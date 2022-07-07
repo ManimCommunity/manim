@@ -6,9 +6,11 @@ height/width, frame rate), output (e.g. directories, logging), styling
 (e.g. background color, transparency), and general behavior (e.g. writing a
 movie vs writing a single frame).
 
-See :doc:`/tutorials/configuration` for an introduction to Manim's configuration system.
+See :doc:`/guides/configuration` for an introduction to Manim's configuration system.
 
 """
+from __future__ import annotations
+
 import argparse
 import configparser
 import copy
@@ -17,9 +19,9 @@ import logging
 import os
 import re
 import sys
-import typing
 from collections.abc import Mapping, MutableMapping
 from pathlib import Path
+from typing import Any, Iterable, Iterator
 
 import colour
 import numpy as np
@@ -27,10 +29,9 @@ import numpy as np
 from .. import constants
 from ..utils.tex import TexTemplate, TexTemplateFromFile
 from ..utils.tex_templates import TexTemplateLibrary
-from .logger_utils import set_file_logger
 
 
-def config_file_paths() -> typing.List[Path]:
+def config_file_paths() -> list[Path]:
     """The paths where ``.cfg`` files will be searched for.
 
     When manim is first imported, it processes any ``.cfg`` files it finds.  This
@@ -149,12 +150,22 @@ class ManimConfig(MutableMapping):
 
     Examples
     --------
+    We use a copy of the global configuration object in the following
+    examples for the sake of demonstration; you can skip these lines
+    and just import ``config`` directly if you actually want to modify
+    the configuration:
+
+    .. code-block:: pycon
+
+        >>> from manim import config as global_config
+        >>> config = global_config.copy()
+
     Each config option allows for dict syntax and attribute syntax.  For
     example, the following two lines are equivalent,
 
     .. code-block:: pycon
 
-        >>> from manim import config, WHITE
+        >>> from manim import WHITE
         >>> config.background_color = WHITE
         >>> config["background_color"] = WHITE
 
@@ -251,8 +262,8 @@ class ManimConfig(MutableMapping):
         "from_animation_number",
         "images_dir",
         "input_file",
+        "media_embed",
         "media_width",
-        "webgl_renderer_path",
         "log_dir",
         "log_to_file",
         "max_files_cached",
@@ -279,7 +290,6 @@ class ManimConfig(MutableMapping):
         "upto_animation_number",
         "renderer",
         "use_opengl_renderer",
-        "use_webgl_renderer",
         "enable_gui",
         "gui_location",
         "use_projection_fill_shaders",
@@ -301,7 +311,7 @@ class ManimConfig(MutableMapping):
         self._d = {k: None for k in self._OPTS}
 
     # behave like a dict
-    def __iter__(self) -> typing.Iterator[str]:
+    def __iter__(self) -> Iterator[str]:
         return iter(self._d)
 
     def __len__(self) -> int:
@@ -314,13 +324,13 @@ class ManimConfig(MutableMapping):
         except AttributeError:
             return False
 
-    def __getitem__(self, key) -> typing.Any:
+    def __getitem__(self, key) -> Any:
         return getattr(self, key)
 
-    def __setitem__(self, key: str, val: typing.Any) -> None:
+    def __setitem__(self, key: str, val: Any) -> None:
         getattr(ManimConfig, key).fset(self, val)  # fset is the property's setter
 
-    def update(self, obj: typing.Union["ManimConfig", dict]) -> None:
+    def update(self, obj: ManimConfig | dict) -> None:
         """Digest the options found in another :class:`ManimConfig` or in a dict.
 
         Similar to :meth:`dict.update`, replaces the values of this object with
@@ -369,7 +379,7 @@ class ManimConfig(MutableMapping):
         raise AttributeError("'ManimConfig' object does not support item deletion")
 
     # copy functions
-    def copy(self) -> "ManimConfig":
+    def copy(self) -> ManimConfig:
         """Deepcopy the contents of this ManimConfig.
 
         Returns
@@ -388,11 +398,11 @@ class ManimConfig(MutableMapping):
         """
         return copy.deepcopy(self)
 
-    def __copy__(self) -> "ManimConfig":
+    def __copy__(self) -> ManimConfig:
         """See ManimConfig.copy()."""
         return copy.deepcopy(self)
 
-    def __deepcopy__(self, memo: typing.Dict[str, typing.Any]) -> "ManimConfig":
+    def __deepcopy__(self, memo: dict[str, Any]) -> ManimConfig:
         """See ManimConfig.copy()."""
         c = ManimConfig()
         # Deepcopying the underlying dict is enough because all properties
@@ -402,14 +412,14 @@ class ManimConfig(MutableMapping):
         return c
 
     # helper type-checking methods
-    def _set_from_list(self, key: str, val: typing.Any, values: list) -> None:
+    def _set_from_list(self, key: str, val: Any, values: list) -> None:
         """Set ``key`` to ``val`` if ``val`` is contained in ``values``."""
         if val in values:
             self._d[key] = val
         else:
             raise ValueError(f"attempted to set {key} to {val}; must be in {values}")
 
-    def _set_boolean(self, key: typing.Union[str, int], val: typing.Any) -> None:
+    def _set_boolean(self, key: str | int, val: Any) -> None:
         """Set ``key`` to ``val`` if ``val`` is Boolean."""
         if val in [True, False]:
             self._d[key] = val
@@ -422,7 +432,7 @@ class ManimConfig(MutableMapping):
         else:
             raise ValueError(f"{key} must be tuple")
 
-    def _set_str(self, key: str, val: typing.Any) -> None:
+    def _set_str(self, key: str, val: Any) -> None:
         """Set ``key`` to ``val`` if ``val`` is a string."""
         if isinstance(val, str):
             self._d[key] = val
@@ -465,7 +475,7 @@ class ManimConfig(MutableMapping):
         return rep
 
     # builders
-    def digest_parser(self, parser: configparser.ConfigParser) -> "ManimConfig":
+    def digest_parser(self, parser: configparser.ConfigParser) -> ManimConfig:
         """Process the config options present in a :class:`ConfigParser` object.
 
         This method processes arbitrary parsers, not only those read from a
@@ -534,7 +544,6 @@ class ManimConfig(MutableMapping):
             "flush_cache",
             "custom_folders",
             "use_opengl_renderer",
-            "use_webgl_renderer",
             "enable_gui",
             "fullscreen",
             "use_projection_fill_shaders",
@@ -574,7 +583,6 @@ class ManimConfig(MutableMapping):
             "movie_file_extension",
             "background_color",
             "renderer",
-            "webgl_renderer_path",
             "window_position",
         ]:
             setattr(self, key, parser["CLI"].get(key, fallback="", raw=True))
@@ -625,6 +633,12 @@ class ManimConfig(MutableMapping):
         if val:
             self.ffmpeg_loglevel = val
 
+        try:
+            val = parser["jupyter"].getboolean("media_embed")
+        except ValueError:
+            val = None
+        setattr(self, "media_embed", val)
+
         val = parser["jupyter"].get("media_width")
         if val:
             setattr(self, "media_width", val)
@@ -635,7 +649,7 @@ class ManimConfig(MutableMapping):
 
         return self
 
-    def digest_args(self, args: argparse.Namespace) -> "ManimConfig":
+    def digest_args(self, args: argparse.Namespace) -> ManimConfig:
         """Process the config options present in CLI arguments.
 
         Parameters
@@ -701,7 +715,6 @@ class ManimConfig(MutableMapping):
             "renderer",
             "background_color",
             "use_opengl_renderer",
-            "use_webgl_renderer",
             "enable_gui",
             "fullscreen",
             "use_projection_fill_shaders",
@@ -788,7 +801,7 @@ class ManimConfig(MutableMapping):
 
         return self
 
-    def digest_file(self, filename: str) -> "ManimConfig":
+    def digest_file(self, filename: str) -> ManimConfig:
         """Process the config options present in a ``.cfg`` file.
 
         This method processes a single ``.cfg`` file, whereas
@@ -826,8 +839,7 @@ class ManimConfig(MutableMapping):
                 filename,
             )
 
-        if filename:
-            return self.digest_parser(make_config_parser(filename))
+        return self.digest_parser(make_config_parser(filename))
 
     # config options are properties
     preview = property(
@@ -852,19 +864,11 @@ class ManimConfig(MutableMapping):
         doc="Whether to show progress bars while rendering animations.",
     )
 
-    @property
-    def log_to_file(self):
-        """Whether to save logs to a file."""
-        return self._d["log_to_file"]
-
-    @log_to_file.setter
-    def log_to_file(self, val: str) -> None:
-        self._set_boolean("log_to_file", val)
-        if val:
-            log_dir = self.get_dir("log_dir")
-            if not os.path.exists(log_dir):
-                os.makedirs(log_dir)
-            set_file_logger(self, self["verbosity"])
+    log_to_file = property(
+        lambda self: self._d["log_to_file"],
+        lambda self, val: self._set_boolean("log_to_file", val),
+        doc="Whether to save logs to a file.",
+    )
 
     notify_outdated_version = property(
         lambda self: self._d["notify_outdated_version"],
@@ -920,12 +924,6 @@ class ManimConfig(MutableMapping):
         doc="Set to force window when using the opengl renderer",
     )
 
-    dry_run = property(
-        lambda self: self._d["dry_run"],
-        lambda self, val: self._set_boolean("dry_run", val),
-        doc="Enable dry_run so that no output files are generated and window is disabled.",
-    )
-
     @property
     def verbosity(self):
         """Logger verbosity; "DEBUG", "INFO", "WARNING", "ERROR", or "CRITICAL" (-v)."""
@@ -967,6 +965,12 @@ class ManimConfig(MutableMapping):
             ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
         ),
         doc="Verbosity level of ffmpeg (no flag).",
+    )
+
+    media_embed = property(
+        lambda self: self._d["media_embed"],
+        lambda self, val: self._d.__setitem__("media_embed", val),
+        doc="Embed videos in Jupyter notebook",
     )
 
     media_width = property(
@@ -1166,17 +1170,18 @@ class ManimConfig(MutableMapping):
 
     @property
     def renderer(self):
-        """Renderer: "cairo", "opengl", "webgl"""
+        """Renderer: "cairo", "opengl"""
         return self._d["renderer"]
 
     @renderer.setter
     def renderer(self, val: str) -> None:
         """Renderer for animations."""
         try:
+            from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
+            from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+            from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+
             from ..mobject.mobject import Mobject
-            from ..mobject.opengl_compatibility import ConvertToOpenGL
-            from ..mobject.opengl_mobject import OpenGLMobject
-            from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
             from ..mobject.types.vectorized_mobject import VMobject
 
             for cls in ConvertToOpenGL._converted_classes:
@@ -1205,7 +1210,7 @@ class ManimConfig(MutableMapping):
         self._set_from_list(
             "renderer",
             val,
-            ["cairo", "opengl", "webgl"],
+            ["cairo", "opengl"],
         )
 
     @property
@@ -1220,30 +1225,8 @@ class ManimConfig(MutableMapping):
             self._set_from_list(
                 "renderer",
                 "opengl",
-                ["cairo", "opengl", "webgl"],
+                ["cairo", "opengl"],
             )
-
-    @property
-    def use_webgl_renderer(self):
-        """Whether or not to use WebGL renderer."""
-        return self._d["use_webgl_renderer"]
-
-    @use_webgl_renderer.setter
-    def use_webgl_renderer(self, val: bool) -> None:
-        self._d["use_webgl_renderer"] = val
-        if val:
-            self._set_from_list(
-                "webgl",
-                "renderer",
-                ["cairo", "opengl", "webgl"],
-            )
-            self["disable_caching"] = True
-
-    webgl_renderer_path = property(
-        lambda self: self._d["webgl_renderer_path"],
-        lambda self, val: self._d.__setitem__("webgl_renderer_path", val),
-        doc="Path to WebGL renderer.",
-    )
 
     media_dir = property(
         lambda self: self._d["media_dir"],
@@ -1353,7 +1336,8 @@ class ManimConfig(MutableMapping):
 
         .. code-block:: pycon
 
-            >>> from manim import config
+            >>> from manim import config as globalconfig
+            >>> config = globalconfig.copy()
             >>> config.tex_dir
             '{media_dir}/Tex'
             >>> config.media_dir
@@ -1459,7 +1443,7 @@ class ManimConfig(MutableMapping):
                 ) from exc
         return Path(path) if path else None
 
-    def _set_dir(self, key: str, val: typing.Union[str, Path]):
+    def _set_dir(self, key: str, val: str | Path):
         if isinstance(val, Path):
             self._d.__setitem__(key, str(val))
         else:
@@ -1549,7 +1533,7 @@ class ManimConfig(MutableMapping):
         return self._tex_template
 
     @tex_template.setter
-    def tex_template(self, val: typing.Union[TexTemplateFromFile, TexTemplate]) -> None:
+    def tex_template(self, val: TexTemplateFromFile | TexTemplate) -> None:
         if isinstance(val, (TexTemplateFromFile, TexTemplate)):
             self._tex_template = val
 
@@ -1583,7 +1567,7 @@ class ManimConfig(MutableMapping):
 
 
 class ManimFrame(Mapping):
-    _OPTS: typing.Set[str] = {
+    _OPTS: set[str] = {
         "pixel_width",
         "pixel_height",
         "aspect_ratio",
@@ -1596,7 +1580,7 @@ class ManimFrame(Mapping):
         "left_side",
         "right_side",
     }
-    _CONSTANTS: typing.Dict[str, np.ndarray] = {
+    _CONSTANTS: dict[str, np.ndarray] = {
         "UP": np.array((0.0, 1.0, 0.0)),
         "DOWN": np.array((0.0, -1.0, 0.0)),
         "RIGHT": np.array((1.0, 0.0, 0.0)),
@@ -1621,7 +1605,7 @@ class ManimFrame(Mapping):
         self.__dict__["_c"] = c
 
     # there are required by parent class Mapping to behave like a dict
-    def __getitem__(self, key: typing.Union[str, int]) -> typing.Any:
+    def __getitem__(self, key: str | int) -> Any:
         if key in self._OPTS:
             return self._c[key]
         elif key in self._CONSTANTS:
@@ -1629,7 +1613,7 @@ class ManimFrame(Mapping):
         else:
             raise KeyError(key)
 
-    def __iter__(self) -> typing.Iterable:
+    def __iter__(self) -> Iterable:
         return iter(list(self._OPTS) + list(self._CONSTANTS))
 
     def __len__(self) -> int:

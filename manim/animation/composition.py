@@ -1,20 +1,24 @@
 """Tools for displaying multiple animations at once."""
 
 
-from typing import TYPE_CHECKING, Callable, Optional, Sequence, Union
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Callable, Sequence
 
 import numpy as np
+
+from manim.mobject.opengl.opengl_mobject import OpenGLGroup
 
 from .._config import config
 from ..animation.animation import Animation, prepare_animation
 from ..mobject.mobject import Group, Mobject
-from ..mobject.opengl_mobject import OpenGLGroup
 from ..scene.scene import Scene
 from ..utils.iterables import remove_list_redundancies
 from ..utils.rate_functions import linear
 
 if TYPE_CHECKING:
-    from ..mobject.types.opengl_vectorized_mobject import OpenGLVGroup
+    from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup
+
     from ..mobject.types.vectorized_mobject import VGroup
 
 __all__ = ["AnimationGroup", "Succession", "LaggedStart", "LaggedStartMap"]
@@ -27,23 +31,26 @@ class AnimationGroup(Animation):
     def __init__(
         self,
         *animations: Animation,
-        group: Union[Group, "VGroup", OpenGLGroup, "OpenGLVGroup"] = None,
-        run_time: Optional[float] = None,
+        group: Group | VGroup | OpenGLGroup | OpenGLVGroup = None,
+        run_time: float | None = None,
         rate_func: Callable[[float], float] = linear,
         lag_ratio: float = 0,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.animations = [prepare_animation(anim) for anim in animations]
+        self.rate_func = rate_func
         self.group = group
         if self.group is None:
             mobjects = remove_list_redundancies(
-                [anim.mobject for anim in self.animations],
+                [anim.mobject for anim in self.animations if not anim.is_introducer()],
             )
             if config["renderer"] == "opengl":
                 self.group = OpenGLGroup(*mobjects)
             else:
                 self.group = Group(*mobjects)
-        super().__init__(self.group, rate_func=rate_func, lag_ratio=lag_ratio, **kwargs)
+        super().__init__(
+            self.group, rate_func=self.rate_func, lag_ratio=lag_ratio, **kwargs
+        )
         self.run_time: float = self.init_run_time(run_time)
 
     def get_all_mobjects(self) -> Sequence[Mobject]:
@@ -55,6 +62,10 @@ class AnimationGroup(Animation):
         for anim in self.animations:
             anim.begin()
 
+    def _setup_scene(self, scene) -> None:
+        for anim in self.animations:
+            anim._setup_scene(scene)
+
     def finish(self) -> None:
         for anim in self.animations:
             anim.finish()
@@ -62,6 +73,7 @@ class AnimationGroup(Animation):
             self.group.resume_updating()
 
     def clean_up_from_scene(self, scene: Scene) -> None:
+        self._on_finish(scene)
         for anim in self.animations:
             if self.remover:
                 anim.remover = self.remover
@@ -99,7 +111,7 @@ class AnimationGroup(Animation):
         # times might not correspond to actual times,
         # e.g. of the surrounding scene.  Instead they'd
         # be a rescaled version.  But that's okay!
-        time = alpha * self.max_end_time
+        time = self.rate_func(alpha) * self.max_end_time
         for anim, start_time, end_time in self.anims_with_timings:
             anim_time = end_time - start_time
             if anim_time == 0:
@@ -125,14 +137,25 @@ class Succession(AnimationGroup):
         if self.active_animation:
             self.active_animation.update_mobjects(dt)
 
+    def _setup_scene(self, scene) -> None:
+        if scene is None:
+            return
+        if self.is_introducer():
+            for anim in self.animations:
+                if not anim.is_introducer() and anim.mobject is not None:
+                    scene.add(anim.mobject)
+
+        self.scene = scene
+
     def update_active_animation(self, index: int) -> None:
         self.active_index = index
         if index >= len(self.animations):
-            self.active_animation: Optional[Animation] = None
-            self.active_start_time: Optional[float] = None
-            self.active_end_time: Optional[float] = None
+            self.active_animation: Animation | None = None
+            self.active_start_time: float | None = None
+            self.active_end_time: float | None = None
         else:
             self.active_animation = self.animations[index]
+            self.active_animation._setup_scene(self.scene)
             self.active_animation.begin()
             self.active_start_time = self.anims_with_timings[index][1]
             self.active_end_time = self.anims_with_timings[index][2]
@@ -143,7 +166,7 @@ class Succession(AnimationGroup):
         self.update_active_animation(self.active_index + 1)
 
     def interpolate(self, alpha: float) -> None:
-        current_time = alpha * self.run_time
+        current_time = self.rate_func(alpha) * self.run_time
         while self.active_end_time is not None and current_time >= self.active_end_time:
             self.next_animation()
         if self.active_animation is not None and self.active_start_time is not None:
@@ -158,7 +181,7 @@ class LaggedStart(AnimationGroup):
         self,
         *animations: Animation,
         lag_ratio: float = DEFAULT_LAGGED_START_LAG_RATIO,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(*animations, lag_ratio=lag_ratio, **kwargs)
 
@@ -170,7 +193,7 @@ class LaggedStartMap(LaggedStart):
         mobject: Mobject,
         arg_creator: Callable[[Mobject], str] = None,
         run_time: float = 2,
-        **kwargs
+        **kwargs,
     ) -> None:
         args_list = []
         for submob in mobject:

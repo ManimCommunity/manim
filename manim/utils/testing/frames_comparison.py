@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import functools
 import inspect
 from pathlib import Path
-from typing import Callable, Optional, Tuple, Type
+from typing import Callable
 
 from _pytest.fixtures import FixtureRequest
 
@@ -87,10 +89,12 @@ def frames_comparison(
             construct = functools.partial(tested_scene_construct, *args, **kwargs)
 
             # Kwargs contains the eventual parametrization arguments.
-            # This modify the test_name so the it is defined by the parametrization arguments too.
-            # Ex : if "length" is parametrized from 0 to 20, the kwargs will be with once with {"length" : 1}, etc.
+            # This modifies the test_name so that it is defined by the parametrization
+            # arguments too.
+            # Example: if "length" is parametrized from 0 to 20, the kwargs
+            # will be once with {"length" : 1}, etc.
             test_name_with_param = test_name + "_".join(
-                map(lambda tup: f"{str(tup[0])}:{str(tup[1])}", kwargs.items()),
+                f"_{str(tup[0])}[{str(tup[1])}]" for tup in kwargs.items()
             )
 
             config_tests = _config_test(last_frame)
@@ -155,13 +159,13 @@ def frames_comparison(
 
 def _make_test_comparing_frames(
     file_path: Path,
-    base_scene: Type[Scene],
+    base_scene: type[Scene],
     construct: Callable[[Scene], None],
     renderer_class,  # Renderer type, there is no superclass renderer yet .....
     is_set_test_data_test: bool,
     last_frame: bool,
     show_diff: bool,
-    size_frame: Tuple,
+    size_frame: tuple,
 ) -> Callable[[], None]:
     """Create the real pytest test that will fail if the frames mismatch.
 
@@ -221,7 +225,7 @@ def _make_test_comparing_frames(
 
 
 def _control_data_path(
-    test_file_path: Optional[str], module_name: str, test_name: str, setting_test: bool
+    test_file_path: str | None, module_name: str, test_name: str, setting_test: bool
 ) -> Path:
     if test_file_path is None:
         # For some reason, path to test file containing @frames_comparison could not

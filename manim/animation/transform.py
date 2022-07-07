@@ -1,5 +1,7 @@
 """Animations transforming one mobject into another."""
 
+from __future__ import annotations
+
 __all__ = [
     "Transform",
     "ReplacementTransform",
@@ -26,15 +28,16 @@ __all__ = [
 
 import inspect
 import types
-from typing import TYPE_CHECKING, Any, Callable, Iterable, Optional, Sequence
+from typing import TYPE_CHECKING, Any, Callable, Iterable, Sequence
 
 import numpy as np
+
+from manim.mobject.opengl.opengl_mobject import OpenGLGroup, OpenGLMobject
 
 from .. import config
 from ..animation.animation import Animation
 from ..constants import DEFAULT_POINTWISE_FUNCTION_RUN_TIME, DEGREES, ORIGIN, OUT
 from ..mobject.mobject import Group, Mobject
-from ..mobject.opengl_mobject import OpenGLGroup, OpenGLMobject
 from ..utils.paths import path_along_arc, path_along_circles
 from ..utils.rate_functions import smooth, squish_rate_func
 
@@ -43,11 +46,41 @@ if TYPE_CHECKING:
 
 
 class Transform(Animation):
+    """A Transform transforms a Mobject into a target Mobject.
+
+    Parameters
+    ----------
+    mobject
+        The :class:`.Mobject` to be transformed. It will be mutated to become the ``target_mobject``.
+    target_mobject
+        The target of the transformation.
+    path_func
+        A function defining the path that the points of the ``mobject`` are being moved
+        along until they match the points of the ``target_mobject``, see :mod:`.utils.paths`.
+    path_arc
+        The arc angle (in radians) that the points of ``mobject`` will follow to reach
+        the points of the target if using a circular path arc, see ``path_arc_centers``.
+    path_arc_axis
+        The axis to rotate along if using a circular path arc, see ``path_arc_centers``.
+    path_arc_centers
+        The center of the circular arcs along which the points of ``mobject`` are
+        moved by the transformation.
+
+        If this is set and ``path_func`` is not set, then a ``path_along_circles`` path will be generated
+        using the ``path_arc`` parameters and stored in ``path_func``. If ``path_func`` is set, this and the
+        other ``path_arc`` fields are set as attributes, but a ``path_func`` is not generated from it.
+    replace_mobject_with_target_in_scene
+        Controls which mobject is replaced when the transformation is complete.
+
+        If set to True, ``mobject`` will be removed from the scene and ``target_mobject`` will
+        replace it. Otherwise, ``target_mobject`` is never added and ``mobject`` just takes its shape.
+    """
+
     def __init__(
         self,
-        mobject: Optional[Mobject],
-        target_mobject: Optional[Mobject] = None,
-        path_func: Optional[Callable] = None,
+        mobject: Mobject | None,
+        target_mobject: Mobject | None = None,
+        path_func: Callable | None = None,
         path_arc: float = 0,
         path_arc_axis: np.ndarray = OUT,
         path_arc_centers: np.ndarray = None,
@@ -58,14 +91,16 @@ class Transform(Animation):
         self.path_arc_centers: np.ndarray = path_arc_centers
         self.path_arc: float = path_arc
 
-        if self.path_arc_centers is not None:
+        # path_func is a property a few lines below so it doesn't need to be set in any case
+        if path_func is not None:
+            self.path_func: Callable = path_func
+        elif self.path_arc_centers is not None:
             self.path_func = path_along_circles(
                 path_arc,
                 self.path_arc_centers,
                 self.path_arc_axis,
             )
 
-        self.path_func: Optional[Callable] = path_func
         self.replace_mobject_with_target_in_scene: bool = (
             replace_mobject_with_target_in_scene
         )
@@ -125,7 +160,7 @@ class Transform(Animation):
         # in subclasses
         return self.target_mobject
 
-    def clean_up_from_scene(self, scene: "Scene") -> None:
+    def clean_up_from_scene(self, scene: Scene) -> None:
         super().clean_up_from_scene(scene)
         if self.replace_mobject_with_target_in_scene:
             scene.remove(self.mobject)
@@ -155,7 +190,7 @@ class Transform(Animation):
         starting_submobject: Mobject,
         target_copy: Mobject,
         alpha: float,
-    ) -> "Transform":
+    ) -> Transform:
         submobject.interpolate(starting_submobject, target_copy, alpha, self.path_func)
         return self
 
@@ -227,6 +262,35 @@ class TransformFromCopy(Transform):
 
 
 class ClockwiseTransform(Transform):
+    """Transforms the points of a mobject along a clockwise oriented arc.
+
+    See also
+    --------
+    :class:`.Transform`, :class:`.CounterclockwiseTransform`
+
+    Examples
+    --------
+
+    .. manim:: ClockwiseExample
+
+        class ClockwiseExample(Scene):
+            def construct(self):
+                dl, dr = Dot(), Dot()
+                sl, sr = Square(), Square()
+
+                VGroup(dl, sl).arrange(DOWN).shift(2*LEFT)
+                VGroup(dr, sr).arrange(DOWN).shift(2*RIGHT)
+
+                self.add(dl, dr)
+                self.wait()
+                self.play(
+                    ClockwiseTransform(dl, sl),
+                    Transform(dr, sr)
+                )
+                self.wait()
+
+    """
+
     def __init__(
         self,
         mobject: Mobject,
@@ -238,6 +302,44 @@ class ClockwiseTransform(Transform):
 
 
 class CounterclockwiseTransform(Transform):
+    """Transforms the points of a mobject along a counterclockwise oriented arc.
+
+    See also
+    --------
+    :class:`.Transform`, :class:`.ClockwiseTransform`
+
+    Examples
+    --------
+
+    .. manim:: CounterclockwiseTransform_vs_Transform
+
+        class CounterclockwiseTransform_vs_Transform(Scene):
+            def construct(self):
+                # set up the numbers
+                c_transform = VGroup(DecimalNumber(number=3.141, num_decimal_places=3), DecimalNumber(number=1.618, num_decimal_places=3))
+                text_1 = Text("CounterclockwiseTransform", color=RED)
+                c_transform.add(text_1)
+
+                transform = VGroup(DecimalNumber(number=1.618, num_decimal_places=3), DecimalNumber(number=3.141, num_decimal_places=3))
+                text_2 = Text("Transform", color=BLUE)
+                transform.add(text_2)
+
+                ints = VGroup(c_transform, transform)
+                texts = VGroup(text_1, text_2).scale(0.75)
+                c_transform.arrange(direction=UP, buff=1)
+                transform.arrange(direction=UP, buff=1)
+
+                ints.arrange(buff=2)
+                self.add(ints, texts)
+
+                # The mobs move in clockwise direction for ClockwiseTransform()
+                self.play(CounterclockwiseTransform(c_transform[0], c_transform[1]))
+
+                # The mobs move straight up for Transform()
+                self.play(Transform(transform[0], transform[1]))
+
+    """
+
     def __init__(
         self,
         mobject: Mobject,
@@ -249,6 +351,31 @@ class CounterclockwiseTransform(Transform):
 
 
 class MoveToTarget(Transform):
+    """Transforms a mobject to the mobject stored in its ``target`` attribute.
+
+    After calling the :meth:`~.Mobject.generate_target` method, the :attr:`target`
+    attribute of the mobject is populated with a copy of it. After modifying the attribute,
+    playing the :class:`.MoveToTarget` animation transforms the original mobject
+    into the modified one stored in the :attr:`target` attribute.
+
+    Examples
+    --------
+
+    .. manim:: MoveToTargetExample
+
+        class MoveToTargetExample(Scene):
+            def construct(self):
+                c = Circle()
+
+                c.generate_target()
+                c.target.set_fill(color=GREEN, opacity=0.5)
+                c.target.shift(2*RIGHT + UP).scale(0.5)
+
+                self.add(c)
+                self.play(MoveToTarget(c))
+
+    """
+
     def __init__(self, mobject: Mobject, **kwargs) -> None:
         self.check_validity_of_input(mobject)
         super().__init__(mobject, mobject.target, **kwargs)
@@ -264,6 +391,11 @@ class _MethodAnimation(MoveToTarget):
     def __init__(self, mobject, methods):
         self.methods = methods
         super().__init__(mobject)
+
+    def finish(self) -> None:
+        for method, method_args, method_kwargs in self.methods:
+            method.__func__(self.mobject, *method_args, **method_kwargs)
+        super().finish()
 
 
 class ApplyMethod(Transform):
@@ -357,21 +489,81 @@ class ApplyPointwiseFunctionToCenter(ApplyPointwiseFunction):
 
 
 class FadeToColor(ApplyMethod):
+    """Animation that changes color of a mobject.
+
+    Examples
+    --------
+
+    .. manim:: FadeToColorExample
+
+        class FadeToColorExample(Scene):
+            def construct(self):
+                self.play(FadeToColor(Text("Hello World!"), color=RED))
+
+    """
+
     def __init__(self, mobject: Mobject, color: str, **kwargs) -> None:
         super().__init__(mobject.set_color, color, **kwargs)
 
 
 class ScaleInPlace(ApplyMethod):
+    """Animation that scales a mobject by a certain factor.
+
+    Examples
+    --------
+
+    .. manim:: ScaleInPlaceExample
+
+        class ScaleInPlaceExample(Scene):
+            def construct(self):
+                self.play(ScaleInPlace(Text("Hello World!"), 2))
+
+    """
+
     def __init__(self, mobject: Mobject, scale_factor: float, **kwargs) -> None:
         super().__init__(mobject.scale, scale_factor, **kwargs)
 
 
 class ShrinkToCenter(ScaleInPlace):
+    """Animation that makes a mobject shrink to center.
+
+    Examples
+    --------
+
+    .. manim:: ShrinkToCenterExample
+
+        class ShrinkToCenterExample(Scene):
+            def construct(self):
+                self.play(ShrinkToCenter(Text("Hello World!")))
+
+    """
+
     def __init__(self, mobject: Mobject, **kwargs) -> None:
         super().__init__(mobject, 0, **kwargs)
 
 
 class Restore(ApplyMethod):
+    """Transforms a mobject to its last saved state.
+
+    To save the state of a mobject, use the :meth:`~.Mobject.save_state` method.
+
+    Examples
+    --------
+
+    .. manim:: RestoreExample
+
+        class RestoreExample(Scene):
+            def construct(self):
+                s = Square()
+                s.save_state()
+                self.play(FadeIn(s))
+                self.play(s.animate.set_color(PURPLE).set_opacity(0.5).shift(2*LEFT).scale(3))
+                self.play(s.animate.shift(5*DOWN).rotate(PI/4))
+                self.wait()
+                self.play(Restore(s), run_time=2)
+
+    """
+
     def __init__(self, mobject: Mobject, **kwargs) -> None:
         super().__init__(mobject.restore, **kwargs)
 
@@ -403,6 +595,17 @@ class ApplyMatrix(ApplyPointwiseFunction):
         The origin point for the transform. Defaults to ``ORIGIN``.
     kwargs
         Further keyword arguments that are passed to :class:`ApplyPointwiseFunction`.
+
+    Examples
+    --------
+
+    .. manim:: ApplyMatrixExample
+
+        class ApplyMatrixExample(Scene):
+            def construct(self):
+                matrix = [[1, 1], [0, 2/3]]
+                self.play(ApplyMatrix(matrix, Text("Hello World!")), ApplyMatrix(matrix, NumberPlane()))
+
     """
 
     def __init__(

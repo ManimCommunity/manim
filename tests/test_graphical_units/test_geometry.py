@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from manim import *
 from manim.utils.testing.frames_comparison import frames_comparison
 
@@ -164,6 +166,35 @@ def test_Angle(scene):
     l2 = Line(ORIGIN, UP)
     a = Angle(l1, l2)
     scene.add(a)
+
+
+@frames_comparison
+def test_three_points_Angle(scene):
+    # acute angle
+    acute = Angle.from_three_points(
+        np.array([10, 0, 0]), np.array([0, 0, 0]), np.array([10, 10, 0])
+    )
+    # obtuse angle
+    obtuse = Angle.from_three_points(
+        np.array([-10, 1, 0]), np.array([0, 0, 0]), np.array([10, 1, 0])
+    )
+    # quadrant 1 angle
+    q1 = Angle.from_three_points(
+        np.array([10, 10, 0]), np.array([0, 0, 0]), np.array([10, 1, 0])
+    )
+    # quadrant 2 angle
+    q2 = Angle.from_three_points(
+        np.array([-10, 1, 0]), np.array([0, 0, 0]), np.array([-1, 10, 0])
+    )
+    # quadrant 3 angle
+    q3 = Angle.from_three_points(
+        np.array([-10, -1, 0]), np.array([0, 0, 0]), np.array([-1, -10, 0])
+    )
+    # quadrant 4 angle
+    q4 = Angle.from_three_points(
+        np.array([10, -1, 0]), np.array([0, 0, 0]), np.array([1, -10, 0])
+    )
+    scene.add(VGroup(acute, obtuse, q1, q2, q3, q4).arrange(RIGHT))
 
 
 @frames_comparison

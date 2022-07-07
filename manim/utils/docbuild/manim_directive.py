@@ -73,6 +73,8 @@ directive:
         that is rendered in a reference block after the source code.
 
 """
+from __future__ import annotations
+
 import csv
 import itertools as it
 import os
@@ -81,7 +83,6 @@ import shutil
 import sys
 from pathlib import Path
 from timeit import timeit
-from typing import Callable, List
 
 import jinja2
 from docutils import nodes
@@ -93,19 +94,27 @@ from manim import QUALITIES
 classnamedict = {}
 
 
-class skip_manim_node(nodes.Admonition, nodes.Element):
+class SkipManimNode(nodes.Admonition, nodes.Element):
+    """Auxiliary node class that is used when the ``skip-manim`` tag is present
+    or ``.pot`` files are being built.
+
+    Skips rendering the manim directive and outputs a placeholder instead.
+    """
+
     pass
 
 
 def visit(self, node, name=""):
     self.visit_admonition(node, name)
+    if not isinstance(node[0], nodes.title):
+        node.insert(0, nodes.title("skip-manim", "Example Placeholder"))
 
 
 def depart(self, node):
     self.depart_admonition(node)
 
 
-def process_name_list(option_input: str, reference_type: str) -> List[str]:
+def process_name_list(option_input: str, reference_type: str) -> list[str]:
     r"""Reformats a string of space separated class names
     as a list of strings containing valid Sphinx references.
 
@@ -147,19 +156,24 @@ class ManimDirective(Directive):
     final_argument_whitespace = True
 
     def run(self):
-        # Render is skipped if the tag skip-manim is present
+        # Rendering is skipped if the tag skip-manim is present,
+        # or if we are making the pot-files
         should_skip = (
             "skip-manim" in self.state.document.settings.env.app.builder.tags.tags
-        )
-        # Or if we are making the pot-files
-        should_skip = (
-            should_skip
             or self.state.document.settings.env.app.builder.name == "gettext"
         )
         if should_skip:
-            node = skip_manim_node()
+            node = SkipManimNode()
             self.state.nested_parse(
-                StringList(self.content[0]),
+                StringList(
+                    [
+                        f"Placeholder block for ``{self.arguments[0]}``.",
+                        "",
+                        ".. code-block:: python",
+                        "",
+                    ]
+                    + ["    " + line for line in self.content]
+                ),
                 self.content_offset,
                 node,
             )
@@ -341,9 +355,7 @@ def _delete_rendering_times(*args):
 
 
 def setup(app):
-    import manim
-
-    app.add_node(skip_manim_node, html=(visit, depart))
+    app.add_node(SkipManimNode, html=(visit, depart))
 
     setup.app = app
     setup.config = app.config

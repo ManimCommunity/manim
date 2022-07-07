@@ -57,28 +57,12 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.animation.fading.FadeOut.rst:21:<autosummary>:1
-msgid ":py:obj:`clean_up_from_scene <manim.animation.fading.FadeOut.clean_up_from_scene>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.fading.FadeOut.rst:21:<autosummary>:1
 #: ../../../manim/animation/fading.py:docstring of manim.animation.fading.FadeOut.clean_up_from_scene:1
 msgid "Clean up the :class:`~.Scene` after finishing the animation."
 msgstr ""
 
-#: ../../source/reference/manim.animation.fading.FadeOut.rst:21:<autosummary>:1
-msgid ":py:obj:`create_target <manim.animation.fading.FadeOut.create_target>`"
-msgstr ""
-
 #: ../../source/reference/manim.animation.fading.FadeOut.rst:23
 msgid "Attributes"
-msgstr ""
-
-#: ../../../manim/animation/fading.py:docstring of manim.animation.fading.FadeOut.clean_up_from_scene:1:<autosummary>:1
-msgid ":py:obj:`path_arc <manim.animation.fading.FadeOut.path_arc>`\\"
-msgstr ""
-
-#: ../../../manim/animation/fading.py:docstring of manim.animation.fading.FadeOut.clean_up_from_scene:1:<autosummary>:1
-msgid ":py:obj:`path_func <manim.animation.fading.FadeOut.path_func>`\\"
 msgstr ""
 
 #: ../../../manim/animation/fading.py:docstring of manim.animation.fading.FadeOut.clean_up_from_scene:3

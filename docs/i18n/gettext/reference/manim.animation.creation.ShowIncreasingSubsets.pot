@@ -31,16 +31,8 @@ msgid "Methods"
 msgstr ""
 
 #: ../../../manim/animation/creation.py:docstring of manim.animation.creation.ShowIncreasingSubsets.interpolate_mobject:1:<autosummary>:1
-msgid ":py:obj:`interpolate_mobject <manim.animation.creation.ShowIncreasingSubsets.interpolate_mobject>`"
-msgstr ""
-
-#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.ShowIncreasingSubsets.interpolate_mobject:1:<autosummary>:1
 #: ../../../manim/animation/creation.py:docstring of manim.animation.creation.ShowIncreasingSubsets.interpolate_mobject:1
 msgid "Interpolates the mobject of the :class:`Animation` based on alpha value."
-msgstr ""
-
-#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.ShowIncreasingSubsets.interpolate_mobject:1:<autosummary>:1
-msgid ":py:obj:`update_submobject_list <manim.animation.creation.ShowIncreasingSubsets.update_submobject_list>`"
 msgstr ""
 
 #: ../../../manim/animation/creation.py:docstring of manim.animation.creation.ShowIncreasingSubsets:0

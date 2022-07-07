@@ -1,5 +1,5 @@
-sphinx==4.1.2
 furo
-recommonmark>=0.5.0
+myst-parser
+sphinx
 sphinx-copybutton
 sphinxext-opengraph

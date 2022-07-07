@@ -54,8 +54,4 @@ msgstr ""
 msgid "Attributes"
 msgstr ""
 
-#: ../../source/reference/manim.animation.growing.GrowFromEdge.rst:25:<autosummary>:1
-msgid ":py:obj:`path_arc <manim.animation.growing.GrowFromEdge.path_arc>`\\"
-msgstr ""
-
 

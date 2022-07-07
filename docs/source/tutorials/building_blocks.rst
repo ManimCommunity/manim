@@ -13,7 +13,7 @@ concepts is implemented in manim as a separate class: the :class:`.Mobject`,
 :class:`.Animation`, and :class:`.Scene` classes.
 
 .. note:: It is recommended that you read the tutorials :doc:`quickstart` and
-          :doc:`a_deeper_look` before reading this page.
+          :doc:`output_and_config` before reading this page.
 
 
 ********

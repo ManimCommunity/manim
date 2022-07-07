@@ -1,0 +1,107 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.text.numbers.Variable.rst:2
+msgid "Variable"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.numbers.Variable.rst:4
+msgid "Qualified name: ``manim.mobject.text.numbers.Variable``"
+msgstr ""
+
+#: ../../../manim/mobject/text/numbers.py:docstring of manim.mobject.text.numbers.Variable:1
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgstr ""
+
+#: ../../../manim/mobject/text/numbers.py:docstring of manim.mobject.text.numbers.Variable:1
+msgid "A class for displaying text that shows \"label = value\" with the value continuously updated from a :class:`~.ValueTracker`."
+msgstr ""
+
+#: ../../../manim/mobject/text/numbers.py:docstring of manim.mobject.text.numbers.Variable:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/text/numbers.py:docstring of manim.mobject.text.numbers.Variable:4
+msgid "The initial value you need to keep track of and display."
+msgstr ""
+
+#: ../../../manim/mobject/text/numbers.py:docstring of manim.mobject.text.numbers.Variable:6
+msgid "The label for your variable. Raw strings are convertex to :class:`~.MathTex` objects."
+msgstr ""
+
+#: ../../../manim/mobject/text/numbers.py:docstring of manim.mobject.text.numbers.Variable:8
+msgid "The class used for displaying the number. Defaults to :class:`DecimalNumber`."
+msgstr ""
+
+#: ../../../manim/mobject/text/numbers.py:docstring of manim.mobject.text.numbers.Variable:10
+msgid "The number of decimal places to display in your variable. Defaults to 2. If `var_type` is an :class:`Integer`, this parameter is ignored."
+msgstr ""
+
+#: ../../../manim/mobject/text/numbers.py:docstring of manim.mobject.text.numbers.Variable:13
+msgid "Other arguments to be passed to `~.Mobject`."
+msgstr ""
+
+#: ../../../manim/mobject/text/numbers.py:docstring of manim.mobject.text.numbers.Variable:18
+msgid "The label for your variable, for example ``x = ...``."
+msgstr ""
+
+#: ../../../manim/mobject/text/numbers.py:docstring of manim.mobject.text.numbers.Variable:0
+#: ../../../manim/mobject/text/numbers.py:docstring of manim.mobject.text.numbers.Variable:0
+#: ../../../manim/mobject/text/numbers.py:docstring of manim.mobject.text.numbers.Variable:0
+msgid "type"
+msgstr ""
+
+#: ../../../manim/mobject/text/numbers.py:docstring of manim.mobject.text.numbers.Variable:20
+msgid "Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`, :class:`~.Text`, :class:`~.TexSymbol`, :class:`~.SingleStringMathTex`]"
+msgstr ""
+
+#: ../../../manim/mobject/text/numbers.py:docstring of manim.mobject.text.numbers.Variable:24
+msgid "Useful in updating the value of your variable on-screen."
+msgstr ""
+
+#: ../../../manim/mobject/text/numbers.py:docstring of manim.mobject.text.numbers.Variable:30
+msgid "The tex for the value of your variable."
+msgstr ""
+
+#: ../../../manim/mobject/text/numbers.py:docstring of manim.mobject.text.numbers.Variable:32
+msgid "Union[:class:`DecimalNumber`, :class:`Integer`]"
+msgstr ""
+
+#: ../../../manim/mobject/text/numbers.py:docstring of manim.mobject.text.numbers.Variable:35
+msgid "Examples"
+msgstr ""
+
+#: ../../../manim/mobject/text/numbers.py:docstring of manim.mobject.text.numbers.Variable:36
+msgid "Normal usage::"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.numbers.Variable.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.numbers.Variable.rst:21
+msgid "Attributes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.numbers.Variable.rst:32:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.numbers.Variable.rst:32:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.numbers.Variable.rst:32:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.numbers.Variable.rst:32:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+

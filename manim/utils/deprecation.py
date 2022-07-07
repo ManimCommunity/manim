@@ -1,18 +1,20 @@
 """Decorators for deprecating classes, functions and function parameters."""
 
+from __future__ import annotations
+
 __all__ = ["deprecated", "deprecated_params"]
 
 
 import inspect
 import re
-from typing import Any, Callable, Iterable, List, Optional, Tuple, Union
+from typing import Any, Callable, Iterable
 
 from decorator import decorate, decorator
 
 from .. import logger
 
 
-def _get_callable_info(callable: Callable) -> Tuple[str, str]:
+def _get_callable_info(callable: Callable) -> tuple[str, str]:
     """Returns type and name of a callable.
 
     Parameters
@@ -36,8 +38,8 @@ def _get_callable_info(callable: Callable) -> Tuple[str, str]:
 
 
 def _deprecation_text_component(
-    since: Optional[str],
-    until: Optional[str],
+    since: str | None,
+    until: str | None,
     message: str,
 ) -> str:
     """Generates a text component used in deprecation messages.
@@ -68,10 +70,10 @@ def _deprecation_text_component(
 
 def deprecated(
     func: Callable = None,
-    since: Optional[str] = None,
-    until: Optional[str] = None,
-    replacement: Optional[str] = None,
-    message: Optional[str] = "",
+    since: str | None = None,
+    until: str | None = None,
+    replacement: str | None = None,
+    message: str | None = "",
 ) -> Callable:
     """Decorator to mark a callable as deprecated.
 
@@ -100,6 +102,8 @@ def deprecated(
     --------
     Basic usage::
 
+        from manim.utils.deprecation import deprecated
+
         @deprecated
         def foo(**kwargs):
             pass
@@ -124,6 +128,8 @@ def deprecated(
 
     You can specify additional information for a more precise warning::
 
+        from manim.utils.deprecation import deprecated
+
         @deprecated(
             since="v0.2",
             until="v0.4",
@@ -137,6 +143,8 @@ def deprecated(
         # WARNING  The function foo has been deprecated since v0.2 and is expected to be removed after v0.4. Use bar instead. It is cooler.
 
     You may also use dates instead of versions::
+
+        from manim.utils.deprecation import deprecated
 
         @deprecated(since="05/01/2021", until="06/01/2021")
         def foo():
@@ -185,7 +193,7 @@ def deprecated(
         """
         warning = warning_msg(True)
         doc_string = func.__doc__ or ""
-        func.__doc__ = f"{doc_string}\n\n.. admonition:: Deprecated\n  :class: attention\n\n  {warning}"
+        func.__doc__ = f"{doc_string}\n\n.. attention:: Deprecated\n  {warning}"
 
     def deprecate(func: Callable, *args, **kwargs):
         """The actual decorator used to extend the callables behavior.
@@ -221,13 +229,12 @@ def deprecated(
 
 
 def deprecated_params(
-    params: Optional[Union[str, Iterable[str]]] = None,
-    since: Optional[str] = None,
-    until: Optional[str] = None,
-    message: Optional[str] = "",
-    redirections: Optional[
-        "Iterable[Union[Tuple[str, str], Callable[..., dict[str, Any]]]]"
-    ] = None,
+    params: str | Iterable[str] | None = None,
+    since: str | None = None,
+    until: str | None = None,
+    message: str | None = "",
+    redirections: None
+    | (Iterable[tuple[str, str] | Callable[..., dict[str, Any]]]) = None,
 ) -> Callable:
     """Decorator to mark parameters of a callable as deprecated.
 
@@ -276,6 +283,8 @@ def deprecated_params(
     --------
     Basic usage::
 
+        from manim.utils.deprecation import deprecated_params
+
         @deprecated_params(params="a, b, c")
         def foo(**kwargs):
             pass
@@ -287,6 +296,8 @@ def deprecated_params(
         # WARNING  The parameters a and b of method foo have been deprecated and may be removed in a later version.
 
     You can also specify additional information for a more precise warning::
+
+        from manim.utils.deprecation import deprecated_params
 
         @deprecated_params(
             params="a, b, c",
@@ -302,6 +313,8 @@ def deprecated_params(
 
     Basic parameter redirection::
 
+        from manim.utils.deprecation import deprecated_params
+
         @deprecated_params(redirections=[
             # Two ways to redirect one parameter to another:
             ("old_param", "new_param"),
@@ -316,6 +329,8 @@ def deprecated_params(
 
     Redirecting using a calculated value::
 
+        from manim.utils.deprecation import deprecated_params
+
         @deprecated_params(redirections=[
             lambda runtime_in_ms: {"run_time": runtime_in_ms / 1000}
         ])
@@ -328,6 +343,8 @@ def deprecated_params(
 
     Redirecting multiple parameter values to one::
 
+        from manim.utils.deprecation import deprecated_params
+
         @deprecated_params(redirections=[
             lambda buff_x=1, buff_y=1: {"buff": (buff_x, buff_y)}
         ])
@@ -339,6 +356,8 @@ def deprecated_params(
         # returns {"buff": (2, 1)}
 
     Redirect one parameter to multiple::
+
+        from manim.utils.deprecation import deprecated_params
 
         @deprecated_params(redirections=[
             lambda buff=1: {"buff_x": buff[0], "buff_y": buff[1]} if isinstance(buff, tuple)
@@ -386,7 +405,7 @@ def deprecated_params(
 
     redirections = list(redirections)
 
-    def warning_msg(func: Callable, used: List[str]):
+    def warning_msg(func: Callable, used: list[str]):
         """Generate the deprecation warning message.
 
         Parameters
@@ -409,7 +428,7 @@ def deprecated_params(
         deprecated = _deprecation_text_component(since, until, message)
         return f"The parameter{parameter_s} {used_} of {what} {name} {has_have_been} {deprecated}"
 
-    def redirect_params(kwargs: dict, used: List[str]):
+    def redirect_params(kwargs: dict, used: list[str]):
         """Adjust the keyword arguments as defined by the redirections.
 
         Parameters

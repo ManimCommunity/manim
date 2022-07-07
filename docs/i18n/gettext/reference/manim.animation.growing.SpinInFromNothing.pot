@@ -54,8 +54,4 @@ msgstr ""
 msgid "Attributes"
 msgstr ""
 
-#: ../../source/reference/manim.animation.growing.SpinInFromNothing.rst:25:<autosummary>:1
-msgid ":py:obj:`path_arc <manim.animation.growing.SpinInFromNothing.path_arc>`\\"
-msgstr ""
-
 

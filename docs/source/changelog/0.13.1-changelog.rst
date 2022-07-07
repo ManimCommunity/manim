@@ -27,10 +27,10 @@ A total of 2 pull requests were merged for this release.
 Fixed bugs
 ----------
 
-* `#2363 <https://github.com/ManimCommunity/manim/pull/2363>`__: Fixed broken IPython magic command
+* :pr:`2363`: Fixed broken IPython magic command
 
 
 New releases
 ------------
 
-* `#2364 <https://github.com/ManimCommunity/manim/pull/2364>`__: Prepared bugfix release ``v0.13.1``
+* :pr:`2364`: Prepared bugfix release ``v0.13.1``

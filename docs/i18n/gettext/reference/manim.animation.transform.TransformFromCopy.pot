@@ -27,24 +27,12 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.TransformFromCopy.rst:20:<autosummary>:1
-msgid ":py:obj:`interpolate <manim.animation.transform.TransformFromCopy.interpolate>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform.TransformFromCopy.rst:20:<autosummary>:1
 #: ../../../manim/animation/transform.py:docstring of manim.animation.transform.TransformFromCopy.interpolate:1
 msgid "Set the animation progress."
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.TransformFromCopy.rst:22
 msgid "Attributes"
-msgstr ""
-
-#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.TransformFromCopy.interpolate:1:<autosummary>:1
-msgid ":py:obj:`path_arc <manim.animation.transform.TransformFromCopy.path_arc>`\\"
-msgstr ""
-
-#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.TransformFromCopy.interpolate:1:<autosummary>:1
-msgid ":py:obj:`path_func <manim.animation.transform.TransformFromCopy.path_func>`\\"
 msgstr ""
 
 #: ../../../manim/animation/transform.py:docstring of manim.animation.transform.TransformFromCopy:0

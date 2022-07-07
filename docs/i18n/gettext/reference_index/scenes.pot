@@ -11,15 +11,7 @@ msgid "Scenes"
 msgstr ""
 
 #: ../../source/reference_index/scenes.rst:15:<autosummary>:1
-msgid ":py:obj:`moving_camera_scene <manim.scene.moving_camera_scene>`\\"
-msgstr ""
-
-#: ../../source/reference_index/scenes.rst:15:<autosummary>:1
 msgid "A scene whose camera can be moved around."
-msgstr ""
-
-#: ../../source/reference_index/scenes.rst:15:<autosummary>:1
-msgid ":py:obj:`section <manim.scene.section>`\\"
 msgstr ""
 
 #: ../../source/reference_index/scenes.rst:15:<autosummary>:1
@@ -27,15 +19,7 @@ msgid "building blocks of segmented video API"
 msgstr ""
 
 #: ../../source/reference_index/scenes.rst:15:<autosummary>:1
-msgid ":py:obj:`scene <manim.scene.scene>`\\"
-msgstr ""
-
-#: ../../source/reference_index/scenes.rst:15:<autosummary>:1
 msgid "Basic canvas for animations."
-msgstr ""
-
-#: ../../source/reference_index/scenes.rst:15:<autosummary>:1
-msgid ":py:obj:`scene_file_writer <manim.scene.scene_file_writer>`\\"
 msgstr ""
 
 #: ../../source/reference_index/scenes.rst:15:<autosummary>:1
@@ -43,23 +27,11 @@ msgid "The interface between scenes and ffmpeg."
 msgstr ""
 
 #: ../../source/reference_index/scenes.rst:15:<autosummary>:1
-msgid ":py:obj:`three_d_scene <manim.scene.three_d_scene>`\\"
-msgstr ""
-
-#: ../../source/reference_index/scenes.rst:15:<autosummary>:1
 msgid "A scene suitable for rendering three-dimensional objects and animations."
 msgstr ""
 
 #: ../../source/reference_index/scenes.rst:15:<autosummary>:1
-msgid ":py:obj:`vector_space_scene <manim.scene.vector_space_scene>`\\"
-msgstr ""
-
-#: ../../source/reference_index/scenes.rst:15:<autosummary>:1
 msgid "A scene suitable for vector spaces."
-msgstr ""
-
-#: ../../source/reference_index/scenes.rst:15:<autosummary>:1
-msgid ":py:obj:`zoomed_scene <manim.scene.zoomed_scene>`\\"
 msgstr ""
 
 

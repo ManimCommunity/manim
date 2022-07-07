@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import math
 
 import numpy as np
@@ -19,8 +21,8 @@ def test_initial_config():
     assert cs.y_range[2] == 1.0
 
     ax = Axes()
-    assert np.allclose(ax.get_center(), ORIGIN)
-    assert np.allclose(ax.y_axis_config["label_direction"], LEFT)
+    np.testing.assert_allclose(ax.get_center(), ORIGIN)
+    np.testing.assert_allclose(ax.y_axis_config["label_direction"], LEFT)
 
     with tempconfig({"frame_x_radius": 100, "frame_y_radius": 200}):
         cs = CS()
@@ -53,19 +55,16 @@ def test_NumberPlane():
     pos_y_range = (2, 6)
     neg_y_range = (-6, -2)
 
-    x_vals = [0, 1.5, 2, 2.8, 4, 6.25]
-    y_vals = [2, 5, 4.25, 6, 4.5, 2.75]
-
     testing_data = [
-        (pos_x_range, pos_y_range, x_vals, y_vals),
-        (pos_x_range, neg_y_range, x_vals, [-v for v in y_vals]),
-        (neg_x_range, pos_y_range, [-v for v in x_vals], y_vals),
-        (neg_x_range, neg_y_range, [-v for v in x_vals], [-v for v in y_vals]),
+        (pos_x_range, pos_y_range),
+        (pos_x_range, neg_y_range),
+        (neg_x_range, pos_y_range),
+        (neg_x_range, neg_y_range),
     ]
 
     for test_data in testing_data:
 
-        x_range, y_range, x_vals, y_vals = test_data
+        x_range, y_range = test_data
 
         x_start, x_end = x_range
         y_start, y_end = y_range
@@ -87,8 +86,11 @@ def test_NumberPlane():
         assert len(plane.x_lines) == num_x_lines
 
     plane = NumberPlane((-5, 5, 0.5), (-8, 8, 2))  # <- test for different step values
-    assert len(plane.x_lines) == 8
-    assert len(plane.y_lines) == 20
+    # horizontal lines: -6 -4, -2, 0, 2, 4, 6
+    assert len(plane.x_lines) == 7
+    # vertical lines: 0, +-0.5, +-1, +-1.5, +-2, +-2.5,
+    # +-3, +-3.5, +-4, +-4.5
+    assert len(plane.y_lines) == 19
 
 
 def test_point_to_coords():
@@ -97,7 +99,20 @@ def test_point_to_coords():
 
     # get the coordinates of the circle with respect to the axes
     coords = np.around(ax.point_to_coords(circ.get_right()), decimals=4)
-    assert np.array_equal(coords, (7.0833, 2.6667))
+    np.testing.assert_array_equal(coords, (7.0833, 2.6667))
+
+
+def test_point_to_coords_vectorized():
+    ax = Axes(x_range=[0, 10, 2])
+    circ = Circle(radius=0.5).shift(UR * 2)
+    points = np.array(
+        [circ.get_right(), circ.get_left(), circ.get_bottom(), circ.get_top()]
+    )
+    # get the coordinates of the circle with respect to the axes
+    expected = [np.around(ax.point_to_coords(point), decimals=4) for point in points]
+    actual = np.around(ax.point_to_coords(points), decimals=4)
+
+    np.testing.assert_array_equal(expected, actual)
 
 
 def test_coords_to_point():
@@ -105,7 +120,42 @@ def test_coords_to_point():
 
     # a point with respect to the axes
     c2p_coord = np.around(ax.coords_to_point(2, 2), decimals=4)
-    assert np.array_equal(c2p_coord, (1.7143, 1.5, 0))
+    np.testing.assert_array_equal(c2p_coord, (1.7143, 1.5, 0))
+
+
+def test_coords_to_point_vectorized():
+    plane = NumberPlane(x_range=[2, 4])
+
+    origin = plane.x_axis.number_to_point(
+        plane._origin_shift([plane.x_axis.x_min, plane.x_axis.x_max]),
+    )
+
+    def ref_func(*coords):
+        result = np.array(origin)
+        for axis, number in zip(plane.get_axes(), coords):
+            result += axis.number_to_point(number) - origin
+        return result
+
+    coords = [[1], [1, 2], [2, 2], [3, 4]]
+
+    print(f"\n\nTesting coords_to_point {coords}")
+    expected = np.round([ref_func(*coord) for coord in coords], 4)
+    actual1 = np.round([plane.coords_to_point(*coord) for coord in coords], 4)
+    coords[0] = [
+        1,
+        0,
+    ]  # Extend the first coord because you can't vectorize items with different dimensions
+    actual2 = np.round(
+        plane.coords_to_point(coords), 4
+    )  # Test [x_0,y_0,z_0], [x_1,y_1,z_1], ...
+    actual3 = np.round(
+        plane.coords_to_point(*np.array(coords).T), 4
+    )  # Test [x_0,x_1,...], [y_0,y_1,...], ...
+    print(actual3)
+
+    np.testing.assert_array_equal(expected, actual1)
+    np.testing.assert_array_equal(expected, actual2)
+    np.testing.assert_array_equal(expected, actual3.T)
 
 
 def test_input_to_graph_point():
@@ -117,8 +167,8 @@ def test_input_to_graph_point():
 
     # move a square to PI on the cosine curve.
     position = np.around(ax.input_to_graph_point(x=PI, graph=curve), decimals=4)
-    assert np.array_equal(position, (2.6928, -0.75, 0))
+    np.testing.assert_array_equal(position, (2.6928, -0.75, 0))
 
     # test the line_graph implementation
     position = np.around(ax.input_to_graph_point(x=PI, graph=line_graph), decimals=4)
-    assert np.array_equal(position, (2.6928, 1.2876, 0))
+    np.testing.assert_array_equal(position, (2.6928, 1.2876, 0))

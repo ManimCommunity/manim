@@ -74,8 +74,4 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.animation.indication.Flash.rst:19:<autosummary>:1
-msgid ":py:obj:`create_line_anims <manim.animation.indication.Flash.create_line_anims>`"
-msgstr ""
-
 

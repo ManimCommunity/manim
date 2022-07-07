@@ -66,12 +66,4 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.animation.indication.Wiggle.rst:20:<autosummary>:1
-msgid ":py:obj:`get_rotate_about_point <manim.animation.indication.Wiggle.get_rotate_about_point>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.indication.Wiggle.rst:20:<autosummary>:1
-msgid ":py:obj:`get_scale_about_point <manim.animation.indication.Wiggle.get_scale_about_point>`"
-msgstr ""
-
 

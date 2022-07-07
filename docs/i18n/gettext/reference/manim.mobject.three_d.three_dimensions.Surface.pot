@@ -1,0 +1,109 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.three_d.three_dimensions.Surface.rst:2
+msgid "Surface"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_d.three_dimensions.Surface.rst:4
+msgid "Qualified name: ``manim.mobject.three\\_d.three\\_dimensions.Surface``"
+msgstr ""
+
+#: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Surface:1
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VGroup`"
+msgstr ""
+
+#: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Surface:1
+msgid "Creates a Parametric Surface using a checkerboard pattern."
+msgstr ""
+
+#: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Surface:0
+#: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Surface.set_fill_by_value:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Surface:3
+msgid "The function that defines the surface."
+msgstr ""
+
+#: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Surface:4
+msgid "The range of the ``u`` variable: ``(u_min, u_max)``."
+msgstr ""
+
+#: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Surface:5
+msgid "The range of the ``v`` variable: ``(v_min, v_max)``."
+msgstr ""
+
+#: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Surface:6
+msgid "The number of samples taken of the surface. A tuple can be used to define different resolutions for ``u`` and ``v`` respectively."
+msgstr ""
+
+#: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Surface:0
+#: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Surface.set_fill_by_value:0
+msgid "Return type"
+msgstr ""
+
+#: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Surface:11
+#: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Surface.set_fill_by_value:12
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_d.three_dimensions.Surface.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_d.three_dimensions.Surface.rst:21:<autosummary>:1
+#: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Surface.set_fill_by_value:1
+msgid "Sets the color of each mobject of a parametric surface to a color relative to its axis-value"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_d.three_dimensions.Surface.rst:23
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Surface.set_fill_by_value:1:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Surface.set_fill_by_value:1:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Surface.set_fill_by_value:1:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Surface.set_fill_by_value:1:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Surface.set_fill_by_value:1:<autosummary>:1
+msgid "The width of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Surface.set_fill_by_value:3
+msgid "The axes for the parametric surface, which will be used to map axis-values to colors."
+msgstr ""
+
+#: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Surface.set_fill_by_value:4
+msgid "A list of colors, ordered from lower axis-values to higher axis-values. If a list of tuples is passed containing colors paired with numbers, then those numbers will be used as the pivots."
+msgstr ""
+
+#: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Surface.set_fill_by_value:6
+msgid "The chosen axis to use for the color mapping. (0 = x, 1 = y, 2 = z)"
+msgstr ""
+
+#: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Surface.set_fill_by_value:0
+msgid "Returns"
+msgstr ""
+
+#: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Surface.set_fill_by_value:8
+msgid "The parametric surface with a gradient applied by value. For chaining."
+msgstr ""
+
+

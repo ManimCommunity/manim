@@ -1,14 +1,16 @@
 """Special rectangles."""
 
+from __future__ import annotations
+
 __all__ = [
     "ScreenRectangle",
     "FullScreenRectangle",
 ]
 
 
+from manim.mobject.geometry.polygram import Rectangle
+
 from .. import config
-from ..constants import *
-from ..mobject.geometry import Rectangle
 
 
 class ScreenRectangle(Rectangle):

@@ -1,0 +1,148 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.graphing.coordinate_systems.ThreeDAxes.rst:2
+msgid "ThreeDAxes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.graphing.coordinate_systems.ThreeDAxes.rst:4
+msgid "Qualified name: ``manim.mobject.graphing.coordinate\\_systems.ThreeDAxes``"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.ThreeDAxes:1
+msgid "Bases: :py:class:`manim.mobject.graphing.coordinate_systems.Axes`"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.ThreeDAxes:1
+msgid "A 3-dimensional set of axes."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.ThreeDAxes:0
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.ThreeDAxes.get_z_axis_label:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.ThreeDAxes:3
+msgid "The ``[x_min, x_max, x_step]`` values of the x-axis."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.ThreeDAxes:4
+msgid "The ``[y_min, y_max, y_step]`` values of the y-axis."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.ThreeDAxes:5
+msgid "The ``[z_min, z_max, z_step]`` values of the z-axis."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.ThreeDAxes:6
+msgid "The length of the x-axis."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.ThreeDAxes:7
+msgid "The length of the y-axis."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.ThreeDAxes:8
+msgid "The length of the z-axis."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.ThreeDAxes:9
+msgid "Arguments to be passed to :class:`~.NumberLine` that influence the z-axis."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.ThreeDAxes:10
+msgid "The direction of the normal."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.ThreeDAxes:11
+msgid "The number of pieces used to construct the axes."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.ThreeDAxes:12
+msgid "The direction of the light source."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.ThreeDAxes:13
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.ThreeDAxes:14
+msgid "Currently non-functional."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.ThreeDAxes:15
+msgid "Additional arguments to be passed to :class:`Axes`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.graphing.coordinate_systems.ThreeDAxes.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.graphing.coordinate_systems.ThreeDAxes.rst:20:<autosummary>:1
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.ThreeDAxes.get_z_axis_label:1
+msgid "Generate a z-axis label."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.graphing.coordinate_systems.ThreeDAxes.rst:22
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.ThreeDAxes.get_z_axis_label:1:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.ThreeDAxes.get_z_axis_label:1:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.ThreeDAxes.get_z_axis_label:1:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.ThreeDAxes.get_z_axis_label:1:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.ThreeDAxes.get_z_axis_label:1:<autosummary>:1
+msgid "The width of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.ThreeDAxes.get_z_axis_label:3
+msgid "The label. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.ThreeDAxes.get_z_axis_label:4
+msgid "The edge of the x-axis to which the label will be added, by default ``UR``."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.ThreeDAxes.get_z_axis_label:5
+msgid "Allows for further positioning of the label from an edge, by default ``UR``."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.ThreeDAxes.get_z_axis_label:6
+msgid "The distance of the label from the line."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.ThreeDAxes.get_z_axis_label:7
+msgid "The angle at which to rotate the label, by default ``PI/2``."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.ThreeDAxes.get_z_axis_label:8
+msgid "The axis about which to rotate the label, by default ``RIGHT``."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.ThreeDAxes.get_z_axis_label:0
+msgid "Returns"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.ThreeDAxes.get_z_axis_label:10
+msgid "The positioned label."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.ThreeDAxes.get_z_axis_label:0
+msgid "Return type"
+msgstr ""
+
+

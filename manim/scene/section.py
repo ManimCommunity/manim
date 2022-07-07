@@ -1,8 +1,10 @@
 """building blocks of segmented video API"""
 
+from __future__ import annotations
+
 import os
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from manim import get_video_metadata
 
@@ -31,7 +33,7 @@ class DefaultSectionType(str, Enum):
 
 class Section:
     """A :class:`.Scene` can be segmented into multiple Sections.
-    Refer to :doc:`the documentation</tutorials/a_deeper_look>` for more info.
+    Refer to :doc:`the documentation</tutorials/output_and_config>` for more info.
     It consists of multiple animations.
 
     Attributes
@@ -55,15 +57,13 @@ class Section:
     :meth:`.OpenGLRenderer.update_skipping_status`
     """
 
-    def __init__(
-        self, type: str, video: Optional[str], name: str, skip_animations: bool
-    ):
+    def __init__(self, type: str, video: str | None, name: str, skip_animations: bool):
         self.type = type
         # None when not to be saved -> still keeps section alive
-        self.video: Optional[str] = video
+        self.video: str | None = video
         self.name = name
         self.skip_animations = skip_animations
-        self.partial_movie_files: List[Optional[str]] = []
+        self.partial_movie_files: list[str | None] = []
 
     def is_empty(self) -> bool:
         """Check whether this section is empty.
@@ -72,11 +72,11 @@ class Section:
         """
         return len(self.partial_movie_files) == 0
 
-    def get_clean_partial_movie_files(self) -> List[str]:
+    def get_clean_partial_movie_files(self) -> list[str]:
         """Return all partial movie files that are not ``None``."""
         return [el for el in self.partial_movie_files if el is not None]
 
-    def get_dict(self, sections_dir: str) -> Dict[str, Any]:
+    def get_dict(self, sections_dir: str) -> dict[str, Any]:
         """Get dictionary representation with metadata of output video.
 
         The output from this function is used from every section to build the sections index file.

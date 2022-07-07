@@ -31,25 +31,13 @@ msgid "Methods"
 msgstr ""
 
 #: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Write.begin:1:<autosummary>:1
-msgid ":py:obj:`begin <manim.animation.creation.Write.begin>`"
-msgstr ""
-
-#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Write.begin:1:<autosummary>:1
 #: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Write.begin:1
 msgid "Begin the animation."
 msgstr ""
 
 #: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Write.begin:1:<autosummary>:1
-msgid ":py:obj:`finish <manim.animation.creation.Write.finish>`"
-msgstr ""
-
-#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Write.begin:1:<autosummary>:1
 #: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Write.finish:1
 msgid "Finish the animation."
-msgstr ""
-
-#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Write.begin:1:<autosummary>:1
-msgid ":py:obj:`reverse_submobjects <manim.animation.creation.Write.reverse_submobjects>`"
 msgstr ""
 
 #: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Write:0

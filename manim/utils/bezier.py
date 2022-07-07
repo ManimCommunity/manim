@@ -1,5 +1,7 @@
 """Utility functions related to Bézier curves."""
 
+from __future__ import annotations
+
 __all__ = [
     "bezier",
     "partial_bezier_points",
@@ -20,6 +22,7 @@ __all__ = [
 
 import typing
 from functools import reduce
+from typing import Iterable
 
 import numpy as np
 from scipy import linalg
@@ -30,7 +33,7 @@ from ..utils.space_ops import cross2d, find_intersection
 
 def bezier(
     points: np.ndarray,
-) -> typing.Callable[[float], typing.Union[int, typing.Iterable]]:
+) -> typing.Callable[[float], int | typing.Iterable]:
     """Classic implementation of a bezier curve.
 
     Parameters
@@ -44,8 +47,25 @@ def bezier(
         function describing the bezier curve.
     """
     n = len(points) - 1
+
+    # Cubic Bezier curve
+    if n == 3:
+        return (
+            lambda t: (1 - t) ** 3 * points[0]
+            + 3 * t * (1 - t) ** 2 * points[1]
+            + 3 * (1 - t) * t**2 * points[2]
+            + t**3 * points[3]
+        )
+    # Quadratic Bezier curve
+    if n == 2:
+        return (
+            lambda t: (1 - t) ** 2 * points[0]
+            + 2 * t * (1 - t) * points[1]
+            + t**2 * points[2]
+        )
+
     return lambda t: sum(
-        ((1 - t) ** (n - k)) * (t ** k) * choose(n, k) * point
+        ((1 - t) ** (n - k)) * (t**k) * choose(n, k) * point
         for k, point in enumerate(points)
     )
 
@@ -100,6 +120,61 @@ def partial_quadratic_bezier_points(points, a, b):
     return [h0, h1, h2]
 
 
+def split_quadratic_bezier(points: Iterable[float], t: float) -> np.ndarray:
+    """Split a quadratic Bézier curve at argument ``t`` into two quadratic curves.
+
+    Parameters
+    ----------
+    points
+        The control points of the bezier curve
+        has shape ``[a1, h1, b1]``
+
+    t
+        The ``t``-value at which to split the Bézier curve
+
+    Returns
+    -------
+        The two Bézier curves as a list of tuples,
+        has the shape ``[a1, h1, b1], [a2, h2, b2]``
+    """
+    a1, h1, a2 = points
+    s1 = interpolate(a1, h1, t)
+    s2 = interpolate(h1, a2, t)
+    p = interpolate(s1, s2, t)
+
+    return np.array([a1, s1, p, p, s2, a2])
+
+
+def subdivide_quadratic_bezier(points: Iterable[float], n: int) -> np.ndarray:
+    """Subdivide a quadratic Bézier curve into ``n`` subcurves which have the same shape.
+
+    The points at which the curve is split are located at the
+    arguments :math:`t = i/n` for :math:`i = 1, ..., n-1`.
+
+    Parameters
+    ----------
+    points
+        The control points of the Bézier curve in form ``[a1, h1, b1]``
+
+    n
+        The number of curves to subdivide the Bézier curve into
+
+    Returns
+    -------
+        The new points for the Bézier curve in the form ``[a1, h1, b1, a2, h2, b2, ...]``
+
+    .. image:: /_static/bezier_subdivision_example.png
+
+    """
+    beziers = []
+    current = points
+    for i in range(n, 0, -1):
+        tmp = split_quadratic_bezier(current, 1 / i)
+        beziers.append(tmp[:3])
+        current = tmp[3:]
+    return np.asarray(beziers).reshape(-1, 3)
+
+
 # Linear interpolation variants
 
 
@@ -111,7 +186,7 @@ def integer_interpolate(
     start: float,
     end: float,
     alpha: float,
-) -> typing.Tuple[int, float]:
+) -> tuple[int, float]:
     """
     Alpha is a float between 0 and 1.  This returns
     an integer between start and end (inclusive) representing
@@ -217,7 +292,7 @@ def get_smooth_cubic_bezier_handle_points(points):
 
 def get_smooth_handle_points(
     points: np.ndarray,
-) -> typing.Tuple[np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray]:
     """Given some anchors (points), compute handles so the resulting bezier curve is smooth.
 
     Parameters
@@ -288,7 +363,7 @@ def get_smooth_handle_points(
     return handle_pairs[0::2], handle_pairs[1::2]
 
 
-def diag_to_matrix(l_and_u: typing.Tuple[int, int], diag: np.ndarray) -> np.ndarray:
+def diag_to_matrix(l_and_u: tuple[int, int], diag: np.ndarray) -> np.ndarray:
     """
     Converts array whose rows represent diagonal
     entries of a matrix into the matrix itself.
@@ -375,14 +450,14 @@ def get_quadratic_approximation_of_cubic(a0, h0, h1, a1):
     return result
 
 
-def is_closed(points: typing.Tuple[np.ndarray, np.ndarray]) -> bool:
+def is_closed(points: tuple[np.ndarray, np.ndarray]) -> bool:
     return np.allclose(points[0], points[-1])
 
 
 def proportions_along_bezier_curve_for_point(
-    point: typing.Iterable[typing.Union[float, int]],
-    control_points: typing.Iterable[typing.Iterable[typing.Union[float, int]]],
-    round_to: typing.Optional[typing.Union[float, int]] = 1e-6,
+    point: typing.Iterable[float | int],
+    control_points: typing.Iterable[typing.Iterable[float | int]],
+    round_to: float | int | None = 1e-6,
 ) -> np.ndarray:
     """Obtains the proportion along the bezier curve corresponding to a given point
     given the bezier curve's control points.
@@ -459,14 +534,14 @@ def proportions_along_bezier_curve_for_point(
 
     roots = [[root for root in rootlist if root.imag == 0] for rootlist in roots]
     roots = reduce(np.intersect1d, roots)  # Get common roots.
-    roots = np.array([r.real for r in roots])
+    roots = np.array([r.real for r in roots if 0 <= r.real <= 1])
     return roots
 
 
 def point_lies_on_bezier(
-    point: typing.Iterable[typing.Union[float, int]],
-    control_points: typing.Iterable[typing.Iterable[typing.Union[float, int]]],
-    round_to: typing.Optional[typing.Union[float, int]] = 1e-6,
+    point: typing.Iterable[float | int],
+    control_points: typing.Iterable[typing.Iterable[float | int]],
+    round_to: float | int | None = 1e-6,
 ) -> bool:
     """Checks if a given point lies on the bezier curves with the given control points.
 

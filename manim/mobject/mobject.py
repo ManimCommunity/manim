@@ -31,6 +31,8 @@ from typing import (
 import numpy as np
 from colour import Color
 
+from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
+
 from .. import config
 from ..constants import *
 from ..utils.color import (
@@ -46,7 +48,6 @@ from ..utils.iterables import list_update, remove_list_redundancies
 from ..utils.paths import straight_path
 from ..utils.simple_functions import get_parameters
 from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
-from .opengl_compatibility import ConvertToOpenGL
 
 # TODO: Explain array_attrs
 
@@ -91,7 +92,6 @@ class Mobject:
         cls._original__init__ = cls.__init__
 
     def __init__(self, color=WHITE, name=None, dim=3, target=None, z_index=0):
-        self.color = Color(color) if color else None
         self.name = self.__class__.__name__ if name is None else name
         self.dim = dim
         self.target = target
@@ -100,6 +100,8 @@ class Mobject:
         self.submobjects = []
         self.updaters = []
         self.updating_suspended = False
+        self.color = Color(color) if color else None
+
         self.reset_points()
         self.generate_points()
         self.init_colors()
@@ -231,7 +233,7 @@ class Mobject:
         that method on the mobject itself.
 
         For example, :code:`square.set_fill(WHITE)` sets the fill color of a square,
-        while :code:`sqaure.animate.set_fill(WHITE)` animates this action.
+        while :code:`square.animate.set_fill(WHITE)` animates this action.
 
         Multiple methods can be put in a single animation once via chaining:
 
@@ -1281,7 +1283,7 @@ class Mobject:
             alphas = np.dot(mob.points, np.transpose(axis))
             alphas -= min(alphas)
             alphas /= max(alphas)
-            alphas = alphas ** wag_factor
+            alphas = alphas**wag_factor
             mob.points += np.dot(
                 alphas.reshape((len(alphas), 1)),
                 np.array(direction).reshape((1, mob.dim)),
@@ -1676,7 +1678,7 @@ class Mobject:
 
         # TODO, this does not behave well when the mobject has points,
         # since it gets displayed on top
-        from ..mobject.shape_matchers import BackgroundRectangle
+        from manim.mobject.geometry.shape_matchers import BackgroundRectangle
 
         self.background_rectangle = BackgroundRectangle(
             self, color=color, fill_opacity=opacity, **kwargs
@@ -1943,14 +1945,11 @@ class Mobject:
 
     def length_over_dim(self, dim):
         """Measure the length of an :class:`~.Mobject` in a certain direction."""
-        return (
-            self.reduce_across_dimension(
-                np.max,
-                np.max,
-                dim,
-            )
-            - self.reduce_across_dimension(np.min, np.min, dim)
-        )
+        return self.reduce_across_dimension(
+            np.max,
+            np.max,
+            dim,
+        ) - self.reduce_across_dimension(np.min, np.min, dim)
 
     def get_coord(self, dim, direction=ORIGIN):
         """Meant to generalize ``get_x``, ``get_y`` and ``get_z``"""
@@ -2222,11 +2221,9 @@ class Mobject:
 
             class ArrangeInGrid(Scene):
                 def construct(self):
-                    #Add some numbered boxes:
-                    np.random.seed(3)
                     boxes = VGroup(*[
-                        Rectangle(WHITE, np.random.random()+.5, np.random.random()+.5).add(Text(str(i+1)).scale(0.5))
-                        for i in range(22)
+                        Rectangle(WHITE, 0.5, 0.5).add(Text(str(i+1)).scale(0.5))
+                        for i in range(24)
                     ])
                     self.add(boxes)
 
@@ -2234,13 +2231,14 @@ class Mobject:
                         buff=(0.25,0.5),
                         col_alignments="lccccr",
                         row_alignments="uccd",
-                        col_widths=[2, *[None]*4, 2],
+                        col_widths=[1, *[None]*4, 1],
+                        row_heights=[1, None, None, 1],
                         flow_order="dr"
                     )
 
 
         """
-        from .geometry import Line
+        from manim.mobject.geometry.line import Line
 
         mobs = self.submobjects.copy()
         start_pos = self.get_center()
@@ -2470,10 +2468,26 @@ class Mobject:
         return self.shuffle(*args, **kwargs)
 
     # Alignment
-    def align_data(self, mobject: "Mobject"):
+    def align_data(self, mobject: "Mobject", skip_point_alignment: bool = False):
+        """Aligns the data of this mobject with another mobject.
+
+        Afterwards, the two mobjects will have the same number of submobjects
+        (see :meth:`.align_submobjects`), the same parent structure (see
+        :meth:`.null_point_align`). If ``skip_point_alignment`` is false,
+        they will also have the same number of points (see :meth:`.align_points`).
+
+        Parameters
+        ----------
+        mobject
+            The other mobject this mobject should be aligned to.
+        skip_point_alignment
+            Controls whether or not the computationally expensive
+            point alignment is skipped (default: False).
+        """
         self.null_point_align(mobject)
         self.align_submobjects(mobject)
-        self.align_points(mobject)
+        if not skip_point_alignment:
+            self.align_points(mobject)
         # Recurse
         for m1, m2 in zip(self.submobjects, mobject.submobjects):
             m1.align_data(m2)
@@ -2643,7 +2657,7 @@ class Mobject:
         if match_center:
             mobject.move_to(self.get_center())
 
-        self.align_data(mobject)
+        self.align_data(mobject, skip_point_alignment=True)
         for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
             sm1.points = np.array(sm2.points)
             sm1.interpolate_color(sm1, sm2, 1)
@@ -2666,7 +2680,6 @@ class Mobject:
                     self.play(circ.animate.match_points(square))
                     self.wait(0.5)
         """
-        self.align_data(mobject)
         for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
             sm1.points = np.array(sm2.points)
         return self
@@ -2770,7 +2783,6 @@ class _AnimationBuilder:
 
     def __getattr__(self, method_name):
         method = getattr(self.mobject.target, method_name)
-        self.methods.append(method)
         has_overridden_animation = hasattr(method, "_override_animate")
 
         if (self.is_chaining and has_overridden_animation) or self.overridden_animation:
@@ -2788,6 +2800,7 @@ class _AnimationBuilder:
                     **method_kwargs,
                 )
             else:
+                self.methods.append([method, method_args, method_kwargs])
                 method(*method_args, **method_kwargs)
             return self
 

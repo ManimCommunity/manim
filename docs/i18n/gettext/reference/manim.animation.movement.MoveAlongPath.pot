@@ -27,10 +27,6 @@ msgid "Methods"
 msgstr ""
 
 #: ../../../manim/animation/movement.py:docstring of manim.animation.movement.MoveAlongPath.interpolate_mobject:1:<autosummary>:1
-msgid ":py:obj:`interpolate_mobject <manim.animation.movement.MoveAlongPath.interpolate_mobject>`"
-msgstr ""
-
-#: ../../../manim/animation/movement.py:docstring of manim.animation.movement.MoveAlongPath.interpolate_mobject:1:<autosummary>:1
 #: ../../../manim/animation/movement.py:docstring of manim.animation.movement.MoveAlongPath.interpolate_mobject:1
 msgid "Interpolates the mobject of the :class:`Animation` based on alpha value."
 msgstr ""

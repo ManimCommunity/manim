@@ -1,25 +1,28 @@
 """A scene suitable for rendering three-dimensional objects and animations."""
 
+from __future__ import annotations
+
 __all__ = ["ThreeDScene", "SpecialThreeDScene"]
 
 
 import warnings
-from typing import Iterable, Optional, Sequence, Union
+from typing import Iterable, Sequence
 
 import numpy as np
+
+from manim.mobject.geometry.line import Line
+from manim.mobject.graphing.coordinate_systems import ThreeDAxes
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.mobject.three_d.three_dimensions import Sphere
+from manim.mobject.value_tracker import ValueTracker
 
 from .. import config
 from ..animation.animation import Animation
 from ..animation.transform import Transform
 from ..camera.three_d_camera import ThreeDCamera
 from ..constants import DEGREES
-from ..mobject.coordinate_systems import ThreeDAxes
-from ..mobject.geometry import Line
 from ..mobject.mobject import Mobject
-from ..mobject.opengl_mobject import OpenGLMobject
-from ..mobject.three_dimensions import Sphere
 from ..mobject.types.vectorized_mobject import VectorizedPoint, VGroup
-from ..mobject.value_tracker import ValueTracker
 from ..renderer.opengl_renderer import OpenGLCamera
 from ..scene.scene import Scene
 from ..utils.config_ops import merge_dicts_recursively
@@ -51,12 +54,12 @@ class ThreeDScene(Scene):
 
     def set_camera_orientation(
         self,
-        phi: Optional[float] = None,
-        theta: Optional[float] = None,
-        gamma: Optional[float] = None,
-        zoom: Optional[float] = None,
-        focal_distance: Optional[float] = None,
-        frame_center: Optional[Union["Mobject", Sequence[float]]] = None,
+        phi: float | None = None,
+        theta: float | None = None,
+        gamma: float | None = None,
+        zoom: float | None = None,
+        focal_distance: float | None = None,
+        frame_center: Mobject | Sequence[float] | None = None,
         **kwargs,
     ):
         """
@@ -158,8 +161,8 @@ class ThreeDScene(Scene):
     def begin_3dillusion_camera_rotation(
         self,
         rate: float = 1,
-        origin_phi: Optional[float] = None,
-        origin_theta: Optional[float] = None,
+        origin_phi: float | None = None,
+        origin_theta: float | None = None,
     ):
         """
         This method creates a 3D camera rotation illusion around
@@ -212,13 +215,13 @@ class ThreeDScene(Scene):
 
     def move_camera(
         self,
-        phi: Optional[float] = None,
-        theta: Optional[float] = None,
-        gamma: Optional[float] = None,
-        zoom: Optional[float] = None,
-        focal_distance: Optional[float] = None,
-        frame_center: Optional[Union["Mobject", Sequence[float]]] = None,
-        added_anims: Iterable["Animation"] = [],
+        phi: float | None = None,
+        theta: float | None = None,
+        gamma: float | None = None,
+        zoom: float | None = None,
+        focal_distance: float | None = None,
+        frame_center: Mobject | Sequence[float] | None = None,
+        added_anims: Iterable[Animation] = [],
         **kwargs,
     ):
         """
@@ -348,8 +351,14 @@ class ThreeDScene(Scene):
                 use_static_center_func : bool
                 center_func : function
         """
-        self.add(*mobjects)
-        self.renderer.camera.add_fixed_orientation_mobjects(*mobjects, **kwargs)
+        if config.renderer != "opengl":
+            self.add(*mobjects)
+            self.renderer.camera.add_fixed_orientation_mobjects(*mobjects, **kwargs)
+        else:
+            for mob in mobjects:
+                mob: OpenGLMobject
+                mob.fix_orientation()
+                self.add(mob)
 
     def add_fixed_in_frame_mobjects(self, *mobjects):
         """
@@ -363,8 +372,15 @@ class ThreeDScene(Scene):
         *mobjects : Mobjects
             The Mobjects whose orientation must be fixed.
         """
-        self.add(*mobjects)
-        self.renderer.camera.add_fixed_in_frame_mobjects(*mobjects)
+        if config.renderer != "opengl":
+            self.add(*mobjects)
+            self.camera: ThreeDCamera
+            self.camera.add_fixed_in_frame_mobjects(*mobjects)
+        else:
+            for mob in mobjects:
+                mob: OpenGLMobject
+                mob.fix_in_frame()
+                self.add(mob)
 
     def remove_fixed_orientation_mobjects(self, *mobjects):
         """
@@ -378,7 +394,13 @@ class ThreeDScene(Scene):
         *mobjects : Mobjects
             The Mobjects whose orientation must be unfixed.
         """
-        self.renderer.camera.remove_fixed_orientation_mobjects(*mobjects)
+        if config.renderer != "opengl":
+            self.renderer.camera.remove_fixed_orientation_mobjects(*mobjects)
+        else:
+            for mob in mobjects:
+                mob: OpenGLMobject
+                mob.unfix_orientation()
+                self.remove(mob)
 
     def remove_fixed_in_frame_mobjects(self, *mobjects):
         """
@@ -391,7 +413,13 @@ class ThreeDScene(Scene):
         *mobjects : Mobjects
             The Mobjects whose position and orientation must be unfixed.
         """
-        self.renderer.camera.remove_fixed_in_frame_mobjects(*mobjects)
+        if config.renderer != "opengl":
+            self.renderer.camera.remove_fixed_in_frame_mobjects(*mobjects)
+        else:
+            for mob in mobjects:
+                mob: OpenGLMobject
+                mob.unfix_from_frame()
+                self.remove(mob)
 
     ##
     def set_to_default_angled_camera_orientation(self, **kwargs):

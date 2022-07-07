@@ -2,10 +2,11 @@
 Constant definitions.
 """
 
-import typing
+from __future__ import annotations
 
 import numpy as np
-from PIL import Image
+from cloup import Context
+from PIL.Image import Resampling
 
 __all__ = [
     "NOT_SETTING_FONT_MSG",
@@ -67,12 +68,10 @@ __all__ = [
     "GIF_FILE_EXTENSION",
     "FFMPEG_VERBOSITY_MAP",
     "VERBOSITY_CHOICES",
-    "WEBGL_RENDERER_INFO",
     "QUALITIES",
     "DEFAULT_QUALITY",
     "DEFAULT_QUALITY_SHORT",
     "EPILOG",
-    "HELP_OPTIONS",
     "CONTEXT_SETTINGS",
     "SHIFT_VALUE",
     "CTRL_VALUE",
@@ -114,16 +113,16 @@ HEAVY: str = "HEAVY"
 ULTRAHEAVY: str = "ULTRAHEAVY"
 
 RESAMPLING_ALGORITHMS = {
-    "nearest": Image.NEAREST,
-    "none": Image.NEAREST,
-    "lanczos": Image.LANCZOS,
-    "antialias": Image.LANCZOS,
-    "bilinear": Image.BILINEAR,
-    "linear": Image.BILINEAR,
-    "bicubic": Image.BICUBIC,
-    "cubic": Image.BICUBIC,
-    "box": Image.BOX,
-    "hamming": Image.HAMMING,
+    "nearest": Resampling.NEAREST,
+    "none": Resampling.NEAREST,
+    "lanczos": Resampling.LANCZOS,
+    "antialias": Resampling.LANCZOS,
+    "bilinear": Resampling.BILINEAR,
+    "linear": Resampling.BILINEAR,
+    "bicubic": Resampling.BICUBIC,
+    "cubic": Resampling.BICUBIC,
+    "box": Resampling.BOX,
+    "hamming": Resampling.HAMMING,
 }
 
 # Geometry: directions
@@ -208,7 +207,7 @@ FFMPEG_BIN: str = "ffmpeg"
 # gif stuff
 GIF_FILE_EXTENSION: str = ".gif"
 
-FFMPEG_VERBOSITY_MAP: typing.Dict[str, str] = {
+FFMPEG_VERBOSITY_MAP: dict[str, str] = {
     "DEBUG": "error",
     "INFO": "error",
     "WARNING": "error",
@@ -216,15 +215,9 @@ FFMPEG_VERBOSITY_MAP: typing.Dict[str, str] = {
     "CRITICAL": "fatal",
 }
 VERBOSITY_CHOICES = FFMPEG_VERBOSITY_MAP.keys()
-WEBGL_RENDERER_INFO: str = (
-    "The Electron frontend to Manim is hosted at "
-    "https://github.com/ManimCommunity/manim-renderer. After cloning and building it, "
-    "you can either start it prior to running Manim or specify the path to the "
-    "executable with the --webgl_renderer_path flag."
-)
 
 # Video qualities
-QUALITIES: typing.Dict[str, typing.Dict[str, typing.Union[str, int, None]]] = {
+QUALITIES: dict[str, dict[str, str | int | None]] = {
     "fourk_quality": {
         "flag": "k",
         "pixel_height": 2160,
@@ -267,7 +260,11 @@ DEFAULT_QUALITY: str = "high_quality"
 DEFAULT_QUALITY_SHORT = QUALITIES[DEFAULT_QUALITY]["flag"]
 
 EPILOG = "Made with <3 by Manim Community developers."
-HELP_OPTIONS = ["-h", "--help"]
-CONTEXT_SETTINGS = {"help_option_names": HELP_OPTIONS}
 SHIFT_VALUE = 65505
 CTRL_VALUE = 65507
+
+CONTEXT_SETTINGS = Context.settings(
+    align_option_groups=True,
+    align_sections=True,
+    show_constraints=True,
+)

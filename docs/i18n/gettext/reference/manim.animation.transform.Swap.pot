@@ -26,8 +26,4 @@ msgstr ""
 msgid "Attributes"
 msgstr ""
 
-#: ../../source/reference/manim.animation.transform.Swap.rst:25:<autosummary>:1
-msgid ":py:obj:`path_arc <manim.animation.transform.Swap.path_arc>`\\"
-msgstr ""
-
 

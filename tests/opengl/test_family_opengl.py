@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import numpy as np
 
 from manim import RIGHT, Circle
-from manim.mobject.opengl_mobject import OpenGLMobject
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 
 
 def test_family(using_opengl_renderer):
@@ -80,4 +82,4 @@ def test_shift_family(using_opengl_renderer):
     positions_after = {m: m.get_center().copy() for m in family}
 
     for m in family:
-        assert np.allclose(positions_before[m] + RIGHT, positions_after[m])
+        np.testing.assert_allclose(positions_before[m] + RIGHT, positions_after[m])

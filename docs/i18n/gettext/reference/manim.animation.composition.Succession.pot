@@ -23,16 +23,8 @@ msgid "Methods"
 msgstr ""
 
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession.begin:1:<autosummary>:1
-msgid ":py:obj:`begin <manim.animation.composition.Succession.begin>`"
-msgstr ""
-
-#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession.begin:1:<autosummary>:1
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession.begin:1
 msgid "Begin the animation."
-msgstr ""
-
-#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession.begin:1:<autosummary>:1
-msgid ":py:obj:`finish <manim.animation.composition.Succession.finish>`"
 msgstr ""
 
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession.begin:1:<autosummary>:1
@@ -41,24 +33,8 @@ msgid "Finish the animation."
 msgstr ""
 
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession.begin:1:<autosummary>:1
-msgid ":py:obj:`interpolate <manim.animation.composition.Succession.interpolate>`"
-msgstr ""
-
-#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession.begin:1:<autosummary>:1
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession.interpolate:1
 msgid "Set the animation progress."
-msgstr ""
-
-#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession.begin:1:<autosummary>:1
-msgid ":py:obj:`next_animation <manim.animation.composition.Succession.next_animation>`"
-msgstr ""
-
-#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession.begin:1:<autosummary>:1
-msgid ":py:obj:`update_active_animation <manim.animation.composition.Succession.update_active_animation>`"
-msgstr ""
-
-#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession.begin:1:<autosummary>:1
-msgid ":py:obj:`update_mobjects <manim.animation.composition.Succession.update_mobjects>`"
 msgstr ""
 
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession.begin:1:<autosummary>:1

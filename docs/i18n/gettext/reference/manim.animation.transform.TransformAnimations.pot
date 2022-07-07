@@ -23,24 +23,12 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.TransformAnimations.rst:20:<autosummary>:1
-msgid ":py:obj:`interpolate <manim.animation.transform.TransformAnimations.interpolate>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform.TransformAnimations.rst:20:<autosummary>:1
 #: ../../../manim/animation/transform.py:docstring of manim.animation.transform.TransformAnimations.interpolate:1
 msgid "Set the animation progress."
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.TransformAnimations.rst:22
 msgid "Attributes"
-msgstr ""
-
-#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.TransformAnimations.interpolate:1:<autosummary>:1
-msgid ":py:obj:`path_arc <manim.animation.transform.TransformAnimations.path_arc>`\\"
-msgstr ""
-
-#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.TransformAnimations.interpolate:1:<autosummary>:1
-msgid ":py:obj:`path_func <manim.animation.transform.TransformAnimations.path_func>`\\"
 msgstr ""
 
 #: ../../../manim/animation/transform.py:docstring of manim.animation.transform.TransformAnimations:0

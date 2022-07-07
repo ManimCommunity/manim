@@ -23,14 +23,6 @@ msgid "Methods"
 msgstr ""
 
 #: ../../../manim/animation/numbers.py:docstring of manim.animation.numbers.ChangingDecimal.interpolate_mobject:1:<autosummary>:1
-msgid ":py:obj:`check_validity_of_input <manim.animation.numbers.ChangingDecimal.check_validity_of_input>`"
-msgstr ""
-
-#: ../../../manim/animation/numbers.py:docstring of manim.animation.numbers.ChangingDecimal.interpolate_mobject:1:<autosummary>:1
-msgid ":py:obj:`interpolate_mobject <manim.animation.numbers.ChangingDecimal.interpolate_mobject>`"
-msgstr ""
-
-#: ../../../manim/animation/numbers.py:docstring of manim.animation.numbers.ChangingDecimal.interpolate_mobject:1:<autosummary>:1
 #: ../../../manim/animation/numbers.py:docstring of manim.animation.numbers.ChangingDecimal.interpolate_mobject:1
 msgid "Interpolates the mobject of the :class:`Animation` based on alpha value."
 msgstr ""

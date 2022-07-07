@@ -20,26 +20,27 @@ import colour
 import numpy as np
 from PIL.Image import Image
 
+from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+from manim.mobject.three_d.three_d_utils import (
+    get_3d_vmob_gradient_start_and_end_points,
+)
+
 from ... import config, logger
 from ...constants import *
 from ...mobject.mobject import Mobject
-from ...mobject.three_d_utils import get_3d_vmob_gradient_start_and_end_points
 from ...utils.bezier import (
     bezier,
     get_smooth_handle_points,
     integer_interpolate,
     interpolate,
     partial_bezier_points,
-    point_lies_on_bezier,
     proportions_along_bezier_curve_for_point,
 )
 from ...utils.color import BLACK, WHITE, color_to_rgba
 from ...utils.deprecation import deprecated
 from ...utils.iterables import make_even, stretch_array_to_length, tuplify
-from ...utils.simple_functions import clip_in_place
 from ...utils.space_ops import rotate_vector, shoelace_direction
-from ..opengl_compatibility import ConvertToOpenGL
-from .opengl_vectorized_mobject import OpenGLVMobject
 
 # TODO
 # - Change cubic curve groups to have 4 points instead of 3
@@ -71,6 +72,8 @@ class VMobject(Mobject):
         This is within a pixel
     """
 
+    sheen_factor = 0.0
+
     def __init__(
         self,
         fill_color=None,
@@ -93,9 +96,7 @@ class VMobject(Mobject):
         n_points_per_cubic_curve=4,
         **kwargs,
     ):
-        self.fill_color = fill_color
         self.fill_opacity = fill_opacity
-        self.stroke_color = stroke_color
         self.stroke_opacity = stroke_opacity
         self.stroke_width = stroke_width
         self.background_stroke_color = background_stroke_color
@@ -114,18 +115,23 @@ class VMobject(Mobject):
         self.n_points_per_cubic_curve = n_points_per_cubic_curve
         super().__init__(**kwargs)
 
+        if fill_color:
+            self.fill_color = fill_color
+        if stroke_color:
+            self.stroke_color = stroke_color
+
     def get_group_class(self):
         return VGroup
 
     # Colors
     def init_colors(self, propagate_colors=True):
         self.set_fill(
-            color=self.fill_color or self.color,
+            color=self.fill_color,
             opacity=self.fill_opacity,
             family=propagate_colors,
         )
         self.set_stroke(
-            color=self.stroke_color or self.color,
+            color=self.stroke_color,
             width=self.stroke_width,
             opacity=self.stroke_opacity,
             family=propagate_colors,
@@ -156,8 +162,8 @@ class VMobject(Mobject):
         one color was passed in, a second slightly light color
         will automatically be added for the gradient
         """
-        colors = list(tuplify(color))
-        opacities = list(tuplify(opacity))
+        colors = [c if (c is not None) else BLACK for c in tuplify(color)]
+        opacities = [o if (o is not None) else 0 for o in tuplify(opacity)]
         rgbas = np.array(
             [color_to_rgba(c, o) for c, o in zip(*make_even(colors, opacities))],
         )
@@ -166,14 +172,12 @@ class VMobject(Mobject):
         if sheen_factor != 0 and len(rgbas) == 1:
             light_rgbas = np.array(rgbas)
             light_rgbas[:, :3] += sheen_factor
-            clip_in_place(light_rgbas, 0, 1)
+            np.clip(light_rgbas, 0, 1, out=light_rgbas)
             rgbas = np.append(rgbas, light_rgbas, axis=0)
         return rgbas
 
     def update_rgbas_array(self, array_name, color=None, opacity=None):
-        passed_color = color if (color is not None) else BLACK
-        passed_opacity = opacity if (opacity is not None) else 0
-        rgbas = self.generate_rgbas_array(passed_color, passed_opacity)
+        rgbas = self.generate_rgbas_array(color, opacity)
         if not hasattr(self, array_name):
             setattr(self, array_name, rgbas)
             return self
@@ -240,8 +244,6 @@ class VMobject(Mobject):
         self.update_rgbas_array("fill_rgbas", color, opacity)
         if opacity is not None:
             self.fill_opacity = opacity
-        if color is not None:
-            self.fill_color = color
         return self
 
     def set_stroke(
@@ -259,19 +261,17 @@ class VMobject(Mobject):
             array_name = "background_stroke_rgbas"
             width_name = "background_stroke_width"
             opacity_name = "background_stroke_opacity"
-            color_name = "background_stroke_color"
         else:
             array_name = "stroke_rgbas"
             width_name = "stroke_width"
             opacity_name = "stroke_opacity"
-            color_name = "stroke_color"
         self.update_rgbas_array(array_name, color, opacity)
         if width is not None:
             setattr(self, width_name, width)
         if opacity is not None:
             setattr(self, opacity_name, opacity)
-        if color is not None:
-            setattr(self, color_name, color)
+        if color is not None and background:
+            self.background_stroke_color = color
         return self
 
     def set_background_stroke(self, **kwargs):
@@ -358,12 +358,6 @@ class VMobject(Mobject):
     def set_color(self, color, family=True):
         self.set_fill(color, family=family)
         self.set_stroke(color, family=family)
-
-        # check if a list of colors is passed to color
-        if isinstance(color, str):
-            self.color = colour.Color(color)
-        else:
-            self.color = color
         return self
 
     def set_opacity(self, opacity, family=True):
@@ -396,6 +390,8 @@ class VMobject(Mobject):
         """
         return self.get_fill_colors()[0]
 
+    fill_color = property(get_fill_color, set_fill)
+
     def get_fill_opacity(self):
         """
         If there are multiple opacities, this returns the
@@ -404,7 +400,10 @@ class VMobject(Mobject):
         return self.get_fill_opacities()[0]
 
     def get_fill_colors(self):
-        return [colour.Color(rgb=rgba[:3]) for rgba in self.get_fill_rgbas()]
+        return [
+            colour.Color(rgb=rgba[:3]) if rgba.any() else None
+            for rgba in self.get_fill_rgbas()
+        ]
 
     def get_fill_opacities(self):
         return self.get_fill_rgbas()[:, 3]
@@ -422,6 +421,8 @@ class VMobject(Mobject):
     def get_stroke_color(self, background=False):
         return self.get_stroke_colors(background)[0]
 
+    stroke_color = property(get_stroke_color, set_stroke)
+
     def get_stroke_width(self, background=False):
         if background:
             width = self.background_stroke_width
@@ -436,7 +437,8 @@ class VMobject(Mobject):
 
     def get_stroke_colors(self, background=False):
         return [
-            colour.Color(rgb=rgba[:3]) for rgba in self.get_stroke_rgbas(background)
+            colour.Color(rgb=rgba[:3]) if rgba.any() else None
+            for rgba in self.get_stroke_rgbas(background)
         ]
 
     def get_stroke_opacities(self, background=False):
@@ -446,6 +448,8 @@ class VMobject(Mobject):
         if np.all(self.get_fill_opacities() == 0):
             return self.get_stroke_color()
         return self.get_fill_color()
+
+    color = property(get_color, set_color)
 
     def set_sheen_direction(self, direction: np.ndarray, family=True):
         """Sets the direction of the applied sheen.
@@ -586,10 +590,6 @@ class VMobject(Mobject):
         self.points = np.array(points)
         return self
 
-    @deprecated(since="0.11.0", replacement="self.points")
-    def get_points(self):
-        return np.array(self.points)
-
     def set_anchors_and_handles(
         self,
         anchors1: Sequence[float],
@@ -648,6 +648,9 @@ class VMobject(Mobject):
     ) -> None:
         # TODO, check the len(self.points) % 4 == 0?
         self.append_points([anchor1, handle1, handle2, anchor2])
+
+    def add_cubic_bezier_curves(self, curves):
+        self.append_points(curves.flatten())
 
     def add_cubic_bezier_curve_to(
         self,
@@ -1102,7 +1105,7 @@ class VMobject(Mobject):
         curve = self.get_nth_curve_function(n)
         points = np.array([curve(a) for a in np.linspace(0, 1, sample_points)])
         diffs = points[1:] - points[:-1]
-        norms = np.apply_along_axis(np.linalg.norm, 1, diffs)
+        norms = np.linalg.norm(diffs, axis=1)
 
         return norms
 
@@ -1331,7 +1334,7 @@ class VMobject(Mobject):
         return self.points[0 :: self.n_points_per_cubic_curve]
 
     def get_end_anchors(self) -> np.ndarray:
-        """Return the starting anchors of the bezier curves.
+        """Return the end anchors of the bezier curves.
 
         Returns
         -------
@@ -1503,13 +1506,20 @@ class VMobject(Mobject):
         # it's total length is target_num.  For example,
         # with curr_num = 10, target_num = 15, this would
         # be [0, 0, 1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 8, 8, 9]
-        repeat_indices = (np.arange(target_num) * curr_num) // target_num
+        repeat_indices = (np.arange(target_num, dtype="i") * curr_num) // target_num
 
         # If the nth term of this list is k, it means
         # that the nth curve of our path should be split
-        # into k pieces.  In the above example, this would
-        # be [2, 1, 2, 1, 2, 1, 2, 1, 2, 1]
-        split_factors = [sum(repeat_indices == i) for i in range(curr_num)]
+        # into k pieces.
+        # In the above example our array had the following elements
+        # [0, 0, 1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 8, 8, 9]
+        # We have two 0s, one 1, two 2s and so on.
+        # The split factors array would hence be:
+        # [2, 1, 2, 1, 2, 1, 2, 1, 2, 1]
+        split_factors = np.zeros(curr_num, dtype="i")
+        for val in repeat_indices:
+            split_factors[val] += 1
+
         new_points = np.zeros((0, self.dim))
         for quad, sf in zip(bezier_quads, split_factors):
             # What was once a single cubic curve defined
@@ -1688,7 +1698,7 @@ class VMobject(Mobject):
             class ChangeOfDirection(Scene):
                 def construct(self):
                     ccw = RegularPolygon(5)
-                    ccw.shift(LEFT).rotate
+                    ccw.shift(LEFT)
                     cw = RegularPolygon(5)
                     cw.shift(RIGHT).reverse_direction()
 
@@ -2205,7 +2215,7 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
         mob = value
         if self.show_keys:
             # This import is here and not at the top to avoid circular import
-            from ...mobject.svg.tex_mobject import Tex
+            from manim.mobject.text.tex_mobject import Tex
 
             key_text = Tex(str(key)).next_to(value, LEFT)
             mob.add(key_text)

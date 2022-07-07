@@ -1,5 +1,7 @@
 """Mobjects representing vector fields."""
 
+from __future__ import annotations
+
 __all__ = [
     "VectorField",
     "ArrowVectorField",
@@ -9,26 +11,28 @@ __all__ = [
 import itertools as it
 import random
 from math import ceil, floor
-from typing import Callable, Iterable, Optional, Sequence, Tuple, Type
+from typing import Callable, Iterable, Sequence
 
 import numpy as np
 from colour import Color
 from PIL import Image
 
+from manim.animation.updaters.update import UpdateFromAlphaFunc
+from manim.mobject.geometry.line import Vector
+from manim.mobject.graphing.coordinate_systems import CoordinateSystem
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+
 from .. import config
 from ..animation.composition import AnimationGroup, Succession
 from ..animation.creation import Create
 from ..animation.indication import ShowPassingFlash
-from ..animation.update import UpdateFromAlphaFunc
 from ..constants import OUT, RIGHT, UP
-from ..mobject.geometry import Vector
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import BLUE_E, GREEN, RED, YELLOW, color_to_rgb, rgb_to_color
 from ..utils.rate_functions import ease_out_sine, linear
 from ..utils.simple_functions import sigmoid
-from .types.opengl_vectorized_mobject import OpenGLVMobject
 
 DEFAULT_SCALAR_FIELD_COLORS: list = [BLUE_E, GREEN, YELLOW, RED]
 
@@ -62,12 +66,12 @@ class VectorField(VGroup):
     def __init__(
         self,
         func: Callable[[np.ndarray], np.ndarray],
-        color: Optional[Color] = None,
-        color_scheme: Optional[Callable[[np.ndarray], float]] = None,
+        color: Color | None = None,
+        color_scheme: Callable[[np.ndarray], float] | None = None,
         min_color_scheme_value: float = 0,
         max_color_scheme_value: float = 2,
         colors: Sequence[Color] = DEFAULT_SCALAR_FIELD_COLORS,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.func = func
@@ -81,7 +85,7 @@ class VectorField(VGroup):
             self.color_scheme = color_scheme  # TODO maybe other default for direction?
             self.rgbs = np.array(list(map(color_to_rgb, colors)))
 
-            def pos_to_rgb(pos: np.ndarray) -> Tuple[float, float, float, float]:
+            def pos_to_rgb(pos: np.ndarray) -> tuple[float, float, float, float]:
                 vec = self.func(pos)
                 color_value = np.clip(
                     self.color_scheme(vec),
@@ -165,13 +169,29 @@ class VectorField(VGroup):
         """
         return lambda p: func(p * scalar)
 
+    def fit_to_coordinate_system(self, coordinate_system: CoordinateSystem):
+        """Scale the vector field to fit a coordinate system.
+
+        This method is useful when the vector field is defined in a coordinate system
+        different from the one used to display the vector field.
+
+        This method can only be used once because it transforms the origin of each vector.
+
+        Parameters
+        ----------
+        coordinate_system
+            The coordinate system to fit the vector field to.
+
+        """
+        self.apply_function(lambda pos: coordinate_system.coords_to_point(*pos))
+
     def nudge(
         self,
         mob: Mobject,
         dt: float = 1,
         substeps: int = 1,
         pointwise: bool = False,
-    ) -> "VectorField":
+    ) -> VectorField:
         """Nudge a :class:`~.Mobject` along the vector field.
 
         Parameters
@@ -255,7 +275,7 @@ class VectorField(VGroup):
         dt: float = 1,
         substeps: int = 1,
         pointwise: bool = False,
-    ) -> "VectorField":
+    ) -> VectorField:
         """Apply a nudge along the vector field to all submobjects.
 
         Parameters
@@ -306,7 +326,7 @@ class VectorField(VGroup):
         self,
         speed: float = 1,
         pointwise: bool = False,
-    ) -> "VectorField":
+    ) -> VectorField:
         """Start continuously moving all submobjects along the vector field.
 
         Calling this method multiple times will result in removing the previous updater created by this method.
@@ -333,7 +353,7 @@ class VectorField(VGroup):
         self.add_updater(self.submob_movement_updater)
         return self
 
-    def stop_submobject_movement(self) -> "VectorField":
+    def stop_submobject_movement(self) -> VectorField:
         """Stops the continuous movement started using :meth:`start_submobject_movement`.
 
         Returns
@@ -513,8 +533,8 @@ class ArrowVectorField(VectorField):
     def __init__(
         self,
         func: Callable[[np.ndarray], np.ndarray],
-        color: Optional[Color] = None,
-        color_scheme: Optional[Callable[[np.ndarray], float]] = None,
+        color: Color | None = None,
+        color_scheme: Callable[[np.ndarray], float] | None = None,
         min_color_scheme_value: float = 0,
         max_color_scheme_value: float = 2,
         colors: Sequence[Color] = DEFAULT_SCALAR_FIELD_COLORS,
@@ -526,8 +546,8 @@ class ArrowVectorField(VectorField):
         # Takes in actual norm, spits out displayed norm
         length_func: Callable[[float], float] = lambda norm: 0.45 * sigmoid(norm),
         opacity: float = 1.0,
-        vector_config: Optional[dict] = None,
-        **kwargs
+        vector_config: dict | None = None,
+        **kwargs,
     ):
         self.x_range = x_range or [
             floor(-config["frame_width"] / 2),
@@ -572,8 +592,12 @@ class ArrowVectorField(VectorField):
         x_range = np.arange(*self.x_range)
         y_range = np.arange(*self.y_range)
         z_range = np.arange(*self.z_range)
-        for x, y, z in it.product(x_range, y_range, z_range):
-            self.add(self.get_vector(x * RIGHT + y * UP + z * OUT))
+        self.add(
+            *[
+                self.get_vector(x * RIGHT + y * UP + z * OUT)
+                for x, y, z in it.product(x_range, y_range, z_range)
+            ]
+        )
         self.set_opacity(self.opacity)
 
     def get_vector(self, point: np.ndarray):
@@ -591,7 +615,7 @@ class ArrowVectorField(VectorField):
             Additional arguments to be passed to the :class:`~.Vector` constructor
 
         """
-        output = np.array(self.func(point))
+        output = np.asarray(self.func(point))
         norm = np.linalg.norm(output)
         if norm != 0:
             output *= self.length_func(norm) / norm
@@ -685,8 +709,8 @@ class StreamLines(VectorField):
     def __init__(
         self,
         func: Callable[[np.ndarray], np.ndarray],
-        color: Optional[Color] = None,
-        color_scheme: Optional[Callable[[np.ndarray], float]] = None,
+        color: Color | None = None,
+        color_scheme: Callable[[np.ndarray], float] | None = None,
         min_color_scheme_value: float = 0,
         max_color_scheme_value: float = 2,
         colors: Sequence[Color] = DEFAULT_SCALAR_FIELD_COLORS,
@@ -695,7 +719,7 @@ class StreamLines(VectorField):
         y_range: Sequence[float] = None,
         z_range: Sequence[float] = None,
         three_dimensions: bool = False,
-        noise_factor: Optional[float] = None,
+        noise_factor: float | None = None,
         n_repeats=1,
         # Determining how lines are drawn
         dt=0.05,
@@ -705,7 +729,7 @@ class StreamLines(VectorField):
         # Determining stream line appearance:
         stroke_width=1,
         opacity=1,
-        **kwargs
+        **kwargs,
     ):
         self.x_range = x_range or [
             floor(-config["frame_width"] / 2),
@@ -827,9 +851,9 @@ class StreamLines(VectorField):
 
     def create(
         self,
-        lag_ratio: Optional[float] = None,
-        run_time: Optional[Callable[[float], float]] = None,
-        **kwargs
+        lag_ratio: float | None = None,
+        run_time: Callable[[float], float] | None = None,
+        **kwargs,
     ) -> AnimationGroup:
         """The creation animation of the stream lines.
 
@@ -887,8 +911,8 @@ class StreamLines(VectorField):
         flow_speed: float = 1,
         time_width: float = 0.3,
         rate_func: Callable[[float], float] = linear,
-        line_animation_class: Type[ShowPassingFlash] = ShowPassingFlash,
-        **kwargs
+        line_animation_class: type[ShowPassingFlash] = ShowPassingFlash,
+        **kwargs,
     ) -> None:
         """Animates the stream lines using an updater.
 

@@ -54,8 +54,4 @@ msgstr ""
 msgid "Attributes"
 msgstr ""
 
-#: ../../source/reference/manim.animation.transform.ReplacementTransform.rst:25:<autosummary>:1
-msgid ":py:obj:`path_arc <manim.animation.transform.ReplacementTransform.path_arc>`\\"
-msgstr ""
-
 

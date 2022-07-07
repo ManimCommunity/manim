@@ -7,6 +7,7 @@ Animations
    :toctree: ../reference
 
    ~animation.animation
+   ~animation.changing
    ~animation.composition
    ~animation.creation
    ~animation.fading
@@ -16,6 +17,7 @@ Animations
    ~animation.numbers
    ~animation.rotation
    ~animation.specialized
+   ~animation.speedmodifier
    ~animation.transform
    ~animation.transform_matching_parts
-   ~animation.update
+   ~animation.updaters

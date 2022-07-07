@@ -1,8 +1,9 @@
+from __future__ import annotations
+
 import collections
 
 import numpy as np
 
-from ..constants import *
 from ..utils import opengl
 from ..utils.space_ops import cross2d, earclip_triangulation
 from .shader import Shader
@@ -73,7 +74,7 @@ def render_mobject_fills_with_matrix(renderer, model_matrix, mobjects):
     fill_shader.set_uniform(
         "u_model_view_matrix",
         opengl.matrix_to_shader_input(
-            renderer.camera.get_view_matrix(format=False) @ model_matrix,
+            renderer.camera.unformatted_view_matrix @ model_matrix,
         ),
     )
     fill_shader.set_uniform(
@@ -270,7 +271,7 @@ def render_mobject_strokes_with_matrix(renderer, model_matrix, mobjects):
     shader.set_uniform(
         "u_model_view_matrix",
         opengl.matrix_to_shader_input(
-            renderer.camera.get_view_matrix(format=False) @ model_matrix,
+            renderer.camera.unformatted_view_matrix @ model_matrix,
         ),
     )
     shader.set_uniform("u_projection_matrix", renderer.scene.camera.projection_matrix)

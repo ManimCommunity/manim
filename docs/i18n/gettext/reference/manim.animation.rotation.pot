@@ -19,7 +19,7 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.animation.rotation.rst:22:<autosummary>:1
-msgid ":py:obj:`Rotate <manim.animation.rotation.Rotate>`"
+msgid "Animation that rotates a Mobject."
 msgstr ""
 
 

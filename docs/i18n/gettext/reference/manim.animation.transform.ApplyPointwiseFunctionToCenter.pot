@@ -23,24 +23,12 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.ApplyPointwiseFunctionToCenter.rst:20:<autosummary>:1
-msgid ":py:obj:`begin <manim.animation.transform.ApplyPointwiseFunctionToCenter.begin>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform.ApplyPointwiseFunctionToCenter.rst:20:<autosummary>:1
 #: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyPointwiseFunctionToCenter.begin:1
 msgid "Begin the animation."
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.ApplyPointwiseFunctionToCenter.rst:22
 msgid "Attributes"
-msgstr ""
-
-#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyPointwiseFunctionToCenter.begin:1:<autosummary>:1
-msgid ":py:obj:`path_arc <manim.animation.transform.ApplyPointwiseFunctionToCenter.path_arc>`\\"
-msgstr ""
-
-#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyPointwiseFunctionToCenter.begin:1:<autosummary>:1
-msgid ":py:obj:`path_func <manim.animation.transform.ApplyPointwiseFunctionToCenter.path_func>`\\"
 msgstr ""
 
 #: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyPointwiseFunctionToCenter:0

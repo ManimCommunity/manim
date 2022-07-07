@@ -58,16 +58,8 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.animation.indication.FocusOn.rst:20:<autosummary>:1
-msgid ":py:obj:`create_target <manim.animation.indication.FocusOn.create_target>`"
-msgstr ""
-
 #: ../../source/reference/manim.animation.indication.FocusOn.rst:22
 msgid "Attributes"
-msgstr ""
-
-#: ../../source/reference/manim.animation.indication.FocusOn.rst:26:<autosummary>:1
-msgid ":py:obj:`path_arc <manim.animation.indication.FocusOn.path_arc>`\\"
 msgstr ""
 
 

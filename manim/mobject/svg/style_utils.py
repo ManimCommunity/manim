@@ -1,16 +1,17 @@
 """Utility functions for parsing SVG styles."""
 
 
+from __future__ import annotations
+
 __all__ = ["cascade_element_style", "parse_style", "parse_color_string"]
 
-from typing import Dict, List
 from xml.dom.minidom import Element as MinidomElement
 
 from colour import web2hex
 
 from ...utils.color import rgb_to_hex
 
-CASCADING_STYLING_ATTRIBUTES: List[str] = [
+CASCADING_STYLING_ATTRIBUTES: list[str] = [
     "fill",
     "stroke",
     "fill-opacity",
@@ -21,7 +22,7 @@ CASCADING_STYLING_ATTRIBUTES: List[str] = [
 # The default styling specifications for SVG images,
 # according to https://www.w3.org/TR/SVG/painting.html
 # (ctrl-F for "initial")
-SVG_DEFAULT_ATTRIBUTES: Dict[str, str] = {
+SVG_DEFAULT_ATTRIBUTES: dict[str, str] = {
     "fill": "black",
     "fill-opacity": "1",
     "stroke": "none",
@@ -31,8 +32,8 @@ SVG_DEFAULT_ATTRIBUTES: Dict[str, str] = {
 
 def cascade_element_style(
     element: MinidomElement,
-    inherited: Dict[str, str],
-) -> Dict[str, str]:
+    inherited: dict[str, str],
+) -> dict[str, str]:
     """Collect the element's style attributes based upon both its inheritance and its own attributes.
 
     SVG uses cascading element styles. A closer ancestor's style takes precedence over a more distant ancestor's
@@ -121,7 +122,7 @@ def parse_color_string(color_spec: str) -> str:
     return hex_color
 
 
-def fill_default_values(svg_style: Dict) -> None:
+def fill_default_values(svg_style: dict) -> None:
     """
     Fill in the default values for properties of SVG elements,
     if they are not currently set in the style dictionary.
@@ -141,7 +142,7 @@ def fill_default_values(svg_style: Dict) -> None:
             svg_style[key] = SVG_DEFAULT_ATTRIBUTES[key]
 
 
-def parse_style(svg_style: Dict[str, str]) -> Dict:
+def parse_style(svg_style: dict[str, str]) -> dict:
     """Convert a dictionary of SVG attributes to Manim VMobject keyword arguments.
 
     Parameters

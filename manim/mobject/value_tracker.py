@@ -1,13 +1,15 @@
-"""Mobjects that dynamically show the change of a variable."""
+"""Simple mobjects that can be used for storing (and updating) a value."""
+
+from __future__ import annotations
 
 __all__ = ["ValueTracker", "ComplexValueTracker"]
 
 
 import numpy as np
 
-from ..mobject.mobject import Mobject
-from ..utils.paths import straight_path
-from .opengl_compatibility import ConvertToOpenGL
+from manim.mobject.mobject import Mobject
+from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
+from manim.utils.paths import straight_path
 
 
 class ValueTracker(Mobject, metaclass=ConvertToOpenGL):

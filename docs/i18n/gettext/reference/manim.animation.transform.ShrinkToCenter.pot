@@ -18,20 +18,20 @@ msgstr ""
 msgid "Bases: :py:class:`manim.animation.transform.ScaleInPlace`"
 msgstr ""
 
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ShrinkToCenter:1
+msgid "Animation that makes a mobject shrink to center."
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ShrinkToCenter:4
+msgid "Examples"
+msgstr ""
+
 #: ../../source/reference/manim.animation.transform.ShrinkToCenter.rst:14
 msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.ShrinkToCenter.rst:21
 msgid "Attributes"
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform.ShrinkToCenter.rst:25:<autosummary>:1
-msgid ":py:obj:`path_arc <manim.animation.transform.ShrinkToCenter.path_arc>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform.ShrinkToCenter.rst:25:<autosummary>:1
-msgid ":py:obj:`path_func <manim.animation.transform.ShrinkToCenter.path_func>`\\"
 msgstr ""
 
 #: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ShrinkToCenter:0
