@@ -26,7 +26,7 @@ from manim.mobject.three_d.three_d_utils import (
     get_3d_vmob_gradient_start_and_end_points,
 )
 
-from ... import config, logger
+from ... import config
 from ...constants import *
 from ...mobject.mobject import Mobject
 from ...utils.bezier import (
@@ -1851,10 +1851,6 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
         """
         if not all(isinstance(m, (VMobject, OpenGLVMobject)) for m in vmobjects):
             raise TypeError("All submobjects must be of type VMobject")
-        if any(vmobjects.count(elem) > 1 for elem in list(vmobjects)):
-            logger.warning(
-                f"Attempted adding some Mobject to a group more than once, this is not possible. Repetitions are ignored.",
-            )
         return super().add(*vmobjects)
 
     def __add__(self, vmobject):
