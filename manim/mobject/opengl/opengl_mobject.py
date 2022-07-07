@@ -728,7 +728,7 @@ class OpenGLMobject:
             raise ValueError("OpenGLMobject cannot contain self")
         if any(mobjects.count(elem) > 1 for elem in mobjects):
             logger.warning(
-                f"Attempted adding some Mobject as a child more than once, "
+                "Attempted adding some Mobject as a child more than once, "
                 "this is not possible. Repetitions are ignored.",
             )
         for mobject in mobjects:
