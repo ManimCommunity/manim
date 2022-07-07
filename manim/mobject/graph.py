@@ -389,7 +389,6 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         :save_last_frame:
 
         class LinearNN(Scene):
-
             def construct(self):
                 edges = []
                 partitions = []
