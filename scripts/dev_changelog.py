@@ -66,10 +66,10 @@ this_repo = Repo(str(Path(__file__).resolve().parent.parent))
 PR_LABELS = {
     "breaking changes": "Breaking changes",
     "highlight": "Highlights",
-    "deprecation": "Deprecated classes and functions",
+    "pr:deprecation": "Deprecated classes and functions",
     "new feature": "New features",
     "enhancement": "Enhancements",
-    "bugfix": "Fixed bugs",
+    "pr:bugfix": "Fixed bugs",
     "documentation": "Documentation-related changes",
     "testing": "Changes concerning the testing system",
     "infrastructure": "Changes to our development infrastructure",
