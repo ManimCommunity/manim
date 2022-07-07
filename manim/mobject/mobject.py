@@ -2767,7 +2767,14 @@ class Mobject:
 
 
 class Group(Mobject, metaclass=ConvertToOpenGL):
-    """Groups together multiple :class:`Mobjects <.Mobject>`."""
+    """Groups together multiple :class:`Mobjects <.Mobject>`.
+
+    Notes
+    -----
+    When adding the same mobject more than once, repetitions are ignored.
+    Use :meth:`.Mobject.copy` to create a separate copy which can then
+    be added to the group.
+    """
 
     def __init__(self, *mobjects, **kwargs):
         super().__init__(**kwargs)

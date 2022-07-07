@@ -1732,6 +1732,12 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
     This can be used to group multiple :class:`~.VMobject` instances together
     in order to scale, move, ... them together.
 
+    Notes
+    -----
+    When adding the same mobject more than once, repetitions are ignored.
+    Use :meth:`.Mobject.copy` to create a separate copy which can then
+    be added to the group.
+
     Examples
     --------
 
@@ -1842,12 +1848,6 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
                     self.play( # Animate group without component
                         (gr-circle_red).animate.shift(RIGHT)
                     )
-
-        Notes
-        -----
-        When adding the same mobject more than once, repetitions are ignored.
-        Use :meth:`.Mobject.copy` to create a separate copy which can then
-        be added to the group.
         """
         if not all(isinstance(m, (VMobject, OpenGLVMobject)) for m in vmobjects):
             raise TypeError("All submobjects must be of type VMobject")
