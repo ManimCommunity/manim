@@ -1,6 +1,8 @@
 A deep dive into Manim's internals
 ==================================
 
+**Author:** `Benjamin Hackl <https://benjamin-hackl.at>`__
+
 Introduction
 ------------
 
@@ -862,25 +864,159 @@ integral part of the render loop (in which the library steps through
 the time progression of the animation and renders the corresponding
 frames).
 
+Within :meth:`.Scene.play_internal`, the following steps are performed:
 
-- scene.play_internal:
+- The scene determines the run time of the animations by calling
+  :meth:`.Scene.get_run_time`. This method basically takes the maximum
+  ``run_time`` attribute of all of the animations passed to the
+  :meth:`.Scene.play` call.
+- Then the *time progression* is constructed via the (internal)
+  :meth:`.Scene._get_animation_time_progression` method, which wraps
+  the actual :meth:`.Scene.get_time_progression` method. The time
+  progression is a ``tqdm`` `progress bar object <https://tqdm.github.io>`__
+  for an iterator over ``np.arange(0, run_time, 1 / config.frame_rate)``. In
+  other words, the time progression holds the time stamps (relative to the
+  current animations, so starting at 0 and ending at the total animation run time,
+  with the step size determined by the render frame rate) of the timeline where
+  a new animation frame should be rendered.
+- Then the scene iterates over the time progression: for each time stamp ``t``,
+  :meth:`.Scene.update_to_time` is called, which ...
+  
+  - ... first computes the time passed since the last update (which might be 0,
+    especially for the initial call) and references it as ``dt``,
+  - then (in the order in which the animations are passed to :meth:`.Scene.play`)
+    calls :meth:`.Animation.update_mobjects` to trigger all updater functions that
+    are attached to the respective animation except for the "main mobject" of
+    the animation (that is, for example, for :class:`.Transform` the unmodified
+    copies of start and target mobject -- see :meth:`.Animation.get_all_mobjects_to_update`
+    for more details),
+  - then the relative time progression with respect to the current animation
+    is computed (``alpha = t / animation.run_time``), which is then used to
+    update the state of the animation with a call to :meth:`.Animation.interpolate`.
+  - After all of the passed animations have been processed, the updater functions
+    of all mobjects in the scene, all meshes, and finally those attached to
+    the scene itself are run.
 
-  - construct time_progression (i.e., the progress bar; t-values for
-    which frames are rendered)
-  - step through time progression. scene.update_to_time(t)
+At this point, the internal (Python) state of all mobjects has been updated
+to match the currently processed timestamp. If rendering should not be skipped,
+then it is now time to *take a picture*! 
 
-    - updates animation mobjects
-    - runs interpolate for correct alpha value
-    - runs mobject updaters
-    - runs scene updaters
-    - self.renderer.render(self, t, self.moving_mobjects), actually
-      rendering the frame
+.. NOTE::
+
+  The update of the internal state (iteration over the time progression) happens
+  *always* once :meth:`.Scene.play_internal` is entered. This ensures that even
+  if frames do not need to be rendered (because, e.g., the ``-n`` CLI flag has
+  been passed, something has been cached, or because we might be in a *Section*
+  with skipped rendering), updater functions still run correctly, and the state
+  of the first frame that *is* rendered is kept consistent.
+
+To render an image, the scene calls the corresponding method of its renderer,
+:meth:`.CairoRenderer.render` and passes just the list of *moving mobjects* (remember,
+the *static mobjects* are assumed to have already been painted statically to
+the background of the scene). All of the hard work then happens when the renderer
+updates its current frame via a call to :meth:`.CairoRenderer.update_frame`:
+
+First, the renderer prepares its :class:`.Camera` by checking whether the renderer
+has a ``static_image`` different from ``None`` stored already. If so, it sets the
+image as the *background image* of the camera via :meth:`.Camera.set_frame_to_background`,
+and otherwise it just resets the camera via :meth:`.Camera.reset`. The camera is then
+asked to capture the scene with a call to :meth:`.Camera.camture_mobjects`.
+
+Things get a bit technical here, and at some point it is more efficient to
+delve into the implementation -- but here is a summary of what happens once the
+camera is asked to capture the scene:
+
+- First, a flat list of mobjects is created (so submobjects get extracted from
+  their parents). This list is then processed in groups of the same type of
+  mobjects (e.g., a batch of vectorized mobjects, followed by a batch of image mobjects,
+  followed by more vectorized mobjects, etc. -- in many cases there will just be
+  one batch of vectorized mobjects).
+- Depending on the type of the currently processed batch, the camera uses dedicated
+  *display functions* to convert the :class:`.Mobject` Python object to
+  a NumPy array stored in the camera's ``pixel_array`` attribute.
+  The most important example in that context is the display function for
+  vectorized mobjects, :meth:`.Camera.display_multiple_vectorized_mobjects`,
+  or the more particular (in case you did not add a background image to your
+  :class:`.VMobject`), :meth:`.Camera.display_multiple_non_background_colored_vmobjects`.
+  This method first gets the current Cairo context, and then, for every (vectorized)
+  mobject in the batch, calls :meth:`.Camera.display_vectorized`. There,
+  the actual background stroke, fill, and then stroke of the mobject is
+  drawn onto the context. See :meth:`.Camera.apply_stroke` and 
+  :meth:`.Camera.set_cairo_context_color` for more details -- but it does not get
+  much deeper than that, in the latter method the actual Bézier curves
+  determined by the points of the mobject are drawn; this is where the low-level
+  interaction with Cairo happens.
+  
+After all batches have been processed, the camera has an image representation
+of the Scene at the current time stamp in form of a NumPy array stored in its
+``pixel_array`` attribute. The renderer then takes this array and passes it to
+its :class:`.SceneFileWriter`. This concludes one iteration of the render loop,
+and once the time progression has been processed completely, a final bit
+of cleanup is performed before the :meth:`.Scene.play_internal` call is completed.
+
+A TL;DR for the render loop, in the context of our toy example, reads as follows:
+
+- The scene finds that a 3 second long animation (the :class:`.ReplacementTransform`
+  changing the orange square to the blue circle) should be played. Given the requested
+  medium render quality, the frame rate is 30 frames per second, and so the time
+  progression with steps ``[0, 1/30, 2/30, ..., 89/30]`` is created.
+- In the internal render loop, each of these time stamps is processed:
+  there are no updater functions, so effectively the scene updates the
+  state of the transformation animation to the desired time stamp (for example,
+  at time stamp ``t = 45/30``, the animation is completed to a rate of
+  ``alpha = 0.5``).
+- Then the scene asks the renderer to do its job. The renderer asks its camera
+  to capture the scene, the only mobject that needs to be processed at this point
+  is the main mobject attached to the transformation; the camera converts the
+  current state of the mobject to entries in a NumPy array. The renderer passes
+  this array to the file writer.
+- At the end of the loop, 90 frames have been passed to the file writer.
 
 Completing the render loop
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- finish animations
-- ffmpeg movie pipeline closes; partial movie file is written
+The last few steps in the :meth:`.Scene.play_internal` call are not too
+exciting: for every animation, the corresponding :meth:`.Animation.finish`
+and :meth:`.Animation.clean_up_from_scene` methods are called.
 
-- after all animations: combination of all partial movie files to one
-  rendered video.
+.. NOTE::
+
+  Note that as part of :meth:`.Animation.finish`, the :meth:`.Animation.interpolate`
+  method is called with an argument of 1.0 -- you might have noticed already that
+  the last frame of an animation can sometimes be a bit off or incomplete. 
+  This is by current design! The last frame rendered in the render loop (and displayed
+  for a duration of ``1 / frame_rate`` seconds in the rendered video) corresponds to
+  the state of the animation ``1 / frame_rate`` seconds before it ends. To display
+  the final frame as well in the video, we would need to append another ``1 / frame_rate``
+  seconds to the video -- which would then mean that a 1 second rendered Manim video
+  would be slightly longer than 1 second. We decided against this at some point.
+
+In the end, the time progression is closed (which completes the displayed progress bar)
+in the terminal. With the closing of the time progression, the
+:meth:`.Scene.play_internal` call is completed, and we return to the renderer,
+which now orders the :class:`.SceneFileWriter` to close the movie pipe that has
+been opened for this animation: a partial movie file is written.
+
+This pretty much concludes the walkthrough of a :class:`.Scene.play` call,
+and actually there is not too much more to say for our toy example either: at
+this point, a partial movie file that represents playing the
+:class:`.ReplacementTransform` has been written. The initialization of
+the :class:`.Dot` happens analogous to the initialization of ``blue_circle``,
+which has been discussed above. The :meth:`.Mobject.add_updater` call literally
+just attaches a function to the ``updaters`` attribute of the ``small_dot``. And
+the remaining :meth:`.Scene.play` and :meth:`.Scene.wait` calls follow the
+exact same procedure as discussed in the render loop section above; each such call
+produces a corresponding partial movie file.
+
+Once the :meth:`.Scene.construct` method has been fully processed (and thus all
+of the corresponding partial movie files have been written), the 
+scene calls its cleanup method :meth:`.Scene.tear_down`, and then
+asks its renderer to finish the scene. The renderer, in turn, asks 
+its scene file writer to wrap things up by calling :meth:`.SceneFileWriter.finish`,
+which triggers the combination of the partial movie files into the final product.
+
+And there you go! This is a more or less detailed description of how Manim works
+under the hood. While we did not discuss every single line of code in detail
+in this tutorial, it should still give you a fairly good idea of how the general
+structural design of the library and at least the Cairo rendering flow in particular
+looks like.
