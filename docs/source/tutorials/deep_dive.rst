@@ -881,7 +881,7 @@ Within :meth:`.Scene.play_internal`, the following steps are performed:
   a new animation frame should be rendered.
 - Then the scene iterates over the time progression: for each time stamp ``t``,
   :meth:`.Scene.update_to_time` is called, which ...
-  
+
   - ... first computes the time passed since the last update (which might be 0,
     especially for the initial call) and references it as ``dt``,
   - then (in the order in which the animations are passed to :meth:`.Scene.play`)
@@ -899,7 +899,7 @@ Within :meth:`.Scene.play_internal`, the following steps are performed:
 
 At this point, the internal (Python) state of all mobjects has been updated
 to match the currently processed timestamp. If rendering should not be skipped,
-then it is now time to *take a picture*! 
+then it is now time to *take a picture*!
 
 .. NOTE::
 
@@ -941,12 +941,12 @@ camera is asked to capture the scene:
   This method first gets the current Cairo context, and then, for every (vectorized)
   mobject in the batch, calls :meth:`.Camera.display_vectorized`. There,
   the actual background stroke, fill, and then stroke of the mobject is
-  drawn onto the context. See :meth:`.Camera.apply_stroke` and 
+  drawn onto the context. See :meth:`.Camera.apply_stroke` and
   :meth:`.Camera.set_cairo_context_color` for more details -- but it does not get
   much deeper than that, in the latter method the actual Bézier curves
   determined by the points of the mobject are drawn; this is where the low-level
   interaction with Cairo happens.
-  
+
 After all batches have been processed, the camera has an image representation
 of the Scene at the current time stamp in form of a NumPy array stored in its
 ``pixel_array`` attribute. The renderer then takes this array and passes it to
@@ -983,7 +983,7 @@ and :meth:`.Animation.clean_up_from_scene` methods are called.
 
   Note that as part of :meth:`.Animation.finish`, the :meth:`.Animation.interpolate`
   method is called with an argument of 1.0 -- you might have noticed already that
-  the last frame of an animation can sometimes be a bit off or incomplete. 
+  the last frame of an animation can sometimes be a bit off or incomplete.
   This is by current design! The last frame rendered in the render loop (and displayed
   for a duration of ``1 / frame_rate`` seconds in the rendered video) corresponds to
   the state of the animation ``1 / frame_rate`` seconds before it ends. To display
@@ -1009,9 +1009,9 @@ exact same procedure as discussed in the render loop section above; each such ca
 produces a corresponding partial movie file.
 
 Once the :meth:`.Scene.construct` method has been fully processed (and thus all
-of the corresponding partial movie files have been written), the 
+of the corresponding partial movie files have been written), the
 scene calls its cleanup method :meth:`.Scene.tear_down`, and then
-asks its renderer to finish the scene. The renderer, in turn, asks 
+asks its renderer to finish the scene. The renderer, in turn, asks
 its scene file writer to wrap things up by calling :meth:`.SceneFileWriter.finish`,
 which triggers the combination of the partial movie files into the final product.
 
