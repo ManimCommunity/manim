@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "manim"
-version = "0.15.1"
+version = "0.15.2"
 description = "Animation engine for explanatory math videos."
 authors = ["The Manim Community Developers <contact@manim.community>", "3b1b <grant@3blue1brown.com>"]
 license="MIT"
@@ -94,6 +94,7 @@ sphinxcontrib-programoutput = "^0.17"
 data-science-types = "^0.2.23"
 psutil-wheels = {version = "5.8.0", python = ">=3.10"}
 psutil = {version = "^5.8.0", python = "<3.10"}
+myst-parser = "^0.17.2"
 
 
 [tool.poetry.urls]

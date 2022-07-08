@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import numpy as np
 from cloup import Context
-from PIL import Image
+from PIL.Image import Resampling
 
 __all__ = [
     "NOT_SETTING_FONT_MSG",
@@ -113,16 +113,16 @@ HEAVY: str = "HEAVY"
 ULTRAHEAVY: str = "ULTRAHEAVY"
 
 RESAMPLING_ALGORITHMS = {
-    "nearest": Image.NEAREST,
-    "none": Image.NEAREST,
-    "lanczos": Image.LANCZOS,
-    "antialias": Image.LANCZOS,
-    "bilinear": Image.BILINEAR,
-    "linear": Image.BILINEAR,
-    "bicubic": Image.BICUBIC,
-    "cubic": Image.BICUBIC,
-    "box": Image.BOX,
-    "hamming": Image.HAMMING,
+    "nearest": Resampling.NEAREST,
+    "none": Resampling.NEAREST,
+    "lanczos": Resampling.LANCZOS,
+    "antialias": Resampling.LANCZOS,
+    "bilinear": Resampling.BILINEAR,
+    "linear": Resampling.BILINEAR,
+    "bicubic": Resampling.BICUBIC,
+    "cubic": Resampling.BICUBIC,
+    "box": Resampling.BOX,
+    "hamming": Resampling.HAMMING,
 }
 
 # Geometry: directions
