@@ -158,7 +158,7 @@ files (all users have at least the global one that is shipped with the library)
 as well as correctly handling command line arguments (if you used the CLI to render).
 
 You can read more about the config system in the
-:doc:`corresponding tutorial <configuration>`, and if you are interested in learning
+:doc:`corresponding tutorial </guides/configuration>`, and if you are interested in learning
 more about the internals of the configuration system and how it is initialized,
 follow the code flow starting in `the config module's init file
 <https://github.com/ManimCommunity/manim/blob/main/manim/_config/__init__.py>`__.
