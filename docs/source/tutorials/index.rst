@@ -8,4 +8,3 @@ Tutorials
    quickstart
    output_and_config
    building_blocks
-   deep_dive
