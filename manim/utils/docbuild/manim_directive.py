@@ -398,9 +398,9 @@ TEMPLATE = r"""
 
 {{ ref_block }}
 
-{% endif %}
-
 .. raw:: html
 
     </div>
+
+{% endif %}
 """
