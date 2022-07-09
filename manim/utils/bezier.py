@@ -22,6 +22,7 @@ __all__ = [
 
 import typing
 from functools import reduce
+from typing import Iterable
 
 import numpy as np
 from scipy import linalg
@@ -117,6 +118,61 @@ def partial_quadratic_bezier_points(points, a, b):
     end_prop = (b - a) / (1.0 - a)
     h1 = (1 - end_prop) * h0 + end_prop * h1_prime
     return [h0, h1, h2]
+
+
+def split_quadratic_bezier(points: Iterable[float], t: float) -> np.ndarray:
+    """Split a quadratic Bézier curve at argument ``t`` into two quadratic curves.
+
+    Parameters
+    ----------
+    points
+        The control points of the bezier curve
+        has shape ``[a1, h1, b1]``
+
+    t
+        The ``t``-value at which to split the Bézier curve
+
+    Returns
+    -------
+        The two Bézier curves as a list of tuples,
+        has the shape ``[a1, h1, b1], [a2, h2, b2]``
+    """
+    a1, h1, a2 = points
+    s1 = interpolate(a1, h1, t)
+    s2 = interpolate(h1, a2, t)
+    p = interpolate(s1, s2, t)
+
+    return np.array([a1, s1, p, p, s2, a2])
+
+
+def subdivide_quadratic_bezier(points: Iterable[float], n: int) -> np.ndarray:
+    """Subdivide a quadratic Bézier curve into ``n`` subcurves which have the same shape.
+
+    The points at which the curve is split are located at the
+    arguments :math:`t = i/n` for :math:`i = 1, ..., n-1`.
+
+    Parameters
+    ----------
+    points
+        The control points of the Bézier curve in form ``[a1, h1, b1]``
+
+    n
+        The number of curves to subdivide the Bézier curve into
+
+    Returns
+    -------
+        The new points for the Bézier curve in the form ``[a1, h1, b1, a2, h2, b2, ...]``
+
+    .. image:: /_static/bezier_subdivision_example.png
+
+    """
+    beziers = []
+    current = points
+    for i in range(n, 0, -1):
+        tmp = split_quadratic_bezier(current, 1 / i)
+        beziers.append(tmp[:3])
+        current = tmp[3:]
+    return np.asarray(beziers).reshape(-1, 3)
 
 
 # Linear interpolation variants

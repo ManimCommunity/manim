@@ -64,7 +64,6 @@ __all__ = [
     "PI",
     "TAU",
     "DEGREES",
-    "FFMPEG_BIN",
     "GIF_FILE_EXTENSION",
     "FFMPEG_VERBOSITY_MAP",
     "VERBOSITY_CHOICES",
@@ -200,9 +199,6 @@ TAU: float = 2 * PI
 
 DEGREES: float = TAU / 360
 """The exchange rate between radians and degrees."""
-
-# ffmpeg stuff
-FFMPEG_BIN: str = "ffmpeg"
 
 # gif stuff
 GIF_FILE_EXTENSION: str = ".gif"

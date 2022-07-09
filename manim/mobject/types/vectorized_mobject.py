@@ -1732,6 +1732,12 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
     This can be used to group multiple :class:`~.VMobject` instances together
     in order to scale, move, ... them together.
 
+    Notes
+    -----
+    When adding the same mobject more than once, repetitions are ignored.
+    Use :meth:`.Mobject.copy` to create a separate copy which can then
+    be added to the group.
+
     Examples
     --------
 
