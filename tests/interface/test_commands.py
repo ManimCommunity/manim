@@ -83,6 +83,16 @@ Made with <3 by Manim Community developers.
     assert dedent(expected_output) == result.output
 
 
+def test_manim_init_project(tmp_path):
+    command = ["init", "project", "--default", "testproject"]
+    runner = CliRunner()
+    with runner.isolated_filesystem(temp_dir=tmp_path) as tmp_dir:
+      result = runner.invoke(main, command, prog_name="manim", input="Default\n")
+      assert not result.exception
+      assert (Path(tmp_dir) / "testproject/main.py").exists()
+      assert (Path(tmp_dir) / "testproject/manim.cfg").exists()
+
+
 def test_manim_new_command():
     command = ["new"]
     runner = CliRunner()
