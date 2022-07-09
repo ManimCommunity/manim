@@ -1333,13 +1333,15 @@ class OpenGLVMobject(OpenGLMobject):
                 ),
             )
             inner_points = bezier_triplets[lower_index + 1 : upper_index]
+            if len(inner_points) > 0:
+                if remap:
+                    new_triplets = quadratic_bezier_remap(
+                        inner_points, num_quadratics - 2
+                    )
+                else:
+                    new_triplets = bezier_triplets
 
-            if remap:
-                new_triplets = quadratic_bezier_remap(inner_points, num_quadratics - 2)
-            else:
-                new_triplets = bezier_triplets
-
-            self.append_points(np.asarray(new_triplets).reshape(-1, 3))
+                self.append_points(np.asarray(new_triplets).reshape(-1, 3))
             self.append_points(
                 partial_quadratic_bezier_points(
                     bezier_triplets[upper_index], 0, upper_residue
