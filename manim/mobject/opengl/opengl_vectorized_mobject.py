@@ -22,7 +22,6 @@ from manim.utils.bezier import (
     partial_quadratic_bezier_points,
     proportions_along_bezier_curve_for_point,
     quadratic_bezier_remap,
-    subdivide_quadratic_bezier,
 )
 from manim.utils.color import *
 from manim.utils.config_ops import _Data
@@ -1283,7 +1282,7 @@ class OpenGLVMobject(OpenGLMobject):
         return self
 
     def pointwise_become_partial(
-        self, vmobject: OpenGLVMobject, a: float, b: float, remap=True
+        self, vmobject: OpenGLVMobject, a: float, b: float, remap: bool = True
     ) -> OpenGLVMobject:
         """Given two bounds a and b, transforms the points of the self vmobject into the points of the vmobject
         passed as parameter with respect to the bounds. Points here stand for control points of the bezier curves (anchors and handles)
