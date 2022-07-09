@@ -1333,7 +1333,6 @@ class OpenGLVMobject(OpenGLMobject):
                     bezier_triplets[lower_index], lower_residue, 1
                 ),
             )
-            # TODO: replace by smooth_bezier_remap(triplets[li+1:ui], num_quadratics-2) -> [points; len(ui-li+1)] : #2742
             inner_points = bezier_triplets[lower_index + 1 : upper_index]
 
             if remap:

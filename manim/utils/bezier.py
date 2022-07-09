@@ -22,7 +22,7 @@ __all__ = [
 
 import typing
 from functools import reduce
-from typing import Iterable
+from typing import Iterable, Sequence
 
 import numpy as np
 from scipy import linalg
@@ -175,7 +175,23 @@ def subdivide_quadratic_bezier(points: Iterable[float], n: int) -> np.ndarray:
     return np.asarray(beziers).reshape(-1, 3)
 
 
-def quadratic_bezier_remap(triplets, new_number_of_curves):
+def quadratic_bezier_remap(
+    triplets: Sequence[Sequence[float]], new_number_of_curves: int
+):
+    """Remaps the number of curves to a higher amount by splitting bezier curves
+
+    Parameters
+    ----------
+    triplets
+        The triplets of the quadratic bezier curves to be remapped
+
+    new_number_of_curves
+        The number of curves that the output will contain. This needs to be higher than the current number.
+
+    Returns
+    -------
+        The new triplets for the quadratic bezier curves.
+    """
     new_triplets = []
     difference = new_number_of_curves - len(triplets)
     for triplet in triplets:
