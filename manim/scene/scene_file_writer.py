@@ -83,12 +83,12 @@ class SceneFileWriter:
         )
         # fail fast if ffmpeg is not found
         if not ensure_executable(Path(config.ffmpeg_executable)):
-            logger.critical(
-                """FFmpeg not found.
-Manim requires an ffmpeg installation to render videos.
-Please download ffmpeg """
+            raise RuntimeError(
+                "Manim could not find ffmpeg, which is required for generating video output.\n"
+                "For installing ffmpeg please consult https://docs.manim.community/en/stable/installation.html\n"
+                "Make sure to either add ffmpeg to the PATH environment variable\n"
+                "or set path to the ffmpeg executable under the ffmpeg header in Manim's configuration."
             )
-            sys.exit(1)
 
     def init_output_directories(self, scene_name):
         """Initialise output directories.
