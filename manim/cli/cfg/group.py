@@ -9,14 +9,16 @@ from __future__ import annotations
 
 import os
 from ast import literal_eval
+from pathlib import Path
 
 import click
+import cloup
 from rich.errors import StyleSyntaxError
 from rich.style import Style
 
-from ... import console
+from ... import cli_ctx_settings, console
 from ..._config.utils import config_file_paths, make_config_parser
-from ...constants import CONTEXT_SETTINGS, EPILOG
+from ...constants import EPILOG
 from ...utils.file_ops import guarantee_existence, open_file
 
 RICH_COLOUR_INSTRUCTIONS: str = """
@@ -114,8 +116,8 @@ def replace_keys(default: dict) -> dict:
     return default
 
 
-@click.group(
-    context_settings=CONTEXT_SETTINGS,
+@cloup.group(
+    context_settings=cli_ctx_settings,
     invoke_without_command=True,
     no_args_is_help=True,
     epilog=EPILOG,
@@ -127,7 +129,7 @@ def cfg(ctx):
     pass
 
 
-@cfg.command(context_settings=CONTEXT_SETTINGS, no_args_is_help=True)
+@cfg.command(context_settings=cli_ctx_settings, no_args_is_help=True)
 @click.option(
     "-l",
     "--level",
@@ -237,7 +239,7 @@ modify write_cfg_subcmd_input to account for it.""",
         open_file(cfg_file_path)
 
 
-@cfg.command(context_settings=CONTEXT_SETTINGS)
+@cfg.command(context_settings=cli_ctx_settings)
 def show():
     parser = make_config_parser()
     rich_non_style_entries = [a.replace(".", "_") for a in RICH_NON_STYLE_ENTRIES]
@@ -255,11 +257,12 @@ def show():
         console.print("\n")
 
 
-@cfg.command(context_settings=CONTEXT_SETTINGS)
-@click.option("-d", "--directory", default=os.getcwd())
+@cfg.command(context_settings=cli_ctx_settings)
+@click.option("-d", "--directory", default=Path.cwd())
 @click.pass_context
 def export(ctx, directory):
-    if os.path.abspath(directory) == os.path.abspath(os.getcwd()):
+    directory_path = Path(directory)
+    if directory_path.absolute == Path.cwd().absolute:
         console.print(
             """You are reading the config from the same directory you are exporting to.
 This means that the exported config will overwrite the config for this directory.
@@ -271,13 +274,14 @@ Are you sure you want to continue? (y/n)""",
     else:
         proceed = True
     if proceed:
-        if not os.path.isdir(directory):
+        if not directory_path.is_dir():
             console.print(f"Creating folder: {directory}.", style="red bold")
-            os.mkdir(directory)
-        with open(os.path.join(directory, "manim.cfg"), "w") as outpath:
-            ctx.invoke(write)
-            from_path = os.path.join(os.getcwd(), "manim.cfg")
-            to_path = os.path.join(directory, "manim.cfg")
+            directory_path.mkdir(parents=True)
+
+        ctx.invoke(write)
+        from_path = Path.cwd() / "manim.cfg"
+        to_path = directory_path / "manim.cfg"
+
         console.print(f"Exported final Config at {from_path} to {to_path}.")
     else:
         console.print("Aborted...", style="red bold")

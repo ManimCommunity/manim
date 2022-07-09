@@ -6,7 +6,7 @@ height/width, frame rate), output (e.g. directories, logging), styling
 (e.g. background color, transparency), and general behavior (e.g. writing a
 movie vs writing a single frame).
 
-See :doc:`/tutorials/configuration` for an introduction to Manim's configuration system.
+See :doc:`/guides/configuration` for an introduction to Manim's configuration system.
 
 """
 from __future__ import annotations
@@ -150,12 +150,22 @@ class ManimConfig(MutableMapping):
 
     Examples
     --------
+    We use a copy of the global configuration object in the following
+    examples for the sake of demonstration; you can skip these lines
+    and just import ``config`` directly if you actually want to modify
+    the configuration:
+
+    .. code-block:: pycon
+
+        >>> from manim import config as global_config
+        >>> config = global_config.copy()
+
     Each config option allows for dict syntax and attribute syntax.  For
     example, the following two lines are equivalent,
 
     .. code-block:: pycon
 
-        >>> from manim import config, WHITE
+        >>> from manim import WHITE
         >>> config.background_color = WHITE
         >>> config["background_color"] = WHITE
 
@@ -1326,7 +1336,8 @@ class ManimConfig(MutableMapping):
 
         .. code-block:: pycon
 
-            >>> from manim import config
+            >>> from manim import config as globalconfig
+            >>> config = globalconfig.copy()
             >>> config.tex_dir
             '{media_dir}/Tex'
             >>> config.media_dir

@@ -163,3 +163,39 @@ def test_ReplacementTransform(scene):
     v2 = Vector()
     v3 = Line()
     scene.play(ReplacementTransform(VGroup(v1, v2), v3))
+
+
+@frames_comparison(last_frame=False)
+def test_TransformWithPathFunc(scene):
+    dots_start = VGroup(*[Dot(LEFT, color=BLUE), Dot(3 * RIGHT, color=RED)])
+    dots_end = VGroup(*[Dot(LEFT + 2 * DOWN, color=BLUE), Dot(2 * UP, color=RED)])
+    scene.play(Transform(dots_start, dots_end, path_func=clockwise_path()))
+
+
+@frames_comparison(last_frame=False)
+def test_TransformWithPathArcCenters(scene):
+    dots_start = VGroup(*[Dot(LEFT, color=BLUE), Dot(3 * RIGHT, color=RED)])
+    dots_end = VGroup(*[Dot(LEFT + 2 * DOWN, color=BLUE), Dot(2 * UP, color=RED)])
+    scene.play(
+        Transform(
+            dots_start,
+            dots_end,
+            path_arc=2 * PI,
+            path_arc_centers=ORIGIN,
+        )
+    )
+
+
+@frames_comparison(last_frame=False)
+def test_TransformWithConflictingPaths(scene):
+    dots_start = VGroup(*[Dot(LEFT, color=BLUE), Dot(3 * RIGHT, color=RED)])
+    dots_end = VGroup(*[Dot(LEFT + 2 * DOWN, color=BLUE), Dot(2 * UP, color=RED)])
+    scene.play(
+        Transform(
+            dots_start,
+            dots_end,
+            path_func=clockwise_path(),
+            path_arc=2 * PI,
+            path_arc_centers=ORIGIN,
+        )
+    )

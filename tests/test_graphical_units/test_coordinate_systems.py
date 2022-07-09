@@ -57,6 +57,20 @@ def test_plot_log_x_axis(scene):
 
 
 @frames_comparison
+def test_plot_log_x_axis_vectorized(scene):
+    ax = Axes(
+        x_range=[-1, 4],
+        y_range=[0, 3],
+        x_axis_config={"scaling": LogBase()},
+    )
+
+    graph = ax.plot(
+        lambda x: np.where(x < 10, 2, 1), x_range=[-1, 4], use_vectorized=True
+    )
+    scene.add(ax, graph)
+
+
+@frames_comparison
 def test_number_plane_log(scene):
     """Test that NumberPlane generates its lines properly with a LogBase"""
     # y_axis log

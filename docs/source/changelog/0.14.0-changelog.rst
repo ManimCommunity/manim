@@ -111,7 +111,7 @@ Documentation-related changes
 * :pr:`2415`: Removed instructions on using and installing Docker in README
 
 
-* :pr:`2414`: Made improvements to the :doc:`configuration` tutorial
+* :pr:`2414`: Made improvements to the :doc:`/guides/configuration` tutorial
 
 
 * :pr:`2423`: Changed recommendation to ``mactex-no-gui`` from ``mactex`` for macOS install

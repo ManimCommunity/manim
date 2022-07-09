@@ -24,7 +24,7 @@ sys.path.insert(0, os.path.abspath("."))
 # -- Project information -----------------------------------------------------
 
 project = "Manim"
-copyright = "2020-2021, The Manim Community Dev Team"
+copyright = "2020-2022, The Manim Community Dev Team"
 author = "The Manim Community Dev Team"
 
 
@@ -35,7 +35,6 @@ author = "The Manim Community Dev Team"
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
-    "recommonmark",
     "sphinx_copybutton",
     "sphinx.ext.napoleon",
     "sphinx.ext.autosummary",
@@ -47,6 +46,7 @@ extensions = [
     "sphinx.ext.graphviz",
     "sphinx.ext.inheritance_diagram",
     "sphinxcontrib.programoutput",
+    "myst_parser",
 ]
 
 # Automatically generate stub pages when using the .. autosummary directive

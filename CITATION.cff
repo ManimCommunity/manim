@@ -4,10 +4,10 @@ authors:
   -
     name: "The Manim Community Developers"
 cff-version: "1.2.0"
-date-released: 2022-03-08
+date-released: 2022-04-25
 license: MIT
 message: "We acknowledge the importance of good software to support research, and we note that research becomes more valuable when it is communicated effectively. To demonstrate the value of Manim, we ask that you cite Manim in your work."
 title: Manim – Mathematical Animation Framework
 url: "https://www.manim.community/"
-version: "v0.15.1"
+version: "v0.15.2"
 ...
