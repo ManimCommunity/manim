@@ -12,7 +12,7 @@ import moderngl
 import numpy as np
 from colour import Color
 
-from manim import config
+from manim import config, logger
 from manim.constants import *
 from manim.utils.bezier import integer_interpolate, interpolate
 from manim.utils.color import *
@@ -726,6 +726,11 @@ class OpenGLMobject:
 
         if self in mobjects:
             raise ValueError("OpenGLMobject cannot contain self")
+        if any(mobjects.count(elem) > 1 for elem in mobjects):
+            logger.warning(
+                "Attempted adding some Mobject as a child more than once, "
+                "this is not possible. Repetitions are ignored.",
+            )
         for mobject in mobjects:
             if not isinstance(mobject, OpenGLMobject):
                 raise TypeError("All submobjects must be of type OpenGLMobject")

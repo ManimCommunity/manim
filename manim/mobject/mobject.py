@@ -33,7 +33,7 @@ from colour import Color
 
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 
-from .. import config
+from .. import config, logger
 from ..constants import *
 from ..utils.color import (
     BLACK,
@@ -416,12 +416,29 @@ class Mobject:
             ...
             ValueError: Mobject cannot contain self
 
+        A given mobject cannot be added as a submobject
+        twice to some parent::
+
+            >>> parent = Mobject(name="parent")
+            >>> child = Mobject(name="child")
+            >>> parent.add(child, child)
+            [...] WARNING  ...
+            parent
+            >>> parent.submobjects
+            [child]
+
         """
         for m in mobjects:
             if not isinstance(m, Mobject):
                 raise TypeError("All submobjects must be of type Mobject")
             if m is self:
                 raise ValueError("Mobject cannot contain self")
+            if any(mobjects.count(elem) > 1 for elem in mobjects):
+                logger.warning(
+                    "Attempted adding some Mobject as a child more than once, "
+                    "this is not possible. Repetitions are ignored.",
+                )
+                mobjects = remove_list_redundancies(mobjects)
         self.submobjects = list_update(self.submobjects, mobjects)
         return self
 
@@ -2771,7 +2788,14 @@ class Mobject:
 
 
 class Group(Mobject, metaclass=ConvertToOpenGL):
-    """Groups together multiple :class:`Mobjects <.Mobject>`."""
+    """Groups together multiple :class:`Mobjects <.Mobject>`.
+
+    Notes
+    -----
+    When adding the same mobject more than once, repetitions are ignored.
+    Use :meth:`.Mobject.copy` to create a separate copy which can then
+    be added to the group.
+    """
 
     def __init__(self, *mobjects, **kwargs):
         super().__init__(**kwargs)
