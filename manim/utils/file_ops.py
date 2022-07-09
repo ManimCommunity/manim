@@ -15,6 +15,7 @@ __all__ = [
     "is_webm_format",
     "is_mov_format",
     "write_to_movie",
+    "ensure_executable",
 ]
 
 import os
@@ -119,6 +120,16 @@ def write_to_movie() -> bool:
         or is_webm_format()
         or is_mov_format()
     )
+
+
+def ensure_executable(path_to_exe: Path) -> bool:
+    if path_to_exe.parent == Path("."):
+        executable = shutil.which(path_to_exe.stem)
+        if executable is None:
+            return False
+    else:
+        executable = path_to_exe
+    return os.access(executable, os.X_OK)
 
 
 def add_extension_if_not_present(file_name: Path, extension: str) -> Path:
