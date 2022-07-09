@@ -324,24 +324,40 @@ class NumberLine(Line):
 
         return self.scaling.function(tick_range)
 
-    def number_to_point(self, number: float) -> np.ndarray:
+    def number_to_point(self, number: float | np.ndarray) -> np.ndarray:
         """Accepts a value along the number line and returns a point with
         respect to the scene.
 
         Parameters
         ----------
         number
-            The value to be transformed into a coordinate.
+            The value to be transformed into a coordinate. Or a list of values.
 
         Returns
         -------
         np.ndarray
-            A point with respect to the scene's coordinate system.
-        """
+            A point with respect to the scene's coordinate system. Or a list of points.
 
+        Examples
+        --------
+
+            >>> from manim import NumberLine
+            >>> number_line = NumberLine()
+            >>> number_line.number_to_point(0)
+            array([0., 0., 0.])
+            >>> number_line.number_to_point(1)
+            array([1., 0., 0.])
+            >>> number_line.number_to_point([1,2,3])
+            array([[1., 0., 0.],
+                   [2., 0., 0.],
+                   [3., 0., 0.]])
+        """
+        number = np.asarray(number)
+        scalar = number.ndim == 0
         number = self.scaling.inverse_function(number)
-        alpha = float(number - self.x_range[0]) / (self.x_range[1] - self.x_range[0])
-        val = interpolate(self.get_start(), self.get_end(), alpha)
+        alphas = (number - self.x_range[0]) / (self.x_range[1] - self.x_range[0])
+        alphas = float(alphas) if scalar else np.vstack(alphas)
+        val = interpolate(self.get_start(), self.get_end(), alphas)
         return val
 
     def point_to_number(self, point: Sequence[float]) -> float:
@@ -357,13 +373,27 @@ class NumberLine(Line):
         -------
         float
             A float representing a value along the number line.
+
+        Examples
+        --------
+
+            >>> from manim import NumberLine
+            >>> number_line = NumberLine()
+            >>> number_line.point_to_number((0,0,0))
+            0.0
+            >>> number_line.point_to_number((1,0,0))
+            1.0
+            >>> number_line.point_to_number([[0.5,0,0],[1,0,0],[1.5,0,0]])
+            array([0.5, 1. , 1.5])
+
         """
+        point = np.asarray(point)
         start, end = self.get_start_and_end()
         unit_vect = normalize(end - start)
         proportion = np.dot(point - start, unit_vect) / np.dot(end - start, unit_vect)
         return interpolate(self.x_min, self.x_max, proportion)
 
-    def n2p(self, number: float) -> np.ndarray:
+    def n2p(self, number: float | np.ndarray) -> np.ndarray:
         """Abbreviation for :meth:`~.NumberLine.number_to_point`."""
         return self.number_to_point(number)
 

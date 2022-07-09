@@ -9,7 +9,7 @@ from .. import config, logger
 from ..mobject import mobject
 from ..mobject.mobject import Mobject
 from ..mobject.opengl import opengl_mobject
-from ..utils.rate_functions import smooth
+from ..utils.rate_functions import linear, smooth
 
 __all__ = ["Animation", "Wait", "override_animation"]
 
@@ -545,6 +545,7 @@ class Wait(Animation):
         run_time: float = 1,
         stop_condition: Callable[[], bool] | None = None,
         frozen_frame: bool | None = None,
+        rate_func: Callable[[float], float] = linear,
         **kwargs,
     ):
         if stop_condition and frozen_frame:
@@ -553,7 +554,7 @@ class Wait(Animation):
         self.duration: float = run_time
         self.stop_condition = stop_condition
         self.is_static_wait: bool = frozen_frame
-        super().__init__(None, run_time=run_time, **kwargs)
+        super().__init__(None, run_time=run_time, rate_func=rate_func, **kwargs)
         # quick fix to work in opengl setting:
         self.mobject.shader_wrapper_list = []
 

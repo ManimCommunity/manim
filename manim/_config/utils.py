@@ -150,12 +150,22 @@ class ManimConfig(MutableMapping):
 
     Examples
     --------
+    We use a copy of the global configuration object in the following
+    examples for the sake of demonstration; you can skip these lines
+    and just import ``config`` directly if you actually want to modify
+    the configuration:
+
+    .. code-block:: pycon
+
+        >>> from manim import config as global_config
+        >>> config = global_config.copy()
+
     Each config option allows for dict syntax and attribute syntax.  For
     example, the following two lines are equivalent,
 
     .. code-block:: pycon
 
-        >>> from manim import config, WHITE
+        >>> from manim import WHITE
         >>> config.background_color = WHITE
         >>> config["background_color"] = WHITE
 
@@ -1326,7 +1336,8 @@ class ManimConfig(MutableMapping):
 
         .. code-block:: pycon
 
-            >>> from manim import config
+            >>> from manim import config as globalconfig
+            >>> config = globalconfig.copy()
             >>> config.tex_dir
             '{media_dir}/Tex'
             >>> config.media_dir
