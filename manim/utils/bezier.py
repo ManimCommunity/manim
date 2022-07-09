@@ -175,6 +175,20 @@ def subdivide_quadratic_bezier(points: Iterable[float], n: int) -> np.ndarray:
     return np.asarray(beziers).reshape(-1, 3)
 
 
+def quadratic_bezier_remap(triplets, new_number_of_curves):
+    new_triplets = []
+    difference = new_number_of_curves - len(triplets)
+    for triplet in triplets:
+        if difference > 0:
+            tmp = subdivide_quadratic_bezier(triplet, 2)
+            new_triplets.append(tmp[:3])
+            new_triplets.append(tmp[3:])
+            difference -= 1
+        else:
+            new_triplets.append(triplet)
+    return new_triplets
+
+
 # Linear interpolation variants
 
 

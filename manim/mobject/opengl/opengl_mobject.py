@@ -2348,7 +2348,7 @@ class OpenGLMobject:
                 continue
 
             if key in ("points", "bounding_box"):
-                self.data[key] = path_func(
+                self.data[key][:] = path_func(
                     mobject1.data[key], mobject2.data[key], alpha
                 )
             else:
