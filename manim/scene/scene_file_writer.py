@@ -82,7 +82,7 @@ class SceneFileWriter:
             name="autocreated", type=DefaultSectionType.NORMAL, skip_animations=False
         )
         # fail fast if ffmpeg is not found
-        if not ensure_executable(Path(config.ffmpeg_path)):
+        if not ensure_executable(Path(config.ffmpeg_executable)):
             logger.critical(
                 """FFmpeg not found.
 Manim requires an ffmpeg installation to render videos.
@@ -474,7 +474,7 @@ Please download ffmpeg """
             width = config["pixel_width"]
 
         command = [
-            config.ffmpeg_path,
+            config.ffmpeg_executable,
             "-y",  # overwrite output file if it exists
             "-f",
             "rawvideo",
@@ -557,7 +557,7 @@ Please download ffmpeg """
                     pf_path = pf_path.replace("\\", "/")
                 fp.write(f"file 'file:{pf_path}'\n")
         commands = [
-            config.ffmpeg_path,
+            config.ffmpeg_executable,
             "-y",  # overwrite output file if it exists
             "-f",
             "concat",
@@ -624,7 +624,7 @@ Please download ffmpeg """
             )
             temp_file_path = movie_file_path.replace(extension, f"_temp{extension}")
             commands = [
-                config.ffmpeg_path,
+                config.ffmpeg_executable,
                 "-i",
                 movie_file_path,
                 "-i",

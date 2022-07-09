@@ -252,7 +252,7 @@ class ManimConfig(MutableMapping):
         "dry_run",
         "enable_wireframe",
         "ffmpeg_loglevel",
-        "ffmpeg_path",
+        "ffmpeg_executable",
         "format",
         "flush_cache",
         "frame_height",
@@ -634,8 +634,9 @@ class ManimConfig(MutableMapping):
         if val:
             self.ffmpeg_loglevel = val
 
-        val = parser["ffmpeg"].get("path")
-        setattr(self, "ffmpeg_path", val)
+        # TODO: Fix the mess above and below
+        val = parser["ffmpeg"].get("ffmpeg_executable")
+        setattr(self, "ffmpeg_executable", val)
 
         try:
             val = parser["jupyter"].getboolean("media_embed")
@@ -971,9 +972,10 @@ class ManimConfig(MutableMapping):
         doc="Verbosity level of ffmpeg (no flag).",
     )
 
-    ffmpeg_path = property(
-        lambda self: self._d["ffmpeg_path"],
-        lambda self, val: self._set_str("ffmpeg_path", val),
+    ffmpeg_executable = property(
+        lambda self: self._d["ffmpeg_executable"],
+        lambda self, val: self._set_str("ffmpeg_executable", val),
+        doc="Manually specify the path to the ffmpeg executable",
     )
 
     media_embed = property(
