@@ -736,6 +736,42 @@ class OpenGLMobject:
         self.assemble_family()
         return self
 
+    def insert(self, index: int, mobject: OpenGLMobject, update_parent: bool = False):
+        """Inserts a mobject at a specific position into self.submobjects
+
+        Effectively just calls  ``self.submobjects.insert(index, mobject)``,
+        where ``self.submobjects`` is a list.
+
+        Highly adapted from ``OpenGLMobject.add``.
+
+        Parameters
+        ----------
+        index
+            The index at which
+        mobject
+            The mobject to be inserted.
+        update_parent
+            Whether or not to set ``mobject.parent`` to ``self``.
+        """
+
+        if update_parent:
+            mobject.parent = self
+
+        if mobject is self:
+            raise ValueError("OpenGLMobject cannot contain self")
+
+        if not isinstance(mobject, OpenGLMobject):
+            raise TypeError("All submobjects must be of type OpenGLMobject")
+
+        if mobject not in self.submobjects:
+            self.submobjects.insert(index, mobject)
+
+        if self not in mobject.parents:
+            mobject.parents.append(self)
+
+        self.assemble_family()
+        return self
+
     def remove(
         self, *mobjects: OpenGLMobject, update_parent: bool = False
     ) -> OpenGLMobject:
