@@ -772,7 +772,45 @@ class CoordinateSystem:
         )
         return graph
 
-    def plot_parametric_curve(self, function, use_vectorized=False, **kwargs):
+    def plot_parametric_curve(
+        self,
+        function: Callable[[float], np.ndarray],
+        use_vectorized: bool = False,
+        **kwargs,
+    ) -> ParametricFunction:
+        """A parametric curve.
+
+        Parameters
+        ----------
+        function
+            A parametric function mapping a number to a point in the
+            coordinate system.
+        use_vectorized
+            Whether to pass in the generated t value array to the function. Only use this if your function supports it.
+        kwargs
+            Any further keyword arguments are passed to :class:`.ParametricFunction`.
+
+        Example
+        -------
+        .. manim:: ParametricCurveExample
+            :save_last_frame:
+
+            class ParametricCurveExample(Scene):
+                def construct(self):
+                    ax = Axes()
+                    cardioid = ax.plot_parametric_curve(
+                        lambda t: np.array(
+                            [
+                                np.exp(1) * np.cos(t) * (1 - np.cos(t)),
+                                np.exp(1) * np.sin(t) * (1 - np.cos(t)),
+                                0,
+                            ]
+                        ),
+                        t_range=[0, 2 * PI],
+                        color="#0FF1CE",
+                    )
+                    self.add(ax, cardioid)
+        """
         dim = self.dimension
         graph = ParametricFunction(
             lambda t: self.coords_to_point(*function(t)[:dim]),

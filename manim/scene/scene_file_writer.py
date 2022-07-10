@@ -8,6 +8,7 @@ import json
 import os
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -20,10 +21,11 @@ from manim import __version__
 
 from .. import config, logger
 from .._config.logger_utils import set_file_logger
-from ..constants import FFMPEG_BIN, GIF_FILE_EXTENSION
+from ..constants import GIF_FILE_EXTENSION
 from ..utils.file_ops import (
     add_extension_if_not_present,
     add_version_before_extension,
+    ensure_executable,
     guarantee_existence,
     is_gif_format,
     is_png_format,
@@ -79,6 +81,14 @@ class SceneFileWriter:
         self.next_section(
             name="autocreated", type=DefaultSectionType.NORMAL, skip_animations=False
         )
+        # fail fast if ffmpeg is not found
+        if not ensure_executable(Path(config.ffmpeg_executable)):
+            raise RuntimeError(
+                "Manim could not find ffmpeg, which is required for generating video output.\n"
+                "For installing ffmpeg please consult https://docs.manim.community/en/stable/installation.html\n"
+                "Make sure to either add ffmpeg to the PATH environment variable\n"
+                "or set path to the ffmpeg executable under the ffmpeg header in Manim's configuration."
+            )
 
     def init_output_directories(self, scene_name):
         """Initialise output directories.
@@ -464,7 +474,7 @@ class SceneFileWriter:
             width = config["pixel_width"]
 
         command = [
-            FFMPEG_BIN,
+            config.ffmpeg_executable,
             "-y",  # overwrite output file if it exists
             "-f",
             "rawvideo",
@@ -547,7 +557,7 @@ class SceneFileWriter:
                     pf_path = pf_path.replace("\\", "/")
                 fp.write(f"file 'file:{pf_path}'\n")
         commands = [
-            FFMPEG_BIN,
+            config.ffmpeg_executable,
             "-y",  # overwrite output file if it exists
             "-f",
             "concat",
@@ -614,7 +624,7 @@ class SceneFileWriter:
             )
             temp_file_path = movie_file_path.replace(extension, f"_temp{extension}")
             commands = [
-                FFMPEG_BIN,
+                config.ffmpeg_executable,
                 "-i",
                 movie_file_path,
                 "-i",
