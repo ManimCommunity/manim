@@ -2394,6 +2394,7 @@ class OpenGLMobject:
                 func = interpolate
 
             self.data[key][:] = func(mobject1.data[key], mobject2.data[key], alpha)
+
         for key in self.uniforms:
             if key != "fixed_orientation_center":
                 self.uniforms[key] = interpolate(

@@ -175,6 +175,62 @@ def subdivide_quadratic_bezier(points: Iterable[float], n: int) -> np.ndarray:
     return np.asarray(beziers).reshape(-1, 3)
 
 
+def quadratic_bezier_remap(
+    triplets: Iterable[Iterable[float]], new_number_of_curves: int
+):
+    """Remaps the number of curves to a higher amount by splitting bezier curves
+
+    Parameters
+    ----------
+    triplets
+        The triplets of the quadratic bezier curves to be remapped
+
+    new_number_of_curves
+        The number of curves that the output will contain. This needs to be higher than the current number.
+
+    Returns
+    -------
+        The new triplets for the quadratic bezier curves.
+    """
+    difference = new_number_of_curves - len(triplets)
+    if difference <= 0:
+        return triplets
+    new_triplets = np.zeros((new_number_of_curves, 3, 3))
+    idx = 0
+    for triplet in triplets:
+        if difference > 0:
+            tmp_noc = int(np.ceil(difference / len(triplets))) + 1
+            tmp = subdivide_quadratic_bezier(triplet, tmp_noc).reshape(-1, 3, 3)
+            for i in range(tmp_noc):
+                new_triplets[idx + i] = tmp[i]
+            difference -= tmp_noc - 1
+            idx += tmp_noc
+        else:
+            new_triplets[idx] = triplet
+            idx += 1
+    return new_triplets
+
+    """
+    This is an alternate version of the function just for documentation purposes
+    --------
+
+    difference = new_number_of_curves - len(triplets)
+    if difference <= 0:
+        return triplets
+    new_triplets = []
+    for triplet in triplets:
+        if difference > 0:
+            tmp_noc = int(np.ceil(difference / len(triplets))) + 1
+            tmp = subdivide_quadratic_bezier(triplet, tmp_noc).reshape(-1, 3, 3)
+            for i in range(tmp_noc):
+                new_triplets.append(tmp[i])
+            difference -= tmp_noc - 1
+        else:
+            new_triplets.append(triplet)
+    return new_triplets
+    """
+
+
 # Linear interpolation variants
 
 
