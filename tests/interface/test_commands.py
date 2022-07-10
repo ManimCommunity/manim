@@ -65,38 +65,32 @@ Made with <3 by Manim Community developers.
 def test_manim_init_subcommand():
     command = ["init"]
     runner = CliRunner()
-    runner.invoke(main, command, prog_name="manim")
+    result = runner.invoke(main, command, prog_name="manim")
+    expected_output = """\
+Usage: manim init [OPTIONS] COMMAND [ARGS]...
 
-    expected_manim_cfg = ""
-    expected_main_py = ""
+  Create a new project or insert a new scene.
 
-    with open(
-        Path.resolve(Path(__file__).parent.parent / "manim/templates/template.cfg"),
-    ) as f:
-        expected_manim_cfg = f.read()
+Options:
+  --help  Show this message and exit.
 
-    with open(
-        Path.resolve(Path(__file__).parent.parent / "manim/templates/Default.mtp"),
-    ) as f:
-        expected_main_py = f.read()
+Commands:
+  project  Creates a new project.
+  scene    Inserts a SCENE to an existing FILE or creates a new FILE.
 
-    manim_cfg_path = Path("manim.cfg")
-    manim_cfg_content = ""
-    main_py_path = Path("main.py")
-    main_py_content = ""
-    with open(manim_cfg_path) as f:
-        manim_cfg_content = f.read()
+Made with <3 by Manim Community developers.
+"""
+    assert dedent(expected_output) == result.output
 
-    with open(main_py_path) as f:
-        main_py_content = f.read()
 
-    manim_cfg_path.unlink()
-    main_py_path.unlink()
-
-    assert (
-        dedent(expected_manim_cfg + "from manim import *\n" + expected_main_py)
-        == manim_cfg_content + main_py_content
-    )
+def test_manim_init_project(tmp_path):
+    command = ["init", "project", "--default", "testproject"]
+    runner = CliRunner()
+    with runner.isolated_filesystem(temp_dir=tmp_path) as tmp_dir:
+        result = runner.invoke(main, command, prog_name="manim", input="Default\n")
+        assert not result.exception
+        assert (Path(tmp_dir) / "testproject/main.py").exists()
+        assert (Path(tmp_dir) / "testproject/manim.cfg").exists()
 
 
 def test_manim_new_command():
@@ -106,7 +100,7 @@ def test_manim_new_command():
     expected_output = """\
 Usage: manim new [OPTIONS] COMMAND [ARGS]...
 
-  Create a new project or insert a new scene.
+  (DEPRECATED) Create a new project or insert a new scene.
 
 Options:
   --help  Show this message and exit.
