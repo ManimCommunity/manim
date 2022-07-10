@@ -57,8 +57,8 @@ def test_TransformMatchingTex_TransformMismatches(scene):
 @frames_comparison(last_frame=False)
 def test_TransformMatchingTex_FadeTransformMismatches_NothingToFade(scene):
     # https://github.com/ManimCommunity/manim/issues/2845
-    start = MathTex("A", "->", "B")
-    end = MathTex("B", "->", "A")
+    start = MathTex("A", r"\to", "B")
+    end = MathTex("B", r"\to", "A")
 
     scene.add(start)
     scene.play(TransformMatchingTex(start, end, fade_transform_mismatches=True))
