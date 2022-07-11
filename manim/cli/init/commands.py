@@ -149,9 +149,6 @@ def scene(**args):
 
     FILE is the name of file in which the SCENE will be inserted.
     """
-    if not Path("main.py").exists():
-        raise FileNotFoundError(f"{Path('main.py')} : Not a valid project directory.")
-
     template_name = click.prompt(
         "template",
         type=click.Choice(get_template_names(), False),
@@ -163,7 +160,10 @@ def scene(**args):
         scene = scene.replace(template_name + "Template", args["scene_name"], 1)
 
     if args["file_name"]:
-        file_name = Path(args["file_name"] + ".py")
+        if args["file_name"][-3:] == ".py":
+            file_name = args["file_name"]
+        else:
+            file_name = Path(args["file_name"] + ".py")
 
         if file_name.is_file():
             # file exists so we are going to append new scene to that file
