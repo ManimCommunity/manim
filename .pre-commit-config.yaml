@@ -24,7 +24,7 @@ repos:
         name: isort (pyi)
         types: [pyi]
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.34.0
+    rev: v2.37.1
     hooks:
       - id: pyupgrade
         name: Update code to new python versions
