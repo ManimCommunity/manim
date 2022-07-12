@@ -150,12 +150,22 @@ class ManimConfig(MutableMapping):
 
     Examples
     --------
+    We use a copy of the global configuration object in the following
+    examples for the sake of demonstration; you can skip these lines
+    and just import ``config`` directly if you actually want to modify
+    the configuration:
+
+    .. code-block:: pycon
+
+        >>> from manim import config as global_config
+        >>> config = global_config.copy()
+
     Each config option allows for dict syntax and attribute syntax.  For
     example, the following two lines are equivalent,
 
     .. code-block:: pycon
 
-        >>> from manim import config, WHITE
+        >>> from manim import WHITE
         >>> config.background_color = WHITE
         >>> config["background_color"] = WHITE
 
@@ -242,6 +252,7 @@ class ManimConfig(MutableMapping):
         "dry_run",
         "enable_wireframe",
         "ffmpeg_loglevel",
+        "ffmpeg_executable",
         "format",
         "flush_cache",
         "frame_height",
@@ -623,6 +634,10 @@ class ManimConfig(MutableMapping):
         if val:
             self.ffmpeg_loglevel = val
 
+        # TODO: Fix the mess above and below
+        val = parser["ffmpeg"].get("ffmpeg_executable")
+        setattr(self, "ffmpeg_executable", val)
+
         try:
             val = parser["jupyter"].getboolean("media_embed")
         except ValueError:
@@ -955,6 +970,12 @@ class ManimConfig(MutableMapping):
             ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
         ),
         doc="Verbosity level of ffmpeg (no flag).",
+    )
+
+    ffmpeg_executable = property(
+        lambda self: self._d["ffmpeg_executable"],
+        lambda self, val: self._set_str("ffmpeg_executable", val),
+        doc="Manually specify the path to the ffmpeg executable",
     )
 
     media_embed = property(
@@ -1326,7 +1347,8 @@ class ManimConfig(MutableMapping):
 
         .. code-block:: pycon
 
-            >>> from manim import config
+            >>> from manim import config as globalconfig
+            >>> config = globalconfig.copy()
             >>> config.tex_dir
             '{media_dir}/Tex'
             >>> config.media_dir

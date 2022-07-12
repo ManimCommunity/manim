@@ -46,6 +46,78 @@ if TYPE_CHECKING:
 
 
 class Transform(Animation):
+    """A Transform transforms a Mobject into a target Mobject.
+
+    Parameters
+    ----------
+    mobject
+        The :class:`.Mobject` to be transformed. It will be mutated to become the ``target_mobject``.
+    target_mobject
+        The target of the transformation.
+    path_func
+        A function defining the path that the points of the ``mobject`` are being moved
+        along until they match the points of the ``target_mobject``, see :mod:`.utils.paths`.
+    path_arc
+        The arc angle (in radians) that the points of ``mobject`` will follow to reach
+        the points of the target if using a circular path arc, see ``path_arc_centers``.
+        See also :func:`manim.utils.paths.path_along_arc`.
+    path_arc_axis
+        The axis to rotate along if using a circular path arc, see ``path_arc_centers``.
+    path_arc_centers
+        The center of the circular arcs along which the points of ``mobject`` are
+        moved by the transformation.
+
+        If this is set and ``path_func`` is not set, then a ``path_along_circles`` path will be generated
+        using the ``path_arc`` parameters and stored in ``path_func``. If ``path_func`` is set, this and the
+        other ``path_arc`` fields are set as attributes, but a ``path_func`` is not generated from it.
+    replace_mobject_with_target_in_scene
+        Controls which mobject is replaced when the transformation is complete.
+
+        If set to True, ``mobject`` will be removed from the scene and ``target_mobject`` will
+        replace it. Otherwise, ``target_mobject`` is never added and ``mobject`` just takes its shape.
+
+    Examples
+    --------
+
+    .. manim :: TransformPathArc
+
+        class TransformPathArc(Scene):
+            def construct(self):
+                def make_arc_path(start, end, arc_angle):
+                    points = []
+                    p_fn = path_along_arc(arc_angle)
+                    # alpha animates between 0.0 and 1.0, where 0.0
+                    # is the beginning of the animation and 1.0 is the end.
+                    for alpha in range(0, 11):
+                        points.append(p_fn(start, end, alpha / 10.0))
+                    path = VMobject(stroke_color=YELLOW)
+                    path.set_points_smoothly(points)
+                    return path
+
+                left = Circle(stroke_color=BLUE_E, fill_opacity=1.0, radius=0.5).move_to(LEFT * 2)
+                colors = [TEAL_A, TEAL_B, TEAL_C, TEAL_D, TEAL_E, GREEN_A]
+                # Positive angles move counter-clockwise, negative angles move clockwise.
+                examples = [-90, 0, 30, 90, 180, 270]
+                anims = []
+                for idx, angle in enumerate(examples):
+                    left_c = left.copy().shift((3 - idx) * UP)
+                    left_c.fill_color = colors[idx]
+                    right_c = left_c.copy().shift(4 * RIGHT)
+                    path_arc = make_arc_path(left_c.get_center(), right_c.get_center(),
+                                             arc_angle=angle * DEGREES)
+                    desc = Text('%d°' % examples[idx]).next_to(left_c, LEFT)
+                    # Make the circles in front of the text in front of the arcs.
+                    self.add(
+                        path_arc.set_z_index(1),
+                        desc.set_z_index(2),
+                        left_c.set_z_index(3),
+                    )
+                    anims.append(Transform(left_c, right_c, path_arc=angle * DEGREES))
+
+                self.play(*anims, run_time=2)
+                self.wait()
+    """
+
     def __init__(
         self,
         mobject: Mobject | None,
@@ -61,14 +133,16 @@ class Transform(Animation):
         self.path_arc_centers: np.ndarray = path_arc_centers
         self.path_arc: float = path_arc
 
-        if self.path_arc_centers is not None:
+        # path_func is a property a few lines below so it doesn't need to be set in any case
+        if path_func is not None:
+            self.path_func: Callable = path_func
+        elif self.path_arc_centers is not None:
             self.path_func = path_along_circles(
                 path_arc,
                 self.path_arc_centers,
                 self.path_arc_axis,
             )
 
-        self.path_func: Callable | None = path_func
         self.replace_mobject_with_target_in_scene: bool = (
             replace_mobject_with_target_in_scene
         )

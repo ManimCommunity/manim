@@ -38,6 +38,7 @@ class AnimationGroup(Animation):
         **kwargs,
     ) -> None:
         self.animations = [prepare_animation(anim) for anim in animations]
+        self.rate_func = rate_func
         self.group = group
         if self.group is None:
             mobjects = remove_list_redundancies(
@@ -47,7 +48,9 @@ class AnimationGroup(Animation):
                 self.group = OpenGLGroup(*mobjects)
             else:
                 self.group = Group(*mobjects)
-        super().__init__(self.group, rate_func=rate_func, lag_ratio=lag_ratio, **kwargs)
+        super().__init__(
+            self.group, rate_func=self.rate_func, lag_ratio=lag_ratio, **kwargs
+        )
         self.run_time: float = self.init_run_time(run_time)
 
     def get_all_mobjects(self) -> Sequence[Mobject]:
@@ -108,7 +111,7 @@ class AnimationGroup(Animation):
         # times might not correspond to actual times,
         # e.g. of the surrounding scene.  Instead they'd
         # be a rescaled version.  But that's okay!
-        time = alpha * self.max_end_time
+        time = self.rate_func(alpha) * self.max_end_time
         for anim, start_time, end_time in self.anims_with_timings:
             anim_time = end_time - start_time
             if anim_time == 0:
@@ -163,7 +166,7 @@ class Succession(AnimationGroup):
         self.update_active_animation(self.active_index + 1)
 
     def interpolate(self, alpha: float) -> None:
-        current_time = alpha * self.run_time
+        current_time = self.rate_func(alpha) * self.run_time
         while self.active_end_time is not None and current_time >= self.active_end_time:
             self.next_animation()
         if self.active_animation is not None and self.active_start_time is not None:
