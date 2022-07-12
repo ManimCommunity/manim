@@ -8,22 +8,14 @@
 
 from __future__ import annotations
 
-__all__ = ["CameraFrame", "MovingCamera"]
+__all__ = ["MovingCamera"]
 
 from .. import config
 from ..camera.camera import Camera
-from ..constants import DOWN, LEFT, ORIGIN, RIGHT, UP
+from ..constants import DOWN, LEFT, RIGHT, UP
 from ..mobject.frame import ScreenRectangle
-from ..mobject.types.vectorized_mobject import VGroup
+from ..mobject.mobject import Mobject
 from ..utils.color import WHITE
-
-
-# TODO, think about how to incorporate perspective
-class CameraFrame(VGroup):
-    def __init__(self, center=ORIGIN, **kwargs):
-        super().__init__(center=center, **kwargs)
-        self.width = config["frame_width"]
-        self.height = config["frame_height"]
 
 
 class MovingCamera(Camera):
@@ -175,7 +167,13 @@ class MovingCamera(Camera):
         """
         return [self.frame]
 
-    def auto_zoom(self, mobjects, margin=0, only_mobjects_in_frame=False):
+    def auto_zoom(
+        self,
+        mobjects: list[Mobject],
+        margin: float = 0,
+        only_mobjects_in_frame: bool = False,
+        animate: bool = True,
+    ):
         """Zooms on to a given array of mobjects (or a singular mobject)
         and automatically resizes to frame all the mobjects.
 
@@ -195,11 +193,14 @@ class MovingCamera(Camera):
         only_mobjects_in_frame
             If set to ``True``, only allows focusing on mobjects that are already in frame.
 
+        animate
+            If set to ``False``, applies the changes instead of returning the corresponding animation
+
         Returns
         -------
-        _AnimationBuilder
-            Returns an animation that zooms the camera view to a given
-            list of mobjects.
+        Union[_AnimationBuilder, ScreenRectangle]
+            _AnimationBuilder that zooms the camera view to a given list of mobjects
+            or ScreenRectangle with position and size updated to zoomed position.
 
         """
         scene_critical_x_left = None
@@ -242,8 +243,9 @@ class MovingCamera(Camera):
         new_width = abs(scene_critical_x_left - scene_critical_x_right)
         new_height = abs(scene_critical_y_up - scene_critical_y_down)
 
+        m_target = self.frame.animate if animate else self.frame
         # zoom to fit all mobjects along the side that has the largest size
         if new_width / self.frame.width > new_height / self.frame.height:
-            return self.frame.animate.set_x(x).set_y(y).set(width=new_width + margin)
+            return m_target.set_x(x).set_y(y).set(width=new_width + margin)
         else:
-            return self.frame.animate.set_x(x).set_y(y).set(height=new_height + margin)
+            return m_target.set_x(x).set_y(y).set(height=new_height + margin)

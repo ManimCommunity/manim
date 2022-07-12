@@ -199,7 +199,7 @@ class Code(VGroup):
         self.file_name = file_name
         if self.file_name:
             self._ensure_valid_file()
-            with open(self.file_path) as f:
+            with open(self.file_path, encoding="utf-8") as f:
                 self.code_string = f.read()
         elif code:
             self.code_string = code
@@ -404,6 +404,11 @@ class Code(VGroup):
         # print(self.default_color,self.background_color)
         for i in range(3, -1, -1):
             self.html_string = self.html_string.replace("</" + " " * i, "</")
+
+        # handle pygments bug
+        # https://github.com/pygments/pygments/issues/961
+        self.html_string = self.html_string.replace("<span></span>", "")
+
         for i in range(10, -1, -1):
             self.html_string = self.html_string.replace(
                 "</span>" + " " * i,

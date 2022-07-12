@@ -459,9 +459,10 @@ class SpiralIn(Animation):
             shape.move_to(shape.initial_position)
             shape.save_state()
 
-        super().__init__(shapes, **kwargs)
+        super().__init__(shapes, introducer=True, **kwargs)
 
     def interpolate_mobject(self, alpha: float) -> None:
+        alpha = self.rate_func(alpha)
         for shape in self.shapes:
             shape.restore()
             shape.save_state()
