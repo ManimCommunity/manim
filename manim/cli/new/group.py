@@ -181,6 +181,7 @@ def scene(**args):
     no_args_is_help=True,
     epilog=EPILOG,
     help="Create a new project or insert a new scene.",
+    deprecated=True,
 )
 @cloup.pass_context
 def new(ctx):

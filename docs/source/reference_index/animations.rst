@@ -17,6 +17,7 @@ Animations
    ~animation.numbers
    ~animation.rotation
    ~animation.specialized
+   ~animation.speedmodifier
    ~animation.transform
    ~animation.transform_matching_parts
    ~animation.updaters

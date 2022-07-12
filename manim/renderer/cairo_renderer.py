@@ -90,7 +90,7 @@ class CairoRenderer:
         scene.begin_animations()
 
         # Save a static image, to avoid rendering non moving objects.
-        self.static_image = self.save_static_frame_data(scene, scene.static_mobjects)
+        self.save_static_frame_data(scene, scene.static_mobjects)
 
         if scene.is_current_animation_frozen_frame():
             self.update_frame(scene, mobjects=scene.moving_mobjects)

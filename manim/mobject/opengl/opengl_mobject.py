@@ -12,7 +12,7 @@ import moderngl
 import numpy as np
 from colour import Color
 
-from manim import config
+from manim import config, logger
 from manim.constants import *
 from manim.utils.bezier import integer_interpolate, interpolate
 from manim.utils.color import *
@@ -726,6 +726,11 @@ class OpenGLMobject:
 
         if self in mobjects:
             raise ValueError("OpenGLMobject cannot contain self")
+        if any(mobjects.count(elem) > 1 for elem in mobjects):
+            logger.warning(
+                "Attempted adding some Mobject as a child more than once, "
+                "this is not possible. Repetitions are ignored.",
+            )
         for mobject in mobjects:
             if not isinstance(mobject, OpenGLMobject):
                 raise TypeError("All submobjects must be of type OpenGLMobject")
@@ -733,6 +738,42 @@ class OpenGLMobject:
                 self.submobjects.append(mobject)
             if self not in mobject.parents:
                 mobject.parents.append(self)
+        self.assemble_family()
+        return self
+
+    def insert(self, index: int, mobject: OpenGLMobject, update_parent: bool = False):
+        """Inserts a mobject at a specific position into self.submobjects
+
+        Effectively just calls  ``self.submobjects.insert(index, mobject)``,
+        where ``self.submobjects`` is a list.
+
+        Highly adapted from ``OpenGLMobject.add``.
+
+        Parameters
+        ----------
+        index
+            The index at which
+        mobject
+            The mobject to be inserted.
+        update_parent
+            Whether or not to set ``mobject.parent`` to ``self``.
+        """
+
+        if update_parent:
+            mobject.parent = self
+
+        if mobject is self:
+            raise ValueError("OpenGLMobject cannot contain self")
+
+        if not isinstance(mobject, OpenGLMobject):
+            raise TypeError("All submobjects must be of type OpenGLMobject")
+
+        if mobject not in self.submobjects:
+            self.submobjects.insert(index, mobject)
+
+        if self not in mobject.parents:
+            mobject.parents.append(self)
+
         self.assemble_family()
         return self
 
@@ -2353,6 +2394,7 @@ class OpenGLMobject:
                 func = interpolate
 
             self.data[key][:] = func(mobject1.data[key], mobject2.data[key], alpha)
+
         for key in self.uniforms:
             if key != "fixed_orientation_center":
                 self.uniforms[key] = interpolate(
