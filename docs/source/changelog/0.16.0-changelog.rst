@@ -7,7 +7,7 @@ v0.16.0
 Contributors
 ============
 
-A total of 41 people contributed to this
+A total of 43 people contributed to this
 release. People with a '+' by their names authored a patch for the first
 time.
 
@@ -25,6 +25,7 @@ time.
 * Kevin Lubick +
 * Laith Bahodi
 * Lingren Kong +
+* Logen +
 * Naveen M K
 * Noam Zaks
 * Pedro Lamkowski +
@@ -50,6 +51,7 @@ the following contributors.
 * Darylgolden
 * Francesco Frassinelli
 * Francisco Manríquez Novoa
+* Gianluca Gippetto
 * Jan-Hendrik Müller
 * Jonathan Alpert
 * Kevin Lubick
@@ -68,10 +70,14 @@ the following contributors.
 Pull requests merged
 ====================
 
-A total of 51 pull requests were merged for this release.
+A total of 55 pull requests were merged for this release.
 
 Highlights
 ----------
+
+* :pr:`2550`: New thematic guide: a deep dive into the internals of the library
+   This new :doc:`thematic guide </guides/deep_dive>` aims to be a comprehensive walkthrough
+   describing all the things that Manim does when you run it to produce a video.
 
 * :pr:`2732`: Improved overall structure of deployed documentation; added a dedicated :doc:`FAQ section </faq/index>`
 
@@ -130,13 +136,13 @@ Enhancements
 Fixed bugs
 ----------
 
+* :pr:`2567`: Use tempconfig for every scene render
+
 * :pr:`2638`: Fixed :meth:`BarChart.change_bar_values`  not updating when height is 0
 
 
 * :pr:`2661`: Fixed tip resize functionality for :class:`.Axes` to match documentation
-   This change enables users to specify the x- and y-axis tip_width and tip_height configs of arrow tips used in Axes and NumberLine creation. This functionality was previously unavailable but was documented in the Axes and NumberLine classes. This fix retains same the tip anchor location as before.
 
-   This change also includes two unit tests that test the new arrow tip resize functionality and the default width/height if none are specified.
 
 * :pr:`2703`: Default to utf-8 when reading files in :class:`.Code`
 
@@ -160,6 +166,9 @@ Fixed bugs
 
 
 * :pr:`2826`: Fixed leaked mobjects coming from :class:`.TransformMatchingAbstractBase`
+
+
+* :pr:`2870`: Fixed issue with ``manim init scene SCENE_NAME filename.py`` and removed necessity of ``main.py`` to be present in working directory
 
 
 Documentation-related changes
@@ -228,11 +237,13 @@ Changes to our development infrastructure
 Code quality improvements and similar refactors
 -----------------------------------------------
 
+* :pr:`2680`: Increased minimum required version of ``numpy`` to 1.19
+
 * :pr:`2687`: Migrated from ``os.path`` to ``pathlib`` in :class:`.SVGMobject` and other locations
 
 
 * :pr:`2715`: Updated deprecated ``pillow`` constants
-   Changed Image.<filter constant> to Resampling.<filter constant> as mentioned in the pillow deprecation message! (Introduces missing typehints from the pillow library 🤔)
+
 
 * :pr:`2735`: Bump pyjwt from 2.3.0 to 2.4.0
 
