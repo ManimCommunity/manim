@@ -163,8 +163,9 @@ def scene(**args):
         if args["file_name"][-3:] == ".py":
             file_name = args["file_name"]
         else:
-            file_name = Path(args["file_name"] + ".py")
+            file_name = args["file_name"] + ".py"
 
+        file_name = Path(file_name)
         if file_name.is_file():
             # file exists so we are going to append new scene to that file
             with open(file_name, "a") as f:
