@@ -5,7 +5,8 @@ Constant definitions.
 from __future__ import annotations
 
 import numpy as np
-from PIL import Image
+from cloup import Context
+from PIL.Image import Resampling
 
 __all__ = [
     "NOT_SETTING_FONT_MSG",
@@ -63,7 +64,6 @@ __all__ = [
     "PI",
     "TAU",
     "DEGREES",
-    "FFMPEG_BIN",
     "GIF_FILE_EXTENSION",
     "FFMPEG_VERBOSITY_MAP",
     "VERBOSITY_CHOICES",
@@ -71,7 +71,6 @@ __all__ = [
     "DEFAULT_QUALITY",
     "DEFAULT_QUALITY_SHORT",
     "EPILOG",
-    "HELP_OPTIONS",
     "CONTEXT_SETTINGS",
     "SHIFT_VALUE",
     "CTRL_VALUE",
@@ -113,16 +112,16 @@ HEAVY: str = "HEAVY"
 ULTRAHEAVY: str = "ULTRAHEAVY"
 
 RESAMPLING_ALGORITHMS = {
-    "nearest": Image.NEAREST,
-    "none": Image.NEAREST,
-    "lanczos": Image.LANCZOS,
-    "antialias": Image.LANCZOS,
-    "bilinear": Image.BILINEAR,
-    "linear": Image.BILINEAR,
-    "bicubic": Image.BICUBIC,
-    "cubic": Image.BICUBIC,
-    "box": Image.BOX,
-    "hamming": Image.HAMMING,
+    "nearest": Resampling.NEAREST,
+    "none": Resampling.NEAREST,
+    "lanczos": Resampling.LANCZOS,
+    "antialias": Resampling.LANCZOS,
+    "bilinear": Resampling.BILINEAR,
+    "linear": Resampling.BILINEAR,
+    "bicubic": Resampling.BICUBIC,
+    "cubic": Resampling.BICUBIC,
+    "box": Resampling.BOX,
+    "hamming": Resampling.HAMMING,
 }
 
 # Geometry: directions
@@ -201,9 +200,6 @@ TAU: float = 2 * PI
 DEGREES: float = TAU / 360
 """The exchange rate between radians and degrees."""
 
-# ffmpeg stuff
-FFMPEG_BIN: str = "ffmpeg"
-
 # gif stuff
 GIF_FILE_EXTENSION: str = ".gif"
 
@@ -260,7 +256,11 @@ DEFAULT_QUALITY: str = "high_quality"
 DEFAULT_QUALITY_SHORT = QUALITIES[DEFAULT_QUALITY]["flag"]
 
 EPILOG = "Made with <3 by Manim Community developers."
-HELP_OPTIONS = ["-h", "--help"]
-CONTEXT_SETTINGS = {"help_option_names": HELP_OPTIONS}
 SHIFT_VALUE = 65505
 CTRL_VALUE = 65507
+
+CONTEXT_SETTINGS = Context.settings(
+    align_option_groups=True,
+    align_sections=True,
+    show_constraints=True,
+)

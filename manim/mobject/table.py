@@ -979,7 +979,7 @@ class Table(VGroup):
 
 
 class MathTable(Table):
-    """A specialized :class:`~.Table` mobject for use with with LaTeX.
+    """A specialized :class:`~.Table` mobject for use with LaTeX.
 
     Examples
     --------
@@ -1026,7 +1026,7 @@ class MathTable(Table):
 
 
 class MobjectTable(Table):
-    """A specialized :class:`~.Table` mobject for use with with :class:`~.Mobject`.
+    """A specialized :class:`~.Table` mobject for use with :class:`~.Mobject`.
 
     Examples
     --------
@@ -1076,7 +1076,7 @@ class MobjectTable(Table):
 
 
 class IntegerTable(Table):
-    """A specialized :class:`~.Table` mobject for use with with :class:`~.Integer`.
+    """A specialized :class:`~.Table` mobject for use with :class:`~.Integer`.
 
     Examples
     --------
@@ -1125,7 +1125,7 @@ class IntegerTable(Table):
 
 
 class DecimalTable(Table):
-    """A specialized :class:`~.Table` mobject for use with with :class:`~.DecimalNumber` to display decimal entries.
+    """A specialized :class:`~.Table` mobject for use with :class:`~.DecimalNumber` to display decimal entries.
 
     Examples
     --------
