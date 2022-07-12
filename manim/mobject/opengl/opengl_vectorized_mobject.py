@@ -21,6 +21,7 @@ from manim.utils.bezier import (
     interpolate,
     partial_quadratic_bezier_points,
     proportions_along_bezier_curve_for_point,
+    quadratic_bezier_remap,
 )
 from manim.utils.color import *
 from manim.utils.config_ops import _Data
@@ -120,7 +121,6 @@ class OpenGLVMobject(OpenGLMobject):
         self.flat_stroke = flat_stroke
         self.render_primitive = render_primitive
         self.triangulation_locked = triangulation_locked
-        self.n_points_per_curve = n_points_per_curve
 
         self.needs_new_triangulation = True
         self.triangulation = np.zeros(0, dtype="i4")
@@ -690,7 +690,7 @@ class OpenGLVMobject(OpenGLMobject):
         nppc = self.n_points_per_curve
         remainder = len(points) % nppc
         points = points[: len(points) - remainder]
-        return [points[i : i + nppc] for i in range(0, len(points), nppc)]
+        return points.reshape((-1, nppc, 3))
 
     def get_bezier_tuples(self):
         return self.get_bezier_tuples_from_points(self.points)
@@ -783,10 +783,7 @@ class OpenGLVMobject(OpenGLMobject):
             sample_points = 10
 
         curve = self.get_nth_curve_function(n)
-
-        points = np.array([curve(a) for a in np.linspace(0, 1, sample_points)])
-        diffs = points[1:] - points[:-1]
-        norms = np.apply_along_axis(np.linalg.norm, 1, diffs)
+        norms = self.get_nth_curve_length_pieces(n, sample_points)
 
         length = np.sum(norms)
 
@@ -1285,10 +1282,7 @@ class OpenGLVMobject(OpenGLMobject):
         return self
 
     def pointwise_become_partial(
-        self,
-        vmobject: OpenGLVMobject,
-        a: float,
-        b: float,
+        self, vmobject: OpenGLVMobject, a: float, b: float, remap: bool = True
     ) -> OpenGLVMobject:
         """Given two bounds a and b, transforms the points of the self vmobject into the points of the vmobject
         passed as parameter with respect to the bounds. Points here stand for control points of the bezier curves (anchors and handles)
@@ -1301,58 +1295,58 @@ class OpenGLVMobject(OpenGLMobject):
             upper-bound.
         b : float
             lower-bound
+        remap : bool
+            if the point amount should be kept the same (True)
+            This option should be manually set to False if keeping the number of points is not needed
         """
         assert isinstance(vmobject, OpenGLVMobject)
-        if a <= 0 and b >= 1:
-            self.become(vmobject)
-            return self
-        num_curves = vmobject.get_num_curves()
-        nppc = self.n_points_per_curve
-
         # Partial curve includes three portions:
         # - A middle section, which matches the curve exactly
-        # - A start, which is some ending portion of an inner quadratic
-        # - An end, which is the starting portion of a later inner quadratic
+        # - A start, which is some ending portion of an inner cubic
+        # - An end, which is the starting portion of a later inner cubic
+        if a <= 0 and b >= 1:
+            self.set_points(vmobject.points)
+            return self
+        bezier_triplets = vmobject.get_bezier_tuples()
+        num_quadratics = len(bezier_triplets)
 
-        lower_index, lower_residue = integer_interpolate(0, num_curves, a)
-        upper_index, upper_residue = integer_interpolate(0, num_curves, b)
-        i1 = nppc * lower_index
-        i2 = nppc * (lower_index + 1)
-        i3 = nppc * upper_index
-        i4 = nppc * (upper_index + 1)
-
-        vm_points = vmobject.points
-        new_points = vm_points.copy()
-        if num_curves == 0:
-            new_points[:] = 0
+        # The following two lines will compute which bezier curves of the given mobject need to be processed.
+        # The residue basically indicates the proportion of the selected Bèzier curve.
+        # Ex: if lower_index is 3, and lower_residue is 0.4, then the algorithm will append to the points 0.4 of the third bezier curve
+        lower_index, lower_residue = integer_interpolate(0, num_quadratics, a)
+        upper_index, upper_residue = integer_interpolate(0, num_quadratics, b)
+        self.clear_points()
+        if num_quadratics == 0:
             return self
         if lower_index == upper_index:
-            tup = partial_quadratic_bezier_points(
-                vm_points[i1:i2],
-                lower_residue,
-                upper_residue,
+            self.append_points(
+                partial_quadratic_bezier_points(
+                    bezier_triplets[lower_index],
+                    lower_residue,
+                    upper_residue,
+                ),
             )
-            new_points[:i1] = tup[0]
-            new_points[i1:i4] = tup
-            new_points[i4:] = tup[2]
-            new_points[nppc:] = new_points[nppc - 1]
         else:
-            low_tup = partial_quadratic_bezier_points(
-                vm_points[i1:i2],
-                lower_residue,
-                1,
+            self.append_points(
+                partial_quadratic_bezier_points(
+                    bezier_triplets[lower_index], lower_residue, 1
+                ),
             )
-            high_tup = partial_quadratic_bezier_points(
-                vm_points[i3:i4],
-                0,
-                upper_residue,
+            inner_points = bezier_triplets[lower_index + 1 : upper_index]
+            if len(inner_points) > 0:
+                if remap:
+                    new_triplets = quadratic_bezier_remap(
+                        inner_points, num_quadratics - 2
+                    )
+                else:
+                    new_triplets = bezier_triplets
+
+                self.append_points(np.asarray(new_triplets).reshape(-1, 3))
+            self.append_points(
+                partial_quadratic_bezier_points(
+                    bezier_triplets[upper_index], 0, upper_residue
+                ),
             )
-            new_points[0:i1] = low_tup[0]
-            new_points[i1:i2] = low_tup
-            # Keep new_points i2:i3 as they are
-            new_points[i3:i4] = high_tup
-            new_points[i4:] = high_tup[2]
-        self.set_points(new_points)
         return self
 
     def get_subcurve(self, a: float, b: float) -> OpenGLVMobject:

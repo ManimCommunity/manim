@@ -26,7 +26,7 @@ a way that allows them to be shared interactively via Binder as well:
 
    .. code-block:: dockerfile
 
-      FROM manimcommunity/manim:v0.9.0
+      FROM docker.io/manimcommunity/manim:v0.9.0
 
       COPY --chown=manimuser:manimuser . /manim
 

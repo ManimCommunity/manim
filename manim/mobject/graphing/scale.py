@@ -3,6 +3,8 @@ from __future__ import annotations
 import math
 from typing import TYPE_CHECKING, Any, Iterable
 
+import numpy as np
+
 __all__ = ["LogBase", "LinearBase"]
 
 from manim.mobject.text.numbers import Integer
@@ -141,11 +143,18 @@ class LogBase(_ScaleBase):
 
     def inverse_function(self, value: float) -> float:
         """Inverse of ``function``. The value must be greater than 0"""
-        if value <= 0:
+        if isinstance(value, np.ndarray):
+            condition = value.any() <= 0
+            func = lambda value, base: np.log(value) / np.log(base)
+        else:
+            condition = value <= 0
+            func = math.log
+
+        if condition:
             raise ValueError(
                 "log(0) is undefined. Make sure the value is in the domain of the function"
             )
-        value = math.log(value, self.base)
+        value = func(value, self.base)
         return value
 
     def get_custom_labels(
