@@ -3,6 +3,13 @@ A deep dive into Manim's internals
 
 **Author:** `Benjamin Hackl <https://benjamin-hackl.at>`__
 
+.. admonition:: Disclaimer
+
+    This guide reflects the state of the library as of version ``v0.16.0``
+    and primarily treats the Cairo renderer. The situation in the latest
+    version of Manim might be different; in case of substantial deviations
+    we will add a note below.
+
 Introduction
 ------------
 
@@ -158,7 +165,7 @@ files (all users have at least the global one that is shipped with the library)
 as well as correctly handling command line arguments (if you used the CLI to render).
 
 You can read more about the config system in the
-:doc:`corresponding tutorial </guides/configuration>`, and if you are interested in learning
+:doc:`corresponding thematic guide </guides/configuration>`, and if you are interested in learning
 more about the internals of the configuration system and how it is initialized,
 follow the code flow starting in `the config module's init file
 <https://github.com/ManimCommunity/manim/blob/main/manim/_config/__init__.py>`__.
@@ -359,7 +366,7 @@ mobjects that can be rendered:
 - :class:`.ImageMobject`, which represent images that you can display
   in your scene,
 - :class:`.PMobject`, which are very special mobjects used to represent
-  point clouds; we will not discuss them further in this tutorial,
+  point clouds; we will not discuss them further in this guide,
 - :class:`.VMobject`, which are *vectorized mobjects*, that is, mobjects
   that consist of points that are connected via curves. These are pretty
   much everywhere, and we will discuss them in detail in the next section.
@@ -1017,6 +1024,6 @@ which triggers the combination of the partial movie files into the final product
 
 And there you go! This is a more or less detailed description of how Manim works
 under the hood. While we did not discuss every single line of code in detail
-in this tutorial, it should still give you a fairly good idea of how the general
+in this walkthrough, it should still give you a fairly good idea of how the general
 structural design of the library and at least the Cairo rendering flow in particular
 looks like.
