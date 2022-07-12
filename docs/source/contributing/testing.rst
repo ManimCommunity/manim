@@ -222,6 +222,15 @@ For the example above, it would be
 
 (``-s`` is here to see manim logs, so you can see what's going on).
 
+If you want to see all the control data frames (e.g. to make sure your test is doing what you want), use the
+``extract_frames.py`` script. The first parameter is the path to a ``.npz`` file and the second parameter is the
+directory you want the frames created. The frames will be named ``frame0.png``, ``frame1.png``, etc.
+
+.. code-block:: bash
+
+    python python manim/utils/testing/extract_frames.py tests\test_graphical_units\control_data\plot\axes.npz output
+
+
 Please make sure to add the control data to git as soon as it is produced with ``git add <your-control-data.npz>``.
 
 
