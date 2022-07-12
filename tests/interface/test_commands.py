@@ -93,6 +93,28 @@ def test_manim_init_project(tmp_path):
         assert (Path(tmp_dir) / "testproject/manim.cfg").exists()
 
 
+def test_manim_init_scene(tmp_path):
+    command_named = ["init", "scene", "NamedFileTestScene", "my_awesome_file.py"]
+    command_unnamed = ["init", "scene", "DefaultFileTestScene"]
+    runner = CliRunner()
+    with runner.isolated_filesystem(temp_dir=tmp_path) as tmp_dir:
+        result = runner.invoke(
+            main, command_named, prog_name="manim", input="Default\n"
+        )
+        assert not result.exception
+        assert (Path(tmp_dir) / "my_awesome_file.py").exists()
+        with open(Path(tmp_dir) / "my_awesome_file.py") as f:
+            file_content = f.read()
+            assert "NamedFileTestScene(Scene):" in file_content
+        result = runner.invoke(
+            main, command_unnamed, prog_name="manim", input="Default\n"
+        )
+        assert (Path(tmp_dir) / "main.py").exists()
+        with open(Path(tmp_dir) / "main.py") as f:
+            file_content = f.read()
+            assert "DefaultFileTestScene(Scene):" in file_content
+
+
 def test_manim_new_command():
     command = ["new"]
     runner = CliRunner()
