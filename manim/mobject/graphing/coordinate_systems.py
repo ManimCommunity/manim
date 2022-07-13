@@ -28,7 +28,9 @@ from manim.mobject.graphing.functions import ImplicitFunction, ParametricFunctio
 from manim.mobject.graphing.number_line import NumberLine
 from manim.mobject.graphing.scale import LinearBase
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
+from manim.mobject.opengl.opengl_surface import OpenGLSurface
 from manim.mobject.text.tex_mobject import MathTex
+from manim.mobject.three_d.three_dimensions import Surface
 from manim.mobject.types.vectorized_mobject import (
     VDict,
     VectorizedPoint,
@@ -857,6 +859,90 @@ class CoordinateSystem:
         )
         graph.underlying_function = r_func
         return graph
+
+    def plot_surface(
+        self,
+        function: Callable[[float], float],
+        u_range: Sequence[float] | None = None,
+        v_range: Sequence[float] | None = None,
+        colorscale: Sequence[[color], float] | None = None,
+        colorscale_axis: int = 2,
+        **kwargs,
+    ):
+        """Generates a surface based on a function.
+
+        Parameters
+        ----------
+        function
+            The function used to construct the :class:`~.Surface`.
+        u_range
+            The range of the ``u`` variable: ``(u_min, u_max)``.
+        v_range
+            The range of the ``v`` variable: ``(v_min, v_max)``.
+        colorscale
+            Colors of the surface. Passing a list of colors will color the surface by z-value.
+            Passing a list of tuples in the form ``(color, pivot)`` allows user-defined pivots
+            where the color transitions.
+        colorscale_axis
+            Defines the axis on which the colorscale is applied (0 = x, 1 = y, 2 = z), default
+            is z-axis (2).
+        kwargs
+            Additional parameters to be passed to :class:`~.Surface`.
+
+        Returns
+        -------
+        :class:`~.Surface`
+            The plotted surface.
+
+        Examples
+        --------
+        .. manim:: PlotSurfaceExample
+            :save_last_frame:
+
+            class PlotSurfaceExample(ThreeDScene):
+                def construct(self):
+                    resolution_fa = 42
+                    self.set_camera_orientation(phi=75 * DEGREES, theta=-60 * DEGREES)
+                    axes = ThreeDAxes(x_range=(-3, 3, 1), y_range=(-3, 3, 1), z_range=(-5, 5, 1))
+                    def param_trig(u, v):
+                        x = u
+                        y = v
+                        z = 2 * np.sin(x) + 2 * np.cos(y)
+                        return z
+                    trig_plane = axes.plot_surface(
+                        param_trig,
+                        resolution=(resolution_fa, resolution_fa),
+                        u_range = (-3, 3),
+                        v_range = (-3, 3),
+                        colorscale = [BLUE, GREEN, YELLOW, ORANGE, RED],
+                        )
+                    self.add(axes, trig_plane)
+        """
+        if config.renderer != "opengl":
+            surface = Surface(
+                lambda u, v: self.c2p(u, v, function(u, v)),
+                u_range=u_range,
+                v_range=v_range,
+                **kwargs,
+            )
+            if colorscale:
+                surface.set_fill_by_value(
+                    axes=self.copy(),
+                    colorscale=colorscale,
+                    axis=colorscale_axis,
+                )
+        else:
+            surface = OpenGLSurface(
+                lambda u, v: self.c2p(u, v, function(u, v)),
+                u_range=u_range,
+                v_range=v_range,
+                axes=self.copy(),
+                colorscale=colorscale,
+                colorscale_axis=colorscale_axis,
+                **kwargs,
+            )
+
+        return surface
 
     def input_to_graph_point(
         self,

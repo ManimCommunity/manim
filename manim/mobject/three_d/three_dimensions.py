@@ -22,7 +22,7 @@ from typing import *
 import numpy as np
 from colour import Color
 
-from manim import config
+from manim import config, logger
 from manim.constants import *
 from manim.mobject.geometry.arc import Circle
 from manim.mobject.geometry.polygram import Square
@@ -31,6 +31,7 @@ from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import *
+from manim.utils.deprecation import deprecated_params
 from manim.utils.iterables import tuplify
 from manim.utils.space_ops import normalize, perpendicular_bisector, z_to_vector
 
@@ -165,11 +166,13 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
             face.set_fill(colors[c_index], opacity=opacity)
         return self
 
+    @deprecated_params("colors", since="v0.16.0")
     def set_fill_by_value(
         self,
         axes: Mobject,
-        colors: Union[Iterable[Color], Color],
+        colorscale: Union[Iterable[Color], Color] | None = None,
         axis: int = 2,
+        **kwargs,
     ):
         """Sets the color of each mobject of a parametric surface to a color relative to its axis-value
 
@@ -177,7 +180,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         ----------
         axes :
             The axes for the parametric surface, which will be used to map axis-values to colors.
-        colors :
+        colorscale :
             A list of colors, ordered from lower axis-values to higher axis-values. If a list of tuples is passed
             containing colors paired with numbers, then those numbers will be used as the pivots.
         axis :
@@ -210,16 +213,32 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
                         u_range=[0, 5],
                         )
                     surface_plane.set_style(fill_opacity=1)
-                    surface_plane.set_fill_by_value(axes=axes, colors=[(RED, -0.5), (YELLOW, 0), (GREEN, 0.5)], axis=2)
+                    surface_plane.set_fill_by_value(axes=axes, colorscale=[(RED, -0.5), (YELLOW, 0), (GREEN, 0.5)], axis=2)
                     self.add(axes, surface_plane)
         """
+        if "colors" in kwargs and colorscale is None:
+            colorscale = kwargs.pop("colors")
+            if kwargs:
+                raise ValueError(
+                    "Unsupported keyword argument(s): "
+                    f"{', '.join(str(key) for key in kwargs)}"
+                )
+        if colorscale is None:
+            logger.warning(
+                "The value passed to the colorscale keyword argument was None, "
+                "the surface fill color has not been changed"
+            )
+            return self
 
         ranges = [axes.x_range, axes.y_range, axes.z_range]
 
-        if type(colors[0]) is tuple:
-            new_colors, pivots = [[i for i, j in colors], [j for i, j in colors]]
+        if type(colorscale[0]) is tuple:
+            new_colors, pivots = [
+                [i for i, j in colorscale],
+                [j for i, j in colorscale],
+            ]
         else:
-            new_colors = colors
+            new_colors = colorscale
 
             pivot_min = ranges[axis][0]
             pivot_max = ranges[axis][1]
