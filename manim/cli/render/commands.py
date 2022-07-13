@@ -16,6 +16,7 @@ import cloup
 import requests
 
 from ... import __version__, config, console, error_console, logger
+from ..._config import tempconfig
 from ...constants import EPILOG
 from ...utils.module_ops import scene_classes_from_file
 from .ease_of_access_options import ease_of_access_options
@@ -97,8 +98,9 @@ def render(
             keep_running = True
             while keep_running:
                 for SceneClass in scene_classes_from_file(file):
-                    scene = SceneClass(renderer)
-                    rerun = scene.render()
+                    with tempconfig(config):
+                        scene = SceneClass(renderer)
+                        rerun = scene.render()
                     if rerun or config["write_all"]:
                         renderer.num_plays = 0
                         continue
@@ -114,8 +116,9 @@ def render(
     else:
         for SceneClass in scene_classes_from_file(file):
             try:
-                scene = SceneClass()
-                scene.render()
+                with tempconfig(config):
+                    scene = SceneClass()
+                    scene.render()
             except Exception:
                 error_console.print_exception()
                 sys.exit(1)

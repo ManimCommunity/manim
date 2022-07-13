@@ -9,7 +9,7 @@ from click.testing import CliRunner
 from PIL import Image
 
 from manim import capture, get_video_metadata
-from manim.__main__ import main
+from manim.__main__ import __version__, main
 from manim.utils.file_ops import add_version_before_extension
 
 from ..utils.video_tester import video_comparison
@@ -229,7 +229,7 @@ def test_a_flag(tmp_path, manim_cfg_file, infallible_scenes_path):
         "-a",
         infallible_scenes_path,
     ]
-    out, err, exit_code = capture(command)
+    _, err, exit_code = capture(command)
     assert exit_code == 0, err
 
     one_is_not_empty = (
@@ -238,10 +238,17 @@ def test_a_flag(tmp_path, manim_cfg_file, infallible_scenes_path):
     assert one_is_not_empty, "running manim with -a flag did not render the first scene"
 
     two_is_not_empty = (
-        tmp_path / "videos" / "infallible_scenes" / "480p15" / "Wait2.mp4"
+        tmp_path / "images" / "infallible_scenes" / f"Wait2_ManimCE_v{__version__}.png"
     ).is_file()
     assert (
         two_is_not_empty
+    ), "running manim with -a flag did not render an image, possible leak of the config dictionary."
+
+    three_is_not_empty = (
+        tmp_path / "videos" / "infallible_scenes" / "480p15" / "Wait3.mp4"
+    ).is_file()
+    assert (
+        three_is_not_empty
     ), "running manim with -a flag did not render the second scene"
 
 
