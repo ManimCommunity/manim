@@ -901,7 +901,7 @@ class CoordinateSystem:
 
             class PlotSurfaceExample(ThreeDScene):
                 def construct(self):
-                    resolution_fa = 42
+                    resolution_fa = 16
                     self.set_camera_orientation(phi=75 * DEGREES, theta=-60 * DEGREES)
                     axes = ThreeDAxes(x_range=(-3, 3, 1), y_range=(-3, 3, 1), z_range=(-5, 5, 1))
                     def param_trig(u, v):
