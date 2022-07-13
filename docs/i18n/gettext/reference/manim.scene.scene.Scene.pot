@@ -79,6 +79,11 @@ msgid "Adds an entry in the corresponding subcaption file at the current time st
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_updater:1
+msgid "Add an update function to the scene."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.begin_animations:1
 msgid "Start the animations of the scene."
 msgstr ""
@@ -191,6 +196,11 @@ msgid "Removes mobjects from the foreground, and internally from the list foregr
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.remove_updater:1
+msgid "Remove an update function from the scene."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.render:1
 msgid "Renders this Scene."
 msgstr ""
@@ -221,6 +231,11 @@ msgid "Begins updating all mobjects in the Scene."
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.update_self:1
+msgid "Run all scene updater functions."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.wait:1
 msgid "Plays a \"no operation\" animation."
 msgstr ""
@@ -238,6 +253,7 @@ msgstr ""
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_foreground_mobjects:0
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_sound:0
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_subcaption:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_updater:0
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.bring_to_back:0
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.bring_to_front:0
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.compile_animation_data:0
@@ -254,9 +270,11 @@ msgstr ""
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.remove:0
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.remove_foreground_mobject:0
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.remove_foreground_mobjects:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.remove_updater:0
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.render:0
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.restructure_mobjects:0
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.update_mobjects:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.update_self:0
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.wait:0
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.wait_until:0
 msgid "Parameters"
@@ -295,6 +313,7 @@ msgstr ""
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_foreground_mobject:0
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_foreground_mobjects:0
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_subcaption:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_updater:0
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.begin_animations:0
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.bring_to_back:0
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.bring_to_front:0
@@ -312,6 +331,7 @@ msgstr ""
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.next_section:0
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.remove_foreground_mobject:0
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.remove_foreground_mobjects:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.remove_updater:0
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.restructure_mobjects:0
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.should_update_mobjects:0
 msgid "Return type"
@@ -367,6 +387,22 @@ msgstr ""
 
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_subcaption:13
 msgid "This example illustrates both possibilities for adding subcaptions to Manimations::"
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_updater:3
+msgid "The scene updater functions are run every frame, and they are the last type of updaters to run."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_updater:8
+msgid "When using the Cairo renderer, scene updaters that modify mobjects are not detected in the same way that mobject updaters are. To be more concrete, a mobject only modified via a scene updater will not necessarily be added to the list of *moving mobjects* and thus might not be updated every frame."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_updater:15
+msgid "TL;DR: Use mobject updaters to update mobjects."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_updater:17
+msgid "The updater function. It takes a float, which is the time difference since the last update (usually equal to the frame rate)."
 msgstr ""
 
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.bring_to_back:4
@@ -504,7 +540,7 @@ msgid "List of top level mobjects."
 msgstr ""
 
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.next_section:1
-msgid "Create separation here; the last section gets finished and a new one gets created. ``skip_animations`` skips the rendering of all animations in this section. Refer to :doc:`the documentation</tutorials/a_deeper_look>` on how to use sections."
+msgid "Create separation here; the last section gets finished and a new one gets created. ``skip_animations`` skips the rendering of all animations in this section. Refer to :doc:`the documentation</tutorials/output_and_config>` on how to use sections."
 msgstr ""
 
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.pause:3
@@ -559,6 +595,10 @@ msgstr ""
 msgid "The Scene, with the foreground mobjects removed."
 msgstr ""
 
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.remove_updater:3
+msgid "The updater function to be removed."
+msgstr ""
+
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.render:3
 msgid "If true, opens scene in a file viewer."
 msgstr ""
@@ -609,6 +649,14 @@ msgstr ""
 
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.update_mobjects:3
 msgid "Change in time between updates. Defaults (mostly) to 1/frames_per_second"
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.update_self:3
+msgid "Among all types of update functions (mobject updaters, mesh updaters, scene updaters), scene update functions are called last."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.update_self:6
+msgid "Scene time since last update."
 msgstr ""
 
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.wait:3

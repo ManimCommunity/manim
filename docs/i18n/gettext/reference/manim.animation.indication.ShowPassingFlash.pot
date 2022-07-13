@@ -35,11 +35,6 @@ msgstr ""
 msgid "The length of the sliver relative to the length of the stroke."
 msgstr ""
 
-#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.ShowPassingFlash:0
-#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.ShowPassingFlash.clean_up_from_scene:0
-msgid "Return type"
-msgstr ""
-
 #: ../../../manim/animation/indication.py:docstring of manim.animation.indication.ShowPassingFlash:7
 msgid "Examples"
 msgstr ""
@@ -55,6 +50,10 @@ msgstr ""
 
 #: ../../../manim/animation/indication.py:docstring of manim.animation.indication.ShowPassingFlash.clean_up_from_scene:3
 msgid "This includes to :meth:`~.Scene.remove` the Animation's :class:`~.Mobject` if the animation is a remover."
+msgstr ""
+
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.ShowPassingFlash.clean_up_from_scene:6
+msgid "The scene the animation should be cleaned up from."
 msgstr ""
 
 

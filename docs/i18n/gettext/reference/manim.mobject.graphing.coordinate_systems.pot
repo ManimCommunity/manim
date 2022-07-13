@@ -27,7 +27,7 @@ msgid "A :class:`~.NumberPlane` specialized for use with complex numbers."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.graphing.coordinate_systems.rst:30:<autosummary>:1
-msgid "Abstract class for Axes and NumberPlane"
+msgid "Abstract base class for Axes and NumberPlane."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.graphing.coordinate_systems.rst:30:<autosummary>:1

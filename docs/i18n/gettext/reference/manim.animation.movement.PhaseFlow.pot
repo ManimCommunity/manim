@@ -27,14 +27,12 @@ msgstr ""
 msgid "Interpolates the mobject of the :class:`Animation` based on alpha value."
 msgstr ""
 
-#: ../../../manim/animation/movement.py:docstring of manim.animation.movement.PhaseFlow:0
 #: ../../../manim/animation/movement.py:docstring of manim.animation.movement.PhaseFlow.interpolate_mobject:0
 msgid "Parameters"
 msgstr ""
 
-#: ../../../manim/animation/movement.py:docstring of manim.animation.movement.PhaseFlow:0
-#: ../../../manim/animation/movement.py:docstring of manim.animation.movement.PhaseFlow.interpolate_mobject:0
-msgid "Return type"
+#: ../../../manim/animation/movement.py:docstring of manim.animation.movement.PhaseFlow.interpolate_mobject:3
+msgid "A float between 0 and 1 expressing the ratio to which the animation is completed. For example, alpha-values of 0, 0.5, and 1 correspond to the animation being completed 0%, 50%, and 100%, respectively."
 msgstr ""
 
 

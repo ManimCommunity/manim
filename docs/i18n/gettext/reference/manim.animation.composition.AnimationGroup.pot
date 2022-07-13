@@ -56,14 +56,10 @@ msgstr ""
 msgid "Updates things like starting_mobject, and (for Transforms) target_mobject."
 msgstr ""
 
-#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup:0
-#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.clean_up_from_scene:0
-#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.interpolate:0
-#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.update_mobjects:0
-msgid "Parameters"
+#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.begin:3
+msgid "This method is called right as an animation is being played. As much initialization as possible, especially any mobject copying, should live in this method."
 msgstr ""
 
-#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup:0
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.begin:0
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.build_animations_with_timings:0
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.clean_up_from_scene:0
@@ -74,12 +70,14 @@ msgstr ""
 msgid "Return type"
 msgstr ""
 
-#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.begin:3
-msgid "This method is called right as an animation is being played. As much initialization as possible, especially any mobject copying, should live in this method."
-msgstr ""
-
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.clean_up_from_scene:3
 msgid "This includes to :meth:`~.Scene.remove` the Animation's :class:`~.Mobject` if the animation is a remover."
+msgstr ""
+
+#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.clean_up_from_scene:0
+#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.interpolate:0
+#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.update_mobjects:0
+msgid "Parameters"
 msgstr ""
 
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.clean_up_from_scene:6

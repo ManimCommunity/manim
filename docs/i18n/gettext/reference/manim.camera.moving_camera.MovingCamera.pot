@@ -90,6 +90,10 @@ msgstr ""
 msgid "If set to ``True``, only allows focusing on mobjects that are already in frame."
 msgstr ""
 
+#: ../../../manim/camera/moving_camera.py:docstring of manim.camera.moving_camera.MovingCamera.auto_zoom:12
+msgid "If set to ``False``, applies the changes instead of returning the corresponding animation"
+msgstr ""
+
 #: ../../../manim/camera/moving_camera.py:docstring of manim.camera.moving_camera.MovingCamera.auto_zoom:0
 #: ../../../manim/camera/moving_camera.py:docstring of manim.camera.moving_camera.MovingCamera.frame_center:0
 #: ../../../manim/camera/moving_camera.py:docstring of manim.camera.moving_camera.MovingCamera.frame_height:0
@@ -97,8 +101,8 @@ msgstr ""
 msgid "Returns"
 msgstr ""
 
-#: ../../../manim/camera/moving_camera.py:docstring of manim.camera.moving_camera.MovingCamera.auto_zoom:13
-msgid "Returns an animation that zooms the camera view to a given list of mobjects."
+#: ../../../manim/camera/moving_camera.py:docstring of manim.camera.moving_camera.MovingCamera.auto_zoom:14
+msgid "_AnimationBuilder that zooms the camera view to a given list of mobjects or ScreenRectangle with position and size updated to zoomed position."
 msgstr ""
 
 #: ../../../manim/camera/moving_camera.py:docstring of manim.camera.moving_camera.MovingCamera.auto_zoom:0

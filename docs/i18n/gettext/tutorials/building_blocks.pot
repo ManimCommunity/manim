@@ -19,7 +19,7 @@ msgid "Essentially, manim puts at your disposal three different concepts that yo
 msgstr ""
 
 #: ../../source/tutorials/building_blocks.rst:15
-msgid "It is recommended that you read the tutorials :doc:`quickstart` and :doc:`a_deeper_look` before reading this page."
+msgid "It is recommended that you read the tutorials :doc:`quickstart` and :doc:`output_and_config` before reading this page."
 msgstr ""
 
 #: ../../source/tutorials/building_blocks.rst:21

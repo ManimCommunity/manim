@@ -1,17 +1,1 @@
 
-msgid ""
-msgstr ""
-"Project-Id-Version: Manim \n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-
-#: ../../source/internals.rst:2
-msgid "Internal structure"
-msgstr ""
-
-#: ../../source/internals.rst:4
-msgid "Efforts to document the internal structure of Manim is ongoing on our `wiki <https://github.com/ManimCommunity/manim/wiki/Developer-documentation-(WIP)>`_."
-msgstr ""
-
-

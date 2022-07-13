@@ -127,6 +127,8 @@ msgid "Number ranges that include both negative and positive values will be gene
 msgstr ""
 
 #: ../../../manim/mobject/graphing/number_line.py:docstring of manim.mobject.graphing.number_line.NumberLine:34
+#: ../../../manim/mobject/graphing/number_line.py:docstring of manim.mobject.graphing.number_line.NumberLine.number_to_point:10
+#: ../../../manim/mobject/graphing/number_line.py:docstring of manim.mobject.graphing.number_line.NumberLine.point_to_number:10
 msgid "Examples"
 msgstr ""
 
@@ -308,11 +310,11 @@ msgid "A numpy array of floats represnting values along the number line."
 msgstr ""
 
 #: ../../../manim/mobject/graphing/number_line.py:docstring of manim.mobject.graphing.number_line.NumberLine.number_to_point:4
-msgid "The value to be transformed into a coordinate."
+msgid "The value to be transformed into a coordinate. Or a list of values."
 msgstr ""
 
 #: ../../../manim/mobject/graphing/number_line.py:docstring of manim.mobject.graphing.number_line.NumberLine.number_to_point:6
-msgid "A point with respect to the scene's coordinate system."
+msgid "A point with respect to the scene's coordinate system. Or a list of points."
 msgstr ""
 
 #: ../../../manim/mobject/graphing/number_line.py:docstring of manim.mobject.graphing.number_line.NumberLine.point_to_number:4
