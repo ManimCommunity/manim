@@ -2,15 +2,16 @@
 v0.16.0
 *******
 
-:Date: July 12, 2022
+:Date: July 13, 2022
 
 Contributors
 ============
 
-A total of 43 people contributed to this
+A total of 44 people contributed to this
 release. People with a '+' by their names authored a patch for the first
 time.
 
+* Alex Lembcke
 * Baroudi Aymen +
 * Benjamin Hackl
 * Charalampos Georgiou +
@@ -47,6 +48,7 @@ time.
 The patches included in this release have been reviewed by
 the following contributors.
 
+* Alex Lembcke
 * Benjamin Hackl
 * Darylgolden
 * Francesco Frassinelli
@@ -70,7 +72,7 @@ the following contributors.
 Pull requests merged
 ====================
 
-A total of 55 pull requests were merged for this release.
+A total of 56 pull requests were merged for this release.
 
 Highlights
 ----------
@@ -90,7 +92,7 @@ Highlights
 New features
 ------------
 
-* :pr:`2667`: Made FFmpeg executable path configureable
+* :pr:`2667`: Made FFmpeg executable path configurable
 
 
 * :pr:`2739`: Added vectorized plotting functionality via keyword argument ``use_vectorized`` to improve performance
@@ -98,6 +100,9 @@ New features
 
 Enhancements
 ------------
+
+* :pr:`2186`: Enabled filling color by value for :class:`.OpenGLSurface`, replaced ``colors`` keyword argument of :meth:`.Surface.set_fill_by_value`  with ``colorscale``
+
 
 * :pr:`2288`: Added warning when attempting to add same mobject as child twice
 
@@ -137,6 +142,7 @@ Fixed bugs
 ----------
 
 * :pr:`2567`: Use tempconfig for every scene render
+
 
 * :pr:`2638`: Fixed :meth:`BarChart.change_bar_values`  not updating when height is 0
 
@@ -238,6 +244,7 @@ Code quality improvements and similar refactors
 -----------------------------------------------
 
 * :pr:`2680`: Increased minimum required version of ``numpy`` to 1.19
+
 
 * :pr:`2687`: Migrated from ``os.path`` to ``pathlib`` in :class:`.SVGMobject` and other locations
 
