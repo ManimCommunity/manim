@@ -114,7 +114,7 @@ msgstr ""
 msgid "Returns"
 msgstr ""
 
-#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.remove_invisible_chars:6
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.remove_invisible_chars:5
 msgid "The SVGMobject without unwanted invisible characters."
 msgstr ""
 

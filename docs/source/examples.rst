@@ -667,7 +667,7 @@ Special Camera Settings
 
    class ThreeDSurfacePlot(ThreeDScene):
        def construct(self):
-           resolution_fa = 42
+           resolution_fa = 24
            self.set_camera_orientation(phi=75 * DEGREES, theta=-30 * DEGREES)
 
            def param_gauss(u, v):

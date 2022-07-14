@@ -1,0 +1,21 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.animation.speedmodifier.rst:2
+msgid "speedmodifier"
+msgstr ""
+
+#: ../../../manim/animation/speedmodifier.py:docstring of manim.animation.speedmodifier:1
+msgid "Utilities for modifying the speed at which animations are played."
+msgstr ""
+
+#: ../../source/reference/manim.animation.speedmodifier.rst:15
+msgid "Classes"
+msgstr ""
+
+

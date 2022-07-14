@@ -79,6 +79,10 @@ msgid "The right bracket type, by default ``\"]\"``."
 msgstr ""
 
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.MobjectMatrix:30
+msgid "``True`` if should stretch the brackets to fit the height of matrix contents, by default ``True``."
+msgstr ""
+
+#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.MobjectMatrix:31
 msgid "Additional arguments to be passed to :class:`~.MathTex` when constructing the brackets."
 msgstr ""
 

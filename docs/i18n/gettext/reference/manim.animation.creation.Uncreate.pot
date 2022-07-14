@@ -26,12 +26,4 @@ msgstr ""
 msgid "Examples"
 msgstr ""
 
-#: ../../source/reference/manim.animation.creation.Uncreate.rst:14
-msgid "Methods"
-msgstr ""
-
-#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Uncreate:0
-msgid "Parameters"
-msgstr ""
-
 

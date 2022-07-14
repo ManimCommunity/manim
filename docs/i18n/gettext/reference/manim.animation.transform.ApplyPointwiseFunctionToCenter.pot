@@ -31,13 +31,8 @@ msgstr ""
 msgid "Attributes"
 msgstr ""
 
-#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyPointwiseFunctionToCenter:0
-msgid "Parameters"
-msgstr ""
-
-#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyPointwiseFunctionToCenter:0
-#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyPointwiseFunctionToCenter.begin:0
-msgid "Return type"
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyPointwiseFunctionToCenter.begin:3
+msgid "This method is called right as an animation is being played. As much initialization as possible, especially any mobject copying, should live in this method."
 msgstr ""
 
 

@@ -71,7 +71,8 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
                 surface = Surface(
                     lambda u, v: axes.c2p(*self.func(u, v)),
                     u_range=[-PI, PI],
-                    v_range=[0, TAU]
+                    v_range=[0, TAU],
+                    resolution=8,
                 )
                 self.set_camera_orientation(theta=70 * DEGREES, phi=75 * DEGREES)
                 self.add(axes, surface)
@@ -198,7 +199,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
 
             class FillByValueExample(ThreeDScene):
                 def construct(self):
-                    resolution_fa = 42
+                    resolution_fa = 8
                     self.set_camera_orientation(phi=75 * DEGREES, theta=-160 * DEGREES)
                     axes = ThreeDAxes(x_range=(0, 5, 1), y_range=(0, 5, 1), z_range=(-1, 1, 0.5))
                     def param_surface(u, v):
@@ -457,7 +458,7 @@ class Cone(Surface):
         class ExampleCone(ThreeDScene):
             def construct(self):
                 axes = ThreeDAxes()
-                cone = Cone(direction=X_AXIS+Y_AXIS+2*Z_AXIS)
+                cone = Cone(direction=X_AXIS+Y_AXIS+2*Z_AXIS, resolution=8)
                 self.set_camera_orientation(phi=5*PI/11, theta=PI/9)
                 self.add(axes, cone)
 
@@ -871,7 +872,11 @@ class Arrow3D(Line3D):
         class ExampleArrow3D(ThreeDScene):
             def construct(self):
                 axes = ThreeDAxes()
-                arrow = Arrow3D(start=np.array([0, 0, 0]), end=np.array([2, 2, 2]))
+                arrow = Arrow3D(
+                    start=np.array([0, 0, 0]),
+                    end=np.array([2, 2, 2]),
+                    resolution=8
+                )
                 self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
                 self.add(axes, arrow)
 

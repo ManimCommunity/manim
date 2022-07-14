@@ -19,7 +19,7 @@ msgid "Bases: :py:class:`manim.mobject.table.Table`"
 msgstr ""
 
 #: ../../../manim/mobject/table.py:docstring of manim.mobject.table.DecimalTable:1
-msgid "A specialized :class:`~.Table` mobject for use with with :class:`~.DecimalNumber` to display decimal entries."
+msgid "A specialized :class:`~.Table` mobject for use with :class:`~.DecimalNumber` to display decimal entries."
 msgstr ""
 
 #: ../../../manim/mobject/table.py:docstring of manim.mobject.table.DecimalTable:4
