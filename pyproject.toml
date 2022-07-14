@@ -43,6 +43,7 @@ decorator = "^5.0.7"
 importlib-metadata = { version = "^4.10.0", python = "<3.8" }
 watchdog = "^2.1.6"
 jupyterlab = { version = "^3.0", optional = true }
+notebook = { version = "^6.4", optional = true }
 moderngl = "^5.6.3"
 moderngl-window = "^2.3.0"
 mapbox-earcut = "^0.12.10"
@@ -57,7 +58,7 @@ Pygments = "^2.10.0"
 "backports.cached-property" = { version = "^1.0.1", python = "<3.8" }
 
 [tool.poetry.extras]
-jupyterlab = ["jupyterlab"]
+jupyterlab = ["jupyterlab", "notebook"]
 gui = ["dearpygui"]
 
 [tool.poetry.dev-dependencies]
