@@ -970,7 +970,7 @@ A TL;DR for the render loop, in the context of our toy example, reads as follows
 - In the internal render loop, each of these time stamps is processed:
   there are no updater functions, so effectively the scene updates the
   state of the transformation animation to the desired time stamp (for example,
-  at time stamp ``t = 45/30``, the animation is completed to a rate of
+  at time stamp ``t = 15/30``, the animation is completed to a rate of
   ``alpha = 0.5``).
 - Then the scene asks the renderer to do its job. The renderer asks its camera
   to capture the scene, the only mobject that needs to be processed at this point
