@@ -834,16 +834,12 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         animation = anim_args.pop("animation", Create)
 
         vertex_mobjects = self._create_vertices(*args, **kwargs)
-
-        def on_finish(scene: Scene):
-            for v in vertex_mobjects:
-                scene.remove(v[-1])
-                self._add_created_vertex(*v)
+        for v in vertex_mobjects:
+            self._add_created_vertex(*v)
 
         return AnimationGroup(
             *(animation(v[-1], **anim_args) for v in vertex_mobjects),
             group=self,
-            _on_finish=on_finish,
         )
 
     def _remove_vertex(self, vertex):
