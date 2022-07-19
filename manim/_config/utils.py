@@ -286,6 +286,7 @@ class ManimConfig(MutableMapping):
         "scene_names",
         "show_in_file_browser",
         "tex_dir",
+        "tex_template",
         "tex_template_file",
         "text_dir",
         "upto_animation_number",
@@ -361,6 +362,8 @@ class ManimConfig(MutableMapping):
 
         if isinstance(obj, ManimConfig):
             self._d.update(obj._d)
+            if obj.tex_template:
+                self.tex_template = obj.tex_template
 
         elif isinstance(obj, dict):
             # First update the underlying _d, then update other properties
