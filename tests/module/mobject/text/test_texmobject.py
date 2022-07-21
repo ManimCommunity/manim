@@ -177,7 +177,7 @@ def test_tempconfig_resetting_tex_template():
     my_template = TexTemplate()
     my_template.preamble = "Custom preamble!"
     tex_template_config_value = config.tex_template
-    with tempconfig({'tex_template': my_template}):
+    with tempconfig({"tex_template": my_template}):
         assert config.tex_template.preamble == "Custom preamble!"
 
     assert config.tex_template.preamble != "Custom preamble!"
