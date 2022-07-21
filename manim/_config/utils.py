@@ -1543,7 +1543,7 @@ class ManimConfig(MutableMapping):
             if fn:
                 self._tex_template = TexTemplateFromFile(filename=fn)
             else:
-                self._tex_template = TexTemplateLibrary.default.copy()
+                self._tex_template = TexTemplate()
         return self._tex_template
 
     @tex_template.setter
@@ -1565,10 +1565,8 @@ class ManimConfig(MutableMapping):
                 )
             else:
                 self._d["tex_template_file"] = Path(val)
-                self._tex_template = TexTemplateFromFile(filename=val)
         else:
             self._d["tex_template_file"] = val  # actually set the falsy value
-            self._tex_template = TexTemplate()  # but don't use it
 
     @property
     def plugins(self):
