@@ -415,8 +415,8 @@ Plotting with Manim
             return [
                 (top_right[0], top_right[1]),
                 (bottom_left[0], top_right[1]),
-                (bottom_left[0], bottom_left[0]),
-                (top_right[0], bottom_left[0]),
+                (bottom_left[0], bottom_left[1]),
+                (top_right[0], bottom_left[1]),
             ]
 
         def construct(self):
