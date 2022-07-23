@@ -2188,6 +2188,14 @@ optional = false
 python-versions = ">=2.7"
 
 [[package]]
+name = "svgelements"
+version = "1.7.2"
+description = "Svg Elements Parsing"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "terminado"
 version = "0.15.0"
 description = "Tornado websocket backend for the Xterm.js Javascript terminal emulator library."
@@ -2456,7 +2464,7 @@ jupyterlab = ["jupyterlab", "notebook"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<3.11"
-content-hash = "c2a44c7802a88f2d2d5cd0a5dd422c54947c05d11a841ec5cdcb43abde425604"
+content-hash = "b5557b54c1753ffe6b27d6339262e8b743daf325d3b489a433858ed2a380eced"
 
 [metadata.files]
 alabaster = [
@@ -3695,6 +3703,7 @@ sphinxext-opengraph = [
 srt = [
     {file = "srt-3.5.2.tar.gz", hash = "sha256:7aa4ad5ce4126d3f53b3e7bc4edaa86653d0378bf1c0b1ab8c59f5ab41384450"},
 ]
+svgelements = []
 terminado = [
     {file = "terminado-0.15.0-py3-none-any.whl", hash = "sha256:0d5f126fbfdb5887b25ae7d9d07b0d716b1cc0ccaacc71c1f3c14d228e065197"},
     {file = "terminado-0.15.0.tar.gz", hash = "sha256:ab4eeedccfcc1e6134bfee86106af90852c69d602884ea3a1e8ca6d4486e9bfe"},
