@@ -431,9 +431,7 @@ def uniq_chain(*args: Iterable) -> Generator:
 def hash_obj(obj: object) -> int:
     """Determines a hash, even of potentially mutable objects."""
     if isinstance(obj, dict):
-        return hash(tuple(sorted([
-            (hash_obj(k), hash_obj(v)) for k, v in obj.items()
-        ])))
+        return hash(tuple(sorted((hash_obj(k), hash_obj(v)) for k, v in obj.items())))
 
     if isinstance(obj, set):
         return hash(tuple(sorted(hash_obj(e) for e in obj)))

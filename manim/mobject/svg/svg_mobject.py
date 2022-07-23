@@ -9,20 +9,16 @@ import svgelements as se
 
 from manim import config, logger
 
-from ..opengl.opengl_compatibility import ConvertToOpenGL
-
 from ...constants import RIGHT
-from ..geometry.arc import Circle
-from ..geometry.line import Line
-from ..geometry.polygram import Polygon, Rectangle, RoundedRectangle, Polyline
-from ..types.vectorized_mobject import VMobject
 from ...utils.images import get_full_vector_image_path
 from ...utils.iterables import hash_obj
+from ..geometry.arc import Circle
+from ..geometry.line import Line
+from ..geometry.polygram import Polygon, Polyline, Rectangle, RoundedRectangle
+from ..opengl.opengl_compatibility import ConvertToOpenGL
+from ..types.vectorized_mobject import VMobject
 
-__all__ = [
-    "SVGMobject",
-    "VMobjectFromSVGPath"
-]
+__all__ = ["SVGMobject", "VMobjectFromSVGPath"]
 
 
 SVG_HASH_TO_MOB_MAP: dict[int, VMobject] = {}
@@ -50,14 +46,9 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         stroke_width: float | None = None,
         svg_default: dict | None = None,
         path_string_config: dict | None = None,
-        **kwargs
+        **kwargs,
     ):
-        super().__init__(
-            color=None,
-            stroke_color=None,
-            fill_color=None,
-            **kwargs
-        )
+        super().__init__(color=None, stroke_color=None, fill_color=None, **kwargs)
 
         # process keyword arguments
         self.file_name = file_name
@@ -110,7 +101,6 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         self.generate_mobject()
         SVG_HASH_TO_MOB_MAP[hash_val] = self.copy()
 
-
     @property
     def hash_seed(self) -> tuple:
         # Returns data which can uniquely represent the result of `init_points`.
@@ -152,13 +142,10 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             "stroke",
             "stroke-opacity",
             "stroke-width",
-            "style"
+            "style",
         )
         root = element_tree.getroot()
-        root_style_dict = {
-            k: v for k, v in root.attrib.items()
-            if k in style_keys
-        }
+        root_style_dict = {k: v for k, v in root.attrib.items() if k in style_keys}
 
         new_root = ET.Element("svg", {})
         config_style_node = ET.SubElement(new_root, "g", config_style_dict)
@@ -172,7 +159,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             "fill-opacity": ("opacity", "fill_opacity"),
             "stroke": ("color", "stroke_color"),
             "stroke-opacity": ("opacity", "stroke_opacity"),
-            "stroke-width": ("stroke_width",)
+            "stroke-width": ("stroke_width",),
         }
         svg_default_dict = self.svg_default
         result = {}
@@ -219,35 +206,26 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
 
     @staticmethod
     def handle_transform(mob: VMobject, matrix: se.Matrix) -> VMobject:
-        mat = np.array([
-            [matrix.a, matrix.c],
-            [matrix.b, matrix.d]
-        ])
+        mat = np.array([[matrix.a, matrix.c], [matrix.b, matrix.d]])
         vec = np.array([matrix.e, matrix.f, 0.0])
         mob.apply_matrix(mat)
         mob.shift(vec)
         return mob
 
     @staticmethod
-    def apply_style_to_mobject(
-        mob: VMobject,
-        shape: se.GraphicObject
-    ) -> VMobject:
+    def apply_style_to_mobject(mob: VMobject, shape: se.GraphicObject) -> VMobject:
         mob.set_style(
             stroke_width=shape.stroke_width,
             stroke_color=shape.stroke.hexrgb,
             stroke_opacity=shape.stroke.opacity,
             fill_color=shape.fill.hexrgb,
-            fill_opacity=shape.fill.opacity
+            fill_opacity=shape.fill.opacity,
         )
         return mob
 
     @staticmethod
     def handle_transform(mob, matrix):
-        mat = np.array([
-            [matrix.a, matrix.c],
-            [matrix.b, matrix.d]
-        ])
+        mat = np.array([[matrix.a, matrix.c], [matrix.b, matrix.d]])
         vec = np.array([matrix.e, matrix.f, 0.0])
         mob.apply_matrix(mat)
         mob.shift(vec)
@@ -259,7 +237,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
     def line_to_mobject(self, line: se.Line) -> Line:
         return Line(
             start=_convert_point_to_3d(line.x1, line.y1),
-            end=_convert_point_to_3d(line.x2, line.y2)
+            end=_convert_point_to_3d(line.x2, line.y2),
         )
 
     def rect_to_mobject(self, rect: se.Rect) -> Rectangle:
@@ -272,43 +250,32 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             mob = RoundedRectangle(
                 width=rect.width,
                 height=rect.height * rect.rx / rect.ry,
-                corner_radius=rect.rx
+                corner_radius=rect.rx,
             )
             mob.stretch_to_fit_height(rect.height)
-        mob.shift(_convert_point_to_3d(
-            rect.x + rect.width / 2,
-            rect.y + rect.height / 2
-        ))
+        mob.shift(
+            _convert_point_to_3d(rect.x + rect.width / 2, rect.y + rect.height / 2)
+        )
         return mob
 
     def circle_to_mobject(self, circle: se.Circle) -> Circle:
         # svgelements supports `rx` & `ry` but `r`
         mob = Circle(radius=circle.rx)
-        mob.shift(_convert_point_to_3d(
-            circle.cx, circle.cy
-        ))
+        mob.shift(_convert_point_to_3d(circle.cx, circle.cy))
         return mob
 
     def ellipse_to_mobject(self, ellipse: se.Ellipse) -> Circle:
         mob = Circle(radius=ellipse.rx)
         mob.stretch_to_fit_height(2 * ellipse.ry)
-        mob.shift(_convert_point_to_3d(
-            ellipse.cx, ellipse.cy
-        ))
+        mob.shift(_convert_point_to_3d(ellipse.cx, ellipse.cy))
         return mob
 
     def polygon_to_mobject(self, polygon: se.Polygon) -> Polygon:
-        points = [
-            _convert_point_to_3d(*point)
-            for point in polygon
-        ]
+        points = [_convert_point_to_3d(*point) for point in polygon]
         return Polygon(*points)
 
     def polyline_to_mobject(self, polyline: se.Polyline) -> Polyline:
-        points = [
-            _convert_point_to_3d(*point)
-            for point in polyline
-        ]
+        points = [_convert_point_to_3d(*point) for point in polyline]
         return Polyline(*points)
 
     def text_to_mobject(self, text: se.Text):
@@ -324,15 +291,14 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
 
 
 class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
-
     def __init__(
         self,
         path_obj: se.Path,
         long_lines: bool = False,
         should_subdivide_sharp_curves: bool = False,
         should_remove_null_curves: bool = False,
-        **kwargs
-        ):
+        **kwargs,
+    ):
         # Get rid of arcs
         path_obj.approximate_arcs_with_quads()
         self.path_obj = path_obj
@@ -342,7 +308,6 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
         self.should_remove_null_curves = should_remove_null_curves
 
         super().__init__(**kwargs)
-
 
     def init_points(self) -> None:
         # TODO: cache mobject in a re-importable way
@@ -364,8 +329,14 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
             se.Move: (self.start_new_path, ("end",)),
             se.Close: (self.close_path, ()),
             se.Line: (self.add_line_to, ("end",)),
-            se.QuadraticBezier: (self.add_quadratic_bezier_curve_to, ("control", "end")),
-            se.CubicBezier: (self.add_cubic_bezier_curve_to, ("control1", "control2", "end"))
+            se.QuadraticBezier: (
+                self.add_quadratic_bezier_curve_to,
+                ("control", "end"),
+            ),
+            se.CubicBezier: (
+                self.add_cubic_bezier_curve_to,
+                ("control1", "control2", "end"),
+            ),
         }
         for segment in self.path_obj:
             segment_class = segment.__class__

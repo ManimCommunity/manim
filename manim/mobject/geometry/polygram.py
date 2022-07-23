@@ -128,7 +128,6 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
 
     init_points = generate_points
 
-
     def round_corners(self, radius: float = 0.5):
         """Rounds off the corners of the :class:`Polygram`.
 
