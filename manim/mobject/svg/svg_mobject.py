@@ -47,7 +47,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         fill_opacity: float | None = None,
         stroke_color: str | None = None,
         stroke_opacity: float | None = None,
-        stroke_width: float | None = 4,
+        stroke_width: float | None = None,
         svg_default: dict | None = None,
         path_string_config: dict | None = None,
         **kwargs
@@ -79,7 +79,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
                 "opacity": None,
                 "fill_color": None,
                 "fill_opacity": None,
-                "stroke_width": 4.0,
+                "stroke_width": None,
                 "stroke_color": None,
                 "stroke_opacity": None,
             }
