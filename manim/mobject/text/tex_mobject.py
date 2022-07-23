@@ -100,8 +100,10 @@ class SingleStringMathTex(SVGMobject):
             should_center=should_center,
             stroke_width=stroke_width,
             height=height,
-            should_subdivide_sharp_curves=True,
-            should_remove_null_curves=True,
+            path_string_config=dict(
+                should_subdivide_sharp_curves=True,
+                should_remove_null_curves=True,
+            ),
             **kwargs,
         )
         # used for scaling via font_size.setter

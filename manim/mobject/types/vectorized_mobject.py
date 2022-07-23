@@ -788,6 +788,10 @@ class VMobject(Mobject):
         # TODO use consider_points_equals_2d ?
         return self.consider_points_equals(self.points[0], self.points[-1])
 
+    def close_path(self):
+        if not self.is_closed():
+            self.add_line_to(self.get_subpaths()[-1][0])
+
     def add_points_as_corners(self, points: np.ndarray) -> "VMobject":
         for point in points:
             self.add_line_to(point)

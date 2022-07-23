@@ -389,10 +389,21 @@ class OpenGLVMobject(OpenGLMobject):
     fill_color = property(get_fill_color, set_fill)
 
     def has_stroke(self):
-        return any(self.get_stroke_widths()) and any(self.get_stroke_opacities())
+        stroke_widths = self.get_stroke_widths()
+        stroke_opacities = self.get_stroke_opacities()
+        return (
+            stroke_widths is not None and
+            stroke_opacities is not None and
+            any(stroke_widths) and
+            any(stroke_opacities)
+        )
 
     def has_fill(self):
-        return any(self.get_fill_opacities())
+        fill_opacities = self.get_fill_opacities()
+        return (
+            fill_opacities is not None and
+            any(fill_opacities)
+        )
 
     def get_opacity(self):
         if self.has_fill():
