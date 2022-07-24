@@ -181,9 +181,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
                 mob = self.line_to_mobject(shape)
             elif isinstance(shape, se.Rect):
                 mob = self.rect_to_mobject(shape)
-            elif isinstance(shape, se.Circle):
-                mob = self.circle_to_mobject(shape)
-            elif isinstance(shape, se.Ellipse):
+            elif isinstance(shape, (se.Circle, se.Ellipse)):
                 mob = self.ellipse_to_mobject(shape)
             elif isinstance(shape, se.Polygon):
                 mob = self.polygon_to_mobject(shape)
@@ -258,15 +256,11 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         )
         return mob
 
-    def circle_to_mobject(self, circle: se.Circle) -> Circle:
-        # svgelements supports `rx` & `ry` but `r`
-        mob = Circle(radius=circle.rx)
-        mob.shift(_convert_point_to_3d(circle.cx, circle.cy))
-        return mob
-
-    def ellipse_to_mobject(self, ellipse: se.Ellipse) -> Circle:
+    @staticmethod
+    def ellipse_to_mobject(ellipse: se.Ellipse | se.Circle) -> Circle:
         mob = Circle(radius=ellipse.rx)
-        mob.stretch_to_fit_height(2 * ellipse.ry)
+        if ellipse.rx != ellipse.ry:
+            mob.stretch_to_fit_height(2 * ellipse.ry)
         mob.shift(_convert_point_to_3d(ellipse.cx, ellipse.cy))
         return mob
 
