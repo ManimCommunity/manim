@@ -12,7 +12,9 @@ __module_test__ = "text"
 )
 @frames_comparison
 def test_Text2Color(scene):
-    scene.add(Text("this is  a text  with spaces!", t2c={"spaces": RED}))
+    scene.add(
+        Text("this is  a text  with spaces!", t2c={"spaces": RED}, font="Monospace")
+    )
 
 
 @pytest.mark.skipif(
@@ -25,8 +27,8 @@ def test_text_color_inheritance(scene):
     their parent class."""
     VMobject.set_default(color=RED)
     # set both to a singular font so that the tests agree.
-    text = Text("test_color_inheritance", font="Dejavu Sans")
-    markup_text = MarkupText("test_color_inheritance", font="Dejavu Sans")
+    text = Text("test_color_inheritance", font="Monospace")
+    markup_text = MarkupText("test_color_inheritance", font="Monospace")
     vgr = VGroup(text, markup_text).arrange()
 
     # reset the default color so that future tests aren't affected by this change.
