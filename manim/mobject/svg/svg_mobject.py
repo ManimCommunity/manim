@@ -232,13 +232,15 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
     def path_to_mobject(self, path: se.Path) -> VMobjectFromSVGPath:
         return VMobjectFromSVGPath(path, **self.path_string_config)
 
-    def line_to_mobject(self, line: se.Line) -> Line:
+    @staticmethod
+    def line_to_mobject(line: se.Line) -> Line:
         return Line(
             start=_convert_point_to_3d(line.x1, line.y1),
             end=_convert_point_to_3d(line.x2, line.y2),
         )
 
-    def rect_to_mobject(self, rect: se.Rect) -> Rectangle:
+    @staticmethod
+    def rect_to_mobject(rect: se.Rect) -> Rectangle:
         if rect.rx == 0 or rect.ry == 0:
             mob = Rectangle(
                 width=rect.width,
@@ -264,15 +266,18 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         mob.shift(_convert_point_to_3d(ellipse.cx, ellipse.cy))
         return mob
 
-    def polygon_to_mobject(self, polygon: se.Polygon) -> Polygon:
+    @staticmethod
+    def polygon_to_mobject(polygon: se.Polygon) -> Polygon:
         points = [_convert_point_to_3d(*point) for point in polygon]
         return Polygon(*points)
 
-    def polyline_to_mobject(self, polyline: se.Polyline) -> Polyline:
+    @staticmethod
+    def polyline_to_mobject(polyline: se.Polyline) -> Polyline:
         points = [_convert_point_to_3d(*point) for point in polyline]
         return Polyline(*points)
 
-    def text_to_mobject(self, text: se.Text):
+    @staticmethod
+    def text_to_mobject(text: se.Text):
         pass
 
     def move_into_position(self) -> None:
