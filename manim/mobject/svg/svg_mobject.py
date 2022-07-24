@@ -70,7 +70,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
                 "opacity": None,
                 "fill_color": None,
                 "fill_opacity": None,
-                "stroke_width": None,
+                "stroke_width": 0,
                 "stroke_color": None,
                 "stroke_opacity": None,
             }
