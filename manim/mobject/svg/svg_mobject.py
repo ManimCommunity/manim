@@ -221,14 +221,6 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         )
         return mob
 
-    @staticmethod
-    def handle_transform(mob, matrix):
-        mat = np.array([[matrix.a, matrix.c], [matrix.b, matrix.d]])
-        vec = np.array([matrix.e, matrix.f, 0.0])
-        mob.apply_matrix(mat)
-        mob.shift(vec)
-        return mob
-
     def path_to_mobject(self, path: se.Path) -> VMobjectFromSVGPath:
         return VMobjectFromSVGPath(path, **self.path_string_config)
 
