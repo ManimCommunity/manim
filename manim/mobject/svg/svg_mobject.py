@@ -29,7 +29,59 @@ def _convert_point_to_3d(x: float, y: float) -> np.ndarray:
 
 
 class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
-    """TODO: docstring"""
+    """A vectorized mobject created from importing an SVG file.
+
+    Parameters
+    ----------
+    file_name
+        The path to the SVG file.
+    should_center
+        Whether or not the mobject should be centered after
+        being imported.
+    height
+        The target height of the mobject, set to 2 Manim units by default.
+        If the height and width are both set to ``None``, the mobject
+        is imported without being scaled.
+    width
+        The target width of the mobject, set to ``None`` by default. If
+        the height and the width are both set to ``None``, the mobject
+        is imported without being scaled.
+    color
+        The color (both fill and stroke color) of the mobject. If
+        ``None`` (the default), the colors set in the SVG file
+        are used.
+    opacity
+        The opacity (both fill and stroke opacity) of the mobject.
+        If ``None`` (the default), the opacity set in the SVG file
+        is used.
+    fill_color
+        The fill color of the mobject. If ``None`` (the default),
+        the fill colors set in the SVG file are used.
+    fill_opacity
+        The fill opacity of the mobject. If ``None`` (the default),
+        the fill opacities set in the SVG file are used.
+    stroke_color
+        The stroke color of the mobject. If ``None`` (the default),
+        the stroke colors set in the SVG file are used.
+    stroke_opacity
+        The stroke opacity of the mobject. If ``None`` (the default),
+        the stroke opacities set in the SVG file are used.
+    stroke_width
+        The stroke width of the mobject. If ``None`` (the default),
+        the stroke width values set in the SVG file are used.
+    svg_default
+        A dictionary in which fallback values for unspecified
+        properties of elements in the SVG file are defined. If
+        ``None`` (the default), ``color``, ``opacity``, ``fill_color``
+        ``fill_opacity``, ``stroke_color``, and ``stroke_opacity``
+        are set to ``None``, and ``stroke_width`` is set to 0.
+    path_string_config
+        A dictionary with keyword arguments passed to
+        :class:`.VMobjectFromSVGPath` used for importing path elements.
+        If ``None`` (the default), no additional arguments are passed.
+    kwargs
+        Further arguments passed to the parent class.
+    """
 
     def __init__(
         self,
@@ -92,6 +144,13 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         self.move_into_position()
 
     def init_svg_mobject(self) -> None:
+        """Checks whether the SVG has already been imported and
+        generates it if not.
+
+        See also
+        --------
+        :meth:`.SVGMobject.generate_mobject`
+        """
         hash_val = hash_obj(self.hash_seed)
         if hash_val in SVG_HASH_TO_MOB_MAP:
             mob = SVG_HASH_TO_MOB_MAP[hash_val].copy()
@@ -103,8 +162,11 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
 
     @property
     def hash_seed(self) -> tuple:
-        # Returns data which can uniquely represent the result of `init_points`.
-        # The hashed value of it is stored as a key in `SVG_HASH_TO_MOB_MAP`.
+        """A unique hash representing the result of the generated
+        mobject points.
+
+        Used as keys in the ``SVG_HASH_TO_MOB_MAP`` caching dictionary.
+        """
         return (
             self.__class__.__name__,
             self.svg_default,
@@ -114,6 +176,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         )
 
     def generate_mobject(self) -> None:
+        """Parse the SVG and translate its elements to submobjects."""
         file_path = self.get_file_path()
         element_tree = ET.parse(file_path)
         new_tree = self.modify_xml_tree(element_tree)
@@ -130,11 +193,20 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         self.flip(RIGHT)  # Flip y
 
     def get_file_path(self) -> str:
+        """Search for an existing file based on the specified file name."""
         if self.file_name is None:
-            raise Exception("Must specify file for SVGMobject")
+            raise ValueError("Must specify file for SVGMobject")
         return get_full_vector_image_path(self.file_name)
 
     def modify_xml_tree(self, element_tree: ET.ElementTree) -> ET.ElementTree:
+        """Modifies the SVG element tree to include default
+        style information.
+
+        Parameters
+        ----------
+        element_tree
+            The parsed element tree from the SVG file.
+        """
         config_style_dict = self.generate_config_style_dict()
         style_keys = (
             "fill",
@@ -154,6 +226,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         return ET.ElementTree(new_root)
 
     def generate_config_style_dict(self) -> dict[str, str]:
+        """Generate a dictionary holding the default style information."""
         keys_converting_dict = {
             "fill": ("color", "fill_color"),
             "fill-opacity": ("opacity", "fill_opacity"),
@@ -171,6 +244,13 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         return result
 
     def get_mobjects_from(self, svg: se.SVG) -> list[VMobject]:
+        """Convert the elements of the SVG to a list of mobjects.
+
+        Parameters
+        ----------
+        svg
+            The parsed SVG file.
+        """
         result = []
         for shape in svg.elements():
             if isinstance(shape, se.Group):
@@ -187,14 +267,14 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
                 mob = self.polygon_to_mobject(shape)
             elif isinstance(shape, se.Polyline):
                 mob = self.polyline_to_mobject(shape)
-            # elif isinstance(shape, se.Text):
-            #     mob = self.text_to_mobject(shape)
+            elif isinstance(shape, se.Text):
+                mob = self.text_to_mobject(shape)
             elif type(shape) == se.SVGElement:
                 continue
             else:
                 logger.warning(f"Unsupported element type: {type(shape)}")
                 continue
-            if not mob.has_points():
+            if mob is None or not mob.has_points():
                 continue
             self.apply_style_to_mobject(mob, shape)
             if isinstance(shape, se.Transformable) and shape.apply:
@@ -204,6 +284,16 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
 
     @staticmethod
     def handle_transform(mob: VMobject, matrix: se.Matrix) -> VMobject:
+        """Apply SVG transformations to the converted mobject.
+
+        Parameters
+        ----------
+        mob
+            The converted mobject.
+        matrix
+            The transformation matrix determined from the SVG
+            transformation.
+        """
         mat = np.array([[matrix.a, matrix.c], [matrix.b, matrix.d]])
         vec = np.array([matrix.e, matrix.f, 0.0])
         mob.apply_matrix(mat)
@@ -212,6 +302,15 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
 
     @staticmethod
     def apply_style_to_mobject(mob: VMobject, shape: se.GraphicObject) -> VMobject:
+        """Apply SVG style information to the converted mobject.
+
+        Parameters
+        ----------
+        mob
+            The converted mobject.
+        shape
+            The parsed SVG element.
+        """
         mob.set_style(
             stroke_width=shape.stroke_width,
             stroke_color=shape.stroke.hexrgb,
@@ -222,10 +321,24 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         return mob
 
     def path_to_mobject(self, path: se.Path) -> VMobjectFromSVGPath:
+        """Convert a path element to a vectorized mobject.
+
+        Parameters
+        ----------
+        path
+            The parsed SVG path.
+        """
         return VMobjectFromSVGPath(path, **self.path_string_config)
 
     @staticmethod
     def line_to_mobject(line: se.Line) -> Line:
+        """Convert a line element to a vectorized mobject.
+
+        Parameters
+        ----------
+        line
+            The parsed SVG line.
+        """
         return Line(
             start=_convert_point_to_3d(line.x1, line.y1),
             end=_convert_point_to_3d(line.x2, line.y2),
@@ -233,6 +346,13 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
 
     @staticmethod
     def rect_to_mobject(rect: se.Rect) -> Rectangle:
+        """Convert a rectangle element to a vectorized mobject.
+
+        Parameters
+        ----------
+        rect
+            The parsed SVG rectangle.
+        """
         if rect.rx == 0 or rect.ry == 0:
             mob = Rectangle(
                 width=rect.width,
@@ -252,6 +372,13 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
 
     @staticmethod
     def ellipse_to_mobject(ellipse: se.Ellipse | se.Circle) -> Circle:
+        """Convert an ellipse or circle element to a vectorized mobject.
+
+        Parameters
+        ----------
+        ellipse
+            The parsed SVG ellipse or circle.
+        """
         mob = Circle(radius=ellipse.rx)
         if ellipse.rx != ellipse.ry:
             mob.stretch_to_fit_height(2 * ellipse.ry)
@@ -260,19 +387,46 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
 
     @staticmethod
     def polygon_to_mobject(polygon: se.Polygon) -> Polygon:
+        """Convert a polygon element to a vectorized mobject.
+
+        Parameters
+        ----------
+        polygon
+            The parsed SVG polygon.
+        """
         points = [_convert_point_to_3d(*point) for point in polygon]
         return Polygon(*points)
 
     @staticmethod
     def polyline_to_mobject(polyline: se.Polyline) -> Polyline:
+        """Convert a polyline element to a vectorized mobject.
+
+        Parameters
+        ----------
+        polyline
+            The parsed SVG polyline.
+        """
         points = [_convert_point_to_3d(*point) for point in polyline]
         return Polyline(*points)
 
     @staticmethod
     def text_to_mobject(text: se.Text):
-        pass
+        """Convert a text element to a vectorized mobject.
+
+        .. warning::
+
+            Not yet implemented.
+
+        Parameters
+        ----------
+        text
+            The parsed SVG text.
+        """
+        logger.warning(f"Unsupported element type: {type(text)}")
+        return
 
     def move_into_position(self) -> None:
+        """Scale and move the generated mobject into position."""
         if self.should_center:
             self.center()
         if self.svg_height is not None:
@@ -282,6 +436,31 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
 
 
 class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
+    """A vectorized mobject representing an SVG path.
+
+    .. note::
+
+        The ``long_lines``, ``should_subdivide_sharp_curves``,
+        and ``should_remove_null_curves`` keyword arguments are
+        only respected with the OpenGL renderer.
+
+    Parameters
+    ----------
+    path_obj
+        A parsed SVG path object.
+    long_lines
+        Whether or not straight lines in the vectorized mobject
+        are drawn in one or two segments.
+    should_subdivide_sharp_curves
+        Whether or not to subdivide subcurves further in case
+        two segments meet at an angle that is sharper than a
+        given threshold.
+    should_remove_null_curves
+        Whether or not to remove subcurves of length 0.
+    kwargs
+        Further keyword arguments are passed to the parent
+        class.
+    """
     def __init__(
         self,
         path_obj: se.Path,
