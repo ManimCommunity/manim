@@ -43,7 +43,6 @@ SCALE_FACTOR_PER_FONT_POINT = 1 / 960
 tex_string_to_mob_map = {}
 
 
-
 class SingleStringMathTex(SVGMobject):
     """Elementary building block for rendering text with LaTeX.
 
