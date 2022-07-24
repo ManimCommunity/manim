@@ -1,6 +1,7 @@
+"""Mobjects generated from an SVG file."""
+
 from __future__ import annotations
 
-import hashlib
 import os
 from xml.etree import ElementTree as ET
 
