@@ -100,12 +100,14 @@ class SingleStringMathTex(SVGMobject):
             should_center=should_center,
             stroke_width=stroke_width,
             height=height,
-            path_string_config=dict(
-                should_subdivide_sharp_curves=True,
-                should_remove_null_curves=True,
-            ),
+            path_string_config={
+                "should_subdivide_sharp_curves": True,
+                "should_remove_null_curves": True,
+            },
             **kwargs,
         )
+        self.init_colors()
+
         # used for scaling via font_size.setter
         self.initial_height = self.height
 
@@ -226,7 +228,10 @@ class SingleStringMathTex(SVGMobject):
         return TexSymbol(path_string, **self.path_string_config, **parse_style(style))
 
     def init_colors(self, propagate_colors=True):
-        super().init_colors(propagate_colors=propagate_colors)
+        if config.renderer == "opengl":
+            super().init_colors()
+        else:
+            super().init_colors(propagate_colors=propagate_colors)
 
 
 class MathTex(SingleStringMathTex):

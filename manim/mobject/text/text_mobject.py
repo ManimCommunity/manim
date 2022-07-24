@@ -778,7 +778,10 @@ class Text(SVGMobject):
         return svg_file
 
     def init_colors(self, propagate_colors=True):
-        super().init_colors(propagate_colors=propagate_colors)
+        if config.renderer == "opengl":
+            super().init_colors()
+        else:
+            super().init_colors(propagate_colors=propagate_colors)
 
 
 class MarkupText(SVGMobject):
