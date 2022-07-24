@@ -461,6 +461,7 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
         Further keyword arguments are passed to the parent
         class.
     """
+
     def __init__(
         self,
         path_obj: se.Path,
