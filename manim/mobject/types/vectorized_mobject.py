@@ -123,6 +123,10 @@ class VMobject(Mobject):
     def get_group_class(self):
         return VGroup
 
+    @staticmethod
+    def get_mobject_type_class():
+        return VMobject
+
     # Colors
     def init_colors(self, propagate_colors=True):
         self.set_fill(

@@ -142,6 +142,10 @@ class OpenGLVMobject(OpenGLMobject):
     def get_group_class(self):
         return OpenGLVGroup
 
+    @staticmethod
+    def get_mobject_type_class():
+        return OpenGLVMobject
+
     def init_data(self):
         super().init_data()
         self.data.pop("rgbas")

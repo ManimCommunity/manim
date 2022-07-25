@@ -15,7 +15,7 @@ from ...utils.images import get_full_vector_image_path
 from ...utils.iterables import hash_obj
 from ..geometry.arc import Circle
 from ..geometry.line import Line
-from ..geometry.polygram import Polygon, Polyline, Rectangle, RoundedRectangle
+from ..geometry.polygram import Polygon, Rectangle, RoundedRectangle
 from ..opengl.opengl_compatibility import ConvertToOpenGL
 from ..types.vectorized_mobject import VMobject
 
@@ -398,8 +398,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         points = [_convert_point_to_3d(*point) for point in polygon]
         return Polygon(*points)
 
-    @staticmethod
-    def polyline_to_mobject(polyline: se.Polyline) -> Polyline:
+    def polyline_to_mobject(self, polyline: se.Polyline) -> VMobject:
         """Convert a polyline element to a vectorized mobject.
 
         Parameters
@@ -408,7 +407,8 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             The parsed SVG polyline.
         """
         points = [_convert_point_to_3d(*point) for point in polyline]
-        return Polyline(*points)
+        vmobject_class = self.get_mobject_type_class()
+        return vmobject_class().set_points_as_corners(points)
 
     @staticmethod
     def text_to_mobject(text: se.Text):
