@@ -65,9 +65,16 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
     """
 
     def __init__(self, *vertex_groups: Iterable[Sequence[float]], color=BLUE, **kwargs):
-        self._initial_vertex_groups = np.array(vertex_groups)
-        self.vertex_group_shape = [len(vertices) for vertices in vertex_groups]
         super().__init__(color=color, **kwargs)
+
+        for vertices in vertex_groups:
+            first_vertex, *vertices = vertices
+            first_vertex = np.array(first_vertex)
+
+            self.start_new_path(first_vertex)
+            self.add_points_as_corners(
+                [*(np.array(vertex) for vertex in vertices), first_vertex],
+            )
 
     def get_vertices(self) -> np.ndarray:
         """Gets the vertices of the :class:`Polygram`.
@@ -88,6 +95,7 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
                    [-1., -1.,  0.],
                    [ 1., -1.,  0.]])
         """
+
         return self.get_start_anchors()
 
     def get_vertex_groups(self) -> np.ndarray:
@@ -104,29 +112,26 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
 
             >>> poly = Polygram([ORIGIN, RIGHT, UP], [LEFT, LEFT + UP, 2 * LEFT])
             >>> poly.get_vertex_groups()
-            [array([[0., 0., 0.],
-                   [1., 0., 0.],
-                   [0., 1., 0.]]), array([[-1.,  0.,  0.],
-                   [-1.,  1.,  0.],
-                   [-2.,  0.,  0.]])]
+            array([[[ 0.,  0.,  0.],
+                    [ 1.,  0.,  0.],
+                    [ 0.,  1.,  0.]],
+            <BLANKLINE>
+                   [[-1.,  0.,  0.],
+                    [-1.,  1.,  0.],
+                    [-2.,  0.,  0.]]])
         """
-        vertex_iterator = iter(self.get_vertices())
-        return [
-            np.array([next(vertex_iterator) for _ in range(group_length)])
-            for group_length in self.vertex_group_shape
-        ]
 
-    def generate_points(self):
-        for vertices in self._initial_vertex_groups:
-            first_vertex, *vertices = vertices
-            first_vertex = np.array(first_vertex)
+        vertex_groups = []
 
-            self.start_new_path(first_vertex)
-            self.add_points_as_corners(
-                [*(np.array(vertex) for vertex in vertices), first_vertex],
-            )
+        group = []
+        for start, end in zip(self.get_start_anchors(), self.get_end_anchors()):
+            group.append(start)
 
-    init_points = generate_points
+            if self.consider_points_equals(end, group[0]):
+                vertex_groups.append(group)
+                group = []
+
+        return np.array(vertex_groups)
 
     def round_corners(self, radius: float = 0.5):
         """Rounds off the corners of the :class:`Polygram`.
@@ -240,18 +245,6 @@ class Polygon(Polygram):
 
     def __init__(self, *vertices: Sequence[float], **kwargs):
         super().__init__(vertices, **kwargs)
-
-
-class Polyline(Polygon):
-    def generate_points(self):
-        for vertices in self._initial_vertex_groups:
-            first_vertex, *vertices = vertices
-            first_vertex = np.array(first_vertex)
-
-            self.start_new_path(first_vertex)
-            self.add_points_as_corners(
-                [*(np.array(vertex) for vertex in vertices)],
-            )
 
 
 class RegularPolygram(Polygram):
