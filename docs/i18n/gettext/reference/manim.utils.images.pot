@@ -18,6 +18,10 @@ msgstr ""
 msgid "Functions"
 msgstr ""
 
+#: ../../../manim/utils/images.py:docstring of manim.utils.images.change_to_rgba_array:1
+msgid "Converts an RGB array into RGBA with the alpha value opacity maxed."
+msgstr ""
+
 #: ../../../manim/utils/images.py:docstring of manim.utils.images.drag_pixels:0
 #: ../../../manim/utils/images.py:docstring of manim.utils.images.get_full_raster_image_path:0
 #: ../../../manim/utils/images.py:docstring of manim.utils.images.invert_image:0

@@ -286,6 +286,7 @@ class ManimConfig(MutableMapping):
         "scene_names",
         "show_in_file_browser",
         "tex_dir",
+        "tex_template",
         "tex_template_file",
         "text_dir",
         "upto_animation_number",
@@ -361,6 +362,8 @@ class ManimConfig(MutableMapping):
 
         if isinstance(obj, ManimConfig):
             self._d.update(obj._d)
+            if obj.tex_template:
+                self.tex_template = obj.tex_template
 
         elif isinstance(obj, dict):
             # First update the underlying _d, then update other properties
@@ -1540,7 +1543,7 @@ class ManimConfig(MutableMapping):
             if fn:
                 self._tex_template = TexTemplateFromFile(filename=fn)
             else:
-                self._tex_template = TexTemplateLibrary.default.copy()
+                self._tex_template = TexTemplate()
         return self._tex_template
 
     @tex_template.setter
@@ -1562,10 +1565,8 @@ class ManimConfig(MutableMapping):
                 )
             else:
                 self._d["tex_template_file"] = Path(val)
-                self._tex_template = TexTemplateFromFile(filename=val)
         else:
             self._d["tex_template_file"] = val  # actually set the falsy value
-            self._tex_template = TexTemplate()  # but don't use it
 
     @property
     def plugins(self):

@@ -1,0 +1,273 @@
+*******
+v0.16.0
+*******
+
+:Date: July 13, 2022
+
+Contributors
+============
+
+A total of 44 people contributed to this
+release. People with a '+' by their names authored a patch for the first
+time.
+
+* Alex Lembcke
+* Baroudi Aymen +
+* Benjamin Hackl
+* Charalampos Georgiou +
+* Cindy Park +
+* Ejar +
+* Francesco Frassinelli +
+* Francisco Manríquez Novoa +
+* Jacob Evan Shreve +
+* Jaime Santos +
+* Jonathan Alpert
+* Joshua Mankelow +
+* Kevin Lubick +
+* Laith Bahodi
+* Lingren Kong +
+* Logen +
+* Naveen M K
+* Noam Zaks
+* Pedro Lamkowski +
+* Raghav Goel
+* Simeon Widdis
+* Sparsh Goenka
+* TornaxO7 +
+* Tristan Schulz +
+* WillSoltas
+* ad_chaos
+* conor-oneill-2 +
+* fcrozatier +
+* mooncaker816 +
+* niklebedenko +
+* nyabkun +
+* quark67
+
+
+The patches included in this release have been reviewed by
+the following contributors.
+
+* Alex Lembcke
+* Benjamin Hackl
+* Darylgolden
+* Francesco Frassinelli
+* Francisco Manríquez Novoa
+* Gianluca Gippetto
+* Jan-Hendrik Müller
+* Jonathan Alpert
+* Kevin Lubick
+* Laith Bahodi
+* Naveen M K
+* Pedro Lamkowski
+* Philipp Imhof
+* Raghav Goel
+* Ryan McCauley
+* Sparsh Goenka
+* TornaxO7
+* Tristan Schulz
+* ad_chaos
+* hickmott99
+
+Pull requests merged
+====================
+
+A total of 56 pull requests were merged for this release.
+
+Highlights
+----------
+
+* :pr:`2550`: New thematic guide: a deep dive into the internals of the library
+   This new :doc:`thematic guide </guides/deep_dive>` aims to be a comprehensive walkthrough
+   describing all the things that Manim does when you run it to produce a video.
+
+* :pr:`2732`: Improved overall structure of deployed documentation; added a dedicated :doc:`FAQ section </faq/index>`
+
+
+* :pr:`2749`: Added :class:`.ChangeSpeed`, an animation wrapper that allows to smoothly change the speed at which an animation is played
+   The speed of any animation can be changed by wrapping the animation with :class:`.ChangeSpeed` and passing a dictionary as ``speedinfo`` whose keys are the relative animation run time stamps and whose values are the absolute speed factors; e.g., ``{0.5: 2, 0.75: 0.25}`` smoothly speeds up the animation by a factor of 2 once it has been completed to 50%, and then it is smoothly slowed down to 1/4 of the default run speed after 75% of the animation are completed. The ``run_time`` of the animation will be adjusted to match the changed play speed.
+
+   It is also possible to add time-based updaters that respect the change in speed, use the auxiliary :meth:`.ChangeSpeed.add_updater` method to do so.
+
+New features
+------------
+
+* :pr:`2667`: Made FFmpeg executable path configurable
+
+
+* :pr:`2739`: Added vectorized plotting functionality via keyword argument ``use_vectorized`` to improve performance
+
+
+Enhancements
+------------
+
+* :pr:`2186`: Enabled filling color by value for :class:`.OpenGLSurface`, replaced ``colors`` keyword argument of :meth:`.Surface.set_fill_by_value`  with ``colorscale``
+
+
+* :pr:`2288`: Added warning when attempting to add same mobject as child twice
+
+
+* :pr:`2707`: Fixed missing ``get_nth_curve_length_pieces`` method of :class:`.OpenGLVMobject`
+   - Removed duplicate definition of ``get_curve_functions_with_lengths`` in ``OpenGLVMobject``
+   - Added definition of ``get_nth_curve_length_pieces`` to ``OpenGLVMobject``
+
+* :pr:`2709`: Improved the look of the brackets of :class:`.Matrix`
+
+
+* :pr:`2714`: Fixed :meth:`.OpenGLVMobject.pointwise_become_partial` to improve stroke rendering
+
+
+* :pr:`2727`: Slight performance improvement for :class:`.ArrowVectorField` and Bézier curve computation
+
+
+* :pr:`2728`: Added :meth:`.VectorField.fit_to_coordinate_system` to fit a vector field to a given coordinate system
+
+
+* :pr:`2730`: Added note to let users find documentation of default CLI subcommand easier
+
+
+* :pr:`2746`: Installed ghostscript in the docker image
+
+
+* :pr:`2841`: Added :func:`.split_quadratic_bezier` and :func:`.subdivide_quadratic_bezier`
+
+
+* :pr:`2842`: CLI: Moved functionality from ``manim new`` to ``manim init`` and added deprecation warning for ``manim new``
+
+
+* :pr:`2866`: Reorganize test files to match library module structure
+
+
+Fixed bugs
+----------
+
+* :pr:`2567`: Use tempconfig for every scene render
+
+
+* :pr:`2638`: Fixed :meth:`BarChart.change_bar_values`  not updating when height is 0
+
+
+* :pr:`2661`: Fixed tip resize functionality for :class:`.Axes` to match documentation
+
+
+* :pr:`2703`: Default to utf-8 when reading files in :class:`.Code`
+
+
+* :pr:`2721`: Fixed bad text slicing for lines in :class:`.Paragraph`
+
+
+* :pr:`2725`: Fixed wrong indentation in :class:`.Code`
+
+
+* :pr:`2734`: Fixed OpenGL segfaults when running :meth:`.Scene.play` or :meth:`.Scene.wait` in interactive mode
+
+
+* :pr:`2753`: Fixed multiplatform builds for docker images in pipeline
+
+
+* :pr:`2757`: Added missing ``__init__.py`` file in :mod:`.docbuild` module
+
+
+* :pr:`2770`: Fixed bug in :meth:`.VMobject.proportion_from_point` that caused proportions greater than 1 to be returned
+
+
+* :pr:`2826`: Fixed leaked mobjects coming from :class:`.TransformMatchingAbstractBase`
+
+
+* :pr:`2870`: Fixed issue with ``manim init scene SCENE_NAME filename.py`` and removed necessity of ``main.py`` to be present in working directory
+
+
+Documentation-related changes
+-----------------------------
+
+* :pr:`2704`: Updated URL to Pango Markup formatting page
+
+
+* :pr:`2716`: Improved the order of the reference manuals
+
+
+* :pr:`2720`: Fixed typo in docstring of :class:`.Angle`
+
+
+* :pr:`2722`: Fixed typos in docstrings of classes in :mod:`.mobject.table`
+
+
+* :pr:`2726`: Edited note on :class:`.NumberPlane` length and added another example
+
+
+* :pr:`2740`: Fixed documentation of :meth:`.Cylinder.get_direction`
+
+
+* :pr:`2755`: Fixed docstring of  :meth:`.VMobject.get_end_anchors`
+
+
+* :pr:`2760`: Removed ``cmake`` from the MacOS installation section
+
+
+* :pr:`2767`: Added more questions and answers to FAQ section, new :doc:`OpenGL FAQ </faq/opengl>`
+
+
+* :pr:`2771`: Added documentation and testing for ``path_func`` keyword argument of :class:`.Transform`
+
+
+* :pr:`2828`: Removed suggestion issue template, added FAQ answer regarding proposing new features
+
+
+* :pr:`2849`: Added example for ``path_arc`` keyword argument of :class:`.Transform`
+
+
+* :pr:`2851`: Added an example on constructing a (neural) network using a partite :class:`.Graph`
+
+
+* :pr:`2855`: Added implicit ``docker.io/`` URL base in reference to docker images
+
+
+* :pr:`2861`: Added docstring for :meth:`.CoordinateSystem.plot_parametric_curve`
+
+
+Changes concerning the testing system
+-------------------------------------
+
+* :pr:`2743`: Replaced ``assert`` statements with with assertion functions from ``np.testing``
+
+
+Changes to our development infrastructure
+-----------------------------------------
+
+* :pr:`2700`: CI: updated Python versions
+
+
+* :pr:`2701`: CI: added a workflow to publish docker image after releases and commits to main branch
+
+
+Code quality improvements and similar refactors
+-----------------------------------------------
+
+* :pr:`2680`: Increased minimum required version of ``numpy`` to 1.19
+
+
+* :pr:`2687`: Migrated from ``os.path`` to ``pathlib`` in :class:`.SVGMobject` and other locations
+
+
+* :pr:`2715`: Updated deprecated ``pillow`` constants
+
+
+* :pr:`2735`: Bump pyjwt from 2.3.0 to 2.4.0
+
+
+* :pr:`2748`: Bump pillow from 9.1.0 to 9.1.1
+
+
+* :pr:`2751`: Fixed flake C417 and improved a comment
+
+
+* :pr:`2825`: Bump notebook from 6.4.11 to 6.4.12
+
+
+* :pr:`2864`: Updated lockfile
+
+
+New releases
+------------
+
+* :pr:`2863`: Prepared new release,  ``v0.16.0``

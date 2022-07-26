@@ -582,7 +582,29 @@ def find_intersection(
     return result
 
 
-def get_winding_number(points: Sequence[float]) -> float:
+def get_winding_number(points: Sequence[np.ndarray]) -> float:
+    """Determine the number of times a polygon winds around the origin.
+
+    The orientation is measured mathematically positively, i.e.,
+    counterclockwise.
+
+    Parameters
+    ----------
+    points
+        The vertices of the polygon being queried.
+
+    Examples
+    --------
+
+    >>> from manim import Square, get_winding_number
+    >>> polygon = Square()
+    >>> get_winding_number(polygon.get_vertices())
+    1.0
+    >>> polygon.shift(2*UP)
+    Square
+    >>> get_winding_number(polygon.get_vertices())
+    0.0
+    """
     total_angle = 0
     for p1, p2 in adjacent_pairs(points):
         d_angle = angle_of_vector(p2) - angle_of_vector(p1)

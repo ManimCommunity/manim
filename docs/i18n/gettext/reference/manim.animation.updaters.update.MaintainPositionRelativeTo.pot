@@ -27,14 +27,12 @@ msgstr ""
 msgid "Interpolates the mobject of the :class:`Animation` based on alpha value."
 msgstr ""
 
-#: ../../../manim/animation/updaters/update.py:docstring of manim.animation.updaters.update.MaintainPositionRelativeTo:0
 #: ../../../manim/animation/updaters/update.py:docstring of manim.animation.updaters.update.MaintainPositionRelativeTo.interpolate_mobject:0
 msgid "Parameters"
 msgstr ""
 
-#: ../../../manim/animation/updaters/update.py:docstring of manim.animation.updaters.update.MaintainPositionRelativeTo:0
-#: ../../../manim/animation/updaters/update.py:docstring of manim.animation.updaters.update.MaintainPositionRelativeTo.interpolate_mobject:0
-msgid "Return type"
+#: ../../../manim/animation/updaters/update.py:docstring of manim.animation.updaters.update.MaintainPositionRelativeTo.interpolate_mobject:3
+msgid "A float between 0 and 1 expressing the ratio to which the animation is completed. For example, alpha-values of 0, 0.5, and 1 correspond to the animation being completed 0%, 50%, and 100%, respectively."
 msgstr ""
 
 

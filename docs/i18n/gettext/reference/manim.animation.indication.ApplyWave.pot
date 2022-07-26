@@ -54,16 +54,8 @@ msgstr ""
 msgid "The duration of the animation."
 msgstr ""
 
-#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.ApplyWave:0
-msgid "Return type"
-msgstr ""
-
 #: ../../../manim/animation/indication.py:docstring of manim.animation.indication.ApplyWave:12
 msgid "Examples"
-msgstr ""
-
-#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.ApplyWave:31
-msgid "Homotopy is a function from (x, y, z, t) to (x', y', z')"
 msgstr ""
 
 

@@ -42,10 +42,6 @@ msgstr ""
 msgid "Any keyword arguments passed to :class:`~.Transform`."
 msgstr ""
 
-#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyMethod:0
-msgid "Return type"
-msgstr ""
-
 #: ../../source/reference/manim.animation.transform.ApplyMethod.rst:14
 msgid "Methods"
 msgstr ""

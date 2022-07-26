@@ -98,7 +98,7 @@ def render(
             keep_running = True
             while keep_running:
                 for SceneClass in scene_classes_from_file(file):
-                    with tempconfig(config):
+                    with tempconfig({}):
                         scene = SceneClass(renderer)
                         rerun = scene.render()
                     if rerun or config["write_all"]:
@@ -116,7 +116,7 @@ def render(
     else:
         for SceneClass in scene_classes_from_file(file):
             try:
-                with tempconfig(config):
+                with tempconfig({}):
                     scene = SceneClass()
                     scene.render()
             except Exception:

@@ -255,7 +255,7 @@ msgid ":pr:`2415`: Removed instructions on using and installing Docker in README
 msgstr ""
 
 #: ../../source/changelog/0.14.0-changelog.rst:114
-msgid ":pr:`2414`: Made improvements to the :doc:`configuration` tutorial"
+msgid ":pr:`2414`: Made improvements to the :doc:`/guides/configuration` tutorial"
 msgstr ""
 
 #: ../../source/changelog/0.14.0-changelog.rst:117

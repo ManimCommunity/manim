@@ -42,10 +42,6 @@ msgstr ""
 msgid "The factor by which the mobject is scaled initially before being rescaling to its original size while being faded in."
 msgstr ""
 
-#: ../../../manim/animation/fading.py:docstring of manim.animation.fading.FadeIn:0
-msgid "Return type"
-msgstr ""
-
 #: ../../../manim/animation/fading.py:docstring of manim.animation.fading.FadeIn:11
 msgid "Examples"
 msgstr ""
