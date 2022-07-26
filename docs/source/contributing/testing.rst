@@ -228,7 +228,7 @@ directory you want the frames created. The frames will be named ``frame0.png``, 
 
 .. code-block:: bash
 
-    python python manim/utils/testing/extract_frames.py tests/test_graphical_units/control_data/plot/axes.npz output
+    python manim/utils/testing/extract_frames.py tests/test_graphical_units/control_data/plot/axes.npz output
 
 
 Please make sure to add the control data to git as soon as it is produced with ``git add <your-control-data.npz>``.
