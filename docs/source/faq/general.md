@@ -7,11 +7,11 @@ the file containing your `Scene` class and forgot to save it, or if you
 have accidentally passed the name of a wrong file to `manim`, this is
 a likely outcome. Check that you have spelled everything correctly.
 
-Otherwise you are likely mixing up Manim versions. See {ref}`this FAQ answer <different-versions>`
-for an explanation regarding why there are different versions. Under the assumption
-that you are trying to use the `manim` executable from the terminal to run
+Otherwise, you are likely mixing up Manim versions. See {ref}`this FAQ answer <different-versions>`
+for an explanation regarding why there are different versions. This is under the
+assumption that you are trying to use the `manim` executable from the terminal to run
 a scene that has been written for the community version (i.e., there is
-`from manim import *`, or more specifically `from manim import Scene`)
+`from manim import *`, or more specifically `from manim import Scene`).
 
 ---
 
@@ -42,7 +42,7 @@ upper left corner of the scene has coordinates `[-7-1/9, 4, 0]`.
 
 ## How do I find out which keyword arguments I can pass when creating a `Mobject`?
 
-Let us consider some specific example, like the {class}`.Circle` class. When looking
+Let us consider a specific example, like the {class}`.Circle` class. When looking
 at its documentation page, only two specific keyword arguments are listed
 (`radius`, and `color`). Besides these concrete arguments, there is also a
 catchall `**kwargs` argument which captures all other arguments that are passed
@@ -93,7 +93,7 @@ for more information.
 
 ## I want to translate some code from `manimgl` to `manim`, what do I do with `CONFIG` dictionaries?
 
-The community maintained version has dropped the use of `CONFIG` dictionaries very
+The community-maintained version has dropped the use of `CONFIG` dictionaries very
 early, with {doc}`version v0.2.0 </changelog/0.2.0-changelog>` released in
 January 2021.
 
@@ -229,7 +229,7 @@ If you are unable to solve your problem, check out the
 
 ## Where can I find more resources for learning Manim?
 
-In our [Discord server](https://manim.community/discord), we have the community maintained
+In our [Discord server](https://manim.community/discord), we have the community-maintained
 `#beginner-resources` channel in which links to helpful learning resources are collected.
 You are welcome to join our Discord and take a look yourself! If you have found some
 guides or tutorials yourself that are not on our list yet, feel free to add them!
