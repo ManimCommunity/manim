@@ -242,8 +242,8 @@ sticks to our coding conventions.
   to your pull request. Make sure not to introduce any Sphinx errors, and have
   a look at the built HTML files to see whether the formatting of the documentation
   you added looks as you intended. You can build the documentation locally
-  by running ``make html`` from the ``docs`` directory. Since the inheritance diagrams
-  require you to have `Graphviz <https://graphviz.org/>`_ installed locally.
+  by running ``make html`` from the ``docs`` directory. Make sure you have `Graphviz <https://graphviz.org/>`_
+  installed locally in order to build the inheritance diagrams.
 
 Finally, if the pipeline passes and you are satisfied with your changes: wait for
 feedback and iterate over any requested changes. You will likely be asked to
