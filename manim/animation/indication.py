@@ -634,8 +634,8 @@ class Circumscribe(AnimationGroup):
         if fade_in and fade_out:
             super().__init__(
                 Succession(
-                FadeIn(frame, run_time=run_time / 2),
-                FadeOut(frame, run_time=run_time / 2)
+                    FadeIn(frame, run_time=run_time / 2),
+                    FadeOut(frame, run_time=run_time / 2),
                 ),
                 **kwargs,
             )
@@ -643,16 +643,16 @@ class Circumscribe(AnimationGroup):
             frame.reverse_direction()
             super().__init__(
                 Succession(
-                FadeIn(frame, run_time=run_time / 2),
-                Uncreate(frame, run_time=run_time / 2)
+                    FadeIn(frame, run_time=run_time / 2),
+                    Uncreate(frame, run_time=run_time / 2),
                 ),
                 **kwargs,
             )
         elif fade_out:
             super().__init__(
                 Succession(
-                Create(frame, run_time=run_time / 2),
-                FadeOut(frame, run_time=run_time / 2)
+                    Create(frame, run_time=run_time / 2),
+                    FadeOut(frame, run_time=run_time / 2),
                 ),
                 **kwargs,
             )
