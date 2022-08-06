@@ -26,7 +26,7 @@ in the right place!
    to learn more!
 
 - The :doc:`Installation <installation>` section has the latest and
-  up-to-date installation instructions for Windows, MacOS, and Linux.
+  up-to-date installation instructions for Windows, macOS, and Linux.
   You can also find information on Manim's docker images and (online)
   notebook environments there.
 - Want to try the library before installing it? Take a look at our

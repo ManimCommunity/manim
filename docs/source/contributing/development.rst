@@ -230,7 +230,7 @@ sticks to our coding conventions.
   manually that were detected by ``flake8``.
 
 - **Tests**: The pipeline runs manim's test suite on different operating systems
-  (the latest versions of Ubuntu, MacOS, and Windows) for different versions of Python.
+  (the latest versions of Ubuntu, macOS, and Windows) for different versions of Python.
   The test suite consists of two different kinds of tests: integration tests
   and doctests. You can run them locally by executing ``poetry run pytest``
   and ``poetry run pytest --doctest-modules manim``, respectively, from the
