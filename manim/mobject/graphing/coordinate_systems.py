@@ -2661,7 +2661,10 @@ class NumberPlane(Axes):
             for k, x in enumerate(inputs):
                 new_line = line.copy()
                 new_line.shift(unit_vector_axis_perp_to * x)
-                if k % ratio_faded_lines == 0:
+                if len(inputs) == 0:
+                    lines1.add(new_line)
+                    break
+                elif (k + 1) % ratio_faded_lines == 0:
                     lines1.add(new_line)
                 else:
                     lines2.add(new_line)
