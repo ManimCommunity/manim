@@ -261,7 +261,7 @@ def test_ImageTransparency(scene):
 
     im1.set_opacity(0.5)
     im2.set_opacity(0.5)
-    im3.set_opacity(0.5).set_color(RED)
+    im3.set_opacity(0.9).set_color(RED, alpha=0.1)
 
     scene.add(im1, im2, im3)
     scene.wait()
