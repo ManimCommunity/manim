@@ -200,7 +200,7 @@ class ImageMobject(AbstractImageMobject):
         rgb = color_to_int_rgb(color)
         self.pixel_array[:, :, :3] = rgb
         if alpha is not None:
-            self.pixel_array[:, :, 3] = int(self.orig_alpha_pixel_array * alpha)
+            self.pixel_array[:, :, 3] = self.orig_alpha_pixel_array * alpha
         for submob in self.submobjects:
             submob.set_color(color, alpha, family)
         self.color = color
@@ -215,7 +215,7 @@ class ImageMobject(AbstractImageMobject):
             The alpha value of the object, 1 being opaque and 0 being
             transparent.
         """
-        self.pixel_array[:, :, 3] = (self.orig_alpha_pixel_array * alpha).astype(int)
+        self.pixel_array[:, :, 3] = self.orig_alpha_pixel_array * alpha
         self.fill_opacity = alpha
         self.stroke_opacity = alpha
         return self
