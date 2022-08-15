@@ -253,6 +253,21 @@ def test_ImageMobject(scene):
 
 
 @frames_comparison
+def test_ImageTransparency(scene):
+    file_path = get_svg_resource("translate.png")
+    im1 = ImageMobject(file_path).scale(5)
+    im2 = ImageMobject(file_path, invert=True).scale(5).shift(1 * LEFT + 2 * DOWN)
+    im3 = ImageMobject(file_path).scale(5).shift(1 * RIGHT + 2 * UP)
+
+    im1.set_opacity(0.5)
+    im2.set_opacity(0.5)
+    im3.set_opacity(0.5).set_color(RED)
+
+    scene.add(im1, im2, im3)
+    scene.wait()
+
+
+@frames_comparison
 def test_ImageInterpolation(scene):
     img = ImageMobject(
         np.uint8([[63, 0, 0, 0], [0, 127, 0, 0], [0, 0, 191, 0], [0, 0, 0, 255]]),
