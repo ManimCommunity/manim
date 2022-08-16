@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.7.13', '3.10.4']
+        python: ['3.7.13', '3.10.6']
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v2
