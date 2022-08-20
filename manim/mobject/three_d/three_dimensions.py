@@ -528,18 +528,6 @@ class Cone(Surface):
     height) The spherical radius, r, is calculated using the pythagorean
     theorem.
 
-    Examples
-    --------
-    .. manim:: ExampleCone
-        :save_last_frame:
-
-        class ExampleCone(ThreeDScene):
-            def construct(self):
-                axes = ThreeDAxes()
-                cone = Cone(direction=X_AXIS+Y_AXIS+2*Z_AXIS, resolution=8)
-                self.set_camera_orientation(phi=5*PI/11, theta=PI/9)
-                self.add(axes, cone)
-
     Parameters
     --------
     base_radius : :class:`float`
@@ -556,6 +544,18 @@ class Cone(Surface):
         The radius at the apex.
     checkerboard_colors : :class:`bool`
         Show checkerboard grid texture on the cone.
+
+    Examples
+    --------
+    .. manim:: ExampleCone
+        :save_last_frame:
+
+        class ExampleCone(ThreeDScene):
+            def construct(self):
+                axes = ThreeDAxes()
+                cone = Cone(direction=X_AXIS+Y_AXIS+2*Z_AXIS, resolution=8)
+                self.set_camera_orientation(phi=5*PI/11, theta=PI/9)
+                self.add(axes, cone)
     """
 
     def __init__(
@@ -673,18 +673,6 @@ class Cone(Surface):
 class Cylinder(Surface):
     """A cylinder, defined by its height, radius and direction,
 
-    Examples
-    ---------
-    .. manim:: ExampleCylinder
-        :save_last_frame:
-
-        class ExampleCylinder(ThreeDScene):
-            def construct(self):
-                axes = ThreeDAxes()
-                cylinder = Cylinder(radius=2, height=3)
-                self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
-                self.add(axes, cylinder)
-
     Parameters
     ---------
     radius : :class:`float`
@@ -700,6 +688,18 @@ class Cylinder(Surface):
     resolution :
         The number of samples taken of the :class:`Cylinder`. A tuple can be used to define different
         resolutions for ``u`` and ``v`` respectively.
+
+    Examples
+    ---------
+    .. manim:: ExampleCylinder
+        :save_last_frame:
+
+        class ExampleCylinder(ThreeDScene):
+            def construct(self):
+                axes = ThreeDAxes()
+                cylinder = Cylinder(radius=2, height=3)
+                self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+                self.add(axes, cylinder)
     """
 
     def __init__(
@@ -824,6 +824,17 @@ class Cylinder(Surface):
 class Line3D(Cylinder):
     """A cylindrical line, for use in ThreeDScene.
 
+    Parameters
+    ---------
+    start : :class:`numpy.array`
+        The start position of the :class:`Line3D`.
+    end : :class:`numpy.array`
+        The end position of the :class:`Line3D`.
+    thickness : :class:`float`
+        The thickness of the :class:`Line3D`.
+    color :
+        The color of the :class:`Line3D`.
+
     Examples
     ---------
     .. manim:: ExampleLine3D
@@ -835,17 +846,6 @@ class Line3D(Cylinder):
                 line = Line3D(start=np.array([0, 0, 0]), end=np.array([2, 2, 2]))
                 self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
                 self.add(axes, line)
-
-    Parameters
-    ---------
-    start : :class:`numpy.array`
-        The start position of the :class:`Line3D`.
-    end : :class:`numpy.array`
-        The end position of the :class:`Line3D`.
-    thickness : :class:`float`
-        The thickness of the :class:`Line3D`.
-    color :
-        The color of the :class:`Line3D`.
     """
 
     def __init__(self, start=LEFT, end=RIGHT, thickness=0.02, color=None, **kwargs):
@@ -997,6 +997,21 @@ class Line3D(Cylinder):
 class Arrow3D(Line3D):
     """An arrow made out of a cylindrical line and a conical tip.
 
+    Parameters
+    ---------
+    start : :class:`numpy.array`
+        The start position of the arrow.
+    end : :class:`numpy.array`
+        The end position of the arrow.
+    thickness : :class:`float`
+        The thickness of the arrow.
+    height : :class:`float`
+        The height of the conical tip.
+    base_radius: :class:`float`
+        The base radius of the conical tip.
+    color :
+        The color of the :class:`Arrow3D`.
+
     Examples
     ---------
     .. manim:: ExampleArrow3D
@@ -1012,21 +1027,6 @@ class Arrow3D(Line3D):
                 )
                 self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
                 self.add(axes, arrow)
-
-    Parameters
-    ---------
-    start : :class:`numpy.array`
-        The start position of the arrow.
-    end : :class:`numpy.array`
-        The end position of the arrow.
-    thickness : :class:`float`
-        The thickness of the arrow.
-    height : :class:`float`
-        The height of the conical tip.
-    base_radius: :class:`float`
-        The base radius of the conical tip.
-    color :
-        The color of the :class:`Arrow3D`.
     """
 
     def __init__(
@@ -1061,18 +1061,6 @@ class Arrow3D(Line3D):
 class Torus(Surface):
     """A torus.
 
-    Examples
-    ---------
-    .. manim :: ExampleTorus
-        :save_last_frame:
-
-        class ExampleTorus(ThreeDScene):
-            def construct(self):
-                axes = ThreeDAxes()
-                torus = Torus()
-                self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
-                self.add(axes, torus)
-
     Parameters
     ---------
     major_radius : :class:`float`
@@ -1086,6 +1074,18 @@ class Torus(Surface):
     resolution :
         The number of samples taken of the :class:`Torus`. A tuple can be used to define different
         resolutions for ``u`` and ``v`` respectively.
+
+    Examples
+    ---------
+    .. manim :: ExampleTorus
+        :save_last_frame:
+
+        class ExampleTorus(ThreeDScene):
+            def construct(self):
+                axes = ThreeDAxes()
+                torus = Torus()
+                self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+                self.add(axes, torus)
     """
 
     def __init__(
