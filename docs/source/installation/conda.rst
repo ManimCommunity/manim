@@ -30,9 +30,9 @@ equations, LaTeX has to be installed as well. Note that this is an optional
 dependency: if you don't intend to use LaTeX, you don't have to install it.
 
 You can install LaTeX by following the optional dependencies steps
-for :ref:`Windows </installation/windows:win-optional-dependencies>`,
-:ref:`Linux </installation/linux:linux-optional-dependencies>` or
-:ref:`macOS </installation/macos:macos-optional-dependencies>`.
+for :ref:`Windows <win-optional-dependencies>`,
+:ref:`Linux <linux-optional-dependencies>` or
+:ref:`macOS <macos-optional-dependencies>`.
 
 
 

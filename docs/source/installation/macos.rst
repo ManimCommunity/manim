@@ -58,6 +58,7 @@ to install Manim.
    make sure that the Homebrew-related lines in your ``.zprofile`` are
    at the very end of the file.
 
+.. _macos-optional-dependencies:
 
 Optional Dependencies
 ---------------------
