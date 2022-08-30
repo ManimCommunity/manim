@@ -657,7 +657,7 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
         verts is a numpy array of points.
     ring_ends
         ring_ends is a list of indices indicating where
-    the ends of new paths are.
+        the ends of new paths are.
 
     Returns
     -------
