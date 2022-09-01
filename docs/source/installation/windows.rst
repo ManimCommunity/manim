@@ -54,6 +54,28 @@ Manim should now be installed on your system. Continue reading
 the :ref:`optional dependencies <win-optional-dependencies>` section
 below.
 
+Winget
+*****
+
+While there is no recipe for installing Manim with Winget directly,
+you can install all requirements by running:
+
+.. code-block:: powershell
+
+   winget install python
+   winget install ffmpeg
+
+and then Manim can be installed by running:
+
+.. code-block:: powershell
+
+   python -m pip install manim
+
+Manim should now be installed on your system. Continue reading
+the :ref:`optional dependencies <win-optional-dependencies>` section
+below.
+
+
 Manual Installation
 *******************
 
