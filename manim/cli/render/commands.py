@@ -129,7 +129,8 @@ def render(
         req_info = {}
 
         try:
-            req_info = requests.get(manim_info_url)
+            # OpenRefactory Warning: The 'requests.get' method does not use any 'timeout' threshold which may cause program to hang indefinitely.
+            req_info = requests.get(manim_info_url, timeout=100)
             req_info.raise_for_status()
 
             stable = req_info.json()["info"]["version"]

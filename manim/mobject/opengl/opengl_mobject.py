@@ -155,16 +155,16 @@ class OpenGLMobject:
         return self.__class__.__name__
 
     def __sub__(self, other):
-        raise NotImplementedError
+        return NotImplemented
 
     def __isub__(self, other):
-        raise NotImplementedError
+        return NotImplemented
 
     def __add__(self, mobject):
-        raise NotImplementedError
+        return NotImplemented
 
     def __iadd__(self, mobject):
-        raise NotImplementedError
+        return NotImplemented
 
     @classmethod
     def set_default(cls, **kwargs):
