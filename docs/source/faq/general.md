@@ -8,10 +8,23 @@ have accidentally passed the name of a wrong file to `manim`, this is
 a likely outcome. Check that you have spelled everything correctly.
 
 Otherwise, you are likely mixing up Manim versions. See {ref}`this FAQ answer <different-versions>`
-for an explanation regarding why there are different versions. This is under the
+for an explanation regarding why there are different versions. Under the
 assumption that you are trying to use the `manim` executable from the terminal to run
 a scene that has been written for the community version (i.e., there is
-`from manim import *`, or more specifically `from manim import Scene`).
+`from manim import *`, or more specifically `from manim import Scene`),
+then this error indicates that the `manim` executable has been overwritten
+by the one provided by `manimgl` (unfortunately, both `manim` and `manimgl`
+provide a `manim` executable).
+
+You can check whether this is the case by running `manim --version`, the output of
+the community maintained version starts with `Manim Community v...`. If this is not
+the case, you are running `manimgl`.
+
+You can resolve this by either of the following steps:
+- Un- and reinstalling `manim`,
+- using the `manimce` executable in place of the `manim` one,
+- or replacing the call to the executable with a direct call to the
+  Python module via `python -m manim`.
 
 ---
 
