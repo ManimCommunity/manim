@@ -44,7 +44,7 @@ class Homotopy(Animation):
         Keyword arguments propagated to :meth:`.Mobject.apply_function`.
     kwargs
         Further keyword arguments passed to the parent class.
-    
+
     Examples
     --------
     .. manim:: HomotopyExample
