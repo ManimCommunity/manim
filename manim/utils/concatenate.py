@@ -1,15 +1,18 @@
 """Utilities to concatenate multiple scenes into one."""
 
-__all__ = [
-    "concatenate"
-]
+__all__ = ["concatenate"]
 
 from functools import wraps
 from typing import Callable, Tuple
 
 from ..scene.scene import Scene
 
-def concatenate(*scenes: Tuple[Scene], wait_between_scenes: float = 0, clear_between_scenes: bool = True) -> Callable:
+
+def concatenate(
+    *scenes: Tuple[Scene],
+    wait_between_scenes: float = 0,
+    clear_between_scenes: bool = True
+) -> Callable:
     """
     Concatenates multiple scenes into one.
 
@@ -32,7 +35,7 @@ def concatenate(*scenes: Tuple[Scene], wait_between_scenes: float = 0, clear_bet
         class First(Scene):
             def construct(self):
                 ...
-        
+
         class Second(Scene):
             def construct(self):
                 ...
@@ -47,6 +50,7 @@ def concatenate(*scenes: Tuple[Scene], wait_between_scenes: float = 0, clear_bet
         class BothScenesAlt:
             pass
     """
+
     def construct(self):
         for scene in self.scenes:
             scene.construct(self)
