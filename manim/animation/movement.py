@@ -44,6 +44,17 @@ class Homotopy(Animation):
         Keyword arguments propagated to :meth:`.Mobject.apply_function`.
     kwargs
         Further keyword arguments passed to the parent class.
+    
+    Examples
+    --------
+    .. manim:: HomotopyExample
+
+        class HomotopyExample(Scene):
+            def construct(self):
+                dot = Dot()
+                homotopy = lambda x,y,z,t:[x + t, y + t**2, z]
+
+                self.play(Homotopy(homotopy, dot))
     """
 
     def __init__(
