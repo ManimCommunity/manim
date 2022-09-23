@@ -97,6 +97,7 @@ from .scene.zoomed_scene import *
 from .utils import color, rate_functions, unit
 from .utils.bezier import *
 from .utils.color import *
+from .utils.concatenate import *
 from .utils.config_ops import *
 from .utils.debug import *
 from .utils.file_ops import *
