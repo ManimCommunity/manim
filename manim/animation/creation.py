@@ -558,7 +558,7 @@ class AddTextLetterByLetter(ShowIncreasingSubsets):
         if run_time is None:
             # minimum time per character is 1/frame_rate, otherwise
             # the animation does not finish.
-            run_time = np.max((1/config.frame_rate, self.time_per_char)) * len(text)
+            run_time = np.max((1 / config.frame_rate, self.time_per_char)) * len(text)
         super().__init__(
             text,
             suspend_mobject_updating=suspend_mobject_updating,
