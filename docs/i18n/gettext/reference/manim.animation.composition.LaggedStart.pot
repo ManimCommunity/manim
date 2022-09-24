@@ -18,8 +18,4 @@ msgstr ""
 msgid "Bases: :py:class:`manim.animation.composition.AnimationGroup`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.composition.LaggedStart.rst:14
-msgid "Methods"
-msgstr ""
-
 

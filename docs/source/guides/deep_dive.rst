@@ -927,7 +927,7 @@ First, the renderer prepares its :class:`.Camera` by checking whether the render
 has a ``static_image`` different from ``None`` stored already. If so, it sets the
 image as the *background image* of the camera via :meth:`.Camera.set_frame_to_background`,
 and otherwise it just resets the camera via :meth:`.Camera.reset`. The camera is then
-asked to capture the scene with a call to :meth:`.Camera.camture_mobjects`.
+asked to capture the scene with a call to :meth:`.Camera.capture_mobjects`.
 
 Things get a bit technical here, and at some point it is more efficient to
 delve into the implementation -- but here is a summary of what happens once the

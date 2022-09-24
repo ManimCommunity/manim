@@ -96,6 +96,14 @@ class TexTemplate:
         )
         self._rebuild()
 
+    def __eq__(self, other: TexTemplate) -> bool:
+        return (
+            self.body == other.body
+            and self.tex_compiler == other.tex_compiler
+            and self.output_format == other.output_format
+            and self.post_doc_commands == other.post_doc_commands
+        )
+
     def _rebuild(self):
         """Rebuilds the entire TeX template text from ``\\documentclass`` to ``\\end{document}`` according to all settings and choices."""
         self.body = (

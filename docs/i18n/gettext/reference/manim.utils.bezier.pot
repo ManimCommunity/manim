@@ -34,6 +34,9 @@ msgstr ""
 #: ../../../manim/utils/bezier.py:docstring of manim.utils.bezier.partial_bezier_points:0
 #: ../../../manim/utils/bezier.py:docstring of manim.utils.bezier.point_lies_on_bezier:0
 #: ../../../manim/utils/bezier.py:docstring of manim.utils.bezier.proportions_along_bezier_curve_for_point:0
+#: ../../../manim/utils/bezier.py:docstring of manim.utils.bezier.quadratic_bezier_remap:0
+#: ../../../manim/utils/bezier.py:docstring of manim.utils.bezier.split_quadratic_bezier:0
+#: ../../../manim/utils/bezier.py:docstring of manim.utils.bezier.subdivide_quadratic_bezier:0
 msgid "Parameters"
 msgstr ""
 
@@ -46,6 +49,7 @@ msgstr ""
 #: ../../../manim/utils/bezier.py:docstring of manim.utils.bezier.partial_bezier_points:0
 #: ../../../manim/utils/bezier.py:docstring of manim.utils.bezier.point_lies_on_bezier:0
 #: ../../../manim/utils/bezier.py:docstring of manim.utils.bezier.proportions_along_bezier_curve_for_point:0
+#: ../../../manim/utils/bezier.py:docstring of manim.utils.bezier.split_quadratic_bezier:0
 msgid "Returns"
 msgstr ""
 
@@ -65,6 +69,9 @@ msgstr ""
 #: ../../../manim/utils/bezier.py:docstring of manim.utils.bezier.partial_bezier_points:0
 #: ../../../manim/utils/bezier.py:docstring of manim.utils.bezier.point_lies_on_bezier:0
 #: ../../../manim/utils/bezier.py:docstring of manim.utils.bezier.proportions_along_bezier_curve_for_point:0
+#: ../../../manim/utils/bezier.py:docstring of manim.utils.bezier.quadratic_bezier_remap:0
+#: ../../../manim/utils/bezier.py:docstring of manim.utils.bezier.split_quadratic_bezier:0
+#: ../../../manim/utils/bezier.py:docstring of manim.utils.bezier.subdivide_quadratic_bezier:0
 msgid "Return type"
 msgstr ""
 
@@ -160,6 +167,62 @@ msgstr ""
 
 #: ../../../manim/utils/bezier.py:docstring of manim.utils.bezier.proportions_along_bezier_curve_for_point:0
 msgid "Raises"
+msgstr ""
+
+#: ../../../manim/utils/bezier.py:docstring of manim.utils.bezier.proportions_along_bezier_curve_for_point:25
+msgid "When ``point`` and the control points have different shapes."
+msgstr ""
+
+#: ../../../manim/utils/bezier.py:docstring of manim.utils.bezier.quadratic_bezier_remap:1
+msgid "Remaps the number of curves to a higher amount by splitting bezier curves"
+msgstr ""
+
+#: ../../../manim/utils/bezier.py:docstring of manim.utils.bezier.quadratic_bezier_remap:3
+msgid "The triplets of the quadratic bezier curves to be remapped"
+msgstr ""
+
+#: ../../../manim/utils/bezier.py:docstring of manim.utils.bezier.quadratic_bezier_remap:4
+msgid "The number of curves that the output will contain. This needs to be higher than the current number."
+msgstr ""
+
+#: ../../../manim/utils/bezier.py:docstring of manim.utils.bezier.split_quadratic_bezier:1
+msgid "Split a quadratic Bézier curve at argument ``t`` into two quadratic curves."
+msgstr ""
+
+#: ../../../manim/utils/bezier.py:docstring of manim.utils.bezier.split_quadratic_bezier:3
+msgid "The control points of the bezier curve has shape ``[a1, h1, b1]``"
+msgstr ""
+
+#: ../../../manim/utils/bezier.py:docstring of manim.utils.bezier.split_quadratic_bezier:5
+msgid "The ``t``-value at which to split the Bézier curve"
+msgstr ""
+
+#: ../../../manim/utils/bezier.py:docstring of manim.utils.bezier.split_quadratic_bezier:7
+msgid "* *The two Bézier curves as a list of tuples,* * has the shape ``[a1, h1, b1], [a2, h2, b2]``"
+msgstr ""
+
+#: ../../../manim/utils/bezier.py:docstring of manim.utils.bezier.split_quadratic_bezier:7
+msgid "*The two Bézier curves as a list of tuples,*"
+msgstr ""
+
+#: ../../../manim/utils/bezier.py:docstring of manim.utils.bezier.split_quadratic_bezier:8
+msgid "has the shape ``[a1, h1, b1], [a2, h2, b2]``"
+msgstr ""
+
+#: ../../../manim/utils/bezier.py:docstring of manim.utils.bezier.subdivide_quadratic_bezier:1
+msgid "Subdivide a quadratic Bézier curve into ``n`` subcurves which have the same shape."
+msgstr ""
+
+#: ../../../manim/utils/bezier.py:docstring of manim.utils.bezier.subdivide_quadratic_bezier:3
+msgid "The points at which the curve is split are located at the arguments :math:`t = i/n` for :math:`i = 1, ..., n-1`."
+msgstr ""
+
+#: ../../../manim/utils/bezier.py:docstring of manim.utils.bezier.subdivide_quadratic_bezier:6
+msgid "The control points of the Bézier curve in form ``[a1, h1, b1]``"
+msgstr ""
+
+#: ../../../manim/utils/bezier.py:docstring of manim.utils.bezier.subdivide_quadratic_bezier:7
+msgid "The number of curves to subdivide the Bézier curve into"
 msgstr ""
 
 

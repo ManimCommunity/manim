@@ -27,6 +27,7 @@ msgid "Vector fields are based on a function defining a vector at every position
 msgstr ""
 
 #: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.VectorField:0
+#: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.VectorField.fit_to_coordinate_system:0
 #: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.VectorField.get_colored_background_image:0
 #: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.VectorField.get_nudge_updater:0
 #: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.VectorField.get_vectorized_rgba_gradient_function:0
@@ -71,73 +72,90 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:28:<autosummary>:1
+#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:29:<autosummary>:1
+#: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.VectorField.fit_to_coordinate_system:1
+msgid "Scale the vector field to fit a coordinate system."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:29:<autosummary>:1
 #: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.VectorField.get_colored_background_image:1
 msgid "Generate an image that displays the vector field."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:28:<autosummary>:1
+#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:29:<autosummary>:1
 #: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.VectorField.get_nudge_updater:1
 msgid "Get an update function to move a :class:`~.Mobject` along the vector field."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:28:<autosummary>:1
+#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:29:<autosummary>:1
 #: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.VectorField.get_vectorized_rgba_gradient_function:1
 msgid "Generates a gradient of rgbas as a numpy array"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:28:<autosummary>:1
+#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:29:<autosummary>:1
 #: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.VectorField.nudge:1
 msgid "Nudge a :class:`~.Mobject` along the vector field."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:28:<autosummary>:1
+#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:29:<autosummary>:1
 #: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.VectorField.nudge_submobjects:1
 msgid "Apply a nudge along the vector field to all submobjects."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:28:<autosummary>:1
+#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:29:<autosummary>:1
 #: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.VectorField.scale_func:1
 msgid "Scale a vector field function."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:28:<autosummary>:1
+#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:29:<autosummary>:1
 #: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.VectorField.shift_func:1
 msgid "Shift a vector field function."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:28:<autosummary>:1
+#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:29:<autosummary>:1
 #: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.VectorField.start_submobject_movement:1
 msgid "Start continuously moving all submobjects along the vector field."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:28:<autosummary>:1
+#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:29:<autosummary>:1
 #: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.VectorField.stop_submobject_movement:1
 msgid "Stops the continuous movement started using :meth:`start_submobject_movement`."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:30
+#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:31
 msgid "Attributes"
 msgstr ""
 
-#: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.VectorField.get_colored_background_image:1:<autosummary>:1
+#: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.VectorField.fit_to_coordinate_system:1:<autosummary>:1
 msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
-#: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.VectorField.get_colored_background_image:1:<autosummary>:1
+#: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.VectorField.fit_to_coordinate_system:1:<autosummary>:1
 msgid "The depth of the mobject."
 msgstr ""
 
-#: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.VectorField.get_colored_background_image:1:<autosummary>:1
+#: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.VectorField.fit_to_coordinate_system:1:<autosummary>:1
 msgid "If there are multiple colors (for gradient) this returns the first one"
 msgstr ""
 
-#: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.VectorField.get_colored_background_image:1:<autosummary>:1
+#: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.VectorField.fit_to_coordinate_system:1:<autosummary>:1
 msgid "The height of the mobject."
 msgstr ""
 
-#: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.VectorField.get_colored_background_image:1:<autosummary>:1
+#: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.VectorField.fit_to_coordinate_system:1:<autosummary>:1
 msgid "The width of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.VectorField.fit_to_coordinate_system:3
+msgid "This method is useful when the vector field is defined in a coordinate system different from the one used to display the vector field."
+msgstr ""
+
+#: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.VectorField.fit_to_coordinate_system:6
+msgid "This method can only be used once because it transforms the origin of each vector."
+msgstr ""
+
+#: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.VectorField.fit_to_coordinate_system:8
+msgid "The coordinate system to fit the vector field to."
 msgstr ""
 
 #: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.VectorField.get_colored_background_image:3

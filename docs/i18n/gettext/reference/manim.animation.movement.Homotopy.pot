@@ -19,15 +19,39 @@ msgid "Bases: :py:class:`manim.animation.animation.Animation`"
 msgstr ""
 
 #: ../../../manim/animation/movement.py:docstring of manim.animation.movement.Homotopy:1
-msgid "Homotopy is a function from (x, y, z, t) to (x', y', z')"
+msgid "A Homotopy."
 msgstr ""
 
-#: ../../source/reference/manim.animation.movement.Homotopy.rst:14
-msgid "Methods"
+#: ../../../manim/animation/movement.py:docstring of manim.animation.movement.Homotopy:3
+msgid "This is an animation transforming the points of a mobject according to the specified transformation function. With the parameter :math:`t` moving from 0 to 1 throughout the animation and :math:`(x, y, z)` describing the coordinates of the point of a mobject, the function passed to the ``homotopy`` keyword argument should transform the tuple :math:`(x, y, z, t)` to :math:`(x', y', z')`, the coordinates the original point is transformed to at time :math:`t`."
 msgstr ""
 
 #: ../../../manim/animation/movement.py:docstring of manim.animation.movement.Homotopy:0
 msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/animation/movement.py:docstring of manim.animation.movement.Homotopy:11
+msgid "A function mapping :math:`(x, y, z, t)` to :math:`(x', y', z')`."
+msgstr ""
+
+#: ../../../manim/animation/movement.py:docstring of manim.animation.movement.Homotopy:12
+msgid "The mobject transformed under the given homotopy."
+msgstr ""
+
+#: ../../../manim/animation/movement.py:docstring of manim.animation.movement.Homotopy:13
+msgid "The run time of the animation."
+msgstr ""
+
+#: ../../../manim/animation/movement.py:docstring of manim.animation.movement.Homotopy:14
+msgid "Keyword arguments propagated to :meth:`.Mobject.apply_function`."
+msgstr ""
+
+#: ../../../manim/animation/movement.py:docstring of manim.animation.movement.Homotopy:15
+msgid "Further keyword arguments passed to the parent class."
+msgstr ""
+
+#: ../../source/reference/manim.animation.movement.Homotopy.rst:14
+msgid "Methods"
 msgstr ""
 
 

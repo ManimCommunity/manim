@@ -43,11 +43,6 @@ msgstr ""
 msgid "The factor by which the mobject is scaled while being faded out."
 msgstr ""
 
-#: ../../../manim/animation/fading.py:docstring of manim.animation.fading.FadeOut:0
-#: ../../../manim/animation/fading.py:docstring of manim.animation.fading.FadeOut.clean_up_from_scene:0
-msgid "Return type"
-msgstr ""
-
 #: ../../../manim/animation/fading.py:docstring of manim.animation.fading.FadeOut:10
 msgid "Examples"
 msgstr ""
@@ -67,6 +62,10 @@ msgstr ""
 
 #: ../../../manim/animation/fading.py:docstring of manim.animation.fading.FadeOut.clean_up_from_scene:3
 msgid "This includes to :meth:`~.Scene.remove` the Animation's :class:`~.Mobject` if the animation is a remover."
+msgstr ""
+
+#: ../../../manim/animation/fading.py:docstring of manim.animation.fading.FadeOut.clean_up_from_scene:6
+msgid "The scene the animation should be cleaned up from."
 msgstr ""
 
 

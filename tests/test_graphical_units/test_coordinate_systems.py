@@ -37,6 +37,46 @@ def test_line_graph(scene):
     scene.add(plane, first_line, second_line)
 
 
+@frames_comparison(base_scene=ThreeDScene)
+def test_plot_surface(scene):
+    axes = ThreeDAxes(x_range=(-5, 5, 1), y_range=(-5, 5, 1), z_range=(-5, 5, 1))
+
+    def param_trig(u, v):
+        x = u
+        y = v
+        z = 2 * np.sin(x) + 2 * np.cos(y)
+        return z
+
+    trig_plane = axes.plot_surface(
+        param_trig,
+        u_range=(-5, 5),
+        v_range=(-5, 5),
+        color=BLUE,
+    )
+
+    scene.add(axes, trig_plane)
+
+
+@frames_comparison(base_scene=ThreeDScene)
+def test_plot_surface_colorscale(scene):
+    axes = ThreeDAxes(x_range=(-3, 3, 1), y_range=(-3, 3, 1), z_range=(-5, 5, 1))
+
+    def param_trig(u, v):
+        x = u
+        y = v
+        z = 2 * np.sin(x) + 2 * np.cos(y)
+        return z
+
+    trig_plane = axes.plot_surface(
+        param_trig,
+        u_range=(-3, 3),
+        v_range=(-3, 3),
+        colorscale=[BLUE, GREEN, YELLOW, ORANGE, RED],
+    )
+
+    scene.add(axes, trig_plane)
+
+
 @frames_comparison
 def test_implicit_graph(scene):
     ax = Axes()

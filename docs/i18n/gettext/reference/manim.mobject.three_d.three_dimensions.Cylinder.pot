@@ -23,7 +23,6 @@ msgid "A cylinder, defined by its height, radius and direction,"
 msgstr ""
 
 #: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Cylinder:4
-#: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Cylinder.get_direction:6
 msgid "Examples"
 msgstr ""
 
@@ -65,7 +64,8 @@ msgid "Converts from cylindrical coordinates to cartesian."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_d.three_dimensions.Cylinder.rst:23:<autosummary>:1
-msgid "Uses :func:`~.space_ops.shoelace_direction` to calculate the direction."
+#: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Cylinder.get_direction:1
+msgid "Returns the direction of the central axis of the cylinder."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_d.three_dimensions.Cylinder.rst:25
@@ -90,30 +90,6 @@ msgstr ""
 
 #: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Cylinder.add_bases:1:<autosummary>:1
 msgid "The width of the mobject."
-msgstr ""
-
-#: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Cylinder.func:1
-msgid "Converts from cylindrical coordinates to cartesian. :param u: The height. :type u: :class:`float` :param v: The azimuthal angle. :type v: :class:`float`"
-msgstr ""
-
-#: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Cylinder.get_direction:1
-msgid "Uses :func:`~.space_ops.shoelace_direction` to calculate the direction. The direction of points determines in which direction the object is drawn, clockwise or counterclockwise."
-msgstr ""
-
-#: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Cylinder.get_direction:7
-msgid "The default direction of a :class:`~.Circle` is counterclockwise::"
-msgstr ""
-
-#: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Cylinder.get_direction:0
-msgid "Returns"
-msgstr ""
-
-#: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Cylinder.get_direction:13
-msgid "Either ``\"CW\"`` or ``\"CCW\"``."
-msgstr ""
-
-#: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Cylinder.get_direction:0
-msgid "Return type"
 msgstr ""
 
 

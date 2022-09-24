@@ -1054,10 +1054,7 @@ class MarkupText(SVGMobject):
                     "Praesent feugiat metus sit amet iaculis pulvinar. Nulla posuere "
                     "quam a ex aliquam, eleifend consectetur tellus viverra. Aliquam "
                     "fermentum interdum justo, nec rutrum elit pretium ac. Nam quis "
-                    "leo pulvinar, dignissim est at, venenatis nisi. Quisque mattis "
-                    "dolor ut euismod hendrerit. Nullam eu ante sollicitudin, commodo "
-                    "risus a, vehicula odio. Nam urna tortor, aliquam a nibh eu, commodo "
-                    "imperdiet arcu. Donec tincidunt commodo enim a tincidunt."
+                    "leo pulvinar, dignissim est at, venenatis nisi."
                 )
                 justified_text = MarkupText(ipsum_text, justify=True).scale(0.4)
                 not_justified_text = MarkupText(ipsum_text, justify=False).scale(0.4)
@@ -1065,15 +1062,10 @@ class MarkupText(SVGMobject):
                 njust_title = Title("Not Justified")
                 self.add(njust_title, not_justified_text)
                 self.play(
-                    Transform(
-                        not_justified_text,
-                        justified_text,
-                    ),
-                    Transform(
-                        njust_title,
-                        just_title,
-                    ),
-                    run_time=2,
+                    FadeOut(not_justified_text),
+                    FadeIn(justified_text),
+                    FadeOut(njust_title),
+                    FadeIn(just_title),
                 )
                 self.wait(1)
 

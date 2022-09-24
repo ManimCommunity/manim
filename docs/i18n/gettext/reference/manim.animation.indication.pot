@@ -43,6 +43,10 @@ msgid "Indicate a Mobject by temporarily resizing and recoloring it."
 msgstr ""
 
 #: ../../source/reference/manim.animation.indication.rst:36:<autosummary>:1
+msgid "Deprecated"
+msgstr ""
+
+#: ../../source/reference/manim.animation.indication.rst:36:<autosummary>:1
 msgid "Show only a sliver of the VMobject each frame."
 msgstr ""
 

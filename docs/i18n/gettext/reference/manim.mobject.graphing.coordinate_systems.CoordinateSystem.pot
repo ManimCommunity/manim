@@ -19,7 +19,7 @@ msgid "Bases: :py:class:`object`"
 msgstr ""
 
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem:1
-msgid "Abstract class for Axes and NumberPlane"
+msgid "Abstract base class for Axes and NumberPlane."
 msgstr ""
 
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem:4
@@ -27,7 +27,7 @@ msgstr ""
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.angle_of_tangent:12
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.get_T_label:17
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.get_area:16
-#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.get_axis_labels:15
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.get_axis_labels:17
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.get_graph_label:16
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.get_horizontal_line:10
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.get_lines_to_point:14
@@ -39,11 +39,12 @@ msgstr ""
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.get_y_axis_label:12
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.input_to_graph_coords:5
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.input_to_graph_point:12
-#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot:16
-#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_antiderivative_graph:17
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot:18
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_antiderivative_graph:20
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_derivative_graph:11
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_implicit_curve:9
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_polar_graph:8
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_surface:17
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.polar_to_point:10
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.slope_of_tangent:11
 msgid "Examples"
@@ -64,7 +65,7 @@ msgstr ""
 
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.add_coordinates:1:<autosummary>:1
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.c2p:1
-msgid "Abbreviation for coords_to_point"
+msgid "Abbreviation for :meth:`coords_to_point`"
 msgstr ""
 
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.add_coordinates:1:<autosummary>:1
@@ -78,6 +79,7 @@ msgid "Returns a :class:`~.Polygon` representing the area under the graph passed
 msgstr ""
 
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.add_coordinates:1:<autosummary>:1
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.get_axis_labels:1
 msgid "Defines labels for the x_axis and y_axis of the graph."
 msgstr ""
 
@@ -158,7 +160,7 @@ msgstr ""
 
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.add_coordinates:1:<autosummary>:1
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.p2c:1
-msgid "Abbreviation for point_to_coords"
+msgid "Abbreviation for :meth:`point_to_coords`"
 msgstr ""
 
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.add_coordinates:1:<autosummary>:1
@@ -182,8 +184,18 @@ msgid "Creates the curves of an implicit function."
 msgstr ""
 
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.add_coordinates:1:<autosummary>:1
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_parametric_curve:1
+msgid "A parametric curve."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.add_coordinates:1:<autosummary>:1
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_polar_graph:1
 msgid "A polar graph."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.add_coordinates:1:<autosummary>:1
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_surface:1
+msgid "Generates a surface based on a function."
 msgstr ""
 
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.add_coordinates:1:<autosummary>:1
@@ -238,7 +250,9 @@ msgstr ""
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_antiderivative_graph:0
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_derivative_graph:0
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_implicit_curve:0
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_parametric_curve:0
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_polar_graph:0
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_surface:0
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.point_to_polar:0
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.polar_to_point:0
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.pr2pt:0
@@ -288,6 +302,7 @@ msgstr ""
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot:0
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_antiderivative_graph:0
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_derivative_graph:0
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_surface:0
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.point_to_polar:0
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.polar_to_point:0
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.slope_of_tangent:0
@@ -321,7 +336,9 @@ msgstr ""
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_antiderivative_graph:0
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_derivative_graph:0
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_implicit_curve:0
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_parametric_curve:0
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_polar_graph:0
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_surface:0
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.point_to_polar:0
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.polar_to_point:0
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.pr2pt:0
@@ -403,23 +420,23 @@ msgstr ""
 msgid "When x_ranges do not match (either area x_range, graph's x_range or bounded_graph's x_range)."
 msgstr ""
 
-#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.get_axis_labels:1
-msgid "Defines labels for the x_axis and y_axis of the graph. For increased control over the position of the labels, use :meth:`get_x_axis_label` and :meth:`get_y_axis_label`."
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.get_axis_labels:3
+msgid "For increased control over the position of the labels, use :meth:`get_x_axis_label` and :meth:`get_y_axis_label`."
 msgstr ""
 
-#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.get_axis_labels:4
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.get_axis_labels:6
 msgid "The label for the x_axis. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs."
 msgstr ""
 
-#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.get_axis_labels:5
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.get_axis_labels:7
 msgid "The label for the y_axis. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs."
 msgstr ""
 
-#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.get_axis_labels:7
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.get_axis_labels:9
 msgid "A :class:`~.Vgroup` of the labels for the x_axis and y_axis."
 msgstr ""
 
-#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.get_axis_labels:11
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.get_axis_labels:13
 msgid ":class:`get_x_axis_label` :class:`get_y_axis_label`"
 msgstr ""
 
@@ -702,14 +719,18 @@ msgid "The range of the curve along the axes. ``x_range = [x_min, x_max, x_step]
 msgstr ""
 
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot:5
-msgid "Additional parameters to be passed to :class:`~.ParametricFunction`."
+msgid "Whether to pass in the generated t value array to the function. Only use this if your function supports it. Output should be a numpy array of shape ``[y_0, y_1, ...]``"
 msgstr ""
 
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot:7
+msgid "Additional parameters to be passed to :class:`~.ParametricFunction`."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot:9
 msgid "The plotted curve."
 msgstr ""
 
-#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot:11
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot:13
 msgid "This method may not produce accurate graphs since Manim currently relies on interpolation between evenly-spaced samples of the curve, instead of intelligent plotting. See the example below for some solutions to this problem."
 msgstr ""
 
@@ -726,15 +747,19 @@ msgid "The number of points to take the area under the graph."
 msgstr ""
 
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_antiderivative_graph:6
+msgid "Whether to use the vectorized version of the antiderivative. This means to pass in the generated t value array to the function. Only use this if your function supports it. Output should be a numpy array of shape ``[y_0, y_1, ...]``"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_antiderivative_graph:9
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_derivative_graph:5
 msgid "Any valid keyword argument of :class:`~.ParametricFunction`."
 msgstr ""
 
-#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_antiderivative_graph:8
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_antiderivative_graph:11
 msgid "The curve of the antiderivative."
 msgstr ""
 
-#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_antiderivative_graph:12
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_antiderivative_graph:15
 msgid "This graph is plotted from the values of area under the reference graph. The result might not be ideal if the reference graph contains uncalculatable areas from x=0."
 msgstr ""
 
@@ -766,6 +791,22 @@ msgstr ""
 msgid "Additional parameters to pass into :class:`ImplicitFunction`."
 msgstr ""
 
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_parametric_curve:3
+msgid "A parametric function mapping a number to a point in the coordinate system."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_parametric_curve:5
+msgid "Whether to pass in the generated t value array to the function. Only use this if your function supports it."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_parametric_curve:6
+msgid "Any further keyword arguments are passed to :class:`.ParametricFunction`."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_parametric_curve:9
+msgid "Example"
+msgstr ""
+
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_polar_graph:3
 msgid "The function r of theta."
 msgstr ""
@@ -776,6 +817,34 @@ msgstr ""
 
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_polar_graph:5
 msgid "Additional parameters passed to :class:`~.ParametricFunction`."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_surface:3
+msgid "The function used to construct the :class:`~.Surface`."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_surface:4
+msgid "The range of the ``u`` variable: ``(u_min, u_max)``."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_surface:5
+msgid "The range of the ``v`` variable: ``(v_min, v_max)``."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_surface:6
+msgid "Colors of the surface. Passing a list of colors will color the surface by z-value. Passing a list of tuples in the form ``(color, pivot)`` allows user-defined pivots where the color transitions."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_surface:9
+msgid "Defines the axis on which the colorscale is applied (0 = x, 1 = y, 2 = z), default is z-axis (2)."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_surface:11
+msgid "Additional parameters to be passed to :class:`~.Surface`."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.plot_surface:13
+msgid "The plotted surface."
 msgstr ""
 
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.CoordinateSystem.point_to_polar:3

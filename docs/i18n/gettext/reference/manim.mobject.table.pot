@@ -23,19 +23,19 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.table.rst:28:<autosummary>:1
-msgid "A specialized :class:`~.Table` mobject for use with with :class:`~.DecimalNumber` to display decimal entries."
+msgid "A specialized :class:`~.Table` mobject for use with :class:`~.DecimalNumber` to display decimal entries."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.table.rst:28:<autosummary>:1
-msgid "A specialized :class:`~.Table` mobject for use with with :class:`~.Integer`."
+msgid "A specialized :class:`~.Table` mobject for use with :class:`~.Integer`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.table.rst:28:<autosummary>:1
-msgid "A specialized :class:`~.Table` mobject for use with with LaTeX."
+msgid "A specialized :class:`~.Table` mobject for use with LaTeX."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.table.rst:28:<autosummary>:1
-msgid "A specialized :class:`~.Table` mobject for use with with :class:`~.Mobject`."
+msgid "A specialized :class:`~.Table` mobject for use with :class:`~.Mobject`."
 msgstr ""
 
 

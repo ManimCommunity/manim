@@ -147,7 +147,7 @@ msgid "Escaping of special characters: ``>`` **should** be written as ``&gt;`` w
 msgstr ""
 
 #: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:103
-msgid "You can find more information about Pango markup formatting at the corresponding documentation page: `Pango Markup <https://developer.gnome.org/pango/stable/pango-Markup.html>`_. Please be aware that not all features are supported by this class and that the ``<gradient>`` tag mentioned above is not supported by Pango."
+msgid "You can find more information about Pango markup formatting at the corresponding documentation page: `Pango Markup <https://docs.gtk.org/Pango/pango_markup.html>`_. Please be aware that not all features are supported by this class and that the ``<gradient>`` tag mentioned above is not supported by Pango."
 msgstr ""
 
 #: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:0
@@ -155,38 +155,38 @@ msgid "Parameters"
 msgstr ""
 
 #: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:109
-msgid "The text that need to created as mobject."
+msgid "The text that needs to be created as mobject."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:110
+msgid "The fill opacity, with 1 meaning opaque and 0 meaning transparent."
 msgstr ""
 
 #: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:111
-msgid "The fill opacity with 1 meaning opaque and 0 meaning transparent."
-msgstr ""
-
-#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:113
 msgid "Stroke width."
 msgstr ""
 
-#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:115
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:112
 msgid "Font size."
 msgstr ""
 
-#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:117
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:113
 msgid "Line spacing."
 msgstr ""
 
-#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:119
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:114
 msgid "Global font setting for the entire text. Local overrides are possible."
 msgstr ""
 
-#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:121
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:115
 msgid "Global slant setting, e.g. `NORMAL` or `ITALIC`. Local overrides are possible."
 msgstr ""
 
-#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:123
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:116
 msgid "Global weight setting, e.g. `NORMAL` or `BOLD`. Local overrides are possible."
 msgstr ""
 
-#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:125
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:117
 msgid "Global gradient setting. Local overrides are possible."
 msgstr ""
 
@@ -194,7 +194,7 @@ msgstr ""
 msgid "Returns"
 msgstr ""
 
-#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:128
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:119
 msgid "The text displayed in form of a :class:`.VGroup`-like mobject."
 msgstr ""
 
@@ -202,23 +202,23 @@ msgstr ""
 msgid "Return type"
 msgstr ""
 
-#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:132
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:123
 msgid "Examples"
 msgstr ""
 
-#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:233
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:224
 msgid "As :class:`MarkupText` uses Pango to render text, rendering non-English characters is easily possible:"
 msgstr ""
 
-#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:252
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:243
 msgid "You can justify the text by passing :attr:`justify` parameter."
 msgstr ""
 
-#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:287
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:278
 msgid "Tests"
 msgstr ""
 
-#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:288
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:279
 msgid "Check that the creation of :class:`~.MarkupText` works::"
 msgstr ""
 
