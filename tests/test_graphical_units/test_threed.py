@@ -30,7 +30,7 @@ def test_Dot3D(scene):
 
 @frames_comparison(base_scene=ThreeDScene)
 def test_Cone(scene):
-    scene.add(Cone())
+    scene.add(Cone(resolution=16))
 
 
 @frames_comparison(base_scene=ThreeDScene)
@@ -40,15 +40,16 @@ def test_Cylinder(scene):
 
 @frames_comparison(base_scene=ThreeDScene)
 def test_Line3D(scene):
-    line1, line2 = Line3D().shift(LEFT * 2), Line3D().shift(RIGHT * 2)
-    perp_line = Line3D.perpendicular_to(line1, UP + OUT)
-    parallel_line = Line3D.parallel_to(line2, DOWN + IN)
+    line1 = Line3D(resolution=16).shift(LEFT * 2)
+    line2 = Line3D(resolution=16).shift(RIGHT * 2)
+    perp_line = Line3D.perpendicular_to(line1, UP + OUT, resolution=16)
+    parallel_line = Line3D.parallel_to(line2, DOWN + IN, resolution=16)
     scene.add(line1, line2, perp_line, parallel_line)
 
 
 @frames_comparison(base_scene=ThreeDScene)
 def test_Arrow3D(scene):
-    scene.add(Arrow3D())
+    scene.add(Arrow3D(resolution=16))
 
 
 @frames_comparison(base_scene=ThreeDScene)
@@ -103,7 +104,7 @@ def test_MovingVertices(scene):
 
 @frames_comparison(base_scene=ThreeDScene)
 def test_SurfaceColorscale(scene):
-    resolution_fa = 50
+    resolution_fa = 16
     scene.set_camera_orientation(phi=75 * DEGREES, theta=-30 * DEGREES)
     axes = ThreeDAxes(x_range=(-3, 3, 1), y_range=(-3, 3, 1), z_range=(-4, 4, 1))
 
@@ -127,7 +128,7 @@ def test_SurfaceColorscale(scene):
 
 @frames_comparison(base_scene=ThreeDScene)
 def test_Y_Direction(scene):
-    resolution_fa = 42
+    resolution_fa = 16
     scene.set_camera_orientation(phi=75 * DEGREES, theta=-120 * DEGREES)
     axes = ThreeDAxes(x_range=(0, 5, 1), y_range=(0, 5, 1), z_range=(-1, 1, 0.5))
 

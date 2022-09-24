@@ -1,4 +1,4 @@
-MacOS
+macOS
 =====
 
 For the sake of simplicity, the following instructions assume that you have
@@ -11,7 +11,7 @@ follow `Homebrew's installation instructions <https://docs.brew.sh/Installation>
 
 .. note::
 
-   For a while after Apple released its new ARM-based processors (the *"M1 chip"*),
+   For a while after Apple released its new ARM-based processors (the Apple Silicon chips like the *"M1 chip"*),
    the recommended way of installing Manim relied on *Rosetta*, Apple's compatibility
    layer between Intel and ARM architectures. This is no longer necessary, Manim can
    (and is recommended to) be installed natively.
@@ -48,7 +48,7 @@ to install Manim.
 
    A frequent source for installation problems is if ``pip3``
    does not point to the correct Python installation on your system.
-   To check this, run ``pip3 -V``: for MacOS Intel, the path should
+   To check this, run ``pip3 -V``: for macOS Intel, the path should
    start with ``/usr/local``, and for Apple Silicon with
    ``/opt/homebrew``. If this is not the case, you either forgot
    to modify your shell profile (``.zprofile``) during the installation
@@ -58,6 +58,7 @@ to install Manim.
    make sure that the Homebrew-related lines in your ``.zprofile`` are
    at the very end of the file.
 
+.. _macos-optional-dependencies:
 
 Optional Dependencies
 ---------------------
@@ -66,7 +67,7 @@ In order to make use of Manim's interface to LaTeX for, e.g., rendering
 equations, LaTeX has to be installed as well. Note that this is an optional
 dependency: if you don't intend to use LaTeX, you don't have to install it.
 
-For MacOS, the recommended LaTeX distribution is
+For macOS, the recommended LaTeX distribution is
 `MacTeX <http://www.tug.org/mactex/>`__. You can install it by following
 the instructions from the link, or alternatively also via Homebrew by
 running:

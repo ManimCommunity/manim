@@ -1497,6 +1497,7 @@ class Scene:
         Examples
         --------
         .. manim:: SoundExample
+            :no_autoplay:
 
             class SoundExample(Scene):
                 # Source of sound under Creative Commons 0 License. https://freesound.org/people/Druminfected/sounds/250551/
