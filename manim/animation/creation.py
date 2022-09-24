@@ -85,6 +85,7 @@ if TYPE_CHECKING:
 from manim.mobject.opengl.opengl_surface import OpenGLSurface
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 
+from .. import config
 from ..animation.animation import Animation
 from ..animation.composition import Succession
 from ..constants import TAU
@@ -553,10 +554,11 @@ class AddTextLetterByLetter(ShowIncreasingSubsets):
         introducer=True,
         **kwargs,
     ) -> None:
-        # time_per_char must be above 0.06, or the animation won't finish
         self.time_per_char = time_per_char
         if run_time is None:
-            run_time = np.max((0.06, self.time_per_char)) * len(text)
+            # minimum time per character is 1/frame_rate, otherwise
+            # the animation does not finish.
+            run_time = np.max((1/config.frame_rate, self.time_per_char)) * len(text)
         super().__init__(
             text,
             suspend_mobject_updating=suspend_mobject_updating,
