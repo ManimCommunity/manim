@@ -45,6 +45,7 @@ jobs:
 
       - name: Install Manim
         run: |
+          poetry env use ${{ matrix.python }}
           poetry install
 
       - name: Run tests
