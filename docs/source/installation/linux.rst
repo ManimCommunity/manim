@@ -147,3 +147,12 @@ be sufficient for your particular application) is::
    dvisvgm everysel fontspec frcursive fundus-calligra gnu-freefont jknapltx
    latex-bin mathastext microtype ms physics preview ragged2e relsize rsfs
    setspace standalone tipa wasy wasysym xcolor xetex xkeyval
+
+
+
+Working with Manim
+------------------
+
+At this point, you should have a working installation of Manim, head
+over to our :doc:`Quickstart Tutorial <../tutorials/quickstart>` to learn
+how to make your own *Manimations*!

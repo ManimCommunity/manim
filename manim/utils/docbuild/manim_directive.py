@@ -47,6 +47,10 @@ directive:
         If this flag is present without argument,
         the source code is not displayed above the rendered video.
 
+    no_autoplay
+        If this flag is present without argument,
+        the video will not autoplay.
+
     quality : {'low', 'medium', 'high', 'fourk'}
         Controls render quality of the video, in analogy to
         the corresponding command line flags.
@@ -142,6 +146,7 @@ class ManimDirective(Directive):
     optional_arguments = 0
     option_spec = {
         "hide_source": bool,
+        "no_autoplay": bool,
         "quality": lambda arg: directives.choice(
             arg,
             ("low", "medium", "high", "fourk"),
@@ -190,6 +195,7 @@ class ManimDirective(Directive):
             classnamedict[clsname] += 1
 
         hide_source = "hide_source" in self.options
+        no_autoplay = "no_autoplay" in self.options
         save_as_gif = "save_as_gif" in self.options
         save_last_frame = "save_last_frame" in self.options
         assert not (save_as_gif and save_last_frame)
@@ -242,6 +248,7 @@ class ManimDirective(Directive):
 
         example_config = {
             "frame_rate": frame_rate,
+            "no_autoplay": no_autoplay,
             "pixel_height": pixel_height,
             "pixel_width": pixel_width,
             "save_last_frame": save_last_frame,
@@ -295,6 +302,7 @@ class ManimDirective(Directive):
             clsname_lowercase=clsname.lower(),
             hide_source=hide_source,
             filesrc_rel=Path(filesrc).relative_to(setup.confdir).as_posix(),
+            no_autoplay=no_autoplay,
             output_file=output_file,
             save_last_frame=save_last_frame,
             save_as_gif=save_as_gif,
@@ -382,7 +390,13 @@ TEMPLATE = r"""
 {% if not (save_as_gif or save_last_frame) %}
 .. raw:: html
 
-    <video class="manim-video" controls loop autoplay src="./{{ output_file }}.mp4"></video>
+    <video
+        class="manim-video"
+        controls
+        loop
+        {{ '' if no_autoplay else 'autoplay' }}
+        src="./{{ output_file }}.mp4">
+    </video>
 
 {% elif save_as_gif %}
 .. image:: /{{ filesrc_rel }}
