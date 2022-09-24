@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.7.13', '3.10.6']
+        python: ['3.7.14', '3.10.7']
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v2
@@ -37,7 +37,7 @@ jobs:
 
       - name: Activate Python ${{ matrix.python }}
         run: |
-          echo "/root/.pyenv/versions/${{ matrix.python }}/bin:/root/.poetry/bin:$PATH" > $GITHUB_PATH
+          echo "/root/.pyenv/versions/${{ matrix.python }}/bin:/root/.local/bin:$PATH" > $GITHUB_PATH
 
       - name: Show Python Version
         run: |
