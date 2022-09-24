@@ -99,6 +99,10 @@ html_favicon = str(Path("_static/favicon.ico"))
 html_static_path = ["_static"]
 
 html_theme_options = {
+    "source_repository": "https://github.com/ManimCommunity/manim/",
+    "source_branch": "main",
+    "source_directory": "docs/source/",
+    "top_of_page_button": None,
     "light_logo": "manim-logo-sidebar.svg",
     "dark_logo": "manim-logo-sidebar-dark.svg",
     "light_css_variables": {
