@@ -67,6 +67,7 @@ __all__ = [
     "ShowIncreasingSubsets",
     "SpiralIn",
     "AddTextLetterByLetter",
+    "RemoveTextLetterByLetter",
     "ShowSubmobjectsOneByOne",
     "AddTextWordByWord",
 ]
