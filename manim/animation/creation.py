@@ -572,7 +572,7 @@ class AddTextLetterByLetter(ShowIncreasingSubsets):
 
 
 class RemoveTextLetterByLetter(AddTextLetterByLetter):
-    """Remove a :class:`~.Text` letter by letter on the scene.
+    """Remove a :class:`~.Text` letter by letter from the scene.
 
     Parameters
     ----------
