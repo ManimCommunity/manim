@@ -125,8 +125,8 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         if self.file_name is None:
             raise Exception("Must specify file for SVGMobject")
 
-        if self.file_name.exists():
-            self.file_path = self.file_name
+        if self.file_name.expanduser().exists():
+            self.file_path = self.file_name.expanduser()
             return
 
         relative = Path.cwd() / self.file_name
