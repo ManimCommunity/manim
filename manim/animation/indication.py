@@ -330,7 +330,7 @@ class ShowPassingFlashWithThinningStrokeWidth(AnimationGroup):
         super().__init__(
             *(
                 ShowPassingFlash(
-                    vmobject.deepcopy().set_stroke(width=stroke_width),
+                    vmobject.copy().set_stroke(width=stroke_width),
                     time_width=time_width,
                     **kwargs,
                 )
