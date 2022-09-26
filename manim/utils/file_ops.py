@@ -161,7 +161,7 @@ def guarantee_empty_existence(path: Path) -> Path:
 def seek_full_path_from_defaults(
     file_name: str, default_dir: Path, extensions: list[str]
 ) -> Path:
-    possible_paths = [Path(file_name)]
+    possible_paths = [Path(file_name).expanduser()]
     possible_paths += [
         Path(default_dir) / f"{file_name}{extension}" for extension in ["", *extensions]
     ]
