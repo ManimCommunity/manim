@@ -823,8 +823,14 @@ class FadeTransform(Transform):
             self.ghost_to(m0, m1)
 
     def ghost_to(self, source, target):
-        """Replaces the source by the target and sets the opacity to 0."""
-        source.replace(target, stretch=self.stretch, dim_to_match=self.dim_to_match)
+        """Replaces the source by the target and sets the opacity to 0.
+
+        If the provided target has no points, and thus a location of [0, 0, 0]
+        the source will simply fade out where it currently is.
+        """
+        # mobject.replace() does not work if the target has no points.
+        if target.get_num_points() or target.submobjects:
+            source.replace(target, stretch=self.stretch, dim_to_match=self.dim_to_match)
         source.set_opacity(0)
 
     def get_all_mobjects(self) -> Sequence[Mobject]:
