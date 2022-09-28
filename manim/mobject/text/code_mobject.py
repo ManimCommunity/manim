@@ -285,7 +285,7 @@ class Code(VGroup):
             raise Exception("Must specify file for Code")
         possible_paths = [
             os.path.join(os.path.join("assets", "codes"), self.file_name),
-            self.file_name,
+            os.path.expanduser(self.file_name),
         ]
         for path in possible_paths:
             if os.path.exists(path):
