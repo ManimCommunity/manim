@@ -7,6 +7,7 @@ __all__ = ["Brace", "BraceLabel", "ArcBrace", "BraceText", "BraceBetweenPoints"]
 from typing import Sequence
 
 import numpy as np
+import svgelements as se
 
 from manim._config import config
 from manim.mobject.geometry.arc import Arc
@@ -18,12 +19,12 @@ from ...animation.composition import AnimationGroup
 from ...animation.fading import FadeIn
 from ...animation.growing import GrowFromCenter
 from ...constants import *
-from ...mobject.svg.svg_path import SVGPathMobject
 from ...mobject.types.vectorized_mobject import VMobject
 from ...utils.color import BLACK
+from ..svg.svg_mobject import VMobjectFromSVGPath
 
 
-class Brace(SVGPathMobject):
+class Brace(VMobjectFromSVGPath):
     """Takes a mobject and draws a brace adjacent to it.
 
     Passing a direction vector determines the direction from which the
@@ -99,19 +100,22 @@ class Brace(SVGPathMobject):
             (target_width * sharpness - default_min_width) / 2,
         )
 
-        path = path_string_template.format(
-            linear_section_length,
-            -linear_section_length,
+        path = se.Path(
+            path_string_template.format(
+                linear_section_length,
+                -linear_section_length,
+            )
         )
 
         super().__init__(
-            path_string=path,
+            path_obj=path,
             stroke_width=stroke_width,
             fill_opacity=fill_opacity,
             background_stroke_width=background_stroke_width,
             background_stroke_color=background_stroke_color,
             **kwargs,
         )
+        self.flip(RIGHT)
         self.stretch_to_fit_width(target_width)
         self.shift(left - self.get_corner(UP + LEFT) + self.buff * DOWN)
 

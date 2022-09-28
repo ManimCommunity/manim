@@ -2135,6 +2135,11 @@ class Mobject:
     def get_group_class(self):
         return Group
 
+    @staticmethod
+    def get_mobject_type_class():
+        """Return the base class of this mobject type."""
+        return Mobject
+
     def split(self):
         result = [self] if len(self.points) > 0 else []
         return result + self.submobjects
