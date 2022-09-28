@@ -21,6 +21,7 @@ from ...constants import *
 from ...mobject.svg.svg_path import SVGPathMobject
 from ...mobject.types.vectorized_mobject import VMobject
 from ...utils.color import BLACK
+from ...utils.space_ops import angle_of_vector
 
 
 class Brace(SVGPathMobject):
@@ -118,14 +119,20 @@ class Brace(SVGPathMobject):
         for mob in mobject, self:
             mob.rotate(angle, about_point=ORIGIN)
 
-    def put_at_tip(self, mob, use_next_to=True, **kwargs):
-        if use_next_to:
-            mob.next_to(self.get_tip(), np.round(self.get_direction()), **kwargs)
-        else:
-            mob.move_to(self.get_tip())
+    def put_at_tip(self, mob, rotate=False, **kwargs):
+
+        if rotate:
             buff = kwargs.get("buff", DEFAULT_MOBJECT_TO_MOBJECT_BUFFER)
-            shift_distance = mob.width / 2.0 + buff
-            mob.shift(self.get_direction() * shift_distance)
+            shift_distance = mob.height / 2.0 + buff
+            mob.move_to(self.get_tip() + self.get_direction() * shift_distance)
+            angle = angle_of_vector(self.get_direction()) - PI / 2
+            # Prevent mobjects from being upside-down
+            if angle > -3 / 2 * PI and angle < -PI / 2:
+                angle += PI
+            mob.rotate(angle)
+        else:
+            mob.next_to(self.get_tip(), np.round(self.get_direction()), **kwargs)
+
         return self
 
     def get_text(self, *text, **kwargs):
@@ -158,11 +165,14 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
         brace_direction=DOWN,
         label_constructor=MathTex,
         font_size=DEFAULT_FONT_SIZE,
+        label_rotate=False,
         buff=0.2,
         **kwargs,
     ):
-        self.label_constructor = label_constructor
         super().__init__(**kwargs)
+        self.label_constructor = label_constructor
+        self.label_scale = label_scale
+        self.label_rotate = label_rotate
 
         self.brace_direction = brace_direction
         self.buff = buff
@@ -175,34 +185,42 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
         else:
             self.label = self.label_constructor(str(text), font_size=font_size)
 
-        self.brace.put_at_tip(self.label)
+        self.brace.put_at_tip(self.label, rotate=self.label_rotate)
         self.add(self.brace, self.label)
 
     def creation_anim(self, label_anim=FadeIn, brace_anim=GrowFromCenter):
         return AnimationGroup(brace_anim(self.brace), label_anim(self.label))
 
-    def shift_brace(self, obj, **kwargs):
+    def shift_brace(self, obj, label_rotate=False, **kwargs):
         if isinstance(obj, list):
             obj = self.get_group_class()(*obj)
         self.brace = Brace(obj, self.brace_direction, **kwargs)
-        self.brace.put_at_tip(self.label)
+
+        self.brace.put_at_tip(self.label, rotate=label_rotate)
         return self
 
-    def change_label(self, *text, **kwargs):
+    def change_label(self, *text, label_rotate=False, **kwargs):
         self.label = self.label_constructor(*text, **kwargs)
-
-        self.brace.put_at_tip(self.label)
+        self.brace.put_at_tip(self.label, rotate=label_rotate)
         return self
 
-    def change_brace_label(self, obj, *text, **kwargs):
+    def change_brace_label(self, obj, label_rotate=False, *text, **kwargs):
         self.shift_brace(obj)
-        self.change_label(*text, **kwargs)
+        self.change_label(*text, label_rotate=label_rotate, **kwargs)
         return self
 
 
 class BraceText(BraceLabel):
-    def __init__(self, obj, text, label_constructor=Tex, **kwargs):
-        super().__init__(obj, text, label_constructor=label_constructor, **kwargs)
+    def __init__(
+        self, obj, text, brace_direction=DOWN, label_constructor=Tex, **kwargs
+    ):
+        super().__init__(
+            obj,
+            text,
+            brace_direction=brace_direction,
+            label_constructor=label_constructor,
+            **kwargs,
+        )
 
 
 class BraceBetweenPoints(Brace):
