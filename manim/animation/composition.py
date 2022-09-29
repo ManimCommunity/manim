@@ -310,7 +310,7 @@ class LaggedStartMap(LaggedStart):
     AnimationClass
         :class:`Animation` to apply to `mobject`.
     mobject
-        :class:`Mobject` whose sub-Mobjects the animation, and optionally the function,
+        :class:`~.Mobject` whose submobjects the animation, and optionally the function,
         are to be applied.
     arg_creator
         Function which will be applied to :class:`~.Mobject`.
