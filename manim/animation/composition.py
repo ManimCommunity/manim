@@ -42,7 +42,7 @@ class AnimationGroup(Animation):
         The function defining the animation progress based on the relative
         runtime (see  :mod:`~.rate_functions`) .
     lag_ratio
-        Defines the delay after which the animation is applied to sub-Mobjects. A lag_ratio of
+        Defines the delay after which the animation is applied to submobjects. A lag_ratio of
         'n.nn' means the next animation will play when 'nnn%' of the current animation has played.
         Defaults to 0.0, meaning that all animations will be played together.
 
