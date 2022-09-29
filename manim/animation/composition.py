@@ -33,7 +33,7 @@ class AnimationGroup(Animation):
     Parameters
     ----------
     animations
-        Group or series of :class:Animation to be played.
+        Group or series of :class:`~.Animation` to be played.
     group
         A group of multiple :class:`~.Mobject`.
     run_time
