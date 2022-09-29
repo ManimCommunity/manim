@@ -28,7 +28,7 @@ DEFAULT_LAGGED_START_LAG_RATIO: float = 0.05
 
 
 class AnimationGroup(Animation):
-    """Plays a group or series of :class:`Animation`.
+    """Plays a group or series of :class:`~.Animation`.
 
     Parameters
     ----------
