@@ -303,7 +303,7 @@ class LaggedStart(AnimationGroup):
 
 
 class LaggedStartMap(LaggedStart):
-    """Plays a series of :class:`Animation` while mapping a function to sub-Mobjects.
+    """Plays a series of :class:`~.Animation` while mapping a function to submobjects.
 
     Parameters
     ----------
