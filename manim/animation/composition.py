@@ -249,7 +249,7 @@ class Succession(AnimationGroup):
 
 
 class LaggedStart(AnimationGroup):
-    """Adjusts the timing of a series of :class:`Animation` according to `lag_ratio`.
+    """Adjusts the timing of a series of :class:`~.Animation` according to ``lag_ratio``.
 
     Parameters
     ----------
