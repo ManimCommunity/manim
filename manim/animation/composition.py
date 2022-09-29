@@ -254,7 +254,7 @@ class LaggedStart(AnimationGroup):
     Parameters
     ----------
     animations
-        Series of :class:`Animation` to be played.
+        Series of :class:`~.Animation` to be played.
     lag_ratio
         Defines the delay after which the animation is applied to submobjects. A lag_ratio of
         'n.nn' means the next animation will play when 'nnn%' of the current animation has played.
