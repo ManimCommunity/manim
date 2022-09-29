@@ -107,7 +107,7 @@ class AnimationGroup(Animation):
             anim.update_mobjects(dt)
 
     def init_run_time(self, run_time) -> float:
-        """Calculates the run time of the animation, if different from `run_time`.
+        """Calculates the run time of the animation, if different from ``run_time``.
 
         Parameters
         ----------
