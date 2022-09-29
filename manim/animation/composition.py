@@ -35,7 +35,7 @@ class AnimationGroup(Animation):
     animations
         Group or series of :class:Animation to be played.
     group
-        A group of multiple :class:`Mobject`.
+        A group of multiple :class:`~.Mobject`.
     run_time
         The duration of the animation in seconds.
     rate_func
