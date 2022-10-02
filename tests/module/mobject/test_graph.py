@@ -11,6 +11,8 @@ def test_graph_creation():
     assert str(G_manual) == "Graph on 4 vertices and 4 edges"
     G_spring = Graph(vertices=vertices, edges=edges)
     assert str(G_spring) == "Graph on 4 vertices and 4 edges"
+    G_directed = Graph(vertices=vertices, edges=edges, constructor="DiGraph")
+    assert str(G_directed) == "Directed graph on 4 vertices and 4 edges"
 
 
 def test_graph_add_vertices():

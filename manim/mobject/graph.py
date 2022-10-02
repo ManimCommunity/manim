@@ -13,21 +13,21 @@ from typing import Hashable, Iterable
 import networkx as nx
 import numpy as np
 
+from manim.animation.composition import AnimationGroup
+from manim.animation.creation import Create, Uncreate
 from manim.mobject.geometry.arc import Dot, LabeledDot
 from manim.mobject.geometry.line import Line
+from manim.mobject.geometry.tips import ArrowTriangleFilledTip
+from manim.mobject.mobject import Mobject, override_animate
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.text.tex_mobject import MathTex
-
-from ..animation.composition import AnimationGroup
-from ..animation.creation import Create, Uncreate
-from ..utils.color import BLACK
-from .mobject import Mobject, override_animate
-from .types.vectorized_mobject import VMobject
+from manim.mobject.types.vectorized_mobject import VMobject
+from manim.utils.color import BLACK
 
 
 def _determine_graph_layout(
-    nx_graph: nx.classes.graph.Graph,
+    nx_graph: nx.classes.graph.Graph | nx.classes.digraph.DiGraph,
     layout: str | dict = "spring",
     layout_scale: float = 2,
     layout_config: dict | None = None,
@@ -100,7 +100,7 @@ def _determine_graph_layout(
 
 
 def _tree_layout(
-    T: nx.classes.graph.Graph,
+    T: nx.classes.graph.Graph | nx.classes.digraph.DiGraph,
     root_vertex: Hashable | None,
     scale: float | tuple | None = 2,
     vertex_spacing: tuple | None = None,
@@ -208,7 +208,7 @@ def _tree_layout(
 
 
 class Graph(VMobject, metaclass=ConvertToOpenGL):
-    """An undirected graph (that is, a collection of vertices connected with edges).
+    """A graph (that is, a collection of vertices connected with edges).
 
     Graphs can be instantiated by passing both a list of (distinct, hashable)
     vertex names, together with list of edges (as tuples of vertex names). See
@@ -279,6 +279,9 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         to the class specified via ``edge_type``, or a dictionary whose
         keys are the edges, and whose values are dictionaries containing
         keyword arguments for the mobject related to the corresponding edge.
+        In the case of a directed graph you can further customize the tip by adding a `tip_config` dict for global styling, or by adding the dict to a specific edge_config. See examples below.
+    constructor
+        A string to specify whether to construct a directed or undirected graph. Possible constructors: "Graph","DiGraph". Defaults to "Graph" if unspecified.
 
     Examples
     --------
@@ -442,6 +445,39 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
                 self.play(Create(
                     Graph(list(G.nodes), list(G.edges), layout="tree", root_vertex="ROOT")))
 
+    You can also create a directed graph with the "DiGraph" constructor
+
+    .. manim:: DiGraph
+
+        class DiGraph(Scene):
+            def construct(self):
+                vertices = [i for i in range(5)]
+                edges = [
+                    (0, 1),
+                    (1, 2),
+                    (3, 2),
+                    (3, 4),
+                ]
+
+                vertex_config = {"radius": 0.02}
+                edge_config = {
+                    "stroke_width": 2,
+                    "tip_config": {"tip_length": 0.1, "tip_width": 0.05},
+                    (3, 4): {"color": RED, "tip_config": {"tip_length": 0.5, "tip_width": 0.5}},
+                }
+
+                g = Graph(
+                    vertices,
+                    edges,
+                    layout="circular",
+                    vertex_config=vertex_config,
+                    edge_config=edge_config,
+                    constructor="DiGraph",
+                ).scale(1.4)
+
+                self.play(Create(g))
+                self.wait()
+
     The following code sample illustrates the use of the ``vertex_spacing``
     layout parameter specific to the ``"tree"`` layout. As mentioned
     above, setting ``vertex_spacing`` overrides the specified value
@@ -502,10 +538,17 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         partitions: list[list[Hashable]] | None = None,
         root_vertex: Hashable | None = None,
         edge_config: dict | None = None,
+        constructor: str = "Graph",
     ) -> None:
         super().__init__()
 
-        nx_graph = nx.Graph()
+        if constructor == "Graph":
+            nx_graph = nx.Graph()
+        elif constructor == "DiGraph":
+            nx_graph = nx.DiGraph()
+        else:
+            raise NameError("Graph constructor must be 'Graph' or 'DiGraph'")
+
         nx_graph.add_nodes_from(vertices)
         nx_graph.add_edges_from(edges)
         self._graph = nx_graph
@@ -563,14 +606,18 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
             default_edge_config = {
                 k: v
                 for k, v in edge_config.items()
-                if k not in edges and k[::-1] not in edges
+                if k not in edges and k[::-1] not in edges and k != "tip_config"
             }
         self._edge_config = {}
         for e in edges:
             if e in edge_config:
-                self._edge_config[e] = edge_config[e]
+                self._edge_config[e] = {
+                    k: v for k, v in edge_config[e].items() if k != "tip_config"
+                }
             elif e[::-1] in edge_config:
-                self._edge_config[e] = edge_config[e[::-1]]
+                self._edge_config[e] = {
+                    k: v for k, v in edge_config[e[::-1]].items() if k != "tip_config"
+                }
             else:
                 self._edge_config[e] = copy(default_edge_config)
 
@@ -585,6 +632,26 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
             for (u, v) in edges
         }
 
+        # Add tips in case of directed graph
+        if isinstance(nx_graph, nx.DiGraph):
+            default_tip_config = {
+                "tip_shape": ArrowTriangleFilledTip,
+                "tip_length": 0.1,
+                "tip_width": 0.1,
+            }
+            self._tip_config = {}
+            if "tip_config" in edge_config:
+                self._tip_config = edge_config["tip_config"]
+            self._tip_config = {**self._tip_config, **default_tip_config}
+
+            for (u, v), edge in self.edges.items():
+                if (u, v) in edge_config and "tip_config" in edge_config[(u, v)]:
+                    self.edges[(u, v)] = edge.add_tip(
+                        **edge_config[(u, v)]["tip_config"]
+                    )
+                else:
+                    self.edges[(u, v)] = edge.add_tip(**self._tip_config)
+
         self.add(*self.vertices.values())
         self.add(*self.edges.values())
 
@@ -598,7 +665,11 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         return self.vertices[v]
 
     def __repr__(self: Graph) -> str:
-        return f"Graph on {len(self.vertices)} vertices and {len(self.edges)} edges"
+        if isinstance(self._graph, nx.Graph):
+            graph = "Graph"
+        elif isinstance(self._graph, nx.DiGraph):
+            graph = "Directed graph"
+        return f"{graph} on {len(self.vertices)} vertices and {len(self.edges)} edges"
 
     def _create_vertex(
         self,
@@ -1099,7 +1170,9 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         return AnimationGroup(*(animation(mobj, **anim_args) for mobj in mobjects))
 
     @staticmethod
-    def from_networkx(nxgraph: nx.classes.graph.Graph, **kwargs) -> Graph:
+    def from_networkx(
+        nxgraph: nx.classes.graph.Graph | nx.classes.digraph.DiGraph, **kwargs
+    ) -> Graph:
         """Build a :class:`~.Graph` from a given ``networkx`` graph.
 
         Parameters
@@ -1129,7 +1202,13 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
                     self.play(Uncreate(G))
 
         """
-        return Graph(list(nxgraph.nodes), list(nxgraph.edges), **kwargs)
+        if isinstance(nxgraph, nx.classes.graph.Graph):
+            constructor = nx.Graph
+        elif isinstance(nxgraph, nx.classes.graph.Graph):
+            constructor = nx.DiGraph
+        return Graph(
+            list(nxgraph.nodes), list(nxgraph.edges), constructor=constructor, **kwargs
+        )
 
     def change_layout(
         self,
