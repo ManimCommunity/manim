@@ -633,7 +633,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         }
 
         # Add tips in case of directed graph
-        if isinstance(nx_graph, nx.DiGraph):
+        if type(nx_graph) == nx.DiGraph:
             default_tip_config = {
                 "tip_shape": ArrowTriangleFilledTip,
                 "tip_length": 0.1,
@@ -665,9 +665,9 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         return self.vertices[v]
 
     def __repr__(self: Graph) -> str:
-        if isinstance(self._graph, nx.Graph):
+        if type(self._graph) == nx.Graph:
             graph = "Graph"
-        elif isinstance(self._graph, nx.DiGraph):
+        elif type(self._graph) == nx.DiGraph:
             graph = "Directed graph"
         return f"{graph} on {len(self.vertices)} vertices and {len(self.edges)} edges"
 
@@ -1202,9 +1202,9 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
                     self.play(Uncreate(G))
 
         """
-        if isinstance(nxgraph, nx.classes.graph.Graph):
+        if type(nxgraph) == nx.classes.graph.Graph:
             constructor = nx.Graph
-        elif isinstance(nxgraph, nx.classes.graph.Graph):
+        elif type(nxgraph) == nx.classes.digraph.DiGraph:
             constructor = nx.DiGraph
         return Graph(
             list(nxgraph.nodes), list(nxgraph.edges), constructor=constructor, **kwargs
