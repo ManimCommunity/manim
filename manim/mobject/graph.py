@@ -459,7 +459,6 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
                     (3, 4),
                 ]
 
-                vertex_config = {"radius": 0.02}
                 edge_config = {
                     "stroke_width": 2,
                     "tip_config": {"tip_length": 0.1, "tip_width": 0.05},
@@ -469,8 +468,8 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
                 g = Graph(
                     vertices,
                     edges,
+                    labels=True,
                     layout="circular",
-                    vertex_config=vertex_config,
                     edge_config=edge_config,
                     constructor="DiGraph",
                 ).scale(1.4)
@@ -624,8 +623,8 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         self.default_edge_config = default_edge_config
         self.edges = {
             (u, v): edge_type(
-                self[u].get_center(),
-                self[v].get_center(),
+                self[u],
+                self[v],
                 z_index=-1,
                 **self._edge_config[(u, v)],
             )
@@ -657,7 +656,10 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
         def update_edges(graph):
             for (u, v), edge in graph.edges.items():
-                edge.put_start_and_end_on(graph[u].get_center(), graph[v].get_center())
+                if hasattr(edge, "_set_start_and_end_attrs"):
+                    edge._set_start_and_end_attrs(graph[u], graph[v])
+                elif hasattr(edge, "put_start_and_end_on"):
+                    edge.put_start_and_end_on(graph[u], graph[v])
 
         self.add_updater(update_edges)
 
