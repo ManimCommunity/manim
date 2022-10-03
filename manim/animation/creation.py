@@ -302,6 +302,15 @@ class Write(DrawBorderThenFill):
         class ShowWriteReversed(Scene):
             def construct(self):
                 self.play(Write(Text("Hello", font_size=144), reverse=True))
+
+    Tests
+    -----
+
+    Check that creating empty :class:`.Write` animations works::
+
+        >>> from manim import Write, Text
+        >>> Write(Text(''))
+        Write(Text(''))
     """
 
     def __init__(
