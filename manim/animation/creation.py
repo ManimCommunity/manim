@@ -343,7 +343,7 @@ class Write(DrawBorderThenFill):
             else:
                 run_time = 2
         if lag_ratio is None:
-            lag_ratio = min(4.0 / length, 0.2)
+            lag_ratio = min(4.0 / max(1.0, length), 0.2)
         return run_time, lag_ratio
 
     def reverse_submobjects(self) -> None:
