@@ -24,6 +24,14 @@ def get_full_raster_image_path(image_file_name: str) -> str:
     )
 
 
+def get_full_vector_image_path(image_file_name: str):
+    return seek_full_path_from_defaults(
+        image_file_name,
+        default_dir=config.get_dir("assets_dir"),
+        extensions=[".svg"],
+    )
+
+
 def drag_pixels(frames: list[np.array]) -> list[np.array]:
     curr = frames[0]
     new_frames = []
