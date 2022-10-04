@@ -691,6 +691,39 @@ class ApplyComplexFunction(ApplyMethod):
 
 
 class CyclicReplace(Transform):
+    """
+    A CycleReplace moves (or swaps) a list of Mobjects in cycle:
+    - the 1st Mobject takes the place of the 2nd Mobject,
+    - the 2nd takes the place of the 3rd,
+    - and so on,
+    - until the last Mobject takes the place of the first one.
+
+    Parameters
+    ----------
+    mobjects
+        :class:`.Mobject`
+        List of Mobject to be transformed.
+    path_arc
+        The arc angle (in radians) that the points of ``mobject`` will follow to reach
+        the points of the target if using a circular path arc, see ``path_arc_centers``.
+        See also :func:`manim.utils.paths.path_along_arc`.
+    kwargs
+        Further keyword arguments that are passed to :class:`Transform`.
+
+    Examples
+    --------
+    .. manim :: CyclicReplaceExample
+
+        class CyclicReplaceExample(Scene):
+            def construct(self):
+
+                group = VGroup(Square(), Circle(), Triangle(), Star()).arrange(RIGHT)
+
+                self.add(group)
+
+                self.play(CyclicReplace(*group))
+    """
+
     def __init__(
         self, *mobjects: Mobject, path_arc: float = 90 * DEGREES, **kwargs
     ) -> None:
