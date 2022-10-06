@@ -721,7 +721,8 @@ class CyclicReplace(Transform):
 
                 self.add(group)
 
-                self.play(CyclicReplace(*group))
+                for i in range(4):
+                    self.play(CyclicReplace(*group))
     """
 
     def __init__(
