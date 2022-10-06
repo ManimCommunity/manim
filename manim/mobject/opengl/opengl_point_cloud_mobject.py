@@ -155,6 +155,10 @@ class OpenGLPMobject(OpenGLMobject):
         self.read_data_to_shader(shader_data, "color", "rgbas")
         return shader_data
 
+    @staticmethod
+    def get_mobject_type_class():
+        return OpenGLPMobject
+
 
 class OpenGLPGroup(OpenGLPMobject):
     def __init__(self, *pmobs, **kwargs):
