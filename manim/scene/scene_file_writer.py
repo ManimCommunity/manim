@@ -673,9 +673,7 @@ class SceneFileWriter:
                     self.sections_output_dir / section.video,
                 )
                 sections_index.append(section.get_dict(self.sections_output_dir))
-        with (
-            self.sections_output_dir / f"{self.output_name}.json"
-        ).open("w") as file:
+        with (self.sections_output_dir / f"{self.output_name}.json").open("w") as file:
             json.dump(sections_index, file, indent=4)
 
     def clean_cache(self):

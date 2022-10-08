@@ -7,8 +7,8 @@ __all__ = [
 ]
 
 import html
-from pathlib import Path
 import re
+from pathlib import Path
 
 import numpy as np
 from pygments import highlight

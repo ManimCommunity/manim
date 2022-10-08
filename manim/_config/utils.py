@@ -74,7 +74,9 @@ def config_file_paths() -> list[Path]:
     return [library_wide, user_wide, folder_wide]
 
 
-def make_config_parser(custom_file: Optional[str | os.PathLike] = None) -> configparser.ConfigParser:
+def make_config_parser(
+    custom_file: str | os.PathLike | None = None,
+) -> configparser.ConfigParser:
     """Make a :class:`ConfigParser` object and load any ``.cfg`` files.
 
     The user-wide file, if it exists, overrides the library-wide file.  The

@@ -9,9 +9,10 @@ __all__ = [
     "change_to_rgba_array",
 ]
 
+from pathlib import Path
+
 import numpy as np
 from PIL import Image
-from pathlib import Path
 
 from .. import config
 from ..utils.file_ops import seek_full_path_from_defaults

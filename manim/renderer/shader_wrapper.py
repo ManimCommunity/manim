@@ -22,7 +22,7 @@ def get_shader_dir():
     return Path(__file__).parent / "shaders"
 
 
-def find_file(file_name: Path, directories: Optional[list[Path]] = None) -> Path:
+def find_file(file_name: Path, directories: list[Path] | None = None) -> Path:
     # Check if what was passed in is already a valid path to a file
     if file_name.exists():
         return file_name
