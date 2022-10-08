@@ -50,7 +50,7 @@ class SceneFileWriter:
         sections : list of :class:`.Section`
             used to segment scene
 
-        sections_output_dir : str
+        sections_output_dir : :class:`pathlib.Path`
             where are section videos stored
 
         output_name : str
@@ -136,7 +136,7 @@ class SceneFileWriter:
             )
 
             # TODO: /dev/null would be good in case sections_output_dir is used without bein set (doesn't work on Windows), everyone likes defensive programming, right?
-            self.sections_output_dir = ""
+            self.sections_output_dir = Path("")
             if config.save_sections:
                 self.sections_output_dir = guarantee_existence(
                     config.get_dir(
@@ -670,12 +670,12 @@ class SceneFileWriter:
                 logger.info(f"Combining partial files for section '{section.name}'")
                 self.combine_files(
                     section.get_clean_partial_movie_files(),
-                    os.path.join(self.sections_output_dir, section.video),
+                    self.sections_output_dir / section.video,
                 )
                 sections_index.append(section.get_dict(self.sections_output_dir))
-        with open(
-            os.path.join(self.sections_output_dir, f"{self.output_name}.json"), "w"
-        ) as file:
+        with (
+            self.sections_output_dir / f"{self.output_name}.json"
+        ).open("w") as file:
             json.dump(sections_index, file, indent=4)
 
     def clean_cache(self):
