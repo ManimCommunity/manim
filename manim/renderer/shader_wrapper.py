@@ -22,7 +22,7 @@ def get_shader_dir():
     return Path(__file__).parent / "shaders"
 
 
-def find_file(file_name: Path, directories: list[Path] | None = None) -> Path:
+def find_file(file_name: Path, directories: list[Path]) -> Path:
     # Check if what was passed in is already a valid path to a file
     if file_name.exists():
         return file_name
@@ -111,7 +111,7 @@ class ShaderWrapper:
         )
 
     def init_program_code(self):
-        def get_code(name: str) -> str:
+        def get_code(name: str) -> str | None:
             return get_shader_code_from_file(
                 self.shader_folder / f"{name}.glsl",
             )
@@ -158,7 +158,7 @@ class ShaderWrapper:
 filename_to_code_map: dict = {}
 
 
-def get_shader_code_from_file(filename: Path) -> str:
+def get_shader_code_from_file(filename: Path) -> str | None:
     if filename in filename_to_code_map:
         return filename_to_code_map[filename]
 
@@ -185,6 +185,8 @@ def get_shader_code_from_file(filename: Path) -> str:
         inserted_code = get_shader_code_from_file(
             Path() / "include" / line.replace("#include ../include/", ""),
         )
+        if inserted_code is None:
+            return None
         result = result.replace(line, inserted_code)
     filename_to_code_map[filename] = result
     return result
