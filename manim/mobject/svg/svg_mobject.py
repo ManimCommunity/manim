@@ -182,7 +182,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         element_tree = ET.parse(file_path)
         new_tree = self.modify_xml_tree(element_tree)
         # Create a temporary svg file to dump modified svg to be parsed
-        modified_file_path = modified_file_path.with_stem(file_path.stem + "_")
+        modified_file_path = file_path.with_stem(file_path.stem + "_")
         new_tree.write(modified_file_path)
 
         svg = se.SVG.parse(modified_file_path)

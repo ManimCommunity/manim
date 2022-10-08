@@ -21,7 +21,7 @@ import re
 import sys
 from collections.abc import Mapping, MutableMapping
 from pathlib import Path
-from typing import Any, Iterable, Iterator, Optional
+from typing import Any, Iterable, Iterator
 
 import colour
 import numpy as np
@@ -87,7 +87,7 @@ def make_config_parser(
 
     Parameters
     ----------
-    custom_file : Union[:class:`str`, :class:`os.PathLike`], optional
+    custom_file
         Path to a custom config file.  If used, the folder-wide file in the
         relevant directory will be ignored, if it exists.  If None, the
         folder-wide file will be used, if it exists.
