@@ -820,7 +820,7 @@ class ManimConfig(MutableMapping):
 
         Parameters
         ----------
-        filename : Union[:class:`str`, :class:`os.PathLike`]
+        filename
             Path to the ``.cfg`` file.
 
         Returns

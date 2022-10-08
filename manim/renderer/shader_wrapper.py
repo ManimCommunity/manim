@@ -49,7 +49,7 @@ class ShaderWrapper:
         self.vert_data = vert_data
         self.vert_indices = vert_indices
         self.vert_attributes = vert_data.dtype.names
-        self.shader_folder = Path(shader_folder) if shader_folder else None
+        self.shader_folder = Path(shader_folder or "")
         self.uniforms = uniforms or {}
         self.texture_paths = texture_paths or {}
         self.depth_test = depth_test

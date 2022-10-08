@@ -88,7 +88,7 @@ class Code(VGroup):
 
     Parameters
     ----------
-    file_name : Union[:class:`str`, :class:`os.PathLike`]
+    file_name
         Name of the code file to display.
     code : :class:`str`
         If ``file_name`` is not specified, a code string can be
@@ -153,7 +153,7 @@ class Code(VGroup):
 
     def __init__(
         self,
-        file_name=None,
+        file_name: str | os.PathLike = None,
         code=None,
         tab_width=3,
         line_spacing=0.3,
