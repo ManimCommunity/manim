@@ -45,7 +45,7 @@ watchdog = "^2.1.6"
 jupyterlab = { version = "^3.0", optional = true }
 notebook = { version = "^6.4", optional = true }
 moderngl = "^5.6.3"
-moderngl-window = "^2.3.0"
+moderngl-window = "<=2.4.1"  # Windows CI broken for 2.4.2?
 mapbox-earcut = "^1.0.0"
 cloup = "^0.13.0"
 requests = "^2.26.0"
