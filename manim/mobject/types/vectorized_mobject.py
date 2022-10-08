@@ -123,6 +123,10 @@ class VMobject(Mobject):
     def get_group_class(self):
         return VGroup
 
+    @staticmethod
+    def get_mobject_type_class():
+        return VMobject
+
     # Colors
     def init_colors(self, propagate_colors=True):
         self.set_fill(
@@ -787,6 +791,10 @@ class VMobject(Mobject):
     def is_closed(self):
         # TODO use consider_points_equals_2d ?
         return self.consider_points_equals(self.points[0], self.points[-1])
+
+    def close_path(self):
+        if not self.is_closed():
+            self.add_line_to(self.get_subpaths()[-1][0])
 
     def add_points_as_corners(self, points: np.ndarray) -> "VMobject":
         for point in points:
