@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 import logging
 import warnings
 
@@ -53,4 +54,3 @@ def show_diff_helper(
                 "Interactive matplotlib interface not available,"
                 f" diff saved to {filename}."
             )
-
