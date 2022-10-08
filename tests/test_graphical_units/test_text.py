@@ -1,22 +1,22 @@
 import pytest
-
 from colour import Color
-from manim import MarkupText, Text, RED, VGroup, VMobject
+
+from manim import RED, MarkupText, Text, VGroup, VMobject
 
 __module_test__ = "text"
 
 
 def test_Text2Color():
-        txt = Text(
-            "this is  a text  with spaces!",
-            t2c={"spaces": RED},
-            stroke_width=1,
-            disable_ligatures=True,
-        )
-        assert len(txt.submobjects) == 29
-        assert all(char.fill_color == Color("#ffffff") for char in txt[:4]) # "this"
-        assert all(char.fill_color == Color(RED) for char in txt[-7:-1]) # "spaces"
-        assert txt[-1].fill_color == Color("#ffffff") # "!"
+    txt = Text(
+        "this is  a text  with spaces!",
+        t2c={"spaces": RED},
+        stroke_width=1,
+        disable_ligatures=True,
+    )
+    assert len(txt.submobjects) == 29
+    assert all(char.fill_color == Color("#ffffff") for char in txt[:4])  # "this"
+    assert all(char.fill_color == Color(RED) for char in txt[-7:-1])  # "spaces"
+    assert txt[-1].fill_color == Color("#ffffff")  # "!"
 
 
 def test_text_color_inheritance():
