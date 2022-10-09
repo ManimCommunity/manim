@@ -201,7 +201,7 @@ jobs:
 
       - name: Run module doctests
         run: |
-          poetry run pytest --cov-append --doctest-modules --ignore-glob="*opengl*" manim
+          poetry run pytest -v --cov-append --doctest-modules manim
 
       - name: Run doctests in rst files
         run: |
