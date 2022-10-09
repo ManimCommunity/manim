@@ -45,7 +45,7 @@ jobs:
 
       - name: Install Manim
         run: |
-          poetry env use ${{ matrix.python }}
+          poetry config virtualenvs.prefer-active-python true
           poetry install
 
       - name: Run tests
@@ -66,7 +66,6 @@ jobs:
     env:
       DISPLAY: :0
       PYTEST_ADDOPTS: "--color=yes" # colors in pytest
-      GLCONTEXT_WIN_LIBGL: C:\msys64\mingw64\bin\opengl32.dll
     strategy:
       fail-fast: false
       matrix:
@@ -165,15 +164,7 @@ jobs:
           path: ${{ github.workspace }}\ManimCache
           key: ${{ runner.os }}-dependencies-tinytex-${{ hashFiles('.github/manimdependency.json') }}-${{ steps.cache-vars.outputs.date }}-1
 
-      - name: Setup MSYS2 (Windows)
-        if: runner.os == 'Windows'
-        uses: msys2/setup-msys2@v2
-        with:
-          release: false
-          msystem: MINGW64
-          path-type: inherit
-          install: >-
-            mingw-w64-x86_64-mesa
+      - uses: ssciwr/setup-mesa-dist-win@v1
 
       - name: Install system dependencies (Windows)
         if: runner.os == 'Windows' && steps.cache-windows.outputs.cache-hit != 'true'
@@ -197,7 +188,6 @@ jobs:
         run: |
           $env:Path += ";" + "$($PWD)\ManimCache\LatexWindows\TinyTeX\bin\win32"
           $env:Path = "$env:USERPROFILE\.poetry\bin;$($env:PATH)"
-          $env:PATH = "C:\msys64\mingw64\bin;$($env:PATH)"
           echo "$env:Path" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       - name: Install manim
@@ -207,11 +197,11 @@ jobs:
 
       - name: Run tests
         run: |
-          poetry run pytest
+          poetry run python -m pytest
 
       - name: Run module doctests
         run: |
-          poetry run pytest --cov-append --doctest-modules --ignore-glob="*opengl*" manim
+          poetry run python -m pytest -v --cov-append --doctest-modules manim
 
       - name: Run doctests in rst files
         run: |

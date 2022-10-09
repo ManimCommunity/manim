@@ -1629,27 +1629,38 @@ class OpenGLVGroup(OpenGLVMobject):
     can subtract elements of a OpenGLVGroup via :meth:`~.OpenGLVGroup.remove` method, or
     `-` and `-=` operators:
 
-        >>> from manim import Triangle, Square, config
+    .. doctest::
+
+        >>> from manim import config
+        >>> original_renderer = config.renderer
         >>> config.renderer = "opengl"
+
+        >>> from manim import Triangle, Square
         >>> from manim.opengl import OpenGLVGroup
+        >>> config.renderer
+        'opengl'
         >>> vg = OpenGLVGroup()
         >>> triangle, square = Triangle(), Square()
         >>> vg.add(triangle)
         OpenGLVGroup(Triangle)
-        >>> vg + square   # a new OpenGLVGroup is constructed
+        >>> vg + square  # a new OpenGLVGroup is constructed
         OpenGLVGroup(Triangle, Square)
-        >>> vg            # not modified
+        >>> vg  # not modified
         OpenGLVGroup(Triangle)
-        >>> vg += square; vg  # modifies vg
+        >>> vg += square  # modifies vg
+        >>> vg
         OpenGLVGroup(Triangle, Square)
         >>> vg.remove(triangle)
         OpenGLVGroup(Square)
-        >>> vg - square; # a new OpenGLVGroup is constructed
+        >>> vg - square  # a new OpenGLVGroup is constructed
         OpenGLVGroup()
-        >>> vg   # not modified
+        >>> vg  # not modified
         OpenGLVGroup(Square)
-        >>> vg -= square; vg # modifies vg
+        >>> vg -= square  # modifies vg
+        >>> vg
         OpenGLVGroup()
+
+        >>> config.renderer = original_renderer
 
     .. manim:: ArcShapeIris
         :save_last_frame:
@@ -1767,13 +1778,20 @@ class OpenGLVGroup(OpenGLVMobject):
         -------
         None
 
-        Examples
-        --------
-        Normal usage::
+        Tests
+        -----
+
+        .. doctest::
+
+            >>> from manim import config
+            >>> original_renderer = config.renderer
+            >>> config.renderer = "opengl"
 
             >>> vgroup = OpenGLVGroup(OpenGLVMobject())
             >>> new_obj = OpenGLVMobject()
             >>> vgroup[0] = new_obj
+
+            >>> config.renderer = original_renderer
         """
         if not all(isinstance(m, OpenGLVMobject) for m in value):
             raise TypeError("All submobjects must be of type OpenGLVMobject")
