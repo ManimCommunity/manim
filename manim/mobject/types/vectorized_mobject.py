@@ -1889,10 +1889,9 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
         -------
         None
 
-        Examples
-        --------
-        Normal usage::
-
+        Tests
+        -----
+        Check that item assignment does not raise error::
             >>> vgroup = VGroup(VMobject())
             >>> new_obj = VMobject()
             >>> vgroup[0] = new_obj

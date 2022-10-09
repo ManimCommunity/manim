@@ -1629,8 +1629,15 @@ class OpenGLVGroup(OpenGLVMobject):
     can subtract elements of a OpenGLVGroup via :meth:`~.OpenGLVGroup.remove` method, or
     `-` and `-=` operators:
 
-        >>> from manim import Triangle, Square, config
+    .. testsetup::
+
+        >>> from manim import config
+        >>> original_renderer = config.renderer
         >>> config.renderer = "opengl"
+
+    ::
+
+        >>> from manim import Triangle, Square, config
         >>> from manim.opengl import OpenGLVGroup
         >>> vg = OpenGLVGroup()
         >>> triangle, square = Triangle(), Square()
@@ -1650,6 +1657,10 @@ class OpenGLVGroup(OpenGLVMobject):
         OpenGLVGroup(Square)
         >>> vg -= square; vg # modifies vg
         OpenGLVGroup()
+
+    .. testcleanup::
+
+        >>> config.renderer = original_renderer
 
     .. manim:: ArcShapeIris
         :save_last_frame:
@@ -1767,13 +1778,24 @@ class OpenGLVGroup(OpenGLVMobject):
         -------
         None
 
-        Examples
-        --------
-        Normal usage::
+        Tests
+        -----
+
+        .. testsetup::
+
+            >>> from manim import config
+            >>> original_renderer = config.renderer
+            >>> config.renderer = "opengl"
+
+        ::
 
             >>> vgroup = OpenGLVGroup(OpenGLVMobject())
             >>> new_obj = OpenGLVMobject()
             >>> vgroup[0] = new_obj
+
+        .. testcleanup::
+
+            >>> config.renderer = original_renderer
         """
         if not all(isinstance(m, OpenGLVMobject) for m in value):
             raise TypeError("All submobjects must be of type OpenGLVMobject")
