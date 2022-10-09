@@ -66,7 +66,6 @@ jobs:
     env:
       DISPLAY: :0
       PYTEST_ADDOPTS: "--color=yes" # colors in pytest
-      # GLCONTEXT_WIN_LIBGL: C:\msys64\mingw64\bin\opengl32.dll
     strategy:
       fail-fast: false
       matrix:
@@ -165,19 +164,7 @@ jobs:
           path: ${{ github.workspace }}\ManimCache
           key: ${{ runner.os }}-dependencies-tinytex-${{ hashFiles('.github/manimdependency.json') }}-${{ steps.cache-vars.outputs.date }}-1
 
-      # - name: Setup MSYS2 (Windows)
-      #   if: runner.os == 'Windows'
-      #   uses: msys2/setup-msys2@v2
-      #   with:
-      #     release: false
-      #     msystem: MINGW64
-      #     path-type: inherit
-      #     install: >-
-      #       mingw-w64-x86_64-mesa
-
       - uses: ssciwr/setup-mesa-dist-win@v1
-        with:
-          deployment-choice: '5'
 
       - name: Install system dependencies (Windows)
         if: runner.os == 'Windows' && steps.cache-windows.outputs.cache-hit != 'true'
