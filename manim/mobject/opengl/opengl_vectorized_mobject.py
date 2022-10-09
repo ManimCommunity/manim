@@ -1635,7 +1635,7 @@ class OpenGLVGroup(OpenGLVMobject):
         >>> original_renderer = config.renderer
         >>> config.renderer = "opengl"
 
-        >>> from manim import Triangle, Square, config
+        >>> from manim import Triangle, Square
         >>> from manim.opengl import OpenGLVGroup
         >>> config.renderer
         'opengl'
