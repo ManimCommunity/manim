@@ -1647,18 +1647,17 @@ class OpenGLVGroup(OpenGLVMobject):
         OpenGLVGroup(Triangle, Square)
         >>> vg  # not modified
         OpenGLVGroup(Triangle)
-        >>> vg += square
-        ... vg  # modifies vg
+        >>> vg += square  # modifies vg
+        >>> vg
         OpenGLVGroup(Triangle, Square)
         >>> vg.remove(triangle)
         OpenGLVGroup(Square)
-        >>> vg - square
-        ... # a new OpenGLVGroup is constructed
+        >>> vg - square  # a new OpenGLVGroup is constructed
         OpenGLVGroup()
         >>> vg  # not modified
         OpenGLVGroup(Square)
-        >>> vg -= square
-        ... vg  # modifies vg
+        >>> vg -= square  # modifies vg
+        >>> vg
         OpenGLVGroup()
 
         >>> config.renderer = original_renderer
