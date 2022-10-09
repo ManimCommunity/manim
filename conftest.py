@@ -10,6 +10,7 @@ from __future__ import annotations
 # itself. If it's a normal test then it uses the
 # tempconfig to change directories.
 import pytest
+import moderngl
 from _pytest.doctest import DoctestItem
 
 from manim import config, tempconfig
@@ -24,3 +25,13 @@ def temp_media_dir(tmpdir, monkeypatch, request):
         with tempconfig({"media_dir": str(tmpdir)}):
             assert config.media_dir == str(tmpdir)
             yield tmpdir
+
+def pytest_report_header(config):
+    ctx = moderngl.create_standalone_context()
+    return (
+        "\nOpenGL Information",
+        "------------------",
+        f"vendor: {ctx.info['GL_VENDOR'].strip()}",
+        f"renderer: {ctx.info['GL_RENDERER'].strip()}",
+        f"version: {ctx.info['GL_VERSION'].strip()}\n",
+    )
