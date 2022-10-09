@@ -197,7 +197,7 @@ jobs:
 
       - name: Run tests
         run: |
-          poetry run pytest tests/opengl
+          poetry run pytest
 
       - name: Run module doctests
         run: |
