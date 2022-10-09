@@ -1632,6 +1632,7 @@ class OpenGLVGroup(OpenGLVMobject):
     .. testsetup:: pycon
 
         from manim import config
+
         original_renderer = config.renderer
         config.renderer = "opengl"
 
@@ -1643,19 +1644,22 @@ class OpenGLVGroup(OpenGLVMobject):
         >>> triangle, square = Triangle(), Square()
         >>> vg.add(triangle)
         OpenGLVGroup(Triangle)
-        >>> vg + square   # a new OpenGLVGroup is constructed
+        >>> vg + square  # a new OpenGLVGroup is constructed
         OpenGLVGroup(Triangle, Square)
-        >>> vg            # not modified
+        >>> vg  # not modified
         OpenGLVGroup(Triangle)
-        >>> vg += square; vg  # modifies vg
+        >>> vg += square
+        ... vg  # modifies vg
         OpenGLVGroup(Triangle, Square)
         >>> vg.remove(triangle)
         OpenGLVGroup(Square)
-        >>> vg - square; # a new OpenGLVGroup is constructed
+        >>> vg - square
+        ... # a new OpenGLVGroup is constructed
         OpenGLVGroup()
-        >>> vg   # not modified
+        >>> vg  # not modified
         OpenGLVGroup(Square)
-        >>> vg -= square; vg # modifies vg
+        >>> vg -= square
+        ... vg  # modifies vg
         OpenGLVGroup()
 
     .. testcleanup::
@@ -1784,6 +1788,7 @@ class OpenGLVGroup(OpenGLVMobject):
         .. testsetup::
 
             from manim import config
+
             original_renderer = config.renderer
             config.renderer = "opengl"
 
