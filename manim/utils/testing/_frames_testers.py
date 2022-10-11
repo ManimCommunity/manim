@@ -49,7 +49,12 @@ class _FramesTester:
             self._frames_compared += 1
         except AssertionError as e:
             if self._show_diff:
-                show_diff_helper(frame_number, frame, self._frames[frame_number])
+                show_diff_helper(
+                    frame_number,
+                    frame,
+                    self._frames[frame_number],
+                    self._file_path.name,
+                )
             raise e
 
 
