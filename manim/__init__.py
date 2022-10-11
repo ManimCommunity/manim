@@ -73,6 +73,7 @@ from .mobject.opengl.dot_cloud import *
 from .mobject.opengl.opengl_point_cloud_mobject import *
 from .mobject.svg.brace import *
 from .mobject.svg.svg_mobject import *
+from .mobject.svg.svg_path import *
 from .mobject.table import *
 from .mobject.text.code_mobject import *
 from .mobject.text.numbers import *
