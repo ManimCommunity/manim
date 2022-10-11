@@ -1,10 +1,8 @@
 from __future__ import annotations
 
 import copy
-import os
 import re
 from pathlib import Path
-from typing import Optional
 
 import moderngl
 import numpy as np
