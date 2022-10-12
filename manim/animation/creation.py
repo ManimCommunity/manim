@@ -302,6 +302,15 @@ class Write(DrawBorderThenFill):
         class ShowWriteReversed(Scene):
             def construct(self):
                 self.play(Write(Text("Hello", font_size=144), reverse=True))
+
+    Tests
+    -----
+
+    Check that creating empty :class:`.Write` animations works::
+
+        >>> from manim import Write, Text
+        >>> Write(Text(''))
+        Write(Text(''))
     """
 
     def __init__(
@@ -343,7 +352,7 @@ class Write(DrawBorderThenFill):
             else:
                 run_time = 2
         if lag_ratio is None:
-            lag_ratio = min(4.0 / length, 0.2)
+            lag_ratio = min(4.0 / max(1.0, length), 0.2)
         return run_time, lag_ratio
 
     def reverse_submobjects(self) -> None:
