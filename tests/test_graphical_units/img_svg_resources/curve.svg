@@ -46,7 +46,7 @@
 <g fill="none" color="black" stroke="white" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
 </g>
 	<g id="gnuplot_plot_1" ><title>7.65*(t-sin(t)), 7.65*(cos(t)-1)</title>
-<g fill="none" color="black" stroke="white" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+<g fill="none" color="black" stroke="white" stroke-width="4.00" stroke-linecap="butt" stroke-linejoin="miter">
 	<path stroke='rgb(148,   0, 211)'  d='M154.5,18.1 L154.5,18.9 L154.7,21.5 L155.1,25.7 L155.9,31.5 L157.2,38.9 L159.1,47.9 L161.8,58.5
 		L165.4,70.4 L170.0,83.7 L175.6,98.4 L182.4,114.2 L190.5,131.2 L199.9,149.1 L210.7,168.0 L223.1,187.6
 		L237.0,208.0 L252.4,228.9 L269.5,250.2 L288.3,271.8 L308.8,293.6 L330.9,315.4 L354.7,337.2 L380.2,358.7

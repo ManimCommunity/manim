@@ -54,6 +54,28 @@ Manim should now be installed on your system. Continue reading
 the :ref:`optional dependencies <win-optional-dependencies>` section
 below.
 
+Winget
+*****
+
+While there is no recipe for installing Manim with Winget directly,
+you can install all requirements by running:
+
+.. code-block:: powershell
+
+   winget install python
+   winget install ffmpeg
+
+and then Manim can be installed by running:
+
+.. code-block:: powershell
+
+   python -m pip install manim
+
+Manim should now be installed on your system. Continue reading
+the :ref:`optional dependencies <win-optional-dependencies>` section
+below.
+
+
 Manual Installation
 *******************
 
@@ -115,7 +137,7 @@ For Windows, the recommended LaTeX distribution is
 `MiKTeX <https://miktex.org/download>`__. You can install it by using the
 installer from the linked MiKTeX site, or by using the package manager
 of your choice (Chocolatey: ``choco install miktex.install``,
-Scoop: ``scoop install latex``).
+Scoop: ``scoop install latex``, Winget: ``winget install ChristianSchenk.MiKTeX``).
 
 If you are concerned about disk space, there are some alternative,
 smaller distributions of LaTeX.
