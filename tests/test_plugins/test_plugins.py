@@ -109,14 +109,13 @@ def create_plugin(tmp_path, python_version, random_string):
         entry_point = entry_point.format(plugin_name=plugin_name)
         module_dir = plugin_dir / plugin_name
         module_dir.mkdir(parents=True)
-        with open(module_dir / "__init__.py", "w") as f:
-            f.write(
-                plugin_init_template.format(
-                    class_name=class_name,
-                    function_name=function_name,
-                    all_dec=all_dec,
-                ),
-            )
+        (module_dir / "__init__.py").write_text(
+            plugin_init_template.format(
+                class_name=class_name,
+                function_name=function_name,
+                all_dec=all_dec,
+            ),
+        )
         (plugin_dir / "pyproject.toml").write_text(
             plugin_pyproject_template.format(
                 plugin_name=plugin_name,
