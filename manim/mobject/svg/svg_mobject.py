@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+from pathlib import Path
 from xml.etree import ElementTree as ET
 
 import numpy as np
@@ -86,7 +87,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
 
     def __init__(
         self,
-        file_name: str | None = None,
+        file_name: str | os.PathLike | None = None,
         should_center: bool = True,
         height: float | None = 2,
         width: float | None = None,
@@ -104,7 +105,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         super().__init__(color=None, stroke_color=None, fill_color=None, **kwargs)
 
         # process keyword arguments
-        self.file_name = file_name
+        self.file_name = Path(file_name) if file_name is not None else None
 
         self.should_center = should_center
         self.svg_height = height
