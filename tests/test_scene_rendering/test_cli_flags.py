@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 import sys
 
 import numpy as np
@@ -227,7 +226,7 @@ def test_a_flag(tmp_path, manim_cfg_file, infallible_scenes_path):
         "--media_dir",
         str(tmp_path),
         "-a",
-        infallible_scenes_path,
+        str(infallible_scenes_path),
     ]
     _, err, exit_code = capture(command)
     assert exit_code == 0, err
@@ -747,13 +746,12 @@ def test_mov_can_be_set_as_output_format(tmp_path, manim_cfg_file, simple_scenes
 )
 def test_input_file_via_cfg(tmp_path, manim_cfg_file, simple_scenes_path):
     scene_name = "SquareToCircle"
-    with open(os.path.join(tmp_path, "manim.cfg"), "w") as file:
-        file.write(
-            f"""
+    (tmp_path / "manim.cfg").write_text(
+        f"""
 [CLI]
 input_file = {simple_scenes_path}
-            """
-        )
+        """
+    )
 
     command = [
         sys.executable,

@@ -4,15 +4,15 @@ import itertools
 import json
 import os
 from functools import wraps
+from pathlib import Path
 
 import pytest
 
 
-def _check_logs(reference_logfile, generated_logfile):
-    with open(reference_logfile) as reference_logs, open(
-        generated_logfile,
-    ) as generated_logs:
+def _check_logs(reference_logfile: Path, generated_logfile: Path) -> None:
+    with reference_logfile.open() as reference_logs:
         reference_logs = reference_logs.readlines()
+    with generated_logfile.open() as generated_logs:
         generated_logs = generated_logs.readlines()
     diff = abs(len(reference_logs) - len(generated_logs))
     if len(reference_logs) != len(generated_logs):
@@ -26,7 +26,7 @@ def _check_logs(reference_logfile, generated_logfile):
             for log in generated_logs[len(reference_logs) :]:
                 msg_assert += log
         msg_assert += f"\nPath of reference log: {reference_logfile}\nPath of generated logs: {generated_logfile}"
-        pytest.fail(msg_assert + reference_logfile + " " + generated_logfile)
+        pytest.fail(msg_assert)
 
     for index, ref, gen in zip(itertools.count(), reference_logs, generated_logs):
         # As they are string, we only need to check if they are equal. If they are not, we then compute a more precise difference, to debug.
@@ -46,17 +46,17 @@ def _check_logs(reference_logfile, generated_logfile):
         )
 
 
-def logs_comparison(control_data_file, log_path_from_media_dir):
+def logs_comparison(control_data_file: Path | os.PathLike, log_path_from_media_dir: Path | os.PathLike):
     """Decorator used for any test that needs to check logs.
 
     Parameters
     ----------
-    control_data_file : :class:`str`
+    control_data_file
         Name of the control data file, i.e. .log that will be compared to the outputted logs.
         .. warning:: You don't have to pass the path here.
         .. example:: "SquareToCircleWithLFlag.log"
 
-    log_path_from_media_dir : :class:`str`
+    log_path_from_media_dir
         The path of the .log generated, from the media dir. Example: /logs/Square.log.
 
     Returns
@@ -65,31 +65,27 @@ def logs_comparison(control_data_file, log_path_from_media_dir):
         The test wrapped with which we are going to make the comparison.
     """
 
+    control_data_file = Path(control_data_file)
+    log_path_from_media_dir = Path(log_path_from_media_dir)
+
     def decorator(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
             # NOTE : Every args goes seemingly in kwargs instead of args; this is perhaps Pytest.
             result = f(*args, **kwargs)
             tmp_path = kwargs["tmp_path"]
-            tests_directory = os.path.dirname(
-                os.path.dirname(os.path.abspath(__file__)),
-            )
-            control_data_path = os.path.join(
-                tests_directory,
-                "control_data",
-                "logs_data",
-                control_data_file,
-            )
+            tests_directory = Path(__file__).absolute().parent.parent
+            control_data_path = tests_directory / "control_data" / "logs_data" / control_data_file
             path_log_generated = tmp_path / log_path_from_media_dir
             # The following will say precisely which subdir does not exist.
-            if not os.path.exists(path_log_generated):
+            if not path_log_generated.exists():
                 for parent in reversed(path_log_generated.parents):
                     if not parent.exists():
                         pytest.fail(
                             f"'{parent.name}' does not exist in '{parent.parent}' (which exists). ",
                         )
                         break
-            _check_logs(control_data_path, str(path_log_generated))
+            _check_logs(control_data_path, path_log_generated)
             return result
 
         return wrapper

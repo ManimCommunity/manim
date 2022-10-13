@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 import sys
 
 import pytest
@@ -31,9 +30,9 @@ def test_no_sections(tmp_path, manim_cfg_file, simple_scenes_path):
     _, err, exit_code = capture(command)
     assert exit_code == 0, err
 
-    scene_dir = os.path.join(tmp_path, "videos", "simple_scenes", "480p15")
+    scene_dir = tmp_path / "videos" / "simple_scenes" / "480p15"
     assert_dir_exists(scene_dir)
-    assert_dir_not_exists(os.path.join(scene_dir, "sections"))
+    assert_dir_not_exists(scene_dir / "sections")
 
 
 @pytest.mark.slow
@@ -57,9 +56,9 @@ def test_sections(tmp_path, manim_cfg_file, simple_scenes_path):
     _, err, exit_code = capture(command)
     assert exit_code == 0, err
 
-    scene_dir = os.path.join(tmp_path, "videos", "simple_scenes", "480p15")
+    scene_dir = tmp_path / "videos" / "simple_scenes" / "480p15"
     assert_dir_exists(scene_dir)
-    assert_dir_exists(os.path.join(scene_dir, "sections"))
+    assert_dir_exists(scene_dir / "sections")
 
 
 @pytest.mark.slow

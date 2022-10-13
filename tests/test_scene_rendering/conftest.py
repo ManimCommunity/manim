@@ -46,7 +46,7 @@ def disabling_caching():
 
 @pytest.fixture
 def infallible_scenes_path():
-    return str(Path(__file__).parent / "infallible_scenes.py")
+    return Path(__file__).parent / "infallible_scenes.py"
 
 
 @pytest.fixture

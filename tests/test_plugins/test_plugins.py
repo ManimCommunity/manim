@@ -65,8 +65,7 @@ def simple_scenes_path():
 
 def cfg_file_create(cfg_file_contents, path):
     file_loc = (path / "manim.cfg").absolute()
-    with open(file_loc, "w") as f:
-        f.write(cfg_file_contents)
+    file_loc.write_text(cfg_file_contents)
     return file_loc
 
 
@@ -118,13 +117,12 @@ def create_plugin(tmp_path, python_version, random_string):
                     all_dec=all_dec,
                 ),
             )
-        with open(plugin_dir / "pyproject.toml", "w") as f:
-            f.write(
-                plugin_pyproject_template.format(
-                    plugin_name=plugin_name,
-                    plugin_entrypoint=entry_point,
-                ),
-            )
+        (plugin_dir / "pyproject.toml").write_text(
+            plugin_pyproject_template.format(
+                plugin_name=plugin_name,
+                plugin_entrypoint=entry_point,
+            ),
+        )
         command = [
             python_version,
             "-m",
