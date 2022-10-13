@@ -252,9 +252,7 @@ def print_all_tex_errors(log_file: Path, tex_compiler: str, tex_file: Path):
     with log_file.open() as f:
         tex_compilation_log = f.readlines()
     error_indices = [
-        index
-        for index, line in enumerate(tex_compilation_log)
-        if line.startswith("!")
+        index for index, line in enumerate(tex_compilation_log) if line.startswith("!")
     ]
     if error_indices:
         with tex_file.open() as f:

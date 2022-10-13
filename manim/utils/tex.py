@@ -9,8 +9,8 @@ __all__ = [
 
 import copy
 import os
-from pathlib import Path
 import re
+from pathlib import Path
 
 
 class TexTemplate:
@@ -263,7 +263,9 @@ class TexTemplateFromFile(TexTemplate):
         The output format resulting from compilation, e.g. ``.dvi`` or ``.pdf``
     """
 
-    def __init__(self, *, tex_filename: str | os.PathLike = "tex_template.tex", **kwargs):
+    def __init__(
+        self, *, tex_filename: str | os.PathLike = "tex_template.tex", **kwargs
+    ):
         self.template_file = Path(tex_filename)
         super().__init__(**kwargs)
 
