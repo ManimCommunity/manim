@@ -255,11 +255,11 @@ def add_import_statement(file):
     ----------
         file : :class:`Path`
     """
-    with open(file, "r+") as f:
+    with file.open("r+") as f:
         import_line = "from manim import *"
         content = f.read()
-        f.seek(0, 0)
-        f.write(import_line.rstrip("\r\n") + "\n" + content)
+        f.seek(0)
+        f.write(import_line + "\n" + content)
 
 
 def copy_template_files(

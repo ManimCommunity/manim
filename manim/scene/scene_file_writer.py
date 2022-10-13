@@ -544,17 +544,15 @@ class SceneFileWriter:
         create_gif=False,
         includes_sound=False,
     ):
-        file_list = str(self.partial_movie_directory / "partial_movie_file_list.txt")
+        file_list = self.partial_movie_directory / "partial_movie_file_list.txt"
         logger.debug(
             f"Partial movie files to combine ({len(input_files)} files): %(p)s",
             {"p": input_files[:5]},
         )
-        with open(file_list, "w", encoding="utf-8") as fp:
+        with file_list.open("w", encoding="utf-8") as fp:
             fp.write("# This file is used internally by FFMPEG.\n")
             for pf_path in input_files:
-                pf_path = str(pf_path)
-                if os.name == "nt":
-                    pf_path = pf_path.replace("\\", "/")
+                pf_path = Path(pf_path).as_posix()
                 fp.write(f"file 'file:{pf_path}'\n")
         commands = [
             config.ffmpeg_executable,
@@ -564,7 +562,7 @@ class SceneFileWriter:
             "-safe",
             "0",
             "-i",
-            file_list,
+            str(file_list),
             "-loglevel",
             config.ffmpeg_loglevel.lower(),
             "-metadata",
@@ -716,8 +714,7 @@ class SceneFileWriter:
     def write_subcaption_file(self):
         """Writes the subcaption file."""
         subcaption_file = Path(config.output_file).with_suffix(".srt")
-        with open(subcaption_file, "w") as f:
-            f.write(srt.compose(self.subcaptions))
+        subcaption_file.write_text(srt.compose(self.subcaptions))
         logger.info(f"Subcaption file has been written as {subcaption_file}")
 
     def print_file_ready_message(self, file_path):

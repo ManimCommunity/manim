@@ -82,14 +82,13 @@ def generate_tex_file(expression, environment=None, tex_template=None):
     if not tex_dir.exists():
         tex_dir.mkdir()
 
-    result = Path(tex_dir) / (tex_hash(output) + ".tex")
+    result = tex_dir / (tex_hash(output) + ".tex")
     if not result.exists():
         logger.info(
             "Writing %(expression)s to %(path)s",
             {"expression": expression, "path": f"{result}"},
         )
-        with open(result, "w", encoding="utf-8") as outfile:
-            outfile.write(output)
+        result.write_text(output, encoding="utf-8")
     return result.as_posix()
 
 
@@ -188,7 +187,7 @@ def compile_tex(tex_file, tex_compiler, output_format):
         exit_code = os.system(command)
         if exit_code != 0:
             log_file = tex_file.replace(".tex", ".log")
-            print_all_tex_errors(log_file, tex_compiler, tex_file)
+            print_all_tex_errors(Path(log_file), tex_compiler, Path(tex_file))
             raise ValueError(
                 f"{tex_compiler} error converting to"
                 f" {output_format[1:]}. See log output above or"
@@ -244,24 +243,24 @@ def convert_to_svg(dvi_file, extension, page=1):
     return result_str
 
 
-def print_all_tex_errors(log_file, tex_compiler, tex_file):
-    if not Path(log_file).exists():
+def print_all_tex_errors(log_file: Path, tex_compiler: str, tex_file: Path):
+    if not log_file.exists():
         raise RuntimeError(
             f"{tex_compiler} failed but did not produce a log file. "
             "Check your LaTeX installation.",
         )
-    with open(log_file) as f:
+    with log_file.open() as f:
         tex_compilation_log = f.readlines()
-        error_indices = [
-            index
-            for index, line in enumerate(tex_compilation_log)
-            if line.startswith("!")
-        ]
-        if error_indices:
-            with open(tex_file) as g:
-                tex = g.readlines()
-                for error_index in error_indices:
-                    print_tex_error(tex_compilation_log, error_index, tex)
+    error_indices = [
+        index
+        for index, line in enumerate(tex_compilation_log)
+        if line.startswith("!")
+    ]
+    if error_indices:
+        with tex_file.open() as f:
+            tex = f.readlines()
+        for error_index in error_indices:
+            print_tex_error(tex_compilation_log, error_index, tex)
 
 
 LATEX_ERROR_INSIGHTS = [
