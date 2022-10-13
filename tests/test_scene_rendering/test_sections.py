@@ -24,7 +24,7 @@ def test_no_sections(tmp_path, manim_cfg_file, simple_scenes_path):
         "-ql",
         "--media_dir",
         str(tmp_path),
-        simple_scenes_path,
+        str(simple_scenes_path),
         scene_name,
     ]
     _, err, exit_code = capture(command)
@@ -50,7 +50,7 @@ def test_sections(tmp_path, manim_cfg_file, simple_scenes_path):
         "--save_sections",
         "--media_dir",
         str(tmp_path),
-        simple_scenes_path,
+        str(simple_scenes_path),
         scene_name,
     ]
     _, err, exit_code = capture(command)
@@ -76,7 +76,7 @@ def test_many_sections(tmp_path, manim_cfg_file, simple_scenes_path):
         "--save_sections",
         "--media_dir",
         str(tmp_path),
-        simple_scenes_path,
+        str(simple_scenes_path),
         scene_name,
     ]
     _, err, exit_code = capture(command)
@@ -98,7 +98,7 @@ def test_skip_animations(tmp_path, manim_cfg_file, simple_scenes_path):
         "--save_sections",
         "--media_dir",
         str(tmp_path),
-        simple_scenes_path,
+        str(simple_scenes_path),
         scene_name,
     ]
     _, err, exit_code = capture(command)

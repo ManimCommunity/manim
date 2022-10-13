@@ -27,7 +27,7 @@ def test_basic_scene_with_default_values(tmp_path, manim_cfg_file, simple_scenes
         "manim",
         "--media_dir",
         str(tmp_path),
-        simple_scenes_path,
+        str(simple_scenes_path),
         scene_name,
     ]
     out, err, exit_code = capture(command)
@@ -85,7 +85,7 @@ def test_basic_scene_l_flag(tmp_path, manim_cfg_file, simple_scenes_path):
         "-ql",
         "--media_dir",
         str(tmp_path),
-        simple_scenes_path,
+        str(simple_scenes_path),
         scene_name,
     ]
     out, err, exit_code = capture(command)
@@ -107,7 +107,7 @@ def test_n_flag(tmp_path, simple_scenes_path):
         "-n 3,6",
         "--media_dir",
         str(tmp_path),
-        simple_scenes_path,
+        str(simple_scenes_path),
         scene_name,
     ]
     _, err, exit_code = capture(command)
@@ -125,7 +125,7 @@ def test_s_flag_no_animations(tmp_path, manim_cfg_file, simple_scenes_path):
         "-s",
         "--media_dir",
         str(tmp_path),
-        simple_scenes_path,
+        str(simple_scenes_path),
         scene_name,
     ]
     out, err, exit_code = capture(command)
@@ -149,7 +149,7 @@ def test_s_flag(tmp_path, manim_cfg_file, simple_scenes_path):
         "-s",
         "--media_dir",
         str(tmp_path),
-        simple_scenes_path,
+        str(simple_scenes_path),
         scene_name,
     ]
     out, err, exit_code = capture(command)
@@ -175,7 +175,7 @@ def test_s_flag_opengl_renderer(tmp_path, manim_cfg_file, simple_scenes_path):
         "opengl",
         "--media_dir",
         str(tmp_path),
-        simple_scenes_path,
+        str(simple_scenes_path),
         scene_name,
     ]
     out, err, exit_code = capture(command)
@@ -201,7 +201,7 @@ def test_r_flag(tmp_path, manim_cfg_file, simple_scenes_path):
         str(tmp_path),
         "-r",
         "200,100",
-        simple_scenes_path,
+        str(simple_scenes_path),
         scene_name,
     ]
     out, err, exit_code = capture(command)
@@ -263,7 +263,7 @@ def test_custom_folders(tmp_path, manim_cfg_file, simple_scenes_path):
         "--media_dir",
         str(tmp_path),
         "--custom_folders",
-        simple_scenes_path,
+        str(simple_scenes_path),
         scene_name,
     ]
     out, err, exit_code = capture(command)
@@ -290,7 +290,7 @@ def test_custom_output_name_gif(tmp_path, simple_scenes_path):
         "--format=gif",
         "-o",
         custom_name,
-        simple_scenes_path,
+        str(simple_scenes_path),
         scene_name,
     ]
     out, err, exit_code = capture(command)
@@ -336,7 +336,7 @@ def test_custom_output_name_mp4(tmp_path, simple_scenes_path):
         str(tmp_path),
         "-o",
         custom_name,
-        simple_scenes_path,
+        str(simple_scenes_path),
         scene_name,
     ]
     out, err, exit_code = capture(command)
@@ -405,7 +405,7 @@ def test_gif_format_output(tmp_path, manim_cfg_file, simple_scenes_path):
         str(tmp_path),
         "--format",
         "gif",
-        simple_scenes_path,
+        str(simple_scenes_path),
         scene_name,
     ]
     out, err, exit_code = capture(command)
@@ -441,7 +441,7 @@ def test_mp4_format_output(tmp_path, manim_cfg_file, simple_scenes_path):
         str(tmp_path),
         "--format",
         "mp4",
-        simple_scenes_path,
+        str(simple_scenes_path),
         scene_name,
     ]
     out, err, exit_code = capture(command)
@@ -483,7 +483,7 @@ def test_videos_not_created_when_png_format_set(
         str(tmp_path),
         "--format",
         "png",
-        simple_scenes_path,
+        str(simple_scenes_path),
         scene_name,
     ]
     out, err, exit_code = capture(command)
@@ -525,7 +525,7 @@ def test_images_are_created_when_png_format_set(
         str(tmp_path),
         "--format",
         "png",
-        simple_scenes_path,
+        str(simple_scenes_path),
         scene_name,
     ]
     out, err, exit_code = capture(command)
@@ -554,7 +554,7 @@ def test_images_are_created_when_png_format_set_for_opengl(
         str(tmp_path),
         "--format",
         "png",
-        simple_scenes_path,
+        str(simple_scenes_path),
         scene_name,
     ]
     out, err, exit_code = capture(command)
@@ -583,7 +583,7 @@ def test_images_are_zero_padded_when_zero_pad_set(
         "png",
         "--zero_pad",
         "3",
-        simple_scenes_path,
+        str(simple_scenes_path),
         scene_name,
     ]
     out, err, exit_code = capture(command)
@@ -619,7 +619,7 @@ def test_images_are_zero_padded_when_zero_pad_set_for_opengl(
         "png",
         "--zero_pad",
         "3",
-        simple_scenes_path,
+        str(simple_scenes_path),
         scene_name,
     ]
     out, err, exit_code = capture(command)
@@ -647,7 +647,7 @@ def test_webm_format_output(tmp_path, manim_cfg_file, simple_scenes_path):
         str(tmp_path),
         "--format",
         "webm",
-        simple_scenes_path,
+        str(simple_scenes_path),
         scene_name,
     ]
     out, err, exit_code = capture(command)
@@ -684,7 +684,7 @@ def test_default_format_output_for_transparent_flag(
         "--media_dir",
         str(tmp_path),
         "-t",
-        simple_scenes_path,
+        str(simple_scenes_path),
         scene_name,
     ]
     out, err, exit_code = capture(command)
@@ -718,7 +718,7 @@ def test_mov_can_be_set_as_output_format(tmp_path, manim_cfg_file, simple_scenes
         str(tmp_path),
         "--format",
         "mov",
-        simple_scenes_path,
+        str(simple_scenes_path),
         scene_name,
     ]
     out, err, exit_code = capture(command)

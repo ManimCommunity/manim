@@ -60,7 +60,7 @@ cfg_file_contents = textwrap.dedent(
 
 @pytest.fixture
 def simple_scenes_path():
-    yield str(Path(__file__).parent / "simple_scenes.py")
+    yield Path(__file__).parent / "simple_scenes.py"
 
 
 def cfg_file_create(cfg_file_contents, path):
@@ -92,7 +92,7 @@ def test_plugin_warning(tmp_path, python_version, simple_scenes_path):
         str(cfg_file.parent),
         "--config_file",
         str(cfg_file),
-        simple_scenes_path,
+        str(simple_scenes_path),
         scene_name,
     ]
     out, err, exit_code = capture(command, cwd=str(cfg_file.parent))
@@ -171,7 +171,7 @@ def test_plugin_function_like(
         str(cfg_file.parent),
         "--config_file",
         str(cfg_file),
-        simple_scenes_path,
+        str(simple_scenes_path),
         scene_name,
     ]
     out, err, exit_code = capture(command, cwd=str(cfg_file.parent))
@@ -249,7 +249,7 @@ def test_plugin_with_all(tmp_path, create_plugin, python_version, simple_scenes_
         str(cfg_file.parent),
         "--config_file",
         str(cfg_file),
-        simple_scenes_path,
+        str(simple_scenes_path),
         scene_name,
     ]
     out, err, exit_code = capture(command, cwd=str(cfg_file.parent))
