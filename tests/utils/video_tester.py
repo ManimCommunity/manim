@@ -68,7 +68,9 @@ def check_video_data(path_control_data: Path, path_video_gen: Path) -> None:
         )
 
 
-def video_comparison(control_data_file: str | os.PathLike, scene_path_from_media_dir: str | os.PathLike):
+def video_comparison(
+    control_data_file: str | os.PathLike, scene_path_from_media_dir: str | os.PathLike
+):
     """Decorator used for any test that needs to check a rendered scene/video.
 
     .. warning::
@@ -99,7 +101,9 @@ def video_comparison(control_data_file: str | os.PathLike, scene_path_from_media
             result = f(*args, **kwargs)
             tmp_path = kwargs["tmp_path"]
             tests_directory = Path(__file__).absolute().parent.parent
-            path_control_data = tests_directory / "control_data" / "videos_data" / control_data_file
+            path_control_data = (
+                tests_directory / "control_data" / "videos_data" / control_data_file
+            )
             path_video_gen = tmp_path / scene_path_from_media_dir
             if not path_video_gen.exists():
                 for parent in reversed(path_video_gen.parents):

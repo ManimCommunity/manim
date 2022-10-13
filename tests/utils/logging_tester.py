@@ -46,7 +46,9 @@ def _check_logs(reference_logfile: Path, generated_logfile: Path) -> None:
         )
 
 
-def logs_comparison(control_data_file: Path | os.PathLike, log_path_from_media_dir: Path | os.PathLike):
+def logs_comparison(
+    control_data_file: Path | os.PathLike, log_path_from_media_dir: Path | os.PathLike
+):
     """Decorator used for any test that needs to check logs.
 
     Parameters
@@ -75,7 +77,9 @@ def logs_comparison(control_data_file: Path | os.PathLike, log_path_from_media_d
             result = f(*args, **kwargs)
             tmp_path = kwargs["tmp_path"]
             tests_directory = Path(__file__).absolute().parent.parent
-            control_data_path = tests_directory / "control_data" / "logs_data" / control_data_file
+            control_data_path = (
+                tests_directory / "control_data" / "logs_data" / control_data_file
+            )
             path_log_generated = tmp_path / log_path_from_media_dir
             # The following will say precisely which subdir does not exist.
             if not path_log_generated.exists():
