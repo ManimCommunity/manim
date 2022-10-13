@@ -9,11 +9,11 @@ from pathlib import Path
 import pytest
 
 
-def _check_logs(reference_logfile: Path, generated_logfile: Path) -> None:
-    with reference_logfile.open() as reference_logs:
-        reference_logs = reference_logs.readlines()
-    with generated_logfile.open() as generated_logs:
-        generated_logs = generated_logs.readlines()
+def _check_logs(reference_logfile_path: Path, generated_logfile_path: Path) -> None:
+    with reference_logfile_path.open() as reference_logfile:
+        reference_logs = reference_logfile.readlines()
+    with generated_logfile_path.open() as generated_logfile:
+        generated_logs = generated_logfile.readlines()
     diff = abs(len(reference_logs) - len(generated_logs))
     if len(reference_logs) != len(generated_logs):
         msg_assert = ""
@@ -47,7 +47,7 @@ def _check_logs(reference_logfile: Path, generated_logfile: Path) -> None:
 
 
 def logs_comparison(
-    control_data_file: Path | os.PathLike, log_path_from_media_dir: Path | os.PathLike
+    control_data_file: str | os.PathLike, log_path_from_media_dir: str | os.PathLike
 ):
     """Decorator used for any test that needs to check logs.
 
