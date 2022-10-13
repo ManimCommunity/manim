@@ -92,7 +92,9 @@ def generate_tex_file(expression, environment=None, tex_template=None):
     return result
 
 
-def tex_compilation_command(tex_compiler: str, output_format: str, tex_file: Path, tex_dir: Path) -> str:
+def tex_compilation_command(
+    tex_compiler: str, output_format: str, tex_file: Path, tex_dir: Path
+) -> str:
     """Prepares the tex compilation command with all necessary cli flags
 
     Parameters
