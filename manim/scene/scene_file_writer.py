@@ -540,7 +540,7 @@ class SceneFileWriter:
     def combine_files(
         self,
         input_files: list[str],
-        output_file: Path | str,
+        output_file: Path,
         create_gif=False,
         includes_sound=False,
     ):
@@ -601,7 +601,6 @@ class SceneFileWriter:
         movie_file_path = self.movie_file_path
         if is_gif_format():
             movie_file_path = self.gif_file_path
-        movie_file_path = str(movie_file_path)
         logger.info("Combining to Movie file.")
         self.combine_files(
             partial_movie_files,
@@ -612,21 +611,20 @@ class SceneFileWriter:
 
         # handle sound
         if self.includes_sound:
-            extension = config["movie_file_extension"]
-            sound_file_path = movie_file_path.replace(extension, ".wav")
+            sound_file_path = movie_file_path.with_suffix(".wav")
             # Makes sure sound file length will match video file
             self.add_audio_segment(AudioSegment.silent(0))
             self.audio_segment.export(
                 sound_file_path,
                 bitrate="312k",
             )
-            temp_file_path = movie_file_path.replace(extension, f"_temp{extension}")
+            temp_file_path = movie_file_path.with_name(f"{movie_file_path.stem}_temp{movie_file_path.suffix}")
             commands = [
                 config.ffmpeg_executable,
                 "-i",
-                movie_file_path,
+                str(movie_file_path),
                 "-i",
-                sound_file_path,
+                str(sound_file_path),
                 "-y",  # overwrite output file if it exists
                 "-c:v",
                 "copy",
@@ -645,13 +643,13 @@ class SceneFileWriter:
                 "-metadata",
                 f"comment=Rendered with Manim Community v{__version__}",
                 # "-shortest",
-                temp_file_path,
+                str(temp_file_path),
             ]
             subprocess.call(commands)
-            shutil.move(temp_file_path, movie_file_path)
-            os.remove(sound_file_path)
+            shutil.move(str(temp_file_path), str(movie_file_path))
+            sound_file_path.unlink()
 
-        self.print_file_ready_message(movie_file_path)
+        self.print_file_ready_message(str(movie_file_path))
         if write_to_movie():
             for file_path in partial_movie_files:
                 # We have to modify the accessed time so if we have to clean the cache we remove the one used the longest.

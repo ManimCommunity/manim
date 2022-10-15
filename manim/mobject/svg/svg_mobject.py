@@ -187,7 +187,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         new_tree.write(modified_file_path)
 
         svg = se.SVG.parse(modified_file_path)
-        os.remove(modified_file_path)
+        modified_file_path.unlink()
 
         mobjects = self.get_mobjects_from(svg)
         self.add(*mobjects)
