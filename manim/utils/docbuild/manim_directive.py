@@ -358,7 +358,8 @@ def _log_rendering_times(*args):
 
 
 def _delete_rendering_times(*args):
-    rendering_times_file_path.unlink(missing_ok=True)
+    if rendering_times_file_path.exists():
+        rendering_times_file_path.unlink()
 
 
 def setup(app):
