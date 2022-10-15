@@ -11,7 +11,7 @@ import operator as op
 import pathlib
 import time
 from functools import reduce
-from typing import Any
+from typing import Any, Callable, Iterable
 
 import cairo
 import numpy as np
@@ -29,8 +29,6 @@ from ..utils.family import extract_mobject_family_members
 from ..utils.images import get_full_raster_image_path
 from ..utils.iterables import list_difference_update
 from ..utils.space_ops import angle_of_vector
-from typing import Callable
-from typing import Iterable
 
 
 class Camera:

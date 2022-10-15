@@ -12,6 +12,7 @@ import svgelements as se
 from manim._config import config
 from manim.mobject.geometry.arc import Arc
 from manim.mobject.geometry.line import Line
+from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.text.tex_mobject import MathTex, Tex
 
@@ -22,7 +23,6 @@ from ...constants import *
 from ...mobject.types.vectorized_mobject import VMobject
 from ...utils.color import BLACK
 from ..svg.svg_mobject import VMobjectFromSVGPath
-from manim.mobject.mobject import Mobject
 
 
 class Brace(VMobjectFromSVGPath):

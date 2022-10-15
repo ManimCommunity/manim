@@ -10,13 +10,14 @@ from __future__ import annotations
 
 __all__ = ["MovingCamera"]
 
+import numpy as np
+
 from .. import config
 from ..camera.camera import Camera
 from ..constants import DOWN, LEFT, RIGHT, UP
 from ..mobject.frame import ScreenRectangle
 from ..mobject.mobject import Mobject
 from ..utils.color import WHITE
-import numpy as np
 
 
 class MovingCamera(Camera):

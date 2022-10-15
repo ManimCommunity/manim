@@ -4,6 +4,8 @@ from __future__ import annotations
 
 __all__ = ["VectorScene", "LinearTransformationScene"]
 
+from typing import Callable
+
 import numpy as np
 from colour import Color
 
@@ -29,7 +31,6 @@ from ..scene.scene import Scene
 from ..utils.color import BLUE_D, GREEN_C, GREY, RED_C, WHITE, YELLOW
 from ..utils.rate_functions import rush_from, rush_into
 from ..utils.space_ops import angle_of_vector
-from typing import Callable
 
 X_COLOR = GREEN_C
 Y_COLOR = RED_C

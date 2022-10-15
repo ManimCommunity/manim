@@ -13,6 +13,7 @@ from ..mobject.mobject import Mobject
 from ..scene.scene_file_writer import SceneFileWriter
 from ..utils.exceptions import EndSceneEarlyException
 from ..utils.iterables import list_update
+
 if typing.TYPE_CHECKING:
     from manim.scene.scene import Scene
 

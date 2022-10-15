@@ -5,8 +5,11 @@ from __future__ import annotations
 __all__ = ["ThreeDCamera"]
 
 
+from typing import Callable
+
 import numpy as np
 
+from manim.mobject.mobject import Mobject
 from manim.mobject.three_d.three_d_utils import (
     get_3d_vmob_end_corner,
     get_3d_vmob_end_corner_unit_normal,
@@ -22,8 +25,6 @@ from ..mobject.types.point_cloud_mobject import Point
 from ..utils.color import get_shaded_rgb
 from ..utils.family import extract_mobject_family_members
 from ..utils.space_ops import rotation_about_z, rotation_matrix
-from typing import Callable
-from manim.mobject.mobject import Mobject
 
 
 class ThreeDCamera(Camera):

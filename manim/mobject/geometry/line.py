@@ -14,7 +14,7 @@ __all__ = [
     "RightAngle",
 ]
 
-from typing import Sequence
+from typing import Any, Sequence
 
 import numpy as np
 from colour import Color
@@ -28,9 +28,8 @@ from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.types.vectorized_mobject import DashedVMobject, VGroup, VMobject
 from manim.utils.color import *
-from manim.utils.space_ops import angle_of_vector, line_intersection, normalize
-from typing import Any
 from manim.utils.color import Colors
+from manim.utils.space_ops import angle_of_vector, line_intersection, normalize
 
 
 class Line(TipableVMobject):

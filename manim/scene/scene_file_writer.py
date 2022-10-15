@@ -10,7 +10,7 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import srt
@@ -35,7 +35,7 @@ from ..utils.file_ops import (
 )
 from ..utils.sounds import get_full_sound_file_path
 from .section import DefaultSectionType, Section
-from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from manim.renderer.opengl_renderer import OpenGLRenderer
 

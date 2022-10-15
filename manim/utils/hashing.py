@@ -14,10 +14,12 @@ from typing import Any
 
 import numpy as np
 
-from .. import config, logger
 from manim.animation.animation import Animation
 from manim.camera.camera import Camera
 from manim.mobject.mobject import Mobject
+
+from .. import config, logger
+
 if typing.TYPE_CHECKING:
     from manim.scene.scene import Scene
 
