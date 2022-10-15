@@ -134,7 +134,7 @@ def ensure_executable(path_to_exe: Path) -> bool:
 
 def add_extension_if_not_present(file_name: Path, extension: str) -> Path:
     if file_name.suffix != extension:
-        return file_name.with_suffix(extension)
+        return file_name.with_suffix(file_name.suffix + extension)
     else:
         return file_name
 
