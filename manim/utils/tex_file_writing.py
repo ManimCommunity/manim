@@ -27,7 +27,11 @@ def tex_hash(expression):
     return hasher.hexdigest()[:16]
 
 
-def tex_to_svg_file(expression: str, environment: str | None=None, tex_template: TexTemplate | None=None):
+def tex_to_svg_file(
+    expression: str,
+    environment: str | None = None,
+    tex_template: TexTemplate | None = None,
+):
     """Takes a tex expression and returns the svg version of the compiled tex
 
     Parameters
@@ -55,7 +59,11 @@ def tex_to_svg_file(expression: str, environment: str | None=None, tex_template:
     return convert_to_svg(dvi_file, tex_template.output_format)
 
 
-def generate_tex_file(expression: str, environment: str | None=None, tex_template: TexTemplate | None=None):
+def generate_tex_file(
+    expression: str,
+    environment: str | None = None,
+    tex_template: TexTemplate | None = None,
+):
     """Takes a tex expression (and an optional tex environment),
     and returns a fully formed tex file ready for compilation.
 
@@ -95,7 +103,9 @@ def generate_tex_file(expression: str, environment: str | None=None, tex_templat
     return result.as_posix()
 
 
-def tex_compilation_command(tex_compiler: str, output_format: str, tex_file: str, tex_dir: str):
+def tex_compilation_command(
+    tex_compiler: str, output_format: str, tex_file: str, tex_dir: str
+):
     """Prepares the tex compilation command with all necessary cli flags
 
     Parameters
@@ -199,7 +209,7 @@ def compile_tex(tex_file: str, tex_compiler: str, output_format: str):
     return result
 
 
-def convert_to_svg(dvi_file: str, extension: str, page: int=1):
+def convert_to_svg(dvi_file: str, extension: str, page: int = 1):
     """Converts a .dvi, .xdv, or .pdf file into an svg using dvisvgm.
 
     Parameters

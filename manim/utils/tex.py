@@ -58,12 +58,12 @@ class TexTemplate:
 
     def __init__(
         self,
-        tex_compiler: str | None=None,
-        output_format: str | None=None,
-        documentclass: str | None=None,
-        preamble: str | None=None,
-        placeholder_text: str | None=None,
-        post_doc_commands: str | None=None,
+        tex_compiler: str | None = None,
+        output_format: str | None = None,
+        documentclass: str | None = None,
+        preamble: str | None = None,
+        placeholder_text: str | None = None,
+        post_doc_commands: str | None = None,
         **kwargs,
     ):
         self.tex_compiler = (
@@ -122,7 +122,7 @@ class TexTemplate:
             + "\n"
         )
 
-    def add_to_preamble(self, txt: str, prepend: bool=False):
+    def add_to_preamble(self, txt: str, prepend: bool = False):
         """Adds stuff to the TeX template's preamble (e.g. definitions, packages). Text can be inserted at the beginning or at the end of the preamble.
 
         Parameters

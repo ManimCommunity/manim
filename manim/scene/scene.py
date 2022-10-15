@@ -209,7 +209,7 @@ class Scene:
                 result.mobject_updater_lists.append((mobject_clone, cloned_updaters))
         return result
 
-    def render(self, preview: bool=False):
+    def render(self, preview: bool = False):
         """
         Renders this Scene.
 
@@ -568,8 +568,8 @@ class Scene:
     def restructure_mobjects(
         self,
         to_remove: Mobject,
-        mobject_list_name: str="mobjects",
-        extract_families: bool=True,
+        mobject_list_name: str = "mobjects",
+        extract_families: bool = True,
     ):
         """
         tl:wr
@@ -857,7 +857,9 @@ class Scene:
 
         return animations
 
-    def _get_animation_time_progression(self, animations: list[Animation], duration: float):
+    def _get_animation_time_progression(
+        self, animations: list[Animation], duration: float
+    ):
         """
         You will hardly use this when making your own animations.
         This method is for Manim's internal use.
@@ -911,8 +913,8 @@ class Scene:
         self,
         run_time: float,
         description,
-        n_iterations: int | None=None,
-        override_skip_animations: bool=False,
+        n_iterations: int | None = None,
+        override_skip_animations: bool = False,
     ):
         """
         You will hardly use this when making your own animations.
@@ -1094,7 +1096,7 @@ class Scene:
         """
         self.wait(duration=duration, frozen_frame=True)
 
-    def wait_until(self, stop_condition: Callable[[], bool], max_time: float=60):
+    def wait_until(self, stop_condition: Callable[[], bool], max_time: float = 60):
         """
         Like a wrapper for wait().
         You pass a function that determines whether to continue waiting,
@@ -1483,7 +1485,13 @@ class Scene:
         )
         self.renderer.file_writer.subcaptions.append(subtitle)
 
-    def add_sound(self, sound_file: str, time_offset: float=0, gain: float | None=None, **kwargs):
+    def add_sound(
+        self,
+        sound_file: str,
+        time_offset: float = 0,
+        gain: float | None = None,
+        **kwargs,
+    ):
         """
         This method is used to add a sound to the animation.
 

@@ -167,7 +167,7 @@ class ImageMobject(AbstractImageMobject):
     def __init__(
         self,
         filename_or_array,
-        scale_to_resolution: int=QUALITIES[DEFAULT_QUALITY]["pixel_height"],
+        scale_to_resolution: int = QUALITIES[DEFAULT_QUALITY]["pixel_height"],
         invert=False,
         image_mode="RGBA",
         **kwargs,
@@ -219,7 +219,7 @@ class ImageMobject(AbstractImageMobject):
         self.stroke_opacity = alpha
         return self
 
-    def fade(self, darkness: float=0.5, family: bool=True):
+    def fade(self, darkness: float = 0.5, family: bool = True):
         """Sets the image's opacity using a 1 - alpha relationship.
 
         Parameters
@@ -234,7 +234,9 @@ class ImageMobject(AbstractImageMobject):
         super().fade(darkness, family)
         return self
 
-    def interpolate_color(self, mobject1: ImageMobject, mobject2: ImageMobject, alpha: float):
+    def interpolate_color(
+        self, mobject1: ImageMobject, mobject2: ImageMobject, alpha: float
+    ):
         """Interpolates the array of pixel color values from one ImageMobject
         into an array of equal size in the target ImageMobject.
 

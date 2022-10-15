@@ -398,7 +398,12 @@ class Variable(VMobject, metaclass=ConvertToOpenGL):
     """
 
     def __init__(
-        self, var: float, label: str | Tex | MathTex | Text | SingleStringMathTex, var_type: DecimalNumber | Integer=DecimalNumber, num_decimal_places: int=2, **kwargs
+        self,
+        var: float,
+        label: str | Tex | MathTex | Text | SingleStringMathTex,
+        var_type: DecimalNumber | Integer = DecimalNumber,
+        num_decimal_places: int = 2,
+        **kwargs,
     ):
 
         self.label = MathTex(label) if isinstance(label, str) else label

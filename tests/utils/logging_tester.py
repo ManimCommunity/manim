@@ -46,7 +46,9 @@ def _check_logs(reference_logfile, generated_logfile):
         )
 
 
-def logs_comparison(control_data_file: str | os.PathLike, log_path_from_media_dir: str | os.PathLike):
+def logs_comparison(
+    control_data_file: str | os.PathLike, log_path_from_media_dir: str | os.PathLike
+):
     """Decorator used for any test that needs to check logs.
 
     Parameters

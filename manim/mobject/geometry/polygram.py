@@ -541,8 +541,8 @@ class Rectangle(Polygon):
         width: float = 4.0,
         grid_xstep: float | None = None,
         grid_ystep: float | None = None,
-        mark_paths_closed: bool=True,
-        close_new_points: bool=True,
+        mark_paths_closed: bool = True,
+        close_new_points: bool = True,
         **kwargs,
     ):
         super().__init__(UR, UL, DL, DR, color=color, **kwargs)
@@ -604,7 +604,7 @@ class Square(Rectangle):
                 self.add(square_1, square_2, square_3)
     """
 
-    def __init__(self, side_length: float=2.0, **kwargs):
+    def __init__(self, side_length: float = 2.0, **kwargs):
         self.side_length = side_length
         super().__init__(height=side_length, width=side_length, **kwargs)
 
@@ -633,7 +633,7 @@ class RoundedRectangle(Rectangle):
                 self.add(rect_group)
     """
 
-    def __init__(self, corner_radius: float=0.5, **kwargs):
+    def __init__(self, corner_radius: float = 0.5, **kwargs):
         super().__init__(**kwargs)
         self.corner_radius = corner_radius
         self.round_corners(self.corner_radius)

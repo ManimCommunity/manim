@@ -100,7 +100,7 @@ class ThreeDScene(Scene):
         if frame_center is not None:
             self.renderer.camera._frame_center.move_to(frame_center)
 
-    def begin_ambient_camera_rotation(self, rate: float=0.02, about: str="theta"):
+    def begin_ambient_camera_rotation(self, rate: float = 0.02, about: str = "theta"):
         """
         This method begins an ambient rotation of the camera about the Z_AXIS,
         in the anticlockwise direction

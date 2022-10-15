@@ -1999,7 +1999,15 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
                 self.wait()
     """
 
-    def __init__(self, mapping_or_iterable: Union[typing.Mapping[typing.Hashable, VMobject], typing.Iterable[typing.Tuple[typing.Hashable, VMobject]]]={}, show_keys: bool=False, **kwargs):
+    def __init__(
+        self,
+        mapping_or_iterable: Union[
+            typing.Mapping[typing.Hashable, VMobject],
+            typing.Iterable[typing.Tuple[typing.Hashable, VMobject]],
+        ] = {},
+        show_keys: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
         self.show_keys = show_keys
         self.submob_dict = {}
@@ -2008,7 +2016,13 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
     def __repr__(self):
         return __class__.__name__ + "(" + repr(self.submob_dict) + ")"
 
-    def add(self, mapping_or_iterable: Union[typing.Mapping[typing.Hashable, VMobject], typing.Iterable[typing.Tuple[typing.Hashable, VMobject]]]):
+    def add(
+        self,
+        mapping_or_iterable: Union[
+            typing.Mapping[typing.Hashable, VMobject],
+            typing.Iterable[typing.Tuple[typing.Hashable, VMobject]],
+        ],
+    ):
         """Adds the key-value pairs to the :class:`VDict` object.
 
         Also, it internally adds the value to the `submobjects` :class:`list`

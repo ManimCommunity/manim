@@ -109,9 +109,9 @@ class CairoRenderer:
     def update_frame(  # TODO Description in Docstring
         self,
         scene,
-        mobjects: typing.Iterable[Mobject] | None=None,
-        include_submobjects: bool=True,
-        ignore_skipping: bool=True,
+        mobjects: typing.Iterable[Mobject] | None = None,
+        include_submobjects: bool = True,
+        ignore_skipping: bool = True,
         **kwargs,
     ):
         """Update the frame.
@@ -159,7 +159,7 @@ class CairoRenderer:
         """
         return np.array(self.camera.pixel_array)
 
-    def add_frame(self, frame: np.ndarray, num_frames: int=1):
+    def add_frame(self, frame: np.ndarray, num_frames: int = 1):
         """
         Adds a frame to the video_file_stream
 

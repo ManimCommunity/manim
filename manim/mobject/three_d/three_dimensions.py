@@ -375,9 +375,9 @@ class Dot3D(Sphere):
 
     def __init__(
         self,
-        point: list | np.ndarray=ORIGIN,
-        radius: float=DEFAULT_DOT_RADIUS,
-        color: Colors=WHITE,
+        point: list | np.ndarray = ORIGIN,
+        radius: float = DEFAULT_DOT_RADIUS,
+        color: Colors = WHITE,
         resolution=(8, 8),
         **kwargs,
     ):
@@ -483,13 +483,13 @@ class Cone(Surface):
 
     def __init__(
         self,
-        base_radius: float=1,
-        height: float=1,
-        direction: np.ndarray=Z_AXIS,
-        show_base: bool=False,
-        v_range: Sequence[float]=[0, TAU],
-        u_min: float=0,
-        checkerboard_colors: bool=False,
+        base_radius: float = 1,
+        height: float = 1,
+        direction: np.ndarray = Z_AXIS,
+        show_base: bool = False,
+        v_range: Sequence[float] = [0, TAU],
+        u_min: float = 0,
+        checkerboard_colors: bool = False,
         **kwargs,
     ):
         self.direction = direction
@@ -609,11 +609,11 @@ class Cylinder(Surface):
 
     def __init__(
         self,
-        radius: float=1,
-        height: float=2,
-        direction: np.ndarray=Z_AXIS,
-        v_range: Sequence[float]=[0, TAU],
-        show_ends: bool=True,
+        radius: float = 1,
+        height: float = 2,
+        direction: np.ndarray = Z_AXIS,
+        v_range: Sequence[float] = [0, TAU],
+        show_ends: bool = True,
         resolution=(24, 24),
         **kwargs,
     ):
@@ -737,7 +737,14 @@ class Line3D(Cylinder):
         The thickness of the line.
     """
 
-    def __init__(self, start: np.ndarray=LEFT, end: np.ndarray=RIGHT, thickness: float=0.02, color=None, **kwargs):
+    def __init__(
+        self,
+        start: np.ndarray = LEFT,
+        end: np.ndarray = RIGHT,
+        thickness: float = 0.02,
+        color=None,
+        **kwargs,
+    ):
         self.thickness = thickness
         self.set_start_and_end_attrs(start, end, **kwargs)
         if color is not None:
@@ -897,11 +904,11 @@ class Arrow3D(Line3D):
 
     def __init__(
         self,
-        start: np.ndarray=LEFT,
-        end: np.ndarray=RIGHT,
-        thickness: float=0.02,
-        height: float=0.3,
-        base_radius: float=0.08,
+        start: np.ndarray = LEFT,
+        end: np.ndarray = RIGHT,
+        thickness: float = 0.02,
+        height: float = 0.3,
+        base_radius: float = 0.08,
         color=WHITE,
         **kwargs,
     ):
@@ -949,8 +956,8 @@ class Torus(Surface):
 
     def __init__(
         self,
-        major_radius: float=3,
-        minor_radius: float=1,
+        major_radius: float = 3,
+        minor_radius: float = 1,
         u_range=(0, TAU),
         v_range=(0, TAU),
         resolution=None,

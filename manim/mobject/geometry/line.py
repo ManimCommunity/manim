@@ -223,8 +223,8 @@ class DashedLine(Line):
     def __init__(
         self,
         *args: Any,
-        dash_length: float=DEFAULT_DASH_LENGTH,
-        dashed_ratio: float=0.5,
+        dash_length: float = DEFAULT_DASH_LENGTH,
+        dashed_ratio: float = 0.5,
         **kwargs,
     ):
         self.dash_length = dash_length
@@ -347,7 +347,14 @@ class TangentLine(Line):
                 self.add(circle, line_1, line_2)
     """
 
-    def __init__(self, vmob: VMobject, alpha: float, length: float=1, d_alpha: float=1e-6, **kwargs):
+    def __init__(
+        self,
+        vmob: VMobject,
+        alpha: float,
+        length: float = 1,
+        d_alpha: float = 1e-6,
+        **kwargs,
+    ):
         self.length = length
         self.d_alpha = d_alpha
         da = self.d_alpha
@@ -389,7 +396,7 @@ class Elbow(VMobject, metaclass=ConvertToOpenGL):
                 self.add(elbow_group)
     """
 
-    def __init__(self, width: float=0.2, angle: float=0, **kwargs):
+    def __init__(self, width: float = 0.2, angle: float = 0, **kwargs):
         self.angle = angle
         super().__init__(**kwargs)
         self.set_points_as_corners([UP, UP + RIGHT, RIGHT])
@@ -488,10 +495,10 @@ class Arrow(Line):
     def __init__(
         self,
         *args: Any,
-        stroke_width: float=6,
-        buff: float=MED_SMALL_BUFF,
-        max_tip_length_to_length_ratio: float=0.25,
-        max_stroke_width_to_length_ratio: float=5,
+        stroke_width: float = 6,
+        buff: float = MED_SMALL_BUFF,
+        max_tip_length_to_length_ratio: float = 0.25,
+        max_stroke_width_to_length_ratio: float = 5,
         **kwargs,
     ):
         self.max_tip_length_to_length_ratio = max_tip_length_to_length_ratio
@@ -629,7 +636,7 @@ class Vector(Arrow):
                 self.add(plane, vector_1, vector_2)
     """
 
-    def __init__(self, direction: list | np.ndarray=RIGHT, buff: float=0, **kwargs):
+    def __init__(self, direction: list | np.ndarray = RIGHT, buff: float = 0, **kwargs):
         self.buff = buff
         if len(direction) == 2:
             direction = np.hstack([direction, 0])
@@ -867,13 +874,13 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         line1: Line,
         line2: Line,
         radius: float = None,
-        quadrant: Sequence[int]=(1, 1),
+        quadrant: Sequence[int] = (1, 1),
         other_angle: bool = False,
-        dot: bool=False,
-        dot_radius: float | None=None,
-        dot_distance: float=0.55,
-        dot_color: Colors=WHITE,
-        elbow: bool=False,
+        dot: bool = False,
+        dot_radius: float | None = None,
+        dot_distance: float = 0.55,
+        dot_color: Colors = WHITE,
+        elbow: bool = False,
         **kwargs,
     ):
         super().__init__(**kwargs)

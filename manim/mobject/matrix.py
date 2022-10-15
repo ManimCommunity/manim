@@ -228,7 +228,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
                 )
         return self
 
-    def _add_brackets(self, left: str="[", right: str="]", **kwargs):
+    def _add_brackets(self, left: str = "[", right: str = "]", **kwargs):
         """Adds the brackets to the Matrix mobject.
 
         See Latex document for various bracket types.
@@ -489,8 +489,8 @@ class DecimalMatrix(Matrix):
     def __init__(
         self,
         matrix: Iterable,
-        element_to_mobject: Mobject=DecimalNumber,
-        element_to_mobject_config: dict[str, Mobject]={"num_decimal_places": 1},
+        element_to_mobject: Mobject = DecimalNumber,
+        element_to_mobject_config: dict[str, Mobject] = {"num_decimal_places": 1},
         **kwargs,
     ):
         """
@@ -531,7 +531,9 @@ class IntegerMatrix(Matrix):
                 self.add(m0)
     """
 
-    def __init__(self, matrix: Iterable, element_to_mobject: Mobject=Integer, **kwargs):
+    def __init__(
+        self, matrix: Iterable, element_to_mobject: Mobject = Integer, **kwargs
+    ):
         """
         Will round if there are decimal entries in the matrix.
 
@@ -570,9 +572,9 @@ class MobjectMatrix(Matrix):
 
 def get_det_text(
     matrix: Matrix,
-    determinant: int | str | None=None,
-    background_rect: bool=False,
-    initial_scale_factor: float=2,
+    determinant: int | str | None = None,
+    background_rect: bool = False,
+    initial_scale_factor: float = 2,
 ):
     r"""Helper function to create determinant.
 

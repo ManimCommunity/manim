@@ -16,7 +16,7 @@ class MultiCamera(MovingCamera):
 
     def __init__(
         self,
-        image_mobjects_from_cameras: ImageMobject | None=None,
+        image_mobjects_from_cameras: ImageMobject | None = None,
         allow_cameras_to_capture_their_own_display=False,
         **kwargs,
     ):

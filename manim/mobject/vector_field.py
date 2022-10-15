@@ -905,7 +905,7 @@ class StreamLines(VectorField):
 
     def start_animation(
         self,
-        warm_up: bool=True,
+        warm_up: bool = True,
         flow_speed: float = 1,
         time_width: float = 0.3,
         rate_func: Callable[[float], float] = linear,

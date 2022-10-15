@@ -270,7 +270,12 @@ class SceneFileWriter:
         """
         self.audio_segment = AudioSegment.silent()
 
-    def add_audio_segment(self, new_segment: AudioSegment, time: float | None=None, gain_to_background: float | None=None):
+    def add_audio_segment(
+        self,
+        new_segment: AudioSegment,
+        time: float | None = None,
+        gain_to_background: float | None = None,
+    ):
         """
         This method adds an audio segment from an
         AudioSegment type object and suitable parameters.
@@ -310,7 +315,13 @@ class SceneFileWriter:
             gain_during_overlay=gain_to_background,
         )
 
-    def add_sound(self, sound_file: str, time: float | None=None, gain: float | None=None, **kwargs):
+    def add_sound(
+        self,
+        sound_file: str,
+        time: float | None = None,
+        gain: float | None = None,
+        **kwargs,
+    ):
         """
         This method adds an audio segment from a sound file.
 
@@ -337,7 +348,7 @@ class SceneFileWriter:
         self.add_audio_segment(new_segment, time, **kwargs)
 
     # Writers
-    def begin_animation(self, allow_write: bool=False, file_path=None):
+    def begin_animation(self, allow_write: bool = False, file_path=None):
         """
         Used internally by manim to stream the animation to FFMPEG for
         displaying or writing to a file.
@@ -350,7 +361,7 @@ class SceneFileWriter:
         if write_to_movie() and allow_write:
             self.open_movie_pipe(file_path=file_path)
 
-    def end_animation(self, allow_write: bool=False):
+    def end_animation(self, allow_write: bool = False):
         """
         Internally used by Manim to stop streaming to
         FFMPEG gracefully.

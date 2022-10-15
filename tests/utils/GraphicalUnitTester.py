@@ -31,7 +31,9 @@ class GraphicalUnitTester:
         The scene tested
     """
 
-    def __init__(self, scene_class: type[Scene], module_tested: str, tmpdir, rgb_atol=0):
+    def __init__(
+        self, scene_class: type[Scene], module_tested: str, tmpdir, rgb_atol=0
+    ):
         # Disable the the logs, (--quiet is broken) TODO
         logging.disable(logging.CRITICAL)
         tests_directory = Path(__file__).absolute().parent.parent

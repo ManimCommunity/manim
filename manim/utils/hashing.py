@@ -57,7 +57,7 @@ class _Memoizer:
         cls._already_processed.clear()
 
     @classmethod
-    def check_already_processed_decorator(cls: _Memoizer, is_method: bool=False):
+    def check_already_processed_decorator(cls: _Memoizer, is_method: bool = False):
         """Decorator to handle the arguments that goes through the decorated function.
         Returns _ALREADY_PROCESSED_PLACEHOLDER if the obj has been processed, or lets
         the decorated function call go ahead.

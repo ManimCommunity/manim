@@ -358,7 +358,10 @@ class ThreeDCamera(Camera):
             return self.project_points(points)
 
     def add_fixed_orientation_mobjects(
-        self, *mobjects: Mobject, use_static_center_func: bool=False, center_func: Callable[[], np.ndarray] | None=None
+        self,
+        *mobjects: Mobject,
+        use_static_center_func: bool = False,
+        center_func: Callable[[], np.ndarray] | None = None,
     ):
         """This method allows the mobject to have a fixed orientation,
         even when the camera moves around.
