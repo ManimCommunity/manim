@@ -140,7 +140,9 @@ def add_extension_if_not_present(file_name: Path, extension: str) -> Path:
 
 
 def add_version_before_extension(file_name: Path) -> Path:
-    return file_name.with_name(f"{file_name.stem}_ManimCE_v{__version__}{file_name.suffix}")
+    return file_name.with_name(
+        f"{file_name.stem}_ManimCE_v{__version__}{file_name.suffix}"
+    )
 
 
 def guarantee_existence(path: Path) -> Path:

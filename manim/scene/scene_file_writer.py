@@ -618,7 +618,9 @@ class SceneFileWriter:
                 sound_file_path,
                 bitrate="312k",
             )
-            temp_file_path = movie_file_path.with_name(f"{movie_file_path.stem}_temp{movie_file_path.suffix}")
+            temp_file_path = movie_file_path.with_name(
+                f"{movie_file_path.stem}_temp{movie_file_path.suffix}"
+            )
             commands = [
                 config.ffmpeg_executable,
                 "-i",
