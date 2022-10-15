@@ -105,11 +105,14 @@ class FadeIn(_Fade):
     mobjects
         The mobjects to be faded in.
     shift
+        # TODO TYPEHINTS
         The vector by which the mobject shifts while being faded in.
     target_position
+        # TODO TYPEHINTS
         The position from which the mobject starts while being faded in. In case
         another mobject is given as target position, its center is used.
     scale
+        # TODO TYPEHINTS
         The factor by which the mobject is scaled initially before being rescaling to
         its original size while being faded in.
 
@@ -153,11 +156,14 @@ class FadeOut(_Fade):
     mobjects
         The mobjects to be faded out.
     shift
+        # TODO TYPEHINTS
         The vector by which the mobject shifts while being faded out.
     target_position
+        # TODO TYPEHINTS
         The position to which the mobject moves while being faded out. In case another
         mobject is given as target position, its center is used.
     scale
+        # TODO TYPEHINTS
         The factor by which the mobject is scaled while being faded out.
 
     Examples

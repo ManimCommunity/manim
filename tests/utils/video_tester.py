@@ -67,7 +67,7 @@ def check_video_data(path_control_data, path_video_gen):
         )
 
 
-def video_comparison(control_data_file, scene_path_from_media_dir):
+def video_comparison(control_data_file: str, scene_path_from_media_dir: str):
     """Decorator used for any test that needs to check a rendered scene/video.
 
     .. warning::
@@ -76,11 +76,11 @@ def video_comparison(control_data_file, scene_path_from_media_dir):
 
     Parameters
     ----------
-    control_data_file : :class:`str`
+    control_data_file
         Name of the control data file, i.e. the .json containing all the pre-rendered references of the scene tested.
         .. warning:: You don't have to pass the path here.
 
-    scene_path_from_media_dir : :class:`str`
+    scene_path_from_media_dir
         The path of the scene generated, from the media dir. Example: /videos/1080p60/SquareToCircle.mp4.
 
     See Also

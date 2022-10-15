@@ -114,7 +114,7 @@ def quaternion_from_angle_axis(
         The angle for the quaternion.
     axis
         The axis for the quaternion
-    axis_normalized : bool, optional
+    axis_normalized
         Checks whether the axis is normalized, by default False
 
     Returns
@@ -267,7 +267,7 @@ def rotation_about_z(angle: float) -> np.ndarray:
 
     Parameters
     ----------
-    angle : float
+    angle
         Angle for the rotation matrix.
 
     Returns

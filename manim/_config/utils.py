@@ -85,7 +85,7 @@ def make_config_parser(custom_file: str = None) -> configparser.ConfigParser:
 
     Parameters
     ----------
-    custom_file : :class:`str`
+    custom_file
         Path to a custom config file.  If used, the folder-wide file in the
         relevant directory will be ignored, if it exists.  If None, the
         folder-wide file will be used, if it exists.
@@ -340,7 +340,7 @@ class ManimConfig(MutableMapping):
 
         Parameters
         ----------
-        obj : Union[:class:`ManimConfig`, :class:`dict`]
+        obj
             The object to copy values from.
 
         Returns
@@ -488,7 +488,7 @@ class ManimConfig(MutableMapping):
 
         Parameters
         ----------
-        parser : :class:`ConfigParser`
+        parser
             An object reflecting the contents of one or many ``.cfg`` files.  In
             particular, it may reflect the contents of multiple files that have
             been parsed in a cascading fashion.
@@ -662,7 +662,7 @@ class ManimConfig(MutableMapping):
 
         Parameters
         ----------
-        args : :class:`argparse.Namespace`
+        args
             An object returned by :func:`.main_utils.parse_args()`.
 
         Returns
@@ -818,7 +818,7 @@ class ManimConfig(MutableMapping):
 
         Parameters
         ----------
-        filename : :class:`str`
+        filename
             Path to the ``.cfg`` file.
 
         Returns
@@ -1314,11 +1314,11 @@ class ManimConfig(MutableMapping):
 
         Parameters
         ----------
-        key : :class:`str`
+        key
             The config option to be resolved.  Must be an option ending in
             ``'_dir'``, for example ``'media_dir'`` or ``'video_dir'``.
 
-        kwargs : :class:`str`
+        kwargs
             Any strings to be used when resolving the directory.
 
         Returns

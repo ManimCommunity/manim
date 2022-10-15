@@ -49,7 +49,7 @@ def tempconfig(temp: ManimConfig | dict) -> _GeneratorContextManager:
 
     Parameters
     ----------
-    temp : Union[:class:`ManimConfig`, :class:`dict`]
+    temp
         Object whose keys will be used to temporarily update the global
         ``config``.
 

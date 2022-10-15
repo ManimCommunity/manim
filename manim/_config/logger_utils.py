@@ -56,10 +56,10 @@ def make_logger(
 
     Parameters
     ----------
-    parser : :class:`configparser.ConfigParser`
+    parser
         A parser containing any .cfg files in use.
 
-    verbosity : :class:`str`
+    verbosity
         The verbosity level of the logger.
 
     Returns
@@ -106,7 +106,7 @@ def parse_theme(parser: configparser.ConfigParser) -> Theme:
 
     Parameters
     ----------
-    parser : :class:`configparser.ConfigParser`
+    parser
         A parser containing any .cfg files in use.
 
     Returns
@@ -149,6 +149,7 @@ def set_file_logger(scene_name: str, module_name: str, log_dir: Path) -> None:
     Parameters
     ----------
     config : :class:`ManimConfig`
+        # TODO TYPEHINTS
         The global config, used to determine the log file path.
 
     """

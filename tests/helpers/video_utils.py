@@ -43,9 +43,9 @@ def save_control_data_from_video(path_to_video: str, name: str) -> None:
 
     Parameters
     ----------
-    path_to_video : :class:`str`
+    path_to_video
         Path to the video to extract information from.
-    name : :class:`str`
+    name
         Name of the test. The .json file will be named with it.
 
     See Also

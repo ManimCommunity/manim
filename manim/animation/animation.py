@@ -416,6 +416,7 @@ class Animation:
         Parameters
         ----------
         run_time
+            # TODO TYPEHINTS
             The new time the animation should take in seconds.
 
 

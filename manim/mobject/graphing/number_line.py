@@ -598,8 +598,6 @@ class NumberLine(Line):
         ----------
         label_tex
             The label to be compared against the above types.
-        label_constructor
-            The VMobject class used to construct the label.
 
         Returns
         -------

@@ -46,17 +46,17 @@ def _check_logs(reference_logfile, generated_logfile):
         )
 
 
-def logs_comparison(control_data_file, log_path_from_media_dir):
+def logs_comparison(control_data_file: str | os.PathLike, log_path_from_media_dir: str | os.PathLike):
     """Decorator used for any test that needs to check logs.
 
     Parameters
     ----------
-    control_data_file : :class:`str`
+    control_data_file
         Name of the control data file, i.e. .log that will be compared to the outputted logs.
         .. warning:: You don't have to pass the path here.
         .. example:: "SquareToCircleWithLFlag.log"
 
-    log_path_from_media_dir : :class:`str`
+    log_path_from_media_dir
         The path of the .log generated, from the media dir. Example: /logs/Square.log.
 
     Returns

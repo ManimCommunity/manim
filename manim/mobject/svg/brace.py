@@ -22,6 +22,7 @@ from ...constants import *
 from ...mobject.types.vectorized_mobject import VMobject
 from ...utils.color import BLACK
 from ..svg.svg_mobject import VMobjectFromSVGPath
+from manim.mobject.mobject import Mobject
 
 
 class Brace(VMobjectFromSVGPath):
@@ -32,7 +33,7 @@ class Brace(VMobjectFromSVGPath):
 
     Parameters
     ----------
-    mobject : :class:`~.Mobject`
+    mobject
         The mobject adjacent to which the brace is placed.
     direction :
         The direction from which the brace faces the mobject.
@@ -61,7 +62,7 @@ class Brace(VMobjectFromSVGPath):
 
     def __init__(
         self,
-        mobject,
+        mobject: Mobject,
         direction: Sequence[float] | None = DOWN,
         buff=0.2,
         sharpness=2,
