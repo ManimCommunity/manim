@@ -229,31 +229,10 @@ class TexTemplateFromFile(TexTemplate):
 
     Parameters
     ----------
-    tex_compiler : Optional[:class:`str`], optional
-        # TODO TYPEHINTS
-        The TeX compiler to be used, e.g. ``latex``, ``pdflatex`` or ``lualatex``
-    output_format : Optional[:class:`str`], optional
-        # TODO TYPEHINTS
-        The output format resulting from compilation, e.g. ``.dvi`` or ``.pdf``
-    documentclass : Optional[:class:`str`], optional
-        # TODO TYPEHINTS
-        The command defining the documentclass, e.g. ``\\documentclass[preview]{standalone}``
-    preamble : Optional[:class:`str`], optional
-        # TODO TYPEHINTS
-        The document's preamble, i.e. the part between ``\\documentclass`` and ``\\begin{document}``
-    placeholder_text : Optional[:class:`str`], optional
-        # TODO TYPEHINTS
-        Text in the document that will be replaced by the expression to be rendered
-    post_doc_commands : Optional[:class:`str`], optional
-        # TODO TYPEHINTS
-        Text (definitions, commands) to be inserted at right after ``\\begin{document}``, e.g. ``\\boldmath``
-    kwargs
-        The kwargs specified can only be strings.
-
-    Other Parameters
-    ----------------
-    tex_filename : Optional[:class:`str`], optional
+    tex_filename
         Path to a valid TeX template file
+    kwargs
+        Arguments for :class:`~.TexTemplate`.
 
     Attributes
     ----------
@@ -267,8 +246,8 @@ class TexTemplateFromFile(TexTemplate):
         The output format resulting from compilation, e.g. ``.dvi`` or ``.pdf``
     """
 
-    def __init__(self, **kwargs):
-        self.template_file = kwargs.pop("tex_filename", "tex_template.tex")
+    def __init__(self, *, tex_filename: str = "tex_template.tex", **kwargs):
+        self.template_file = tex_filename
         super().__init__(**kwargs)
 
     def _rebuild(self):

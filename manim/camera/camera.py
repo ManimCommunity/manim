@@ -36,42 +36,38 @@ class Camera:
 
     This is the object which takes care of what exactly is displayed
     on screen at any given moment.
-
-    Some important configuration values and local variables to note are:
-
-    background_image : :class:`str`, optional
-        The path to an image that should be the background image.
-        If not set, the background is filled with `self.background_color`
-
-    pixel_height : :class:`int`, optional
-        The height of the scene in pixels.
-
     """
 
     def __init__(
         self,
-        background_image=None,
-        frame_center=ORIGIN,
-        image_mode="RGBA",
-        n_channels=4,
-        pixel_array_dtype="uint8",
-        z_buff_func=lambda m: np.round(m.get_center()[2], 2),
-        cairo_line_width_multiple=0.01,
-        use_z_index=True,
+        background_image: str | None = None,
+        frame_center: np.ndarray = ORIGIN,
+        image_mode: str = "RGBA",
+        n_channels: int = 4,
+        pixel_array_dtype: str = "uint8",
+        cairo_line_width_multiple: float = 0.01,
+        use_z_index: bool = True,
         background: np.ndarray | None = None,
-        pixel_height=None,
-        pixel_width=None,
-        frame_height=None,
-        frame_width=None,
-        frame_rate=None,
+        pixel_height: int | None = None,
+        pixel_width: int | None = None,
+        frame_height: float | None = None,
+        frame_width: float | None = None,
+        frame_rate: float | None = None,
         **kwargs,
     ):
         """Initialises the Camera.
 
         Parameters
         ----------
+        background_image
+            The path to an image that should be the background image.
+            If not set, the background is filled with `self.background_color`
         background
             What self.background should be, by default None as will be set later.
+        pixel_height
+            The height of the scene in pixels.
+        pixel_width
+            The width of the scene in pixels.
         **kwargs
             Any local variables to be set.
         """
@@ -80,7 +76,6 @@ class Camera:
         self.image_mode = image_mode
         self.n_channels = n_channels
         self.pixel_array_dtype = pixel_array_dtype
-        self.z_buff_func = z_buff_func
         self.cairo_line_width_multiple = cairo_line_width_multiple
         self.use_z_index = use_z_index
         self.background = background
@@ -437,7 +432,7 @@ class Camera:
                     use_z_index=self.use_z_index,
                 )
                 mobjects = list_difference_update(mobjects, all_excluded)
-        return mobjects
+        return list(mobjects)
 
     def is_in_frame(self, mobject: Mobject):
         """Checks whether the passed mobject is in

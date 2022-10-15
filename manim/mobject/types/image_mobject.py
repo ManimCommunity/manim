@@ -63,15 +63,16 @@ class AbstractImageMobject(Mobject):
 
         Parameters
         ----------
-        resampling_algorithm, an integer constant described in the
-        Pillow library, or one from the RESAMPLING_ALGORITHMS global dictionary, under
-        the following keys:
-         * 'bicubic' or 'cubic'
-         * 'nearest' or 'none'
-         * 'box'
-         * 'bilinear' or 'linear'
-         * 'hamming'
-         * 'lanczos' or 'antialias'
+        resampling_algorithm
+            An integer constant described in the Pillow library,
+            or one from the RESAMPLING_ALGORITHMS global dictionary,
+            under the following keys:
+            * 'bicubic' or 'cubic'
+            * 'nearest' or 'none'
+            * 'box'
+            * 'bilinear' or 'linear'
+            * 'hamming'
+            * 'lanczos' or 'antialias'
         """
         if isinstance(resampling_algorithm, int):
             self.resampling_algorithm = resampling_algorithm

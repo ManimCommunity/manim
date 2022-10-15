@@ -592,7 +592,7 @@ class NumberLine(Line):
         self, label_tex: str | float | VMobject, **kwargs
     ) -> VMobject:
         """Checks if the label is a :class:`~.VMobject`, otherwise, creates a
-        label according to the ``label_constructor``.
+        label according to :attr:`label_constructor`.
 
         Parameters
         ----------

@@ -901,7 +901,7 @@ class Table(VGroup):
         line_animation: Callable[[VMobject | VGroup], Animation] = Create,
         label_animation: Callable[[VMobject | VGroup], Animation] = Write,
         element_animation: Callable[[VMobject | VGroup], Animation] = Create,
-        entry_animation=FadeIn,
+        entry_animation: Callable[[VMobject | VGroup], Animation] = FadeIn,
         **kwargs,
     ) -> AnimationGroup:
         """Customized create-type function for tables.
@@ -916,6 +916,8 @@ class Table(VGroup):
             The animation style of the table labels, see :mod:`~.creation` for examples.
         element_animation
             The animation style of the table elements, see :mod:`~.creation` for examples.
+        entry_animation
+            The entry animation of the table background, see :mod:`~.creation` for examples.
         kwargs
             Further arguments passed to the creation animations.
 

@@ -118,6 +118,8 @@ class CairoRenderer:
 
         Parameters
         ----------
+        scene
+
         mobjects
             list of mobjects
 
@@ -204,8 +206,8 @@ class CairoRenderer:
         scene: Scene,
         static_mobjects: typing.Iterable[Mobject],
     ) -> typing.Iterable[Mobject] | None:
-        """Compute and save the static frame, that will be reused at each frame to avoid to unecesseraly computer
-        static mobjects.
+        """Compute and save the static frame, that will be reused at each frame
+        to avoid unnecessarily computing static mobjects.
 
         Parameters
         ----------
@@ -217,7 +219,7 @@ class CairoRenderer:
         Returns
         -------
         typing.Iterable[Mobject]
-            the static image computed.
+            The static image computed.
         """
         self.static_image = None
         if not static_mobjects:

@@ -1120,9 +1120,11 @@ class Scene:
 
         Parameters
         ----------
-        skip_rendering : bool, optional
-            # TODO TYPEHINTS
-            Whether the rendering should be skipped, by default False
+        animations
+            Animation or mobject with mobject method and params
+        play_kwargs
+            named parameters affecting what was passed in ``animations``,
+            e.g. ``run_time``, ``lag_ratio`` and so on.
 
         Returns
         -------
@@ -1176,7 +1178,7 @@ class Scene:
             and self.animations[0].is_static_wait
         )
 
-    def play_internal(self, skip_rendering=False):
+    def play_internal(self, skip_rendering: bool = False):
         """
         This method is used to prep the animations for rendering,
         apply the arguments and parameters required to them,
@@ -1184,13 +1186,8 @@ class Scene:
 
         Parameters
         ----------
-        args
-            # TODO TYPEHINTS
-            Animation or mobject with mobject method and params
-        kwargs
-            # TODO TYPEHINTS
-            named parameters affecting what was passed in ``args``,
-            e.g. ``run_time``, ``lag_ratio`` and so on.
+        skip_rendering
+            Whether the rendering should be skipped, by default False
         """
         self.duration = self.get_run_time(self.animations)
         self.time_progression = self._get_animation_time_progression(

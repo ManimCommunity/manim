@@ -187,14 +187,7 @@ class VectorScene(Scene):
             The arrow representing the vector.
 
         **kwargs
-            Any valid keyword arguments of :meth:`~.geometry.Vector.coordinate_label`:
-
-            integer_labels : :class:`bool`
-                Whether or not to round the coordinates to integers. Default: ``True``.
-            n_dim : :class:`int`
-                The number of dimensions of the vector. Default: ``2``.
-            color
-                The color of the label. Default: ``WHITE``.
+            Any valid keyword arguments of :meth:`~.Vector.coordinate_label`:
 
         Returns
         -------

@@ -393,7 +393,7 @@ class SceneFileWriter:
             if is_png_format() and not config["dry_run"]:
                 self.output_image_from_array(frame)
 
-    def write_opengl_frame(self, renderer):
+    def write_opengl_frame(self, renderer: OpenGLRenderer):
         if write_to_movie():
             self.writing_process.stdin.write(
                 renderer.get_raw_frame_buffer_object_data(),

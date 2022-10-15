@@ -483,7 +483,7 @@ class VMobject(Mobject):
             self.sheen_direction = direction
         return self
 
-    def rotate_sheen_direction(self, angle: np.ndarray, axis: float = OUT, family=True):
+    def rotate_sheen_direction(self, angle: float, axis: np.ndarray = OUT, family=True):
         """Rotates the direction of the applied sheen.
 
         Parameters
