@@ -5,6 +5,9 @@
 
 from __future__ import annotations
 
+import readline  # required to prevent a segfault on Python 3.10
+import moderngl
+
 # If it is running Doctest the current directory
 # is changed because it also tests the config module
 # itself. If it's a normal test then it uses the
@@ -24,3 +27,16 @@ def temp_media_dir(tmpdir, monkeypatch, request):
         with tempconfig({"media_dir": str(tmpdir)}):
             assert config.media_dir == str(tmpdir)
             yield tmpdir
+
+
+def pytest_report_header(config):
+    ctx = moderngl.create_standalone_context()
+    info = ctx.info
+    ctx.release()
+    return (
+        "\nOpenGL information",
+        "------------------",
+        f"vendor: {info['GL_VENDOR'].strip()}",
+        f"renderer: {info['GL_RENDERER'].strip()}",
+        f"version: {info['GL_VERSION'].strip()}\n",
+    )
