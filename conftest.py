@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import readline  # required to prevent a segfault on Python 3.10
+
 import moderngl
 
 # If it is running Doctest the current directory
