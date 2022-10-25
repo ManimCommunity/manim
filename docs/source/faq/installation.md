@@ -173,7 +173,7 @@ conda install -c conda-forge pycairo
 
 ## How can I fix the error that `cmanimpango/cmanimpango.c` could not be found when trying to install Manim?
 
-This occasionally happens when your system has to build a wheel for 
+This occasionally happens when your system has to build a wheel for
 [ManimPango](https://github.com/ManimCommunity/ManimPango) locally because there
 is no compatible version for your architecture available on PyPI.
 
