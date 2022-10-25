@@ -5,7 +5,10 @@
 
 from __future__ import annotations
 
-import readline  # required to prevent a segfault on Python 3.10
+try:
+    import readline  # required to prevent a segfault on Python 3.10
+except ModuleNotFoundError:  # windows
+    pass
 
 import moderngl
 
