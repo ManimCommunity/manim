@@ -250,7 +250,7 @@ def print_all_tex_errors(log_file, tex_compiler, tex_file):
             f"{tex_compiler} failed but did not produce a log file. "
             "Check your LaTeX installation.",
         )
-    with open(log_file) as f:
+    with open(log_file, encoding="utf-8") as f:
         tex_compilation_log = f.readlines()
         error_indices = [
             index
