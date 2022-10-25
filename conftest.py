@@ -5,6 +5,12 @@
 
 from __future__ import annotations
 
+try:
+    # https://github.com/moderngl/moderngl/issues/517
+    import readline  # required to prevent a segfault on Python 3.10
+except ModuleNotFoundError:  # windows
+    pass
+
 import moderngl
 
 # If it is running Doctest the current directory
@@ -30,10 +36,12 @@ def temp_media_dir(tmpdir, monkeypatch, request):
 
 def pytest_report_header(config):
     ctx = moderngl.create_standalone_context()
+    info = ctx.info
+    ctx.release()
     return (
-        "\nOpenGL Information",
+        "\nOpenGL information",
         "------------------",
-        f"vendor: {ctx.info['GL_VENDOR'].strip()}",
-        f"renderer: {ctx.info['GL_RENDERER'].strip()}",
-        f"version: {ctx.info['GL_VERSION'].strip()}\n",
+        f"vendor: {info['GL_VENDOR'].strip()}",
+        f"renderer: {info['GL_RENDERER'].strip()}",
+        f"version: {info['GL_VERSION'].strip()}\n",
     )
