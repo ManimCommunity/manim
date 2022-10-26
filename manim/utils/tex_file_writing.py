@@ -246,7 +246,7 @@ def print_all_tex_errors(log_file: Path, tex_compiler: str, tex_file: Path) -> N
             f"{tex_compiler} failed but did not produce a log file. "
             "Check your LaTeX installation.",
         )
-    with log_file.open() as f:
+    with log_file.open(encoding="utf-8") as f:
         tex_compilation_log = f.readlines()
     error_indices = [
         index for index, line in enumerate(tex_compilation_log) if line.startswith("!")
