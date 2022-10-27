@@ -199,3 +199,40 @@ def test_TransformWithConflictingPaths(scene):
             path_arc_centers=ORIGIN,
         )
     )
+
+
+@frames_comparison(last_frame=False)
+def test_FadeTransformPieces(scene):
+    src = VGroup(Square(), Circle().shift(LEFT + UP))
+    src.shift(3 * LEFT)
+
+    target = VGroup(Circle(), Triangle().shift(RIGHT + DOWN))
+    target.shift(3 * RIGHT)
+
+    scene.add(src)
+    scene.play(FadeTransformPieces(src, target))
+
+
+@frames_comparison(last_frame=False)
+def test_FadeTransform(scene):
+    src = Square(fill_opacity=1.0)
+    src.shift(3 * LEFT)
+
+    target = Circle(fill_opacity=1.0, color=ORANGE)
+    target.shift(3 * RIGHT)
+
+    scene.add(src)
+    scene.play(FadeTransform(src, target))
+
+
+@frames_comparison(last_frame=False)
+def test_FadeTransform_TargetIsEmpty_FadesOutInPlace(scene):
+    # https://github.com/ManimCommunity/manim/issues/2845
+    src = Square(fill_opacity=1.0)
+    src.shift(3 * LEFT)
+
+    target = VGroup()
+    target.shift(3 * RIGHT)
+
+    scene.add(src)
+    scene.play(FadeTransform(src, target))

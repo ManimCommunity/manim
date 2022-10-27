@@ -8,7 +8,7 @@ from pprint import pformat
 def assert_file_exists(filepath: str | os.PathLike) -> None:
     """Assert that filepath points to an existing file. Print all the elements (files and dir) of the parent dir of the given filepath.
 
-    This is mostly to have better assert message than using a raw assert os.path.isfile(filepath).
+    This is mostly to have better assert message than using a raw assert filepath.is_file().
 
     Parameters
     ----------
@@ -22,7 +22,7 @@ def assert_file_exists(filepath: str | os.PathLike) -> None:
     """
     path = Path(filepath)
     if not path.is_file():
-        elems = pformat([path.name for path in list(path.parent.iterdir())])
+        elems = pformat([path.name for path in path.parent.iterdir()])
         message = f"{path.absolute()} is not a file. Other elements in the parent directory are \n{elems}"
         raise AssertionError(message)
 
@@ -60,14 +60,14 @@ def assert_dir_filled(dirpath: str | os.PathLike) -> None:
     AssertionError
         If dirpath does not point to a directory (if the file does exist or it's a file) or the directory is empty.
     """
-    if len(os.listdir(dirpath)) == 0:
+    if not any(Path(dirpath).iterdir()):
         raise AssertionError(f"{dirpath} is an empty directory.")
 
 
 def assert_file_not_exists(filepath: str | os.PathLike) -> None:
     """Assert that filepath does not point to an existing file. Print all the elements (files and dir) of the parent dir of the given filepath.
 
-    This is mostly to have better assert message than using a raw assert os.path.isfile(filepath).
+    This is mostly to have better assert message than using a raw assert filepath.is_file().
 
     Parameters
     ----------
@@ -81,7 +81,7 @@ def assert_file_not_exists(filepath: str | os.PathLike) -> None:
     """
     path = Path(filepath)
     if path.is_file():
-        elems = pformat([path.name for path in list(path.parent.iterdir())])
+        elems = pformat([path.name for path in path.parent.iterdir()])
         message = f"{path.absolute()} is a file. Other elements in the parent directory are \n{elems}"
         raise AssertionError(message)
 

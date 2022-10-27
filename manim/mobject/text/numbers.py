@@ -301,7 +301,7 @@ class Variable(VMobject, metaclass=ConvertToOpenGL):
     ----------
     var : Union[:class:`int`, :class:`float`]
         The initial value you need to keep track of and display.
-    label : Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`, :class:`~.Text`, :class:`~.TexSymbol`, :class:`~.SingleStringMathTex`]
+    label : Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`, :class:`~.Text`, :class:`~.SingleStringMathTex`]
         The label for your variable. Raw strings are convertex to :class:`~.MathTex` objects.
     var_type : Union[:class:`DecimalNumber`, :class:`Integer`], optional
         The class used for displaying the number. Defaults to :class:`DecimalNumber`.
@@ -313,7 +313,7 @@ class Variable(VMobject, metaclass=ConvertToOpenGL):
 
     Attributes
     ----------
-    label : Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`, :class:`~.Text`, :class:`~.TexSymbol`, :class:`~.SingleStringMathTex`]
+    label : Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`, :class:`~.Text`, :class:`~.SingleStringMathTex`]
         The label for your variable, for example ``x = ...``.
     tracker : :class:`~.ValueTracker`
         Useful in updating the value of your variable on-screen.
