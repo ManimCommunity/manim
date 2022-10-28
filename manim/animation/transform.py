@@ -701,7 +701,6 @@ class CyclicReplace(Transform):
     Parameters
     ----------
     mobjects
-        :class:`.Mobject`
         List of Mobject to be transformed.
     path_arc
         The arc angle (in radians) that the points of ``mobject`` will follow to reach
