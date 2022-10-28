@@ -691,12 +691,12 @@ class ApplyComplexFunction(ApplyMethod):
 
 
 class CyclicReplace(Transform):
-    """
-    A CycleReplace moves (or swaps) a list of Mobjects in cycle:
-    - the 1st Mobject takes the place of the 2nd Mobject,
-    - the 2nd takes the place of the 3rd,
-    - and so on,
-    - until the last Mobject takes the place of the first one.
+    """An animation moving mobjects cyclically.
+
+    In particular, this means: the first mobject takes the place
+    of the second mobject, the second one takes the place of
+    the third mobject, and so on. The last mobject takes the
+    place of the first one.
 
     Parameters
     ----------
