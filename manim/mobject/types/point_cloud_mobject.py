@@ -183,6 +183,10 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         index = alpha * (self.get_num_points() - 1)
         return self.points[index]
 
+    @staticmethod
+    def get_mobject_type_class():
+        return PMobject
+
     # Alignment
     def align_points_with_larger(self, larger_mobject):
         assert isinstance(larger_mobject, PMobject)

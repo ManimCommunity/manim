@@ -31,7 +31,7 @@ def get_section_index(metapath: Path) -> list[dict[str, Any]]:
     return index
 
 
-def save_control_data_from_video(path_to_video: str, name: str) -> None:
+def save_control_data_from_video(path_to_video: Path, name: str) -> None:
     """Helper used to set up a new test that will compare videos.
 
     This will create a new ``.json`` file in ``control_data/videos_data`` that contains:
@@ -43,9 +43,9 @@ def save_control_data_from_video(path_to_video: str, name: str) -> None:
 
     Parameters
     ----------
-    path_to_video : :class:`str`
+    path_to_video
         Path to the video to extract information from.
-    name : :class:`str`
+    name
         Name of the test. The .json file will be named with it.
 
     See Also
@@ -53,7 +53,7 @@ def save_control_data_from_video(path_to_video: str, name: str) -> None:
 
     tests/utils/video_tester.py : read control data and compare with output of test
     """
-    orig_path_to_sections = Path(path_to_video)
+    orig_path_to_sections = path_to_video
     path_to_sections = orig_path_to_sections.parent.absolute() / "sections"
     tests_directory = Path(__file__).absolute().parent.parent
     path_control_data = Path(tests_directory) / "control_data" / "videos_data"
@@ -71,6 +71,6 @@ def save_control_data_from_video(path_to_video: str, name: str) -> None:
         "section_index": section_index,
     }
     path_saved = Path(path_control_data) / f"{name}.json"
-    with open(path_saved, "w") as f:
+    with path_saved.open("w") as f:
         json.dump(data, f, indent=4)
     logger.info(f"Data for {name} saved in {path_saved}")

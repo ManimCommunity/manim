@@ -2281,6 +2281,11 @@ class OpenGLMobject:
     def get_group_class(self):
         return OpenGLGroup
 
+    @staticmethod
+    def get_mobject_type_class():
+        """Return the base class of this mobject type."""
+        return OpenGLMobject
+
     # Alignment
 
     def align_data_and_family(self, mobject):
