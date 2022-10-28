@@ -703,9 +703,8 @@ class CyclicReplace(Transform):
     mobjects
         List of mobjects to be transformed.
     path_arc
-        The arc angle (in radians) that the points of ``mobject`` will follow to reach
-        the points of the target if using a circular path arc, see ``path_arc_centers``.
-        See also :func:`manim.utils.paths.path_along_arc`.
+        The angle of the arc (in radians) that the mobjects will follow to reach
+        their target.
     kwargs
         Further keyword arguments that are passed to :class:`Transform`.
 
