@@ -701,7 +701,7 @@ class CyclicReplace(Transform):
     Parameters
     ----------
     mobjects
-        List of Mobject to be transformed.
+        List of mobjects to be transformed.
     path_arc
         The arc angle (in radians) that the points of ``mobject`` will follow to reach
         the points of the target if using a circular path arc, see ``path_arc_centers``.
