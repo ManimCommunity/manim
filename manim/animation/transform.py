@@ -706,7 +706,7 @@ class CyclicReplace(Transform):
         The angle of the arc (in radians) that the mobjects will follow to reach
         their target.
     kwargs
-        Further keyword arguments that are passed to :class:`Transform`.
+        Further keyword arguments that are passed to :class:`.Transform`.
 
     Examples
     --------
