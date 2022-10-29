@@ -55,7 +55,7 @@ the :ref:`optional dependencies <win-optional-dependencies>` section
 below.
 
 Winget
-*****
+******
 
 While there is no recipe for installing Manim with Winget directly,
 you can install all requirements by running:
