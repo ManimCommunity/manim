@@ -168,3 +168,20 @@ required by Manim. Usually it can be fixed by running
 ```bash
 conda install -c conda-forge pycairo
 ```
+
+---
+
+## How can I fix the error that `manimpango/cmanimpango.c` could not be found when trying to install Manim?
+
+This occasionally happens when your system has to build a wheel for
+[ManimPango](https://github.com/ManimCommunity/ManimPango) locally because there
+is no compatible version for your architecture available on PyPI.
+
+Very often, the problem is resolved by installing Cython (e.g., via
+`pip3 install Cython`) and then trying to reinstall Manim. If this
+does not fix it:
+
+- Make sure that you have installed all build dependencies mentioned
+  in [ManimPango's README](https://github.com/ManimCommunity/ManimPango),
+- and if you still run into troubles after that, please reach out to
+  us as described in the {doc}`Getting Help FAQs </faq/help>`.
