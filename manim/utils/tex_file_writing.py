@@ -217,7 +217,7 @@ def convert_to_svg(dvi_file, extension, page=1):
     if not result.exists():
         commands = [
             "dvisvgm",
-            "--pdf" if dvi_file.suffix == ".pdf" else "",
+            "--pdf" if extension == ".pdf" else "",
             "-p " + str(page),
             f'"{dvi_file}"',
             "-n",

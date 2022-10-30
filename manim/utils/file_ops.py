@@ -170,7 +170,7 @@ def seek_full_path_from_defaults(
             return path
     error = (
         f"From: {Path.cwd()}, could not find {file_name} at either "
-        + f"of these locations: {list(map(str, possible_paths))}"
+        f"of these locations: {list(map(str, possible_paths))}"
     )
     raise OSError(error)
 
