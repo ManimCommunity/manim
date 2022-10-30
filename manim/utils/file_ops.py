@@ -134,15 +134,15 @@ def ensure_executable(path_to_exe: Path) -> bool:
 
 def add_extension_if_not_present(file_name: Path, extension: str) -> Path:
     if file_name.suffix != extension:
-        return file_name.with_suffix(extension)
+        return file_name.with_suffix(file_name.suffix + extension)
     else:
         return file_name
 
 
 def add_version_before_extension(file_name: Path) -> Path:
-    file_name = Path(file_name)
-    path, name, suffix = file_name.parent, file_name.stem, file_name.suffix
-    return Path(path, f"{name}_ManimCE_v{__version__}{suffix}")
+    return file_name.with_name(
+        f"{file_name.stem}_ManimCE_v{__version__}{file_name.suffix}"
+    )
 
 
 def guarantee_existence(path: Path) -> Path:
@@ -168,7 +168,10 @@ def seek_full_path_from_defaults(
     for path in possible_paths:
         if path.exists():
             return path
-    error = f"From: {os.getcwd()}, could not find {file_name} at either of these locations: {possible_paths}"
+    error = (
+        f"From: {Path.cwd()}, could not find {file_name} at either "
+        f"of these locations: {list(map(str, possible_paths))}"
+    )
     raise OSError(error)
 
 
@@ -252,11 +255,11 @@ def add_import_statement(file):
     ----------
         file : :class:`Path`
     """
-    with open(file, "r+") as f:
+    with file.open("r+") as f:
         import_line = "from manim import *"
         content = f.read()
-        f.seek(0, 0)
-        f.write(import_line.rstrip("\r\n") + "\n" + content)
+        f.seek(0)
+        f.write(import_line + "\n" + content)
 
 
 def copy_template_files(
