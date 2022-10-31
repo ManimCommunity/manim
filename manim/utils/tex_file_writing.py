@@ -45,7 +45,7 @@ def tex_to_svg_file(
 
     Returns
     -------
-    :class:`str`
+    :class:`Path`
         Path to generated SVG file.
     """
     if tex_template is None:
@@ -78,7 +78,7 @@ def generate_tex_file(
 
     Returns
     -------
-    :class:`str`
+    :class:`Path`
         Path to generated TeX file
     """
     if tex_template is None:
@@ -92,20 +92,19 @@ def generate_tex_file(
     if not tex_dir.exists():
         tex_dir.mkdir()
 
-    result = Path(tex_dir) / (tex_hash(output) + ".tex")
+    result = tex_dir / (tex_hash(output) + ".tex")
     if not result.exists():
         logger.info(
             "Writing %(expression)s to %(path)s",
             {"expression": expression, "path": f"{result}"},
         )
-        with open(result, "w", encoding="utf-8") as outfile:
-            outfile.write(output)
-    return result.as_posix()
+        result.write_text(output, encoding="utf-8")
+    return result
 
 
 def tex_compilation_command(
-    tex_compiler: str, output_format: str, tex_file: str, tex_dir: str
-):
+    tex_compiler: str, output_format: str, tex_file: Path, tex_dir: Path
+) -> str:
     """Prepares the tex compilation command with all necessary cli flags
 
     Parameters
@@ -169,7 +168,7 @@ def insight_package_not_found_error(matching):
     yield f"Install {matching[1]} it using your LaTeX package manager, or check for typos."
 
 
-def compile_tex(tex_file: str, tex_compiler: str, output_format: str):
+def compile_tex(tex_file: Path, tex_compiler: str, output_format: str) -> Path:
     """Compiles a tex_file into a .dvi or a .xdv or a .pdf
 
     Parameters
@@ -183,14 +182,12 @@ def compile_tex(tex_file: str, tex_compiler: str, output_format: str):
 
     Returns
     -------
-    :class:`str`
+    :class:`Path`
         Path to generated output file in desired format (DVI, XDV or PDF).
     """
-    result = tex_file.replace(".tex", output_format)
-    result = Path(result).as_posix()
-    tex_file = Path(tex_file).as_posix()
-    tex_dir = Path(config.get_dir("tex_dir")).as_posix()
-    if not Path(result).exists():
+    result = tex_file.with_suffix(output_format)
+    tex_dir = config.get_dir("tex_dir")
+    if not result.exists():
         command = tex_compilation_command(
             tex_compiler,
             output_format,
@@ -199,7 +196,7 @@ def compile_tex(tex_file: str, tex_compiler: str, output_format: str):
         )
         exit_code = os.system(command)
         if exit_code != 0:
-            log_file = tex_file.replace(".tex", ".log")
+            log_file = tex_file.with_suffix(".log")
             print_all_tex_errors(log_file, tex_compiler, tex_file)
             raise ValueError(
                 f"{tex_compiler} error converting to"
@@ -209,7 +206,7 @@ def compile_tex(tex_file: str, tex_compiler: str, output_format: str):
     return result
 
 
-def convert_to_svg(dvi_file: str, extension: str, page: int = 1):
+def convert_to_svg(dvi_file: Path, extension: str, page: int = 1):
     """Converts a .dvi, .xdv, or .pdf file into an svg using dvisvgm.
 
     Parameters
@@ -223,13 +220,10 @@ def convert_to_svg(dvi_file: str, extension: str, page: int = 1):
 
     Returns
     -------
-    :class:`str`
+    :class:`Path`
         Path to generated SVG file.
     """
-    result = dvi_file.replace(extension, ".svg")
-    result = Path(result)
-    result_str = result.as_posix()
-    dvi_file = Path(dvi_file).as_posix()
+    result = dvi_file.with_suffix(".svg")
     if not result.exists():
         commands = [
             "dvisvgm",
@@ -238,7 +232,7 @@ def convert_to_svg(dvi_file: str, extension: str, page: int = 1):
             f'"{dvi_file}"',
             "-n",
             "-v 0",
-            "-o " + f'"{result_str}"',
+            "-o " + f'"{result}"',
             ">",
             os.devnull,
         ]
@@ -247,33 +241,31 @@ def convert_to_svg(dvi_file: str, extension: str, page: int = 1):
     # if the file does not exist now, this means conversion failed
     if not result.exists():
         raise ValueError(
-            f"Your installation does not support converting {extension} files to SVG."
+            f"Your installation does not support converting {dvi_file.suffix} files to SVG."
             f" Consider updating dvisvgm to at least version 2.4."
             f" If this does not solve the problem, please refer to our troubleshooting guide at:"
             f" https://docs.manim.community/en/stable/installation/troubleshooting.html",
         )
 
-    return result_str
+    return result
 
 
-def print_all_tex_errors(log_file, tex_compiler, tex_file):
-    if not Path(log_file).exists():
+def print_all_tex_errors(log_file: Path, tex_compiler: str, tex_file: Path) -> None:
+    if not log_file.exists():
         raise RuntimeError(
             f"{tex_compiler} failed but did not produce a log file. "
             "Check your LaTeX installation.",
         )
-    with open(log_file, encoding="utf-8") as f:
+    with log_file.open(encoding="utf-8") as f:
         tex_compilation_log = f.readlines()
-        error_indices = [
-            index
-            for index, line in enumerate(tex_compilation_log)
-            if line.startswith("!")
-        ]
-        if error_indices:
-            with open(tex_file) as g:
-                tex = g.readlines()
-                for error_index in error_indices:
-                    print_tex_error(tex_compilation_log, error_index, tex)
+    error_indices = [
+        index for index, line in enumerate(tex_compilation_log) if line.startswith("!")
+    ]
+    if error_indices:
+        with tex_file.open() as f:
+            tex = f.readlines()
+        for error_index in error_indices:
+            print_tex_error(tex_compilation_log, error_index, tex)
 
 
 LATEX_ERROR_INSIGHTS = [

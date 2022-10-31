@@ -12,7 +12,7 @@ def test_guarantee_existence(tmp_path: Path):
     guarantee_existence(test_dir)
     # test if file dir got created
     assert_dir_exists(test_dir)
-    with open(test_dir / "test.txt", "x") as f:
+    with (test_dir / "test.txt").open("x") as f:
         pass
     # test if file didn't get deleted
     guarantee_existence(test_dir)
@@ -21,7 +21,7 @@ def test_guarantee_existence(tmp_path: Path):
 def test_guarantee_empty_existence(tmp_path: Path):
     test_dir = tmp_path / "test"
     test_dir.mkdir()
-    with open(test_dir / "test.txt", "x"):
+    with (test_dir / "test.txt").open("x"):
         pass
 
     guarantee_empty_existence(test_dir)

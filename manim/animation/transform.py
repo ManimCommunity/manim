@@ -691,6 +691,37 @@ class ApplyComplexFunction(ApplyMethod):
 
 
 class CyclicReplace(Transform):
+    """An animation moving mobjects cyclically.
+
+    In particular, this means: the first mobject takes the place
+    of the second mobject, the second one takes the place of
+    the third mobject, and so on. The last mobject takes the
+    place of the first one.
+
+    Parameters
+    ----------
+    mobjects
+        List of mobjects to be transformed.
+    path_arc
+        The angle of the arc (in radians) that the mobjects will follow to reach
+        their target.
+    kwargs
+        Further keyword arguments that are passed to :class:`.Transform`.
+
+    Examples
+    --------
+    .. manim :: CyclicReplaceExample
+
+        class CyclicReplaceExample(Scene):
+            def construct(self):
+                group = VGroup(Square(), Circle(), Triangle(), Star())
+                group.arrange(RIGHT)
+                self.add(group)
+
+                for _ in range(4):
+                    self.play(CyclicReplace(*group))
+    """
+
     def __init__(
         self, *mobjects: Mobject, path_arc: float = 90 * DEGREES, **kwargs
     ) -> None:

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from subprocess import run
 from typing import Generator
@@ -18,7 +19,7 @@ def capture(command, cwd=None, command_input=None):
     return out, err, p.returncode
 
 
-def get_video_metadata(path_to_video: str) -> dict[str]:
+def get_video_metadata(path_to_video: str | os.PathLike) -> dict[str]:
     command = [
         "ffprobe",
         "-v",

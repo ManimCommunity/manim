@@ -74,7 +74,9 @@ def config_file_paths() -> list[Path]:
     return [library_wide, user_wide, folder_wide]
 
 
-def make_config_parser(custom_file: str = None) -> configparser.ConfigParser:
+def make_config_parser(
+    custom_file: str | os.PathLike | None = None,
+) -> configparser.ConfigParser:
     """Make a :class:`ConfigParser` object and load any ``.cfg`` files.
 
     The user-wide file, if it exists, overrides the library-wide file.  The
@@ -108,10 +110,10 @@ def make_config_parser(custom_file: str = None) -> configparser.ConfigParser:
     # read_file() before calling read() for any optional files."
     # https://docs.python.org/3/library/configparser.html#configparser.ConfigParser.read
     parser = configparser.ConfigParser()
-    with open(library_wide) as file:
+    with library_wide.open() as file:
         parser.read_file(file)  # necessary file
 
-    other_files = [user_wide, custom_file if custom_file else folder_wide]
+    other_files = [user_wide, Path(custom_file) if custom_file else folder_wide]
     parser.read(other_files)  # optional files
 
     return parser
@@ -809,7 +811,7 @@ class ManimConfig(MutableMapping):
 
         return self
 
-    def digest_file(self, filename: str) -> ManimConfig:
+    def digest_file(self, filename: str | os.PathLike) -> ManimConfig:
         """Process the config options present in a ``.cfg`` file.
 
         This method processes a single ``.cfg`` file, whereas
@@ -840,11 +842,11 @@ class ManimConfig(MutableMapping):
         multiple times.
 
         """
-        if not os.path.isfile(filename):
+        if not Path(filename).is_file():
             raise FileNotFoundError(
                 errno.ENOENT,
                 "Error: --config_file could not find a valid config file.",
-                filename,
+                str(filename),
             )
 
         return self.digest_parser(make_config_parser(filename))

@@ -321,7 +321,7 @@ rendering_times_file_path = Path("../rendering_times.csv")
 
 
 def _write_rendering_stats(scene_name, run_time, file_name):
-    with open(rendering_times_file_path, "a") as file:
+    with rendering_times_file_path.open("a") as file:
         csv.writer(file).writerow(
             [
                 re.sub(r"^(reference\/)|(manim\.)", "", file_name),
@@ -333,33 +333,33 @@ def _write_rendering_stats(scene_name, run_time, file_name):
 
 def _log_rendering_times(*args):
     if rendering_times_file_path.exists():
-        with open(rendering_times_file_path) as file:
+        with rendering_times_file_path.open() as file:
             data = list(csv.reader(file))
-            if len(data) == 0:
-                sys.exit()
+        if len(data) == 0:
+            sys.exit()
 
-            print("\nRendering Summary\n-----------------\n")
+        print("\nRendering Summary\n-----------------\n")
 
-            max_file_length = max(len(row[0]) for row in data)
-            for key, group in it.groupby(data, key=lambda row: row[0]):
-                key = key.ljust(max_file_length + 1, ".")
-                group = list(group)
-                if len(group) == 1:
-                    row = group[0]
-                    print(f"{key}{row[2].rjust(7, '.')}s {row[1]}")
-                    continue
-                time_sum = sum(float(row[2]) for row in group)
-                print(
-                    f"{key}{f'{time_sum:.3f}'.rjust(7, '.')}s  => {len(group)} EXAMPLES",
-                )
-                for row in group:
-                    print(f"{' '*(max_file_length)} {row[2].rjust(7)}s {row[1]}")
+        max_file_length = max(len(row[0]) for row in data)
+        for key, group in it.groupby(data, key=lambda row: row[0]):
+            key = key.ljust(max_file_length + 1, ".")
+            group = list(group)
+            if len(group) == 1:
+                row = group[0]
+                print(f"{key}{row[2].rjust(7, '.')}s {row[1]}")
+                continue
+            time_sum = sum(float(row[2]) for row in group)
+            print(
+                f"{key}{f'{time_sum:.3f}'.rjust(7, '.')}s  => {len(group)} EXAMPLES",
+            )
+            for row in group:
+                print(f"{' '*(max_file_length)} {row[2].rjust(7)}s {row[1]}")
         print("")
 
 
 def _delete_rendering_times(*args):
     if rendering_times_file_path.exists():
-        os.remove(rendering_times_file_path)
+        rendering_times_file_path.unlink()
 
 
 def setup(app):

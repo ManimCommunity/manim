@@ -8,7 +8,9 @@ __all__ = [
 ]
 
 import copy
+import os
 import re
+from pathlib import Path
 
 
 class TexTemplate:
@@ -246,13 +248,14 @@ class TexTemplateFromFile(TexTemplate):
         The output format resulting from compilation, e.g. ``.dvi`` or ``.pdf``
     """
 
-    def __init__(self, *, tex_filename: str = "tex_template.tex", **kwargs):
-        self.template_file = tex_filename
+    def __init__(
+        self, *, tex_filename: str | os.PathLike = "tex_template.tex", **kwargs
+    ):
+        self.template_file = Path(tex_filename)
         super().__init__(**kwargs)
 
     def _rebuild(self):
-        with open(self.template_file) as infile:
-            self.body = infile.read()
+        self.body = self.template_file.read_text()
 
     def file_not_mutable(self):
         raise Exception("Cannot modify TexTemplate when using a template file.")

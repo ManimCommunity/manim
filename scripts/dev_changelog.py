@@ -47,7 +47,6 @@ from __future__ import annotations
 
 import concurrent.futures
 import datetime
-import os
 import re
 from collections import defaultdict
 from pathlib import Path
@@ -85,17 +84,13 @@ SILENT_CONTRIBUTORS = [
 
 
 def update_citation(version, date):
-    current_directory = os.path.dirname(__file__)
-    parent_directory = os.path.split(current_directory)[0]
-    with open(os.path.join(current_directory, "TEMPLATE.cff")) as a, open(
-        os.path.join(parent_directory, "CITATION.cff"),
-        "w",
-        newline="\n",
-    ) as b:
-        contents = a.read()
-        contents = contents.replace("<version>", version)
-        contents = contents.replace("<date_released>", date)
-        b.write(contents)
+    current_directory = Path(__file__).parent
+    parent_directory = current_directory.parent
+    contents = (current_directory / "TEMPLATE.cff").read_text()
+    contents = contents.replace("<version>", version)
+    contents = contents.replace("<date_released>", date)
+    with (parent_directory / "CITATION.cff").open("w", newline="\n") as f:
+        f.write(contents)
 
 
 def process_pullrequests(lst, cur, github_repo, pr_nums):
