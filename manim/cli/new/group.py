@@ -67,7 +67,7 @@ def update_cfg(cfg_dict, project_cfg_path):
         else:
             cli_config[key] = str(value)
 
-    with open(project_cfg_path, "w") as conf:
+    with project_cfg_path.open("w") as conf:
         config.write(conf)
 
 
@@ -150,28 +150,25 @@ def scene(**args):
         type=click.Choice(get_template_names(), False),
         default="Default",
     )
-    scene = ""
-    with open(Path.resolve(get_template_path() / f"{template_name}.mtp")) as f:
-        scene = f.read()
-        scene = scene.replace(template_name + "Template", args["scene_name"], 1)
+    scene = (get_template_path() / f"{template_name}.mtp").resolve().read_text()
+    scene = scene.replace(template_name + "Template", args["scene_name"], 1)
 
     if args["file_name"]:
         file_name = Path(args["file_name"] + ".py")
 
         if file_name.is_file():
             # file exists so we are going to append new scene to that file
-            with open(file_name, "a") as f:
+            with file_name.open("a") as f:
                 f.write("\n\n\n" + scene)
         else:
             # file does not exist so we create a new file, append the scene and prepend the import statement
-            with open(file_name, "w") as f:
-                f.write("\n\n\n" + scene)
+            file_name.write_text("\n\n\n" + scene)
 
             add_import_statement(file_name)
     else:
         # file name is not provided so we assume it is main.py
         # if main.py does not exist we do not continue
-        with open(Path("main.py"), "a") as f:
+        with Path("main.py").open("a") as f:
             f.write("\n\n\n" + scene)
 
 
