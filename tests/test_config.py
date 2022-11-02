@@ -210,3 +210,22 @@ def test_dry_run_with_png_format_skipped_animations():
         assert config["dry_run"] is True
         scene = MyScene(skip_animations=True)
         scene.render()
+
+
+def test_tex_template_file(tmp_path):
+    """Test that a custom tex template file can be set from a config file."""
+    with tempconfig({}):
+        tex_file = Path(tmp_path / "my_template.tex")
+        tex_file.write_text("Hello World!")
+        tmp_cfg = tempfile.NamedTemporaryFile("w", dir=tmp_path, delete=False)
+        tmp_cfg.write(
+            f"""
+            [CLI]
+            tex_template_file = { tex_file }
+            """,
+        )
+        tmp_cfg.close()
+        config.digest_file(tmp_cfg.name)
+
+        assert config.tex_template.body == "Hello World!"
+        assert Path(config.tex_template_file) == tex_file
