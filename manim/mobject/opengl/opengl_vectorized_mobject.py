@@ -1449,6 +1449,7 @@ class OpenGLVMobject(OpenGLMobject):
         self.needs_new_triangulation = False
         return tri_indices
 
+    @staticmethod
     def triggers_refreshed_triangulation(func):
         @wraps(func)
         def wrapper(self, *args, **kwargs):
