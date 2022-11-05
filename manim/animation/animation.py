@@ -416,7 +416,8 @@ class Animation:
         Parameters
         ----------
         rate_func
-            The new function defining the animation progress based on the relative runtime (see :mod:`~.rate_functions`).
+            The new function defining the animation progress based on the
+            relative runtime (see :mod:`~.rate_functions`).
 
         Returns
         -------
