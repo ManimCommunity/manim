@@ -7,8 +7,8 @@ __all__ = [
 ]
 
 import html
-import os
 import re
+from pathlib import Path
 
 import numpy as np
 from pygments import highlight
@@ -88,7 +88,7 @@ class Code(VGroup):
 
     Parameters
     ----------
-    file_name : :class:`str`
+    file_name
         Name of the code file to display.
     code : :class:`str`
         If ``file_name`` is not specified, a code string can be
@@ -153,7 +153,7 @@ class Code(VGroup):
 
     def __init__(
         self,
-        file_name=None,
+        file_name: str | os.PathLike = None,
         code=None,
         tab_width=3,
         line_spacing=0.3,
@@ -199,8 +199,7 @@ class Code(VGroup):
         self.file_name = file_name
         if self.file_name:
             self._ensure_valid_file()
-            with open(self.file_path, encoding="utf-8") as f:
-                self.code_string = f.read()
+            self.code_string = self.file_path.read_text(encoding="utf-8")
         elif code:
             self.code_string = code
         else:
@@ -284,16 +283,16 @@ class Code(VGroup):
         if self.file_name is None:
             raise Exception("Must specify file for Code")
         possible_paths = [
-            os.path.join(os.path.join("assets", "codes"), self.file_name),
-            os.path.expanduser(self.file_name),
+            Path() / "assets" / "codes" / self.file_name,
+            Path(self.file_name).expanduser(),
         ]
         for path in possible_paths:
-            if os.path.exists(path):
+            if path.exists():
                 self.file_path = path
                 return
         error = (
-            f"From: {os.getcwd()}, could not find {self.file_name} at either "
-            + f"of these locations: {possible_paths}"
+            f"From: {Path.cwd()}, could not find {self.file_name} at either "
+            + f"of these locations: {list(map(str, possible_paths))}"
         )
         raise OSError(error)
 
@@ -369,20 +368,9 @@ class Code(VGroup):
         )
 
         if self.generate_html_file:
-            os.makedirs(
-                os.path.join("assets", "codes", "generated_html_files"),
-                exist_ok=True,
-            )
-            with open(
-                os.path.join(
-                    "assets",
-                    "codes",
-                    "generated_html_files",
-                    self.file_name + ".html",
-                ),
-                "w",
-            ) as file:
-                file.write(self.html_string)
+            output_folder = Path() / "assets" / "codes" / "generated_html_files"
+            output_folder.mkdir(parents=True, exist_ok=True)
+            (output_folder / f"{self.file_name}.html").write_text(self.html_string)
 
     def _gen_code_json(self):
         """Function to background_color, generate code_json and tab_spaces from html_string.
@@ -559,7 +547,7 @@ def _hilite_me(
         Defines whether line numbers should be inserted in the html file.
     divstyles : :class:`str`
         Some html css styles.
-    file_path : :class:`str`
+    file_path : :class:`pathlib.Path`
         Path of code file.
     line_no_from : :class:`int`
         Defines the first line's number in the line count.
