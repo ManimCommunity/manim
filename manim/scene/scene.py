@@ -1123,7 +1123,7 @@ class Scene:
         animations
             Animation or mobject with mobject method and params
         play_kwargs
-            named parameters affecting what was passed in ``animations``,
+            Named parameters affecting what was passed in ``animations``,
             e.g. ``run_time``, ``lag_ratio`` and so on.
 
         Returns
