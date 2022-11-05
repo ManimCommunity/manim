@@ -60,6 +60,7 @@ def triggers_refreshed_triangulation(func):
 
     return wrapper
 
+
 class OpenGLVMobject(OpenGLMobject):
     """A vectorized mobject."""
 

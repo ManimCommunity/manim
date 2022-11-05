@@ -49,6 +49,7 @@ def affects_shader_info_id(func):
 
     return wrapper
 
+
 class OpenGLMobject:
     """Mathematical Object: base class for objects that can be displayed on screen.
 
