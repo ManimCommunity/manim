@@ -65,4 +65,4 @@ repos:
     rev: v2.2.2
     hooks:
       - id: codespell
-        args: ["-L", "medias"]
+        args: ["-L", "medias,Nam"]
