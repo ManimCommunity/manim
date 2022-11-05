@@ -1543,7 +1543,7 @@ class ManimConfig(MutableMapping):
         if not hasattr(self, "_tex_template") or not self._tex_template:
             fn = self._d["tex_template_file"]
             if fn:
-                self._tex_template = TexTemplateFromFile(filename=fn)
+                self._tex_template = TexTemplateFromFile(tex_filename=fn)
             else:
                 self._tex_template = TexTemplate()
         return self._tex_template
