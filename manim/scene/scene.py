@@ -145,7 +145,10 @@ class Scene:
         if self.random_seed is not None:
             random.seed(self.random_seed)
             np.random.seed(self.random_seed)
-
+    
+    def clear():
+        self.remove(*self.mobjects)
+        
     @property
     def camera(self):
         return self.renderer.camera
