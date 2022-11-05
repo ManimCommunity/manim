@@ -2530,13 +2530,13 @@ class OpenGLMobject:
             mob.locked_data_keys = set()
 
     # Operations touching shader uniforms
-
+    @staticmethod
     def affects_shader_info_id(func):
         @wraps(func)
         def wrapper(self):
             for mob in self.get_family():
                 func(mob)
-                # mob.refresh_shader_wrapper_id()
+                mob.refresh_shader_wrapper_id()
             return self
 
         return wrapper
@@ -2623,9 +2623,9 @@ class OpenGLMobject:
 
     # For shader data
 
-    # def refresh_shader_wrapper_id(self):
-    #     self.shader_wrapper.refresh_id()
-    #     return self
+    def refresh_shader_wrapper_id(self):
+        self.shader_wrapper.refresh_id()
+        return self
 
     def get_shader_wrapper(self):
         from manim.renderer.shader_wrapper import ShaderWrapper
