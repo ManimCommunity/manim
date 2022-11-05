@@ -36,6 +36,21 @@ class Camera:
 
     This is the object which takes care of what exactly is displayed
     on screen at any given moment.
+
+    Parameters
+    ----------
+    background_image
+        The path to an image that should be the background image.
+        If not set, the background is filled with :attr:`self.background_color`
+    background
+        What :attr:`background` is set to. By default, ``None``.
+    pixel_height
+        The height of the scene in pixels.
+    pixel_width
+        The width of the scene in pixels.
+    kwargs
+        Additional arguments (``background_color``, ``background_opacity``)
+        to be set.
     """
 
     def __init__(
@@ -55,22 +70,6 @@ class Camera:
         frame_rate: float | None = None,
         **kwargs,
     ):
-        """Initialises the Camera.
-
-        Parameters
-        ----------
-        background_image
-            The path to an image that should be the background image.
-            If not set, the background is filled with `self.background_color`
-        background
-            What self.background should be, by default None as will be set later.
-        pixel_height
-            The height of the scene in pixels.
-        pixel_width
-            The width of the scene in pixels.
-        **kwargs
-            Any local variables to be set.
-        """
         self.background_image = background_image
         self.frame_center = frame_center
         self.image_mode = image_mode
@@ -100,6 +99,7 @@ class Camera:
             frame_rate = config["frame_rate"]
         self.frame_rate = frame_rate
 
+        # TODO: change this to not use kwargs.get
         for attr in ["background_color", "background_opacity"]:
             setattr(self, f"_{attr}", kwargs.get(attr, config[attr]))
 
