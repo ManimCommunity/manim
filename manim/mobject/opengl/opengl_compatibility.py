@@ -23,7 +23,7 @@ class ConvertToOpenGL(ABCMeta):
 
     _converted_classes = []
 
-    def __new__(mcls, name, bases, namespace):
+    def __new__(mcls, name, bases, namespace):  # noqa: B902
         if config.renderer == RendererType.OPENGL:
             # Must check class names to prevent
             # cyclic importing.
@@ -42,6 +42,6 @@ class ConvertToOpenGL(ABCMeta):
 
         return super().__new__(mcls, name, bases, namespace)
 
-    def __init__(cls, name, bases, namespace):
+    def __init__(cls, name, bases, namespace):  # noqa: B902
         super().__init__(name, bases, namespace)
         cls._converted_classes.append(cls)
