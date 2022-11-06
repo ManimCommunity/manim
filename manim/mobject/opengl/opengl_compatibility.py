@@ -8,6 +8,8 @@ from manim.mobject.opengl.opengl_point_cloud_mobject import OpenGLPMobject
 from manim.mobject.opengl.opengl_three_dimensions import OpenGLSurface
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 
+from ...constants import RendererType
+
 
 class ConvertToOpenGL(ABCMeta):
     """Metaclass for swapping (V)Mobject with its OpenGL counterpart at runtime
@@ -22,7 +24,7 @@ class ConvertToOpenGL(ABCMeta):
     _converted_classes = []
 
     def __new__(mcls, name, bases, namespace):  # noqa: B902
-        if config.renderer == "opengl":
+        if config.renderer == RendererType.OPENGL:
             # Must check class names to prevent
             # cyclic importing.
             base_names_to_opengl = {
