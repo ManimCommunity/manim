@@ -146,7 +146,7 @@ class Scene:
             random.seed(self.random_seed)
             np.random.seed(self.random_seed)
 
-    def clear():
+    def clear(self) -> None:
         self.remove(*self.mobjects)
 
     @property
