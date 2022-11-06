@@ -27,6 +27,7 @@ import colour
 import numpy as np
 
 from .. import constants
+from ..constants import RendererType
 from ..utils.tex import TexTemplate, TexTemplateFromFile
 from ..utils.tex_templates import TexTemplateLibrary
 
@@ -424,6 +425,31 @@ class ManimConfig(MutableMapping):
         else:
             raise ValueError(f"attempted to set {key} to {val}; must be in {values}")
 
+    def _set_from_enum(self, key: str, enum_value: Any, enum_class: EnumMeta) -> None:
+        """Set ``key`` to the enum object with value ``enum_value`` in the given
+        ``enum_class``.
+
+        Tests::
+
+            >>> from enum import Enum
+            >>> class Fruit(Enum):
+            ...     APPLE = 1
+            ...     BANANA = 2
+            ...     CANTALOUPE = 3
+            >>> test_config = ManimConfig()
+            >>> test_config._set_from_enum("fruit", 1, Fruit)
+            >>> test_config._d['fruit']
+            <Fruit.APPLE: 1>
+            >>> test_config._set_from_enum("fruit", Fruit.BANANA, Fruit)
+            >>> test_config._d['fruit']
+            <Fruit.BANANA: 2>
+            >>> test_config._set_from_enum("fruit", 42, Fruit)
+            Traceback (most recent call last):
+            ...
+            ValueError: 42 is not a valid Fruit
+        """
+        self._d[key] = enum_class(enum_value)
+
     def _set_boolean(self, key: str | int, val: Any) -> None:
         """Set ``key`` to ``val`` if ``val`` is Boolean."""
         if val in [True, False]:
@@ -798,7 +824,7 @@ class ManimConfig(MutableMapping):
         if args.tex_template:
             self.tex_template = TexTemplateFromFile(tex_filename=args.tex_template)
 
-        if self.renderer == "opengl" and getattr(args, "write_to_movie") is None:
+        if self.renderer == RendererType.OPENGL and getattr(args, "write_to_movie") is None:
             # --write_to_movie was not passed on the command line, so don't generate video.
             self["write_to_movie"] = False
 
@@ -1183,12 +1209,33 @@ class ManimConfig(MutableMapping):
 
     @property
     def renderer(self):
-        """Renderer: "cairo", "opengl"""
+        """The currently active renderer.
+
+        Populated with one of the available renderers in :class:`.RendererType`.
+
+        Tests::
+
+            >>> test_config = ManimConfig()
+            >>> test_config.renderer
+            <RendererType.CAIRO: 'cairo'>
+            >>> test_config.renderer = 'opengl'
+            >>> test_config.renderer
+            <RendererType.OPENGL: 'opengl'>
+            >>> test_config.renderer = 42
+            Traceback (most recent call last):
+            ...
+            ValueError: 42 is not a valid RendererType
+        """
         return self._d["renderer"]
 
     @renderer.setter
     def renderer(self, val: str) -> None:
-        """Renderer for animations."""
+        """The setter of the renderer property.
+
+        Takes care of switching inheritance bases using the
+        :class:`.ConvertToOpenGL` metaclass.
+        """
+        renderer = RendererType(val)
         try:
             from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
             from manim.mobject.opengl.opengl_mobject import OpenGLMobject
@@ -1198,7 +1245,7 @@ class ManimConfig(MutableMapping):
             from ..mobject.types.vectorized_mobject import VMobject
 
             for cls in ConvertToOpenGL._converted_classes:
-                if val == "opengl":
+                if renderer == RendererType.OPENGL:
                     conversion_dict = {
                         Mobject: OpenGLMobject,
                         VMobject: OpenGLVMobject,
@@ -1220,26 +1267,7 @@ class ManimConfig(MutableMapping):
             # can just do nothing.
             pass
 
-        self._set_from_list(
-            "renderer",
-            val,
-            ["cairo", "opengl"],
-        )
-
-    @property
-    def use_opengl_renderer(self):
-        """Whether or not to use the OpenGL renderer."""
-        return self._d["use_opengl_renderer"]
-
-    @use_opengl_renderer.setter
-    def use_opengl_renderer(self, val: bool) -> None:
-        self._d["use_opengl_renderer"] = val
-        if val:
-            self._set_from_list(
-                "renderer",
-                "opengl",
-                ["cairo", "opengl"],
-            )
+        self._set_from_enum("renderer", renderer, RendererType)
 
     media_dir = property(
         lambda self: self._d["media_dir"],

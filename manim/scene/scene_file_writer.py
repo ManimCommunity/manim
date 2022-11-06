@@ -8,7 +8,7 @@ import json
 import os
 import shutil
 import subprocess
-import sys
+
 from pathlib import Path
 from typing import Any
 
@@ -21,6 +21,7 @@ from manim import __version__
 
 from .. import config, logger
 from .._config.logger_utils import set_file_logger
+from ..constants import RendererType
 from ..utils.file_ops import (
     add_extension_if_not_present,
     add_version_before_extension,
@@ -369,9 +370,9 @@ class SceneFileWriter:
         frame : np.array
             Pixel array of the frame.
         """
-        if config.renderer == "opengl":
+        if config.renderer == RendererType.OPENGL:
             self.write_opengl_frame(frame_or_renderer)
-        else:
+        elif config.renderer == RendererType.CAIRO:
             frame = frame_or_renderer
             if write_to_movie():
                 self.writing_process.stdin.write(frame.tobytes())
@@ -466,7 +467,7 @@ class SceneFileWriter:
         fps = config["frame_rate"]
         if fps == int(fps):  # fps is integer
             fps = int(fps)
-        if config.renderer == "opengl":
+        if config.renderer == RendererType.OPENGL:
             width, height = self.renderer.get_pixel_shape()
         else:
             height = config["pixel_height"]
@@ -491,7 +492,7 @@ class SceneFileWriter:
             "-metadata",
             f"comment=Rendered with Manim Community v{__version__}",
         ]
-        if config.renderer == "opengl":
+        if config.renderer == RendererType.OPENGL:
             command += ["-vf", "vflip"]
         if is_webm_format():
             command += ["-vcodec", "libvpx-vp9", "-auto-alt-ref", "0"]

@@ -45,7 +45,7 @@ from mapbox_earcut import triangulate_float32 as earcut
 from scipy.spatial.transform import Rotation
 
 from .. import config
-from ..constants import DOWN, OUT, PI, RIGHT, TAU, UP
+from ..constants import DOWN, OUT, PI, RIGHT, TAU, UP, RendererType
 from ..utils.iterables import adjacent_pairs
 
 
@@ -69,7 +69,7 @@ def quaternion_mult(
     Union[np.ndarray, List[Union[float, np.ndarray]]]
         Returns a list of product of two quaternions.
     """
-    if config.renderer == "opengl":
+    if config.renderer == RendererType.OPENGL:
         if len(quats) == 0:
             return [1, 0, 0, 0]
         result = quats[0]
@@ -83,7 +83,7 @@ def quaternion_mult(
                 w1 * z2 + z1 * w2 + x1 * y2 - y1 * x2,
             ]
         return result
-    else:
+    elif config.renderer == RendererType.CAIRO:
         q1 = quats[0]
         q2 = quats[1]
 
@@ -122,11 +122,11 @@ def quaternion_from_angle_axis(
     List[float]
         Gives back a quaternion from the angle and axis
     """
-    if config.renderer == "opengl":
+    if config.renderer == RendererType.OPENGL:
         if not axis_normalized:
             axis = normalize(axis)
         return [math.cos(angle / 2), *(math.sin(angle / 2) * axis)]
-    else:
+    elif config.renderer == RendererType.CAIRO:
         return np.append(np.cos(angle / 2), np.sin(angle / 2) * normalize(axis))
 
 

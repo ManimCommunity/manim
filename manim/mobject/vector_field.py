@@ -26,9 +26,9 @@ from .. import config
 from ..animation.composition import AnimationGroup, Succession
 from ..animation.creation import Create
 from ..animation.indication import ShowPassingFlash
-from ..constants import OUT, RIGHT, UP
+from ..constants import OUT, RIGHT, UP, RendererType
 from ..mobject.mobject import Mobject
-from ..mobject.types.vectorized_mobject import VGroup, VMobject
+from ..mobject.types.vectorized_mobject import VGroup
 from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import BLUE_E, GREEN, RED, YELLOW, color_to_rgb, rgb_to_color
 from ..utils.rate_functions import ease_out_sine, linear
@@ -801,7 +801,7 @@ class StreamLines(VectorField):
         max_steps = ceil(virtual_time / dt) + 1
         if not self.single_color:
             self.background_img = self.get_colored_background_image()
-            if config["renderer"] == "opengl":
+            if config["renderer"] == RendererType.OPENGL:
                 self.values_to_rgbas = self.get_vectorized_rgba_gradient_function(
                     min_color_scheme_value,
                     max_color_scheme_value,
@@ -828,7 +828,7 @@ class StreamLines(VectorField):
             if self.single_color:
                 line.set_stroke(self.color)
             else:
-                if config["renderer"] == "opengl":
+                if config.renderer == RendererType.OPENGL:
                     # scaled for compatibility with cairo
                     line.set_stroke(width=self.stroke_width / 4.0)
                     norms = np.array(

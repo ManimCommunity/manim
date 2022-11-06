@@ -6,6 +6,7 @@ from __future__ import annotations
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 
 from .. import config, logger
+from ..constants import RendererType
 from ..mobject import mobject
 from ..mobject.mobject import Mobject
 from ..mobject.opengl import opengl_mobject
@@ -149,7 +150,7 @@ class Animation:
         self.suspend_mobject_updating: bool = suspend_mobject_updating
         self.lag_ratio: float = lag_ratio
         self._on_finish: Callable[[Scene], None] = _on_finish
-        if config["renderer"] == "opengl":
+        if config["renderer"] == RendererType.OPENGL:
             self.starting_mobject: OpenGLMobject = OpenGLMobject()
             self.mobject: OpenGLMobject = (
                 mobject if mobject is not None else OpenGLMobject()
@@ -265,7 +266,7 @@ class Animation:
         return self.mobject, self.starting_mobject
 
     def get_all_families_zipped(self) -> Iterable[tuple]:
-        if config["renderer"] == "opengl":
+        if config["renderer"] == RendererType.OPENGL:
             return zip(*(mob.get_family() for mob in self.get_all_mobjects()))
         return zip(
             *(mob.family_members_with_points() for mob in self.get_all_mobjects())

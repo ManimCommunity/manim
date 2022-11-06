@@ -17,7 +17,7 @@ import requests
 
 from ... import __version__, config, console, error_console, logger
 from ..._config import tempconfig
-from ...constants import EPILOG
+from ...constants import EPILOG, RendererType
 from ...utils.module_ops import scene_classes_from_file
 from .ease_of_access_options import ease_of_access_options
 from .global_options import global_options
@@ -84,7 +84,7 @@ def render(
 
     config.digest_args(click_args)
     file = Path(config.input_file)
-    if config.renderer == "opengl":
+    if config.renderer == RendererType.OPENGL:
         from manim.renderer.opengl_renderer import OpenGLRenderer
 
         try:
