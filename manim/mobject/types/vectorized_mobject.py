@@ -120,6 +120,11 @@ class VMobject(Mobject):
         if stroke_color:
             self.stroke_color = stroke_color
 
+    # OpenGL compatibility
+    @property
+    def n_points_per_curve(self):
+        return self.n_points_per_cubic_curve
+
     def get_group_class(self):
         return VGroup
 
