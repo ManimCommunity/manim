@@ -4,12 +4,13 @@ Constant definitions.
 
 from __future__ import annotations
 
+from enum import Enum
+
 import numpy as np
 from cloup import Context
 from PIL.Image import Resampling
 
 __all__ = [
-    "NOT_SETTING_FONT_MSG",
     "SCENE_NOT_FOUND_MESSAGE",
     "CHOOSE_NUMBER_MESSAGE",
     "INVALID_NUMBER_MESSAGE",
@@ -64,24 +65,16 @@ __all__ = [
     "PI",
     "TAU",
     "DEGREES",
-    "GIF_FILE_EXTENSION",
-    "FFMPEG_VERBOSITY_MAP",
-    "VERBOSITY_CHOICES",
     "QUALITIES",
     "DEFAULT_QUALITY",
-    "DEFAULT_QUALITY_SHORT",
     "EPILOG",
     "CONTEXT_SETTINGS",
     "SHIFT_VALUE",
     "CTRL_VALUE",
+    "RendererType",
 ]
 # Messages
-NOT_SETTING_FONT_MSG: str = """
-You haven't set font.
-If you are not using English, this may cause text rendering problem.
-You set font like:
-text = Text('your text', font='your font')
-"""
+
 SCENE_NOT_FOUND_MESSAGE: str = """
    {} is not in the script
 """
@@ -200,18 +193,6 @@ TAU: float = 2 * PI
 DEGREES: float = TAU / 360
 """The exchange rate between radians and degrees."""
 
-# gif stuff
-GIF_FILE_EXTENSION: str = ".gif"
-
-FFMPEG_VERBOSITY_MAP: dict[str, str] = {
-    "DEBUG": "error",
-    "INFO": "error",
-    "WARNING": "error",
-    "ERROR": "error",
-    "CRITICAL": "fatal",
-}
-VERBOSITY_CHOICES = FFMPEG_VERBOSITY_MAP.keys()
-
 # Video qualities
 QUALITIES: dict[str, dict[str, str | int | None]] = {
     "fourk_quality": {
@@ -253,7 +234,6 @@ QUALITIES: dict[str, dict[str, str | int | None]] = {
 }
 
 DEFAULT_QUALITY: str = "high_quality"
-DEFAULT_QUALITY_SHORT = QUALITIES[DEFAULT_QUALITY]["flag"]
 
 EPILOG = "Made with <3 by Manim Community developers."
 SHIFT_VALUE = 65505
@@ -264,3 +244,7 @@ CONTEXT_SETTINGS = Context.settings(
     align_sections=True,
     show_constraints=True,
 )
+
+class RendererType(Enum):
+    CAIRO = "cairo"
+    OPENGL = "opengl"

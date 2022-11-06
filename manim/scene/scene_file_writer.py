@@ -21,7 +21,6 @@ from manim import __version__
 
 from .. import config, logger
 from .._config.logger_utils import set_file_logger
-from ..constants import GIF_FILE_EXTENSION
 from ..utils.file_ops import (
     add_extension_if_not_present,
     add_version_before_extension,
@@ -146,7 +145,7 @@ class SceneFileWriter:
 
             if is_gif_format():
                 self.gif_file_path = add_extension_if_not_present(
-                    self.output_name, GIF_FILE_EXTENSION
+                    self.output_name, ".gif"
                 )
 
                 if not config["output_file"]:
