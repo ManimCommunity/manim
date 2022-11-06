@@ -333,10 +333,7 @@ class Mobject:
         return result
 
     def __repr__(self):
-        if config["renderer"] == "opengl":
-            return super().__repr__()
-        else:
-            return str(self.name)
+        return str(self.name)
 
     def reset_points(self):
         """Sets :attr:`points` to be an empty array."""

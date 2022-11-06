@@ -93,8 +93,10 @@ class OpenGLMobject:
         listen_to_events=False,
         model_matrix=None,
         should_render=True,
+        name: str | None = None,
         **kwargs,
     ):
+        self.name = self.__class__.__name__ if name is None else name
         # getattr in case data/uniforms are already defined in parent classes.
         self.data = getattr(self, "data", {})
         self.uniforms = getattr(self, "uniforms", {})
@@ -152,7 +154,7 @@ class OpenGLMobject:
         return self.__class__.__name__
 
     def __repr__(self):
-        return self.__class__.__name__
+        return str(self.name)
 
     def __sub__(self, other):
         raise NotImplementedError
