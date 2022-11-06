@@ -21,7 +21,7 @@ extend-ignore = E203, W503, D202, D212, D213, D404
                 A001, A002, A003,
 
                 # Plug-in: flake8-bugbear
-                B006, B007, B008, B009, B010,
+                B006, B007, B008, B009, B010, B903, B950,
 
                 # Plug-in: flake8-simplify
                 SIM105, SIM106, SIM119,

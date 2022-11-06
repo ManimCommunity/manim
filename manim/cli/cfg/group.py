@@ -233,7 +233,7 @@ modify write_cfg_subcmd_input to account for it.""",
         cfg_file_path = config_paths[2]
         guarantee_existence(config_paths[2].parents[0])
         console.print(CWD_CONFIG_MSG)
-    with open(cfg_file_path, "w") as fp:
+    with cfg_file_path.open("w") as fp:
         parser.write(fp)
     if openfile:
         open_file(cfg_file_path)

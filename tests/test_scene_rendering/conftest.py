@@ -9,12 +9,12 @@ from manim import config, tempconfig
 
 @pytest.fixture
 def manim_cfg_file():
-    return str(Path(__file__).parent / "manim.cfg")
+    return Path(__file__).parent / "manim.cfg"
 
 
 @pytest.fixture
 def simple_scenes_path():
-    return str(Path(__file__).parent / "simple_scenes.py")
+    return Path(__file__).parent / "simple_scenes.py"
 
 
 @pytest.fixture
@@ -46,7 +46,7 @@ def disabling_caching():
 
 @pytest.fixture
 def infallible_scenes_path():
-    return str(Path(__file__).parent / "infallible_scenes.py")
+    return Path(__file__).parent / "infallible_scenes.py"
 
 
 @pytest.fixture
