@@ -149,7 +149,7 @@ class Scene:
     def clear(self, condition=(lambda m: True)) -> None:
         """
         Removes all the mobjects satisfying a condition.
-        
+
         Parameters
         ---------
         condition: function
