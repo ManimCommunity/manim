@@ -146,8 +146,19 @@ class Scene:
             random.seed(self.random_seed)
             np.random.seed(self.random_seed)
 
-    def clear(self) -> None:
-        self.remove(*self.mobjects)
+    def clear(self, condition=(lambda m: True)) -> None:
+        """
+        Removes all the mobjects satisfying a condition.
+        
+        Parameters
+        ---------
+        condition: function
+             For every mobject if condition(mobject) is True
+             then remove the mobject
+        """
+        for mob in self.mobjects:
+            if condition(mob):
+                self.remove(mob)
 
     @property
     def camera(self):
