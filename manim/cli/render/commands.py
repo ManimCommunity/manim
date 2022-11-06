@@ -46,12 +46,6 @@ def render(
     SCENES is an optional list of scenes in the file.
     """
 
-    if args["use_opengl_renderer"]:
-        logger.warning(
-            "--use_opengl_renderer is deprecated, please use --renderer=opengl instead!",
-        )
-        args["renderer"] = "opengl"
-
     if args["save_as_gif"]:
         logger.warning("--save_as_gif is deprecated, please use --format=gif instead!")
         args["format"] = "gif"
