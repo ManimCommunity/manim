@@ -74,6 +74,7 @@ def test_subcaption():
         assert subcaptions[1].end == datetime.timedelta(seconds=3)
         assert subcaptions[1].content == "Testing Scene.play subcaption interface"
 
+
 def test_clear():
     with tempconfig({"dry_run": True}):
         scene = Scene()
