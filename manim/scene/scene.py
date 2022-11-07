@@ -146,7 +146,7 @@ class Scene:
             random.seed(self.random_seed)
             np.random.seed(self.random_seed)
 
-    def clear(self, condition=(lambda m: True)) -> None:
+    def clear(self, condition: Callable[[Mobject], bool] | None = None) -> None:
         """
         Removes all the mobjects satisfying a condition.
 
@@ -156,7 +156,10 @@ class Scene:
              For every mobject if condition(mobject) is True
              then remove the mobject
         """
-        for mob in self.mobjects:
+        if condition is None:
+            
+        import copy
+        for mob in copy.copy(self.mobjects):
             if condition(mob):
                 self.remove(mob)
 
