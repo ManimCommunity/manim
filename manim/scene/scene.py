@@ -157,7 +157,7 @@ class Scene:
              then remove the mobject
         """
         if condition is None:
-            
+
         import copy
         for mob in copy.copy(self.mobjects):
             if condition(mob):
