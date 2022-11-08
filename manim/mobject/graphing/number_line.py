@@ -562,7 +562,7 @@ class NumberLine(Line):
         direction = self.label_direction if direction is None else direction
         buff = self.line_to_number_buff if buff is None else buff
         font_size = self.font_size if font_size is None else font_size
-        label_constructor = (
+        self.label_constructor = (
             self.label_constructor if label_constructor is None else label_constructor
         )
 
