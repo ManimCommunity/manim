@@ -35,13 +35,6 @@ from manim.utils.space_ops import (
     z_to_vector,
 )
 
-JOINT_TYPE_MAP = {
-    "auto": 0,
-    "round": 1,
-    "bevel": 2,
-    "miter": 3,
-}
-
 
 def triggers_refreshed_triangulation(func):
     @wraps(func)
@@ -108,7 +101,7 @@ class OpenGLVMobject(OpenGLMobject):
         should_subdivide_sharp_curves: bool = False,
         should_remove_null_curves: bool = False,
         # Could also be "bevel", "miter", "round"
-        joint_type: str = "auto",
+        joint_type: LineJointType | None = None,
         flat_stroke: bool = True,
         render_primitive=moderngl.TRIANGLES,
         triangulation_locked: bool = False,
@@ -134,7 +127,8 @@ class OpenGLVMobject(OpenGLMobject):
         self.long_lines = long_lines
         self.should_subdivide_sharp_curves = should_subdivide_sharp_curves
         self.should_remove_null_curves = should_remove_null_curves
-        # Could also be "bevel", "miter", "round"
+        if joint_type is None:
+            joint_type = LineJointType.AUTO
         self.joint_type = joint_type
         self.flat_stroke = flat_stroke
         self.render_primitive = render_primitive
@@ -1564,7 +1558,7 @@ class OpenGLVMobject(OpenGLMobject):
 
     def get_stroke_uniforms(self):
         result = dict(super().get_shader_uniforms())
-        result["joint_type"] = JOINT_TYPE_MAP[self.joint_type]
+        result["joint_type"] = self.joint_type.value
         result["flat_stroke"] = float(self.flat_stroke)
         return result
 

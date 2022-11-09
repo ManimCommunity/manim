@@ -31,6 +31,13 @@ from ..utils.iterables import list_difference_update
 from ..utils.space_ops import angle_of_vector
 
 
+LINE_JOIN_MAP = {
+    LineJointType.AUTO: cairo.LineJoin.MITER,  # TODO: this could be improved
+    LineJointType.ROUND: cairo.LineJoin.ROUND,
+    LineJointType.BEVEL: cairo.LineJoin.BEVEL,
+    LineJointType.MITER: cairo.LineJoin.MITER,
+}
+
 class Camera:
     """Base camera class.
 
@@ -755,7 +762,6 @@ class Camera:
             The camera object with the stroke applied.
         """
         width = vmobject.get_stroke_width(background)
-        line_join = vmobject.get_line_join()
         if width == 0:
             return self
         self.set_cairo_context_color(
@@ -769,7 +775,7 @@ class Camera:
             # This ensures lines have constant width as you zoom in on them.
             * (self.frame_width / self.frame_width),
         )
-        ctx.set_line_join(line_join)
+        ctx.set_line_join(LINE_JOIN_MAP[vmobject.joint_type])
         ctx.stroke_preserve()
         return self
 

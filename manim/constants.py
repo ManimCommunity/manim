@@ -7,7 +7,6 @@ from __future__ import annotations
 from enum import Enum
 
 import numpy as np
-from cairo import LineJoin
 from cloup import Context
 from PIL.Image import Resampling
 
@@ -73,7 +72,7 @@ __all__ = [
     "SHIFT_VALUE",
     "CTRL_VALUE",
     "RendererType",
-    "LINE_JOINS",
+    "LineJointType",
 ]
 # Messages
 
@@ -269,4 +268,9 @@ class RendererType(Enum):
 
 
 
-LINE_JOINS = {"ROUND": LineJoin.ROUND, "BEVEL": LineJoin.BEVEL, "MITER": LineJoin.MITER}
+class LineJointType(Enum):
+    """Collection of available line joint types."""
+    AUTO = 0
+    ROUND = 1
+    BEVEL = 2
+    MITER = 3
