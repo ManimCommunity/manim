@@ -270,6 +270,7 @@ class RendererType(Enum):
 
 class LineJointType(Enum):
     """Collection of available line joint types."""
+
     AUTO = 0
     ROUND = 1
     BEVEL = 2

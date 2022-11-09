@@ -93,7 +93,7 @@ class VMobject(Mobject):
                 lines = VGroup(*[mob.copy() for _ in range(len(LineJointType))])
                 for line, joint_type in zip(lines, LineJointType):
                     line.joint_type = joint_type
-                
+
                 lines.arrange(RIGHT, buff=1)
                 self.add(lines)
                 for line in lines:
@@ -241,8 +241,8 @@ class VMobject(Mobject):
 
     def set_fill(
         self,
-        color: Optional[str] = None,
-        opacity: Optional[float] = None,
+        color: str | None = None,
+        opacity: float | None = None,
         family: bool = True,
     ):
         """Set the fill color and fill opacity of a :class:`VMobject`.
@@ -607,14 +607,14 @@ class VMobject(Mobject):
             offset = np.dot(bases, direction)
             return (c - offset, c + offset)
 
-    def color_using_background_image(self, background_image: Union[Image, str]):
+    def color_using_background_image(self, background_image: Image | str):
         self.background_image = background_image
         self.set_color(WHITE)
         for submob in self.submobjects:
             submob.color_using_background_image(background_image)
         return self
 
-    def get_background_image(self) -> Union[Image, str]:
+    def get_background_image(self) -> Image | str:
         return self.background_image
 
     def match_background_image(self, vmobject):
@@ -860,7 +860,7 @@ class VMobject(Mobject):
         if not self.is_closed():
             self.add_line_to(self.get_subpaths()[-1][0])
 
-    def add_points_as_corners(self, points: np.ndarray) -> "VMobject":
+    def add_points_as_corners(self, points: np.ndarray) -> VMobject:
         for point in points:
             self.add_line_to(point)
         return points
@@ -962,7 +962,7 @@ class VMobject(Mobject):
         self,
         angle: float,
         axis: np.ndarray = OUT,
-        about_point: Optional[Sequence[float]] = None,
+        about_point: Sequence[float] | None = None,
         **kwargs,
     ):
         self.rotate_sheen_direction(angle, axis)
@@ -1033,7 +1033,7 @@ class VMobject(Mobject):
     def get_cubic_bezier_tuples_from_points(self, points):
         return np.array(list(self.gen_cubic_bezier_tuples_from_points(points)))
 
-    def gen_cubic_bezier_tuples_from_points(self, points: np.ndarray) -> typing.Tuple:
+    def gen_cubic_bezier_tuples_from_points(self, points: np.ndarray) -> tuple:
         """Returns the bezier tuples from an array of points.
 
         self.points is a list of the anchors and handles of the bezier curves of the mobject (ie [anchor1, handle1, handle2, anchor2, anchor3 ..])
@@ -1064,7 +1064,7 @@ class VMobject(Mobject):
         self,
         points: np.ndarray,
         filter_func: typing.Callable[[int], bool],
-    ) -> typing.Tuple:
+    ) -> tuple:
         """Given an array of points defining the bezier curves of the vmobject, return subpaths formed by these points.
         Here, Two bezier curves form a path if at least two of their anchors are evaluated True by the relation defined by filter_func.
 
@@ -1108,7 +1108,7 @@ class VMobject(Mobject):
             lambda n: not self.consider_points_equals_2d(points[n - 1], points[n]),
         )
 
-    def get_subpaths(self) -> typing.Tuple:
+    def get_subpaths(self) -> tuple:
         """Returns subpaths formed by the curves of the VMobject.
 
         Subpaths are ranges of curves with each pair of consecutive curves having their end/start points coincident.
@@ -1155,7 +1155,7 @@ class VMobject(Mobject):
     def get_nth_curve_length_pieces(
         self,
         n: int,
-        sample_points: Optional[int] = None,
+        sample_points: int | None = None,
     ) -> np.ndarray:
         """Returns the array of short line lengths used for length approximation.
 
@@ -1184,7 +1184,7 @@ class VMobject(Mobject):
     def get_nth_curve_length(
         self,
         n: int,
-        sample_points: Optional[int] = None,
+        sample_points: int | None = None,
     ) -> float:
         """Returns the (approximate) length of the nth curve.
 
@@ -1208,8 +1208,8 @@ class VMobject(Mobject):
     def get_nth_curve_function_with_length(
         self,
         n: int,
-        sample_points: Optional[int] = None,
-    ) -> typing.Tuple[typing.Callable[[float], np.ndarray], float]:
+        sample_points: int | None = None,
+    ) -> tuple[typing.Callable[[float], np.ndarray], float]:
         """Returns the expression of the nth curve along with its (approximate) length.
 
         Parameters
@@ -1262,7 +1262,7 @@ class VMobject(Mobject):
 
     def get_curve_functions_with_lengths(
         self, **kwargs
-    ) -> typing.Iterable[typing.Tuple[typing.Callable[[float], np.ndarray], float]]:
+    ) -> typing.Iterable[tuple[typing.Callable[[float], np.ndarray], float]]:
         """Gets the functions and lengths of the curves for the mobject.
 
         Parameters
@@ -1327,7 +1327,7 @@ class VMobject(Mobject):
 
     def proportion_from_point(
         self,
-        point: typing.Iterable[typing.Union[float, int]],
+        point: typing.Iterable[float | int],
     ) -> float:
         """Returns the proportion along the path of the :class:`VMobject`
         a particular given point is at.
@@ -1434,7 +1434,7 @@ class VMobject(Mobject):
         # Probably returns all anchors, but this is weird regarding  the name of the method.
         return np.array(list(it.chain(*(sm.get_anchors() for sm in self.get_family()))))
 
-    def get_arc_length(self, sample_points_per_curve: Optional[int] = None) -> float:
+    def get_arc_length(self, sample_points_per_curve: int | None = None) -> float:
         """Return the approximated length of the whole curve.
 
         Parameters
@@ -1456,7 +1456,7 @@ class VMobject(Mobject):
         )
 
     # Alignment
-    def align_points(self, vmobject: "VMobject"):
+    def align_points(self, vmobject: VMobject):
         """Adds points to self and vmobject so that they both have the same number of subpaths, with
         corresponding subpaths each containing the same number of points.
 
@@ -1647,7 +1647,7 @@ class VMobject(Mobject):
 
     def pointwise_become_partial(
         self,
-        vmobject: "VMobject",
+        vmobject: VMobject,
         a: float,
         b: float,
     ):
@@ -1707,7 +1707,7 @@ class VMobject(Mobject):
             )
         return self
 
-    def get_subcurve(self, a: float, b: float) -> "VMobject":
+    def get_subcurve(self, a: float, b: float) -> VMobject:
         """Returns the subcurve of the VMobject between the interval [a, b].
         The curve is a VMobject itself.
 
@@ -1939,7 +1939,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
     def __isub__(self, vmobject):
         return self.remove(vmobject)
 
-    def __setitem__(self, key: int, value: Union[VMobject, typing.Sequence[VMobject]]):
+    def __setitem__(self, key: int, value: VMobject | typing.Sequence[VMobject]):
         """Override the [] operator for item assignment.
 
         Parameters
