@@ -5,8 +5,6 @@ from __future__ import annotations
 __all__ = [
     "get_mobject_class",
     "get_vectorized_mobject_class",
-    "get_group_class",
-    "get_vectorized_group_class",
 ]
 
 from .._config import config
