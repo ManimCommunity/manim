@@ -1234,13 +1234,15 @@ class ManimConfig(MutableMapping):
         return self._d["renderer"]
 
     @renderer.setter
-    def renderer(self, val: str) -> None:
+    def renderer(self, val: str | RendererType) -> None:
         """The setter of the renderer property.
 
         Takes care of switching inheritance bases using the
         :class:`.ConvertToOpenGL` metaclass.
         """
-        renderer = RendererType(val.lower())
+        if isinstance(val, str):
+            val = val.lower()
+        renderer = RendererType(val)
         try:
             from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
             from manim.mobject.opengl.opengl_mobject import OpenGLMobject
