@@ -75,7 +75,6 @@ from manim.mobject.geometry.shape_matchers import BackgroundRectangle
 from manim.mobject.text.numbers import DecimalNumber, Integer
 from manim.mobject.text.tex_mobject import MathTex
 from manim.mobject.text.text_mobject import Paragraph
-from .utils import get_vectorized_mobject_class
 
 from .. import config
 from ..animation.animation import Animation
@@ -84,6 +83,7 @@ from ..animation.creation import Create, Write
 from ..animation.fading import FadeIn
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import BLACK, YELLOW
+from .utils import get_vectorized_mobject_class
 
 
 class Table(VGroup):

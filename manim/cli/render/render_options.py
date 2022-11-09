@@ -97,7 +97,7 @@ render_options = option_group(
         "--renderer",
         type=click.Choice(
             [renderer_type.value for renderer_type in RendererType],
-            case_sensitive=False
+            case_sensitive=False,
         ),
         help="Select a renderer for your Scene.",
         default="cairo",
