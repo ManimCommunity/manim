@@ -82,6 +82,7 @@ class VMobject(Mobject):
     The available line joint variants are illustrated below.
 
     .. manim:: LineJointVariants
+        :save_last_frame:
 
         class LineJointVariants(Scene):
             def construct(self):
