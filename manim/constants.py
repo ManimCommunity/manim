@@ -7,9 +7,9 @@ from __future__ import annotations
 from enum import Enum
 
 import numpy as np
+from cairo import LineJoin
 from cloup import Context
 from PIL.Image import Resampling
-from cairo import LineJoin
 
 __all__ = [
     "SCENE_NOT_FOUND_MESSAGE",
@@ -268,8 +268,5 @@ class RendererType(Enum):
     OPENGL = "opengl"  #: An OpenGL-based renderer.
 
 
-LINE_JOINS = {
-    "ROUND": LineJoin.ROUND,
-    "BEVEL": LineJoin.BEVEL,
-    "MITER": LineJoin.MITER
-}
+
+LINE_JOINS = {"ROUND": LineJoin.ROUND, "BEVEL": LineJoin.BEVEL, "MITER": LineJoin.MITER}

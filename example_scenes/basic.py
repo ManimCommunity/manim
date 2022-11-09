@@ -163,6 +163,7 @@ class SpiralInExample(Scene):
 
 Triangle.set_default(stroke_width=20)
 
+
 class LineJoins(Scene):
     def construct(self):
         t1 = Triangle()
@@ -170,7 +171,7 @@ class LineJoins(Scene):
         t3 = Triangle(line_join=LINE_JOINS["BEVEL"])
 
         grp = VGroup(t1, t2, t3).arrange(RIGHT)
-        grp.set(width=config.frame_width-1)
+        grp.set(width=config.frame_width - 1)
 
         self.add(grp)
 
