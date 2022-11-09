@@ -32,7 +32,7 @@ from ..utils.space_ops import angle_of_vector
 
 
 LINE_JOIN_MAP = {
-    LineJointType.AUTO: cairo.LineJoin.MITER,  # TODO: this could be improved
+    LineJointType.AUTO: None,  # TODO: this could be improved
     LineJointType.ROUND: cairo.LineJoin.ROUND,
     LineJointType.BEVEL: cairo.LineJoin.BEVEL,
     LineJointType.MITER: cairo.LineJoin.MITER,
@@ -775,7 +775,8 @@ class Camera:
             # This ensures lines have constant width as you zoom in on them.
             * (self.frame_width / self.frame_width),
         )
-        ctx.set_line_join(LINE_JOIN_MAP[vmobject.joint_type])
+        if vmobject.joint_type != LineJointType.AUTO:
+            ctx.set_line_join(LINE_JOIN_MAP[vmobject.joint_type])
         ctx.stroke_preserve()
         return self
 
