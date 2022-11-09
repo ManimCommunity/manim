@@ -85,6 +85,7 @@ class VMobject(Mobject):
         background_stroke_opacity=1.0,
         background_stroke_width=0,
         sheen_factor=0.0,
+        line_join=LINE_JOINS["MITER"],
         sheen_direction=UL,
         close_new_points=False,
         pre_function_handle_to_anchor_scale_factor=0.01,
@@ -103,6 +104,7 @@ class VMobject(Mobject):
         self.background_stroke_opacity = background_stroke_opacity
         self.background_stroke_width = background_stroke_width
         self.sheen_factor = sheen_factor
+        self.line_join = line_join
         self.sheen_direction = sheen_direction
         self.close_new_points = close_new_points
         self.pre_function_handle_to_anchor_scale_factor = (
@@ -131,6 +133,9 @@ class VMobject(Mobject):
     @staticmethod
     def get_mobject_type_class():
         return VMobject
+
+    def get_line_join(self):
+        return self.line_join
 
     # Colors
     def init_colors(self, propagate_colors=True):

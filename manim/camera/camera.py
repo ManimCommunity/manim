@@ -755,6 +755,7 @@ class Camera:
             The camera object with the stroke applied.
         """
         width = vmobject.get_stroke_width(background)
+        line_join = vmobject.get_line_join()
         if width == 0:
             return self
         self.set_cairo_context_color(
@@ -768,6 +769,7 @@ class Camera:
             # This ensures lines have constant width as you zoom in on them.
             * (self.frame_width / self.frame_width),
         )
+        ctx.set_line_join(line_join)
         ctx.stroke_preserve()
         return self
 

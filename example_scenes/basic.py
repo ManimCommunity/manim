@@ -161,4 +161,18 @@ class SpiralInExample(Scene):
         self.play(FadeOut(shapes))
 
 
+Triangle.set_default(stroke_width=20)
+
+class LineJoins(Scene):
+    def construct(self):
+        t1 = Triangle()
+        t2 = Triangle(line_join=LINE_JOINS["ROUND"])
+        t3 = Triangle(line_join=LINE_JOINS["BEVEL"])
+
+        grp = VGroup(t1, t2, t3).arrange(RIGHT)
+        grp.set(width=config.frame_width-1)
+
+        self.add(grp)
+
+
 # See many more examples at https://docs.manim.community/en/stable/examples.html
