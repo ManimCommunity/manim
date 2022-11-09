@@ -1225,6 +1225,8 @@ class ManimConfig(MutableMapping):
             Traceback (most recent call last):
             ...
             ValueError: 42 is not a valid RendererType
+            >>> test_config.renderer = 'OpenGL'
+            >>> test_config.renderer = 'cAirO'
         """
         return self._d["renderer"]
 
@@ -1235,7 +1237,7 @@ class ManimConfig(MutableMapping):
         Takes care of switching inheritance bases using the
         :class:`.ConvertToOpenGL` metaclass.
         """
-        renderer = RendererType(val)
+        renderer = RendererType(val.lower())
         try:
             from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
             from manim.mobject.opengl.opengl_mobject import OpenGLMobject
