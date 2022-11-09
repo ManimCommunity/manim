@@ -10,9 +10,17 @@ __version__: str = pkg_resources.get_distribution(__name__).version
 
 import sys
 
+# isort: off
+
 # Importing the config module should be the first thing we do, since other
 # modules depend on the global config dict for initialization.
 from ._config import *
+
+# many scripts depend on this -> has to be loaded first
+from .utils.commands import *
+
+# isort: on
+
 from .animation.animation import *
 from .animation.changing import *
 from .animation.composition import *
@@ -91,10 +99,6 @@ from .utils.sounds import *
 from .utils.space_ops import *
 from .utils.tex import *
 from .utils.tex_templates import *
-
-# many scripts depend on this -> has to be loaded first
-from .utils.commands import *  # isort:skip
-
 
 try:
     from IPython import get_ipython
