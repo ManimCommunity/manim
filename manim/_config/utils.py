@@ -1219,8 +1219,8 @@ class ManimConfig(MutableMapping):
         Tests::
 
             >>> test_config = ManimConfig()
-            >>> test_config.renderer
-            <RendererType.CAIRO: 'cairo'>
+            >>> test_config.renderer is None  # a new ManimConfig is unpopulated
+            True
             >>> test_config.renderer = 'opengl'
             >>> test_config.renderer
             <RendererType.OPENGL: 'opengl'>
@@ -1228,6 +1228,9 @@ class ManimConfig(MutableMapping):
             Traceback (most recent call last):
             ...
             ValueError: 42 is not a valid RendererType
+
+        Check that capitalization of renderer types is irrelevant::
+
             >>> test_config.renderer = 'OpenGL'
             >>> test_config.renderer = 'cAirO'
         """

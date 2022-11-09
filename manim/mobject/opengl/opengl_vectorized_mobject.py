@@ -1639,7 +1639,7 @@ class OpenGLVGroup(OpenGLVMobject):
         >>> from manim import Triangle, Square
         >>> from manim.opengl import OpenGLVGroup
         >>> config.renderer
-        'opengl'
+        <RendererType.OPENGL: 'opengl'>
         >>> vg = OpenGLVGroup()
         >>> triangle, square = Triangle(), Square()
         >>> vg.add(triangle)
