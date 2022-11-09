@@ -245,6 +245,7 @@ CONTEXT_SETTINGS = Context.settings(
     show_constraints=True,
 )
 
+
 class RendererType(Enum):
     CAIRO = "cairo"
     OPENGL = "opengl"

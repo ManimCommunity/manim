@@ -12,11 +12,11 @@ __all__ = [
 from .._config import config
 from ..constants import RendererType
 from .mobject import Mobject
+from .opengl.opengl_mobject import OpenGLMobject
+from .opengl.opengl_point_cloud_mobject import OpenGLPMobject
+from .opengl.opengl_vectorized_mobject import OpenGLVMobject
 from .types.point_cloud_mobject import PMobject
 from .types.vectorized_mobject import VMobject
-from .opengl.opengl_mobject import OpenGLMobject
-from .opengl.opengl_vectorized_mobject import OpenGLVMobject
-from .opengl.opengl_point_cloud_mobject import OpenGLPMobject
 
 
 def get_mobject_class() -> type:
