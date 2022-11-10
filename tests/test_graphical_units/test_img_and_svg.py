@@ -241,6 +241,7 @@ def test_RotateTransform(scene):
     scene.add(svg_obj)
     scene.wait()
 
+
 @frames_comparison
 def test_path_multiple_moves(scene):
     svg_obj = SVGMobject(
@@ -250,6 +251,7 @@ def test_path_multiple_moves(scene):
         stroke_width=3,
     )
     scene.add(svg_obj)
+
 
 @frames_comparison
 def test_ImageMobject(scene):

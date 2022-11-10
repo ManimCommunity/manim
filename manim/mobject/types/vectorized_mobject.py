@@ -594,13 +594,14 @@ class VMobject(Mobject):
         self.points = np.array(points)
         return self
 
-    def resize_points(self,
+    def resize_points(
+        self,
         new_length: int,
         resize_func: Callable[[np.ndarray, int], np.ndarray] = resize_array,
     ):
-        """Resize the array of anchor points and handles to have 
+        """Resize the array of anchor points and handles to have
         the specified size.
-        
+
         Parameters
         ----------
         new_length
