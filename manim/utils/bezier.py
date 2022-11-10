@@ -38,7 +38,7 @@ def bezier(
 
     Parameters
     ----------
-    points : np.ndarray
+    points
         points defining the desired bezier curve.
 
     Returns
@@ -78,11 +78,11 @@ def partial_bezier_points(points: np.ndarray, a: float, b: float) -> np.ndarray:
 
     Parameters
     ----------
-    points : np.ndarray
+    points
         set of points defining the bezier curve.
-    a : float
+    a
         lower bound of the desired partial bezier curve.
-    b : float
+    b
         upper bound of the desired partial bezier curve.
 
     Returns
@@ -353,7 +353,7 @@ def get_smooth_handle_points(
 
     Parameters
     ----------
-    points : np.ndarray
+    points
         Anchors.
 
     Returns

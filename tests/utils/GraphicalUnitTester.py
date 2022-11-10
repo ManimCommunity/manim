@@ -8,6 +8,7 @@ import numpy as np
 
 from manim import config, tempconfig
 from manim.renderer.opengl_renderer import OpenGLRenderer
+from manim.scene.scene import Scene
 
 
 class GraphicalUnitTester:
@@ -15,11 +16,9 @@ class GraphicalUnitTester:
 
     Parameters
     ----------
-    scene_class : :class:`~.Scene`
+    scene_class
         The scene to be tested
-    config_scene : :class:`dict`
-        The configuration of the scene
-    module_tested : :class:`str`
+    module_tested
         The name of the module tested. i.e if we are testing functions of creation.py, the module will be "creation"
 
     Attributes
@@ -32,7 +31,9 @@ class GraphicalUnitTester:
         The scene tested
     """
 
-    def __init__(self, scene_class, module_tested, tmpdir, rgb_atol=0):
+    def __init__(
+        self, scene_class: type[Scene], module_tested: str, tmpdir, rgb_atol=0
+    ):
         # Disable the the logs, (--quiet is broken) TODO
         logging.disable(logging.CRITICAL)
         tests_directory = Path(__file__).absolute().parent.parent

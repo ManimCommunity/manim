@@ -171,7 +171,7 @@ else:
                 if local_path in self.rendered_files:
                     self.rendered_files[local_path].unlink()
                 self.rendered_files[local_path] = tmpfile
-                os.makedirs(tmpfile.parent, exist_ok=True)
+                tmpfile.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy(local_path, tmpfile)
 
                 file_type = mimetypes.guess_type(config["output_file"])[0]

@@ -74,7 +74,9 @@ def config_file_paths() -> list[Path]:
     return [library_wide, user_wide, folder_wide]
 
 
-def make_config_parser(custom_file: str = None) -> configparser.ConfigParser:
+def make_config_parser(
+    custom_file: str | os.PathLike | None = None,
+) -> configparser.ConfigParser:
     """Make a :class:`ConfigParser` object and load any ``.cfg`` files.
 
     The user-wide file, if it exists, overrides the library-wide file.  The
@@ -85,7 +87,7 @@ def make_config_parser(custom_file: str = None) -> configparser.ConfigParser:
 
     Parameters
     ----------
-    custom_file : :class:`str`
+    custom_file
         Path to a custom config file.  If used, the folder-wide file in the
         relevant directory will be ignored, if it exists.  If None, the
         folder-wide file will be used, if it exists.
@@ -108,10 +110,10 @@ def make_config_parser(custom_file: str = None) -> configparser.ConfigParser:
     # read_file() before calling read() for any optional files."
     # https://docs.python.org/3/library/configparser.html#configparser.ConfigParser.read
     parser = configparser.ConfigParser()
-    with open(library_wide) as file:
+    with library_wide.open() as file:
         parser.read_file(file)  # necessary file
 
-    other_files = [user_wide, custom_file if custom_file else folder_wide]
+    other_files = [user_wide, Path(custom_file) if custom_file else folder_wide]
     parser.read(other_files)  # optional files
 
     return parser
@@ -340,7 +342,7 @@ class ManimConfig(MutableMapping):
 
         Parameters
         ----------
-        obj : Union[:class:`ManimConfig`, :class:`dict`]
+        obj
             The object to copy values from.
 
         Returns
@@ -488,7 +490,7 @@ class ManimConfig(MutableMapping):
 
         Parameters
         ----------
-        parser : :class:`ConfigParser`
+        parser
             An object reflecting the contents of one or many ``.cfg`` files.  In
             particular, it may reflect the contents of multiple files that have
             been parsed in a cascading fashion.
@@ -662,7 +664,7 @@ class ManimConfig(MutableMapping):
 
         Parameters
         ----------
-        args : :class:`argparse.Namespace`
+        args
             An object returned by :func:`.main_utils.parse_args()`.
 
         Returns
@@ -809,7 +811,7 @@ class ManimConfig(MutableMapping):
 
         return self
 
-    def digest_file(self, filename: str) -> ManimConfig:
+    def digest_file(self, filename: str | os.PathLike) -> ManimConfig:
         """Process the config options present in a ``.cfg`` file.
 
         This method processes a single ``.cfg`` file, whereas
@@ -818,7 +820,7 @@ class ManimConfig(MutableMapping):
 
         Parameters
         ----------
-        filename : :class:`str`
+        filename
             Path to the ``.cfg`` file.
 
         Returns
@@ -840,11 +842,11 @@ class ManimConfig(MutableMapping):
         multiple times.
 
         """
-        if not os.path.isfile(filename):
+        if not Path(filename).is_file():
             raise FileNotFoundError(
                 errno.ENOENT,
                 "Error: --config_file could not find a valid config file.",
-                filename,
+                str(filename),
             )
 
         return self.digest_parser(make_config_parser(filename))
@@ -1314,11 +1316,11 @@ class ManimConfig(MutableMapping):
 
         Parameters
         ----------
-        key : :class:`str`
+        key
             The config option to be resolved.  Must be an option ending in
             ``'_dir'``, for example ``'media_dir'`` or ``'video_dir'``.
 
-        kwargs : :class:`str`
+        kwargs
             Any strings to be used when resolving the directory.
 
         Returns
@@ -1541,7 +1543,7 @@ class ManimConfig(MutableMapping):
         if not hasattr(self, "_tex_template") or not self._tex_template:
             fn = self._d["tex_template_file"]
             if fn:
-                self._tex_template = TexTemplateFromFile(filename=fn)
+                self._tex_template = TexTemplateFromFile(tex_filename=fn)
             else:
                 self._tex_template = TexTemplate()
         return self._tex_template

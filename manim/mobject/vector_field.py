@@ -58,7 +58,7 @@ class VectorField(VGroup):
         The value of the color_scheme function to be mapped to the last color in `colors`. Higher values also result in the last color of the gradient.
     colors
         The colors defining the color gradient of the vector field.
-    kwargs : Any
+    kwargs
         Additional arguments to be passed to the :class:`~.VGroup` constructor
 
     """
@@ -143,7 +143,7 @@ class VectorField(VGroup):
         ----------
         func
             The function defining a vector field.
-        shift_vector
+        scalar
             The scalar to be applied to the vector field.
 
         Examples
@@ -486,7 +486,7 @@ class ArrowVectorField(VectorField):
         The opacity of the arrows.
     vector_config
         Additional arguments to be passed to the :class:`~.Vector` constructor
-    kwargs : Any
+    kwargs
         Additional arguments to be passed to the :class:`~.VGroup` constructor
 
     Examples
@@ -611,8 +611,6 @@ class ArrowVectorField(VectorField):
         ----------
         point
             The root point of the vector.
-        kwargs : Any
-            Additional arguments to be passed to the :class:`~.Vector` constructor
 
         """
         output = np.asarray(self.func(point))
@@ -907,7 +905,7 @@ class StreamLines(VectorField):
 
     def start_animation(
         self,
-        warm_up=True,
+        warm_up: bool = True,
         flow_speed: float = 1,
         time_width: float = 0.3,
         rate_func: Callable[[float], float] = linear,
@@ -920,7 +918,7 @@ class StreamLines(VectorField):
 
         Parameters
         ----------
-        warm_up : bool, optional
+        warm_up
             If `True` the animation is initialized line by line. Otherwise it starts with all lines shown.
         flow_speed
             At `flow_speed=1` the distance the flow moves per second is equal to the magnitude of the vector field along its path. The speed value scales the speed of this flow.
