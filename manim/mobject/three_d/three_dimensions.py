@@ -31,6 +31,7 @@ from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import *
+from manim.utils.color import Colors
 from manim.utils.deprecation import deprecated_params
 from manim.utils.iterables import tuplify
 from manim.utils.space_ops import normalize, perpendicular_bisector, z_to_vector
@@ -348,11 +349,11 @@ class Dot3D(Sphere):
 
     Parameters
     --------
-    point : Union[:class:`list`, :class:`numpy.ndarray`], optional
+    point
         The location of the dot.
-    radius : :class:`float`, optional
+    radius
         The radius of the dot.
-    color : :class:`~.Colors`, optional
+    color
         The color of the :class:`Dot3D`
 
     Examples
@@ -374,9 +375,9 @@ class Dot3D(Sphere):
 
     def __init__(
         self,
-        point=ORIGIN,
-        radius=DEFAULT_DOT_RADIUS,
-        color=WHITE,
+        point: list | np.ndarray = ORIGIN,
+        radius: float = DEFAULT_DOT_RADIUS,
+        color: Colors = WHITE,
         resolution=(8, 8),
         **kwargs,
     ):
@@ -464,31 +465,31 @@ class Cone(Surface):
 
     Parameters
     --------
-    base_radius : :class:`float`
+    base_radius
         The base radius from which the cone tapers.
-    height : :class:`float`
+    height
         The height measured from the plane formed by the base_radius to the apex of the cone.
-    direction : :class:`numpy.array`
+    direction
         The direction of the apex.
-    show_base : :class:`bool`
+    show_base
         Whether to show the base plane or not.
-    v_range : :class:`Sequence[float]`
+    v_range
         The azimuthal angle to start and end at.
-    u_min : :class:`float`
+    u_min
         The radius at the apex.
-    checkerboard_colors : :class:`bool`
+    checkerboard_colors
         Show checkerboard grid texture on the cone.
     """
 
     def __init__(
         self,
-        base_radius=1,
-        height=1,
-        direction=Z_AXIS,
-        show_base=False,
-        v_range=[0, TAU],
-        u_min=0,
-        checkerboard_colors=False,
+        base_radius: float = 1,
+        height: float = 1,
+        direction: np.ndarray = Z_AXIS,
+        show_base: bool = False,
+        v_range: Sequence[float] = [0, TAU],
+        u_min: float = 0,
+        checkerboard_colors: bool = False,
         **kwargs,
     ):
         self.direction = direction
@@ -517,13 +518,13 @@ class Cone(Surface):
 
         self._rotate_to_direction()
 
-    def func(self, u, v):
+    def func(self, u: float, v: float):
         """Converts from spherical coordinates to cartesian.
         Parameters
         ---------
-        u : :class:`float`
+        u
             The radius.
-        v : :class:`float`
+        v
             The azimuthal angle.
         """
         r = u
@@ -594,25 +595,25 @@ class Cylinder(Surface):
 
     Parameters
     ---------
-    radius : :class:`float`
+    radius
         The radius of the cylinder.
-    height : :class:`float`
+    height
         The height of the cylinder.
-    direction : :class:`numpy.array`
+    direction
         The direction of the central axis of the cylinder.
-    v_range : :class:`Sequence[float]`
+    v_range
         The height along the height axis (given by direction) to start and end on.
-    show_ends : :class:`bool`
+    show_ends
         Whether to show the end caps or not.
     """
 
     def __init__(
         self,
-        radius=1,
-        height=2,
-        direction=Z_AXIS,
-        v_range=[0, TAU],
-        show_ends=True,
+        radius: float = 1,
+        height: float = 2,
+        direction: np.ndarray = Z_AXIS,
+        v_range: Sequence[float] = [0, TAU],
+        show_ends: bool = True,
         resolution=(24, 24),
         **kwargs,
     ):
@@ -631,13 +632,13 @@ class Cylinder(Surface):
         self._current_theta = 0
         self.set_direction(direction)
 
-    def func(self, u, v):
+    def func(self, u: float, v: float):
         """Converts from cylindrical coordinates to cartesian.
         Parameters
         ---------
-        u : :class:`float`
+        u
             The height.
-        v : :class:`float`
+        v
             The azimuthal angle.
         """
         height = u
@@ -728,15 +729,22 @@ class Line3D(Cylinder):
 
     Parameters
     ---------
-    start : :class:`numpy.array`
+    start
         The start position of the line.
-    end : :class:`numpy.array`
+    end
         The end position of the line.
-    thickness : :class:`float`
+    thickness
         The thickness of the line.
     """
 
-    def __init__(self, start=LEFT, end=RIGHT, thickness=0.02, color=None, **kwargs):
+    def __init__(
+        self,
+        start: np.ndarray = LEFT,
+        end: np.ndarray = RIGHT,
+        thickness: float = 0.02,
+        color=None,
+        **kwargs,
+    ):
         self.thickness = thickness
         self.set_start_and_end_attrs(start, end, **kwargs)
         if color is not None:
@@ -882,25 +890,25 @@ class Arrow3D(Line3D):
 
     Parameters
     ---------
-    start : :class:`numpy.array`
+    start
         The start position of the arrow.
-    end : :class:`numpy.array`
+    end
         The end position of the arrow.
-    thickness : :class:`float`
+    thickness
         The thickness of the arrow.
-    height : :class:`float`
+    height
         The height of the conical tip.
-    base_radius: :class:`float`
+    base_radius
         The base radius of the conical tip.
     """
 
     def __init__(
         self,
-        start=LEFT,
-        end=RIGHT,
-        thickness=0.02,
-        height=0.3,
-        base_radius=0.08,
+        start: np.ndarray = LEFT,
+        end: np.ndarray = RIGHT,
+        thickness: float = 0.02,
+        height: float = 0.3,
+        base_radius: float = 0.08,
         color=WHITE,
         **kwargs,
     ):
@@ -940,16 +948,16 @@ class Torus(Surface):
 
     Parameters
     ---------
-    major_radius : :class:`float`
+    major_radius
         Distance from the center of the tube to the center of the torus.
-    minor_radius : :class:`float`
+    minor_radius
         Radius of the tube.
     """
 
     def __init__(
         self,
-        major_radius=3,
-        minor_radius=1,
+        major_radius: float = 3,
+        minor_radius: float = 1,
         u_range=(0, TAU),
         v_range=(0, TAU),
         resolution=None,

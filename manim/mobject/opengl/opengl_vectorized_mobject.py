@@ -202,7 +202,7 @@ class OpenGLVMobject(OpenGLMobject):
             Fill color of the :class:`OpenGLVMobject`.
         opacity
             Fill opacity of the :class:`OpenGLVMobject`.
-        family
+        recurse
             If ``True``, the fill color of all submobjects is also set.
 
         Returns
@@ -491,7 +491,7 @@ class OpenGLVMobject(OpenGLMobject):
         Parameters
         ----------
 
-        point : Sequence[float]
+        point
             end of the straight line.
         """
         end = self.points[-1]
@@ -572,7 +572,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         Parameters
         ----------
-        points : Iterable[float]
+        points
             Array of points that will be set as corners.
 
         Returns
@@ -674,13 +674,13 @@ class OpenGLVMobject(OpenGLMobject):
         return np.linalg.norm(p1 - p0) < self.tolerance_for_point_equality
 
     # Information about the curve
-    def force_direction(self, target_direction):
+    def force_direction(self, target_direction: str):
         """Makes sure that points are either directed clockwise or
         counterclockwise.
 
         Parameters
         ----------
-        target_direction : :class:`str`
+        target_direction
             Either ``"CW"`` or ``"CCW"``.
         """
         if target_direction not in ("CW", "CCW"):
@@ -760,7 +760,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         Parameters
         ----------
-        n : int
+        n
             index of the desired bezier curve.
 
         Returns
@@ -777,7 +777,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         Parameters
         ----------
-        n : int
+        n
             index of the desired curve.
 
         Returns
@@ -1260,9 +1260,9 @@ class OpenGLVMobject(OpenGLMobject):
 
         Parameters
         ----------
-        n : int
+        n
             Number of desired curves.
-        points : np.ndarray
+        points
             Starting points.
 
         Returns
@@ -1319,13 +1319,13 @@ class OpenGLVMobject(OpenGLMobject):
 
         Parameters
         ----------
-        vmobject : OpenGLVMobject
+        vmobject
             The vmobject that will serve as a model.
-        a : float
+        a
             upper-bound.
-        b : float
+        b
             lower-bound
-        remap : bool
+        remap
             if the point amount should be kept the same (True)
             This option should be manually set to False if keeping the number of points is not needed
         """
@@ -1699,12 +1699,12 @@ class OpenGLVGroup(OpenGLVMobject):
             f"submobject{'s' if len(self.submobjects) > 0 else ''}"
         )
 
-    def add(self, *vmobjects):
+    def add(self, *vmobjects: OpenGLVMobject):
         """Checks if all passed elements are an instance of OpenGLVMobject and then add them to submobjects
 
         Parameters
         ----------
-        vmobjects : :class:`~.OpenGLVMobject`
+        vmobjects
             List of OpenGLVMobject to add
 
         Returns

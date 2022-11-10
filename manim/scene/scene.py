@@ -30,6 +30,7 @@ from tqdm import tqdm
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
+from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLPoint
 
 from .. import config, logger
@@ -208,13 +209,13 @@ class Scene:
                 result.mobject_updater_lists.append((mobject_clone, cloned_updaters))
         return result
 
-    def render(self, preview=False):
+    def render(self, preview: bool = False):
         """
         Renders this Scene.
 
         Parameters
         ---------
-        preview : bool
+        preview
             If true, opens scene in a file viewer.
         """
         self.setup()
@@ -312,13 +313,13 @@ class Scene:
     def __str__(self):
         return self.__class__.__name__
 
-    def get_attrs(self, *keys):
+    def get_attrs(self, *keys: str):
         """
         Gets attributes of a scene given the attribute's identifier/name.
 
         Parameters
         ----------
-        *keys : str
+        *keys
             Name(s) of the argument(s) to return the attribute of.
 
         Returns
@@ -328,13 +329,13 @@ class Scene:
         """
         return [getattr(self, key) for key in keys]
 
-    def update_mobjects(self, dt):
+    def update_mobjects(self, dt: float):
         """
         Begins updating all mobjects in the Scene.
 
         Parameters
         ----------
-        dt: int or float
+        dt
             Change in time between updates. Defaults (mostly) to 1/frames_per_second
         """
         for mobject in self.mobjects:
@@ -434,14 +435,14 @@ class Scene:
                 use_z_index=self.renderer.camera.use_z_index,
             )
 
-    def add(self, *mobjects):
+    def add(self, *mobjects: Mobject):
         """
         Mobjects will be displayed, from background to
         foreground in the order with which they are added.
 
         Parameters
         ---------
-        *mobjects : Mobject
+        *mobjects
             Mobjects to add.
 
         Returns
@@ -486,7 +487,7 @@ class Scene:
                 self.add(mob)
                 curr_mobjects += mob.get_family()
 
-    def remove(self, *mobjects):
+    def remove(self, *mobjects: Mobject):
         """
         Removes mobjects in the passed list of mobjects
         from the scene and the foreground, by removing them
@@ -494,7 +495,7 @@ class Scene:
 
         Parameters
         ----------
-        *mobjects : Mobject
+        *mobjects
             The mobjects to remove.
         """
         if config.renderer == "opengl":
@@ -566,9 +567,9 @@ class Scene:
 
     def restructure_mobjects(
         self,
-        to_remove,
-        mobject_list_name="mobjects",
-        extract_families=True,
+        to_remove: Mobject,
+        mobject_list_name: str = "mobjects",
+        extract_families: bool = True,
     ):
         """
         tl:wr
@@ -583,13 +584,13 @@ class Scene:
 
         Parameters
         ----------
-        to_remove : Mobject
+        to_remove
             The Mobject to remove.
 
-        mobject_list_name : str, optional
+        mobject_list_name
             The list of mobjects ("mobjects", "foreground_mobjects" etc) to remove from.
 
-        extract_families : bool, optional
+        extract_families
             Whether the mobject's families should be recursively extracted.
 
         Returns
@@ -607,7 +608,7 @@ class Scene:
         setattr(self, mobject_list_name, new_list)
         return self
 
-    def get_restructured_mobject_list(self, mobjects, to_remove):
+    def get_restructured_mobject_list(self, mobjects: list, to_remove: list):
         """
         Given a list of mobjects and a list of mobjects to be removed, this
         filters out the removable mobjects from the list of mobjects.
@@ -615,10 +616,10 @@ class Scene:
         Parameters
         ----------
 
-        mobjects : list
+        mobjects
             The Mobjects to check.
 
-        to_remove : list
+        to_remove
             The list of mobjects to remove.
 
         Returns
@@ -643,14 +644,14 @@ class Scene:
         return new_mobjects
 
     # TODO, remove this, and calls to this
-    def add_foreground_mobjects(self, *mobjects):
+    def add_foreground_mobjects(self, *mobjects: Mobject):
         """
         Adds mobjects to the foreground, and internally to the list
         foreground_mobjects, and mobjects.
 
         Parameters
         ----------
-        *mobjects : Mobject
+        *mobjects
             The Mobjects to add to the foreground.
 
         Returns
@@ -662,14 +663,14 @@ class Scene:
         self.add(*mobjects)
         return self
 
-    def add_foreground_mobject(self, mobject):
+    def add_foreground_mobject(self, mobject: Mobject):
         """
         Adds a single mobject to the foreground, and internally to the list
         foreground_mobjects, and mobjects.
 
         Parameters
         ----------
-        mobject : Mobject
+        mobject
             The Mobject to add to the foreground.
 
         Returns
@@ -679,14 +680,14 @@ class Scene:
         """
         return self.add_foreground_mobjects(mobject)
 
-    def remove_foreground_mobjects(self, *to_remove):
+    def remove_foreground_mobjects(self, *to_remove: Mobject):
         """
         Removes mobjects from the foreground, and internally from the list
         foreground_mobjects.
 
         Parameters
         ----------
-        *to_remove : Mobject
+        *to_remove
             The mobject(s) to remove from the foreground.
 
         Returns
@@ -697,14 +698,14 @@ class Scene:
         self.restructure_mobjects(to_remove, "foreground_mobjects")
         return self
 
-    def remove_foreground_mobject(self, mobject):
+    def remove_foreground_mobject(self, mobject: Mobject):
         """
         Removes a single mobject from the foreground, and internally from the list
         foreground_mobjects.
 
         Parameters
         ----------
-        mobject : Mobject
+        mobject
             The mobject to remove from the foreground.
 
         Returns
@@ -714,14 +715,14 @@ class Scene:
         """
         return self.remove_foreground_mobjects(mobject)
 
-    def bring_to_front(self, *mobjects):
+    def bring_to_front(self, *mobjects: Mobject):
         """
         Adds the passed mobjects to the scene again,
         pushing them to he front of the scene.
 
         Parameters
         ----------
-        *mobjects : Mobject
+        *mobjects
             The mobject(s) to bring to the front of the scene.
 
         Returns
@@ -733,14 +734,14 @@ class Scene:
         self.add(*mobjects)
         return self
 
-    def bring_to_back(self, *mobjects):
+    def bring_to_back(self, *mobjects: Mobject):
         """
         Removes the mobject from the scene and
         adds them to the back of the scene.
 
         Parameters
         ----------
-        *mobjects : Mobject
+        *mobjects
             The mobject(s) to push to the back of the scene.
 
         Returns
@@ -769,13 +770,13 @@ class Scene:
         self.foreground_mobjects = []
         return self
 
-    def get_moving_mobjects(self, *animations):
+    def get_moving_mobjects(self, *animations: Animation):
         """
         Gets all moving mobjects in the passed animation(s).
 
         Parameters
         ----------
-        *animations : Animation
+        *animations
             The animations to check for moving mobjects.
 
         Returns
@@ -818,14 +819,14 @@ class Scene:
         )
         return all_moving_mobject_families, static_mobjects
 
-    def compile_animations(self, *args, **kwargs):
+    def compile_animations(self, *args: Animation, **kwargs):
         """
         Creates _MethodAnimations from any _AnimationBuilders and updates animation
         kwargs with kwargs passed to play().
 
         Parameters
         ----------
-        *args : Tuple[:class:`Animation`]
+        *args
             Animations to be played.
         **kwargs
             Configuration for the call to play().
@@ -856,7 +857,9 @@ class Scene:
 
         return animations
 
-    def _get_animation_time_progression(self, animations, duration):
+    def _get_animation_time_progression(
+        self, animations: list[Animation], duration: float
+    ):
         """
         You will hardly use this when making your own animations.
         This method is for Manim's internal use.
@@ -867,11 +870,11 @@ class Scene:
 
         Parameters
         ----------
-        animations : List[:class:`~.Animation`, ...]
+        animations
             The list of animations to get
             the time progression for.
 
-        duration : int or float
+        duration
             duration of wait time
 
         Returns
@@ -908,10 +911,10 @@ class Scene:
 
     def get_time_progression(
         self,
-        run_time,
+        run_time: float,
         description,
-        n_iterations=None,
-        override_skip_animations=False,
+        n_iterations: int | None = None,
+        override_skip_animations: bool = False,
     ):
         """
         You will hardly use this when making your own animations.
@@ -925,13 +928,13 @@ class Scene:
 
         Parameters
         ----------
-        run_time : float
+        run_time
             The ``run_time`` of the animation.
 
-        n_iterations : int, optional
+        n_iterations
             The number of iterations in the animation.
 
-        override_skip_animations : bool, optional
+        override_skip_animations
             Whether or not to show skipped animations in the progress bar.
 
         Returns
@@ -954,13 +957,13 @@ class Scene:
         )
         return time_progression
 
-    def get_run_time(self, animations):
+    def get_run_time(self, animations: list[Animation]):
         """
         Gets the total run time for a list of animations.
 
         Parameters
         ----------
-        animations : List[:class:`Animation`, ...]
+        animations
             A list of the animations whose total
             ``run_time`` is to be calculated.
 
@@ -1093,7 +1096,7 @@ class Scene:
         """
         self.wait(duration=duration, frozen_frame=True)
 
-    def wait_until(self, stop_condition, max_time=60):
+    def wait_until(self, stop_condition: Callable[[], bool], max_time: float = 60):
         """
         Like a wrapper for wait().
         You pass a function that determines whether to continue waiting,
@@ -1101,10 +1104,10 @@ class Scene:
 
         Parameters
         ----------
-        stop_condition : function
+        stop_condition
             The function whose boolean return value determines whether to continue waiting
 
-        max_time : int or float, optional
+        max_time
             The maximum wait time in seconds, if the stop_condition is never fulfilled.
         """
         self.wait(max_time, stop_condition=stop_condition)
@@ -1117,8 +1120,11 @@ class Scene:
 
         Parameters
         ----------
-        skip_rendering : bool, optional
-            Whether the rendering should be skipped, by default False
+        animations
+            Animation or mobject with mobject method and params
+        play_kwargs
+            named parameters affecting what was passed in ``animations``,
+            e.g. ``run_time``, ``lag_ratio`` and so on.
 
         Returns
         -------
@@ -1172,7 +1178,7 @@ class Scene:
             and self.animations[0].is_static_wait
         )
 
-    def play_internal(self, skip_rendering=False):
+    def play_internal(self, skip_rendering: bool = False):
         """
         This method is used to prep the animations for rendering,
         apply the arguments and parameters required to them,
@@ -1180,11 +1186,8 @@ class Scene:
 
         Parameters
         ----------
-        args
-            Animation or mobject with mobject method and params
-        kwargs
-            named parameters affecting what was passed in ``args``,
-            e.g. ``run_time``, ``lag_ratio`` and so on.
+        skip_rendering
+            Whether the rendering should be skipped, by default False
         """
         self.duration = self.get_run_time(self.animations)
         self.time_progression = self._get_animation_time_progression(
@@ -1479,19 +1482,25 @@ class Scene:
         )
         self.renderer.file_writer.subcaptions.append(subtitle)
 
-    def add_sound(self, sound_file, time_offset=0, gain=None, **kwargs):
+    def add_sound(
+        self,
+        sound_file: str,
+        time_offset: float = 0,
+        gain: float | None = None,
+        **kwargs,
+    ):
         """
         This method is used to add a sound to the animation.
 
         Parameters
         ----------
 
-        sound_file : str
+        sound_file
             The path to the sound file.
-        time_offset : int,float, optional
+        time_offset
             The offset in the sound file after which
             the sound can be played.
-        gain : float
+        gain
             Amplification of the sound.
 
         Examples

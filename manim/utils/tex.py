@@ -18,17 +18,17 @@ class TexTemplate:
 
     Parameters
     ----------
-    tex_compiler : Optional[:class:`str`], optional
+    tex_compiler
         The TeX compiler to be used, e.g. ``latex``, ``pdflatex`` or ``lualatex``
-    output_format : Optional[:class:`str`], optional
+    output_format
         The output format resulting from compilation, e.g. ``.dvi`` or ``.pdf``
-    documentclass : Optional[:class:`str`], optional
+    documentclass
         The command defining the documentclass, e.g. ``\\documentclass[preview]{standalone}``
-    preamble : Optional[:class:`str`], optional
+    preamble
         The document's preamble, i.e. the part between ``\\documentclass`` and ``\\begin{document}``
-    placeholder_text : Optional[:class:`str`], optional
+    placeholder_text
         Text in the document that will be replaced by the expression to be rendered
-    post_doc_commands : Optional[:class:`str`], optional
+    post_doc_commands
         Text (definitions, commands) to be inserted at right after ``\\begin{document}``, e.g. ``\\boldmath``
 
     Attributes
@@ -60,12 +60,12 @@ class TexTemplate:
 
     def __init__(
         self,
-        tex_compiler=None,
-        output_format=None,
-        documentclass=None,
-        preamble=None,
-        placeholder_text=None,
-        post_doc_commands=None,
+        tex_compiler: str | None = None,
+        output_format: str | None = None,
+        documentclass: str | None = None,
+        preamble: str | None = None,
+        placeholder_text: str | None = None,
+        post_doc_commands: str | None = None,
         **kwargs,
     ):
         self.tex_compiler = (
@@ -124,14 +124,14 @@ class TexTemplate:
             + "\n"
         )
 
-    def add_to_preamble(self, txt, prepend=False):
+    def add_to_preamble(self, txt: str, prepend: bool = False):
         """Adds stuff to the TeX template's preamble (e.g. definitions, packages). Text can be inserted at the beginning or at the end of the preamble.
 
         Parameters
         ----------
-        txt : :class:`string`
+        txt
             String containing the text to be added, e.g. ``\\usepackage{hyperref}``
-        prepend : Optional[:class:`bool`], optional
+        prepend
             Whether the text should be added at the beginning of the preamble, i.e. right after ``\\documentclass``. Default is to add it at the end of the preamble, i.e. right before ``\\begin{document}``
         """
         if prepend:
@@ -140,23 +140,23 @@ class TexTemplate:
             self.preamble += "\n" + txt
         self._rebuild()
 
-    def add_to_document(self, txt):
+    def add_to_document(self, txt: str):
         """Adds txt to the TeX template just after \\begin{document}, e.g. ``\\boldmath``
 
         Parameters
         ----------
-        txt : :class:`str`
+        txt
             String containing the text to be added.
         """
         self.post_doc_commands += "\n" + txt + "\n"
         self._rebuild()
 
-    def get_texcode_for_expression(self, expression):
+    def get_texcode_for_expression(self, expression: str):
         """Inserts expression verbatim into TeX template.
 
         Parameters
         ----------
-        expression : :class:`str`
+        expression
             The string containing the expression to be typeset, e.g. ``$\\sqrt{2}$``
 
         Returns
@@ -166,13 +166,13 @@ class TexTemplate:
         """
         return self.body.replace(self.placeholder_text, expression)
 
-    def _texcode_for_environment(self, environment):
+    def _texcode_for_environment(self, environment: str):
         """Processes the tex_environment string to return the correct ``\\begin{environment}[extra]{extra}`` and
         ``\\end{environment}`` strings
 
         Parameters
         ----------
-        environment : :class:`str`
+        environment
             The tex_environment as a string. Acceptable formats include:
             ``{align*}``, ``align*``, ``{tabular}[t]{cccl}``, ``tabular}{cccl``, ``\\begin{tabular}[t]{cccl}``.
 
@@ -204,14 +204,14 @@ class TexTemplate:
 
         return begin, end
 
-    def get_texcode_for_expression_in_env(self, expression, environment):
+    def get_texcode_for_expression_in_env(self, expression: str, environment: str):
         r"""Inserts expression into TeX template wrapped in \begin{environment} and \end{environment}
 
         Parameters
         ----------
-        expression : :class:`str`
+        expression
             The string containing the expression to be typeset, e.g. ``$\\sqrt{2}$``
-        environment : :class:`str`
+        environment
             The string containing the environment in which the expression should be typeset, e.g. ``align*``
 
         Returns
@@ -231,25 +231,10 @@ class TexTemplateFromFile(TexTemplate):
 
     Parameters
     ----------
-    tex_compiler : Optional[:class:`str`], optional
-        The TeX compiler to be used, e.g. ``latex``, ``pdflatex`` or ``lualatex``
-    output_format : Optional[:class:`str`], optional
-        The output format resulting from compilation, e.g. ``.dvi`` or ``.pdf``
-    documentclass : Optional[:class:`str`], optional
-        The command defining the documentclass, e.g. ``\\documentclass[preview]{standalone}``
-    preamble : Optional[:class:`str`], optional
-        The document's preamble, i.e. the part between ``\\documentclass`` and ``\\begin{document}``
-    placeholder_text : Optional[:class:`str`], optional
-        Text in the document that will be replaced by the expression to be rendered
-    post_doc_commands : Optional[:class:`str`], optional
-        Text (definitions, commands) to be inserted at right after ``\\begin{document}``, e.g. ``\\boldmath``
-    kwargs : :class:`str`
-        The kwargs specified can only be strings.
-
-    Other Parameters
-    ----------------
     tex_filename
         Path to a valid TeX template file
+    kwargs
+        Arguments for :class:`~.TexTemplate`.
 
     Attributes
     ----------

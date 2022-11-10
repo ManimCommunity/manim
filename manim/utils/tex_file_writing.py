@@ -14,6 +14,8 @@ import re
 import unicodedata
 from pathlib import Path
 
+from manim.utils.tex import TexTemplate
+
 from .. import config, logger
 
 
@@ -25,16 +27,20 @@ def tex_hash(expression):
     return hasher.hexdigest()[:16]
 
 
-def tex_to_svg_file(expression, environment=None, tex_template=None):
+def tex_to_svg_file(
+    expression: str,
+    environment: str | None = None,
+    tex_template: TexTemplate | None = None,
+):
     """Takes a tex expression and returns the svg version of the compiled tex
 
     Parameters
     ----------
-    expression : :class:`str`
+    expression
         String containing the TeX expression to be rendered, e.g. ``\\sqrt{2}`` or ``foo``
-    environment : Optional[:class:`str`], optional
+    environment
         The string containing the environment in which the expression should be typeset, e.g. ``align*``
-    tex_template : Optional[:class:`~.TexTemplate`], optional
+    tex_template
         Template class used to typesetting. If not set, use default template set via `config["tex_template"]`
 
     Returns
@@ -53,17 +59,21 @@ def tex_to_svg_file(expression, environment=None, tex_template=None):
     return convert_to_svg(dvi_file, tex_template.output_format)
 
 
-def generate_tex_file(expression, environment=None, tex_template=None):
+def generate_tex_file(
+    expression: str,
+    environment: str | None = None,
+    tex_template: TexTemplate | None = None,
+):
     """Takes a tex expression (and an optional tex environment),
     and returns a fully formed tex file ready for compilation.
 
     Parameters
     ----------
-    expression : :class:`str`
+    expression
         String containing the TeX expression to be rendered, e.g. ``\\sqrt{2}`` or ``foo``
-    environment : Optional[:class:`str`], optional
+    environment
         The string containing the environment in which the expression should be typeset, e.g. ``align*``
-    tex_template : Optional[:class:`~.TexTemplate`], optional
+    tex_template
         Template class used to typesetting. If not set, use default template set via `config["tex_template"]`
 
     Returns
@@ -196,16 +206,16 @@ def compile_tex(tex_file: Path, tex_compiler: str, output_format: str) -> Path:
     return result
 
 
-def convert_to_svg(dvi_file, extension, page=1):
+def convert_to_svg(dvi_file: Path, extension: str, page: int = 1):
     """Converts a .dvi, .xdv, or .pdf file into an svg using dvisvgm.
 
     Parameters
     ----------
-    dvi_file : :class:`Path`
+    dvi_file
         File name of the input file to be converted.
-    extension : :class:`str`
+    extension
         String containing the file extension and thus indicating the file type, e.g. ``.dvi`` or ``.pdf``
-    page : Optional[:class:`int`], optional
+    page
         Page to be converted if input file is multi-page.
 
     Returns

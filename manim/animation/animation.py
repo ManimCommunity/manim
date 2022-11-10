@@ -415,9 +415,8 @@ class Animation:
 
         Parameters
         ----------
-        run_time
-            The new time the animation should take in seconds.
-
+        rate_func
+            The new function defining the animation progress based on the relative runtime (see :mod:`~.rate_functions`).
 
         Returns
         -------
