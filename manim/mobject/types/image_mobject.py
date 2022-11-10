@@ -67,6 +67,7 @@ class AbstractImageMobject(Mobject):
             An integer constant described in the Pillow library,
             or one from the RESAMPLING_ALGORITHMS global dictionary,
             under the following keys:
+
             * 'bicubic' or 'cubic'
             * 'nearest' or 'none'
             * 'box'
