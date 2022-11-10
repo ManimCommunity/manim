@@ -47,27 +47,27 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
 
     Parameters
     ----------
-    func :
+    func
         The function defining the :class:`Surface`.
-    u_range :
+    u_range
         The range of the ``u`` variable: ``(u_min, u_max)``.
-    v_range :
+    v_range
         The range of the ``v`` variable: ``(v_min, v_max)``.
-    resolution :
+    resolution
         The number of samples taken of the :class:`Surface`. A tuple can be used to define different
         resolutions for ``u`` and ``v`` respectively.
-    fill_color :
+    fill_color
         The color of the :class:`Surface`. Ignored if ``checkerboard_colors`` is set.
-    fill_opacity :
+    fill_opacity
         The opacity of the :class:`Surface`, from 0 being fully transparent to 1 being fully opaque.
         Defaults to 1.
-    checkerboard_colors :
+    checkerboard_colors
         Colors individual faces alternating colors. Overrides `fill_color`.
-    stroke_color :
+    stroke_color
         Color of the stroke surrounding each face of :class:`Surface`.
-    stroke_width :
+    stroke_width
         Width of the stroke surrounding each face of :class:`Surface`. Defaults to 0.5.
-    should_make_jagged :
+    should_make_jagged
         Changes the anchor mode of the bezier curves from smooth to jagged. Defaults to ``False``.
 
     Examples
@@ -178,13 +178,14 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
 
         Parameters
         ----------
-        colors :
+        colors
             List of colors for alternating pattern.
-        opacity :
+        opacity
             The fill_opacity of :class:`Surface`, from 0 being fully transparent to 1 being fully
             opaque.
 
-        Returns :
+        Returns
+        -------
         :class:`~.Surface`
             The parametric surface with an alternating pattern.
         """
@@ -206,12 +207,12 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
 
         Parameters
         ----------
-        axes :
+        axes
             The axes for the parametric surface, which will be used to map axis-values to colors.
-        colorscale :
+        colorscale
             A list of colors, ordered from lower axis-values to higher axis-values. If a list of tuples is passed
             containing colors paired with numbers, then those numbers will be used as the pivots.
-        axis :
+        axis
             The chosen axis to use for the color mapping. (0 = x, 1 = y, 2 = z)
 
         Returns
@@ -312,16 +313,16 @@ class Sphere(Surface):
 
     Parameters
     ----------
-    center :
+    center
         Center of the :class:`Sphere`.
-    radius :
+    radius
         The radius of the :class:`Sphere`.
-    resolution :
+    resolution
         The number of samples taken of the :class:`Sphere`. A tuple can be used to define different
         resolutions for ``u`` and ``v`` respectively.
-    u_range :
+    u_range
         The range of the ``u`` variable: ``(u_min, u_max)``.
-    v_range :
+    v_range
         The range of the ``v`` variable: ``(v_min, v_max)``.
 
     Examples
@@ -433,14 +434,14 @@ class Cube(VGroup):
 
     Parameters
     ----------
-    side_length :
+    side_length
         Length of each side of the :class:`Cube`.
-    fill_opacity :
+    fill_opacity
         The opacity of the :class:`Cube`, from 0 being fully transparent to 1 being
         fully opaque. Defaults to 0.75.
-    fill_color :
+    fill_color
         The color of the :class:`Cube`.
-    stroke_width :
+    stroke_width
         The width of the stroke surrounding each face of the :class:`Cube`.
 
     Examples
@@ -495,7 +496,7 @@ class Prism(Cube):
 
     Parameters
     ----------
-    dimensions :
+    dimensions
         Dimensions of the :class:`Prism` in ``[x, y, z]`` format.
 
     Examples
@@ -686,7 +687,7 @@ class Cylinder(Surface):
         The height along the height axis (given by direction) to start and end on.
     show_ends
         Whether to show the end caps or not.
-    resolution :
+    resolution
         The number of samples taken of the :class:`Cylinder`. A tuple can be used to define different
         resolutions for ``u`` and ``v`` respectively.
 
@@ -803,7 +804,7 @@ class Cylinder(Surface):
 
         Parameters
         ----------
-        direction :
+        direction
             The direction of the central axis of the :class:`Cylinder`.
         """
         # if get_norm(direction) is get_norm(self.direction):
@@ -816,7 +817,7 @@ class Cylinder(Surface):
 
         Returns
         -------
-        direction :
+        direction
             The direction of the central axis of the :class:`Cylinder`.
         """
         return self.direction
@@ -869,9 +870,9 @@ class Line3D(Cylinder):
 
         Parameters
         ----------
-        start :
+        start
             Starting point or :class:`Mobject`.
-        end :
+        end
             Ending point or :class:`Mobject`.
         """
         rough_start = self.pointify(start)
