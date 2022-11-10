@@ -43,6 +43,24 @@ JOINT_TYPE_MAP = {
 }
 
 
+def triggers_refreshed_triangulation(func):
+    @wraps(func)
+    def wrapper(self, *args, **kwargs):
+        old_points = np.empty((0, 3))
+        for mob in self.family_members_with_points():
+            old_points = np.concatenate((old_points, mob.points), axis=0)
+        func(self, *args, **kwargs)
+        new_points = np.empty((0, 3))
+        for mob in self.family_members_with_points():
+            new_points = np.concatenate((new_points, mob.points), axis=0)
+        if not np.array_equal(new_points, old_points):
+            self.refresh_triangulation()
+            self.refresh_unit_normal()
+        return self
+
+    return wrapper
+
+
 class OpenGLVMobject(OpenGLMobject):
     """A vectorized mobject."""
 
@@ -1448,23 +1466,6 @@ class OpenGLVMobject(OpenGLMobject):
         self.triangulation = tri_indices
         self.needs_new_triangulation = False
         return tri_indices
-
-    def triggers_refreshed_triangulation(func):
-        @wraps(func)
-        def wrapper(self, *args, **kwargs):
-            old_points = np.empty((0, 3))
-            for mob in self.family_members_with_points():
-                old_points = np.concatenate((old_points, mob.points), axis=0)
-            func(self, *args, **kwargs)
-            new_points = np.empty((0, 3))
-            for mob in self.family_members_with_points():
-                new_points = np.concatenate((new_points, mob.points), axis=0)
-            if not np.array_equal(new_points, old_points):
-                self.refresh_triangulation()
-                self.refresh_unit_normal()
-            return self
-
-        return wrapper
 
     @triggers_refreshed_triangulation
     def set_points(self, points):

@@ -230,7 +230,7 @@ class ChangeSpeed(Animation):
 
     @classmethod
     def add_updater(
-        self,
+        cls,
         mobject: Mobject,
         update_function: Updater,
         index: int | None = None,
