@@ -14,7 +14,7 @@ __all__ = [
 import itertools as it
 import sys
 import typing
-from typing import Optional, Sequence, Union
+from typing import Optional, Sequence, Union, Callable
 
 import colour
 import numpy as np
@@ -39,7 +39,7 @@ from ...utils.bezier import (
 )
 from ...utils.color import BLACK, WHITE, color_to_rgba
 from ...utils.deprecation import deprecated
-from ...utils.iterables import make_even, stretch_array_to_length, tuplify
+from ...utils.iterables import make_even, stretch_array_to_length, tuplify, resize_array
 from ...utils.space_ops import rotate_vector, shoelace_direction
 
 # TODO
