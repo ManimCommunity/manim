@@ -659,7 +659,12 @@ class VMobject(Mobject):
         return self
 
     def start_new_path(self, point):
-        # TODO, make sure that len(self.points) % 4 == 0?
+        if len(self.points) % 4 != 0:
+            # close the open path by appending the last
+            # start anchor sufficiently often
+            last_anchor = self.get_start_anchors()[-1]
+            for _ in range(4 - (len(self.points) % 4)):
+                self.append_points([last_anchor])
         self.append_points([point])
         return self
 
