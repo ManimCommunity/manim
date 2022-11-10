@@ -333,7 +333,7 @@ class Sphere(Surface):
         The range of the ``v`` variable: ``(v_min, v_max)``.
 
     Examples
-    ---------
+    --------
 
     .. manim:: ExampleSphere
         :save_last_frame:
@@ -396,7 +396,7 @@ class Dot3D(Sphere):
     """A spherical dot.
 
     Parameters
-    --------
+    ----------
     point
         The location of the dot.
     radius
@@ -538,7 +538,7 @@ class Cone(Surface):
     theorem.
 
     Parameters
-    --------
+    ----------
     base_radius
         The base radius from which the cone tapers.
     height
@@ -609,7 +609,7 @@ class Cone(Surface):
         """Converts from spherical coordinates to cartesian.
 
         Parameters
-        ---------
+        ----------
         u
             The radius.
         v
@@ -684,7 +684,7 @@ class Cylinder(Surface):
     """A cylinder, defined by its height, radius and direction,
 
     Parameters
-    ---------
+    ----------
     radius
         The radius of the cylinder.
     height
@@ -700,7 +700,7 @@ class Cylinder(Surface):
         to define different resolutions for ``u`` and ``v`` respectively.
 
     Examples
-    ---------
+    --------
     .. manim:: ExampleCylinder
         :save_last_frame:
 
@@ -741,7 +741,7 @@ class Cylinder(Surface):
         """Converts from cylindrical coordinates to cartesian.
 
         Parameters
-        ---------
+        ----------
         u
             The height.
         v
@@ -835,7 +835,7 @@ class Line3D(Cylinder):
     """A cylindrical line, for use in ThreeDScene.
 
     Parameters
-    ---------
+    ----------
     start
         The start point of the line.
     end
@@ -846,7 +846,7 @@ class Line3D(Cylinder):
         The color of the line.
 
     Examples
-    ---------
+    --------
     .. manim:: ExampleLine3D
         :save_last_frame:
 
@@ -1016,7 +1016,7 @@ class Arrow3D(Line3D):
     """An arrow made out of a cylindrical line and a conical tip.
 
     Parameters
-    ---------
+    ----------
     start
         The start position of the arrow.
     end
@@ -1031,7 +1031,7 @@ class Arrow3D(Line3D):
         The color of the arrow.
 
     Examples
-    ---------
+    --------
     .. manim:: ExampleArrow3D
         :save_last_frame:
 
@@ -1080,7 +1080,7 @@ class Torus(Surface):
     """A torus.
 
     Parameters
-    ---------
+    ----------
     major_radius
         Distance from the center of the tube to the center of the torus.
     minor_radius
@@ -1094,7 +1094,7 @@ class Torus(Surface):
         used to define different resolutions for ``u`` and ``v`` respectively.
 
     Examples
-    ---------
+    --------
     .. manim :: ExampleTorus
         :save_last_frame:
 
