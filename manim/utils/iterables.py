@@ -261,21 +261,16 @@ def resize_array(nparray: np.ndarray, length: int) -> np.ndarray:
     --------
     Normal usage::
 
-        nparray = np.array([[1, 2],
-                            [3, 4]])
-
-        resize_array(nparray, 1)
-        # np.array([[1, 2]])
-
-        resize_array(nparray, 3)
-        # np.array([[1, 2],
-        #           [3, 4],
-        #           [1, 2]])
-
-        nparray = np.array([[[1, 2],[3, 4]]])
-        resize_array(nparray, 2)
-        # np.array([[[1, 2], [3, 4]],
-        #           [[1, 2], [3, 4]]])
+        >>> points = np.array([[1, 2], [3, 4]])
+        >>> resize_array(points, 1)
+        array([[1, 2]])
+        >>> resize_array(points, 3)
+        array([[1, 2],
+               [3, 4],
+               [1, 2]])
+        >>> resize_array(points, 2)
+        array([[1, 2],
+               [3, 4]])
     """
     if len(nparray) == length:
         return nparray
