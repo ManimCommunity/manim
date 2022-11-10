@@ -54,21 +54,24 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
     v_range
         The range of the ``v`` variable: ``(v_min, v_max)``.
     resolution
-        The number of samples taken of the :class:`Surface`. A tuple can be used to define different
-        resolutions for ``u`` and ``v`` respectively.
+        The number of samples taken of the :class:`Surface`. A tuple can be
+        used to define different resolutions for ``u`` and ``v`` respectively.
     fill_color
-        The color of the :class:`Surface`. Ignored if ``checkerboard_colors`` is set.
+        The color of the :class:`Surface`. Ignored if ``checkerboard_colors``
+        is set.
     fill_opacity
-        The opacity of the :class:`Surface`, from 0 being fully transparent to 1 being fully opaque.
-        Defaults to 1.
+        The opacity of the :class:`Surface`, from 0 being fully transparent
+        to 1 being fully opaque. Defaults to 1.
     checkerboard_colors
-        Colors individual faces alternating colors. Overrides `fill_color`.
+        Colors individual faces alternating colors. Overrides ``fill_color``.
     stroke_color
         Color of the stroke surrounding each face of :class:`Surface`.
     stroke_width
-        Width of the stroke surrounding each face of :class:`Surface`. Defaults to 0.5.
+        Width of the stroke surrounding each face of :class:`Surface`.
+        Defaults to 0.5.
     should_make_jagged
-        Changes the anchor mode of the bezier curves from smooth to jagged. Defaults to ``False``.
+        Changes the anchor mode of the Bézier curves from smooth to jagged.
+        Defaults to ``False``.
 
     Examples
     --------
@@ -174,15 +177,16 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
             self.set_fill_by_checkerboard(*self.checkerboard_colors)
 
     def set_fill_by_checkerboard(self, *colors, opacity=None):
-        """Sets the fill_color of each face of :class:`Surface` in an alternating pattern.
+        """Sets the fill_color of each face of :class:`Surface` in
+        an alternating pattern.
 
         Parameters
         ----------
         colors
             List of colors for alternating pattern.
         opacity
-            The fill_opacity of :class:`Surface`, from 0 being fully transparent to 1 being fully
-            opaque.
+            The fill_opacity of :class:`Surface`, from 0 being fully transparent
+            to 1 being fully opaque.
 
         Returns
         -------
@@ -203,15 +207,18 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         axis: int = 2,
         **kwargs,
     ):
-        """Sets the color of each mobject of a parametric surface to a color relative to its axis-value
+        """Sets the color of each mobject of a parametric surface to a color
+        relative to its axis-value.
 
         Parameters
         ----------
         axes
-            The axes for the parametric surface, which will be used to map axis-values to colors.
+            The axes for the parametric surface, which will be used to map
+            axis-values to colors.
         colorscale
-            A list of colors, ordered from lower axis-values to higher axis-values. If a list of tuples is passed
-            containing colors paired with numbers, then those numbers will be used as the pivots.
+            A list of colors, ordered from lower axis-values to higher axis-values.
+            If a list of tuples is passed containing colors paired with numbers,
+            then those numbers will be used as the pivots.
         axis
             The chosen axis to use for the color mapping. (0 = x, 1 = y, 2 = z)
 
@@ -318,8 +325,8 @@ class Sphere(Surface):
     radius
         The radius of the :class:`Sphere`.
     resolution
-        The number of samples taken of the :class:`Sphere`. A tuple can be used to define different
-        resolutions for ``u`` and ``v`` respectively.
+        The number of samples taken of the :class:`Sphere`. A tuple can be used
+        to define different resolutions for ``u`` and ``v`` respectively.
     u_range
         The range of the ``u`` variable: ``(u_min, u_max)``.
     v_range
@@ -397,8 +404,8 @@ class Dot3D(Sphere):
     color
         The color of the :class:`Dot3D`.
     resolution
-        The number of samples taken of the :class:`Dot3D`. A tuple can be used to define different
-        resolutions for ``u`` and ``v`` respectively.
+        The number of samples taken of the :class:`Dot3D`. A tuple can be
+        used to define different resolutions for ``u`` and ``v`` respectively.
 
     Examples
     --------
@@ -535,7 +542,8 @@ class Cone(Surface):
     base_radius
         The base radius from which the cone tapers.
     height
-        The height measured from the plane formed by the base_radius to the apex of the cone.
+        The height measured from the plane formed by the base_radius to
+        the apex of the cone.
     direction
         The direction of the apex.
     show_base
@@ -688,8 +696,8 @@ class Cylinder(Surface):
     show_ends
         Whether to show the end caps or not.
     resolution
-        The number of samples taken of the :class:`Cylinder`. A tuple can be used to define different
-        resolutions for ``u`` and ``v`` respectively.
+        The number of samples taken of the :class:`Cylinder`. A tuple can be used
+        to define different resolutions for ``u`` and ``v`` respectively.
 
     Examples
     ---------
@@ -866,7 +874,8 @@ class Line3D(Cylinder):
     def set_start_and_end_attrs(self, start, end, **kwargs):
         """Sets the start and end points of the line.
 
-        If either ``start`` or ``end`` are :class:`Mobjects <.Mobject>`, this gives their centers.
+        If either ``start`` or ``end`` are :class:`Mobjects <.Mobject>`,
+        this gives their centers.
 
         Parameters
         ----------
@@ -1081,8 +1090,8 @@ class Torus(Surface):
     v_range
         The range of the ``v`` variable: ``(v_min, v_max)``.
     resolution
-        The number of samples taken of the :class:`Torus`. A tuple can be used to define different
-        resolutions for ``u`` and ``v`` respectively.
+        The number of samples taken of the :class:`Torus`. A tuple can be
+        used to define different resolutions for ``u`` and ``v`` respectively.
 
     Examples
     ---------
