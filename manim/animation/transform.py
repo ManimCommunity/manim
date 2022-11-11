@@ -691,6 +691,37 @@ class ApplyComplexFunction(ApplyMethod):
 
 
 class CyclicReplace(Transform):
+    """An animation moving mobjects cyclically.
+
+    In particular, this means: the first mobject takes the place
+    of the second mobject, the second one takes the place of
+    the third mobject, and so on. The last mobject takes the
+    place of the first one.
+
+    Parameters
+    ----------
+    mobjects
+        List of mobjects to be transformed.
+    path_arc
+        The angle of the arc (in radians) that the mobjects will follow to reach
+        their target.
+    kwargs
+        Further keyword arguments that are passed to :class:`.Transform`.
+
+    Examples
+    --------
+    .. manim :: CyclicReplaceExample
+
+        class CyclicReplaceExample(Scene):
+            def construct(self):
+                group = VGroup(Square(), Circle(), Triangle(), Star())
+                group.arrange(RIGHT)
+                self.add(group)
+
+                for _ in range(4):
+                    self.play(CyclicReplace(*group))
+    """
+
     def __init__(
         self, *mobjects: Mobject, path_arc: float = 90 * DEGREES, **kwargs
     ) -> None:
@@ -823,8 +854,14 @@ class FadeTransform(Transform):
             self.ghost_to(m0, m1)
 
     def ghost_to(self, source, target):
-        """Replaces the source by the target and sets the opacity to 0."""
-        source.replace(target, stretch=self.stretch, dim_to_match=self.dim_to_match)
+        """Replaces the source by the target and sets the opacity to 0.
+
+        If the provided target has no points, and thus a location of [0, 0, 0]
+        the source will simply fade out where it currently is.
+        """
+        # mobject.replace() does not work if the target has no points.
+        if target.get_num_points() or target.submobjects:
+            source.replace(target, stretch=self.stretch, dim_to_match=self.dim_to_match)
         source.set_opacity(0)
 
     def get_all_mobjects(self) -> Sequence[Mobject]:

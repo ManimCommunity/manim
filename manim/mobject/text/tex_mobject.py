@@ -13,7 +13,6 @@ r"""Mobjects representing text rendered using LaTeX.
 from __future__ import annotations
 
 __all__ = [
-    "TexSymbol",
     "SingleStringMathTex",
     "MathTex",
     "Tex",
@@ -34,9 +33,7 @@ from colour import Color
 from manim import config, logger
 from manim.constants import *
 from manim.mobject.geometry.line import Line
-from manim.mobject.svg.style_utils import parse_style
 from manim.mobject.svg.svg_mobject import SVGMobject
-from manim.mobject.svg.svg_path import SVGPathMobject
 from manim.mobject.types.vectorized_mobject import VectorizedPoint, VGroup, VMobject
 from manim.utils.tex import TexTemplate
 from manim.utils.tex_file_writing import tex_to_svg_file
@@ -44,12 +41,6 @@ from manim.utils.tex_file_writing import tex_to_svg_file
 SCALE_FACTOR_PER_FONT_POINT = 1 / 960
 
 tex_string_to_mob_map = {}
-
-
-class TexSymbol(SVGPathMobject):
-    """Purely a renaming of SVGPathMobject."""
-
-    pass
 
 
 class SingleStringMathTex(SVGMobject):
@@ -100,10 +91,14 @@ class SingleStringMathTex(SVGMobject):
             should_center=should_center,
             stroke_width=stroke_width,
             height=height,
-            should_subdivide_sharp_curves=True,
-            should_remove_null_curves=True,
+            path_string_config={
+                "should_subdivide_sharp_curves": True,
+                "should_remove_null_curves": True,
+            },
             **kwargs,
         )
+        self.init_colors()
+
         # used for scaling via font_size.setter
         self.initial_height = self.height
 
@@ -218,13 +213,11 @@ class SingleStringMathTex(SVGMobject):
     def get_tex_string(self):
         return self.tex_string
 
-    def path_string_to_mobject(self, path_string, style):
-        # Overwrite superclass default to use
-        # specialized path_string mobject
-        return TexSymbol(path_string, **self.path_string_config, **parse_style(style))
-
     def init_colors(self, propagate_colors=True):
-        super().init_colors(propagate_colors=propagate_colors)
+        if config.renderer == "opengl":
+            super().init_colors()
+        else:
+            super().init_colors(propagate_colors=propagate_colors)
 
 
 class MathTex(SingleStringMathTex):

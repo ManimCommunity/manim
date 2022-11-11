@@ -226,7 +226,7 @@ class Mobject:
             cls.__init__ = cls._original__init__
 
     @property
-    def animate(self):
+    def animate(self) -> _AnimationBuilder | T:
         """Used to animate the application of any method of :code:`self`.
 
         Any method called on :code:`animate` is converted to an animation of applying
@@ -2134,6 +2134,11 @@ class Mobject:
 
     def get_group_class(self):
         return Group
+
+    @staticmethod
+    def get_mobject_type_class():
+        """Return the base class of this mobject type."""
+        return Mobject
 
     def split(self):
         result = [self] if len(self.points) > 0 else []

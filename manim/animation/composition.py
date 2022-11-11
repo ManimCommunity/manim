@@ -166,7 +166,7 @@ class Succession(AnimationGroup):
         self.update_active_animation(self.active_index + 1)
 
     def interpolate(self, alpha: float) -> None:
-        current_time = self.rate_func(alpha) * self.run_time
+        current_time = self.rate_func(alpha) * self.max_end_time
         while self.active_end_time is not None and current_time >= self.active_end_time:
             self.next_animation()
         if self.active_animation is not None and self.active_start_time is not None:

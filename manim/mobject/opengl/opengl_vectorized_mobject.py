@@ -43,6 +43,24 @@ JOINT_TYPE_MAP = {
 }
 
 
+def triggers_refreshed_triangulation(func):
+    @wraps(func)
+    def wrapper(self, *args, **kwargs):
+        old_points = np.empty((0, 3))
+        for mob in self.family_members_with_points():
+            old_points = np.concatenate((old_points, mob.points), axis=0)
+        func(self, *args, **kwargs)
+        new_points = np.empty((0, 3))
+        for mob in self.family_members_with_points():
+            new_points = np.concatenate((new_points, mob.points), axis=0)
+        if not np.array_equal(new_points, old_points):
+            self.refresh_triangulation()
+            self.refresh_unit_normal()
+        return self
+
+    return wrapper
+
+
 class OpenGLVMobject(OpenGLMobject):
     """A vectorized mobject."""
 
@@ -142,6 +160,10 @@ class OpenGLVMobject(OpenGLMobject):
     def get_group_class(self):
         return OpenGLVGroup
 
+    @staticmethod
+    def get_mobject_type_class():
+        return OpenGLVMobject
+
     def init_data(self):
         super().init_data()
         self.data.pop("rgbas")
@@ -180,7 +202,7 @@ class OpenGLVMobject(OpenGLMobject):
             Fill color of the :class:`OpenGLVMobject`.
         opacity
             Fill opacity of the :class:`OpenGLVMobject`.
-        family
+        recurse
             If ``True``, the fill color of all submobjects is also set.
 
         Returns
@@ -389,10 +411,18 @@ class OpenGLVMobject(OpenGLMobject):
     fill_color = property(get_fill_color, set_fill)
 
     def has_stroke(self):
-        return any(self.get_stroke_widths()) and any(self.get_stroke_opacities())
+        stroke_widths = self.get_stroke_widths()
+        stroke_opacities = self.get_stroke_opacities()
+        return (
+            stroke_widths is not None
+            and stroke_opacities is not None
+            and any(stroke_widths)
+            and any(stroke_opacities)
+        )
 
     def has_fill(self):
-        return any(self.get_fill_opacities())
+        fill_opacities = self.get_fill_opacities()
+        return fill_opacities is not None and any(fill_opacities)
 
     def get_opacity(self):
         if self.has_fill():
@@ -461,7 +491,7 @@ class OpenGLVMobject(OpenGLMobject):
         Parameters
         ----------
 
-        point : Sequence[float]
+        point
             end of the straight line.
         """
         end = self.points[-1]
@@ -542,7 +572,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         Parameters
         ----------
-        points : Iterable[float]
+        points
             Array of points that will be set as corners.
 
         Returns
@@ -644,13 +674,13 @@ class OpenGLVMobject(OpenGLMobject):
         return np.linalg.norm(p1 - p0) < self.tolerance_for_point_equality
 
     # Information about the curve
-    def force_direction(self, target_direction):
+    def force_direction(self, target_direction: str):
         """Makes sure that points are either directed clockwise or
         counterclockwise.
 
         Parameters
         ----------
-        target_direction : :class:`str`
+        target_direction
             Either ``"CW"`` or ``"CCW"``.
         """
         if target_direction not in ("CW", "CCW"):
@@ -730,7 +760,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         Parameters
         ----------
-        n : int
+        n
             index of the desired bezier curve.
 
         Returns
@@ -747,7 +777,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         Parameters
         ----------
-        n : int
+        n
             index of the desired curve.
 
         Returns
@@ -1230,9 +1260,9 @@ class OpenGLVMobject(OpenGLMobject):
 
         Parameters
         ----------
-        n : int
+        n
             Number of desired curves.
-        points : np.ndarray
+        points
             Starting points.
 
         Returns
@@ -1289,13 +1319,13 @@ class OpenGLVMobject(OpenGLMobject):
 
         Parameters
         ----------
-        vmobject : OpenGLVMobject
+        vmobject
             The vmobject that will serve as a model.
-        a : float
+        a
             upper-bound.
-        b : float
+        b
             lower-bound
-        remap : bool
+        remap
             if the point amount should be kept the same (True)
             This option should be manually set to False if keeping the number of points is not needed
         """
@@ -1436,23 +1466,6 @@ class OpenGLVMobject(OpenGLMobject):
         self.triangulation = tri_indices
         self.needs_new_triangulation = False
         return tri_indices
-
-    def triggers_refreshed_triangulation(func):
-        @wraps(func)
-        def wrapper(self, *args, **kwargs):
-            old_points = np.empty((0, 3))
-            for mob in self.family_members_with_points():
-                old_points = np.concatenate((old_points, mob.points), axis=0)
-            func(self, *args, **kwargs)
-            new_points = np.empty((0, 3))
-            for mob in self.family_members_with_points():
-                new_points = np.concatenate((new_points, mob.points), axis=0)
-            if not np.array_equal(new_points, old_points):
-                self.refresh_triangulation()
-                self.refresh_unit_normal()
-            return self
-
-        return wrapper
 
     @triggers_refreshed_triangulation
     def set_points(self, points):
@@ -1617,27 +1630,38 @@ class OpenGLVGroup(OpenGLVMobject):
     can subtract elements of a OpenGLVGroup via :meth:`~.OpenGLVGroup.remove` method, or
     `-` and `-=` operators:
 
-        >>> from manim import Triangle, Square, config
+    .. doctest::
+
+        >>> from manim import config
+        >>> original_renderer = config.renderer
         >>> config.renderer = "opengl"
+
+        >>> from manim import Triangle, Square
         >>> from manim.opengl import OpenGLVGroup
+        >>> config.renderer
+        'opengl'
         >>> vg = OpenGLVGroup()
         >>> triangle, square = Triangle(), Square()
         >>> vg.add(triangle)
         OpenGLVGroup(Triangle)
-        >>> vg + square   # a new OpenGLVGroup is constructed
+        >>> vg + square  # a new OpenGLVGroup is constructed
         OpenGLVGroup(Triangle, Square)
-        >>> vg            # not modified
+        >>> vg  # not modified
         OpenGLVGroup(Triangle)
-        >>> vg += square; vg  # modifies vg
+        >>> vg += square  # modifies vg
+        >>> vg
         OpenGLVGroup(Triangle, Square)
         >>> vg.remove(triangle)
         OpenGLVGroup(Square)
-        >>> vg - square; # a new OpenGLVGroup is constructed
+        >>> vg - square  # a new OpenGLVGroup is constructed
         OpenGLVGroup()
-        >>> vg   # not modified
+        >>> vg  # not modified
         OpenGLVGroup(Square)
-        >>> vg -= square; vg # modifies vg
+        >>> vg -= square  # modifies vg
+        >>> vg
         OpenGLVGroup()
+
+        >>> config.renderer = original_renderer
 
     .. manim:: ArcShapeIris
         :save_last_frame:
@@ -1675,12 +1699,12 @@ class OpenGLVGroup(OpenGLVMobject):
             f"submobject{'s' if len(self.submobjects) > 0 else ''}"
         )
 
-    def add(self, *vmobjects):
+    def add(self, *vmobjects: OpenGLVMobject):
         """Checks if all passed elements are an instance of OpenGLVMobject and then add them to submobjects
 
         Parameters
         ----------
-        vmobjects : :class:`~.OpenGLVMobject`
+        vmobjects
             List of OpenGLVMobject to add
 
         Returns
@@ -1755,13 +1779,20 @@ class OpenGLVGroup(OpenGLVMobject):
         -------
         None
 
-        Examples
-        --------
-        Normal usage::
+        Tests
+        -----
+
+        .. doctest::
+
+            >>> from manim import config
+            >>> original_renderer = config.renderer
+            >>> config.renderer = "opengl"
 
             >>> vgroup = OpenGLVGroup(OpenGLVMobject())
             >>> new_obj = OpenGLVMobject()
             >>> vgroup[0] = new_obj
+
+            >>> config.renderer = original_renderer
         """
         if not all(isinstance(m, OpenGLVMobject) for m in value):
             raise TypeError("All submobjects must be of type OpenGLVMobject")

@@ -11,7 +11,8 @@ import numpy as np
 from manim import config
 from manim.constants import *
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.text.tex_mobject import MathTex, SingleStringMathTex
+from manim.mobject.text.tex_mobject import MathTex, SingleStringMathTex, Tex
+from manim.mobject.text.text_mobject import Text
 from manim.mobject.types.vectorized_mobject import VMobject
 from manim.mobject.value_tracker import ValueTracker
 
@@ -299,21 +300,21 @@ class Variable(VMobject, metaclass=ConvertToOpenGL):
 
     Parameters
     ----------
-    var : Union[:class:`int`, :class:`float`]
+    var
         The initial value you need to keep track of and display.
-    label : Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`, :class:`~.Text`, :class:`~.TexSymbol`, :class:`~.SingleStringMathTex`]
+    label
         The label for your variable. Raw strings are convertex to :class:`~.MathTex` objects.
-    var_type : Union[:class:`DecimalNumber`, :class:`Integer`], optional
+    var_type
         The class used for displaying the number. Defaults to :class:`DecimalNumber`.
-    num_decimal_places : :class:`int`, optional
+    num_decimal_places
         The number of decimal places to display in your variable. Defaults to 2.
         If `var_type` is an :class:`Integer`, this parameter is ignored.
-    kwargs : Any
+    kwargs
             Other arguments to be passed to `~.Mobject`.
 
     Attributes
     ----------
-    label : Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`, :class:`~.Text`, :class:`~.TexSymbol`, :class:`~.SingleStringMathTex`]
+    label : Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`, :class:`~.Text`, :class:`~.SingleStringMathTex`]
         The label for your variable, for example ``x = ...``.
     tracker : :class:`~.ValueTracker`
         Useful in updating the value of your variable on-screen.
@@ -397,7 +398,12 @@ class Variable(VMobject, metaclass=ConvertToOpenGL):
     """
 
     def __init__(
-        self, var, label, var_type=DecimalNumber, num_decimal_places=2, **kwargs
+        self,
+        var: float,
+        label: str | Tex | MathTex | Text | SingleStringMathTex,
+        var_type: DecimalNumber | Integer = DecimalNumber,
+        num_decimal_places: int = 2,
+        **kwargs,
     ):
 
         self.label = MathTex(label) if isinstance(label, str) else label
