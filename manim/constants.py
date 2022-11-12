@@ -251,12 +251,14 @@ class RendererType(Enum):
     the ``config.renderer`` attribute.
 
     Manim's configuration allows assigning string values to the renderer
-    setting, the values are then replaced by the corresponding enum object::
+    setting, the values are then replaced by the corresponding enum object.
+    In other words, you can run::
 
-        >>> from manim._config import ManimConfig
-        >>> example_config = ManimConfig()
-        >>> example_config.renderer = "opengl"
-        >>> example_config.renderer
+        config.renderer = "opengl"
+
+    and checking the renderer afterwards reveals that the attribute has
+    assumed the value::
+
         <RendererType.OPENGL: 'opengl'>
     """
     CAIRO = "cairo"  #: A renderer based on the cairo backend.
