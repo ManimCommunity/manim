@@ -20,7 +20,7 @@ from .types.vectorized_mobject import VMobject
 
 def get_mobject_class() -> type:
     """Gets the base mobject class, depending on the currently active renderer.
-    
+
     .. NOTE::
 
         This method is intended to be used in the code base of Manim itself

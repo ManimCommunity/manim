@@ -261,5 +261,6 @@ class RendererType(Enum):
 
         <RendererType.OPENGL: 'opengl'>
     """
+
     CAIRO = "cairo"  #: A renderer based on the cairo backend.
     OPENGL = "opengl"  #: An OpenGL-based renderer.
