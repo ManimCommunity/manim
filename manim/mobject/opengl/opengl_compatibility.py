@@ -15,10 +15,6 @@ class ConvertToOpenGL(ABCMeta):
     """Metaclass for swapping (V)Mobject with its OpenGL counterpart at runtime
     depending on config.renderer. This metaclass should only need to be inherited
     on the lowest order inheritance classes such as Mobject and VMobject.
-
-    Note that with this implementation, changing the value of ``config.renderer``
-    after Manim has been imported won't have the desired effect and will lead to
-    spurious errors.
     """
 
     _converted_classes = []
