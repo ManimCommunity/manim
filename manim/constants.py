@@ -247,5 +247,17 @@ CONTEXT_SETTINGS = Context.settings(
 
 
 class RendererType(Enum):
-    CAIRO = "cairo"
-    OPENGL = "opengl"
+    """An enumeration of all renderer types that can be assigned to
+    the ``config.renderer`` attribute.
+
+    Manim's configuration allows assigning string values to the renderer
+    setting, the values are then replaced by the corresponding enum object::
+
+        >>> from manim._config import ManimConfig
+        >>> example_config = ManimConfig()
+        >>> example_config.renderer = "opengl"
+        >>> example_config.renderer
+        <RendererType.OPENGL: 'opengl'>
+    """
+    CAIRO = "cairo"  #: A renderer based on the cairo backend.
+    OPENGL = "opengl"  #: An OpenGL-based renderer.
