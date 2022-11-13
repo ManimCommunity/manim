@@ -14,7 +14,7 @@ __all__ = [
 import itertools as it
 import sys
 import typing
-from typing import Optional, Sequence, Union
+from typing import Callable, Optional, Sequence, Union
 
 import colour
 import numpy as np
@@ -39,7 +39,7 @@ from ...utils.bezier import (
 )
 from ...utils.color import BLACK, WHITE, color_to_rgba
 from ...utils.deprecation import deprecated
-from ...utils.iterables import make_even, stretch_array_to_length, tuplify
+from ...utils.iterables import make_even, resize_array, stretch_array_to_length, tuplify
 from ...utils.space_ops import rotate_vector, shoelace_direction
 
 # TODO
@@ -599,6 +599,27 @@ class VMobject(Mobject):
         self.points = np.array(points)
         return self
 
+    def resize_points(
+        self,
+        new_length: int,
+        resize_func: Callable[[np.ndarray, int], np.ndarray] = resize_array,
+    ):
+        """Resize the array of anchor points and handles to have
+        the specified size.
+
+        Parameters
+        ----------
+        new_length
+            The new (total) number of points.
+        resize_func
+            A function mapping a Numpy array (the points) and an integer
+            (the target size) to a Numpy array. The default implementation
+            is based on Numpy's ``resize`` function.
+        """
+        if new_length != len(self.points):
+            self.points = resize_func(self.points, new_length)
+        return self
+
     def set_anchors_and_handles(
         self,
         anchors1: Sequence[float],
@@ -644,7 +665,12 @@ class VMobject(Mobject):
         return self
 
     def start_new_path(self, point):
-        # TODO, make sure that len(self.points) % 4 == 0?
+        if len(self.points) % 4 != 0:
+            # close the open path by appending the last
+            # start anchor sufficiently often
+            last_anchor = self.get_start_anchors()[-1]
+            for _ in range(4 - (len(self.points) % 4)):
+                self.append_points([last_anchor])
         self.append_points([point])
         return self
 
