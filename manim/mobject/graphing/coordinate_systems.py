@@ -918,7 +918,7 @@ class CoordinateSystem:
                         )
                     self.add(axes, trig_plane)
         """
-        if config.renderer != "opengl":
+        if config.renderer == RendererType.CAIRO:
             surface = Surface(
                 lambda u, v: self.c2p(u, v, function(u, v)),
                 u_range=u_range,
@@ -931,7 +931,7 @@ class CoordinateSystem:
                     colorscale=colorscale,
                     axis=colorscale_axis,
                 )
-        else:
+        elif config.renderer == RendererType.OPENGL:
             surface = OpenGLSurface(
                 lambda u, v: self.c2p(u, v, function(u, v)),
                 u_range=u_range,
@@ -2336,7 +2336,7 @@ class ThreeDAxes(Axes):
         self.add(z_axis)
         self.z_axis = z_axis
 
-        if config.renderer != "opengl":
+        if config.renderer == RendererType.CAIRO:
             self._add_3d_pieces()
             self._set_axis_shading()
 

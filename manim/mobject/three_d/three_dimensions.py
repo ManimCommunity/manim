@@ -303,9 +303,9 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
                             new_colors[i],
                             color_index,
                         )
-                        if config.renderer == "opengl":
+                        if config.renderer == RendererType.OPENGL:
                             mob.set_color(mob_color, recurse=False)
-                        else:
+                        elif config.renderer == RendererType.CAIRO:
                             mob.set_color(mob_color, family=False)
                         break
 
@@ -367,9 +367,9 @@ class Sphere(Surface):
         v_range=(0, PI),
         **kwargs,
     ):
-        if config.renderer == "opengl":
+        if config.renderer == RendererType.OPENGL:
             res_value = (101, 51)
-        else:
+        elif config.renderer == RendererType.CAIRO:
             res_value = (24, 12)
 
         resolution = resolution if resolution is not None else res_value
@@ -754,8 +754,13 @@ class Cylinder(Surface):
 
     def add_bases(self):
         """Adds the end caps of the cylinder."""
-        color = self.color if config["renderer"] == "opengl" else self.fill_color
-        opacity = self.opacity if config["renderer"] == "opengl" else self.fill_opacity
+        if config.renderer == RendererType.OPENGL:
+            color = self.color
+            opacity = self.opacity
+        elif config.renderer == RendererType.CAIRO:
+            color = self.fill_color
+            opacity = self.fill_opacity
+
         self.base_top = Circle(
             radius=self.radius,
             color=color,
@@ -1115,9 +1120,9 @@ class Torus(Surface):
         resolution=None,
         **kwargs,
     ):
-        if config.renderer == "opengl":
+        if config.renderer == RendererType.OPENGL:
             res_value = (101, 101)
-        else:
+        elif config.renderer == RendererType.CAIRO:
             res_value = (24, 24)
 
         resolution = resolution if resolution is not None else res_value

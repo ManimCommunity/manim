@@ -252,7 +252,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         for sm1, sm2 in zip(self.submobjects, old_submobjects):
             sm1.match_style(sm2)
 
-        if config.renderer != "opengl":
+        if config.renderer == RendererType.CAIRO:
             for mob in old_family:
                 # Dumb hack...due to how scene handles families
                 # of animated mobjects

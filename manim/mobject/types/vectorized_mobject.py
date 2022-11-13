@@ -120,6 +120,11 @@ class VMobject(Mobject):
         if stroke_color:
             self.stroke_color = stroke_color
 
+    # OpenGL compatibility
+    @property
+    def n_points_per_curve(self):
+        return self.n_points_per_cubic_curve
+
     def get_group_class(self):
         return VGroup
 
@@ -2262,7 +2267,7 @@ class VectorizedPoint(VMobject, metaclass=ConvertToOpenGL):
         )
         self.set_points(np.array([location]))
 
-    basecls = OpenGLVMobject if config.renderer == "opengl" else VMobject
+    basecls = OpenGLVMobject if config.renderer == RendererType.OPENGL else VMobject
 
     @basecls.width.getter
     def width(self):
@@ -2461,7 +2466,7 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
                 )
         # Family is already taken care of by get_subcurve
         # implementation
-        if config.renderer == "opengl":
+        if config.renderer == RendererType.OPENGL:
             self.match_style(vmobject, recurse=False)
         else:
             self.match_style(vmobject, family=False)

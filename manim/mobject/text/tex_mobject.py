@@ -214,9 +214,9 @@ class SingleStringMathTex(SVGMobject):
         return self.tex_string
 
     def init_colors(self, propagate_colors=True):
-        if config.renderer == "opengl":
+        if config.renderer == RendererType.OPENGL:
             super().init_colors()
-        else:
+        elif config.renderer == RendererType.CAIRO:
             super().init_colors(propagate_colors=propagate_colors)
 
 
