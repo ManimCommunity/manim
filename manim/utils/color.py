@@ -1,6 +1,7 @@
 """Colors and utility functions for conversion between different color models."""
 
 from __future__ import annotations
+
 from enum import Enum
 from typing import Iterable, TypeAlias, TypedDict
 
@@ -30,7 +31,6 @@ import numpy as np
 
 from ..utils.bezier import interpolate
 from ..utils.space_ops import normalize
-
 
 """A list of pre-defined colors.
 
