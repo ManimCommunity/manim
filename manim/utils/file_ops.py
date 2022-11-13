@@ -175,12 +175,12 @@ def seek_full_path_from_defaults(
     raise OSError(error)
 
 
-def modify_atime(file_path) -> None:
+def modify_atime(file_path: str) -> None:
     """Will manually change the accessed time (called `atime`) of the file, as on a lot of OS the accessed time refresh is disabled by default.
 
     Parameters
     ----------
-    file_path : :class:`str`
+    file_path
         The path of the file.
     """
     os.utime(file_path, times=(time.time(), os.path.getmtime(file_path)))
@@ -248,12 +248,12 @@ def get_template_path() -> Path:
     return Path.resolve(Path(__file__).parent.parent / "templates")
 
 
-def add_import_statement(file):
+def add_import_statement(file: Path):
     """Prepends an import statement in a file
 
     Parameters
     ----------
-        file : :class:`Path`
+        file
     """
     with file.open("r+") as f:
         import_line = "from manim import *"
@@ -269,9 +269,9 @@ def copy_template_files(
 
     Parameters
     ----------
-        project_dir : :class:`Path`
+        project_dir
             Path to project directory.
-        template_name : :class:`str`
+        template_name
             Name of template.
     """
     template_cfg_path = Path.resolve(

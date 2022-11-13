@@ -10,6 +10,8 @@ from __future__ import annotations
 
 __all__ = ["MovingCamera"]
 
+import numpy as np
+
 from .. import config
 from ..camera.camera import Camera
 from ..constants import DOWN, LEFT, RIGHT, UP
@@ -87,34 +89,34 @@ class MovingCamera(Camera):
         return self.frame.get_center()
 
     @frame_height.setter
-    def frame_height(self, frame_height):
+    def frame_height(self, frame_height: float):
         """Sets the height of the frame in MUnits.
 
         Parameters
         ----------
-        frame_height : int, float
+        frame_height
             The new frame_height.
         """
         self.frame.stretch_to_fit_height(frame_height)
 
     @frame_width.setter
-    def frame_width(self, frame_width):
+    def frame_width(self, frame_width: float):
         """Sets the width of the frame in MUnits.
 
         Parameters
         ----------
-        frame_width : int, float
+        frame_width
             The new frame_width.
         """
         self.frame.stretch_to_fit_width(frame_width)
 
     @frame_center.setter
-    def frame_center(self, frame_center):
+    def frame_center(self, frame_center: np.ndarray | list | tuple | Mobject):
         """Sets the centerpoint of the frame.
 
         Parameters
         ----------
-        frame_center : np.array, list, tuple, Mobject
+        frame_center
             The point to which the frame must be moved.
             If is of type mobject, the frame will be moved to
             the center of that mobject.

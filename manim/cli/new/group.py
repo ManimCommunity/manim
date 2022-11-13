@@ -47,14 +47,14 @@ def select_resolution():
     return [res for res in resolution_options if f"{res[0]}p" == choice][0]
 
 
-def update_cfg(cfg_dict, project_cfg_path):
+def update_cfg(cfg_dict: dict, project_cfg_path: Path):
     """Updates the manim.cfg file after reading it from the project_cfg_path.
 
     Parameters
     ----------
-    cfg : :class:`dict`
+    cfg_dict
         values used to update manim.cfg found project_cfg_path.
-    project_cfg_path : :class:`Path`
+    project_cfg_path
         Path of manim.cfg file.
     """
     config = configparser.ConfigParser()

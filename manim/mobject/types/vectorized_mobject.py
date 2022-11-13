@@ -68,7 +68,7 @@ class VMobject(Mobject):
     close_new_points
         Indicates that it will not be displayed, but
         that it should count in parent mobject's path
-    tolerance_point_for_equality
+    tolerance_for_point_equality
         This is within a pixel
     """
 
@@ -465,7 +465,7 @@ class VMobject(Mobject):
 
         Parameters
         ----------
-        direction : :class:`numpy.ndarray`, optional
+        direction
             Direction from where the gradient is applied.
 
         Examples
@@ -488,14 +488,14 @@ class VMobject(Mobject):
             self.sheen_direction = direction
         return self
 
-    def rotate_sheen_direction(self, angle: np.ndarray, axis: float = OUT, family=True):
+    def rotate_sheen_direction(self, angle: float, axis: np.ndarray = OUT, family=True):
         """Rotates the direction of the applied sheen.
 
         Parameters
         ----------
-        angle : :class:`float`
+        angle
             Angle by which the direction of sheen is rotated.
-        axis : :class:`numpy.ndarray`
+        axis
             Axis of rotation.
 
         Examples
@@ -519,16 +519,16 @@ class VMobject(Mobject):
             self.sheen_direction = rotate_vector(self.sheen_direction, angle, axis)
         return self
 
-    def set_sheen(self, factor, direction: np.ndarray = None, family=True):
+    def set_sheen(self, factor: float, direction: np.ndarray = None, family=True):
         """Applies a color gradient from a direction.
 
         Parameters
         ----------
-        factor : :class:`float`
+        factor
             The extent of lustre/gradient to apply. If negative, the gradient
             starts from black, if positive the gradient starts from white and
             changes to the current color.
-        direction : :class:`numpy.ndarray`, optional
+        direction
             Direction from where the gradient is applied.
 
         Examples
@@ -673,11 +673,11 @@ class VMobject(Mobject):
 
         Parameters
         ----------
-        handle1 : np.ndarray
+        handle1
             first handle
-        handle2 : np.ndarray
+        handle2
             second handle
-        anchor : np.ndarray
+        anchor
             anchor
 
         Returns
@@ -725,7 +725,7 @@ class VMobject(Mobject):
         Parameters
         ----------
 
-        point : np.ndarray
+        point
             end of the straight line.
 
         Returns
@@ -748,7 +748,7 @@ class VMobject(Mobject):
 
         Parameters
         ----------
-        points: np.array
+        points
             Points (anchor and handle, or just anchor) to add a smooth curve from
 
         Returns
@@ -814,7 +814,7 @@ class VMobject(Mobject):
 
         Parameters
         ----------
-        points : Iterable[float]
+        points
             Array of points that will be set as corners.
 
         Returns
@@ -952,9 +952,9 @@ class VMobject(Mobject):
         2D point case. NumPy is overkill for such a small question.
         Parameters
         ----------
-        p0 : np.ndarray
+        p0
             first point
-        p1 : np.ndarray
+        p1
             second point
 
         Returns
@@ -984,7 +984,7 @@ class VMobject(Mobject):
 
         Parameters
         ----------
-        points : np.ndarray
+        points
             Points from which control points will be extracted.
 
         Returns
@@ -1016,9 +1016,9 @@ class VMobject(Mobject):
 
         Parameters
         ----------
-        points : np.ndarray
+        points
             points defining the bezier curve.
-        filter_func : typing.Callable[int, bool]
+        filter_func
             Filter-func defining the relation.
 
         Returns
@@ -1066,7 +1066,7 @@ class VMobject(Mobject):
 
         Parameters
         ----------
-        n : int
+        n
             index of the desired bezier curve.
 
         Returns
@@ -1083,7 +1083,7 @@ class VMobject(Mobject):
 
         Parameters
         ----------
-        n : int
+        n
             index of the desired curve.
 
         Returns
@@ -1497,9 +1497,9 @@ class VMobject(Mobject):
 
         Parameters
         ----------
-        n : int
+        n
             Number of desired curves.
-        points : np.ndarray
+        points
             Starting points.
 
         Returns
@@ -1597,11 +1597,11 @@ class VMobject(Mobject):
 
         Parameters
         ----------
-        vmobject : VMobject
+        vmobject
             The vmobject that will serve as a model.
-        a : float
+        a
             upper-bound.
-        b : float
+        b
             lower-bound
 
         Returns
@@ -1721,13 +1721,13 @@ class VMobject(Mobject):
         self.points = self.points[::-1]
         return self
 
-    def force_direction(self, target_direction):
+    def force_direction(self, target_direction: str):
         """Makes sure that points are either directed clockwise or
         counterclockwise.
 
         Parameters
         ----------
-        target_direction : :class:`str`
+        target_direction
             Either ``"CW"`` or ``"CCW"``.
         """
         if target_direction not in ("CW", "CCW"):
@@ -1814,12 +1814,12 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
             f"submobject{'s' if len(self.submobjects) > 0 else ''}"
         )
 
-    def add(self, *vmobjects):
+    def add(self, *vmobjects: VMobject):
         """Checks if all passed elements are an instance of VMobject and then add them to submobjects
 
         Parameters
         ----------
-        vmobjects : :class:`~.VMobject`
+        vmobjects
             List of VMobject to add
 
         Returns
@@ -1912,14 +1912,14 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
 
     Parameters
     ----------
-    mapping_or_iterable : Union[:class:`Mapping`, Iterable[Tuple[Hashable, :class:`~.VMobject`]]], optional
+    mapping_or_iterable
             The parameter specifying the key-value mapping of keys and mobjects.
-    show_keys : :class:`bool`, optional
+    show_keys
             Whether to also display the key associated with
             the mobject. This might be useful when debugging,
             especially when there are a lot of mobjects in the
             :class:`VDict`. Defaults to False.
-    kwargs : Any
+    kwargs
             Other arguments to be passed to `Mobject`.
 
     Attributes
@@ -2004,7 +2004,15 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
                 self.wait()
     """
 
-    def __init__(self, mapping_or_iterable={}, show_keys=False, **kwargs):
+    def __init__(
+        self,
+        mapping_or_iterable: Union[
+            typing.Mapping[typing.Hashable, VMobject],
+            typing.Iterable[typing.Tuple[typing.Hashable, VMobject]],
+        ] = {},
+        show_keys: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
         self.show_keys = show_keys
         self.submob_dict = {}
@@ -2013,7 +2021,13 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
     def __repr__(self):
         return __class__.__name__ + "(" + repr(self.submob_dict) + ")"
 
-    def add(self, mapping_or_iterable):
+    def add(
+        self,
+        mapping_or_iterable: Union[
+            typing.Mapping[typing.Hashable, VMobject],
+            typing.Iterable[typing.Tuple[typing.Hashable, VMobject]],
+        ],
+    ):
         """Adds the key-value pairs to the :class:`VDict` object.
 
         Also, it internally adds the value to the `submobjects` :class:`list`
@@ -2021,7 +2035,7 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
 
         Parameters
         ---------
-        mapping_or_iterable : Union[:class:`Mapping`, Iterable[Tuple[Hashable, :class:`~.VMobject`]]], optional
+        mapping_or_iterable
             The parameter specifying the key-value mapping of keys and mobjects.
 
         Returns
@@ -2041,7 +2055,7 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
 
         return self
 
-    def remove(self, key):
+    def remove(self, key: typing.Hashable):
         """Removes the mobject from the :class:`VDict` object having the key `key`
 
         Also, it internally removes the mobject from the `submobjects` :class:`list`
@@ -2049,7 +2063,7 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
 
         Parameters
         ----------
-        key : :class:`typing.Hashable`
+        key
             The key of the submoject to be removed.
 
         Returns
@@ -2069,12 +2083,12 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
         del self.submob_dict[key]
         return self
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: typing.Hashable):
         """Override the [] operator for item retrieval.
 
         Parameters
         ----------
-        key : :class:`typing.Hashable`
+        key
            The key of the submoject to be accessed
 
         Returns
@@ -2091,14 +2105,14 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
         submob = self.submob_dict[key]
         return submob
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: typing.Hashable, value: VMobject):
         """Override the [] operator for item assignment.
 
         Parameters
         ----------
-        key : :class:`typing.Hashable`
+        key
             The key of the submoject to be assigned
-        value : :class:`VMobject`
+        value
             The submobject to bind the key to
 
         Returns
@@ -2116,12 +2130,12 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
             self.remove(key)
         self.add([(key, value)])
 
-    def __delitem__(self, key):
+    def __delitem__(self, key: typing.Hashable):
         """Override the del operator for deleting an item.
 
         Parameters
         ----------
-        key : :class:`typing.Hashable`
+        key
             The key of the submoject to be deleted
 
         Returns
@@ -2148,12 +2162,12 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
         """
         del self.submob_dict[key]
 
-    def __contains__(self, key):
+    def __contains__(self, key: typing.Hashable):
         """Override the in operator.
 
         Parameters
         ----------
-        key : :class:`typing.Hashable`
+        key
             The key to check membership of.
 
         Returns
@@ -2190,15 +2204,15 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
         submobjects = self.submob_dict.values()
         return submobjects
 
-    def add_key_value_pair(self, key, value):
+    def add_key_value_pair(self, key: typing.Hashable, value: VMobject):
         """A utility function used by :meth:`add` to add the key-value pair
         to :attr:`submob_dict`. Not really meant to be used externally.
 
         Parameters
         ----------
-        key : :class:`typing.Hashable`
+        key
             The key of the submobject to be added.
-        value : :class:`~.VMobject`
+        value
             The mobject associated with the key
 
         Returns
