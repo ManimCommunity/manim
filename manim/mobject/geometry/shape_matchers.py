@@ -169,11 +169,6 @@ class Cross(VGroup):
 class Underline(Line):
     """Creates an underline.
 
-    Parameters
-    ----------
-    Line
-        The underline.
-
     Examples
     --------
     .. manim:: UnderLine
