@@ -272,7 +272,7 @@ class LineJointType(Enum):
 
     See the example below for a visual illustration of the different
     joint types.
-    
+
     Examples
     --------
 
