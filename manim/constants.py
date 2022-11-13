@@ -267,7 +267,6 @@ class RendererType(Enum):
     OPENGL = "opengl"  #: An OpenGL-based renderer.
 
 
-
 class LineJointType(Enum):
     """Collection of available line joint types.
 
