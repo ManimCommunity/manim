@@ -16,7 +16,6 @@ import sys
 import typing
 from typing import Optional, Sequence, Union
 
-import colour
 import numpy as np
 from PIL.Image import Image
 
@@ -37,7 +36,7 @@ from ...utils.bezier import (
     partial_bezier_points,
     proportions_along_bezier_curve_for_point,
 )
-from ...utils.color import BLACK, WHITE, color_to_rgba
+from ...utils.color import BLACK, WHITE, ManimColor, ParsableManimColor, color_to_rgba
 from ...utils.deprecation import deprecated
 from ...utils.iterables import make_even, stretch_array_to_length, tuplify
 from ...utils.space_ops import rotate_vector, shoelace_direction
@@ -76,12 +75,12 @@ class VMobject(Mobject):
 
     def __init__(
         self,
-        fill_color=None,
+        fill_color: ParsableManimColor | None = None,
         fill_opacity=0.0,
-        stroke_color=None,
+        stroke_color: ParsableManimColor | None = None,
         stroke_opacity=1.0,
         stroke_width=DEFAULT_STROKE_WIDTH,
-        background_stroke_color=BLACK,
+        background_stroke_color: ParsableManimColor | None = BLACK,
         background_stroke_opacity=1.0,
         background_stroke_width=0,
         sheen_factor=0.0,
@@ -99,7 +98,10 @@ class VMobject(Mobject):
         self.fill_opacity = fill_opacity
         self.stroke_opacity = stroke_opacity
         self.stroke_width = stroke_width
-        self.background_stroke_color = background_stroke_color
+        if background_stroke_color is not None:
+            self.background_stroke_color: ManimColor = ManimColor.parse(
+                background_stroke_color
+            )
         self.background_stroke_opacity = background_stroke_opacity
         self.background_stroke_width = background_stroke_width
         self.sheen_factor = sheen_factor
@@ -114,11 +116,12 @@ class VMobject(Mobject):
         self.tolerance_for_point_equality = tolerance_for_point_equality
         self.n_points_per_cubic_curve = n_points_per_cubic_curve
         super().__init__(**kwargs)
+        self.submobjects: list[VMobject]
 
         if fill_color:
-            self.fill_color = fill_color
+            self.fill_color: ManimColor = ManimColor.parse(fill_color)
         if stroke_color:
-            self.stroke_color = stroke_color
+            self.stroke_color: ManimColor = ManimColor.parse(stroke_color)
 
     def get_group_class(self):
         return VGroup
@@ -158,7 +161,7 @@ class VMobject(Mobject):
 
         return self
 
-    def generate_rgbas_array(self, color, opacity):
+    def generate_rgbas_array(self, color: ManimColor | list[ManimColor], opacity):
         """
         First arg can be either a color, or a tuple/list of colors.
         Likewise, opacity can either be a float, or a tuple of floats.
@@ -169,7 +172,7 @@ class VMobject(Mobject):
         colors = [c if (c is not None) else BLACK for c in tuplify(color)]
         opacities = [o if (o is not None) else 0 for o in tuplify(opacity)]
         rgbas = np.array(
-            [color_to_rgba(c, o) for c, o in zip(*make_even(colors, opacities))],
+            [c.to_rgb_with_alpha(o) for c, o in zip(*make_even(colors, opacities))],
         )
 
         sheen_factor = self.get_sheen_factor()
@@ -180,7 +183,9 @@ class VMobject(Mobject):
             rgbas = np.append(rgbas, light_rgbas, axis=0)
         return rgbas
 
-    def update_rgbas_array(self, array_name, color=None, opacity=None):
+    def update_rgbas_array(
+        self, array_name, color: ManimColor | None = None, opacity=None
+    ):
         rgbas = self.generate_rgbas_array(color, opacity)
         if not hasattr(self, array_name):
             setattr(self, array_name, rgbas)
@@ -203,7 +208,7 @@ class VMobject(Mobject):
 
     def set_fill(
         self,
-        color: Optional[str] = None,
+        color: ParsableManimColor = None,
         opacity: Optional[float] = None,
         family: bool = True,
     ):
@@ -252,7 +257,7 @@ class VMobject(Mobject):
 
     def set_stroke(
         self,
-        color=None,
+        color: ParsableManimColor = None,
         width=None,
         opacity=None,
         background=False,
@@ -275,7 +280,7 @@ class VMobject(Mobject):
         if opacity is not None:
             setattr(self, opacity_name, opacity)
         if color is not None and background:
-            self.background_stroke_color = color
+            self.background_stroke_color = ManimColor.parse(color)
         return self
 
     def set_background_stroke(self, **kwargs):
@@ -285,12 +290,12 @@ class VMobject(Mobject):
 
     def set_style(
         self,
-        fill_color=None,
+        fill_color: ParsableManimColor = None,
         fill_opacity=None,
-        stroke_color=None,
+        stroke_color: ParsableManimColor = None,
         stroke_width=None,
         stroke_opacity=None,
-        background_stroke_color=None,
+        background_stroke_color: ParsableManimColor = None,
         background_stroke_width=None,
         background_stroke_opacity=None,
         sheen_factor=None,
@@ -327,10 +332,11 @@ class VMobject(Mobject):
             "stroke_width": self.get_stroke_width(),
         }
 
+        # TODO: FIX COLORS HERE
         if simple:
-            ret["fill_color"] = colour.rgb2hex(self.get_fill_color().get_rgb())
+            ret["fill_color"] = self.get_fill_color().to_hex()
             ret["fill_opacity"] = self.get_fill_opacity()
-            ret["stroke_color"] = colour.rgb2hex(self.get_stroke_color().get_rgb())
+            ret["stroke_color"] = self.get_stroke_color().to_hex()
         else:
             ret["fill_color"] = self.get_fill_colors()
             ret["fill_opacity"] = self.get_fill_opacities()
@@ -359,7 +365,8 @@ class VMobject(Mobject):
                 sm1.match_style(sm2)
         return self
 
-    def set_color(self, color, family=True):
+    def set_color(self, color: ParsableManimColor, family=True):
+        color = ManimColor.parse(color)
         self.set_fill(color, family=family)
         self.set_stroke(color, family=family)
         return self

@@ -16,7 +16,6 @@ from manim import config, logger
 from manim.constants import *
 from manim.utils.bezier import integer_interpolate, interpolate
 from manim.utils.color import *
-from manim.utils.color import Colors
 from manim.utils.config_ops import _Data, _Uniforms
 
 # from ..utils.iterables import batch_by_property
@@ -2035,7 +2034,7 @@ class OpenGLMobject:
     # Background rectangle
 
     def add_background_rectangle(
-        self, color: Colors | None = None, opacity: float = 0.75, **kwargs
+        self, color: ParsableManimColor | None = None, opacity: float = 0.75, **kwargs
     ):
         # TODO, this does not behave well when the mobject has points,
         # since it gets displayed on top
@@ -2069,7 +2068,7 @@ class OpenGLMobject:
         from manim.mobject.geometry.shape_matchers import BackgroundRectangle
 
         self.background_rectangle = BackgroundRectangle(
-            self, color=color, fill_opacity=opacity, **kwargs
+            self, color=ManimColor.parse(color), fill_opacity=opacity, **kwargs
         )
         self.add_to_back(self.background_rectangle)
         return self
