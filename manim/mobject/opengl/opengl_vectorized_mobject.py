@@ -315,7 +315,7 @@ class OpenGLVMobject(OpenGLMobject):
 
     def match_style(self, vmobject, recurse=True):
         vmobject_style = vmobject.get_style()
-        if config.renderer == "opengl":
+        if config.renderer == RendererType.OPENGL:
             vmobject_style["stroke_width"] = vmobject_style["stroke_width"][0][0]
         self.set_style(**vmobject_style, recurse=False)
         if recurse:
@@ -1639,7 +1639,7 @@ class OpenGLVGroup(OpenGLVMobject):
         >>> from manim import Triangle, Square
         >>> from manim.opengl import OpenGLVGroup
         >>> config.renderer
-        'opengl'
+        <RendererType.OPENGL: 'opengl'>
         >>> vg = OpenGLVGroup()
         >>> triangle, square = Triangle(), Square()
         >>> vg.add(triangle)
