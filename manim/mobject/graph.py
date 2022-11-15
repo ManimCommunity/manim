@@ -58,8 +58,9 @@ def _determine_graph_layout(
         auto_layout = automatic_layouts[layout](
             nx_graph, scale=layout_scale, **layout_config
         )
-        # networkx returns a dictionary of 3D points if the dimension is specified to be 3
-        # it returns a dictionary of 2D points, so adjusting is required
+        # NetworkX returns a dictionary of 3D points if the dimension
+        # is specified to be 3. Otherwise, it returns a dictionary of
+        # 2D points, so adjusting is required.
         if layout_config.get("dim") == 3:
             return auto_layout
         else:
