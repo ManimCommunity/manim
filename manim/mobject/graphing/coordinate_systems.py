@@ -1966,7 +1966,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         return axis
 
     def coords_to_point(
-        self, *coords: Sequence[float] | Sequence[Sequence[float]] | np.ndarray
+        self, *coords: float | Sequence[float] | Sequence[Sequence[float]] | np.ndarray
     ) -> np.ndarray:
         """Accepts coordinates from the axes and returns a point with respect to the scene.
 
