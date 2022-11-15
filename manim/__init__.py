@@ -10,26 +10,16 @@ __version__: str = pkg_resources.get_distribution(__name__).version
 
 import sys
 
+# isort: off
+
 # Importing the config module should be the first thing we do, since other
 # modules depend on the global config dict for initialization.
 from ._config import *
 
-# Workaround to set the renderer passed via CLI args *before* importing
-# Manim's classes (as long as the metaclass approach for switching
-# between OpenGL and cairo rendering is in place, classes depend
-# on the value of config.renderer).
-for i, arg in enumerate(sys.argv):
-    if arg.startswith("--renderer"):
-        if "=" in arg:
-            _, parsed_renderer = arg.split("=")
-        else:
-            parsed_renderer = sys.argv[i + 1]
-        config.renderer = parsed_renderer
-    elif arg == "--use_opengl_renderer":
-        config.renderer = "opengl"
-
 # many scripts depend on this -> has to be loaded first
-from .utils.commands import *  # isort:skip
+from .utils.commands import *
+
+# isort: on
 
 from .animation.animation import *
 from .animation.changing import *

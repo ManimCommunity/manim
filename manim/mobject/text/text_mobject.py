@@ -423,7 +423,6 @@ class Text(SVGMobject):
         height: float = None,
         width: float = None,
         should_center: bool = True,
-        unpack_groups: bool = True,
         disable_ligatures: bool = False,
         **kwargs,
     ) -> None:
@@ -482,7 +481,6 @@ class Text(SVGMobject):
             height=height,
             width=width,
             should_center=should_center,
-            unpack_groups=unpack_groups,
             **kwargs,
         )
         self.text = text
@@ -490,10 +488,7 @@ class Text(SVGMobject):
             self.submobjects = [*self._gen_chars()]
         self.chars = self.get_group_class()(*self.submobjects)
         self.text = text_without_tabs.replace(" ", "").replace("\n", "")
-        if config.renderer == "opengl":
-            nppc = self.n_points_per_curve
-        else:
-            nppc = self.n_points_per_cubic_curve
+        nppc = self.n_points_per_curve
         for each in self:
             if len(each.points) == 0:
                 continue
@@ -780,7 +775,10 @@ class Text(SVGMobject):
         return svg_file
 
     def init_colors(self, propagate_colors=True):
-        super().init_colors(propagate_colors=propagate_colors)
+        if config.renderer == RendererType.OPENGL:
+            super().init_colors()
+        elif config.renderer == RendererType.CAIRO:
+            super().init_colors(propagate_colors=propagate_colors)
 
 
 class MarkupText(SVGMobject):
@@ -1096,7 +1094,6 @@ class MarkupText(SVGMobject):
         height: int = None,
         width: int = None,
         should_center: bool = True,
-        unpack_groups: bool = True,
         disable_ligatures: bool = False,
         **kwargs,
     ) -> None:
@@ -1145,17 +1142,13 @@ class MarkupText(SVGMobject):
             height=height,
             width=width,
             should_center=should_center,
-            unpack_groups=unpack_groups,
             **kwargs,
         )
 
         self.chars = self.get_group_class()(*self.submobjects)
         self.text = text_without_tabs.replace(" ", "").replace("\n", "")
 
-        if config.renderer == "opengl":
-            nppc = self.n_points_per_curve
-        else:
-            nppc = self.n_points_per_cubic_curve
+        nppc = self.n_points_per_curve
         for each in self:
             if len(each.points) == 0:
                 continue

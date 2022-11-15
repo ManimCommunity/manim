@@ -17,7 +17,7 @@ import requests
 
 from ... import __version__, config, console, error_console, logger
 from ..._config import tempconfig
-from ...constants import EPILOG
+from ...constants import EPILOG, RendererType
 from ...utils.module_ops import scene_classes_from_file
 from .ease_of_access_options import ease_of_access_options
 from .global_options import global_options
@@ -45,12 +45,6 @@ def render(
 
     SCENES is an optional list of scenes in the file.
     """
-
-    if args["use_opengl_renderer"]:
-        logger.warning(
-            "--use_opengl_renderer is deprecated, please use --renderer=opengl instead!",
-        )
-        args["renderer"] = "opengl"
 
     if args["save_as_gif"]:
         logger.warning("--save_as_gif is deprecated, please use --format=gif instead!")
@@ -90,7 +84,7 @@ def render(
 
     config.digest_args(click_args)
     file = Path(config.input_file)
-    if config.renderer == "opengl":
+    if config.renderer == RendererType.OPENGL:
         from manim.renderer.opengl_renderer import OpenGLRenderer
 
         try:

@@ -83,6 +83,7 @@ from ..animation.creation import Create, Write
 from ..animation.fading import FadeIn
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import BLACK, YELLOW
+from .utils import get_vectorized_mobject_class
 
 
 class Table(VGroup):
@@ -206,7 +207,7 @@ class Table(VGroup):
             Dict passed to :meth:`~.Mobject.arrange_in_grid`, customizes the arrangement of the table.
         line_config
             Dict passed to :class:`~.Line`, customizes the lines of the table.
-        kwargs : Any
+        kwargs
             Additional arguments to be passed to :class:`~.VGroup`.
         """
 
@@ -328,13 +329,7 @@ class Table(VGroup):
                 else:
                     # Placeholder to use arrange_in_grid if top_left_entry is not set.
                     # Import OpenGLVMobject to work with --renderer=opengl
-                    if config.renderer == "opengl":
-                        from manim.opengl import OpenGLVMobject
-
-                        dummy_class = OpenGLVMobject
-                    else:
-                        dummy_class = VMobject
-                    dummy_mobject = dummy_class()
+                    dummy_mobject = get_vectorized_mobject_class()()
                     col_labels = [dummy_mobject] + self.col_labels
                     mob_table.insert(0, col_labels)
             else:
@@ -773,7 +768,7 @@ class Table(VGroup):
         pos
             The position of a specific entry on the table. ``(1,1)`` being the top left entry
             of the table.
-        kwargs : Any
+        kwargs
             Additional arguments to be passed to :class:`~.Polygon`.
 
         Returns
@@ -834,7 +829,7 @@ class Table(VGroup):
             of the table.
         color
             The color used to highlight the cell.
-        kwargs : Any
+        kwargs
             Additional arguments to be passed to :class:`~.BackgroundRectangle`.
 
         Examples
@@ -870,7 +865,7 @@ class Table(VGroup):
             of the table.
         color
             The color used to highlight the cell.
-        kwargs : Any
+        kwargs
             Additional arguments to be passed to :class:`~.BackgroundRectangle`.
 
         Examples
@@ -901,15 +896,13 @@ class Table(VGroup):
         line_animation: Callable[[VMobject | VGroup], Animation] = Create,
         label_animation: Callable[[VMobject | VGroup], Animation] = Write,
         element_animation: Callable[[VMobject | VGroup], Animation] = Create,
-        entry_animation=FadeIn,
+        entry_animation: Callable[[VMobject | VGroup], Animation] = FadeIn,
         **kwargs,
     ) -> AnimationGroup:
         """Customized create-type function for tables.
 
         Parameters
         ----------
-        run_time
-            The run time of the line creation and the writing of the elements.
         lag_ratio
             The lag ratio of the animation.
         line_animation
@@ -918,7 +911,9 @@ class Table(VGroup):
             The animation style of the table labels, see :mod:`~.creation` for examples.
         element_animation
             The animation style of the table elements, see :mod:`~.creation` for examples.
-        kwargs : Any
+        entry_animation
+            The entry animation of the table background, see :mod:`~.creation` for examples.
+        kwargs
             Further arguments passed to the creation animations.
 
         Returns
@@ -1015,7 +1010,7 @@ class MathTable(Table):
             for :class:`~.MathTex`.
         element_to_mobject
             The :class:`~.Mobject` class applied to the table entries. Set as :class:`~.MathTex`.
-        kwargs : Any
+        kwargs
             Additional arguments to be passed to :class:`~.Table`.
         """
         super().__init__(
@@ -1069,7 +1064,7 @@ class MobjectTable(Table):
             A 2D array or list of lists. Content of the table must be of type :class:`~.Mobject`.
         element_to_mobject
             The :class:`~.Mobject` class applied to the table entries. Set as ``lambda m : m`` to return itself.
-        kwargs : Any
+        kwargs
             Additional arguments to be passed to :class:`~.Table`.
         """
         super().__init__(table, element_to_mobject=element_to_mobject, **kwargs)
@@ -1118,7 +1113,7 @@ class IntegerTable(Table):
             for :class:`~.Integer`.
         element_to_mobject
             The :class:`~.Mobject` class applied to the table entries. Set as :class:`~.Integer`.
-        kwargs : Any
+        kwargs
             Additional arguments to be passed to :class:`~.Table`.
         """
         super().__init__(table, element_to_mobject=element_to_mobject, **kwargs)
@@ -1166,7 +1161,7 @@ class DecimalTable(Table):
             The :class:`~.Mobject` class applied to the table entries. Set as :class:`~.DecimalNumber`.
         element_to_mobject_config
             Element to mobject config, here set as {"num_decimal_places": 1}.
-        kwargs : Any
+        kwargs
             Additional arguments to be passed to :class:`~.Table`.
         """
         super().__init__(

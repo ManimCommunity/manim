@@ -29,7 +29,7 @@ def test_wait_skip(tmp_path, manim_cfg_file, simple_scenes_path):
         str(tmp_path),
         "-n",
         "3",
-        simple_scenes_path,
+        str(simple_scenes_path),
         scene_name,
     ]
     out, err, exit_code = capture(command)
@@ -56,7 +56,7 @@ def test_play_skip(tmp_path, manim_cfg_file, simple_scenes_path):
         str(tmp_path),
         "-n",
         "3",
-        simple_scenes_path,
+        str(simple_scenes_path),
         scene_name,
     ]
     out, err, exit_code = capture(command)

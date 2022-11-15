@@ -2,13 +2,13 @@ from __future__ import annotations
 
 import numpy as np
 
-from manim import config
+from manim import RendererType, config
 from manim.constants import RIGHT
 from manim.mobject.geometry.polygram import Square
 
 
 def test_Data():
-    config.renderer = "opengl"
+    config.renderer = RendererType.OPENGL
     a = Square().move_to(RIGHT)
     data_bb = a.data["bounding_box"]
     np.testing.assert_array_equal(
@@ -39,4 +39,6 @@ def test_Data():
     )
 
     np.testing.assert_array_equal(a.bounding_box, data_bb)
-    config.renderer = "cairo"  # needs to be here or else the following cairo tests fail
+    config.renderer = (
+        RendererType.CAIRO
+    )  # needs to be here or else the following cairo tests fail
