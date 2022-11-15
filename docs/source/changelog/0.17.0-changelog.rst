@@ -240,5 +240,3 @@ Unclassified changes
 
 
 * :pr:`2995`: Add encoding for `open()` function in text_file_writing module
-
-
