@@ -11,6 +11,7 @@ from manim.mobject.opengl.opengl_mobject import OpenGLGroup
 
 from .._config import config
 from ..animation.animation import Animation, prepare_animation
+from ..constants import RendererType
 from ..mobject.mobject import Group, Mobject
 from ..scene.scene import Scene
 from ..utils.iterables import remove_list_redundancies
@@ -44,7 +45,7 @@ class AnimationGroup(Animation):
             mobjects = remove_list_redundancies(
                 [anim.mobject for anim in self.animations if not anim.is_introducer()],
             )
-            if config["renderer"] == "opengl":
+            if config["renderer"] == RendererType.OPENGL:
                 self.group = OpenGLGroup(*mobjects)
             else:
                 self.group = Group(*mobjects)

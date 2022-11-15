@@ -1,5 +1,6 @@
 """Mobjects that use vector graphics."""
 
+from __future__ import annotations
 
 __all__ = [
     "VMobject",
@@ -14,7 +15,7 @@ __all__ = [
 import itertools as it
 import sys
 import typing
-from typing import Optional, Sequence, Union
+from typing import Callable, Optional, Sequence, Union
 
 import colour
 import numpy as np
@@ -39,7 +40,7 @@ from ...utils.bezier import (
 )
 from ...utils.color import BLACK, WHITE, color_to_rgba
 from ...utils.deprecation import deprecated
-from ...utils.iterables import make_even, stretch_array_to_length, tuplify
+from ...utils.iterables import make_even, resize_array, stretch_array_to_length, tuplify
 from ...utils.space_ops import rotate_vector, shoelace_direction
 
 # TODO
@@ -70,6 +71,10 @@ class VMobject(Mobject):
         that it should count in parent mobject's path
     tolerance_for_point_equality
         This is within a pixel
+    joint_type
+        The line joint type used to connect the curve segments
+        of this vectorized mobject. See :class:`.LineJointType`
+        for options.
     """
 
     sheen_factor = 0.0
@@ -85,6 +90,7 @@ class VMobject(Mobject):
         background_stroke_opacity=1.0,
         background_stroke_width=0,
         sheen_factor=0.0,
+        joint_type: LineJointType | None = None,
         sheen_direction=UL,
         close_new_points=False,
         pre_function_handle_to_anchor_scale_factor=0.01,
@@ -103,6 +109,9 @@ class VMobject(Mobject):
         self.background_stroke_opacity = background_stroke_opacity
         self.background_stroke_width = background_stroke_width
         self.sheen_factor = sheen_factor
+        if joint_type is None:
+            joint_type = LineJointType.AUTO
+        self.joint_type = joint_type
         self.sheen_direction = sheen_direction
         self.close_new_points = close_new_points
         self.pre_function_handle_to_anchor_scale_factor = (
@@ -119,6 +128,11 @@ class VMobject(Mobject):
             self.fill_color = fill_color
         if stroke_color:
             self.stroke_color = stroke_color
+
+    # OpenGL compatibility
+    @property
+    def n_points_per_curve(self):
+        return self.n_points_per_cubic_curve
 
     def get_group_class(self):
         return VGroup
@@ -203,8 +217,8 @@ class VMobject(Mobject):
 
     def set_fill(
         self,
-        color: Optional[str] = None,
-        opacity: Optional[float] = None,
+        color: str | None = None,
+        opacity: float | None = None,
         family: bool = True,
     ):
         """Set the fill color and fill opacity of a :class:`VMobject`.
@@ -569,14 +583,14 @@ class VMobject(Mobject):
             offset = np.dot(bases, direction)
             return (c - offset, c + offset)
 
-    def color_using_background_image(self, background_image: Union[Image, str]):
+    def color_using_background_image(self, background_image: Image | str):
         self.background_image = background_image
         self.set_color(WHITE)
         for submob in self.submobjects:
             submob.color_using_background_image(background_image)
         return self
 
-    def get_background_image(self) -> Union[Image, str]:
+    def get_background_image(self) -> Image | str:
         return self.background_image
 
     def match_background_image(self, vmobject):
@@ -592,6 +606,27 @@ class VMobject(Mobject):
 
     def set_points(self, points):
         self.points = np.array(points)
+        return self
+
+    def resize_points(
+        self,
+        new_length: int,
+        resize_func: Callable[[np.ndarray, int], np.ndarray] = resize_array,
+    ):
+        """Resize the array of anchor points and handles to have
+        the specified size.
+
+        Parameters
+        ----------
+        new_length
+            The new (total) number of points.
+        resize_func
+            A function mapping a Numpy array (the points) and an integer
+            (the target size) to a Numpy array. The default implementation
+            is based on Numpy's ``resize`` function.
+        """
+        if new_length != len(self.points):
+            self.points = resize_func(self.points, new_length)
         return self
 
     def set_anchors_and_handles(
@@ -639,7 +674,12 @@ class VMobject(Mobject):
         return self
 
     def start_new_path(self, point):
-        # TODO, make sure that len(self.points) % 4 == 0?
+        if len(self.points) % 4 != 0:
+            # close the open path by appending the last
+            # start anchor sufficiently often
+            last_anchor = self.get_start_anchors()[-1]
+            for _ in range(4 - (len(self.points) % 4)):
+                self.append_points([last_anchor])
         self.append_points([point])
         return self
 
@@ -796,7 +836,7 @@ class VMobject(Mobject):
         if not self.is_closed():
             self.add_line_to(self.get_subpaths()[-1][0])
 
-    def add_points_as_corners(self, points: np.ndarray) -> "VMobject":
+    def add_points_as_corners(self, points: np.ndarray) -> VMobject:
         for point in points:
             self.add_line_to(point)
         return points
@@ -898,7 +938,7 @@ class VMobject(Mobject):
         self,
         angle: float,
         axis: np.ndarray = OUT,
-        about_point: Optional[Sequence[float]] = None,
+        about_point: Sequence[float] | None = None,
         **kwargs,
     ):
         self.rotate_sheen_direction(angle, axis)
@@ -969,7 +1009,7 @@ class VMobject(Mobject):
     def get_cubic_bezier_tuples_from_points(self, points):
         return np.array(list(self.gen_cubic_bezier_tuples_from_points(points)))
 
-    def gen_cubic_bezier_tuples_from_points(self, points: np.ndarray) -> typing.Tuple:
+    def gen_cubic_bezier_tuples_from_points(self, points: np.ndarray) -> tuple:
         """Returns the bezier tuples from an array of points.
 
         self.points is a list of the anchors and handles of the bezier curves of the mobject (ie [anchor1, handle1, handle2, anchor2, anchor3 ..])
@@ -1000,7 +1040,7 @@ class VMobject(Mobject):
         self,
         points: np.ndarray,
         filter_func: typing.Callable[[int], bool],
-    ) -> typing.Tuple:
+    ) -> tuple:
         """Given an array of points defining the bezier curves of the vmobject, return subpaths formed by these points.
         Here, Two bezier curves form a path if at least two of their anchors are evaluated True by the relation defined by filter_func.
 
@@ -1044,7 +1084,7 @@ class VMobject(Mobject):
             lambda n: not self.consider_points_equals_2d(points[n - 1], points[n]),
         )
 
-    def get_subpaths(self) -> typing.Tuple:
+    def get_subpaths(self) -> tuple:
         """Returns subpaths formed by the curves of the VMobject.
 
         Subpaths are ranges of curves with each pair of consecutive curves having their end/start points coincident.
@@ -1091,7 +1131,7 @@ class VMobject(Mobject):
     def get_nth_curve_length_pieces(
         self,
         n: int,
-        sample_points: Optional[int] = None,
+        sample_points: int | None = None,
     ) -> np.ndarray:
         """Returns the array of short line lengths used for length approximation.
 
@@ -1120,7 +1160,7 @@ class VMobject(Mobject):
     def get_nth_curve_length(
         self,
         n: int,
-        sample_points: Optional[int] = None,
+        sample_points: int | None = None,
     ) -> float:
         """Returns the (approximate) length of the nth curve.
 
@@ -1144,8 +1184,8 @@ class VMobject(Mobject):
     def get_nth_curve_function_with_length(
         self,
         n: int,
-        sample_points: Optional[int] = None,
-    ) -> typing.Tuple[typing.Callable[[float], np.ndarray], float]:
+        sample_points: int | None = None,
+    ) -> tuple[typing.Callable[[float], np.ndarray], float]:
         """Returns the expression of the nth curve along with its (approximate) length.
 
         Parameters
@@ -1198,7 +1238,7 @@ class VMobject(Mobject):
 
     def get_curve_functions_with_lengths(
         self, **kwargs
-    ) -> typing.Iterable[typing.Tuple[typing.Callable[[float], np.ndarray], float]]:
+    ) -> typing.Iterable[tuple[typing.Callable[[float], np.ndarray], float]]:
         """Gets the functions and lengths of the curves for the mobject.
 
         Parameters
@@ -1263,7 +1303,7 @@ class VMobject(Mobject):
 
     def proportion_from_point(
         self,
-        point: typing.Iterable[typing.Union[float, int]],
+        point: typing.Iterable[float | int],
     ) -> float:
         """Returns the proportion along the path of the :class:`VMobject`
         a particular given point is at.
@@ -1370,7 +1410,7 @@ class VMobject(Mobject):
         # Probably returns all anchors, but this is weird regarding  the name of the method.
         return np.array(list(it.chain(*(sm.get_anchors() for sm in self.get_family()))))
 
-    def get_arc_length(self, sample_points_per_curve: Optional[int] = None) -> float:
+    def get_arc_length(self, sample_points_per_curve: int | None = None) -> float:
         """Return the approximated length of the whole curve.
 
         Parameters
@@ -1392,7 +1432,7 @@ class VMobject(Mobject):
         )
 
     # Alignment
-    def align_points(self, vmobject: "VMobject"):
+    def align_points(self, vmobject: VMobject):
         """Adds points to self and vmobject so that they both have the same number of subpaths, with
         corresponding subpaths each containing the same number of points.
 
@@ -1583,7 +1623,7 @@ class VMobject(Mobject):
 
     def pointwise_become_partial(
         self,
-        vmobject: "VMobject",
+        vmobject: VMobject,
         a: float,
         b: float,
     ):
@@ -1643,7 +1683,7 @@ class VMobject(Mobject):
             )
         return self
 
-    def get_subcurve(self, a: float, b: float) -> "VMobject":
+    def get_subcurve(self, a: float, b: float) -> VMobject:
         """Returns the subcurve of the VMobject between the interval [a, b].
         The curve is a VMobject itself.
 
@@ -1875,7 +1915,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
     def __isub__(self, vmobject):
         return self.remove(vmobject)
 
-    def __setitem__(self, key: int, value: Union[VMobject, typing.Sequence[VMobject]]):
+    def __setitem__(self, key: int, value: VMobject | typing.Sequence[VMobject]):
         """Override the [] operator for item assignment.
 
         Parameters
@@ -2001,10 +2041,10 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
 
     def __init__(
         self,
-        mapping_or_iterable: Union[
-            typing.Mapping[typing.Hashable, VMobject],
-            typing.Iterable[typing.Tuple[typing.Hashable, VMobject]],
-        ] = {},
+        mapping_or_iterable: (
+            typing.Mapping[typing.Hashable, VMobject]
+            | typing.Iterable[tuple[typing.Hashable, VMobject]]
+        ) = {},
         show_keys: bool = False,
         **kwargs,
     ):
@@ -2018,10 +2058,10 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
 
     def add(
         self,
-        mapping_or_iterable: Union[
-            typing.Mapping[typing.Hashable, VMobject],
-            typing.Iterable[typing.Tuple[typing.Hashable, VMobject]],
-        ],
+        mapping_or_iterable: (
+            typing.Mapping[typing.Hashable, VMobject]
+            | typing.Iterable[tuple[typing.Hashable, VMobject]]
+        ),
     ):
         """Adds the key-value pairs to the :class:`VDict` object.
 
@@ -2262,7 +2302,7 @@ class VectorizedPoint(VMobject, metaclass=ConvertToOpenGL):
         )
         self.set_points(np.array([location]))
 
-    basecls = OpenGLVMobject if config.renderer == "opengl" else VMobject
+    basecls = OpenGLVMobject if config.renderer == RendererType.OPENGL else VMobject
 
     @basecls.width.getter
     def width(self):
@@ -2461,7 +2501,7 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
                 )
         # Family is already taken care of by get_subcurve
         # implementation
-        if config.renderer == "opengl":
+        if config.renderer == RendererType.OPENGL:
             self.match_style(vmobject, recurse=False)
         else:
             self.match_style(vmobject, family=False)
