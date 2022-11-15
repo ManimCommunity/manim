@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 import re
 import textwrap
 from pathlib import Path
@@ -24,24 +23,23 @@ __all__ = [
 ]
 
 
-def get_shader_code_from_file(file_path):
+def get_shader_code_from_file(file_path: Path) -> str:
     if file_path in file_path_to_code_map:
         return file_path_to_code_map[file_path]
-    with open(file_path) as f:
-        source = f.read()
-        include_lines = re.finditer(
-            r"^#include (?P<include_path>.*\.glsl)$",
-            source,
-            flags=re.MULTILINE,
+    source = file_path.read_text()
+    include_lines = re.finditer(
+        r"^#include (?P<include_path>.*\.glsl)$",
+        source,
+        flags=re.MULTILINE,
+    )
+    for match in include_lines:
+        include_path = match.group("include_path")
+        included_code = get_shader_code_from_file(
+            file_path.parent / include_path,
         )
-        for match in include_lines:
-            include_path = match.group("include_path")
-            included_code = get_shader_code_from_file(
-                os.path.join(file_path.parent / include_path),
-            )
-            source = source.replace(match.group(0), included_code)
-        file_path_to_code_map[file_path] = source
-        return source
+        source = source.replace(match.group(0), included_code)
+    file_path_to_code_map[file_path] = source
+    return source
 
 
 def filter_attributes(unfiltered_attributes, attributes):

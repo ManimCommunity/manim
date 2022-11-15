@@ -218,12 +218,6 @@ class OpenGLCamera(OpenGLMobject):
 
 
 points_per_curve = 3
-JOINT_TYPE_MAP = {
-    "auto": 0,
-    "round": 1,
-    "bevel": 2,
-    "miter": 3,
-}
 
 
 class OpenGLRenderer:

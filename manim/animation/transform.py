@@ -36,7 +36,13 @@ from manim.mobject.opengl.opengl_mobject import OpenGLGroup, OpenGLMobject
 
 from .. import config
 from ..animation.animation import Animation
-from ..constants import DEFAULT_POINTWISE_FUNCTION_RUN_TIME, DEGREES, ORIGIN, OUT
+from ..constants import (
+    DEFAULT_POINTWISE_FUNCTION_RUN_TIME,
+    DEGREES,
+    ORIGIN,
+    OUT,
+    RendererType,
+)
 from ..mobject.mobject import Group, Mobject
 from ..utils.paths import path_along_arc, path_along_circles
 from ..utils.rate_functions import smooth, squish_rate_func
@@ -191,7 +197,7 @@ class Transform(Animation):
         self.target_copy = self.target_mobject.copy()
         # Note, this potentially changes the structure
         # of both mobject and target_mobject
-        if config["renderer"] == "opengl":
+        if config.renderer == RendererType.OPENGL:
             self.mobject.align_data_and_family(self.target_copy)
         else:
             self.mobject.align_data(self.target_copy)
@@ -222,7 +228,7 @@ class Transform(Animation):
             self.starting_mobject,
             self.target_copy,
         ]
-        if config["renderer"] == "opengl":
+        if config.renderer == RendererType.OPENGL:
             return zip(*(mob.get_family() for mob in mobs))
         return zip(*(mob.family_members_with_points() for mob in mobs))
 
@@ -691,6 +697,37 @@ class ApplyComplexFunction(ApplyMethod):
 
 
 class CyclicReplace(Transform):
+    """An animation moving mobjects cyclically.
+
+    In particular, this means: the first mobject takes the place
+    of the second mobject, the second one takes the place of
+    the third mobject, and so on. The last mobject takes the
+    place of the first one.
+
+    Parameters
+    ----------
+    mobjects
+        List of mobjects to be transformed.
+    path_arc
+        The angle of the arc (in radians) that the mobjects will follow to reach
+        their target.
+    kwargs
+        Further keyword arguments that are passed to :class:`.Transform`.
+
+    Examples
+    --------
+    .. manim :: CyclicReplaceExample
+
+        class CyclicReplaceExample(Scene):
+            def construct(self):
+                group = VGroup(Square(), Circle(), Triangle(), Star())
+                group.arrange(RIGHT)
+                self.add(group)
+
+                for _ in range(4):
+                    self.play(CyclicReplace(*group))
+    """
+
     def __init__(
         self, *mobjects: Mobject, path_arc: float = 90 * DEGREES, **kwargs
     ) -> None:
@@ -799,7 +836,7 @@ class FadeTransform(Transform):
         self.stretch = stretch
         self.dim_to_match = dim_to_match
         mobject.save_state()
-        if config["renderer"] == "opengl":
+        if config.renderer == RendererType.OPENGL:
             group = OpenGLGroup(mobject, target_mobject.copy())
         else:
             group = Group(mobject, target_mobject.copy())
@@ -823,8 +860,14 @@ class FadeTransform(Transform):
             self.ghost_to(m0, m1)
 
     def ghost_to(self, source, target):
-        """Replaces the source by the target and sets the opacity to 0."""
-        source.replace(target, stretch=self.stretch, dim_to_match=self.dim_to_match)
+        """Replaces the source by the target and sets the opacity to 0.
+
+        If the provided target has no points, and thus a location of [0, 0, 0]
+        the source will simply fade out where it currently is.
+        """
+        # mobject.replace() does not work if the target has no points.
+        if target.get_num_points() or target.submobjects:
+            source.replace(target, stretch=self.stretch, dim_to_match=self.dim_to_match)
         source.set_opacity(0)
 
     def get_all_mobjects(self) -> Sequence[Mobject]:
