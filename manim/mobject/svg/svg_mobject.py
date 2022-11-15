@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+from pathlib import Path
 from xml.etree import ElementTree as ET
 
 import numpy as np
@@ -86,7 +87,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
 
     def __init__(
         self,
-        file_name: str | None = None,
+        file_name: str | os.PathLike | None = None,
         should_center: bool = True,
         height: float | None = 2,
         width: float | None = None,
@@ -104,7 +105,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         super().__init__(color=None, stroke_color=None, fill_color=None, **kwargs)
 
         # process keyword arguments
-        self.file_name = file_name
+        self.file_name = Path(file_name) if file_name is not None else None
 
         self.should_center = should_center
         self.svg_height = height
@@ -182,18 +183,17 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         element_tree = ET.parse(file_path)
         new_tree = self.modify_xml_tree(element_tree)
         # Create a temporary svg file to dump modified svg to be parsed
-        root, ext = os.path.splitext(file_path)
-        modified_file_path = root + "_" + ext
+        modified_file_path = file_path.with_name(f"{file_path.stem}_{file_path.suffix}")
         new_tree.write(modified_file_path)
 
         svg = se.SVG.parse(modified_file_path)
-        os.remove(modified_file_path)
+        modified_file_path.unlink()
 
         mobjects = self.get_mobjects_from(svg)
         self.add(*mobjects)
         self.flip(RIGHT)  # Flip y
 
-    def get_file_path(self) -> str:
+    def get_file_path(self) -> Path:
         """Search for an existing file based on the specified file name."""
         if self.file_name is None:
             raise ValueError("Must specify file for SVGMobject")

@@ -12,6 +12,7 @@ import svgelements as se
 from manim._config import config
 from manim.mobject.geometry.arc import Arc
 from manim.mobject.geometry.line import Line
+from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.text.tex_mobject import MathTex, Tex
 
@@ -32,7 +33,7 @@ class Brace(VMobjectFromSVGPath):
 
     Parameters
     ----------
-    mobject : :class:`~.Mobject`
+    mobject
         The mobject adjacent to which the brace is placed.
     direction :
         The direction from which the brace faces the mobject.
@@ -61,7 +62,7 @@ class Brace(VMobjectFromSVGPath):
 
     def __init__(
         self,
-        mobject,
+        mobject: Mobject,
         direction: Sequence[float] | None = DOWN,
         buff=0.2,
         sharpness=2,

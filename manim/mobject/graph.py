@@ -58,7 +58,13 @@ def _determine_graph_layout(
         auto_layout = automatic_layouts[layout](
             nx_graph, scale=layout_scale, **layout_config
         )
-        return {k: np.append(v, [0]) for k, v in auto_layout.items()}
+        # NetworkX returns a dictionary of 3D points if the dimension
+        # is specified to be 3. Otherwise, it returns a dictionary of
+        # 2D points, so adjusting is required.
+        if layout_config.get("dim") == 3:
+            return auto_layout
+        else:
+            return {k: np.append(v, [0]) for k, v in auto_layout.items()}
     elif layout == "tree":
         return _tree_layout(
             nx_graph, root_vertex=root_vertex, scale=layout_scale, **layout_config

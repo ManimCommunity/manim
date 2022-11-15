@@ -39,6 +39,17 @@ from manim.utils.space_ops import (
 )
 
 
+def affects_shader_info_id(func):
+    @wraps(func)
+    def wrapper(self):
+        for mob in self.get_family():
+            func(mob)
+            mob.refresh_shader_wrapper_id()
+        return self
+
+    return wrapper
+
+
 class OpenGLMobject:
     """Mathematical Object: base class for objects that can be displayed on screen.
 
@@ -93,8 +104,10 @@ class OpenGLMobject:
         listen_to_events=False,
         model_matrix=None,
         should_render=True,
+        name: str | None = None,
         **kwargs,
     ):
+        self.name = self.__class__.__name__ if name is None else name
         # getattr in case data/uniforms are already defined in parent classes.
         self.data = getattr(self, "data", {})
         self.uniforms = getattr(self, "uniforms", {})
@@ -152,19 +165,19 @@ class OpenGLMobject:
         return self.__class__.__name__
 
     def __repr__(self):
-        return self.__class__.__name__
+        return str(self.name)
 
     def __sub__(self, other):
-        raise NotImplementedError
+        return NotImplemented
 
     def __isub__(self, other):
-        raise NotImplementedError
+        return NotImplemented
 
     def __add__(self, mobject):
-        raise NotImplementedError
+        return NotImplemented
 
     def __iadd__(self, mobject):
-        raise NotImplementedError
+        return NotImplemented
 
     @classmethod
     def set_default(cls, **kwargs):
@@ -2531,16 +2544,6 @@ class OpenGLMobject:
 
     # Operations touching shader uniforms
 
-    def affects_shader_info_id(func):
-        @wraps(func)
-        def wrapper(self):
-            for mob in self.get_family():
-                func(mob)
-                # mob.refresh_shader_wrapper_id()
-            return self
-
-        return wrapper
-
     @affects_shader_info_id
     def fix_in_frame(self):
         self.is_fixed_in_frame = 1.0
@@ -2623,9 +2626,9 @@ class OpenGLMobject:
 
     # For shader data
 
-    # def refresh_shader_wrapper_id(self):
-    #     self.shader_wrapper.refresh_id()
-    #     return self
+    def refresh_shader_wrapper_id(self):
+        self.shader_wrapper.refresh_id()
+        return self
 
     def get_shader_wrapper(self):
         from manim.renderer.shader_wrapper import ShaderWrapper

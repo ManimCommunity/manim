@@ -11,6 +11,7 @@ from manim.mobject.opengl.opengl_mobject import OpenGLGroup
 
 from .._config import config
 from ..animation.animation import Animation, prepare_animation
+from ..constants import RendererType
 from ..mobject.mobject import Group, Mobject
 from ..scene.scene import Scene
 from ..utils.iterables import remove_list_redundancies
@@ -44,7 +45,7 @@ class AnimationGroup(Animation):
             mobjects = remove_list_redundancies(
                 [anim.mobject for anim in self.animations if not anim.is_introducer()],
             )
-            if config["renderer"] == "opengl":
+            if config["renderer"] == RendererType.OPENGL:
                 self.group = OpenGLGroup(*mobjects)
             else:
                 self.group = Group(*mobjects)
@@ -166,7 +167,7 @@ class Succession(AnimationGroup):
         self.update_active_animation(self.active_index + 1)
 
     def interpolate(self, alpha: float) -> None:
-        current_time = self.rate_func(alpha) * self.run_time
+        current_time = self.rate_func(alpha) * self.max_end_time
         while self.active_end_time is not None and current_time >= self.active_end_time:
             self.next_animation()
         if self.active_animation is not None and self.active_start_time is not None:

@@ -81,6 +81,7 @@ For specifying multiple plugins, comma-separated values must be used.
 
 Creating Plugins
 ****************
+
 Plugins are intended to extend Manim's core functionality. If you aren't sure
 whether a feature should be included in Manim's core, feel free to ask over
 on the `Discord server <https://www.manim.community/discord/>`_. Visit
@@ -132,3 +133,22 @@ For example,
 Here, Manim will call the function ``setup_things`` defined in
 ``manim_awesomeplugin.imports`` and calls that. It returns a list of function or
 modules which will be imported globally.
+
+A note on Renderer Compatibility
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Depending on which renderer is currently active, custom mobjects
+created in your plugin might want to behave differently as the
+corresponding mobject base classes are (unfortunately) not fully
+compatible.
+
+The currently active renderer can be queried by checking the value
+of ``manim.config.renderer``. All possible renderer types are given
+by :class:`.constants.RendererType`. The module :mod:`.manim.mobject.utils`
+contains utility functions that return the base class for the currently
+active renderer.
+
+A simple form of renderer compatibility (by hot-swapping the class
+inheritance chain) for Mobjects directly inheriting from
+:class:`.Mobject` or :class:`.VMobject` can be achieved by using the
+:class:`.mobject.opengl.opengl_compatibility.ConvertToOpenGL` metaclass.

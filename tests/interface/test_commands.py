@@ -103,16 +103,14 @@ def test_manim_init_scene(tmp_path):
         )
         assert not result.exception
         assert (Path(tmp_dir) / "my_awesome_file.py").exists()
-        with open(Path(tmp_dir) / "my_awesome_file.py") as f:
-            file_content = f.read()
-            assert "NamedFileTestScene(Scene):" in file_content
+        file_content = (Path(tmp_dir) / "my_awesome_file.py").read_text()
+        assert "NamedFileTestScene(Scene):" in file_content
         result = runner.invoke(
             main, command_unnamed, prog_name="manim", input="Default\n"
         )
         assert (Path(tmp_dir) / "main.py").exists()
-        with open(Path(tmp_dir) / "main.py") as f:
-            file_content = f.read()
-            assert "DefaultFileTestScene(Scene):" in file_content
+        file_content = (Path(tmp_dir) / "main.py").read_text()
+        assert "DefaultFileTestScene(Scene):" in file_content
 
 
 def test_manim_new_command():

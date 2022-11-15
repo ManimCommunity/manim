@@ -138,7 +138,7 @@ class Create(ShowPartial):
 
     Parameters
     ----------
-    mobject : :class:`~.VMobject`
+    mobject
         The VMobject to animate.
 
     Raises
@@ -302,6 +302,15 @@ class Write(DrawBorderThenFill):
         class ShowWriteReversed(Scene):
             def construct(self):
                 self.play(Write(Text("Hello", font_size=144), reverse=True))
+
+    Tests
+    -----
+
+    Check that creating empty :class:`.Write` animations works::
+
+        >>> from manim import Write, Text
+        >>> Write(Text(''))
+        Write(Text(''))
     """
 
     def __init__(
@@ -343,7 +352,7 @@ class Write(DrawBorderThenFill):
             else:
                 run_time = 2
         if lag_ratio is None:
-            lag_ratio = min(4.0 / length, 0.2)
+            lag_ratio = min(4.0 / max(1.0, length), 0.2)
         return run_time, lag_ratio
 
     def reverse_submobjects(self) -> None:
@@ -365,7 +374,7 @@ class Unwrite(Write):
 
     Parameters
     ----------
-    reverse : :class:`bool`
+    reverse
         Set True to have the animation start erasing from the last submobject first.
 
     Examples
@@ -533,7 +542,7 @@ class AddTextLetterByLetter(ShowIncreasingSubsets):
 
     Parameters
     ----------
-    time_per_char : :class:`float`
+    time_per_char
         Frequency of appearance of the letters.
 
     .. tip::
@@ -576,7 +585,7 @@ class RemoveTextLetterByLetter(AddTextLetterByLetter):
 
     Parameters
     ----------
-    time_per_char : :class:`float`
+    time_per_char
         Frequency of appearance of the letters.
 
     .. tip::
