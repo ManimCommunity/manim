@@ -1,0 +1,244 @@
+*******
+v0.17.0
+*******
+
+:Date: November 14, 2022
+
+Contributors
+============
+
+A total of 29 people contributed to this
+release. People with a '+' by their names authored a patch for the first
+time.
+
+* Alex Lembcke
+* Alexander Vázquez
+* Benjamin Hackl
+* Duc Phat +
+* Isaac Beh +
+* Jeff Hanke +
+* John Hammond +
+* Jérome Eertmans +
+* Kevin Lubick
+* Kian-Meng Ang +
+* Naveen M K
+* Nick Skriloff +
+* NotWearingPants
+* OpenRefactory, Inc +
+* Owen Samuel +
+* Pavel Zwerschke +
+* Sparsh Goenka
+* Taxo Rubio
+* ad-chaos +
+* fcrozatier
+* mostly documentation +
+* vahndi +
+
+
+The patches included in this release have been reviewed by
+the following contributors.
+
+* Benjamin Hackl
+* Darylgolden
+* Jan-Hendrik Müller
+* Kevin Lubick
+* Mohammed Belgoumri
+* Naveen M K
+* NotWearingPants
+* Raghav Goel
+* Sparsh Goenka
+* Tristan Schulz
+* ad-chaos
+* friedkeenan
+
+Pull requests merged
+====================
+
+A total of 52 pull requests were merged for this release.
+
+Breaking changes
+----------------
+
+* :pr:`2898`: Ported improved implementation of :class:`.SVGMobject` from 3b1b/manim
+
+
+New features
+------------
+
+* :pr:`2883`: Add animation RemoveTextLetterByLetter
+   Added animation RemoveTextLetterByLetter
+
+* :pr:`3016`: Implemented :class:`.LineJointTypes` for both Cairo and OpenGL renderer
+
+
+* :pr:`3017`: Replaced renderer strings with :class:`.RendererType` enum entries
+
+
+Enhancements
+------------
+
+* :pr:`2927`: Allowed ``networkx`` to return 3D layouts when passing ``dim=3`` in the ``layout_config`` of a :class:`.Graph`
+   The layout_config option `dim` when provided to the networkx layout function changes the length of the tuple returned. Manim's `_determine_graph_layout` relied upon the dictionary having tuples of length 2 (i.e. 2D points) and appending 0 for the z-coordinate. This PR changes `_determine_graph_layout` to account for when config option `dim` is 3, by not appending the 0 to the points.
+
+* :pr:`3014`: Enable code completion on Mobject.animate in supporting IDEs
+   Uses a Union of the existing Generic `Mobject` Type `T` and `_Animation Builder` as the declared return type from `Mobject.animate` to improve code completion.
+
+Fixed bugs
+----------
+
+* :pr:`2846`: Prevent TransformMatchingTex from crashing when there is nothing to fade
+
+
+* :pr:`2885`: Always expand user when validating file-paths
+
+
+* :pr:`2888`: Fixed bug with propagation of ``tex_template`` value when using ``tempconfig``
+
+
+* :pr:`2895`: Fixed broken :class:`.ShowPassingFlashWithThinningStrokeWidth`
+
+
+* :pr:`2920`: Fixed alignment of faded lines when passing ``faded_line_ratio`` to :class:`.NumberPlane`
+
+
+* :pr:`2977`: Fix: Allow rendering of empty text strings
+   Adds a `max` statement that allows text element of `0.0` length to be rendered, preventing a division by zero value error.
+
+* :pr:`2992`: Fixed ``CLI.tex_template_file`` config file setting
+
+
+* :pr:`3003`: Fixed setting ``run_time`` of :class:`.Succession` after creating the animation object
+
+
+* :pr:`3019`: Fixed rendering SVG paths with multiple move commands
+
+
+Documentation-related changes
+-----------------------------
+
+* :pr:`2881`: Fix small typo in guide
+
+
+* :pr:`2886`: Added docstring to and fixed type hint of :func:`.get_winding_number`
+
+
+* :pr:`2892`: Corrected error in the ``PolygonOnAxes`` example
+
+
+* :pr:`2903`: Fixed minor grammar issues in :doc:`/faq/general`
+
+
+* :pr:`2915`: Added documentation to :mod:`.three_dimensions`
+   Add documentation to `three_dimensions`.
+
+* :pr:`2919`: Corrected parameters and enhanced the description of :meth:`.ImageMobject.interpolate_color`
+
+
+* :pr:`2933`: Improved answer to the "no scenes in this module" error
+
+
+* :pr:`2936`: Added installation instructions for Windows via ``winget``
+
+
+* :pr:`2962`: Disabled "Edit on GitHub" button in documentation
+
+
+* :pr:`2978`: Added documentation and example for :class:`.CyclicReplace`
+
+
+* :pr:`3001`: Added FAQ entry regarding failed ``manimpango`` build
+
+
+* :pr:`3004`: Fixed docbuild warnings
+
+
+* :pr:`3018`: Follow-up to :pr:`2988` -- fixes and improvements to some docstrings
+
+
+* :pr:`3022`: Corrected type hint in :meth:`Axes.coords_to_point`
+   Type hint is incomplete so flags as a warning in IDE when passing 3 `float` coords e.g. `axes.coords_to_point(1.0, 2.0, 3.0)`
+
+Changes concerning the testing system
+-------------------------------------
+
+* :pr:`2893`: Improved performance of ``test_threed.py``
+
+
+* :pr:`2981`: Implemented fallback save behavior for `pytest --show_diff`
+
+
+* :pr:`2982`: Rewrote unstable tests for :mod:`.text_mobject` to be non-graphical
+
+
+Changes to our development infrastructure
+-----------------------------------------
+
+* :pr:`2925`: CI (test-arm): update python version to `3.10.6`
+
+
+* :pr:`2963`: CI (test-arm): Always select the correct python version
+
+
+Code quality improvements and similar refactors
+-----------------------------------------------
+
+* :pr:`2877`: Fixed binder launch problem by adding missing optional ``notebook`` dependency
+
+
+* :pr:`2887`: Removed empty i18n files that caused filename clashes
+
+
+* :pr:`2938`: Suggested fixes by iCR, OpenRefactory, Inc.
+
+
+* :pr:`2954`: Fixed click version string in ``pyproject.toml``
+
+
+* :pr:`2958`: Fix missing stub packages for mypy
+
+
+* :pr:`2975`: Fixed broken links in README
+
+
+* :pr:`2980`: Migrate more `os.path` to `pathlib`
+
+
+* :pr:`2983`: Fixed Windows CI Pipeline
+
+
+* :pr:`2988`: Convert all types of parameters in docstrings to proper type annotations
+
+
+* :pr:`2994`: Fixed segmentation faults from doctests under Python 3.10
+
+
+Unclassified changes
+--------------------
+
+* :pr:`2872`: Add extract_frames utility to help visualize test control data
+
+
+* :pr:`2904`: Fix formatting and grammar issues in :doc:`/contributing/development`
+   - Removed a reference to a non-existent (404) flowchart at the bottom of the page
+   - Changed list element to be more consistent
+   - Capitalized Manim where necessary
+   - Fixed grammar referring to Graphviz dependency
+
+* :pr:`2911`: fix: SoundExample video autoplaying with sound
+
+
+* :pr:`2914`: Add conda installation docs
+
+
+* :pr:`2931`: Update mapbox-earcut
+   This PR updates the version of `mapbox_earcut` to `1.0.0`.
+
+* :pr:`2932`: Fix whitespace
+   Fix whitespace s.t. docs are rendered properly.
+
+* :pr:`2991`: Migrate more `os.path` to `pathlib` in tests
+
+
+* :pr:`2995`: Add encoding for `open()` function in text_file_writing module
+
+
