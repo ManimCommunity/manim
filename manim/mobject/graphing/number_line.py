@@ -562,9 +562,8 @@ class NumberLine(Line):
         direction = self.label_direction if direction is None else direction
         buff = self.line_to_number_buff if buff is None else buff
         font_size = self.font_size if font_size is None else font_size
-        self.label_constructor = (
-            self.label_constructor if label_constructor is None else label_constructor
-        )
+        if label_constructor is None:
+            label_constructor = self.label_constructor
 
         labels = VGroup()
         for x, label in dict_values.items():
@@ -572,10 +571,10 @@ class NumberLine(Line):
             # TODO: remove this check and ability to call
             # this method via CoordinateSystem.add_coordinates()
             # must be explicitly called
-            if isinstance(label, str) and self.label_constructor is MathTex:
+            if isinstance(label, str) and label_constructor is MathTex:
                 label = Tex(label)
             else:
-                label = self._create_label_tex(label)
+                label = self._create_label_tex(label, label_constructor)
 
             if hasattr(label, "font_size"):
                 label.font_size = font_size
@@ -589,7 +588,7 @@ class NumberLine(Line):
         return self
 
     def _create_label_tex(
-        self, label_tex: str | float | VMobject, **kwargs
+        self, label_tex: str | float | VMobject, label_constructor, **kwargs
     ) -> VMobject:
         """Checks if the label is a :class:`~.VMobject`, otherwise, creates a
         label according to the ``label_constructor``.
@@ -610,7 +609,7 @@ class NumberLine(Line):
         if isinstance(label_tex, VMobject):
             return label_tex
         else:
-            return self.label_constructor(label_tex, **kwargs)
+            return label_constructor(label_tex, **kwargs)
 
     @staticmethod
     def _decimal_places_from_step(step) -> int:
