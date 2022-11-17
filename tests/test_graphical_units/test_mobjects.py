@@ -36,3 +36,20 @@ def test_match_style(scene):
     VGroup(square, circle).arrange()
     circle.match_style(square)
     scene.add(square, circle)
+
+
+@frames_comparison
+def test_vmobject_joint_types(scene):
+    angled_line = VMobject(stroke_width=20, color=GREEN).set_points_as_corners(
+        [
+            np.array([-2, 0, 0]),
+            np.array([0, 0, 0]),
+            np.array([-2, 1, 0]),
+        ]
+    )
+    lines = VGroup(*[angled_line.copy() for _ in range(len(LineJointType))])
+    for line, joint_type in zip(lines, LineJointType):
+        line.joint_type = joint_type
+
+    lines.arrange(RIGHT, buff=1)
+    scene.add(lines)

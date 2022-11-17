@@ -122,7 +122,7 @@ class LogBase(_ScaleBase):
         ----------
         base
             The base of the log, by default 10.
-        custom_labels : bool, optional
+        custom_labels
             For use with :class:`~.Axes`:
             Whetherer or not to include ``LaTeX`` axis labels, by default True.
 

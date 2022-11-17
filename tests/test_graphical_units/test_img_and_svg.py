@@ -243,6 +243,17 @@ def test_RotateTransform(scene):
 
 
 @frames_comparison
+def test_path_multiple_moves(scene):
+    svg_obj = SVGMobject(
+        get_svg_resource("path_multiple_moves.svg"),
+        fill_color=WHITE,
+        stroke_color=WHITE,
+        stroke_width=3,
+    )
+    scene.add(svg_obj)
+
+
+@frames_comparison
 def test_ImageMobject(scene):
     file_path = get_svg_resource("tree_img_640x351.png")
     im1 = ImageMobject(file_path).shift(4 * LEFT + UP)
