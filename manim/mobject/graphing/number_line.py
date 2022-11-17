@@ -588,7 +588,7 @@ class NumberLine(Line):
         return self
 
     def _create_label_tex(
-        self, label_tex: str | float | VMobject, label_constructor, **kwargs
+        self, label_tex: str | float | VMobject, label_constructor=None, **kwargs
     ) -> VMobject:
         """Checks if the label is a :class:`~.VMobject`, otherwise, creates a
         label according to the ``label_constructor``.
@@ -605,7 +605,8 @@ class NumberLine(Line):
         :class:`~.VMobject`
             The label.
         """
-
+        if label_constructor is None:
+            label_constructor = self.label_constructor
         if isinstance(label_tex, VMobject):
             return label_tex
         else:
