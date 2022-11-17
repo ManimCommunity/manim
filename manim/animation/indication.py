@@ -612,17 +612,17 @@ class Circumscribe(Succession):
         color: Color = YELLOW,
         run_time=1,
         stroke_width=DEFAULT_STROKE_WIDTH,
+        z_index: int = 0,
         **kwargs
     ):
         if shape is Rectangle:
             frame = SurroundingRectangle(
-                mobject,
-                color,
-                buff,
-                stroke_width=stroke_width,
+                mobject, color, buff, stroke_width=stroke_width, z_index=z_index
             )
         elif shape is Circle:
-            frame = Circle(color=color, stroke_width=stroke_width).surround(
+            frame = Circle(
+                color=color, stroke_width=stroke_width, z_index=z_index
+            ).surround(
                 mobject,
                 buffer_factor=1,
             )
