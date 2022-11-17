@@ -8,9 +8,8 @@ import json
 import os
 import shutil
 import subprocess
-import sys
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import srt
@@ -21,7 +20,7 @@ from manim import __version__
 
 from .. import config, logger
 from .._config.logger_utils import set_file_logger
-from ..constants import GIF_FILE_EXTENSION
+from ..constants import RendererType
 from ..utils.file_ops import (
     add_extension_if_not_present,
     add_version_before_extension,
@@ -35,6 +34,9 @@ from ..utils.file_ops import (
 )
 from ..utils.sounds import get_full_sound_file_path
 from .section import DefaultSectionType, Section
+
+if TYPE_CHECKING:
+    from manim.renderer.opengl_renderer import OpenGLRenderer
 
 
 class SceneFileWriter:
@@ -146,7 +148,7 @@ class SceneFileWriter:
 
             if is_gif_format():
                 self.gif_file_path = add_extension_if_not_present(
-                    self.output_name, GIF_FILE_EXTENSION
+                    self.output_name, ".gif"
                 )
 
                 if not config["output_file"]:
@@ -200,13 +202,13 @@ class SceneFileWriter:
             ),
         )
 
-    def add_partial_movie_file(self, hash_animation):
+    def add_partial_movie_file(self, hash_animation: str):
         """Adds a new partial movie file path to `scene.partial_movie_files` and current section from a hash.
         This method will compute the path from the hash. In addition to that it adds the new animation to the current section.
 
         Parameters
         ----------
-        hash_animation : str
+        hash_animation
             Hash of the animation.
         """
         if not hasattr(self, "partial_movie_directory") or not write_to_movie():
@@ -267,21 +269,26 @@ class SceneFileWriter:
         """
         self.audio_segment = AudioSegment.silent()
 
-    def add_audio_segment(self, new_segment, time=None, gain_to_background=None):
+    def add_audio_segment(
+        self,
+        new_segment: AudioSegment,
+        time: float | None = None,
+        gain_to_background: float | None = None,
+    ):
         """
         This method adds an audio segment from an
         AudioSegment type object and suitable parameters.
 
         Parameters
         ----------
-        new_segment : AudioSegment
+        new_segment
             The audio segment to add
 
-        time : int, float, optional
+        time
             the timestamp at which the
             sound should be added.
 
-        gain_to_background : optional
+        gain_to_background
             The gain of the segment from the background.
         """
         if not self.includes_sound:
@@ -307,19 +314,25 @@ class SceneFileWriter:
             gain_during_overlay=gain_to_background,
         )
 
-    def add_sound(self, sound_file, time=None, gain=None, **kwargs):
+    def add_sound(
+        self,
+        sound_file: str,
+        time: float | None = None,
+        gain: float | None = None,
+        **kwargs,
+    ):
         """
         This method adds an audio segment from a sound file.
 
         Parameters
         ----------
-        sound_file : str
+        sound_file
             The path to the sound file.
 
-        time : float or int, optional
+        time
             The timestamp at which the audio should be added.
 
-        gain : optional
+        gain
             The gain of the given audio segment.
 
         **kwargs
@@ -334,52 +347,52 @@ class SceneFileWriter:
         self.add_audio_segment(new_segment, time, **kwargs)
 
     # Writers
-    def begin_animation(self, allow_write=False, file_path=None):
+    def begin_animation(self, allow_write: bool = False, file_path=None):
         """
         Used internally by manim to stream the animation to FFMPEG for
         displaying or writing to a file.
 
         Parameters
         ----------
-        allow_write : bool, optional
+        allow_write
             Whether or not to write to a video file.
         """
         if write_to_movie() and allow_write:
             self.open_movie_pipe(file_path=file_path)
 
-    def end_animation(self, allow_write=False):
+    def end_animation(self, allow_write: bool = False):
         """
         Internally used by Manim to stop streaming to
         FFMPEG gracefully.
 
         Parameters
         ----------
-        allow_write : bool, optional
+        allow_write
             Whether or not to write to a video file.
         """
         if write_to_movie() and allow_write:
             self.close_movie_pipe()
 
-    def write_frame(self, frame_or_renderer):
+    def write_frame(self, frame_or_renderer: np.ndarray | OpenGLRenderer):
         """
         Used internally by Manim to write a frame to
         the FFMPEG input buffer.
 
         Parameters
         ----------
-        frame : np.array
+        frame_or_renderer
             Pixel array of the frame.
         """
-        if config.renderer == "opengl":
+        if config.renderer == RendererType.OPENGL:
             self.write_opengl_frame(frame_or_renderer)
-        else:
+        elif config.renderer == RendererType.CAIRO:
             frame = frame_or_renderer
             if write_to_movie():
                 self.writing_process.stdin.write(frame.tobytes())
             if is_png_format() and not config["dry_run"]:
                 self.output_image_from_array(frame)
 
-    def write_opengl_frame(self, renderer):
+    def write_opengl_frame(self, renderer: OpenGLRenderer):
         if write_to_movie():
             self.writing_process.stdin.write(
                 renderer.get_raw_frame_buffer_object_data(),
@@ -411,14 +424,14 @@ class SceneFileWriter:
             image.save(f"{target_dir}{self.frame_count}{ext}")
         self.frame_count += 1
 
-    def save_final_image(self, image):
+    def save_final_image(self, image: np.ndarray):
         """
         The name is a misnomer. This method saves the image
         passed to it as an in the default image directory.
 
         Parameters
         ----------
-        image : np.array
+        image
             The pixel array of the image to save.
         """
         if config["dry_run"]:
@@ -467,7 +480,7 @@ class SceneFileWriter:
         fps = config["frame_rate"]
         if fps == int(fps):  # fps is integer
             fps = int(fps)
-        if config.renderer == "opengl":
+        if config.renderer == RendererType.OPENGL:
             width, height = self.renderer.get_pixel_shape()
         else:
             height = config["pixel_height"]
@@ -492,7 +505,7 @@ class SceneFileWriter:
             "-metadata",
             f"comment=Rendered with Manim Community v{__version__}",
         ]
-        if config.renderer == "opengl":
+        if config.renderer == RendererType.OPENGL:
             command += ["-vf", "vflip"]
         if is_webm_format():
             command += ["-vcodec", "libvpx-vp9", "-auto-alt-ref", "0"]
@@ -516,12 +529,12 @@ class SceneFileWriter:
             {"path": f"'{self.partial_movie_file_path}'"},
         )
 
-    def is_already_cached(self, hash_invocation):
+    def is_already_cached(self, hash_invocation: str):
         """Will check if a file named with `hash_invocation` exists.
 
         Parameters
         ----------
-        hash_invocation : :class:`str`
+        hash_invocation
             The hash corresponding to an invocation to either `scene.play` or `scene.wait`.
 
         Returns

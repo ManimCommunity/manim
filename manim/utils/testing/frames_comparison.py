@@ -45,10 +45,6 @@ def frames_comparison(
 
     Parameters
     ----------
-    test_name
-        The name of the test.
-    module_name
-        The module which the test belongs to.
     last_frame
         whether the test should test the last frame, by default True.
     renderer_class
@@ -161,7 +157,7 @@ def _make_test_comparing_frames(
     file_path: Path,
     base_scene: type[Scene],
     construct: Callable[[Scene], None],
-    renderer_class,  # Renderer type, there is no superclass renderer yet .....
+    renderer_class: type,  # Renderer type, there is no superclass renderer yet .....
     is_set_test_data_test: bool,
     last_frame: bool,
     show_diff: bool,
@@ -171,15 +167,15 @@ def _make_test_comparing_frames(
 
     Parameters
     ----------
-    file_path : Path
+    file_path
         The path of the control frames.
-    base_scene : Type[Scene]
+    base_scene
         The base scene class.
-    construct : Callable[[Scene], None]
+    construct
         The construct method (= the test function)
-    renderer_class : [type]
+    renderer_class
         The renderer base class.
-    show_diff : bool
+    show_diff
         whether to visually show_diff (see --show_diff)
 
     Returns

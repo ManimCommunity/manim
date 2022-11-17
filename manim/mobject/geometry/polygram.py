@@ -478,7 +478,7 @@ class Triangle(RegularPolygon):
 
     Parameters
     ----------
-    kwargs : Any
+    kwargs
         Additional arguments to be passed to :class:`RegularPolygon`
 
     Examples
@@ -503,21 +503,21 @@ class Rectangle(Polygon):
 
     Parameters
     ----------
-    color : :class:`~.Colors`, optional
+    color
         The color of the rectangle.
-    height : :class:`float`, optional
+    height
         The vertical height of the rectangle.
-    width : :class:`float`, optional
+    width
         The horizontal width of the rectangle.
-    grid_xstep : :class:`float`, optional
+    grid_xstep
         Space between vertical grid lines.
-    grid_ystep : :class:`float`, optional
+    grid_ystep
         Space between horizontal grid lines.
-    mark_paths_closed : :class:`bool`, optional
+    mark_paths_closed
         No purpose.
-    close_new_points : :class:`bool`, optional
+    close_new_points
         No purpose.
-    kwargs : Any
+    kwargs
         Additional arguments to be passed to :class:`Polygon`
 
     Examples
@@ -541,8 +541,8 @@ class Rectangle(Polygon):
         width: float = 4.0,
         grid_xstep: float | None = None,
         grid_ystep: float | None = None,
-        mark_paths_closed=True,
-        close_new_points=True,
+        mark_paths_closed: bool = True,
+        close_new_points: bool = True,
         **kwargs,
     ):
         super().__init__(UR, UL, DL, DR, color=color, **kwargs)
@@ -586,9 +586,9 @@ class Square(Rectangle):
 
     Parameters
     ----------
-    side_length : :class:`float`, optional
+    side_length
         The length of the sides of the square.
-    kwargs : Any
+    kwargs
         Additional arguments to be passed to :class:`Rectangle`.
 
     Examples
@@ -604,7 +604,7 @@ class Square(Rectangle):
                 self.add(square_1, square_2, square_3)
     """
 
-    def __init__(self, side_length=2.0, **kwargs):
+    def __init__(self, side_length: float = 2.0, **kwargs):
         self.side_length = side_length
         super().__init__(height=side_length, width=side_length, **kwargs)
 
@@ -614,9 +614,9 @@ class RoundedRectangle(Rectangle):
 
     Parameters
     ----------
-    corner_radius : :class:`float`, optional
+    corner_radius
         The curvature of the corners of the rectangle.
-    kwargs : Any
+    kwargs
         Additional arguments to be passed to :class:`Rectangle`
 
     Examples
@@ -633,7 +633,7 @@ class RoundedRectangle(Rectangle):
                 self.add(rect_group)
     """
 
-    def __init__(self, corner_radius=0.5, **kwargs):
+    def __init__(self, corner_radius: float = 0.5, **kwargs):
         super().__init__(**kwargs)
         self.corner_radius = corner_radius
         self.round_corners(self.corner_radius)
@@ -644,9 +644,9 @@ class Cutout(VMobject, metaclass=ConvertToOpenGL):
 
     Parameters
     ----------
-    main_shape : :class:`~.VMobject`
+    main_shape
         The primary shape from which cutouts are made.
-    mobjects : :class:`~.VMobject`
+    mobjects
         The smaller shapes which are to be cut out of the ``main_shape``.
     kwargs
         Further keyword arguments that are passed to the constructor of
@@ -674,7 +674,7 @@ class Cutout(VMobject, metaclass=ConvertToOpenGL):
                 self.wait()
     """
 
-    def __init__(self, main_shape, *mobjects, **kwargs):
+    def __init__(self, main_shape: VMobject, *mobjects: VMobject, **kwargs):
         super().__init__(**kwargs)
         self.append_points(main_shape.points)
         if main_shape.get_direction() == "CW":

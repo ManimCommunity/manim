@@ -7,6 +7,7 @@ __all__ = [
 ]
 
 import html
+import os
 import re
 from pathlib import Path
 
@@ -90,45 +91,45 @@ class Code(VGroup):
     ----------
     file_name
         Name of the code file to display.
-    code : :class:`str`
+    code
         If ``file_name`` is not specified, a code string can be
         passed directly.
-    tab_width : :class:`int`, optional
+    tab_width
         Number of space characters corresponding to a tab character. Defaults to 3.
-    line_spacing : :class:`float`, optional
+    line_spacing
         Amount of space between lines in relation to font size. Defaults to 0.3, which means 30% of font size.
-    font_size : class:`float`, optional
+    font_size
         A number which scales displayed code. Defaults to 24.
-    font : :class:`str`, optional
+    font
          The name of the text font to be used. Defaults to ``"Monospac821 BT"``.
-    stroke_width : class:`float`, optional
+    stroke_width
         Stroke width for text. 0 is recommended, and the default.
-    margin: class :`float`, optional
+    margin
         Inner margin of text from the background. Defaults to 0.3.
-    indentation_chars : :class:`str`, optional
+    indentation_chars
         "Indentation chars" refers to the spaces/tabs at the beginning of a given code line. Defaults to ``"    "`` (spaces).
-    background : :class:`str`, optional
+    background
         Defines the background's type. Currently supports only ``"rectangle"`` (default) and ``"window"``.
-    background_stroke_width : class:`float`, optional
+    background_stroke_width
         Defines the stroke width of the background. Defaults to 1.
-    background_stroke_color : class:`str`, optional
+    background_stroke_color
         Defines the stroke color for the background. Defaults to ``WHITE``.
-    corner_radius : :class:`float`, optional
+    corner_radius
         Defines the corner radius for the background. Defaults to 0.2.
-    insert_line_no : :class:`bool`, optional
+    insert_line_no
         Defines whether line numbers should be inserted in displayed code. Defaults to ``True``.
-    line_no_from : :class:`int`, optional
+    line_no_from
         Defines the first line's number in the line count. Defaults to 1.
-    line_no_buff : :class:`float`, optional
+    line_no_buff
         Defines the spacing between line numbers and displayed code. Defaults to 0.4.
-    style : :class:`str`, optional
+    style
         Defines the style type of displayed code. You can see possible names of styles in with :attr:`styles_list`. Defaults to ``"vim"``.
-    language : Optional[:class:`str`], optional
+    language
         Specifies the programming language the given code was written in. If ``None``
         (the default), the language will be automatically detected. For the list of
         possible options, visit https://pygments.org/docs/lexers/ and look for
         'aliases or short names'.
-    generate_html_file : :class:`bool`, optional
+    generate_html_file
         Defines whether to generate highlighted html code to the folder `assets/codes/generated_html_files`. Defaults to `False`.
 
     Attributes
@@ -153,25 +154,25 @@ class Code(VGroup):
 
     def __init__(
         self,
-        file_name: str | os.PathLike = None,
-        code=None,
-        tab_width=3,
-        line_spacing=0.3,
-        font_size=24,
-        font="Monospac821 BT",
-        stroke_width=0,
-        margin=0.3,
-        indentation_chars="    ",
-        background="rectangle",  # or window
-        background_stroke_width=1,
-        background_stroke_color=WHITE,
-        corner_radius=0.2,
-        insert_line_no=True,
-        line_no_from=1,
-        line_no_buff=0.4,
-        style="vim",
-        language=None,
-        generate_html_file=False,
+        file_name: str | os.PathLike | None = None,
+        code: str | None = None,
+        tab_width: int = 3,
+        line_spacing: float = 0.3,
+        font_size: float = 24,
+        font: str = "Monospac821 BT",
+        stroke_width: float = 0,
+        margin: float = 0.3,
+        indentation_chars: str = "    ",
+        background: str = "rectangle",  # or window
+        background_stroke_width: float = 1,
+        background_stroke_color: str = WHITE,
+        corner_radius: float = 0.2,
+        insert_line_no: bool = True,
+        line_no_from: int = 1,
+        line_no_buff: float = 0.4,
+        style: str = "vim",
+        language: str | None = None,
+        generate_html_file: bool = False,
         **kwargs,
     ):
         super().__init__(
@@ -472,12 +473,12 @@ class Code(VGroup):
                     self.code_json[code_json_line_index].append([text, color])
         # print(self.code_json)
 
-    def _correct_non_span(self, line_str):
+    def _correct_non_span(self, line_str: str):
         """Function put text color to those strings that don't have one according to background_color of displayed code.
 
         Parameters
         ---------
-        line_str : :class:`str`
+        line_str
             Takes a html element's string to put color to it according to background_color of displayed code.
 
         Returns
@@ -525,31 +526,31 @@ class Code(VGroup):
 
 
 def _hilite_me(
-    code,
-    language,
-    style,
-    insert_line_no,
-    divstyles,
-    file_path,
-    line_no_from,
+    code: str,
+    language: str,
+    style: str,
+    insert_line_no: bool,
+    divstyles: str,
+    file_path: Path,
+    line_no_from: int,
 ):
     """Function to highlight code from string to html.
 
     Parameters
     ---------
-    code : :class:`str`
+    code
         Code string.
-    language : :class:`str`
+    language
         The name of the programming language the given code was written in.
-    style : :class:`str`
+    style
         Code style name.
-    insert_line_no : :class:`bool`
+    insert_line_no
         Defines whether line numbers should be inserted in the html file.
-    divstyles : :class:`str`
+    divstyles
         Some html css styles.
-    file_path : :class:`pathlib.Path`
+    file_path
         Path of code file.
-    line_no_from : :class:`int`
+    line_no_from
         Defines the first line's number in the line count.
     """
     style = style or "colorful"
@@ -578,14 +579,14 @@ def _hilite_me(
     return html
 
 
-def _insert_line_numbers_in_html(html, line_no_from):
+def _insert_line_numbers_in_html(html: str, line_no_from: int):
     """Function that inserts line numbers in the highlighted HTML code.
 
     Parameters
     ---------
-    html : :class:`str`
+    html
         html string of highlighted code.
-    line_no_from : :class:`int`
+    line_no_from
         Defines the first line's number in the line count.
 
     Returns

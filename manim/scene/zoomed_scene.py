@@ -132,14 +132,14 @@ class ZoomedScene(MovingCameraScene):
         self.zoomed_camera = zoomed_camera
         self.zoomed_display = zoomed_display
 
-    def activate_zooming(self, animate=False):
+    def activate_zooming(self, animate: bool = False):
         """
         This method is used to activate the zooming for
         the zoomed_camera.
 
         Parameters
         ----------
-        animate : bool, optional
+        animate
             Whether or not to animate the activation
             of the zoomed camera.
         """
@@ -153,13 +153,13 @@ class ZoomedScene(MovingCameraScene):
             self.zoomed_display,
         )
 
-    def get_zoom_in_animation(self, run_time=2, **kwargs):
+    def get_zoom_in_animation(self, run_time: float = 2, **kwargs):
         """
         Returns the animation of camera zooming in.
 
         Parameters
         ----------
-        run_time : int or float, optional
+        run_time
             The run_time of the animation of the camera zooming in.
         **kwargs
             Any valid keyword arguments of ApplyMethod()
