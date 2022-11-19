@@ -8,6 +8,7 @@ __all__ = [
 
 import itertools as it
 from copy import copy
+from enum import Enum
 from typing import Hashable, Iterable
 
 import networkx as nx
@@ -24,6 +25,11 @@ from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.text.tex_mobject import MathTex
 from manim.mobject.types.vectorized_mobject import VMobject
 from manim.utils.color import BLACK
+
+
+class GraphType(Enum):
+    UNDIRECTED = nx.Graph
+    DIRECTED = nx.DiGraph
 
 
 def _determine_graph_layout(
@@ -207,7 +213,7 @@ def _tree_layout(
     return {v: (np.array([x, y, 0]) - center) * sf for v, (x, y) in pos.items()}
 
 
-class Graph(VMobject, metaclass=ConvertToOpenGL):
+class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
     """A graph (that is, a collection of vertices connected with edges).
 
     Graphs can be instantiated by passing both a list of (distinct, hashable)
@@ -445,38 +451,6 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
                 self.play(Create(
                     Graph(list(G.nodes), list(G.edges), layout="tree", root_vertex="ROOT")))
 
-    You can also create a directed graph with the "DiGraph" constructor
-
-    .. manim:: DiGraph
-
-        class DiGraph(Scene):
-            def construct(self):
-                vertices = [i for i in range(5)]
-                edges = [
-                    (0, 1),
-                    (1, 2),
-                    (3, 2),
-                    (3, 4),
-                ]
-
-                edge_config = {
-                    "stroke_width": 2,
-                    "tip_config": {"tip_length": 0.1, "tip_width": 0.05},
-                    (3, 4): {"color": RED, "tip_config": {"tip_length": 0.5, "tip_width": 0.5}},
-                }
-
-                g = Graph(
-                    vertices,
-                    edges,
-                    labels=True,
-                    layout="circular",
-                    edge_config=edge_config,
-                    constructor="DiGraph",
-                ).scale(1.4)
-
-                self.play(Create(g))
-                self.wait()
-
     The following code sample illustrates the use of the ``vertex_spacing``
     layout parameter specific to the ``"tree"`` layout. As mentioned
     above, setting ``vertex_spacing`` overrides the specified value
@@ -537,16 +511,16 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         partitions: list[list[Hashable]] | None = None,
         root_vertex: Hashable | None = None,
         edge_config: dict | None = None,
-        constructor: str = "Graph",
+        graph_type: GraphType = GraphType.UNDIRECTED,
     ) -> None:
         super().__init__()
 
-        if constructor == "Graph":
+        if graph_type == GraphType.UNDIRECTED:
             nx_graph = nx.Graph()
-        elif constructor == "DiGraph":
+        elif graph_type == GraphType.DIRECTED:
             nx_graph = nx.DiGraph()
         else:
-            raise NameError("Graph constructor must be 'Graph' or 'DiGraph'")
+            raise NotImplementedError("graph_type must be a GraphType")
 
         nx_graph.add_nodes_from(vertices)
         nx_graph.add_edges_from(edges)
@@ -623,8 +597,8 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         self.default_edge_config = default_edge_config
         self.edges = {
             (u, v): edge_type(
-                self[u],
-                self[v],
+                self[u].get_center() if graph_type == GraphType.UNDIRECTED else self[u],
+                self[v].get_center() if graph_type == GraphType.UNDIRECTED else self[v],
                 z_index=-1,
                 **self._edge_config[(u, v)],
             )
@@ -632,7 +606,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         }
 
         # Add tips in case of directed graph
-        if type(nx_graph) == nx.DiGraph:
+        if graph_type == GraphType.DIRECTED:
             default_tip_config = {
                 "tip_shape": ArrowTriangleFilledTip,
                 "tip_length": 0.1,
@@ -663,15 +637,11 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
         self.add_updater(update_edges)
 
+    def update_edges(graph):
+        pass
+
     def __getitem__(self: Graph, v: Hashable) -> Mobject:
         return self.vertices[v]
-
-    def __repr__(self: Graph) -> str:
-        if type(self._graph) == nx.Graph:
-            graph = "Graph"
-        elif type(self._graph) == nx.DiGraph:
-            graph = "Directed graph"
-        return f"{graph} on {len(self.vertices)} vertices and {len(self.edges)} edges"
 
     def _create_vertex(
         self,
@@ -1204,13 +1174,11 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
                     self.play(Uncreate(G))
 
         """
-        if type(nxgraph) == nx.classes.graph.Graph:
-            constructor = nx.Graph
-        elif type(nxgraph) == nx.classes.digraph.DiGraph:
-            constructor = nx.DiGraph
-        return Graph(
-            list(nxgraph.nodes), list(nxgraph.edges), constructor=constructor, **kwargs
-        )
+        graph_type = GraphType(type(nxgraph))
+        if graph_type == GraphType.UNDIRECTED:
+            return Graph(list(nxgraph.nodes), list(nxgraph.edges), **kwargs)
+        elif graph_type == GraphType.DIRECTED:
+            return DiGraph(list(nxgraph.nodes), list(nxgraph.edges), **kwargs)
 
     def change_layout(
         self,
@@ -1251,3 +1219,129 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         for v in self.vertices:
             self[v].move_to(self._layout[v])
         return self
+
+
+class Graph(GenericGraph):
+    """
+    Create an undirected graph
+    """
+
+    def __init__(
+        self,
+        vertices: list[Hashable],
+        edges: list[tuple[Hashable, Hashable]],
+        labels: bool | dict = False,
+        label_fill_color: str = BLACK,
+        layout: str | dict = "spring",
+        layout_scale: float | tuple = 2,
+        layout_config: dict | None = None,
+        vertex_type: type[Mobject] = Dot,
+        vertex_config: dict | None = None,
+        vertex_mobjects: dict | None = None,
+        edge_type: type[Mobject] = Line,
+        partitions: list[list[Hashable]] | None = None,
+        root_vertex: Hashable | None = None,
+        edge_config: dict | None = None,
+    ) -> None:
+        super().__init__(
+            vertices,
+            edges,
+            labels,
+            label_fill_color,
+            layout,
+            layout_scale,
+            layout_config,
+            vertex_type,
+            vertex_config,
+            vertex_mobjects,
+            edge_type,
+            partitions,
+            root_vertex,
+            edge_config,
+            graph_type=GraphType.UNDIRECTED,
+        )
+
+    def update_edges(graph):
+        for (u, v), edge in graph.edges.items():
+            edge._set_start_and_end_attrs(graph[u], graph[v])
+
+    def __repr__(self: Graph) -> str:
+        return f"Undirected graph on {len(self.vertices)} vertices and {len(self.edges)} edges"
+
+
+class DiGraph(GenericGraph):
+    """
+    A directed graph
+
+    .. manim:: DiGraph
+
+        class ExampleDiGraph(Scene):
+            def construct(self):
+                vertices = [i for i in range(5)]
+                edges = [
+                    (0, 1),
+                    (1, 2),
+                    (3, 2),
+                    (3, 4),
+                ]
+
+                edge_config = {
+                    "stroke_width": 2,
+                    "tip_config": {"tip_length": 0.1, "tip_width": 0.05},
+                    (3, 4): {"color": RED, "tip_config": {"tip_length": 0.5, "tip_width": 0.5}},
+                }
+
+                g = Graph(
+                    vertices,
+                    edges,
+                    labels=True,
+                    layout="circular",
+                    edge_config=edge_config,
+                    constructor="DiGraph",
+                ).scale(1.4)
+
+                self.play(Create(g))
+                self.wait()
+    """
+
+    def __init__(
+        self,
+        vertices: list[Hashable],
+        edges: list[tuple[Hashable, Hashable]],
+        labels: bool | dict = False,
+        label_fill_color: str = BLACK,
+        layout: str | dict = "spring",
+        layout_scale: float | tuple = 2,
+        layout_config: dict | None = None,
+        vertex_type: type[Mobject] = Dot,
+        vertex_config: dict | None = None,
+        vertex_mobjects: dict | None = None,
+        edge_type: type[Mobject] = Line,
+        partitions: list[list[Hashable]] | None = None,
+        root_vertex: Hashable | None = None,
+        edge_config: dict | None = None,
+    ) -> None:
+        super().__init__(
+            vertices,
+            edges,
+            labels,
+            label_fill_color,
+            layout,
+            layout_scale,
+            layout_config,
+            vertex_type,
+            vertex_config,
+            vertex_mobjects,
+            edge_type,
+            partitions,
+            root_vertex,
+            edge_config,
+            graph_type=GraphType.DIRECTED,
+        )
+
+    def update_edges(graph):
+        for (u, v), edge in graph.edges.items():
+            edge.put_start_and_end_on(graph[u], graph[v])
+
+    def __repr__(self: DiGraph) -> str:
+        return f"Directed graph on {len(self.vertices)} vertices and {len(self.edges)} edges"
