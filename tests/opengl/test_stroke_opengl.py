@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-
 import manim.utils.color as C
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 

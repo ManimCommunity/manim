@@ -80,8 +80,8 @@ from ..animation.composition import AnimationGroup
 from ..animation.creation import Create, Write
 from ..animation.fading import FadeIn
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
-from .utils import get_vectorized_mobject_class
 from ..utils.color import BLACK, YELLOW, ManimColor, ParsableManimColor
+from .utils import get_vectorized_mobject_class
 
 
 class Table(VGroup):
