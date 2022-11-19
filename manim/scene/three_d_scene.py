@@ -20,7 +20,7 @@ from .. import config
 from ..animation.animation import Animation
 from ..animation.transform import Transform
 from ..camera.three_d_camera import ThreeDCamera
-from ..constants import DEGREES
+from ..constants import DEGREES, RendererType
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from ..renderer.opengl_renderer import OpenGLCamera
@@ -117,7 +117,7 @@ class ThreeDScene(Scene):
         # can begin and end smoothly
         about: str = about.lower()
         try:
-            if config.renderer != "opengl":
+            if config.renderer == RendererType.CAIRO:
                 trackers = {
                     "theta": self.camera.theta_tracker,
                     "phi": self.camera.phi_tracker,
@@ -126,7 +126,7 @@ class ThreeDScene(Scene):
                 x: ValueTracker = trackers[about]
                 x.add_updater(lambda m, dt: x.increment_value(rate * dt))
                 self.add(x)
-            else:
+            elif config.renderer == RendererType.OPENGL:
                 cam: OpenGLCamera = self.camera
                 methods = {
                     "theta": cam.increment_theta,
@@ -144,7 +144,7 @@ class ThreeDScene(Scene):
         """
         about: str = about.lower()
         try:
-            if config.renderer != "opengl":
+            if config.renderer == RendererType.CAIRO:
                 trackers = {
                     "theta": self.camera.theta_tracker,
                     "phi": self.camera.phi_tracker,
@@ -153,7 +153,7 @@ class ThreeDScene(Scene):
                 x: ValueTracker = trackers[about]
                 x.clear_updaters()
                 self.remove(x)
-            else:
+            elif config.renderer == RendererType.OPENGL:
                 self.camera.clear_updaters()
         except Exception:
             raise ValueError("Invalid ambient rotation angle.")
@@ -254,7 +254,7 @@ class ThreeDScene(Scene):
         """
         anims = []
 
-        if config.renderer != "opengl":
+        if config.renderer == RendererType.CAIRO:
             self.camera: ThreeDCamera
             value_tracker_pairs = [
                 (phi, self.camera.phi_tracker),
@@ -268,7 +268,7 @@ class ThreeDScene(Scene):
                     anims.append(tracker.animate.set_value(value))
             if frame_center is not None:
                 anims.append(self.camera._frame_center.animate.move_to(frame_center))
-        else:
+        elif config.renderer == RendererType.OPENGL:
             cam: OpenGLCamera = self.camera
             cam2 = cam.copy()
             methods = {
@@ -312,7 +312,7 @@ class ThreeDScene(Scene):
         # it is required to redraw every object. These lines remove frame_center from the Scene once
         # its animation is done, ensuring that manim does not think that it is moving. Since the
         # frame_center is never actually drawn, this shouldn't break anything.
-        if frame_center is not None and config.renderer != "opengl":
+        if frame_center is not None and config.renderer == RendererType.CAIRO:
             self.remove(self.camera._frame_center)
 
     def get_moving_mobjects(self, *animations: Animation):
@@ -351,10 +351,10 @@ class ThreeDScene(Scene):
                 use_static_center_func : bool
                 center_func : function
         """
-        if config.renderer != "opengl":
+        if config.renderer == RendererType.CAIRO:
             self.add(*mobjects)
             self.renderer.camera.add_fixed_orientation_mobjects(*mobjects, **kwargs)
-        else:
+        elif config.renderer == RendererType.OPENGL:
             for mob in mobjects:
                 mob: OpenGLMobject
                 mob.fix_orientation()
@@ -372,11 +372,11 @@ class ThreeDScene(Scene):
         *mobjects
             The Mobjects whose orientation must be fixed.
         """
-        if config.renderer != "opengl":
+        if config.renderer == RendererType.CAIRO:
             self.add(*mobjects)
             self.camera: ThreeDCamera
             self.camera.add_fixed_in_frame_mobjects(*mobjects)
-        else:
+        elif config.renderer == RendererType.OPENGL:
             for mob in mobjects:
                 mob: OpenGLMobject
                 mob.fix_in_frame()
@@ -394,9 +394,9 @@ class ThreeDScene(Scene):
         *mobjects
             The Mobjects whose orientation must be unfixed.
         """
-        if config.renderer != "opengl":
+        if config.renderer == RendererType.CAIRO:
             self.renderer.camera.remove_fixed_orientation_mobjects(*mobjects)
-        else:
+        elif config.renderer == RendererType.OPENGL:
             for mob in mobjects:
                 mob: OpenGLMobject
                 mob.unfix_orientation()
@@ -413,9 +413,9 @@ class ThreeDScene(Scene):
         *mobjects
             The Mobjects whose position and orientation must be unfixed.
         """
-        if config.renderer != "opengl":
+        if config.renderer == RendererType.CAIRO:
             self.renderer.camera.remove_fixed_in_frame_mobjects(*mobjects)
-        else:
+        elif config.renderer == RendererType.OPENGL:
             for mob in mobjects:
                 mob: OpenGLMobject
                 mob.unfix_from_frame()

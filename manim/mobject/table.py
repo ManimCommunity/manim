@@ -83,6 +83,7 @@ from ..animation.creation import Create, Write
 from ..animation.fading import FadeIn
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import BLACK, YELLOW
+from .utils import get_vectorized_mobject_class
 
 
 class Table(VGroup):
@@ -328,13 +329,7 @@ class Table(VGroup):
                 else:
                     # Placeholder to use arrange_in_grid if top_left_entry is not set.
                     # Import OpenGLVMobject to work with --renderer=opengl
-                    if config.renderer == "opengl":
-                        from manim.opengl import OpenGLVMobject
-
-                        dummy_class = OpenGLVMobject
-                    else:
-                        dummy_class = VMobject
-                    dummy_mobject = dummy_class()
+                    dummy_mobject = get_vectorized_mobject_class()()
                     col_labels = [dummy_mobject] + self.col_labels
                     mob_table.insert(0, col_labels)
             else:

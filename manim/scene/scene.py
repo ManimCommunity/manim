@@ -124,7 +124,7 @@ class Scene:
         self.mouse_press_callbacks = []
         self.interactive_mode = False
 
-        if config.renderer == "opengl":
+        if config.renderer == RendererType.OPENGL:
             # Items associated with interaction
             self.mouse_point = OpenGLPoint()
             self.mouse_drag_point = OpenGLPoint()
@@ -424,12 +424,12 @@ class Scene:
         list
             List of mobject family members.
         """
-        if config.renderer == "opengl":
+        if config.renderer == RendererType.OPENGL:
             family_members = []
             for mob in self.mobjects:
                 family_members.extend(mob.get_family())
             return family_members
-        else:
+        elif config.renderer == RendererType.CAIRO:
             return extract_mobject_family_members(
                 self.mobjects,
                 use_z_index=self.renderer.camera.use_z_index,
@@ -451,7 +451,7 @@ class Scene:
             The same scene after adding the Mobjects in.
 
         """
-        if config.renderer == "opengl":
+        if config.renderer == RendererType.OPENGL:
             new_mobjects = []
             new_meshes = []
             for mobject_or_mesh in mobjects:
@@ -463,7 +463,7 @@ class Scene:
             self.mobjects += new_mobjects
             self.remove(*new_meshes)
             self.meshes += new_meshes
-        else:
+        elif config.renderer == RendererType.CAIRO:
             mobjects = [*mobjects, *self.foreground_mobjects]
             self.restructure_mobjects(to_remove=mobjects)
             self.mobjects += mobjects
@@ -498,7 +498,7 @@ class Scene:
         *mobjects
             The mobjects to remove.
         """
-        if config.renderer == "opengl":
+        if config.renderer == RendererType.OPENGL:
             mobjects_to_remove = []
             meshes_to_remove = set()
             for mobject_or_mesh in mobjects:
@@ -514,7 +514,7 @@ class Scene:
                 filter(lambda mesh: mesh not in set(meshes_to_remove), self.meshes),
             )
             return self
-        else:
+        elif config.renderer == RendererType.CAIRO:
             for list_name in "mobjects", "foreground_mobjects":
                 self.restructure_mobjects(mobjects, list_name, False)
             return self
@@ -1162,7 +1162,7 @@ class Scene:
             animation._setup_scene(self)
             animation.begin()
 
-        if config.renderer != "opengl":
+        if config.renderer == RendererType.CAIRO:
             # Paint all non-moving objects onto the screen, so they don't
             # have to be rendered every frame
             (
