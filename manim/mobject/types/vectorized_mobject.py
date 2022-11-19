@@ -127,6 +127,7 @@ class VMobject(Mobject):
         super().__init__(**kwargs)
         self.submobjects: list[VMobject]
 
+        # TODO: Maybe that's a little weird to do after all ? Having a default color may help
         if fill_color:
             self.fill_color: ManimColor = ManimColor.parse(fill_color)
         if stroke_color:
@@ -424,9 +425,10 @@ class VMobject(Mobject):
         """
         return self.get_fill_opacities()[0]
 
+    # TODO: Does this just do a copy?
     def get_fill_colors(self):
         return [
-            colour.Color(rgb=rgba[:3]) if rgba.any() else None
+            ManimColor.parse(rgba[:3]) if rgba.any() else None
             for rgba in self.get_fill_rgbas()
         ]
 
@@ -462,7 +464,7 @@ class VMobject(Mobject):
 
     def get_stroke_colors(self, background=False):
         return [
-            colour.Color(rgb=rgba[:3]) if rgba.any() else None
+            ManimColor(rgba[:3]) if rgba.any() else None
             for rgba in self.get_stroke_rgbas(background)
         ]
 

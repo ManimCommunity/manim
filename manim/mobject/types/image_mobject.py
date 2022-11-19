@@ -6,7 +6,6 @@ __all__ = ["AbstractImageMobject", "ImageMobject", "ImageMobjectFromCamera"]
 
 import pathlib
 
-import colour
 import numpy as np
 from PIL import Image
 from PIL.Image import Resampling
@@ -276,7 +275,7 @@ class ImageMobject(AbstractImageMobject):
 
     def get_style(self):
         return {
-            "fill_color": colour.rgb2hex(self.color.get_rgb()),
+            "fill_color": ManimColor(self.color.get_rgb()).to_hex(),
             "fill_opacity": self.fill_opacity,
         }
 

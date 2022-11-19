@@ -10,7 +10,6 @@ from typing import Iterable, Sequence
 
 import moderngl
 import numpy as np
-from colour import Color
 
 from manim import config, logger
 from manim.constants import *
@@ -145,7 +144,7 @@ class OpenGLMobject:
         self.init_updaters()
         # self.init_event_listners()
         self.init_points()
-        self.color = Color(color) if color else None
+        self.color: ManimColor = ManimColor.parse(color) if color else None
         self.init_colors()
 
         self.shader_indices = None
@@ -1970,12 +1969,12 @@ class OpenGLMobject:
         for mob in self.get_family(recurse):
             mob.data[name] = rgbas.copy()
 
-    def set_color(self, color, opacity=None, recurse=True):
+    def set_color(self, color: ParsableManimColor | None, opacity=None, recurse=True):
         self.set_rgba_array(color, opacity, recurse=False)
         # Recurse to submobjects differently from how set_rgba_array
         # in case they implement set_color differently
         if color is not None:
-            self.color = Color(color)
+            self.color: ManimColor = ManimColor.parse(color)
         if opacity is not None:
             self.opacity = opacity
         if recurse:

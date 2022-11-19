@@ -93,7 +93,12 @@ class Mobject:
         cls._original__init__ = cls.__init__
 
     def __init__(
-        self, color: ManimColor = WHITE, name=None, dim=3, target=None, z_index=0
+        self,
+        color: ParsableManimColor = WHITE,
+        name=None,
+        dim=3,
+        target=None,
+        z_index=0,
     ):
         self.name = self.__class__.__name__ if name is None else name
         self.dim = dim
@@ -103,7 +108,7 @@ class Mobject:
         self.submobjects = []
         self.updaters = []
         self.updating_suspended = False
-        self.color: ManimColor = color
+        self.color: ManimColor = ManimColor.parse(color)
 
         self.reset_points()
         self.generate_points()

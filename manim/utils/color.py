@@ -5,7 +5,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import Iterable, TypeAlias, TypedDict
 
-from manim._config import logger
+# from manim._config import logger
 
 __all__ = [
     "color_to_rgb",
@@ -193,9 +193,9 @@ class ManimColor:
         use_floats: bool = True,
     ) -> None:
         if isinstance(value, ManimColor):
-            logger.warning(
-                "ManimColor was passed another ManimColor. This is probably not what you want. Created a copy of the passed ManimColor instead."
-            )
+            # logger.warning(
+            #     "ManimColor was passed another ManimColor. This is probably not what you want. Created a copy of the passed ManimColor instead."
+            # )
             self.value = value.value
         elif isinstance(value, int):
             self.value: int = value << 8 | int(alpha * 255)
@@ -219,7 +219,7 @@ class ManimColor:
                 elif length == 4:
                     self.value: int = ManimColor.int_from_int_rgba(value)
         else:
-            logger.error(f"Invalid color value: {value}")
+            # logger.error(f"Invalid color value: {value}")
             raise TypeError(
                 f"ManimColor only accepts int, str, list[int, int, int], list[int, int, int, int], list[float, float, float], list[float, float, float, float], not {type(value)}"
             )
@@ -288,10 +288,10 @@ class ManimColor:
             ]
         )
 
-    def to_rgb_with_alpha(self, *, alpha: float) -> list[float, float, float, float]:
+    def to_rgb_with_alpha(self, alpha: float) -> list[float, float, float, float]:
         return self.to_int_rgb_with_alpha(alpha) / 255
 
-    def to_int_rgb_with_alpha(self, *, alpha: float) -> list[int, int, int, int]:
+    def to_int_rgb_with_alpha(self, alpha: float) -> list[int, int, int, int]:
         return np.array(
             [
                 (self.value >> 24) & 0xFF,
