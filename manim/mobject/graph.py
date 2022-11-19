@@ -931,7 +931,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
             >>> removed = G.remove_vertices(2, 3); removed
             VGroup(Line, Line, Dot, Dot)
             >>> G
-            Graph on 1 vertices and 0 edges
+            Undirected graph on 1 vertices and 0 edges
 
         """
         mobjects = []
@@ -1265,7 +1265,24 @@ class DiGraph(GenericGraph):
 
     .. manim:: DiGraph
 
-        class ExampleDiGraph(Scene):
+        class MovingDiGraph(Scene):
+            def construct(self):
+                vertices = [1, 2, 3, 4]
+                edges = [(1, 2), (2, 3), (3, 4), (1, 3), (1, 4)]
+
+                g = DiGraph(vertices, edges)
+
+                self.add(g)
+                self.play(
+                    g[1].animate.move_to([1, 1, 1]),
+                    g[2].animate.move_to([-1, 1, 2]),
+                    g[3].animate.move_to([1, -1, -1]),
+                    g[4].animate.move_to([-1, -1, 0]),
+                )
+                self.wait()
+
+
+        class CustomDiGraph(Scene):
             def construct(self):
                 vertices = [i for i in range(5)]
                 edges = [
@@ -1281,13 +1298,12 @@ class DiGraph(GenericGraph):
                     (3, 4): {"color": RED, "tip_config": {"tip_length": 0.5, "tip_width": 0.5}},
                 }
 
-                g = Graph(
+                g = DiGraph(
                     vertices,
                     edges,
                     labels=True,
                     layout="circular",
                     edge_config=edge_config,
-                    constructor="DiGraph",
                 ).scale(1.4)
 
                 self.play(Create(g))
@@ -1332,15 +1348,18 @@ class DiGraph(GenericGraph):
     def update_edges(self, graph):
         for (u, v), edge in graph.edges.items():
             # Tips need to be repositionned sinced otherwise they can be deformed
-            edge.pop_tips()
-            edge.put_start_and_end_on(graph[u].get_center(), graph[v].get_center())
+            # import pdb
 
-            if (u, v) in self._edge_config and "tip_config" in self._edge_config[
-                (u, v)
-            ]:
-                edge.add_tip(**self._edge_config[(u, v)]["tip_config"])
-            else:
-                edge.add_tip(**self._tip_config)
+            # pdb.set_trace()
+            edge_type = type(edge)
+            tip = edge.pop_tips()[0]
+            new_edge = edge_type(self[u], self[v], **self._edge_config[(u, v)])
+            edge.become(new_edge)
+            edge.add_tip(tip)
+            # if (u, v) in self._edge_config and "tip_config" in self._edge_config[(u, v)]:
+            #     self.edges[(u, v)] = edge.add_tip(**self._edge_config[(u, v)]["tip_config"])
+            # else:
+            #     self.edges[(u, v)] = edge.add_tip(**self._tip_config)
 
     def __repr__(self: DiGraph) -> str:
         return f"Directed graph on {len(self.vertices)} vertices and {len(self.edges)} edges"
