@@ -4,6 +4,7 @@ from __future__ import annotations
 
 __all__ = [
     "Graph",
+    "DiGraph",
 ]
 
 import itertools as it
@@ -286,8 +287,6 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         keys are the edges, and whose values are dictionaries containing
         keyword arguments for the mobject related to the corresponding edge.
         In the case of a directed graph you can further customize the tip by adding a `tip_config` dict for global styling, or by adding the dict to a specific edge_config. See examples below.
-    constructor
-        A string to specify whether to construct a directed or undirected graph. Possible constructors: "Graph","DiGraph". Defaults to "Graph" if unspecified.
 
     Examples
     --------
@@ -628,17 +627,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         self.add(*self.vertices.values())
         self.add(*self.edges.values())
 
-        def update_edges(graph):
-            for (u, v), edge in graph.edges.items():
-                if hasattr(edge, "_set_start_and_end_attrs"):
-                    edge._set_start_and_end_attrs(graph[u], graph[v])
-                elif hasattr(edge, "put_start_and_end_on"):
-                    edge.put_start_and_end_on(graph[u], graph[v])
-
-        self.add_updater(update_edges)
-
-    def update_edges(graph):
-        pass
+        self.add_updater(self.update_edges)
 
     def __getitem__(self: Graph, v: Hashable) -> Mobject:
         return self.vertices[v]
@@ -1261,9 +1250,10 @@ class Graph(GenericGraph):
             graph_type=GraphType.UNDIRECTED,
         )
 
-    def update_edges(graph):
+    def update_edges(self, graph):
         for (u, v), edge in graph.edges.items():
-            edge._set_start_and_end_attrs(graph[u], graph[v])
+            # Undirected graph has a Line edge
+            edge.put_start_and_end_on(graph[u].get_center(), graph[v].get_center())
 
     def __repr__(self: Graph) -> str:
         return f"Undirected graph on {len(self.vertices)} vertices and {len(self.edges)} edges"
@@ -1339,9 +1329,18 @@ class DiGraph(GenericGraph):
             graph_type=GraphType.DIRECTED,
         )
 
-    def update_edges(graph):
+    def update_edges(self, graph):
         for (u, v), edge in graph.edges.items():
-            edge.put_start_and_end_on(graph[u], graph[v])
+            # Tips need to be repositionned sinced otherwise they can be deformed
+            edge.pop_tips()
+            edge.put_start_and_end_on(graph[u].get_center(), graph[v].get_center())
+
+            if (u, v) in self._edge_config and "tip_config" in self._edge_config[
+                (u, v)
+            ]:
+                edge.add_tip(**self._edge_config[(u, v)]["tip_config"])
+            else:
+                edge.add_tip(**self._tip_config)
 
     def __repr__(self: DiGraph) -> str:
         return f"Directed graph on {len(self.vertices)} vertices and {len(self.edges)} edges"
