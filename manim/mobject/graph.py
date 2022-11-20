@@ -614,7 +614,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
             self._tip_config = {}
             if "tip_config" in edge_config:
                 self._tip_config = edge_config["tip_config"]
-            self._tip_config = {**self._tip_config, **default_tip_config}
+            self._tip_config = {**default_tip_config, **self._tip_config}
 
             for (u, v), edge in self.edges.items():
                 if (u, v) in edge_config and "tip_config" in edge_config[(u, v)]:
@@ -1263,7 +1263,9 @@ class DiGraph(GenericGraph):
     """
     A directed graph
 
-    .. manim:: DiGraph
+    The arrows move with the vertices by default.
+
+    .. manim:: MovingDiGraph
 
         class MovingDiGraph(Scene):
             def construct(self):
@@ -1281,6 +1283,9 @@ class DiGraph(GenericGraph):
                 )
                 self.wait()
 
+    You can customize the edges and arrow tips globally or locally
+
+    .. manim:: CustomDiGraph
 
         class CustomDiGraph(Scene):
             def construct(self):
@@ -1308,6 +1313,46 @@ class DiGraph(GenericGraph):
 
                 self.play(Create(g))
                 self.wait()
+
+    Since this implementation respects the labels boundary you can also use it for an undirected moving graph with labels
+
+    .. manim:: UndirectedMovingDiGraph
+
+        class UndirectedMovingDiGraph(Scene):
+            def construct(self):
+                vertices = [i for i in range(5)]
+                edges = [
+                    (0, 1),
+                    (1, 2),
+                    (3, 2),
+                    (3, 4),
+                ]
+
+                edge_config = {
+                    "stroke_width": 2,
+                    "tip_config": {"tip_length": 0, "tip_width": 0},
+                    (3, 4): {"color": RED},
+                }
+
+                g = DiGraph(
+                    vertices,
+                    edges,
+                    labels=True,
+                    layout="circular",
+                    edge_config=edge_config,
+                ).scale(1.4)
+
+                self.play(Create(g))
+                self.wait()
+
+                self.play(
+                    g[1].animate.move_to([1, 1, 1]),
+                    g[2].animate.move_to([-1, 1, 2]),
+                    g[3].animate.move_to([-1.5, -1.5, -1]),
+                    g[4].animate.move_to([1, -2, -1]),
+                )
+                self.wait()
+
     """
 
     def __init__(
