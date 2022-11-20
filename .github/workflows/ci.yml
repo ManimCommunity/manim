@@ -84,7 +84,7 @@ jobs:
 
       - name: Install Poetry
         run: |
-          pip install --user poetry
+          pipx install poetry
 
       - name: Setup macOS PATH
         if: runner.os == 'macOS'
