@@ -4,12 +4,13 @@ Constant definitions.
 
 from __future__ import annotations
 
+from enum import Enum
+
 import numpy as np
 from cloup import Context
 from PIL.Image import Resampling
 
 __all__ = [
-    "NOT_SETTING_FONT_MSG",
     "SCENE_NOT_FOUND_MESSAGE",
     "CHOOSE_NUMBER_MESSAGE",
     "INVALID_NUMBER_MESSAGE",
@@ -64,24 +65,17 @@ __all__ = [
     "PI",
     "TAU",
     "DEGREES",
-    "GIF_FILE_EXTENSION",
-    "FFMPEG_VERBOSITY_MAP",
-    "VERBOSITY_CHOICES",
     "QUALITIES",
     "DEFAULT_QUALITY",
-    "DEFAULT_QUALITY_SHORT",
     "EPILOG",
     "CONTEXT_SETTINGS",
     "SHIFT_VALUE",
     "CTRL_VALUE",
+    "RendererType",
+    "LineJointType",
 ]
 # Messages
-NOT_SETTING_FONT_MSG: str = """
-You haven't set font.
-If you are not using English, this may cause text rendering problem.
-You set font like:
-text = Text('your text', font='your font')
-"""
+
 SCENE_NOT_FOUND_MESSAGE: str = """
    {} is not in the script
 """
@@ -200,18 +194,6 @@ TAU: float = 2 * PI
 DEGREES: float = TAU / 360
 """The exchange rate between radians and degrees."""
 
-# gif stuff
-GIF_FILE_EXTENSION: str = ".gif"
-
-FFMPEG_VERBOSITY_MAP: dict[str, str] = {
-    "DEBUG": "error",
-    "INFO": "error",
-    "WARNING": "error",
-    "ERROR": "error",
-    "CRITICAL": "fatal",
-}
-VERBOSITY_CHOICES = FFMPEG_VERBOSITY_MAP.keys()
-
 # Video qualities
 QUALITIES: dict[str, dict[str, str | int | None]] = {
     "fourk_quality": {
@@ -253,7 +235,6 @@ QUALITIES: dict[str, dict[str, str | int | None]] = {
 }
 
 DEFAULT_QUALITY: str = "high_quality"
-DEFAULT_QUALITY_SHORT = QUALITIES[DEFAULT_QUALITY]["flag"]
 
 EPILOG = "Made with <3 by Manim Community developers."
 SHIFT_VALUE = 65505
@@ -264,3 +245,59 @@ CONTEXT_SETTINGS = Context.settings(
     align_sections=True,
     show_constraints=True,
 )
+
+
+class RendererType(Enum):
+    """An enumeration of all renderer types that can be assigned to
+    the ``config.renderer`` attribute.
+
+    Manim's configuration allows assigning string values to the renderer
+    setting, the values are then replaced by the corresponding enum object.
+    In other words, you can run::
+
+        config.renderer = "opengl"
+
+    and checking the renderer afterwards reveals that the attribute has
+    assumed the value::
+
+        <RendererType.OPENGL: 'opengl'>
+    """
+
+    CAIRO = "cairo"  #: A renderer based on the cairo backend.
+    OPENGL = "opengl"  #: An OpenGL-based renderer.
+
+
+class LineJointType(Enum):
+    """Collection of available line joint types.
+
+    See the example below for a visual illustration of the different
+    joint types.
+
+    Examples
+    --------
+
+    .. manim:: LineJointVariants
+        :save_last_frame:
+
+        class LineJointVariants(Scene):
+            def construct(self):
+                mob = VMobject(stroke_width=20, color=GREEN).set_points_as_corners([
+                    np.array([-2, 0, 0]),
+                    np.array([0, 0, 0]),
+                    np.array([-2, 1, 0]),
+                ])
+                lines = VGroup(*[mob.copy() for _ in range(len(LineJointType))])
+                for line, joint_type in zip(lines, LineJointType):
+                    line.joint_type = joint_type
+
+                lines.arrange(RIGHT, buff=1)
+                self.add(lines)
+                for line in lines:
+                    label = Text(line.joint_type.name).next_to(line, DOWN)
+                    self.add(label)
+    """
+
+    AUTO = 0
+    ROUND = 1
+    BEVEL = 2
+    MITER = 3

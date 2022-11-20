@@ -35,7 +35,7 @@ Manim is an animation engine for explanatory math videos. It's used to create pr
 
 ## Installation
 
-> **WARNING:** These instructions are for the community version _only_. Trying to use these instructions to install [3b1b/manim](https://github.com/3b1b/manim) or instructions there to install this version will cause problems. Read [this](https://docs.manim.community/en/stable/installation/versions.html) and decide which version you wish to install, then only follow the instructions for your desired version.
+> **WARNING:** These instructions are for the community version _only_. Trying to use these instructions to install [3b1b/manim](https://github.com/3b1b/manim) or instructions there to install this version will cause problems. Read [this](https://docs.manim.community/en/stable/faq/installation.html#why-are-there-different-versions-of-manim) and decide which version you wish to install, then only follow the instructions for your desired version.
 
 Manim requires a few dependencies that must be installed prior to using it. If you
 want to try it out first before installing it locally, you can do so
@@ -92,7 +92,7 @@ Some other useful flags include:
 -  `-n <number>` to skip ahead to the `n`'th animation of a scene.
 -  `-f` show the file in the file browser.
 
-For a thorough list of command line arguments, visit the [documentation](https://docs.manim.community/en/stable/tutorials/configuration.html).
+For a thorough list of command line arguments, visit the [documentation](https://docs.manim.community/en/stable/guides/configuration.html).
 
 ## Documentation
 
