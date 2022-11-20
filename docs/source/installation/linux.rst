@@ -138,6 +138,12 @@ to install with your package manager. Usually,
 `TeX Live <https://www.tug.org/texlive/>`__ is a good candidate if you don't
 care too much about disk space.
 
+For Ubuntu, sufficient latex can be installed by running:
+
+.. code-block:: bash
+
+   sudo apt install texlive texlive-latex-extra
+
 Should you choose to work with some smaller TeX distribution like
 `TinyTeX <https://yihui.org/tinytex/>`__ , the full list
 of LaTeX packages which Manim interacts with in some way (a subset might
