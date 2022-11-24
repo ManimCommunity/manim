@@ -156,8 +156,11 @@ class Animation:
                 mobject if mobject is not None else OpenGLMobject()
             )
         else:
-            self.starting_mobject: Mobject = Mobject()
-            self.mobject: Mobject = mobject if mobject is not None else Mobject()
+            self.starting_mobject: Mobject = Mobject(name=self.__class__.__name__)
+            if mobject:
+                self.mobject: Mobject = mobject
+            else:
+                self.mobject: Mobject = self.starting_mobject
         if kwargs:
             logger.debug("Animation received extra kwargs: %s", kwargs)
 
@@ -558,6 +561,8 @@ class Wait(Animation):
         super().__init__(None, run_time=run_time, rate_func=rate_func, **kwargs)
         # quick fix to work in opengl setting:
         self.mobject.shader_wrapper_list = []
+        # We do not want this animation to add a Mobject to the scene
+        self.mobject = None
 
     def begin(self) -> None:
         pass
