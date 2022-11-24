@@ -157,10 +157,7 @@ class Animation:
             )
         else:
             self.starting_mobject: Mobject = Mobject(name=self.__class__.__name__)
-            if mobject:
-                self.mobject: Mobject = mobject
-            else:
-                self.mobject: Mobject = self.starting_mobject
+            self.mobject: Mobject = mobject if mobject is not None else self.starting_mobject
         if kwargs:
             logger.debug("Animation received extra kwargs: %s", kwargs)
 
