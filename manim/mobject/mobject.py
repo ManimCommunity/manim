@@ -2801,6 +2801,7 @@ class Group(Mobject, metaclass=ConvertToOpenGL):
 
     def __init__(self, *mobjects, **kwargs):
         super().__init__(**kwargs)
+        assert None not in mobjects
         self.add(*mobjects)
 
 
