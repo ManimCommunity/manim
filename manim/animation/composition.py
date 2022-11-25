@@ -43,8 +43,11 @@ class AnimationGroup(Animation):
         self.group = group
         if self.group is None:
             mobjects = remove_list_redundancies(
-                [anim.mobject for anim in self.animations 
-                 if not anim.is_introducer() and anim.mobject is not None],
+                [
+                    anim.mobject
+                    for anim in self.animations
+                    if not anim.is_introducer() and anim.mobject is not None
+                ],
             )
             if config["renderer"] == RendererType.OPENGL:
                 self.group = OpenGLGroup(*mobjects)
