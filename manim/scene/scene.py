@@ -519,7 +519,6 @@ class Scene:
                 self.restructure_mobjects(mobjects, list_name, False)
             return self
 
-
     def replace(self, old_mobject: Mobject, new_mobject: Mobject) -> None:
         """Replace one Mobject in the scene with another, preserving draw order.
 
@@ -537,7 +536,9 @@ class Scene:
         assert old_mobject is not None
         assert new_mobject is not None
 
-        def replace_in_list(mobj_list: [Mobject], old_m: Mobject, new_m: Mobject) -> bool:
+        def replace_in_list(
+            mobj_list: list[Mobject], old_m: Mobject, new_m: Mobject
+        ) -> bool:
             # We use breadth-first search because some Mobjects get very deep and
             # we expect top-level elements to be the most common targets for replace.
             for i in range(0, len(mobj_list)):
@@ -557,10 +558,10 @@ class Scene:
 
         # Make use of short-circuiting conditionals to check mobjects and then
         # foreground_mobjects
-        replaced = (replace_in_list(self.mobjects, old_mobject, new_mobject) or
-                    replace_in_list(self.foreground_mobjects, old_mobject, new_mobject))
+        replaced = replace_in_list(
+            self.mobjects, old_mobject, new_mobject
+        ) or replace_in_list(self.foreground_mobjects, old_mobject, new_mobject)
         assert replaced, "Could not find old_mobject in Scene"
-
 
     def add_updater(self, func: Callable[[float], None]) -> None:
         """Add an update function to the scene.
