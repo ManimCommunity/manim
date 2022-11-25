@@ -74,12 +74,13 @@ def test_subcaption():
         assert subcaptions[1].end == datetime.timedelta(seconds=3)
         assert subcaptions[1].content == "Testing Scene.play subcaption interface"
 
+
 def test_replace():
     def assert_names(mobjs, names):
         assert len(mobjs) == len(names)
         for i in range(0, len(mobjs)):
             assert mobjs[i].name == names[i]
-    
+
     with tempconfig({"dry_run": True}):
         scene = Scene()
 
