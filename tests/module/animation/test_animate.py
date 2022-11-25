@@ -3,14 +3,13 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
+from manim import Scene, tempconfig
 from manim.animation.creation import Uncreate
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import Square
 from manim.mobject.mobject import override_animate
 from manim.mobject.types.vectorized_mobject import VGroup
-
-from manim import Scene, tempconfig
 
 
 def test_simple_animate():
@@ -122,6 +121,7 @@ def test_animate_with_args_misplaced():
 
     with pytest.raises(ValueError, match="must be passed before"):
         s.animate(run_time=run_time)(run_time=run_time).scale(scale_factor)
+
 
 def test_wait_does_not_add_mobjects():
     with tempconfig({"dry_run": True}):
