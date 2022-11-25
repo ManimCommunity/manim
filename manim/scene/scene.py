@@ -537,15 +537,18 @@ class Scene:
         assert old_mobject is not None
         assert new_mobject is not None
 
-        def replace_in_list(mobj_list: list[Mobject], old_m: Mobject, new_m: Mobject) -> bool:
+        def replace_in_list(mobj_list: [Mobject], old_m: Mobject, new_m: Mobject) -> bool:
+            # We use breadth-first search because some Mobjects get very deep and
+            # we expect top-level elements to be the most common targets for replace.
             for i in range(0, len(mobj_list)):
                 # Is this the old mobject?
                 if mobj_list[i] == old_m:
                     # If so, write the new object to the same spot and stop looking.
                     mobj_list[i] = new_m
                     return True
-                # It is not this object, so recursively look into submobjects
-                if replace_in_list(mobj_list[i].submobjects, old_m, new_m):
+            # Now check all the children of all these mobs.
+            for mob in mobj_list:
+                if replace_in_list(mob.submobjects, old_m, new_m):
                     # If we found it in a submobject, stop looking.
                     return True
             # If we did not find the mobject in the mobject list or any submobjects,
