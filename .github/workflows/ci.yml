@@ -113,7 +113,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt update
-          sudo apt-get -y install texlive texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-fonts-extra tipa python-opengl libpango1.0-dev xvfb
+          sudo apt-get -y install texlive texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-fonts-extra tipa python3-opengl libpango1.0-dev xvfb
           # start xvfb in background
           sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
 
