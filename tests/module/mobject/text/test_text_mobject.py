@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from colour import Color
 
-from manim.mobject.text.text_mobject import MarkupText, Text
+from manim.mobject.text.text_mobject import MarkupText, Text, register_font
 
 
 def test_font_size():
@@ -21,3 +21,19 @@ def test_non_str_color():
 
     text = Text("test_color_inheritance", color=Color("blue"))
     markup_text = MarkupText("test_color_inheritance", color=Color("blue"))
+
+
+def test_text_asserts_on_missing_font():
+    threw = False
+    try:
+        Text("something", font="This font should not exist on the system")
+    except AssertionError:
+        threw = True
+
+    assert threw
+
+
+def test_register_font():
+    with register_font("tests/assets/fonts/DejaVuSans.ttf"):
+        # This will assert if the font family is not found
+        Text("Hello", font="DejaVu Sans")

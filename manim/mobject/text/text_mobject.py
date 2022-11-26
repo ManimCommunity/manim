@@ -6,7 +6,7 @@
 
 .. important::
 
-   See the corresponding tutorial :ref:`rendering-with-latex`
+   See the corresponding tutorial :ref:`using-text-objects`, especially for information about fonts.
 
 
 The simplest way to add text to your animations is to use the :class:`~.Text` class. It uses the Pango library to render text.
@@ -428,6 +428,9 @@ class Text(SVGMobject):
     ) -> None:
 
         self.line_spacing = line_spacing
+        if font:
+            fonts_list = manimpango.list_fonts()
+            assert font in fonts_list, "%s not in %s" % (font, fonts_list)
         self.font = font
         self._font_size = float(font_size)
         # needs to be a float or else size is inflated when font_size = 24
@@ -1100,6 +1103,9 @@ class MarkupText(SVGMobject):
 
         self.text = text
         self.line_spacing = line_spacing
+        if font:
+            fonts_list = manimpango.list_fonts()
+            assert font in fonts_list, "%s not in %s" % (font, fonts_list)
         self.font = font
         self._font_size = float(font_size)
         self.slant = slant

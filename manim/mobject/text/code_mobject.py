@@ -11,6 +11,7 @@ import os
 import re
 from pathlib import Path
 
+import manimpango
 import numpy as np
 from pygments import highlight
 from pygments.formatters.html import HtmlFormatter
@@ -101,7 +102,7 @@ class Code(VGroup):
     font_size
         A number which scales displayed code. Defaults to 24.
     font
-         The name of the text font to be used. Defaults to ``"Monospac821 BT"``.
+         The name of the text font to be used. Defaults to ``"Monospace"``.
     stroke_width
         Stroke width for text. 0 is recommended, and the default.
     margin
@@ -159,7 +160,7 @@ class Code(VGroup):
         tab_width: int = 3,
         line_spacing: float = 0.3,
         font_size: float = 24,
-        font: str = "Monospac821 BT",
+        font: str = "Monospace",  # This should be in the font list on all platforms.
         stroke_width: float = 0,
         margin: float = 0.3,
         indentation_chars: str = "    ",
@@ -183,6 +184,9 @@ class Code(VGroup):
         self.background_stroke_width = background_stroke_width
         self.tab_width = tab_width
         self.line_spacing = line_spacing
+        if font:
+            fonts_list = manimpango.list_fonts()
+            assert font in fonts_list, "%s not in %s" % (font, fonts_list)
         self.font = font
         self.font_size = font_size
         self.margin = margin
