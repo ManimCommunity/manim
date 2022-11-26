@@ -160,16 +160,16 @@ def test_AnimationBuilder(scene):
 @frames_comparison(last_frame=False)
 def test_ReplacementTransform(scene):
     yellow = Square(fill_opacity=1.0, fill_color=YELLOW)
-    yellow.move_to([0, .75, 0])
+    yellow.move_to([0, 0.75, 0])
 
     green = Square(fill_opacity=1.0, fill_color=GREEN)
-    green.move_to([-.75, 0, 0])
+    green.move_to([-0.75, 0, 0])
 
     blue = Square(fill_opacity=1.0, fill_color=BLUE)
-    blue.move_to([.75, 0, 0])
+    blue.move_to([0.75, 0, 0])
 
     orange = Square(fill_opacity=1.0, fill_color=ORANGE)
-    orange.move_to([0, -.75, 0])
+    orange.move_to([0, -0.75, 0])
 
     scene.add(yellow)
     scene.add(VGroup(green, blue))

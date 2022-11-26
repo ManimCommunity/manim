@@ -1,8 +1,7 @@
+import pathlib
 import sys
 
 import numpy as np
-import pathlib
-
 from PIL import Image
 
 
