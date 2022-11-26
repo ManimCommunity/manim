@@ -430,7 +430,7 @@ class Text(SVGMobject):
         self.line_spacing = line_spacing
         if font:
             fonts_list = manimpango.list_fonts()
-            assert font in fonts_list, "%s not in %s" % (font, fonts_list)
+            assert font in fonts_list, "{} not in {}".format(font, fonts_list)
         self.font = font
         self._font_size = float(font_size)
         # needs to be a float or else size is inflated when font_size = 24
@@ -1105,7 +1105,7 @@ class MarkupText(SVGMobject):
         self.line_spacing = line_spacing
         if font:
             fonts_list = manimpango.list_fonts()
-            assert font in fonts_list, "%s not in %s" % (font, fonts_list)
+            assert font in fonts_list, "{} not in {}".format(font, fonts_list)
         self.font = font
         self._font_size = float(font_size)
         self.slant = slant
