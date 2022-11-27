@@ -186,7 +186,7 @@ class Code(VGroup):
         self.line_spacing = line_spacing
         if font:
             fonts_list = manimpango.list_fonts()
-            assert font in fonts_list, "{} not in {}".format(font, fonts_list)
+            assert font in fonts_list, f"{font} not in {fonts_list}"
         self.font = font
         self.font_size = font_size
         self.margin = margin
