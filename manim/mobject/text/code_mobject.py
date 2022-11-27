@@ -18,6 +18,7 @@ from pygments.formatters.html import HtmlFormatter
 from pygments.lexers import get_lexer_by_name, guess_lexer_for_filename
 from pygments.styles import get_all_styles
 
+from manim import logger
 from manim.constants import *
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.geometry.polygram import RoundedRectangle
@@ -102,7 +103,9 @@ class Code(VGroup):
     font_size
         A number which scales displayed code. Defaults to 24.
     font
-         The name of the text font to be used. Defaults to ``"Monospace"``.
+        The name of the text font to be used. Defaults to ``"Monospace"``.
+        This is either a system font or one loaded with `text.register_font()`. Note
+        that font family names may be different across operating systems.
     stroke_width
         Stroke width for text. 0 is recommended, and the default.
     margin
@@ -132,6 +135,9 @@ class Code(VGroup):
         'aliases or short names'.
     generate_html_file
         Defines whether to generate highlighted html code to the folder `assets/codes/generated_html_files`. Defaults to `False`.
+    warn_missing_font
+        If True (default), Manim will issue a warning if the font does not exist in the
+        (case-sensitive) list of fonts returned from `manimpango.list_fonts()`.
 
     Attributes
     ----------
@@ -184,9 +190,10 @@ class Code(VGroup):
         self.background_stroke_width = background_stroke_width
         self.tab_width = tab_width
         self.line_spacing = line_spacing
-        if font:
+        if warn_missing_font:
             fonts_list = manimpango.list_fonts()
-            assert font in fonts_list, f"{font} not in {fonts_list}"
+            if font not in fonts_list:
+                logger.warning(f"Font {font} not in {fonts_list}.")
         self.font = font
         self.font_size = font_size
         self.margin = margin

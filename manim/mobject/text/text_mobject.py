@@ -301,6 +301,13 @@ class Text(SVGMobject):
     ----------
     text
         The text that needs to be created as a mobject.
+    font
+        The font family to be used to render the text. This is either a system font or
+        one loaded with `register_font()`. Note that font family names may be different
+        across operating systems.
+    warn_missing_font
+        If True (default), Manim will issue a warning if the font does not exist in the
+        (case-sensitive) list of fonts returned from `manimpango.list_fonts()`.
 
     Returns
     -------
@@ -419,6 +426,7 @@ class Text(SVGMobject):
         t2w: dict[str, str] = None,
         gradient: tuple = None,
         tab_width: int = 4,
+        warn_missing_font: bool = True,
         # Mobject
         height: float = None,
         width: float = None,
@@ -428,9 +436,10 @@ class Text(SVGMobject):
     ) -> None:
 
         self.line_spacing = line_spacing
-        if font:
+        if warn_missing_font:
             fonts_list = manimpango.list_fonts()
-            assert font in fonts_list, f"{font} not in {fonts_list}"
+            if font not in fonts_list:
+                logger.warning(f"Font {font} not in {fonts_list}.")
         self.font = font
         self._font_size = float(font_size)
         # needs to be a float or else size is inflated when font_size = 24
@@ -914,7 +923,9 @@ class MarkupText(SVGMobject):
         Global weight setting, e.g. `NORMAL` or `BOLD`. Local overrides are possible.
     gradient
         Global gradient setting. Local overrides are possible.
-
+    warn_missing_font
+        If True (default), Manim will issue a warning if the font does not exist in the
+        (case-sensitive) list of fonts returned from `manimpango.list_fonts()`.
 
     Returns
     -------
@@ -1098,14 +1109,16 @@ class MarkupText(SVGMobject):
         width: int = None,
         should_center: bool = True,
         disable_ligatures: bool = False,
+        warn_missing_font: bool = True,
         **kwargs,
     ) -> None:
 
         self.text = text
         self.line_spacing = line_spacing
-        if font:
+        if warn_missing_font:
             fonts_list = manimpango.list_fonts()
-            assert font in fonts_list, f"{font} not in {fonts_list}"
+            if font not in fonts_list:
+                logger.warning(f"Font {font} not in {fonts_list}.")
         self.font = font
         self._font_size = float(font_size)
         self.slant = slant

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import pytest
 from colour import Color
 
 from manim.mobject.text.text_mobject import MarkupText, Text
@@ -22,8 +21,3 @@ def test_non_str_color():
 
     text = Text("test_color_inheritance", color=Color("blue"))
     markup_text = MarkupText("test_color_inheritance", color=Color("blue"))
-
-
-def test_text_asserts_on_missing_font():
-    with pytest.raises(AssertionError):
-        Text("something", font="This font should not exist on the system")
