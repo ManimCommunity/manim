@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from manim import Mobject
+from manim import Mobject, Group
 
 
 def test_mobject_add():
@@ -49,3 +49,21 @@ def test_mobject_remove():
     assert len(obj.submobjects) == 10
 
     assert obj.remove(Mobject()) is obj
+
+
+def test_group():
+    a = Mobject()
+    b = Mobject()
+
+    grp = Group(b)
+    assert len(grp.submobjects) == 1
+
+    grp = Group(a, b)
+    assert len(grp.submobjects) == 2
+
+    # Repetitions are ignored
+    grp = Group(a, b, a, a, a, b, b, b)
+    assert len(grp.submobjects) == 2
+
+    with pytest.raises(ValueError):
+        Group(a, None, b)
