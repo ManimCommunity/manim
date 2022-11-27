@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from manim import Mobject, Group
+from manim import Group, Mobject
 
 
 def test_mobject_add():
