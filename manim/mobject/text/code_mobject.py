@@ -180,6 +180,7 @@ class Code(VGroup):
         style: str = "vim",
         language: str | None = None,
         generate_html_file: bool = False,
+        warn_missing_font: bool = True,
         **kwargs,
     ):
         super().__init__(
