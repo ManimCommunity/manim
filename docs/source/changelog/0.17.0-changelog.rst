@@ -67,8 +67,8 @@ Breaking changes
 New features
 ------------
 
-* :pr:`2883`: Add animation RemoveTextLetterByLetter
-   Added animation RemoveTextLetterByLetter
+* :pr:`2883`: Added animation :class:`.RemoveTextLetterByLetter`
+
 
 * :pr:`3016`: Implemented :class:`.LineJointTypes` for both Cairo and OpenGL renderer
 
@@ -80,15 +80,15 @@ Enhancements
 ------------
 
 * :pr:`2927`: Allowed ``networkx`` to return 3D layouts when passing ``dim=3`` in the ``layout_config`` of a :class:`.Graph`
-   The layout_config option `dim` when provided to the networkx layout function changes the length of the tuple returned. Manim's `_determine_graph_layout` relied upon the dictionary having tuples of length 2 (i.e. 2D points) and appending 0 for the z-coordinate. This PR changes `_determine_graph_layout` to account for when config option `dim` is 3, by not appending the 0 to the points.
 
-* :pr:`3014`: Enable code completion on Mobject.animate in supporting IDEs
+
+* :pr:`3014`: Enabled code completion for :meth:`.Mobject.animate` for some IDEs
    Uses a Union of the existing Generic `Mobject` Type `T` and `_Animation Builder` as the declared return type from `Mobject.animate` to improve code completion.
 
 Fixed bugs
 ----------
 
-* :pr:`2846`: Prevent TransformMatchingTex from crashing when there is nothing to fade
+* :pr:`2846`: Prevent :class:`.TransformMatchingTex` from crashing when there is nothing to fade
 
 
 * :pr:`2885`: Always expand user when validating file-paths
@@ -103,8 +103,8 @@ Fixed bugs
 * :pr:`2920`: Fixed alignment of faded lines when passing ``faded_line_ratio`` to :class:`.NumberPlane`
 
 
-* :pr:`2977`: Fix: Allow rendering of empty text strings
-   Adds a `max` statement that allows text element of `0.0` length to be rendered, preventing a division by zero value error.
+* :pr:`2977`: Allow rendering of empty text strings
+
 
 * :pr:`2992`: Fixed ``CLI.tex_template_file`` config file setting
 
@@ -118,7 +118,7 @@ Fixed bugs
 Documentation-related changes
 -----------------------------
 
-* :pr:`2881`: Fix small typo in guide
+* :pr:`2881`: Fixed small typo in deep dive guide
 
 
 * :pr:`2886`: Added docstring to and fixed type hint of :func:`.get_winding_number`
@@ -130,10 +130,22 @@ Documentation-related changes
 * :pr:`2903`: Fixed minor grammar issues in :doc:`/faq/general`
 
 
+* :pr:`2904`: Fixed formatting and grammar issues in :doc:`/contributing/development`
+
+
+* :pr:`2911`: Disabled autoplay for ``SoundExample`` in documentation
+
+
+* :pr:`2914`: Added conda installation instructions
+
+
 * :pr:`2915`: Added documentation to :mod:`.three_dimensions`
-   Add documentation to `three_dimensions`.
+
 
 * :pr:`2919`: Corrected parameters and enhanced the description of :meth:`.ImageMobject.interpolate_color`
+
+
+* :pr:`2932`: Fixed whitespace formatting issue
 
 
 * :pr:`2933`: Improved answer to the "no scenes in this module" error
@@ -158,7 +170,7 @@ Documentation-related changes
 
 
 * :pr:`3022`: Corrected type hint in :meth:`Axes.coords_to_point`
-   Type hint is incomplete so flags as a warning in IDE when passing 3 `float` coords e.g. `axes.coords_to_point(1.0, 2.0, 3.0)`
+
 
 Changes concerning the testing system
 -------------------------------------
@@ -166,10 +178,13 @@ Changes concerning the testing system
 * :pr:`2893`: Improved performance of ``test_threed.py``
 
 
-* :pr:`2981`: Implemented fallback save behavior for `pytest --show_diff`
+* :pr:`2981`: Implemented fallback save behavior for ``pytest --show_diff``
 
 
 * :pr:`2982`: Rewrote unstable tests for :mod:`.text_mobject` to be non-graphical
+
+
+* :pr:`2991`: Migrate ``os.path`` to ``pathlib.Path`` in tests
 
 
 Changes to our development infrastructure
@@ -187,10 +202,16 @@ Changes to our development infrastructure
 Code quality improvements and similar refactors
 -----------------------------------------------
 
+* :pr:`2872`: Add ``extract_frames.py`` utility script to help visualize test control data
+
+
 * :pr:`2877`: Fixed binder launch problem by adding missing optional ``notebook`` dependency
 
 
 * :pr:`2887`: Removed empty i18n files that caused filename clashes
+
+
+* :pr:`2931`: Updated ``mapbox-earcut``
 
 
 * :pr:`2938`: Suggested fixes by iCR, OpenRefactory, Inc.
@@ -205,16 +226,25 @@ Code quality improvements and similar refactors
 * :pr:`2975`: Fixed broken links in README
 
 
-* :pr:`2980`: Migrate more `os.path` to `pathlib`
+* :pr:`2980`: Migrate more ``os.path`` to ``pathlib.Path``
 
 
 * :pr:`2983`: Fixed Windows CI Pipeline
 
 
-* :pr:`2988`: Convert all types of parameters in docstrings to proper type annotations
+* :pr:`2988`: Converted all types of parameters in docstrings to proper type annotations
 
 
 * :pr:`2994`: Fixed segmentation faults from doctests under Python 3.10
+
+
+* :pr:`2995`: Added encoding to ``open`` in :mod:`.utils.text_file_writing`
+
+
+* :pr:`3032`: Bump jupyter-core from 4.11.1 to 4.11.2
+
+
+* :pr:`3033`: Bump pillow from 9.2.0 to 9.3.0
 
 
 New releases
@@ -226,39 +256,6 @@ New releases
 Unclassified changes
 --------------------
 
-* :pr:`2872`: Add extract_frames utility to help visualize test control data
-
-
-* :pr:`2904`: Fix formatting and grammar issues in :doc:`/contributing/development`
-   - Removed a reference to a non-existent (404) flowchart at the bottom of the page
-   - Changed list element to be more consistent
-   - Capitalized Manim where necessary
-   - Fixed grammar referring to Graphviz dependency
-
-* :pr:`2911`: fix: SoundExample video autoplaying with sound
-
-
-* :pr:`2914`: Add conda installation docs
-
-
-* :pr:`2931`: Update mapbox-earcut
-   This PR updates the version of `mapbox_earcut` to `1.0.0`.
-
-* :pr:`2932`: Fix whitespace
-   Fix whitespace s.t. docs are rendered properly.
-
-* :pr:`2991`: Migrate more `os.path` to `pathlib` in tests
-
-
-* :pr:`2995`: Add encoding for `open()` function in text_file_writing module
-
-
-* :pr:`3032`: Bump jupyter-core from 4.11.1 to 4.11.2
-
-
-* :pr:`3033`: Bump pillow from 9.2.0 to 9.3.0
-
-
 * :pr:`3035`: Include latex install instructions on ubuntu
 
 
@@ -266,5 +263,3 @@ Unclassified changes
 
 
 * :pr:`3045`: Update python-opengl -> python3-opengl for Ubuntu CI task
-
-
