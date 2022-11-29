@@ -39,7 +39,7 @@ simply run:
 .. code-block:: bash
 
    sudo apt update
-   sudo apt install libcairo2-dev libpango1.0-dev ffmpeg
+   sudo apt install build-essential python3-dev libcairo2-dev libpango1.0-dev ffmpeg
 
 If you don't have python3-pip installed, install it via:
 
