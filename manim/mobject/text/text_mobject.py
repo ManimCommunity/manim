@@ -436,7 +436,7 @@ class Text(SVGMobject):
     ) -> None:
 
         self.line_spacing = line_spacing
-        if warn_missing_font:
+        if font and warn_missing_font:
             fonts_list = manimpango.list_fonts()
             if font not in fonts_list:
                 logger.warning(f"Font {font} not in {fonts_list}.")
@@ -1115,7 +1115,7 @@ class MarkupText(SVGMobject):
 
         self.text = text
         self.line_spacing = line_spacing
-        if warn_missing_font:
+        if font and warn_missing_font:
             fonts_list = manimpango.list_fonts()
             if font not in fonts_list:
                 logger.warning(f"Font {font} not in {fonts_list}.")

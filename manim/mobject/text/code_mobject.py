@@ -191,7 +191,7 @@ class Code(VGroup):
         self.background_stroke_width = background_stroke_width
         self.tab_width = tab_width
         self.line_spacing = line_spacing
-        if warn_missing_font:
+        if font and warn_missing_font:
             fonts_list = manimpango.list_fonts()
             if font not in fonts_list:
                 logger.warning(f"Font {font} not in {fonts_list}.")
