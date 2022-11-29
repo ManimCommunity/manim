@@ -2,12 +2,12 @@
 v0.17.0
 *******
 
-:Date: November 14, 2022
+:Date: November 29, 2022
 
 Contributors
 ============
 
-A total of 29 people contributed to this
+A total of 31 people contributed to this
 release. People with a '+' by their names authored a patch for the first
 time.
 
@@ -15,6 +15,7 @@ time.
 * Alexander Vázquez
 * Benjamin Hackl
 * Duc Phat +
+* Ievgen Pyrogov +
 * Isaac Beh +
 * Jeff Hanke +
 * John Hammond +
@@ -40,6 +41,7 @@ the following contributors.
 
 * Benjamin Hackl
 * Darylgolden
+* Hugues Devimeux
 * Jan-Hendrik Müller
 * Kevin Lubick
 * Mohammed Belgoumri
@@ -54,7 +56,7 @@ the following contributors.
 Pull requests merged
 ====================
 
-A total of 52 pull requests were merged for this release.
+A total of 59 pull requests were merged for this release.
 
 Breaking changes
 ----------------
@@ -179,6 +181,9 @@ Changes to our development infrastructure
 * :pr:`2963`: CI (test-arm): Always select the correct python version
 
 
+* :pr:`3029`: CI: update actions version and add dependabot config
+
+
 Code quality improvements and similar refactors
 -----------------------------------------------
 
@@ -212,6 +217,12 @@ Code quality improvements and similar refactors
 * :pr:`2994`: Fixed segmentation faults from doctests under Python 3.10
 
 
+New releases
+------------
+
+* :pr:`3023`: Prepared new release: v0.17.0
+
+
 Unclassified changes
 --------------------
 
@@ -240,3 +251,20 @@ Unclassified changes
 
 
 * :pr:`2995`: Add encoding for `open()` function in text_file_writing module
+
+
+* :pr:`3032`: Bump jupyter-core from 4.11.1 to 4.11.2
+
+
+* :pr:`3033`: Bump pillow from 9.2.0 to 9.3.0
+
+
+* :pr:`3035`: Include latex install instructions on ubuntu
+
+
+* :pr:`3044`: [docs] Add Debian dependencies required for pycairo and manimpango
+
+
+* :pr:`3045`: Update python-opengl -> python3-opengl for Ubuntu CI task
+
+
