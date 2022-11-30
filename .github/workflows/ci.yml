@@ -103,7 +103,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ steps.cache-vars.outputs.poetry-venv-dir }}
-          key: ${{ runner.os }}-poetry-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}-${{ hashFiles('poetry.lock') }}
+          key: ${{ runner.os }}-poetry-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}-${{ hashFiles('poetry.lock') }}-1
 
       - name: Install and cache ffmpeg (all OS)
         uses: FedericoCarboni/setup-ffmpeg@v2
