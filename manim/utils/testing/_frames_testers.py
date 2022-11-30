@@ -11,6 +11,10 @@ from manim import logger
 from ._show_diff import show_diff_helper
 
 
+FRAME_ABSOLUTE_TOLERANCE = 1.01
+FRAME_NUMBER_MISMATCH_TOLERANCE = 1e-5
+
+
 class _FramesTester:
     def __init__(self, file_path: Path, show_diff=False) -> None:
         self._file_path = file_path
@@ -43,17 +47,17 @@ class _FramesTester:
             np.testing.assert_allclose(
                 frame,
                 self._frames[frame_number],
-                atol=1.01,
+                atol=FRAME_ABSOLUTE_TOLERANCE,
                 err_msg=f"Frame no {frame_number}. You can use --show_diff to visually show the difference.",
                 verbose=False,
             )
             self._frames_compared += 1
         except AssertionError as e:
             number_of_matches = np.isclose(
-                frame, self._frames[frame_number], atol=1.01
+                frame, self._frames[frame_number], atol=FRAME_ABSOLUTE_TOLERANCE
             ).sum()
             number_of_mismatches = frame.size - number_of_matches
-            if number_of_mismatches / frame.size < 1e-5:
+            if number_of_mismatches / frame.size < FRAME_NUMBER_MISMATCH_TOLERANCE:
                 # we tolerate a small (< 0.001%) amount of pixel value errors
                 # in the tests, this accounts for minor OS dependent inconsistencies
                 self._frames_compared += 1
