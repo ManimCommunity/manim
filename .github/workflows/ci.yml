@@ -85,6 +85,7 @@ jobs:
       - name: Install Poetry
         run: |
           pipx install poetry
+          poetry config virtualenvs.prefer-active-python true
 
       - name: Setup macOS PATH
         if: runner.os == 'macOS'
