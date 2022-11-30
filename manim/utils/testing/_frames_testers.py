@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import contextlib
+import warnings
 from pathlib import Path
 
 import numpy as np
-import warnings
 
 from manim import logger
 
@@ -50,9 +50,7 @@ class _FramesTester:
             self._frames_compared += 1
         except AssertionError as e:
             number_of_matches = np.isclose(
-                frame,
-                self._frames[frame_number],
-                atol=1.01
+                frame, self._frames[frame_number], atol=1.01
             ).sum()
             number_of_mismatches = frame.size - number_of_matches
             print(number_of_mismatches / frame.size)
