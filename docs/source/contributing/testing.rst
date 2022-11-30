@@ -112,7 +112,6 @@ The ``manim/tests`` directory looks like this:
     │   └── test_cli_flags.py
     └── utils
         ├── commands.py
-        ├── GraphicalUnitTester.py
         ├── __init__.py
         ├── testing_utils.py
         └── video_tester.py
