@@ -138,7 +138,8 @@ to install with your package manager. Usually,
 `TeX Live <https://www.tug.org/texlive/>`__ is a good candidate if you don't
 care too much about disk space.
 
-For Ubuntu, sufficient latex can be installed by running:
+For Debian-based systems (like Ubuntu), sufficient LaTeX dependencies can be
+installed by running:
 
 .. code-block:: bash
 
