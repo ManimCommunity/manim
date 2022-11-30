@@ -6,10 +6,8 @@ Creating a full-fledged video with voiceovers is a bit more involved than
 creating purely visual Manim scenes. One has to use `a video editing
 program <https://en.wikipedia.org/wiki/List_of_video_editing_software>`__
 to add the voiceovers after the video has been rendered. This process
-can be difficult and time-consuming, since the scenes and the voiceover
-script tend to change a lot during the development process. Creating a video with
-voiceovers in one or two takes requires a lot of planning and preparation,
-which beginners often not know how to do.
+can be difficult and time-consuming, since it requires a lot of planning
+and preparation.
 
 To ease the process of adding voiceovers to videos, we have created
 `Manim Voiceover <https://voiceover.manim.community>`__, a plugin
