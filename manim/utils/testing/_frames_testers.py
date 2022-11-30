@@ -4,6 +4,7 @@ import contextlib
 from pathlib import Path
 
 import numpy as np
+import warnings
 
 from manim import logger
 
@@ -48,16 +49,18 @@ class _FramesTester:
             )
             self._frames_compared += 1
         except AssertionError as e:
-            number_of_mismatches = np.isclose(
+            number_of_matches = np.isclose(
                 frame,
                 self._frames[frame_number],
                 atol=1.01
-            )
+            ).sum()
+            number_of_mismatches = frame.size - number_of_matches
+            print(number_of_mismatches / frame.size)
             if number_of_mismatches / frame.size < 1e-5:
                 # we tolerate a small (< 0.001%) amount of pixel value errors
                 # in the tests, this accounts for minor OS dependent inconsistencies
                 self._frames_compared += 1
-                logger.warn(
+                warnings.warn(
                     f"Mismatch of {number_of_mismatches} pixel values in frame {frame_number} "
                     f"against control data in {self._file_path}. Below error threshold, "
                     "continuing..."
