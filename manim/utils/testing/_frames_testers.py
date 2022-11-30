@@ -48,6 +48,22 @@ class _FramesTester:
             )
             self._frames_compared += 1
         except AssertionError as e:
+            number_of_mismatches = np.isclose(
+                frame,
+                self._frames[frame_number],
+                atol=1.01
+            )
+            if number_of_mismatches / frame.size < 1e-5:
+                # we tolerate a small (< 0.001%) amount of pixel value errors
+                # in the tests, this accounts for minor OS dependent inconsistencies
+                self._frames_compared += 1
+                logger.warn(
+                    f"Mismatch of {number_of_mismatches} pixel values in frame {frame_number} "
+                    f"against control data in {self._file_path}. Below error threshold, "
+                    "continuing..."
+                )
+                return
+
             if self._show_diff:
                 show_diff_helper(
                     frame_number,
