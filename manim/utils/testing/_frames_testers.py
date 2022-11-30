@@ -11,7 +11,7 @@ from manim import logger
 from ._show_diff import show_diff_helper
 
 FRAME_ABSOLUTE_TOLERANCE = 1.01
-FRAME_NUMBER_MISMATCH_TOLERANCE = 1e-5
+FRAME_MISMATCH_RATIO_TOLERANCE = 1e-5
 
 
 class _FramesTester:
@@ -56,7 +56,7 @@ class _FramesTester:
                 frame, self._frames[frame_number], atol=FRAME_ABSOLUTE_TOLERANCE
             ).sum()
             number_of_mismatches = frame.size - number_of_matches
-            if number_of_mismatches / frame.size < FRAME_NUMBER_MISMATCH_TOLERANCE:
+            if number_of_mismatches / frame.size < FRAME_MISMATCH_RATIO_TOLERANCE:
                 # we tolerate a small (< 0.001%) amount of pixel value errors
                 # in the tests, this accounts for minor OS dependent inconsistencies
                 self._frames_compared += 1
