@@ -53,7 +53,6 @@ class _FramesTester:
                 frame, self._frames[frame_number], atol=1.01
             ).sum()
             number_of_mismatches = frame.size - number_of_matches
-            print(number_of_mismatches / frame.size)
             if number_of_mismatches / frame.size < 1e-5:
                 # we tolerate a small (< 0.001%) amount of pixel value errors
                 # in the tests, this accounts for minor OS dependent inconsistencies
