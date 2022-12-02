@@ -1610,7 +1610,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
 name = "pycairo"
-version = "1.21.0"
+version = "1.23.0"
 description = "Python interface for cairo"
 category = "main"
 optional = false
@@ -1681,7 +1681,7 @@ integrations = ["cryptography"]
 
 [[package]]
 name = "pyglet"
-version = "2.0.0"
+version = "2.0.1"
 description = "Cross-platform windowing and multimedia library"
 category = "main"
 optional = false
@@ -2557,7 +2557,7 @@ jupyterlab = ["jupyterlab", "notebook"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<3.12"
-content-hash = "6b3d3a3760efc461ba630da2689aac5d47a4c57a3853ffca0100b2338054484a"
+content-hash = "bc07ed049ee4c50bccf6a2691080f425375aae4f834f1af93c003b40c1850f12"
 
 [metadata.files]
 alabaster = [
@@ -3764,15 +3764,17 @@ py = [
     {file = "py-1.11.0.tar.gz", hash = "sha256:51c75c4126074b472f746a24399ad32f6053d1b34b68d2fa41e558e6f4a98719"},
 ]
 pycairo = [
-    {file = "pycairo-1.21.0-cp310-cp310-win32.whl", hash = "sha256:44a2ecf34968de07b3b9dfdcdbccbd25aa3cab267200f234f84e81481a73bbf6"},
-    {file = "pycairo-1.21.0-cp310-cp310-win_amd64.whl", hash = "sha256:f63c153a9ea3d21aff85e2caeee4b0c5d566b2368b4ed64826020d12953d76a4"},
-    {file = "pycairo-1.21.0-cp37-cp37m-win32.whl", hash = "sha256:70936b19f967fa3cb3cd200c2608911227fa5d09dae21c166f64bc15e714ee41"},
-    {file = "pycairo-1.21.0-cp37-cp37m-win_amd64.whl", hash = "sha256:31e1c4850db03201d33929cbe1905ce1b33202683ebda7bb0d4dba489115066b"},
-    {file = "pycairo-1.21.0-cp38-cp38-win32.whl", hash = "sha256:dace6b356c476de27f8e1522428ac21a799c225703f746e2957d441f885dcb6c"},
-    {file = "pycairo-1.21.0-cp38-cp38-win_amd64.whl", hash = "sha256:4357f20a6b1de8f1e8072a74ff68ab4c9a0ae698cd9f5c0f2b2cdd9b28b635f6"},
-    {file = "pycairo-1.21.0-cp39-cp39-win32.whl", hash = "sha256:6d37375aab9f2bb6136f076c19815d72108383baae89fbc0d6cb8e5092217d02"},
-    {file = "pycairo-1.21.0-cp39-cp39-win_amd64.whl", hash = "sha256:26b72b813c6f9d495f71057eab89c13e70a21c92360e9265abc049e0a931fa39"},
-    {file = "pycairo-1.21.0.tar.gz", hash = "sha256:251907f18a552df938aa3386657ff4b5a4937dde70e11aa042bc297957f4b74b"},
+    {file = "pycairo-1.23.0-cp310-cp310-win32.whl", hash = "sha256:564601e5f528531c6caec1c0177c3d0709081e1a2a5cccc13561f715080ae535"},
+    {file = "pycairo-1.23.0-cp310-cp310-win_amd64.whl", hash = "sha256:e7cde633986435d87a86b6118b7b6109c384266fd719ef959883e2729f6eafae"},
+    {file = "pycairo-1.23.0-cp311-cp311-win32.whl", hash = "sha256:3a71f758e461180d241e62ef52e85499c843bd2660fd6d87cec99c9833792bfa"},
+    {file = "pycairo-1.23.0-cp311-cp311-win_amd64.whl", hash = "sha256:2dec5378133778961993fb59d66df16070e03f4d491b67eb695ca9ad7a696008"},
+    {file = "pycairo-1.23.0-cp37-cp37m-win32.whl", hash = "sha256:d6bacff15d688ed135b4567965a4b664d9fb8de7417a7865bb138ad612043c9f"},
+    {file = "pycairo-1.23.0-cp37-cp37m-win_amd64.whl", hash = "sha256:ec305fc7f2f0299df78aadec0eaf6eb9accb90eda242b5d3492544d3f2b28027"},
+    {file = "pycairo-1.23.0-cp38-cp38-win32.whl", hash = "sha256:1a6d8e0f353062ad92954784e33dbbaf66c880c9c30e947996c542ed9748aaaf"},
+    {file = "pycairo-1.23.0-cp38-cp38-win_amd64.whl", hash = "sha256:82e335774a17870bc038e0c2fb106c1e5e7ad0c764662023886dfcfce5bb5a52"},
+    {file = "pycairo-1.23.0-cp39-cp39-win32.whl", hash = "sha256:a4b1f525bbdf637c40f4d91378de36c01ec2b7f8ecc585b700a079b9ff83298e"},
+    {file = "pycairo-1.23.0-cp39-cp39-win_amd64.whl", hash = "sha256:87efd62a7b7afad9a0a420f05b6008742a6cfc59077697be65afe8dc73ae15ad"},
+    {file = "pycairo-1.23.0.tar.gz", hash = "sha256:9b61ac818723adc04367301317eb2e814a83522f07bbd1f409af0dada463c44c"},
 ]
 pycodestyle = [
     {file = "pycodestyle-2.7.0-py2.py3-none-any.whl", hash = "sha256:514f76d918fcc0b55c6680472f0a37970994e07bbb80725808c17089be302068"},
@@ -3799,8 +3801,8 @@ pygithub = [
     {file = "PyGithub-1.57.tar.gz", hash = "sha256:c273f252b278fb81f1769505cc6921bdb6791e1cebd6ac850cc97dad13c31ff3"},
 ]
 pyglet = [
-    {file = "pyglet-2.0.0-py3-none-any.whl", hash = "sha256:42dca924cef1f7b7027dddadd7bd9f3568203952fb60784dea8ad0ad86a16124"},
-    {file = "pyglet-2.0.0.zip", hash = "sha256:da3069e51d2241b122995982ef99f3eb1226477b3a704920a2e4e649778d09ad"},
+    {file = "pyglet-2.0.1-py3-none-any.whl", hash = "sha256:6c0c0fe95fbc3b26c2f008e83bcc3dcbda1609dca6da7c3954bc4d1b529f2303"},
+    {file = "pyglet-2.0.1.zip", hash = "sha256:ec36eba0c769bac25c5347acf14f8a7ac8f64fe469458a0a998ed1d507975e47"},
 ]
 pygments = [
     {file = "Pygments-2.13.0-py3-none-any.whl", hash = "sha256:f643f331ab57ba3c9d89212ee4a2dabc6e94f117cf4eefde99a0574720d14c42"},
