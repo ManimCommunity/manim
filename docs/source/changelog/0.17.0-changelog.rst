@@ -2,12 +2,12 @@
 v0.17.0
 *******
 
-:Date: November 29, 2022
+:Date: December 02, 2022
 
 Contributors
 ============
 
-A total of 31 people contributed to this
+A total of 32 people contributed to this
 release. People with a '+' by their names authored a patch for the first
 time.
 
@@ -15,6 +15,7 @@ time.
 * Alexander Vázquez
 * Benjamin Hackl
 * Duc Phat +
+* Hugues Devimeux
 * Ievgen Pyrogov +
 * Isaac Beh +
 * Jeff Hanke +
@@ -25,6 +26,7 @@ time.
 * Naveen M K
 * Nick Skriloff +
 * NotWearingPants
+* Onur Solmaz +
 * OpenRefactory, Inc +
 * Owen Samuel +
 * Pavel Zwerschke +
@@ -56,12 +58,21 @@ the following contributors.
 Pull requests merged
 ====================
 
-A total of 59 pull requests were merged for this release.
+A total of 63 pull requests were merged for this release.
 
 Breaking changes
 ----------------
 
 * :pr:`2898`: Ported improved implementation of :class:`.SVGMobject` from 3b1b/manim
+
+
+* :pr:`3030`: Added support for Python 3.11, dropped support for Python 3.7
+   - Drop support for Python 3.7
+
+Highlights
+----------
+
+* :pr:`3049`: Added thematic guide for the ``manim-voiceover`` plugin
 
 
 New features
@@ -172,6 +183,12 @@ Documentation-related changes
 * :pr:`3022`: Corrected type hint in :meth:`Axes.coords_to_point`
 
 
+* :pr:`3035`: Include latex install instructions on ubuntu
+
+
+* :pr:`3044`: [docs] Add Debian dependencies required for pycairo and manimpango
+
+
 Changes concerning the testing system
 -------------------------------------
 
@@ -187,6 +204,9 @@ Changes concerning the testing system
 * :pr:`2991`: Migrate ``os.path`` to ``pathlib.Path`` in tests
 
 
+* :pr:`3053`: Added threshold for pixel value errors in frame comparison tests
+
+
 Changes to our development infrastructure
 -----------------------------------------
 
@@ -197,6 +217,9 @@ Changes to our development infrastructure
 
 
 * :pr:`3029`: CI: update actions version and add dependabot config
+
+
+* :pr:`3045`: Update python-opengl -> python3-opengl for Ubuntu CI task
 
 
 Code quality improvements and similar refactors
@@ -247,19 +270,12 @@ Code quality improvements and similar refactors
 * :pr:`3033`: Bump pillow from 9.2.0 to 9.3.0
 
 
+* :pr:`3054`: Removed unused ``GraphicalUnitTester``
+
+
 New releases
 ------------
 
 * :pr:`3023`: Prepared new release: v0.17.0
 
 
-Unclassified changes
---------------------
-
-* :pr:`3035`: Include latex install instructions on ubuntu
-
-
-* :pr:`3044`: [docs] Add Debian dependencies required for pycairo and manimpango
-
-
-* :pr:`3045`: Update python-opengl -> python3-opengl for Ubuntu CI task
