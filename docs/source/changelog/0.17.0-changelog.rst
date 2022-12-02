@@ -294,4 +294,3 @@ New releases
 ------------
 
 * :pr:`3023`: Prepared new release: v0.17.0
-
