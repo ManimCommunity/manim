@@ -64,15 +64,32 @@ Breaking changes
 ----------------
 
 * :pr:`2898`: Ported improved implementation of :class:`.SVGMobject` from 3b1b/manim
+   The implementation of :class:`.SVGMobject` is completely changed in this release.
+   Manim now uses the Python library ``svgelements`` to parse SVGs, instead of trying
+   to do it itself. The former class for SVG path objects, ``SVGPathMobject`` has been
+   replaced (without deprecation) with :class:`.VMobjectFromSVGPath`.
+
+   If you need to create a mobject from an SVG path string, you can do so via::
+
+        import svgelements as se
+        my_path_mobject = VMobjectFromSVGPath(se.Path(my_path_string))
+
+   The unused class ``TexSymbol`` has been removed. The modules
+   ``manim.mobject.svg.svg_path`` and ``manim.mobject.svg.style_utils`` became
+   superfluous due to the rework and have been removed.
 
 
 * :pr:`3030`: Added support for Python 3.11, dropped support for Python 3.7
-   - Drop support for Python 3.7
+
 
 Highlights
 ----------
 
 * :pr:`3049`: Added thematic guide for the ``manim-voiceover`` plugin
+   This new :doc:`thematic guide </guides/add_voiceovers>` provides a brief
+   introduction to ``manim-voiceover``, a plugin that helps to add voiceovers
+   to your manimations. Supports both working with your own voice as well as
+   synthetically generated voices.
 
 
 New features
@@ -277,5 +294,4 @@ New releases
 ------------
 
 * :pr:`3023`: Prepared new release: v0.17.0
-
 
