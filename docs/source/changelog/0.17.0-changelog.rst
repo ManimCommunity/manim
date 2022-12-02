@@ -203,7 +203,7 @@ Documentation-related changes
 * :pr:`3035`: Include latex install instructions on ubuntu
 
 
-* :pr:`3044`: [docs] Add Debian dependencies required for pycairo and manimpango
+* :pr:`3044`: Added Debian dependencies required for pycairo and manimpango
 
 
 Changes concerning the testing system
@@ -218,7 +218,7 @@ Changes concerning the testing system
 * :pr:`2982`: Rewrote unstable tests for :mod:`.text_mobject` to be non-graphical
 
 
-* :pr:`2991`: Migrate ``os.path`` to ``pathlib.Path`` in tests
+* :pr:`2991`: Migrated ``os.path`` to ``pathlib.Path`` in tests
 
 
 * :pr:`3053`: Added threshold for pixel value errors in frame comparison tests
@@ -227,16 +227,16 @@ Changes concerning the testing system
 Changes to our development infrastructure
 -----------------------------------------
 
-* :pr:`2925`: CI (test-arm): update python version to `3.10.6`
+* :pr:`2925`: CI (test-arm): Updated python version to ``3.10.6``
 
 
 * :pr:`2963`: CI (test-arm): Always select the correct python version
 
 
-* :pr:`3029`: CI: update actions version and add dependabot config
+* :pr:`3029`: CI: Updated actions version and added dependabot config
 
 
-* :pr:`3045`: Update python-opengl -> python3-opengl for Ubuntu CI task
+* :pr:`3045`: Updated python-opengl -> python3-opengl for Ubuntu CI task
 
 
 Code quality improvements and similar refactors
