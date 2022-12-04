@@ -290,6 +290,11 @@ class BarChart(Axes):
             (x_axis_config,), (kwargs.pop("x_axis_config", None),)
         )
 
+        # y_axis_config = {"font_size": 24}
+        # self._update_default_configs(
+        #     (y_axis_config,), (kwargs.pop("y_axis_config", None),)
+        # )
+
         self.bars: VGroup = VGroup()
         self.x_labels: VGroup | None = None
         self.bar_labels: VGroup | None = None
@@ -300,6 +305,7 @@ class BarChart(Axes):
             x_length=x_length,
             y_length=y_length,
             x_axis_config=x_axis_config,
+            #y_axis_config=y_axis_config,
             tips=kwargs.pop("tips", False),
             **kwargs,
         )
@@ -309,7 +315,7 @@ class BarChart(Axes):
         if self.bar_names is not None:
             self._add_x_axis_labels()
 
-        self.y_axis.add_numbers()
+        #self.y_axis.add_numbers()
 
     def _update_colors(self):
         """Initialize the colors of the bars of the chart.
