@@ -636,10 +636,11 @@ class Scene:
                     continue
                 intersect = set_to_remove.intersection(mob.get_family())
                 if intersect:
-                    mob.submobjects = add_safe_mobjects_from_list(
+                    newmob = mob.copy()
+                    newmob.submobjects = add_safe_mobjects_from_list(
                         mob.submobjects, intersect
                     )
-                    new_mobjects += [mob]
+                    new_mobjects += [newmob]
                 else:
                     new_mobjects += [mob]
 
