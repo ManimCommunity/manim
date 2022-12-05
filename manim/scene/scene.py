@@ -611,7 +611,8 @@ class Scene:
     def get_restructured_mobject_list(self, mobjects: list, to_remove: list):
         """
         Given a list of mobjects and a list of mobjects to be removed, this
-        filters out the removable mobjects from the list of mobjects.
+        filters out the removable mobjects from the list of mobjects
+        and from the submobjects of those mobjects.
 
         Parameters
         ----------
