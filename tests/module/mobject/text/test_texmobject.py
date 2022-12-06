@@ -33,6 +33,19 @@ def test_tex():
     assert Path(config.media_dir, "Tex", "f2e45e6e82d750e6.svg").exists()
 
 
+def test_tex_temp_directory(tmpdir, monkeypatch):
+    # Adds a test for #3060
+    # It's not possible to reproduce the issue normally, because we use
+    # tempconfig to change media directory to temporary directory by default
+    # we partially, revert that change here.
+    monkeypatch.chdir(tmpdir)
+    Path(tmpdir, "media").mkdir()
+    with tempconfig({"media_dir": "media"}):
+        Tex("The horse does not eat cucumber salad.")
+        assert Path("media", "Tex").exists()
+        assert Path("media", "Tex", "f2e45e6e82d750e6.svg").exists()
+
+
 def test_percent_char_rendering():
     Tex(r"\%")
     assert Path(config.media_dir, "Tex", "3f48edf8ebaf82c8.tex").exists()
