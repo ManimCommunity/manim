@@ -33,17 +33,17 @@ class AnimationGroup(Animation):
     Parameters
     ----------
     animations
-        Group or series of :class:`~.Animation` to be played.
+        Sequence of :class:`~.Animation` objects to be played.
     group
         A group of multiple :class:`~.Mobject`.
     run_time
         The duration of the animation in seconds.
     rate_func
         The function defining the animation progress based on the relative
-        runtime (see  :mod:`~.rate_functions`) .
+        runtime (see :mod:`~.rate_functions`) .
     lag_ratio
         Defines the delay after which the animation is applied to submobjects. A lag_ratio of
-        'n.nn' means the next animation will play when 'nnn%' of the current animation has played.
+        ``n.nn`` means the next animation will play when ``nnn%`` of the current animation has played.
         Defaults to 0.0, meaning that all animations will be played together.
 
         This does not influence the total runtime of the animation. Instead the runtime
@@ -159,10 +159,10 @@ class Succession(AnimationGroup):
     Parameters
     ----------
     animations
-        Series of :class:`~.Animation` to be played.
+        Sequence of :class:`~.Animation` objects to be played.
     lag_ratio
         Defines the delay after which the animation is applied to submobjects. A lag_ratio of
-        'n.nn' means the next animation will play when 'nnn%' of the current animation has played.
+        ``n.nn`` means the next animation will play when ``nnn%`` of the current animation has played.
         Defaults to 1.0, meaning that the next animation will begin when 100% of the current
         animation has played.
 
@@ -254,10 +254,10 @@ class LaggedStart(AnimationGroup):
     Parameters
     ----------
     animations
-        Series of :class:`~.Animation` to be played.
+        Sequence of :class:`~.Animation` objects to be played.
     lag_ratio
         Defines the delay after which the animation is applied to submobjects. A lag_ratio of
-        'n.nn' means the next animation will play when 'nnn%' of the current animation has played.
+        ``n.nn`` means the next animation will play when ``nnn%`` of the current animation has played.
         Defaults to 0.05, meaning that the next animation will begin when 5% of the current
         animation has played.
 
