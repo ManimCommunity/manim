@@ -64,7 +64,7 @@ gui = ["dearpygui"]
 
 [tool.poetry.dev-dependencies]
 pytest-cov = "^3.0.0"
-pytest = "^6.0"
+pytest = "^7.2"
 pylint = "^2.12.2"
 Sphinx = "^4"
 sphinx-copybutton = "^0.4.0"
