@@ -77,7 +77,7 @@ class FocusOn(Transform):
         The color of the spotlight.
     run_time
         The duration of the animation.
-    kwargs : Any
+    kwargs
         Additional arguments to be passed to the :class:`~.Succession` constructor
 
     Examples
@@ -132,7 +132,7 @@ class Indicate(Transform):
         The color the mobject temporally takes.
     rate_func
         The function definig the animation progress at every point in time.
-    kwargs : Any
+    kwargs
         Additional arguments to be passed to the :class:`~.Succession` constructor
 
     Examples
@@ -186,7 +186,7 @@ class Flash(AnimationGroup):
         The time width used for the flash lines. See :class:`.~ShowPassingFlash` for more details.
     run_time
         The duration of the animation.
-    kwargs : Any
+    kwargs
         Additional arguments to be passed to the :class:`~.Succession` constructor
 
     Examples
@@ -486,7 +486,7 @@ class Wiggle(Animation):
 
     Parameters
     ----------
-    mobject : Mobject
+    mobject
         The mobject to wiggle.
     scale_value
         The factor by which the mobject will be temporarily scaled.
@@ -581,7 +581,7 @@ class Circumscribe(Succession):
         The color of the surrounding shape.
     run_time
         The duration of the entire animation.
-    kwargs : Any
+    kwargs
         Additional arguments to be passed to the :class:`~.Succession` constructor
 
     Examples

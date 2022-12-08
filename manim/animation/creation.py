@@ -138,7 +138,7 @@ class Create(ShowPartial):
 
     Parameters
     ----------
-    mobject : :class:`~.VMobject`
+    mobject
         The VMobject to animate.
 
     Raises
@@ -374,7 +374,7 @@ class Unwrite(Write):
 
     Parameters
     ----------
-    reverse : :class:`bool`
+    reverse
         Set True to have the animation start erasing from the last submobject first.
 
     Examples
@@ -542,7 +542,7 @@ class AddTextLetterByLetter(ShowIncreasingSubsets):
 
     Parameters
     ----------
-    time_per_char : :class:`float`
+    time_per_char
         Frequency of appearance of the letters.
 
     .. tip::
@@ -585,7 +585,7 @@ class RemoveTextLetterByLetter(AddTextLetterByLetter):
 
     Parameters
     ----------
-    time_per_char : :class:`float`
+    time_per_char
         Frequency of appearance of the letters.
 
     .. tip::
