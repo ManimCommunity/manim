@@ -29,6 +29,29 @@ DEFAULT_LAGGED_START_LAG_RATIO: float = 0.05
 
 
 class AnimationGroup(Animation):
+    """Plays a group or series of :class:`~.Animation`.
+
+    Parameters
+    ----------
+    animations
+        Sequence of :class:`~.Animation` objects to be played.
+    group
+        A group of multiple :class:`~.Mobject`.
+    run_time
+        The duration of the animation in seconds.
+    rate_func
+        The function defining the animation progress based on the relative
+        runtime (see :mod:`~.rate_functions`) .
+    lag_ratio
+        Defines the delay after which the animation is applied to submobjects. A lag_ratio of
+        ``n.nn`` means the next animation will play when ``nnn%`` of the current animation has played.
+        Defaults to 0.0, meaning that all animations will be played together.
+
+        This does not influence the total runtime of the animation. Instead the runtime
+        of individual animations is adjusted so that the complete animation has the defined
+        run time.
+    """
+
     def __init__(
         self,
         *animations: Animation,
@@ -85,6 +108,18 @@ class AnimationGroup(Animation):
             anim.update_mobjects(dt)
 
     def init_run_time(self, run_time) -> float:
+        """Calculates the run time of the animation, if different from ``run_time``.
+
+        Parameters
+        ----------
+        run_time
+            The duration of the animation in seconds.
+
+        Returns
+        -------
+        run_time
+            The duration of the animation in seconds.
+        """
         self.build_animations_with_timings()
         if self.anims_with_timings:
             self.max_end_time = np.max([awt[2] for awt in self.anims_with_timings])
@@ -93,10 +128,7 @@ class AnimationGroup(Animation):
         return self.max_end_time if run_time is None else run_time
 
     def build_animations_with_timings(self) -> None:
-        """
-        Creates a list of triplets of the form
-        (anim, start_time, end_time)
-        """
+        """Creates a list of triplets of the form (anim, start_time, end_time)."""
         self.anims_with_timings = []
         curr_time: float = 0
         for anim in self.animations:
@@ -123,6 +155,42 @@ class AnimationGroup(Animation):
 
 
 class Succession(AnimationGroup):
+    """Plays a series of animations in succession.
+
+    Parameters
+    ----------
+    animations
+        Sequence of :class:`~.Animation` objects to be played.
+    lag_ratio
+        Defines the delay after which the animation is applied to submobjects. A lag_ratio of
+        ``n.nn`` means the next animation will play when ``nnn%`` of the current animation has played.
+        Defaults to 1.0, meaning that the next animation will begin when 100% of the current
+        animation has played.
+
+        This does not influence the total runtime of the animation. Instead the runtime
+        of individual animations is adjusted so that the complete animation has the defined
+        run time.
+
+    Examples
+    --------
+    .. manim:: SuccessionExample
+
+        class SuccessionExample(Scene):
+            def construct(self):
+                dot1 = Dot(point=LEFT * 2 + UP * 2, radius=0.16, color=BLUE)
+                dot2 = Dot(point=LEFT * 2 + DOWN * 2, radius=0.16, color=MAROON)
+                dot3 = Dot(point=RIGHT * 2 + DOWN * 2, radius=0.16, color=GREEN)
+                dot4 = Dot(point=RIGHT * 2 + UP * 2, radius=0.16, color=YELLOW)
+                self.add(dot1, dot2, dot3, dot4)
+
+                self.play(Succession(
+                    dot1.animate.move_to(dot2),
+                    dot2.animate.move_to(dot3),
+                    dot3.animate.move_to(dot4),
+                    dot4.animate.move_to(dot1)
+                ))
+    """
+
     def __init__(self, *animations: Animation, lag_ratio: float = 1, **kwargs) -> None:
         super().__init__(*animations, lag_ratio=lag_ratio, **kwargs)
 
@@ -162,6 +230,10 @@ class Succession(AnimationGroup):
             self.active_end_time = self.anims_with_timings[index][2]
 
     def next_animation(self) -> None:
+        """Proceeds to the next animation.
+
+        This method is called right when the active animation finishes.
+        """
         if self.active_animation is not None:
             self.active_animation.finish()
         self.update_active_animation(self.active_index + 1)
@@ -178,6 +250,50 @@ class Succession(AnimationGroup):
 
 
 class LaggedStart(AnimationGroup):
+    """Adjusts the timing of a series of :class:`~.Animation` according to ``lag_ratio``.
+
+    Parameters
+    ----------
+    animations
+        Sequence of :class:`~.Animation` objects to be played.
+    lag_ratio
+        Defines the delay after which the animation is applied to submobjects. A lag_ratio of
+        ``n.nn`` means the next animation will play when ``nnn%`` of the current animation has played.
+        Defaults to 0.05, meaning that the next animation will begin when 5% of the current
+        animation has played.
+
+        This does not influence the total runtime of the animation. Instead the runtime
+        of individual animations is adjusted so that the complete animation has the defined
+        run time.
+
+    Examples
+    --------
+    .. manim:: LaggedStartExample
+
+        class LaggedStartExample(Scene):
+            def construct(self):
+                title = Text("lag_ratio = 0.25").to_edge(UP)
+
+                dot1 = Dot(point=LEFT * 2 + UP, radius=0.16)
+                dot2 = Dot(point=LEFT * 2, radius=0.16)
+                dot3 = Dot(point=LEFT * 2 + DOWN, radius=0.16)
+                line_25 = DashedLine(
+                    start=LEFT + UP * 2,
+                    end=LEFT + DOWN * 2,
+                    color=RED
+                )
+                label = Text("25%", font_size=24).next_to(line_25, UP)
+                self.add(title, dot1, dot2, dot3, line_25, label)
+
+                self.play(LaggedStart(
+                    dot1.animate.shift(RIGHT * 4),
+                    dot2.animate.shift(RIGHT * 4),
+                    dot3.animate.shift(RIGHT * 4),
+                    lag_ratio=0.25,
+                    run_time=4
+                ))
+    """
+
     def __init__(
         self,
         *animations: Animation,
@@ -188,6 +304,43 @@ class LaggedStart(AnimationGroup):
 
 
 class LaggedStartMap(LaggedStart):
+    """Plays a series of :class:`~.Animation` while mapping a function to submobjects.
+
+    Parameters
+    ----------
+    AnimationClass
+        :class:`~.Animation` to apply to mobject.
+    mobject
+        :class:`~.Mobject` whose submobjects the animation, and optionally the function,
+        are to be applied.
+    arg_creator
+        Function which will be applied to :class:`~.Mobject`.
+    run_time
+        The duration of the animation in seconds.
+
+    Examples
+    --------
+    .. manim:: LaggedStartMapExample
+
+        class LaggedStartMapExample(Scene):
+            def construct(self):
+                title = Tex("LaggedStartMap").to_edge(UP, buff=LARGE_BUFF)
+                dots = VGroup(
+                    *[Dot(radius=0.16) for _ in range(35)]
+                    ).arrange_in_grid(rows=5, cols=7, buff=MED_LARGE_BUFF)
+                self.add(dots, title)
+
+                # Animate yellow ripple effect
+                for mob in dots, title:
+                    self.play(LaggedStartMap(
+                        ApplyMethod, mob,
+                        lambda m : (m.set_color, YELLOW),
+                        lag_ratio = 0.1,
+                        rate_func = there_and_back,
+                        run_time = 2
+                    ))
+    """
+
     def __init__(
         self,
         AnimationClass: Callable[..., Animation],
