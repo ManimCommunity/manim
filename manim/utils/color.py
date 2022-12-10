@@ -200,7 +200,10 @@ class ManimColor:
         elif isinstance(value, int):
             self.value: int = value << 8 | int(alpha * 255)
         elif isinstance(value, str):
-            self.value: int = ManimColor.int_from_hex(value, alpha)
+            try:
+                self.value: int = ManimColor.int_from_hex(value, alpha)
+            except ValueError:
+                self.value: int = ManimColor.int_from_str(value)
         elif (
             isinstance(value, list)
             or isinstance(value, tuple)
@@ -324,11 +327,21 @@ class ManimColor:
     def int_from_hex(hex: str, alpha: float) -> ManimColor:
         if hex.startswith("#"):
             hex = hex[1:]
-        if hex.startswith("0x"):
+        elif hex.startswith("0x"):
             hex = hex[2:]
+        else:
+            raise ValueError(f"Invalid hex value: {hex}")
         if len(hex) == 6:
             hex += "00"
         return int(hex, 16) | int(alpha * 255)
+
+    # TODO: This may be a bad idea but i don't know what else will be better without writing an endless list of colors
+    @staticmethod
+    def int_from_str(name: str):
+        if name.upper() in globals():
+            return globals()[name].value
+        else:
+            raise ValueError(f"Color {name} not found")
 
     def invert(self, with_alpha=False) -> ManimColor:
         return ManimColor(0xFFFFFFFF - (self.value & 0xFFFFFFFF))
@@ -554,7 +567,7 @@ def color_to_rgba(color: ParsableManimColor, alpha: float = 1) -> np.ndarray:
 
 
 def rgb_to_color(rgb: Iterable[float]) -> ManimColor:
-    return ManimColor(rgb=rgb)
+    return ManimColor.from_rgb(rgb)
 
 
 def rgba_to_color(rgba: Iterable[float]) -> ManimColor:
@@ -582,7 +595,6 @@ def color_to_int_rgb(color: ManimColor) -> np.ndarray:
 
 def color_to_int_rgba(color: ManimColor, opacity: float = 1.0) -> np.ndarray:
     alpha_multiplier = np.vectorize(lambda x: int(x * opacity))
-
     return alpha_multiplier(np.append(color_to_int_rgb(color), 255))
 
 

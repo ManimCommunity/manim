@@ -27,7 +27,6 @@ import numpy as np
 
 from .. import constants
 from ..constants import RendererType
-from ..utils.color import ManimColor
 from ..utils.tex import TexTemplate, TexTemplateFromFile
 from ..utils.tex_templates import TexTemplateLibrary
 
@@ -1096,9 +1095,7 @@ class ManimConfig(MutableMapping):
 
     background_color = property(
         lambda self: self._d["background_color"],
-        lambda self, val: self._d.__setitem__(
-            "background_color", ManimColor.parse(val)
-        ),
+        lambda self, val: self._d.__setitem__("background_color", val),
         doc="Background color of the scene (-c).",
     )
 

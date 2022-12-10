@@ -1750,10 +1750,18 @@ class Mobject:
         if family:
             for submob in self.submobjects:
                 submob.set_color(color, family=family)
+        print("Setting color of", self, "to", color)
         self.color = ManimColor.parse(color)
         return self
 
     def set_color_by_gradient(self, *colors: Iterable[ParsableManimColor]):
+        """
+        Parameters
+        ----------
+        colors
+            The colors to use for the gradient. Use like `set_color_by_gradient(RED, BLUE, GREEN)`.
+
+        """
         self.set_submobject_colors_by_gradient(*colors)
         return self
 
