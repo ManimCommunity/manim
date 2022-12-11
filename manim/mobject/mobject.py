@@ -1752,6 +1752,7 @@ class Mobject:
         if family:
             for submob in self.submobjects:
                 submob.set_color(color, family=family)
+        print("Setting color of", self, "to", color)
         self.color = ManimColor.parse(color)
         return self
 

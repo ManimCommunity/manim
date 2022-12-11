@@ -34,7 +34,6 @@ import_color()
 
 from .. import constants
 from ..constants import RendererType
-from ..utils.color import ManimColor
 from ..utils.tex import TexTemplate, TexTemplateFromFile
 from ..utils.tex_templates import TexTemplateLibrary
 
