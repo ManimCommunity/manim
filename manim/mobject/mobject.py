@@ -1741,7 +1741,9 @@ class Mobject:
 
     # Color functions
 
-    def set_color(self, color: ParsableManimColor = YELLOW_C, family: bool = True):
+    def set_color(
+        self, color: ParsableManimColor = YELLOW_C, family: bool = True
+    ) -> Mobject:
         """Condition is function which takes in one arguments, (x, y, z).
         Here it just recurses to submobjects, but in subclasses this
         should be further implemented based on the the inner workings
@@ -2161,7 +2163,7 @@ class Mobject:
         all_mobjects = [self] + list(it.chain(*sub_families))
         return remove_list_redundancies(all_mobjects)
 
-    def family_members_with_points(self):
+    def family_members_with_points(self) -> Mobject:
         return [m for m in self.get_family() if m.get_num_points() > 0]
 
     def arrange(

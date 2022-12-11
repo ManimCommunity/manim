@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Iterable, TypeAlias, TypedDict
+from typing import Iterable, TypedDict
 
 # from manim._config import logger
 
@@ -373,7 +373,7 @@ class ManimColor:
         return cls(value, alpha, use_floats)
 
 
-ParsableManimColor: TypeAlias = (
+ParsableManimColor = (
     ManimColor
     | int
     | str

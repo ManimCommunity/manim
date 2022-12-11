@@ -184,8 +184,10 @@ class VMobject(Mobject):
         one color was passed in, a second slightly light color
         will automatically be added for the gradient
         """
-        colors = [c if (c is not None) else BLACK for c in tuplify(color)]
-        opacities = [o if (o is not None) else 0 for o in tuplify(opacity)]
+        colors: list[ManimColor] = [
+            c if (c is not None) else BLACK for c in tuplify(color)
+        ]
+        opacities: list[float] = [o if (o is not None) else 0 for o in tuplify(opacity)]
         rgbas = np.array(
             [c.to_rgb_with_alpha(o) for c, o in zip(*make_even(colors, opacities))],
         )
@@ -223,8 +225,8 @@ class VMobject(Mobject):
 
     def set_fill(
         self,
+        color: ParsableManimColor = None,
         opacity: float | None = None,
-        color: ParsableManimColor | None = None,
         family: bool = True,
     ):
         """Set the fill color and fill opacity of a :class:`VMobject`.
@@ -464,7 +466,7 @@ class VMobject(Mobject):
 
     def get_stroke_colors(self, background=False):
         return [
-            ManimColor(rgba[:3]) if rgba.any() else None
+            ManimColor.parse(rgba[:3]) if rgba.any() else None
             for rgba in self.get_stroke_rgbas(background)
         ]
 

@@ -877,7 +877,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         dot: bool = False,
         dot_radius: float | None = None,
         dot_distance: float = 0.55,
-        dot_color: ManimColor = WHITE,
+        dot_color: ParsableManimColor = WHITE,
         elbow: bool = False,
         **kwargs,
     ):

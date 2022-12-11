@@ -70,7 +70,7 @@ from manim.constants import *
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.svg.svg_mobject import SVGMobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
-from manim.utils.color import *
+from manim.utils.color import ManimColor, ParsableManimColor, color_gradient
 from manim.utils.deprecation import deprecated
 
 TEXT_MOB_SCALE_FACTOR = 0.05
@@ -1222,7 +1222,7 @@ class MarkupText(SVGMobject):
             + self.font
             + self.slant
             + self.weight
-            + ManimColor.parse(color).to_hex().lower
+            + ManimColor.parse(color).to_hex().lower()
         )  # to differentiate from classical Pango Text
         settings += str(self.line_spacing) + str(self._font_size)
         settings += str(self.disable_ligatures)
@@ -1327,7 +1327,7 @@ class MarkupText(SVGMobject):
         if re.match("#[0-9a-f]{6}", col):
             return col
         else:
-            return ManimColor.parse(col.lower()).value
+            return ManimColor.parse(col).to_hex()
 
     def _extract_color_tags(self):
         """Used to determine which parts (if any) of the string should be formatted
