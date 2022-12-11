@@ -223,8 +223,8 @@ class VMobject(Mobject):
 
     def set_fill(
         self,
-        color: ParsableManimColor = None,
         opacity: float | None = None,
+        color: ParsableManimColor | None = None,
         family: bool = True,
     ):
         """Set the fill color and fill opacity of a :class:`VMobject`.

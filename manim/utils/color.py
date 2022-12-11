@@ -204,11 +204,7 @@ class ManimColor:
                 self.value: int = ManimColor.int_from_hex(value, alpha)
             except ValueError:
                 self.value: int = ManimColor.int_from_str(value)
-        elif (
-            isinstance(value, list)
-            or isinstance(value, tuple)
-            or isinstance(value, np.ndarray)
-        ):
+        elif isinstance(value, (list, tuple, np.ndarray)):
             length = len(value)
 
             if use_floats:
