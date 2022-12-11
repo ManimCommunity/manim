@@ -25,13 +25,6 @@ from typing import Any, Iterable, Iterator
 
 import numpy as np
 
-
-def import_color():
-    from manim.utils.color import ManimColor
-
-
-import_color()
-
 from .. import constants
 from ..constants import RendererType
 from ..utils.tex import TexTemplate, TexTemplateFromFile
