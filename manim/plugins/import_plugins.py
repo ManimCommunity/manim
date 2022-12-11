@@ -9,7 +9,7 @@ from .. import config, logger
 __all__ = []
 
 
-plugins_requested: list = config["plugins"]
+plugins_requested: list[str] = config["plugins"]
 if "" in plugins_requested:
     plugins_requested.remove("")
 for plugin in pkg_resources.iter_entry_points("manim.plugins"):

@@ -466,7 +466,7 @@ class VMobject(Mobject):
 
     def get_stroke_colors(self, background=False):
         return [
-            ManimColor.parse(rgba[:3]) if rgba.any() else None
+            ManimColor(rgba[:3]) if rgba.any() else None
             for rgba in self.get_stroke_rgbas(background)
         ]
 
