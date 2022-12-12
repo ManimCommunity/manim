@@ -24,7 +24,7 @@ repos:
         name: isort (pyi)
         types: [pyi]
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.3.0
+    rev: v3.3.1
     hooks:
       - id: pyupgrade
         name: Update code to new python versions
@@ -35,7 +35,7 @@ repos:
       - id: python-check-blanket-noqa
         name: Precision flake ignores
   - repo: https://github.com/psf/black
-    rev: 22.10.0
+    rev: 22.12.0
     hooks:
       - id: black
   - repo: https://github.com/asottile/blacken-docs
