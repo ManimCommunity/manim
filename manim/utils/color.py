@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from .. import config
+
 __all__ = [
     "color_to_rgb",
     "color_to_rgba",
@@ -527,15 +529,18 @@ def average_color(*colors: Color) -> Color:
     return rgb_to_color(mean_rgb)
 
 
-def random_bright_color() -> Color:
-    color = random_color()
+def random_bright_color(seed: int = None) -> Color:
+    color = random_color(seed)
     curr_rgb = color_to_rgb(color)
     new_rgb = interpolate(curr_rgb, np.ones(len(curr_rgb)), 0.5)
     return Color(rgb=new_rgb)
 
 
-def random_color() -> Color:
-    return random.choice([c.value for c in list(Colors)])
+def random_color(seed: int = None) -> Color:
+    if seed is not None and seed != config.seed:
+        config.seed = seed
+        config.rng = random.Random(seed)
+    return config.rng.choice([c.value for c in list(Colors)])
 
 
 def get_shaded_rgb(
