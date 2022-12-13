@@ -537,6 +537,8 @@ def random_bright_color(seed: int = None) -> Color:
 
 
 def random_color(seed: int = None) -> Color:
+    if config.rng is None:
+        config.rng = random.Random()
     if seed is not None and seed != config.seed:
         config.seed = seed
         config.rng = random.Random(seed)
