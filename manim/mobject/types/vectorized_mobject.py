@@ -189,7 +189,7 @@ class VMobject(Mobject):
         ]
         opacities: list[float] = [o if (o is not None) else 0 for o in tuplify(opacity)]
         rgbas = np.array(
-            [c.to_rgba_with_alpha(0) for c, o in zip(*make_even(colors, opacities))],
+            [c.to_rgba_with_alpha(o) for c, o in zip(*make_even(colors, opacities))],
         )
 
         sheen_factor = self.get_sheen_factor()

@@ -250,9 +250,9 @@ class ManimColor:
     def internal_from_integer(value: int, alpha: float) -> ManimColorInternal:
         return np.asarray(
             (
-                ((value >> 24) & 0xFF) / 255,
                 ((value >> 16) & 0xFF) / 255,
                 ((value >> 8) & 0xFF) / 255,
+                ((value >> 0) & 0xFF) / 255,
                 alpha,
             ),
             dtype=ManimColorDType,
@@ -309,7 +309,7 @@ class ManimColor:
     @staticmethod
     def internal_from_string(name: str) -> ManimColorInternal:
         if name.upper() in globals():
-            return globals()[name].value
+            return globals()[name]._internal_value
         else:
             raise ValueError(f"Color {name} not found")
 
@@ -335,12 +335,15 @@ class ManimColor:
 
     # @deprecated("Use to_rgb_with_alpha instead.")
     def to_int_rgba_with_alpha(self, alpha: float) -> RGBA_Array_Int:
-        tmp = self._internal_value[:3] * 255
+        tmp = self._internal_value * 255
         tmp[3] = alpha * 255
         return tmp.astype(int)
 
-    def to_hex(self) -> str:
-        return f"#{self._internal_value:08X}"
+    def to_hex(self, with_alpha: bool = False) -> str:
+        tmp = f"#{int(self._internal_value[0]*255):02X}{int(self._internal_value[1]*255):02X}{int(self._internal_value[2]*255):02X}"
+        if with_alpha:
+            tmp += f"{int(self._internal_value[3]*255):02X}"
+        return tmp
 
     def invert(self, with_alpha=False) -> ManimColor:
         return ManimColor(1.0 - self._internal_value, with_alpha, use_floats=True)
@@ -436,7 +439,7 @@ ParsableManimColor: TypeAlias = (
     | RGBA_Array_Float
 )
 
-__all__ += ["ManimColor", "ParsableManimColor"]
+__all__ += ["ManimColor", "ParsableManimColor", "ManimColorDType"]
 
 WHITE: ManimColor = ManimColor("#FFFFFF")
 GRAY_A: ManimColor = ManimColor("#DDDDDD")
@@ -606,14 +609,19 @@ __all__ += [
 
 
 def color_to_rgb(color: ParsableManimColor) -> RGB_Array_Float:
-    if isinstance(color, ManimColor):
-        return color.to_rgb()
-    else:
-        return ManimColor(color).to_rgb()
+    return ManimColor(color).to_rgb()
 
 
 def color_to_rgba(color: ParsableManimColor, alpha: float = 1) -> RGBA_Array_Float:
-    return np.array([*color_to_rgb(color), alpha])
+    return ManimColor(color).to_rgba_with_alpha(alpha)
+
+
+def color_to_int_rgb(color: ManimColor) -> RGB_Array_Int:
+    return ManimColor(color).to_int_rgb()
+
+
+def color_to_int_rgba(color: ManimColor, alpha: float = 1.0) -> RGBA_Array_Int:
+    return ManimColor(color).to_int_rgba_with_alpha(alpha)
 
 
 def rgb_to_color(rgb: RGB_Array_Float | RGB_Tuple_Float) -> ManimColor:
@@ -634,14 +642,6 @@ def hex_to_rgb(hex_code: str) -> RGB_Array_Float:
 
 def invert_color(color: ManimColor) -> ManimColor:
     return color.invert()
-
-
-def color_to_int_rgb(color: ManimColor) -> RGB_Array_Int:
-    return color.to_int_rgb()
-
-
-def color_to_int_rgba(color: ManimColor, alpha: float = 1.0) -> RGBA_Array_Int:
-    return color.to_int_rgba_with_alpha(alpha)
 
 
 def interpolate_arrays(
