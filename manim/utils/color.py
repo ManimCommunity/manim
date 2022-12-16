@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-from enum import Enum
-from typing import Iterable, TypedDict
+from typing import Any, Sequence
+
+from typing_extensions import Annotated, Literal, TypeAlias
 
 # from manim._config import logger
 
@@ -179,16 +180,27 @@ name of the colors in lowercase.
 
 """
 
+ManimColorDType: TypeAlias = np.float32
+
+RGB_Array_Float: TypeAlias = np.ndarray[Literal[3], np.dtype[np.float32]]
+RGB_Tuple_Float: TypeAlias = tuple[float, float, float]
+
+RGB_Array_Int: TypeAlias = np.ndarray[Literal[3], np.dtype[np.int32]]
+RGB_Tuple_Int: TypeAlias = tuple[int, int, int]
+
+RGBA_Array_Float: TypeAlias = np.ndarray[Literal[4], np.dtype[np.float32]]
+RGBA_Tuple_Float: TypeAlias = tuple[float, float, float, float]
+
+RGBA_Array_Int: TypeAlias = np.ndarray[Literal[4], np.dtype[np.int32]]
+RGBA_Tuple_Int: TypeAlias = tuple[int, int, int, int]
+
+ManimColorInternal: TypeAlias = np.ndarray[Literal[4], np.dtype[ManimColorDType]]
+
 
 class ManimColor:
     def __init__(
         self,
-        value: str
-        | int
-        | list[int, int, int]
-        | list[int, int, int, int]
-        | list[float, float, float]
-        | list[float, float, float, float],
+        value: ParsableManimColor,
         alpha: float = 1.0,
         use_floats: bool = True,
     ) -> None:
@@ -196,131 +208,58 @@ class ManimColor:
             # logger.warning(
             #     "ManimColor was passed another ManimColor. This is probably not what you want. Created a copy of the passed ManimColor instead."
             # )
-            self.value = value.value
+            self._internal_value = value._internal_value
         elif isinstance(value, int):
-            self.value: int = value << 8 | int(alpha * 255)
+            self._internal_value = ManimColor.internal_from_integer(value, alpha)
         elif isinstance(value, str):
             try:
-                self.value: int = ManimColor.int_from_hex(value, alpha)
+                self._internal_value = ManimColor.internal_from_hex_string(value, alpha)
             except ValueError:
-                self.value: int = ManimColor.int_from_str(value)
+                self._internal_value = ManimColor.internal_from_string(value)
         elif isinstance(value, (list, tuple, np.ndarray)):
             length = len(value)
-
             if use_floats:
                 if length == 3:
-                    self.value: int = ManimColor.int_from_rgb(value, alpha)
+                    self._internal_value = ManimColor.internal_from_rgb(value, alpha)  # type: ignore
                 elif length == 4:
-                    self.value: int = ManimColor.int_from_rgba(value)
+                    self._internal_value = ManimColor.internal_from_rgba(value)  # type: ignore
             else:
                 if length == 3:
-                    self.value: int = ManimColor.int_from_int_rgb(value, alpha)
+                    self._internal_value = ManimColor.internal_from_int_rgb(
+                        value, alpha  # type: ignore
+                    )
                 elif length == 4:
-                    self.value: int = ManimColor.int_from_int_rgba(value)
+                    self._internal_value = ManimColor.internal_from_int_rgba(value)  # type: ignore
         else:
             # logger.error(f"Invalid color value: {value}")
             raise TypeError(
                 f"ManimColor only accepts int, str, list[int, int, int], list[int, int, int, int], list[float, float, float], list[float, float, float, float], not {type(value)}"
             )
 
-    def __repr__(self) -> str:
-        return f"{self.__class__.__name__}({self.to_hex()})"
+    @property
+    def _internal_value(self) -> ManimColorInternal:
+        return self.__value
 
-    def __str__(self) -> str:
-        return f"{self.__class__.__name__}({self.to_hex()})"
+    @_internal_value.setter
+    def _internal_value(self, value: ManimColorInternal) -> None:
+        if not isinstance(value, np.ndarray):
+            raise TypeError("value must be a numpy array")
+        self.__value: ManimColorInternal = value
 
-    def __eq__(self, other: ManimColor) -> bool:
-        return self.value == other.value
-
-    def __add__(self, other: ManimColor) -> ManimColor:
-        return ManimColor(self.value + other.value)
-
-    def __sub__(self, other: ManimColor) -> ManimColor:
-        return ManimColor(self.value - other.value)
-
-    def __mul__(self, other: ManimColor) -> ManimColor:
-        return ManimColor(self.value * other.value)
-
-    def __truediv__(self, other: ManimColor) -> ManimColor:
-        return ManimColor(self.value / other.value)
-
-    def __floordiv__(self, other: ManimColor) -> ManimColor:
-        return ManimColor(self.value // other.value)
-
-    def __mod__(self, other: ManimColor) -> ManimColor:
-        return ManimColor(self.value % other.value)
-
-    def __pow__(self, other: ManimColor) -> ManimColor:
-        return ManimColor(self.value**other.value)
-
-    def __and__(self, other: ManimColor) -> ManimColor:
-        return ManimColor(self.value & other.value)
-
-    def __or__(self, other: ManimColor) -> ManimColor:
-        return ManimColor(self.value | other.value)
-
-    def __xor__(self, other: ManimColor) -> ManimColor:
-        return ManimColor(self.value ^ other.value)
-
-    def to_rgb(self) -> np.ndarray:
-        return self.to_int_rgb() / 255
-
-    def to_int_rgb(self) -> list[int, int, int]:
-        return np.array(
-            [
-                (self.value >> 24) & 0xFF,
-                (self.value >> 16) & 0xFF,
-                (self.value >> 8) & 0xFF,
-            ]
+    @staticmethod
+    def internal_from_integer(value: int, alpha: float) -> ManimColorInternal:
+        return np.asarray(
+            (
+                ((value >> 24) & 0xFF) / 255,
+                ((value >> 16) & 0xFF) / 255,
+                ((value >> 8) & 0xFF) / 255,
+                alpha,
+            ),
+            dtype=ManimColorDType,
         )
 
-    def to_rgba(self) -> np.ndarray:
-        return self.to_int_rgba() / 255
-
-    def to_int_rgba(self) -> list[int, int, int, int]:
-        return np.array(
-            [
-                (self.value >> 24) & 0xFF,
-                (self.value >> 16) & 0xFF,
-                (self.value >> 8) & 0xFF,
-                self.value & 0xFF,
-            ]
-        )
-
-    def to_rgb_with_alpha(self, alpha: float) -> list[float, float, float, float]:
-        return self.to_int_rgb_with_alpha(alpha) / 255
-
-    def to_int_rgb_with_alpha(self, alpha: float) -> list[int, int, int, int]:
-        return np.array(
-            [
-                (self.value >> 24) & 0xFF,
-                (self.value >> 16) & 0xFF,
-                (self.value >> 8) & 0xFF,
-                int(alpha * 255),
-            ]
-        )
-
-    def to_hex(self) -> str:
-        return f"#{self.value:08X}"
-
     @staticmethod
-    def int_from_int_rgb(rgb: list[int, int, int], alpha: float = 1.0) -> ManimColor:
-        return rgb[0] << 24 | rgb[1] << 16 | rgb[2] << 8 | int(alpha * 255)
-
-    @staticmethod
-    def int_from_rgb(rgb: list[float, float, float], alpha: float = 1.0) -> ManimColor:
-        return ManimColor.int_from_int_rgb((np.asarray(rgb) * 255).astype(int), alpha)
-
-    @staticmethod
-    def int_from_int_rgba(rgba: list[int, int, int, int]) -> ManimColor:
-        return rgba[0] << 24 | rgba[1] << 16 | rgba[2] << 8 | rgba[3]
-
-    @staticmethod
-    def int_from_rgba(rgba: list[float, float, float, float]) -> ManimColor:
-        return ManimColor.from_int_rgba((np.asarray(rgba) * 255).astype(int))
-
-    @staticmethod
-    def int_from_hex(hex: str, alpha: float) -> ManimColor:
+    def internal_from_hex_string(hex: str, alpha: float) -> ManimColorInternal:
         if hex.startswith("#"):
             hex = hex[1:]
         elif hex.startswith("0x"):
@@ -329,33 +268,106 @@ class ManimColor:
             raise ValueError(f"Invalid hex value: {hex}")
         if len(hex) == 6:
             hex += "00"
-        return int(hex, 16) | int(alpha * 255)
+        tmp = int(hex, 16)
+        return np.asarray(
+            (
+                ((tmp >> 24) & 0xFF) / 255,
+                ((tmp >> 16) & 0xFF) / 255,
+                ((tmp >> 8) & 0xFF) / 255,
+                alpha,
+            ),
+            dtype=ManimColorDType,
+        )
+
+    @staticmethod
+    def internal_from_int_rgb(
+        rgb: RGB_Tuple_Int, alpha: float = 1.0
+    ) -> ManimColorInternal:
+        value: np.ndarray = np.asarray(rgb, dtype=ManimColorDType).copy() / 255
+        value.resize(4, refcheck=False)
+        value[3] = alpha
+        return value
+
+    @staticmethod
+    def internal_from_rgb(
+        rgb: RGB_Tuple_Float, alpha: float = 1.0
+    ) -> ManimColorInternal:
+        value: np.ndarray = np.asarray(rgb, dtype=ManimColorDType).copy()
+        value.resize(4, refcheck=False)
+        value[3] = alpha
+        return value
+
+    @staticmethod
+    def internal_from_int_rgba(rgba: RGBA_Tuple_Int) -> ManimColorInternal:
+        return np.asarray(rgba, dtype=ManimColorDType) / 255
+
+    @staticmethod
+    def internal_from_rgba(rgba: RGBA_Tuple_Float) -> ManimColorInternal:
+        return np.asarray(rgba, dtype=ManimColorDType)
 
     # TODO: This may be a bad idea but i don't know what else will be better without writing an endless list of colors
     @staticmethod
-    def int_from_str(name: str):
+    def internal_from_string(name: str) -> ManimColorInternal:
         if name.upper() in globals():
             return globals()[name].value
         else:
             raise ValueError(f"Color {name} not found")
 
+    def to_integer(self) -> int:
+        return int.from_bytes(
+            (self._internal_value[:3] * 255).astype(int).tobytes(), "big"
+        )
+
+    def to_rgb(self) -> RGB_Array_Float:
+        return self._internal_value[:3]
+
+    def to_int_rgb(self) -> RGB_Array_Int:
+        return (self._internal_value[:3] * 255).astype(int)
+
+    def to_rgba(self) -> RGBA_Array_Float:
+        return self._internal_value
+
+    def to_int_rgba(self) -> RGBA_Array_Int:
+        return (self._internal_value * 255).astype(int)
+
+    def to_rgba_with_alpha(self, alpha: float) -> RGBA_Array_Float:
+        return np.fromiter((*self._internal_value[:3], alpha), dtype=ManimColorDType)
+
+    # @deprecated("Use to_rgb_with_alpha instead.")
+    def to_int_rgba_with_alpha(self, alpha: float) -> RGBA_Array_Int:
+        tmp = self._internal_value[:3] * 255
+        tmp[3] = alpha * 255
+        return tmp.astype(int)
+
+    def to_hex(self) -> str:
+        return f"#{self._internal_value:08X}"
+
     def invert(self, with_alpha=False) -> ManimColor:
-        return ManimColor(0xFFFFFFFF - (self.value & 0xFFFFFFFF))
+        return ManimColor(1.0 - self._internal_value, with_alpha, use_floats=True)
+
+    def interpolate(self, other: ManimColor, alpha: float) -> ManimColor:
+        return ManimColor(
+            self._internal_value * (1 - alpha) + other._internal_value * alpha
+        )
 
     @classmethod
-    def from_rgb(cls, rgb: list[float, float, float], alpha: float = 1.0) -> ManimColor:
+    def from_rgb(
+        cls, rgb: RGB_Array_Float | RGB_Tuple_Float, alpha: float = 1.0
+    ) -> ManimColor:
         return cls(rgb, alpha, use_floats=True)
 
     @classmethod
-    def from_int_rgb(cls, rgb: list[int, int, int], alpha: float = 1.0) -> ManimColor:
+    def from_int_rgb(
+        cls, rgb: RGB_Array_Int | RGB_Tuple_Int, alpha: float = 1.0
+    ) -> ManimColor:
         return cls(rgb, alpha)
 
     @classmethod
-    def from_rgba(cls, rgba: list[float, float, float, float]) -> ManimColor:
+    def from_rgba(cls, rgba: RGBA_Array_Float | RGBA_Tuple_Float) -> ManimColor:
         return cls(rgba, use_floats=True)
 
     @classmethod
-    def from_int_rgba(cls, rgba: list[int, int, int, int]) -> ManimColor:
+    def from_int_rgba(cls, rgba: RGBA_Array_Int | RGBA_Tuple_Int) -> ManimColor:
         return cls(rgba)
 
     @classmethod
@@ -366,22 +378,64 @@ class ManimColor:
     def gradient(colors: list[ManimColor], length: int):
         ...
 
-    @classmethod
-    def parse(cls, value, alpha=1.0, use_floats=True) -> ManimColor:
-        if isinstance(value, ManimColor):
-            return value
-        return cls(value, alpha, use_floats)
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self.to_hex()})"
+
+    def __str__(self) -> str:
+        return f"{self.__class__.__name__}({self.to_hex()})"
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, ManimColor):
+            raise TypeError(
+                f"Cannot compare {self.__class__.__name__} with {other.__class__.__name__}"
+            )
+        return self._internal_value == other._internal_value
+
+    def __add__(self, other: ManimColor) -> ManimColor:
+        return ManimColor(self._internal_value + other._internal_value)
+
+    def __sub__(self, other: ManimColor) -> ManimColor:
+        return ManimColor(self._internal_value - other._internal_value)
+
+    def __mul__(self, other: ManimColor) -> ManimColor:
+        return ManimColor(self._internal_value * other._internal_value)
+
+    def __truediv__(self, other: ManimColor) -> ManimColor:
+        return ManimColor(self._internal_value / other._internal_value)
+
+    def __floordiv__(self, other: ManimColor) -> ManimColor:
+        return ManimColor(self._internal_value // other._internal_value)
+
+    def __mod__(self, other: ManimColor) -> ManimColor:
+        return ManimColor(self._internal_value % other._internal_value)
+
+    def __pow__(self, other: ManimColor) -> ManimColor:
+        return ManimColor(self._internal_value**other._internal_value)
+
+    def __and__(self, other: ManimColor) -> ManimColor:
+        return ManimColor(self.to_integer() & other.to_integer())
+
+    def __or__(self, other: ManimColor) -> ManimColor:
+        return ManimColor(self.to_integer() | other.to_integer())
+
+    def __xor__(self, other: ManimColor) -> ManimColor:
+        return ManimColor(self.to_integer() ^ other.to_integer())
 
 
-ParsableManimColor = (
+ParsableManimColor: TypeAlias = (
     ManimColor
     | int
     | str
-    | list[float, float, float]
-    | list[float, float, float, float]
-    | list[int, int, int]
-    | list[int, int, int, int]
+    | RGB_Tuple_Int
+    | RGB_Tuple_Float
+    | RGBA_Tuple_Int
+    | RGBA_Tuple_Float
+    | RGB_Array_Int
+    | RGB_Array_Float
+    | RGBA_Array_Int
+    | RGBA_Array_Float
 )
+
 __all__ += ["ManimColor", "ParsableManimColor"]
 
 WHITE: ManimColor = ManimColor("#FFFFFF")
@@ -551,55 +605,57 @@ __all__ += [
 ]
 
 
-def color_to_rgb(color: ParsableManimColor) -> np.ndarray:
+def color_to_rgb(color: ParsableManimColor) -> RGB_Array_Float:
     if isinstance(color, ManimColor):
         return color.to_rgb()
     else:
         return ManimColor(color).to_rgb()
 
 
-def color_to_rgba(color: ParsableManimColor, alpha: float = 1) -> np.ndarray:
+def color_to_rgba(color: ParsableManimColor, alpha: float = 1) -> RGBA_Array_Float:
     return np.array([*color_to_rgb(color), alpha])
 
 
-def rgb_to_color(rgb: Iterable[float]) -> ManimColor:
+def rgb_to_color(rgb: RGB_Array_Float | RGB_Tuple_Float) -> ManimColor:
     return ManimColor.from_rgb(rgb)
 
 
-def rgba_to_color(rgba: Iterable[float]) -> ManimColor:
-    return rgb_to_color(rgba[:3], alpha=rgba[3])
+def rgba_to_color(rgba: RGBA_Array_Float | RGBA_Tuple_Float) -> ManimColor:
+    return ManimColor.from_rgba(rgba)
 
 
-def rgb_to_hex(rgb: Iterable[float]) -> str:
-    return "#" + "".join("%02x" % round(255 * x) for x in rgb)
+def rgb_to_hex(rgb: RGB_Array_Float | RGB_Tuple_Float) -> str:
+    return ManimColor.from_rgb(rgb).to_hex()
 
 
-def hex_to_rgb(hex_code: str) -> np.ndarray:
-    hex_part = hex_code[1:]
-    if len(hex_part) == 3:
-        hex_part = "".join([2 * c for c in hex_part])
-    return np.array([int(hex_part[i : i + 2], 16) / 255 for i in range(0, 6, 2)])
+def hex_to_rgb(hex_code: str) -> RGB_Array_Float:
+    return ManimColor(hex_code).to_rgb()
 
 
 def invert_color(color: ManimColor) -> ManimColor:
-    return rgb_to_color(1.0 - color_to_rgb(color))
+    return color.invert()
 
 
-def color_to_int_rgb(color: ManimColor) -> np.ndarray:
-    return (255 * color_to_rgb(color)).astype("uint8")
+def color_to_int_rgb(color: ManimColor) -> RGB_Array_Int:
+    return color.to_int_rgb()
 
 
-def color_to_int_rgba(color: ManimColor, opacity: float = 1.0) -> np.ndarray:
-    alpha_multiplier = np.vectorize(lambda x: int(x * opacity))
-    return alpha_multiplier(np.append(color_to_int_rgb(color), 255))
+def color_to_int_rgba(color: ManimColor, alpha: float = 1.0) -> RGBA_Array_Int:
+    return color.to_int_rgba_with_alpha(alpha)
+
+
+def interpolate_arrays(
+    arr1: np.ndarray[Any, Any], arr2: np.ndarray[Any, Any], alpha: float
+) -> np.ndarray:
+    return (1 - alpha) * arr1 + alpha * arr2
 
 
 def color_gradient(
-    reference_colors: Iterable[ManimColor],
+    reference_colors: Sequence[ParsableManimColor],
     length_of_output: int,
-) -> list[ManimColor]:
+) -> list[ManimColor] | ManimColor:
     if length_of_output == 0:
-        return reference_colors[0]
+        return ManimColor(reference_colors[0])
     rgbs = list(map(color_to_rgb, reference_colors))
     alphas = np.linspace(0, (len(rgbs) - 1), length_of_output)
     floors = alphas.astype("int")
@@ -608,7 +664,7 @@ def color_gradient(
     alphas_mod1[-1] = 1
     floors[-1] = len(rgbs) - 2
     return [
-        rgb_to_color(interpolate(rgbs[i], rgbs[i + 1], alpha))
+        rgb_to_color((rgbs[i] * (1 - alpha)) + (rgbs[i + 1] * alpha))
         for i, alpha in zip(floors, alphas_mod1)
     ]
 
@@ -616,8 +672,7 @@ def color_gradient(
 def interpolate_color(
     color1: ManimColor, color2: ManimColor, alpha: float
 ) -> ManimColor:
-    rgb = interpolate(color_to_rgb(color1), color_to_rgb(color2), alpha)
-    return rgb_to_color(rgb)
+    return color1.interpolate(color2, alpha)
 
 
 def average_color(*colors: ManimColor) -> ManimColor:
@@ -629,15 +684,15 @@ def average_color(*colors: ManimColor) -> ManimColor:
 def random_bright_color() -> ManimColor:
     color = random_color()
     curr_rgb = color_to_rgb(color)
-    new_rgb = interpolate(curr_rgb, np.ones(len(curr_rgb)), 0.5)
+    new_rgb = interpolate_arrays(curr_rgb, np.ones(len(curr_rgb)), 0.5)
     return ManimColor(new_rgb)
 
 
-_colors = [x for x in globals().values() if isinstance(x, ManimColor)]
+_colors: list[ManimColor] = [x for x in globals().values() if isinstance(x, ManimColor)]
 
 
 def random_color() -> ManimColor:
-    return random.choice([c.value for c in list(_colors)])
+    return random.choice(_colors)
 
 
 def get_shaded_rgb(
@@ -645,7 +700,7 @@ def get_shaded_rgb(
     point: np.ndarray,
     unit_normal_vect: np.ndarray,
     light_source: np.ndarray,
-) -> np.ndarray:
+) -> RGBA_Array_Float:
     to_sun = normalize(light_source - point)
     factor = 0.5 * np.dot(unit_normal_vect, to_sun) ** 3
     if factor < 0:

@@ -105,7 +105,7 @@ class VMobject(Mobject):
         self.stroke_opacity = stroke_opacity
         self.stroke_width = stroke_width
         if background_stroke_color is not None:
-            self.background_stroke_color: ManimColor = ManimColor.parse(
+            self.background_stroke_color: ManimColor = ManimColor(
                 background_stroke_color
             )
         self.background_stroke_opacity = background_stroke_opacity
@@ -129,9 +129,9 @@ class VMobject(Mobject):
 
         # TODO: Maybe that's a little weird to do after all ? Having a default color may help
         if fill_color:
-            self.fill_color: ManimColor = ManimColor.parse(fill_color)
+            self.fill_color: ManimColor = ManimColor(fill_color)
         if stroke_color:
-            self.stroke_color: ManimColor = ManimColor.parse(stroke_color)
+            self.stroke_color: ManimColor = ManimColor(stroke_color)
 
     # OpenGL compatibility
     @property
@@ -189,7 +189,7 @@ class VMobject(Mobject):
         ]
         opacities: list[float] = [o if (o is not None) else 0 for o in tuplify(opacity)]
         rgbas = np.array(
-            [c.to_rgb_with_alpha(o) for c, o in zip(*make_even(colors, opacities))],
+            [c.to_rgba_with_alpha(0) for c, o in zip(*make_even(colors, opacities))],
         )
 
         sheen_factor = self.get_sheen_factor()
@@ -225,7 +225,7 @@ class VMobject(Mobject):
 
     def set_fill(
         self,
-        color: ParsableManimColor = None,
+        color: ParsableManimColor | None = None,
         opacity: float | None = None,
         family: bool = True,
     ):
@@ -297,7 +297,7 @@ class VMobject(Mobject):
         if opacity is not None:
             setattr(self, opacity_name, opacity)
         if color is not None and background:
-            self.background_stroke_color = ManimColor.parse(color)
+            self.background_stroke_color = ManimColor(color)
         return self
 
     def set_background_stroke(self, **kwargs):
@@ -307,9 +307,9 @@ class VMobject(Mobject):
 
     def set_style(
         self,
-        fill_color: ParsableManimColor = None,
-        fill_opacity=None,
-        stroke_color: ParsableManimColor = None,
+        fill_color: ParsableManimColor | None = None,
+        fill_opacity: float | None = None,
+        stroke_color: ParsableManimColor | None = None,
         stroke_width=None,
         stroke_opacity=None,
         background_stroke_color: ParsableManimColor = None,
@@ -383,7 +383,7 @@ class VMobject(Mobject):
         return self
 
     def set_color(self, color: ParsableManimColor, family=True):
-        color = ManimColor.parse(color)
+        color = ManimColor(color)
         self.set_fill(color, family=family)
         self.set_stroke(color, family=family)
         return self
@@ -430,7 +430,7 @@ class VMobject(Mobject):
     # TODO: Does this just do a copy?
     def get_fill_colors(self):
         return [
-            ManimColor.parse(rgba[:3]) if rgba.any() else None
+            ManimColor(rgba[:3]) if rgba.any() else None
             for rgba in self.get_fill_rgbas()
         ]
 

@@ -602,8 +602,8 @@ class LinearTransformationScene(VectorScene):
         self.show_coordinates = show_coordinates
         self.show_basis_vectors = show_basis_vectors
         self.basis_vector_stroke_width = basis_vector_stroke_width
-        self.i_hat_color = ManimColor.parse(i_hat_color)
-        self.j_hat_color = ManimColor.parse(j_hat_color)
+        self.i_hat_color = ManimColor(i_hat_color)
+        self.j_hat_color = ManimColor(j_hat_color)
         self.leave_ghost_vectors = leave_ghost_vectors
         self.background_plane_kwargs = {
             "color": GREY,

@@ -613,7 +613,7 @@ class Circumscribe(Succession):
         stroke_width=DEFAULT_STROKE_WIDTH,
         **kwargs
     ):
-        color = ManimColor.parse(color)
+        color = ManimColor(color)
         if shape is Rectangle:
             frame = SurroundingRectangle(
                 mobject,

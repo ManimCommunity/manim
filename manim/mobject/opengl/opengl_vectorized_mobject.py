@@ -140,9 +140,9 @@ class OpenGLVMobject(OpenGLMobject):
         self.refresh_unit_normal()
 
         if fill_color:
-            self.fill_color = ManimColor.parse(fill_color)
+            self.fill_color = ManimColor(fill_color)
         if stroke_color:
-            self.stroke_color = ManimColor.parse(stroke_color)
+            self.stroke_color = ManimColor(stroke_color)
 
         self.fill_data = None
         self.stroke_data = None
@@ -223,7 +223,7 @@ class OpenGLVMobject(OpenGLMobject):
         :meth:`~.OpenGLVMobject.set_style`
         """
         if color:
-            color = ManimColor.parse(color)
+            color = ManimColor(color)
         if opacity is not None:
             self.fill_opacity = opacity
         if recurse:
@@ -353,13 +353,13 @@ class OpenGLVMobject(OpenGLMobject):
 
     # Todo im not quite sure why we are doing this
     def get_fill_colors(self):
-        return [ManimColor.parse(rgb_to_hex(rgba[:3])) for rgba in self.fill_rgba]
+        return [ManimColor(rgb_to_hex(rgba[:3])) for rgba in self.fill_rgba]
 
     def get_fill_opacities(self):
         return self.fill_rgba[:, 3]
 
     def get_stroke_colors(self):
-        return [ManimColor.parse(rgb_to_hex(rgba[:3])) for rgba in self.stroke_rgba]
+        return [ManimColor(rgb_to_hex(rgba[:3])) for rgba in self.stroke_rgba]
 
     def get_stroke_opacities(self):
         return self.stroke_rgba[:, 3]

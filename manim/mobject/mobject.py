@@ -108,7 +108,7 @@ class Mobject:
         self.submobjects = []
         self.updaters = []
         self.updating_suspended = False
-        self.color: ManimColor = ManimColor.parse(color)
+        self.color: ManimColor = ManimColor(color)
 
         self.reset_points()
         self.generate_points()
@@ -1753,7 +1753,7 @@ class Mobject:
             for submob in self.submobjects:
                 submob.set_color(color, family=family)
         print("Setting color of", self, "to", color)
-        self.color = ManimColor.parse(color)
+        self.color = ManimColor(color)
         return self
 
     def set_color_by_gradient(self, *colors: Iterable[ParsableManimColor]):

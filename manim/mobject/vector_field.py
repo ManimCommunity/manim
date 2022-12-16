@@ -115,7 +115,7 @@ class VectorField(VGroup):
             self.pos_to_color = lambda pos: rgb_to_color(self.pos_to_rgb(pos))
         else:
             self.single_color = True
-            self.color = ManimColor.parse(color)
+            self.color = ManimColor(color)
         self.submob_movement_updater = None
 
     @staticmethod

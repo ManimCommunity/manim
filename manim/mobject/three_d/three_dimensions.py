@@ -113,12 +113,12 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         super().__init__(**kwargs)
         self.resolution = resolution
         self.surface_piece_config = surface_piece_config
-        self.fill_color: ManimColor = ManimColor.parse(fill_color)
+        self.fill_color: ManimColor = ManimColor(fill_color)
         self.fill_opacity = fill_opacity
         self.checkerboard_colors: list[ManimColor] = [
-            ManimColor.parse(x) for x in checkerboard_colors
+            ManimColor(x) for x in checkerboard_colors
         ]
-        self.stroke_color: ManimColor = ManimColor.parse(stroke_color)
+        self.stroke_color: ManimColor = ManimColor(stroke_color)
         self.stroke_width = stroke_width
         self.should_make_jagged = should_make_jagged
         self.pre_function_handle_to_anchor_scale_factor = (

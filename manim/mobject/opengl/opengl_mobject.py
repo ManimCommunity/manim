@@ -144,7 +144,7 @@ class OpenGLMobject:
         self.init_updaters()
         # self.init_event_listners()
         self.init_points()
-        self.color: ManimColor = ManimColor.parse(color) if color else None
+        self.color: ManimColor = ManimColor(color) if color else None
         self.init_colors()
 
         self.shader_indices = None
@@ -1974,7 +1974,7 @@ class OpenGLMobject:
         # Recurse to submobjects differently from how set_rgba_array
         # in case they implement set_color differently
         if color is not None:
-            self.color: ManimColor = ManimColor.parse(color)
+            self.color: ManimColor = ManimColor(color)
         if opacity is not None:
             self.opacity = opacity
         if recurse:
@@ -2069,7 +2069,7 @@ class OpenGLMobject:
         from manim.mobject.geometry.shape_matchers import BackgroundRectangle
 
         self.background_rectangle = BackgroundRectangle(
-            self, color=ManimColor.parse(color), fill_opacity=opacity, **kwargs
+            self, color=ManimColor(color), fill_opacity=opacity, **kwargs
         )
         self.add_to_back(self.background_rectangle)
         return self
