@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Iterable, Sequence
+from typing import Any, Iterable, Sequence, Union
 
 from typing_extensions import Annotated, Literal, TypeAlias
 
@@ -184,19 +184,19 @@ ManimColorDType: TypeAlias = np.float64
 ManimFloat: TypeAlias = np.float64
 ManimInt: TypeAlias = np.int64
 
-RGB_Array_Float: TypeAlias = np.ndarray[Literal[3], np.dtype[ManimFloat]]
-RGB_Tuple_Float: TypeAlias = tuple[float, float, float]
+RGB_Array_Float: TypeAlias = "np.ndarray[Literal[3], np.dtype[ManimFloat]]"
+RGB_Tuple_Float: TypeAlias = "tuple[float, float, float]"
 
-RGB_Array_Int: TypeAlias = np.ndarray[Literal[3], np.dtype[ManimInt]]
-RGB_Tuple_Int: TypeAlias = tuple[int, int, int]
+RGB_Array_Int: TypeAlias = "np.ndarray[Literal[3], np.dtype[ManimInt]]"
+RGB_Tuple_Int: TypeAlias = "tuple[int, int, int]"
 
-RGBA_Array_Float: TypeAlias = np.ndarray[Literal[4], np.dtype[ManimFloat]]
-RGBA_Tuple_Float: TypeAlias = tuple[float, float, float, float]
+RGBA_Array_Float: TypeAlias = "np.ndarray[Literal[4], np.dtype[ManimFloat]]"
+RGBA_Tuple_Float: TypeAlias = "tuple[float, float, float, float]"
 
-RGBA_Array_Int: TypeAlias = np.ndarray[Literal[4], np.dtype[ManimInt]]
-RGBA_Tuple_Int: TypeAlias = tuple[int, int, int, int]
+RGBA_Array_Int: TypeAlias = "np.ndarray[Literal[4], np.dtype[ManimInt]]"
+RGBA_Tuple_Int: TypeAlias = "tuple[int, int, int, int]"
 
-ManimColorInternal: TypeAlias = np.ndarray[Literal[4], np.dtype[ManimColorDType]]
+ManimColorInternal: TypeAlias = "np.ndarray[Literal[4], np.dtype[ManimColorDType]]"
 
 
 class ManimColor:
@@ -399,8 +399,8 @@ class ManimColor:
             The alpha value to use if a single color is passed. or if a list of colors is passed to set the value of all colors.
         """
         if isinstance(color, (list, tuple)):
-            return [cls(c, alpha) for c in color]
-        return cls(color, alpha)
+            return [cls(c, alpha) for c in color]  # type: ignore
+        return cls(color, alpha)  # type: ignore
 
     @staticmethod
     def gradient(colors: list[ManimColor], length: int):
@@ -450,19 +450,19 @@ class ManimColor:
         return ManimColor(self.to_integer() ^ other.to_integer())
 
 
-ParsableManimColor: TypeAlias = (
-    ManimColor
-    | int
-    | str
-    | RGB_Tuple_Int
-    | RGB_Tuple_Float
-    | RGBA_Tuple_Int
-    | RGBA_Tuple_Float
-    | RGB_Array_Int
-    | RGB_Array_Float
-    | RGBA_Array_Int
-    | RGBA_Array_Float
-)
+ParsableManimColor: TypeAlias = Union[
+    ManimColor,
+    int,
+    str,
+    RGB_Tuple_Int,
+    RGB_Tuple_Float,
+    RGBA_Tuple_Int,
+    RGBA_Tuple_Float,
+    RGB_Array_Int,
+    RGB_Array_Float,
+    RGBA_Array_Int,
+    RGBA_Array_Float,
+]
 
 __all__ += ["ManimColor", "ParsableManimColor", "ManimColorDType"]
 
