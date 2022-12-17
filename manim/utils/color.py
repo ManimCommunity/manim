@@ -404,7 +404,7 @@ class ManimColor:
             raise TypeError(
                 f"Cannot compare {self.__class__.__name__} with {other.__class__.__name__}"
             )
-        return self._internal_value == other._internal_value
+        return np.allclose(self._internal_value, other._internal_value)
 
     def __add__(self, other: ManimColor) -> ManimColor:
         return ManimColor(self._internal_value + other._internal_value)

@@ -222,8 +222,6 @@ class OpenGLVMobject(OpenGLMobject):
         --------
         :meth:`~.OpenGLVMobject.set_style`
         """
-        if color:
-            color = ManimColor(color)
         if opacity is not None:
             self.fill_opacity = opacity
         if recurse:
