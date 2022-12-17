@@ -180,18 +180,20 @@ name of the colors in lowercase.
 
 """
 
-ManimColorDType: TypeAlias = np.float32
+ManimColorDType: TypeAlias = np.float64
+ManimFloat: TypeAlias = np.float64
+ManimInt: TypeAlias = np.int64
 
-RGB_Array_Float: TypeAlias = np.ndarray[Literal[3], np.dtype[np.float32]]
+RGB_Array_Float: TypeAlias = np.ndarray[Literal[3], np.dtype[ManimFloat]]
 RGB_Tuple_Float: TypeAlias = tuple[float, float, float]
 
-RGB_Array_Int: TypeAlias = np.ndarray[Literal[3], np.dtype[np.int32]]
+RGB_Array_Int: TypeAlias = np.ndarray[Literal[3], np.dtype[ManimInt]]
 RGB_Tuple_Int: TypeAlias = tuple[int, int, int]
 
-RGBA_Array_Float: TypeAlias = np.ndarray[Literal[4], np.dtype[np.float32]]
+RGBA_Array_Float: TypeAlias = np.ndarray[Literal[4], np.dtype[ManimFloat]]
 RGBA_Tuple_Float: TypeAlias = tuple[float, float, float, float]
 
-RGBA_Array_Int: TypeAlias = np.ndarray[Literal[4], np.dtype[np.int32]]
+RGBA_Array_Int: TypeAlias = np.ndarray[Literal[4], np.dtype[ManimInt]]
 RGBA_Tuple_Int: TypeAlias = tuple[int, int, int, int]
 
 ManimColorInternal: TypeAlias = np.ndarray[Literal[4], np.dtype[ManimColorDType]]
@@ -204,7 +206,9 @@ class ManimColor:
         alpha: float = 1.0,
         use_floats: bool = True,
     ) -> None:
-        if isinstance(value, ManimColor):
+        if value is None:
+            self._internal_value = np.array([0, 0, 0, alpha], dtype=ManimColorDType)
+        elif isinstance(value, ManimColor):
             # logger.warning(
             #     "ManimColor was passed another ManimColor. This is probably not what you want. Created a copy of the passed ManimColor instead."
             # )
@@ -223,6 +227,10 @@ class ManimColor:
                     self._internal_value = ManimColor.internal_from_rgb(value, alpha)  # type: ignore
                 elif length == 4:
                     self._internal_value = ManimColor.internal_from_rgba(value)  # type: ignore
+                else:
+                    raise ValueError(
+                        f"ManimColor only accepts lists/tuples/arrays of length 3 or 4, not {length}"
+                    )
             else:
                 if length == 3:
                     self._internal_value = ManimColor.internal_from_int_rgb(
@@ -230,6 +238,10 @@ class ManimColor:
                     )
                 elif length == 4:
                     self._internal_value = ManimColor.internal_from_int_rgba(value)  # type: ignore
+                else:
+                    raise ValueError(
+                        f"ManimColor only accepts lists/tuples/arrays of length 3 or 4, not {length}"
+                    )
         else:
             # logger.error(f"Invalid color value: {value}")
             raise TypeError(

@@ -185,7 +185,7 @@ class VMobject(Mobject):
         will automatically be added for the gradient
         """
         colors: list[ManimColor] = [
-            c if (c is not None) else BLACK for c in tuplify(color)
+            ManimColor(c) if (c is not None) else BLACK for c in tuplify(color)
         ]
         opacities: list[float] = [o if (o is not None) else 0 for o in tuplify(opacity)]
         rgbas = np.array(
@@ -297,7 +297,10 @@ class VMobject(Mobject):
         if opacity is not None:
             setattr(self, opacity_name, opacity)
         if color is not None and background:
-            self.background_stroke_color = ManimColor(color)
+            if isinstance(color, (list, tuple)):
+                self.background_stroke_color = color = color
+            else:
+                self.background_stroke_color = ManimColor(color)
         return self
 
     def set_background_stroke(self, **kwargs):
@@ -351,9 +354,9 @@ class VMobject(Mobject):
 
         # TODO: FIX COLORS HERE
         if simple:
-            ret["fill_color"] = self.get_fill_color().to_hex()
+            ret["fill_color"] = self.get_fill_color()
             ret["fill_opacity"] = self.get_fill_opacity()
-            ret["stroke_color"] = self.get_stroke_color().to_hex()
+            ret["stroke_color"] = self.get_stroke_color()
         else:
             ret["fill_color"] = self.get_fill_colors()
             ret["fill_opacity"] = self.get_fill_opacities()
