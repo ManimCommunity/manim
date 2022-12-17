@@ -15,4 +15,4 @@ def test_set_stroke(using_opengl_renderer):
     m.set_stroke(color=C.ORANGE, width=2, opacity=0.8)
     assert m.stroke_width == 2
     assert m.stroke_opacity == 0.8
-    assert m.stroke_color.to_hex() == C.ORANGE
+    assert m.stroke_color.to_hex() == C.ORANGE.to_hex()

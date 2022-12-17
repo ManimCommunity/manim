@@ -144,7 +144,7 @@ class OpenGLMobject:
         self.init_updaters()
         # self.init_event_listners()
         self.init_points()
-        self.color: ManimColor = ManimColor(color) if color else None
+        self.color = ManimColor.parse(color)
         self.init_colors()
 
         self.shader_indices = None

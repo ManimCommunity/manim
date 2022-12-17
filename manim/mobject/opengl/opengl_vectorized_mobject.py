@@ -139,10 +139,10 @@ class OpenGLVMobject(OpenGLMobject):
         super().__init__(**kwargs)
         self.refresh_unit_normal()
 
-        if fill_color:
-            self.fill_color = ManimColor(fill_color)
-        if stroke_color:
-            self.stroke_color = ManimColor(stroke_color)
+        if fill_color is not None:
+            self.fill_color = ManimColor.parse(fill_color)
+        if stroke_color is not None:
+            self.stroke_color = ManimColor.parse(stroke_color)
 
         self.fill_data = None
         self.stroke_data = None

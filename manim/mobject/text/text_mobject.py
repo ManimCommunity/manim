@@ -451,7 +451,7 @@ class Text(SVGMobject):
         t2g = kwargs.pop("text2gradient", t2g)
         t2s = kwargs.pop("text2slant", t2s)
         t2w = kwargs.pop("text2weight", t2w)
-        self.t2c = t2c
+        self.t2c = {k: ManimColor(v).to_hex() for k, v in t2c.items()}
         self.t2f = t2f
         self.t2g = t2g
         self.t2s = t2s
@@ -471,7 +471,7 @@ class Text(SVGMobject):
             self.line_spacing = self._font_size + self._font_size * self.line_spacing
 
         color: ManimColor = ManimColor(color) if color else VMobject().color
-        file_name = self._text2svg(color)
+        file_name = self._text2svg(color.to_hex())
         PangoUtils.remove_last_M(file_name)
         super().__init__(
             file_name,
@@ -590,14 +590,10 @@ class Text(SVGMobject):
             for start, end in self._find_indexes(word, self.text):
                 self.chars[start:end].set_color_by_gradient(*gradient)
 
-    def _text2hash(self, color: ParsableManimColor):
+    def _text2hash(self, color: str):
         """Generates ``sha256`` hash for file name."""
         settings = (
-            "PANGO"
-            + self.font
-            + self.slant
-            + self.weight
-            + ManimColor(color).to_hex().lower()
+            "PANGO" + self.font + self.slant + self.weight + color
         )  # to differentiate Text and CairoText
         settings += str(self.t2f) + str(self.t2s) + str(self.t2w) + str(self.t2c)
         settings += str(self.line_spacing) + str(self._font_size)
@@ -676,7 +672,7 @@ class Text(SVGMobject):
                     settings.append(TextSetting(i, i + 1, **args))
         return settings
 
-    def _text2settings(self, color: ParsableManimColor):
+    def _text2settings(self, color: str):
         """Converts the texts and styles to a setting for parsing."""
         t2xs = [
             (self.t2f, "font"),
@@ -686,10 +682,8 @@ class Text(SVGMobject):
         ]
         # setting_args requires values to be strings
 
-        color = ManimColor(color)
         default_args = {
-            arg: getattr(self, arg) if arg != "color" else color.to_hex()
-            for _, arg in t2xs
+            arg: getattr(self, arg) if arg != "color" else color for _, arg in t2xs
         }
 
         settings = self._get_settings_from_t2xs(t2xs, default_args)
@@ -745,7 +739,7 @@ class Text(SVGMobject):
 
         return settings
 
-    def _text2svg(self, color: ParsableManimColor):
+    def _text2svg(self, color: str):
         """Convert the text to SVG using Pango."""
         size = self._font_size
         line_spacing = self.line_spacing

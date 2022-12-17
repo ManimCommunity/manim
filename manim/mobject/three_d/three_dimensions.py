@@ -101,7 +101,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         surface_piece_config: dict = {},
         fill_color: ParsableManimColor = BLUE_D,
         fill_opacity: float = 1.0,
-        checkerboard_colors: Sequence[ParsableManimColor] = [BLUE_D, BLUE_E],
+        checkerboard_colors: Sequence[ParsableManimColor] | bool = [BLUE_D, BLUE_E],
         stroke_color: ParsableManimColor = LIGHT_GREY,
         stroke_width: float = 0.5,
         should_make_jagged: bool = False,
@@ -115,9 +115,12 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         self.surface_piece_config = surface_piece_config
         self.fill_color: ManimColor = ManimColor(fill_color)
         self.fill_opacity = fill_opacity
-        self.checkerboard_colors: list[ManimColor] = [
-            ManimColor(x) for x in checkerboard_colors
-        ]
+        if checkerboard_colors:
+            self.checkerboard_colors: list[ManimColor] = [
+                ManimColor(x) for x in checkerboard_colors
+            ]
+        else:
+            self.checkerboard_colors = checkerboard_colors
         self.stroke_color: ManimColor = ManimColor(stroke_color)
         self.stroke_width = stroke_width
         self.should_make_jagged = should_make_jagged

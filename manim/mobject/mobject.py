@@ -94,7 +94,7 @@ class Mobject:
 
     def __init__(
         self,
-        color: ParsableManimColor = WHITE,
+        color: ParsableManimColor | list[ParsableManimColor] = WHITE,
         name=None,
         dim=3,
         target=None,
@@ -108,7 +108,7 @@ class Mobject:
         self.submobjects = []
         self.updaters = []
         self.updating_suspended = False
-        self.color: ManimColor = ManimColor(color)
+        self.color: ManimColor = ManimColor.parse(color)
 
         self.reset_points()
         self.generate_points()
@@ -1753,7 +1753,7 @@ class Mobject:
             for submob in self.submobjects:
                 submob.set_color(color, family=family)
         print("Setting color of", self, "to", color)
-        self.color = ManimColor(color)
+        self.color = ManimColor.parse(color)
         return self
 
     def set_color_by_gradient(self, *colors: Iterable[ParsableManimColor]):

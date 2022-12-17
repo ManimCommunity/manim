@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Sequence
+from typing import Any, Iterable, Sequence
 
 from typing_extensions import Annotated, Literal, TypeAlias
 
@@ -204,7 +204,6 @@ class ManimColor:
         self,
         value: ParsableManimColor,
         alpha: float = 1.0,
-        use_floats: bool = True,
     ) -> None:
         if value is None:
             self._internal_value = np.array([0, 0, 0, alpha], dtype=ManimColorDType)
@@ -222,7 +221,7 @@ class ManimColor:
                 self._internal_value = ManimColor.internal_from_string(value)
         elif isinstance(value, (list, tuple, np.ndarray)):
             length = len(value)
-            if use_floats:
+            if all(isinstance(x, float) for x in value):
                 if length == 3:
                     self._internal_value = ManimColor.internal_from_rgb(value, alpha)  # type: ignore
                 elif length == 4:
@@ -358,7 +357,7 @@ class ManimColor:
         return tmp
 
     def invert(self, with_alpha=False) -> ManimColor:
-        return ManimColor(1.0 - self._internal_value, with_alpha, use_floats=True)
+        return ManimColor(1.0 - self._internal_value, with_alpha)
 
     def interpolate(self, other: ManimColor, alpha: float) -> ManimColor:
         return ManimColor(
@@ -367,27 +366,41 @@ class ManimColor:
 
     @classmethod
     def from_rgb(
-        cls, rgb: RGB_Array_Float | RGB_Tuple_Float, alpha: float = 1.0
-    ) -> ManimColor:
-        return cls(rgb, alpha, use_floats=True)
-
-    @classmethod
-    def from_int_rgb(
-        cls, rgb: RGB_Array_Int | RGB_Tuple_Int, alpha: float = 1.0
+        cls,
+        rgb: RGB_Array_Float | RGB_Tuple_Float | RGB_Array_Int | RGB_Tuple_Int,
+        alpha: float = 1.0,
     ) -> ManimColor:
         return cls(rgb, alpha)
 
     @classmethod
-    def from_rgba(cls, rgba: RGBA_Array_Float | RGBA_Tuple_Float) -> ManimColor:
-        return cls(rgba, use_floats=True)
-
-    @classmethod
-    def from_int_rgba(cls, rgba: RGBA_Array_Int | RGBA_Tuple_Int) -> ManimColor:
+    def from_rgba(
+        cls, rgba: RGBA_Array_Float | RGBA_Tuple_Float | RGBA_Array_Int | RGBA_Tuple_Int
+    ) -> ManimColor:
         return cls(rgba)
 
     @classmethod
     def from_hex(cls, hex: str, alpha: float = 1.0) -> ManimColor:
         return cls(hex, alpha)
+
+    @classmethod
+    def parse(
+        cls,
+        color: ParsableManimColor | list[ParsableManimColor] | None,
+        alpha: float = 1.0,
+    ) -> ManimColor | list[ManimColor]:
+        """
+        Handles the parsing of a list of colors or a single color.
+
+        Parameters
+        ----------
+        color
+            The color or list of colors to parse. Note that this function can not accept rgba tuples. It will assume that you mean list[ManimColor] and will return a list of ManimColors.
+        alpha
+            The alpha value to use if a single color is passed. or if a list of colors is passed to set the value of all colors.
+        """
+        if isinstance(color, (list, tuple)):
+            return [cls(c, alpha) for c in color]
+        return cls(color, alpha)
 
     @staticmethod
     def gradient(colors: list[ManimColor], length: int):
@@ -668,6 +681,8 @@ def color_gradient(
 ) -> list[ManimColor] | ManimColor:
     if length_of_output == 0:
         return ManimColor(reference_colors[0])
+    if len(reference_colors) == 1:
+        return [ManimColor(reference_colors[0])] * length_of_output
     rgbs = list(map(color_to_rgb, reference_colors))
     alphas = np.linspace(0, (len(rgbs) - 1), length_of_output)
     floors = alphas.astype("int")

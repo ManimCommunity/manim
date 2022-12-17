@@ -1223,7 +1223,7 @@ class CoordinateSystem:
         rectangles = VGroup()
         x_range = np.arange(*x_range)
 
-        if isinstance(color, list):
+        if isinstance(color, Iterable):
             color = [ManimColor(c) for c in color]
         else:
             color = [ManimColor(color)]

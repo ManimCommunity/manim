@@ -127,11 +127,14 @@ class VMobject(Mobject):
         super().__init__(**kwargs)
         self.submobjects: list[VMobject]
 
-        # TODO: Maybe that's a little weird to do after all ? Having a default color may help
-        if fill_color:
-            self.fill_color: ManimColor = ManimColor(fill_color)
-        if stroke_color:
-            self.stroke_color: ManimColor = ManimColor(stroke_color)
+        # TODO: Find where color overwrites are happening and remove the color doubling
+        # if "color" in kwargs:
+        #     fill_color = kwargs["color"]
+        #     stroke_color = kwargs["color"]
+        if fill_color is not None:
+            self.fill_color = ManimColor.parse(fill_color)
+        if stroke_color is not None:
+            self.stroke_color = ManimColor.parse(stroke_color)
 
     # OpenGL compatibility
     @property
