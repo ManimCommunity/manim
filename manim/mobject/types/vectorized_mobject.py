@@ -386,7 +386,6 @@ class VMobject(Mobject):
         return self
 
     def set_color(self, color: ParsableManimColor, family=True):
-        color = ManimColor(color)
         self.set_fill(color, family=family)
         self.set_stroke(color, family=family)
         return self
