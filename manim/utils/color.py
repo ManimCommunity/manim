@@ -410,7 +410,7 @@ class ManimColor:
         return f"{self.__class__.__name__}('{self.to_hex()}')"
 
     def __str__(self) -> str:
-        return f"{self.__class__.__name__}('{self.to_hex()})'"
+        return f"{self.to_hex()}"
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, ManimColor):

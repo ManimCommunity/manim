@@ -654,7 +654,7 @@ class Text(SVGMobject):
         if self.gradient:
             colors = color_gradient(self.gradient, len(self.text))
             for i in range(len(self.text)):
-                args["color"] = colors[i].hex
+                args["color"] = colors[i].to_hex()
                 settings.append(TextSetting(i, i + 1, **args))
 
         for word, gradient in self.t2g.items():
@@ -668,7 +668,7 @@ class Text(SVGMobject):
             )
             for start, end in self._find_indexes(word, self.text):
                 for i in range(start, end):
-                    args["color"] = colors[i - start].hex
+                    args["color"] = colors[i - start].to_hex()
                     settings.append(TextSetting(i, i + 1, **args))
         return settings
 
