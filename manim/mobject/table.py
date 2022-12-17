@@ -530,7 +530,7 @@ class Table(VGroup):
         """
         columns = self.get_columns()
         for color, column in zip(colors, columns):
-            column.set_color(ManimColor(color))
+            column.set_color(color)
         return self
 
     def set_row_colors(self, *colors: Iterable[ParsableManimColor]) -> Table:
@@ -559,7 +559,7 @@ class Table(VGroup):
         """
         rows = self.get_rows()
         for color, row in zip(colors, rows):
-            row.set_color(ManimColor(color))
+            row.set_color(color)
         return self
 
     def get_entries(

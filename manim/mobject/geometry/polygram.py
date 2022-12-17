@@ -544,7 +544,6 @@ class Rectangle(Polygon):
         close_new_points: bool = True,
         **kwargs,
     ):
-        color = ManimColor(color)
         super().__init__(UR, UL, DL, DR, color=color, **kwargs)
         self.stretch_to_fit_width(width)
         self.stretch_to_fit_height(height)

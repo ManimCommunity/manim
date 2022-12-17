@@ -512,7 +512,7 @@ class CoordinateSystem:
         if color is None:
             color = VMobject().color
 
-        line_config["color"] = ManimColor(color)
+        line_config["color"] = ManimColor.parse(color)
         line_config["stroke_width"] = stroke_width
 
         axis = self.get_axis(index)
@@ -1089,8 +1089,6 @@ class CoordinateSystem:
 
         if dot_config is None:
             dot_config = {}
-        if color:
-            color = ManimColor(color)
         else:
             color = graph.get_color()
         label = self.x_axis._create_label_tex(label).set_color(color)
@@ -1223,7 +1221,7 @@ class CoordinateSystem:
         rectangles = VGroup()
         x_range = np.arange(*x_range)
 
-        if isinstance(color, Iterable):
+        if isinstance(color, (list, tuple)):
             color = [ManimColor(c) for c in color]
         else:
             color = [ManimColor(color)]
@@ -1473,7 +1471,7 @@ class CoordinateSystem:
         def deriv(x):
             return self.slope_of_tangent(x, graph)
 
-        return self.plot(deriv, color=ManimColor(color), **kwargs)
+        return self.plot(deriv, color=color, **kwargs)
 
     def plot_antiderivative_graph(
         self,
@@ -1775,9 +1773,7 @@ class CoordinateSystem:
         triangle.height = triangle_size
         triangle.move_to(self.coords_to_point(x_val, 0), UP)
         if label is not None:
-            t_label = self.x_axis._create_label_tex(
-                label, color=ManimColor(label_color)
-            )
+            t_label = self.x_axis._create_label_tex(label, color=label_color)
             t_label.next_to(triangle, DOWN)
             T_label_group.add(t_label)
 
@@ -2203,7 +2199,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             z_values = np.zeros(x_values.shape)
 
         line_graph = VDict()
-        graph = VGroup(color=ManimColor(line_color), **kwargs)
+        graph = VGroup(color=line_color, **kwargs)
 
         vertices = [
             self.coords_to_point(x, y, z)

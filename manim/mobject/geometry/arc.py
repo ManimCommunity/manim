@@ -498,7 +498,7 @@ class Circle(Arc):
             radius=radius,
             start_angle=0,
             angle=TAU,
-            color=ManimColor(color),
+            color=color,
             **kwargs,
         )
 
@@ -665,7 +665,7 @@ class Dot(Circle):
             radius=radius,
             stroke_width=stroke_width,
             fill_opacity=fill_opacity,
-            color=ManimColor(color),
+            color=color,
             **kwargs,
         )
 

@@ -109,9 +109,9 @@ class Camera:
         self.frame_rate = frame_rate
 
         if background_color is None:
-            self._background_color = ManimColor(config["background_color"])
+            self._background_color = ManimColor.parse(config["background_color"])
         else:
-            self._background_color = ManimColor(background_color)
+            self._background_color = ManimColor.parse(background_color)
         if background_opacity is None:
             self._background_opacity = config["background_opacity"]
         else:

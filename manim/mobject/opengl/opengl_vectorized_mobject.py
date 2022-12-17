@@ -351,13 +351,13 @@ class OpenGLVMobject(OpenGLMobject):
 
     # Todo im not quite sure why we are doing this
     def get_fill_colors(self):
-        return [ManimColor(rgb_to_hex(rgba[:3])) for rgba in self.fill_rgba]
+        return [ManimColor.from_rgb(rgba[:3]) for rgba in self.fill_rgba]
 
     def get_fill_opacities(self):
         return self.fill_rgba[:, 3]
 
     def get_stroke_colors(self):
-        return [ManimColor(rgb_to_hex(rgba[:3])) for rgba in self.stroke_rgba]
+        return [ManimColor.from_rgb(rgba[:3]) for rgba in self.stroke_rgba]
 
     def get_stroke_opacities(self):
         return self.stroke_rgba[:, 3]
