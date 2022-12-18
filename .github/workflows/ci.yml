@@ -122,7 +122,7 @@ jobs:
         uses: teatimeguest/setup-texlive-action@v2
         with:
           cache: true
-          packages: scheme-basic standalone inputenc fontenc setspace tipa relsize mathrsfs calligra wasysym ragged2e physics xcolor microtype preview
+          packages: scheme-basic inputenc fontenc tipa mathrsfs calligra xcolor standalone preview doublestroke ms everysel setspace rsfs relsize ragged2e fundus-calligra microtype wasysym physics dvisvgm jknapltx wasy cm-super babel-english gnu-freefont mathastext cbfonts-fd
 
       - name: Set screen size (Linux)
         if: runner.os == 'Linux'
