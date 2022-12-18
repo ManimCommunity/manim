@@ -114,16 +114,15 @@ jobs:
         if: runner.os == 'Linux'
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          packages: texlive texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science tipa python3-opengl libpango1.0-dev xvfb
+          packages: tipa python3-opengl libpango1.0-dev xvfb
           version: 1.0
-          execute_install_scripts: true
 
       - name: Install Texlive (Linux)
         if: runner.os == 'Linux'
         uses: teatimeguest/setup-texlive-action@v2
         with:
           cache: true
-          packages: latex-extra fonts-extra latex-recommended science
+          packages: scheme-basic
 
       - name: Set screen size (Linux)
         if: runner.os == 'Linux'
