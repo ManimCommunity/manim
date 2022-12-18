@@ -96,7 +96,7 @@ jobs:
         id: cache-vars
         run: |
           echo 'poetry-venv-dir=$(poetry config virtualenvs.path)' >> $GITHUB_OUTPUT
-          echo 'date=$(/bin/date -u "+%m%w%Y")' >> $GITHUB_OUTPUT
+          echo "date=$(/bin/date -u "+%m%w%Y")" >> $GITHUB_OUTPUT
 
       - name: Setup Poetry cache
         uses: actions/cache@v3
