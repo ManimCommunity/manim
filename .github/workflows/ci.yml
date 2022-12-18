@@ -61,7 +61,6 @@ jobs:
         run: |
           cd docs && poetry run make doctest O=-tskip-manim
 
-
   test:
     runs-on: ${{ matrix.os }}
     env:
@@ -96,8 +95,8 @@ jobs:
         shell: bash
         id: cache-vars
         run: |
-          echo "::set-output name=poetry-venv-dir::$(poetry config virtualenvs.path)"
-          echo "::set-output name=date::$(/bin/date -u "+%m%w%Y")"
+          echo "poetry-venv-dir=$(poetry config virtualenvs.path)" >> $GITHUB_STATE
+          echo "date=bin/date -u "+%m%w%Y")" >> $GITHUB_STATE >> $GITHUB_STATE
 
       - name: Setup Poetry cache
         uses: actions/cache@v3
