@@ -80,6 +80,9 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python }}
+          cache: "pip"
+        run: |
+          pip install -r ./docs/requirements.txt
 
       - name: Install Poetry
         run: |
@@ -219,7 +222,7 @@ jobs:
 
       - name: Run doctests in rst files
         run: |
-          cd docs && pip install -r requirements.txt && poetry run make doctest O=-tskip-manim
+          cd docs && poetry run make doctest O=-tskip-manim
 
       - name: Upload coverage
         uses: codecov/codecov-action@v3
