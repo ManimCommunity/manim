@@ -81,6 +81,7 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
           cache: "pip"
+          cache-dependency-path: "./docs/requirements.txt"
 
       - name: Installing Python ${{matrix.python}} doctest Requirements
         run: |
