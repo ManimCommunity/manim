@@ -21,10 +21,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.7.14', '3.10.7']
+        # TODO: test on 3.8 and 3.11
+        python: ['3.10.7']
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Check Runner
         run: |
@@ -69,21 +70,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        python: ['3.7', '3.8', '3.9', '3.10']
+        os: [ubuntu-22.04, macos-latest, windows-latest]
+        python: ['3.8', '3.9', '3.10', '3.11']
 
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup Python ${{ matrix.python }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python }}
 
       - name: Install Poetry
         run: |
-          pip install --user poetry
+          pipx install poetry
+          poetry config virtualenvs.prefer-active-python true
 
       - name: Setup macOS PATH
         if: runner.os == 'macOS'
@@ -98,13 +100,13 @@ jobs:
           echo "::set-output name=date::$(/bin/date -u "+%m%w%Y")"
 
       - name: Setup Poetry cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ steps.cache-vars.outputs.poetry-venv-dir }}
-          key: ${{ runner.os }}-poetry-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}-${{ hashFiles('poetry.lock') }}
+          key: ${{ runner.os }}-poetry-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}-${{ hashFiles('poetry.lock') }}-1
 
       - name: Install and cache ffmpeg (all OS)
-        uses: FedericoCarboni/setup-ffmpeg@v1.1.0
+        uses: FedericoCarboni/setup-ffmpeg@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
         id: setup-ffmpeg
@@ -113,14 +115,14 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt update
-          sudo apt-get -y install texlive texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-fonts-extra tipa python-opengl libpango1.0-dev xvfb
+          sudo apt-get -y install texlive texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-fonts-extra tipa python3-opengl libpango1.0-dev xvfb
           # start xvfb in background
           sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
 
       - name: Setup macOS cache
         id: cache-macos
         if: runner.os == 'macOS'
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ github.workspace }}/macos-cache
           key: ${{ runner.os }}-dependencies-tinytex-${{ hashFiles('.github/manimdependency.json') }}-${{ steps.cache-vars.outputs.date }}-1
@@ -159,7 +161,7 @@ jobs:
       - name: Setup Windows cache
         id: cache-windows
         if: runner.os == 'Windows'
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ github.workspace }}\ManimCache
           key: ${{ runner.os }}-dependencies-tinytex-${{ hashFiles('.github/manimdependency.json') }}-${{ steps.cache-vars.outputs.date }}-1
@@ -208,4 +210,4 @@ jobs:
           cd docs && pip install -r requirements.txt && poetry run make doctest O=-tskip-manim
 
       - name: Upload coverage
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v3
