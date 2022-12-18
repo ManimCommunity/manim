@@ -852,90 +852,152 @@ class ManimConfig(MutableMapping):
         return self.digest_parser(make_config_parser(filename))
 
     # config options are properties
-    preview = property(
-        lambda self: self._d["preview"] or self._d["enable_gui"],
-        lambda self, val: self._set_boolean("preview", val),
-        doc="Whether to play the rendered movie (-p).",
-    )
+    @property
+    def preview(self) -> bool:
+        """Whether to play the rendered movie.
 
-    show_in_file_browser = property(
-        lambda self: self._d["show_in_file_browser"],
-        lambda self, val: self._set_boolean("show_in_file_browser", val),
-        doc="Whether to show the output file in the file browser (-f).",
-    )
+        This is equivalent to the ``-p`` command line flag.
 
-    progress_bar = property(
-        lambda self: self._d["progress_bar"],
-        lambda self, val: self._set_from_list(
-            "progress_bar",
-            val,
-            ["none", "display", "leave"],
-        ),
-        doc="Whether to show progress bars while rendering animations.",
-    )
+        """
+        return self._d["preview"] or self._d["enable_gui"]
 
-    log_to_file = property(
-        lambda self: self._d["log_to_file"],
-        lambda self, val: self._set_boolean("log_to_file", val),
-        doc="Whether to save logs to a file.",
-    )
-
-    notify_outdated_version = property(
-        lambda self: self._d["notify_outdated_version"],
-        lambda self, val: self._set_boolean("notify_outdated_version", val),
-        doc="Whether to notify if there is a version update available.",
-    )
-
-    write_to_movie = property(
-        lambda self: self._d["write_to_movie"],
-        lambda self, val: self._set_boolean("write_to_movie", val),
-        doc="Whether to render the scene to a movie file (-w).",
-    )
-
-    save_last_frame = property(
-        lambda self: self._d["save_last_frame"],
-        lambda self, val: self._set_boolean("save_last_frame", val),
-        doc="Whether to save the last frame of the scene as an image file (-s).",
-    )
-
-    write_all = property(
-        lambda self: self._d["write_all"],
-        lambda self, val: self._set_boolean("write_all", val),
-        doc="Whether to render all scenes in the input file (-a).",
-    )
-
-    save_pngs = property(
-        lambda self: self._d["save_pngs"],
-        lambda self, val: self._set_boolean("save_pngs", val),
-        doc="Whether to save all frames in the scene as images files (-g).",
-    )
-
-    save_as_gif = property(
-        lambda self: self._d["save_as_gif"],
-        lambda self, val: self._set_boolean("save_as_gif", val),
-        doc="Whether to save the rendered scene in .gif format (-i).",
-    )
-
-    save_sections = property(
-        lambda self: self._d["save_sections"],
-        lambda self, val: self._set_boolean("save_sections", val),
-        doc="Whether to save single videos for each section in addition to the movie file.",
-    )
-
-    enable_wireframe = property(
-        lambda self: self._d["enable_wireframe"],
-        lambda self, val: self._set_boolean("enable_wireframe", val),
-        doc="Enable wireframe debugging mode in opengl.",
-    )
-
-    force_window = property(
-        lambda self: self._d["force_window"],
-        lambda self, val: self._set_boolean("force_window", val),
-        doc="Set to force window when using the opengl renderer",
-    )
+    @preview.setter
+    def preview(self, val: bool) -> None:
+        self._set_boolean("preview", val)
 
     @property
-    def verbosity(self):
+    def show_in_file_browser(self) -> bool:
+        """Whether to show the output file in the file browser.
+
+        This is equivalent to the ``-f`` command line flag.
+        """
+        return self._d["show_in_file_browser"]
+
+    @show_in_file_browser.setter
+    def show_in_file_browser(self, val: bool) -> None:
+        self._set_boolean("show_in_file_browser", val)
+
+    @property
+    def progress_bar(self) -> str:
+        """Whether to show progress bars while rendering animations.
+
+        Possible values are ``"none"``, ``"display"`` and ``"leave"``.
+        """
+        return self._d["progress_bar"]
+
+    @progress_bar.setter
+    def progress_bar(self, val: str) -> None:
+        self._set_from_list("progress_bar", val, ["none", "display", "leave"])
+
+    @property
+    def log_to_file(self) -> bool:
+        """Whether to save logs to a file."""
+        return self._d["log_to_file"]
+
+    @log_to_file.setter
+    def log_to_file(self, val: bool) -> None:
+        self._set_boolean("log_to_file", val)
+
+    # rewrite notify_outdated_version to use @property
+
+    @property
+    def notify_outdated_version(self) -> bool:
+        """Whether to notify if there is a version update available."""
+        return self._d["notify_outdated_version"]
+
+    @notify_outdated_version.setter
+    def notify_outdated_version(self, val: bool) -> None:
+        self._set_boolean("notify_outdated_version", val)
+
+    @property
+    def write_to_movie(self) -> bool:
+        """Whether to render the scene to a movie file.
+
+        This is equivalent to the ``-w`` command line flag.
+        """
+        return self._d["write_to_movie"]
+
+    @write_to_movie.setter
+    def write_to_movie(self, val: bool) -> None:
+        self._set_boolean("write_to_movie", val)
+
+    @property
+    def save_last_frame(self) -> bool:
+        """Whether to save the last frame of the scene as an image file.
+
+        This is equivalent to the ``-s`` command line flag.
+        """
+        return self._d["save_last_frame"]
+
+    @save_last_frame.setter
+    def save_last_frame(self, val: bool) -> None:
+        self._set_boolean("save_last_frame", val)
+
+    @property
+    def write_all(self) -> bool:
+        """Whether to render all scenes in the input file.
+
+        This is equivalent to the ``-a`` command line flag.
+        """
+        return self._d["write_all"]
+
+    @write_all.setter
+    def write_all(self, val: bool) -> None:
+        self._set_boolean("write_all", val)
+
+    @property
+    def save_pngs(self) -> bool:
+        """Whether to save all frames in the scene as images files.
+
+        This is equivalent to the ``-g`` command line flag.
+        """
+        return self._d["save_pngs"]
+
+    @save_pngs.setter
+    def save_pngs(self, val: bool) -> None:
+        self._set_boolean("save_pngs", val)
+
+    @property
+    def save_as_gif(self) -> bool:
+        """Whether to save the rendered scene in .gif format.
+
+        This is equivalent to the ``-i`` command line flag.
+        """
+        return self._d["save_as_gif"]
+
+    @save_as_gif.setter
+    def save_as_gif(self, val: bool) -> None:
+        self._set_boolean("save_as_gif", val)
+
+    @property
+    def save_sections(self) -> bool:
+        """Whether to save single videos for each section in addition to the movie file."""
+        return self._d["save_sections"]
+
+    @save_sections.setter
+    def save_sections(self, val: bool) -> None:
+        self._set_boolean("save_sections", val)
+
+    @property
+    def enable_wireframe(self) -> bool:
+        """Enable wireframe debugging mode in opengl."""
+        return self._d["enable_wireframe"]
+
+    @enable_wireframe.setter
+    def enable_wireframe(self, val: bool) -> None:
+        self._set_boolean("enable_wireframe", val)
+
+    @property
+    def force_window(self) -> bool:
+        """Force window when using the opengl renderer."""
+        return self._d["force_window"]
+
+    @force_window.setter
+    def force_window(self, val: bool) -> None:
+        self._set_boolean("force_window", val)
+
+    @property
+    def verbosity(self) -> str:
         """Logger verbosity; "DEBUG", "INFO", "WARNING", "ERROR", or "CRITICAL" (-v)."""
         return self._d["verbosity"]
 
@@ -950,7 +1012,7 @@ class ManimConfig(MutableMapping):
         logging.getLogger("manim").setLevel(val)
 
     @property
-    def format(self):
+    def format(self) -> str:
         """File format; "png", "gif", "mp4", "webm" or "mov"."""
         return self._d["format"]
 
@@ -967,7 +1029,7 @@ class ManimConfig(MutableMapping):
                 "Output format set as webm, this can be slower than other formats",
             )
 
-    ffmpeg_loglevel = property(
+    ffmpeg_loglevel: property[str] = property(
         lambda self: self._d["ffmpeg_loglevel"],
         lambda self, val: self._set_from_list(
             "ffmpeg_loglevel",
