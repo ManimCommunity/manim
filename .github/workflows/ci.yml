@@ -81,6 +81,8 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
           cache: "pip"
+
+      - name: Installing Python ${{matrix.python}} doctest Requirements
         run: |
           pip install -r ./docs/requirements.txt
 
