@@ -116,6 +116,7 @@ jobs:
         with:
           packages: texlive texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-fonts-extra tipa python3-opengl libpango1.0-dev xvfb
           version: 1.0
+          execute_install_scripts: true
 
       - name: Set screen size (Linux)
         if: runner.os == 'Linux'
