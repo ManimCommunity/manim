@@ -112,9 +112,14 @@ jobs:
 
       - name: Install system dependencies (Linux)
         if: runner.os == 'Linux'
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: dtexlive texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-fonts-extra tipa python3-opengl libpango1.0-dev xvfb
+          version: 1.0
+
+      - name: Set screen size (Linux)
+        if: runner.os == 'Linux'
         run: |
-          sudo apt update
-          sudo apt-get -y install texlive texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-fonts-extra tipa python3-opengl libpango1.0-dev xvfb
           # start xvfb in background
           sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
 
