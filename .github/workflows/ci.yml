@@ -17,12 +17,12 @@ jobs:
     runs-on: self-hosted
     env:
       DISPLAY: :0
-      PYTEST_ADDOPTS: "--color=yes" # colors in pytest
+      PYTEST_ADDOPTS: '--color=yes' # colors in pytest
     strategy:
       fail-fast: false
       matrix:
         # TODO: test on 3.8 and 3.11
-        python: ["3.10.7"]
+        python: ['3.10.7']
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v3
@@ -65,12 +65,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       DISPLAY: :0
-      PYTEST_ADDOPTS: "--color=yes" # colors in pytest
+      PYTEST_ADDOPTS: '--color=yes' # colors in pytest
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-22.04, macos-latest, windows-latest]
-        python: ["3.8", "3.9", "3.10", "3.11"]
+        python: ['3.8', '3.9', '3.10', '3.11']
 
     steps:
       - name: Checkout the repository
