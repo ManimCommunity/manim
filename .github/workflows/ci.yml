@@ -79,16 +79,16 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@v3
 
+      - name: Install Poetry
+        run: |
+          pipx install poetry
+          poetry config virtualenvs.prefer-active-python true
+
       - name: Setup Python ${{ matrix.python }}
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python }}
           cache: "poetry"
-
-      - name: Install Poetry
-        run: |
-          pipx install poetry
-          poetry config virtualenvs.prefer-active-python true
 
       - name: Setup macOS PATH
         if: runner.os == 'macOS'
