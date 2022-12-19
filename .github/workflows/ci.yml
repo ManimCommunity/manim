@@ -60,6 +60,10 @@ jobs:
         run: |
           cd docs && poetry run make doctest O=-tskip-manim
 
+      # upload coverage report
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+
   test:
     runs-on: ${{ matrix.os }}
     env:
@@ -225,6 +229,3 @@ jobs:
       - name: Run doctests in rst files
         run: |
           cd docs && poetry run make doctest O=-tskip-manim
-
-      - name: Upload coverage
-        uses: codecov/codecov-action@v3
