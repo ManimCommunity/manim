@@ -21,8 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # TODO: test on 3.8 and 3.11
-        python: ["3.10.7"]
+        python: ["3.8.16", "3.11.1"]
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v3
