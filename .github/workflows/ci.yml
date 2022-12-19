@@ -83,12 +83,7 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python }}
-          cache: "pip"
-          cache-dependency-path: "./docs/requirements.txt"
-
-      - name: Installing Python ${{matrix.python}} doctest Requirements
-        run: |
-          pip install -r ./docs/requirements.txt
+          cache: "poetry"
 
       - name: Install Poetry
         run: |
@@ -104,14 +99,7 @@ jobs:
         shell: bash
         id: cache-vars
         run: |
-          echo "poetry-venv-dir=$(poetry config virtualenvs.path)" >> $GITHUB_OUTPUT
           echo "date=$(/bin/date -u "+%m%w%Y")" >> $GITHUB_OUTPUT
-
-      - name: Setup Poetry cache
-        uses: actions/cache@v3
-        with:
-          path: ${{ steps.cache-vars.outputs.poetry-venv-dir }}
-          key: ${{ runner.os }}-poetry-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}-${{ hashFiles('poetry.lock') }}-1
 
       - name: Install and cache ffmpeg (all OS)
         uses: FedericoCarboni/setup-ffmpeg@v2
@@ -143,7 +131,6 @@ jobs:
         uses: actions/cache@v3
         id: cache-macos
         if: runner.os == 'macOS'
-
         with:
           path: ${{ github.workspace }}/macos-cache
           key: ${{ runner.os }}-dependencies-tinytex-${{ hashFiles('.github/manimdependency.json') }}-${{ steps.cache-vars.outputs.date }}-1
