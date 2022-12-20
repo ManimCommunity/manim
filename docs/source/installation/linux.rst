@@ -39,7 +39,7 @@ simply run:
 .. code-block:: bash
 
    sudo apt update
-   sudo apt install libcairo2-dev libpango1.0-dev ffmpeg
+   sudo apt install build-essential python3-dev libcairo2-dev libpango1.0-dev ffmpeg
 
 If you don't have python3-pip installed, install it via:
 
@@ -138,7 +138,8 @@ to install with your package manager. Usually,
 `TeX Live <https://www.tug.org/texlive/>`__ is a good candidate if you don't
 care too much about disk space.
 
-For Ubuntu, sufficient latex can be installed by running:
+For Debian-based systems (like Ubuntu), sufficient LaTeX dependencies can be
+installed by running:
 
 .. code-block:: bash
 

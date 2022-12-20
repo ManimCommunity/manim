@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import contextlib
+import warnings
 from pathlib import Path
 
 import numpy as np
@@ -8,6 +9,9 @@ import numpy as np
 from manim import logger
 
 from ._show_diff import show_diff_helper
+
+FRAME_ABSOLUTE_TOLERANCE = 1.01
+FRAME_MISMATCH_RATIO_TOLERANCE = 1e-5
 
 
 class _FramesTester:
@@ -42,12 +46,27 @@ class _FramesTester:
             np.testing.assert_allclose(
                 frame,
                 self._frames[frame_number],
-                atol=1.01,
+                atol=FRAME_ABSOLUTE_TOLERANCE,
                 err_msg=f"Frame no {frame_number}. You can use --show_diff to visually show the difference.",
                 verbose=False,
             )
             self._frames_compared += 1
         except AssertionError as e:
+            number_of_matches = np.isclose(
+                frame, self._frames[frame_number], atol=FRAME_ABSOLUTE_TOLERANCE
+            ).sum()
+            number_of_mismatches = frame.size - number_of_matches
+            if number_of_mismatches / frame.size < FRAME_MISMATCH_RATIO_TOLERANCE:
+                # we tolerate a small (< 0.001%) amount of pixel value errors
+                # in the tests, this accounts for minor OS dependent inconsistencies
+                self._frames_compared += 1
+                warnings.warn(
+                    f"Mismatch of {number_of_mismatches} pixel values in frame {frame_number} "
+                    f"against control data in {self._file_path}. Below error threshold, "
+                    "continuing..."
+                )
+                return
+
             if self._show_diff:
                 show_diff_helper(
                     frame_number,

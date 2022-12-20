@@ -6,4 +6,7 @@ Thematic Guides
    :maxdepth: 2
    :glob:
 
-   *
+   configuration
+   deep_dive
+   using_text
+   add_voiceovers
