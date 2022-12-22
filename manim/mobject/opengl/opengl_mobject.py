@@ -583,7 +583,7 @@ class OpenGLMobject:
         self.set_points(mobject.points)
 
     def clear_points(self):
-        self.resize_points(0)
+        self.points = np.empty((0, 3))
 
     def get_num_points(self):
         return len(self.points)
@@ -2411,7 +2411,7 @@ class OpenGLMobject:
             else:
                 func = interpolate
 
-            self.data[key][:] = func(mobject1.data[key], mobject2.data[key], alpha)
+            self.data[key] = func(mobject1.data[key], mobject2.data[key], alpha)
 
         for key in self.uniforms:
             if key != "fixed_orientation_center":
