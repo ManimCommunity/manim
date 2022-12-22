@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import numba
-
 __all__ = [
     "bezier",
     "partial_bezier_points",
