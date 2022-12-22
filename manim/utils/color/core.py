@@ -2,36 +2,17 @@
 
 from __future__ import annotations
 
-from typing import Any, Iterable, Sequence, Union
-
-from typing_extensions import Annotated, Literal, TypeAlias
-
-# from manim._config import logger
-
-__all__ = [
-    "color_to_rgb",
-    "color_to_rgba",
-    "rgb_to_color",
-    "rgba_to_color",
-    "rgb_to_hex",
-    "hex_to_rgb",
-    "invert_color",
-    "color_to_int_rgb",
-    "color_to_int_rgba",
-    "color_gradient",
-    "interpolate_color",
-    "average_color",
-    "random_bright_color",
-    "random_color",
-    "get_shaded_rgb",
-]
-
+# logger = _config.logger
 import random
+from typing import Any, Sequence, Union
 
 import numpy as np
+from typing_extensions import Literal, TypeAlias
 
-from ..utils.bezier import interpolate
-from ..utils.space_ops import normalize
+from ...utils.space_ops import normalize
+
+# import manim._config as _config
+
 
 """A list of pre-defined colors.
 
@@ -198,6 +179,10 @@ RGBA_Tuple_Int: TypeAlias = "tuple[int, int, int, int]"
 
 ManimColorInternal: TypeAlias = "np.ndarray[Literal[4], np.dtype[ManimColorDType]]"
 
+import re
+
+re_hex = re.compile("((?<=#)|(?<=0x))[A-F0-9]{6,8}", re.IGNORECASE)
+
 
 class ManimColor:
     def __init__(
@@ -208,35 +193,40 @@ class ManimColor:
         if value is None:
             self._internal_value = np.array([0, 0, 0, alpha], dtype=ManimColorDType)
         elif isinstance(value, ManimColor):
-            # logger.warning(
+            # logger.info(
             #     "ManimColor was passed another ManimColor. This is probably not what you want. Created a copy of the passed ManimColor instead."
             # )
             self._internal_value = value._internal_value
         elif isinstance(value, int):
-            self._internal_value = ManimColor.internal_from_integer(value, alpha)
+            self._internal_value = ManimColor._internal_from_integer(value, alpha)
         elif isinstance(value, str):
-            try:
-                self._internal_value = ManimColor.internal_from_hex_string(value, alpha)
-            except ValueError:
-                self._internal_value = ManimColor.internal_from_string(value)
+            result = re_hex.search(value)
+            if result is not None:
+                self._internal_value = ManimColor._internal_from_hex_string(
+                    result.group(), alpha
+                )
+            else:
+                # This is not expected to be called on module initialization time
+                # It can be horribly slow to convert a string to a color because it has to access the dictionary of colors and find the right color
+                self._internal_value = ManimColor._internal_from_string(value)
         elif isinstance(value, (list, tuple, np.ndarray)):
             length = len(value)
             if all(isinstance(x, float) for x in value):
                 if length == 3:
-                    self._internal_value = ManimColor.internal_from_rgb(value, alpha)  # type: ignore
+                    self._internal_value = ManimColor._internal_from_rgb(value, alpha)  # type: ignore
                 elif length == 4:
-                    self._internal_value = ManimColor.internal_from_rgba(value)  # type: ignore
+                    self._internal_value = ManimColor._internal_from_rgba(value)  # type: ignore
                 else:
                     raise ValueError(
                         f"ManimColor only accepts lists/tuples/arrays of length 3 or 4, not {length}"
                     )
             else:
                 if length == 3:
-                    self._internal_value = ManimColor.internal_from_int_rgb(
+                    self._internal_value = ManimColor._internal_from_int_rgb(
                         value, alpha  # type: ignore
                     )
                 elif length == 4:
-                    self._internal_value = ManimColor.internal_from_int_rgba(value)  # type: ignore
+                    self._internal_value = ManimColor._internal_from_int_rgba(value)  # type: ignore
                 else:
                     raise ValueError(
                         f"ManimColor only accepts lists/tuples/arrays of length 3 or 4, not {length}"
@@ -258,7 +248,7 @@ class ManimColor:
         self.__value: ManimColorInternal = value
 
     @staticmethod
-    def internal_from_integer(value: int, alpha: float) -> ManimColorInternal:
+    def _internal_from_integer(value: int, alpha: float) -> ManimColorInternal:
         return np.asarray(
             (
                 ((value >> 16) & 0xFF) / 255,
@@ -270,13 +260,7 @@ class ManimColor:
         )
 
     @staticmethod
-    def internal_from_hex_string(hex: str, alpha: float) -> ManimColorInternal:
-        if hex.startswith("#"):
-            hex = hex[1:]
-        elif hex.startswith("0x"):
-            hex = hex[2:]
-        else:
-            raise ValueError(f"Invalid hex value: {hex}")
+    def _internal_from_hex_string(hex: str, alpha: float) -> ManimColorInternal:
         if len(hex) == 6:
             hex += "00"
         tmp = int(hex, 16)
@@ -291,7 +275,7 @@ class ManimColor:
         )
 
     @staticmethod
-    def internal_from_int_rgb(
+    def _internal_from_int_rgb(
         rgb: RGB_Tuple_Int, alpha: float = 1.0
     ) -> ManimColorInternal:
         value: np.ndarray = np.asarray(rgb, dtype=ManimColorDType).copy() / 255
@@ -300,7 +284,7 @@ class ManimColor:
         return value
 
     @staticmethod
-    def internal_from_rgb(
+    def _internal_from_rgb(
         rgb: RGB_Tuple_Float, alpha: float = 1.0
     ) -> ManimColorInternal:
         value: np.ndarray = np.asarray(rgb, dtype=ManimColorDType).copy()
@@ -309,18 +293,20 @@ class ManimColor:
         return value
 
     @staticmethod
-    def internal_from_int_rgba(rgba: RGBA_Tuple_Int) -> ManimColorInternal:
+    def _internal_from_int_rgba(rgba: RGBA_Tuple_Int) -> ManimColorInternal:
         return np.asarray(rgba, dtype=ManimColorDType) / 255
 
     @staticmethod
-    def internal_from_rgba(rgba: RGBA_Tuple_Float) -> ManimColorInternal:
+    def _internal_from_rgba(rgba: RGBA_Tuple_Float) -> ManimColorInternal:
         return np.asarray(rgba, dtype=ManimColorDType)
 
     # TODO: This may be a bad idea but i don't know what else will be better without writing an endless list of colors
     @staticmethod
-    def internal_from_string(name: str) -> ManimColorInternal:
-        if name.upper() in globals():
-            return globals()[name]._internal_value
+    def _internal_from_string(name: str) -> ManimColorInternal:
+        from . import _all_color_dict
+
+        if name.upper() in _all_color_dict:
+            return _all_color_dict[name]._internal_value
         else:
             raise ValueError(f"Color {name} not found")
 
@@ -464,174 +450,6 @@ ParsableManimColor: TypeAlias = Union[
     RGBA_Array_Float,
 ]
 
-__all__ += ["ManimColor", "ParsableManimColor", "ManimColorDType"]
-
-WHITE: ManimColor = ManimColor("#FFFFFF")
-GRAY_A: ManimColor = ManimColor("#DDDDDD")
-GREY_A: ManimColor = ManimColor("#DDDDDD")
-GRAY_B: ManimColor = ManimColor("#BBBBBB")
-GREY_B: ManimColor = ManimColor("#BBBBBB")
-GRAY_C: ManimColor = ManimColor("#888888")
-GREY_C: ManimColor = ManimColor("#888888")
-GRAY_D: ManimColor = ManimColor("#444444")
-GREY_D: ManimColor = ManimColor("#444444")
-GRAY_E: ManimColor = ManimColor("#222222")
-GREY_E: ManimColor = ManimColor("#222222")
-BLACK: ManimColor = ManimColor("#000000")
-LIGHTER_GRAY: ManimColor = ManimColor("#DDDDDD")
-LIGHTER_GREY: ManimColor = ManimColor("#DDDDDD")
-LIGHT_GRAY: ManimColor = ManimColor("#BBBBBB")
-LIGHT_GREY: ManimColor = ManimColor("#BBBBBB")
-GRAY: ManimColor = ManimColor("#888888")
-GREY: ManimColor = ManimColor("#888888")
-DARK_GRAY: ManimColor = ManimColor("#444444")
-DARK_GREY: ManimColor = ManimColor("#444444")
-DARKER_GRAY: ManimColor = ManimColor("#222222")
-DARKER_GREY: ManimColor = ManimColor("#222222")
-BLUE_A: ManimColor = ManimColor("#C7E9F1")
-BLUE_B: ManimColor = ManimColor("#9CDCEB")
-BLUE_C: ManimColor = ManimColor("#58C4DD")
-BLUE_D: ManimColor = ManimColor("#29ABCA")
-BLUE_E: ManimColor = ManimColor("#236B8E")
-PURE_BLUE: ManimColor = ManimColor("#0000FF")
-BLUE: ManimColor = ManimColor("#58C4DD")
-DARK_BLUE: ManimColor = ManimColor("#236B8E")
-TEAL_A: ManimColor = ManimColor("#ACEAD7")
-TEAL_B: ManimColor = ManimColor("#76DDC0")
-TEAL_C: ManimColor = ManimColor("#5CD0B3")
-TEAL_D: ManimColor = ManimColor("#55C1A7")
-TEAL_E: ManimColor = ManimColor("#49A88F")
-TEAL: ManimColor = ManimColor("#5CD0B3")
-GREEN_A: ManimColor = ManimColor("#C9E2AE")
-GREEN_B: ManimColor = ManimColor("#A6CF8C")
-GREEN_C: ManimColor = ManimColor("#83C167")
-GREEN_D: ManimColor = ManimColor("#77B05D")
-GREEN_E: ManimColor = ManimColor("#699C52")
-PURE_GREEN: ManimColor = ManimColor("#00FF00")
-GREEN: ManimColor = ManimColor("#83C167")
-YELLOW_A: ManimColor = ManimColor("#FFF1B6")
-YELLOW_B: ManimColor = ManimColor("#FFEA94")
-YELLOW_C: ManimColor = ManimColor("#FFFF00")
-YELLOW_D: ManimColor = ManimColor("#F4D345")
-YELLOW_E: ManimColor = ManimColor("#E8C11C")
-YELLOW: ManimColor = ManimColor("#FFFF00")
-GOLD_A: ManimColor = ManimColor("#F7C797")
-GOLD_B: ManimColor = ManimColor("#F9B775")
-GOLD_C: ManimColor = ManimColor("#F0AC5F")
-GOLD_D: ManimColor = ManimColor("#E1A158")
-GOLD_E: ManimColor = ManimColor("#C78D46")
-GOLD: ManimColor = ManimColor("#F0AC5F")
-RED_A: ManimColor = ManimColor("#F7A1A3")
-RED_B: ManimColor = ManimColor("#FF8080")
-RED_C: ManimColor = ManimColor("#FC6255")
-RED_D: ManimColor = ManimColor("#E65A4C")
-RED_E: ManimColor = ManimColor("#CF5044")
-PURE_RED: ManimColor = ManimColor("#FF0000")
-RED: ManimColor = ManimColor("#FC6255")
-MAROON_A: ManimColor = ManimColor("#ECABC1")
-MAROON_B: ManimColor = ManimColor("#EC92AB")
-MAROON_C: ManimColor = ManimColor("#C55F73")
-MAROON_D: ManimColor = ManimColor("#A24D61")
-MAROON_E: ManimColor = ManimColor("#94424F")
-MAROON: ManimColor = ManimColor("#C55F73")
-PURPLE_A: ManimColor = ManimColor("#CAA3E8")
-PURPLE_B: ManimColor = ManimColor("#B189C6")
-PURPLE_C: ManimColor = ManimColor("#9A72AC")
-PURPLE_D: ManimColor = ManimColor("#715582")
-PURPLE_E: ManimColor = ManimColor("#644172")
-PURPLE: ManimColor = ManimColor("#9A72AC")
-PINK: ManimColor = ManimColor("#D147BD")
-LIGHT_PINK: ManimColor = ManimColor("#DC75CD")
-ORANGE: ManimColor = ManimColor("#FF862F")
-LIGHT_BROWN: ManimColor = ManimColor("#CD853F")
-DARK_BROWN: ManimColor = ManimColor("#8B4513")
-GRAY_BROWN: ManimColor = ManimColor("#736357")
-GREY_BROWN: ManimColor = ManimColor("#736357")
-
-__all__ += [
-    "WHITE",
-    "GRAY_A",
-    "GREY_A",
-    "GRAY_B",
-    "GREY_B",
-    "GRAY_C",
-    "GREY_C",
-    "GRAY_D",
-    "GREY_D",
-    "GRAY_E",
-    "GREY_E",
-    "BLACK",
-    "LIGHTER_GRAY",
-    "LIGHTER_GREY",
-    "LIGHT_GRAY",
-    "LIGHT_GREY",
-    "GRAY",
-    "GREY",
-    "DARK_GRAY",
-    "DARK_GREY",
-    "DARKER_GRAY",
-    "DARKER_GREY",
-    "BLUE_A",
-    "BLUE_B",
-    "BLUE_C",
-    "BLUE_D",
-    "BLUE_E",
-    "PURE_BLUE",
-    "BLUE",
-    "DARK_BLUE",
-    "TEAL_A",
-    "TEAL_B",
-    "TEAL_C",
-    "TEAL_D",
-    "TEAL_E",
-    "TEAL",
-    "GREEN_A",
-    "GREEN_B",
-    "GREEN_C",
-    "GREEN_D",
-    "GREEN_E",
-    "PURE_GREEN",
-    "GREEN",
-    "YELLOW_A",
-    "YELLOW_B",
-    "YELLOW_C",
-    "YELLOW_D",
-    "YELLOW_E",
-    "YELLOW",
-    "GOLD_A",
-    "GOLD_B",
-    "GOLD_C",
-    "GOLD_D",
-    "GOLD_E",
-    "GOLD",
-    "RED_A",
-    "RED_B",
-    "RED_C",
-    "RED_D",
-    "RED_E",
-    "PURE_RED",
-    "RED",
-    "MAROON_A",
-    "MAROON_B",
-    "MAROON_C",
-    "MAROON_D",
-    "MAROON_E",
-    "MAROON",
-    "PURPLE_A",
-    "PURPLE_B",
-    "PURPLE_C",
-    "PURPLE_D",
-    "PURPLE_E",
-    "PURPLE",
-    "PINK",
-    "LIGHT_PINK",
-    "ORANGE",
-    "LIGHT_BROWN",
-    "DARK_BROWN",
-    "GRAY_BROWN",
-    "GREY_BROWN",
-]
-
 
 def color_to_rgb(color: ParsableManimColor) -> RGB_Array_Float:
     return ManimColor(color).to_rgb()
@@ -715,10 +533,9 @@ def random_bright_color() -> ManimColor:
     return ManimColor(new_rgb)
 
 
-_colors: list[ManimColor] = [x for x in globals().values() if isinstance(x, ManimColor)]
-
-
 def random_color() -> ManimColor:
+    from . import _colors
+
     return random.choice(_colors)
 
 
@@ -734,3 +551,26 @@ def get_shaded_rgb(
         factor *= 0.5
     result = rgb + factor
     return result
+
+
+__all__ = [
+    "ManimColor",
+    "ManimColorDType",
+    "ParsableManimColor",
+    "color_to_rgb",
+    "color_to_rgba",
+    "color_to_int_rgb",
+    "color_to_int_rgba",
+    "rgb_to_color",
+    "rgba_to_color",
+    "rgb_to_hex",
+    "hex_to_rgb",
+    "invert_color",
+    "interpolate_arrays",
+    "color_gradient",
+    "interpolate_color",
+    "average_color",
+    "random_bright_color",
+    "random_color",
+    "get_shaded_rgb",
+]
