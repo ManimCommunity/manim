@@ -124,11 +124,14 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         self.pre_function_handle_to_anchor_scale_factor = (
             pre_function_handle_to_anchor_scale_factor
         )
-        self.func = func
+        self._func = func
         self._setup_in_uv_space()
         self.apply_function(lambda p: func(p[0], p[1]))
         if self.should_make_jagged:
             self.make_jagged()
+
+    def func(self, u: float, v: float):
+        return self._func(u, v)
 
     def _get_u_values_and_v_values(self):
         res = tuplify(self.resolution)
@@ -371,6 +374,8 @@ class Sphere(Surface):
             res_value = (101, 51)
         elif config.renderer == RendererType.CAIRO:
             res_value = (24, 12)
+        else:
+            raise Exception("Unknown renderer")
 
         resolution = resolution if resolution is not None else res_value
 

@@ -627,13 +627,11 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
                 f"Vertex identifier '{vertex}' is already used for a vertex in this graph.",
             )
 
-        if isinstance(label, (Mobject, OpenGLMobject)):
-            label = label
-        elif label is True:
+        if label is True:
             label = MathTex(vertex, fill_color=label_fill_color)
         elif vertex in self._labels:
             label = self._labels[vertex]
-        else:
+        elif not isinstance(label, (Mobject, OpenGLMobject)):
             label = None
 
         base_vertex_config = copy(self.default_vertex_config)

@@ -92,7 +92,7 @@ def remove_invisible_chars(mobject: SVGMobject) -> SVGMobject:
     :class:`~.SVGMobject`
         The SVGMobject without unwanted invisible characters.
     """
-
+    # TODO: Refactor needed
     iscode = False
     if mobject.__class__.__name__ == "Text":
         mobject = mobject[:]
