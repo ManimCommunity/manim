@@ -173,7 +173,7 @@ class NumberLine(Line):
                 "num_decimal_places": self._decimal_places_from_step(x_range[2]),
             }
 
-        # turn into into an np array to scale by just applying the function
+        # turn into a np array to scale by just applying the function
         self.x_range = np.array(x_range, dtype=float)
         self.x_min, self.x_max, self.x_step = scaling.function(self.x_range)
         self.length = length
