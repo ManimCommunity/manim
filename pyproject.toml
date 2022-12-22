@@ -57,6 +57,7 @@ screeninfo = "^0.8"
 Pygments = "^2.10.0"
 "backports.cached-property" = { version = "^1.0.1", python = "<3.8" }
 svgelements = "^1.8.0"
+numba = "^0.56.4"
 
 [tool.poetry.extras]
 jupyterlab = ["jupyterlab", "notebook"]

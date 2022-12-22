@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import numba
+
 __all__ = [
     "bezier",
     "partial_bezier_points",
@@ -25,7 +27,10 @@ from functools import reduce
 from typing import Iterable
 
 import numpy as np
+from numba import jit, njit
 from scipy import linalg
+
+from manim._config import logger
 
 from ..utils.simple_functions import choose
 from ..utils.space_ops import cross2d, find_intersection
@@ -100,7 +105,9 @@ def partial_bezier_points(points: np.ndarray, a: float, b: float) -> np.ndarray:
 
 # Shortened version of partial_bezier_points just for quadratics,
 # since this is called a fair amount
+@njit(cache=True, parallel=True)
 def partial_quadratic_bezier_points(points, a, b):
+    points = np.asarray(points, dtype=np.float64)
     if a == 1:
         return 3 * [points[-1]]
 
@@ -120,7 +127,8 @@ def partial_quadratic_bezier_points(points, a, b):
     return [h0, h1, h2]
 
 
-def split_quadratic_bezier(points: Iterable[float], t: float) -> np.ndarray:
+@njit(cache=True)
+def split_quadratic_bezier(points: np.ndarray, t: float) -> np.ndarray:
     """Split a quadratic Bézier curve at argument ``t`` into two quadratic curves.
 
     Parameters
@@ -142,9 +150,17 @@ def split_quadratic_bezier(points: Iterable[float], t: float) -> np.ndarray:
     s2 = interpolate(h1, a2, t)
     p = interpolate(s1, s2, t)
 
-    return np.array([a1, s1, p, p, s2, a2])
+    tmp = np.empty((6, 3))
+    tmp[0] = a1
+    tmp[1] = s1
+    tmp[2] = p
+    tmp[3] = p
+    tmp[4] = s2
+    tmp[5] = a2
+    return tmp
 
 
+@njit(cache=True)
 def subdivide_quadratic_bezier(points: Iterable[float], n: int) -> np.ndarray:
     """Subdivide a quadratic Bézier curve into ``n`` subcurves which have the same shape.
 
@@ -166,15 +182,17 @@ def subdivide_quadratic_bezier(points: Iterable[float], n: int) -> np.ndarray:
     .. image:: /_static/bezier_subdivision_example.png
 
     """
-    beziers = []
+    beziers = np.empty((n, 3, 3))
     current = points
-    for i in range(n, 0, -1):
+    for j in range(0, n):
+        i = n - j
         tmp = split_quadratic_bezier(current, 1 / i)
-        beziers.append(tmp[:3])
+        beziers[j] = tmp[:3]
         current = tmp[3:]
-    return np.asarray(beziers).reshape(-1, 3)
+    return beziers.reshape(-1, 3)
 
 
+@njit(cache=True)
 def quadratic_bezier_remap(
     triplets: Iterable[Iterable[float]], new_number_of_curves: int
 ):
@@ -183,7 +201,7 @@ def quadratic_bezier_remap(
     Parameters
     ----------
     triplets
-        The triplets of the quadratic bezier curves to be remapped
+        The triplets of the quadratic bezier curves to be remapped shape(n, 3, 3)
 
     new_number_of_curves
         The number of curves that the output will contain. This needs to be higher than the current number.
@@ -232,9 +250,8 @@ def quadratic_bezier_remap(
 
 
 # Linear interpolation variants
-
-
-def interpolate(start: int, end: int, alpha: float) -> float:
+@njit(cache=True)
+def interpolate(start: np.ndarray, end: np.ndarray, alpha: float) -> np.ndarray:
     return (1 - alpha) * start + alpha * end
 
 
