@@ -27,7 +27,6 @@ from functools import reduce
 from typing import Iterable
 
 import numpy as np
-from numba import jit, njit
 from scipy import linalg
 
 from manim._config import logger
@@ -105,7 +104,6 @@ def partial_bezier_points(points: np.ndarray, a: float, b: float) -> np.ndarray:
 
 # Shortened version of partial_bezier_points just for quadratics,
 # since this is called a fair amount
-@njit(cache=True, parallel=True)
 def partial_quadratic_bezier_points(points, a, b):
     points = np.asarray(points, dtype=np.float64)
     if a == 1:
@@ -127,7 +125,6 @@ def partial_quadratic_bezier_points(points, a, b):
     return [h0, h1, h2]
 
 
-@njit(cache=True)
 def split_quadratic_bezier(points: np.ndarray, t: float) -> np.ndarray:
     """Split a quadratic Bézier curve at argument ``t`` into two quadratic curves.
 
@@ -160,7 +157,6 @@ def split_quadratic_bezier(points: np.ndarray, t: float) -> np.ndarray:
     return tmp
 
 
-@njit(cache=True)
 def subdivide_quadratic_bezier(points: Iterable[float], n: int) -> np.ndarray:
     """Subdivide a quadratic Bézier curve into ``n`` subcurves which have the same shape.
 
@@ -192,7 +188,6 @@ def subdivide_quadratic_bezier(points: Iterable[float], n: int) -> np.ndarray:
     return beziers.reshape(-1, 3)
 
 
-@njit(cache=True)
 def quadratic_bezier_remap(
     triplets: Iterable[Iterable[float]], new_number_of_curves: int
 ):
@@ -250,7 +245,6 @@ def quadratic_bezier_remap(
 
 
 # Linear interpolation variants
-@njit(cache=True)
 def interpolate(start: np.ndarray, end: np.ndarray, alpha: float) -> np.ndarray:
     return (1 - alpha) * start + alpha * end
 
