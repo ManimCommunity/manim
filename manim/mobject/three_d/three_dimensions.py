@@ -20,7 +20,6 @@ __all__ = [
 from typing import *
 
 import numpy as np
-from colour import Color
 
 from manim import config, logger
 from manim.constants import *
@@ -31,7 +30,6 @@ from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import *
-from manim.utils.color import Colors
 from manim.utils.deprecation import deprecated_params
 from manim.utils.iterables import tuplify
 from manim.utils.space_ops import normalize, perpendicular_bisector, z_to_vector
@@ -101,10 +99,10 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         v_range: Sequence[float] = [0, 1],
         resolution: Sequence[int] = 32,
         surface_piece_config: dict = {},
-        fill_color: Color = BLUE_D,
+        fill_color: ParsableManimColor = BLUE_D,
         fill_opacity: float = 1.0,
-        checkerboard_colors: Sequence[Color] = [BLUE_D, BLUE_E],
-        stroke_color: Color = LIGHT_GREY,
+        checkerboard_colors: Sequence[ParsableManimColor] | bool = [BLUE_D, BLUE_E],
+        stroke_color: ParsableManimColor = LIGHT_GREY,
         stroke_width: float = 0.5,
         should_make_jagged: bool = False,
         pre_function_handle_to_anchor_scale_factor: float = 0.00001,
@@ -115,10 +113,15 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         super().__init__(**kwargs)
         self.resolution = resolution
         self.surface_piece_config = surface_piece_config
-        self.fill_color = fill_color
+        self.fill_color: ManimColor = ManimColor(fill_color)
         self.fill_opacity = fill_opacity
-        self.checkerboard_colors = checkerboard_colors
-        self.stroke_color = stroke_color
+        if checkerboard_colors:
+            self.checkerboard_colors: list[ManimColor] = [
+                ManimColor(x) for x in checkerboard_colors
+            ]
+        else:
+            self.checkerboard_colors = checkerboard_colors
+        self.stroke_color: ManimColor = ManimColor(stroke_color)
         self.stroke_width = stroke_width
         self.should_make_jagged = should_make_jagged
         self.pre_function_handle_to_anchor_scale_factor = (
@@ -206,7 +209,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
     def set_fill_by_value(
         self,
         axes: Mobject,
-        colorscale: Union[Iterable[Color], Color] | None = None,
+        colorscale: list[ParsableManimColor] | ParsableManimColor | None = None,
         axis: int = 2,
         **kwargs,
     ):
@@ -433,7 +436,7 @@ class Dot3D(Sphere):
         self,
         point: list | np.ndarray = ORIGIN,
         radius: float = DEFAULT_DOT_RADIUS,
-        color: Colors = WHITE,
+        color: ParsableManimColor = WHITE,
         resolution=(8, 8),
         **kwargs,
     ):

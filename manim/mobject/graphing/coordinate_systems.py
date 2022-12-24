@@ -17,7 +17,6 @@ import numbers
 from typing import TYPE_CHECKING, Any, Callable, Iterable, Sequence
 
 import numpy as np
-from colour import Color
 
 from manim import config
 from manim.constants import *
@@ -44,6 +43,8 @@ from manim.utils.color import (
     GREEN,
     WHITE,
     YELLOW,
+    ManimColor,
+    ParsableManimColor,
     color_gradient,
     invert_color,
 )
@@ -475,7 +476,7 @@ class CoordinateSystem:
         point: Sequence[float],
         line_func: Line = DashedLine,
         line_config: dict | None = None,
-        color: Color | None = None,
+        color: ParsableManimColor | None = None,
         stroke_width: float = 2,
     ) -> Line:
         """Returns a straight line from a given axis to a point in the scene.
@@ -511,7 +512,7 @@ class CoordinateSystem:
         if color is None:
             color = VMobject().color
 
-        line_config["color"] = color
+        line_config["color"] = ManimColor.parse(color)
         line_config["stroke_width"] = stroke_width
 
         axis = self.get_axis(index)
@@ -865,7 +866,9 @@ class CoordinateSystem:
         function: Callable[[float], float],
         u_range: Sequence[float] | None = None,
         v_range: Sequence[float] | None = None,
-        colorscale: Sequence[[color], float] | None = None,
+        colorscale: Sequence[ParsableManimColor]
+        | Sequence[tuple[ParsableManimColor, float]]
+        | None = None,
         colorscale_axis: int = 2,
         **kwargs,
     ):
@@ -1034,7 +1037,7 @@ class CoordinateSystem:
         x_val: float | None = None,
         direction: Sequence[float] = RIGHT,
         buff: float = MED_SMALL_BUFF,
-        color: Color | None = None,
+        color: ParsableManimColor | None = None,
         dot: bool = False,
         dot_config: dict | None = None,
     ) -> Mobject:
@@ -1086,7 +1089,8 @@ class CoordinateSystem:
 
         if dot_config is None:
             dot_config = {}
-        color = color or graph.get_color()
+        else:
+            color = graph.get_color()
         label = self.x_axis._create_label_tex(label).set_color(color)
 
         if x_val is None:
@@ -1116,9 +1120,9 @@ class CoordinateSystem:
         dx: float | None = 0.1,
         input_sample_type: str = "left",
         stroke_width: float = 1,
-        stroke_color: Color = BLACK,
+        stroke_color: ParsableManimColor = BLACK,
         fill_opacity: float = 1,
-        color: Iterable[Color] | Color = np.array((BLUE, GREEN)),
+        color: Iterable[ParsableManimColor] | ParsableManimColor = (BLUE, GREEN),
         show_signed_area: bool = True,
         bounded_graph: ParametricFunction = None,
         blend: bool = False,
@@ -1217,11 +1221,12 @@ class CoordinateSystem:
         rectangles = VGroup()
         x_range = np.arange(*x_range)
 
-        # allows passing a string to color the graph
-        if type(color) is str:
-            colors = [color] * len(x_range)
+        if isinstance(color, (list, tuple)):
+            color = [ManimColor(c) for c in color]
         else:
-            colors = color_gradient(color, len(x_range))
+            color = [ManimColor(color)]
+
+        colors = color_gradient(color, len(x_range))
 
         for x, color in zip(x_range, colors):
             if input_sample_type == "left":
@@ -1276,7 +1281,7 @@ class CoordinateSystem:
         self,
         graph: ParametricFunction,
         x_range: tuple[float, float] | None = None,
-        color: Color | Iterable[Color] = [BLUE, GREEN],
+        color: ParsableManimColor | Iterable[ParsableManimColor] = (BLUE, GREEN),
         opacity: float = 0.3,
         bounded_graph: ParametricFunction = None,
         **kwargs,
@@ -1425,7 +1430,7 @@ class CoordinateSystem:
         return np.tan(self.angle_of_tangent(x, graph, **kwargs))
 
     def plot_derivative_graph(
-        self, graph: ParametricFunction, color: Color = GREEN, **kwargs
+        self, graph: ParametricFunction, color: ParsableManimColor = GREEN, **kwargs
     ) -> ParametricFunction:
         """Returns the curve of the derivative of the passed graph.
 
@@ -1533,12 +1538,12 @@ class CoordinateSystem:
         x: float,
         graph: ParametricFunction,
         dx: float | None = None,
-        dx_line_color: Color = YELLOW,
-        dy_line_color: Color | None = None,
+        dx_line_color: ParsableManimColor = YELLOW,
+        dy_line_color: ParsableManimColor | None = None,
         dx_label: float | str | None = None,
         dy_label: float | str | None = None,
         include_secant_line: bool = True,
-        secant_line_color: Color = GREEN,
+        secant_line_color: ParsableManimColor = GREEN,
         secant_line_length: float = 10,
     ) -> VGroup:
         """Creates two lines representing `dx` and `df`, the labels for `dx` and `df`, and
@@ -1712,11 +1717,11 @@ class CoordinateSystem:
         x_val: float,
         graph: ParametricFunction,
         label: float | str | Mobject | None = None,
-        label_color: Color | None = None,
+        label_color: ParsableManimColor | None = None,
         triangle_size: float = MED_SMALL_BUFF,
-        triangle_color: Color | None = WHITE,
+        triangle_color: ParsableManimColor | None = WHITE,
         line_func: Line = Line,
-        line_color: Color = YELLOW,
+        line_color: ParsableManimColor = YELLOW,
     ) -> VGroup:
         """Creates a labelled triangle marker with a vertical line from the x-axis
         to a curve at a given x-value.
@@ -2129,7 +2134,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         x_values: Iterable[float],
         y_values: Iterable[float],
         z_values: Iterable[float] | None = None,
-        line_color: Color = YELLOW,
+        line_color: ParsableManimColor = YELLOW,
         add_vertex_dots: bool = True,
         vertex_dot_radius: float = DEFAULT_DOT_RADIUS,
         vertex_dot_style: dict | None = None,

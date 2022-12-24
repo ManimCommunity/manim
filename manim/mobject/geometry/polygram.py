@@ -18,7 +18,6 @@ __all__ = [
 from typing import Iterable, Sequence
 
 import numpy as np
-from colour import Color
 
 from manim.constants import *
 from manim.mobject.geometry.arc import ArcBetweenPoints
@@ -536,7 +535,7 @@ class Rectangle(Polygon):
 
     def __init__(
         self,
-        color: Color = WHITE,
+        color: ParsableManimColor = WHITE,
         height: float = 2.0,
         width: float = 4.0,
         grid_xstep: float | None = None,
