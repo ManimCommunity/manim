@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from manim.typing import ColVector, Point3D_Array, RowVector, Vector
+from manim.typing import Point3D_Array, Vector
 
 __all__ = [
     "quaternion_mult",

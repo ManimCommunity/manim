@@ -3,13 +3,12 @@ from __future__ import annotations
 import itertools as it
 import operator as op
 from functools import reduce, wraps
-from typing import Callable, Iterable, Optional, Sequence
+from typing import Callable, Iterable, Sequence
 
 import moderngl
 import numpy as np
 
 from manim import config
-from manim._config import logger
 from manim.constants import *
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject, OpenGLPoint
 from manim.renderer.shader_wrapper import ShaderWrapper
@@ -23,7 +22,7 @@ from manim.utils.bezier import (
     proportions_along_bezier_curve_for_point,
     quadratic_bezier_remap,
 )
-from manim.utils.color import *
+from manim.utils.color import BLACK, WHITE, ManimColor, ParsableManimColor
 from manim.utils.config_ops import _Data
 from manim.utils.iterables import listify, make_even, resize_with_interpolation
 from manim.utils.space_ops import (

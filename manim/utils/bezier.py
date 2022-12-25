@@ -2,21 +2,15 @@
 
 from __future__ import annotations
 
-from cairo import Matrix
-
 from manim.typing import (
     BezierPoints,
-    BezierPoints_Array,
     ColVector,
-    CubicBezierPoints,
     MatrixMN,
     Point3D,
     Point3D_Array,
     PointDType,
     QuadraticBezierPoints,
     QuadraticBezierPoints_Array,
-    RowVector,
-    Vector,
 )
 
 __all__ = [
@@ -37,9 +31,8 @@ __all__ = [
 ]
 
 
-import typing
 from functools import reduce
-from typing import Callable, Iterable, List, Sequence, Tuple, overload
+from typing import Callable, Sequence, overload
 
 import numpy as np
 from scipy import linalg

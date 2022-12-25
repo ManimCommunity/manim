@@ -10,7 +10,7 @@ from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import RoundedRectangle
 from manim.mobject.mobject import Mobject
 from manim.mobject.types.vectorized_mobject import VGroup
-from manim.utils.color import BLACK, RED, YELLOW, ManimColor, ParsableManimColor
+from manim.utils.color import BLACK, RED, YELLOW, ParsableManimColor
 
 
 class SurroundingRectangle(RoundedRectangle):
@@ -152,7 +152,7 @@ class Cross(VGroup):
     def __init__(
         self,
         mobject: Mobject | None = None,
-        stroke_color: Color = RED,
+        stroke_color: ParsableManimColor = RED,
         stroke_width: float = 6,
         scale_factor: float = 1,
         **kwargs,

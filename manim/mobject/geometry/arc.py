@@ -52,7 +52,7 @@ import numpy as np
 from manim.constants import *
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VMobject
-from manim.utils.color import *
+from manim.utils.color import BLACK, BLUE, RED, WHITE, ParsableManimColor
 from manim.utils.iterables import adjacent_pairs
 from manim.utils.space_ops import (
     angle_of_vector,

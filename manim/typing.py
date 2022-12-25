@@ -1,8 +1,8 @@
-from typing import Protocol, Tuple
+from typing import Tuple
 
 import numpy as np
 import numpy.typing as npt
-from typing_extensions import Annotated, Literal, TypeAlias, TypeVar
+from typing_extensions import TypeAlias
 
 # Color Types
 

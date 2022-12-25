@@ -14,8 +14,7 @@ __all__ = [
 
 import itertools as it
 import sys
-import typing
-from typing import Callable, Optional, Sequence, Union
+from typing import Callable, Hashable, Iterable, Mapping, Sequence
 
 import numpy as np
 from PIL.Image import Image
@@ -37,8 +36,7 @@ from ...utils.bezier import (
     partial_bezier_points,
     proportions_along_bezier_curve_for_point,
 )
-from ...utils.color import BLACK, WHITE, ManimColor, ParsableManimColor, color_to_rgba
-from ...utils.deprecation import deprecated
+from ...utils.color import BLACK, WHITE, ManimColor, ParsableManimColor
 from ...utils.iterables import make_even, resize_array, stretch_array_to_length, tuplify
 from ...utils.space_ops import rotate_vector, shoelace_direction
 
@@ -301,7 +299,7 @@ class VMobject(Mobject):
             setattr(self, opacity_name, opacity)
         if color is not None and background:
             if isinstance(color, (list, tuple)):
-                self.background_stroke_color = color = color
+                self.background_stroke_color = color
             else:
                 self.background_stroke_color = ManimColor(color)
         return self
@@ -1055,7 +1053,7 @@ class VMobject(Mobject):
     def _gen_subpaths_from_points(
         self,
         points: np.ndarray,
-        filter_func: typing.Callable[[int], bool],
+        filter_func: Callable[[int], bool],
     ) -> tuple:
         """Given an array of points defining the bezier curves of the vmobject, return subpaths formed by these points.
         Here, Two bezier curves form a path if at least two of their anchors are evaluated True by the relation defined by filter_func.
@@ -1129,7 +1127,7 @@ class VMobject(Mobject):
         nppcc = self.n_points_per_cubic_curve
         return self.points[nppcc * n : nppcc * (n + 1)]
 
-    def get_nth_curve_function(self, n: int) -> typing.Callable[[float], np.ndarray]:
+    def get_nth_curve_function(self, n: int) -> Callable[[float], np.ndarray]:
         """Returns the expression of the nth curve.
 
         Parameters
@@ -1201,7 +1199,7 @@ class VMobject(Mobject):
         self,
         n: int,
         sample_points: int | None = None,
-    ) -> tuple[typing.Callable[[float], np.ndarray], float]:
+    ) -> tuple[Callable[[float], np.ndarray], float]:
         """Returns the expression of the nth curve along with its (approximate) length.
 
         Parameters
@@ -1238,7 +1236,7 @@ class VMobject(Mobject):
 
     def get_curve_functions(
         self,
-    ) -> typing.Iterable[typing.Callable[[float], np.ndarray]]:
+    ) -> Iterable[Callable[[float], np.ndarray]]:
         """Gets the functions for the curves of the mobject.
 
         Returns
@@ -1254,7 +1252,7 @@ class VMobject(Mobject):
 
     def get_curve_functions_with_lengths(
         self, **kwargs
-    ) -> typing.Iterable[tuple[typing.Callable[[float], np.ndarray], float]]:
+    ) -> Iterable[tuple[Callable[[float], np.ndarray], float]]:
         """Gets the functions and lengths of the curves for the mobject.
 
         Parameters
@@ -1319,7 +1317,7 @@ class VMobject(Mobject):
 
     def proportion_from_point(
         self,
-        point: typing.Iterable[float | int],
+        point: Iterable[float | int],
     ) -> float:
         """Returns the proportion along the path of the :class:`VMobject`
         a particular given point is at.
@@ -1373,7 +1371,7 @@ class VMobject(Mobject):
 
         return alpha
 
-    def get_anchors_and_handles(self) -> typing.Iterable[np.ndarray]:
+    def get_anchors_and_handles(self) -> Iterable[np.ndarray]:
         """Returns anchors1, handles1, handles2, anchors2,
         where (anchors1[i], handles1[i], handles2[i], anchors2[i])
         will be four points defining a cubic bezier curve
@@ -1931,7 +1929,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
     def __isub__(self, vmobject):
         return self.remove(vmobject)
 
-    def __setitem__(self, key: int, value: VMobject | typing.Sequence[VMobject]):
+    def __setitem__(self, key: int, value: VMobject | Sequence[VMobject]):
         """Override the [] operator for item assignment.
 
         Parameters
@@ -2058,8 +2056,7 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
     def __init__(
         self,
         mapping_or_iterable: (
-            typing.Mapping[typing.Hashable, VMobject]
-            | typing.Iterable[tuple[typing.Hashable, VMobject]]
+            Mapping[Hashable, VMobject] | Iterable[tuple[Hashable, VMobject]]
         ) = {},
         show_keys: bool = False,
         **kwargs,
@@ -2075,8 +2072,7 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
     def add(
         self,
         mapping_or_iterable: (
-            typing.Mapping[typing.Hashable, VMobject]
-            | typing.Iterable[tuple[typing.Hashable, VMobject]]
+            Mapping[Hashable, VMobject] | Iterable[tuple[Hashable, VMobject]]
         ),
     ):
         """Adds the key-value pairs to the :class:`VDict` object.
@@ -2106,7 +2102,7 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
 
         return self
 
-    def remove(self, key: typing.Hashable):
+    def remove(self, key: Hashable):
         """Removes the mobject from the :class:`VDict` object having the key `key`
 
         Also, it internally removes the mobject from the `submobjects` :class:`list`
@@ -2134,7 +2130,7 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
         del self.submob_dict[key]
         return self
 
-    def __getitem__(self, key: typing.Hashable):
+    def __getitem__(self, key: Hashable):
         """Override the [] operator for item retrieval.
 
         Parameters
@@ -2156,7 +2152,7 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
         submob = self.submob_dict[key]
         return submob
 
-    def __setitem__(self, key: typing.Hashable, value: VMobject):
+    def __setitem__(self, key: Hashable, value: VMobject):
         """Override the [] operator for item assignment.
 
         Parameters
@@ -2181,7 +2177,7 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
             self.remove(key)
         self.add([(key, value)])
 
-    def __delitem__(self, key: typing.Hashable):
+    def __delitem__(self, key: Hashable):
         """Override the del operator for deleting an item.
 
         Parameters
@@ -2213,7 +2209,7 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
         """
         del self.submob_dict[key]
 
-    def __contains__(self, key: typing.Hashable):
+    def __contains__(self, key: Hashable):
         """Override the in operator.
 
         Parameters
@@ -2255,7 +2251,7 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
         submobjects = self.submob_dict.values()
         return submobjects
 
-    def add_key_value_pair(self, key: typing.Hashable, value: VMobject):
+    def add_key_value_pair(self, key: Hashable, value: VMobject):
         """A utility function used by :meth:`add` to add the key-value pair
         to :attr:`submob_dict`. Not really meant to be used externally.
 
@@ -2426,7 +2422,6 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
         equal_lengths=True,
         **kwargs,
     ):
-
         self.dashed_ratio = dashed_ratio
         self.num_dashes = num_dashes
         super().__init__(color=color, **kwargs)

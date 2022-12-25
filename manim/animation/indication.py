@@ -45,6 +45,7 @@ from manim.mobject.geometry.arc import Circle, Dot
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import Rectangle
 from manim.mobject.geometry.shape_matchers import SurroundingRectangle
+from manim.scene.scene import Scene
 
 from .. import config
 from ..animation.animation import Animation
@@ -57,7 +58,7 @@ from ..constants import *
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.bezier import interpolate, inverse_interpolate
-from ..utils.color import GREY, YELLOW, ManimColor, ParsableManimColor
+from ..utils.color import GREY, YELLOW, ParsableManimColor
 from ..utils.deprecation import deprecated
 from ..utils.rate_functions import smooth, there_and_back, wiggle
 from ..utils.space_ops import normalize
@@ -313,7 +314,7 @@ class ShowPassingFlash(ShowPartial):
         lower = max(lower, 0)
         return (lower, upper)
 
-    def clean_up_from_scene(self, scene: "Scene") -> None:
+    def clean_up_from_scene(self, scene: Scene) -> None:
         super().clean_up_from_scene(scene)
         for submob, start in self.get_all_families_zipped():
             submob.pointwise_become_partial(start, 0, 1)

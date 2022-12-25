@@ -28,7 +28,7 @@ import operator as op
 import re
 from functools import reduce
 from textwrap import dedent
-from typing import Dict, Iterable, Optional
+from typing import Iterable
 
 from manim import config, logger
 from manim.constants import *
@@ -66,7 +66,6 @@ class SingleStringMathTex(SVGMobject):
         font_size: float = DEFAULT_FONT_SIZE,
         **kwargs,
     ):
-
         if kwargs.get("color") is None:
             # makes it so that color isn't explicitly passed for these mobs,
             # and can instead inherit from the parent
@@ -433,7 +432,7 @@ class Tex(MathTex):
 
 
 class BulletedList(Tex):
-    """
+    """A bulleted list.
     Examples
     --------
 
@@ -510,7 +509,6 @@ class Title(Tex):
         underline_buff=MED_SMALL_BUFF,
         **kwargs,
     ):
-
         self.include_underline = include_underline
         self.match_underline_width_to_text = match_underline_width_to_text
         self.underline_buff = underline_buff

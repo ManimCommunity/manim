@@ -83,7 +83,7 @@ if TYPE_CHECKING:
 
 from manim.mobject.opengl.opengl_surface import OpenGLSurface
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
-from manim.utils.color import *
+from manim.utils.color import ManimColor
 
 from .. import config
 from ..animation.animation import Animation
@@ -92,7 +92,7 @@ from ..constants import TAU
 from ..mobject.mobject import Group, Mobject
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.bezier import integer_interpolate
-from ..utils.rate_functions import double_smooth, linear, smooth
+from ..utils.rate_functions import double_smooth, linear
 
 
 class ShowPartial(Animation):
@@ -404,7 +404,6 @@ class Unwrite(Write):
         reverse: bool = True,
         **kwargs,
     ) -> None:
-
         run_time: float | None = kwargs.pop("run_time", None)
         lag_ratio: float | None = kwargs.pop("lag_ratio", None)
         run_time, lag_ratio = self._set_default_config_from_length(
