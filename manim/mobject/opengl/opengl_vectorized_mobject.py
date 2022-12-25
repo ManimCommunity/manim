@@ -107,6 +107,7 @@ class OpenGLVMobject(OpenGLMobject):
         triangulation_locked: bool = False,
         **kwargs,
     ):
+        self._is_initialized: bool = False
         self.data = {}
         self.fill_opacity = fill_opacity
         self.stroke_opacity = stroke_opacity
@@ -150,6 +151,7 @@ class OpenGLVMobject(OpenGLMobject):
         self.fill_shader_wrapper = None
         self.stroke_shader_wrapper = None
         self.init_shader_data()
+        self._is_initialized = True
 
     def get_group_class(self):
         return OpenGLVGroup

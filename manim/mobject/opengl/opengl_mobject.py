@@ -107,7 +107,6 @@ class OpenGLMobject:
         name: str | None = None,
         **kwargs,
     ):
-        self._is_initialized: bool = False
         self.name = self.__class__.__name__ if name is None else name
         # getattr in case data/uniforms are already defined in parent classes.
         self.data = getattr(self, "data", {})
@@ -2628,8 +2627,7 @@ class OpenGLMobject:
     # For shader data
 
     def refresh_shader_wrapper_id(self):
-        if self._is_initialized:
-            self.get_shader_wrapper().refresh_id()
+        self.get_shader_wrapper().refresh_id()
         return self
 
     def get_shader_wrapper(self):
