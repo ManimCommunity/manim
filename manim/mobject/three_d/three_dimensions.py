@@ -2,14 +2,7 @@
 
 from __future__ import annotations
 
-from manim.utils.color.core import (
-    BLUE,
-    BLUE_D,
-    BLUE_E,
-    LIGHT_GREY,
-    WHITE,
-    interpolate_color,
-)
+from manim.utils.color import BLUE, BLUE_D, BLUE_E, LIGHT_GREY, WHITE, interpolate_color
 
 __all__ = [
     "ThreeDVMobject",
