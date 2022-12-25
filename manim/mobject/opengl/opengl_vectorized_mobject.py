@@ -1506,8 +1506,9 @@ class OpenGLVMobject(OpenGLMobject):
         )
 
     def refresh_shader_wrapper_id(self):
-        for wrapper in [self.fill_shader_wrapper, self.stroke_shader_wrapper]:
-            wrapper.refresh_id()
+        if self._is_initialized:
+            for wrapper in [self.fill_shader_wrapper, self.stroke_shader_wrapper]:
+                wrapper.refresh_id()
         return self
 
     def get_fill_shader_wrapper(self):

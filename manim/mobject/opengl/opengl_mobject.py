@@ -107,6 +107,7 @@ class OpenGLMobject:
         name: str | None = None,
         **kwargs,
     ):
+        self._is_initialized: bool = False
         self.name = self.__class__.__name__ if name is None else name
         # getattr in case data/uniforms are already defined in parent classes.
         self.data = getattr(self, "data", {})
@@ -2627,13 +2628,17 @@ class OpenGLMobject:
     # For shader data
 
     def refresh_shader_wrapper_id(self):
-        self.shader_wrapper.refresh_id()
+        if self._is_initialized:
+            self.get_shader_wrapper().refresh_id()
         return self
 
     def get_shader_wrapper(self):
         from manim.renderer.shader_wrapper import ShaderWrapper
 
-        self.shader_wrapper = ShaderWrapper(
+        if hasattr(self, "__shader_wrapper"):
+            return self.__shader_wrapper
+
+        self.__shader_wrapper = ShaderWrapper(
             vert_data=self.get_shader_data(),
             vert_indices=self.get_shader_vert_indices(),
             uniforms=self.get_shader_uniforms(),
@@ -2642,7 +2647,7 @@ class OpenGLMobject:
             render_primitive=self.render_primitive,
             shader_folder=self.__class__.shader_folder,
         )
-        return self.shader_wrapper
+        return self.__shader_wrapper
 
     def get_shader_wrapper_list(self):
         shader_wrappers = it.chain(
