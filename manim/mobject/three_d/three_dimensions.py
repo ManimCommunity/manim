@@ -147,7 +147,6 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
 
     def _setup_in_uv_space(self):
         u_values, v_values = self._get_u_values_and_v_values()
-        faces = VGroup()
         for i in range(len(u_values) - 1):
             for j in range(len(v_values) - 1):
                 u1, u2 = u_values[i : i + 2]
@@ -162,20 +161,21 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
                         [u1, v1, 0],
                     ],
                 )
-                faces.add(face)
                 face.u_index = i
                 face.v_index = j
                 face.u1 = u1
                 face.u2 = u2
                 face.v1 = v1
                 face.v2 = v2
-        faces.set_fill(color=self.fill_color, opacity=self.fill_opacity)
-        faces.set_stroke(
-            color=self.stroke_color,
-            width=self.stroke_width,
-            opacity=self.stroke_opacity,
-        )
-        self.add(*faces)
+                face.set_fill(color=self.fill_color, opacity=self.fill_opacity)
+                face.set_stroke(
+                    color=self.stroke_color,
+                    width=self.stroke_width,
+                    opacity=self.stroke_opacity,
+                )
+
+                self.add(face)
+
         if self.checkerboard_colors:
             self.set_fill_by_checkerboard(*self.checkerboard_colors)
 
