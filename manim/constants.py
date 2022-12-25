@@ -7,8 +7,10 @@ from __future__ import annotations
 from enum import Enum
 
 import numpy as np
-from cloup import Context
+from cloup import Context  # type: ignore
 from PIL.Image import Resampling
+
+from manim.typing import Point3D
 
 __all__ = [
     "SCENE_NOT_FOUND_MESSAGE",
@@ -119,43 +121,43 @@ RESAMPLING_ALGORITHMS = {
 }
 
 # Geometry: directions
-ORIGIN: np.ndarray = np.array((0.0, 0.0, 0.0))
+ORIGIN: Point3D = np.array((0.0, 0.0, 0.0))
 """The center of the coordinate system."""
 
-UP: np.ndarray = np.array((0.0, 1.0, 0.0))
+UP: Point3D = np.array((0.0, 1.0, 0.0))
 """One unit step in the positive Y direction."""
 
-DOWN: np.ndarray = np.array((0.0, -1.0, 0.0))
+DOWN: Point3D = np.array((0.0, -1.0, 0.0))
 """One unit step in the negative Y direction."""
 
-RIGHT: np.ndarray = np.array((1.0, 0.0, 0.0))
+RIGHT: Point3D = np.array((1.0, 0.0, 0.0))
 """One unit step in the positive X direction."""
 
-LEFT: np.ndarray = np.array((-1.0, 0.0, 0.0))
+LEFT: Point3D = np.array((-1.0, 0.0, 0.0))
 """One unit step in the negative X direction."""
 
-IN: np.ndarray = np.array((0.0, 0.0, -1.0))
+IN: Point3D = np.array((0.0, 0.0, -1.0))
 """One unit step in the negative Z direction."""
 
-OUT: np.ndarray = np.array((0.0, 0.0, 1.0))
+OUT: Point3D = np.array((0.0, 0.0, 1.0))
 """One unit step in the positive Z direction."""
 
 # Geometry: axes
-X_AXIS: np.ndarray = np.array((1.0, 0.0, 0.0))
-Y_AXIS: np.ndarray = np.array((0.0, 1.0, 0.0))
-Z_AXIS: np.ndarray = np.array((0.0, 0.0, 1.0))
+X_AXIS: Point3D = np.array((1.0, 0.0, 0.0))
+Y_AXIS: Point3D = np.array((0.0, 1.0, 0.0))
+Z_AXIS: Point3D = np.array((0.0, 0.0, 1.0))
 
 # Geometry: useful abbreviations for diagonals
-UL: np.ndarray = UP + LEFT
+UL: Point3D = UP + LEFT
 """One step up plus one step left."""
 
-UR: np.ndarray = UP + RIGHT
+UR: Point3D = UP + RIGHT
 """One step up plus one step right."""
 
-DL: np.ndarray = DOWN + LEFT
+DL: Point3D = DOWN + LEFT
 """One step down plus one step left."""
 
-DR: np.ndarray = DOWN + RIGHT
+DR: Point3D = DOWN + RIGHT
 """One step down plus one step right."""
 
 # Geometry

@@ -78,12 +78,12 @@ pygithub = "^1"
 flake8 = "^3.9.0"
 isort = "^5.8.0"
 pytest-xdist = "^2.2"
-mypy = "^0.931"
+mypy = "^0.991"
 types-requests = "^2.25.6"
 types-protobuf = "^3.17.4"
 types-decorator = "^0.1.7"
 types-setuptools = "^57.0.2"
-types-Pillow = "^8.3.3"
+types-Pillow = "^9.3.0.4"
 types-Pygments = "^2.9.2"
 flake8-builtins = "^1.5.3"
 flake8-bugbear = "^21.4.3"
@@ -110,6 +110,11 @@ version = ">=20.8b1"
 allow-prereleases = false
 python = "^3.6"
 markers = "platform_python_implementation == 'CPython'"
+
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^0.991"
+types-tqdm = "^4.64.7.9"
 
 [tool.pytest.ini_options]
 markers = "slow: Mark the test as slow. Can be skipped with --skip_slow"

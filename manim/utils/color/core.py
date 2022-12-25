@@ -9,6 +9,19 @@ from typing import Any, Sequence, Union
 import numpy as np
 from typing_extensions import Literal, TypeAlias
 
+from manim.typing import (
+    ManimColorDType,
+    ManimColorInternal,
+    RGB_Array_Float,
+    RGB_Array_Int,
+    RGB_Tuple_Float,
+    RGB_Tuple_Int,
+    RGBA_Array_Float,
+    RGBA_Array_Int,
+    RGBA_Tuple_Float,
+    RGBA_Tuple_Int,
+)
+
 from ...utils.space_ops import normalize
 
 # import manim._config as _config
@@ -161,23 +174,6 @@ name of the colors in lowercase.
 
 """
 
-ManimColorDType: TypeAlias = np.float64
-ManimFloat: TypeAlias = np.float64
-ManimInt: TypeAlias = np.int64
-
-RGB_Array_Float: TypeAlias = "np.ndarray[Literal[3], np.dtype[ManimFloat]]"
-RGB_Tuple_Float: TypeAlias = "tuple[float, float, float]"
-
-RGB_Array_Int: TypeAlias = "np.ndarray[Literal[3], np.dtype[ManimInt]]"
-RGB_Tuple_Int: TypeAlias = "tuple[int, int, int]"
-
-RGBA_Array_Float: TypeAlias = "np.ndarray[Literal[4], np.dtype[ManimFloat]]"
-RGBA_Tuple_Float: TypeAlias = "tuple[float, float, float, float]"
-
-RGBA_Array_Int: TypeAlias = "np.ndarray[Literal[4], np.dtype[ManimInt]]"
-RGBA_Tuple_Int: TypeAlias = "tuple[int, int, int, int]"
-
-ManimColorInternal: TypeAlias = "np.ndarray[Literal[4], np.dtype[ManimColorDType]]"
 
 import re
 
@@ -278,7 +274,7 @@ class ManimColor:
     def _internal_from_int_rgb(
         rgb: RGB_Tuple_Int, alpha: float = 1.0
     ) -> ManimColorInternal:
-        value: np.ndarray = np.asarray(rgb, dtype=ManimColorDType).copy() / 255
+        value: RGB_Array_Float = np.asarray(rgb, dtype=ManimColorDType).copy() / 255
         value.resize(4, refcheck=False)
         value[3] = alpha
         return value
@@ -287,7 +283,7 @@ class ManimColor:
     def _internal_from_rgb(
         rgb: RGB_Tuple_Float, alpha: float = 1.0
     ) -> ManimColorInternal:
-        value: np.ndarray = np.asarray(rgb, dtype=ManimColorDType).copy()
+        value: RGB_Array_Int = np.asarray(rgb, dtype=ManimColorDType).copy()
         value.resize(4, refcheck=False)
         value[3] = alpha
         return value

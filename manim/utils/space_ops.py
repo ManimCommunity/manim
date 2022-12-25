@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from manim.typing import ColVector, Point3D_Array, RowVector, Vector
+
 __all__ = [
     "quaternion_mult",
     "quaternion_from_angle_axis",
@@ -559,10 +561,10 @@ def line_intersection(
 
 
 def find_intersection(
-    p0s: Sequence[np.ndarray],
-    v0s: Sequence[np.ndarray],
-    p1s: Sequence[np.ndarray],
-    v1s: Sequence[np.ndarray],
+    p0s: Sequence[np.ndarray] | Point3D_Array,
+    v0s: Sequence[np.ndarray] | Point3D_Array,
+    p1s: Sequence[np.ndarray] | Point3D_Array,
+    v1s: Sequence[np.ndarray] | Point3D_Array,
     threshold: float = 1e-5,
 ) -> Sequence[np.ndarray]:
     """
@@ -640,7 +642,8 @@ def shoelace_direction(x_y: np.ndarray) -> str:
     return "CW" if area > 0 else "CCW"
 
 
-def cross2d(a, b):
+# !TODO: Probably needs retyping but idk what it does at the moment
+def cross2d(a: Vector, b: Vector) -> Vector:
     if len(a.shape) == 2:
         return a[:, 0] * b[:, 1] - a[:, 1] * b[:, 0]
     else:
