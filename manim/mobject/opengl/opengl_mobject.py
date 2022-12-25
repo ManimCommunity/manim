@@ -2633,8 +2633,8 @@ class OpenGLMobject:
     def get_shader_wrapper(self):
         from manim.renderer.shader_wrapper import ShaderWrapper
 
-        if hasattr(self, "__shader_wrapper"):
-            return self.__shader_wrapper
+        # if hasattr(self, "__shader_wrapper"):
+        # return self.__shader_wrapper
 
         self.__shader_wrapper = ShaderWrapper(
             vert_data=self.get_shader_data(),
