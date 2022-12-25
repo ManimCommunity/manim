@@ -654,7 +654,7 @@ def get_quadratic_approximation_of_cubic(
 
 
 def is_closed(points: Point3D_Array) -> bool:
-    return np.allclose(points[0], points[-1])
+    return np.allclose(points[0], points[-1])  # type: ignore
 
 
 def proportions_along_bezier_curve_for_point(
