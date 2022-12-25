@@ -16,8 +16,7 @@ select = A,A00,B,B9,C4,C90,D,E,F,F,PT,RST,SIM,W,F401
 extend-ignore = E203, W503, D202, D212, D213, D404
 
                 # Misc
-                ; F401,
-                F403, F405, F841, E501, E731, E402, F811, F821,
+                F401, F403, F405, F841, E501, E731, E402, F811, F821,
 
                 # Plug-in: flake8-builtins
                 A001, A002, A003,
