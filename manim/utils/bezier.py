@@ -143,14 +143,7 @@ def split_quadratic_bezier(points: np.ndarray, t: float) -> np.ndarray:
     s2 = interpolate(h1, a2, t)
     p = interpolate(s1, s2, t)
 
-    tmp = np.empty((6, 3))
-    tmp[0] = a1
-    tmp[1] = s1
-    tmp[2] = p
-    tmp[3] = p
-    tmp[4] = s2
-    tmp[5] = a2
-    return tmp
+    return np.array([a1, s1, p, p, s2, a2])
 
 
 def subdivide_quadratic_bezier(points: Iterable[float], n: int) -> np.ndarray:
