@@ -107,7 +107,6 @@ class OpenGLVMobject(OpenGLMobject):
         triangulation_locked: bool = False,
         **kwargs,
     ):
-        self._is_initialized: bool = False
         self.data = {}
         self.fill_opacity = fill_opacity
         self.stroke_opacity = stroke_opacity
@@ -138,6 +137,12 @@ class OpenGLVMobject(OpenGLMobject):
         self.needs_new_triangulation = True
         self.triangulation = np.zeros(0, dtype="i4")
         self.orientation = 1
+        self.fill_data = None
+        self.stroke_data = None
+        self.fill_shader_wrapper = None
+        self.stroke_shader_wrapper = None
+        self.init_shader_data()
+
         super().__init__(**kwargs)
         self.refresh_unit_normal()
 
@@ -145,13 +150,6 @@ class OpenGLVMobject(OpenGLMobject):
             self.fill_color = Color(fill_color)
         if stroke_color:
             self.stroke_color = Color(stroke_color)
-
-        self.fill_data = None
-        self.stroke_data = None
-        self.fill_shader_wrapper = None
-        self.stroke_shader_wrapper = None
-        self.init_shader_data()
-        self._is_initialized = True
 
     def get_group_class(self):
         return OpenGLVGroup
@@ -1508,9 +1506,8 @@ class OpenGLVMobject(OpenGLMobject):
         )
 
     def refresh_shader_wrapper_id(self):
-        if self._is_initialized:
-            for wrapper in [self.fill_shader_wrapper, self.stroke_shader_wrapper]:
-                wrapper.refresh_id()
+        for wrapper in [self.fill_shader_wrapper, self.stroke_shader_wrapper]:
+            wrapper.refresh_id()
         return self
 
     def get_fill_shader_wrapper(self):
