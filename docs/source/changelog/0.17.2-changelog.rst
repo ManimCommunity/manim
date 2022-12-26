@@ -40,7 +40,7 @@ Documentation-related changes
 * :pr:`3073`: Fixed typo: "Whetherer" to "Whether"
 
 
-* :pr:`3074`: Fixed typo in a comment 
+* :pr:`3074`: Fixed typo in a comment
 
 
 Code quality improvements and similar refactors
@@ -59,4 +59,3 @@ New releases
 ------------
 
 * :pr:`3090`: Prepared new Hotfix Release: ``v0.17.2``
-
