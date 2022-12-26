@@ -19,7 +19,7 @@ msgid "Otherwise, if you intend to use Manim to work on an animation project, we
 msgstr ""
 
 #: ../../source/installation.rst:16
-msgid "Note that there are several different versions of Manim. The instructions on this website are **only** for the *community edition*. Find out more about the :doc:`differences between Manim versions <installation/versions>` if you are unsure which version you should install."
+msgid "Note that there are several different versions of Manim. The instructions on this website are **only** for the *community edition*. Find out more about the :ref:`differences between Manim versions <different-versions>` if you are unsure which version you should install."
 msgstr ""
 
 #: ../../source/installation.rst:22
@@ -50,47 +50,47 @@ msgstr ""
 msgid "Depending on your particular setup, the installation process might be slightly different. Make sure that you have tried to follow the steps on the following pages carefully, but in case you hit a wall we are happy to help: either `join our Discord <https://www.manim.community/discord/>`__, or start a new Discussion `directly on GitHub <https://github.com/ManimCommunity/manim/discussions>`__."
 msgstr ""
 
-#: ../../source/installation.rst:59
+#: ../../source/installation.rst:58
 msgid "Once Manim is installed locally, you can proceed to our :doc:`quickstart guide <tutorials/quickstart>` which walks you through rendering a first simple scene."
 msgstr ""
 
-#: ../../source/installation.rst:63
-msgid "As mentioned above, do not worry if there are errors or other problems: consult our :doc:`troubleshooting guide <installation/troubleshooting>` for help, or get in touch with the community via `GitHub discussions <https://github.com/ManimCommunity/manim/discussions>`__ or `Discord <https://www.manim.community/discord/>`__."
+#: ../../source/installation.rst:62
+msgid "As mentioned above, do not worry if there are errors or other problems: consult our :doc:`FAQ section </faq/index>` for help (including instructions for how to ask Manim's community for help)."
 msgstr ""
 
-#: ../../source/installation.rst:75
+#: ../../source/installation.rst:71
 msgid "Using Manim via Docker"
 msgstr ""
 
-#: ../../source/installation.rst:77
+#: ../../source/installation.rst:73
 msgid "`Docker <https://www.docker.com>`__ is a virtualization tool that allows the distribution of encapsulated software environments (containers)."
 msgstr ""
 
-#: ../../source/installation.rst:80
+#: ../../source/installation.rst:76
 msgid "The following pages contain more information about the docker image maintained by the community, ``manimcommunity/manim``:"
 msgstr ""
 
-#: ../../source/installation.rst:91
+#: ../../source/installation.rst:87
 msgid "Interactive Jupyter notebooks for your browser"
 msgstr ""
 
-#: ../../source/installation.rst:93
+#: ../../source/installation.rst:89
 msgid "Manim ships with a built-in ``%%manim`` IPython magic command designed for the use within `Jupyter notebooks <https://jupyter.org>`__. Our interactive tutorial over at https://try.manim.community illustrates how Manim can be used from within a Jupyter notebook."
 msgstr ""
 
-#: ../../source/installation.rst:98
+#: ../../source/installation.rst:94
 msgid "The following pages explain how you can setup interactive environments like that yourself:"
 msgstr ""
 
-#: ../../source/installation.rst:108
+#: ../../source/installation.rst:104
 msgid "Editors"
 msgstr ""
 
-#: ../../source/installation.rst:110
+#: ../../source/installation.rst:106
 msgid "If you're using Visual Studio Code you can install an extension called *Manim Sideview* which provides automated rendering and an integrated preview of the animation inside the editor. The extension can be installed through the `marketplace of VS Code <https://marketplace.visualstudio.com/items?itemName=Rickaym.manim-sideview>`__."
 msgstr ""
 
-#: ../../source/installation.rst:117
+#: ../../source/installation.rst:113
 msgid "Installation for developers"
 msgstr ""
 

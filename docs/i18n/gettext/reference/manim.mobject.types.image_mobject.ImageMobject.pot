@@ -45,52 +45,47 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobject.rst:26:<autosummary>:1
-#: ../../../manim/mobject/types/image_mobject.py:docstring of manim.mobject.types.image_mobject.ImageMobject.change_to_rgba_array:1
-msgid "Converts an RGB array into RGBA with the alpha value opacity maxed."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobject.rst:26:<autosummary>:1
+#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobject.rst:25:<autosummary>:1
 #: ../../../manim/mobject/types/image_mobject.py:docstring of manim.mobject.types.image_mobject.ImageMobject.fade:1
 msgid "Sets the image's opacity using a 1 - alpha relationship."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobject.rst:26:<autosummary>:1
+#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobject.rst:25:<autosummary>:1
 #: ../../../manim/mobject/types/image_mobject.py:docstring of manim.mobject.types.image_mobject.ImageMobject.get_pixel_array:1
 msgid "A simple getter method."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobject.rst:26:<autosummary>:1
+#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobject.rst:25:<autosummary>:1
 #: ../../../manim/mobject/types/image_mobject.py:docstring of manim.mobject.types.image_mobject.ImageMobject.interpolate_color:1
 msgid "Interpolates an array of pixel color values into another array of equal size."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobject.rst:26:<autosummary>:1
+#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobject.rst:25:<autosummary>:1
 msgid "Condition is function which takes in one arguments, (x, y, z)."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobject.rst:26:<autosummary>:1
+#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobject.rst:25:<autosummary>:1
 #: ../../../manim/mobject/types/image_mobject.py:docstring of manim.mobject.types.image_mobject.ImageMobject.set_opacity:1
 msgid "Sets the image's opacity."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobject.rst:28
+#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobject.rst:27
 msgid "Attributes"
 msgstr ""
 
-#: ../../../manim/mobject/types/image_mobject.py:docstring of manim.mobject.types.image_mobject.ImageMobject.change_to_rgba_array:1:<autosummary>:1
+#: ../../../manim/mobject/types/image_mobject.py:docstring of manim.mobject.types.image_mobject.ImageMobject.fade:1:<autosummary>:1
 msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
-#: ../../../manim/mobject/types/image_mobject.py:docstring of manim.mobject.types.image_mobject.ImageMobject.change_to_rgba_array:1:<autosummary>:1
+#: ../../../manim/mobject/types/image_mobject.py:docstring of manim.mobject.types.image_mobject.ImageMobject.fade:1:<autosummary>:1
 msgid "The depth of the mobject."
 msgstr ""
 
-#: ../../../manim/mobject/types/image_mobject.py:docstring of manim.mobject.types.image_mobject.ImageMobject.change_to_rgba_array:1:<autosummary>:1
+#: ../../../manim/mobject/types/image_mobject.py:docstring of manim.mobject.types.image_mobject.ImageMobject.fade:1:<autosummary>:1
 msgid "The height of the mobject."
 msgstr ""
 
-#: ../../../manim/mobject/types/image_mobject.py:docstring of manim.mobject.types.image_mobject.ImageMobject.change_to_rgba_array:1:<autosummary>:1
+#: ../../../manim/mobject/types/image_mobject.py:docstring of manim.mobject.types.image_mobject.ImageMobject.fade:1:<autosummary>:1
 msgid "The width of the mobject."
 msgstr ""
 

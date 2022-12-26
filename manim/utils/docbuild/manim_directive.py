@@ -47,6 +47,10 @@ directive:
         If this flag is present without argument,
         the source code is not displayed above the rendered video.
 
+    no_autoplay
+        If this flag is present without argument,
+        the video will not autoplay.
+
     quality : {'low', 'medium', 'high', 'fourk'}
         Controls render quality of the video, in analogy to
         the corresponding command line flags.
@@ -142,6 +146,7 @@ class ManimDirective(Directive):
     optional_arguments = 0
     option_spec = {
         "hide_source": bool,
+        "no_autoplay": bool,
         "quality": lambda arg: directives.choice(
             arg,
             ("low", "medium", "high", "fourk"),
@@ -190,6 +195,7 @@ class ManimDirective(Directive):
             classnamedict[clsname] += 1
 
         hide_source = "hide_source" in self.options
+        no_autoplay = "no_autoplay" in self.options
         save_as_gif = "save_as_gif" in self.options
         save_last_frame = "save_last_frame" in self.options
         assert not (save_as_gif and save_last_frame)
@@ -242,6 +248,7 @@ class ManimDirective(Directive):
 
         example_config = {
             "frame_rate": frame_rate,
+            "no_autoplay": no_autoplay,
             "pixel_height": pixel_height,
             "pixel_width": pixel_width,
             "save_last_frame": save_last_frame,
@@ -295,6 +302,7 @@ class ManimDirective(Directive):
             clsname_lowercase=clsname.lower(),
             hide_source=hide_source,
             filesrc_rel=Path(filesrc).relative_to(setup.confdir).as_posix(),
+            no_autoplay=no_autoplay,
             output_file=output_file,
             save_last_frame=save_last_frame,
             save_as_gif=save_as_gif,
@@ -313,7 +321,7 @@ rendering_times_file_path = Path("../rendering_times.csv")
 
 
 def _write_rendering_stats(scene_name, run_time, file_name):
-    with open(rendering_times_file_path, "a") as file:
+    with rendering_times_file_path.open("a") as file:
         csv.writer(file).writerow(
             [
                 re.sub(r"^(reference\/)|(manim\.)", "", file_name),
@@ -325,33 +333,33 @@ def _write_rendering_stats(scene_name, run_time, file_name):
 
 def _log_rendering_times(*args):
     if rendering_times_file_path.exists():
-        with open(rendering_times_file_path) as file:
+        with rendering_times_file_path.open() as file:
             data = list(csv.reader(file))
-            if len(data) == 0:
-                sys.exit()
+        if len(data) == 0:
+            sys.exit()
 
-            print("\nRendering Summary\n-----------------\n")
+        print("\nRendering Summary\n-----------------\n")
 
-            max_file_length = max(len(row[0]) for row in data)
-            for key, group in it.groupby(data, key=lambda row: row[0]):
-                key = key.ljust(max_file_length + 1, ".")
-                group = list(group)
-                if len(group) == 1:
-                    row = group[0]
-                    print(f"{key}{row[2].rjust(7, '.')}s {row[1]}")
-                    continue
-                time_sum = sum(float(row[2]) for row in group)
-                print(
-                    f"{key}{f'{time_sum:.3f}'.rjust(7, '.')}s  => {len(group)} EXAMPLES",
-                )
-                for row in group:
-                    print(f"{' '*(max_file_length)} {row[2].rjust(7)}s {row[1]}")
+        max_file_length = max(len(row[0]) for row in data)
+        for key, group in it.groupby(data, key=lambda row: row[0]):
+            key = key.ljust(max_file_length + 1, ".")
+            group = list(group)
+            if len(group) == 1:
+                row = group[0]
+                print(f"{key}{row[2].rjust(7, '.')}s {row[1]}")
+                continue
+            time_sum = sum(float(row[2]) for row in group)
+            print(
+                f"{key}{f'{time_sum:.3f}'.rjust(7, '.')}s  => {len(group)} EXAMPLES",
+            )
+            for row in group:
+                print(f"{' '*(max_file_length)} {row[2].rjust(7)}s {row[1]}")
         print("")
 
 
 def _delete_rendering_times(*args):
     if rendering_times_file_path.exists():
-        os.remove(rendering_times_file_path)
+        rendering_times_file_path.unlink()
 
 
 def setup(app):
@@ -382,7 +390,13 @@ TEMPLATE = r"""
 {% if not (save_as_gif or save_last_frame) %}
 .. raw:: html
 
-    <video class="manim-video" controls loop autoplay src="./{{ output_file }}.mp4"></video>
+    <video
+        class="manim-video"
+        controls
+        loop
+        {{ '' if no_autoplay else 'autoplay' }}
+        src="./{{ output_file }}.mp4">
+    </video>
 
 {% elif save_as_gif %}
 .. image:: /{{ filesrc_rel }}
@@ -398,9 +412,9 @@ TEMPLATE = r"""
 
 {{ ref_block }}
 
-{% endif %}
-
 .. raw:: html
 
     </div>
+
+{% endif %}
 """

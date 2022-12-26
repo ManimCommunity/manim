@@ -39,7 +39,7 @@ simply run:
 .. code-block:: bash
 
    sudo apt update
-   sudo apt install libcairo2-dev libpango1.0-dev ffmpeg
+   sudo apt install build-essential python3-dev libcairo2-dev libpango1.0-dev ffmpeg
 
 If you don't have python3-pip installed, install it via:
 
@@ -138,6 +138,13 @@ to install with your package manager. Usually,
 `TeX Live <https://www.tug.org/texlive/>`__ is a good candidate if you don't
 care too much about disk space.
 
+For Debian-based systems (like Ubuntu), sufficient LaTeX dependencies can be
+installed by running:
+
+.. code-block:: bash
+
+   sudo apt install texlive texlive-latex-extra
+
 Should you choose to work with some smaller TeX distribution like
 `TinyTeX <https://yihui.org/tinytex/>`__ , the full list
 of LaTeX packages which Manim interacts with in some way (a subset might
@@ -147,3 +154,12 @@ be sufficient for your particular application) is::
    dvisvgm everysel fontspec frcursive fundus-calligra gnu-freefont jknapltx
    latex-bin mathastext microtype ms physics preview ragged2e relsize rsfs
    setspace standalone tipa wasy wasysym xcolor xetex xkeyval
+
+
+
+Working with Manim
+------------------
+
+At this point, you should have a working installation of Manim, head
+over to our :doc:`Quickstart Tutorial <../tutorials/quickstart>` to learn
+how to make your own *Manimations*!

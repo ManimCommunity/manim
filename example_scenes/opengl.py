@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 
 import manim.utils.opengl as opengl
@@ -462,7 +461,7 @@ class SurfaceExample(Scene):
         # in whatever you've set as the image directory in
         # the custom_config.yml file
 
-        script_location = Path(os.path.realpath(__file__)).parent
+        script_location = Path(__file__).resolve().parent
         day_texture = (
             script_location / "assets" / "1280px-Whole_world_-_land_and_oceans.jpg"
         )

@@ -31,22 +31,26 @@ msgid "Parameters"
 msgstr ""
 
 #: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.Paragraph:8
-msgid "Represents the spacing between lines. Default to -1, which means auto."
+msgid "Represents the spacing between lines. Defaults to -1, which means auto."
 msgstr ""
 
-#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.Paragraph:10
-msgid "Defines the alignment of paragraph. Default to \"left\". Possible values are \"left\", \"right\", \"center\""
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.Paragraph:9
+msgid "Defines the alignment of paragraph. Defaults to None. Possible values are \"left\", \"right\" or \"center\"."
 msgstr ""
 
-#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.Paragraph:14
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.Paragraph:0
+msgid "Return type"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.Paragraph:12
 msgid "Examples"
 msgstr ""
 
-#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.Paragraph:15
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.Paragraph:13
 msgid "Normal usage::"
 msgstr ""
 
-#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.Paragraph:22
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.Paragraph:20
 msgid "Remove unwanted invisible characters::"
 msgstr ""
 

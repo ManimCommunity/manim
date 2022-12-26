@@ -12,6 +12,7 @@ from manim.mobject.opengl.opengl_mobject import OpenGLGroup, OpenGLMobject
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup, OpenGLVMobject
 
 from .._config import config
+from ..constants import RendererType
 from ..mobject.mobject import Group, Mobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from .composition import AnimationGroup
@@ -122,6 +123,7 @@ class TransformMatchingAbstractBase(AnimationGroup):
             fade_source.add(source_map[key])
         for key in set(target_map).difference(source_map):
             fade_target.add(target_map[key])
+        fade_target_copy = fade_target.copy()
 
         if transform_mismatches:
             if "replace_mobject_with_target_in_scene" not in kwargs:
@@ -132,12 +134,12 @@ class TransformMatchingAbstractBase(AnimationGroup):
         else:
             anims.append(FadeOut(fade_source, target_position=fade_target, **kwargs))
             anims.append(
-                FadeIn(fade_target.copy(), target_position=fade_target, **kwargs),
+                FadeIn(fade_target_copy, target_position=fade_target, **kwargs),
             )
 
         super().__init__(*anims)
 
-        self.to_remove = mobject
+        self.to_remove = [mobject, fade_target_copy]
         self.to_add = target_mobject
 
     def get_shape_map(self, mobject: Mobject) -> dict:
@@ -145,7 +147,7 @@ class TransformMatchingAbstractBase(AnimationGroup):
         for sm in self.get_mobject_parts(mobject):
             key = self.get_mobject_key(sm)
             if key not in shape_map:
-                if config["renderer"] == "opengl":
+                if config["renderer"] == RendererType.OPENGL:
                     shape_map[key] = OpenGLVGroup()
                 else:
                     shape_map[key] = VGroup()
@@ -153,10 +155,11 @@ class TransformMatchingAbstractBase(AnimationGroup):
         return shape_map
 
     def clean_up_from_scene(self, scene: Scene) -> None:
+        # Interpolate all animations back to 0 to ensure source mobjects remain unchanged.
         for anim in self.animations:
             anim.interpolate(0)
         scene.remove(self.mobject)
-        scene.remove(self.to_remove)
+        scene.remove(*self.to_remove)
         scene.add(self.to_add)
 
     @staticmethod

@@ -135,10 +135,14 @@ msgid "All vertices in your graph which are not listed in any of the partitions 
 msgstr ""
 
 #: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph:159
+msgid "The representation of a linear artificial neural network is facilitated by the use of the partite layout and defining partitions for each layer."
+msgstr ""
+
+#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph:193
 msgid "The custom tree layout can be used to show the graph by distance from the root vertex. You must pass the root vertex of the tree."
 msgstr ""
 
-#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph:185
+#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph:219
 msgid "The following code sample illustrates the use of the ``vertex_spacing`` layout parameter specific to the ``\"tree\"`` layout. As mentioned above, setting ``vertex_spacing`` overrides the specified value for ``layout_scale``, and as such it is harder to control the size of the mobject. However, we can adjust the captured frame and zoom out by using a :class:`.MovingCameraScene`::"
 msgstr ""
 

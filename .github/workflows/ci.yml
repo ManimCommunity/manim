@@ -21,10 +21,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.7.13', '3.10.4']
+        python: ["3.8.16", "3.11.1"]
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Check Runner
         run: |
@@ -37,7 +37,7 @@ jobs:
 
       - name: Activate Python ${{ matrix.python }}
         run: |
-          echo "/root/.pyenv/versions/${{ matrix.python }}/bin:/root/.poetry/bin:$PATH" > $GITHUB_PATH
+          echo "/root/.pyenv/versions/${{ matrix.python }}/bin:/root/.local/bin:$PATH" > $GITHUB_PATH
 
       - name: Show Python Version
         run: |
@@ -45,6 +45,7 @@ jobs:
 
       - name: Install Manim
         run: |
+          poetry config virtualenvs.prefer-active-python true
           poetry install
 
       - name: Run tests
@@ -59,31 +60,35 @@ jobs:
         run: |
           cd docs && poetry run make doctest O=-tskip-manim
 
+      # upload coverage report
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
 
   test:
     runs-on: ${{ matrix.os }}
     env:
       DISPLAY: :0
       PYTEST_ADDOPTS: "--color=yes" # colors in pytest
-      GLCONTEXT_WIN_LIBGL: C:\msys64\mingw64\bin\opengl32.dll
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        python: ['3.7', '3.8', '3.9', '3.10']
+        os: [ubuntu-22.04, macos-latest, windows-latest]
+        python: ["3.8", "3.9", "3.10", "3.11"]
 
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v2
-
-      - name: Setup Python ${{ matrix.python }}
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python }}
+        uses: actions/checkout@v3
 
       - name: Install Poetry
         run: |
-          pip install --user poetry
+          pipx install poetry
+          poetry config virtualenvs.prefer-active-python true
+
+      - name: Setup Python ${{ matrix.python }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python }}
+          cache: "poetry"
 
       - name: Setup macOS PATH
         if: runner.os == 'macOS'
@@ -94,33 +99,38 @@ jobs:
         shell: bash
         id: cache-vars
         run: |
-          echo "::set-output name=poetry-venv-dir::$(poetry config virtualenvs.path)"
-          echo "::set-output name=date::$(/bin/date -u "+%m%w%Y")"
-
-      - name: Setup Poetry cache
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.cache-vars.outputs.poetry-venv-dir }}
-          key: ${{ runner.os }}-poetry-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}-${{ hashFiles('poetry.lock') }}
+          echo "date=$(/bin/date -u "+%m%w%Y")" >> $GITHUB_OUTPUT
 
       - name: Install and cache ffmpeg (all OS)
-        uses: FedericoCarboni/setup-ffmpeg@v1.1.0
+        uses: FedericoCarboni/setup-ffmpeg@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
         id: setup-ffmpeg
 
       - name: Install system dependencies (Linux)
         if: runner.os == 'Linux'
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: python3-opengl libpango1.0-dev xvfb
+          version: 1.0
+
+      - name: Install Texlive (Linux)
+        if: runner.os == 'Linux'
+        uses: teatimeguest/setup-texlive-action@v2
+        with:
+          cache: true
+          packages: scheme-basic fontspec inputenc fontenc tipa mathrsfs calligra xcolor standalone preview doublestroke ms everysel setspace rsfs relsize ragged2e fundus-calligra microtype wasysym physics dvisvgm jknapltx wasy cm-super babel-english gnu-freefont mathastext cbfonts-fd
+
+      - name: Start virtual display (Linux)
+        if: runner.os == 'Linux'
         run: |
-          sudo apt update
-          sudo apt-get -y install texlive texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-fonts-extra tipa python-opengl libpango1.0-dev xvfb
           # start xvfb in background
           sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
 
       - name: Setup macOS cache
+        uses: actions/cache@v3
         id: cache-macos
         if: runner.os == 'macOS'
-        uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}/macos-cache
           key: ${{ runner.os }}-dependencies-tinytex-${{ hashFiles('.github/manimdependency.json') }}-${{ steps.cache-vars.outputs.date }}-1
@@ -159,20 +169,12 @@ jobs:
       - name: Setup Windows cache
         id: cache-windows
         if: runner.os == 'Windows'
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ github.workspace }}\ManimCache
           key: ${{ runner.os }}-dependencies-tinytex-${{ hashFiles('.github/manimdependency.json') }}-${{ steps.cache-vars.outputs.date }}-1
 
-      - name: Setup MSYS2 (Windows)
-        if: runner.os == 'Windows'
-        uses: msys2/setup-msys2@v2
-        with:
-          release: false
-          msystem: MINGW64
-          path-type: inherit
-          install: >-
-            mingw-w64-x86_64-mesa
+      - uses: ssciwr/setup-mesa-dist-win@v1
 
       - name: Install system dependencies (Windows)
         if: runner.os == 'Windows' && steps.cache-windows.outputs.cache-hit != 'true'
@@ -196,7 +198,6 @@ jobs:
         run: |
           $env:Path += ";" + "$($PWD)\ManimCache\LatexWindows\TinyTeX\bin\win32"
           $env:Path = "$env:USERPROFILE\.poetry\bin;$($env:PATH)"
-          $env:PATH = "C:\msys64\mingw64\bin;$($env:PATH)"
           echo "$env:Path" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       - name: Install manim
@@ -206,15 +207,12 @@ jobs:
 
       - name: Run tests
         run: |
-          poetry run pytest
+          poetry run python -m pytest
 
       - name: Run module doctests
         run: |
-          poetry run pytest --cov-append --doctest-modules --ignore-glob="*opengl*" manim
+          poetry run python -m pytest -v --cov-append --ignore-glob="*opengl*" --doctest-modules manim
 
       - name: Run doctests in rst files
         run: |
-          cd docs && pip install -r requirements.txt && poetry run make doctest O=-tskip-manim
-
-      - name: Upload coverage
-        uses: codecov/codecov-action@v1
+          cd docs && poetry run make doctest O=-tskip-manim

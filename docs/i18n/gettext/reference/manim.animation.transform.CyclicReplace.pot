@@ -26,8 +26,4 @@ msgstr ""
 msgid "Attributes"
 msgstr ""
 
-#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.CyclicReplace:0
-msgid "Parameters"
-msgstr ""
-
 

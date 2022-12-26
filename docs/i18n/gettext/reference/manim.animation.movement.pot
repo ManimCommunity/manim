@@ -23,8 +23,7 @@ msgid "Complex Homotopy a function Cx[0, 1] to C"
 msgstr ""
 
 #: ../../source/reference/manim.animation.movement.rst:28:<autosummary>:1
-#: ../../source/reference/manim.animation.movement.rst:28:<autosummary>:1
-msgid "Homotopy is a function from (x, y, z, t) to (x', y', z')"
+msgid "A Homotopy."
 msgstr ""
 
 #: ../../source/reference/manim.animation.movement.rst:28:<autosummary>:1

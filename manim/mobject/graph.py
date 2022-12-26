@@ -58,7 +58,13 @@ def _determine_graph_layout(
         auto_layout = automatic_layouts[layout](
             nx_graph, scale=layout_scale, **layout_config
         )
-        return {k: np.append(v, [0]) for k, v in auto_layout.items()}
+        # NetworkX returns a dictionary of 3D points if the dimension
+        # is specified to be 3. Otherwise, it returns a dictionary of
+        # 2D points, so adjusting is required.
+        if layout_config.get("dim") == 3:
+            return auto_layout
+        else:
+            return {k: np.append(v, [0]) for k, v in auto_layout.items()}
     elif layout == "tree":
         return _tree_layout(
             nx_graph, root_vertex=root_vertex, scale=layout_scale, **layout_config
@@ -382,6 +388,40 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
                 graph = Graph(list(G.nodes), list(G.edges), layout="partite", partitions=[[0, 1]])
                 self.play(Create(graph))
 
+    The representation of a linear artificial neural network is facilitated
+    by the use of the partite layout and defining partitions for each layer.
+
+    .. manim:: LinearNN
+        :save_last_frame:
+
+        class LinearNN(Scene):
+            def construct(self):
+                edges = []
+                partitions = []
+                c = 0
+                layers = [2, 3, 3, 2]  # the number of neurons in each layer
+
+                for i in layers:
+                    partitions.append(list(range(c + 1, c + i + 1)))
+                    c += i
+                for i, v in enumerate(layers[1:]):
+                        last = sum(layers[:i+1])
+                        for j in range(v):
+                            for k in range(last - layers[i], last):
+                                edges.append((k + 1, j + last + 1))
+
+                vertices = np.arange(1, sum(layers) + 1)
+
+                graph = Graph(
+                    vertices,
+                    edges,
+                    layout='partite',
+                    partitions=partitions,
+                    layout_scale=3,
+                    vertex_config={'radius': 0.20},
+                )
+                self.add(graph)
+
     The custom tree layout can be used to show the graph
     by distance from the root vertex. You must pass the root vertex
     of the tree.
@@ -587,13 +627,11 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
                 f"Vertex identifier '{vertex}' is already used for a vertex in this graph.",
             )
 
-        if isinstance(label, (Mobject, OpenGLMobject)):
-            label = label
-        elif label is True:
+        if label is True:
             label = MathTex(vertex, fill_color=label_fill_color)
         elif vertex in self._labels:
             label = self._labels[vertex]
-        else:
+        elif not isinstance(label, (Mobject, OpenGLMobject)):
             label = None
 
         base_vertex_config = copy(self.default_vertex_config)

@@ -40,18 +40,13 @@ msgstr ""
 msgid "Finish the animation."
 msgstr ""
 
-#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Write:0
-msgid "Parameters"
+#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Write.begin:3
+msgid "This method is called right as an animation is being played. As much initialization as possible, especially any mobject copying, should live in this method."
 msgstr ""
 
-#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Write:0
 #: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Write.begin:0
 #: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Write.finish:0
 msgid "Return type"
-msgstr ""
-
-#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Write.begin:3
-msgid "This method is called right as an animation is being played. As much initialization as possible, especially any mobject copying, should live in this method."
 msgstr ""
 
 

@@ -28,7 +28,9 @@ from manim.mobject.graphing.functions import ImplicitFunction, ParametricFunctio
 from manim.mobject.graphing.number_line import NumberLine
 from manim.mobject.graphing.scale import LinearBase
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
+from manim.mobject.opengl.opengl_surface import OpenGLSurface
 from manim.mobject.text.tex_mobject import MathTex
+from manim.mobject.three_d.three_dimensions import Surface
 from manim.mobject.types.vectorized_mobject import (
     VDict,
     VectorizedPoint,
@@ -629,6 +631,7 @@ class CoordinateSystem:
         self,
         function: Callable[[float], float],
         x_range: Sequence[float] | None = None,
+        use_vectorized: bool = False,
         **kwargs,
     ):
         """Generates a curve based on a function.
@@ -639,6 +642,9 @@ class CoordinateSystem:
             The function used to construct the :class:`~.ParametricFunction`.
         x_range
             The range of the curve along the axes. ``x_range = [x_min, x_max, x_step]``.
+        use_vectorized
+            Whether to pass in the generated t value array to the function. Only use this if your function supports it.
+            Output should be a numpy array of shape ``[y_0, y_1, ...]``
         kwargs
             Additional parameters to be passed to :class:`~.ParametricFunction`.
 
@@ -714,6 +720,7 @@ class CoordinateSystem:
             lambda t: self.coords_to_point(t, function(t)),
             t_range=t_range,
             scaling=self.x_axis.scaling,
+            use_vectorized=use_vectorized,
             **kwargs,
         )
         graph.underlying_function = function
@@ -767,10 +774,50 @@ class CoordinateSystem:
         )
         return graph
 
-    def plot_parametric_curve(self, function, **kwargs):
+    def plot_parametric_curve(
+        self,
+        function: Callable[[float], np.ndarray],
+        use_vectorized: bool = False,
+        **kwargs,
+    ) -> ParametricFunction:
+        """A parametric curve.
+
+        Parameters
+        ----------
+        function
+            A parametric function mapping a number to a point in the
+            coordinate system.
+        use_vectorized
+            Whether to pass in the generated t value array to the function. Only use this if your function supports it.
+        kwargs
+            Any further keyword arguments are passed to :class:`.ParametricFunction`.
+
+        Example
+        -------
+        .. manim:: ParametricCurveExample
+            :save_last_frame:
+
+            class ParametricCurveExample(Scene):
+                def construct(self):
+                    ax = Axes()
+                    cardioid = ax.plot_parametric_curve(
+                        lambda t: np.array(
+                            [
+                                np.exp(1) * np.cos(t) * (1 - np.cos(t)),
+                                np.exp(1) * np.sin(t) * (1 - np.cos(t)),
+                                0,
+                            ]
+                        ),
+                        t_range=[0, 2 * PI],
+                        color="#0FF1CE",
+                    )
+                    self.add(ax, cardioid)
+        """
         dim = self.dimension
         graph = ParametricFunction(
-            lambda t: self.coords_to_point(*function(t)[:dim]), **kwargs
+            lambda t: self.coords_to_point(*function(t)[:dim]),
+            use_vectorized=use_vectorized,
+            **kwargs,
         )
         graph.underlying_function = function
         return graph
@@ -812,6 +859,90 @@ class CoordinateSystem:
         )
         graph.underlying_function = r_func
         return graph
+
+    def plot_surface(
+        self,
+        function: Callable[[float], float],
+        u_range: Sequence[float] | None = None,
+        v_range: Sequence[float] | None = None,
+        colorscale: Sequence[[color], float] | None = None,
+        colorscale_axis: int = 2,
+        **kwargs,
+    ):
+        """Generates a surface based on a function.
+
+        Parameters
+        ----------
+        function
+            The function used to construct the :class:`~.Surface`.
+        u_range
+            The range of the ``u`` variable: ``(u_min, u_max)``.
+        v_range
+            The range of the ``v`` variable: ``(v_min, v_max)``.
+        colorscale
+            Colors of the surface. Passing a list of colors will color the surface by z-value.
+            Passing a list of tuples in the form ``(color, pivot)`` allows user-defined pivots
+            where the color transitions.
+        colorscale_axis
+            Defines the axis on which the colorscale is applied (0 = x, 1 = y, 2 = z), default
+            is z-axis (2).
+        kwargs
+            Additional parameters to be passed to :class:`~.Surface`.
+
+        Returns
+        -------
+        :class:`~.Surface`
+            The plotted surface.
+
+        Examples
+        --------
+        .. manim:: PlotSurfaceExample
+            :save_last_frame:
+
+            class PlotSurfaceExample(ThreeDScene):
+                def construct(self):
+                    resolution_fa = 16
+                    self.set_camera_orientation(phi=75 * DEGREES, theta=-60 * DEGREES)
+                    axes = ThreeDAxes(x_range=(-3, 3, 1), y_range=(-3, 3, 1), z_range=(-5, 5, 1))
+                    def param_trig(u, v):
+                        x = u
+                        y = v
+                        z = 2 * np.sin(x) + 2 * np.cos(y)
+                        return z
+                    trig_plane = axes.plot_surface(
+                        param_trig,
+                        resolution=(resolution_fa, resolution_fa),
+                        u_range = (-3, 3),
+                        v_range = (-3, 3),
+                        colorscale = [BLUE, GREEN, YELLOW, ORANGE, RED],
+                        )
+                    self.add(axes, trig_plane)
+        """
+        if config.renderer == RendererType.CAIRO:
+            surface = Surface(
+                lambda u, v: self.c2p(u, v, function(u, v)),
+                u_range=u_range,
+                v_range=v_range,
+                **kwargs,
+            )
+            if colorscale:
+                surface.set_fill_by_value(
+                    axes=self.copy(),
+                    colorscale=colorscale,
+                    axis=colorscale_axis,
+                )
+        elif config.renderer == RendererType.OPENGL:
+            surface = OpenGLSurface(
+                lambda u, v: self.c2p(u, v, function(u, v)),
+                u_range=u_range,
+                v_range=v_range,
+                axes=self.copy(),
+                colorscale=colorscale,
+                colorscale_axis=colorscale_axis,
+                **kwargs,
+            )
+
+        return surface
 
     def input_to_graph_point(
         self,
@@ -1342,6 +1473,7 @@ class CoordinateSystem:
         graph: ParametricFunction,
         y_intercept: float = 0,
         samples: int = 50,
+        use_vectorized: bool = False,
         **kwargs,
     ):
         """Plots an antiderivative graph.
@@ -1354,6 +1486,10 @@ class CoordinateSystem:
             The y-value at which the graph intercepts the y-axis.
         samples
             The number of points to take the area under the graph.
+        use_vectorized
+            Whether to use the vectorized version of the antiderivative. This means
+            to pass in the generated t value array to the function. Only use this if your function supports it.
+            Output should be a numpy array of shape ``[y_0, y_1, ...]``
         kwargs
             Any valid keyword argument of :class:`~.ParametricFunction`.
 
@@ -1385,12 +1521,12 @@ class CoordinateSystem:
         """
 
         def antideriv(x):
-            x_vals = np.linspace(0, x, samples)
+            x_vals = np.linspace(0, x, samples, axis=1 if use_vectorized else 0)
             f_vec = np.vectorize(graph.underlying_function)
             y_vals = f_vec(x_vals)
             return np.trapz(y_vals, x_vals) + y_intercept
 
-        return self.plot(antideriv, **kwargs)
+        return self.plot(antideriv, use_vectorized=use_vectorized, **kwargs)
 
     def get_secant_slope_group(
         self,
@@ -1829,7 +1965,9 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         axis.shift(-axis.number_to_point(self._origin_shift([axis.x_min, axis.x_max])))
         return axis
 
-    def coords_to_point(self, *coords: Sequence[float]) -> np.ndarray:
+    def coords_to_point(
+        self, *coords: float | Sequence[float] | Sequence[Sequence[float]] | np.ndarray
+    ) -> np.ndarray:
         """Accepts coordinates from the axes and returns a point with respect to the scene.
 
         Parameters
@@ -1837,13 +1975,39 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         coords
             The coordinates. Each coord is passed as a separate argument: ``ax.coords_to_point(1, 2, 3)``.
 
+            Also accepts a list of coordinates
+
+            ``ax.coords_to_point( [x_0, x_1, ...], [y_0, y_1, ...], ... )``
+
+            ``ax.coords_to_point( [[x_0, y_0, z_0], [x_1, y_1, z_1]] )``
+
         Returns
         -------
         np.ndarray
             A point with respect to the scene's coordinate system.
+            The shape of the array will be similar to the shape of the input.
 
         Examples
         --------
+
+        .. code-block:: pycon
+
+            >>> from manim import Axes
+            >>> import numpy as np
+            >>> ax = Axes()
+            >>> np.around(ax.coords_to_point(1, 0, 0), 2)
+            array([0.86, 0.  , 0.  ])
+            >>> np.around(ax.coords_to_point([[0, 1], [1, 1], [1, 0]]), 2)
+            array([[0.  , 0.75, 0.  ],
+                   [0.86, 0.75, 0.  ],
+                   [0.86, 0.  , 0.  ]])
+            >>> np.around(
+            ...     ax.coords_to_point([0, 1, 1], [1, 1, 0]), 2
+            ... )  # Transposed version of the above
+            array([[0.  , 0.86, 0.86],
+                   [0.75, 0.75, 0.  ],
+                   [0.  , 0.  , 0.  ]])
+
         .. manim:: CoordsToPointExample
             :save_last_frame:
 
@@ -1865,26 +2029,68 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         origin = self.x_axis.number_to_point(
             self._origin_shift([self.x_axis.x_min, self.x_axis.x_max]),
         )
-        result = np.array(origin)
-        for axis, coord in zip(self.get_axes(), coords):
-            result += axis.number_to_point(coord) - origin
-        return result
 
-    def point_to_coords(self, point: Sequence[float]) -> tuple[float]:
+        coords = np.asarray(coords)
+
+        # if called like coords_to_point(1, 2, 3), then coords is a 1x3 array
+        transposed = False
+        if coords.ndim == 1:
+            # original implementation of coords_to_point for performance in the legacy case
+            result = np.array(origin)
+            for axis, number in zip(self.get_axes(), coords):
+                result += axis.number_to_point(number) - origin
+            return result
+        # if called like coords_to_point([1, 2, 3],[4, 5, 6]), then it shall be used as [1,4], [2,5], [3,6] and return the points as ([x_0,x_1],[y_0,y_1],[z_0,z_1])
+        elif coords.ndim == 2:
+            coords = coords.T
+            transposed = True
+        # if called like coords_to_point(np.array([[1, 2, 3],[4,5,6]])), reduce dimension by 1
+        elif coords.ndim == 3:
+            coords = np.squeeze(coords)
+        # else the coords is a Nx1, Nx2, Nx3 array so we do not need to modify the array
+
+        points = origin + np.sum(
+            [
+                axis.number_to_point(number) - origin
+                for number, axis in zip(coords.T, self.get_axes())
+            ],
+            axis=0,
+        )
+        # if called with single coord, then return a point instead of a list of points
+        if transposed:
+            return points.T
+        return points
+
+    def point_to_coords(self, point: Sequence[float]) -> np.ndarray:
         """Accepts a point from the scene and returns its coordinates with respect to the axes.
 
         Parameters
         ----------
         point
             The point, i.e. ``RIGHT`` or ``[0, 1, 0]``.
+            Also accepts a list of points as ``[RIGHT, [0, 1, 0]]``.
 
         Returns
         -------
-        Tuple[float]
-            The coordinates on the axes, i.e. ``(4.0, 7.0)``.
+        np.ndarray[float]
+            The coordinates on the axes, i.e. ``[4.0, 7.0]``.
+            Or a list of coordinates if `point` is a list of points.
 
         Examples
         --------
+
+        .. code-block:: pycon
+
+            >>> from manim import Axes, RIGHT
+            >>> import numpy as np
+            >>> ax = Axes(x_range=[0, 10, 2])
+            >>> np.around(ax.point_to_coords(RIGHT), 2)
+            array([5.83, 0.  ])
+            >>> np.around(ax.point_to_coords([[0, 0, 1], [1, 0, 0]]), 2)
+            array([[5.  , 0.  ],
+                   [5.83, 0.  ]])
+
+
         .. manim:: PointToCoordsExample
             :save_last_frame:
 
@@ -1902,7 +2108,11 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
 
                     self.add(ax, circ, label, Dot(circ.get_right()))
         """
-        return tuple(axis.point_to_number(point) for axis in self.get_axes())
+        point = np.asarray(point)
+        result = np.asarray([axis.point_to_number(point) for axis in self.get_axes()])
+        if point.ndim == 2:
+            return result.T
+        return result
 
     def get_axes(self) -> VGroup:
         """Gets the axes.
@@ -2126,7 +2336,7 @@ class ThreeDAxes(Axes):
         self.add(z_axis)
         self.z_axis = z_axis
 
-        if config.renderer != "opengl":
+        if config.renderer == RendererType.CAIRO:
             self._add_3d_pieces()
             self._set_axis_shading()
 
@@ -2451,7 +2661,7 @@ class NumberPlane(Axes):
             for k, x in enumerate(inputs):
                 new_line = line.copy()
                 new_line.shift(unit_vector_axis_perp_to * x)
-                if k % ratio_faded_lines == 0:
+                if (k + 1) % ratio_faded_lines == 0:
                     lines1.add(new_line)
                 else:
                     lines2.add(new_line)

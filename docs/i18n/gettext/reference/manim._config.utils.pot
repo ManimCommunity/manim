@@ -19,7 +19,7 @@ msgid "The main class exported by this module is :class:`ManimConfig`.  This cla
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils:9
-msgid "See :doc:`/tutorials/configuration` for an introduction to Manim's configuration system."
+msgid "See :doc:`/guides/configuration` for an introduction to Manim's configuration system."
 msgstr ""
 
 #: ../../source/reference/manim._config.utils.rst:15

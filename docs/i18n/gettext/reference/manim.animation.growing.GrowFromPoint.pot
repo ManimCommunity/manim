@@ -38,10 +38,6 @@ msgstr ""
 msgid "Initial color of the mobject before growing to its full size. Leave empty to match mobject's color."
 msgstr ""
 
-#: ../../../manim/animation/growing.py:docstring of manim.animation.growing.GrowFromPoint:0
-msgid "Return type"
-msgstr ""
-
 #: ../../../manim/animation/growing.py:docstring of manim.animation.growing.GrowFromPoint:8
 msgid "Examples"
 msgstr ""

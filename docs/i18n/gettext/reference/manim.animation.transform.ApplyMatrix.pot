@@ -42,10 +42,6 @@ msgstr ""
 msgid "Further keyword arguments that are passed to :class:`ApplyPointwiseFunction`."
 msgstr ""
 
-#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyMatrix:0
-msgid "Return type"
-msgstr ""
-
 #: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyMatrix:9
 msgid "Examples"
 msgstr ""
