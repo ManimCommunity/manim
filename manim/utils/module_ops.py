@@ -56,7 +56,7 @@ def get_module(file_name: Path):
 
 
 def get_scene_classes_from_module(module):
-    from ..scene.scene import REGISTERED_MANIMATIONS, Scene
+    from ..scene.scene import Scene
 
     def is_child_scene(obj, module):
         return (
@@ -69,7 +69,7 @@ def get_scene_classes_from_module(module):
     return [
         member[1]
         for member in inspect.getmembers(module, lambda x: is_child_scene(x, module))
-    ] + REGISTERED_MANIMATIONS
+    ]
 
 
 def get_scenes_to_render(scene_classes):
