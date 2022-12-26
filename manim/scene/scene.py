@@ -13,7 +13,7 @@ import threading
 import time
 import types
 from queue import Queue
-from typing import Callable, Type
+from typing import Callable
 
 import srt
 
@@ -1672,6 +1672,9 @@ class Scene:
             func()
 
 
+REGISTERED_MANIMATIONS: list[Scene] = []
+
+
 def manimation(
     construct_function: Callable[[Scene], None] | None = None,
     *,
@@ -1729,9 +1732,22 @@ def manimation(
         scene_name = construct.__name__
         if scene_name == "<lambda>":
             scene_name = "anonymous"
-        scene = type(construct.__name__, (scene_class,), {})()
-        scene.construct = types.MethodType(construct, scene)
-        return scene
+
+        # Create a new class that inherits from the specified scene class.
+        scene_type = type(
+            scene_name,
+            (scene_class,),
+            {
+                "construct": construct,
+                "__name__": scene_name,
+                "__qualname__": scene_name,
+            },
+        )
+        REGISTERED_MANIMATIONS.append(scene_type)
+        # Create an instance of the new class. For use after decoration.
+        scene_instance = scene_type()
+        # Add the new class to the list of registered animations. To display in the cli chooser.
+        return scene_instance
 
     if construct_function is not None and not callable(construct_function):
         raise TypeError(
