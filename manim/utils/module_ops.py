@@ -56,6 +56,15 @@ def get_module(file_name: Path):
             raise FileNotFoundError(f"{file_name} not found")
 
 
+def get_manimations_from_module(module):
+    from ..scene.scene import REGISTERED_MANIMATIONS
+
+    return [
+        REGISTERED_MANIMATIONS[name]
+        for name in inspect.getmembers(module, lambda x: x in REGISTERED_MANIMATIONS)
+    ]
+
+
 def get_scene_classes_from_module(module):
     from ..scene.scene import Scene
 
@@ -129,6 +138,9 @@ def scene_classes_from_file(
 ):
     module = get_module(file_path)
     all_scene_classes = get_scene_classes_from_module(module)
+    # all_scene_classes += get_manimations_from_module(module)
+    logger.info(all_scene_classes)
+
     if full_list:
         return all_scene_classes
     scene_classes_to_render = get_scenes_to_render(all_scene_classes)
