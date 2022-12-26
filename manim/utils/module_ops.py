@@ -56,15 +56,6 @@ def get_module(file_name: Path):
             raise FileNotFoundError(f"{file_name} not found")
 
 
-def get_manimations_from_module(module):
-    from ..scene.scene import REGISTERED_MANIMATIONS
-
-    return [
-        REGISTERED_MANIMATIONS[name]
-        for name in inspect.getmembers(module, lambda x: x in REGISTERED_MANIMATIONS)
-    ]
-
-
 def get_scene_classes_from_module(module):
     from ..scene.scene import Scene
 
@@ -136,9 +127,11 @@ def prompt_user_for_choice(scene_classes):
 def scene_classes_from_file(
     file_path: Path, require_single_scene=False, full_list=False
 ):
+    import manim.scene.scene as sc
+
     module = get_module(file_path)
     all_scene_classes = get_scene_classes_from_module(module)
-    # all_scene_classes += get_manimations_from_module(module)
+    all_scene_classes += sc.REGISTERED_MANIMATIONS
     logger.info(all_scene_classes)
 
     if full_list:

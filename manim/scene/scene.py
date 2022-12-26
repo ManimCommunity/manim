@@ -1742,7 +1742,7 @@ class Scene:
             func()
 
 
-REGISTERED_MANIMATIONS: dict[str, Scene] = {}
+REGISTERED_MANIMATIONS: list[Scene] = []
 
 
 def manimation(
@@ -1814,7 +1814,7 @@ def manimation(
                 "__qualname__": scene_name,
             },
         )
-        REGISTERED_MANIMATIONS[scene_name] = scene_type
+        REGISTERED_MANIMATIONS.append(scene_type)
         # Create an instance of the new class. For use after decoration.
         scene_instance = scene_type()
         # Add the new class to the list of registered animations. To display in the cli chooser.

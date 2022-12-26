@@ -1,7 +1,9 @@
+import inspect
+
 from manim._config import tempconfig
 from manim.mobject.geometry.arc import Circle
 from manim.scene.moving_camera_scene import MovingCameraScene
-from manim.scene.scene import Scene, manimation
+from manim.scene.scene import REGISTERED_MANIMATIONS, Scene, manimation
 from manim.utils import module_ops
 
 
@@ -10,9 +12,7 @@ def test_cli_registry_manimation():
     def MyAnimation(self: Scene):
         self.add(Circle())
 
-    assert MyAnimation.__class__ in module_ops.get_scene_classes_from_module(
-        test_cli_registry_manimation.__module__
-    )
+    assert MyAnimation.__class__ in REGISTERED_MANIMATIONS
 
 
 def test_manimation_is_instance():
