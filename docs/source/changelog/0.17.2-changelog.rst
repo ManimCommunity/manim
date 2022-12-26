@@ -31,34 +31,32 @@ A total of 7 pull requests were merged for this release.
 Fixed bugs
 ----------
 
-* :pr:`3089`: Fixed opengl Surface with reordering initialization process
+* :pr:`3089`: Fixed OpenGL mobjects like :class:`.Surface` by reordering init calls
 
 
 Documentation-related changes
 -----------------------------
 
-* :pr:`3073`: Fix typo: "Whetherer" to "Whether"
+* :pr:`3073`: Fixed typo: "Whetherer" to "Whether"
 
 
-* :pr:`3074`: Fix typo:  "turn into into an np array" to "turn into a np array"
+* :pr:`3074`: Fixed typo in a comment 
 
 
 Code quality improvements and similar refactors
 -----------------------------------------------
 
-* :pr:`3079`: Updating ci syntax for runner version >=2.298.2
+* :pr:`3024`: Add CodeQL workflow for GitHub code scanning
 
 
-* :pr:`3084`: Codeql
+* :pr:`3079`: Updated CI syntax for runner version >= 2.298.2
+
+
+* :pr:`3084`: Properly setup CodeQL
 
 
 New releases
 ------------
 
-* :pr:`3090`: Prepared new Hotfix Release: `v0.17.2`
+* :pr:`3090`: Prepared new Hotfix Release: ``v0.17.2``
 
-
-Unclassified changes
---------------------
-
-* :pr:`3024`: Add CodeQL workflow for GitHub code scanning
