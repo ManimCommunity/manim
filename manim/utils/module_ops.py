@@ -9,8 +9,9 @@ import types
 import warnings
 from pathlib import Path
 
-from .. import config, console, constants, logger
-from ..scene.scene_file_writer import SceneFileWriter
+from manim import constants
+from manim._config import config, console, logger
+from manim.scene.scene_file_writer import SceneFileWriter
 
 
 def get_module(file_name: Path):

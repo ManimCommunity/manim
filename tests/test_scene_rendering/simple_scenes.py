@@ -1,6 +1,18 @@
 from __future__ import annotations
 
-from manim import *
+from enum import Enum
+
+from manim.animation.animation import Animation
+from manim.animation.creation import Create
+from manim.animation.fading import FadeIn, FadeOut
+from manim.animation.transform import Transform
+from manim.constants import DOWN
+from manim.mobject.geometry.arc import Circle, Dot
+from manim.mobject.geometry.polygram import Square
+from manim.mobject.text.numbers import Integer
+from manim.scene.scene import Scene
+from manim.scene.section import DefaultSectionType
+from manim.utils.color import GREEN
 
 
 class SquareToCircle(Scene):

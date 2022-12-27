@@ -11,30 +11,34 @@ __all__ = [
 import itertools as it
 import random
 from math import ceil, floor
-from typing import Callable, Iterable, Sequence
 
 import numpy as np
 from colour import Color
 from PIL import Image
 
+from manim._config import config
+from manim.animation.composition import AnimationGroup, Succession
+from manim.animation.creation import Create
+from manim.animation.indication import ShowPassingFlash
 from manim.animation.updaters.update import UpdateFromAlphaFunc
-from manim.mobject.geometry.line import Vector
-from manim.mobject.graphing.coordinate_systems import CoordinateSystem
+from manim.constants import OUT, RIGHT, UP, RendererType
+from manim.utils.bezier import interpolate, inverse_interpolate
+from manim.utils.color import BLUE_E, GREEN, RED, YELLOW, color_to_rgb, rgb_to_color
+from manim.utils.rate_functions import ease_out_sine, linear
+from manim.utils.simple_functions import sigmoid
 
-from .. import config
-from ..animation.composition import AnimationGroup, Succession
-from ..animation.creation import Create
-from ..animation.indication import ShowPassingFlash
-from ..constants import OUT, RIGHT, UP, RendererType
-from ..mobject.mobject import Mobject
-from ..mobject.types.vectorized_mobject import VGroup
-from ..mobject.utils import get_vectorized_mobject_class
-from ..utils.bezier import interpolate, inverse_interpolate
-from ..utils.color import BLUE_E, GREEN, RED, YELLOW, color_to_rgb, rgb_to_color
-from ..utils.rate_functions import ease_out_sine, linear
-from ..utils.simple_functions import sigmoid
+from .geometry.line import Vector
+from .graphing.coordinate_systems import CoordinateSystem
+from .mobject import Mobject
+from .types.vectorized_mobject import VGroup
+from .utils import get_vectorized_mobject_class
 
 DEFAULT_SCALAR_FIELD_COLORS: list = [BLUE_E, GREEN, YELLOW, RED]
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Callable, Iterable, Sequence
 
 
 class VectorField(VGroup):

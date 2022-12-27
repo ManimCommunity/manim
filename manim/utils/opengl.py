@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 import numpy.linalg as linalg
 
-from .. import config
+from manim._config import config
 
 depth = 20
 

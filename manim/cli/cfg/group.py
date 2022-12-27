@@ -16,10 +16,10 @@ import cloup
 from rich.errors import StyleSyntaxError
 from rich.style import Style
 
-from ... import cli_ctx_settings, console
-from ..._config.utils import config_file_paths, make_config_parser
-from ...constants import EPILOG
-from ...utils.file_ops import guarantee_existence, open_file
+from manim._config import cli_ctx_settings, console
+from manim._config.manim_config import config_file_paths, make_config_parser
+from manim.constants import EPILOG
+from manim.utils.file_ops import guarantee_existence, open_file
 
 RICH_COLOUR_INSTRUCTIONS: str = """
 [red]The default colour is used by the input statement.

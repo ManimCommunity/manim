@@ -37,31 +37,35 @@ __all__ = [
     "Wiggle",
 ]
 
-from typing import Callable, Iterable, Optional, Tuple, Type, Union
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Callable, Iterable, Optional, Tuple, Type, Union
+    from colour import Color
+    from manim.mobject.mobject import Mobject
+    from manim.mobject.types.vectorized_mobject import VGroup, VMobject
+    from manim.scene.scene import Scene
 
 import numpy as np
-from colour import Color
 
+from manim._config import config
+from manim.constants import DEFAULT_STROKE_WIDTH, RIGHT, SMALL_BUFF, TAU, UP
 from manim.mobject.geometry.arc import Circle, Dot
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import Rectangle
 from manim.mobject.geometry.shape_matchers import SurroundingRectangle
+from manim.utils.bezier import interpolate, inverse_interpolate
+from manim.utils.color import GREY, YELLOW
+from manim.utils.deprecation import deprecated
+from manim.utils.rate_functions import smooth, there_and_back, wiggle
+from manim.utils.space_ops import normalize
 
-from .. import config
-from ..animation.animation import Animation
-from ..animation.composition import AnimationGroup, Succession
-from ..animation.creation import Create, ShowPartial, Uncreate
-from ..animation.fading import FadeIn, FadeOut
-from ..animation.movement import Homotopy
-from ..animation.transform import Transform
-from ..constants import *
-from ..mobject.mobject import Mobject
-from ..mobject.types.vectorized_mobject import VGroup, VMobject
-from ..utils.bezier import interpolate, inverse_interpolate
-from ..utils.color import GREY, YELLOW
-from ..utils.deprecation import deprecated
-from ..utils.rate_functions import smooth, there_and_back, wiggle
-from ..utils.space_ops import normalize
+from .animation import Animation
+from .composition import AnimationGroup, Succession
+from .creation import Create, ShowPartial, Uncreate
+from .fading import FadeIn, FadeOut
+from .movement import Homotopy
+from .transform import Transform
 
 
 class FocusOn(Transform):
@@ -148,7 +152,7 @@ class Indicate(Transform):
 
     def __init__(
         self,
-        mobject: "Mobject",
+        mobject: Mobject,
         scale_factor: float = 1.2,
         color: str = YELLOW,
         rate_func: Callable[[float, Optional[float]], np.ndarray] = there_and_back,
@@ -158,7 +162,7 @@ class Indicate(Transform):
         self.scale_factor = scale_factor
         super().__init__(mobject, rate_func=rate_func, **kwargs)
 
-    def create_target(self) -> "Mobject":
+    def create_target(self) -> Mobject:
         target = self.mobject.copy()
         target.scale(self.scale_factor)
         target.set_color(self.color)
@@ -246,6 +250,8 @@ class Flash(AnimationGroup):
         super().__init__(*animations, group=self.lines)
 
     def create_lines(self) -> VGroup:
+        from manim.mobject.types.vectorized_mobject import VGroup
+
         lines = VGroup()
         for angle in np.arange(0, TAU, TAU / self.num_lines):
             line = Line(self.point, self.point + self.line_length * RIGHT)
@@ -302,7 +308,7 @@ class ShowPassingFlash(ShowPartial):
 
     """
 
-    def __init__(self, mobject: "VMobject", time_width: float = 0.1, **kwargs) -> None:
+    def __init__(self, mobject: VMobject, time_width: float = 0.1, **kwargs) -> None:
         self.time_width = time_width
         super().__init__(mobject, remover=True, introducer=True, **kwargs)
 
@@ -314,7 +320,7 @@ class ShowPassingFlash(ShowPartial):
         lower = max(lower, 0)
         return (lower, upper)
 
-    def clean_up_from_scene(self, scene: "Scene") -> None:
+    def clean_up_from_scene(self, scene: Scene) -> None:
         super().clean_up_from_scene(scene)
         for submob, start in self.get_all_families_zipped():
             submob.pointwise_become_partial(start, 0, 1)
@@ -348,7 +354,7 @@ class ShowPassingFlashWithThinningStrokeWidth(AnimationGroup):
     message="Use Create then FadeOut to achieve this effect.",
 )
 class ShowCreationThenFadeOut(Succession):
-    def __init__(self, mobject: "Mobject", remover: bool = True, **kwargs) -> None:
+    def __init__(self, mobject: Mobject, remover: bool = True, **kwargs) -> None:
         super().__init__(Create(mobject), FadeOut(mobject), remover=remover, **kwargs)
 
 
@@ -397,7 +403,7 @@ class ApplyWave(Homotopy):
 
     def __init__(
         self,
-        mobject: "Mobject",
+        mobject: Mobject,
         direction: np.ndarray = UP,
         amplitude: float = 0.2,
         wave_func: Callable[[float], float] = smooth,
@@ -516,7 +522,7 @@ class Wiggle(Animation):
 
     def __init__(
         self,
-        mobject: "Mobject",
+        mobject: Mobject,
         scale_value: float = 1.1,
         rotation_angle: float = 0.01 * TAU,
         n_wiggles: int = 6,
@@ -544,8 +550,8 @@ class Wiggle(Animation):
 
     def interpolate_submobject(
         self,
-        submobject: "Mobject",
-        starting_submobject: "Mobject",
+        submobject: Mobject,
+        starting_submobject: Mobject,
         alpha: float,
     ) -> None:
         submobject.points[:, :] = starting_submobject.points

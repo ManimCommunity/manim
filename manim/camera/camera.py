@@ -11,24 +11,27 @@ import operator as op
 import pathlib
 import time
 from functools import reduce
-from typing import Any, Callable, Iterable
+from typing import TYPE_CHECKING
 
 import cairo
 import numpy as np
 from PIL import Image
 from scipy.spatial.distance import pdist
 
-from .. import config, logger
-from ..constants import *
-from ..mobject.mobject import Mobject
-from ..mobject.types.image_mobject import AbstractImageMobject
-from ..mobject.types.point_cloud_mobject import PMobject
-from ..mobject.types.vectorized_mobject import VMobject
-from ..utils.color import color_to_int_rgba
-from ..utils.family import extract_mobject_family_members
-from ..utils.images import get_full_raster_image_path
-from ..utils.iterables import list_difference_update
-from ..utils.space_ops import angle_of_vector
+from manim._config import config, logger
+from manim.constants import ORIGIN, TAU, LineJointType
+from manim.mobject.mobject import Mobject
+from manim.mobject.types.image_mobject import AbstractImageMobject
+from manim.mobject.types.point_cloud_mobject import PMobject
+from manim.mobject.types.vectorized_mobject import VMobject
+from manim.utils.color import color_to_int_rgba
+from manim.utils.family import extract_mobject_family_members
+from manim.utils.images import get_full_raster_image_path
+from manim.utils.iterables import list_difference_update
+from manim.utils.space_ops import angle_of_vector
+
+if TYPE_CHECKING:
+    from typing import Any, Callable, Iterable
 
 LINE_JOIN_MAP = {
     LineJointType.AUTO: None,  # TODO: this could be improved

@@ -6,18 +6,21 @@ import random
 import sys
 from functools import partialmethod, wraps
 from math import ceil
-from typing import Iterable, Sequence
+from typing import TYPE_CHECKING
 
 import moderngl
 import numpy as np
 from colour import Color
 
-from manim import config, logger
+from manim._config import config, logger
 from manim.constants import *
 from manim.utils.bezier import integer_interpolate, interpolate
 from manim.utils.color import *
 from manim.utils.color import Colors
 from manim.utils.config_ops import _Data, _Uniforms
+
+if TYPE_CHECKING:
+    from typing import Iterable, Sequence
 
 # from ..utils.iterables import batch_by_property
 from manim.utils.iterables import (
@@ -2613,6 +2616,9 @@ class OpenGLMobject:
         # of the shader code
         for char in "xyz":
             glsl_snippet = glsl_snippet.replace(char, "point." + char)
+        raise NotImplementedError(
+            "get_colormap_list is not Implemented we will try to fix this as soon as possible"
+        )
         rgb_list = get_colormap_list(colormap)
         self.set_color_by_code(
             "color.rgb = float_to_color({}, {}, {}, {});".format(

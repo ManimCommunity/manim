@@ -5,10 +5,14 @@ from __future__ import annotations
 __all__ = ["MultiCamera"]
 
 
-from manim.mobject.types.image_mobject import ImageMobject
+from typing import TYPE_CHECKING
 
-from ..camera.moving_camera import MovingCamera
-from ..utils.iterables import list_difference_update
+from manim.utils.iterables import list_difference_update
+
+from .moving_camera import MovingCamera
+
+if TYPE_CHECKING:
+    from manim.mobject.types.image_mobject import ImageMobject
 
 
 class MultiCamera(MovingCamera):

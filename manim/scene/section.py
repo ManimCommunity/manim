@@ -6,7 +6,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
-from manim import get_video_metadata
+from manim.utils.commands import get_video_metadata
 
 
 class DefaultSectionType(str, Enum):

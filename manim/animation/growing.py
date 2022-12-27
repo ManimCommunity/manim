@@ -31,18 +31,18 @@ __all__ = [
     "SpinInFromNothing",
 ]
 
-import typing
+from typing import TYPE_CHECKING
 
 import numpy as np
 
-from ..animation.transform import Transform
-from ..constants import PI
-from ..utils.paths import spiral_path
+from manim.constants import PI
+from manim.utils.paths import spiral_path
 
-if typing.TYPE_CHECKING:
+from .transform import Transform
+
+if TYPE_CHECKING:
     from manim.mobject.geometry.line import Arrow
-
-    from ..mobject.mobject import Mobject
+    from manim.mobject.mobject import Mobject
 
 
 class GrowFromPoint(Transform):

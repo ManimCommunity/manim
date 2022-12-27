@@ -7,8 +7,9 @@ __all__ = [
 ]
 
 
-from .. import config
-from ..utils.file_ops import seek_full_path_from_defaults
+from manim._config import config
+
+from .file_ops import seek_full_path_from_defaults
 
 
 # Still in use by add_sound() function in scene_file_writer.py

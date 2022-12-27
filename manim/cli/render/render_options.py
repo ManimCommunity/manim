@@ -5,9 +5,8 @@ import re
 import click
 from cloup import option, option_group
 
+from manim._config import logger
 from manim.constants import QUALITIES, RendererType
-
-from ... import logger
 
 
 def validate_scene_range(ctx, param, value):

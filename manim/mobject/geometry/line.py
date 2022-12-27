@@ -14,22 +14,30 @@ __all__ = [
     "RightAngle",
 ]
 
-from typing import Any, Sequence
+
+from typing import TYPE_CHECKING
 
 import numpy as np
-from colour import Color
 
-from manim import config
+from manim._config import config
 from manim.constants import *
-from manim.mobject.geometry.arc import Arc, ArcBetweenPoints, Dot, TipableVMobject
-from manim.mobject.geometry.tips import ArrowTriangleFilledTip
-from manim.mobject.mobject import Mobject
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-from manim.mobject.types.vectorized_mobject import DashedVMobject, VGroup, VMobject
 from manim.utils.color import *
 from manim.utils.color import Colors
 from manim.utils.space_ops import angle_of_vector, line_intersection, normalize
+
+from ..mobject import Mobject
+from ..opengl.opengl_compatibility import ConvertToOpenGL
+from ..opengl.opengl_mobject import OpenGLMobject
+from ..types.vectorized_mobject import DashedVMobject, VGroup, VMobject
+
+# !TODO: Line should not depend on Arc
+from .arc import Arc, ArcBetweenPoints, Dot, TipableVMobject
+from .tips import ArrowTriangleFilledTip
+
+if TYPE_CHECKING:
+    from typing import Any, Sequence
+
+    from colour import Color
 
 
 class Line(TipableVMobject):

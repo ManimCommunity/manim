@@ -13,11 +13,207 @@ __all__ = [
 import numpy as np
 
 from manim.constants import *
-from manim.mobject.geometry.arc import Circle
-from manim.mobject.geometry.polygram import Square, Triangle
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.types.vectorized_mobject import VMobject
-from manim.utils.space_ops import angle_of_vector
+from manim.utils.space_ops import angle_of_vector, cartesian_to_spherical
+
+from ..opengl.opengl_compatibility import ConvertToOpenGL
+from ..types.vectorized_mobject import VMobject
+from .arc import Circle
+from .polygram import Square, Triangle
+
+
+class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
+    """Meant for shared functionality between Arc and Line.
+    Functionality can be classified broadly into these groups:
+
+        * Adding, Creating, Modifying tips
+            - add_tip calls create_tip, before pushing the new tip
+                into the TipableVMobject's list of submobjects
+            - stylistic and positional configuration
+
+        * Checking for tips
+            - Boolean checks for whether the TipableVMobject has a tip
+                and a starting tip
+
+        * Getters
+            - Straightforward accessors, returning information pertaining
+                to the TipableVMobject instance's tip(s), its length etc
+    """
+
+    def __init__(
+        self,
+        tip_length=DEFAULT_ARROW_TIP_LENGTH,
+        normal_vector=OUT,
+        tip_style={},
+        **kwargs,
+    ):
+        self.tip_length = tip_length
+        self.normal_vector = normal_vector
+        self.tip_style = tip_style
+        super().__init__(**kwargs)
+
+    # Adding, Creating, Modifying tips
+
+    def add_tip(
+        self, tip=None, tip_shape=None, tip_length=None, tip_width=None, at_start=False
+    ):
+        """Adds a tip to the TipableVMobject instance, recognising
+        that the endpoints might need to be switched if it's
+        a 'starting tip' or not.
+        """
+        if tip is None:
+            tip = self.create_tip(tip_shape, tip_length, tip_width, at_start)
+        else:
+            self.position_tip(tip, at_start)
+        self.reset_endpoints_based_on_tip(tip, at_start)
+        self.asign_tip_attr(tip, at_start)
+        self.add(tip)
+        return self
+
+    def create_tip(
+        self, tip_shape=None, tip_length=None, tip_width=None, at_start=False
+    ):
+        """Stylises the tip, positions it spatially, and returns
+        the newly instantiated tip to the caller.
+        """
+        tip = self.get_unpositioned_tip(tip_shape, tip_length, tip_width)
+        self.position_tip(tip, at_start)
+        return tip
+
+    def get_unpositioned_tip(self, tip_shape=None, tip_length=None, tip_width=None):
+        """Returns a tip that has been stylistically configured,
+        but has not yet been given a position in space.
+        """
+        from manim.mobject.geometry.tips import ArrowTriangleFilledTip
+
+        style = {}
+
+        if tip_shape is None:
+            tip_shape = ArrowTriangleFilledTip
+
+        if tip_shape is ArrowTriangleFilledTip:
+            if tip_width is None:
+                tip_width = self.get_default_tip_length()
+            style.update({"width": tip_width})
+        if tip_length is None:
+            tip_length = self.get_default_tip_length()
+
+        color = self.get_color()
+        style.update({"fill_color": color, "stroke_color": color})
+        style.update(self.tip_style)
+        tip = tip_shape(length=tip_length, **style)
+        return tip
+
+    def position_tip(self, tip, at_start=False):
+        # Last two control points, defining both
+        # the end, and the tangency direction
+        if at_start:
+            anchor = self.get_start()
+            handle = self.get_first_handle()
+        else:
+            handle = self.get_last_handle()
+            anchor = self.get_end()
+        angles = cartesian_to_spherical(handle - anchor)
+        tip.rotate(
+            angles[1] - PI - tip.tip_angle,
+        )  # Rotates the tip along the azimuthal
+        if not hasattr(self, "_init_positioning_axis"):
+            axis = [
+                np.sin(angles[1]),
+                -np.cos(angles[1]),
+                0,
+            ]  # Obtains the perpendicular of the tip
+            tip.rotate(
+                -angles[2] + PI / 2,
+                axis=axis,
+            )  # Rotates the tip along the vertical wrt the axis
+            self._init_positioning_axis = axis
+        tip.shift(anchor - tip.tip_point)
+        return tip
+
+    def reset_endpoints_based_on_tip(self, tip, at_start):
+        if self.get_length() == 0:
+            # Zero length, put_start_and_end_on wouldn't work
+            return self
+
+        if at_start:
+            self.put_start_and_end_on(tip.base, self.get_end())
+        else:
+            self.put_start_and_end_on(self.get_start(), tip.base)
+        return self
+
+    def asign_tip_attr(self, tip, at_start):
+        if at_start:
+            self.start_tip = tip
+        else:
+            self.tip = tip
+        return self
+
+    # Checking for tips
+
+    def has_tip(self):
+        return hasattr(self, "tip") and self.tip in self
+
+    def has_start_tip(self):
+        return hasattr(self, "start_tip") and self.start_tip in self
+
+    # Getters
+
+    def pop_tips(self):
+        start, end = self.get_start_and_end()
+        result = self.get_group_class()()
+        if self.has_tip():
+            result.add(self.tip)
+            self.remove(self.tip)
+        if self.has_start_tip():
+            result.add(self.start_tip)
+            self.remove(self.start_tip)
+        self.put_start_and_end_on(start, end)
+        return result
+
+    def get_tips(self):
+        """Returns a VGroup (collection of VMobjects) containing
+        the TipableVMObject instance's tips.
+        """
+        result = self.get_group_class()()
+        if hasattr(self, "tip"):
+            result.add(self.tip)
+        if hasattr(self, "start_tip"):
+            result.add(self.start_tip)
+        return result
+
+    def get_tip(self):
+        """Returns the TipableVMobject instance's (first) tip,
+        otherwise throws an exception."""
+        tips = self.get_tips()
+        if len(tips) == 0:
+            raise Exception("tip not found")
+        else:
+            return tips[0]
+
+    def get_default_tip_length(self):
+        return self.tip_length
+
+    def get_first_handle(self):
+        return self.points[1]
+
+    def get_last_handle(self):
+        return self.points[-2]
+
+    def get_end(self):
+        if self.has_tip():
+            return self.tip.get_start()
+        else:
+            return super().get_end()
+
+    def get_start(self):
+        if self.has_start_tip():
+            return self.start_tip.get_start()
+        else:
+            return super().get_start()
+
+    def get_length(self):
+        start, end = self.get_start_and_end()
+        return np.linalg.norm(start - end)
 
 
 class ArrowTip(VMobject, metaclass=ConvertToOpenGL):

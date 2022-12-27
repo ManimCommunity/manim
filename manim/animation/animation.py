@@ -3,22 +3,21 @@
 
 from __future__ import annotations
 
+from manim._config import config, logger
+from manim.constants import RendererType
+from manim.mobject.mobject import Mobject, _AnimationBuilder
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-
-from .. import config, logger
-from ..constants import RendererType
-from ..mobject import mobject
-from ..mobject.mobject import Mobject
-from ..mobject.opengl import opengl_mobject
-from ..utils.rate_functions import linear, smooth
+from manim.utils.rate_functions import linear, smooth
 
 __all__ = ["Animation", "Wait", "override_animation"]
 
 
 from copy import deepcopy
-from typing import TYPE_CHECKING, Callable, Iterable, Sequence
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from typing import Callable, Iterable, Sequence
+
     from manim.scene.scene import Scene
 
 
@@ -478,7 +477,7 @@ class Animation:
 
 
 def prepare_animation(
-    anim: Animation | mobject._AnimationBuilder,
+    anim: Animation | _AnimationBuilder,
 ) -> Animation:
     r"""Returns either an unchanged animation, or the animation built
     from a passed animation factory.
@@ -506,10 +505,10 @@ def prepare_animation(
         TypeError: Object 42 cannot be converted to an animation
 
     """
-    if isinstance(anim, mobject._AnimationBuilder):
+    if isinstance(anim, _AnimationBuilder):
         return anim.build()
 
-    if isinstance(anim, opengl_mobject._AnimationBuilder):
+    if isinstance(anim, _AnimationBuilder):
         return anim.build()
 
     if isinstance(anim, Animation):

@@ -6,9 +6,9 @@ from pathlib import Path
 import click
 import cloup
 
-from ... import console
-from ...constants import CONTEXT_SETTINGS, EPILOG, QUALITIES
-from ...utils.file_ops import (
+from manim._config import console
+from manim.constants import CONTEXT_SETTINGS, EPILOG, QUALITIES
+from manim.utils.file_ops import (
     add_import_statement,
     copy_template_files,
     get_template_names,

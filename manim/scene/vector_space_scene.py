@@ -9,28 +9,29 @@ from typing import Callable
 import numpy as np
 from colour import Color
 
+from manim._config import config
+from manim.animation.animation import Animation
+from manim.animation.creation import Create, DrawBorderThenFill, Write
+from manim.animation.fading import FadeOut
+from manim.animation.growing import GrowArrow
+from manim.animation.transform import ApplyFunction, ApplyPointwiseFunction, Transform
+from manim.camera.camera import Camera
+from manim.constants import DL, DOWN, LARGE_BUFF, ORIGIN, RIGHT, SMALL_BUFF, UP
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.geometry.line import Arrow, Line, Vector
 from manim.mobject.geometry.polygram import Rectangle
 from manim.mobject.graphing.coordinate_systems import Axes, NumberPlane
+from manim.mobject.matrix import Matrix
+from manim.mobject.mobject import Group, Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.text.tex_mobject import MathTex, Tex
+from manim.mobject.types.vectorized_mobject import VGroup, VMobject
+from manim.utils.color import BLACK, BLUE_D, GREEN_C, GREY, RED_C, WHITE, YELLOW
 from manim.utils.config_ops import update_dict_recursively
+from manim.utils.rate_functions import rush_from, rush_into
+from manim.utils.space_ops import angle_of_vector
 
-from .. import config
-from ..animation.animation import Animation
-from ..animation.creation import Create, Write
-from ..animation.fading import FadeOut
-from ..animation.growing import GrowArrow
-from ..animation.transform import ApplyFunction, ApplyPointwiseFunction, Transform
-from ..constants import *
-from ..mobject.matrix import Matrix
-from ..mobject.mobject import Mobject
-from ..mobject.types.vectorized_mobject import VGroup, VMobject
-from ..scene.scene import Scene
-from ..utils.color import BLUE_D, GREEN_C, GREY, RED_C, WHITE, YELLOW
-from ..utils.rate_functions import rush_from, rush_into
-from ..utils.space_ops import angle_of_vector
+from .scene import Scene
 
 X_COLOR = GREEN_C
 Y_COLOR = RED_C
@@ -886,9 +887,8 @@ class LinearTransformationScene(VectorScene):
         if new_label:
             label_mob.target_text = new_label
         else:
-            label_mob.target_text = "{}({})".format(
-                transformation_name,
-                label_mob.get_tex_string(),
+            label_mob.target_text = (
+                f"{transformation_name}({label_mob.get_tex_string()})"
             )
         label_mob.vector = vector
         label_mob.kwargs = kwargs

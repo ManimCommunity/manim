@@ -49,13 +49,13 @@ from __future__ import annotations
 
 __all__ = ["ZoomedScene"]
 
+from manim.animation.transform import ApplyMethod
+from manim.camera.moving_camera import MovingCamera
+from manim.camera.multi_camera import MultiCamera
+from manim.constants import *
+from manim.mobject.types.image_mobject import ImageMobjectFromCamera
 
-from ..animation.transform import ApplyMethod
-from ..camera.moving_camera import MovingCamera
-from ..camera.multi_camera import MultiCamera
-from ..constants import *
-from ..mobject.types.image_mobject import ImageMobjectFromCamera
-from ..scene.moving_camera_scene import MovingCameraScene
+from .moving_camera_scene import MovingCameraScene
 
 # Note, any scenes from old videos using ZoomedScene will almost certainly
 # break, as it was restructured.

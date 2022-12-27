@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 import click
 from cloup import option, option_group
 
-from ... import logger
+from manim._config import logger
 
 if TYPE_CHECKING:
     from cloup._option_groups import OptionGroupDecorator

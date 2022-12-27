@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import pkg_resources
 
-from manim import console
+from manim._config import console
 
 __all__ = ["list_plugins"]
 

@@ -5,14 +5,13 @@ from typing import Any
 
 import numpy as np
 
+from manim._config import config, logger
+from manim.camera.camera import Camera
+from manim.mobject.mobject import Mobject
+from manim.scene.scene_file_writer import SceneFileWriter
+from manim.utils.exceptions import EndSceneEarlyException
 from manim.utils.hashing import get_hash_from_play_call
-
-from .. import config, logger
-from ..camera.camera import Camera
-from ..mobject.mobject import Mobject
-from ..scene.scene_file_writer import SceneFileWriter
-from ..utils.exceptions import EndSceneEarlyException
-from ..utils.iterables import list_update
+from manim.utils.iterables import list_update
 
 if typing.TYPE_CHECKING:
     from manim.scene.scene import Scene

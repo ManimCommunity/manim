@@ -9,11 +9,10 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from manim import Group, config, logger, tempconfig
+from manim import config, logger, tempconfig
 from manim.__main__ import main
+from manim.constants import RendererType
 from manim.renderer.shader import shader_program_cache
-
-from ..constants import RendererType
 
 try:
     from IPython import get_ipython

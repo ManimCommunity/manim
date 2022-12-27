@@ -20,14 +20,18 @@ __all__ = [
     "FadeIn",
 ]
 
+from typing import TYPE_CHECKING
+
 import numpy as np
 
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.constants import ORIGIN
+from manim.mobject.mobject import Group
 
-from ..animation.transform import Transform
-from ..constants import ORIGIN
-from ..mobject.mobject import Group, Mobject
-from ..scene.scene import Scene
+from .transform import Transform
+
+if TYPE_CHECKING:
+    from manim.mobject.mobject import Mobject
+    from manim.scene.scene import Scene
 
 
 class _Fade(Transform):
@@ -66,6 +70,9 @@ class _Fade(Transform):
         self.point_target = False
         if shift is None:
             if target_position is not None:
+                from manim.mobject.mobject import Mobject
+                from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+
                 if isinstance(target_position, (Mobject, OpenGLMobject)):
                     target_position = target_position.get_center()
                 shift = target_position - mobject.get_center()

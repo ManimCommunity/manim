@@ -14,9 +14,9 @@ import re
 import unicodedata
 from pathlib import Path
 
-from manim.utils.tex import TexTemplate
+from manim._config import config, logger
 
-from .. import config, logger
+from .tex import TexTemplate
 
 
 def tex_hash(expression):

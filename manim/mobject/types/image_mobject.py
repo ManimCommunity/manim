@@ -11,14 +11,14 @@ import numpy as np
 from PIL import Image
 from PIL.Image import Resampling
 
-from manim.mobject.geometry.shape_matchers import SurroundingRectangle
+from manim._config import config
+from manim.constants import *
+from manim.mobject.mobject import Mobject
+from manim.utils.bezier import interpolate
+from manim.utils.color import WHITE, color_to_int_rgb
+from manim.utils.images import change_to_rgba_array, get_full_raster_image_path
 
-from ... import config
-from ...constants import *
-from ...mobject.mobject import Mobject
-from ...utils.bezier import interpolate
-from ...utils.color import WHITE, color_to_int_rgb
-from ...utils.images import change_to_rgba_array, get_full_raster_image_path
+from ..geometry.shape_matchers import SurroundingRectangle
 
 
 class AbstractImageMobject(Mobject):

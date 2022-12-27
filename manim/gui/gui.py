@@ -10,8 +10,9 @@ except ImportError:
     dearpygui_imported = False
 
 
-from .. import __version__, config
-from ..utils.module_ops import scene_classes_from_file
+from manim import __version__
+from manim._config import config
+from manim.utils.module_ops import scene_classes_from_file
 
 if dearpygui_imported:
     dpg.create_context()

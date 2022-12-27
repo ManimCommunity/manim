@@ -1,6 +1,21 @@
 from __future__ import annotations
 
-from manim import *
+import numpy as np
+
+from manim.animation.creation import Create, DrawBorderThenFill, Uncreate
+from manim.animation.fading import FadeIn, FadeOut
+from manim.animation.growing import (
+    GrowFromCenter,
+    GrowFromEdge,
+    GrowFromPoint,
+    SpinInFromNothing,
+)
+from manim.animation.transform import ShrinkToCenter
+from manim.constants import DOWN, RIGHT
+from manim.mobject.geometry.arc import Circle
+from manim.mobject.geometry.polygram import Square
+from manim.utils.color import BLUE, GREEN, RED
+from manim.utils.rate_functions import linear
 from manim.utils.testing.frames_comparison import frames_comparison
 
 __module_test__ = "creation"

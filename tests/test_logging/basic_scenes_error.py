@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from manim import *
+from manim.scene.scene import Scene
 
 # This module is intended to raise an error.
 

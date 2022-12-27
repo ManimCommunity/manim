@@ -4,7 +4,7 @@ import types
 
 import pkg_resources
 
-from .. import config, logger
+from manim._config import config, logger
 
 __all__ = []
 

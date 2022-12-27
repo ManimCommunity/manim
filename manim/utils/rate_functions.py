@@ -109,8 +109,8 @@ from math import sqrt
 
 import numpy as np
 
-from ..utils.bezier import bezier
-from ..utils.simple_functions import sigmoid
+from .bezier import bezier
+from .simple_functions import sigmoid
 
 
 # This is a decorator that makes sure any function it's used on will

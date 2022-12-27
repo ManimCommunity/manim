@@ -44,9 +44,10 @@ import numpy as np
 from mapbox_earcut import triangulate_float32 as earcut
 from scipy.spatial.transform import Rotation
 
-from .. import config
-from ..constants import DOWN, OUT, PI, RIGHT, TAU, UP, RendererType
-from ..utils.iterables import adjacent_pairs
+from manim._config import config
+from manim.constants import DOWN, OUT, PI, RIGHT, TAU, UP, RendererType
+
+from .iterables import adjacent_pairs
 
 
 def norm_squared(v: float) -> float:

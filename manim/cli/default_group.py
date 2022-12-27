@@ -4,7 +4,7 @@ In particular, this class is what allows ``manim`` to act as ``manim render``.
 """
 import cloup
 
-from .. import logger
+from manim._config import logger
 
 __all__ = ["DefaultGroup"]
 

@@ -7,9 +7,10 @@ __all__ = ["ValueTracker", "ComplexValueTracker"]
 
 import numpy as np
 
-from manim.mobject.mobject import Mobject
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.utils.paths import straight_path
+
+from .mobject import Mobject
+from .opengl.opengl_compatibility import ConvertToOpenGL
 
 
 class ValueTracker(Mobject, metaclass=ConvertToOpenGL):

@@ -40,18 +40,20 @@ __all__ = [
 
 
 import itertools as it
-from typing import Iterable, Sequence
+from typing import TYPE_CHECKING
 
 import numpy as np
 
-from manim.mobject.mobject import Mobject
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.text.numbers import DecimalNumber, Integer
-from manim.mobject.text.tex_mobject import MathTex, Tex
+from manim.constants import *
 
-from ..constants import *
-from ..mobject.types.vectorized_mobject import VGroup, VMobject
+from .mobject import Mobject
+from .opengl.opengl_compatibility import ConvertToOpenGL
+from .text.numbers import DecimalNumber, Integer
+from .text.tex_mobject import MathTex, Tex
+from .types.vectorized_mobject import VGroup, VMobject
 
+if TYPE_CHECKING:
+    from typing import Iterable, Sequence
 # TO DO : The following two functions are not used in this file.
 #         Not sure if we should keep it or not.
 

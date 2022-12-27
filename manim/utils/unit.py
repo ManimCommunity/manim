@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from .. import config, constants
+from manim._config import config, constants
 
 __all__ = ["Pixels", "Degrees", "Munits", "Percent"]
 

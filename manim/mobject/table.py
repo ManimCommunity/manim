@@ -69,20 +69,20 @@ from typing import Callable, Iterable, Sequence
 
 from colour import Color
 
-from manim.mobject.geometry.line import Line
-from manim.mobject.geometry.polygram import Polygon
-from manim.mobject.geometry.shape_matchers import BackgroundRectangle
-from manim.mobject.text.numbers import DecimalNumber, Integer
-from manim.mobject.text.tex_mobject import MathTex
-from manim.mobject.text.text_mobject import Paragraph
+from manim._config import config
+from manim.animation.animation import Animation
+from manim.animation.composition import AnimationGroup
+from manim.animation.creation import Create, Write
+from manim.animation.fading import FadeIn
+from manim.utils.color import BLACK, YELLOW
 
-from .. import config
-from ..animation.animation import Animation
-from ..animation.composition import AnimationGroup
-from ..animation.creation import Create, Write
-from ..animation.fading import FadeIn
-from ..mobject.types.vectorized_mobject import VGroup, VMobject
-from ..utils.color import BLACK, YELLOW
+from .geometry.line import Line
+from .geometry.polygram import Polygon
+from .geometry.shape_matchers import BackgroundRectangle
+from .text.numbers import DecimalNumber, Integer
+from .text.tex_mobject import MathTex
+from .text.text_mobject import Paragraph
+from .types.vectorized_mobject import VGroup, VMobject
 from .utils import get_vectorized_mobject_class
 
 

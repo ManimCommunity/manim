@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from manim import *
+from manim._config.init_config import tempconfig
+from manim.mobject.geometry.polygram import Square
+from manim.scene.moving_camera_scene import MovingCameraScene
 
 
 def test_zoom():

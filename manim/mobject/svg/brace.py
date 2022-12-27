@@ -10,19 +10,19 @@ import numpy as np
 import svgelements as se
 
 from manim._config import config
-from manim.mobject.geometry.arc import Arc
-from manim.mobject.geometry.line import Line
-from manim.mobject.mobject import Mobject
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.text.tex_mobject import MathTex, Tex
+from manim.animation.composition import AnimationGroup
+from manim.animation.fading import FadeIn
+from manim.animation.growing import GrowFromCenter
+from manim.constants import *
+from manim.utils.color import BLACK
 
-from ...animation.composition import AnimationGroup
-from ...animation.fading import FadeIn
-from ...animation.growing import GrowFromCenter
-from ...constants import *
-from ...mobject.types.vectorized_mobject import VMobject
-from ...utils.color import BLACK
-from ..svg.svg_mobject import VMobjectFromSVGPath
+from ..geometry.arc import Arc
+from ..geometry.line import Line
+from ..mobject import Mobject
+from ..opengl.opengl_compatibility import ConvertToOpenGL
+from ..text.tex_mobject import MathTex, Tex
+from ..types.vectorized_mobject import VMobject
+from .svg_mobject import VMobjectFromSVGPath
 
 
 class Brace(VMobjectFromSVGPath):

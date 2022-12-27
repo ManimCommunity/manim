@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from manim import config, tempconfig
+from manim._config import config, tempconfig
 
 
 @pytest.fixture

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from manim.scene.scene import Scene
+
 __all__ = [
     "Graph",
 ]
@@ -13,16 +15,16 @@ from typing import Hashable, Iterable
 import networkx as nx
 import numpy as np
 
-from manim.mobject.geometry.arc import Dot, LabeledDot
-from manim.mobject.geometry.line import Line
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-from manim.mobject.text.tex_mobject import MathTex
+from manim.animation.composition import AnimationGroup
+from manim.animation.creation import Create, Uncreate
+from manim.utils.color import BLACK
 
-from ..animation.composition import AnimationGroup
-from ..animation.creation import Create, Uncreate
-from ..utils.color import BLACK
+from .geometry.arc import Dot, LabeledDot
+from .geometry.line import Line
 from .mobject import Mobject, override_animate
+from .opengl.opengl_compatibility import ConvertToOpenGL
+from .opengl.opengl_mobject import OpenGLMobject
+from .text.tex_mobject import MathTex
 from .types.vectorized_mobject import VMobject
 
 

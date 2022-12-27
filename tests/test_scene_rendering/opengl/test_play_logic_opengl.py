@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import sys
 from unittest.mock import Mock
 
+import numpy as np
 import pytest
 
-from manim import *
-from manim import config
+from manim._config.init_config import config
+from manim.mobject.value_tracker import ValueTracker
+from manim.scene.scene import Scene
 
 from ..simple_scenes import (
     SceneForFrozenFrameTests,

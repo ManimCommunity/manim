@@ -15,18 +15,23 @@ __all__ = [
     "Cutout",
 ]
 
-from typing import Iterable, Sequence
+from typing import TYPE_CHECKING
 
 import numpy as np
-from colour import Color
 
 from manim.constants import *
-from manim.mobject.geometry.arc import ArcBetweenPoints
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import *
 from manim.utils.iterables import adjacent_n_tuples, adjacent_pairs
 from manim.utils.space_ops import angle_between_vectors, normalize, regular_vertices
+
+from ..opengl.opengl_compatibility import ConvertToOpenGL
+from ..types.vectorized_mobject import VGroup, VMobject
+from .arc import ArcBetweenPoints
+
+if TYPE_CHECKING:
+    from typing import Iterable, Sequence
+
+    from colour import Color
 
 
 class Polygram(VMobject, metaclass=ConvertToOpenGL):

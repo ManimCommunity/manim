@@ -7,11 +7,14 @@ __all__ = ["deprecated", "deprecated_params"]
 
 import inspect
 import re
-from typing import Any, Callable, Iterable
+from typing import TYPE_CHECKING
 
 from decorator import decorate, decorator
 
-from .. import logger
+from manim._config import logger
+
+if TYPE_CHECKING:
+    from typing import Any, Callable, Iterable
 
 
 def _get_callable_info(callable: Callable) -> tuple[str, str]:

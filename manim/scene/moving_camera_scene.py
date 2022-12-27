@@ -71,11 +71,11 @@ from __future__ import annotations
 __all__ = ["MovingCameraScene"]
 
 from manim.animation.animation import Animation
+from manim.camera.moving_camera import MovingCamera
+from manim.utils.family import extract_mobject_family_members
+from manim.utils.iterables import list_update
 
-from ..camera.moving_camera import MovingCamera
-from ..scene.scene import Scene
-from ..utils.family import extract_mobject_family_members
-from ..utils.iterables import list_update
+from .scene import Scene
 
 
 class MovingCameraScene(Scene):

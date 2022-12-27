@@ -7,13 +7,10 @@ __all__ = ["PMobject", "Mobject1D", "Mobject2D", "PGroup", "PointCloudDot", "Poi
 import numpy as np
 from colour import Color
 
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.opengl.opengl_point_cloud_mobject import OpenGLPMobject
-
-from ...constants import *
-from ...mobject.mobject import Mobject
-from ...utils.bezier import interpolate
-from ...utils.color import (
+from manim.constants import *
+from manim.mobject.mobject import Mobject
+from manim.utils.bezier import interpolate
+from manim.utils.color import (
     BLACK,
     WHITE,
     YELLOW,
@@ -21,7 +18,10 @@ from ...utils.color import (
     color_to_rgba,
     rgba_to_color,
 )
-from ...utils.iterables import stretch_array_to_length
+from manim.utils.iterables import stretch_array_to_length
+
+from ..opengl.opengl_compatibility import ConvertToOpenGL
+from ..opengl.opengl_point_cloud_mobject import OpenGLPMobject
 
 
 class PMobject(Mobject, metaclass=ConvertToOpenGL):

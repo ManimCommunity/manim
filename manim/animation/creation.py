@@ -74,25 +74,29 @@ __all__ = [
 
 
 import itertools as it
-from typing import TYPE_CHECKING, Callable, Iterable, Sequence
+from typing import TYPE_CHECKING
 
 import numpy as np
-from colour import Color
+
+from manim._config import config
+from manim.constants import TAU
+from manim.mobject.mobject import Group
+from manim.utils.bezier import integer_interpolate
+from manim.utils.rate_functions import double_smooth, linear
+
+from .animation import Animation
+from .composition import Succession
 
 if TYPE_CHECKING:
+    from typing import Callable, Iterable, Sequence
+
+    from colour import Color
+
+    from manim.mobject.mobject import Mobject
+    from manim.mobject.opengl.opengl_surface import OpenGLSurface
+    from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
     from manim.mobject.text.text_mobject import Text
-
-from manim.mobject.opengl.opengl_surface import OpenGLSurface
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
-
-from .. import config
-from ..animation.animation import Animation
-from ..animation.composition import Succession
-from ..constants import TAU
-from ..mobject.mobject import Group, Mobject
-from ..mobject.types.vectorized_mobject import VMobject
-from ..utils.bezier import integer_interpolate
-from ..utils.rate_functions import double_smooth, linear, smooth
+    from manim.mobject.types.vectorized_mobject import VMobject
 
 
 class ShowPartial(Animation):
@@ -245,6 +249,9 @@ class DrawBorderThenFill(Animation):
         self.outline = self.get_outline()
 
     def _typecheck_input(self, vmobject: VMobject | OpenGLVMobject) -> None:
+        from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+        from manim.mobject.types.vectorized_mobject import VMobject
+
         if not isinstance(vmobject, (VMobject, OpenGLVMobject)):
             raise TypeError("DrawBorderThenFill only works for vectorized Mobjects")
 

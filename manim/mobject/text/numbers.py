@@ -4,19 +4,24 @@ from __future__ import annotations
 
 __all__ = ["DecimalNumber", "Integer", "Variable"]
 
-from typing import Sequence
 
 import numpy as np
 
-from manim import config
+from manim._config import config
 from manim.constants import *
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.text.tex_mobject import MathTex, SingleStringMathTex, Tex
-from manim.mobject.text.text_mobject import Text
-from manim.mobject.types.vectorized_mobject import VMobject
-from manim.mobject.value_tracker import ValueTracker
+
+from ..opengl.opengl_compatibility import ConvertToOpenGL
+from ..types.vectorized_mobject import VMobject
+from ..value_tracker import ValueTracker
+from .tex_mobject import MathTex, SingleStringMathTex, Tex
+from .text_mobject import Text
 
 string_to_mob_map = {}
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Sequence
 
 
 class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):

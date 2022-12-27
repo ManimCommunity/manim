@@ -5,7 +5,8 @@ import sys
 import click
 import cloup
 
-from . import __version__, cli_ctx_settings, console
+from . import __version__
+from ._config import cli_ctx_settings, console
 from .cli.cfg.group import cfg
 from .cli.default_group import DefaultGroup
 from .cli.init.commands import init

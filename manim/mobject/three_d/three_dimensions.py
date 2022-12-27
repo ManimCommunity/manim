@@ -22,19 +22,20 @@ from typing import *
 import numpy as np
 from colour import Color
 
-from manim import config, logger
+from manim._config import config, logger
 from manim.constants import *
-from manim.mobject.geometry.arc import Circle
-from manim.mobject.geometry.polygram import Square
-from manim.mobject.mobject import *
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import *
 from manim.utils.color import Colors
 from manim.utils.deprecation import deprecated_params
 from manim.utils.iterables import tuplify
 from manim.utils.space_ops import normalize, perpendicular_bisector, z_to_vector
+
+from ..geometry.arc import Circle
+from ..geometry.polygram import Square
+from ..mobject import *
+from ..opengl.opengl_compatibility import ConvertToOpenGL
+from ..opengl.opengl_mobject import OpenGLMobject
+from ..types.vectorized_mobject import VGroup, VMobject
 
 
 class ThreeDVMobject(VMobject, metaclass=ConvertToOpenGL):

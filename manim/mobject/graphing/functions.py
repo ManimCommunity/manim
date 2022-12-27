@@ -5,16 +5,20 @@ from __future__ import annotations
 __all__ = ["ParametricFunction", "FunctionGraph", "ImplicitFunction"]
 
 
-from typing import Callable, Iterable, Sequence
+from typing import TYPE_CHECKING
 
 import numpy as np
 from isosurfaces import plot_isoline
 
-from manim import config
-from manim.mobject.graphing.scale import LinearBase, _ScaleBase
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.types.vectorized_mobject import VMobject
+from manim._config import config
 from manim.utils.color import YELLOW
+
+from ..opengl.opengl_compatibility import ConvertToOpenGL
+from ..types.vectorized_mobject import VMobject
+from .scale import LinearBase, _ScaleBase
+
+if TYPE_CHECKING:
+    from typing import Callable, Iterable, Sequence
 
 
 class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):

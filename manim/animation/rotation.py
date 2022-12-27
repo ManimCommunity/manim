@@ -4,17 +4,20 @@ from __future__ import annotations
 
 __all__ = ["Rotating", "Rotate"]
 
-from typing import TYPE_CHECKING, Callable, Sequence
+from typing import TYPE_CHECKING
 
 import numpy as np
 
-from ..animation.animation import Animation
-from ..animation.transform import Transform
-from ..constants import OUT, PI, TAU
-from ..utils.rate_functions import linear
+from manim.constants import OUT, PI, TAU
+from manim.utils.rate_functions import linear
+
+from .animation import Animation
+from .transform import Transform
 
 if TYPE_CHECKING:
-    from ..mobject.mobject import Mobject
+    from typing import Callable, Sequence
+
+    from manim.mobject.mobject import Mobject
 
 
 class Rotating(Animation):
