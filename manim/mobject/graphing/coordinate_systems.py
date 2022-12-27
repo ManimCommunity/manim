@@ -2100,7 +2100,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         Returns
         -------
         :class:`~.VGroup`
-            A :class:`~.Vgroup` of the labels for the x_axis and y_axis.
+            A :class:`~.VGroup` of the labels for the x_axis and y_axis.
 
 
         .. seealso::
