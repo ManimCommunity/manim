@@ -2493,9 +2493,9 @@ class ThreeDAxes(Axes):
 
 
         .. seealso::
-            :class:`get_x_axis_label`
-            :class:`get_y_axis_label`
-            :class:`get_z_axis_label`
+            :meth:`.get_x_axis_label`
+            :meth:`.get_y_axis_label`
+            :meth:`.get_z_axis_label`
 
         Examples
         --------
