@@ -583,7 +583,7 @@ class OpenGLMobject:
         self.set_points(mobject.points)
 
     def clear_points(self):
-        self.resize_points(0)
+        self.points = np.empty((0, 3))
 
     def get_num_points(self):
         return len(self.points)
