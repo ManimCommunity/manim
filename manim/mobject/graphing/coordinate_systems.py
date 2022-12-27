@@ -2489,7 +2489,7 @@ class ThreeDAxes(Axes):
         Returns
         -------
         :class:`~.VGroup`
-            A :class:`~.Vgroup` of the labels for the x_axis, y_axis and z_axis.
+            A :class:`~.VGroup` of the labels for the x_axis, y_axis, and z_axis.
 
 
         .. seealso::
