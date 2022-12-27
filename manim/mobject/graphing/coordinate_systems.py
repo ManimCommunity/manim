@@ -2104,8 +2104,8 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
 
 
         .. seealso::
-            :class:`get_x_axis_label`
-            :class:`get_y_axis_label`
+            :meth:`.get_x_axis_label`
+            :meth:`.get_y_axis_label`
 
         Examples
         --------
