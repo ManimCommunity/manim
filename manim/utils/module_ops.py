@@ -127,7 +127,7 @@ def prompt_user_for_choice(scene_classes):
 def scene_classes_from_file(
     file_path: Path, require_single_scene=False, full_list=False
 ):
-    import manim.scene.scene as sc
+    # import manim.scene.scene as sc
 
     module = get_module(file_path)
     all_scene_classes = get_scene_classes_from_module(module)
