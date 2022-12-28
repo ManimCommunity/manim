@@ -131,7 +131,8 @@ def scene_classes_from_file(
 
     module = get_module(file_path)
     all_scene_classes = get_scene_classes_from_module(module)
-    all_scene_classes += sc.REGISTERED_MANIMATIONS
+    # TODO: Uncomment this line as soon as we resolved the circular imports
+    # all_scene_classes += sc.REGISTERED_MANIMATIONS
     logger.info(all_scene_classes)
 
     if full_list:
