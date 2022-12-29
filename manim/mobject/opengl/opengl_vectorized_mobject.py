@@ -11,55 +11,54 @@ from colour import Color
 
 from manim import config
 from manim.constants import *
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject, OpenGLPoint
+from manim.mobject.opengl.opengl_mobject import (
+    UNIFORM_DTYPE,
+    OpenGLMobject,
+    OpenGLPoint,
+)
 from manim.renderer.shader_wrapper import ShaderWrapper
 from manim.utils.bezier import (
     bezier,
     get_quadratic_approximation_of_cubic,
     get_smooth_cubic_bezier_handle_points,
+    get_smooth_quadratic_bezier_handle_points,
     integer_interpolate,
     interpolate,
+    inverse_interpolate,
     partial_quadratic_bezier_points,
     proportions_along_bezier_curve_for_point,
     quadratic_bezier_remap,
 )
 from manim.utils.color import *
-from manim.utils.config_ops import _Data
-from manim.utils.iterables import listify, make_even, resize_with_interpolation
+from manim.utils.iterables import (
+    listify,
+    make_even,
+    resize_array,
+    resize_with_interpolation,
+)
 from manim.utils.space_ops import (
     angle_between_vectors,
     cross2d,
     earclip_triangulation,
+    get_norm,
     get_unit_normal,
     shoelace_direction,
     z_to_vector,
 )
 
-
-def triggers_refreshed_triangulation(func):
-    @wraps(func)
-    def wrapper(self, *args, **kwargs):
-        old_points = np.empty((0, 3))
-        for mob in self.family_members_with_points():
-            old_points = np.concatenate((old_points, mob.points), axis=0)
-        func(self, *args, **kwargs)
-        new_points = np.empty((0, 3))
-        for mob in self.family_members_with_points():
-            new_points = np.concatenate((new_points, mob.points), axis=0)
-        if not np.array_equal(new_points, old_points):
-            self.refresh_triangulation()
-            self.refresh_unit_normal()
-        return self
-
-    return wrapper
+DEFAULT_STROKE_COLOR = GREY_A
+DEFAULT_FILL_COLOR = GREY_C
 
 
 class OpenGLVMobject(OpenGLMobject):
     """A vectorized mobject."""
 
+    n_points_per_curve: int = 3
+    stroke_shader_folder = "quadratic_bezier_stroke"
+    fill_shader_folder = "quadratic_bezier_fill"
     fill_dtype = [
         ("point", np.float32, (3,)),
-        ("unit_normal", np.float32, (3,)),
+        ("orientation", np.float32, (3,)),
         ("color", np.float32, (4,)),
         ("vert_index", np.float32, (1,)),
     ]
@@ -67,89 +66,48 @@ class OpenGLVMobject(OpenGLMobject):
         ("point", np.float32, (3,)),
         ("prev_point", np.float32, (3,)),
         ("next_point", np.float32, (3,)),
-        ("unit_normal", np.float32, (3,)),
         ("stroke_width", np.float32, (1,)),
         ("color", np.float32, (4,)),
     ]
-    stroke_shader_folder = "quadratic_bezier_stroke"
-    fill_shader_folder = "quadratic_bezier_fill"
+    render_primitive: int = moderngl.TRIANGLES
 
-    fill_rgba = _Data()
-    stroke_rgba = _Data()
-    stroke_width = _Data()
-    unit_normal = _Data()
+    pre_function_handle_to_anchor_scale_factor: float = 0.01
+    make_smooth_after_applying_functions: bool = False
+    tolerance_for_point_equality: float = 1e-8
 
     def __init__(
         self,
+        color: Color | None = None,
         fill_color: Color | None = None,
         fill_opacity: float = 0.0,
         stroke_color: Color | None = None,
         stroke_opacity: float = 1.0,
         stroke_width: float = DEFAULT_STROKE_WIDTH,
         draw_stroke_behind_fill: bool = False,
-        # Indicates that it will not be displayed, but
-        # that it should count in parent mobject's path
-        pre_function_handle_to_anchor_scale_factor: float = 0.01,
-        make_smooth_after_applying_functions: float = False,
         background_image_file: str | None = None,
-        # This is within a pixel
-        # TODO, do we care about accounting for
-        # varying zoom levels?
-        tolerance_for_point_equality: float = 1e-8,
-        n_points_per_curve: int = 3,
         long_lines: bool = False,
-        should_subdivide_sharp_curves: bool = False,
-        should_remove_null_curves: bool = False,
-        # Could also be "bevel", "miter", "round"
-        joint_type: LineJointType | None = None,
+        joint_type: LineJointType = LineJointType.AUTO,
         flat_stroke: bool = True,
-        render_primitive=moderngl.TRIANGLES,
-        triangulation_locked: bool = False,
+        # Measured in pixel widths
+        anti_alias_width: float = 1.0,
         **kwargs,
     ):
-        self.data = {}
+        self.fill_color = fill_color or color or DEFAULT_FILL_COLOR
         self.fill_opacity = fill_opacity
+        self.stroke_color = stroke_color or color or DEFAULT_STROKE_COLOR
         self.stroke_opacity = stroke_opacity
         self.stroke_width = stroke_width
         self.draw_stroke_behind_fill = draw_stroke_behind_fill
-        # Indicates that it will not be displayed, but
-        # that it should count in parent mobject's path
-        self.pre_function_handle_to_anchor_scale_factor = (
-            pre_function_handle_to_anchor_scale_factor
-        )
-        self.make_smooth_after_applying_functions = make_smooth_after_applying_functions
         self.background_image_file = background_image_file
-        # This is within a pixel
-        # TODO, do we care about accounting for
-        # varying zoom levels?
-        self.tolerance_for_point_equality = tolerance_for_point_equality
-        self.n_points_per_curve = n_points_per_curve
         self.long_lines = long_lines
-        self.should_subdivide_sharp_curves = should_subdivide_sharp_curves
-        self.should_remove_null_curves = should_remove_null_curves
-        if joint_type is None:
-            joint_type = LineJointType.AUTO
         self.joint_type = joint_type
         self.flat_stroke = flat_stroke
-        self.render_primitive = render_primitive
-        self.triangulation_locked = triangulation_locked
+        self.anti_alias_width = anti_alias_width
 
         self.needs_new_triangulation = True
         self.triangulation = np.zeros(0, dtype="i4")
-        self.orientation = 1
-        self.fill_data = None
-        self.stroke_data = None
-        self.fill_shader_wrapper = None
-        self.stroke_shader_wrapper = None
-        self.init_shader_data()
 
         super().__init__(**kwargs)
-        self.refresh_unit_normal()
-
-        if fill_color:
-            self.fill_color = Color(fill_color)
-        if stroke_color:
-            self.stroke_color = Color(stroke_color)
 
     def get_group_class(self):
         return OpenGLVGroup
@@ -158,13 +116,67 @@ class OpenGLVMobject(OpenGLMobject):
     def get_mobject_type_class():
         return OpenGLVMobject
 
+    @property
+    def rgbas(self):
+        raise NotImplementedError(
+            "rgbas is not implemented for OpenGLVMobject. please use fill_rgba and stroke_rgba."
+        )
+
+    @rgbas.setter
+    def rgbas(self, value):
+        raise NotImplementedError(
+            "rgbas is not implemented for OpenGLVMobject. please use fill_rgba and stroke_rgba."
+        )
+
     def init_data(self):
         super().init_data()
         self.data.pop("rgbas")
-        self.fill_rgba = np.zeros((1, 4))
-        self.stroke_rgba = np.zeros((1, 4))
-        self.unit_normal = np.zeros((1, 3))
-        # stroke_width belongs to self.data, but is defined through init_colors+set_stroke
+        self.data.update(
+            {
+                "fill_rgba": np.zeros((1, 4)),
+                "stroke_rgba": np.zeros((1, 4)),
+                "stroke_width": np.zeros((1, 1)),
+                "orientation": np.zeros((1, 1)),
+            }
+        )
+
+    def init_uniforms(self):
+        super().init_uniforms()
+        self.uniforms["anti_alias_width"] = np.asarray(
+            self.anti_alias_width, dtype=UNIFORM_DTYPE
+        )
+        self.uniforms["joint_type"] = np.asarray(
+            self.joint_type.value, dtype=UNIFORM_DTYPE
+        )
+        self.uniforms["flat_stroke"] = np.asarray(
+            float(self.flat_stroke), dtype=UNIFORM_DTYPE
+        )
+
+    # These are here just to make type checkers happy
+    def get_family(self, recurse: bool = True) -> list[OpenGLVMobject]:  # type: ignore
+        return super().get_family(recurse)  # type: ignore
+
+    def family_members_with_points(self) -> list[OpenGLVMobject]:  # type: ignore
+        return super().family_members_with_points()  # type: ignore
+
+    def replicate(self, n: int) -> OpenGLVGroup:  # type: ignore
+        return super().replicate(n)  # type: ignore
+
+    def get_grid(self, *args, **kwargs) -> OpenGLVGroup:  # type: ignore
+        return super().get_grid(*args, **kwargs)  # type: ignore
+
+    def __getitem__(self, value: int | slice) -> OpenGLVMobject:  # type: ignore
+        return super().__getitem__(value)  # type: ignore
+
+    def add(self, *vmobjects: OpenGLVMobject):  # type: ignore
+        if not all(isinstance(m, OpenGLVMobject) for m in vmobjects):
+            raise Exception("All submobjects must be of type OpenGLVMobject")
+        super().add(*vmobjects)
+
+    def copy(self, deep: bool = False) -> OpenGLVMobject:
+        result = super().copy(deep)
+        result.shader_wrapper_list = [sw.copy() for sw in self.shader_wrapper_list]
+        return result
 
     # Colors
     def init_colors(self):
@@ -180,12 +192,28 @@ class OpenGLVMobject(OpenGLMobject):
         )
         self.set_gloss(self.gloss)
         self.set_flat_stroke(self.flat_stroke)
+        self.color = self.get_color()
+        return self
+
+    def set_rgba_array(
+        self, rgba_array: np.ndarray, name: str | None = None, recurse: bool = False
+    ) -> OpenGLVMobject:
+        if name is None:
+            names = ["fill_rgba", "stroke_rgba"]
+        else:
+            names = [name]
+
+        for name in names:
+            if name in self.data:
+                self.data[name] = rgba_array
+            else:
+                raise Exception(f"{name} is not a valid data name.")
         return self
 
     def set_fill(
         self,
-        color: Color | None = None,
-        opacity: float | None = None,
+        color: Color | Iterable[Color] | None = None,
+        opacity: float | Iterable[float] | None = None,
         recurse: bool = True,
     ) -> OpenGLVMobject:
         """Set the fill color and fill opacity of a :class:`OpenGLVMobject`.
@@ -223,13 +251,7 @@ class OpenGLVMobject(OpenGLMobject):
         --------
         :meth:`~.OpenGLVMobject.set_style`
         """
-        if opacity is not None:
-            self.fill_opacity = opacity
-        if recurse:
-            for submobject in self.submobjects:
-                submobject.set_fill(color, opacity, recurse)
-
-        self.set_rgba_array(color, opacity, "fill_rgba", recurse)
+        self.set_rgba_array_by_color(color, opacity, "fill_rgba", recurse)
         return self
 
     def set_stroke(
@@ -240,78 +262,98 @@ class OpenGLVMobject(OpenGLMobject):
         background=None,
         recurse=True,
     ):
-        if opacity is not None:
-            self.stroke_opacity = opacity
-        if recurse:
-            for submobject in self.submobjects:
-                submobject.set_stroke(
-                    color=color,
-                    width=width,
-                    opacity=opacity,
-                    background=background,
-                    recurse=recurse,
-                )
-
-        self.set_rgba_array(color, opacity, "stroke_rgba", recurse)
+        self.set_rgba_array_by_color(color, opacity, "stroke_rgba", recurse)
 
         if width is not None:
             for mob in self.get_family(recurse):
-                mob.stroke_width = np.array([[width] for width in listify(width)])
+                if isinstance(width, np.ndarray):
+                    arr = width.reshape((len(width), 1))
+                else:
+                    arr = np.array([[w] for w in listify(width)], dtype=float)
+                mob.data["stroke_width"] = arr
 
         if background is not None:
             for mob in self.get_family(recurse):
                 mob.draw_stroke_behind_fill = background
         return self
 
-    def set_style(
+    def set_backstroke(
         self,
-        fill_color=None,
-        fill_opacity=None,
-        fill_rgba=None,
-        stroke_color=None,
-        stroke_opacity=None,
-        stroke_rgba=None,
-        stroke_width=None,
-        gloss=None,
-        shadow=None,
-        recurse=True,
-    ):
-        if fill_rgba is not None:
-            self.fill_rgba = resize_with_interpolation(fill_rgba, len(fill_rgba))
-        else:
-            self.set_fill(color=fill_color, opacity=fill_opacity, recurse=recurse)
+        color: Color | Iterable[Color] | None = None,
+        width: float | Iterable[float] = 3,
+        background: bool = True,
+    ) -> OpenGLVMobject:
+        self.set_stroke(color, width, background=background)
+        return self
 
-        if stroke_rgba is not None:
-            self.stroke_rgba = resize_with_interpolation(stroke_rgba, len(fill_rgba))
-            self.set_stroke(width=stroke_width)
-        else:
-            self.set_stroke(
-                color=stroke_color,
-                width=stroke_width,
-                opacity=stroke_opacity,
-                recurse=recurse,
+    def align_stroke_width_data_to_points(self, recurse: bool = True) -> None:
+        for mob in self.get_family(recurse):
+            mob.data["stroke_width"] = resize_with_interpolation(
+                mob.data["stroke_width"], len(mob.points)
             )
 
-        if gloss is not None:
-            self.set_gloss(gloss, recurse=recurse)
-        if shadow is not None:
-            self.set_shadow(shadow, recurse=recurse)
+    def set_style(
+        self,
+        fill_color: Color | Iterable[Color] | None = None,
+        fill_opacity: float | Iterable[float] | None = None,
+        fill_rgba: np.ndarray | None = None,
+        stroke_color: Color | Iterable[Color] | None = None,
+        stroke_opacity: float | Iterable[float] | None = None,
+        stroke_rgba: np.ndarray | None = None,
+        stroke_width: float | Iterable[float] | None = None,
+        stroke_background: bool = True,
+        reflectiveness: float | None = None,
+        gloss: float | None = None,
+        shadow: float | None = None,
+        recurse: bool = True,
+    ) -> OpenGLVMobject:
+        for mob in self.get_family(recurse):
+            if fill_rgba is not None:
+                mob.data["fill_rgba"] = resize_with_interpolation(
+                    fill_rgba, len(fill_rgba)
+                )
+            else:
+                mob.set_fill(color=fill_color, opacity=fill_opacity, recurse=False)
+
+            if stroke_rgba is not None:
+                mob.data["stroke_rgba"] = resize_with_interpolation(
+                    stroke_rgba, len(stroke_rgba)
+                )
+                mob.set_stroke(
+                    width=stroke_width,
+                    background=stroke_background,
+                    recurse=False,
+                )
+            else:
+                mob.set_stroke(
+                    color=stroke_color,
+                    width=stroke_width,
+                    opacity=stroke_opacity,
+                    recurse=False,
+                    background=stroke_background,
+                )
+
+            if reflectiveness is not None:
+                mob.set_reflectiveness(reflectiveness, recurse=False)
+            if gloss is not None:
+                mob.set_gloss(gloss, recurse=False)
+            if shadow is not None:
+                mob.set_shadow(shadow, recurse=False)
         return self
 
     def get_style(self):
         return {
-            "fill_rgba": self.fill_rgba,
-            "stroke_rgba": self.stroke_rgba,
-            "stroke_width": self.stroke_width,
-            "gloss": self.gloss,
-            "shadow": self.shadow,
+            "fill_rgba": self.data["fill_rgba"].copy(),
+            "stroke_rgba": self.data["stroke_rgba"].copy(),
+            "stroke_width": self.data["stroke_width"].copy(),
+            "stroke_background": self.draw_stroke_behind_fill,
+            "reflectiveness": self.get_reflectiveness(),
+            "gloss": self.get_gloss(),
+            "shadow": self.get_shadow(),
         }
 
-    def match_style(self, vmobject, recurse=True):
-        vmobject_style = vmobject.get_style()
-        if config.renderer == RendererType.OPENGL:
-            vmobject_style["stroke_width"] = vmobject_style["stroke_width"][0][0]
-        self.set_style(**vmobject_style, recurse=False)
+    def match_style(self, vmobject: OpenGLVMobject, recurse: bool = True):
+        self.set_style(**vmobject.get_style(), recurse=False)
         if recurse:
             # Does its best to match up submobject lists, and
             # match styles accordingly
@@ -324,112 +366,101 @@ class OpenGLVMobject(OpenGLMobject):
                 sm1.match_style(sm2)
         return self
 
-    def set_color(self, color, opacity=None, recurse=True):
-        if opacity is not None:
-            self.opacity = opacity
-
+    def set_color(self, color, opacity=None, recurse=True) -> OpenGLVMobject:
         self.set_fill(color, opacity=opacity, recurse=recurse)
         self.set_stroke(color, opacity=opacity, recurse=recurse)
         return self
 
-    def set_opacity(self, opacity, recurse=True):
+    def set_opacity(self, opacity, recurse=True) -> OpenGLVMobject:
         self.set_fill(opacity=opacity, recurse=recurse)
         self.set_stroke(opacity=opacity, recurse=recurse)
         return self
 
-    def fade(self, darkness=0.5, recurse=True):
-        factor = 1.0 - darkness
-        self.set_fill(
-            opacity=factor * self.get_fill_opacity(),
-            recurse=False,
-        )
-        self.set_stroke(
-            opacity=factor * self.get_stroke_opacity(),
-            recurse=False,
-        )
-        super().fade(darkness, recurse)
+    def fade(self, darkness=0.5, recurse=True) -> OpenGLVMobject:
+        mobs = self.get_family() if recurse else [self]
+        for mob in mobs:
+            factor = 1.0 - darkness
+            mob.set_fill(
+                opacity=factor * mob.get_fill_opacity(),
+                recurse=False,
+            )
+            mob.set_stroke(
+                opacity=factor * mob.get_stroke_opacity(),
+                recurse=False,
+            )
         return self
 
-    def get_fill_colors(self):
-        return [Color(rgb_to_hex(rgba[:3])) for rgba in self.fill_rgba]
+    def get_fill_colors(self) -> list[str]:
+        return [rgb_to_hex(rgba[:3]) for rgba in self.data["fill_rgba"]]
 
-    def get_fill_opacities(self):
-        return self.fill_rgba[:, 3]
+    def get_fill_opacities(self) -> np.ndarray:
+        return self.data["fill_rgba"][:, 3]
 
-    def get_stroke_colors(self):
-        return [Color(rgb_to_hex(rgba[:3])) for rgba in self.stroke_rgba]
+    def get_stroke_colors(self) -> list[str]:
+        return [rgb_to_hex(rgba[:3]) for rgba in self.data["stroke_rgba"]]
 
-    def get_stroke_opacities(self):
-        return self.stroke_rgba[:, 3]
+    def get_stroke_opacities(self) -> np.ndarray:
+        return self.data["stroke_rgba"][:, 3]
 
-    def get_stroke_widths(self):
-        return self.stroke_width
+    def get_stroke_widths(self) -> np.ndarray:
+        return self.data["stroke_width"][:, 0]
 
     # TODO, it's weird for these to return the first of various lists
     # rather than the full information
-    def get_fill_color(self):
+    def get_fill_color(self) -> str:
         """
         If there are multiple colors (for gradient)
         this returns the first one
         """
         return self.get_fill_colors()[0]
 
-    def get_fill_opacity(self):
+    def get_fill_opacity(self) -> float:
         """
         If there are multiple opacities, this returns the
         first
         """
         return self.get_fill_opacities()[0]
 
-    def get_stroke_color(self):
+    def get_stroke_color(self) -> str:
         return self.get_stroke_colors()[0]
 
-    def get_stroke_width(self):
+    def get_stroke_width(self) -> float | np.ndarray:
         return self.get_stroke_widths()[0]
 
-    def get_stroke_opacity(self):
+    def get_stroke_opacity(self) -> float:
         return self.get_stroke_opacities()[0]
 
-    def get_color(self):
-        if self.has_stroke():
-            return self.get_stroke_color()
-        return self.get_fill_color()
+    def get_color(self) -> str:
+        if self.has_fill():
+            return self.get_fill_color()
+        return self.get_stroke_color()
 
-    def get_colors(self):
-        if self.has_stroke():
-            return self.get_stroke_colors()
-        return self.get_fill_colors()
+    def has_stroke(self) -> bool:
+        return any(self.data["stroke_width"]) and any(self.data["stroke_rgba"][:, 3])
 
-    stroke_color = property(get_stroke_color, set_stroke)
-    color = property(get_color, set_color)
-    fill_color = property(get_fill_color, set_fill)
+    def has_fill(self) -> bool:
+        return any(self.data["fill_rgba"][:, 3])
 
-    def has_stroke(self):
-        stroke_widths = self.get_stroke_widths()
-        stroke_opacities = self.get_stroke_opacities()
-        return (
-            stroke_widths is not None
-            and stroke_opacities is not None
-            and any(stroke_widths)
-            and any(stroke_opacities)
-        )
-
-    def has_fill(self):
-        fill_opacities = self.get_fill_opacities()
-        return fill_opacities is not None and any(fill_opacities)
-
-    def get_opacity(self):
+    def get_opacity(self) -> float:
         if self.has_fill():
             return self.get_fill_opacity()
         return self.get_stroke_opacity()
 
-    def set_flat_stroke(self, flat_stroke=True, recurse=True):
+    def set_flat_stroke(self, flat_stroke: bool = True, recurse: bool = True):
         for mob in self.get_family(recurse):
-            mob.flat_stroke = flat_stroke
+            mob.uniforms["flat_stroke"] = np.asarray(float(flat_stroke))
         return self
 
-    def get_flat_stroke(self):
-        return self.flat_stroke
+    def get_flat_stroke(self) -> bool:
+        return self.uniforms["flat_stroke"] == 1.0
+
+    def set_joint_type(self, joint_type: LineJointType, recurse: bool = True):
+        for mob in self.get_family(recurse):
+            mob.uniforms["joint_type"] = np.asarray(joint_type.value)
+        return self
+
+    def get_joint_type(self) -> LineJointType:
+        return LineJointType(int(self.uniforms["joint_type"][0]))
 
     # Points
     def set_anchors_and_handles(self, anchors1, handles, anchors2):
@@ -511,9 +542,12 @@ class OpenGLVMobject(OpenGLMobject):
             self.add_quadratic_bezier_curve_to(new_handle, point)
         return self
 
-    def add_smooth_cubic_curve_to(self, handle, point):
+    def add_smooth_cubic_curve_to(self, handle: np.ndarray, point: np.ndarray):
         self.throw_error_if_no_points()
-        new_handle = self.get_reflection_of_last_handle()
+        if self.get_num_points() == 1:
+            new_handle = self.points[-1]
+        else:
+            new_handle = self.get_reflection_of_last_handle()
         self.add_cubic_bezier_curve_to(new_handle, handle, point)
 
     def has_new_path_started(self):
@@ -581,12 +615,15 @@ class OpenGLVMobject(OpenGLMobject):
         )
         return self
 
-    def set_points_smoothly(self, points, true_smooth=False):
+    def set_points_smoothly(self, points, true_smooth=False) -> OpenGLVMobject:
         self.set_points_as_corners(points)
-        self.make_smooth()
+        if true_smooth:
+            self.make_smooth()
+        else:
+            self.make_approximately_smooth()
         return self
 
-    def change_anchor_mode(self, mode):
+    def change_anchor_mode(self, mode) -> OpenGLVMobject:
         """Changes the anchor mode of the bezier curves. This will modify the handles.
 
         There can be only three modes, "jagged", "approx_smooth"  and "true_smooth".
@@ -605,17 +642,13 @@ class OpenGLVMobject(OpenGLMobject):
                 anchors = np.vstack([subpath[::nppc], subpath[-1:]])
                 new_subpath = np.array(subpath)
                 if mode == "approx_smooth":
-                    # TODO: get_smooth_quadratic_bezier_handle_points is not defined
                     new_subpath[1::nppc] = get_smooth_quadratic_bezier_handle_points(
-                        anchors,
+                        anchors
                     )
                 elif mode == "true_smooth":
                     h1, h2 = get_smooth_cubic_bezier_handle_points(anchors)
                     new_subpath = get_quadratic_approximation_of_cubic(
-                        anchors[:-1],
-                        h1,
-                        h2,
-                        anchors[1:],
+                        anchors[:-1], h1, h2, anchors[1:]
                     )
                 elif mode == "jagged":
                     new_subpath[1::nppc] = 0.5 * (anchors[:-1] + anchors[1:])
@@ -823,6 +856,55 @@ class OpenGLVMobject(OpenGLMobject):
         """
         return self.get_num_points() // self.n_points_per_curve
 
+    def quick_point_from_proportion(self, alpha: float) -> np.ndarray:
+        # Assumes all curves have the same length, so is inaccurate
+        num_curves = self.get_num_curves()
+        n, residue = integer_interpolate(0, num_curves, alpha)
+        curve_func = self.get_nth_curve_function(n)
+        return curve_func(residue)
+
+    def point_from_proportion(self, alpha: float) -> np.ndarray:
+        """Gets the point at a proportion along the path of the :class:`OpenGLVMobject`.
+
+        Parameters
+        ----------
+        alpha
+            The proportion along the the path of the :class:`OpenGLVMobject`.
+
+        Returns
+        -------
+        :class:`numpy.ndarray`
+            The point on the :class:`OpenGLVMobject`.
+
+        Raises
+        ------
+        :exc:`ValueError`
+            If ``alpha`` is not between 0 and 1.
+        :exc:`Exception`
+            If the :class:`OpenGLVMobject` has no points.
+        """
+
+        if alpha <= 0:
+            return self.get_start()
+        elif alpha >= 1:
+            return self.get_end()
+
+        partials = [0.0]
+        for tup in self.get_bezier_tuples():
+            # Approximate length with straight line from start to end
+            arclen = get_norm(tup[0] - tup[-1])
+            partials.append(partials[-1] + arclen)
+        full = partials[-1]
+        if full == 0:
+            return self.get_start()
+        # First index where the partial length is more alpha times the full length
+        i = next(
+            (i for i, x in enumerate(partials) if x >= full * alpha),
+            len(partials),  # Default
+        )
+        residue = inverse_interpolate(partials[i - 1] / full, partials[i] / full, alpha)
+        return self.get_nth_curve_function(i - 1)(residue)  # type: ignore
+
     def get_nth_curve_length(
         self,
         n: int,
@@ -888,7 +970,7 @@ class OpenGLVMobject(OpenGLMobject):
         curve = self.get_nth_curve_function(n)
         points = np.array([curve(a) for a in np.linspace(0, 1, sample_points)])
         diffs = points[1:] - points[:-1]
-        norms = np.apply_along_axis(np.linalg.norm, 1, diffs)
+        norms = np.apply_along_axis(np.linalg.norm, 1, diffs)  # type: ignore
 
         return norms
 
@@ -912,50 +994,6 @@ class OpenGLVMobject(OpenGLMobject):
 
         for n in range(num_curves):
             yield self.get_nth_curve_function_with_length(n, **kwargs)
-
-    def point_from_proportion(self, alpha: float) -> np.ndarray:
-        """Gets the point at a proportion along the path of the :class:`OpenGLVMobject`.
-
-        Parameters
-        ----------
-        alpha
-            The proportion along the the path of the :class:`OpenGLVMobject`.
-
-        Returns
-        -------
-        :class:`numpy.ndarray`
-            The point on the :class:`OpenGLVMobject`.
-
-        Raises
-        ------
-        :exc:`ValueError`
-            If ``alpha`` is not between 0 and 1.
-        :exc:`Exception`
-            If the :class:`OpenGLVMobject` has no points.
-        """
-
-        if alpha < 0 or alpha > 1:
-            raise ValueError(f"Alpha {alpha} not between 0 and 1.")
-
-        self.throw_error_if_no_points()
-        if alpha == 1:
-            return self.points[-1]
-
-        curves_and_lengths = tuple(self.get_curve_functions_with_lengths())
-
-        target_length = alpha * np.sum(length for _, length in curves_and_lengths)
-        current_length = 0
-
-        for curve, length in curves_and_lengths:
-            if current_length + length >= target_length:
-                if length != 0:
-                    residue = (target_length - current_length) / length
-                else:
-                    residue = 0
-
-                return curve(residue)
-
-            current_length += length
 
     def proportion_from_point(
         self,
@@ -993,7 +1031,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         num_curves = self.get_num_curves()
         total_length = self.get_arc_length()
-        target_length = 0
+        target_length = 0.0
         for n in range(num_curves):
             control_points = self.get_nth_curve_points(n)
             length = self.get_nth_curve_length(n)
@@ -1063,8 +1101,8 @@ class OpenGLVMobject(OpenGLMobject):
                         self.get_start_anchors(),
                         self.get_end_anchors(),
                     )
-                ),
-            ),
+                )
+            )
         )
 
     def get_points_without_null_curves(self, atol=1e-9):
@@ -1079,13 +1117,14 @@ class OpenGLVMobject(OpenGLMobject):
         )
         return points[distinct_curves.repeat(nppc)]
 
-    def get_arc_length(self, sample_points_per_curve: int | None = None) -> float:
+    def get_arc_length(self, n_sample_points: int | None = None) -> float:
         """Return the approximated length of the whole curve.
 
         Parameters
         ----------
-        sample_points_per_curve
-            Number of sample points per curve used to approximate the length. More points result in a better approximation.
+        n_sample_points
+            The number of points to sample. If ``None``, the number of points is calculated automatically.
+            Takes points on the outline of the :class:`OpenGLVMobject` and calculates the distance between them.
 
         Returns
         -------
@@ -1093,12 +1132,14 @@ class OpenGLVMobject(OpenGLMobject):
             The length of the :class:`OpenGLVMobject`.
         """
 
-        return np.sum(
-            length
-            for _, length in self.get_curve_functions_with_lengths(
-                sample_points=sample_points_per_curve,
-            )
+        if n_sample_points is None:
+            n_sample_points = 4 * self.get_num_curves() + 1
+        points = np.array(
+            [self.point_from_proportion(a) for a in np.linspace(0, 1, n_sample_points)]
         )
+        diffs = points[1:] - points[:-1]
+        norms = np.array([get_norm(d) for d in diffs])
+        return norms.sum()
 
     def get_area_vector(self):
         # Returns a vector whose length is the area bound by
@@ -1112,6 +1153,11 @@ class OpenGLVMobject(OpenGLMobject):
         points = self.points
         p0 = points[0::nppc]
         p1 = points[nppc - 1 :: nppc]
+
+        if len(p0) != len(p1):
+            m = min(len(p0), len(p1))
+            p0 = p0[:m]
+            p1 = p1[:m]
 
         # Each term goes through all edges [(x1, y1, z1), (x2, y2, z2)]
         return 0.5 * np.array(
@@ -1148,28 +1194,21 @@ class OpenGLVMobject(OpenGLMobject):
         """
         return shoelace_direction(self.get_start_anchors())
 
-    def get_unit_normal(self, recompute=False):
-        if not recompute:
-            return self.unit_normal[0]
-
-        if len(self.points) < 3:
+    def get_unit_normal(self) -> np.ndarray:
+        if self.get_num_points() < 3:
             return OUT
 
         area_vect = self.get_area_vector()
-        area = np.linalg.norm(area_vect)
+        area = get_norm(area_vect)
         if area > 0:
-            return area_vect / area
+            normal = area_vect / area
         else:
             points = self.points
-            return get_unit_normal(
+            normal = get_unit_normal(
                 points[1] - points[0],
                 points[2] - points[1],
             )
-
-    def refresh_unit_normal(self):
-        for mob in self.get_family():
-            mob.unit_normal[:] = mob.get_unit_normal(recompute=True)
-        return self
+        return normal
 
     # Alignment
     def align_points(self, vmobject):
@@ -1202,14 +1241,14 @@ class OpenGLVMobject(OpenGLMobject):
                 # Create a null path at the very end
                 return [path_list[-1][-1]] * nppc
             path = path_list[n]
-            # Check for useless points at the end of the path and remove them
-            # https://github.com/ManimCommunity/manim/issues/1959
-            while len(path) > nppc:
-                # If the last nppc points are all equal to the preceding point
-                if self.consider_points_equals(path[-nppc:], path[-nppc - 1]):
-                    path = path[:-nppc]
-                else:
-                    break
+            # # Check for useless points at the end of the path and remove them
+            # # https://github.com/ManimCommunity/manim/issues/1959
+            # while len(path) > nppc:
+            #     # If the last nppc points are all equal to the preceding point
+            #     if self.consider_points_equals(path[-nppc:], path[-nppc - 1]):
+            #         path = path[:-nppc]
+            #     else:
+            #         break
             return path
 
         for n in range(n_subpaths):
@@ -1269,7 +1308,7 @@ class OpenGLVMobject(OpenGLMobject):
             return np.repeat(points, nppc * n, 0)
 
         bezier_groups = self.get_bezier_tuples_from_points(points)
-        norms = np.array([np.linalg.norm(bg[nppc - 1] - bg[0]) for bg in bezier_groups])
+        norms = np.array([get_norm(bg[nppc - 1] - bg[0]) for bg in bezier_groups])
         total_norm = sum(norms)
         # Calculate insertions per curve (ipc)
         if total_norm < 1e-6:
@@ -1295,6 +1334,7 @@ class OpenGLVMobject(OpenGLMobject):
 
     def interpolate(self, mobject1, mobject2, alpha, *args, **kwargs):
         super().interpolate(mobject1, mobject2, alpha, *args, **kwargs)
+        # TODO: Do we still need this? Because for many scenes it just doesn't work
         if config["use_projection_fill_shaders"]:
             self.refresh_triangulation()
         else:
@@ -1305,6 +1345,7 @@ class OpenGLVMobject(OpenGLMobject):
                     self.refresh_triangulation()
         return self
 
+    # TODO: compare to 3b1b/manim again check if something changed so we don't need the cairo interpolation anymore
     def pointwise_become_partial(
         self, vmobject: OpenGLVMobject, a: float, b: float, remap: bool = True
     ) -> OpenGLVMobject:
@@ -1399,45 +1440,43 @@ class OpenGLVMobject(OpenGLMobject):
     def refresh_triangulation(self):
         for mob in self.get_family():
             mob.needs_new_triangulation = True
+            mob.data["orientation"] = resize_array(
+                mob.data["orientation"], mob.get_num_points()
+            )
         return self
 
-    def get_triangulation(self, normal_vector=None):
+    def get_triangulation(self):
         # Figure out how to triangulate the interior to know
         # how to send the points as to the vertex shader.
         # First triangles come directly from the points
-        if normal_vector is None:
-            normal_vector = self.get_unit_normal()
-
         if not self.needs_new_triangulation:
             return self.triangulation
 
-        points = self.points
+        points = self.get_points()
 
         if len(points) <= 1:
             self.triangulation = np.zeros(0, dtype="i4")
             self.needs_new_triangulation = False
             return self.triangulation
 
-        if not np.isclose(normal_vector, OUT).all():
-            # Rotate points such that unit normal vector is OUT
-            points = np.dot(points, z_to_vector(normal_vector))
+        normal_vector = self.get_unit_normal()
         indices = np.arange(len(points), dtype=int)
 
-        b0s = points[0::3]
-        b1s = points[1::3]
-        b2s = points[2::3]
-        v01s = b1s - b0s
-        v12s = b2s - b1s
-
-        crosses = cross2d(v01s, v12s)
-        convexities = np.sign(crosses)
+        # Rotate points such that unit normal vector is OUT
+        if not np.isclose(normal_vector, OUT).all():
+            points = np.dot(points, z_to_vector(normal_vector))
 
         atol = self.tolerance_for_point_equality
-        end_of_loop = np.zeros(len(b0s), dtype=bool)
-        end_of_loop[:-1] = (np.abs(b2s[:-1] - b0s[1:]) > atol).any(1)
+        end_of_loop = np.zeros(len(points) // 3, dtype=bool)
+        end_of_loop[:-1] = (np.abs(points[2:-3:3] - points[3::3]) > atol).any(1)
         end_of_loop[-1] = True
 
-        concave_parts = convexities < 0
+        v01s = points[1::3] - points[0::3]
+        v12s = points[2::3] - points[1::3]
+        curve_orientations = np.sign(cross2d(v01s, v12s))
+        self.data["orientation"] = np.transpose([curve_orientations.repeat(3)])
+
+        concave_parts = curve_orientations < 0
 
         # These are the vertices to which we'll apply a polygon triangulation
         inner_vert_indices = np.hstack(
@@ -1445,7 +1484,7 @@ class OpenGLVMobject(OpenGLMobject):
                 indices[0::3],
                 indices[1::3][concave_parts],
                 indices[2::3][end_of_loop],
-            ],
+            ]
         )
         inner_vert_indices.sort()
         rings = np.arange(1, len(inner_vert_indices) + 1)[inner_vert_indices % 3 == 2]
@@ -1461,10 +1500,27 @@ class OpenGLVMobject(OpenGLMobject):
         self.needs_new_triangulation = False
         return tri_indices
 
+    @staticmethod
+    def triggers_refreshed_triangulation(func: Callable):
+        @wraps(func)
+        def wrapper(self, *args, **kwargs):
+            func(self, *args, **kwargs)
+            self.refresh_triangulation()
+
+        return wrapper
+
     @triggers_refreshed_triangulation
     def set_points(self, points):
         super().set_points(points)
         return self
+
+    @triggers_refreshed_triangulation
+    def append_points(self, points):
+        return super().append_points(points)
+
+    @triggers_refreshed_triangulation
+    def reverse_points(self):
+        return super().reverse_points()
 
     @triggers_refreshed_triangulation
     def set_data(self, data):
@@ -1496,36 +1552,42 @@ class OpenGLVMobject(OpenGLMobject):
         self.fill_shader_wrapper = ShaderWrapper(
             vert_data=self.fill_data,
             vert_indices=np.zeros(0, dtype="i4"),
+            uniforms=self.uniforms,
             shader_folder=self.fill_shader_folder,
             render_primitive=self.render_primitive,
         )
         self.stroke_shader_wrapper = ShaderWrapper(
             vert_data=self.stroke_data,
+            uniforms=self.uniforms,
             shader_folder=self.stroke_shader_folder,
             render_primitive=self.render_primitive,
         )
+
+        self.shader_wrapper_list = [
+            self.stroke_shader_wrapper.copy(),  # Use for back stroke
+            self.fill_shader_wrapper.copy(),
+            self.stroke_shader_wrapper.copy(),
+        ]
+        for sw in self.shader_wrapper_list:
+            sw.uniforms = self.uniforms
 
     def refresh_shader_wrapper_id(self):
         for wrapper in [self.fill_shader_wrapper, self.stroke_shader_wrapper]:
             wrapper.refresh_id()
         return self
 
-    def get_fill_shader_wrapper(self):
-        self.update_fill_shader_wrapper()
+    def get_fill_shader_wrapper(self) -> ShaderWrapper:
+        self.fill_shader_wrapper.vert_indices = self.get_fill_shader_vert_indices()
+        self.fill_shader_wrapper.vert_data = self.get_fill_shader_data()
+        self.fill_shader_wrapper.uniforms = self.get_shader_uniforms()
+        self.fill_shader_wrapper.depth_test = self.depth_test
         return self.fill_shader_wrapper
 
-    def update_fill_shader_wrapper(self):
-        self.fill_shader_wrapper.vert_data = self.get_fill_shader_data()
-        self.fill_shader_wrapper.vert_indices = self.get_triangulation()
-        self.fill_shader_wrapper.uniforms = self.get_fill_uniforms()
-
-    def get_stroke_shader_wrapper(self):
-        self.update_stroke_shader_wrapper()
-        return self.stroke_shader_wrapper
-
-    def update_stroke_shader_wrapper(self):
+    def get_stroke_shader_wrapper(self) -> ShaderWrapper:
         self.stroke_shader_wrapper.vert_data = self.get_stroke_shader_data()
-        self.stroke_shader_wrapper.uniforms = self.get_stroke_uniforms()
+        self.stroke_shader_wrapper.uniforms = self.get_shader_uniforms()
+        self.stroke_shader_wrapper.depth_test = self.depth_test
+        return self.stroke_shader_wrapper
 
     def get_shader_wrapper_list(self):
         # Build up data lists
@@ -1533,9 +1595,9 @@ class OpenGLVMobject(OpenGLMobject):
         stroke_shader_wrappers = []
         back_stroke_shader_wrappers = []
         for submob in self.family_members_with_points():
-            if submob.has_fill() and not config["use_projection_fill_shaders"]:
+            if submob.has_fill():
                 fill_shader_wrappers.append(submob.get_fill_shader_wrapper())
-            if submob.has_stroke() and not config["use_projection_stroke_shaders"]:
+            if submob.has_stroke():
                 ssw = submob.get_stroke_shader_wrapper()
                 if submob.draw_stroke_behind_fill:
                     back_stroke_shader_wrappers.append(ssw)
@@ -1543,38 +1605,23 @@ class OpenGLVMobject(OpenGLMobject):
                     stroke_shader_wrappers.append(ssw)
 
         # Combine data lists
-        wrapper_lists = [
+        sw_lists = [
             back_stroke_shader_wrappers,
             fill_shader_wrappers,
             stroke_shader_wrappers,
         ]
-        result = []
-        for wlist in wrapper_lists:
-            if wlist:
-                wrapper = wlist[0]
-                wrapper.combine_with(*wlist[1:])
-                result.append(wrapper)
-        return result
+        for sw, sw_list in zip(self.shader_wrapper_list, sw_lists):
+            if not sw_list:
+                continue
+            sw.read_in(*sw_list)
+            sw.depth_test = any(sw.depth_test for sw in sw_list)
+            sw.uniforms.update(sw_list[0].uniforms)
+        return list(filter(lambda sw: len(sw.vert_data) > 0, self.shader_wrapper_list))
 
-    def get_stroke_uniforms(self):
-        result = dict(super().get_shader_uniforms())
-        result["joint_type"] = self.joint_type.value
-        result["flat_stroke"] = float(self.flat_stroke)
-        return result
-
-    def get_fill_uniforms(self):
-        return {
-            "is_fixed_in_frame": float(self.is_fixed_in_frame),
-            "is_fixed_orientation": float(self.is_fixed_orientation),
-            "fixed_orientation_center": self.fixed_orientation_center,
-            "gloss": self.gloss,
-            "shadow": self.shadow,
-        }
-
-    def get_stroke_shader_data(self):
-        points = self.points
+    def get_stroke_shader_data(self) -> np.ndarray:
+        points = self.get_points()
         if len(self.stroke_data) != len(points):
-            self.stroke_data = np.zeros(len(points), dtype=OpenGLVMobject.stroke_dtype)
+            self.stroke_data = resize_array(self.stroke_data, len(points))
 
         if "points" not in self.locked_data_keys:
             nppc = self.n_points_per_curve
@@ -1586,19 +1633,18 @@ class OpenGLVMobject(OpenGLMobject):
 
         self.read_data_to_shader(self.stroke_data, "color", "stroke_rgba")
         self.read_data_to_shader(self.stroke_data, "stroke_width", "stroke_width")
-        self.read_data_to_shader(self.stroke_data, "unit_normal", "unit_normal")
 
         return self.stroke_data
 
-    def get_fill_shader_data(self):
-        points = self.points
+    def get_fill_shader_data(self) -> np.ndarray:
+        points = self.get_points()
         if len(self.fill_data) != len(points):
-            self.fill_data = np.zeros(len(points), dtype=OpenGLVMobject.fill_dtype)
+            self.fill_data = resize_array(self.fill_data, len(points))
             self.fill_data["vert_index"][:, 0] = range(len(points))
 
         self.read_data_to_shader(self.fill_data, "point", "points")
         self.read_data_to_shader(self.fill_data, "color", "fill_rgba")
-        self.read_data_to_shader(self.fill_data, "unit_normal", "unit_normal")
+        self.read_data_to_shader(self.fill_data, "orientation", "orientation")
 
         return self.fill_data
 
@@ -1606,7 +1652,7 @@ class OpenGLVMobject(OpenGLMobject):
         self.get_fill_shader_data()
         self.get_stroke_shader_data()
 
-    def get_fill_shader_vert_indices(self):
+    def get_fill_shader_vert_indices(self) -> np.ndarray:
         return self.get_triangulation()
 
 
@@ -1693,7 +1739,7 @@ class OpenGLVGroup(OpenGLVMobject):
             f"submobject{'s' if len(self.submobjects) > 0 else ''}"
         )
 
-    def add(self, *vmobjects: OpenGLVMobject):
+    def add(self, *vmobjects: OpenGLVMobject):  # type: ignore
         """Checks if all passed elements are an instance of OpenGLVMobject and then add them to submobjects
 
         Parameters
@@ -1790,7 +1836,7 @@ class OpenGLVGroup(OpenGLVMobject):
         """
         if not all(isinstance(m, OpenGLVMobject) for m in value):
             raise TypeError("All submobjects must be of type OpenGLVMobject")
-        self.submobjects[key] = value
+        self.submobjects[key] = value  # type: ignore
 
 
 class OpenGLVectorizedPoint(OpenGLPoint, OpenGLVMobject):
@@ -1800,15 +1846,15 @@ class OpenGLVectorizedPoint(OpenGLPoint, OpenGLVMobject):
         color=BLACK,
         fill_opacity=0,
         stroke_width=0,
-        artificial_width=0.01,
-        artificial_height=0.01,
         **kwargs,
     ):
-        self.artificial_width = artificial_width
-        self.artificial_height = artificial_height
-
-        super().__init__(
-            color=color, fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
+        OpenGLPoint.__init__(self, location, **kwargs)
+        OpenGLVMobject.__init__(
+            self,
+            color=color,
+            fill_opacity=fill_opacity,
+            stroke_width=stroke_width,
+            **kwargs,
         )
         self.set_points(np.array([location]))
 
@@ -1878,32 +1924,50 @@ class OpenGLDashedVMobject(OpenGLVMobject):
         self,
         vmobject: OpenGLVMobject,
         num_dashes: int = 15,
-        dashed_ratio: float = 0.5,
-        color: Color = WHITE,
+        positive_space_ratio: float = 0.5,
         **kwargs,
     ):
-        self.dashed_ratio = dashed_ratio
-        self.num_dashes = num_dashes
-        super().__init__(color=color, **kwargs)
-        r = self.dashed_ratio
-        n = self.num_dashes
+        super().__init__(**kwargs)
+
         if num_dashes > 0:
-            # Assuming total length is 1
-            dash_len = r / n
-            if vmobject.is_closed():
-                void_len = (1 - r) / n
-            else:
-                void_len = (1 - r) / (n - 1)
+            # End points of the unit interval for division
+            alphas = np.linspace(0, 1, num_dashes + 1)
+
+            # This determines the length of each "dash"
+            full_d_alpha = 1.0 / num_dashes
+            partial_d_alpha = full_d_alpha * positive_space_ratio
+
+            # Rescale so that the last point of vmobject will
+            # be the end of the last dash
+            alphas /= 1 - full_d_alpha + partial_d_alpha
 
             self.add(
-                *(
-                    vmobject.get_subcurve(
-                        i * (dash_len + void_len),
-                        i * (dash_len + void_len) + dash_len,
-                    )
-                    for i in range(n)
-                )
+                *[
+                    vmobject.get_subcurve(alpha, alpha + partial_d_alpha)
+                    for alpha in alphas[:-1]
+                ]
             )
         # Family is already taken care of by get_subcurve
         # implementation
         self.match_style(vmobject, recurse=False)
+
+
+class VHighlight(OpenGLVGroup):
+    def __init__(
+        self,
+        vmobject: OpenGLVMobject,
+        n_layers: int = 5,
+        color_bounds: tuple[Color, Color] = (GREY_C, GREY_E),
+        max_stroke_addition: float = 5.0,
+    ):
+        outline = vmobject.replicate(n_layers)
+        outline.set_fill(opacity=0)
+        added_widths = np.linspace(0, max_stroke_addition, n_layers + 1)[1:]
+        colors = color_gradient(color_bounds, n_layers)
+        for part, added_width, color in zip(reversed(outline), added_widths, colors):
+            for sm in part.family_members_with_points():
+                sm.set_stroke(
+                    width=sm.get_stroke_width() + added_width,
+                    color=color,
+                )
+        super().__init__(*outline)

@@ -58,41 +58,7 @@ if TYPE_CHECKING:
     Updater: TypeAlias = Union[TimeBasedUpdater, NonTimeUpdater]
     PointUpdateFunction: TypeAlias = Callable[[np.ndarray], np.ndarray]
 
-
-class MobjectData(TypedDict, total=False):
-    points: np.ndarray
-    bounding_box: np.ndarray
-    rgbas: np.ndarray
-
-
-def to_mobject_data(values: dict[str, np.ndarray] | MobjectData) -> MobjectData:
-    result = MobjectData(
-        points=np.array(values["points"]),
-        bounding_box=np.array(values["bounding_box"]),
-        rgbas=np.array(values["rgbas"]),
-    )
-    return result
-
-
-class MobjectUniforms(TypedDict):
-    is_fixed_in_frame: np.ndarray
-    is_fixed_orientation: np.ndarray
-    gloss: np.ndarray
-    shadow: np.ndarray
-    reflectiveness: np.ndarray
-
-
-def to_mobject_uniforms(
-    values: dict[str, np.ndarray] | MobjectUniforms
-) -> MobjectUniforms:
-    result = MobjectUniforms(
-        is_fixed_in_frame=np.array(values["is_fixed_in_frame"]),
-        is_fixed_orientation=np.array(values["is_fixed_orientation"]),
-        gloss=np.array(values["gloss"]),
-        shadow=np.array(values["shadow"]),
-        reflectiveness=np.array(values["reflectiveness"]),
-    )
-    return result
+UNIFORM_DTYPE = np.float64
 
 
 class OpenGLMobject:
@@ -151,8 +117,8 @@ class OpenGLMobject:
         self.saved_state: OpenGLMobject | None = None
         self.target: OpenGLMobject | None = None
 
-        self.data: MobjectData
-        self.uniforms: MobjectUniforms
+        self.data: dict[str, np.ndarray] = {}
+        self.uniforms: dict[str, np.ndarray] = {}
 
         self.init_data()
         self.init_uniforms()
@@ -261,22 +227,24 @@ class OpenGLMobject:
     def init_data(self):
         """Initializes the ``points``, ``bounding_box`` and ``rgbas`` attributes and groups them into self.data.
         Subclasses can inherit and overwrite this method to extend `self.data`."""
-        self.data = MobjectData(
-            points=np.zeros((0, 3)),
-            bounding_box=np.zeros((3, 3)),
-            rgbas=np.zeros((1, 4)),
-        )
+        self.data = {
+            "points": np.zeros((0, 3)),
+            "bounding_box": np.zeros((3, 3)),
+            "rgbas": np.zeros((1, 4)),
+        }
 
     def init_uniforms(self):
         """Initializes the uniforms.
 
         Gets called upon creation"""
-        self.uniforms = MobjectUniforms(
-            is_fixed_in_frame=np.array(float(self.is_fixed_in_frame)),
-            gloss=np.array(self.gloss),
-            shadow=np.array(self.shadow),
-            reflectiveness=np.array(self.reflectiveness),
-        )
+        self.uniforms = {
+            "is_fixed_in_frame": np.array(
+                float(self.is_fixed_in_frame), dtype=UNIFORM_DTYPE
+            ),
+            "gloss": np.array(self.gloss, dtype=UNIFORM_DTYPE),
+            "shadow": np.array(self.shadow, dtype=UNIFORM_DTYPE),
+            "reflectiveness": np.array(self.reflectiveness, dtype=UNIFORM_DTYPE),
+        }
 
     def init_colors(self):
         """Initializes the colors.
@@ -1393,8 +1361,8 @@ class OpenGLMobject:
         # The line above is only a shallow copy, so the internal
         # data which are numpyu arrays or other mobjects still
         # need to be further copied.
-        result.data = to_mobject_data(self.data)
-        result.uniforms = to_mobject_uniforms(self.uniforms)
+        result.data = {k: np.array(v) for k, v in self.data.items()}
+        result.uniforms = {k: np.array(v) for k, v in self.uniforms.items()}
 
         # Instead of adding using result.add, which does some checks for updating
         # updater statues and bounding box, just directly modify the family-related
@@ -1427,7 +1395,7 @@ class OpenGLMobject:
         return result
 
     def generate_target(self, use_deepcopy: bool = False):
-        target: OpenGLMobject = self.copy(use_deepcopy=use_deepcopy)
+        target: OpenGLMobject = self.copy(deep=use_deepcopy)
         target.saved_state = self.saved_state
         self.target = target
         return self.target
