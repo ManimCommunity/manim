@@ -285,6 +285,22 @@ def rotation_about_z(angle: float) -> np.ndarray:
     )
 
 
+def get_norm(vector: np.ndarray) -> float:
+    """Returns the norm of the vector.
+
+    Parameters
+    ----------
+    vector
+        The vector for which you want to find the norm.
+
+    Returns
+    -------
+    float
+        The norm of the vector.
+    """
+    return np.linalg.norm(vector)
+
+
 def z_to_vector(vector: np.ndarray) -> np.ndarray:
     """
     Returns some matrix in SO(3) which takes the z-axis to the

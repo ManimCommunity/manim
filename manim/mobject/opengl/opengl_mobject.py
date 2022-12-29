@@ -2,22 +2,30 @@ from __future__ import annotations
 
 import copy
 import itertools as it
+import numbers
+import os
+import pickle
 import random
 import sys
 from functools import partialmethod, wraps
 from math import ceil
-from typing import Iterable, Sequence
+from typing import TYPE_CHECKING
 
 import moderngl
 import numpy as np
 from colour import Color
+from typing_extensions import TypedDict
 
 from manim import config, logger
 from manim.constants import *
+from manim.event_handler import EVENT_DISPATCHER
+from manim.event_handler.event_listener import EventListener
+from manim.event_handler.event_type import EventType
+from manim.renderer.shader_wrapper import ShaderWrapper, get_colormap_code
 from manim.utils.bezier import integer_interpolate, interpolate
 from manim.utils.color import *
-from manim.utils.color import Colors
-from manim.utils.config_ops import _Data, _Uniforms
+from manim.utils.color import Colors, get_colormap_list
+from manim.utils.deprecation import deprecated
 
 # from ..utils.iterables import batch_by_property
 from manim.utils.iterables import (
@@ -34,20 +42,57 @@ from manim.utils.paths import straight_path
 from manim.utils.simple_functions import get_parameters
 from manim.utils.space_ops import (
     angle_between_vectors,
+    angle_of_vector,
+    get_norm,
     normalize,
     rotation_matrix_transpose,
 )
 
+if TYPE_CHECKING:
+    from typing import Callable, Iterable, Sequence, Tuple, Union
 
-def affects_shader_info_id(func):
-    @wraps(func)
-    def wrapper(self):
-        for mob in self.get_family():
-            func(mob)
-            mob.refresh_shader_wrapper_id()
-        return self
+    from typing_extensions import TypeAlias
 
-    return wrapper
+    TimeBasedUpdater: TypeAlias = Callable[[OpenGLMobject, float], OpenGLMobject | None]
+    NonTimeUpdater: TypeAlias = Callable[[OpenGLMobject], OpenGLMobject | None]
+    Updater: TypeAlias = Union[TimeBasedUpdater, NonTimeUpdater]
+    PointUpdateFunction: TypeAlias = Callable[[np.ndarray], np.ndarray]
+
+
+class MobjectData(TypedDict, total=False):
+    points: np.ndarray
+    bounding_box: np.ndarray
+    rgbas: np.ndarray
+
+
+def to_mobject_data(values: dict[str, np.ndarray] | MobjectData) -> MobjectData:
+    result = MobjectData(
+        points=np.array(values["points"]),
+        bounding_box=np.array(values["bounding_box"]),
+        rgbas=np.array(values["rgbas"]),
+    )
+    return result
+
+
+class MobjectUniforms(TypedDict):
+    is_fixed_in_frame: np.ndarray
+    is_fixed_orientation: np.ndarray
+    gloss: np.ndarray
+    shadow: np.ndarray
+    reflectiveness: np.ndarray
+
+
+def to_mobject_uniforms(
+    values: dict[str, np.ndarray] | MobjectUniforms
+) -> MobjectUniforms:
+    result = MobjectUniforms(
+        is_fixed_in_frame=np.array(values["is_fixed_in_frame"]),
+        is_fixed_orientation=np.array(values["is_fixed_orientation"]),
+        gloss=np.array(values["gloss"]),
+        shadow=np.array(values["shadow"]),
+        reflectiveness=np.array(values["reflectiveness"]),
+    )
+    return result
 
 
 class OpenGLMobject:
@@ -66,95 +111,59 @@ class OpenGLMobject:
 
     """
 
-    shader_dtype = [
+    dim: int = 3
+    shader_folder: str = ""
+    render_primitive: int = moderngl.TRIANGLE_STRIP
+    shader_dtype: Sequence[tuple[str, type, tuple[int]]] = [
         ("point", np.float32, (3,)),
     ]
-    shader_folder = ""
-
-    # _Data and _Uniforms are set as class variables to tell manim how to handle setting/getting these attributes later.
-    points = _Data()
-    bounding_box = _Data()
-    rgbas = _Data()
-
-    is_fixed_in_frame = _Uniforms()
-    is_fixed_orientation = _Uniforms()
-    fixed_orientation_center = _Uniforms()  # for fixed orientation reference
-    gloss = _Uniforms()
-    shadow = _Uniforms()
 
     def __init__(
         self,
         color=WHITE,
-        opacity=1,
-        dim=3,  # TODO, get rid of this
-        # Lighting parameters
-        # Positive gloss up to 1 makes it reflect the light.
-        gloss=0.0,
-        # Positive shadow up to 1 makes a side opposite the light darker
-        shadow=0.0,
-        # For shaders
-        render_primitive=moderngl.TRIANGLES,
-        texture_paths=None,
-        depth_test=False,
-        # If true, the mobject will not get rotated according to camera position
-        is_fixed_in_frame=False,
-        is_fixed_orientation=False,
-        # Must match in attributes of vert shader
-        # Event listener
-        listen_to_events=False,
-        model_matrix=None,
-        should_render=True,
+        opacity: float = 1.0,
+        reflectiveness: float = 0.0,
+        shadow: float = 0.0,
+        gloss: float = 0.0,
+        texture_paths: dict[str, str] | None = None,
+        is_fixed_in_frame: bool = False,
+        depth_test: bool = False,
         name: str | None = None,
         **kwargs,
     ):
-        self.name = self.__class__.__name__ if name is None else name
-        # getattr in case data/uniforms are already defined in parent classes.
-        self.data = getattr(self, "data", {})
-        self.uniforms = getattr(self, "uniforms", {})
-
+        self.color = color
         self.opacity = opacity
-        self.dim = dim  # TODO, get rid of this
-        # Lighting parameters
-        # Positive gloss up to 1 makes it reflect the light.
-        self.gloss = gloss
-        # Positive shadow up to 1 makes a side opposite the light darker
+        self.reflectiveness = reflectiveness
         self.shadow = shadow
-        # For shaders
-        self.render_primitive = render_primitive
+        self.gloss = gloss
         self.texture_paths = texture_paths
+        self.is_fixed_in_frame = is_fixed_in_frame
         self.depth_test = depth_test
-        # If true, the mobject will not get rotated according to camera position
-        self.is_fixed_in_frame = float(is_fixed_in_frame)
-        self.is_fixed_orientation = float(is_fixed_orientation)
-        self.fixed_orientation_center = (0, 0, 0)
-        # Must match in attributes of vert shader
-        # Event listener
-        self.listen_to_events = listen_to_events
+        self.name = self.__class__.__name__ if name is None else name
 
-        self._submobjects = []
-        self.parents = []
-        self.parent = None
-        self.family = [self]
-        self.locked_data_keys = set()
-        self.needs_new_bounding_box = True
-        if model_matrix is None:
-            self.model_matrix = np.eye(4)
-        else:
-            self.model_matrix = model_matrix
+        # internal_state
+        self.submobjects: list[OpenGLMobject] = []
+        self.parents: list[OpenGLMobject] = []
+        self.family: list[OpenGLMobject] = [self]
+        self.locked_data_keys: set[str] = set()
+        self.needs_new_bounding_box: bool = True
+        self._is_animating: bool = False
+        self.saved_state: OpenGLMobject | None = None
+        self.target: OpenGLMobject | None = None
+
+        self.data: MobjectData
+        self.uniforms: MobjectUniforms
 
         self.init_data()
+        self.init_uniforms()
         self.init_updaters()
-        # self.init_event_listners()
+        self.init_event_listeners()
         self.init_points()
-        self.color = Color(color) if color else None
         self.init_colors()
-
-        self.shader_indices = None
+        self.init_shader_data()
 
         if self.depth_test:
             self.apply_depth_test()
-
-        self.should_render = should_render
 
     @classmethod
     def __init_subclass__(cls, **kwargs):
@@ -167,17 +176,15 @@ class OpenGLMobject:
     def __repr__(self):
         return str(self.name)
 
-    def __sub__(self, other):
-        return NotImplemented
+    def __add__(self, other: OpenGLMobject) -> OpenGLMobject:
+        if not isinstance(other, OpenGLMobject):
+            raise TypeError(f"Only Mobjects can be added to Mobjects not {type(other)}")
+        return self.get_group_class()(self, other)
 
-    def __isub__(self, other):
-        return NotImplemented
-
-    def __add__(self, mobject):
-        return NotImplemented
-
-    def __iadd__(self, mobject):
-        return NotImplemented
+    def __mul__(self, other: int) -> OpenGLMobject:
+        if not isinstance(other, int):
+            raise TypeError(f"Only int can be multiplied to Mobjects not {type(other)}")
+        return self.replicate(other)
 
     @classmethod
     def set_default(cls, **kwargs):
@@ -227,12 +234,49 @@ class OpenGLMobject:
         else:
             cls.__init__ = cls._original__init__
 
+    @property
+    def points(self):
+        return self.data["points"]
+
+    @points.setter
+    def points(self, value):
+        self.data["points"] = value
+
+    @property
+    def bounding_box(self):
+        return self.data["bounding_box"]
+
+    @bounding_box.setter
+    def bounding_box(self, value):
+        self.data["bounding_box"] = value
+
+    @property
+    def rgbas(self):
+        return self.data["rgbas"]
+
+    @rgbas.setter
+    def rgbas(self, value):
+        self.data["rgbas"] = value
+
     def init_data(self):
         """Initializes the ``points``, ``bounding_box`` and ``rgbas`` attributes and groups them into self.data.
         Subclasses can inherit and overwrite this method to extend `self.data`."""
-        self.points = np.zeros((0, 3))
-        self.bounding_box = np.zeros((3, 3))
-        self.rgbas = np.zeros((1, 4))
+        self.data = MobjectData(
+            points=np.zeros((0, 3)),
+            bounding_box=np.zeros((3, 3)),
+            rgbas=np.zeros((1, 4)),
+        )
+
+    def init_uniforms(self):
+        """Initializes the uniforms.
+
+        Gets called upon creation"""
+        self.uniforms = MobjectUniforms(
+            is_fixed_in_frame=np.array(float(self.is_fixed_in_frame)),
+            gloss=np.array(self.gloss),
+            shadow=np.array(self.shadow),
+            reflectiveness=np.array(self.reflectiveness),
+        )
 
     def init_colors(self):
         """Initializes the colors.
@@ -248,52 +292,20 @@ class OpenGLMobject:
         # Typically implemented in subclass, unless purposefully left blank
         pass
 
-    def set(self, **kwargs) -> OpenGLMobject:
-        """Sets attributes.
-
-        Mainly to be used along with :attr:`animate` to
-        animate setting attributes.
-
-        Examples
-        --------
-        ::
-
-            >>> mob = OpenGLMobject()
-            >>> mob.set(foo=0)
-            OpenGLMobject
-            >>> mob.foo
-            0
-
-        Parameters
-        ----------
-        **kwargs
-            The attributes and corresponding values to set.
-
-        Returns
-        -------
-        :class:`OpenGLMobject`
-            ``self``
-
-
-        """
-
-        for attr, value in kwargs.items():
-            setattr(self, attr, value)
-
-        return self
-
     def set_data(self, data):
         for key in data:
-            self.data[key] = data[key].copy()
+            self.data[key] = data[key]
         return self
 
     def set_uniforms(self, uniforms):
-        for key in uniforms:
-            self.uniforms[key] = uniforms[key]  # Copy?
+        for key, value in uniforms.items():
+            if isinstance(value, np.ndarray):
+                value = value.copy()
+            self.uniforms[key] = value
         return self
 
     @property
-    def animate(self):
+    def animate(self) -> _AnimationBuilder:
         """Used to animate the application of a method.
 
         .. warning::
@@ -379,6 +391,101 @@ class OpenGLMobject:
 
         """
         return _AnimationBuilder(self)
+
+    def resize_points(self, new_length, resize_func=resize_array):
+        if new_length != len(self.points):
+            self.points = resize_func(self.points, new_length)
+        self.refresh_bounding_box()
+        return self
+
+    def set_points(self, points):
+        if len(points) == len(self.points):
+            self.points[:] = points
+        elif isinstance(points, np.ndarray):
+            self.points = points.copy()
+        else:
+            self.points = np.array(points)
+        self.refresh_bounding_box()
+        return self
+
+    def append_points(self, new_points):
+        self.points = np.vstack([self.points, new_points])
+        self.refresh_bounding_box()
+        return self
+
+    def reverse_points(self):
+        for mob in self.get_family():
+            for key in mob.data:
+                mob.data[key] = mob.data[key][::-1]
+        return self
+
+    def apply_points_function(
+        self,
+        func: PointUpdateFunction,
+        about_point=None,
+        about_edge=ORIGIN,
+        works_on_bounding_box=False,
+    ):
+        if about_point is None and about_edge is not None:
+            about_point = self.get_bounding_box_point(about_edge)
+
+        for mob in self.get_family():
+            arrs = []
+            if mob.has_points():
+                arrs.append(mob.points)
+            if works_on_bounding_box:
+                arrs.append(mob.get_bounding_box())
+
+            for arr in arrs:
+                if about_point is None:
+                    arr[:] = func(arr)
+                else:
+                    arr[:] = func(arr - about_point) + about_point
+
+        if not works_on_bounding_box:
+            self.refresh_bounding_box(recurse_down=True)
+        else:
+            for parent in self.parents:
+                parent.refresh_bounding_box()
+        return self
+
+    # ce only
+    def get_array_attrs(self):
+        """This method is used to determine which attributes of the :class:`~.OpenGLMobject` are arrays.
+        These can be used to apply functions to all of them at once.
+        """
+        return ["points"]
+
+    # ce only
+    def apply_over_attr_arrays(self, func):
+        """This method is used to apply a function to all attributes of the :class:`~.OpenGLMobject` that are arrays."""
+        for attr in self.get_array_attrs():
+            setattr(self, attr, func(getattr(self, attr)))
+        return self
+
+    # ce only
+    def get_midpoint(self) -> np.ndarray:
+        """Get coordinates of the middle of the path that forms the  :class:`~.OpenGLMobject`.
+
+        Examples
+        --------
+
+        .. manim:: AngleMidPoint
+            :save_last_frame:
+
+            class AngleMidPoint(Scene):
+                def construct(self):
+                    line1 = Line(ORIGIN, 2*RIGHT)
+                    line2 = Line(ORIGIN, 2*RIGHT).rotate_about_origin(80*DEGREES)
+
+                    a = Angle(line1, line2, radius=1.5, other_angle=False)
+                    d = Dot(a.get_midpoint()).set_color(RED)
+
+                    self.add(line1, line2, a, d)
+                    self.wait()
+
+        """
+        return self.point_from_proportion(0.5)
 
     @property
     def width(self):
@@ -476,91 +583,6 @@ class OpenGLMobject:
     def depth(self, value):
         self.rescale_to_fit(value, 2, stretch=False)
 
-    def resize_points(self, new_length, resize_func=resize_array):
-        if new_length != len(self.points):
-            self.points = resize_func(self.points, new_length)
-        self.refresh_bounding_box()
-        return self
-
-    def set_points(self, points):
-        if len(points) == len(self.points):
-            self.points[:] = points
-        elif isinstance(points, np.ndarray):
-            self.points = points.copy()
-        else:
-            self.points = np.array(points)
-        self.refresh_bounding_box()
-        return self
-
-    def apply_over_attr_arrays(self, func):
-        for attr in self.get_array_attrs():
-            setattr(self, attr, func(getattr(self, attr)))
-        return self
-
-    def append_points(self, new_points):
-        self.points = np.vstack([self.points, new_points])
-        self.refresh_bounding_box()
-        return self
-
-    def reverse_points(self):
-        for mob in self.get_family():
-            for key in mob.data:
-                mob.data[key] = mob.data[key][::-1]
-        return self
-
-    def get_midpoint(self) -> np.ndarray:
-        """Get coordinates of the middle of the path that forms the  :class:`~.OpenGLMobject`.
-
-        Examples
-        --------
-
-        .. manim:: AngleMidPoint
-            :save_last_frame:
-
-            class AngleMidPoint(Scene):
-                def construct(self):
-                    line1 = Line(ORIGIN, 2*RIGHT)
-                    line2 = Line(ORIGIN, 2*RIGHT).rotate_about_origin(80*DEGREES)
-
-                    a = Angle(line1, line2, radius=1.5, other_angle=False)
-                    d = Dot(a.get_midpoint()).set_color(RED)
-
-                    self.add(line1, line2, a, d)
-                    self.wait()
-
-        """
-        return self.point_from_proportion(0.5)
-
-    def apply_points_function(
-        self,
-        func,
-        about_point=None,
-        about_edge=ORIGIN,
-        works_on_bounding_box=False,
-    ):
-        if about_point is None and about_edge is not None:
-            about_point = self.get_bounding_box_point(about_edge)
-
-        for mob in self.get_family():
-            arrs = []
-            if mob.has_points():
-                arrs.append(mob.points)
-            if works_on_bounding_box:
-                arrs.append(mob.get_bounding_box())
-
-            for arr in arrs:
-                if about_point is None:
-                    arr[:] = func(arr)
-                else:
-                    arr[:] = func(arr - about_point) + about_point
-
-        if not works_on_bounding_box:
-            self.refresh_bounding_box(recurse_down=True)
-        else:
-            for parent in self.parents:
-                parent.refresh_bounding_box()
-        return self
-
     # Others related to points
 
     def match_points(self, mobject):
@@ -581,6 +603,7 @@ class OpenGLMobject:
                     self.wait(0.5)
         """
         self.set_points(mobject.points)
+        return self
 
     def clear_points(self):
         self.points = np.empty((0, 3))
@@ -631,11 +654,28 @@ class OpenGLMobject:
                 parent.refresh_bounding_box()
         return self
 
-    def is_point_touching(self, point, buff=MED_SMALL_BUFF):
+    def are_points_touching(self, points, buff: float = 0) -> np.ndarray:
         bb = self.get_bounding_box()
         mins = bb[0] - buff
         maxs = bb[2] + buff
-        return (point >= mins).all() and (point <= maxs).all()
+        return ((points >= mins) * (points <= maxs)).all(1)
+
+    def is_point_touching(self, point, buff=MED_SMALL_BUFF):
+        return self.are_points_touching(np.array(point, ndmin=2), buff)[0]
+
+    def is_touching(self, mobject: OpenGLMobject, buff: float = 1e-2) -> bool:
+        bb1 = self.get_bounding_box()
+        bb2 = mobject.get_bounding_box()
+        return not any(
+            (
+                (
+                    bb2[2] < bb1[0] - buff
+                ).any(),  # E.g. Right of mobject is left of self's left
+                (
+                    bb2[0] > bb1[2] + buff
+                ).any(),  # E.g. Left of mobject is right of self's right
+            )
+        )
 
     # Family matters
 
@@ -648,13 +688,13 @@ class OpenGLMobject:
     def __iter__(self):
         return iter(self.split())
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.split())
 
-    def split(self):
+    def split(self) -> list[OpenGLMobject]:
         return self.submobjects
 
-    def assemble_family(self):
+    def assemble_family(self) -> OpenGLMobject:
         sub_families = (sm.get_family() for sm in self.submobjects)
         self.family = [self, *uniq_chain(*sub_families)]
         self.refresh_has_updater_status()
@@ -663,17 +703,39 @@ class OpenGLMobject:
             parent.assemble_family()
         return self
 
-    def get_family(self, recurse=True):
+    def get_family(self, recurse=True) -> list[OpenGLMobject]:
         if recurse and hasattr(self, "family"):
             return self.family
         else:
             return [self]
 
-    def family_members_with_points(self):
+    def family_members_with_points(self) -> list[OpenGLMobject]:
         return [m for m in self.get_family() if m.has_points()]
 
+    def get_ancestors(self, extended: bool = False) -> list[OpenGLMobject]:
+        """
+        Returns parents, grandparents, etc.
+        Order of result should be from higher members of the hierarchy down.
+
+        If extended is set to true, it includes the ancestors of all family members,
+        e.g. any other parents of a submobject
+        """
+        ancestors = []
+        to_process = list(self.get_family(recurse=extended))
+        excluded = set(to_process)
+        while to_process:
+            for p in to_process.pop().parents:
+                if p not in excluded:
+                    ancestors.append(p)
+                    to_process.append(p)
+        # Ensure mobjects highest in the hierarchy show up first
+        ancestors.reverse()
+        # Remove list redundancies while preserving order
+        return list(dict.fromkeys(ancestors))
+
     def add(
-        self, *mobjects: OpenGLMobject, update_parent: bool = False
+        self,
+        *mobjects: OpenGLMobject,
     ) -> OpenGLMobject:
         """Add mobjects as submobjects.
 
@@ -733,17 +795,6 @@ class OpenGLMobject:
             ValueError: OpenGLMobject cannot contain self
 
         """
-        if update_parent:
-            assert len(mobjects) == 1, "Can't set multiple parents."
-            mobjects[0].parent = self
-
-        if self in mobjects:
-            raise ValueError("OpenGLMobject cannot contain self")
-        if any(mobjects.count(elem) > 1 for elem in mobjects):
-            logger.warning(
-                "Attempted adding some Mobject as a child more than once, "
-                "this is not possible. Repetitions are ignored.",
-            )
         for mobject in mobjects:
             if not isinstance(mobject, OpenGLMobject):
                 raise TypeError("All submobjects must be of type OpenGLMobject")
@@ -754,44 +805,8 @@ class OpenGLMobject:
         self.assemble_family()
         return self
 
-    def insert(self, index: int, mobject: OpenGLMobject, update_parent: bool = False):
-        """Inserts a mobject at a specific position into self.submobjects
-
-        Effectively just calls  ``self.submobjects.insert(index, mobject)``,
-        where ``self.submobjects`` is a list.
-
-        Highly adapted from ``OpenGLMobject.add``.
-
-        Parameters
-        ----------
-        index
-            The index at which
-        mobject
-            The mobject to be inserted.
-        update_parent
-            Whether or not to set ``mobject.parent`` to ``self``.
-        """
-
-        if update_parent:
-            mobject.parent = self
-
-        if mobject is self:
-            raise ValueError("OpenGLMobject cannot contain self")
-
-        if not isinstance(mobject, OpenGLMobject):
-            raise TypeError("All submobjects must be of type OpenGLMobject")
-
-        if mobject not in self.submobjects:
-            self.submobjects.insert(index, mobject)
-
-        if self not in mobject.parents:
-            mobject.parents.append(self)
-
-        self.assemble_family()
-        return self
-
     def remove(
-        self, *mobjects: OpenGLMobject, update_parent: bool = False
+        self, *mobjects: OpenGLMobject, reassemble: bool = True
     ) -> OpenGLMobject:
         """Remove :attr:`submobjects`.
 
@@ -814,16 +829,13 @@ class OpenGLMobject:
         :meth:`add`
 
         """
-        if update_parent:
-            assert len(mobjects) == 1, "Can't remove multiple parents."
-            mobjects[0].parent = None
-
         for mobject in mobjects:
             if mobject in self.submobjects:
                 self.submobjects.remove(mobject)
             if self in mobject.parents:
                 mobject.parents.remove(self)
-        self.assemble_family()
+        if reassemble:
+            self.assemble_family()
         return self
 
     def add_to_back(self, *mobjects: OpenGLMobject) -> OpenGLMobject:
@@ -871,7 +883,7 @@ class OpenGLMobject:
         :meth:`add`
 
         """
-        self.submobjects = list_update(mobjects, self.submobjects)
+        self.set_submobjects(list_update(mobjects, self.submobjects))
         return self
 
     def replace_submobject(self, index, new_submob):
@@ -882,32 +894,39 @@ class OpenGLMobject:
         self.assemble_family()
         return self
 
-    def invert(self, recursive=False):
-        """Inverts the list of :attr:`submobjects`.
+    def insert_submobject(self, index: int, mobject: OpenGLMobject):
+        """Inserts a mobject at a specific position into self.submobjects
+
+        Effectively just calls  ``self.submobjects.insert(index, mobject)``,
+        where ``self.submobjects`` is a list.
+
+        Highly adapted from ``OpenGLMobject.add``.
 
         Parameters
         ----------
-        recursive
-            If ``True``, all submobject lists of this mobject's family are inverted.
-
-        Examples
-        --------
-
-        .. manim:: InvertSumobjectsExample
-
-            class InvertSumobjectsExample(Scene):
-                def construct(self):
-                    s = VGroup(*[Dot().shift(i*0.1*RIGHT) for i in range(-20,20)])
-                    s2 = s.copy()
-                    s2.invert()
-                    s2.shift(DOWN)
-                    self.play(Write(s), Write(s2))
+        index
+            The index at which
+        mobject
+            The mobject to be inserted.
+        update_parent
+            Whether or not to set ``mobject.parent`` to ``self``.
         """
-        if recursive:
-            for submob in self.submobjects:
-                submob.invert(recursive=True)
-        list.reverse(self.submobjects)
+        if mobject is self:
+            raise ValueError("OpenGLMobject cannot contain self")
+
+        if not isinstance(mobject, OpenGLMobject):
+            raise TypeError("All submobjects must be of type OpenGLMobject")
+
+        if mobject not in self.submobjects:
+            self.submobjects.insert(index, mobject)
+
         self.assemble_family()
+        return self
+
+    def set_submobjects(self, submobject_list: list[OpenGLMobject]):
+        self.remove(*self.submobjects, reassemble=False)
+        self.add(*submobject_list)
+        return self
 
     # Submobject organization
 
@@ -935,7 +954,8 @@ class OpenGLMobject:
             self.center()
         return self
 
-    def arrange_in_grid(
+    # !TODO this differs a lot from 3b1b/manim
+    def arrange_in_grid_legacy(
         self,
         rows: int | None = None,
         cols: int | None = None,
@@ -1062,7 +1082,7 @@ class OpenGLMobject:
             # This is favored over rows>cols since in general
             # the sceene is wider than high.
         if rows is None:
-            rows = ceil(len(mobs) / cols)
+            rows = ceil(len(mobs) / cols)  # type: ignore
         if cols is None:
             cols = ceil(len(mobs) / rows)
         if rows * cols < len(mobs):
@@ -1117,7 +1137,7 @@ class OpenGLMobject:
             raise ValueError(
                 'flow_order must be one of the following values: "dr", "rd", "ld" "dl", "ru", "ur", "lu", "ul".',
             )
-        flow_order = mapper[flow_order]
+        flow_order = mapper[flow_order]  # type: ignore
 
         # Reverse row_alignments and row_heights. Necessary since the
         # grid filling is handled bottom up for simplicity reasons.
@@ -1136,7 +1156,11 @@ class OpenGLMobject:
         # properties of 0.
 
         mobs.extend([placeholder] * (rows * cols - len(mobs)))
-        grid = [[mobs[flow_order(r, c)] for c in range(cols)] for r in range(rows)]
+
+        grid = [
+            [mobs[flow_order(r, c)] for c in range(cols)]  # type:ignore
+            for r in range(rows)
+        ]
 
         measured_heigths = [
             max(grid[r][c].height for c in range(cols)) for r in range(rows)
@@ -1163,7 +1187,7 @@ class OpenGLMobject:
             x = 0
             for c in range(cols):
                 if grid[r][c] is not placeholder:
-                    alignment = row_alignments[r] + col_alignments[c]
+                    alignment = row_alignments[r] + col_alignments[c]  # type:ignore
                     line = Line(
                         x * RIGHT + y * UP,
                         (x + widths[c]) * RIGHT + (y + heights[r]) * UP,
@@ -1179,20 +1203,76 @@ class OpenGLMobject:
         self.move_to(start_pos)
         return self
 
-    def get_grid(self, n_rows, n_cols, height=None, **kwargs):
-        """
-        Returns a new mobject containing multiple copies of this one
-        arranged in a grid
-        """
-        grid = self.duplicate(n_rows * n_cols)
-        grid.arrange_in_grid(n_rows, n_cols, **kwargs)
-        if height is not None:
-            grid.set_height(height)
-        return grid
+    def arrange_in_grid(
+        self,
+        n_rows: int | None = None,
+        n_cols: int | None = None,
+        buff: float | None = None,
+        h_buff: float | None = None,
+        v_buff: float | None = None,
+        buff_ratio: float | None = None,
+        h_buff_ratio: float = 0.5,
+        v_buff_ratio: float = 0.5,
+        aligned_edge: np.ndarray = ORIGIN,
+        fill_rows_first: bool = True,
+    ):
+        submobs = self.submobjects
+        if n_rows is None and n_cols is None:
+            n_rows = int(np.sqrt(len(submobs)))
+        if n_rows is None and n_cols is not None:
+            n_rows = len(submobs) // n_cols
+        if n_cols is None and n_rows is not None:
+            n_cols = len(submobs) // n_rows
 
-    def duplicate(self, n: int):
-        """Returns an :class:`~.OpenGLVGroup` containing ``n`` copies of the mobject."""
-        return self.get_group_class()(*[self.copy() for _ in range(n)])
+        if buff is not None:
+            h_buff = buff
+            v_buff = buff
+        else:
+            if buff_ratio is not None:
+                v_buff_ratio = buff_ratio
+                h_buff_ratio = buff_ratio
+            if h_buff is None:
+                h_buff = h_buff_ratio * self[0].get_width()
+            if v_buff is None:
+                v_buff = v_buff_ratio * self[0].get_height()
+
+        x_unit = h_buff + max([sm.get_width() for sm in submobs])
+        y_unit = v_buff + max([sm.get_height() for sm in submobs])
+
+        for index, sm in enumerate(submobs):
+            if fill_rows_first:
+                x, y = index % n_cols, index // n_cols  # type: ignore
+            else:
+                x, y = index // n_rows, index % n_rows  # type: ignore
+            sm.move_to(ORIGIN, aligned_edge)
+            sm.shift(x * x_unit * RIGHT + y * y_unit * DOWN)
+        self.center()
+        return self
+
+    def arrange_to_fit_dim(self, length: float, dim: int, about_edge=ORIGIN):
+        ref_point = self.get_bounding_box_point(about_edge)
+        n_submobs = len(self.submobjects)
+        if n_submobs <= 1:
+            return
+        total_length = sum(sm.length_over_dim(dim) for sm in self.submobjects)
+        buff = (length - total_length) / (n_submobs - 1)
+        vect = np.zeros(self.dim)
+        vect[dim] = 1
+        x = 0
+        for submob in self.submobjects:
+            submob.set_coord(x, dim, -vect)
+            x += submob.length_over_dim(dim) + buff
+        self.move_to(ref_point, about_edge)
+        return self
+
+    def arrange_to_fit_width(self, width: float, about_edge=ORIGIN):
+        return self.arrange_to_fit_dim(width, 0, about_edge)
+
+    def arrange_to_fit_height(self, height: float, about_edge=ORIGIN):
+        return self.arrange_to_fit_dim(height, 1, about_edge)
+
+    def arrange_to_fit_depth(self, depth: float, about_edge=ORIGIN):
+        return self.arrange_to_fit_dim(depth, 2, about_edge)
 
     def sort(self, point_to_num_func=lambda p: p[0], submob_func=None):
         """Sorts the list of :attr:`submobjects` by a function defined by ``submob_func``."""
@@ -1225,8 +1305,8 @@ class OpenGLMobject:
         self.assemble_family()
         return self
 
-    def invert(self, recursive=False):
-        """Inverts the list of :attr:`submobjects`.
+    def reverse_submobjects(self, recursive=False):
+        """Reverses the list of :attr:`submobjects`.
 
         Parameters
         ----------
@@ -1236,24 +1316,58 @@ class OpenGLMobject:
         Examples
         --------
 
-        .. manim:: InvertSumobjectsExample
+        .. manim:: ReverseSumobjectsExample
 
-            class InvertSumobjectsExample(Scene):
+            class ReverseSumobjectsExample(Scene):
                 def construct(self):
                     s = VGroup(*[Dot().shift(i*0.1*RIGHT) for i in range(-20,20)])
                     s2 = s.copy()
-                    s2.invert()
+                    s2.reverse_submobjects()
                     s2.shift(DOWN)
                     self.play(Write(s), Write(s2))
         """
         if recursive:
             for submob in self.submobjects:
-                submob.invert(recursive=True)
-        list.reverse(self.submobjects)
+                submob.reverse_submobjects(recursive=True)
+        self.submobjects.reverse()
+        self.assemble_family()
 
     # Copying
 
-    def copy(self, shallow: bool = False):
+    @staticmethod
+    def stash_mobject_pointers(func: Callable):
+        @wraps(func)
+        def wrapper(self, *args, **kwargs):
+            uncopied_attrs = ["parents", "target", "saved_state"]
+            stash = {}
+            for attr in uncopied_attrs:
+                if hasattr(self, attr):
+                    value = getattr(self, attr)
+                    stash[attr] = value
+                    null_value = [] if isinstance(value, list) else None
+                    setattr(self, attr, null_value)
+            result = func(self, *args, **kwargs)
+            self.__dict__.update(stash)
+            return result
+
+        return wrapper
+
+    @stash_mobject_pointers
+    def serialize(self) -> bytes:
+        return pickle.dumps(self)
+
+    def deserialize(self, data: bytes) -> OpenGLMobject:
+        self.become(pickle.loads(data))
+        return self
+
+    def deepcopy(self) -> OpenGLMobject:
+        try:
+            return pickle.loads(pickle.dumps(self))
+        except AttributeError:
+            return copy.deepcopy(self)
+
+    @stash_mobject_pointers
+    def copy(self, deep: bool = False) -> OpenGLMobject:
         """Create and return an identical copy of the :class:`OpenGLMobject` including all
         :attr:`submobjects`.
 
@@ -1271,70 +1385,58 @@ class OpenGLMobject:
         ----
         The clone is initially not visible in the Scene, even if the original was.
         """
-        if not shallow:
+        if deep:
             return self.deepcopy()
 
-        # TODO, either justify reason for shallow copy, or
-        # remove this redundancy everywhere
-        # return self.deepcopy()
+        result = copy.copy(self)
 
-        parents = self.parents
-        self.parents = []
-        copy_mobject = copy.copy(self)
-        self.parents = parents
+        # The line above is only a shallow copy, so the internal
+        # data which are numpyu arrays or other mobjects still
+        # need to be further copied.
+        result.data = to_mobject_data(self.data)
+        result.uniforms = to_mobject_uniforms(self.uniforms)
 
-        copy_mobject.data = dict(self.data)
-        for key in self.data:
-            copy_mobject.data[key] = self.data[key].copy()
+        # Instead of adding using result.add, which does some checks for updating
+        # updater statues and bounding box, just directly modify the family-related
+        # lists
+        result.submobjects = [sm.copy() for sm in self.submobjects]
+        for sm in result.submobjects:
+            sm.parents = [result]
+        result.family = [
+            result,
+            *it.chain(*(sm.get_family() for sm in result.submobjects)),
+        ]
 
-        # TODO, are uniforms ever numpy arrays?
-        copy_mobject.uniforms = dict(self.uniforms)
+        # Similarly, instead of calling match_updaters, since we know the status
+        # won't have changed, just directly match.
+        result.non_time_updaters = list(self.non_time_updaters)
+        result.time_based_updaters = list(self.time_based_updaters)
 
-        copy_mobject.submobjects = []
-        copy_mobject.add(*(sm.copy() for sm in self.submobjects))
-        copy_mobject.match_updaters(self)
-
-        copy_mobject.needs_new_bounding_box = self.needs_new_bounding_box
-
-        # Make sure any mobject or numpy array attributes are copied
         family = self.get_family()
         for attr, value in list(self.__dict__.items()):
             if (
                 isinstance(value, OpenGLMobject)
-                and value in family
                 and value is not self
+                and value in family
             ):
-                setattr(copy_mobject, attr, value.copy())
+                setattr(result, attr, result.family[self.family.index(value)])
             if isinstance(value, np.ndarray):
-                setattr(copy_mobject, attr, value.copy())
-            # if isinstance(value, ShaderWrapper):
-            #     setattr(copy_mobject, attr, value.copy())
-        return copy_mobject
-
-    def deepcopy(self):
-        parents = self.parents
-        self.parents = []
-        result = copy.deepcopy(self)
-        self.parents = parents
+                setattr(result, attr, value.copy())
+            if isinstance(value, ShaderWrapper):
+                setattr(result, attr, value.copy())
         return result
 
     def generate_target(self, use_deepcopy: bool = False):
-        self.target = None  # Prevent exponential explosion
-        if use_deepcopy:
-            self.target = self.deepcopy()
-        else:
-            self.target = self.copy()
+        target: OpenGLMobject = self.copy(use_deepcopy=use_deepcopy)
+        target.saved_state = self.saved_state
+        self.target = target
         return self.target
 
     def save_state(self, use_deepcopy: bool = False):
         """Save the current state (position, color & size). Can be restored with :meth:`~.OpenGLMobject.restore`."""
-        if hasattr(self, "saved_state"):
-            # Prevent exponential growth of data
-            self.saved_state = None
-        if use_deepcopy:
-            self.saved_state = self.deepcopy()
-        else:
-            self.saved_state = self.copy()
+        saved_state: OpenGLMobject = self.copy(deep=use_deepcopy)
+        saved_state.target = self.target
+        self.saved_state = saved_state
         return self
 
     def restore(self):
@@ -1344,43 +1446,113 @@ class OpenGLMobject:
         self.become(self.saved_state)
         return self
 
+    def save_to_file(self, file_path: str):
+        with open(file_path, "wb") as fp:
+            fp.write(self.serialize())
+        logger.info(f"Saved mobject to {file_path}")
+        return self
+
+    @staticmethod
+    def load(file_path):
+        if not os.path.exists(file_path):
+            logger.error(f"No file found at {file_path}")
+            sys.exit(2)
+        with open(file_path, "rb") as fp:
+            mobject = pickle.load(fp)
+        return mobject
+
+    # Creating new Mobjects from this one
+
+    def replicate(self, n: int) -> OpenGLGroup:
+        """Returns an :class:`~.OpenGLVGroup` containing ``n`` copies of the mobject."""
+        group_class = self.get_group_class()
+        return group_class(*(self.copy() for _ in range(n)))
+
+    def get_grid_legacy(self, n_rows, n_cols, height=None, **kwargs):
+        """
+        Returns a new mobject containing multiple copies of this one
+        arranged in a grid
+        """
+        grid = self.duplicate(n_rows * n_cols)
+        grid.arrange_in_grid(n_rows, n_cols, **kwargs)
+        if height is not None:
+            grid.set_height(height)
+        return grid
+
+    def get_grid(
+        self,
+        n_rows: int,
+        n_cols: int,
+        height: float | None = None,
+        width: float | None = None,
+        group_by_rows: bool = False,
+        group_by_cols: bool = False,
+        **kwargs,
+    ) -> OpenGLGroup:
+        """
+        Returns a new mobject containing multiple copies of this one
+        arranged in a grid
+        """
+        total = n_rows * n_cols
+        grid = self.replicate(total)
+        if group_by_cols:
+            kwargs["fill_rows_first"] = False
+        grid.arrange_in_grid(n_rows, n_cols, **kwargs)
+        if height is not None:
+            grid.set_height(height)
+        if width is not None:
+            grid.set_height(width)
+
+        group_class = self.get_group_class()
+        if group_by_rows:
+            return group_class(*(grid[n : n + n_cols] for n in range(0, total, n_cols)))
+        elif group_by_cols:
+            return group_class(*(grid[n : n + n_rows] for n in range(0, total, n_rows)))
+        else:
+            return grid
+
     # Updating
 
-    def init_updaters(self):
-        self.time_based_updaters = []
-        self.non_time_updaters = []
-        self.has_updaters = False
-        self.updating_suspended = False
+    def init_updaters(self) -> None:
+        self.time_based_updaters: list[TimeBasedUpdater] = []
+        self.non_time_updaters: list[NonTimeUpdater] = []
+        self.has_updaters: bool = False
+        self.updating_suspended: bool = False
 
-    def update(self, dt=0, recurse=True):
+    def update(self, dt: float = 0, recurse: bool = True) -> OpenGLMobject:
         if not self.has_updaters or self.updating_suspended:
             return self
-        for updater in self.time_based_updaters:
-            updater(self, dt)
-        for updater in self.non_time_updaters:
-            updater(self)
+        for time_updater in self.time_based_updaters:
+            time_updater(self, dt)
+        for non_time_updater in self.non_time_updaters:
+            non_time_updater(self)
         if recurse:
             for submob in self.submobjects:
                 submob.update(dt, recurse)
         return self
 
-    def get_time_based_updaters(self):
+    def get_time_based_updaters(self) -> list[TimeBasedUpdater]:
         return self.time_based_updaters
 
-    def has_time_based_updater(self):
+    def has_time_based_updater(self) -> bool:
         return len(self.time_based_updaters) > 0
 
-    def get_updaters(self):
+    def get_updaters(self) -> list[Updater]:
         return self.time_based_updaters + self.non_time_updaters
 
-    def get_family_updaters(self):
+    def get_family_updaters(self) -> list[Updater]:
         return list(it.chain(*(sm.get_updaters() for sm in self.get_family())))
 
-    def add_updater(self, update_function, index=None, call_updater=False):
+    def add_updater(
+        self,
+        update_function: Updater,
+        index: int | None = None,
+        call_updater: bool = False,
+    ) -> OpenGLMobject:
         if "dt" in get_parameters(update_function):
-            updater_list = self.time_based_updaters
+            updater_list: list[Updater] = self.time_based_updaters  # type: ignore
         else:
-            updater_list = self.non_time_updaters
+            updater_list: list[Updater] = self.non_time_updaters  # type: ignore
 
         if index is None:
             updater_list.append(update_function)
@@ -1392,14 +1564,18 @@ class OpenGLMobject:
             self.update()
         return self
 
-    def remove_updater(self, update_function):
-        for updater_list in [self.time_based_updaters, self.non_time_updaters]:
+    def remove_updater(self, update_function: Updater) -> OpenGLMobject:
+        updater_lists: list[list[Updater]] = [
+            self.time_based_updaters,  # type: ignore
+            self.non_time_updaters,  # type: ignore
+        ]
+        for updater_list in updater_lists:
             while update_function in updater_list:
                 updater_list.remove(update_function)
         self.refresh_has_updater_status()
         return self
 
-    def clear_updaters(self, recurse=True):
+    def clear_updaters(self, recurse: bool = True) -> OpenGLMobject:
         self.time_based_updaters = []
         self.non_time_updaters = []
         self.refresh_has_updater_status()
@@ -1408,20 +1584,22 @@ class OpenGLMobject:
                 submob.clear_updaters()
         return self
 
-    def match_updaters(self, mobject):
+    def match_updaters(self, mobject: OpenGLMobject) -> OpenGLMobject:
         self.clear_updaters()
         for updater in mobject.get_updaters():
             self.add_updater(updater)
         return self
 
-    def suspend_updating(self, recurse=True):
+    def suspend_updating(self, recurse: bool = True) -> OpenGLMobject:
         self.updating_suspended = True
         if recurse:
             for submob in self.submobjects:
                 submob.suspend_updating(recurse)
         return self
 
-    def resume_updating(self, recurse=True, call_updater=True):
+    def resume_updating(
+        self, recurse: bool = True, call_updater: bool = True
+    ) -> OpenGLMobject:
         self.updating_suspended = False
         if recurse:
             for submob in self.submobjects:
@@ -1432,13 +1610,25 @@ class OpenGLMobject:
             self.update(dt=0, recurse=recurse)
         return self
 
-    def refresh_has_updater_status(self):
+    def refresh_has_updater_status(self) -> OpenGLMobject:
         self.has_updaters = any(mob.get_updaters() for mob in self.get_family())
+        return self
+
+    # Check if mark as static or not for camera
+
+    def is_changing(self) -> bool:
+        return self.has_updaters or self._is_animating
+
+    def set_animating_status(
+        self, is_animating: bool, recurse: bool = True
+    ) -> OpenGLMobject:
+        for mob in (*self.get_family(recurse), *self.get_ancestors(extended=True)):
+            mob._is_animating = is_animating
         return self
 
     # Transforming operations
 
-    def shift(self, vector):
+    def shift(self, vector) -> OpenGLMobject:
         self.apply_points_function(
             lambda points: points + vector,
             about_edge=None,
@@ -1448,9 +1638,10 @@ class OpenGLMobject:
 
     def scale(
         self,
-        scale_factor: float,
-        about_point: Sequence[float] | None = None,
-        about_edge: Sequence[float] = ORIGIN,
+        scale_factor: float | np.ndarray,
+        min_scale_factor: float = 1e-8,
+        about_point: Sequence[float] | np.ndarray | None = None,
+        about_edge: Sequence[float] | np.ndarray = ORIGIN,
         **kwargs,
     ) -> OpenGLMobject:
         r"""Scale the size by a factor.
@@ -1469,6 +1660,10 @@ class OpenGLMobject:
             The scaling factor :math:`\alpha`. If :math:`0 < |\alpha| < 1`, the mobject
             will shrink, and for :math:`|\alpha| > 1` it will grow. Furthermore,
             if :math:`\alpha < 0`, the mobject is also flipped.
+
+        min_scale_factor
+            The minimum scaling factor that is used such that the mobject is not scaled to zero.
+
         kwargs
             Additional keyword arguments passed to
             :meth:`apply_points_function_about_point`.
@@ -1499,16 +1694,33 @@ class OpenGLMobject:
         :meth:`move_to`
 
         """
+        if isinstance(scale_factor, numbers.Number):
+            scale_factor = max(scale_factor, min_scale_factor)
+        else:
+            scale_factor = np.array(scale_factor).clip(min=min_scale_factor)  # type: ignore
         self.apply_points_function(
             lambda points: scale_factor * points,
             about_point=about_point,
             about_edge=about_edge,
             works_on_bounding_box=True,
-            **kwargs,
         )
+        for mob in self.get_family():
+            mob._handle_scale_side_effects(scale_factor)
         return self
 
-    def stretch(self, factor, dim, **kwargs):
+    def _handle_scale_side_effects(self, scale_factor: float | np.ndarray) -> None:
+        """In case subclasses, such as DecimalNumber, need to make
+        any other changes when the size gets altered by scaling.
+        This method can be overridden in subclasses.
+
+        Parameters
+        ----------
+        scale_factor
+            The scaling factor :math:`\alpha`. If :math:`0 < |\alpha| < 1`
+        """
+        pass
+
+    def stretch(self, factor: float, dim: int, **kwargs) -> OpenGLMobject:
         def func(points):
             points[:, dim] *= factor
             return points
@@ -1516,16 +1728,16 @@ class OpenGLMobject:
         self.apply_points_function(func, works_on_bounding_box=True, **kwargs)
         return self
 
-    def rotate_about_origin(self, angle, axis=OUT):
-        return self.rotate(angle, axis, about_point=ORIGIN)
+    def rotate_about_origin(self, angle: float, axis=OUT) -> OpenGLMobject:
+        return self.rotate(angle, axis, about_point=ORIGIN)  # type: ignore
 
     def rotate(
         self,
-        angle,
+        angle: float,
         axis=OUT,
         about_point: Sequence[float] | None = None,
         **kwargs,
-    ):
+    ) -> OpenGLMobject:
         """Rotates the :class:`~.OpenGLMobject` about a certain point."""
         rot_matrix_T = rotation_matrix_transpose(angle, axis)
         self.apply_points_function(
@@ -1535,7 +1747,7 @@ class OpenGLMobject:
         )
         return self
 
-    def flip(self, axis=UP, **kwargs):
+    def flip(self, axis=UP, **kwargs) -> OpenGLMobject:
         """Flips/Mirrors an mobject about its center.
 
         Examples
@@ -1554,7 +1766,7 @@ class OpenGLMobject:
         """
         return self.rotate(TAU / 2, axis, **kwargs)
 
-    def apply_function(self, function, **kwargs):
+    def apply_function(self, function: PointUpdateFunction, **kwargs) -> OpenGLMobject:
         # Default to applying matrix about the origin, not mobjects center
         if len(kwargs) == 0:
             kwargs["about_point"] = ORIGIN
@@ -1563,16 +1775,20 @@ class OpenGLMobject:
         )
         return self
 
-    def apply_function_to_position(self, function):
+    def apply_function_to_position(
+        self, function: PointUpdateFunction
+    ) -> OpenGLMobject:
         self.move_to(function(self.get_center()))
         return self
 
-    def apply_function_to_submobject_positions(self, function):
+    def apply_function_to_submobject_positions(
+        self, function: PointUpdateFunction
+    ) -> OpenGLMobject:
         for submob in self.submobjects:
             submob.apply_function_to_position(function)
         return self
 
-    def apply_matrix(self, matrix, **kwargs):
+    def apply_matrix(self, matrix, **kwargs) -> OpenGLMobject:
         # Default to applying matrix about the origin, not mobjects center
         if ("about_point" not in kwargs) and ("about_edge" not in kwargs):
             kwargs["about_point"] = ORIGIN
@@ -1584,7 +1800,7 @@ class OpenGLMobject:
         )
         return self
 
-    def apply_complex_function(self, function, **kwargs):
+    def apply_complex_function(self, function, **kwargs) -> OpenGLMobject:
         """Applies a complex function to a :class:`OpenGLMobject`.
         The x and y coordinates correspond to the real and imaginary parts respectively.
 
@@ -1629,7 +1845,7 @@ class OpenGLMobject:
             current_object = current_object.parent
         return np.linalg.multi_dot(list(reversed(model_matrices)))
 
-    def wag(self, direction=RIGHT, axis=DOWN, wag_factor=1.0):
+    def wag(self, direction=RIGHT, axis=DOWN, wag_factor=1.0) -> OpenGLMobject:
         for mob in self.family_members_with_points():
             alphas = np.dot(mob.points, np.transpose(axis))
             alphas -= min(alphas)
@@ -1646,19 +1862,21 @@ class OpenGLMobject:
 
     # Positioning methods
 
-    def center(self):
+    def center(self) -> OpenGLMobject:
         """Moves the mobject to the center of the Scene."""
         self.shift(-self.get_center())
         return self
 
-    def align_on_border(self, direction, buff=DEFAULT_MOBJECT_TO_EDGE_BUFFER):
+    def align_on_border(
+        self, direction, buff=DEFAULT_MOBJECT_TO_EDGE_BUFFER
+    ) -> OpenGLMobject:
         """
         Direction just needs to be a vector pointing towards side or
         corner in the 2d plane.
         """
         target_point = np.sign(direction) * (
-            config["frame_x_radius"],
-            config["frame_y_radius"],
+            config.frame_x_radius,
+            config.frame_y_radius,
             0,
         )
         point_to_align = self.get_bounding_box_point(direction)
@@ -1667,10 +1885,12 @@ class OpenGLMobject:
         self.shift(shift_val)
         return self
 
-    def to_corner(self, corner=LEFT + DOWN, buff=DEFAULT_MOBJECT_TO_EDGE_BUFFER):
+    def to_corner(
+        self, corner=LEFT + DOWN, buff=DEFAULT_MOBJECT_TO_EDGE_BUFFER
+    ) -> OpenGLMobject:
         return self.align_on_border(corner, buff)
 
-    def to_edge(self, edge=LEFT, buff=DEFAULT_MOBJECT_TO_EDGE_BUFFER):
+    def to_edge(self, edge=LEFT, buff=DEFAULT_MOBJECT_TO_EDGE_BUFFER) -> OpenGLMobject:
         return self.align_on_border(edge, buff)
 
     def next_to(
@@ -1682,7 +1902,7 @@ class OpenGLMobject:
         submobject_to_align=None,
         index_of_submobject_to_align=None,
         coor_mask=np.array([1, 1, 1]),
-    ):
+    ) -> OpenGLMobject:
         """Move this :class:`~.OpenGLMobject` next to another's :class:`~.OpenGLMobject` or coordinate.
 
         Examples
@@ -1725,7 +1945,7 @@ class OpenGLMobject:
         return self
 
     def shift_onto_screen(self, **kwargs):
-        space_lengths = [config["frame_x_radius"], config["frame_y_radius"]]
+        space_lengths = [config.frame_x_radius, config.frame_y_radius]
         for vect in UP, DOWN, LEFT, RIGHT:
             dim = np.argmax(np.abs(vect))
             buff = kwargs.get("buff", DEFAULT_MOBJECT_TO_EDGE_BUFFER)
@@ -1831,6 +2051,36 @@ class OpenGLMobject:
 
     scale_to_fit_depth = set_depth
 
+    def set_max_width(self, max_width: float, **kwargs):
+        if self.get_width() > max_width:
+            self.set_width(max_width, **kwargs)
+        return self
+
+    def set_max_height(self, max_height: float, **kwargs):
+        if self.get_height() > max_height:
+            self.set_height(max_height, **kwargs)
+        return self
+
+    def set_max_depth(self, max_depth: float, **kwargs):
+        if self.get_depth() > max_depth:
+            self.set_depth(max_depth, **kwargs)
+        return self
+
+    def set_min_width(self, min_width: float, **kwargs):
+        if self.get_width() < min_width:
+            self.set_width(min_width, **kwargs)
+        return self
+
+    def set_min_height(self, min_height: float, **kwargs):
+        if self.get_height() < min_height:
+            self.set_height(min_height, **kwargs)
+        return self
+
+    def set_min_depth(self, min_depth: float, **kwargs):
+        if self.get_depth() < min_depth:
+            self.set_depth(min_depth, **kwargs)
+        return self
+
     def set_coord(self, value, dim, direction=ORIGIN):
         curr = self.get_coord(dim, direction)
         shift_vect = np.zeros(self.dim)
@@ -1860,7 +2110,7 @@ class OpenGLMobject:
         self,
         point_or_mobject,
         aligned_edge=ORIGIN,
-        coor_mask=np.array([1, 1, 1]),
+        coor_mask=np.array((1, 1, 1)),
     ):
         """Move center of the :class:`~.OpenGLMobject` to certain coordinate."""
         if isinstance(point_or_mobject, OpenGLMobject):
@@ -1899,12 +2149,13 @@ class OpenGLMobject:
         self.scale((length + buff) / length)
         return self
 
-    def put_start_and_end_on(self, start, end):
+    # ! TODO: Check implementation of 3b1b for this method
+    def put_start_and_end_on_legacy(self, start, end):
         curr_start, curr_end = self.get_start_and_end()
         curr_vect = curr_end - curr_start
         if np.all(curr_vect == 0):
             raise Exception("Cannot position endpoints of closed loop")
-        target_vect = np.array(end) - np.array(start)
+        target_vect = np.asarray(end) - np.asarray(start)
         axis = (
             normalize(np.cross(curr_vect, target_vect))
             if np.linalg.norm(np.cross(curr_vect, target_vect)) != 0
@@ -1922,9 +2173,32 @@ class OpenGLMobject:
         self.shift(start - curr_start)
         return self
 
+    def put_start_and_end_on(self, start: np.ndarray, end: np.ndarray):
+        curr_start, curr_end = self.get_start_and_end()
+        curr_vect = curr_end - curr_start
+        if np.all(curr_vect == 0):
+            raise Exception("Cannot position endpoints of closed loop")
+        target_vect = end - start
+        self.scale(
+            get_norm(target_vect) / get_norm(curr_vect),
+            about_point=curr_start,
+        )
+        self.rotate(
+            angle_of_vector(target_vect) - angle_of_vector(curr_vect),
+        )
+        self.rotate(
+            np.arctan2(curr_vect[2], get_norm(curr_vect[:2]))
+            - np.arctan2(target_vect[2], get_norm(target_vect[:2])),
+            axis=np.array([-target_vect[1], target_vect[0], 0]),
+        )
+        self.shift(start - self.get_start())
+        return self
+
     # Color functions
 
-    def set_rgba_array(self, color=None, opacity=None, name="rgbas", recurse=True):
+    def set_rgba_array_legacy(
+        self, color=None, opacity=None, name="rgbas", recurse=True
+    ):
         if color is not None:
             rgbs = np.array([color_to_rgb(c) for c in listify(color)])
         if opacity is not None:
@@ -1954,7 +2228,9 @@ class OpenGLMobject:
                 mob.data[name] = rgbas.copy()
         return self
 
-    def set_rgba_array_direct(self, rgbas: np.ndarray, name="rgbas", recurse=True):
+    def set_rgba_array(
+        self, rgba_array: np.ndarray, name: str = "rgbas", recurse: bool = False
+    ):
         """Directly set rgba data from `rgbas` and optionally do the same recursively
         with submobjects. This can be used if the `rgbas` have already been generated
         with the correct shape and simply need to be set.
@@ -1969,7 +2245,58 @@ class OpenGLMobject:
             set to true to recursively apply this method to submobjects
         """
         for mob in self.get_family(recurse):
-            mob.data[name] = rgbas.copy()
+            mob.data[name] = np.array(rgba_array)  # type: ignore
+        return self
+
+    def set_color_by_rgba_func(
+        self, func: Callable[[np.ndarray], np.ndarray], recurse: bool = True
+    ):
+        """
+        Func should take in a point in R3 and output an rgba value
+        """
+        for mob in self.get_family(recurse):
+            rgba_array = np.asarray([func(point) for point in mob.points])
+            mob.set_rgba_array(rgba_array)
+        return self
+
+    def set_color_by_rgb_func(
+        self,
+        func: Callable[[np.ndarray], np.ndarray],
+        opacity: float = 1,
+        recurse: bool = True,
+    ):
+        """
+        Func should take in a point in R3 and output an rgb value
+        """
+        for mob in self.get_family(recurse):
+            rgba_array = np.asarray([[*func(point), opacity] for point in mob.points])
+            mob.set_rgba_array(rgba_array)
+        return self
+
+    def set_rgba_array_by_color(
+        self,
+        color=None,
+        opacity: float | Iterable[float] | None = None,
+        name: str = "rgbas",
+        recurse: bool = True,
+    ):
+        max_len = 0
+        if color is not None:
+            rgbs = np.array([color_to_rgb(c) for c in listify(color)])
+            max_len = len(rgbs)
+        if opacity is not None:
+            opacities = np.array(listify(opacity))
+            max_len = max(max_len, len(opacities))
+
+        for mob in self.get_family(recurse):
+            if max_len > len(mob.data[name]):  # type: ignore
+                mob.data[name] = resize_array(mob.data[name], max_len)  # type: ignore
+            size = len(mob.data[name])  # type: ignore
+            if color is not None:
+                mob.data[name][:, :3] = resize_array(rgbs, size)  # type: ignore
+            if opacity is not None:
+                mob.data[name][:, 3] = resize_array(opacities, size)  # type: ignore
+        return self
 
     def set_color(self, color, opacity=None, recurse=True):
         self.set_rgba_array(color, opacity, recurse=False)
@@ -1995,10 +2322,13 @@ class OpenGLMobject:
         return rgb_to_hex(self.rgbas[0, :3])
 
     def get_opacity(self):
-        return self.rgbas[0, 3]
+        return self.data["rgbas"][0, 3]
 
-    def set_color_by_gradient(self, *colors):
-        self.set_submobject_colors_by_gradient(*colors)
+    def set_color_by_gradient(self, *colors: Color):
+        if self.has_points():
+            self.set_color(colors)
+        else:
+            self.set_submobject_colors_by_gradient(*colors)
         return self
 
     def set_submobject_colors_by_gradient(self, *colors):
@@ -2018,20 +2348,28 @@ class OpenGLMobject:
     def fade(self, darkness=0.5, recurse=True):
         self.set_opacity(1.0 - darkness, recurse=recurse)
 
-    def get_gloss(self):
-        return self.gloss
+    def get_reflectiveness(self) -> np.ndarray:
+        return self.uniforms["reflectiveness"]
 
-    def set_gloss(self, gloss, recurse=True):
+    def set_reflectiveness(self, reflectiveness: float, recurse: bool = True):
         for mob in self.get_family(recurse):
-            mob.gloss = gloss
+            mob.uniforms["reflectiveness"] = np.asarray(reflectiveness)
         return self
 
-    def get_shadow(self):
-        return self.shadow
+    def get_shadow(self) -> np.ndarray:
+        return self.uniforms["shadow"]
 
-    def set_shadow(self, shadow, recurse=True):
+    def set_shadow(self, shadow: float, recurse: bool = True):
         for mob in self.get_family(recurse):
-            mob.shadow = shadow
+            mob.uniforms["shadow"] = np.asarray(shadow)
+        return self
+
+    def get_gloss(self) -> np.ndarray:
+        return self.uniforms["gloss"]
+
+    def set_gloss(self, gloss: float, recurse: bool = True):
+        for mob in self.get_family(recurse):
+            mob.uniforms["gloss"] = np.asarray(gloss)
         return self
 
     # Background rectangle
@@ -2073,7 +2411,7 @@ class OpenGLMobject:
         self.background_rectangle = BackgroundRectangle(
             self, color=color, fill_opacity=opacity, **kwargs
         )
-        self.add_to_back(self.background_rectangle)
+        self.add_to_back(self.background_rectangle)  # type: ignore
         return self
 
     def add_background_rectangle_to_submobjects(self, **kwargs):
@@ -2100,6 +2438,15 @@ class OpenGLMobject:
     def get_corner(self, direction) -> np.ndarray:
         """Get corner coordinates for certain direction."""
         return self.get_bounding_box_point(direction)
+
+    def get_all_corners(self):
+        bb = self.get_bounding_box()
+        return np.array(
+            [
+                [bb[indices[-i + 1]][i] for i in range(3)]
+                for indices in it.product([0, 2], repeat=3)
+            ]
+        )
 
     def get_center(self) -> np.ndarray:
         """Get center coordinates."""
@@ -2205,9 +2552,8 @@ class OpenGLMobject:
         i, subalpha = integer_interpolate(0, len(points) - 1, alpha)
         return interpolate(points[i], points[i + 1], subalpha)
 
-    def pfp(self, alpha):
-        """Abbreviation for point_from_proportion"""
-        return self.point_from_proportion(alpha)
+    pfp = point_from_proportion
+    """Abbreviation for point_from_proportion"""
 
     def get_pieces(self, n_pieces):
         template = self.copy()
@@ -2247,25 +2593,25 @@ class OpenGLMobject:
         """Match the depth with the depth of another :class:`~.OpenGLMobject`."""
         return self.match_dim_size(mobject, 2, **kwargs)
 
-    def match_coord(self, mobject: OpenGLMobject, dim, direction=ORIGIN):
+    def match_coord(self, mobject_or_point: OpenGLMobject, dim, direction=ORIGIN):
         """Match the coordinates with the coordinates of another :class:`~.OpenGLMobject`."""
-        return self.set_coord(
-            mobject.get_coord(dim, direction),
-            dim=dim,
-            direction=direction,
-        )
+        if isinstance(mobject_or_point, OpenGLMobject):
+            coord = mobject_or_point.get_coord(dim, direction)
+        else:
+            coord = mobject_or_point[dim]
+        return self.set_coord(coord, dim=dim, direction=direction)
 
-    def match_x(self, mobject, direction=ORIGIN):
+    def match_x(self, mobject_or_point, direction=ORIGIN):
         """Match x coord. to the x coord. of another :class:`~.OpenGLMobject`."""
-        return self.match_coord(mobject, 0, direction)
+        return self.match_coord(mobject_or_point, 0, direction)
 
-    def match_y(self, mobject, direction=ORIGIN):
+    def match_y(self, mobject_or_point, direction=ORIGIN):
         """Match y coord. to the x coord. of another :class:`~.OpenGLMobject`."""
-        return self.match_coord(mobject, 1, direction)
+        return self.match_coord(mobject_or_point, 1, direction)
 
-    def match_z(self, mobject, direction=ORIGIN):
+    def match_z(self, mobject_or_point, direction=ORIGIN):
         """Match z coord. to the x coord. of another :class:`~.OpenGLMobject`."""
-        return self.match_coord(mobject, 2, direction)
+        return self.match_coord(mobject_or_point, 2, direction)
 
     def align_to(
         self,
@@ -2305,9 +2651,9 @@ class OpenGLMobject:
         self.align_family(mobject)
         self.align_data(mobject)
 
-    def align_data(self, mobject):
+    def align_data(self, mobject) -> None:
         # In case any data arrays get resized when aligned to shader data
-        # self.refresh_shader_data()
+        self.refresh_shader_data()
         for mob1, mob2 in zip(self.get_family(), mobject.get_family()):
             # Separate out how points are treated so that subclasses
             # can handle that case differently if they choose
@@ -2315,20 +2661,20 @@ class OpenGLMobject:
             for key in mob1.data.keys() & mob2.data.keys():
                 if key == "points":
                     continue
-                arr1 = mob1.data[key]
+                arr1 = mob1.data[key]  # type: ignore
                 arr2 = mob2.data[key]
                 if len(arr2) > len(arr1):
-                    mob1.data[key] = resize_preserving_order(arr1, len(arr2))
+                    mob1.data[key] = resize_preserving_order(arr1, len(arr2))  # type: ignore
                 elif len(arr1) > len(arr2):
                     mob2.data[key] = resize_preserving_order(arr2, len(arr1))
 
-    def align_points(self, mobject):
+    def align_points(self, mobject) -> OpenGLMobject:
         max_len = max(self.get_num_points(), mobject.get_num_points())
         for mob in (self, mobject):
             mob.resize_points(max_len, resize_func=resize_preserving_order)
         return self
 
-    def align_family(self, mobject):
+    def align_family(self, mobject) -> OpenGLMobject:
         mob1 = self
         mob2 = mobject
         n1 = len(mob1)
@@ -2341,14 +2687,14 @@ class OpenGLMobject:
             sm1.align_family(sm2)
         return self
 
-    def push_self_into_submobjects(self):
+    def push_self_into_submobjects(self) -> OpenGLMobject:
         copy = self.deepcopy()
         copy.submobjects = []
-        self.resize_points(0)
+        self.clear_points()
         self.add(copy)
         return self
 
-    def add_n_more_submobjects(self, n):
+    def add_n_more_submobjects(self, n) -> OpenGLMobject:
         if n == 0:
             return self
 
@@ -2377,7 +2723,9 @@ class OpenGLMobject:
 
     # Interpolate
 
-    def interpolate(self, mobject1, mobject2, alpha, path_func=straight_path()):
+    def interpolate(
+        self, mobject1, mobject2, alpha, path_func=straight_path
+    ) -> OpenGLMobject:
         """Turns this :class:`~.OpenGLMobject` into an interpolation between ``mobject1``
         and ``mobject2``.
 
@@ -2401,7 +2749,7 @@ class OpenGLMobject:
         for key in self.data:
             if key in self.locked_data_keys:
                 continue
-            if len(self.data[key]) == 0:
+            if len(self.data[key]) == 0:  # type: ignore
                 continue
             if key not in mobject1.data or key not in mobject2.data:
                 continue
@@ -2411,23 +2759,11 @@ class OpenGLMobject:
             else:
                 func = interpolate
 
-            self.data[key][:] = func(mobject1.data[key], mobject2.data[key], alpha)
-
+            self.data[key][:] = func(mobject1.data[key], mobject2.data[key], alpha)  # type: ignore
         for key in self.uniforms:
-            if key != "fixed_orientation_center":
-                self.uniforms[key] = interpolate(
-                    mobject1.uniforms[key],
-                    mobject2.uniforms[key],
-                    alpha,
-                )
-            else:
-                self.uniforms["fixed_orientation_center"] = tuple(
-                    interpolate(
-                        np.array(mobject1.uniforms["fixed_orientation_center"]),
-                        np.array(mobject2.uniforms["fixed_orientation_center"]),
-                        alpha,
-                    )
-                )
+            self.uniforms[key] = interpolate(  # type: ignore
+                mobject1.uniforms[key], mobject2.uniforms[key], alpha
+            )
         return self
 
     def pointwise_become_partial(self, mobject, a, b):
@@ -2439,9 +2775,45 @@ class OpenGLMobject:
         """
         pass  # To implement in subclass
 
+    # Locking data
+
+    def lock_data(self, keys: Iterable[str]):
+        """
+        To speed up some animations, particularly transformations,
+        it can be handy to acknowledge which pieces of data
+        won't change during the animation so that calls to
+        interpolate can skip this, and so that it's not
+        read into the shader_wrapper objects needlessly
+        """
+        if self.has_updaters:
+            return
+        # Be sure shader data has most up to date information
+        self.refresh_shader_data()
+        self.locked_data_keys = set(keys)
+
+    def lock_matching_data(self, mobject1: OpenGLMobject, mobject2: OpenGLMobject):
+        for sm, sm1, sm2 in zip(
+            self.get_family(), mobject1.get_family(), mobject2.get_family()
+        ):
+            keys = sm.data.keys() & sm1.data.keys() & sm2.data.keys()
+            sm.lock_data(
+                list(
+                    filter(
+                        lambda key: np.all(sm1.data[key] == sm2.data[key]),  # type: ignore
+                        keys,
+                    )
+                )
+            )
+        return self
+
+    def unlock_data(self):
+        for mob in self.get_family():
+            mob.locked_data_keys = set()
+
     def become(
         self,
         mobject: OpenGLMobject,
+        match_updaters=False,
         match_height: bool = False,
         match_width: bool = False,
         match_depth: bool = False,
@@ -2482,7 +2854,7 @@ class OpenGLMobject:
                     circ.become(square)
                     self.wait(0.5)
         """
-
+        # Manim CE Weird stretching thing which also modifies the original mobject
         if stretch:
             mobject.stretch_to_fit_height(self.height)
             mobject.stretch_to_fit_width(self.width)
@@ -2498,74 +2870,62 @@ class OpenGLMobject:
         if match_center:
             mobject.move_to(self.get_center())
 
+        # Original 3b1b/manim behaviour
         self.align_family(mobject)
-        for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
+        family1 = self.get_family()
+        family2 = mobject.get_family()
+        for sm1, sm2 in zip(family1, family2):
             sm1.set_data(sm2.data)
             sm1.set_uniforms(sm2.uniforms)
+            sm1.shader_folder = sm2.shader_folder
+            sm1.texture_paths = sm2.texture_paths
+            sm1.depth_test = sm2.depth_test
+            sm1.render_primitive = sm2.render_primitive
+        # Make sure named family members carry over
+        for attr, value in list(mobject.__dict__.items()):
+            if isinstance(value, OpenGLMobject) and value in family2:
+                setattr(self, attr, family1[family2.index(value)])
         self.refresh_bounding_box(recurse_down=True)
+        if match_updaters:
+            self.match_updaters(mobject)
         return self
-
-    # Locking data
-
-    def lock_data(self, keys):
-        """
-        To speed up some animations, particularly transformations,
-        it can be handy to acknowledge which pieces of data
-        won't change during the animation so that calls to
-        interpolate can skip this, and so that it's not
-        read into the shader_wrapper objects needlessly
-        """
-        if self.has_updaters:
-            return
-        # Be sure shader data has most up to date information
-        self.refresh_shader_data()
-        self.locked_data_keys = set(keys)
-
-    def lock_matching_data(self, mobject1, mobject2):
-        for sm, sm1, sm2 in zip(
-            self.get_family(),
-            mobject1.get_family(),
-            mobject2.get_family(),
-        ):
-            keys = sm.data.keys() & sm1.data.keys() & sm2.data.keys()
-            sm.lock_data(
-                list(
-                    filter(
-                        lambda key: np.all(sm1.data[key] == sm2.data[key]),
-                        keys,
-                    ),
-                ),
-            )
-        return self
-
-    def unlock_data(self):
-        for mob in self.get_family():
-            mob.locked_data_keys = set()
 
     # Operations touching shader uniforms
 
+    @staticmethod
+    def affects_shader_info_id(func):
+        @wraps(func)
+        def wrapper(self):
+            for mob in self.get_family():
+                func(mob)
+                mob.refresh_shader_wrapper_id()
+            return self
+
+        return wrapper
+
     @affects_shader_info_id
-    def fix_in_frame(self):
-        self.is_fixed_in_frame = 1.0
+    def fix_in_frame(self) -> OpenGLMobject:
+        self.uniforms["is_fixed_in_frame"] = np.asarray(1.0)
+        self.is_fixed_in_frame = True
         return self
 
     @affects_shader_info_id
-    def fix_orientation(self):
-        self.is_fixed_orientation = 1.0
+    def fix_orientation(self) -> OpenGLMobject:
+        self.uniforms["is_fixed_orientation"] = np.asarray(1.0)
+        self.is_fixed_orientation = True
         self.fixed_orientation_center = tuple(self.get_center())
-        self.depth_test = True
         return self
 
     @affects_shader_info_id
-    def unfix_from_frame(self):
-        self.is_fixed_in_frame = 0.0
+    def unfix_from_frame(self) -> OpenGLMobject:
+        self.uniforms["is_fixed_in_frame"] = np.asarray(0.0)
+        self.is_fixed_in_frame = False
         return self
 
     @affects_shader_info_id
     def unfix_orientation(self):
         self.is_fixed_orientation = 0.0
         self.fixed_orientation_center = (0, 0, 0)
-        self.depth_test = False
         return self
 
     @affects_shader_info_id
@@ -2625,26 +2985,27 @@ class OpenGLMobject:
         return self
 
     # For shader data
+    def init_shader_data(self):
+        # TODO, only call this when needed?
+        self.shader_data = np.zeros(len(self.points), dtype=self.shader_dtype)
+        self.shader_indices = None
+        self.shader_wrapper = ShaderWrapper(
+            vert_data=self.shader_data,
+            shader_folder=self.shader_folder,
+            texture_paths=self.texture_paths,
+            depth_test=self.depth_test,
+            render_primitive=self.render_primitive,
+        )
 
     def refresh_shader_wrapper_id(self):
-        self.get_shader_wrapper().refresh_id()
+        self.shader_wrapper.refresh_id()
         return self
 
     def get_shader_wrapper(self):
-        from manim.renderer.shader_wrapper import ShaderWrapper
-
-        # if hasattr(self, "__shader_wrapper"):
-        # return self.__shader_wrapper
-
-        self.shader_wrapper = ShaderWrapper(
-            vert_data=self.get_shader_data(),
-            vert_indices=self.get_shader_vert_indices(),
-            uniforms=self.get_shader_uniforms(),
-            depth_test=self.depth_test,
-            texture_paths=self.texture_paths,
-            render_primitive=self.render_primitive,
-            shader_folder=self.__class__.shader_folder,
-        )
+        self.shader_wrapper.vert_data = self.get_shader_data()
+        self.shader_wrapper.vert_indices = self.get_shader_vert_indices()
+        self.shader_wrapper.uniforms = self.get_shader_uniforms()
+        self.shader_wrapper.depth_test = self.depth_test
         return self.shader_wrapper
 
     def get_shader_wrapper_list(self):
@@ -2676,12 +3037,12 @@ class OpenGLMobject:
             )
         return self
 
-    def get_resized_shader_data_array(self, length):
+    def get_resized_shader_data_array(self, length: int) -> np.ndarray:
         # If possible, try to populate an existing array, rather
         # than recreating it each frame
-        points = self.points
-        shader_data = np.zeros(len(points), dtype=self.shader_dtype)
-        return shader_data
+        if len(self.shader_data) != length:
+            self.shader_data = resize_array(self.shader_data, length)
+        return self.shader_data
 
     def read_data_to_shader(self, shader_data, shader_data_key, data_key):
         if data_key in self.locked_data_keys:
@@ -2703,14 +3064,98 @@ class OpenGLMobject:
     def get_shader_vert_indices(self):
         return self.shader_indices
 
-    @property
-    def submobjects(self):
-        return self._submobjects if hasattr(self, "_submobjects") else []
+    # Event Handlers
+    """
+        Event handling follows the Event Bubbling model of DOM in javascript.
+        Return false to stop the event bubbling.
+        To learn more visit https://www.quirksmode.org/js/events_order.html
 
-    @submobjects.setter
-    def submobjects(self, submobject_list):
-        self.remove(*self.submobjects)
-        self.add(*submobject_list)
+        Event Callback Argument is a callable function taking two arguments:
+            1. Mobject
+            2. EventData
+    """
+
+    def init_event_listeners(self):
+        self.event_listeners: list[EventListener] = []
+
+    def add_event_listener(
+        self,
+        event_type: EventType,
+        event_callback: Callable[[OpenGLMobject, dict[str, str]], None],
+    ):
+        event_listener = EventListener(self, event_type, event_callback)
+        self.event_listeners.append(event_listener)
+        EVENT_DISPATCHER.add_listener(event_listener)
+        return self
+
+    def remove_event_listener(
+        self,
+        event_type: EventType,
+        event_callback: Callable[[OpenGLMobject, dict[str, str]], None],
+    ):
+        event_listener = EventListener(self, event_type, event_callback)
+        while event_listener in self.event_listeners:
+            self.event_listeners.remove(event_listener)
+        EVENT_DISPATCHER.remove_listener(event_listener)
+        return self
+
+    def clear_event_listeners(self, recurse: bool = True):
+        self.event_listeners = []
+        if recurse:
+            for submob in self.submobjects:
+                submob.clear_event_listeners(recurse=recurse)
+        return self
+
+    def get_event_listeners(self):
+        return self.event_listeners
+
+    def get_family_event_listeners(self):
+        return list(it.chain(*[sm.get_event_listeners() for sm in self.get_family()]))
+
+    def get_has_event_listener(self):
+        return any(mob.get_event_listeners() for mob in self.get_family())
+
+    def add_mouse_motion_listener(self, callback):
+        self.add_event_listener(EventType.MouseMotionEvent, callback)
+
+    def remove_mouse_motion_listener(self, callback):
+        self.remove_event_listener(EventType.MouseMotionEvent, callback)
+
+    def add_mouse_press_listener(self, callback):
+        self.add_event_listener(EventType.MousePressEvent, callback)
+
+    def remove_mouse_press_listener(self, callback):
+        self.remove_event_listener(EventType.MousePressEvent, callback)
+
+    def add_mouse_release_listener(self, callback):
+        self.add_event_listener(EventType.MouseReleaseEvent, callback)
+
+    def remove_mouse_release_listener(self, callback):
+        self.remove_event_listener(EventType.MouseReleaseEvent, callback)
+
+    def add_mouse_drag_listener(self, callback):
+        self.add_event_listener(EventType.MouseDragEvent, callback)
+
+    def remove_mouse_drag_listener(self, callback):
+        self.remove_event_listener(EventType.MouseDragEvent, callback)
+
+    def add_mouse_scroll_listener(self, callback):
+        self.add_event_listener(EventType.MouseScrollEvent, callback)
+
+    def remove_mouse_scroll_listener(self, callback):
+        self.remove_event_listener(EventType.MouseScrollEvent, callback)
+
+    def add_key_press_listener(self, callback):
+        self.add_event_listener(EventType.KeyPressEvent, callback)
+
+    def remove_key_press_listener(self, callback):
+        self.remove_event_listener(EventType.KeyPressEvent, callback)
+
+    def add_key_release_listener(self, callback):
+        self.add_event_listener(EventType.KeyReleaseEvent, callback)
+
+    def remove_key_release_listener(self, callback):
+        self.remove_event_listener(EventType.KeyReleaseEvent, callback)
 
     # Errors
 
@@ -2722,6 +3167,44 @@ class OpenGLMobject:
             caller_name = sys._getframe(1).f_code.co_name
             raise Exception(message.format(caller_name))
 
+    @deprecated(
+        since="v0.17.2",
+        message="The usage of this method is discouraged please set attributes directly",
+    )
+    def set(self, **kwargs) -> OpenGLMobject:
+        """Sets attributes.
+
+        Mainly to be used along with :attr:`animate` to
+        animate setting attributes.
+
+        Examples
+        --------
+        ::
+
+            >>> mob = OpenGLMobject()
+            >>> mob.set(foo=0)
+            OpenGLMobject
+            >>> mob.foo
+            0
+
+        Parameters
+        ----------
+        **kwargs
+            The attributes and corresponding values to set.
+
+        Returns
+        -------
+        :class:`OpenGLMobject`
+            ``self``
+
+
+        """
+
+        for attr, value in kwargs.items():
+            setattr(self, attr, value)
+
+        return self
+
 
 class OpenGLGroup(OpenGLMobject):
     def __init__(self, *mobjects, **kwargs):
@@ -2729,6 +3212,10 @@ class OpenGLGroup(OpenGLMobject):
             raise Exception("All submobjects must be of type OpenGLMobject")
         super().__init__(**kwargs)
         self.add(*mobjects)
+
+    def __add__(self, other: OpenGLMobject | OpenGLGroup):
+        assert isinstance(other, OpenGLMobject)
+        return self.add(other)
 
 
 class OpenGLPoint(OpenGLMobject):
@@ -2769,7 +3256,7 @@ class _AnimationBuilder:
         self.cannot_pass_args = False
         self.anim_args = {}
 
-    def __call__(self, **kwargs):
+    def __call__(self, **kwargs) -> _AnimationBuilder:
         if self.cannot_pass_args:
             raise ValueError(
                 "Animation arguments must be passed before accessing methods and can only be passed once",
