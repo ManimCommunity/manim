@@ -194,6 +194,9 @@ TAU: float = 2 * PI
 DEGREES: float = TAU / 360
 """The exchange rate between radians and degrees."""
 
+RADIANS: float = 1.0
+"""Just a default to select for camera."""
+
 # Video qualities
 QUALITIES: dict[str, dict[str, str | int | None]] = {
     "fourk_quality": {

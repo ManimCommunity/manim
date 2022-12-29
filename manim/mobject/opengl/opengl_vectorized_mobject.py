@@ -1619,7 +1619,7 @@ class OpenGLVMobject(OpenGLMobject):
         return list(filter(lambda sw: len(sw.vert_data) > 0, self.shader_wrapper_list))
 
     def get_stroke_shader_data(self) -> np.ndarray:
-        points = self.get_points()
+        points = self.points
         if len(self.stroke_data) != len(points):
             self.stroke_data = resize_array(self.stroke_data, len(points))
 
@@ -1637,7 +1637,7 @@ class OpenGLVMobject(OpenGLMobject):
         return self.stroke_data
 
     def get_fill_shader_data(self) -> np.ndarray:
-        points = self.get_points()
+        points = self.points
         if len(self.fill_data) != len(points):
             self.fill_data = resize_array(self.fill_data, len(points))
             self.fill_data["vert_index"][:, 0] = range(len(points))

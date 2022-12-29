@@ -118,7 +118,7 @@ class OpenGLMobject:
         self.target: OpenGLMobject | None = None
 
         self.data: dict[str, np.ndarray] = {}
-        self.uniforms: dict[str, np.ndarray] = {}
+        self.uniforms: dict[str, float | np.ndarray] = {}
 
         self.init_data()
         self.init_uniforms()
