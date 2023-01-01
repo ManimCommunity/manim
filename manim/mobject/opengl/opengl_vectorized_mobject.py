@@ -1518,6 +1518,7 @@ class OpenGLVMobject(OpenGLMobject):
         self.fill_shader_wrapper.vert_data = self.get_fill_shader_data()
         self.fill_shader_wrapper.vert_indices = self.get_triangulation()
         self.fill_shader_wrapper.uniforms = self.get_fill_uniforms()
+        self.fill_shader_wrapper.depth_test = self.depth_test
 
     def get_stroke_shader_wrapper(self):
         self.update_stroke_shader_wrapper()
@@ -1526,6 +1527,7 @@ class OpenGLVMobject(OpenGLMobject):
     def update_stroke_shader_wrapper(self):
         self.stroke_shader_wrapper.vert_data = self.get_stroke_shader_data()
         self.stroke_shader_wrapper.uniforms = self.get_stroke_uniforms()
+        self.stroke_shader_wrapper.depth_test = self.depth_test
 
     def get_shader_wrapper_list(self):
         # Build up data lists
