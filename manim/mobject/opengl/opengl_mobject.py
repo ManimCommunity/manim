@@ -14,7 +14,6 @@ from typing import TYPE_CHECKING
 import moderngl
 import numpy as np
 from colour import Color
-from typing_extensions import TypedDict
 
 from manim import config, logger
 from manim.constants import *
@@ -51,7 +50,7 @@ from manim.utils.space_ops import (
 if TYPE_CHECKING:
     from typing import Callable, Iterable, Sequence, Tuple, Union
 
-    from typing_extensions import TypeAlias
+    from typing_extensions import Self, TypeAlias
 
     TimeBasedUpdater: TypeAlias = Callable[[OpenGLMobject, float], OpenGLMobject | None]
     NonTimeUpdater: TypeAlias = Callable[[OpenGLMobject], OpenGLMobject | None]
@@ -142,12 +141,12 @@ class OpenGLMobject:
     def __repr__(self):
         return str(self.name)
 
-    def __add__(self, other: OpenGLMobject) -> OpenGLMobject:
+    def __add__(self, other: OpenGLMobject) -> Self:
         if not isinstance(other, OpenGLMobject):
             raise TypeError(f"Only Mobjects can be added to Mobjects not {type(other)}")
         return self.get_group_class()(self, other)
 
-    def __mul__(self, other: int) -> OpenGLMobject:
+    def __mul__(self, other: int) -> Self:
         if not isinstance(other, int):
             raise TypeError(f"Only int can be multiplied to Mobjects not {type(other)}")
         return self.replicate(other)
@@ -662,7 +661,7 @@ class OpenGLMobject:
     def split(self) -> list[OpenGLMobject]:
         return self.submobjects
 
-    def assemble_family(self) -> OpenGLMobject:
+    def assemble_family(self) -> Self:
         sub_families = (sm.get_family() for sm in self.submobjects)
         self.family = [self, *uniq_chain(*sub_families)]
         self.refresh_has_updater_status()
@@ -704,7 +703,7 @@ class OpenGLMobject:
     def add(
         self,
         *mobjects: OpenGLMobject,
-    ) -> OpenGLMobject:
+    ) -> Self:
         """Add mobjects as submobjects.
 
         The mobjects are added to :attr:`submobjects`.
@@ -773,9 +772,7 @@ class OpenGLMobject:
         self.assemble_family()
         return self
 
-    def remove(
-        self, *mobjects: OpenGLMobject, reassemble: bool = True
-    ) -> OpenGLMobject:
+    def remove(self, *mobjects: OpenGLMobject, reassemble: bool = True) -> Self:
         """Remove :attr:`submobjects`.
 
         The mobjects are removed from :attr:`submobjects`, if they exist.
@@ -806,7 +803,7 @@ class OpenGLMobject:
             self.assemble_family()
         return self
 
-    def add_to_back(self, *mobjects: OpenGLMobject) -> OpenGLMobject:
+    def add_to_back(self, *mobjects: OpenGLMobject) -> Self:
         # NOTE: is the note true OpenGLMobjects?
         """Add all passed mobjects to the back of the submobjects.
 
@@ -859,6 +856,7 @@ class OpenGLMobject:
         if self in old_submob.parents:
             old_submob.parents.remove(self)
         self.submobjects[index] = new_submob
+        new_submob.parents.append(self)
         self.assemble_family()
         return self
 
@@ -935,7 +933,7 @@ class OpenGLMobject:
         col_widths: Iterable[float | None] | None = None,
         flow_order: str = "rd",
         **kwargs,
-    ) -> OpenGLMobject:
+    ) -> Self:
         """Arrange submobjects in a grid.
 
         Parameters
@@ -1324,18 +1322,18 @@ class OpenGLMobject:
     def serialize(self) -> bytes:
         return pickle.dumps(self)
 
-    def deserialize(self, data: bytes) -> OpenGLMobject:
+    def deserialize(self, data: bytes) -> Self:
         self.become(pickle.loads(data))
         return self
 
-    def deepcopy(self) -> OpenGLMobject:
+    def deepcopy(self) -> Self:
         try:
             return pickle.loads(pickle.dumps(self))
         except AttributeError:
             return copy.deepcopy(self)
 
     @stash_mobject_pointers
-    def copy(self, deep: bool = False) -> OpenGLMobject:
+    def copy(self, deep: bool = False) -> Self:
         """Create and return an identical copy of the :class:`OpenGLMobject` including all
         :attr:`submobjects`.
 
@@ -1487,7 +1485,7 @@ class OpenGLMobject:
         self.has_updaters: bool = False
         self.updating_suspended: bool = False
 
-    def update(self, dt: float = 0, recurse: bool = True) -> OpenGLMobject:
+    def update(self, dt: float = 0, recurse: bool = True) -> Self:
         if not self.has_updaters or self.updating_suspended:
             return self
         for time_updater in self.time_based_updaters:
@@ -1516,7 +1514,7 @@ class OpenGLMobject:
         update_function: Updater,
         index: int | None = None,
         call_updater: bool = False,
-    ) -> OpenGLMobject:
+    ) -> Self:
         if "dt" in get_parameters(update_function):
             updater_list: list[Updater] = self.time_based_updaters  # type: ignore
         else:
@@ -1532,7 +1530,7 @@ class OpenGLMobject:
             self.update()
         return self
 
-    def remove_updater(self, update_function: Updater) -> OpenGLMobject:
+    def remove_updater(self, update_function: Updater) -> Self:
         updater_lists: list[list[Updater]] = [
             self.time_based_updaters,  # type: ignore
             self.non_time_updaters,  # type: ignore
@@ -1543,7 +1541,7 @@ class OpenGLMobject:
         self.refresh_has_updater_status()
         return self
 
-    def clear_updaters(self, recurse: bool = True) -> OpenGLMobject:
+    def clear_updaters(self, recurse: bool = True) -> Self:
         self.time_based_updaters = []
         self.non_time_updaters = []
         self.refresh_has_updater_status()
@@ -1552,22 +1550,20 @@ class OpenGLMobject:
                 submob.clear_updaters()
         return self
 
-    def match_updaters(self, mobject: OpenGLMobject) -> OpenGLMobject:
+    def match_updaters(self, mobject: OpenGLMobject) -> Self:
         self.clear_updaters()
         for updater in mobject.get_updaters():
             self.add_updater(updater)
         return self
 
-    def suspend_updating(self, recurse: bool = True) -> OpenGLMobject:
+    def suspend_updating(self, recurse: bool = True) -> Self:
         self.updating_suspended = True
         if recurse:
             for submob in self.submobjects:
                 submob.suspend_updating(recurse)
         return self
 
-    def resume_updating(
-        self, recurse: bool = True, call_updater: bool = True
-    ) -> OpenGLMobject:
+    def resume_updating(self, recurse: bool = True, call_updater: bool = True) -> Self:
         self.updating_suspended = False
         if recurse:
             for submob in self.submobjects:
@@ -1578,7 +1574,7 @@ class OpenGLMobject:
             self.update(dt=0, recurse=recurse)
         return self
 
-    def refresh_has_updater_status(self) -> OpenGLMobject:
+    def refresh_has_updater_status(self) -> Self:
         self.has_updaters = any(mob.get_updaters() for mob in self.get_family())
         return self
 
@@ -1587,16 +1583,14 @@ class OpenGLMobject:
     def is_changing(self) -> bool:
         return self.has_updaters or self._is_animating
 
-    def set_animating_status(
-        self, is_animating: bool, recurse: bool = True
-    ) -> OpenGLMobject:
+    def set_animating_status(self, is_animating: bool, recurse: bool = True) -> Self:
         for mob in (*self.get_family(recurse), *self.get_ancestors(extended=True)):
             mob._is_animating = is_animating
         return self
 
     # Transforming operations
 
-    def shift(self, vector) -> OpenGLMobject:
+    def shift(self, vector) -> Self:
         self.apply_points_function(
             lambda points: points + vector,
             about_edge=None,
@@ -1611,7 +1605,7 @@ class OpenGLMobject:
         about_point: Sequence[float] | np.ndarray | None = None,
         about_edge: Sequence[float] | np.ndarray = ORIGIN,
         **kwargs,
-    ) -> OpenGLMobject:
+    ) -> Self:
         r"""Scale the size by a factor.
 
         Default behavior is to scale about the center of the mobject.
@@ -1688,7 +1682,7 @@ class OpenGLMobject:
         """
         pass
 
-    def stretch(self, factor: float, dim: int, **kwargs) -> OpenGLMobject:
+    def stretch(self, factor: float, dim: int, **kwargs) -> Self:
         def func(points):
             points[:, dim] *= factor
             return points
@@ -1696,7 +1690,7 @@ class OpenGLMobject:
         self.apply_points_function(func, works_on_bounding_box=True, **kwargs)
         return self
 
-    def rotate_about_origin(self, angle: float, axis=OUT) -> OpenGLMobject:
+    def rotate_about_origin(self, angle: float, axis=OUT) -> Self:
         return self.rotate(angle, axis, about_point=ORIGIN)  # type: ignore
 
     def rotate(
@@ -1705,7 +1699,7 @@ class OpenGLMobject:
         axis=OUT,
         about_point: Sequence[float] | None = None,
         **kwargs,
-    ) -> OpenGLMobject:
+    ) -> Self:
         """Rotates the :class:`~.OpenGLMobject` about a certain point."""
         rot_matrix_T = rotation_matrix_transpose(angle, axis)
         self.apply_points_function(
@@ -1715,7 +1709,7 @@ class OpenGLMobject:
         )
         return self
 
-    def flip(self, axis=UP, **kwargs) -> OpenGLMobject:
+    def flip(self, axis=UP, **kwargs) -> Self:
         """Flips/Mirrors an mobject about its center.
 
         Examples
@@ -1734,7 +1728,7 @@ class OpenGLMobject:
         """
         return self.rotate(TAU / 2, axis, **kwargs)
 
-    def apply_function(self, function: PointUpdateFunction, **kwargs) -> OpenGLMobject:
+    def apply_function(self, function: PointUpdateFunction, **kwargs) -> Self:
         # Default to applying matrix about the origin, not mobjects center
         if len(kwargs) == 0:
             kwargs["about_point"] = ORIGIN
@@ -1743,20 +1737,18 @@ class OpenGLMobject:
         )
         return self
 
-    def apply_function_to_position(
-        self, function: PointUpdateFunction
-    ) -> OpenGLMobject:
+    def apply_function_to_position(self, function: PointUpdateFunction) -> Self:
         self.move_to(function(self.get_center()))
         return self
 
     def apply_function_to_submobject_positions(
         self, function: PointUpdateFunction
-    ) -> OpenGLMobject:
+    ) -> Self:
         for submob in self.submobjects:
             submob.apply_function_to_position(function)
         return self
 
-    def apply_matrix(self, matrix, **kwargs) -> OpenGLMobject:
+    def apply_matrix(self, matrix, **kwargs) -> Self:
         # Default to applying matrix about the origin, not mobjects center
         if ("about_point" not in kwargs) and ("about_edge" not in kwargs):
             kwargs["about_point"] = ORIGIN
@@ -1768,7 +1760,7 @@ class OpenGLMobject:
         )
         return self
 
-    def apply_complex_function(self, function, **kwargs) -> OpenGLMobject:
+    def apply_complex_function(self, function, **kwargs) -> Self:
         """Applies a complex function to a :class:`OpenGLMobject`.
         The x and y coordinates correspond to the real and imaginary parts respectively.
 
@@ -1813,7 +1805,7 @@ class OpenGLMobject:
             current_object = current_object.parent
         return np.linalg.multi_dot(list(reversed(model_matrices)))
 
-    def wag(self, direction=RIGHT, axis=DOWN, wag_factor=1.0) -> OpenGLMobject:
+    def wag(self, direction=RIGHT, axis=DOWN, wag_factor=1.0) -> Self:
         for mob in self.family_members_with_points():
             alphas = np.dot(mob.points, np.transpose(axis))
             alphas -= min(alphas)
@@ -1830,14 +1822,12 @@ class OpenGLMobject:
 
     # Positioning methods
 
-    def center(self) -> OpenGLMobject:
+    def center(self) -> Self:
         """Moves the mobject to the center of the Scene."""
         self.shift(-self.get_center())
         return self
 
-    def align_on_border(
-        self, direction, buff=DEFAULT_MOBJECT_TO_EDGE_BUFFER
-    ) -> OpenGLMobject:
+    def align_on_border(self, direction, buff=DEFAULT_MOBJECT_TO_EDGE_BUFFER) -> Self:
         """
         Direction just needs to be a vector pointing towards side or
         corner in the 2d plane.
@@ -1855,10 +1845,10 @@ class OpenGLMobject:
 
     def to_corner(
         self, corner=LEFT + DOWN, buff=DEFAULT_MOBJECT_TO_EDGE_BUFFER
-    ) -> OpenGLMobject:
+    ) -> Self:
         return self.align_on_border(corner, buff)
 
-    def to_edge(self, edge=LEFT, buff=DEFAULT_MOBJECT_TO_EDGE_BUFFER) -> OpenGLMobject:
+    def to_edge(self, edge=LEFT, buff=DEFAULT_MOBJECT_TO_EDGE_BUFFER) -> Self:
         return self.align_on_border(edge, buff)
 
     def next_to(
@@ -1870,7 +1860,7 @@ class OpenGLMobject:
         submobject_to_align=None,
         index_of_submobject_to_align=None,
         coor_mask=np.array([1, 1, 1]),
-    ) -> OpenGLMobject:
+    ) -> Self:
         """Move this :class:`~.OpenGLMobject` next to another's :class:`~.OpenGLMobject` or coordinate.
 
         Examples
@@ -2636,13 +2626,13 @@ class OpenGLMobject:
                 elif len(arr1) > len(arr2):
                     mob2.data[key] = resize_preserving_order(arr2, len(arr1))
 
-    def align_points(self, mobject) -> OpenGLMobject:
+    def align_points(self, mobject) -> Self:
         max_len = max(self.get_num_points(), mobject.get_num_points())
         for mob in (self, mobject):
             mob.resize_points(max_len, resize_func=resize_preserving_order)
         return self
 
-    def align_family(self, mobject) -> OpenGLMobject:
+    def align_family(self, mobject) -> Self:
         mob1 = self
         mob2 = mobject
         n1 = len(mob1)
@@ -2655,14 +2645,14 @@ class OpenGLMobject:
             sm1.align_family(sm2)
         return self
 
-    def push_self_into_submobjects(self) -> OpenGLMobject:
+    def push_self_into_submobjects(self) -> Self:
         copy = self.deepcopy()
         copy.submobjects = []
         self.clear_points()
         self.add(copy)
         return self
 
-    def add_n_more_submobjects(self, n) -> OpenGLMobject:
+    def add_n_more_submobjects(self, n) -> Self:
         if n == 0:
             return self
 
@@ -2691,9 +2681,7 @@ class OpenGLMobject:
 
     # Interpolate
 
-    def interpolate(
-        self, mobject1, mobject2, alpha, path_func=straight_path
-    ) -> OpenGLMobject:
+    def interpolate(self, mobject1, mobject2, alpha, path_func=straight_path) -> Self:
         """Turns this :class:`~.OpenGLMobject` into an interpolation between ``mobject1``
         and ``mobject2``.
 
@@ -2858,6 +2846,36 @@ class OpenGLMobject:
             self.match_updaters(mobject)
         return self
 
+    def looks_identical(self, mobject: OpenGLMobject) -> bool:
+        fam1 = self.family_members_with_points()
+        fam2 = mobject.family_members_with_points()
+        if len(fam1) != len(fam2):
+            return False
+        for m1, m2 in zip(fam1, fam2):
+            for d1, d2 in [(m1.data, m2.data), (m1.uniforms, m2.uniforms)]:
+                if set(d1).difference(d2):
+                    return False
+                for key in d1:
+                    if (
+                        isinstance(d1[key], np.ndarray)
+                        and isinstance(d2[key], np.ndarray)
+                        and (d1[key].size != d2[key].size)
+                    ):
+                        return False
+                    if not np.isclose(d1[key], d2[key]).all():
+                        return False
+        return True
+
+    def has_same_shape_as(self, mobject: OpenGLMobject) -> bool:
+        # Normalize both point sets by centering and making height 1
+        points1, points2 = (
+            (m.get_all_points() - m.get_center()) / m.get_height()
+            for m in (self, mobject)
+        )
+        if len(points1) != len(points2):
+            return False
+        return bool(np.isclose(points1, points2).all())
+
     # Operations touching shader uniforms
 
     @staticmethod
@@ -2872,20 +2890,20 @@ class OpenGLMobject:
         return wrapper
 
     @affects_shader_info_id
-    def fix_in_frame(self) -> OpenGLMobject:
+    def fix_in_frame(self) -> Self:
         self.uniforms["is_fixed_in_frame"] = np.asarray(1.0)
         self.is_fixed_in_frame = True
         return self
 
     @affects_shader_info_id
-    def fix_orientation(self) -> OpenGLMobject:
+    def fix_orientation(self) -> Self:
         self.uniforms["is_fixed_orientation"] = np.asarray(1.0)
         self.is_fixed_orientation = True
         self.fixed_orientation_center = tuple(self.get_center())
         return self
 
     @affects_shader_info_id
-    def unfix_from_frame(self) -> OpenGLMobject:
+    def unfix_from_frame(self) -> Self:
         self.uniforms["is_fixed_in_frame"] = np.asarray(0.0)
         self.is_fixed_in_frame = False
         return self
@@ -3139,7 +3157,7 @@ class OpenGLMobject:
         since="v0.17.2",
         message="The usage of this method is discouraged please set attributes directly",
     )
-    def set(self, **kwargs) -> OpenGLMobject:
+    def set(self, **kwargs) -> Self:
         """Sets attributes.
 
         Mainly to be used along with :attr:`animate` to

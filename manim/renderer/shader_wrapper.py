@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import re
+from functools import lru_cache
 from pathlib import Path
 
 import moderngl
@@ -185,6 +186,7 @@ class ShaderWrapper:
 filename_to_code_map: dict = {}
 
 
+@lru_cache(maxsize=12)
 def get_shader_code_from_file(filename: Path) -> str | None:
     if filename in filename_to_code_map:
         return filename_to_code_map[filename]
