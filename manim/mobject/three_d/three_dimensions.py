@@ -32,7 +32,6 @@ from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import *
 from manim.utils.color import Colors
-from manim.utils.deprecation import deprecated_params
 from manim.utils.iterables import tuplify
 from manim.utils.space_ops import normalize, perpendicular_bisector, z_to_vector
 
