@@ -16,7 +16,10 @@ __all__ = [
     "Torus",
 ]
 
+from typing import TYPE_CHECKING
+
 import numpy as np
+
 from manim import config, logger
 from manim.constants import *
 from manim.mobject.geometry.arc import Circle
@@ -29,11 +32,10 @@ from manim.utils.color import *
 from manim.utils.iterables import tuplify
 from manim.utils.space_ops import normalize, perpendicular_bisector, z_to_vector
 
-from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from colour import Color
     from typing import *
-    
+
+    from colour import Color
 
 
 class ThreeDVMobject(VMobject, metaclass=ConvertToOpenGL):
