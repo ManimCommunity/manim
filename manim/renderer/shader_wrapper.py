@@ -7,7 +7,7 @@ from pathlib import Path
 import moderngl
 import numpy as np
 
-from .. import logger
+from manim._config import logger
 
 # Mobjects that should be rendered with
 # the same shader will be organized and

@@ -5,19 +5,22 @@ from __future__ import annotations
 __all__ = ["ChangingDecimal", "ChangeDecimalToValue"]
 
 
-import typing
+from typing import TYPE_CHECKING
 
 from manim.mobject.text.numbers import DecimalNumber
+from manim.utils.bezier import interpolate
 
-from ..animation.animation import Animation
-from ..utils.bezier import interpolate
+from .animation import Animation
+
+if TYPE_CHECKING:
+    from typing import Callable
 
 
 class ChangingDecimal(Animation):
     def __init__(
         self,
         decimal_mob: DecimalNumber,
-        number_update_func: typing.Callable[[float], float],
+        number_update_func: Callable[[float], float],
         suspend_mobject_updating: bool | None = False,
         **kwargs,
     ) -> None:

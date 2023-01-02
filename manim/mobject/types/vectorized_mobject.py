@@ -15,22 +15,15 @@ __all__ = [
 import itertools as it
 import sys
 import typing
-from typing import Callable, Optional, Sequence, Union
+from typing import TYPE_CHECKING
 
 import colour
 import numpy as np
 from PIL.Image import Image
 
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
-from manim.mobject.three_d.three_d_utils import (
-    get_3d_vmob_gradient_start_and_end_points,
-)
-
-from ... import config
-from ...constants import *
-from ...mobject.mobject import Mobject
-from ...utils.bezier import (
+from manim._config import config
+from manim.constants import *
+from manim.utils.bezier import (
     bezier,
     get_smooth_handle_points,
     integer_interpolate,
@@ -38,11 +31,23 @@ from ...utils.bezier import (
     partial_bezier_points,
     proportions_along_bezier_curve_for_point,
 )
-from ...utils.color import BLACK, WHITE, color_to_rgba
-from ...utils.deprecation import deprecated
-from ...utils.iterables import make_even, resize_array, stretch_array_to_length, tuplify
-from ...utils.space_ops import rotate_vector, shoelace_direction
+from manim.utils.color import BLACK, WHITE, color_to_rgba
+from manim.utils.deprecation import deprecated
+from manim.utils.iterables import (
+    make_even,
+    resize_array,
+    stretch_array_to_length,
+    tuplify,
+)
+from manim.utils.space_ops import rotate_vector, shoelace_direction
 
+from ..mobject import Mobject
+from ..opengl.opengl_compatibility import ConvertToOpenGL
+from ..opengl.opengl_vectorized_mobject import OpenGLVMobject
+from ..three_d.three_d_utils import get_3d_vmob_gradient_start_and_end_points
+
+if TYPE_CHECKING:
+    from typing import Callable, Sequence
 # TODO
 # - Change cubic curve groups to have 4 points instead of 3
 # - Change sub_path idea accordingly

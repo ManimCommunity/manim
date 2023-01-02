@@ -5,26 +5,30 @@ from __future__ import annotations
 __all__ = ["ThreeDCamera"]
 
 
-from typing import Callable
+from typing import TYPE_CHECKING
 
 import numpy as np
 
-from manim.mobject.mobject import Mobject
+from manim._config import config
+from manim.constants import *
 from manim.mobject.three_d.three_d_utils import (
     get_3d_vmob_end_corner,
     get_3d_vmob_end_corner_unit_normal,
     get_3d_vmob_start_corner,
     get_3d_vmob_start_corner_unit_normal,
 )
+from manim.mobject.types.point_cloud_mobject import Point
 from manim.mobject.value_tracker import ValueTracker
+from manim.utils.color import get_shaded_rgb
+from manim.utils.family import extract_mobject_family_members
+from manim.utils.space_ops import rotation_about_z, rotation_matrix
 
-from .. import config
-from ..camera.camera import Camera
-from ..constants import *
-from ..mobject.types.point_cloud_mobject import Point
-from ..utils.color import get_shaded_rgb
-from ..utils.family import extract_mobject_family_members
-from ..utils.space_ops import rotation_about_z, rotation_matrix
+from .camera import Camera
+
+if TYPE_CHECKING:
+    from typing import Callable
+
+    from manim.mobject.mobject import Mobject
 
 
 class ThreeDCamera(Camera):

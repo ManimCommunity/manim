@@ -19,9 +19,20 @@ __all__ = [
 ]
 
 import itertools as it
-from typing import Any, Callable, Collection, Generator, Iterable, Reversible, Sequence
+from typing import TYPE_CHECKING
 
 import numpy as np
+
+if TYPE_CHECKING:
+    from typing import (
+        Any,
+        Callable,
+        Collection,
+        Generator,
+        Iterable,
+        Reversible,
+        Sequence,
+    )
 
 
 def adjacent_n_tuples(objects: Sequence, n: int) -> zip:

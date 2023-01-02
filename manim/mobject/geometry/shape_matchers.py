@@ -4,13 +4,18 @@ from __future__ import annotations
 
 __all__ = ["SurroundingRectangle", "BackgroundRectangle", "Cross", "Underline"]
 
-from manim import config, logger
+from typing import TYPE_CHECKING
+
+from manim._config import config, logger
 from manim.constants import *
-from manim.mobject.geometry.line import Line
-from manim.mobject.geometry.polygram import RoundedRectangle
-from manim.mobject.mobject import Mobject
-from manim.mobject.types.vectorized_mobject import VGroup
 from manim.utils.color import BLACK, RED, YELLOW, Color, Colors
+
+from ..types.vectorized_mobject import VGroup
+from .line import Line
+from .polygram import RoundedRectangle
+
+if TYPE_CHECKING:
+    from ..mobject import Mobject
 
 
 class SurroundingRectangle(RoundedRectangle):

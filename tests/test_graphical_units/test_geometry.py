@@ -1,6 +1,46 @@
 from __future__ import annotations
 
-from manim import *
+import numpy as np
+
+from manim.animation.fading import FadeIn
+from manim.animation.transform import ApplyMethod
+from manim.constants import LEFT, ORIGIN, OUT, PI, RIGHT, UP
+from manim.mobject.geometry.arc import (
+    AnnotationDot,
+    AnnularSector,
+    Annulus,
+    Arc,
+    ArcBetweenPoints,
+    Circle,
+    CurvedArrow,
+    CurvedDoubleArrow,
+    Dot,
+    Ellipse,
+    Sector,
+)
+from manim.mobject.geometry.line import (
+    Angle,
+    Arrow,
+    DashedLine,
+    DoubleArrow,
+    Elbow,
+    Line,
+    RightAngle,
+    Vector,
+)
+from manim.mobject.geometry.polygram import (
+    Polygon,
+    Polygram,
+    Rectangle,
+    RegularPolygram,
+    RoundedRectangle,
+    Square,
+    Star,
+    Triangle,
+)
+from manim.mobject.geometry.tips import ArrowCircleTip, ArrowSquareFilledTip
+from manim.mobject.types.vectorized_mobject import DashedVMobject, VGroup
+from manim.utils.color import BLUE, GREEN, RED
 from manim.utils.testing.frames_comparison import frames_comparison
 
 __module_test__ = "geometry"

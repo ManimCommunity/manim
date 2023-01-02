@@ -1,14 +1,13 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Iterable
+from typing import TYPE_CHECKING
 
 import moderngl
 import numpy as np
 from PIL import Image
 
 from manim.constants import *
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.utils.bezier import integer_interpolate, interpolate
 from manim.utils.color import *
 from manim.utils.config_ops import _Data, _Uniforms
@@ -16,6 +15,11 @@ from manim.utils.deprecation import deprecated
 from manim.utils.images import change_to_rgba_array, get_full_raster_image_path
 from manim.utils.iterables import listify
 from manim.utils.space_ops import normalize_along_axis
+
+from .opengl_mobject import OpenGLMobject
+
+if TYPE_CHECKING:
+    from typing import Iterable
 
 
 class OpenGLSurface(OpenGLMobject):

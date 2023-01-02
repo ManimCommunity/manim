@@ -8,9 +8,9 @@ __all__ = [
 ]
 
 
-from manim.mobject.geometry.polygram import Rectangle
+from manim._config import config
 
-from .. import config
+from .geometry.polygram import Rectangle
 
 
 class ScreenRectangle(Rectangle):

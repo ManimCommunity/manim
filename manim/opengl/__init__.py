@@ -1,11 +1,5 @@
 from __future__ import annotations
 
-try:
-    from dearpygui import dearpygui as dpg
-except ImportError:
-    pass
-
-
 from manim.mobject.opengl.dot_cloud import *
 from manim.mobject.opengl.opengl_image_mobject import *
 from manim.mobject.opengl.opengl_mobject import *

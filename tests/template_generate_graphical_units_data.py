@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from manim import *
+from manim.animation.animation import Animation
+from manim.mobject.geometry.arc import Circle
+from manim.scene.scene import Scene
 from tests.helpers.graphical_units import set_test_scene
 
 # Note: DO NOT COMMIT THIS FILE. The purpose of this template is to produce control data for graphical_units_data. As

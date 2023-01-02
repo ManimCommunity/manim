@@ -20,16 +20,15 @@ import os
 import re
 import sys
 from collections.abc import Mapping, MutableMapping
+from enum import EnumMeta
 from pathlib import Path
 from typing import Any, Iterable, Iterator
 
 import colour
 import numpy as np
 
-from .. import constants
-from ..constants import RendererType
-from ..utils.tex import TexTemplate, TexTemplateFromFile
-from ..utils.tex_templates import TexTemplateLibrary
+from manim import constants
+from manim.utils.tex import TexTemplate, TexTemplateFromFile
 
 
 def config_file_paths() -> list[Path]:
@@ -825,7 +824,7 @@ class ManimConfig(MutableMapping):
             self.tex_template = TexTemplateFromFile(tex_filename=args.tex_template)
 
         if (
-            self.renderer == RendererType.OPENGL
+            self.renderer == constants.RendererType.OPENGL
             and getattr(args, "write_to_movie") is None
         ):
             # --write_to_movie was not passed on the command line, so don't generate video.
@@ -1237,7 +1236,7 @@ class ManimConfig(MutableMapping):
         return self._d["renderer"]
 
     @renderer.setter
-    def renderer(self, val: str | RendererType) -> None:
+    def renderer(self, val: str | constants.RendererType) -> None:
         """The setter of the renderer property.
 
         Takes care of switching inheritance bases using the
@@ -1245,7 +1244,7 @@ class ManimConfig(MutableMapping):
         """
         if isinstance(val, str):
             val = val.lower()
-        renderer = RendererType(val)
+        renderer = constants.RendererType(val)
         try:
             from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
             from manim.mobject.opengl.opengl_mobject import OpenGLMobject
@@ -1255,7 +1254,7 @@ class ManimConfig(MutableMapping):
             from ..mobject.types.vectorized_mobject import VMobject
 
             for cls in ConvertToOpenGL._converted_classes:
-                if renderer == RendererType.OPENGL:
+                if renderer == constants.RendererType.OPENGL:
                     conversion_dict = {
                         Mobject: OpenGLMobject,
                         VMobject: OpenGLVMobject,
@@ -1277,7 +1276,7 @@ class ManimConfig(MutableMapping):
             # can just do nothing.
             pass
 
-        self._set_from_enum("renderer", renderer, RendererType)
+        self._set_from_enum("renderer", renderer, constants.RendererType)
 
     media_dir = property(
         lambda self: self._d["media_dir"],

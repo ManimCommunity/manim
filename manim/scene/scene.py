@@ -30,23 +30,22 @@ from tqdm import tqdm
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
+from manim._config import config, logger
+from manim.animation.animation import Animation, Wait, prepare_animation
+from manim.camera.camera import Camera
+from manim.constants import *
+from manim.gui.gui import configure_pygui
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLPoint
-
-from .. import config, logger
-from ..animation.animation import Animation, Wait, prepare_animation
-from ..camera.camera import Camera
-from ..constants import *
-from ..gui.gui import configure_pygui
-from ..renderer.cairo_renderer import CairoRenderer
-from ..renderer.opengl_renderer import OpenGLRenderer
-from ..renderer.shader import Object3D
-from ..utils import opengl, space_ops
-from ..utils.exceptions import EndSceneEarlyException, RerunSceneException
-from ..utils.family import extract_mobject_family_members
-from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
-from ..utils.file_ops import open_media_file
-from ..utils.iterables import list_difference_update, list_update
+from manim.renderer.cairo_renderer import CairoRenderer
+from manim.renderer.opengl_renderer import OpenGLRenderer
+from manim.renderer.shader import Object3D
+from manim.utils import opengl, space_ops
+from manim.utils.exceptions import EndSceneEarlyException, RerunSceneException
+from manim.utils.family import extract_mobject_family_members
+from manim.utils.family_ops import restructure_list_to_exclude_certain_family_members
+from manim.utils.file_ops import open_media_file
+from manim.utils.iterables import list_difference_update, list_update
 
 
 class RerunSceneHandler(FileSystemEventHandler):

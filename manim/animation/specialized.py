@@ -2,12 +2,15 @@ from __future__ import annotations
 
 __all__ = ["Broadcast"]
 
-from typing import Any, Sequence
+from typing import TYPE_CHECKING
 
-from manim.animation.transform import Restore
+from manim.constants import ORIGIN
 
-from ..constants import *
 from .composition import LaggedStart
+from .transform import Restore
+
+if TYPE_CHECKING:
+    from typing import Any, Sequence
 
 
 class Broadcast(LaggedStart):

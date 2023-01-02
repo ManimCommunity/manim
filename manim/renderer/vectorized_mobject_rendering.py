@@ -4,8 +4,9 @@ import collections
 
 import numpy as np
 
-from ..utils import opengl
-from ..utils.space_ops import cross2d, earclip_triangulation
+from manim.utils import opengl
+from manim.utils.space_ops import cross2d, earclip_triangulation
+
 from .shader import Shader
 
 

@@ -18,12 +18,13 @@ from pygments.lexers import get_lexer_by_name, guess_lexer_for_filename
 from pygments.styles import get_all_styles
 
 from manim.constants import *
-from manim.mobject.geometry.arc import Dot
-from manim.mobject.geometry.polygram import RoundedRectangle
-from manim.mobject.geometry.shape_matchers import SurroundingRectangle
-from manim.mobject.text.text_mobject import Paragraph
-from manim.mobject.types.vectorized_mobject import VGroup
 from manim.utils.color import WHITE
+
+from ..geometry.arc import Dot
+from ..geometry.polygram import RoundedRectangle
+from ..geometry.shape_matchers import SurroundingRectangle
+from ..types.vectorized_mobject import VGroup
+from .text_mobject import Paragraph
 
 
 class Code(VGroup):

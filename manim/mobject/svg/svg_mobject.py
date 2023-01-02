@@ -10,10 +10,10 @@ import numpy as np
 import svgelements as se
 
 from manim import config, logger
+from manim.constants import RIGHT
+from manim.utils.images import get_full_vector_image_path
+from manim.utils.iterables import hash_obj
 
-from ...constants import RIGHT
-from ...utils.images import get_full_vector_image_path
-from ...utils.iterables import hash_obj
 from ..geometry.arc import Circle
 from ..geometry.line import Line
 from ..geometry.polygram import Polygon, Rectangle, RoundedRectangle

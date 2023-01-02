@@ -1,6 +1,16 @@
 from __future__ import annotations
 
-from manim import *
+import numpy as np
+
+from manim.animation.fading import *
+from manim.animation.rotation import *
+from manim.animation.transform import *
+from manim.constants import *
+from manim.mobject.geometry.arc import *
+from manim.mobject.geometry.line import *
+from manim.mobject.geometry.polygram import *
+from manim.mobject.types.vectorized_mobject import *
+from manim.utils.color import *
 from manim.utils.testing.frames_comparison import frames_comparison
 
 __module_test__ = "transform"

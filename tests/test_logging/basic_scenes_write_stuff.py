@@ -1,6 +1,12 @@
 from __future__ import annotations
 
-from manim import *
+from manim._config.init_config import config
+from manim.animation.creation import Write
+from manim.constants import DOWN, LARGE_BUFF
+from manim.mobject.text.tex_mobject import MathTex, Tex
+from manim.mobject.types.vectorized_mobject import VGroup
+from manim.scene.scene import Scene
+from manim.utils.color import YELLOW
 
 # This module is used in the CLI tests in tests_CLi.py.
 

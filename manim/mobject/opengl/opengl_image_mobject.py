@@ -10,8 +10,9 @@ import numpy as np
 from PIL import Image
 from PIL.Image import Resampling
 
-from manim.mobject.opengl.opengl_surface import OpenGLSurface, OpenGLTexturedSurface
 from manim.utils.images import get_full_raster_image_path
+
+from .opengl_surface import OpenGLSurface, OpenGLTexturedSurface
 
 
 class OpenGLImageMobject(OpenGLTexturedSurface):

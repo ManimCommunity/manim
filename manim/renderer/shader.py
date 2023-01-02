@@ -7,9 +7,9 @@ from pathlib import Path
 import moderngl
 import numpy as np
 
-from .. import config
-from ..utils import opengl
-from ..utils.simple_functions import get_parameters
+from manim._config import config
+from manim.utils import opengl
+from manim.utils.simple_functions import get_parameters
 
 SHADER_FOLDER = Path(__file__).parent / "shaders"
 shader_program_cache: dict = {}

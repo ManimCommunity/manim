@@ -5,20 +5,12 @@ from __future__ import annotations
 __all__ = ["SampleSpace", "BarChart"]
 
 
-from typing import Iterable, MutableSequence, Sequence
+from typing import TYPE_CHECKING
 
 import numpy as np
-from colour import Color
 
-from manim import config, logger
+from manim._config import config, logger
 from manim.constants import *
-from manim.mobject.geometry.polygram import Rectangle
-from manim.mobject.graphing.coordinate_systems import Axes
-from manim.mobject.mobject import Mobject
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-from manim.mobject.svg.brace import Brace
-from manim.mobject.text.tex_mobject import MathTex, Tex
-from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import (
     BLUE_E,
     DARK_GREY,
@@ -29,6 +21,19 @@ from manim.utils.color import (
     color_gradient,
 )
 from manim.utils.iterables import tuplify
+
+from ..geometry.polygram import Rectangle
+from ..mobject import Mobject
+from ..opengl.opengl_mobject import OpenGLMobject
+from ..svg.brace import Brace
+from ..text.tex_mobject import MathTex, Tex
+from ..types.vectorized_mobject import VGroup, VMobject
+from .coordinate_systems import Axes
+
+if TYPE_CHECKING:
+    from typing import Iterable, MutableSequence, Sequence
+
+    from colour import Color
 
 EPSILON = 0.0001
 

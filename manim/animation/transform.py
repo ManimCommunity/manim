@@ -28,27 +28,29 @@ __all__ = [
 
 import inspect
 import types
-from typing import TYPE_CHECKING, Any, Callable, Iterable, Sequence
+from typing import TYPE_CHECKING
 
 import numpy as np
 
-from manim.mobject.opengl.opengl_mobject import OpenGLGroup, OpenGLMobject
-
-from .. import config
-from ..animation.animation import Animation
-from ..constants import (
+from manim._config import config
+from manim.constants import (
     DEFAULT_POINTWISE_FUNCTION_RUN_TIME,
     DEGREES,
     ORIGIN,
     OUT,
     RendererType,
 )
-from ..mobject.mobject import Group, Mobject
-from ..utils.paths import path_along_arc, path_along_circles
-from ..utils.rate_functions import smooth, squish_rate_func
+from manim.mobject.mobject import Group, Mobject
+from manim.mobject.opengl.opengl_mobject import OpenGLGroup, OpenGLMobject
+from manim.utils.paths import path_along_arc, path_along_circles
+from manim.utils.rate_functions import smooth, squish_rate_func
+
+from .animation import Animation
 
 if TYPE_CHECKING:
-    from ..scene.scene import Scene
+    from typing import Any, Callable, Iterable, Sequence
+
+    from manim.scene.scene import Scene
 
 
 class Transform(Animation):

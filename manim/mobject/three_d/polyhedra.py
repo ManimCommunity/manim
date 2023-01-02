@@ -6,10 +6,10 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from manim.mobject.geometry.polygram import Polygon
-from manim.mobject.graph import Graph
-from manim.mobject.three_d.three_dimensions import Dot3D
-from manim.mobject.types.vectorized_mobject import VGroup
+from ..geometry.polygram import Polygon
+from ..graph import Graph
+from ..three_d.three_dimensions import Dot3D
+from ..types.vectorized_mobject import VGroup
 
 if TYPE_CHECKING:
     from manim.mobject.mobject import Mobject

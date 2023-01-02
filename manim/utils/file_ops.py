@@ -28,11 +28,10 @@ from shutil import copyfile
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..scene.scene_file_writer import SceneFileWriter
+    from manim.scene.scene_file_writer import SceneFileWriter
 
-from manim import __version__, config, logger
-
-from .. import console
+from manim import __version__
+from manim._config import config, console, logger
 
 
 def is_mp4_format() -> bool:

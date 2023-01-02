@@ -14,28 +14,14 @@ import warnings
 from functools import partialmethod, reduce
 from math import ceil
 from pathlib import Path
-from typing import (
-    TYPE_CHECKING,
-    Callable,
-    Dict,
-    Iterable,
-    List,
-    Optional,
-    Sequence,
-    Tuple,
-    Type,
-    TypeVar,
-    Union,
-)
+from typing import TYPE_CHECKING
 
 import numpy as np
 from colour import Color
 
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-
-from .. import config, logger
-from ..constants import *
-from ..utils.color import (
+from manim._config import config, logger
+from manim.constants import *
+from manim.utils.color import (
     BLACK,
     WHITE,
     YELLOW_C,
@@ -43,11 +29,17 @@ from ..utils.color import (
     color_gradient,
     interpolate_color,
 )
-from ..utils.exceptions import MultiAnimationOverrideException
-from ..utils.iterables import list_update, remove_list_redundancies
-from ..utils.paths import straight_path
-from ..utils.simple_functions import get_parameters
-from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
+from manim.utils.exceptions import MultiAnimationOverrideException
+from manim.utils.iterables import list_update, remove_list_redundancies
+from manim.utils.paths import straight_path
+from manim.utils.simple_functions import get_parameters
+from manim.utils.space_ops import angle_between_vectors, normalize, rotation_matrix
+
+from .opengl.opengl_compatibility import ConvertToOpenGL
+from .types.vectorized_mobject import VMobject
+
+if TYPE_CHECKING:
+    from typing import Callable, Iterable, Sequence, TypeVar, Union
 
 # TODO: Explain array_attrs
 

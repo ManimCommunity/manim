@@ -59,20 +59,24 @@ import re
 from contextlib import contextmanager
 from itertools import chain
 from pathlib import Path
-from typing import Iterable, Sequence
+from typing import TYPE_CHECKING
 
 import manimpango
 import numpy as np
 from colour import Color
 from manimpango import MarkupUtils, PangoUtils, TextSetting
 
-from manim import config, logger
+from manim._config import config, logger
 from manim.constants import *
-from manim.mobject.geometry.arc import Dot
-from manim.mobject.svg.svg_mobject import SVGMobject
-from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import Colors, color_gradient
 from manim.utils.deprecation import deprecated
+
+from ..geometry.arc import Dot
+from ..svg.svg_mobject import SVGMobject
+from ..types.vectorized_mobject import VGroup, VMobject
+
+if TYPE_CHECKING:
+    from typing import Iterable, Optional, Sequence
 
 TEXT_MOB_SCALE_FACTOR = 0.05
 DEFAULT_LINE_SPACING_SCALE = 0.3
@@ -148,7 +152,7 @@ class Paragraph(VGroup):
         self,
         *text: Sequence[str],
         line_spacing: float = -1,
-        alignment: Optional[str] = None,
+        alignment: str | None = None,
         **kwargs,
     ) -> None:
         self.line_spacing = line_spacing

@@ -17,11 +17,10 @@ from PIL import Image
 from pydub import AudioSegment
 
 from manim import __version__
-
-from .. import config, logger
-from .._config.logger_utils import set_file_logger
-from ..constants import RendererType
-from ..utils.file_ops import (
+from manim._config import config, logger
+from manim._config.logger_utils import set_file_logger
+from manim.constants import RendererType
+from manim.utils.file_ops import (
     add_extension_if_not_present,
     add_version_before_extension,
     ensure_executable,
@@ -32,7 +31,8 @@ from ..utils.file_ops import (
     modify_atime,
     write_to_movie,
 )
-from ..utils.sounds import get_full_sound_file_path
+from manim.utils.sounds import get_full_sound_file_path
+
 from .section import DefaultSectionType, Section
 
 if TYPE_CHECKING:

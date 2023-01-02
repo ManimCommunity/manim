@@ -10,14 +10,17 @@ __all__ = [
     "MoveAlongPath",
 ]
 
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING
 
 import numpy as np
 
-from ..animation.animation import Animation
-from ..utils.rate_functions import linear
+from manim.utils.rate_functions import linear
+
+from .animation import Animation
 
 if TYPE_CHECKING:
+    from typing import Any, Callable
+
     from ..mobject.mobject import Mobject, VMobject
 
 

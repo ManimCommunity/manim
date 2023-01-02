@@ -15,10 +15,11 @@ import click
 import cloup
 import requests
 
-from ... import __version__, config, console, error_console, logger
-from ..._config import tempconfig
-from ...constants import EPILOG, RendererType
-from ...utils.module_ops import scene_classes_from_file
+from manim import __version__
+from manim._config import config, console, error_console, logger, tempconfig
+from manim.constants import EPILOG, RendererType
+from manim.utils.module_ops import scene_classes_from_file
+
 from .ease_of_access_options import ease_of_access_options
 from .global_options import global_options
 from .output_options import output_options

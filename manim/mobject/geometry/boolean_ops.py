@@ -2,17 +2,20 @@
 
 from __future__ import annotations
 
-import typing
+from typing import TYPE_CHECKING
 
 import numpy as np
 from pathops import Path as SkiaPath
 from pathops import PathVerb, difference, intersection, union, xor
 
-from manim import config
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.types.vectorized_mobject import VMobject
+from manim._config import config
 
 from ...constants import RendererType
+from ..opengl.opengl_compatibility import ConvertToOpenGL
+from ..types.vectorized_mobject import VMobject
+
+if TYPE_CHECKING:
+    from typing import Iterable
 
 __all__ = ["Union", "Intersection", "Difference", "Exclusion"]
 
@@ -28,7 +31,7 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
 
     def _convert_2d_to_3d_array(
         self,
-        points: typing.Iterable,
+        points: Iterable,
         z_dim: float = 0.0,
     ) -> list[np.ndarray]:
         """Converts an iterable with coordinates in 2d to 3d by adding

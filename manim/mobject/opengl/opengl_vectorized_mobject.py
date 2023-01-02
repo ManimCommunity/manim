@@ -3,15 +3,14 @@ from __future__ import annotations
 import itertools as it
 import operator as op
 from functools import reduce, wraps
-from typing import Callable, Iterable, Optional, Sequence
+from typing import TYPE_CHECKING
 
 import moderngl
 import numpy as np
 from colour import Color
 
-from manim import config
+from manim._config import config
 from manim.constants import *
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject, OpenGLPoint
 from manim.renderer.shader_wrapper import ShaderWrapper
 from manim.utils.bezier import (
     bezier,
@@ -34,6 +33,11 @@ from manim.utils.space_ops import (
     shoelace_direction,
     z_to_vector,
 )
+
+from .opengl_mobject import OpenGLMobject, OpenGLPoint
+
+if TYPE_CHECKING:
+    from typing import Callable, Iterable, Sequence
 
 
 def triggers_refreshed_triangulation(func):
@@ -606,9 +610,12 @@ class OpenGLVMobject(OpenGLMobject):
                 new_subpath = np.array(subpath)
                 if mode == "approx_smooth":
                     # TODO: get_smooth_quadratic_bezier_handle_points is not defined
-                    new_subpath[1::nppc] = get_smooth_quadratic_bezier_handle_points(
-                        anchors,
+                    raise NotImplementedError(
+                        "Sorry we still didn't implement get_smooth_quadratic_bezier_handle_points :( Feel free to add it"
                     )
+                    # new_subpath[1::nppc] = get_smooth_quadratic_bezier_handle_points(
+                    #     anchors,
+                    # )
                 elif mode == "true_smooth":
                     h1, h2 = get_smooth_cubic_bezier_handle_points(anchors)
                     new_subpath = get_quadratic_approximation_of_cubic(

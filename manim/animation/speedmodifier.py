@@ -3,16 +3,20 @@
 from __future__ import annotations
 
 import types
-from typing import Callable
+from typing import TYPE_CHECKING
 
 from numpy import piecewise
 
 from manim.utils.simple_functions import get_parameters
 
-from ..animation.animation import Animation, Wait, prepare_animation
-from ..animation.composition import AnimationGroup
-from ..mobject.mobject import Mobject, Updater, _AnimationBuilder
-from ..scene.scene import Scene
+from .animation import Animation, Wait, prepare_animation
+from .composition import AnimationGroup
+
+if TYPE_CHECKING:
+    from typing import Callable
+
+    from manim.mobject.mobject import Mobject, Updater, _AnimationBuilder
+    from manim.scene.scene import Scene
 
 
 class ChangeSpeed(Animation):

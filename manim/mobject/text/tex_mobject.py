@@ -26,17 +26,21 @@ import operator as op
 import re
 from functools import reduce
 from textwrap import dedent
-from typing import Dict, Iterable, Optional
+from typing import TYPE_CHECKING
 
 from colour import Color
 
 from manim import config, logger
 from manim.constants import *
-from manim.mobject.geometry.line import Line
-from manim.mobject.svg.svg_mobject import SVGMobject
-from manim.mobject.types.vectorized_mobject import VectorizedPoint, VGroup, VMobject
 from manim.utils.tex import TexTemplate
 from manim.utils.tex_file_writing import tex_to_svg_file
+
+from ..geometry.line import Line
+from ..svg.svg_mobject import SVGMobject
+from ..types.vectorized_mobject import VectorizedPoint, VGroup, VMobject
+
+if TYPE_CHECKING:
+    from typing import Iterable
 
 SCALE_FACTOR_PER_FONT_POINT = 1 / 960
 

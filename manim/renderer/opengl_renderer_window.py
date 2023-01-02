@@ -5,7 +5,8 @@ from moderngl_window.context.pyglet.window import Window as PygletWindow
 from moderngl_window.timers.clock import Timer
 from screeninfo import get_monitors
 
-from .. import __version__, config
+from manim import __version__
+from manim._config import config
 
 
 class Window(PygletWindow):

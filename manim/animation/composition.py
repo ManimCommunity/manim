@@ -3,21 +3,24 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Callable, Sequence
+from typing import TYPE_CHECKING
 
 import numpy as np
 
+from manim._config import config
+from manim.constants import RendererType
+from manim.mobject.mobject import Group
 from manim.mobject.opengl.opengl_mobject import OpenGLGroup
+from manim.scene.scene import Scene
+from manim.utils.iterables import remove_list_redundancies
+from manim.utils.rate_functions import linear
 
-from .._config import config
-from ..animation.animation import Animation, prepare_animation
-from ..constants import RendererType
-from ..mobject.mobject import Group, Mobject
-from ..scene.scene import Scene
-from ..utils.iterables import remove_list_redundancies
-from ..utils.rate_functions import linear
+from .animation import Animation, prepare_animation
 
 if TYPE_CHECKING:
+    from typing import Callable, Sequence
+
+    from manim.mobject.mobject import Mobject
     from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup
 
     from ..mobject.types.vectorized_mobject import VGroup

@@ -3,12 +3,6 @@ from __future__ import annotations
 import numpy as np
 
 from manim.constants import *
-from manim.mobject.mobject import Mobject
-from manim.mobject.opengl.opengl_vectorized_mobject import (
-    OpenGLDashedVMobject,
-    OpenGLVGroup,
-    OpenGLVMobject,
-)
 from manim.utils.color import *
 from manim.utils.iterables import adjacent_n_tuples, adjacent_pairs
 from manim.utils.simple_functions import clip
@@ -20,6 +14,13 @@ from manim.utils.space_ops import (
     normalize,
     rotate_vector,
     rotation_matrix_transpose,
+)
+
+from .. import Mobject
+from .opengl_vectorized_mobject import (
+    OpenGLDashedVMobject,
+    OpenGLVGroup,
+    OpenGLVMobject,
 )
 
 DEFAULT_DOT_RADIUS = 0.08

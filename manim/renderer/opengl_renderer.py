@@ -14,25 +14,25 @@ import moderngl
 import numpy as np
 from PIL import Image
 
-from manim import config, logger
+from manim._config import config, logger
+from manim.constants import *
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject, OpenGLPoint
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+from manim.scene.scene_file_writer import SceneFileWriter
+from manim.utils import opengl
 from manim.utils.caching import handle_caching_play
 from manim.utils.color import color_to_rgba
+from manim.utils.config_ops import _Data
 from manim.utils.exceptions import EndSceneEarlyException
-
-from ..constants import *
-from ..scene.scene_file_writer import SceneFileWriter
-from ..utils import opengl
-from ..utils.config_ops import _Data
-from ..utils.simple_functions import clip
-from ..utils.space_ops import (
+from manim.utils.simple_functions import clip
+from manim.utils.space_ops import (
     angle_of_vector,
     quaternion_from_angle_axis,
     quaternion_mult,
     rotation_matrix_transpose,
     rotation_matrix_transpose_from_quaternion,
 )
+
 from .shader import Mesh, Shader
 from .vectorized_mobject_rendering import (
     render_opengl_vectorized_mobject_fill,

@@ -27,8 +27,8 @@ from typing import Iterable
 import numpy as np
 from scipy import linalg
 
-from ..utils.simple_functions import choose
-from ..utils.space_ops import cross2d, find_intersection
+from .simple_functions import choose
+from .space_ops import cross2d, find_intersection
 
 
 def bezier(

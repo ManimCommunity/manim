@@ -9,8 +9,8 @@ from __future__ import annotations
 
 import cloup
 
-from ...constants import CONTEXT_SETTINGS, EPILOG
-from ...plugins.plugins_flags import list_plugins
+from manim.constants import CONTEXT_SETTINGS, EPILOG
+from manim.plugins.plugins_flags import list_plugins
 
 
 @cloup.command(

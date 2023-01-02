@@ -1,6 +1,10 @@
 from __future__ import annotations
 
-from manim import *
+import numpy as np
+
+from manim.constants import PI
+from manim.mobject.graphing.functions import FunctionGraph, ImplicitFunction
+from manim.utils.color import BLUE
 from manim.utils.testing.frames_comparison import frames_comparison
 
 __module_test__ = "functions"

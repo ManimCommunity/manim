@@ -4,19 +4,19 @@ from __future__ import annotations
 
 __all__ = ["ManimBanner"]
 
+from manim.animation.animation import override_animation
+from manim.animation.composition import AnimationGroup, Succession
+from manim.animation.creation import Create, SpiralIn
+from manim.animation.fading import FadeIn
 from manim.animation.updaters.update import UpdateFromAlphaFunc
-from manim.mobject.geometry.arc import Circle
-from manim.mobject.geometry.polygram import Square, Triangle
-from manim.mobject.text.tex_mobject import MathTex, Tex
+from manim.constants import DOWN, LEFT, ORIGIN, RIGHT, TAU, UP
+from manim.utils.rate_functions import ease_in_out_cubic, ease_out_sine, smooth
+from manim.utils.tex_templates import TexFontTemplates
 
-from ..animation.animation import override_animation
-from ..animation.composition import AnimationGroup, Succession
-from ..animation.creation import Create, SpiralIn
-from ..animation.fading import FadeIn
-from ..constants import DOWN, LEFT, ORIGIN, RIGHT, TAU, UP
-from ..mobject.types.vectorized_mobject import VGroup
-from ..utils.rate_functions import ease_in_out_cubic, ease_out_sine, smooth
-from ..utils.tex_templates import TexFontTemplates
+from .geometry.arc import Circle
+from .geometry.polygram import Square, Triangle
+from .text.tex_mobject import MathTex, Tex
+from .types.vectorized_mobject import VGroup
 
 
 class ManimBanner(VGroup):
