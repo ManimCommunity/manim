@@ -1050,6 +1050,7 @@ class Line3D(Cylinder):
             Additional parameters to be passed to the class.
 
         Returns
+        -------
         :class:`Line3D`
             Line perpendicular to ``line``.
 
