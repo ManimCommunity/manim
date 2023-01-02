@@ -16,12 +16,7 @@ __all__ = [
     "Torus",
 ]
 
-
-from typing import *
-
 import numpy as np
-from colour import Color
-
 from manim import config, logger
 from manim.constants import *
 from manim.mobject.geometry.arc import Circle
@@ -31,9 +26,14 @@ from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import *
-from manim.utils.color import Colors
 from manim.utils.iterables import tuplify
 from manim.utils.space_ops import normalize, perpendicular_bisector, z_to_vector
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from colour import Color
+    from typing import *
+    
 
 
 class ThreeDVMobject(VMobject, metaclass=ConvertToOpenGL):
@@ -62,7 +62,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         The opacity of the :class:`Surface`, from 0 being fully transparent
         to 1 being fully opaque. Defaults to 1.
     checkerboard_colors
-        Colors individual faces alternating colors. Overrides ``fill_color``.
+        ng individual faces alternating colors. Overrides ``fill_color``.
     stroke_color
         Color of the stroke surrounding each face of :class:`Surface`.
     stroke_width
@@ -100,10 +100,10 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         v_range: Sequence[float] = [0, 1],
         resolution: Sequence[int] = 32,
         surface_piece_config: dict = {},
-        fill_color: Colors = BLUE_D,
+        fill_color: Color = BLUE_D,
         fill_opacity: float = 1.0,
-        checkerboard_colors: Sequence[Colors] = [BLUE_D, BLUE_E],
-        stroke_color: Colors = LIGHT_GREY,
+        checkerboard_colors: Sequence[Color] = [BLUE_D, BLUE_E],
+        stroke_color: Color = LIGHT_GREY,
         stroke_width: float = 0.5,
         should_make_jagged: bool = False,
         pre_function_handle_to_anchor_scale_factor: float = 0.00001,
@@ -186,7 +186,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
             self.set_fill_by_checkerboard(*self.checkerboard_colors)
 
     def set_fill_by_checkerboard(
-        self, *colors: Sequence[Colors], opacity: float = None
+        self, *colors: Sequence[Color], opacity: float = None
     ) -> Mobject:
         """Sets the fill_color of each face of :class:`Surface` in
         an alternating pattern.
@@ -213,7 +213,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
     def set_fill_by_value(
         self,
         axes: Mobject,
-        colorscale: Union[Iterable[Colors], Colors] | None = None,
+        colorscale: Union[Iterable[Color], Color] | None = None,
         axis: int = 2,
         **kwargs,
     ) -> Mobject:
@@ -447,7 +447,7 @@ class Dot3D(Sphere):
         self,
         point: list | np.ndarray = ORIGIN,
         radius: float = DEFAULT_DOT_RADIUS,
-        color: Colors = WHITE,
+        color: Color = WHITE,
         resolution: Sequence[int] = (8, 8),
         **kwargs,
     ) -> None:
@@ -489,7 +489,7 @@ class Cube(VGroup):
         self,
         side_length: float = 2,
         fill_opacity: float = 0.75,
-        fill_color: Colors = BLUE,
+        fill_color: Color = BLUE,
         stroke_width: float = 0,
         **kwargs,
     ) -> None:
@@ -899,7 +899,7 @@ class Line3D(Cylinder):
         start: np.ndarray = LEFT,
         end: np.ndarray = RIGHT,
         thickness: float = 0.02,
-        color: Colors = None,
+        color: Color = None,
         **kwargs,
     ):
         self.thickness = thickness
@@ -1121,7 +1121,7 @@ class Arrow3D(Line3D):
         thickness: float = 0.02,
         height: float = 0.3,
         base_radius: float = 0.08,
-        color: Colors = WHITE,
+        color: Color = WHITE,
         **kwargs,
     ) -> None:
         super().__init__(
