@@ -999,6 +999,8 @@ class Line3D(Cylinder):
             The line to be parallel to.
         point
             The point to pass through.
+        length
+            Length of the parallel line.
         kwargs
             Additional parameters to be passed to the class.
 
@@ -1041,6 +1043,8 @@ class Line3D(Cylinder):
             The line to be perpendicular to.
         point
             The point to pass through.
+        length
+            Length of the perpendicular line.
         kwargs
             Additional parameters to be passed to the class.
 
