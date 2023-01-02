@@ -686,7 +686,6 @@ class Cone(Surface):
         self._current_theta = theta
         self._current_phi = phi
 
-
     def set_direction(self, direction: np.ndarray) -> None:
         """Changes the direction of the apex of the :class:`Cone`.
 
