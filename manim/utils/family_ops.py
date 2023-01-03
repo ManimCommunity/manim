@@ -37,7 +37,9 @@ def restructure_list_to_exclude_certain_family_members(mobject_list, to_remove):
     return new_list
 
 
-def recursive_mobject_remove(mobjects: List[Mobject], to_remove: Set[Mobject]) -> Tuple[List[Mobject], bool]:
+def recursive_mobject_remove(
+    mobjects: List[Mobject], to_remove: Set[Mobject]
+) -> Tuple[List[Mobject], bool]:
     """
     Takes in a list of mobjects, together with a set of mobjects to remove.
     The first component of what's removed is a new list such that any mobject

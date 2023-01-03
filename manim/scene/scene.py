@@ -17,8 +17,6 @@ from tqdm import tqdm as ProgressDisplay
 from manim._config import logger as log
 from manim.animation.animation import prepare_animation
 from manim.camera.camera import Camera
-from manim.utils.color import RED
-from manim.utils.module_ops import get_module
 from manim.constants import DEFAULT_WAIT_TIME
 from manim.event_handler import EVENT_DISPATCHER
 from manim.event_handler.event_type import EventType
@@ -26,10 +24,12 @@ from manim.mobject.frame import FullScreenRectangle
 from manim.mobject.mobject import Group, Mobject, Point, _AnimationBuilder
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.scene.scene_file_writer import SceneFileWriter
+from manim.utils.color import RED
 from manim.utils.family_ops import (
     extract_mobject_family_members,
     recursive_mobject_remove,
 )
+from manim.utils.module_ops import get_module
 
 if TYPE_CHECKING:
     from typing import Callable, Iterable
@@ -259,7 +259,10 @@ class Scene:
 
             from manim.animation.fading import FadeIn
             from manim.utils.rate_functions import there_and_back
-            self.play(FadeIn(rect, run_time=0.5, rate_func=there_and_back, remover=True))
+
+            self.play(
+                FadeIn(rect, run_time=0.5, rate_func=there_and_back, remover=True)
+            )
 
         shell.set_custom_exc((Exception,), custom_exc)
 

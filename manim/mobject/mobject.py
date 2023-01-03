@@ -2812,7 +2812,7 @@ class Point(Mobject):
         location: np.ndarray = ORIGIN,
         artificial_width: float = 1e-6,
         artificial_height: float = 1e-6,
-        **kwargs
+        **kwargs,
     ):
         self.artificial_width = artificial_width
         self.artificial_height = artificial_height
