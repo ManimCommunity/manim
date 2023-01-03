@@ -97,7 +97,7 @@ class Scene:
 
         # Initialize window, if applicable
         if self.preview:
-            from manimlib.window import Window
+            from manim.renderer.opengl_renderer_window import Window
 
             self.window = Window(scene=self, **self.window_config)
             self.camera_config["ctx"] = self.window.ctx
