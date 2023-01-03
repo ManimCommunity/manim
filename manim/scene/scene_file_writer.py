@@ -373,7 +373,7 @@ class SceneFileWriter:
         if write_to_movie() and allow_write:
             self.close_movie_pipe()
 
-    def write_frame(self, frame_or_renderer: np.ndarray | OpenGLRenderer):
+    def write_frame(self, renderer: np.ndarray | OpenGLRenderer):
         """
         Used internally by Manim to write a frame to
         the FFMPEG input buffer.
@@ -383,16 +383,11 @@ class SceneFileWriter:
         frame_or_renderer
             Pixel array of the frame.
         """
-        if config.renderer == RendererType.OPENGL:
-            self.write_opengl_frame(frame_or_renderer)
-        elif config.renderer == RendererType.CAIRO:
-            frame = frame_or_renderer
-            if write_to_movie():
-                self.writing_process.stdin.write(frame.tobytes())
-            if is_png_format() and not config["dry_run"]:
-                self.output_image_from_array(frame)
-
-    def write_opengl_frame(self, renderer: OpenGLRenderer):
+        # TODO: this has to be changed: the argument passed should be a Camera,
+        # and the camera should have standardized methods for extracting an image
+        # or raw data to be passed to ffmpeg.
+        if config.renderer == RendererType.CAIRO:
+            raise NotImplementedError
         if write_to_movie():
             self.writing_process.stdin.write(
                 renderer.get_raw_frame_buffer_object_data(),
@@ -480,11 +475,9 @@ class SceneFileWriter:
         fps = config["frame_rate"]
         if fps == int(fps):  # fps is integer
             fps = int(fps)
-        if config.renderer == RendererType.OPENGL:
-            width, height = self.renderer.get_pixel_shape()
-        else:
-            height = config["pixel_height"]
-            width = config["pixel_width"]
+
+        # TODO: renderer -> camera? reading from config might lead to inconsistencies
+        width, height = self.renderer.get_pixel_shape()
 
         command = [
             config.ffmpeg_executable,

@@ -108,14 +108,7 @@ def render(
             error_console.print_exception()
             sys.exit(1)
     else:
-        for SceneClass in scene_classes_from_file(file):
-            try:
-                with tempconfig({}):
-                    scene = SceneClass()
-                    scene.render()
-            except Exception:
-                error_console.print_exception()
-                sys.exit(1)
+        raise NotImplementedError
 
     if config.notify_outdated_version:
         manim_info_url = "https://pypi.org/pypi/manim/json"

@@ -315,10 +315,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
                             new_colors[i],
                             color_index,
                         )
-                        if config.renderer == RendererType.OPENGL:
-                            mob.set_color(mob_color, recurse=False)
-                        elif config.renderer == RendererType.CAIRO:
-                            mob.set_color(mob_color, family=False)
+                        mob.set_color(mob_color, recurse=False)
                         break
 
         return self
@@ -787,12 +784,14 @@ class Cylinder(Surface):
 
     def add_bases(self) -> None:
         """Adds the end caps of the cylinder."""
-        if config.renderer == RendererType.OPENGL:
-            color = self.color
-            opacity = self.opacity
-        elif config.renderer == RendererType.CAIRO:
-            color = self.fill_color
-            opacity = self.fill_opacity
+        if config.renderer == RendererType.CAIRO:
+            # TODO: Surface should be made a separate mobject type
+            # (like it is for OpenGL) for the Cairo renderer too,
+            # to make them have the same interface.
+            raise NotImplementedError
+
+        color = self.color
+        opacity = self.opacity
 
         self.base_top = Circle(
             radius=self.radius,

@@ -129,15 +129,9 @@ else:
             with tempconfig(local_ns.get("config", {})):
                 config.digest_args(args)
 
-                renderer = None
-                if config.renderer == RendererType.OPENGL:
-                    from manim.renderer.opengl_renderer import OpenGLRenderer
-
-                    renderer = OpenGLRenderer()
-
                 try:
                     SceneClass = local_ns[config["scene_names"][0]]
-                    scene = SceneClass(renderer=renderer)
+                    scene = SceneClass()
                     scene.render()
                 finally:
                     # Shader cache becomes invalid as the context is destroyed
@@ -145,8 +139,8 @@ else:
 
                     # Close OpenGL window here instead of waiting for the main thread to
                     # finish causing the window to stay open and freeze
-                    if renderer is not None and renderer.window is not None:
-                        renderer.window.close()
+                    if scene.window is not None:
+                        scene.window.close()
 
                 if config["output_file"] is None:
                     logger.info("No output file produced")

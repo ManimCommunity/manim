@@ -84,27 +84,15 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
             return path
 
         # In OpenGL it's quadratic beizer curves while on Cairo it's cubic...
-        if config.renderer == RendererType.OPENGL:
-            subpaths = vmobject.get_subpaths_from_points(points)
-            for subpath in subpaths:
-                quads = vmobject.get_bezier_tuples_from_points(subpath)
-                start = subpath[0]
-                path.moveTo(*start[:2])
-                for p0, p1, p2 in quads:
-                    path.quadTo(*p1[:2], *p2[:2])
-                if vmobject.consider_points_equals(subpath[0], subpath[-1]):
-                    path.close()
-        elif config.renderer == RendererType.CAIRO:
-            subpaths = vmobject.gen_subpaths_from_points_2d(points)
-            for subpath in subpaths:
-                quads = vmobject.gen_cubic_bezier_tuples_from_points(subpath)
-                start = subpath[0]
-                path.moveTo(*start[:2])
-                for p0, p1, p2, p3 in quads:
-                    path.cubicTo(*p1[:2], *p2[:2], *p3[:2])
-
-                if vmobject.consider_points_equals_2d(subpath[0], subpath[-1]):
-                    path.close()
+        subpaths = vmobject.get_subpaths_from_points(points)
+        for subpath in subpaths:
+            quads = vmobject.get_bezier_tuples_from_points(subpath)
+            start = subpath[0]
+            path.moveTo(*start[:2])
+            for p0, p1, p2 in quads:
+                path.quadTo(*p1[:2], *p2[:2])
+            if vmobject.consider_points_equals(subpath[0], subpath[-1]):
+                path.close()
 
         return path
 

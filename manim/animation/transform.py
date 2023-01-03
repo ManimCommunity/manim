@@ -197,10 +197,7 @@ class Transform(Animation):
         self.target_copy = self.target_mobject.copy()
         # Note, this potentially changes the structure
         # of both mobject and target_mobject
-        if config.renderer == RendererType.OPENGL:
-            self.mobject.align_data_and_family(self.target_copy)
-        else:
-            self.mobject.align_data(self.target_copy)
+        self.mobject.align_data_and_family(self.target_copy)
         super().begin()
 
     def create_target(self) -> Mobject:
@@ -228,9 +225,7 @@ class Transform(Animation):
             self.starting_mobject,
             self.target_copy,
         ]
-        if config.renderer == RendererType.OPENGL:
-            return zip(*(mob.get_family() for mob in mobs))
-        return zip(*(mob.family_members_with_points() for mob in mobs))
+        return zip(*(mob.get_family() for mob in mobs))
 
     def interpolate_submobject(
         self,
@@ -836,10 +831,7 @@ class FadeTransform(Transform):
         self.stretch = stretch
         self.dim_to_match = dim_to_match
         mobject.save_state()
-        if config.renderer == RendererType.OPENGL:
-            group = OpenGLGroup(mobject, target_mobject.copy())
-        else:
-            group = Group(mobject, target_mobject.copy())
+        group = Group(mobject, target_mobject.copy())
         super().__init__(group, **kwargs)
 
     def begin(self):

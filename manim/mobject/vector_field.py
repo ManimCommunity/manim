@@ -27,8 +27,7 @@ from ..animation.creation import Create
 from ..animation.indication import ShowPassingFlash
 from ..constants import OUT, RIGHT, UP, RendererType
 from ..mobject.mobject import Mobject
-from ..mobject.types.vectorized_mobject import VGroup
-from ..mobject.utils import get_vectorized_mobject_class
+from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import BLUE_E, GREEN, RED, YELLOW, color_to_rgb, rgb_to_color
 from ..utils.rate_functions import ease_out_sine, linear
@@ -816,7 +815,7 @@ class StreamLines(VectorField):
             step = max_steps
             if not step:
                 continue
-            line = get_vectorized_mobject_class()()
+            line = VMobject()
             line.duration = step * dt
             step = max(1, int(len(points) / self.max_anchors_per_line))
             line.set_points_smoothly(points[::step])

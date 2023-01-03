@@ -774,12 +774,6 @@ class Text(SVGMobject):
 
         return svg_file
 
-    def init_colors(self, propagate_colors=True):
-        if config.renderer == RendererType.OPENGL:
-            super().init_colors()
-        elif config.renderer == RendererType.CAIRO:
-            super().init_colors(propagate_colors=propagate_colors)
-
 
 class MarkupText(SVGMobject):
     r"""Display (non-LaTeX) text rendered using `Pango <https://pango.gnome.org/>`_.
