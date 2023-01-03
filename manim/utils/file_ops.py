@@ -27,8 +27,6 @@ from pathlib import Path
 from shutil import copyfile
 from typing import TYPE_CHECKING
 
-import validators
-
 if TYPE_CHECKING:
     from ..scene.scene_file_writer import SceneFileWriter
     from typing import Iterable

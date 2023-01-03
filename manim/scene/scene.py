@@ -11,20 +11,15 @@ from typing import TYPE_CHECKING
 import numpy as np
 from IPython.terminal import pt_inputhooks
 from IPython.terminal.embed import InteractiveShellEmbed
+from pyglet.window import key
 from tqdm import tqdm as ProgressDisplay
 
 from manim._config import logger as log
 from manim.animation.animation import prepare_animation
-from manim.animation.fading import VFadeInThenOut
 from manim.camera.camera import Camera
-from manim.config import get_module
-from manim.constants import (
-    ARROW_SYMBOLS,
-    COMMAND_MODIFIER,
-    DEFAULT_WAIT_TIME,
-    RED,
-    SHIFT_MODIFIER,
-)
+from manim.utils.color import RED
+from manim.utils.module_ops import get_module
+from manim.constants import DEFAULT_WAIT_TIME
 from manim.event_handler import EVENT_DISPATCHER
 from manim.event_handler.event_type import EventType
 from manim.mobject.frame import FullScreenRectangle
@@ -43,6 +38,7 @@ if TYPE_CHECKING:
 
     from manim.animation.animation import Animation
 
+## TODO: these keybindings should be made configureable
 
 PAN_3D_KEY = "d"
 FRAME_SHIFT_KEY = "f"
@@ -260,7 +256,10 @@ class Scene:
                 os.system("printf '\a'")
             rect = FullScreenRectangle().set_stroke(RED, 30).set_fill(opacity=0)
             rect.fix_in_frame()
-            self.play(VFadeInThenOut(rect, run_time=0.5))
+
+            from manim.animation.fading import FadeIn
+            from manim.utils.rate_functions import there_and_back
+            self.play(FadeIn(rect, run_time=0.5, rate_func=there_and_back, remover=True))
 
         shell.set_custom_exc((Exception,), custom_exc)
 
@@ -821,15 +820,15 @@ class Scene:
 
         if char == RESET_FRAME_KEY:
             self.play(self.camera.frame.animate.to_default_state())
-        elif char == "z" and modifiers == COMMAND_MODIFIER:
+        elif char == "z" and modifiers == key.MOD_COMMAND:
             self.undo()
-        elif char == "z" and modifiers == COMMAND_MODIFIER | SHIFT_MODIFIER:
+        elif char == "z" and modifiers == key.MOD_COMMAND | key.MOD_SHIFT:
             self.redo()
         # command + q
-        elif char == QUIT_KEY and modifiers == COMMAND_MODIFIER:
+        elif char == QUIT_KEY and modifiers == key.MOD_COMMAND:
             self.quit_interaction = True
         # Space or right arrow
-        elif char == " " or symbol == ARROW_SYMBOLS[2]:
+        elif char == " " or symbol == key.RIGHT:
             self.hold_on_wait = False
 
     def on_resize(self, width: int, height: int) -> None:

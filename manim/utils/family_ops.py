@@ -35,3 +35,29 @@ def restructure_list_to_exclude_certain_family_members(mobject_list, to_remove):
 
     add_safe_mobjects_from_list(mobject_list, set(to_remove))
     return new_list
+
+
+def recursive_mobject_remove(mobjects: List[Mobject], to_remove: Set[Mobject]) -> Tuple[List[Mobject], bool]:
+    """
+    Takes in a list of mobjects, together with a set of mobjects to remove.
+    The first component of what's removed is a new list such that any mobject
+    with one of the elements from `to_remove` in its family is no longer in
+    the list, and in its place are its family members which aren't in `to_remove`
+    The second component is a boolean value indicating whether any removals were made
+    """
+    result = []
+    found_in_list = False
+    for mob in mobjects:
+        if mob in to_remove:
+            found_in_list = True
+            continue
+        # Recursive call
+        sub_list, found_in_submobjects = recursive_mobject_remove(
+            mob.submobjects, to_remove
+        )
+        if found_in_submobjects:
+            result.extend(sub_list)
+            found_in_list = True
+        else:
+            result.append(mob)
+    return result, found_in_list

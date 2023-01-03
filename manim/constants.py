@@ -240,8 +240,6 @@ QUALITIES: dict[str, dict[str, str | int | None]] = {
 DEFAULT_QUALITY: str = "high_quality"
 
 EPILOG = "Made with <3 by Manim Community developers."
-SHIFT_VALUE = 65505
-CTRL_VALUE = 65507
 
 CONTEXT_SETTINGS = Context.settings(
     align_option_groups=True,

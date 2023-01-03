@@ -21,13 +21,16 @@ __all__ = [
 ]
 
 import numpy as np
+from typing import TYPE_CHECKING
 
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 
 from ..animation.transform import Transform
 from ..constants import ORIGIN
 from ..mobject.mobject import Group, Mobject
-from ..scene.scene import Scene
+
+if TYPE_CHECKING:
+    from ..scene import Scene
 
 
 class _Fade(Transform):
