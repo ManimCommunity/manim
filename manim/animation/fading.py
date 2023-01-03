@@ -20,8 +20,9 @@ __all__ = [
     "FadeIn",
 ]
 
-import numpy as np
 from typing import TYPE_CHECKING
+
+import numpy as np
 
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 
