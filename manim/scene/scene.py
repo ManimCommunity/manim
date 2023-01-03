@@ -9,8 +9,6 @@ from collections import OrderedDict
 from typing import TYPE_CHECKING
 
 import numpy as np
-import pyperclip
-from IPython.core.getipython import get_ipython
 from IPython.terminal import pt_inputhooks
 from IPython.terminal.embed import InteractiveShellEmbed
 from tqdm import tqdm as ProgressDisplay
@@ -114,7 +112,6 @@ class Scene:
         self.time: float = 0
         self.skip_time: float = 0
         self.original_skipping_status: bool = self.skip_animations
-        self.checkpoint_states: dict[str, list[tuple[Mobject, Mobject]]] = {}
         self.undo_stack = []
         self.redo_stack = []
 
@@ -223,7 +220,6 @@ class Scene:
             redo=self.redo,
             i2g=self.i2g,
             i2m=self.i2m,
-            checkpoint_paste=self.checkpoint_paste,
         )
 
         # Enables gui interactions during the embed
@@ -701,53 +697,8 @@ class Scene:
             self.restore_state(self.redo_stack.pop())
         self.refresh_static_mobjects()
 
-    def checkpoint_paste(self, skip: bool = False):
-        """
-        Used during interactive development to run (or re-run)
-        a block of scene code.
+    # TODO: reimplement checkpoint feature with CE's section API
 
-        If the copied selection starts with a comment, this will
-        revert to the state of the scene the first time this function
-        was called on a block of code starting with that comment.
-        """
-        shell = get_ipython()
-        if shell is None:
-            raise Exception(
-                "Scene.checkpoint_paste cannot be called outside of "
-                + "an ipython shell"
-            )
-
-        pasted = pyperclip.paste()
-        line0 = pasted.lstrip().split("\n")[0]
-        if line0.startswith("#"):
-            if line0 not in self.checkpoint_states:
-                self.checkpoint(line0)
-            else:
-                self.revert_to_checkpoint(line0)
-
-        prev_skipping = self.skip_animations
-        self.skip_animations = skip
-
-        shell.run_cell(pasted)
-
-        self.skip_animations = prev_skipping
-
-    def checkpoint(self, key: str):
-        self.checkpoint_states[key] = self.get_state()
-
-    def revert_to_checkpoint(self, key: str):
-        if key not in self.checkpoint_states:
-            log.error(f"No checkpoint at {key}")
-            return
-        all_keys = list(self.checkpoint_states.keys())
-        index = all_keys.index(key)
-        for later_key in all_keys[index + 1 :]:
-            self.checkpoint_states.pop(later_key)
-
-        self.restore_state(self.checkpoint_states[key])
-
-    def clear_checkpoints(self):
-        self.checkpoint_states = {}
 
     def save_mobject_to_file(
         self, mobject: Mobject, file_path: str | None = None
