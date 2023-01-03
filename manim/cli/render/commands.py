@@ -85,18 +85,15 @@ def render(
     config.digest_args(click_args)
     file = Path(config.input_file)
     if config.renderer == RendererType.OPENGL:
-        from manim.renderer.opengl_renderer import OpenGLRenderer
-
         try:
-            renderer = OpenGLRenderer()
             keep_running = True
             while keep_running:
                 for SceneClass in scene_classes_from_file(file):
                     with tempconfig({}):
-                        scene = SceneClass(renderer)
+                        scene = SceneClass()
                         rerun = scene.render()
                     if rerun or config["write_all"]:
-                        renderer.num_plays = 0
+                        scene.num_plays = 0
                         continue
                     else:
                         keep_running = False
