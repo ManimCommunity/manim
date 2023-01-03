@@ -69,8 +69,6 @@ __all__ = [
     "DEFAULT_QUALITY",
     "EPILOG",
     "CONTEXT_SETTINGS",
-    "SHIFT_VALUE",
-    "CTRL_VALUE",
     "RendererType",
     "LineJointType",
 ]
