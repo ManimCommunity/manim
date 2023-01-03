@@ -18,7 +18,6 @@ __all__ = [
     "ensure_executable",
 ]
 
-import numpy as np
 import os
 import platform
 import shutil
@@ -27,6 +26,8 @@ import time
 from pathlib import Path
 from shutil import copyfile
 from typing import TYPE_CHECKING
+
+import numpy as np
 
 if TYPE_CHECKING:
     from ..scene.scene_file_writer import SceneFileWriter

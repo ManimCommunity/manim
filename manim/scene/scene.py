@@ -16,13 +16,13 @@ from tqdm import tqdm as ProgressDisplay
 
 from manim._config import logger as log
 from manim.animation.animation import prepare_animation
-from manim.renderer.opengl_renderer import OpenGLCamera as Camera
 from manim.constants import DEFAULT_WAIT_TIME
 from manim.event_handler import EVENT_DISPATCHER
 from manim.event_handler.event_type import EventType
 from manim.mobject.frame import FullScreenRectangle
 from manim.mobject.mobject import Group, Mobject, Point, _AnimationBuilder
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
+from manim.renderer.opengl_renderer import OpenGLCamera as Camera
 from manim.scene.scene_file_writer import SceneFileWriter
 from manim.utils.color import RED
 from manim.utils.family_ops import (

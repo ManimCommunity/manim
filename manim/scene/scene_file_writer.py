@@ -5,14 +5,14 @@ import platform
 import shutil
 import subprocess as sp
 import sys
+from pathlib import Path
+from typing import TYPE_CHECKING
 
 import numpy as np
-from pathlib import Path
 from pydub import AudioSegment
 from tqdm import tqdm as ProgressDisplay
 
 from manim import config
-
 from manim._config import logger as log
 from manim.mobject.mobject import Mobject
 from manim.utils.file_ops import (
@@ -22,8 +22,6 @@ from manim.utils.file_ops import (
 )
 from manim.utils.sounds import get_full_sound_file_path
 
-from typing import TYPE_CHECKING
-
 if TYPE_CHECKING:
     from PIL.Image import Image
 
@@ -31,7 +29,7 @@ if TYPE_CHECKING:
     from manim.scene import Scene
 
 
-class SceneFileWriter(object):
+class SceneFileWriter:
     def __init__(
         self,
         scene: Scene,
@@ -115,7 +113,7 @@ class SceneFileWriter(object):
     def get_resolution_directory(self) -> str:
         pixel_height = self.scene.camera.pixel_height
         fps = self.scene.camera.fps
-        return "{}p{}".format(pixel_height, fps)
+        return f"{pixel_height}p{fps}"
 
     # Directory getters
     def get_image_file_path(self) -> str:
