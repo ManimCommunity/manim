@@ -16,7 +16,7 @@ from tqdm import tqdm as ProgressDisplay
 
 from manim._config import logger as log
 from manim.animation.animation import prepare_animation
-from manim.camera.camera import Camera
+from manim.renderer.opengl_renderer import OpenGLCamera as Camera
 from manim.constants import DEFAULT_WAIT_TIME
 from manim.event_handler import EVENT_DISPATCHER
 from manim.event_handler.event_type import EventType
@@ -101,7 +101,7 @@ class Scene:
 
         # Core state of the scene
         self.camera: Camera = Camera(**self.camera_config)
-        self.file_writer = SceneFileWriter(self, **self.file_writer_config)
+        self.file_writer = SceneFileWriter(self, str(self), **self.file_writer_config)
         self.mobjects: list[Mobject] = [self.camera.frame]
         self.id_to_mobject_map: dict[int, Mobject] = {}
         self.num_plays: int = 0
@@ -146,6 +146,8 @@ class Scene:
             print("", end="\r")
             self.file_writer.ended_with_interrupt = True
         self.tear_down()
+
+    render = run
 
     def setup(self) -> None:
         """

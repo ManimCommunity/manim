@@ -183,6 +183,17 @@ class Animation:
     def __repr__(self) -> str:
         return str(self)
 
+    def update_rate_info(
+        self,
+        run_time: float | None = None,
+        rate_func: Callable[[float], float] | None = None,
+        lag_ratio: float | None = None,
+    ):
+        self.run_time = run_time or self.run_time
+        self.rate_func = rate_func or self.rate_func
+        self.lag_ratio = lag_ratio or self.lag_ratio
+        return self
+
     def begin(self) -> None:
         """Begin the animation.
 
