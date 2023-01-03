@@ -699,7 +699,6 @@ class Scene:
 
     # TODO: reimplement checkpoint feature with CE's section API
 
-
     def save_mobject_to_file(
         self, mobject: Mobject, file_path: str | None = None
     ) -> None:
