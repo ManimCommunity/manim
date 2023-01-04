@@ -493,7 +493,7 @@ class OpenGLCamera:
                     value = tuple(value)
                 shader[name].value = value
             else:
-                logger.warning(f"Uniform {name} not found in shader {shader}")
+                logger.debug(f"Uniform {name} not found in shader {shader}")
 
     def refresh_perspective_uniforms(self) -> None:
         frame = self.frame

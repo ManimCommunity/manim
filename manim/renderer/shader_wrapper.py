@@ -29,10 +29,11 @@ def find_file(file_name: Path, directories: list[Path]) -> Path:
         return file_name
     possible_paths = (directory / file_name for directory in directories)
     for path in possible_paths:
+        logger.debug(f"Searching for {file_name} in {path}")
         if path.exists():
             return path
         else:
-            logger.debug(f"{path} does not exist.")
+            logger.debug(f"shader_wrapper.py::find_file() : {path} does not exist.")
     raise OSError(f"{file_name} not Found")
 
 
@@ -136,9 +137,14 @@ class ShaderWrapper:
 
     def init_program_code(self):
         def get_code(name: str) -> str | None:
-            return get_shader_code_from_file(
-                self.shader_folder / f"{name}.glsl",
-            )
+            path = self.shader_folder / f"{name}.glsl"
+            logger.debug(f"Reading {name}.glsl shader code from {path.absolute()}")
+            code = get_shader_code_from_file(path)
+            if code is not None:
+                logger.debug(
+                    f"=============================================\n{code}\n============================================="
+                )
+            return code
 
         self.program_code = {
             "vertex_shader": get_code("vert"),
@@ -190,13 +196,13 @@ filename_to_code_map: dict = {}
 def get_shader_code_from_file(filename: Path) -> str | None:
     if filename in filename_to_code_map:
         return filename_to_code_map[filename]
-
     try:
         filepath = find_file(
             filename,
             directories=[get_shader_dir(), Path("/")],
         )
     except OSError:
+        logger.warning(f"Could not find shader file {filename}")
         return None
 
     result = filepath.read_text()
@@ -206,17 +212,25 @@ def get_shader_code_from_file(filename: Path) -> str | None:
     # passing to ctx.program for compiling
     # Replace "#INSERT " lines with relevant code
     insertions = re.findall(
-        r"^#include ../include/.*\.glsl$",
+        r"^#include.*",
         result,
         flags=re.MULTILINE,
     )
     for line in insertions:
+        include_path = line.strip().replace("#include", "")
+        include_path = include_path.replace('"', "")
+        path = (filepath.parent / Path(include_path.strip())).resolve()
+        logger.debug(f"Trying to get code from: {path} to include in {filepath.name}")
         inserted_code = get_shader_code_from_file(
-            Path() / "include" / line.replace("#include ../include/", ""),
+            path,
         )
         if inserted_code is None:
             return None
-        result = result.replace(line, inserted_code)
+
+        result = result.replace(
+            line,
+            f"// Start include of: {include_path}\n\n{inserted_code}\n\n// End include of: {include_path}",
+        )
     filename_to_code_map[filename] = result
     return result
 

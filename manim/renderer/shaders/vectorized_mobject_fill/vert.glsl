@@ -12,7 +12,8 @@ out vec4 v_color;
 out vec2 v_texture_coords;
 flat out int v_texture_mode;
 
-void main() {
+void main()
+{
     v_color = in_color;
     v_texture_coords = texture_coords;
     v_texture_mode = texture_mode;

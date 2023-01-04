@@ -36,10 +36,14 @@ out float bezier_degree;
 vec3 unit_normal;
 
 // Analog of import for manim only
-#include ../include/quadratic_bezier_geometry_functions.glsl
-#include ../include/get_gl_Position.glsl
-#include ../include/get_unit_normal.glsl
-#include ../include/finalize_color.glsl
+// Comment to prevent formatting
+#include "../include/quadratic_bezier_geometry_functions.glsl"
+//
+#include "../include/get_gl_Position.glsl"
+//
+#include "../include/get_unit_normal.glsl"
+//
+#include "../include/finalize_color.glsl"
 
 void emit_vertex_wrapper(vec3 point, int index)
 {
@@ -67,7 +71,8 @@ void emit_pentagon(vec3[3] points, vec3 normal)
     // Tangent vectors
     vec3 t01 = normalize(p1 - p0);
     vec3 t12 = normalize(p2 - p1);
-    // Vectors perpendicular to the curve in the plane of the curve pointing outside the curve
+    // Vectors perpendicular to the curve in the plane of the curve pointing
+    // outside the curve
     vec3 p0_perp = cross(t01, normal);
     vec3 p2_perp = cross(t12, normal);
 

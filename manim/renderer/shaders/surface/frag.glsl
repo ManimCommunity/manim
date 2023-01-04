@@ -10,15 +10,9 @@ in vec4 v_color;
 
 out vec4 frag_color;
 
-#include ../include/finalize_color.glsl
+#include "../include/finalize_color.glsl"
 
-void main() {
-    frag_color = finalize_color(
-        v_color,
-        xyz_coords,
-        normalize(v_normal),
-        light_source_position,
-        gloss,
-        shadow
-    );
+void main()
+{
+    frag_color = finalize_color(v_color, xyz_coords, normalize(v_normal), light_source_position, gloss, shadow);
 }

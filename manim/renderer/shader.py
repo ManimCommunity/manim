@@ -24,6 +24,7 @@ __all__ = [
 
 
 def get_shader_code_from_file(file_path: Path) -> str:
+    # TODO: Is this code used ?
     if file_path in file_path_to_code_map:
         return file_path_to_code_map[file_path]
     source = file_path.read_text()

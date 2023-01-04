@@ -1,6 +1,6 @@
 #version 330
 
-#include ../ include / camera_uniform_declarations.glsl
+#include "../include/camera_uniform_declarations.glsl"
 
 in vec4 color;
 in float fill_all; // Either 0 or 1
@@ -20,7 +20,7 @@ float modify_distance_for_endpoints(vec2 p, float dist, float t)
     return dist;
 }
 
-#include ../ include / quadratic_bezier_distance.glsl
+#include "../include/quadratic_bezier_distance.glsl"
 
 float sdf()
 {
@@ -40,7 +40,8 @@ float sdf()
     // as y = x^2.
     mat2 to_simple_space = mat2(v2, 0, 2 - u2, 4 * v2);
     vec2 p = to_simple_space * uv_coords;
-    // Sign takes care of whether we should be filling the inside or outside of curve.
+    // Sign takes care of whether we should be filling the inside or outside of
+    // curve.
     float sgn = orientation * sign(v2);
     float Fp = (p.x * p.x - p.y);
     if (sgn * Fp <= 0)

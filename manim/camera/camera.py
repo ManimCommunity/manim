@@ -77,6 +77,7 @@ class Camera:
         frame_rate: float | None = None,
         **kwargs,
     ):
+        logger.warning("Camera is deprecated. Please use OpenGLCamera instead.")
         self.background_image = background_image
         self.frame_center = frame_center
         self.image_mode = image_mode

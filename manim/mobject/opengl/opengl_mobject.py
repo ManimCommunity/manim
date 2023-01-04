@@ -237,12 +237,10 @@ class OpenGLMobject:
 
         Gets called upon creation"""
         self.uniforms = {
-            "is_fixed_in_frame": np.array(
-                float(self.is_fixed_in_frame), dtype=UNIFORM_DTYPE
-            ),
-            "gloss": np.array(self.gloss, dtype=UNIFORM_DTYPE),
-            "shadow": np.array(self.shadow, dtype=UNIFORM_DTYPE),
-            "reflectiveness": np.array(self.reflectiveness, dtype=UNIFORM_DTYPE),
+            "is_fixed_in_frame": float(self.is_fixed_in_frame),
+            "gloss": float(self.gloss),
+            "shadow": float(self.shadow),
+            "reflectiveness": float(self.reflectiveness),
         }
 
     def init_colors(self):
@@ -2311,7 +2309,7 @@ class OpenGLMobject:
 
     def set_reflectiveness(self, reflectiveness: float, recurse: bool = True):
         for mob in self.get_family(recurse):
-            mob.uniforms["reflectiveness"] = np.asarray(reflectiveness)
+            mob.uniforms["reflectiveness"] = float(reflectiveness)
         return self
 
     def get_shadow(self) -> np.ndarray:
@@ -2319,7 +2317,7 @@ class OpenGLMobject:
 
     def set_shadow(self, shadow: float, recurse: bool = True):
         for mob in self.get_family(recurse):
-            mob.uniforms["shadow"] = np.asarray(shadow)
+            mob.uniforms["shadow"] = float(shadow)
         return self
 
     def get_gloss(self) -> np.ndarray:
@@ -2327,7 +2325,7 @@ class OpenGLMobject:
 
     def set_gloss(self, gloss: float, recurse: bool = True):
         for mob in self.get_family(recurse):
-            mob.uniforms["gloss"] = np.asarray(gloss)
+            mob.uniforms["gloss"] = float(gloss)
         return self
 
     # Background rectangle
@@ -2891,20 +2889,20 @@ class OpenGLMobject:
 
     @affects_shader_info_id
     def fix_in_frame(self) -> Self:
-        self.uniforms["is_fixed_in_frame"] = np.asarray(1.0)
+        self.uniforms["is_fixed_in_frame"] = float(1.0)
         self.is_fixed_in_frame = True
         return self
 
     @affects_shader_info_id
     def fix_orientation(self) -> Self:
-        self.uniforms["is_fixed_orientation"] = np.asarray(1.0)
+        self.uniforms["is_fixed_orientation"] = float(1.0)
         self.is_fixed_orientation = True
         self.fixed_orientation_center = tuple(self.get_center())
         return self
 
     @affects_shader_info_id
     def unfix_from_frame(self) -> Self:
-        self.uniforms["is_fixed_in_frame"] = np.asarray(0.0)
+        self.uniforms["is_fixed_in_frame"] = float(0.0)
         self.is_fixed_in_frame = False
         return self
 

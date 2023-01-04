@@ -1,6 +1,6 @@
 #version 330
 
-#include ../include/camera_uniform_declarations.glsl
+#include "../include/camera_uniform_declarations.glsl"
 
 in vec3 point;
 in vec3 prev_point;
@@ -19,7 +19,7 @@ out vec4 v_color;
 
 const float STROKE_WIDTH_CONVERSION = 0.01;
 
-#include ../include/position_point_into_frame.glsl
+#include "../include/position_point_into_frame.glsl"
 
 void main()
 {

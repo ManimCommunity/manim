@@ -4,6 +4,7 @@ in vec4 v_color;
 
 out vec4 frag_color;
 
-void main() {
+void main()
+{
     frag_color = v_color;
 }

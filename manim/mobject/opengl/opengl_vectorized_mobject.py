@@ -92,7 +92,7 @@ class OpenGLVMobject(OpenGLMobject):
         background_image_file: str | None = None,
         long_lines: bool = False,
         joint_type: LineJointType = LineJointType.AUTO,
-        flat_stroke: bool = True,
+        flat_stroke: bool = False,
         # Measured in pixel widths
         anti_alias_width: float = 1.0,
         **kwargs,
@@ -147,15 +147,9 @@ class OpenGLVMobject(OpenGLMobject):
 
     def init_uniforms(self):
         super().init_uniforms()
-        self.uniforms["anti_alias_width"] = np.asarray(
-            self.anti_alias_width, dtype=UNIFORM_DTYPE
-        )
-        self.uniforms["joint_type"] = np.asarray(
-            self.joint_type.value, dtype=UNIFORM_DTYPE
-        )
-        self.uniforms["flat_stroke"] = np.asarray(
-            float(self.flat_stroke), dtype=UNIFORM_DTYPE
-        )
+        self.uniforms["anti_alias_width"] = float(self.anti_alias_width)
+        self.uniforms["joint_type"] = float(self.joint_type.value)
+        self.uniforms["flat_stroke"] = float(self.flat_stroke)
 
     # These are here just to make type checkers happy
     def get_family(self, recurse: bool = True) -> list[OpenGLVMobject]:  # type: ignore
@@ -453,7 +447,7 @@ class OpenGLVMobject(OpenGLMobject):
 
     def set_flat_stroke(self, flat_stroke: bool = True, recurse: bool = True):
         for mob in self.get_family(recurse):
-            mob.uniforms["flat_stroke"] = np.asarray(float(flat_stroke))
+            mob.uniforms["flat_stroke"] = float(flat_stroke)
         return self
 
     def get_flat_stroke(self) -> bool:
@@ -461,11 +455,11 @@ class OpenGLVMobject(OpenGLMobject):
 
     def set_joint_type(self, joint_type: LineJointType, recurse: bool = True):
         for mob in self.get_family(recurse):
-            mob.uniforms["joint_type"] = np.asarray(joint_type.value)
+            mob.uniforms["joint_type"] = float(joint_type.value)
         return self
 
     def get_joint_type(self) -> LineJointType:
-        return LineJointType(int(self.uniforms["joint_type"][0]))
+        return LineJointType(int(self.uniforms["joint_type"]))
 
     # Points
     def set_anchors_and_handles(self, anchors1, handles, anchors2):
@@ -1457,7 +1451,7 @@ class OpenGLVMobject(OpenGLMobject):
         if not self.needs_new_triangulation:
             return self.triangulation
 
-        points = self.get_points()
+        points = self.points
 
         if len(points) <= 1:
             self.triangulation = np.zeros(0, dtype="i4")
