@@ -521,7 +521,8 @@ def prepare_animation(
 
 
 class Wait(Animation):
-    """A "no operation" animation.
+    """A "no operation" animation. Most users will want to use :meth:`.Scene.pause`
+    or :meth:`.Scene.wait` instead of this directly.
 
     Parameters
     ----------

@@ -96,7 +96,10 @@ class CairoRenderer:
         self.save_static_frame_data(scene, scene.static_mobjects)
 
         if scene.is_current_animation_frozen_frame():
-            self.update_frame(scene, mobjects=scene.moving_mobjects)
+            if len(scene.moving_mobjects) > 0:
+                # We only want to call update_frame if we have moving_mobjects.
+                # Otherwise, it will re-draw all mobjects.
+                self.update_frame(scene, mobjects=scene.moving_mobjects)
             # self.duration stands for the total run time of all the animations.
             # In this case, as there is only a wait, it will be the length of the wait.
             self.freeze_current_frame(scene.duration)
@@ -106,7 +109,7 @@ class CairoRenderer:
 
         self.num_plays += 1
 
-    def update_frame(  # TODO Description in Docstring
+    def update_frame(
         self,
         scene,
         mobjects: typing.Iterable[Mobject] | None = None,
@@ -116,12 +119,14 @@ class CairoRenderer:
     ):
         """Update the frame.
 
+        Draws all the provided mobjects from the view of the camera.
+
         Parameters
         ----------
         scene
 
         mobjects
-            list of mobjects
+            list of mobjects. If None or empty list, *all* mobjects will be drawn.
 
         include_submobjects
 
