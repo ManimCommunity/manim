@@ -83,7 +83,7 @@ render_options = option_group(
         "--resolution",
         callback=validate_resolution,
         default=None,
-        help="Resolution in (W,H) for when 16:9 aspect ratio isn't possible.",
+        help='Resolution in "W,H" for when 16:9 aspect ratio isn\'t possible.',
     ),
     option(
         "--fps",
