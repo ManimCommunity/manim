@@ -9,10 +9,8 @@ from collections import OrderedDict
 from typing import TYPE_CHECKING
 
 import numpy as np
-
 from IPython.terminal import pt_inputhooks
 from IPython.terminal.embed import InteractiveShellEmbed
-
 from pyglet.window import key
 from tqdm import tqdm as ProgressDisplay
 
