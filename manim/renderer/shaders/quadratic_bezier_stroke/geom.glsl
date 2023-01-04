@@ -5,24 +5,24 @@ layout (triangle_strip, max_vertices = 5) out;
 
 // Needed for get_gl_Position
 uniform vec2 frame_shape;
+uniform vec2 pixel_shape;
 uniform float focal_distance;
 uniform float is_fixed_in_frame;
-uniform float is_fixed_orientation;
-uniform vec3 fixed_orientation_center;
 
 uniform float anti_alias_width;
 uniform float flat_stroke;
 
 //Needed for lighting
 uniform vec3 light_source_position;
+uniform vec3 camera_position;
 uniform float joint_type;
+uniform float reflectiveness;
 uniform float gloss;
 uniform float shadow;
 
 in vec3 bp[3];
 in vec3 prev_bp[3];
 in vec3 next_bp[3];
-in vec3 v_global_unit_normal[3];
 
 in vec4 v_color[3];
 in float v_stroke_width[3];
@@ -43,13 +43,14 @@ out float bezier_degree;
 out vec2 uv_coords;
 out vec2 uv_b2;
 
+vec3 unit_normal;
+
 // Codes for joint types
 const float AUTO_JOINT = 0;
 const float ROUND_JOINT = 1;
 const float BEVEL_JOINT = 2;
 const float MITER_JOINT = 3;
 const float PI = 3.141592653;
-
 
 #include ../include/quadratic_bezier_geometry_functions.glsl
 #include ../include/get_gl_Position.glsl
@@ -127,7 +128,7 @@ int get_corners(vec2 controls[3], int degree, float stroke_widths[3], out vec2 c
     // aaw is the added width given around the polygon for antialiasing.
     // In case the normal is faced away from (0, 0, 1), the vector to the
     // camera, this is scaled up.
-    float aaw = anti_alias_width;
+    float aaw = anti_alias_width * frame_shape.y / pixel_shape.y;
     float buff0 = 0.5 * stroke_widths[0] + aaw;
     float buff2 = 0.5 * stroke_widths[2] + aaw;
     float aaw0 = (1 - has_prev) * aaw;
@@ -206,6 +207,7 @@ void main() {
     vec3 controls[3];
     vec3 prev[3];
     vec3 next[3];
+    unit_normal = get_unit_normal(controls);
     bezier_degree = get_reduced_control_points(vec3[3](bp[0], bp[1], bp[2]), controls);
     if(bezier_degree == 0.0) return;  // Null curve
     int degree = int(bezier_degree);
@@ -219,13 +221,13 @@ void main() {
         float sf = perspective_scale_factor(controls[i].z, focal_distance);
         if(bool(flat_stroke)){
             vec3 to_cam = normalize(vec3(0.0, 0.0, focal_distance) - controls[i]);
-            sf *= abs(dot(v_global_unit_normal[i], to_cam));
+            sf *= abs(dot(unit_normal, to_cam));
         }
         scaled_strokes[i] = v_stroke_width[i] * sf;
     }
 
     // Control points are projected to the xy plane before drawing, which in turn
-    // gets translated to a uv plane.  The z-coordinate information will be remembered
+    // gets tranlated to a uv plane.  The z-coordinate information will be remembered
     // by what's sent out to gl_Position, and by how it affects the lighting and stroke width
     vec2 flat_controls[3];
     vec2 flat_prev[3];
@@ -246,7 +248,7 @@ void main() {
     // Find uv conversion matrix
     mat3 xy_to_uv = get_xy_to_uv(flat_controls[0], flat_controls[1]);
     float scale_factor = length(flat_controls[1] - flat_controls[0]);
-    uv_anti_alias_width = anti_alias_width / scale_factor;
+    uv_anti_alias_width = anti_alias_width * frame_shape.y / pixel_shape.y / scale_factor;
     uv_b2 = (xy_to_uv * vec3(flat_controls[2], 1.0)).xy;
 
     // Emit each corner
@@ -259,8 +261,10 @@ void main() {
         color = finalize_color(
             v_color[index_map[i]],
             xyz_coords,
-            v_global_unit_normal[index_map[i]],
+            unit_normal,
             light_source_position,
+            camera_position,
+            reflectiveness,
             gloss,
             shadow
         );

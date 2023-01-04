@@ -46,7 +46,6 @@ class Window(PygletWindow):
             size = tuple(size)
 
         super().__init__(size=size)
-
         self.scene = scene
         self.pressed_keys = set()
         self.title = self.title = f"Manim Community {__version__} - {str(scene)}"

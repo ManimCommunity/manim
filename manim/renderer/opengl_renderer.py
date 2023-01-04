@@ -295,7 +295,14 @@ class OpenGLCamera:
 
     def get_raw_fbo_data(self, dtype: str = "f1") -> bytes:
         # Copy blocks from the fbo_msaa to the drawn fbo using Blit
-        self.ctx.copy_framebuffer(self.fbo_msaa, self.fbo)
+        # pw, ph = (self.pixel_width, self.pixel_height)
+        # gl.glBindFramebuffer(gl.GL_READ_FRAMEBUFFER, self.fbo_msaa.glo)
+        # gl.glBindFramebuffer(gl.GL_DRAW_FRAMEBUFFER, self.fbo.glo)
+        # gl.glBlitFramebuffer(
+        #     0, 0, pw, ph, 0, 0, pw, ph, gl.GL_COLOR_BUFFER_BIT, gl.GL_LINEAR
+        # )
+
+        self.ctx.copy_framebuffer(self.fbo, self.fbo_msaa)
         return self.fbo.read(
             viewport=self.fbo.viewport,
             components=self.n_channels,
@@ -485,6 +492,8 @@ class OpenGLCamera:
                 if isinstance(value, np.ndarray) and value.ndim > 0:
                     value = tuple(value)
                 shader[name].value = value
+            else:
+                logger.warning(f"Uniform {name} not found in shader {shader}")
 
     def refresh_perspective_uniforms(self) -> None:
         frame = self.frame

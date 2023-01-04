@@ -2806,7 +2806,7 @@ class Group(Mobject, metaclass=ConvertToOpenGL):
         self.add(*mobjects)
 
 
-class Point(Mobject):
+class Point(Mobject, metaclass=ConvertToOpenGL):
     def __init__(
         self,
         location: np.ndarray = ORIGIN,

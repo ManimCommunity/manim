@@ -9,8 +9,10 @@ from collections import OrderedDict
 from typing import TYPE_CHECKING
 
 import numpy as np
+
 from IPython.terminal import pt_inputhooks
 from IPython.terminal.embed import InteractiveShellEmbed
+
 from pyglet.window import key
 from tqdm import tqdm as ProgressDisplay
 
@@ -101,7 +103,7 @@ class Scene:
 
         # Core state of the scene
         self.camera: Camera = Camera(**self.camera_config)
-        self.file_writer = SceneFileWriter(self, str(self), **self.file_writer_config)
+        self.file_writer = SceneFileWriter(self, **self.file_writer_config)
         self.mobjects: list[Mobject] = [self.camera.frame]
         self.id_to_mobject_map: dict[int, Mobject] = {}
         self.num_plays: int = 0
