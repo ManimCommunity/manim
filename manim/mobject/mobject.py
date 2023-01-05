@@ -768,7 +768,7 @@ class Mobject:
 
     def get_image(self, camera=None):
         if camera is None:
-            from ..camera.camera import Camera
+            from ..camera.cairo_camera import CairoCamera as Camera
 
             camera = Camera()
         camera.capture_mobject(self)
