@@ -39,7 +39,7 @@ LINE_JOIN_MAP = {
 
 
 class CairoCamera:
-    """Cairo rendering implementation. 
+    """Cairo rendering implementation.
 
     This is the object which takes care of what exactly is displayed
     on screen at any given moment.

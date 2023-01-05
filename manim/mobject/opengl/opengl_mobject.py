@@ -59,6 +59,7 @@ if TYPE_CHECKING:
 
 UNIFORM_DTYPE = np.float64
 
+
 def stash_mobject_pointers(func: Callable):
     @wraps(func)
     def wrapper(self, *args, **kwargs):
@@ -86,6 +87,7 @@ def affects_shader_info_id(func):
         return self
 
     return wrapper
+
 
 class OpenGLMobject:
     """Mathematical Object: base class for objects that can be displayed on screen.
