@@ -5,7 +5,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from manim.renderer.opengl_renderer import OpenGLRenderer
+from manim.camera.camera import OpenGLRenderer
 from tests.assert_utils import assert_file_exists
 from tests.test_scene_rendering.simple_scenes import *
 

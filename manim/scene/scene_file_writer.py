@@ -25,7 +25,7 @@ from manim.utils.sounds import get_full_sound_file_path
 if TYPE_CHECKING:
     from PIL.Image import Image
 
-    from manim.renderer.opengl_renderer import OpenGLCamera as Camera
+    from manim.camera.camera import OpenGLCamera as Camera
     from manim.scene import Scene
 
 

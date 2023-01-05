@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-__all__ = ["Camera", "BackgroundColoredVMobjectDisplayer"]
+__all__ = ["CairoCamera"]
 
 import copy
 import itertools as it
