@@ -55,6 +55,14 @@ DEFAULT_STROKE_COLOR = GREY_A
 DEFAULT_FILL_COLOR = GREY_C
 
 
+def triggers_refreshed_triangulation(func: Callable):
+    @wraps(func)
+    def wrapper(self, *args, **kwargs):
+        func(self, *args, **kwargs)
+        self.refresh_triangulation()
+
+    return wrapper
+
 class OpenGLVMobject(OpenGLMobject):
     """A vectorized mobject."""
 
@@ -1498,15 +1506,6 @@ class OpenGLVMobject(OpenGLMobject):
         self.triangulation = tri_indices
         self.needs_new_triangulation = False
         return tri_indices
-
-    @staticmethod
-    def triggers_refreshed_triangulation(func: Callable):
-        @wraps(func)
-        def wrapper(self, *args, **kwargs):
-            func(self, *args, **kwargs)
-            self.refresh_triangulation()
-
-        return wrapper
 
     @triggers_refreshed_triangulation
     def set_points(self, points):

@@ -59,6 +59,33 @@ if TYPE_CHECKING:
 
 UNIFORM_DTYPE = np.float64
 
+def stash_mobject_pointers(func: Callable):
+    @wraps(func)
+    def wrapper(self, *args, **kwargs):
+        uncopied_attrs = ["parents", "target", "saved_state"]
+        stash = {}
+        for attr in uncopied_attrs:
+            if hasattr(self, attr):
+                value = getattr(self, attr)
+                stash[attr] = value
+                null_value = [] if isinstance(value, list) else None
+                setattr(self, attr, null_value)
+        result = func(self, *args, **kwargs)
+        self.__dict__.update(stash)
+        return result
+
+    return wrapper
+
+
+def affects_shader_info_id(func):
+    @wraps(func)
+    def wrapper(self):
+        for mob in self.get_family():
+            func(mob)
+            mob.refresh_shader_wrapper_id()
+        return self
+
+    return wrapper
 
 class OpenGLMobject:
     """Mathematical Object: base class for objects that can be displayed on screen.
@@ -1297,24 +1324,6 @@ class OpenGLMobject:
         self.assemble_family()
 
     # Copying
-
-    @staticmethod
-    def stash_mobject_pointers(func: Callable):
-        @wraps(func)
-        def wrapper(self, *args, **kwargs):
-            uncopied_attrs = ["parents", "target", "saved_state"]
-            stash = {}
-            for attr in uncopied_attrs:
-                if hasattr(self, attr):
-                    value = getattr(self, attr)
-                    stash[attr] = value
-                    null_value = [] if isinstance(value, list) else None
-                    setattr(self, attr, null_value)
-            result = func(self, *args, **kwargs)
-            self.__dict__.update(stash)
-            return result
-
-        return wrapper
 
     @stash_mobject_pointers
     def serialize(self) -> bytes:
@@ -2875,17 +2884,6 @@ class OpenGLMobject:
         return bool(np.isclose(points1, points2).all())
 
     # Operations touching shader uniforms
-
-    @staticmethod
-    def affects_shader_info_id(func):
-        @wraps(func)
-        def wrapper(self):
-            for mob in self.get_family():
-                func(mob)
-                mob.refresh_shader_wrapper_id()
-            return self
-
-        return wrapper
 
     @affects_shader_info_id
     def fix_in_frame(self) -> Self:
