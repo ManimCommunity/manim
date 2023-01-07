@@ -108,11 +108,11 @@ class CoordinateSystem:
 
     def __init__(
         self,
-        x_range=None,
-        y_range=None,
-        x_length=None,
-        y_length=None,
-        dimension=2,
+        x_range: Sequence[float] | None = None,
+        y_range: Sequence[float] | None = None,
+        x_length: float | None = None,
+        y_length: float | None = None,
+        dimension: int = 2,
     ):
         self.dimension = dimension
 
@@ -194,11 +194,13 @@ class CoordinateSystem:
         x, y = self.point_to_coords(point)
         return np.sqrt(x**2 + y**2), np.arctan2(y, x)
 
-    def c2p(self, *coords):
+    def c2p(
+        self, *coords: float | Sequence[float] | Sequence[Sequence[float]] | np.ndarray
+    ) -> np.ndarray:
         """Abbreviation for :meth:`coords_to_point`"""
         return self.coords_to_point(*coords)
 
-    def p2c(self, point):
+    def p2c(self, point: np.ndarray):
         """Abbreviation for :meth:`point_to_coords`"""
         return self.point_to_coords(point)
 
@@ -213,7 +215,7 @@ class CoordinateSystem:
     def get_axes(self):
         raise NotImplementedError()
 
-    def get_axis(self, index):
+    def get_axis(self, index: int) -> Mobject:
         return self.get_axes()[index]
 
     def get_origin(self) -> np.ndarray:
@@ -226,19 +228,19 @@ class CoordinateSystem:
         """
         return self.coords_to_point(0, 0)
 
-    def get_x_axis(self):
+    def get_x_axis(self) -> Mobject:
         return self.get_axis(0)
 
-    def get_y_axis(self):
+    def get_y_axis(self) -> Mobject:
         return self.get_axis(1)
 
-    def get_z_axis(self):
+    def get_z_axis(self) -> Mobject:
         return self.get_axis(2)
 
-    def get_x_unit_size(self):
+    def get_x_unit_size(self) -> float:
         return self.get_x_axis().get_unit_size()
 
-    def get_y_unit_size(self):
+    def get_y_unit_size(self) -> float:
         return self.get_y_axis().get_unit_size()
 
     def get_x_axis_label(
@@ -291,7 +293,7 @@ class CoordinateSystem:
         direction: Sequence[float] = UP * 0.5 + RIGHT,
         buff: float = SMALL_BUFF,
         **kwargs,
-    ):
+    ) -> Mobject:
         """Generate a y-axis label.
 
         Parameters
@@ -634,7 +636,7 @@ class CoordinateSystem:
         x_range: Sequence[float] | None = None,
         use_vectorized: bool = False,
         **kwargs,
-    ):
+    ) -> ParametricFunction:
         """Generates a curve based on a function.
 
         Parameters
@@ -1285,7 +1287,7 @@ class CoordinateSystem:
         opacity: float = 0.3,
         bounded_graph: ParametricFunction = None,
         **kwargs,
-    ):
+    ) -> Polygon:
         """Returns a :class:`~.Polygon` representing the area under the graph passed.
 
         Parameters
@@ -2372,8 +2374,8 @@ class ThreeDAxes(Axes):
         edge: Sequence[float] = OUT,
         direction: Sequence[float] = RIGHT,
         buff: float = SMALL_BUFF,
-        rotation=PI / 2,
-        rotation_axis=RIGHT,
+        rotation: float = PI / 2,
+        rotation_axis: Sequence[float] = RIGHT,
         **kwargs,
     ) -> Mobject:
         """Generate a z-axis label.
@@ -2672,7 +2674,7 @@ class NumberPlane(Axes):
                     lines2.add(new_line)
         return lines1, lines2
 
-    def get_vector(self, coords: Sequence[float], **kwargs):
+    def get_vector(self, coords: Sequence[float], **kwargs) -> Arrow:
         kwargs["buff"] = 0
         return Arrow(
             self.coords_to_point(0, 0), self.coords_to_point(*coords), **kwargs
@@ -2929,13 +2931,13 @@ class PolarPlane(Axes):
         """
         return self.axes
 
-    def get_vector(self, coords, **kwargs):
+    def get_vector(self, coords: Sequence[float], **kwargs) -> Arrow:
         kwargs["buff"] = 0
         return Arrow(
             self.coords_to_point(0, 0), self.coords_to_point(*coords), **kwargs
         )
 
-    def prepare_for_nonlinear_transform(self, num_inserted_curves=50):
+    def prepare_for_nonlinear_transform(self, num_inserted_curves: int = 50):
         for mob in self.family_members_with_points():
             num_curves = mob.get_num_curves()
             if num_inserted_curves > num_curves:
@@ -3061,7 +3063,7 @@ class PolarPlane(Axes):
         self.add(self.get_coordinate_labels(r_values, a_values))
         return self
 
-    def get_radian_label(self, number, font_size=24, **kwargs):
+    def get_radian_label(self, number, font_size: float = 24, **kwargs) -> MathTex:
         constant_label = {"PI radians": r"\pi", "TAU radians": r"\tau"}[
             self.azimuth_units
         ]
