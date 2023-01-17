@@ -245,7 +245,7 @@ def convert_to_svg(dvi_file: Path, extension: str, page: int = 1):
             f" Consider updating dvisvgm to at least version 2.4."
             f" If this does not solve the problem, please refer to our troubleshooting guide at:"
             f" https://docs.manim.community/en/stable/faq/general.html#my-installation-"
-            f"does-not-support-converting-pdf-to-svg-helpl",
+            f"does-not-support-converting-pdf-to-svg-help",
         )
 
     return result
