@@ -31,7 +31,14 @@ from manim.utils.space_ops import angle_of_vector, line_intersection, normalize
 
 
 class Line(TipableVMobject):
-    def __init__(self, start=LEFT, end=RIGHT, buff=0, path_arc=None, **kwargs):
+    def __init__(
+        self,
+        start: Sequence[float] = LEFT,
+        end: Sequence[float] = RIGHT,
+        buff: float = 0,
+        path_arc: float | None = None,
+        **kwargs,
+    ):
         self.dim = 3
         self.buff = buff
         self.path_arc = path_arc
@@ -46,7 +53,13 @@ class Line(TipableVMobject):
             path_arc=self.path_arc,
         )
 
-    def set_points_by_ends(self, start, end, buff=0, path_arc=0):
+    def set_points_by_ends(
+        self,
+        start: Sequence[float],
+        end: Sequence[float],
+        buff: float = 0,
+        path_arc: float = 0,
+    ):
         if path_arc:
             arc = ArcBetweenPoints(self.start, self.end, angle=self.path_arc)
             self.set_points(arc.points)
@@ -57,7 +70,7 @@ class Line(TipableVMobject):
 
     init_points = generate_points
 
-    def _account_for_buff(self, buff):
+    def _account_for_buff(self, buff: float):
         if buff == 0:
             return
         #
@@ -72,7 +85,7 @@ class Line(TipableVMobject):
         self.pointwise_become_partial(self, buff_proportion, 1 - buff_proportion)
         return self
 
-    def _set_start_and_end_attrs(self, start, end):
+    def _set_start_and_end_attrs(self, start: Sequence[float], end: Sequence[float]):
         # If either start or end are Mobjects, this
         # gives their centers
         rough_start = self._pointify(start)
@@ -108,7 +121,7 @@ class Line(TipableVMobject):
                 return mob.get_boundary_point(direction)
         return np.array(mob_or_point)
 
-    def set_path_arc(self, new_value):
+    def set_path_arc(self, new_value: float):
         self.path_arc = new_value
         self.init_points()
 
@@ -143,16 +156,16 @@ class Line(TipableVMobject):
             self.generate_points()
         return super().put_start_and_end_on(start, end)
 
-    def get_vector(self):
+    def get_vector(self) -> np.ndarray:
         return self.get_end() - self.get_start()
 
-    def get_unit_vector(self):
+    def get_unit_vector(self) -> np.ndarray:
         return normalize(self.get_vector())
 
-    def get_angle(self):
+    def get_angle(self) -> float:
         return angle_of_vector(self.get_vector())
 
-    def get_projection(self, point: Sequence[float]) -> Sequence[float]:
+    def get_projection(self, point: Sequence[float]) -> np.ndarray:
         """Returns the projection of a point onto a line.
 
         Parameters
@@ -166,10 +179,10 @@ class Line(TipableVMobject):
         unit_vect = normalize(end - start)
         return start + np.dot(point - start, unit_vect) * unit_vect
 
-    def get_slope(self):
+    def get_slope(self) -> float:
         return np.tan(self.get_angle())
 
-    def set_angle(self, angle, about_point=None):
+    def set_angle(self, angle: float, about_point: Sequence[float] | None = None):
         if about_point is None:
             about_point = self.get_start()
 
@@ -509,7 +522,7 @@ class Arrow(Line):
         self.add_tip(tip_shape=tip_shape)
         self._set_stroke_width_from_length()
 
-    def scale(self, factor, scale_tips=False, **kwargs):
+    def scale(self, factor: float, scale_tips: bool = False, **kwargs):
         r"""Scale an arrow, but keep stroke width and arrow tip size fixed.
 
 
@@ -871,7 +884,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         self,
         line1: Line,
         line2: Line,
-        radius: float = None,
+        radius: float | None = None,
         quadrant: Sequence[int] = (1, 1),
         other_angle: bool = False,
         dot: bool = False,
