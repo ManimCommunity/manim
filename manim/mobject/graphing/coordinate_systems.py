@@ -14,7 +14,7 @@ __all__ = [
 
 import fractions as fr
 import numbers
-from typing import TYPE_CHECKING, Any, Callable, Iterable, Sequence
+from typing import TYPE_CHECKING, Any, Callable, Iterable, overload, Sequence, TypeVar
 
 import numpy as np
 
@@ -54,6 +54,9 @@ from manim.utils.space_ops import angle_of_vector
 
 if TYPE_CHECKING:
     from manim.mobject.mobject import Mobject
+    from manim.typing import Point2D
+
+    LineType = TypeVar("LineType", bound=Line)
 
 
 class CoordinateSystem:
@@ -113,7 +116,7 @@ class CoordinateSystem:
         x_length: float | None = None,
         y_length: float | None = None,
         dimension: int = 2,
-    ):
+    ) -> None:
         self.dimension = dimension
 
         default_step = 1
@@ -147,7 +150,7 @@ class CoordinateSystem:
     def point_to_coords(self, point):
         raise NotImplementedError()
 
-    def polar_to_point(self, radius: float, azimuth: float) -> np.ndarray:
+    def polar_to_point(self, radius: float, azimuth: float) -> Point2D:
         r"""Gets a point from polar coordinates.
 
         Parameters
@@ -178,7 +181,7 @@ class CoordinateSystem:
         """
         return self.coords_to_point(radius * np.cos(azimuth), radius * np.sin(azimuth))
 
-    def point_to_polar(self, point: np.ndarray) -> tuple[float, float]:
+    def point_to_polar(self, point: np.ndarray) -> Point2D:
         r"""Gets polar coordinates from a point.
 
         Parameters
@@ -416,8 +419,8 @@ class CoordinateSystem:
 
     def add_coordinates(
         self,
-        *axes_numbers: (Iterable[float] | None | dict[float, str | float | Mobject]),
-        **kwargs,
+        *axes_numbers: Iterable[float] | None | dict[float, str | float | Mobject],
+        **kwargs: Any,
     ):
         """Adds labels to the axes. Use ``Axes.coordinate_labels`` to
         access the coordinates after creation.
@@ -472,15 +475,39 @@ class CoordinateSystem:
 
         return self
 
+    # overload necessary until https://github.com/python/mypy/issues/3737 is supported
+    @overload
     def get_line_from_axis_to_point(
         self,
         index: int,
         point: Sequence[float],
-        line_func: Line = DashedLine,
-        line_config: dict | None = None,
-        color: ParsableManimColor | None = None,
-        stroke_width: float = 2,
-    ) -> Line:
+        line_config: dict | None = ...,
+        color: ParsableManimColor | None = ...,
+        stroke_width: float = ...,
+    ) -> DashedLine:
+        ...
+
+    @overload
+    def get_line_from_axis_to_point(
+        self,
+        index: int,
+        point: Sequence[float],
+        line_func: type[LineType],
+        line_config: dict | None = ...,
+        color: ParsableManimColor | None = ...,
+        stroke_width: float = ...,
+    ) -> LineType:
+        ...
+
+    def get_line_from_axis_to_point(  # type: ignore[no-untyped-def]
+        self,
+        index,
+        point,
+        line_func=DashedLine,
+        line_config=None,
+        color=None,
+        stroke_width=2,
+    ):
         """Returns a straight line from a given axis to a point in the scene.
 
         Parameters
@@ -521,7 +548,7 @@ class CoordinateSystem:
         line = line_func(axis.get_projection(point), point, **line_config)
         return line
 
-    def get_vertical_line(self, point: Sequence[float], **kwargs) -> Line:
+    def get_vertical_line(self, point: Sequence[float], **kwargs: Any) -> Line:
         """A vertical line from the x-axis to a given point in the scene.
 
         Parameters
@@ -635,7 +662,7 @@ class CoordinateSystem:
         function: Callable[[float], float],
         x_range: Sequence[float] | None = None,
         use_vectorized: bool = False,
-        **kwargs,
+        **kwargs: Any,
     ) -> ParametricFunction:
         """Generates a curve based on a function.
 
@@ -731,10 +758,10 @@ class CoordinateSystem:
 
     def plot_implicit_curve(
         self,
-        func: Callable,
+        func: Callable[[float, float], float],
         min_depth: int = 5,
         max_quads: int = 1500,
-        **kwargs,
+        **kwargs: Any,
     ) -> ImplicitFunction:
         """Creates the curves of an implicit function.
 
@@ -781,7 +808,7 @@ class CoordinateSystem:
         self,
         function: Callable[[float], np.ndarray],
         use_vectorized: bool = False,
-        **kwargs,
+        **kwargs: Any,
     ) -> ParametricFunction:
         """A parametric curve.
 
@@ -828,8 +855,8 @@ class CoordinateSystem:
     def plot_polar_graph(
         self,
         r_func: Callable[[float], float],
-        theta_range: Sequence[float] = [0, 2 * PI],
-        **kwargs,
+        theta_range: Sequence[float] | None = None,
+        **kwargs: Any,
     ) -> ParametricFunction:
         """A polar graph.
 
@@ -855,6 +882,7 @@ class CoordinateSystem:
                     graph = plane.plot_polar_graph(r, [0, 2 * PI], color=ORANGE)
                     self.add(plane, graph)
         """
+        theta_range = theta_range if theta_range is not None else [0, 2 * PI]
         graph = ParametricFunction(
             function=lambda th: self.pr2pt(r_func(th), th),
             t_range=theta_range,
@@ -872,7 +900,7 @@ class CoordinateSystem:
         | Sequence[tuple[ParsableManimColor, float]]
         | None = None,
         colorscale_axis: int = 2,
-        **kwargs,
+        **kwargs: Any,
     ):
         """Generates a surface based on a function.
 
@@ -1008,7 +1036,7 @@ class CoordinateSystem:
                     f"x={x} not located in the range of the graph ([{self.p2c(graph.get_start())[0]}, {self.p2c(graph.get_end())[0]}])",
                 )
 
-    def input_to_graph_coords(self, x: float, graph: ParametricFunction) -> tuple:
+    def input_to_graph_coords(self, x: float, graph: ParametricFunction) -> tuple[float, float]:
         """Returns a tuple of the axis relative coordinates of the point
         on the graph based on the x-value given.
 
@@ -1024,7 +1052,7 @@ class CoordinateSystem:
         """
         return x, graph.underlying_function(x)
 
-    def i2gc(self, x: float, graph: ParametricFunction) -> tuple:
+    def i2gc(self, x: float, graph: ParametricFunction) -> tuple[float, float]:
         """Alias for :meth:`input_to_graph_coords`."""
         return self.input_to_graph_coords(x, graph)
 
@@ -1041,7 +1069,7 @@ class CoordinateSystem:
         buff: float = MED_SMALL_BUFF,
         color: ParsableManimColor | None = None,
         dot: bool = False,
-        dot_config: dict | None = None,
+        dot_config: dict[str, Any] | None = None,
     ) -> Mobject:
         """Creates a properly positioned label for the passed graph, with an optional dot.
 
@@ -1286,7 +1314,7 @@ class CoordinateSystem:
         color: ParsableManimColor | Iterable[ParsableManimColor] = (BLUE, GREEN),
         opacity: float = 0.3,
         bounded_graph: ParametricFunction = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> Polygon:
         """Returns a :class:`~.Polygon` representing the area under the graph passed.
 
@@ -1403,7 +1431,7 @@ class CoordinateSystem:
         p1 = np.array([*self.input_to_graph_coords(x + dx, graph)])
         return angle_of_vector(p1 - p0)
 
-    def slope_of_tangent(self, x: float, graph: ParametricFunction, **kwargs) -> float:
+    def slope_of_tangent(self, x: float, graph: ParametricFunction, **kwargs: Any) -> float:
         """Returns the slope of the tangent to the plotted curve
         at a particular x-value.
 
@@ -1481,7 +1509,7 @@ class CoordinateSystem:
         y_intercept: float = 0,
         samples: int = 50,
         use_vectorized: bool = False,
-        **kwargs,
+        **kwargs: Any,
     ):
         """Plots an antiderivative graph.
 
@@ -1663,7 +1691,7 @@ class CoordinateSystem:
         graph: ParametricFunction,
         x_range: Sequence[float] | None = None,
         num_lines: int = 20,
-        **kwargs,
+        **kwargs: Any,
     ) -> VGroup:
         """Obtains multiple lines from the x-axis to the curve.
 
@@ -1722,7 +1750,7 @@ class CoordinateSystem:
         label_color: ParsableManimColor | None = None,
         triangle_size: float = MED_SMALL_BUFF,
         triangle_color: ParsableManimColor | None = WHITE,
-        line_func: Line = Line,
+        line_func: type[Line] = Line,
         line_color: ParsableManimColor = YELLOW,
     ) -> VGroup:
         """Creates a labelled triangle marker with a vertical line from the x-axis
@@ -1844,8 +1872,8 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         x_axis_config: dict | None = None,
         y_axis_config: dict | None = None,
         tips: bool = True,
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> None:
         VGroup.__init__(self, **kwargs)
         CoordinateSystem.__init__(self, x_range, y_range, x_length, y_length)
 
@@ -1912,7 +1940,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
     @staticmethod
     def _update_default_configs(
         default_configs: tuple[dict[Any, Any]], passed_configs: tuple[dict[Any, Any]]
-    ):
+    ) -> None:
         """Takes in two tuples of dicts and return modifies the first such that values from
         ``passed_configs`` overwrite values in ``default_configs``. If a key does not exist
         in default_configs, it is added to the dict.
@@ -1945,7 +1973,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
     def _create_axis(
         self,
         range_terms: Sequence[float],
-        axis_config: dict,
+        axis_config: dict[str, Any],
         length: float,
     ) -> NumberLine:
         """Creates an axis and dynamically adjusts its position depending on where 0 is located on the line.
@@ -2139,8 +2167,8 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         line_color: ParsableManimColor = YELLOW,
         add_vertex_dots: bool = True,
         vertex_dot_radius: float = DEFAULT_DOT_RADIUS,
-        vertex_dot_style: dict | None = None,
-        **kwargs,
+        vertex_dot_style: dict[str, Any] | None = None,
+        **kwargs: Any,
     ) -> VDict:
         """Draws a line graph.
 
@@ -2282,14 +2310,14 @@ class ThreeDAxes(Axes):
         x_length: float | None = config.frame_height + 2.5,
         y_length: float | None = config.frame_height + 2.5,
         z_length: float | None = config.frame_height - 1.5,
-        z_axis_config: dict | None = None,
+        z_axis_config: dict[str, Any] | None = None,
         z_normal: Sequence[float] = DOWN,
         num_axis_pieces: int = 20,
         light_source: Sequence[float] = 9 * DOWN + 7 * LEFT + 10 * OUT,
         # opengl stuff (?)
         depth=None,
         gloss=0.5,
-        **kwargs,
+        **kwargs: Any,
     ):
 
         super().__init__(
@@ -2347,14 +2375,14 @@ class ThreeDAxes(Axes):
             self._add_3d_pieces()
             self._set_axis_shading()
 
-    def _add_3d_pieces(self):
+    def _add_3d_pieces(self) -> None:
         for axis in self.axes:
             axis.pieces = VGroup(*axis.get_pieces(self.num_axis_pieces))
             axis.add(axis.pieces)
             axis.set_stroke(width=0, family=False)
             axis.set_shade_in_3d(True)
 
-    def _set_axis_shading(self):
+    def _set_axis_shading(self) -> None:
         def make_func(axis):
             vect = self.light_source
             return lambda: (
@@ -2376,7 +2404,7 @@ class ThreeDAxes(Axes):
         buff: float = SMALL_BUFF,
         rotation: float = PI / 2,
         rotation_axis: Sequence[float] = RIGHT,
-        **kwargs,
+        **kwargs: Any,
     ) -> Mobject:
         """Generate a z-axis label.
 
@@ -2503,12 +2531,12 @@ class NumberPlane(Axes):
         ),
         x_length: float | None = None,
         y_length: float | None = None,
-        background_line_style: dict | None = None,
-        faded_line_style: dict | None = None,
+        background_line_style: dict[str, Any] | None = None,
+        faded_line_style: dict[str, Any] | None = None,
         faded_line_ratio: int = 1,
         make_smooth_after_applying_functions: bool = True,
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> None:
 
         # configs
         self.axis_config = {
@@ -2553,7 +2581,7 @@ class NumberPlane(Axes):
 
         self._init_background_lines()
 
-    def _init_background_lines(self):
+    def _init_background_lines(self) -> None:
         """Will init all the lines of NumberPlanes (faded or not)"""
         if self.faded_line_style is None:
             style = dict(self.background_line_style)
@@ -2674,7 +2702,7 @@ class NumberPlane(Axes):
                     lines2.add(new_line)
         return lines1, lines2
 
-    def get_vector(self, coords: Sequence[float], **kwargs) -> Arrow:
+    def get_vector(self, coords: Sequence[float], **kwargs: Any) -> Arrow:
         kwargs["buff"] = 0
         return Arrow(
             self.coords_to_point(0, 0), self.coords_to_point(*coords), **kwargs
@@ -2774,13 +2802,13 @@ class PolarPlane(Axes):
         azimuth_direction: str = "CCW",
         azimuth_label_buff: float = SMALL_BUFF,
         azimuth_label_font_size: float = 24,
-        radius_config: dict | None = None,
-        background_line_style: dict | None = None,
-        faded_line_style: dict | None = None,
+        radius_config: dict[str, Any] | None = None,
+        background_line_style: dict[str, Any] | None = None,
+        faded_line_style: dict[str, Any] | None = None,
         faded_line_ratio: int = 1,
         make_smooth_after_applying_functions: bool = True,
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> None:
         # error catching
         if azimuth_units in ["PI radians", "TAU radians", "degrees", "gradians", None]:
             self.azimuth_units = azimuth_units
@@ -2851,7 +2879,7 @@ class PolarPlane(Axes):
 
         self._init_background_lines()
 
-    def _init_background_lines(self):
+    def _init_background_lines(self) -> None:
         """Will init all the lines of NumberPlanes (faded or not)"""
         if self.faded_line_style is None:
             style = dict(self.background_line_style)
@@ -2931,7 +2959,7 @@ class PolarPlane(Axes):
         """
         return self.axes
 
-    def get_vector(self, coords: Sequence[float], **kwargs) -> Arrow:
+    def get_vector(self, coords: Sequence[float], **kwargs: Any) -> Arrow:
         kwargs["buff"] = 0
         return Arrow(
             self.coords_to_point(0, 0), self.coords_to_point(*coords), **kwargs
@@ -2948,7 +2976,7 @@ class PolarPlane(Axes):
         self,
         r_values: Iterable[float] | None = None,
         a_values: Iterable[float] | None = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> VDict:
         """Gets labels for the coordinates
 
@@ -3063,7 +3091,7 @@ class PolarPlane(Axes):
         self.add(self.get_coordinate_labels(r_values, a_values))
         return self
 
-    def get_radian_label(self, number, font_size: float = 24, **kwargs) -> MathTex:
+    def get_radian_label(self, number, font_size: float = 24, **kwargs: Any) -> MathTex:
         constant_label = {"PI radians": r"\pi", "TAU radians": r"\tau"}[
             self.azimuth_units
         ]
@@ -3132,7 +3160,7 @@ class ComplexPlane(NumberPlane):
 
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any) -> None:
         super().__init__(
             **kwargs,
         )
@@ -3193,7 +3221,7 @@ class ComplexPlane(NumberPlane):
         return [*x_numbers, *y_numbers]
 
     def get_coordinate_labels(
-        self, *numbers: Iterable[float | complex], **kwargs
+        self, *numbers: Iterable[float | complex], **kwargs: Any
     ) -> VGroup:
         """Generates the :class:`~.DecimalNumber` mobjects for the coordinates of the plane.
 
@@ -3228,7 +3256,7 @@ class ComplexPlane(NumberPlane):
             self.coordinate_labels.add(number_mob)
         return self.coordinate_labels
 
-    def add_coordinates(self, *numbers: Iterable[float | complex], **kwargs):
+    def add_coordinates(self, *numbers: Iterable[float | complex], **kwargs: Any):
         """Adds the labels produced from :meth:`~.NumberPlane.get_coordinate_labels` to the plane.
 
         Parameters
