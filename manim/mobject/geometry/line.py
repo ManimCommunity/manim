@@ -14,9 +14,10 @@ __all__ = [
     "RightAngle",
 ]
 
-from typing import Any, Sequence
+from typing import TYPE_CHECKING, Any, Sequence
 
 import numpy as np
+from typing_extensions import Self
 
 from manim import config
 from manim.constants import *
@@ -29,6 +30,9 @@ from manim.mobject.types.vectorized_mobject import DashedVMobject, VGroup, VMobj
 from manim.utils.color import WHITE, ParsableManimColor
 from manim.utils.space_ops import angle_of_vector, line_intersection, normalize
 
+if TYPE_CHECKING:
+    from ..matrix import Matrix  # Avoid circular import
+
 
 class Line(TipableVMobject):
     def __init__(
@@ -37,7 +41,7 @@ class Line(TipableVMobject):
         end: Sequence[float] = RIGHT,
         buff: float = 0,
         path_arc: float | None = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         self.dim = 3
         self.buff = buff
