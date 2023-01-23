@@ -585,14 +585,13 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
             (u, v): edge_type(
                 self[u].get_center(),
                 self[v].get_center(),
-                z_index=-1,
                 **self._edge_config[(u, v)],
             )
             for (u, v) in edges
         }
 
-        self.add(*self.vertices.values())
         self.add(*self.edges.values())
+        self.add(*self.vertices.values())
 
         def update_edges(graph):
             for (u, v), edge in graph.edges.items():
