@@ -548,7 +548,7 @@ class Scene:
                     mobj_list[i] = new_m
                     return True
             # Now check all the children of all these mobs.
-            for mob in mobj_list:
+            for mob in mobj_list:  # noqa: SIM110
                 if replace_in_list(mob.submobjects, old_m, new_m):
                     # If we found it in a submobject, stop looking.
                     return True
