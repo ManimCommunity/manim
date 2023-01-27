@@ -117,6 +117,19 @@ def clip(a, min_a, max_a):
     return a
 
 
+def fdiv(
+    a: Scalable, b: Scalable, zero_over_zero_value: Scalable | None = None
+) -> Scalable:
+    if zero_over_zero_value is not None:
+        out = np.full_like(a, zero_over_zero_value)
+        where = np.logical_or(a != 0, b != 0)
+    else:
+        out = None
+        where = True
+
+    return np.true_divide(a, b, out=out, where=where)
+
+
 def get_parameters(function: Callable) -> MappingProxyType[str, inspect.Parameter]:
     """Return the parameters of ``function`` as an ordered mapping of parameters'
     names to their corresponding ``Parameter`` objects.

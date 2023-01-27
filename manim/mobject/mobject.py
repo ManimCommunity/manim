@@ -768,7 +768,7 @@ class Mobject:
 
     def get_image(self, camera=None):
         if camera is None:
-            from ..camera.camera import Camera
+            from ..camera.cairo_camera import CairoCamera as Camera
 
             camera = Camera()
         camera.capture_mobject(self)
@@ -2804,6 +2804,45 @@ class Group(Mobject, metaclass=ConvertToOpenGL):
     def __init__(self, *mobjects, **kwargs):
         super().__init__(**kwargs)
         self.add(*mobjects)
+
+
+class Point(Mobject, metaclass=ConvertToOpenGL):
+    def __init__(
+        self,
+        location: np.ndarray = ORIGIN,
+        artificial_width: float = 1e-6,
+        artificial_height: float = 1e-6,
+        **kwargs,
+    ):
+        self.artificial_width = artificial_width
+        self.artificial_height = artificial_height
+        super().__init__(**kwargs)
+        self.set_location(location)
+
+    @property
+    def width(self):
+        return self.artificial_width
+
+    @property
+    def height(self):
+        return self.artificial_height
+
+    # TODO: properties vs. getter methods?
+
+    def get_width(self):
+        return self.artificial_width
+
+    def get_height(self):
+        return self.artificial_height
+
+    def get_location(self):
+        return self.points[0].copy()
+
+    def get_bounding_box_point(self, *args, **kwargs):
+        return self.get_location()
+
+    def set_location(self, new_loc):
+        self.set_points(np.array(new_loc, ndmin=2, dtype=float))
 
 
 class _AnimationBuilder:

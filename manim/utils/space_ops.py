@@ -69,34 +69,19 @@ def quaternion_mult(
     Union[np.ndarray, List[Union[float, np.ndarray]]]
         Returns a list of product of two quaternions.
     """
-    if config.renderer == RendererType.OPENGL:
-        if len(quats) == 0:
-            return [1, 0, 0, 0]
-        result = quats[0]
-        for next_quat in quats[1:]:
-            w1, x1, y1, z1 = result
-            w2, x2, y2, z2 = next_quat
-            result = [
-                w1 * w2 - x1 * x2 - y1 * y2 - z1 * z2,
-                w1 * x2 + x1 * w2 + y1 * z2 - z1 * y2,
-                w1 * y2 + y1 * w2 + z1 * x2 - x1 * z2,
-                w1 * z2 + z1 * w2 + x1 * y2 - y1 * x2,
-            ]
-        return result
-    elif config.renderer == RendererType.CAIRO:
-        q1 = quats[0]
-        q2 = quats[1]
-
-        w1, x1, y1, z1 = q1
-        w2, x2, y2, z2 = q2
-        return np.array(
-            [
-                w1 * w2 - x1 * x2 - y1 * y2 - z1 * z2,
-                w1 * x2 + x1 * w2 + y1 * z2 - z1 * y2,
-                w1 * y2 + y1 * w2 + z1 * x2 - x1 * z2,
-                w1 * z2 + z1 * w2 + x1 * y2 - y1 * x2,
-            ],
-        )
+    if len(quats) == 0:
+        return [1, 0, 0, 0]
+    result = quats[0]
+    for next_quat in quats[1:]:
+        w1, x1, y1, z1 = result
+        w2, x2, y2, z2 = next_quat
+        result = [
+            w1 * w2 - x1 * x2 - y1 * y2 - z1 * z2,
+            w1 * x2 + x1 * w2 + y1 * z2 - z1 * y2,
+            w1 * y2 + y1 * w2 + z1 * x2 - x1 * z2,
+            w1 * z2 + z1 * w2 + x1 * y2 - y1 * x2,
+        ]
+    return result
 
 
 def quaternion_from_angle_axis(
@@ -122,12 +107,9 @@ def quaternion_from_angle_axis(
     List[float]
         Gives back a quaternion from the angle and axis
     """
-    if config.renderer == RendererType.OPENGL:
-        if not axis_normalized:
-            axis = normalize(axis)
-        return [math.cos(angle / 2), *(math.sin(angle / 2) * axis)]
-    elif config.renderer == RendererType.CAIRO:
-        return np.append(np.cos(angle / 2), np.sin(angle / 2) * normalize(axis))
+    if not axis_normalized:
+        axis = normalize(axis)
+    return [math.cos(angle / 2), *(math.sin(angle / 2) * axis)]
 
 
 def angle_axis_from_quaternion(quaternion: Sequence[float]) -> Sequence[float]:
@@ -283,6 +265,32 @@ def rotation_about_z(angle: float) -> np.ndarray:
             [0, 0, 1],
         ]
     )
+
+
+def get_norm(vector: np.ndarray) -> float:
+    """Returns the norm of the vector.
+
+    Parameters
+    ----------
+    vector
+        The vector for which you want to find the norm.
+
+    Returns
+    -------
+    float
+        The norm of the vector.
+    """
+    return np.linalg.norm(vector)
+
+
+def normalize(vect: list[float], fall_back: list[float] | None = None) -> np.ndarray:
+    norm = get_norm(vect)
+    if norm > 0:
+        return np.array(vect) / norm
+    elif fall_back is not None:
+        return np.array(fall_back)
+    else:
+        return np.zeros(len(vect))
 
 
 def z_to_vector(vector: np.ndarray) -> np.ndarray:

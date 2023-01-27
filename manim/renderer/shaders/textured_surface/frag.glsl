@@ -14,29 +14,21 @@ in float v_opacity;
 
 out vec4 frag_color;
 
-#include ../include/finalize_color.glsl
+#include "../include/finalize_color.glsl"
 
 const float dark_shift = 0.2;
 
-void main() {
+void main()
+{
     vec4 color = texture(LightTexture, v_im_coords);
-    if(num_textures == 2.0){
+    if (num_textures == 2.0)
+    {
         vec4 dark_color = texture(DarkTexture, v_im_coords);
-        float dp = dot(
-            normalize(light_source_position - xyz_coords),
-            normalize(v_normal)
-        );
+        float dp = dot(normalize(light_source_position - xyz_coords), normalize(v_normal));
         float alpha = smoothstep(-dark_shift, dark_shift, dp);
         color = mix(dark_color, color, alpha);
     }
 
-    frag_color = finalize_color(
-        color,
-        xyz_coords,
-        normalize(v_normal),
-        light_source_position,
-        gloss,
-        shadow
-    );
+    frag_color = finalize_color(color, xyz_coords, normalize(v_normal), light_source_position, gloss, shadow);
     frag_color.a = v_opacity;
 }

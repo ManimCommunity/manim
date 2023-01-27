@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from manim.utils.iterables import resize_with_interpolation
+
 __all__ = [
     "color_to_rgb",
     "color_to_rgba",
@@ -550,3 +552,28 @@ def get_shaded_rgb(
         factor *= 0.5
     result = rgb + factor
     return result
+
+
+COLORMAP_3B1B: list[Color] = [BLUE_E, GREEN, YELLOW, RED]
+
+
+def get_colormap_list(map_name: str = "viridis", n_colors: int = 9) -> np.ndarray:
+    """
+    Options for map_name:
+    3b1b_colormap
+    magma
+    inferno
+    plasma
+    viridis
+    cividis
+    twilight
+    twilight_shifted
+    turbo
+    """
+    from matplotlib.cm import get_cmap
+
+    if map_name == "3b1b_colormap":
+        rgbs = np.array([color_to_rgb(color) for color in COLORMAP_3B1B])
+    else:
+        rgbs = get_cmap(map_name).colors  # Make more general?
+    return resize_with_interpolation(np.array(rgbs), n_colors)

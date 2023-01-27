@@ -20,6 +20,8 @@ __all__ = [
     "FadeIn",
 ]
 
+from typing import TYPE_CHECKING
+
 import numpy as np
 
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
@@ -27,7 +29,9 @@ from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from ..animation.transform import Transform
 from ..constants import ORIGIN
 from ..mobject.mobject import Group, Mobject
-from ..scene.scene import Scene
+
+if TYPE_CHECKING:
+    from ..scene import Scene
 
 
 class _Fade(Transform):
