@@ -32,6 +32,7 @@ from manim.mobject.opengl.opengl_surface import OpenGLSurface
 from manim.mobject.text.tex_mobject import MathTex
 from manim.mobject.three_d.three_dimensions import Surface
 from manim.mobject.types.vectorized_mobject import (
+    CurvesAsSubmobjects,
     VDict,
     VectorizedPoint,
     VGroup,
@@ -45,6 +46,7 @@ from manim.utils.color import (
     WHITE,
     YELLOW,
     color_gradient,
+    interpolate_color,
     invert_color,
 )
 from manim.utils.config_ops import merge_dicts_recursively, update_dict_recursively
@@ -588,6 +590,8 @@ class CoordinateSystem:
         function: Callable[[float], float],
         x_range: Sequence[float] | None = None,
         use_vectorized: bool = False,
+        colorscale: Union[Iterable[Color], Color] | None = None,
+        colorscale_axis: int = 1,
         **kwargs,
     ):
         """Generates a curve based on a function.
@@ -601,6 +605,12 @@ class CoordinateSystem:
         use_vectorized
             Whether to pass in the generated t value array to the function. Only use this if your function supports it.
             Output should be a numpy array of shape ``[y_0, y_1, ...]``
+        colorscale
+            Colors of the function. Optional parameter used when coloring a function by values. Passing a list of colors
+            and a colorscale_axes will color the function by y-value. Passing a list of tuples in the form ``(color, pivot)``
+            allows user-defined pivots where the color transitions.
+        colorscale_axis
+            Defines the axis on which the colorscale is applied (0 = x, 1 = y), default is y-axis (1).
         kwargs
             Additional parameters to be passed to :class:`~.ParametricFunction`.
 
@@ -680,6 +690,52 @@ class CoordinateSystem:
             **kwargs,
         )
         graph.underlying_function = function
+
+        if colorscale:
+            if type(colorscale[0]) in (list, tuple):
+                new_colors, pivots = [
+                    [i for i, j in colorscale],
+                    [j for i, j in colorscale],
+                ]
+            else:
+                new_colors = colorscale
+
+                ranges = [self.x_range, self.y_range]
+                pivot_min = ranges[colorscale_axis][0]
+                pivot_max = ranges[colorscale_axis][1]
+                pivot_frequency = (pivot_max - pivot_min) / (len(new_colors) - 1)
+                pivots = np.arange(
+                    start=pivot_min,
+                    stop=pivot_max + pivot_frequency,
+                    step=pivot_frequency,
+                )
+
+            new_graph = CurvesAsSubmobjects(graph)
+            for mob in new_graph.family_members_with_points():
+                axis_value = self.point_to_coords(mob.get_midpoint())[colorscale_axis]
+                if axis_value <= pivots[0]:
+                    mob.set_color(new_colors[0])
+                elif axis_value >= pivots[-1]:
+                    mob.set_color(new_colors[-1])
+                else:
+                    for i, pivot in enumerate(pivots):
+                        if pivot > axis_value:
+                            color_index = (axis_value - pivots[i - 1]) / (
+                                pivots[i] - pivots[i - 1]
+                            )
+                            color_index = min(color_index, 1)
+                            mob_color = interpolate_color(
+                                new_colors[i - 1],
+                                new_colors[i],
+                                color_index,
+                            )
+                            if config.renderer == RendererType.OPENGL:
+                                mob.set_color(mob_color, recurse=False)
+                            elif config.renderer == RendererType.CAIRO:
+                                mob.set_color(mob_color, family=False)
+                            break
+            graph = new_graph
+
         return graph
 
     def plot_implicit_curve(
