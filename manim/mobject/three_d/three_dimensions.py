@@ -38,7 +38,7 @@ from manim.utils.space_ops import normalize, perpendicular_bisector, z_to_vector
 
 
 class ThreeDVMobject(VMobject, metaclass=ConvertToOpenGL):
-    def __init__(self, shade_in_3d=True, **kwargs):
+    def __init__(self, shade_in_3d: bool = True, **kwargs: Any) -> None:
         super().__init__(shade_in_3d=shade_in_3d, **kwargs)
 
 
@@ -108,7 +108,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         stroke_width: float = 0.5,
         should_make_jagged: bool = False,
         pre_function_handle_to_anchor_scale_factor: float = 0.00001,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         self.u_range = u_range
         self.v_range = v_range
@@ -135,10 +135,10 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         if self.should_make_jagged:
             self.make_jagged()
 
-    def func(self, u: float, v: float):
+    def func(self, u: float, v: float) -> Callable[[float, float], np.ndarray]:
         return self._func(u, v)
 
-    def _get_u_values_and_v_values(self):
+    def _get_u_values_and_v_values(self) -> tuple[np.ndarray, np.ndarray]:
         res = tuplify(self.resolution)
         if len(res) == 1:
             u_res = v_res = res[0]
@@ -150,7 +150,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
 
         return u_values, v_values
 
-    def _setup_in_uv_space(self):
+    def _setup_in_uv_space(self) -> None:
         u_values, v_values = self._get_u_values_and_v_values()
         faces = VGroup()
         for i in range(len(u_values) - 1):
@@ -184,7 +184,9 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         if self.checkerboard_colors:
             self.set_fill_by_checkerboard(*self.checkerboard_colors)
 
-    def set_fill_by_checkerboard(self, *colors, opacity=None):
+    def set_fill_by_checkerboard(
+        self, *colors: Iterable[ParsableManimColor], opacity: float | None = None
+    ) -> Self:
         """Sets the fill_color of each face of :class:`Surface` in
         an alternating pattern.
 
@@ -214,7 +216,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         colorscale: list[ParsableManimColor] | ParsableManimColor | None = None,
         axis: int = 2,
         **kwargs,
-    ):
+    ) -> Self:
         """Sets the color of each mobject of a parametric surface to a color
         relative to its axis-value.
 
@@ -368,13 +370,13 @@ class Sphere(Surface):
 
     def __init__(
         self,
-        center=ORIGIN,
-        radius=1,
-        resolution=None,
-        u_range=(0, TAU),
-        v_range=(0, PI),
-        **kwargs,
-    ):
+        center: list | np.ndarray = ORIGIN,
+        radius: float = 1,
+        resolution: Sequence[int] | None = None,
+        u_range: Sequence[float] = (0, TAU),
+        v_range: Sequence[float] = (0, PI),
+        **kwargs: Any,
+    ) -> None:
         if config.renderer == RendererType.OPENGL:
             res_value = (101, 51)
         elif config.renderer == RendererType.CAIRO:
@@ -396,7 +398,7 @@ class Sphere(Surface):
 
         self.shift(center)
 
-    def func(self, u, v):
+    def func(self, u: float, v: float) -> np.ndarray:
         return self.radius * np.array(
             [np.cos(u) * np.sin(v), np.sin(u) * np.sin(v), -np.cos(v)],
         )
@@ -439,9 +441,9 @@ class Dot3D(Sphere):
         point: list | np.ndarray = ORIGIN,
         radius: float = DEFAULT_DOT_RADIUS,
         color: ParsableManimColor = WHITE,
-        resolution=(8, 8),
-        **kwargs,
-    ):
+        resolution: Sequence[int] = (8, 8),
+        **kwargs: Any,
+    ) -> None:
         super().__init__(center=point, radius=radius, resolution=resolution, **kwargs)
         self.set_color(color)
 
@@ -478,12 +480,12 @@ class Cube(VGroup):
 
     def __init__(
         self,
-        side_length=2,
-        fill_opacity=0.75,
-        fill_color=BLUE,
-        stroke_width=0,
-        **kwargs,
-    ):
+        side_length: float = 2,
+        fill_opacity: float = 0.75,
+        fill_color: ParsableManimColor = BLUE,
+        stroke_width: float = 0,
+        **kwargs: Any,
+    ) -> None:
         self.side_length = side_length
         super().__init__(
             fill_color=fill_color,
@@ -492,7 +494,7 @@ class Cube(VGroup):
             **kwargs,
         )
 
-    def generate_points(self):
+    def generate_points(self) -> None:
         for vect in IN, OUT, LEFT, RIGHT, UP, DOWN:
             face = Square(
                 side_length=self.side_length,
@@ -530,11 +532,13 @@ class Prism(Cube):
                 self.add(prismSmall, prismLarge)
     """
 
-    def __init__(self, dimensions=[3, 2, 1], **kwargs):
+    def __init__(
+        self, dimensions: Sequence[float] | np.ndarray = [3, 2, 1], **kwargs: Any
+    ) -> None:
         self.dimensions = dimensions
         super().__init__(**kwargs)
 
-    def generate_points(self):
+    def generate_points(self) -> None:
         super().generate_points()
         for dim, value in enumerate(self.dimensions):
             self.rescale_to_fit(value, dim, stretch=True)
@@ -587,8 +591,8 @@ class Cone(Surface):
         v_range: Sequence[float] = [0, TAU],
         u_min: float = 0,
         checkerboard_colors: bool = False,
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> None:
         self.direction = direction
         self.theta = PI - np.arctan(base_radius / height)
 
@@ -615,7 +619,7 @@ class Cone(Surface):
 
         self._rotate_to_direction()
 
-    def func(self, u: float, v: float):
+    def func(self, u: float, v: float) -> np.ndarray:
         """Converts from spherical coordinates to cartesian.
 
         Parameters
@@ -635,7 +639,7 @@ class Cone(Surface):
             ],
         )
 
-    def _rotate_to_direction(self):
+    def _rotate_to_direction(self) -> None:
         x, y, z = self.direction
 
         r = np.sqrt(x**2 + y**2 + z**2)
@@ -668,7 +672,7 @@ class Cone(Surface):
         self._current_theta = theta
         self._current_phi = phi
 
-    def set_direction(self, direction):
+    def set_direction(self, direction: np.ndarray) -> None:
         """Changes the direction of the apex of the :class:`Cone`.
 
         Parameters
@@ -679,7 +683,7 @@ class Cone(Surface):
         self.direction = direction
         self._rotate_to_direction()
 
-    def get_direction(self):
+    def get_direction(self) -> np.ndarray:
         """Returns the current direction of the apex of the :class:`Cone`.
 
         Returns
@@ -729,9 +733,9 @@ class Cylinder(Surface):
         direction: np.ndarray = Z_AXIS,
         v_range: Sequence[float] = [0, TAU],
         show_ends: bool = True,
-        resolution=(24, 24),
-        **kwargs,
-    ):
+        resolution: Sequence[int] = (24, 24),
+        **kwargs: Any,
+    ) -> None:
         self._height = height
         self.radius = radius
         super().__init__(
@@ -747,7 +751,7 @@ class Cylinder(Surface):
         self._current_theta = 0
         self.set_direction(direction)
 
-    def func(self, u: float, v: float):
+    def func(self, u: float, v: float) -> np.ndarray:
         """Converts from cylindrical coordinates to cartesian.
 
         Parameters
@@ -762,7 +766,7 @@ class Cylinder(Surface):
         r = self.radius
         return np.array([r * np.cos(phi), r * np.sin(phi), height])
 
-    def add_bases(self):
+    def add_bases(self) -> None:
         """Adds the end caps of the cylinder."""
         if config.renderer == RendererType.OPENGL:
             color = self.color
@@ -789,7 +793,7 @@ class Cylinder(Surface):
         self.base_bottom.shift(self.u_range[0] * IN)
         self.add(self.base_top, self.base_bottom)
 
-    def _rotate_to_direction(self):
+    def _rotate_to_direction(self) -> None:
         x, y, z = self.direction
 
         r = np.sqrt(x**2 + y**2 + z**2)
@@ -822,7 +826,7 @@ class Cylinder(Surface):
         self._current_theta = theta
         self._current_phi = phi
 
-    def set_direction(self, direction):
+    def set_direction(self, direction: np.ndarray) -> None:
         """Sets the direction of the central axis of the :class:`Cylinder`.
 
         Parameters
@@ -835,7 +839,7 @@ class Cylinder(Surface):
         self.direction = direction
         self._rotate_to_direction()
 
-    def get_direction(self):
+    def get_direction(self) -> np.ndarray:
         """Returns the direction of the central axis of the :class:`Cylinder`.
 
         Returns
@@ -878,15 +882,17 @@ class Line3D(Cylinder):
         start: np.ndarray = LEFT,
         end: np.ndarray = RIGHT,
         thickness: float = 0.02,
-        color=None,
-        **kwargs,
-    ):
+        color: ParsableManimColor | None = None,
+        **kwargs: Any,
+    ) -> None:
         self.thickness = thickness
         self.set_start_and_end_attrs(start, end, **kwargs)
         if color is not None:
             self.set_color(color)
 
-    def set_start_and_end_attrs(self, start, end, **kwargs):
+    def set_start_and_end_attrs(
+        self, start: np.ndarray, end: np.ndarray, **kwargs: Any
+    ) -> None:
         """Sets the start and end points of the line.
 
         If either ``start`` or ``end`` are :class:`Mobjects <.Mobject>`,
@@ -917,7 +923,11 @@ class Line3D(Cylinder):
         )
         self.shift((self.start + self.end) / 2)
 
-    def pointify(self, mob_or_point, direction=None):
+    def pointify(
+        self,
+        mob_or_point: Mobject | Sequence[float] | np.ndarray,
+        direction: np.ndarray | None = None,
+    ) -> np.ndarray:
         if isinstance(mob_or_point, (Mobject, OpenGLMobject)):
             mob = mob_or_point
             if direction is None:
@@ -926,7 +936,7 @@ class Line3D(Cylinder):
                 return mob.get_boundary_point(direction)
         return np.array(mob_or_point)
 
-    def get_start(self):
+    def get_start(self) -> np.ndarray:
         """Returns the starting point of the :class:`Line3D`.
 
         Returns
@@ -936,7 +946,7 @@ class Line3D(Cylinder):
         """
         return self.start
 
-    def get_end(self):
+    def get_end(self) -> np.ndarray:
         """Returns the ending point of the :class:`Line3D`.
 
         Returns
@@ -948,8 +958,12 @@ class Line3D(Cylinder):
 
     @classmethod
     def parallel_to(
-        cls, line: Line3D, point: Sequence[float] = ORIGIN, length: float = 5, **kwargs
-    ):
+        cls,
+        line: Line3D,
+        point: Sequence[float] | np.ndarray = ORIGIN,
+        length: float = 5,
+        **kwargs: Any,
+    ) -> Line3D:
         """Returns a line parallel to another line going through
         a given point.
 
@@ -985,8 +999,12 @@ class Line3D(Cylinder):
 
     @classmethod
     def perpendicular_to(
-        cls, line: Line3D, point: Sequence[float] = ORIGIN, length: float = 5, **kwargs
-    ):
+        cls,
+        line: Line3D,
+        point: Sequence[float] | np.ndarray = ORIGIN,
+        length: float = 5,
+        **kwargs: Any,
+    ) -> Line3D:
         """Returns a line perpendicular to another line going through
         a given point.
 
@@ -1069,9 +1087,9 @@ class Arrow3D(Line3D):
         thickness: float = 0.02,
         height: float = 0.3,
         base_radius: float = 0.08,
-        color=WHITE,
-        **kwargs,
-    ):
+        color: ParsableManimColor = WHITE,
+        **kwargs: Any,
+    ) -> None:
         super().__init__(
             start=start, end=end, thickness=thickness, color=color, **kwargs
         )
@@ -1125,11 +1143,11 @@ class Torus(Surface):
         self,
         major_radius: float = 3,
         minor_radius: float = 1,
-        u_range=(0, TAU),
-        v_range=(0, TAU),
-        resolution=None,
-        **kwargs,
-    ):
+        u_range: Sequence[float] = (0, TAU),
+        v_range: Sequence[float] = (0, TAU),
+        resolution: Sequence[int] | None = None,
+        **kwargs: Any,
+    ) -> None:
         if config.renderer == RendererType.OPENGL:
             res_value = (101, 101)
         elif config.renderer == RendererType.CAIRO:
@@ -1147,6 +1165,6 @@ class Torus(Surface):
             **kwargs,
         )
 
-    def func(self, u, v):
+    def func(self, u: float, v: float) -> np.ndarray:
         P = np.array([np.cos(u), np.sin(u), 0])
         return (self.R - self.r * np.cos(v)) * P - self.r * np.sin(v) * OUT
