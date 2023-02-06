@@ -2287,7 +2287,6 @@ class ThreeDAxes(Axes):
         gloss=0.5,
         **kwargs,
     ):
-
         super().__init__(
             x_range=x_range,
             x_length=x_length,
@@ -2609,7 +2608,6 @@ class NumberPlane(Axes):
         make_smooth_after_applying_functions: bool = True,
         **kwargs,
     ):
-
         # configs
         self.axis_config = {
             "stroke_width": 2,

@@ -404,7 +404,6 @@ class Unwrite(Write):
         reverse: bool = True,
         **kwargs,
     ) -> None:
-
         run_time: float | None = kwargs.pop("run_time", None)
         lag_ratio: float | None = kwargs.pop("lag_ratio", None)
         run_time, lag_ratio = self._set_default_config_from_length(

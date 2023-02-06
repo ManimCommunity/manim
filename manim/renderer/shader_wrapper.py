@@ -125,7 +125,7 @@ class ShaderWrapper:
 
     def replace_code(self, old, new):
         code_map = self.program_code
-        for (name, _code) in code_map.items():
+        for name, _code in code_map.items():
             if code_map[name] is None:
                 continue
             code_map[name] = re.sub(old, new, code_map[name])
