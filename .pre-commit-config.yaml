@@ -13,7 +13,7 @@ repos:
       - id: check-toml
         name: Validate Poetry
   - repo: https://github.com/pycqa/isort
-    rev: 5.11.4
+    rev: 5.12.0
     hooks:
       - id: isort
         name: isort (python)
@@ -35,7 +35,7 @@ repos:
       - id: python-check-blanket-noqa
         name: Precision flake ignores
   - repo: https://github.com/psf/black
-    rev: 22.12.0
+    rev: 23.1.0
     hooks:
       - id: black
   - repo: https://github.com/asottile/blacken-docs

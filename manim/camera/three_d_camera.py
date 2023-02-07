@@ -380,6 +380,7 @@ class ThreeDCamera(Camera):
             The function which returns the centerpoint
             with respect to which the mobject will be oriented, by default None
         """
+
         # This prevents the computation of mobject.get_center
         # every single time a projection happens
         def get_static_center_func(mobject):
