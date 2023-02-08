@@ -383,6 +383,7 @@ class Scene:
             should_update = (
                 self.always_update_mobjects
                 or self.updaters
+                or wait_animation.stop_condition is not None
                 or any(
                     [
                         mob.has_time_based_updater()
@@ -974,10 +975,7 @@ class Scene:
         """
 
         if len(animations) == 1 and isinstance(animations[0], Wait):
-            if animations[0].stop_condition is not None:
-                return 0
-            else:
-                return animations[0].duration
+            return animations[0].duration
 
         else:
             return np.max([animation.run_time for animation in animations])
