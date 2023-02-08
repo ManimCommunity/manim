@@ -72,6 +72,7 @@ def test_non_static_wait_detection(using_temp_config, disabling_caching):
     assert not scene.animations[0].is_static_wait
     assert not scene.is_current_animation_frozen_frame()
 
+
 def test_wait_with_stop_condition(using_temp_config, disabling_caching):
     class TestScene(Scene):
         def construct(self):
@@ -86,6 +87,7 @@ def test_wait_with_stop_condition(using_temp_config, disabling_caching):
 
     scene = TestScene()
     scene.render()
+
 
 def test_frozen_frame(using_temp_config, disabling_caching):
     scene = SceneForFrozenFrameTests()
