@@ -381,6 +381,12 @@ class MathTex(SingleStringMathTex):
             part.set_color(color)
         return self
 
+    def set_opacity_by_tex(self, tex, opacity=0.5, **kwargs):
+        parts_to_color = self.get_parts_by_tex(tex, **kwargs)
+        for part in parts_to_color:
+            part.set_opacity(opacity)
+        return self
+
     def set_color_by_tex_to_color_map(self, texs_to_color_map, **kwargs):
         for texs, color in list(texs_to_color_map.items()):
             try:
@@ -391,6 +397,15 @@ class MathTex(SingleStringMathTex):
                 # If the given key is a tuple
                 for tex in texs:
                     self.set_color_by_tex(tex, color, **kwargs)
+        return self
+
+    def fade_all_but_tex(self, tex, opacity=0.1, non_faded_opacity=1, **kwargs):
+        non_faded_index = self.index_of_part_by_tex(tex, **kwargs)
+        for i, part in enumerate(self):
+            if i is non_faded_index:
+                part.set_opacity(non_faded_opacity)
+            else:
+                part.set_opacity(opacity)
         return self
 
     def index_of_part(self, part):
