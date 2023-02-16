@@ -382,8 +382,8 @@ class MathTex(SingleStringMathTex):
         return self
 
     def set_opacity_by_tex(self, tex, opacity=0.5, **kwargs):
-        parts_to_color = self.get_parts_by_tex(tex, **kwargs)
-        for part in parts_to_color:
+        parts_to_fade = self.get_parts_by_tex(tex, **kwargs)
+        for part in parts_to_fade:
             part.set_opacity(opacity)
         return self
 
