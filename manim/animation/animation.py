@@ -456,7 +456,7 @@ class Animation:
         return self
 
     def is_remover(self) -> bool:
-        """Test if a the animation is a remover.
+        """Test if the animation is a remover.
 
         Returns
         -------
@@ -466,7 +466,7 @@ class Animation:
         return self.remover
 
     def is_introducer(self) -> bool:
-        """Test if a the animation is an introducer.
+        """Test if the animation is an introducer.
 
         Returns
         -------
