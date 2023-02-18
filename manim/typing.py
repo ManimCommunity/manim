@@ -1,10 +1,11 @@
-from typing import Callable, Tuple
+from typing import Callable, Tuple, TYPE_CHECKING
 
 import numpy as np
 import numpy.typing as npt
 from typing_extensions import TypeAlias
 
-from .animation.animation import Animation
+if TYPE_CHECKING:
+    from .animation.animation import Animation
 
 # Color Types
 
