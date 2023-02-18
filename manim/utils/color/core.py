@@ -7,7 +7,7 @@ import random
 from typing import Any, Sequence, Union
 
 import numpy as np
-from typing_extensions import Literal, TypeAlias
+from typing_extensions import TypeAlias
 
 from manim.typing import (
     ManimColorDType,

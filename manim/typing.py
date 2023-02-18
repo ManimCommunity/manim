@@ -1,8 +1,11 @@
-from typing import Tuple
+from typing import Callable, Tuple, TYPE_CHECKING
 
 import numpy as np
 import numpy.typing as npt
 from typing_extensions import TypeAlias
+
+if TYPE_CHECKING:
+    from .animation.animation import Animation
 
 # Color Types
 
@@ -76,3 +79,7 @@ ColVector: TypeAlias = npt.NDArray[PointDType]
 
 MatrixMN: TypeAlias = npt.NDArray[PointDType]
 """ `shape: (M,N)` A Matrix `[[float,...],[float,...],...]`. """
+
+# Due to current limitations (see https://github.com/python/mypy/issues/14656 / 8263), we don't specify the first argument type (Mobject).
+FunctionOverride: TypeAlias = Callable[..., Animation]
+"""Function type returning an animation for the specified Mobject."""

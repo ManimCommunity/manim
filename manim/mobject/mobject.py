@@ -18,13 +18,8 @@ from pathlib import Path
 from typing import (
     TYPE_CHECKING,
     Callable,
-    Dict,
     Iterable,
-    List,
-    Optional,
     Sequence,
-    Tuple,
-    Type,
     TypeVar,
     Union,
 )
@@ -57,6 +52,7 @@ T = TypeVar("T", bound="Mobject")
 
 if TYPE_CHECKING:
     from ..animation.animation import Animation
+    from manim.typing import FunctionOverride
 
 
 class Mobject:
@@ -87,7 +83,7 @@ class Mobject:
 
         cls.animation_overrides: dict[
             type[Animation],
-            Callable[[Mobject], Animation],
+            FunctionOverride,
         ] = {}
         cls._add_intrinsic_animation_overrides()
         cls._original__init__ = cls.__init__
@@ -118,7 +114,7 @@ class Mobject:
     def animation_override_for(
         cls,
         animation_class: type[Animation],
-    ) -> Callable[[Mobject, ...], Animation] | None:
+    ) -> FunctionOverride | None:
         """Returns the function defining a specific animation override for this class.
 
         Parameters
@@ -156,8 +152,8 @@ class Mobject:
     def add_animation_override(
         cls,
         animation_class: type[Animation],
-        override_func: Callable[[Mobject, ...], Animation],
-    ):
+        override_func: FunctionOverride,
+    ) -> None:
         """Add an animation override.
 
         This does not apply to subclasses.
@@ -1756,7 +1752,7 @@ class Mobject:
         self.color = ManimColor.parse(color)
         return self
 
-    def set_color_by_gradient(self, *colors: Iterable[ParsableManimColor]):
+    def set_color_by_gradient(self, *colors: ParsableManimColor):
         """
         Parameters
         ----------
