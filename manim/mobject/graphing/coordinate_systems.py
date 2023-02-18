@@ -17,6 +17,7 @@ import numbers
 from typing import TYPE_CHECKING, Any, Callable, Iterable, overload, Sequence, TypeVar
 
 import numpy as np
+from typing_extensions import Self
 
 from manim import config
 from manim.constants import *
@@ -421,7 +422,7 @@ class CoordinateSystem:
         self,
         *axes_numbers: Iterable[float] | None | dict[float, str | float | Mobject],
         **kwargs: Any,
-    ):
+    ) -> Self:
         """Adds labels to the axes. Use ``Axes.coordinate_labels`` to
         access the coordinates after creation.
 
@@ -901,7 +902,7 @@ class CoordinateSystem:
         | None = None,
         colorscale_axis: int = 2,
         **kwargs: Any,
-    ):
+    ) -> Surface | OpenGLSurface:
         """Generates a surface based on a function.
 
         Parameters
@@ -1510,7 +1511,7 @@ class CoordinateSystem:
         samples: int = 50,
         use_vectorized: bool = False,
         **kwargs: Any,
-    ):
+    ) -> ParametricFunction:
         """Plots an antiderivative graph.
 
         Parameters
@@ -2318,7 +2319,7 @@ class ThreeDAxes(Axes):
         depth=None,
         gloss=0.5,
         **kwargs: Any,
-    ):
+    ) -> None:
 
         super().__init__(
             x_range=x_range,
@@ -2708,7 +2709,7 @@ class NumberPlane(Axes):
             self.coords_to_point(0, 0), self.coords_to_point(*coords), **kwargs
         )
 
-    def prepare_for_nonlinear_transform(self, num_inserted_curves: int = 50):
+    def prepare_for_nonlinear_transform(self, num_inserted_curves: int = 50) -> Self:
         for mob in self.family_members_with_points():
             num_curves = mob.get_num_curves()
             if num_inserted_curves > num_curves:
@@ -2965,7 +2966,7 @@ class PolarPlane(Axes):
             self.coords_to_point(0, 0), self.coords_to_point(*coords), **kwargs
         )
 
-    def prepare_for_nonlinear_transform(self, num_inserted_curves: int = 50):
+    def prepare_for_nonlinear_transform(self, num_inserted_curves: int = 50) -> Self:
         for mob in self.family_members_with_points():
             num_curves = mob.get_num_curves()
             if num_inserted_curves > num_curves:
@@ -3078,7 +3079,7 @@ class PolarPlane(Axes):
         self,
         r_values: Iterable[float] | None = None,
         a_values: Iterable[float] | None = None,
-    ):
+    ) -> Self:
         """Adds the coordinates.
 
         Parameters
@@ -3256,7 +3257,7 @@ class ComplexPlane(NumberPlane):
             self.coordinate_labels.add(number_mob)
         return self.coordinate_labels
 
-    def add_coordinates(self, *numbers: Iterable[float | complex], **kwargs: Any):
+    def add_coordinates(self, *numbers: Iterable[float | complex], **kwargs: Any) -> Self:
         """Adds the labels produced from :meth:`~.NumberPlane.get_coordinate_labels` to the plane.
 
         Parameters
