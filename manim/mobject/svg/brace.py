@@ -156,6 +156,25 @@ class Brace(VMobjectFromSVGPath):
 
 
 class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
+    """Create a brace with a label attached.
+
+    Parameters
+    ----------
+    obj
+        The mobject adjacent to which the brace is placed
+    text
+        label text
+    brace_direction:vector default=DOWN
+    label_constructor default=MathTex,
+    font_size: float default=DEFAULT_FONT_SIZE,
+    buff: int, default=0.2
+        buff between label and obj
+    brace_config: dict, optional
+        Arguments to be passed to :class:`Brace`.
+    kwargs
+        Additional arguments to be passed to :class:`~.VMobject`.
+    """
+
     def __init__(
         self,
         obj,
@@ -164,6 +183,7 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
         label_constructor=MathTex,
         font_size=DEFAULT_FONT_SIZE,
         buff=0.2,
+        brace_config: dict | None = None,
         **kwargs,
     ):
         self.label_constructor = label_constructor
@@ -173,7 +193,7 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
         self.buff = buff
         if isinstance(obj, list):
             obj = self.get_group_class()(*obj)
-        self.brace = Brace(obj, brace_direction, buff, **kwargs)
+        self.brace = Brace(obj, brace_direction, buff, **brace_config)
 
         if isinstance(text, (tuple, list)):
             self.label = self.label_constructor(font_size=font_size, *text, **kwargs)
