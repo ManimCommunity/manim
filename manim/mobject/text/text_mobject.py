@@ -426,7 +426,6 @@ class Text(SVGMobject):
         disable_ligatures: bool = False,
         **kwargs,
     ) -> None:
-
         self.line_spacing = line_spacing
         self.font = font
         self._font_size = float(font_size)
@@ -1097,7 +1096,6 @@ class MarkupText(SVGMobject):
         disable_ligatures: bool = False,
         **kwargs,
     ) -> None:
-
         self.text = text
         self.line_spacing = line_spacing
         self.font = font

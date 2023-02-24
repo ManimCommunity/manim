@@ -85,7 +85,8 @@ class ThreeDCamera(Camera):
         super().capture_mobjects(mobjects, **kwargs)
 
     def get_value_trackers(self):
-        """Returns list of ValueTrackers of phi, theta, focal_distance and gamma
+        """A list of :class:`ValueTrackers <.ValueTracker>` of phi, theta, focal_distance,
+        gamma and zoom.
 
         Returns
         -------
@@ -380,6 +381,7 @@ class ThreeDCamera(Camera):
             The function which returns the centerpoint
             with respect to which the mobject will be oriented, by default None
         """
+
         # This prevents the computation of mobject.get_center
         # every single time a projection happens
         def get_static_center_func(mobject):
