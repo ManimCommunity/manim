@@ -161,25 +161,28 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
     Parameters
     ----------
     obj
-        The mobject adjacent to which the brace is placed
+        The mobject adjacent to which the brace is placed.
     text
-        label text
-    brace_direction:vector default=DOWN
-    label_constructor default=MathTex,
-    font_size: float default=DEFAULT_FONT_SIZE,
-    buff: int, default=0.2
-        buff between label and obj
-    brace_config: dict, optional
-        Arguments to be passed to :class:`Brace`.
+        The label text.
+    brace_direction
+        The direction of the brace. By default ``DOWN``.
+    label_constructor
+        A class or function used to construct a mobject representing
+        the label. By default :class:`~.MathTex`.
+    font_size
+        The font size of the label, passed to the ``label_constructor``.
+    buff
+        The buffer between the mobject and the brace.
+    brace_config
+        Arguments to be passed to :class:`.Brace`.
     kwargs
-        Additional arguments to be passed to :class:`~.VMobject`.
-    """
+        Additional arguments to be passed to :class:`~.VMobject`."""
 
     def __init__(
         self,
-        obj,
-        text,
-        brace_direction=DOWN,
+        obj: Mobject,
+        text: str,
+        brace_direction: np.ndarray = DOWN,
         label_constructor=MathTex,
         font_size=DEFAULT_FONT_SIZE,
         buff=0.2,
@@ -190,14 +193,9 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
         super().__init__(**kwargs)
 
         self.brace_direction = brace_direction
-        self.buff = buff
-        if isinstance(obj, list):
-            obj = self.get_group_class()(*obj)
         if brace_config is None:
-            self.brace_config = {}
-        else:
-            self.brace_config = brace_config
-        self.brace = Brace(obj, brace_direction, buff, **self.brace_config)
+            brace_config = {}
+        self.brace = Brace(obj, brace_direction, buff, **brace_config)
 
         if isinstance(text, (tuple, list)):
             self.label = self.label_constructor(font_size=font_size, *text, **kwargs)
