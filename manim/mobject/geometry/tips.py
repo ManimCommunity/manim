@@ -9,7 +9,7 @@ __all__ = [
     "ArrowSquareTip",
     "ArrowSquareFilledTip",
     "ArrowTriangleTip",
-    "ArrowTriangleFilledTip"
+    "ArrowTriangleFilledTip",
 ]
 
 import numpy as np
