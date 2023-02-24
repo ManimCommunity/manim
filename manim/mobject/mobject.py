@@ -971,7 +971,11 @@ class Mobject:
         else:
             self.updaters.insert(index, update_function)
         if call_updater:
-            update_function(self, 0)
+            parameters = get_parameters(update_function)
+            if "dt" in parameters:
+                update_function(self, 0)
+            else:
+                update_function(self)
         return self
 
     def remove_updater(self, update_function: Updater):
