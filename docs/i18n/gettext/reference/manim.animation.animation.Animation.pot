@@ -171,12 +171,12 @@ msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.is_introducer:1
-msgid "Test if a the animation is an introducer."
+msgid "Test if the animation is an introducer."
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.is_remover:1
-msgid "Test if a the animation is a remover."
+msgid "Test if the animation is a remover."
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1

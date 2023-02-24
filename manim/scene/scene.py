@@ -383,6 +383,7 @@ class Scene:
             should_update = (
                 self.always_update_mobjects
                 or self.updaters
+                or wait_animation.stop_condition is not None
                 or any(
                     [
                         mob.has_time_based_updater()
@@ -1018,10 +1019,7 @@ class Scene:
         """
 
         if len(animations) == 1 and isinstance(animations[0], Wait):
-            if animations[0].stop_condition is not None:
-                return 0
-            else:
-                return animations[0].duration
+            return animations[0].duration
 
         else:
             return np.max([animation.run_time for animation in animations])
@@ -1104,7 +1102,8 @@ class Scene:
         stop_condition
             A function without positional arguments that is evaluated every time
             a frame is rendered. The animation only stops when the return value
-            of the function is truthy. Overrides any value passed to ``duration``.
+            of the function is truthy, or when the time specified in ``duration``
+            passes.
         frozen_frame
             If True, updater functions are not evaluated, and the animation outputs
             a frozen frame. If False, updater functions are called and frames
@@ -1141,18 +1140,15 @@ class Scene:
         self.wait(duration=duration, frozen_frame=True)
 
     def wait_until(self, stop_condition: Callable[[], bool], max_time: float = 60):
-        """
-        Like a wrapper for wait().
-        You pass a function that determines whether to continue waiting,
-        and a max wait time if that is never fulfilled.
+        """Wait until a condition is satisfied, up to a given maximum duration.
 
         Parameters
         ----------
         stop_condition
-            The function whose boolean return value determines whether to continue waiting
-
+            A function with no arguments that determines whether or not the
+            scene should keep waiting.
         max_time
-            The maximum wait time in seconds, if the stop_condition is never fulfilled.
+            The maximum wait time in seconds.
         """
         self.wait(max_time, stop_condition=stop_condition)
 
