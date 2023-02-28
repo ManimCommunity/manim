@@ -183,7 +183,7 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
         obj: Mobject,
         text: str,
         brace_direction: np.ndarray = DOWN,
-        label_constructor: Type = MathTex,
+        label_constructor: type = MathTex,
         font_size: float = DEFAULT_FONT_SIZE,
         buff: float = 0.2,
         brace_config: dict | None = None,
