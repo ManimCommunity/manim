@@ -176,7 +176,8 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
     brace_config
         Arguments to be passed to :class:`.Brace`.
     kwargs
-        Additional arguments to be passed to :class:`~.VMobject`."""
+        Additional arguments to be passed to :class:`~.VMobject`.
+    """
 
     def __init__(
         self,
