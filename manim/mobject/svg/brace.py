@@ -4,7 +4,7 @@ from __future__ import annotations
 
 __all__ = ["Brace", "BraceLabel", "ArcBrace", "BraceText", "BraceBetweenPoints"]
 
-from typing import Sequence
+from typing import Sequence, Type
 
 import numpy as np
 import svgelements as se
@@ -183,9 +183,9 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
         obj: Mobject,
         text: str,
         brace_direction: np.ndarray = DOWN,
-        label_constructor=MathTex,
-        font_size=DEFAULT_FONT_SIZE,
-        buff=0.2,
+        label_constructor: Type = MathTex,
+        font_size: float = DEFAULT_FONT_SIZE,
+        buff: float = 0.2,
         brace_config: dict | None = None,
         **kwargs,
     ):
