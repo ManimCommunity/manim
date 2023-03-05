@@ -183,7 +183,6 @@ def get_summary(body):
     try:
         has_changelog_pattern = re.search(pattern, body)
         if has_changelog_pattern:
-
             return has_changelog_pattern.group()[22:-21].strip()
     except Exception:
         print(f"Error parsing body for changelog: {body}")
