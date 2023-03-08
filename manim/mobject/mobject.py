@@ -1842,16 +1842,24 @@ class Mobject:
         self.become(self.saved_state)
         return self
 
-    ##
-
-    def reduce_across_dimension(self, points_func, reduce_func, dim):
-        points = self.get_all_points()
-        if points is None or len(points) == 0:
-            # Note, this default means things like empty VGroups
-            # will appear to have a center at [0, 0, 0]
-            return 0
-        values = points_func(points[:, dim])
-        return reduce_func(values)
+    def reduce_across_dimension(self, reduce_func, dim: int) -> float:
+        """Find the min or max value from a dimension across all points in this and submobjects."""
+        assert dim >= 0 and dim <= 2
+        # base case: No submobjects.
+        if len(self.submobjects) == 0:
+            # If we have no points, return 0 (e.g. center)...
+            if len(self.points) == 0:
+                return 0
+            # ...otherwise, reduce over our points along that dimension
+            return reduce_func(self.points[:, dim])
+        rv = None
+        for mobj in self.submobjects:
+            value = mobj.reduce_across_dimension(reduce_func, dim)
+            if rv is None:
+                rv = value
+            else:
+                rv = reduce_func([value, rv])
+        return rv
 
     def nonempty_submobjects(self):
         return [
@@ -1860,13 +1868,23 @@ class Mobject:
             if len(submob.submobjects) != 0 or len(submob.points) != 0
         ]
 
-    def get_merged_array(self, array_attr):
+    def get_merged_array(self, array_attr) -> np.ndarray:
+        """Return all of a given attribute from this mobject and all submobjects.
+
+           May contain duplicates; the order is in a depth-first (pre-order)
+           traversal of the submobjects.
+        """
         result = getattr(self, array_attr)
         for submob in self.submobjects:
             result = np.append(result, submob.get_merged_array(array_attr), axis=0)
         return result
 
-    def get_all_points(self):
+    def get_all_points(self) -> np.ndarray:
+        """Return all points from this mobject and all submobjects.
+
+           May contain duplicates; the order is in a depth-first (pre-order)
+           traversal of the submobjects.
+        """
         return self.get_merged_array("points")
 
     # Getters
@@ -1988,9 +2006,8 @@ class Mobject:
         """Measure the length of an :class:`~.Mobject` in a certain direction."""
         return self.reduce_across_dimension(
             np.max,
-            np.max,
             dim,
-        ) - self.reduce_across_dimension(np.min, np.min, dim)
+        ) - self.reduce_across_dimension(np.min, dim)
 
     def get_coord(self, dim, direction=ORIGIN):
         """Meant to generalize ``get_x``, ``get_y`` and ``get_z``"""
