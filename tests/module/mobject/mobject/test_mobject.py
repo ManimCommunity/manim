@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from manim import Mobject, Circle, Rectangle, Square
+from manim import Circle, Mobject, Rectangle, Square, VGroup
 
 
 def test_mobject_add():
