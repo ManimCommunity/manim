@@ -76,8 +76,10 @@ def test_mobject_dimensions_single_mobject():
     assert circ.height == 4
     assert circ.depth == 0
 
+
 def is_close(x, y):
     return abs(x - y) < 0.00001
+
 
 def test_mobject_dimensions_nested_mobjects():
     vg = VGroup()
@@ -87,7 +89,7 @@ def test_mobject_dimensions_nested_mobjects():
         vg += row
         for y in range(-17, 2, 1):
             for z in range(0, 10, 1):
-                s = Square().move_to([x, y, z/10])
+                s = Square().move_to([x, y, z / 10])
                 row += s
 
     assert vg.width == 14.0, f"{vg.width}"
@@ -107,7 +109,3 @@ def test_mobject_dimensions_nested_mobjects():
     assert vg.width == 13.0, f"{vg.width}"
     assert is_close(vg.height, 18.5), f"{vg.height}"
     assert is_close(vg.depth, 0.775), f"{vg.depth}"
-
-
-
-
