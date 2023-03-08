@@ -158,7 +158,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
                 x, y, z = self.function(t_range)
                 if not isinstance(z, np.ndarray):
                     z = np.zeros_like(x)
-                points = np.stack(zip(x, y, z), axis=0)
+                points = np.stack([x, y, z], axis=1)
             else:
                 points = np.array([self.function(t) for t in t_range])
 
