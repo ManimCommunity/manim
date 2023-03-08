@@ -1871,8 +1871,8 @@ class Mobject:
     def get_merged_array(self, array_attr) -> np.ndarray:
         """Return all of a given attribute from this mobject and all submobjects.
 
-           May contain duplicates; the order is in a depth-first (pre-order)
-           traversal of the submobjects.
+        May contain duplicates; the order is in a depth-first (pre-order)
+        traversal of the submobjects.
         """
         result = getattr(self, array_attr)
         for submob in self.submobjects:
@@ -1882,8 +1882,8 @@ class Mobject:
     def get_all_points(self) -> np.ndarray:
         """Return all points from this mobject and all submobjects.
 
-           May contain duplicates; the order is in a depth-first (pre-order)
-           traversal of the submobjects.
+        May contain duplicates; the order is in a depth-first (pre-order)
+        traversal of the submobjects.
         """
         return self.get_merged_array("points")
 
