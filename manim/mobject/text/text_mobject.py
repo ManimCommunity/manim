@@ -489,7 +489,7 @@ class Text(SVGMobject):
         self.chars = self.get_group_class()(*self.submobjects)
         self.text = text_without_tabs.replace(" ", "").replace("\n", "")
         nppc = self.n_points_per_curve
-       for each in self:
+        for each in self:
             if len(each.points) == 0:
                 continue
             points = each.points
