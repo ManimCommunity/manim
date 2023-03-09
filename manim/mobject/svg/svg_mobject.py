@@ -527,7 +527,7 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
 
             def add_line(start, end):
                 add_cubic(
-                    start, (start + end + end) / 3, (start + start + end) / 3, end
+                    start, (start + start + end) / 3, (start + end + end) / 3, end
                 )
                 move_pen(end)
 
