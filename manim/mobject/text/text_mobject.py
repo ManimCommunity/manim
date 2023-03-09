@@ -528,8 +528,6 @@ class Text(SVGMobject):
                 (closed_curve_points[-1] + curve_start) / 2,
                 curve_start,
             ]
-
-            assert len(closed_curve_points) % 4 == 0
             each.points = np.array(closed_curve_points, ndmin=2)
         # anti-aliasing
         if height is None and width is None:
@@ -1213,8 +1211,6 @@ class MarkupText(SVGMobject):
                 (closed_curve_points[-1] + curve_start) / 2,
                 curve_start,
             ]
-
-            assert len(closed_curve_points) % 4 == 0
             each.points = np.array(closed_curve_points, ndmin=2)
 
         if self.gradient:
