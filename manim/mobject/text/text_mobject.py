@@ -509,7 +509,8 @@ class Text(SVGMobject):
                 if (
                     index != len(points) - 1
                     and (index + 1) % nppc == 0
-                    and any(point != points[index + 1])):
+                    and any(point != points[index + 1])
+                ):
                     # Add straight line from last point on this curve to the
                     # start point on the next curve. We represent the line
                     # as a cubic bezier curve where the two control points
