@@ -537,7 +537,7 @@ class Text(SVGMobject):
                     curve_start,
                 ]
             else:
-                assert False, 'unexpected number of points'
+                assert False, "unexpected number of points"
 
             assert len(closed_curve_points) % 4 == 0
             each.points = np.array(closed_curve_points, ndmin=2)
