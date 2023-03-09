@@ -501,6 +501,7 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
         all_points: list[np.ndarray] = []
         last_move = None
         curve_start = None
+
         # These lambdas behave the same as similar functions in
         # vectorized_mobject, except they add to a list of points instead
         # of updating this Mobject's numpy array of points. This way,
@@ -513,6 +514,7 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
                 curve_start = last_move
 
         if self.n_points_per_curve == 4:
+
             def add_cubic(start, cp1, cp2, end):
                 nonlocal all_points
                 assert len(all_points) % 4 == 0, len(all_points)
@@ -520,15 +522,17 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
                 move_pen(end)
 
             def add_quad(start, cp, end):
-                add_cubic(start, (start + cp + cp) / 3,
-                         (cp + cp + end) / 3, end)
+                add_cubic(start, (start + cp + cp) / 3, (cp + cp + end) / 3, end)
                 move_pen(end)
 
             def add_line(start, end):
-                add_cubic(start, (start + end + end) / 3,
-                         (start + start + end) / 3, end)
+                add_cubic(
+                    start, (start + end + end) / 3, (start + start + end) / 3, end
+                )
                 move_pen(end)
+
         else:
+
             def add_cubic(start, cp1, cp2, end):
                 nonlocal all_points
                 assert len(all_points) % 3 == 0, len(all_points)
@@ -555,17 +559,20 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
             if segment_class == se.Move:
                 move_pen(_convert_point_to_3d(*segment.end))
             elif segment_class == se.Line:
-                add_line(last_move,
-                         _convert_point_to_3d(*segment.end))
+                add_line(last_move, _convert_point_to_3d(*segment.end))
             elif segment_class == se.QuadraticBezier:
-                add_quad(last_move,
-                         _convert_point_to_3d(*segment.control),
-                         _convert_point_to_3d(*segment.end))
+                add_quad(
+                    last_move,
+                    _convert_point_to_3d(*segment.control),
+                    _convert_point_to_3d(*segment.end),
+                )
             elif segment_class == se.CubicBezier:
-                add_cubic(last_move,
-                          _convert_point_to_3d(*segment.control1),
-                          _convert_point_to_3d(*segment.control2),
-                          _convert_point_to_3d(*segment.end))
+                add_cubic(
+                    last_move,
+                    _convert_point_to_3d(*segment.control1),
+                    _convert_point_to_3d(*segment.control2),
+                    _convert_point_to_3d(*segment.end),
+                )
             elif segment_class == se.Close:
                 add_line(last_move, curve_start)
                 curve_start = None
