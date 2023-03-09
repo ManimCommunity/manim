@@ -507,6 +507,7 @@ class Text(SVGMobject):
             # OpenGL has points be part of quadratic Bezier curves;
             # Cairo uses cubic Bezier curves.
             if nppc == 3:
+
                 def add_line_to(end):
                     nonlocal closed_curve_points
                     start = closed_curve_points[-1]
@@ -515,7 +516,9 @@ class Text(SVGMobject):
                         (start + end) / 2,
                         end,
                     ]
+
             else:
+
                 def add_line_to(end):
                     nonlocal closed_curve_points
                     start = closed_curve_points[-1]
@@ -525,12 +528,14 @@ class Text(SVGMobject):
                         (start + end + end) / 3,
                         end,
                     ]
+
             for index, point in enumerate(points):
                 closed_curve_points.append(point)
                 if (
                     index != len(points) - 1
                     and (index + 1) % nppc == 0
-                    and any(point != points[index + 1])):
+                    and any(point != points[index + 1])
+                ):
                     # Add straight line from last point on this curve to the
                     # start point on the next curve. We represent the line
                     # as a cubic bezier curve where the two control points
@@ -1201,6 +1206,7 @@ class MarkupText(SVGMobject):
             # OpenGL has points be part of quadratic Bezier curves;
             # Cairo uses cubic Bezier curves.
             if nppc == 3:
+
                 def add_line_to(end):
                     nonlocal closed_curve_points
                     start = closed_curve_points[-1]
@@ -1209,7 +1215,9 @@ class MarkupText(SVGMobject):
                         (start + end) / 2,
                         end,
                     ]
+
             else:
+
                 def add_line_to(end):
                     nonlocal closed_curve_points
                     start = closed_curve_points[-1]
@@ -1219,12 +1227,14 @@ class MarkupText(SVGMobject):
                         (start + end + end) / 3,
                         end,
                     ]
+
             for index, point in enumerate(points):
                 closed_curve_points.append(point)
                 if (
                     index != len(points) - 1
                     and (index + 1) % nppc == 0
-                    and any(point != points[index + 1])):
+                    and any(point != points[index + 1])
+                ):
                     # Add straight line from last point on this curve to the
                     # start point on the next curve. We represent the line
                     # as a cubic bezier curve where the two control points
