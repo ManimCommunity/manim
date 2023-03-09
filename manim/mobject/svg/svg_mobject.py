@@ -536,12 +536,14 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
             def add_cubic(start, cp1, cp2, end):
                 nonlocal all_points
                 assert len(all_points) % 3 == 0, len(all_points)
-                all_points += get_quadratic_approximation_of_cubic(
+                two_quads = get_quadratic_approximation_of_cubic(
                     start,
                     cp1,
                     cp2,
                     end,
                 )
+                all_points += two_quads[:3].tolist()
+                all_points += two_quads[3:].tolist()
                 move_pen(end)
 
             def add_quad(start, cp, end):
