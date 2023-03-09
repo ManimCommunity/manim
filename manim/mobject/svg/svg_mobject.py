@@ -581,7 +581,7 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
             else:
                 assert False, f"Not implemented: {segment_class}"
 
-        self.points = np.array(all_points, ndmin=2, dtype='float64')
+        self.points = np.array(all_points, ndmin=2, dtype="float64")
         # If we have no points, make sure the array is shaped properly
         # (0 rows tall by 3 columns wide) so future operations can
         # add or remove points correctly.
