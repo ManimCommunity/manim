@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-import pytest
 import numpy as np
+import pytest
 
 from manim import Circle, Mobject, Rectangle, Square, VGroup
 
@@ -150,11 +150,10 @@ def test_mobject_dimensions_has_points_and_children():
 
     # The width of a mobject should depend both on its points and
     # the points of all children mobjects.
-    assert outer_rect.width == 5   # 3 fom outer_rect, 2 from inner_rect
+    assert outer_rect.width == 5  # 3 fom outer_rect, 2 from inner_rect
     assert outer_rect.height == 7  # 6 from outer_rect, 1 from inner_rect
     assert outer_rect.depth == 0
 
     assert inner_rect.width == 2
     assert inner_rect.height == 1
     assert inner_rect.depth == 0
-
