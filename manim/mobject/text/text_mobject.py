@@ -501,33 +501,44 @@ class Text(SVGMobject):
             # It is more efficient to temporarily create a list
             # of points and add them one at a time, then turn them
             # into a numpy array at the end, rather than creating
-            # new numpy arrays every time a point or closing line
+            # new numpy arrays every time a point or fixing line
             # is added (which is O(n^2) for numpy arrays).
             closed_curve_points = []
+            # OpenGL has points be part of quadratic Bezier curves;
+            # Cairo uses cubic Bezier curves.
+            if nppc == 3:
+                def add_line_to(end):
+                    nonlocal closed_curve_points
+                    start = closed_curve_points[-1]
+                    closed_curve_points += [
+                        start,
+                        (start + end) / 2,
+                        end,
+                    ]
+            else:
+                def add_line_to(end):
+                    nonlocal closed_curve_points
+                    start = closed_curve_points[-1]
+                    closed_curve_points += [
+                        start,
+                        (start + start + end) / 3,
+                        (start + end + end) / 3,
+                        end,
+                    ]
             for index, point in enumerate(points):
                 closed_curve_points.append(point)
                 if (
                     index != len(points) - 1
                     and (index + 1) % nppc == 0
-                    and any(point != points[index + 1])
-                ):
+                    and any(point != points[index + 1])):
                     # Add straight line from last point on this curve to the
                     # start point on the next curve. We represent the line
                     # as a cubic bezier curve where the two control points
                     # are half-way between the start and stop point.
-                    closed_curve_points += [
-                        closed_curve_points[-1],
-                        (closed_curve_points[-1] + curve_start) / 2,
-                        (closed_curve_points[-1] + curve_start) / 2,
-                        curve_start,
-                    ]
+                    add_line_to(curve_start)
                     curve_start = points[index + 1]
-            closed_curve_points += [
-                closed_curve_points[-1],
-                (closed_curve_points[-1] + curve_start) / 2,
-                (closed_curve_points[-1] + curve_start) / 2,
-                curve_start,
-            ]
+            # Make sure last curve is closed
+            add_line_to(curve_start)
             each.points = np.array(closed_curve_points, ndmin=2)
         # anti-aliasing
         if height is None and width is None:
@@ -1184,33 +1195,44 @@ class MarkupText(SVGMobject):
             # It is more efficient to temporarily create a list
             # of points and add them one at a time, then turn them
             # into a numpy array at the end, rather than creating
-            # new numpy arrays every time a point or closing line
+            # new numpy arrays every time a point or fixing line
             # is added (which is O(n^2) for numpy arrays).
             closed_curve_points = []
+            # OpenGL has points be part of quadratic Bezier curves;
+            # Cairo uses cubic Bezier curves.
+            if nppc == 3:
+                def add_line_to(end):
+                    nonlocal closed_curve_points
+                    start = closed_curve_points[-1]
+                    closed_curve_points += [
+                        start,
+                        (start + end) / 2,
+                        end,
+                    ]
+            else:
+                def add_line_to(end):
+                    nonlocal closed_curve_points
+                    start = closed_curve_points[-1]
+                    closed_curve_points += [
+                        start,
+                        (start + start + end) / 3,
+                        (start + end + end) / 3,
+                        end,
+                    ]
             for index, point in enumerate(points):
                 closed_curve_points.append(point)
                 if (
                     index != len(points) - 1
                     and (index + 1) % nppc == 0
-                    and any(point != points[index + 1])
-                ):
+                    and any(point != points[index + 1])):
                     # Add straight line from last point on this curve to the
                     # start point on the next curve. We represent the line
                     # as a cubic bezier curve where the two control points
                     # are half-way between the start and stop point.
-                    closed_curve_points += [
-                        closed_curve_points[-1],
-                        (closed_curve_points[-1] + curve_start) / 2,
-                        (closed_curve_points[-1] + curve_start) / 2,
-                        curve_start,
-                    ]
+                    add_line_to(curve_start)
                     curve_start = points[index + 1]
-            closed_curve_points += [
-                closed_curve_points[-1],
-                (closed_curve_points[-1] + curve_start) / 2,
-                (closed_curve_points[-1] + curve_start) / 2,
-                curve_start,
-            ]
+            # Make sure last curve is closed
+            add_line_to(curve_start)
             each.points = np.array(closed_curve_points, ndmin=2)
 
         if self.gradient:
