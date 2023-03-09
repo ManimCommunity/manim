@@ -383,6 +383,7 @@ class Scene:
             should_update = (
                 self.always_update_mobjects
                 or self.updaters
+                or wait_animation.stop_condition is not None
                 or any(
                     [
                         mob.has_time_based_updater()
@@ -518,6 +519,50 @@ class Scene:
             for list_name in "mobjects", "foreground_mobjects":
                 self.restructure_mobjects(mobjects, list_name, False)
             return self
+
+    def replace(self, old_mobject: Mobject, new_mobject: Mobject) -> None:
+        """Replace one Mobject in the scene with another, preserving draw order.
+
+        If old_mobject is a submobject of some other Mobject (e.g. a Group),
+        the new_mobject will replace it inside the group, without otherwise
+        changing the parent mobject.
+
+        Parameters
+        ----------
+        old_mobject - A Mobject which must be in the scene. This method asserts if
+                      old_mobject is not in the scene
+        new_mobject - A Mobject which must not already be in the scene.
+
+        """
+        assert old_mobject is not None
+        assert new_mobject is not None
+
+        def replace_in_list(
+            mobj_list: list[Mobject], old_m: Mobject, new_m: Mobject
+        ) -> bool:
+            # We use breadth-first search because some Mobjects get very deep and
+            # we expect top-level elements to be the most common targets for replace.
+            for i in range(0, len(mobj_list)):
+                # Is this the old mobject?
+                if mobj_list[i] == old_m:
+                    # If so, write the new object to the same spot and stop looking.
+                    mobj_list[i] = new_m
+                    return True
+            # Now check all the children of all these mobs.
+            for mob in mobj_list:  # noqa: SIM110
+                if replace_in_list(mob.submobjects, old_m, new_m):
+                    # If we found it in a submobject, stop looking.
+                    return True
+            # If we did not find the mobject in the mobject list or any submobjects,
+            # (or the list was empty), indicate we did not make the replacement.
+            return False
+
+        # Make use of short-circuiting conditionals to check mobjects and then
+        # foreground_mobjects
+        replaced = replace_in_list(
+            self.mobjects, old_mobject, new_mobject
+        ) or replace_in_list(self.foreground_mobjects, old_mobject, new_mobject)
+        assert replaced, "Could not find old_mobject in Scene"
 
     def add_updater(self, func: Callable[[float], None]) -> None:
         """Add an update function to the scene.
@@ -974,10 +1019,7 @@ class Scene:
         """
 
         if len(animations) == 1 and isinstance(animations[0], Wait):
-            if animations[0].stop_condition is not None:
-                return 0
-            else:
-                return animations[0].duration
+            return animations[0].duration
 
         else:
             return np.max([animation.run_time for animation in animations])
@@ -1060,7 +1102,8 @@ class Scene:
         stop_condition
             A function without positional arguments that is evaluated every time
             a frame is rendered. The animation only stops when the return value
-            of the function is truthy. Overrides any value passed to ``duration``.
+            of the function is truthy, or when the time specified in ``duration``
+            passes.
         frozen_frame
             If True, updater functions are not evaluated, and the animation outputs
             a frozen frame. If False, updater functions are called and frames
@@ -1097,18 +1140,15 @@ class Scene:
         self.wait(duration=duration, frozen_frame=True)
 
     def wait_until(self, stop_condition: Callable[[], bool], max_time: float = 60):
-        """
-        Like a wrapper for wait().
-        You pass a function that determines whether to continue waiting,
-        and a max wait time if that is never fulfilled.
+        """Wait until a condition is satisfied, up to a given maximum duration.
 
         Parameters
         ----------
         stop_condition
-            The function whose boolean return value determines whether to continue waiting
-
+            A function with no arguments that determines whether or not the
+            scene should keep waiting.
         max_time
-            The maximum wait time in seconds, if the stop_condition is never fulfilled.
+            The maximum wait time in seconds.
         """
         self.wait(max_time, stop_condition=stop_condition)
 

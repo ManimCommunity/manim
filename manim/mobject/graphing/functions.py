@@ -128,7 +128,6 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
         return self.function(t)
 
     def generate_points(self):
-
         if self.discontinuities is not None:
             discontinuities = filter(
                 lambda t: self.t_min <= t <= self.t_max,
@@ -159,7 +158,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
                 x, y, z = self.function(t_range)
                 if not isinstance(z, np.ndarray):
                     z = np.zeros_like(x)
-                points = np.stack(zip(x, y, z), axis=0)
+                points = np.stack([x, y, z], axis=1)
             else:
                 points = np.array([self.function(t) for t in t_range])
 
@@ -203,7 +202,6 @@ class FunctionGraph(ParametricFunction):
     """
 
     def __init__(self, function, x_range=None, color=YELLOW, **kwargs):
-
         if x_range is None:
             x_range = np.array([-config["frame_x_radius"], config["frame_x_radius"]])
 
