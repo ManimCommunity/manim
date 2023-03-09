@@ -590,7 +590,7 @@ class CoordinateSystem:
         function: Callable[[float], float],
         x_range: Sequence[float] | None = None,
         use_vectorized: bool = False,
-        colorscale: Union[Iterable[Color], Color] | None = None,
+        colorscale: Union[Iterable[Color], Iterable[Color, float]] | None = None,
         colorscale_axis: int = 1,
         **kwargs,
     ):
@@ -689,7 +689,6 @@ class CoordinateSystem:
             use_vectorized=use_vectorized,
             **kwargs,
         )
-        graph.underlying_function = function
 
         if colorscale:
             if type(colorscale[0]) in (list, tuple):
@@ -735,6 +734,8 @@ class CoordinateSystem:
                                 mob.set_color(mob_color, family=False)
                             break
             graph = new_graph
+
+        graph.underlying_function = function
 
         return graph
 
