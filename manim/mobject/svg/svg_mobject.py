@@ -586,4 +586,4 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
         # (0 rows tall by 3 columns wide) so future operations can
         # add or remove points correctly.
         if len(all_points) == 0:
-            np.reshape(self.points, (0, 3))
+            self.points = np.reshape(self.points, (0, 3))
