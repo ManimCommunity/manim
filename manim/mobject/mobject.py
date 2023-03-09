@@ -1845,14 +1845,19 @@ class Mobject:
     def reduce_across_dimension(self, reduce_func, dim: int) -> float:
         """Find the min or max value from a dimension across all points in this and submobjects."""
         assert dim >= 0 and dim <= 2
-        # base case: No submobjects.
-        if len(self.submobjects) == 0:
-            # If we have no points, return 0 (e.g. center)...
-            if len(self.points) == 0:
-                return 0
-            # ...otherwise, reduce over our points along that dimension
-            return reduce_func(self.points[:, dim])
-        rv = None
+        if len(self.submobjects) == 0 and len(self.points) == 0:
+            # If we have no points and no submobjects, return 0 (e.g. center)
+            return 0
+
+        # If we do not have points (but do have submobjects)
+        # use only the points from those.
+        if len(self.points) == 0:
+            rv = None
+        else:
+            # Otherwise, be sure to include our own points
+            rv = reduce_func(self.points[:, dim])
+        # Recursively ask submobjects (if any) for the biggest/
+        # smallest dimension they have and compare it to the return value.
         for mobj in self.submobjects:
             value = mobj.reduce_across_dimension(reduce_func, dim)
             if rv is None:
