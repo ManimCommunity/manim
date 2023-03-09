@@ -607,7 +607,7 @@ class CoordinateSystem:
             Output should be a numpy array of shape ``[y_0, y_1, ...]``
         colorscale
             Colors of the function. Optional parameter used when coloring a function by values. Passing a list of colors
-            and a colorscale_axes will color the function by y-value. Passing a list of tuples in the form ``(color, pivot)``
+            and a colorscale_axis will color the function by y-value. Passing a list of tuples in the form ``(color, pivot)``
             allows user-defined pivots where the color transitions.
         colorscale_axis
             Defines the axis on which the colorscale is applied (0 = x, 1 = y), default is y-axis (1).
