@@ -2010,9 +2010,9 @@ class Mobject:
     def length_over_dim(self, dim):
         """Measure the length of an :class:`~.Mobject` in a certain direction."""
         return self.reduce_across_dimension(
-            np.max,
+            max,
             dim,
-        ) - self.reduce_across_dimension(np.min, dim)
+        ) - self.reduce_across_dimension(min, dim)
 
     def get_coord(self, dim, direction=ORIGIN):
         """Meant to generalize ``get_x``, ``get_y`` and ``get_z``"""
