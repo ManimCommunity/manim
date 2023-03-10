@@ -583,7 +583,7 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
                     add_line(last_move, curve_start)
                 curve_start = None
             else:
-                assert False, f"Not implemented: {segment_class}"
+                raise AssertionError(f"Not implemented: {segment_class}")
 
         self.points = np.array(all_points, ndmin=2, dtype="float64")
         # If we have no points, make sure the array is shaped properly
