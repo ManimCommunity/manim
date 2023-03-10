@@ -576,7 +576,11 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
                     _convert_point_to_3d(*segment.end),
                 )
             elif segment_class == se.Close:
-                add_line(last_move, curve_start)
+                # If the SVG path naturally ends at the beginning of the curve,
+                # we do *not* need to draw a closing line. To account for floating
+                # point precision, we use a small value to compare the two points.
+                if abs(np.linalg.norm(last_move - curve_start)) > 0.0001:
+                    add_line(last_move, curve_start)
                 curve_start = None
             else:
                 assert False, f"Not implemented: {segment_class}"
