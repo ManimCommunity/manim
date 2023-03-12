@@ -381,27 +381,27 @@ class MathTex(SingleStringMathTex):
             part.set_color(color)
         return self
 
-    def set_opacity_by_tex(self, tex, opacity=0.5, remaining_opacity=None, **kwargs):
+    def set_opacity_by_tex(
+        self, tex: str, opacity: float = 0.5, remaining_opacity: float = None, **kwargs
+    ):
         """
         Sets the opacity of the tex specified. If 'remaining_opacity' is specified,
         then the remaining tex will be set to that opacity.
 
         Parameters
         ----------
-        tex : str
+        tex
             The tex to set the opacity of.
-        opacity : float, optional
+        opacity
             Default 0.5. The opacity to set the tex to
-        remaining_opacity : float, optional
+        remaining_opacity
             Default None. The opacity to set the remaining tex to.
             If None, then the remaining tex will not be changed
         """
-        part_index = self.index_of_part_by_tex(tex)
-        for i, part in enumerate(self):
-            if i == part_index:
-                part.set_opacity(opacity)
-            elif remaining_opacity is not None:
-                part.set_opacity(remaining_opacity)
+        if remaining_opacity is not None:
+            self.set_opacity(opacity=remaining_opacity)
+        for part in self.get_parts_by_tex(tex):
+            part.set_opacity(opacity)
         return self
 
     def set_color_by_tex_to_color_map(self, texs_to_color_map, **kwargs):
