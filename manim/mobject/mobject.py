@@ -971,7 +971,11 @@ class Mobject:
         else:
             self.updaters.insert(index, update_function)
         if call_updater:
-            update_function(self, 0)
+            parameters = get_parameters(update_function)
+            if "dt" in parameters:
+                update_function(self, 0)
+            else:
+                update_function(self)
         return self
 
     def remove_updater(self, update_function: Updater):
@@ -2094,17 +2098,12 @@ class Mobject:
         self,
         mobject_or_point: Mobject | np.ndarray | list,
         direction=ORIGIN,
-        alignment_vect=UP,
     ):
         """Aligns mobject to another :class:`~.Mobject` in a certain direction.
 
         Examples:
         mob1.align_to(mob2, UP) moves mob1 vertically so that its
         top edge lines ups with mob2's top edge.
-
-        mob1.align_to(mob2, alignment_vect = RIGHT) moves mob1
-        horizontally so that it's center is directly above/below
-        the center of mob2
         """
         if isinstance(mobject_or_point, Mobject):
             point = mobject_or_point.get_critical_point(direction)
