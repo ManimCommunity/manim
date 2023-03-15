@@ -207,7 +207,7 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
 
             # Repeat the radius list as necessary in order to provide a radius
             # for each vertex.
-            if type(radius) is float:
+            if isinstance(radius, (int, float)):
                 radius_list = [radius] * len(vertices)
             else:
                 radius_list = radius * ceil(len(vertices) / len(radius))
