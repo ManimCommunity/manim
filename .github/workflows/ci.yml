@@ -13,57 +13,6 @@ on:
       - main
 
 jobs:
-  test-arm:
-    runs-on: self-hosted
-    env:
-      DISPLAY: :0
-      PYTEST_ADDOPTS: "--color=yes" # colors in pytest
-    strategy:
-      fail-fast: false
-      matrix:
-        python: ["3.8.16", "3.11.1"]
-    steps:
-      - name: Checkout the repository
-        uses: actions/checkout@v3
-
-      - name: Check Runner
-        run: |
-          which latex
-          which ffmpeg
-          latex --version
-          ffmpeg -version
-          which python
-          python --version
-
-      - name: Activate Python ${{ matrix.python }}
-        run: |
-          echo "/root/.pyenv/versions/${{ matrix.python }}/bin:/root/.local/bin:$PATH" > $GITHUB_PATH
-
-      - name: Show Python Version
-        run: |
-          python --version --version
-
-      - name: Install Manim
-        run: |
-          poetry config virtualenvs.prefer-active-python true
-          poetry install
-
-      - name: Run tests
-        run: |
-          poetry run pytest
-
-      - name: Run module doctests
-        run: |
-          poetry run pytest --cov-append --doctest-modules --ignore-glob="*opengl*" manim
-
-      - name: Run doctests in rst files
-        run: |
-          cd docs && poetry run make doctest O=-tskip-manim
-
-      # upload coverage report
-      - name: Upload coverage
-        uses: codecov/codecov-action@v3
-
   test:
     runs-on: ${{ matrix.os }}
     env:
