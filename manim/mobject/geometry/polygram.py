@@ -144,11 +144,11 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
 
         Parameters
         ----------
-        radius : float | list[float]
+        radius
             The curvature of the corners of the :class:`Polygram`.
-        evenly_distribute_anchors : bool
+        evenly_distribute_anchors
             Break long line segments into proportionally-sized segments.
-        components_per_rounded_corner : int
+        components_per_rounded_corner
             The number of points used to represent the rounded corner curve.
 
 
