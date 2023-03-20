@@ -2343,6 +2343,7 @@ class CurvesAsSubmobjects(VGroup):
             part = VMobject()
             part.set_points(tup)
             part.match_style(vmobject)
+            self.append_points(tup)
             self.add(part)
 
 
