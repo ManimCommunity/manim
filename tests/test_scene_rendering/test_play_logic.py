@@ -150,4 +150,3 @@ def test_animate_with_changing_submobject_list(using_temp_config):
             assert len(base.submobjects) == 0
 
     AnimateTestScene().render()
-

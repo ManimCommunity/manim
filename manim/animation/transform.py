@@ -28,7 +28,6 @@ __all__ = [
 
 import inspect
 import types
-
 from copy import copy
 from typing import TYPE_CHECKING, Any, Callable, Iterable, Sequence
 
