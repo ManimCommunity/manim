@@ -436,10 +436,12 @@ class MoveToTarget(Transform):
 
 class _MethodAnimation(MoveToTarget):
     def __init__(self, mobject, methods):
+        self.original_mobject = mobject.copy()
         self.methods = methods
         super().__init__(mobject)
 
     def finish(self) -> None:
+        self.mobject = self.original_mobject
         for method, method_args, method_kwargs in self.methods:
             method.__func__(self.mobject, *method_args, **method_kwargs)
         super().finish()
