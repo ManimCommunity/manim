@@ -133,3 +133,21 @@ def test_animate_with_changed_custom_attribute(using_temp_config):
             assert vt.custom_attribute == "world"
 
     CustomAnimateScene().render()
+
+
+def test_animate_with_changing_submobject_list(using_temp_config):
+    """Test that animating methods that add or remove mobjects from
+    the submobjects list work correctly with the animate syntax.
+    """
+
+    class AnimateTestScene(Scene):
+        def construct(self):
+            base = VGroup()
+            d = Dot()
+            self.play(base.animate.add(d))
+            assert base.submobjects == [d] and d in base.submobjects
+            self.play(base.animate.remove(d))
+            assert len(base.submobjects) == 0
+
+    AnimateTestScene().render()
+
