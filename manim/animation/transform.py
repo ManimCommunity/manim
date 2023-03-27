@@ -28,6 +28,8 @@ __all__ = [
 
 import inspect
 import types
+
+from copy import copy
 from typing import TYPE_CHECKING, Any, Callable, Iterable, Sequence
 
 import numpy as np
@@ -436,15 +438,15 @@ class MoveToTarget(Transform):
 
 class _MethodAnimation(MoveToTarget):
     def __init__(self, mobject, methods):
-        self.original_mobject = mobject.copy()
+        self.original_mobject = copy(mobject)
         self.methods = methods
         super().__init__(mobject)
 
     def finish(self) -> None:
         super().finish()
-        for method, method_args, method_kwargs in self.methods:
-            method.__func__(self.original_mobject, *method_args, **method_kwargs)
         self.mobject.__dict__.update(self.original_mobject.__dict__)
+        for method, method_args, method_kwargs in self.methods:
+            method.__func__(self.mobject, *method_args, **method_kwargs)
 
 
 class ApplyMethod(Transform):
