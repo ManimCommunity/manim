@@ -441,10 +441,10 @@ class _MethodAnimation(MoveToTarget):
         super().__init__(mobject)
 
     def finish(self) -> None:
-        self.mobject = self.original_mobject
-        for method, method_args, method_kwargs in self.methods:
-            method.__func__(self.mobject, *method_args, **method_kwargs)
         super().finish()
+        for method, method_args, method_kwargs in self.methods:
+            method.__func__(self.original_mobject, *method_args, **method_kwargs)
+        self.mobject.__dict__.update(self.original_mobject.__dict__)
 
 
 class ApplyMethod(Transform):
