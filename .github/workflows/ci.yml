@@ -133,7 +133,7 @@ jobs:
           echo "Install Tinytex"
           Invoke-WebRequest "https://github.com/yihui/tinytex-releases/releases/download/daily/TinyTeX-1.zip" -O "$($env:TMP)\TinyTex.zip"
           Expand-Archive -LiteralPath "$($env:TMP)\TinyTex.zip" -DestinationPath "$($PWD)\ManimCache\LatexWindows"
-          $env:Path = "$($PWD)\ManimCache\LatexWindows\TinyTeX\bin\win32;$($env:PATH)"
+          $env:Path = "$($PWD)\ManimCache\LatexWindows\TinyTeX\bin\windows;$($env:PATH)"
           tlmgr update --self
           foreach ($c in $tinyTexPackages){
             $c=$c.Trim()
@@ -145,7 +145,7 @@ jobs:
       - name: Add Windows dependencies to PATH
         if: runner.os == 'Windows'
         run: |
-          $env:Path += ";" + "$($PWD)\ManimCache\LatexWindows\TinyTeX\bin\win32"
+          $env:Path += ";" + "$($PWD)\ManimCache\LatexWindows\TinyTeX\bin\windows"
           $env:Path = "$env:USERPROFILE\.poetry\bin;$($env:PATH)"
           echo "$env:Path" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
