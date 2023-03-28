@@ -191,10 +191,7 @@ class Code(VGroup):
         self.background_stroke_width = background_stroke_width
         self.tab_width = tab_width
         self.line_spacing = line_spacing
-        if font and warn_missing_font:
-            fonts_list = manimpango.list_fonts()
-            if font not in fonts_list:
-                logger.warning(f"Font {font} not in {fonts_list}.")
+        self.warn_missing_font = warn_missing_font
         self.font = font
         self.font_size = font_size
         self.margin = margin
@@ -329,6 +326,7 @@ class Code(VGroup):
             font=self.font,
             disable_ligatures=True,
             stroke_width=self.stroke_width,
+            warn_missing_font=self.warn_missing_font,
         )
         for i in line_numbers:
             i.set_color(self.default_color)
@@ -356,6 +354,7 @@ class Code(VGroup):
             font=self.font,
             disable_ligatures=True,
             stroke_width=self.stroke_width,
+            warn_missing_font=self.warn_missing_font,
         )
         for line_no in range(code.__len__()):
             line = code.chars[line_no]
