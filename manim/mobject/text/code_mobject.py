@@ -11,7 +11,6 @@ import os
 import re
 from pathlib import Path
 
-import manimpango
 import numpy as np
 from pygments import highlight
 from pygments.formatters.html import HtmlFormatter
