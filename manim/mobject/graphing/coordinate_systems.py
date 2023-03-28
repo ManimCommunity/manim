@@ -715,8 +715,10 @@ class CoordinateSystem:
                     )
                     self.add(ax, a)
         """
+        x_scale = self.get_x_axis().scaling
+        y_scale = self.get_y_axis().scaling
         graph = ImplicitFunction(
-            func=func,
+            func=(lambda x, y: func(x_scale.function(x), y_scale.function(y))),
             x_range=self.x_range[:2],
             y_range=self.y_range[:2],
             min_depth=min_depth,
