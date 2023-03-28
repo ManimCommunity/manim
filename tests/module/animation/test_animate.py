@@ -3,6 +3,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
+from manim import Scene, tempconfig
 from manim.animation.creation import Uncreate
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.geometry.line import Line
@@ -120,3 +121,13 @@ def test_animate_with_args_misplaced():
 
     with pytest.raises(ValueError, match="must be passed before"):
         s.animate(run_time=run_time)(run_time=run_time).scale(scale_factor)
+
+
+def test_wait_does_not_add_mobjects():
+    with tempconfig({"dry_run": True}):
+        scene = Scene()
+        assert len(scene.mobjects) == 0
+        scene.wait(0.1)
+        assert len(scene.mobjects) == 0
+        scene.pause()
+        assert len(scene.mobjects) == 0

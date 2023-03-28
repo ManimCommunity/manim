@@ -2798,10 +2798,14 @@ class Group(Mobject, metaclass=ConvertToOpenGL):
     When adding the same mobject more than once, repetitions are ignored.
     Use :meth:`.Mobject.copy` to create a separate copy which can then
     be added to the group.
+
+    Groups cannot contain None; only Mobjects are allowed.
     """
 
     def __init__(self, *mobjects, **kwargs):
         super().__init__(**kwargs)
+        if None in mobjects:
+            raise ValueError("Cannot have None in a Group")
         self.add(*mobjects)
 
 
