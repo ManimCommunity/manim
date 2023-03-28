@@ -4,7 +4,7 @@ from __future__ import annotations
 
 __all__ = ["NumberLine", "UnitInterval"]
 
-from typing import Iterable, Sequence
+from typing import Callable, Iterable, Sequence
 
 import numpy as np
 
@@ -588,15 +588,24 @@ class NumberLine(Line):
         return self
 
     def _create_label_tex(
-        self, label_tex: str | float | VMobject, label_constructor=None, **kwargs
+        self,
+        label_tex: str | float | VMobject,
+        label_constructor: Callable | None = None,
+        **kwargs,
     ) -> VMobject:
         """Checks if the label is a :class:`~.VMobject`, otherwise, creates a
-        label according to :attr:`label_constructor`.
+        label by passing ``label_tex`` to ``label_constructor``.
 
         Parameters
         ----------
         label_tex
-            The label to be compared against the above types.
+            The label for which a mobject should be created. If the label already
+            is a mobject, no new mobject is created.
+        label_constructor
+            Optional. A class or function returning a mobject when
+            passing ``label_tex`` as an argument. If ``None`` is passed
+            (the default), the label constructor from the :attr:`.label_constructor`
+            attribute is used.
 
         Returns
         -------
