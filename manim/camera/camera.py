@@ -24,7 +24,7 @@ from ..mobject.mobject import Mobject
 from ..mobject.types.image_mobject import AbstractImageMobject
 from ..mobject.types.point_cloud_mobject import PMobject
 from ..mobject.types.vectorized_mobject import VMobject
-from ..utils.color import BLACK, ManimColor, ParsableManimColor, color_to_int_rgba
+from ..utils.color import ManimColor, ParsableManimColor, color_to_int_rgba
 from ..utils.family import extract_mobject_family_members
 from ..utils.images import get_full_raster_image_path
 from ..utils.iterables import list_difference_update
