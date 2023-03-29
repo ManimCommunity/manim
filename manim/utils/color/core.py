@@ -194,7 +194,8 @@ class ManimColor:
             self._internal_value = np.array([0, 0, 0, alpha], dtype=ManimColorDType)
         elif isinstance(value, ManimColor):
             # logger.info(
-            #     "ManimColor was passed another ManimColor. This is probably not what you want. Created a copy of the passed ManimColor instead."
+            #     "ManimColor was passed another ManimColor. This is probably not what "
+            #     "you want. Created a copy of the passed ManimColor instead."
             # )
             self._internal_value = value._internal_value
         elif isinstance(value, int):
@@ -207,8 +208,8 @@ class ManimColor:
                 )
             else:
                 # This is not expected to be called on module initialization time
-                # It can be horribly slow to convert a string to a color because it has to access the dictionary of colors and find the right color
-                self._internal_value = ManimColor._internal_from_string(value)
+                # It can be horribly slow to convert a string to a color because
+                # it has to access the dictionary of colors and find the right color
         elif isinstance(value, (list, tuple, np.ndarray)):
             length = len(value)
             if all(isinstance(x, float) for x in value):
@@ -234,7 +235,9 @@ class ManimColor:
         else:
             # logger.error(f"Invalid color value: {value}")
             raise TypeError(
-                f"ManimColor only accepts int, str, list[int, int, int], list[int, int, int, int], list[float, float, float], list[float, float, float, float], not {type(value)}"
+                "ManimColor only accepts int, str, list[int, int, int], "
+                "list[int, int, int, int], list[float, float, float], "
+                f"list[float, float, float, float], not {type(value)}"
             )
 
     @property
