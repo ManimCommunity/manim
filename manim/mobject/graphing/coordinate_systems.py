@@ -716,8 +716,10 @@ class CoordinateSystem:
                     )
                     self.add(ax, a)
         """
+        x_scale = self.get_x_axis().scaling
+        y_scale = self.get_y_axis().scaling
         graph = ImplicitFunction(
-            func=func,
+            func=(lambda x, y: func(x_scale.function(x), y_scale.function(y))),
             x_range=self.x_range[:2],
             y_range=self.y_range[:2],
             min_depth=min_depth,
@@ -2292,7 +2294,6 @@ class ThreeDAxes(Axes):
         gloss=0.5,
         **kwargs,
     ):
-
         super().__init__(
             x_range=x_range,
             x_length=x_length,
@@ -2614,7 +2615,6 @@ class NumberPlane(Axes):
         make_smooth_after_applying_functions: bool = True,
         **kwargs,
     ):
-
         # configs
         self.axis_config = {
             "stroke_width": 2,

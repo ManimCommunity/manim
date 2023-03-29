@@ -174,7 +174,6 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         return num_string
 
     def _string_to_mob(self, string: str, mob_class: VMobject | None = None, **kwargs):
-
         if mob_class is None:
             mob_class = self.mob_class
 
@@ -405,7 +404,6 @@ class Variable(VMobject, metaclass=ConvertToOpenGL):
         num_decimal_places: int = 2,
         **kwargs,
     ):
-
         self.label = MathTex(label) if isinstance(label, str) else label
         equals = MathTex("=").next_to(self.label, RIGHT)
         self.label.add(equals)

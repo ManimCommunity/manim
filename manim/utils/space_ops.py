@@ -324,7 +324,7 @@ def angle_of_vector(vector: Sequence[float] | np.ndarray) -> float:
     return np.angle(complex(*vector[:2]))
 
 
-def angle_between_vectors(v1: np.ndarray, v2: np.ndarray) -> np.ndarray:
+def angle_between_vectors(v1: np.ndarray, v2: np.ndarray) -> float:
     """Returns the angle between two vectors.
     This angle will always be between 0 and pi
 
@@ -337,7 +337,7 @@ def angle_between_vectors(v1: np.ndarray, v2: np.ndarray) -> np.ndarray:
 
     Returns
     -------
-    np.ndarray
+    float
         The angle between the vectors.
     """
 

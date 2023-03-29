@@ -2426,7 +2426,6 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
         equal_lengths=True,
         **kwargs,
     ):
-
         self.dashed_ratio = dashed_ratio
         self.num_dashes = num_dashes
         super().__init__(color=color, **kwargs)

@@ -254,7 +254,6 @@ class BarChart(Axes):
         bar_stroke_width: float = 3,
         **kwargs,
     ):
-
         if isinstance(bar_colors, str):
             logger.warning(
                 "Passing a string to `bar_colors` has been deprecated since v0.15.2 and will be removed after v0.17.0, the parameter must be a list.  "
@@ -498,7 +497,6 @@ class BarChart(Axes):
             if chart_val != 0:
                 quotient = value / chart_val
                 if quotient < 0:
-
                     aligned_edge = UP if chart_val > 0 else DOWN
 
                     # if the bar is already positive, then we now want to move it
