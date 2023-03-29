@@ -1053,8 +1053,12 @@ class Scene:
             All other keywords are passed to the renderer.
 
         """
-        # Make sure this is running on the main thread
-        if threading.current_thread().name != "MainThread":
+        # If we are in interactive embedded mode, make sure this is running on the main thread (required for OpenGL)
+        if (
+            self.interactive_mode
+            and config.renderer == RendererType.OPENGL
+            and threading.current_thread().name != "MainThread"
+        ):
             kwargs.update(
                 {
                     "subcaption": subcaption,
