@@ -232,6 +232,14 @@ class ManimColor:
                     raise ValueError(
                         f"ManimColor only accepts lists/tuples/arrays of length 3 or 4, not {length}"
                     )
+        elif hasattr(value, 'get_hex') and callable(value.get_hex):
+            result = re_hex.search(value.get_hex())
+            if result is None:
+                raise ValueError(f"Failed to parse a color from {value}")
+            
+            self._internal_value = ManimColor._internal_from_hex_string(
+                result.group(), alpha
+            )
         else:
             # logger.error(f"Invalid color value: {value}")
             raise TypeError(
