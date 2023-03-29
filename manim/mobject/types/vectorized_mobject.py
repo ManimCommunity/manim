@@ -301,7 +301,7 @@ class VMobject(Mobject):
             setattr(self, opacity_name, opacity)
         if color is not None and background:
             if isinstance(color, (list, tuple)):
-                self.background_stroke_color = color = color
+                self.background_stroke_color = color
             else:
                 self.background_stroke_color = ManimColor(color)
         return self
