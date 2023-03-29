@@ -420,7 +420,8 @@ class ManimColor:
 
     @staticmethod
     def gradient(colors: list[ManimColor], length: int):
-        ...
+        # TODO: implement proper gradient
+        raise NotImplementedError
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}('{self.to_hex()}')"
