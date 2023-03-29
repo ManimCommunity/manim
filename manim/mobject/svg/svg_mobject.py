@@ -12,6 +12,7 @@ import svgelements as se
 from manim import config, logger
 
 from ...constants import RIGHT
+from ...utils.bezier import get_quadratic_approximation_of_cubic
 from ...utils.images import get_full_vector_image_path
 from ...utils.iterables import hash_obj
 from ..geometry.arc import Circle
@@ -497,28 +498,96 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
     generate_points = init_points
 
     def handle_commands(self) -> None:
-        segment_class_to_func_map = {
-            se.Move: (self.start_new_path, ("end",)),
-            se.Close: (self.close_path, ()),
-            se.Line: (self.add_line_to, ("end",)),
-            se.QuadraticBezier: (
-                self.add_quadratic_bezier_curve_to,
-                ("control", "end"),
-            ),
-            se.CubicBezier: (
-                self.add_cubic_bezier_curve_to,
-                ("control1", "control2", "end"),
-            ),
-        }
+        all_points: list[np.ndarray] = []
+        last_move = None
+        curve_start = None
+
+        # These lambdas behave the same as similar functions in
+        # vectorized_mobject, except they add to a list of points instead
+        # of updating this Mobject's numpy array of points. This way,
+        # we don't observe O(n^2) behavior for complex paths due to
+        # numpy's need to re-allocate memory on every append.
+        def move_pen(pt):
+            nonlocal last_move, curve_start
+            last_move = pt
+            if curve_start is None:
+                curve_start = last_move
+
+        if self.n_points_per_curve == 4:
+
+            def add_cubic(start, cp1, cp2, end):
+                nonlocal all_points
+                assert len(all_points) % 4 == 0, len(all_points)
+                all_points += [start, cp1, cp2, end]
+                move_pen(end)
+
+            def add_quad(start, cp, end):
+                add_cubic(start, (start + cp + cp) / 3, (cp + cp + end) / 3, end)
+                move_pen(end)
+
+            def add_line(start, end):
+                add_cubic(
+                    start, (start + start + end) / 3, (start + end + end) / 3, end
+                )
+                move_pen(end)
+
+        else:
+
+            def add_cubic(start, cp1, cp2, end):
+                nonlocal all_points
+                assert len(all_points) % 3 == 0, len(all_points)
+                two_quads = get_quadratic_approximation_of_cubic(
+                    start,
+                    cp1,
+                    cp2,
+                    end,
+                )
+                all_points += two_quads[:3].tolist()
+                all_points += two_quads[3:].tolist()
+                move_pen(end)
+
+            def add_quad(start, cp, end):
+                nonlocal all_points
+                assert len(all_points) % 3 == 0, len(all_points)
+                all_points += [start, cp, end]
+                move_pen(end)
+
+            def add_line(start, end):
+                add_quad(start, (start + end) / 2, end)
+                move_pen(end)
+
         for segment in self.path_obj:
             segment_class = segment.__class__
-            func, attr_names = segment_class_to_func_map[segment_class]
-            points = [
-                _convert_point_to_3d(*segment.__getattribute__(attr_name))
-                for attr_name in attr_names
-            ]
-            func(*points)
+            if segment_class == se.Move:
+                move_pen(_convert_point_to_3d(*segment.end))
+            elif segment_class == se.Line:
+                add_line(last_move, _convert_point_to_3d(*segment.end))
+            elif segment_class == se.QuadraticBezier:
+                add_quad(
+                    last_move,
+                    _convert_point_to_3d(*segment.control),
+                    _convert_point_to_3d(*segment.end),
+                )
+            elif segment_class == se.CubicBezier:
+                add_cubic(
+                    last_move,
+                    _convert_point_to_3d(*segment.control1),
+                    _convert_point_to_3d(*segment.control2),
+                    _convert_point_to_3d(*segment.end),
+                )
+            elif segment_class == se.Close:
+                # If the SVG path naturally ends at the beginning of the curve,
+                # we do *not* need to draw a closing line. To account for floating
+                # point precision, we use a small value to compare the two points.
+                if abs(np.linalg.norm(last_move - curve_start)) > 0.0001:
+                    add_line(last_move, curve_start)
+                curve_start = None
+            else:
+                raise AssertionError(f"Not implemented: {segment_class}")
 
-        # Get rid of the side effect of trailing "Z M" commands.
-        if self.has_new_path_started():
-            self.resize_points(self.get_num_points() - 1)
+        self.points = np.array(all_points, ndmin=2, dtype="float64")
+        # If we have no points, make sure the array is shaped properly
+        # (0 rows tall by 3 columns wide) so future operations can
+        # add or remove points correctly.
+        if len(all_points) == 0:
+            self.points = np.reshape(self.points, (0, 3))

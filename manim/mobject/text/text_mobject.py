@@ -92,7 +92,7 @@ def remove_invisible_chars(mobject: SVGMobject) -> SVGMobject:
     :class:`~.SVGMobject`
         The SVGMobject without unwanted invisible characters.
     """
-
+    # TODO: Refactor needed
     iscode = False
     if mobject.__class__.__name__ == "Text":
         mobject = mobject[:]
@@ -434,7 +434,6 @@ class Text(SVGMobject):
         disable_ligatures: bool = False,
         **kwargs,
     ) -> None:
-
         self.line_spacing = line_spacing
         if font and warn_missing_font:
             fonts_list = manimpango.list_fonts()
@@ -1112,7 +1111,6 @@ class MarkupText(SVGMobject):
         warn_missing_font: bool = True,
         **kwargs,
     ) -> None:
-
         self.text = text
         self.line_spacing = line_spacing
         if font and warn_missing_font:

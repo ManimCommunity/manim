@@ -1,3 +1,4 @@
+import pathlib
 import sys
 
 import numpy as np
@@ -9,7 +10,7 @@ def main():
         print_usage()
         sys.exit(1)
     npz_file = sys.argv[1]
-    output_folder = Path(sys.argv[2])
+    output_folder = pathlib.Path(sys.argv[2])
     if not output_folder.exists():
         output_folder.mkdir(parents=True)
 
