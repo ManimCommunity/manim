@@ -237,11 +237,11 @@ class ManimColor:
                     raise ValueError(
                         f"ManimColor only accepts lists/tuples/arrays of length 3 or 4, not {length}"
                     )
-        elif hasattr(value, 'get_hex') and callable(value.get_hex):
+        elif hasattr(value, "get_hex") and callable(value.get_hex):
             result = re_hex.search(value.get_hex())
             if result is None:
                 raise ValueError(f"Failed to parse a color from {value}")
-            
+
             self._internal_value = ManimColor._internal_from_hex_string(
                 result.group(), alpha
             )
@@ -359,7 +359,7 @@ class ManimColor:
         if with_alpha:
             tmp += f"{int(self._internal_value[3]*255):02X}"
         return tmp
-    
+
     def to_hsv(self) -> HSV_Array_Float:
         return colorsys.rgb_to_hsv(*self.to_rgb())
 
@@ -388,12 +388,10 @@ class ManimColor:
     @classmethod
     def from_hex(cls, hex: str, alpha: float = 1.0) -> ManimColor:
         return cls(hex, alpha)
-    
+
     @classmethod
     def from_hsv(
-        cls, 
-        hsv: HSV_Array_Float | HSV_Tuple_Float,
-        alpha: float = 1.0
+        cls, hsv: HSV_Array_Float | HSV_Tuple_Float, alpha: float = 1.0
     ) -> ManimColor:
         rgb = colorsys.hsv_to_rgb(*hsv)
         return cls(rgb, alpha)
