@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 # logger = _config.logger
+import colorsys
 import random
 from typing import Any, Sequence, Union
 
@@ -176,6 +177,9 @@ RGBA_Tuple_Float: TypeAlias = "tuple[float, float, float, float]"
 
 RGBA_Array_Int: TypeAlias = "np.ndarray[Literal[4], np.dtype[ManimInt]]"
 RGBA_Tuple_Int: TypeAlias = "tuple[int, int, int, int]"
+
+HSV_Array_Float: TypeAlias = RGB_Array_Float
+HSV_Tuple_Float: TypeAlias = RGB_Tuple_Float
 
 ManimColorInternal: TypeAlias = "np.ndarray[Literal[4], np.dtype[ManimColorDType]]"
 
@@ -355,6 +359,9 @@ class ManimColor:
         if with_alpha:
             tmp += f"{int(self._internal_value[3]*255):02X}"
         return tmp
+    
+    def to_hsv(self) -> HSV_Array_Float:
+        return colorsys.rgb_to_hsv(*self.to_rgb())
 
     def invert(self, with_alpha=False) -> ManimColor:
         return ManimColor(1.0 - self._internal_value, with_alpha)
@@ -381,6 +388,15 @@ class ManimColor:
     @classmethod
     def from_hex(cls, hex: str, alpha: float = 1.0) -> ManimColor:
         return cls(hex, alpha)
+    
+    @classmethod
+    def from_hsv(
+        cls, 
+        hsv: HSV_Array_Float | HSV_Tuple_Float,
+        alpha: float = 1.0
+    ) -> ManimColor:
+        rgb = colorsys.hsv_to_rgb(*hsv)
+        return cls(rgb, alpha)
 
     @classmethod
     def parse(
