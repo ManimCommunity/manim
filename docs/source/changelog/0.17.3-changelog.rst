@@ -1,0 +1,177 @@
+*******
+v0.17.3
+*******
+
+:Date: March 29, 2023
+
+Contributors
+============
+
+A total of 32 people contributed to this
+release. People with a '+' by their names authored a patch for the first
+time.
+
+* Alex Lembcke
+* Benjamin Hackl
+* DegrangeM +
+* Elyanah Aco +
+* Francisco Manríquez Novoa
+* Fredrik Lundström +
+* Ikko Eltociear Ashimine +
+* JinchuLi2002 +
+* Kevin Lubick
+* KingAndCross +
+* M. A. Ali +
+* Matthew Lee +
+* Max Coplan +
+* Naveen M K
+* NotWearingPants
+* Oscar Rangel +
+* Papierkorb2292 +
+* Phoenix2157 +
+* Tristan Schulz
+* ciobaca +
+* coreyp1 +
+* davidot +
+* icedcoffeeee
+* karpfediem +
+
+
+The patches included in this release have been reviewed by
+the following contributors.
+
+* Benjamin Hackl
+* Fredrik Lundström
+* Hugues Devimeux
+* Kevin Lubick
+* KingAndCross
+* Matthew Lee
+* Naveen M K
+* Tristan Schulz
+* coreyp1
+* davidot
+* github-code-scanning[bot]
+* strager
+
+Pull requests merged
+====================
+
+A total of 32 pull requests were merged for this release.
+
+Deprecated classes and functions
+--------------------------------
+
+* :pr:`3103`: Remove deprecated function from `opengl_surface.py`
+   Remove deprecated function `~.set_fill_by_value()` from `opengl_surface.py`.
+
+New features
+------------
+
+* :pr:`3155`: Added support for individualized radius values in :meth:`.Polygram.round_corners` 
+
+
+* :pr:`3159`: Added :meth:`.set_opacity_by_tex` method for setting the opacity of parts of Tex mobjects
+
+
+Enhancements
+------------
+
+* :pr:`3083`: Minor performance improvement in bezier.py with preallocating array.
+
+
+* :pr:`3092`: perf: improve Mobject.add by checking for redundancy only once
+
+
+* :pr:`3134`: Store color data to prevent opengl embed lag
+
+
+* :pr:`3180`: Speed up width/height/depth calculations by reducing copying
+   The `width`, `height`, and `depth` attributes on Mobjects are calculated more quickly and consume less memory.
+
+* :pr:`3182`: Reduce memory allocations when building SVGMobject
+
+
+* :pr:`3191`: Fixed rendering in named threads, limit condition to interactive OpenGL mode
+   - Narrowed condition for disabling direct rendering in interactive embed mode
+
+Fixed bugs
+----------
+
+* :pr:`3106`: Fixes ignored depth_test parameter for OpenGLVMobjects
+   Adds assignments from `self.depth_test` to `SHADER_WRAPPER.depth_test` in the `update_SHADER_WRAPPER` methods of `OpenGLVMobject`. Without this assignment, the `depth_test` parameter would not be given to the shaders and thus effectively ignored (as it is only assigned to `self.depth_test`, but not used further).
+
+* :pr:`3152`: Fixed behavior of `Wait` with specified `stop_condition`
+
+
+* :pr:`3195`: Fix: Axes Scaling Had No Effect on plot_implicit_curve()
+
+
+Documentation-related changes
+-----------------------------
+
+* :pr:`3109`: Clean-up, type-hints and documentation for `three_dimensions.py`
+   Added type-hints and documentation for three dimensional Mobjects, and removed a deprecated parameter on `Surface.set_fill_by_value()`.
+
+* :pr:`3124`: Fix docstring of ThreeDCamera get_value_trackers
+   Fix the docstring of ThreeDCamera.get_value_trackers
+
+* :pr:`3126`: Change links redirecting to dead troubleshooting page
+
+
+* :pr:`3160`: typo(docs): Fix grammar
+
+
+* :pr:`3186`: Fixed extlinks in docs to work with latest version of Sphinx.
+
+
+Code quality improvements and similar refactors
+-----------------------------------------------
+
+* :pr:`3165`: Remove deprecated arg in M.object.align_to()
+
+
+Unclassified changes
+--------------------
+
+* :pr:`3042`: Add scene.replace() and use in ReplacementTransform
+   ReplacementTransform now preserves the draw order of the (old) mobject when replacing it with `target_mobject`. This uses the new `Scene.replace` method.
+
+* :pr:`3095`: Fixed ``get_axis_labels`` for :class:`.Axes` and :class:`.ThreeDAxes`
+   Moves `~.get_axis_labels()` out of `CoordinateSystem` and into `Axes` and `ThreeDAxes`.  This allows for `~.get_axis_labels()` to be used with both 2D and 3D axes.  Fixed some documentation in the process.
+
+* :pr:`3105`: Convert docstring param type to type-hint in three_dimensions.py
+
+
+* :pr:`3108`: Clarified documentation for --resolution flag
+
+
+* :pr:`3137`: Fixed example using reverse with `Write` 
+   If you use `Write` with kwarg `reverse=True` the animation of object, say the text, will start from right to left, which is the intended action, and it does work, however once the animation ends, the object just disappear. A fix to the issue is to add `remover=False`. I updated the example given in the docs.
+
+* :pr:`3144`: Fix typo in stripUntranslatable.awk
+
+
+* :pr:`3149`: Allow to use call_updater=True with a function without dt
+
+
+* :pr:`3154`: Bump ipython from 8.7.0 to 8.10.0
+
+
+* :pr:`3156`: CI: Remove actions using self-hosted runners
+
+
+* :pr:`3163`: fix: BraceLabel not passing **kwargs to Brace
+   This PR fixes a bug in which the you can't pass arguments to the Brace constructor. My solution imitates the Axes approach, adding a parameter (brace_config) for the arguments to be passed to Brace.
+
+* :pr:`3164`: Bump markdown-it-py from 2.1.0 to 2.2.0
+
+
+* :pr:`3179`: fix deprecation warning
+   Fix issue #3178 Warning when using ParametricFunction with use_vectorized=True
+
+* :pr:`3189`: Corrected the hinted return type for :func:`angle_between_vectors`
+
+
+* :pr:`3196`: CI: update PATH for recent changed in TinyTex
+
+
