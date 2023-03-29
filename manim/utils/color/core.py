@@ -210,6 +210,7 @@ class ManimColor:
                 # This is not expected to be called on module initialization time
                 # It can be horribly slow to convert a string to a color because
                 # it has to access the dictionary of colors and find the right color
+                self._internal_value = ManimColor._internal_from_string(value)
         elif isinstance(value, (list, tuple, np.ndarray)):
             length = len(value)
             if all(isinstance(x, float) for x in value):
@@ -316,8 +317,10 @@ class ManimColor:
     def _internal_from_string(name: str) -> ManimColorInternal:
         from . import _all_color_dict
 
-        if name.upper() in _all_color_dict:
-            return _all_color_dict[name]._internal_value
+        upper_name = name.upper()
+
+        if upper_name in _all_color_dict:
+            return _all_color_dict[upper_name]._internal_value
         else:
             raise ValueError(f"Color {name} not found")
 
