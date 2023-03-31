@@ -492,6 +492,7 @@ class Text(SVGMobject):
             height=height,
             width=width,
             should_center=should_center,
+            use_svg_cache=False,
             **kwargs,
         )
         self.text = text
@@ -504,18 +505,58 @@ class Text(SVGMobject):
             if len(each.points) == 0:
                 continue
             points = each.points
-            last = points[0]
-            each.clear_points()
+            curve_start = points[0]
+            assert len(curve_start) == self.dim, curve_start
+            # Some of the glyphs in this text might not be closed,
+            # so we close them by identifying when one curve ends
+            # but it is not where the next curve starts.
+            # It is more efficient to temporarily create a list
+            # of points and add them one at a time, then turn them
+            # into a numpy array at the end, rather than creating
+            # new numpy arrays every time a point or fixing line
+            # is added (which is O(n^2) for numpy arrays).
+            closed_curve_points = []
+            # OpenGL has points be part of quadratic Bezier curves;
+            # Cairo uses cubic Bezier curves.
+            if nppc == 3:  # RendererType.OPENGL
+
+                def add_line_to(end):
+                    nonlocal closed_curve_points
+                    start = closed_curve_points[-1]
+                    closed_curve_points += [
+                        start,
+                        (start + end) / 2,
+                        end,
+                    ]
+
+            else:  # RendererType.CAIRO
+
+                def add_line_to(end):
+                    nonlocal closed_curve_points
+                    start = closed_curve_points[-1]
+                    closed_curve_points += [
+                        start,
+                        (start + start + end) / 3,
+                        (start + end + end) / 3,
+                        end,
+                    ]
+
             for index, point in enumerate(points):
-                each.append_points([point])
+                closed_curve_points.append(point)
                 if (
                     index != len(points) - 1
                     and (index + 1) % nppc == 0
                     and any(point != points[index + 1])
                 ):
-                    each.add_line_to(last)
-                    last = points[index + 1]
-            each.add_line_to(last)
+                    # Add straight line from last point on this curve to the
+                    # start point on the next curve. We represent the line
+                    # as a cubic bezier curve where the two control points
+                    # are half-way between the start and stop point.
+                    add_line_to(curve_start)
+                    curve_start = points[index + 1]
+            # Make sure last curve is closed
+            add_line_to(curve_start)
+            each.points = np.array(closed_curve_points, ndmin=2)
         # anti-aliasing
         if height is None and width is None:
             self.scale(TEXT_MOB_SCALE_FACTOR)
@@ -1170,18 +1211,56 @@ class MarkupText(SVGMobject):
             if len(each.points) == 0:
                 continue
             points = each.points
-            last = points[0]
-            each.clear_points()
+            curve_start = points[0]
+            assert len(curve_start) == self.dim, curve_start
+            # Some of the glyphs in this text might not be closed,
+            # so we close them by identifying when one curve ends
+            # but it is not where the next curve starts.
+            # It is more efficient to temporarily create a list
+            # of points and add them one at a time, then turn them
+            # into a numpy array at the end, rather than creating
+            # new numpy arrays every time a point or fixing line
+            # is added (which is O(n^2) for numpy arrays).
+            closed_curve_points = []
+            # OpenGL has points be part of quadratic Bezier curves;
+            # Cairo uses cubic Bezier curves.
+            if nppc == 3:  # RendererType.OPENGL
+
+                def add_line_to(end):
+                    nonlocal closed_curve_points
+                    start = closed_curve_points[-1]
+                    closed_curve_points += [
+                        start,
+                        (start + end) / 2,
+                        end,
+                    ]
+
+            else:  # RendererType.CAIRO
+
+                def add_line_to(end):
+                    nonlocal closed_curve_points
+                    start = closed_curve_points[-1]
+                    closed_curve_points += [
+                        start,
+                        (start + start + end) / 3,
+                        (start + end + end) / 3,
+                        end,
+                    ]
+
             for index, point in enumerate(points):
-                each.append_points([point])
+                closed_curve_points.append(point)
                 if (
                     index != len(points) - 1
                     and (index + 1) % nppc == 0
                     and any(point != points[index + 1])
                 ):
-                    each.add_line_to(last)
-                    last = points[index + 1]
-            each.add_line_to(last)
+                    # Add straight line from last point on this curve to the
+                    # start point on the next curve.
+                    add_line_to(curve_start)
+                    curve_start = points[index + 1]
+            # Make sure last curve is closed
+            add_line_to(curve_start)
+            each.points = np.array(closed_curve_points, ndmin=2)
 
         if self.gradient:
             self.set_color_by_gradient(*self.gradient)
