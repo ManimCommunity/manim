@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "manim"
-version = "0.16.0.post0"
+version = "0.17.2"
 description = "Animation engine for explanatory math videos."
 authors = ["The Manim Community Developers <contact@manim.community>", "3b1b <grant@3blue1brown.com>"]
 license="MIT"
@@ -26,7 +26,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.7,<3.11"
+python = ">=3.8,<3.12"
 click = ">=7.2,<=9.0"
 click-default-group = "^1.2.2"
 colour = "^0.1.5"
@@ -36,7 +36,7 @@ scipy = "^1.7.3"
 tqdm = "^4.62.3"
 pydub = "^0.25.1"
 rich = ">=6.0,!=12.0.0"
-pycairo = "^1.19"
+pycairo = "^1.21"
 manimpango = "^0.4.0.post0"
 networkx = "^2.5"
 decorator = "^5.0.7"
@@ -56,7 +56,7 @@ srt = "^3.5.0"
 screeninfo = "^0.8"
 Pygments = "^2.10.0"
 "backports.cached-property" = { version = "^1.0.1", python = "<3.8" }
-svgelements = "^1.7.2"
+svgelements = "^1.8.0"
 
 [tool.poetry.extras]
 jupyterlab = ["jupyterlab", "notebook"]
@@ -64,7 +64,7 @@ gui = ["dearpygui"]
 
 [tool.poetry.dev-dependencies]
 pytest-cov = "^3.0.0"
-pytest = "^6.0"
+pytest = "^7.2"
 pylint = "^2.12.2"
 Sphinx = "^4"
 sphinx-copybutton = "^0.4.0"

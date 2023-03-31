@@ -76,7 +76,6 @@ class TransformMatchingAbstractBase(AnimationGroup):
         key_map: dict | None = None,
         **kwargs,
     ):
-
         if isinstance(mobject, OpenGLVMobject):
             group_type = OpenGLVGroup
         elif isinstance(mobject, OpenGLMobject):
