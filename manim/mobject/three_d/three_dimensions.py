@@ -691,7 +691,7 @@ class Cone(Surface):
 
         Parameters
         ----------
-        direction : :class:`numpy.array`
+        direction
             The direction of the apex.
         """
         self.direction = direction

@@ -18,3 +18,11 @@ def test_color_inheritance(scene):
     VMobject.set_default()
 
     scene.add(vgr)
+
+
+@frames_comparison
+def test_set_opacity_by_tex(scene):
+    """Test that set_opacity_by_tex works correctly."""
+    tex = MathTex("f(x) = y", substrings_to_isolate=["f(x)"])
+    tex.set_opacity_by_tex("f(x)", 0.2, 0.5)
+    scene.add(tex)

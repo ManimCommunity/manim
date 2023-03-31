@@ -137,7 +137,7 @@ For Windows, the recommended LaTeX distribution is
 `MiKTeX <https://miktex.org/download>`__. You can install it by using the
 installer from the linked MiKTeX site, or by using the package manager
 of your choice (Chocolatey: ``choco install miktex.install``,
-Scoop: ``scoop install latex``, Winget: ``winget install ChristianSchenk.MiKTeX``).
+Scoop: ``scoop install latex``, Winget: ``winget install MiKTeX.MiKTeX``).
 
 If you are concerned about disk space, there are some alternative,
 smaller distributions of LaTeX.
