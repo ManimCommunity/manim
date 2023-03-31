@@ -17,6 +17,7 @@ from pygments.formatters.html import HtmlFormatter
 from pygments.lexers import get_lexer_by_name, guess_lexer_for_filename
 from pygments.styles import get_all_styles
 
+from manim import logger
 from manim.constants import *
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.geometry.polygram import RoundedRectangle
@@ -101,7 +102,9 @@ class Code(VGroup):
     font_size
         A number which scales displayed code. Defaults to 24.
     font
-         The name of the text font to be used. Defaults to ``"Monospac821 BT"``.
+        The name of the text font to be used. Defaults to ``"Monospace"``.
+        This is either a system font or one loaded with `text.register_font()`. Note
+        that font family names may be different across operating systems.
     stroke_width
         Stroke width for text. 0 is recommended, and the default.
     margin
@@ -131,6 +134,9 @@ class Code(VGroup):
         'aliases or short names'.
     generate_html_file
         Defines whether to generate highlighted html code to the folder `assets/codes/generated_html_files`. Defaults to `False`.
+    warn_missing_font
+        If True (default), Manim will issue a warning if the font does not exist in the
+        (case-sensitive) list of fonts returned from `manimpango.list_fonts()`.
 
     Attributes
     ----------
@@ -159,7 +165,7 @@ class Code(VGroup):
         tab_width: int = 3,
         line_spacing: float = 0.3,
         font_size: float = 24,
-        font: str = "Monospac821 BT",
+        font: str = "Monospace",  # This should be in the font list on all platforms.
         stroke_width: float = 0,
         margin: float = 0.3,
         indentation_chars: str = "    ",
@@ -173,6 +179,7 @@ class Code(VGroup):
         style: str = "vim",
         language: str | None = None,
         generate_html_file: bool = False,
+        warn_missing_font: bool = True,
         **kwargs,
     ):
         super().__init__(
@@ -183,6 +190,7 @@ class Code(VGroup):
         self.background_stroke_width = background_stroke_width
         self.tab_width = tab_width
         self.line_spacing = line_spacing
+        self.warn_missing_font = warn_missing_font
         self.font = font
         self.font_size = font_size
         self.margin = margin
@@ -317,6 +325,7 @@ class Code(VGroup):
             font=self.font,
             disable_ligatures=True,
             stroke_width=self.stroke_width,
+            warn_missing_font=self.warn_missing_font,
         )
         for i in line_numbers:
             i.set_color(self.default_color)
@@ -344,6 +353,7 @@ class Code(VGroup):
             font=self.font,
             disable_ligatures=True,
             stroke_width=self.stroke_width,
+            warn_missing_font=self.warn_missing_font,
         )
         for line_no in range(code.__len__()):
             line = code.chars[line_no]

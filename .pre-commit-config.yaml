@@ -58,7 +58,7 @@ repos:
             flake8-simplify==0.14.1,
           ]
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.0.1
+    rev: v1.1.1
     hooks:
       - id: mypy
         additional_dependencies:
@@ -71,7 +71,8 @@ repos:
           ]
 
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.2
+    rev: v2.2.4
     hooks:
       - id: codespell
+        files: ^.*\.(py|md|rst)$
         args: ["-L", "medias,nam"]
