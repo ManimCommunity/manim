@@ -506,7 +506,7 @@ class Text(SVGMobject):
             closed_curve_points = []
             # OpenGL has points be part of quadratic Bezier curves;
             # Cairo uses cubic Bezier curves.
-            if nppc == 3:
+            if nppc == 3:  # RendererType.OPENGL
 
                 def add_line_to(end):
                     nonlocal closed_curve_points
@@ -517,7 +517,7 @@ class Text(SVGMobject):
                         end,
                     ]
 
-            else:
+            else:  # RendererType.CAIRO
 
                 def add_line_to(end):
                     nonlocal closed_curve_points
@@ -1205,7 +1205,7 @@ class MarkupText(SVGMobject):
             closed_curve_points = []
             # OpenGL has points be part of quadratic Bezier curves;
             # Cairo uses cubic Bezier curves.
-            if nppc == 3:
+            if nppc == 3:  # RendererType.OPENGL
 
                 def add_line_to(end):
                     nonlocal closed_curve_points
@@ -1216,7 +1216,7 @@ class MarkupText(SVGMobject):
                         end,
                     ]
 
-            else:
+            else:  # RendererType.CAIRO
 
                 def add_line_to(end):
                     nonlocal closed_curve_points
@@ -1236,9 +1236,7 @@ class MarkupText(SVGMobject):
                     and any(point != points[index + 1])
                 ):
                     # Add straight line from last point on this curve to the
-                    # start point on the next curve. We represent the line
-                    # as a cubic bezier curve where the two control points
-                    # are half-way between the start and stop point.
+                    # start point on the next curve.
                     add_line_to(curve_start)
                     curve_start = points[index + 1]
             # Make sure last curve is closed
