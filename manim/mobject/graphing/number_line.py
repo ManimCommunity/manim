@@ -143,7 +143,7 @@ class NumberLine(Line):
         include_tip: bool = False,
         tip_width: float = DEFAULT_ARROW_TIP_LENGTH,
         tip_height: float = DEFAULT_ARROW_TIP_LENGTH,
-        tip_shape: Type | None = None,
+        tip_shape: type | None = None,
         # numbers/labels
         include_numbers: bool = False,
         font_size: float = 36,
