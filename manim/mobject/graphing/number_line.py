@@ -4,7 +4,7 @@ from __future__ import annotations
 
 __all__ = ["NumberLine", "UnitInterval"]
 
-from typing import Iterable, Sequence
+from typing import Iterable, Sequence, Type
 
 import numpy as np
 
@@ -140,6 +140,7 @@ class NumberLine(Line):
         include_tip: bool = False,
         tip_width: float = DEFAULT_ARROW_TIP_LENGTH,
         tip_height: float = DEFAULT_ARROW_TIP_LENGTH,
+        tip_shape: Type | None = None,
         # numbers/labels
         include_numbers: bool = False,
         font_size: float = 36,
@@ -217,7 +218,11 @@ class NumberLine(Line):
         self.center()
 
         if self.include_tip:
-            self.add_tip(tip_length=self.tip_height, tip_width=self.tip_width)
+            self.add_tip(
+                tip_length=self.tip_height,
+                tip_width=self.tip_width,
+                tip_shape=tip_shape,
+            )
             self.tip.set_stroke(self.stroke_color, self.stroke_width)
 
         if self.include_ticks:
