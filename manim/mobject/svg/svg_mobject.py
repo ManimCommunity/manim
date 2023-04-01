@@ -82,6 +82,12 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         A dictionary with keyword arguments passed to
         :class:`.VMobjectFromSVGPath` used for importing path elements.
         If ``None`` (the default), no additional arguments are passed.
+    use_svg_cache
+        If True (default), the svg inputs (e.g. file_name, settings)
+        will be used as a key and a copy of the created mobject will
+        be saved using that key to be quickly retrieved if the same
+        inputs need be processed later. For large SVGs which are used
+        only once, this can be omitted to improve performance.
     kwargs
         Further arguments passed to the parent class.
     """
@@ -101,6 +107,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         stroke_width: float | None = None,
         svg_default: dict | None = None,
         path_string_config: dict | None = None,
+        use_svg_cache: bool = True,
         **kwargs,
     ):
         super().__init__(color=None, stroke_color=None, fill_color=None, **kwargs)
@@ -135,7 +142,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             path_string_config = {}
         self.path_string_config = path_string_config
 
-        self.init_svg_mobject()
+        self.init_svg_mobject(use_svg_cache=use_svg_cache)
 
         self.set_style(
             fill_color=fill_color,
@@ -146,7 +153,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         )
         self.move_into_position()
 
-    def init_svg_mobject(self) -> None:
+    def init_svg_mobject(self, use_svg_cache: bool) -> None:
         """Checks whether the SVG has already been imported and
         generates it if not.
 
@@ -154,14 +161,16 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         --------
         :meth:`.SVGMobject.generate_mobject`
         """
-        hash_val = hash_obj(self.hash_seed)
-        if hash_val in SVG_HASH_TO_MOB_MAP:
-            mob = SVG_HASH_TO_MOB_MAP[hash_val].copy()
-            self.add(*mob)
-            return
+        if use_svg_cache:
+            hash_val = hash_obj(self.hash_seed)
+            if hash_val in SVG_HASH_TO_MOB_MAP:
+                mob = SVG_HASH_TO_MOB_MAP[hash_val].copy()
+                self.add(*mob)
+                return
 
         self.generate_mobject()
-        SVG_HASH_TO_MOB_MAP[hash_val] = self.copy()
+        if use_svg_cache:
+            SVG_HASH_TO_MOB_MAP[hash_val] = self.copy()
 
     @property
     def hash_seed(self) -> tuple:
