@@ -49,6 +49,8 @@ class NumberLine(Line):
         The width of the tip.
     tip_height
         The height of the tip.
+    tip_shape
+        The mobject class used to construct the tip. Inherits from :class:`.ArrowTip`.
     include_numbers
         Whether to add numbers to the tick marks. The number of decimal places is determined
         by the step size, this default can be overridden by ``decimal_number_config``.
