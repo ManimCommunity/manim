@@ -585,7 +585,6 @@ class LinearTransformationScene(VectorScene):
         leave_ghost_vectors: bool = False,
         **kwargs,
     ):
-
         super().__init__(**kwargs)
 
         self.include_background_plane = include_background_plane

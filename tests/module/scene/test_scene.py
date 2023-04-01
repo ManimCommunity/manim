@@ -4,7 +4,7 @@ import datetime
 
 import pytest
 
-from manim import Circle, FadeIn, Mobject, Scene, Square, tempconfig
+from manim import Circle, FadeIn, Group, Mobject, Scene, Square, tempconfig
 from manim.animation.animation import Wait
 
 
@@ -73,3 +73,35 @@ def test_subcaption():
         assert subcaptions[1].start == datetime.timedelta(seconds=1.5)
         assert subcaptions[1].end == datetime.timedelta(seconds=3)
         assert subcaptions[1].content == "Testing Scene.play subcaption interface"
+
+
+def test_replace():
+    def assert_names(mobjs, names):
+        assert len(mobjs) == len(names)
+        for i in range(0, len(mobjs)):
+            assert mobjs[i].name == names[i]
+
+    with tempconfig({"dry_run": True}):
+        scene = Scene()
+
+        first = Mobject(name="first")
+        second = Mobject(name="second")
+        third = Mobject(name="third")
+        fourth = Mobject(name="fourth")
+
+        scene.add(first)
+        scene.add(Group(second, third, name="group"))
+        scene.add(fourth)
+        assert_names(scene.mobjects, ["first", "group", "fourth"])
+        assert_names(scene.mobjects[1], ["second", "third"])
+
+        alpha = Mobject(name="alpha")
+        beta = Mobject(name="beta")
+
+        scene.replace(first, alpha)
+        assert_names(scene.mobjects, ["alpha", "group", "fourth"])
+        assert_names(scene.mobjects[1], ["second", "third"])
+
+        scene.replace(second, beta)
+        assert_names(scene.mobjects, ["alpha", "group", "fourth"])
+        assert_names(scene.mobjects[1], ["beta", "third"])

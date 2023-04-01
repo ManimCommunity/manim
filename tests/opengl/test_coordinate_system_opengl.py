@@ -69,7 +69,6 @@ def test_NumberPlane(using_opengl_renderer):
     ]
 
     for test_data in testing_data:
-
         x_range, y_range, x_vals, y_vals = test_data
 
         x_start, x_end = x_range

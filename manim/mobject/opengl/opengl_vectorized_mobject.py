@@ -137,6 +137,12 @@ class OpenGLVMobject(OpenGLMobject):
         self.needs_new_triangulation = True
         self.triangulation = np.zeros(0, dtype="i4")
         self.orientation = 1
+        self.fill_data = None
+        self.stroke_data = None
+        self.fill_shader_wrapper = None
+        self.stroke_shader_wrapper = None
+        self.init_shader_data()
+
         super().__init__(**kwargs)
         self.refresh_unit_normal()
 
@@ -144,12 +150,6 @@ class OpenGLVMobject(OpenGLMobject):
             self.fill_color = Color(fill_color)
         if stroke_color:
             self.stroke_color = Color(stroke_color)
-
-        self.fill_data = None
-        self.stroke_data = None
-        self.fill_shader_wrapper = None
-        self.stroke_shader_wrapper = None
-        self.init_shader_data()
 
     def get_group_class(self):
         return OpenGLVGroup
@@ -1518,6 +1518,7 @@ class OpenGLVMobject(OpenGLMobject):
         self.fill_shader_wrapper.vert_data = self.get_fill_shader_data()
         self.fill_shader_wrapper.vert_indices = self.get_triangulation()
         self.fill_shader_wrapper.uniforms = self.get_fill_uniforms()
+        self.fill_shader_wrapper.depth_test = self.depth_test
 
     def get_stroke_shader_wrapper(self):
         self.update_stroke_shader_wrapper()
@@ -1526,6 +1527,7 @@ class OpenGLVMobject(OpenGLMobject):
     def update_stroke_shader_wrapper(self):
         self.stroke_shader_wrapper.vert_data = self.get_stroke_shader_data()
         self.stroke_shader_wrapper.uniforms = self.get_stroke_uniforms()
+        self.stroke_shader_wrapper.depth_test = self.depth_test
 
     def get_shader_wrapper_list(self):
         # Build up data lists

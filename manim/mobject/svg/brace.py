@@ -156,24 +156,47 @@ class Brace(VMobjectFromSVGPath):
 
 
 class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
+    """Create a brace with a label attached.
+
+    Parameters
+    ----------
+    obj
+        The mobject adjacent to which the brace is placed.
+    text
+        The label text.
+    brace_direction
+        The direction of the brace. By default ``DOWN``.
+    label_constructor
+        A class or function used to construct a mobject representing
+        the label. By default :class:`~.MathTex`.
+    font_size
+        The font size of the label, passed to the ``label_constructor``.
+    buff
+        The buffer between the mobject and the brace.
+    brace_config
+        Arguments to be passed to :class:`.Brace`.
+    kwargs
+        Additional arguments to be passed to :class:`~.VMobject`.
+    """
+
     def __init__(
         self,
-        obj,
-        text,
-        brace_direction=DOWN,
-        label_constructor=MathTex,
-        font_size=DEFAULT_FONT_SIZE,
-        buff=0.2,
+        obj: Mobject,
+        text: str,
+        brace_direction: np.ndarray = DOWN,
+        label_constructor: type = MathTex,
+        font_size: float = DEFAULT_FONT_SIZE,
+        buff: float = 0.2,
+        brace_config: dict | None = None,
         **kwargs,
     ):
         self.label_constructor = label_constructor
         super().__init__(**kwargs)
 
         self.brace_direction = brace_direction
-        self.buff = buff
-        if isinstance(obj, list):
-            obj = self.get_group_class()(*obj)
-        self.brace = Brace(obj, brace_direction, buff, **kwargs)
+        if brace_config is None:
+            brace_config = {}
+        self.brace = Brace(obj, brace_direction, buff, **brace_config)
 
         if isinstance(text, (tuple, list)):
             self.label = self.label_constructor(font_size=font_size, *text, **kwargs)
