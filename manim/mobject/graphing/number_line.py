@@ -5,7 +5,7 @@ from __future__ import annotations
 __all__ = ["NumberLine", "UnitInterval"]
 
 
-from typing import Callable, Iterable, Sequence, Type, TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable, Iterable, Sequence, Type
 
 if TYPE_CHECKING:
     from manim.mobject.geometry.tips import ArrowTip
@@ -148,7 +148,7 @@ class NumberLine(Line):
         include_tip: bool = False,
         tip_width: float = DEFAULT_ARROW_TIP_LENGTH,
         tip_height: float = DEFAULT_ARROW_TIP_LENGTH,
-        tip_shape: Type[ArrowTip] | None = None,
+        tip_shape: type[ArrowTip] | None = None,
         # numbers/labels
         include_numbers: bool = False,
         font_size: float = 36,
