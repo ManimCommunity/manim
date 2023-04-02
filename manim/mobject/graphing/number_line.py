@@ -5,7 +5,7 @@ from __future__ import annotations
 __all__ = ["NumberLine", "UnitInterval"]
 
 
-from typing import TYPE_CHECKING, Callable, Iterable, Sequence, Type
+from typing import TYPE_CHECKING, Callable, Iterable, Sequence
 
 if TYPE_CHECKING:
     from manim.mobject.geometry.tips import ArrowTip
