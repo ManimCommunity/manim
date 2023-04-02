@@ -212,7 +212,7 @@ class StealthTip(ArrowTip):
     @property
     def length(self):
         """The length of the arrow tip.
-        
+
         In this case, the length is computed as the height of
         the triangle encompassing the stealth tip (otherwise,
         the tip is scaled too large).
