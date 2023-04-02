@@ -5,7 +5,10 @@ from __future__ import annotations
 __all__ = ["NumberLine", "UnitInterval"]
 
 
-from typing import Callable, Iterable, Sequence, Type
+from typing import Callable, Iterable, Sequence, Type, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from manim.mobject.geometry.tips import ArrowTip
 
 import numpy as np
 
@@ -51,7 +54,9 @@ class NumberLine(Line):
     tip_height
         The height of the tip.
     tip_shape
-        The mobject class used to construct the tip. Inherits from :class:`.ArrowTip`.
+        The mobject class used to construct the tip, or ``None`` (the
+        default) for the default arrow tip. Passed classes have to inherit
+        from :class:`.ArrowTip`.
     include_numbers
         Whether to add numbers to the tick marks. The number of decimal places is determined
         by the step size, this default can be overridden by ``decimal_number_config``.
@@ -143,7 +148,7 @@ class NumberLine(Line):
         include_tip: bool = False,
         tip_width: float = DEFAULT_ARROW_TIP_LENGTH,
         tip_height: float = DEFAULT_ARROW_TIP_LENGTH,
-        tip_shape: type | None = None,
+        tip_shape: Type[ArrowTip] | None = None,
         # numbers/labels
         include_numbers: bool = False,
         font_size: float = 36,
