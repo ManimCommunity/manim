@@ -8,6 +8,8 @@ __all__ = [
     "ArrowCircleTip",
     "ArrowSquareTip",
     "ArrowSquareFilledTip",
+    "ArrowTriangleTip",
+    "ArrowTriangleFilledTip",
 ]
 
 import numpy as np
