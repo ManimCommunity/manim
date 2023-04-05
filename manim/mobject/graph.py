@@ -9,7 +9,6 @@ __all__ = [
 
 import itertools as it
 from copy import copy
-from enum import Enum
 from typing import Hashable, Iterable
 
 import networkx as nx
