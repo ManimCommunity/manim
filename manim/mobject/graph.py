@@ -376,15 +376,16 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
             default_edge_config = {
                 k: v
                 for k, v in edge_config.items()
-                if not isinstance(k, tuple)  # everything that is not an edge is an option
+                if not isinstance(
+                    k, tuple
+                )  # everything that is not an edge is an option
             }
         self._edge_config = {}
         self._tip_config = {}
         for e in edges:
             if e in edge_config:
                 self._tip_config[e] = edge_config[e].pop(
-                    "tip_config",
-                    copy(default_tip_config)
+                    "tip_config", copy(default_tip_config)
                 )
                 self._edge_config[e] = edge_config[e]
             else:
@@ -403,12 +404,10 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
     def _empty_networkx_graph():
         """Return an empty networkx graph for the given graph type."""
         raise NotImplementedError("To be implemented in concrete subclasses")
-    
+
     def _populate_edge_dict(
-            self,
-            edges: list[tuple[Hashable, Hashable]],
-            edge_type: type[Mobject]
-        ):
+        self, edges: list[tuple[Hashable, Hashable]], edge_type: type[Mobject]
+    ):
         """Helper method for populating the edges of the graph."""
         raise NotImplementedError("To be implemented in concrete subclasses")
 
@@ -911,11 +910,9 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
 
     @classmethod
     def from_networkx(
-        cls,
-        nxgraph: nx.classes.graph.Graph | nx.classes.digraph.DiGraph,
-        **kwargs
+        cls, nxgraph: nx.classes.graph.Graph | nx.classes.digraph.DiGraph, **kwargs
     ):
-        """Build a :class:`~.Graph` or :class:`~.DiGraph` from a 
+        """Build a :class:`~.Graph` or :class:`~.DiGraph` from a
         given ``networkx`` graph.
 
         Parameters
@@ -1272,7 +1269,9 @@ class Graph(GenericGraph):
     def _empty_networkx_graph() -> nx.Graph:
         return nx.Graph()
 
-    def _populate_edge_dict(self, edges: list[tuple[Hashable, Hashable]], edge_type: type[Mobject]):
+    def _populate_edge_dict(
+        self, edges: list[tuple[Hashable, Hashable]], edge_type: type[Mobject]
+    ):
         self.edges = {
             (u, v): edge_type(
                 self[u].get_center(),
@@ -1294,12 +1293,12 @@ class Graph(GenericGraph):
 
 class DiGraph(GenericGraph):
     """A directed graph.
-    
+
     .. note::
 
         In contrast to undirected graphs, the order in which vertices in a given
         edge are specified is relevant here.
-    
+
     See also
     --------
 
@@ -1367,7 +1366,7 @@ class DiGraph(GenericGraph):
         keyword arguments for the mobject related to the corresponding edge.
         You can further customize the tip by adding a ``tip_config`` dictionary
         for global styling, or by adding the dict to a specific ``edge_config``.
-        
+
     Examples
     --------
 
@@ -1410,7 +1409,7 @@ class DiGraph(GenericGraph):
                         "tip_length": 0.15,
                     },
                     (3, 4): {
-                        "color": RED, 
+                        "color": RED,
                         "tip_config": {"tip_length": 0.25, "tip_width": 0.25}
                     },
                 }
@@ -1471,8 +1470,10 @@ class DiGraph(GenericGraph):
     @staticmethod
     def _empty_networkx_graph() -> nx.DiGraph:
         return nx.DiGraph()
-    
-    def _populate_edge_dict(self, edges: list[tuple[Hashable, Hashable]], edge_type: type[Mobject]):
+
+    def _populate_edge_dict(
+        self, edges: list[tuple[Hashable, Hashable]], edge_type: type[Mobject]
+    ):
         self.edges = {
             (u, v): edge_type(
                 self[u],
@@ -1488,9 +1489,9 @@ class DiGraph(GenericGraph):
 
     def update_edges(self, graph):
         """Updates the edges to stick at their corresponding vertices.
-        
+
         Arrow tips need to be repositioned since otherwise they can be
-        deformed. 
+        deformed.
         """
         for (u, v), edge in graph.edges.items():
             edge_type = type(edge)
