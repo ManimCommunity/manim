@@ -1783,6 +1783,17 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
                 # x_min must be > 0 because log is undefined at 0.
                 graph = ax.plot(lambda x: x ** 2, x_range=[0.001, 10], use_smoothing=False)
                 self.add(ax, graph)
+
+    Styling arguments can be passed to the underlying :class:`.NumberLine`
+    mobjects that represent the axes:
+
+    .. manim:: AxesWithDifferentTips
+        :save_last_frame:
+
+        class AxesWithDifferentTips(Scene):
+            def construct(self):
+                ax = Axes(axis_config={'tip_shape': StealthTip})
+                self.add(ax)
     """
 
     def __init__(
