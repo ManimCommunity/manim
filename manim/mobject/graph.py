@@ -238,8 +238,8 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
     See also
     --------
 
-    - :class:`.Graph`
-    - :class:`.DiGraph`
+    :class:`.Graph`
+    :class:`.DiGraph`
 
 
     Parameters
@@ -1025,6 +1025,11 @@ class Graph(GenericGraph):
     the vertices when moved around. See :class:`.DiGraph` for
     a version with directed edges.
 
+    See also
+    --------
+
+    :class:`.GenericGraph`
+
     Parameters
     ----------
 
@@ -1344,6 +1349,11 @@ class DiGraph(GenericGraph):
 
         In contrast to undirected graphs, the order in which vertices in a given
         edge are specified is relevant here.
+    
+    See also
+    --------
+
+    :class:`.GenericGraph`
 
     Parameters
     ----------
@@ -1429,7 +1439,7 @@ class DiGraph(GenericGraph):
                 )
                 self.wait()
 
-    You can customize the edges and arrow tips globally or locally
+    You can customize the edges and arrow tips globally or locally.
 
     .. manim:: CustomDiGraph
 
@@ -1445,8 +1455,14 @@ class DiGraph(GenericGraph):
 
                 edge_config = {
                     "stroke_width": 2,
-                    "tip_config": {"tip_length": 0.1, "tip_width": 0.05},
-                    (3, 4): {"color": RED, "tip_config": {"tip_length": 0.5, "tip_width": 0.5}},
+                    "tip_config": {
+                        "tip_shape": ArrowSquareTip,
+                        "tip_length": 0.15,
+                    },
+                    (3, 4): {
+                        "color": RED, 
+                        "tip_config": {"tip_length": 0.25, "tip_width": 0.25}
+                    },
                 }
 
                 g = DiGraph(
@@ -1460,7 +1476,8 @@ class DiGraph(GenericGraph):
                 self.play(Create(g))
                 self.wait()
 
-    Since this implementation respects the labels boundary you can also use it for an undirected moving graph with labels
+    Since this implementation respects the labels boundary you can also use
+    it for an undirected moving graph with labels.
 
     .. manim:: UndirectedMovingDiGraph
 
