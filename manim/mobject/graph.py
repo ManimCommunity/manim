@@ -556,7 +556,9 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         for v, label in self._labels.items():
             self._vertex_config[v]["label"] = label
 
-        self.vertices = {v: vertex_type(**self._vertex_config[v]) for v in vertices}
+        self.vertices = {
+            v: vertex_type(z_index=1, **self._vertex_config[v]) for v in vertices
+        }
         self.vertices.update(vertex_mobjects)
         for v in self.vertices:
             self[v].move_to(self._layout[v])
@@ -585,7 +587,6 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
             (u, v): edge_type(
                 self[u].get_center(),
                 self[v].get_center(),
-                z_index=-1,
                 **self._edge_config[(u, v)],
             )
             for (u, v) in edges
