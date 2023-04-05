@@ -19,19 +19,12 @@ from manim.animation.composition import AnimationGroup
 from manim.animation.creation import Create, Uncreate
 from manim.mobject.geometry.arc import Dot, LabeledDot
 from manim.mobject.geometry.line import Line
-from manim.mobject.geometry.tips import ArrowTriangleFilledTip
 from manim.mobject.mobject import Mobject, override_animate
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.text.tex_mobject import MathTex
 from manim.mobject.types.vectorized_mobject import VMobject
 from manim.utils.color import BLACK
-
-
-class GraphType(Enum):
-    """Collection of available graph types."""
-    UNDIRECTED = nx.Graph
-    DIRECTED = nx.DiGraph
 
 
 def _determine_graph_layout(
@@ -320,17 +313,10 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         partitions: list[list[Hashable]] | None = None,
         root_vertex: Hashable | None = None,
         edge_config: dict | None = None,
-        graph_type: GraphType = GraphType.UNDIRECTED,
     ) -> None:
         super().__init__()
 
-        if graph_type == GraphType.UNDIRECTED:
-            nx_graph = nx.Graph()
-        elif graph_type == GraphType.DIRECTED:
-            nx_graph = nx.DiGraph()
-        else:
-            raise NotImplementedError("graph_type must be a GraphType")
-
+        nx_graph = self._empty_networkx_graph()
         nx_graph.add_nodes_from(vertices)
         nx_graph.add_edges_from(edges)
         self._graph = nx_graph
@@ -383,61 +369,48 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         # build edge_config
         if edge_config is None:
             edge_config = {}
+        default_tip_config = {}
         default_edge_config = {}
         if edge_config:
+            default_tip_config = edge_config.pop("tip_config", {})
             default_edge_config = {
                 k: v
                 for k, v in edge_config.items()
-                if k not in edges and k[::-1] not in edges and k != "tip_config"
+                if not isinstance(k, tuple)  # everything that is not an edge is an option
             }
         self._edge_config = {}
+        self._tip_config = {}
         for e in edges:
             if e in edge_config:
-                self._edge_config[e] = {
-                    k: v for k, v in edge_config[e].items() if k != "tip_config"
-                }
-            elif e[::-1] in edge_config:
-                self._edge_config[e] = {
-                    k: v for k, v in edge_config[e[::-1]].items() if k != "tip_config"
-                }
+                self._tip_config[e] = edge_config[e].pop(
+                    "tip_config",
+                    copy(default_tip_config)
+                )
+                self._edge_config[e] = edge_config[e]
             else:
+                self._tip_config[e] = copy(default_tip_config)
                 self._edge_config[e] = copy(default_edge_config)
 
         self.default_edge_config = default_edge_config
-        self.edges = {
-            (u, v): edge_type(
-                self[u].get_center() if graph_type == GraphType.UNDIRECTED else self[u],
-                self[v].get_center() if graph_type == GraphType.UNDIRECTED else self[v],
-                z_index=-1,
-                **self._edge_config[(u, v)],
-            )
-            for (u, v) in edges
-        }
-
-        # Add tips in case of directed graph
-        if graph_type == GraphType.DIRECTED:
-            default_tip_config = {
-                "tip_shape": ArrowTriangleFilledTip,
-                "tip_length": 0.1,
-                "tip_width": 0.1,
-            }
-            self._tip_config = {}
-            if "tip_config" in edge_config:
-                self._tip_config = edge_config["tip_config"]
-            self._tip_config = {**default_tip_config, **self._tip_config}
-
-            for (u, v), edge in self.edges.items():
-                if (u, v) in edge_config and "tip_config" in edge_config[(u, v)]:
-                    self.edges[(u, v)] = edge.add_tip(
-                        **edge_config[(u, v)]["tip_config"]
-                    )
-                else:
-                    self.edges[(u, v)] = edge.add_tip(**self._tip_config)
+        self._populate_edge_dict(edges, edge_type)
 
         self.add(*self.vertices.values())
         self.add(*self.edges.values())
 
         self.add_updater(self.update_edges)
+
+    @staticmethod
+    def _empty_networkx_graph():
+        """Return an empty networkx graph for the given graph type."""
+        raise NotImplementedError("To be implemented in concrete subclasses")
+    
+    def _populate_edge_dict(
+            self,
+            edges: list[tuple[Hashable, Hashable]],
+            edge_type: type[Mobject]
+        ):
+        """Helper method for populating the edges of the graph."""
+        raise NotImplementedError("To be implemented in concrete subclasses")
 
     def __getitem__(self: Graph, v: Hashable) -> Mobject:
         return self.vertices[v]
@@ -899,9 +872,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
 
         """
         if edge not in self.edges:
-            edge = edge[::-1]
-            if edge not in self.edges:
-                raise ValueError(f"The graph does not contain a edge '{edge}'")
+            raise ValueError(f"The graph does not contain a edge '{edge}'")
 
         edge_mobject = self.edges.pop(edge)
 
@@ -938,17 +909,20 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         mobjects = self.remove_edges(*edges)
         return AnimationGroup(*(animation(mobj, **anim_args) for mobj in mobjects))
 
-    @staticmethod
+    @classmethod
     def from_networkx(
-        nxgraph: nx.classes.graph.Graph | nx.classes.digraph.DiGraph, **kwargs
-    ) -> Graph:
-        """Build a :class:`~.Graph` from a given ``networkx`` graph.
+        cls,
+        nxgraph: nx.classes.graph.Graph | nx.classes.digraph.DiGraph,
+        **kwargs
+    ):
+        """Build a :class:`~.Graph` or :class:`~.DiGraph` from a 
+        given ``networkx`` graph.
 
         Parameters
         ----------
 
         nxgraph
-            A ``networkx`` graph.
+            A ``networkx`` graph or digraph.
         **kwargs
             Keywords to be passed to the constructor of :class:`~.Graph`.
 
@@ -971,11 +945,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
                     self.play(Uncreate(G))
 
         """
-        graph_type = GraphType(type(nxgraph))
-        if graph_type == GraphType.UNDIRECTED:
-            return Graph(list(nxgraph.nodes), list(nxgraph.edges), **kwargs)
-        elif graph_type == GraphType.DIRECTED:
-            return DiGraph(list(nxgraph.nodes), list(nxgraph.edges), **kwargs)
+        return cls(list(nxgraph.nodes), list(nxgraph.edges), **kwargs)
 
     def change_layout(
         self,
@@ -1298,40 +1268,20 @@ class Graph(GenericGraph):
                 self.play(self.camera.auto_zoom(g, margin=1), run_time=0.5)
     """
 
-    def __init__(
-        self,
-        vertices: list[Hashable],
-        edges: list[tuple[Hashable, Hashable]],
-        labels: bool | dict = False,
-        label_fill_color: str = BLACK,
-        layout: str | dict = "spring",
-        layout_scale: float | tuple = 2,
-        layout_config: dict | None = None,
-        vertex_type: type[Mobject] = Dot,
-        vertex_config: dict | None = None,
-        vertex_mobjects: dict | None = None,
-        edge_type: type[Mobject] = Line,
-        partitions: list[list[Hashable]] | None = None,
-        root_vertex: Hashable | None = None,
-        edge_config: dict | None = None,
-    ) -> None:
-        super().__init__(
-            vertices,
-            edges,
-            labels,
-            label_fill_color,
-            layout,
-            layout_scale,
-            layout_config,
-            vertex_type,
-            vertex_config,
-            vertex_mobjects,
-            edge_type,
-            partitions,
-            root_vertex,
-            edge_config,
-            graph_type=GraphType.UNDIRECTED,
-        )
+    @staticmethod
+    def _empty_networkx_graph() -> nx.Graph:
+        return nx.Graph()
+
+    def _populate_edge_dict(self, edges: list[tuple[Hashable, Hashable]], edge_type: type[Mobject]):
+        self.edges = {
+            (u, v): edge_type(
+                self[u].get_center(),
+                self[v].get_center(),
+                z_index=-1,
+                **self._edge_config[(u, v)],
+            )
+            for (u, v) in edges
+        }
 
     def update_edges(self, graph):
         for (u, v), edge in graph.edges.items():
@@ -1518,40 +1468,23 @@ class DiGraph(GenericGraph):
 
     """
 
-    def __init__(
-        self,
-        vertices: list[Hashable],
-        edges: list[tuple[Hashable, Hashable]],
-        labels: bool | dict = False,
-        label_fill_color: str = BLACK,
-        layout: str | dict = "spring",
-        layout_scale: float | tuple = 2,
-        layout_config: dict | None = None,
-        vertex_type: type[Mobject] = Dot,
-        vertex_config: dict | None = None,
-        vertex_mobjects: dict | None = None,
-        edge_type: type[Mobject] = Line,
-        partitions: list[list[Hashable]] | None = None,
-        root_vertex: Hashable | None = None,
-        edge_config: dict | None = None,
-    ) -> None:
-        super().__init__(
-            vertices,
-            edges,
-            labels,
-            label_fill_color,
-            layout,
-            layout_scale,
-            layout_config,
-            vertex_type,
-            vertex_config,
-            vertex_mobjects,
-            edge_type,
-            partitions,
-            root_vertex,
-            edge_config,
-            graph_type=GraphType.DIRECTED,
-        )
+    @staticmethod
+    def _empty_networkx_graph() -> nx.DiGraph:
+        return nx.DiGraph()
+    
+    def _populate_edge_dict(self, edges: list[tuple[Hashable, Hashable]], edge_type: type[Mobject]):
+        self.edges = {
+            (u, v): edge_type(
+                self[u],
+                self[v],
+                z_index=-1,
+                **self._edge_config[(u, v)],
+            )
+            for (u, v) in edges
+        }
+
+        for (u, v), edge in self.edges.items():
+            edge.add_tip(**self._tip_config[(u, v)])
 
     def update_edges(self, graph):
         """Updates the edges to stick at their corresponding vertices.
