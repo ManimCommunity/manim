@@ -285,6 +285,10 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         to the class specified via ``edge_type``, or a dictionary whose
         keys are the edges, and whose values are dictionaries containing
         keyword arguments for the mobject related to the corresponding edge.
+    account_for_vertex_radius
+        Whether to account for the vertex radius when updating the edges whenever
+        the vertices move, or to use the vertices' centers instead. It is recommended
+        for 3D scenes to set this option to False.
 
     Examples
     --------
@@ -508,6 +512,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         partitions: list[list[Hashable]] | None = None,
         root_vertex: Hashable | None = None,
         edge_config: dict | None = None,
+        account_for_vertex_radius: bool = True,
     ) -> None:
         super().__init__()
 
@@ -596,7 +601,13 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
         def update_edges(graph):
             for (u, v), edge in graph.edges.items():
-                edge.put_start_and_end_on(graph[u].get_center(), graph[v].get_center())
+                if account_for_vertex_radius:
+                    edge._set_start_and_end_attrs(graph[u], graph[v])
+                    edge.generate_points()
+                else:
+                    edge.put_start_and_end_on(
+                        graph[u].get_center(), graph[v].get_center()
+                    )
 
         self.add_updater(update_edges)
 
