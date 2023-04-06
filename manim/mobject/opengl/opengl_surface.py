@@ -261,7 +261,9 @@ class OpenGLSurface(OpenGLMobject):
             shader_data["du_point"] = du_points
             shader_data["dv_point"] = dv_points
             if self.colorscale:
-                shader_data["color"] = self._get_color_by_value(s_points)
+                if not hasattr(self, "color_by_val"):
+                    self.color_by_val = self._get_color_by_value(s_points)
+                shader_data["color"] = self.color_by_val
             else:
                 self.fill_in_shader_color_info(shader_data)
         return shader_data
