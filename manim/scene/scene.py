@@ -565,7 +565,7 @@ class Scene:
         ) or replace_in_list(self.foreground_mobjects, old_mobject, new_mobject)
 
         if not replaced:
-            raise ValueError(f"Could not find {old_mobject} in scene or ")
+            raise ValueError(f"Could not find {old_mobject} in scene")
 
     def add_updater(self, func: Callable[[float], None]) -> None:
         """Add an update function to the scene.
