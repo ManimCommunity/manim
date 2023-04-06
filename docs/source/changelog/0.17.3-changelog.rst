@@ -75,7 +75,7 @@ New features
 
 * :pr:`3042`: Added :meth:`.Scene.replace` and use in :class:`.ReplacementTransform`
 
-* :pr:`3155`: Added support for individualized radius values in :meth:`.Polygram.round_corners` 
+* :pr:`3155`: Added support for individualized radius values in :meth:`.Polygram.round_corners`
 
 
 * :pr:`3159`: Added :meth:`.set_opacity_by_tex` method for setting the opacity of parts of Tex mobjects
@@ -153,7 +153,7 @@ Documentation-related changes
 * :pr:`3126`: Fixed dead links to troubleshooting page
 
 
-* :pr:`3137`: Fixed example using ``reverse=True`` with :class:`.Write` 
+* :pr:`3137`: Fixed example using ``reverse=True`` with :class:`.Write`
 
 
 * :pr:`3160`: Fixed a typo
