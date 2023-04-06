@@ -2,12 +2,12 @@
 v0.17.3
 *******
 
-:Date: March 31, 2023
+:Date: April 06, 2023
 
 Contributors
 ============
 
-A total of 32 people contributed to this
+A total of 35 people contributed to this
 release. People with a '+' by their names authored a patch for the first
 time.
 
@@ -17,7 +17,9 @@ time.
 * Elyanah Aco +
 * Francisco Manríquez Novoa
 * Fredrik Lundström +
+* Frédéric Crozatier
 * Ikko Eltociear Ashimine +
+* ItIsJoeyG +
 * JinchuLi2002 +
 * Kevin Lubick
 * KingAndCross +
@@ -35,6 +37,7 @@ time.
 * davidot +
 * icedcoffeeee
 * karpfediem +
+* vahndi
 
 
 The patches included in this release have been reviewed by
@@ -42,6 +45,7 @@ the following contributors.
 
 * Benjamin Hackl
 * Fredrik Lundström
+* Frédéric Crozatier
 * Hugues Devimeux
 * Kevin Lubick
 * KingAndCross
@@ -55,7 +59,7 @@ the following contributors.
 Pull requests merged
 ====================
 
-A total of 34 pull requests were merged for this release.
+A total of 42 pull requests were merged for this release.
 
 Deprecated classes and functions
 --------------------------------
@@ -66,13 +70,18 @@ Deprecated classes and functions
 New features
 ------------
 
+* :pr:`2974`: Added :class:`.DiGraph`, a mobject representing directed graphs
+
+
 * :pr:`3042`: Added :meth:`.Scene.replace` and use in :class:`.ReplacementTransform`
-   ReplacementTransform now preserves the draw order of the (old) mobject when replacing it with `target_mobject`. This uses the new `Scene.replace` method.
 
 * :pr:`3155`: Added support for individualized radius values in :meth:`.Polygram.round_corners` 
 
 
 * :pr:`3159`: Added :meth:`.set_opacity_by_tex` method for setting the opacity of parts of Tex mobjects
+
+
+* :pr:`3201`: New tip shape :class:`.StealthTip`, allow specifying tip shape of :class:`.NumberLine`
 
 
 Enhancements
@@ -91,20 +100,22 @@ Enhancements
 
 
 * :pr:`3180`: Performance: Speed up width/height/depth calculations by reducing copying
-   The `width`, `height`, and `depth` attributes on Mobjects are calculated more quickly and consume less memory.
+
 
 * :pr:`3181`: Improved creation time for large :class:`.Text` mobjects
-   - Reduce memory allocations when creating `Text` Mobjects (including `Code` and `Paragraph`)
-   - Make the SVGMobject cache optional, and have `Text` Mobjects skip the cache by default.
+
 
 * :pr:`3182`: Reduce memory allocations when building :class:`.SVGMobject`
 
 
 * :pr:`3191`: Fixed OpenGL rendering in named threads
-   Narrowed condition for disabling direct rendering in interactive embed mode.
+
 
 Fixed bugs
 ----------
+
+* :pr:`3015`: Fixed bug with ``label_constructor`` in :meth:`.NumberLine.add_labels`
+
 
 * :pr:`3095`: Fixed ``get_axis_labels`` for :class:`.Axes` and :class:`.ThreeDAxes`
 
@@ -151,6 +162,12 @@ Documentation-related changes
 * :pr:`3189`: Corrected the hinted return type for :func:`angle_between_vectors`
 
 
+* :pr:`3199`: Updated ``winget`` command for installing MiKTeX in documentation
+
+
+* :pr:`3204`: Fixed docstring formatting of :meth:`.Scene.replace` and improved its error handling
+
+
 Code quality improvements and similar refactors
 -----------------------------------------------
 
@@ -169,6 +186,9 @@ Code quality improvements and similar refactors
 * :pr:`3165`: Removed deprecated keyword argument in :meth:`.Mobject.align_to`
 
 
+* :pr:`3166`: Made :class:`.ArrowTriangleTip`, :class:`.ArrowTriangleFilledTip` available to module namespace
+
+
 * :pr:`3179`: Fixed deprecation warning in :class:`.ParametricFunction` with ``use_vectorized=True``
 
 
@@ -176,3 +196,12 @@ Code quality improvements and similar refactors
 
 
 * :pr:`3196`: CI: updated PATH for recent changed in TinyTex
+
+
+* :pr:`3200`: Made import from ``moderngl`` compatible with more recent versions
+
+
+New releases
+------------
+
+* :pr:`3198`: Prepare new release: v0.17.3
