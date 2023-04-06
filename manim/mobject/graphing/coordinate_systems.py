@@ -1783,6 +1783,17 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
                 # x_min must be > 0 because log is undefined at 0.
                 graph = ax.plot(lambda x: x ** 2, x_range=[0.001, 10], use_smoothing=False)
                 self.add(ax, graph)
+
+    Styling arguments can be passed to the underlying :class:`.NumberLine`
+    mobjects that represent the axes:
+
+    .. manim:: AxesWithDifferentTips
+        :save_last_frame:
+
+        class AxesWithDifferentTips(Scene):
+            def construct(self):
+                ax = Axes(axis_config={'tip_shape': StealthTip})
+                self.add(ax)
     """
 
     def __init__(
@@ -2087,10 +2098,11 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         x_label: float | str | Mobject = "x",
         y_label: float | str | Mobject = "y",
     ) -> VGroup:
-        """Defines labels for the x_axis and y_axis of the graph.
+        """Defines labels for the x-axis and y-axis of the graph.
 
         For increased control over the position of the labels,
-        use :meth:`get_x_axis_label` and :meth:`get_y_axis_label`.
+        use :meth:`~.CoordinateSystem.get_x_axis_label` and
+        :meth:`~.CoordinateSystem.get_y_axis_label`.
 
         Parameters
         ----------
@@ -2106,8 +2118,8 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
 
 
         .. seealso::
-            :meth:`.get_x_axis_label`
-            :meth:`.get_y_axis_label`
+            :meth:`~.CoordinateSystem.get_x_axis_label`
+            :meth:`~.CoordinateSystem.get_y_axis_label`
 
         Examples
         --------
@@ -2476,7 +2488,9 @@ class ThreeDAxes(Axes):
         """Defines labels for the x_axis and y_axis of the graph.
 
         For increased control over the position of the labels,
-        use :meth:`.get_x_axis_label` and :meth:`.get_y_axis_label`.
+        use :meth:`~.CoordinateSystem.get_x_axis_label`,
+        :meth:`~.ThreeDAxes.get_y_axis_label`, and
+        :meth:`~.ThreeDAxes.get_z_axis_label`.
 
         Parameters
         ----------
@@ -2494,9 +2508,9 @@ class ThreeDAxes(Axes):
 
 
         .. seealso::
-            :meth:`.get_x_axis_label`
-            :meth:`.get_y_axis_label`
-            :meth:`.get_z_axis_label`
+            :meth:`~.CoordinateSystem.get_x_axis_label`
+            :meth:`~.ThreeDAxes.get_y_axis_label`
+            :meth:`~.ThreeDAxes.get_z_axis_label`
 
         Examples
         --------
