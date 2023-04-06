@@ -2404,7 +2404,7 @@ class CurvesAsSubmobjects(VGroup):
         if len(submobjs_with_pts) == 0:
             caller_name = sys._getframe(1).f_code.co_name
             raise Exception(
-                f"Cannot call CurvesAsSubmobjects.{caller_name} for a CurvesAsSubmobject whose submobjects have points"
+                f"Cannot call CurvesAsSubmobjects.{caller_name} for a CurvesAsSubmobject whose submobjects have no points"
             )
         return submobjs_with_pts
 
