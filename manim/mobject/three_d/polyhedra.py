@@ -99,6 +99,9 @@ class Polyhedron(VGroup):
         self.graph_config = dict(
             {
                 "vertex_type": Dot3D,
+                "vertex_config": {
+                    "radius": 0,
+                },
                 "edge_config": {
                     "stroke_opacity": 0,  # I find that having the edges visible makes the polyhedra look weird
                 },
