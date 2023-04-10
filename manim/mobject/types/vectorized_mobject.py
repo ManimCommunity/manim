@@ -1392,7 +1392,7 @@ class VMobject(Mobject):
         nppcc = self.n_points_per_cubic_curve
         return self.points[nppcc - 1 :: nppcc]
 
-    def get_anchors(self) -> np.ndarray:
+    def get_anchors(self) -> typing.Iterable[np.ndarray]:
         """Returns the anchors of the curves forming the VMobject.
 
         Returns
@@ -1402,9 +1402,10 @@ class VMobject(Mobject):
         """
         if self.points.shape[0] == 1:
             return self.points
-        return np.array(
-            list(it.chain(*zip(self.get_start_anchors(), self.get_end_anchors()))),
-        )
+
+        s = self.get_start_anchors()
+        e = self.get_end_anchors()
+        return [s[i // 2] if i % 2 == 0 else e[i // 2] for i in range(len(s) + len(e))]
 
     def get_points_defining_boundary(self):
         # Probably returns all anchors, but this is weird regarding  the name of the method.
