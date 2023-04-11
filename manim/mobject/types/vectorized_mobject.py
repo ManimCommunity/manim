@@ -2368,7 +2368,7 @@ class CurvesAsSubmobjects(VGroup):
         if alpha < 0 or alpha > 1:
             raise ValueError(f"Alpha {alpha} not between 0 and 1.")
 
-        self.throw_error_if_no_submobjects()
+        self._throw_error_if_no_submobjects()
         submobjs_with_pts = self._get_submobjects_with_points()
 
         if alpha == 1:
@@ -2390,7 +2390,7 @@ class CurvesAsSubmobjects(VGroup):
 
             current_length += part_length
 
-    def throw_error_if_no_submobjects(self):
+    def _throw_error_if_no_submobjects(self):
         if len(self.submobjects) == 0:
             caller_name = sys._getframe(1).f_code.co_name
             raise Exception(
