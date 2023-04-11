@@ -1397,7 +1397,7 @@ class VMobject(Mobject):
 
         Returns
         -------
-        np.ndarray
+        typing.Iterable[np.ndarray]
             The anchors.
         """
         if self.points.shape[0] == 1:

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import itertools as it
 import operator as op
-import typing
 from functools import reduce, wraps
 from typing import Callable, Iterable, Optional, Sequence
 
@@ -1014,7 +1013,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         return alpha
 
-    def get_anchors_and_handles(self) -> typing.Iterable[np.ndarray]:
+    def get_anchors_and_handles(self) -> Iterable[np.ndarray]:
         """
         Returns anchors1, handles, anchors2,
         where (anchors1[i], handles[i], anchors2[i])
@@ -1046,12 +1045,12 @@ class OpenGLVMobject(OpenGLMobject):
         nppc = self.n_points_per_curve
         return self.points[nppc - 1 :: nppc]
 
-    def get_anchors(self) -> typing.Iterable[np.ndarray]:
+    def get_anchors(self) -> Iterable[np.ndarray]:
         """Returns the anchors of the curves forming the OpenGLVMobject.
 
         Returns
         -------
-        np.ndarray
+        Iterable[np.ndarray]
             The anchors.
         """
         points = self.points
