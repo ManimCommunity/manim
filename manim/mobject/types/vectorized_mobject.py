@@ -2345,6 +2345,69 @@ class CurvesAsSubmobjects(VGroup):
             part.match_style(vmobject)
             self.add(part)
 
+    def point_from_proportion(self, alpha: float) -> np.ndarray:
+        """Gets the point at a proportion along the path of the :class:`CurvesAsSubmobjects`.
+
+        Parameters
+        ----------
+        alpha
+            The proportion along the the path of the :class:`CurvesAsSubmobjects`.
+
+        Returns
+        -------
+        :class:`numpy.ndarray`
+            The point on the :class:`CurvesAsSubmobjects`.
+
+        Raises
+        ------
+        :exc:`ValueError`
+            If ``alpha`` is not between 0 and 1.
+        :exc:`Exception`
+            If the :class:`CurvesAsSubmobjects` has no submobjects, or no submobject has points.
+        """
+        if alpha < 0 or alpha > 1:
+            raise ValueError(f"Alpha {alpha} not between 0 and 1.")
+
+        self._throw_error_if_no_submobjects()
+        submobjs_with_pts = self._get_submobjects_with_points()
+
+        if alpha == 1:
+            return submobjs_with_pts[-1].points[-1]
+
+        submobjs_arc_lengths = tuple(
+            part.get_arc_length() for part in submobjs_with_pts
+        )
+
+        total_length = sum(submobjs_arc_lengths)
+        target_length = alpha * total_length
+        current_length = 0
+
+        for i, part in enumerate(submobjs_with_pts):
+            part_length = submobjs_arc_lengths[i]
+            if current_length + part_length >= target_length:
+                residue = (target_length - current_length) / part_length
+                return part.point_from_proportion(residue)
+
+            current_length += part_length
+
+    def _throw_error_if_no_submobjects(self):
+        if len(self.submobjects) == 0:
+            caller_name = sys._getframe(1).f_code.co_name
+            raise Exception(
+                f"Cannot call CurvesAsSubmobjects.{caller_name} for a CurvesAsSubmobject with no submobjects"
+            )
+
+    def _get_submobjects_with_points(self):
+        submobjs_with_pts = tuple(
+            part for part in self.submobjects if len(part.points) > 0
+        )
+        if len(submobjs_with_pts) == 0:
+            caller_name = sys._getframe(1).f_code.co_name
+            raise Exception(
+                f"Cannot call CurvesAsSubmobjects.{caller_name} for a CurvesAsSubmobject whose submobjects have no points"
+            )
+        return submobjs_with_pts
+
 
 class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
     """A :class:`VMobject` composed of dashes instead of lines.
