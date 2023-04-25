@@ -143,9 +143,11 @@ extlinks = {
 }
 
 # opengraph settings
-ogp_image = "https://www.manim.community/logo.png"
 ogp_site_name = "Manim Community | Documentation"
 ogp_site_url = "https://docs.manim.community/"
+ogp_social_cards = {
+    "image": "_static/logo.png",
+}
 
 
 # inheritance_graph settings
