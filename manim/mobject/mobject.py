@@ -2778,7 +2778,7 @@ class Mobject:
         self,
         z_index_value: float,
         family: bool = True,
-    ) -> VMobject:
+    ) -> T:
         """Sets the :class:`~.Mobject`'s :attr:`z_index` to the value specified in `z_index_value`.
 
         Parameters
