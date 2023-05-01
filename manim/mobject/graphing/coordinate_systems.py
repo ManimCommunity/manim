@@ -1047,7 +1047,7 @@ class CoordinateSystem:
 
         if dot_config is None:
             dot_config = {}
-        else:
+        if color is None:
             color = graph.get_color()
         label = self.x_axis._create_label_tex(label).set_color(color)
 
