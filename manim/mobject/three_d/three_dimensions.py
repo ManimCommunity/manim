@@ -16,7 +16,7 @@ __all__ = [
     "Torus",
 ]
 
-from typing import TYPE_CHECKING
+from typing import Callable, Sequence
 
 import numpy as np
 
@@ -28,14 +28,18 @@ from manim.mobject.mobject import *
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
-from manim.utils.color import *
+from manim.utils.color import (
+    ParsableManimColor,
+    ManimColor,
+    BLUE,
+    BLUE_D,
+    BLUE_E,
+    LIGHT_GREY,
+    WHITE,
+    interpolate_color,
+)
 from manim.utils.iterables import tuplify
 from manim.utils.space_ops import normalize, perpendicular_bisector, z_to_vector
-
-if TYPE_CHECKING:
-    from typing import *
-
-    from colour import Color
 
 
 class ThreeDVMobject(VMobject, metaclass=ConvertToOpenGL):
@@ -193,7 +197,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
             self.set_fill_by_checkerboard(*self.checkerboard_colors)
 
     def set_fill_by_checkerboard(
-        self, *colors: Sequence[Color], opacity: float = None
+        self, *colors: Sequence[ParsableManimColor], opacity: float = None
     ) -> Mobject:
         """Sets the fill_color of each face of :class:`Surface` in
         an alternating pattern.
@@ -496,7 +500,7 @@ class Cube(VGroup):
         self,
         side_length: float = 2,
         fill_opacity: float = 0.75,
-        fill_color: Color = BLUE,
+        fill_color: ParsableManimColor = BLUE,
         stroke_width: float = 0,
         **kwargs,
     ) -> None:
@@ -906,7 +910,7 @@ class Line3D(Cylinder):
         start: np.ndarray = LEFT,
         end: np.ndarray = RIGHT,
         thickness: float = 0.02,
-        color: Color = None,
+        color: ParsableManimColor = None,
         **kwargs,
     ):
         self.thickness = thickness
@@ -1129,7 +1133,7 @@ class Arrow3D(Line3D):
         thickness: float = 0.02,
         height: float = 0.3,
         base_radius: float = 0.08,
-        color: Color = WHITE,
+        color: ParsableManimColor = WHITE,
         **kwargs,
     ) -> None:
         super().__init__(
