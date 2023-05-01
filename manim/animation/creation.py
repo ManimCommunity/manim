@@ -83,7 +83,7 @@ if TYPE_CHECKING:
 
 from manim.mobject.opengl.opengl_surface import OpenGLSurface
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
-from manim.utils.color import *
+from manim.utils.color import ManimColor
 
 from .. import config
 from ..animation.animation import Animation
