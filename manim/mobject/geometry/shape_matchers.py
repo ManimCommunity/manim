@@ -152,7 +152,7 @@ class Cross(VGroup):
     def __init__(
         self,
         mobject: Mobject | None = None,
-        stroke_color: Color = RED,
+        stroke_color: ParsableManimColor = RED,
         stroke_width: float = 6,
         scale_factor: float = 1,
         **kwargs,
