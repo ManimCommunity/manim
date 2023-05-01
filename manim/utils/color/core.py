@@ -1,139 +1,4 @@
-"""Colors and utility functions for conversion between different color models."""
-
-from __future__ import annotations
-
-# logger = _config.logger
-import colorsys
-import random
-from typing import Any, Sequence, Union
-
-import numpy as np
-from typing_extensions import Literal, TypeAlias
-
-from ...utils.space_ops import normalize
-
-# import manim._config as _config
-
-
-"""A list of pre-defined colors.
-
-Examples
---------
-
-.. manim:: ColorsOverview
-    :save_last_frame:
-    :hide_source:
-
-    from manim.utils.color import Colors
-    class ColorsOverview(Scene):
-        def construct(self):
-            def color_group(color):
-                group = VGroup(
-                    *[
-                        Line(ORIGIN, RIGHT * 1.5, stroke_width=35, color=Colors[name].value)
-                        for name in subnames(color)
-                    ]
-                ).arrange_submobjects(buff=0.4, direction=DOWN)
-
-                name = Text(color).scale(0.6).next_to(group, UP, buff=0.3)
-                if any(decender in color for decender in "gjpqy"):
-                    name.shift(DOWN * 0.08)
-                group.add(name)
-                return group
-
-            def subnames(name):
-                return [name + "_" + char for char in "abcde"]
-
-            color_groups = VGroup(
-                *[
-                    color_group(color)
-                    for color in [
-                        "blue",
-                        "teal",
-                        "green",
-                        "yellow",
-                        "gold",
-                        "red",
-                        "maroon",
-                        "purple",
-                    ]
-                ]
-            ).arrange_submobjects(buff=0.2, aligned_edge=DOWN)
-
-            for line, char in zip(color_groups[0], "abcde"):
-                color_groups.add(Text(char).scale(0.6).next_to(line, LEFT, buff=0.2))
-
-            def named_lines_group(length, colors, names, text_colors, align_to_block):
-                lines = VGroup(
-                    *[
-                        Line(
-                            ORIGIN,
-                            RIGHT * length,
-                            stroke_width=55,
-                            color=Colors[color].value,
-                        )
-                        for color in colors
-                    ]
-                ).arrange_submobjects(buff=0.6, direction=DOWN)
-
-                for line, name, color in zip(lines, names, text_colors):
-                    line.add(Text(name, color=color).scale(0.6).move_to(line))
-                lines.next_to(color_groups, DOWN, buff=0.5).align_to(
-                    color_groups[align_to_block], LEFT
-                )
-                return lines
-
-            other_colors = (
-                "pink",
-                "light_pink",
-                "orange",
-                "light_brown",
-                "dark_brown",
-                "gray_brown",
-            )
-
-            other_lines = named_lines_group(
-                3.2,
-                other_colors,
-                other_colors,
-                [BLACK] * 4 + [WHITE] * 2,
-                0,
-            )
-
-            gray_lines = named_lines_group(
-                6.6,
-                ["white"] + subnames("gray") + ["black"],
-                [
-                    "white",
-                    "lighter_gray / gray_a",
-                    "light_gray / gray_b",
-                    "gray / gray_c",
-                    "dark_gray / gray_d",
-                    "darker_gray / gray_e",
-                    "black",
-                ],
-                [BLACK] * 3 + [WHITE] * 4,
-                2,
-            )
-
-            pure_colors = (
-                "pure_red",
-                "pure_green",
-                "pure_blue",
-            )
-
-            pure_lines = named_lines_group(
-                3.2,
-                pure_colors,
-                pure_colors,
-                [BLACK, BLACK, WHITE],
-                6,
-            )
-
-            self.add(color_groups, other_lines, gray_lines, pure_lines)
-
-            VGroup(*self.mobjects).move_to(ORIGIN)
-
+"""Colors and utility functions for conversion between different color models.
 
 The preferred way of using these colors is by importing their constants from manim:
 
@@ -141,7 +6,7 @@ The preferred way of using these colors is by importing their constants from man
 
     >>> from manim import RED, GREEN, BLUE
     >>> RED
-    '#FC6255'
+    ManimColor('#FC6255')
 
 Note this way uses the name of the colors in UPPERCASE.
 
@@ -161,6 +26,20 @@ name of the colors in lowercase.
     e.g. GREEN = GREEN_C
 
 """
+
+
+from __future__ import annotations
+
+# logger = _config.logger
+import colorsys
+import random
+from typing import Any, Sequence, Union
+
+import numpy as np
+from typing_extensions import Literal, TypeAlias
+
+from ...utils.space_ops import normalize
+
 
 ManimColorDType: TypeAlias = np.float64
 ManimFloat: TypeAlias = np.float64
