@@ -17,7 +17,11 @@ Y	Yellow
 
 The codes (or names) cannot be used in HTML.
 
-These hex values are non official approximate values intended to simulate AS 2700 colors
+These hex values are non official approximate values intended to simulate AS 2700 colors:
+
+.. automanimcolormodule:: manim.utils.color.AS2700
+   :noindex:
+
 """
 
 from .core import ManimColor

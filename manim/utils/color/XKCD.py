@@ -5,6 +5,9 @@ XKCD Color Names
 XKCD is a popular web comic created by Randall Munroe.
 His "Color Name Survey" (with 200 000 participants) resulted in a list of nearly 1000 color names.
 These hex values are non official approximate values intended to simulate the colors in HTML:
+
+.. automanimcolormodule:: manim.utils.color.XKCD
+
 """
 from .core import ManimColor
 

@@ -4,6 +4,8 @@
 This list of X11 color names was developed at the
 Massachusetts Intitute of Technology (MIT) during
 the development of color based computer display system:
+
+.. automanimcolormodule:: manim.utils.color.X11
 """
 from .core import ManimColor
 

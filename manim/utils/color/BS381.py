@@ -2,7 +2,10 @@
 """
 The British Standards for colors is called BS 381.
 
-These hex values are non official approximate values intended to simulate the BS 381
+These hex values are non official approximate values intended to simulate the BS 381:
+
+.. automanimcolormodule:: manim.utils.color.BS381
+
 """
 from .core import ManimColor
 

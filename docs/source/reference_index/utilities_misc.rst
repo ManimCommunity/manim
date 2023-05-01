@@ -11,12 +11,7 @@ Module Index
 
    constants
    ~utils.bezier
-   ~utils.color.core
-   ~utils.color.manim_colors
-   ~utils.color.AS2700
-   ~utils.color.BS381
-   ~utils.color.XKCD
-   ~utils.color.X11
+   ~utils.color
    ~utils.commands
    ~utils.config_ops
    ~utils.deprecation

@@ -1,29 +1,7 @@
-"""Colors and utility functions for conversion between different color models.
+"""Manim's (internal) color class and some utilities for color conversion.
 
-The preferred way of using these colors is by importing their constants from manim:
-
-.. code-block:: pycon
-
-    >>> from manim import RED, GREEN, BLUE
-    >>> RED
-    ManimColor('#FC6255')
-
-Note this way uses the name of the colors in UPPERCASE.
-
-Alternatively, you can also import this Enum directly and use its members
-directly, through the use of :code:`color.value`.  Note this way uses the
-name of the colors in lowercase.
-
-.. code-block:: pycon
-
-    >>> from manim.utils.color import Colors
-    >>> Colors.red.value
-    '#FC6255'
-
-.. note::
-
-    The colors of type "C" have an alias equal to the colorname without a letter,
-    e.g. GREEN = GREEN_C
+This module contains the implementation of :class:`.ManimColor`,
+the class internally used to represent colors.
 
 """
 
@@ -68,6 +46,19 @@ re_hex = re.compile("((?<=#)|(?<=0x))[A-F0-9]{6,8}", re.IGNORECASE)
 
 
 class ManimColor:
+    """Internal representation of a color.
+
+    TODO: some details about the implementation (internal value format...).
+
+    Parameters
+    ----------
+    value
+        Some representation of a color (e.g., a string or
+        a suitable tuple).
+    alpha
+        The opacity of the color. By default, colors are
+        fully opaque (value 1.0).
+    """
     def __init__(
         self,
         value: ParsableManimColor,

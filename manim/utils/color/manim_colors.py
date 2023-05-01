@@ -116,6 +116,8 @@ These colors form Manim's default color space.
 
             VGroup(*self.mobjects).move_to(ORIGIN)
 
+.. automanimcolormodule:: manim.utils.color.manim_colors
+
 """
 
 from .core import ManimColor
