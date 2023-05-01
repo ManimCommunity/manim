@@ -1758,7 +1758,7 @@ class Mobject:
         if family:
             for submob in self.submobjects:
                 submob.set_color(color, family=family)
-        print("Setting color of", self, "to", color)
+
         self.color = ManimColor.parse(color)
         return self
 
@@ -2187,7 +2187,7 @@ class Mobject:
         all_mobjects = [self] + list(it.chain(*sub_families))
         return remove_list_redundancies(all_mobjects)
 
-    def family_members_with_points(self) -> Mobject:
+    def family_members_with_points(self) -> list[Mobject]:
         return [m for m in self.get_family() if m.get_num_points() > 0]
 
     def arrange(
