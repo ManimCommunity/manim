@@ -87,7 +87,7 @@ class ManimColorModuleDocumenter(Directive):
                 col2 = nodes.paragraph()
                 col2 += nodes.raw(
                     "",
-                    f'<div style="width:100px;height:2rem;background-color:{hex_code};text-align:center;line-height:37px;"><p style="color:{font_color}; font-weight:bold; font-family: mono;">{hex_code}</p></div>',
+                    f'<div style="width:100px;height:2rem;background-color:{hex_code};text-align:center;line-height:37px;border-radius:8px;"><p style="color:{font_color}; font-weight:bold; font-family: mono;">{hex_code}</p></div>',
                     format="html",
                 )
                 row += nodes.entry("", col1)
