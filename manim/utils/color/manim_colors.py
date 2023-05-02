@@ -6,13 +6,14 @@ These colors form Manim's default color space.
     :save_last_frame:
     :hide_source:
 
-    from manim.utils.color import Colors
+    import manim.utils.color.manim_colors as Colors
+
     class ColorsOverview(Scene):
         def construct(self):
             def color_group(color):
                 group = VGroup(
                     *[
-                        Line(ORIGIN, RIGHT * 1.5, stroke_width=35, color=Colors[name].value)
+                        Line(ORIGIN, RIGHT * 1.5, stroke_width=35, color=getattr(Colors, name.upper()))
                         for name in subnames(color)
                     ]
                 ).arrange_submobjects(buff=0.4, direction=DOWN)
@@ -52,7 +53,7 @@ These colors form Manim's default color space.
                             ORIGIN,
                             RIGHT * length,
                             stroke_width=55,
-                            color=Colors[color].value,
+                            color=getattr(Colors, color.upper()),
                         )
                         for color in colors
                     ]
