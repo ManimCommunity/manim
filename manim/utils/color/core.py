@@ -18,7 +18,6 @@ from typing_extensions import Literal, TypeAlias
 
 from ...utils.space_ops import normalize
 
-
 ManimColorDType: TypeAlias = np.float64
 ManimFloat: TypeAlias = np.float64
 ManimInt: TypeAlias = np.int64
@@ -59,6 +58,7 @@ class ManimColor:
         The opacity of the color. By default, colors are
         fully opaque (value 1.0).
     """
+
     def __init__(
         self,
         value: ParsableManimColor,

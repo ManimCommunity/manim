@@ -1096,10 +1096,7 @@ class ManimConfig(MutableMapping):
 
     background_color = property(
         lambda self: self._d["background_color"],
-        lambda self, val: self._d.__setitem__(
-            "background_color",
-            ManimColor(val)
-        ),
+        lambda self, val: self._d.__setitem__("background_color", ManimColor(val)),
         doc="Background color of the scene (-c).",
     )
 

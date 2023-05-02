@@ -29,13 +29,13 @@ from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import (
-    ParsableManimColor,
-    ManimColor,
     BLUE,
     BLUE_D,
     BLUE_E,
     LIGHT_GREY,
     WHITE,
+    ManimColor,
+    ParsableManimColor,
     interpolate_color,
 )
 from manim.utils.iterables import tuplify
