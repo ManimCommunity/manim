@@ -60,9 +60,8 @@ class ManimColorModuleDocumenter(Directive):
         color_elements = []
         for member_name, member_obj in inspect.getmembers(module):
             if isinstance(member_obj, ManimColor):
-                hex_code = member_obj.to_hex()[1:]
-                r, g, b = tuple(int(hex_code[i : i + 2], 16) for i in (0, 2, 4))
-                luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255
+                r, g, b = member_obj.to_rgb()
+                luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b
 
                 # Choose the font color based on the background luminance
                 if luminance > 0.5:
@@ -73,9 +72,6 @@ class ManimColorModuleDocumenter(Directive):
                 color_elements.append((member_name, member_obj.to_hex(), font_color))
 
         tbody = nodes.tbody()
-
-        def get_color_element():
-            yield from color_elements
 
         for base_i in range(0, len(color_elements), num_color_cols):
             row = nodes.row()
