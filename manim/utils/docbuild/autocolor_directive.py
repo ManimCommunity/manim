@@ -39,7 +39,7 @@ class ManimColorModuleDocumenter(Directive):
 
         # Number of Colors displayed in one row
         num_color_cols = 2
-        table = nodes.table()
+        table = nodes.table(align="center")
 
         tgroup = nodes.tgroup(cols=num_color_cols * 2)
         table += tgroup
@@ -82,12 +82,10 @@ class ManimColorModuleDocumenter(Directive):
             for member_name, hex_code, font_color in color_elements[
                 base_i : base_i + num_color_cols
             ]:
-                col1 = nodes.literal()
-                col1 += nodes.inline(text=member_name)
-                col2 = nodes.paragraph()
-                col2 += nodes.raw(
+                col1 = nodes.literal(text=member_name)
+                col2 = nodes.raw(
                     "",
-                    f'<div style="width:100px;height:2rem;background-color:{hex_code};text-align:center;line-height:37px;border-radius:8px;"><p style="color:{font_color}; font-weight:bold; font-family: mono;">{hex_code}</p></div>',
+                    f'<div style="background-color:{hex_code};padding: 0.25rem 0;border-radius:8px;margin: 0.5rem 0.2rem"><code style="color:{font_color};">{hex_code}</code></div>',
                     format="html",
                 )
                 row += nodes.entry("", col1)
