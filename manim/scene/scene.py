@@ -521,21 +521,22 @@ class Scene:
             return self
 
     def replace(self, old_mobject: Mobject, new_mobject: Mobject) -> None:
-        """Replace one Mobject in the scene with another, preserving draw order.
+        """Replace one mobject in the scene with another, preserving draw order.
 
-        If old_mobject is a submobject of some other Mobject (e.g. a Group),
-        the new_mobject will replace it inside the group, without otherwise
-        changing the parent mobject.
+        If ``old_mobject`` is a submobject of some other Mobject (e.g. a
+        :class:`.Group`), the new_mobject will replace it inside the group,
+        without otherwise changing the parent mobject.
 
         Parameters
         ----------
-        old_mobject - A Mobject which must be in the scene. This method asserts if
-                      old_mobject is not in the scene
-        new_mobject - A Mobject which must not already be in the scene.
+        old_mobject
+            The mobject to be replaced. Must be present in the scene.
+        new_mobject
+            A mobject which must not already be in the scene.
 
         """
-        assert old_mobject is not None
-        assert new_mobject is not None
+        if old_mobject is None or new_mobject is None:
+            raise ValueError("Specified mobjects cannot be None")
 
         def replace_in_list(
             mobj_list: list[Mobject], old_m: Mobject, new_m: Mobject
@@ -562,7 +563,9 @@ class Scene:
         replaced = replace_in_list(
             self.mobjects, old_mobject, new_mobject
         ) or replace_in_list(self.foreground_mobjects, old_mobject, new_mobject)
-        assert replaced, "Could not find old_mobject in Scene"
+
+        if not replaced:
+            raise ValueError(f"Could not find {old_mobject} in scene")
 
     def add_updater(self, func: Callable[[float], None]) -> None:
         """Add an update function to the scene.

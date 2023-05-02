@@ -92,7 +92,7 @@ def test_graph_remove_edges(using_opengl_renderer):
     assert set(G.edges.keys()) == {(2, 3), (3, 4), (4, 5), (1, 5)}
     assert set(G._graph.edges()) == set(G.edges.keys())
 
-    removed_mobjects = G.remove_edges((2, 3), (3, 4), (4, 5), (5, 1))
+    removed_mobjects = G.remove_edges((2, 3), (3, 4), (4, 5), (1, 5))
     assert len(removed_mobjects) == 4
     assert len(G.vertices) == 5
     assert len(G.edges) == 0
