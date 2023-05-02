@@ -1,8 +1,8 @@
-"""Manim's (internal) color class and some utilities for color conversion.
+"""Manim's (internal) color data structure and some utilities for
+color conversion.
 
 This module contains the implementation of :class:`.ManimColor`,
-the class internally used to represent colors.
-
+the data structure internally used to represent colors.
 """
 
 

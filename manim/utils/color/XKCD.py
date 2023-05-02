@@ -1,10 +1,24 @@
-# from https://www.w3schools.com/colors/colors_xkcd.asp
-"""
-XKCD Color Names
+"""Colors from the XKCD Color Name Survey
 
-XKCD is a popular web comic created by Randall Munroe.
-His "Color Name Survey" (with 200 000 participants) resulted in a list of nearly 1000 color names.
-These hex values are non official approximate values intended to simulate the colors in HTML:
+XKCD is a popular `web comic <https://xkcd.com/353/>`__ created by Randall Munroe.
+His "`Color Name Survey <http://blog.xkcd.com/2010/05/03/color-survey-results/>`__" (with
+200000 participants) resulted in a list of nearly 1000 color names.
+
+While the ``XKCD`` module is exposed to Manim's global name space, the colors included
+in it are not. This means that in order to use the colors, access them via the module name:
+
+.. code:: pycon
+
+    >>> from manim import XKCD
+    >>> XKCD.MANGO
+    ManimColor('#FFA62B')
+
+
+List of Color Constants
+-----------------------
+
+These hex values are non official approximate values intended to simulate the colors in HTML,
+taken from `https://www.w3schools.com/colors/colors_xkcd.asp`__.
 
 .. automanimcolormodule:: manim.utils.color.XKCD
 

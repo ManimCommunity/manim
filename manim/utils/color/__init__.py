@@ -17,13 +17,21 @@ There are several predefined colors available in Manim:
 - The colors listed in :mod:`.color.manim_colors` are loaded into
   Manim's global name space.
 - The colors in :mod:`.color.AS2700`, :mod:`.color.BS381`, :mod:`.color.X11`,
-  and :mod:`.color.XKCD` need to be imported separately, or referred to via
-  their module names. For example:
+  and :mod:`.color.XKCD` need to be accessed via their module (which are available
+  in Manim's global name space), or imported separately. For example:
 
   .. code:: pycon
 
      >>> from manim import XKCD
      >>> XKCD.AVOCADO
+     ManimColor('#90B134')
+
+  Or, alternatively:
+
+  .. code:: pycon
+
+     >>> from manim.utils.color.XKCD import AVOCADO
+     >>> AVOCADO
      ManimColor('#90B134')
 
 The following modules contain the predefined color constants:

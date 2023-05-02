@@ -1,8 +1,25 @@
-# from https://www.w3schools.com/colors/colors_british.asp
-"""
-The British Standards for colors is called BS 381.
+"""British Color Standard
 
-These hex values are non official approximate values intended to simulate the BS 381:
+This module contains colors defined in one of the British Standards
+for colors, BS381C. This standard specifies colors used in identification,
+coding, and other special purposes. See `https://www.britishstandardcolour.com/`__
+for more information.
+
+To use the colors from this list, access them directly from the module (which
+is exposed to Manim's global name space):
+
+.. code:: pycon
+
+    >>> from manim import BS381
+    >>> BS381.OXFORD_BLUE
+    ManimColor('#1F3057')
+
+List of Color Constants
+-----------------------
+
+These hex values (taken from `https://www.w3schools.com/colors/colors_british.asp`__)
+are non official approximate values intended to simulate the ones defined
+in the standard:
 
 .. automanimcolormodule:: manim.utils.color.BS381
 
