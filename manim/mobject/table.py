@@ -209,7 +209,6 @@ class Table(VGroup):
         line_config: dict = {},
         **kwargs,
     ):
-
         self.row_labels = row_labels
         self.col_labels = col_labels
         self.top_left_entry = top_left_entry
