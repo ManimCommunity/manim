@@ -1172,7 +1172,7 @@ class ManimConfig(MutableMapping):
         keys = ["pixel_width", "pixel_height", "frame_rate"]
         q = {k: self[k] for k in keys}
         for qual in constants.QUALITIES:
-            if all([q[k] == constants.QUALITIES[qual][k] for k in keys]):
+            if all(q[k] == constants.QUALITIES[qual][k] for k in keys):
                 return qual
         return None
 
