@@ -777,7 +777,9 @@ class Ellipse(Circle):
 
 
 class AnnularSector(Arc):
-    """
+    """A sector of an annulus.
+
+
     Parameters
     ----------
     inner_radius
@@ -862,7 +864,8 @@ class AnnularSector(Arc):
 
 
 class Sector(AnnularSector):
-    """
+    """A sector of a circle.
+
     Examples
     --------
     .. manim:: ExampleSector
@@ -935,7 +938,8 @@ class Annulus(Circle):
 
 
 class CubicBezier(VMobject, metaclass=ConvertToOpenGL):
-    """
+    """A cubic Bézier curve.
+
     Example
     -------
     .. manim:: BezierSplineExample

@@ -455,7 +455,8 @@ class Tex(MathTex):
 
 
 class BulletedList(Tex):
-    """
+    """A bulleted list.
+
     Examples
     --------
 
@@ -508,7 +509,8 @@ class BulletedList(Tex):
 
 
 class Title(Tex):
-    """
+    """A mobject representing an underlined title.
+
     Examples
     --------
     .. manim:: TitleExample
