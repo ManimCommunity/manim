@@ -1228,6 +1228,7 @@ class BackgroundColoredVMobjectDisplayer:
     camera
         Camera object to use.
     """
+
     def __init__(self, camera: Camera):
         self.camera = camera
         self.file_name_to_pixel_array_map = {}
