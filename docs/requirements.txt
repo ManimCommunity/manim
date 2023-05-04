@@ -3,4 +3,3 @@ myst-parser
 sphinx<5.1
 sphinx-copybutton
 sphinxext-opengraph
-urllib3<2.0
