@@ -5,7 +5,7 @@ build:
     - libpango1.0-dev
     - ffmpeg
 python:
-   version: 3.8
+   version: 3.10
    install:
       - requirements: docs/rtd-requirements.txt
       - requirements: docs/requirements.txt
