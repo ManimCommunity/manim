@@ -183,7 +183,7 @@ def modify_atime(file_path: str) -> None:
     file_path
         The path of the file.
     """
-    os.utime(file_path, times=(time.time(), os.path.getmtime(file_path)))
+    os.utime(file_path, times=(time.time(), Path(file_path).stat().st_mtime))
 
 
 def open_file(file_path, in_browser=False):
