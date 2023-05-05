@@ -700,9 +700,8 @@ class SceneFileWriter:
             )
             oldest_files_to_delete = sorted(
                 cached_partial_movies,
-                key=os.path.getatime,
+                key=lambda path: path.stat().st_atime,
             )[:number_files_to_delete]
-            # oldest_file_path = min(cached_partial_movies, key=os.path.getatime)
             for file_to_delete in oldest_files_to_delete:
                 file_to_delete.unlink()
             logger.info(
