@@ -89,6 +89,43 @@ from .utils import get_vectorized_mobject_class
 class Table(VGroup):
     """A mobject that displays a table on the screen.
 
+    Parameters
+    ----------
+    table
+        A 2D array or list of lists. Content of the table has to be a valid input
+        for the callable set in ``element_to_mobject``.
+    row_labels
+        List of :class:`~.VMobject` representing the labels of each row.
+    col_labels
+        List of :class:`~.VMobject` representing the labels of each column.
+    top_left_entry
+        The top-left entry of the table, can only be specified if row and
+        column labels are given.
+    v_buff
+        Vertical buffer passed to :meth:`~.Mobject.arrange_in_grid`, by default 0.8.
+    h_buff
+        Horizontal buffer passed to :meth:`~.Mobject.arrange_in_grid`, by default 1.3.
+    include_outer_lines
+        ``True`` if the table should include outer lines, by default False.
+    add_background_rectangles_to_entries
+        ``True`` if background rectangles should be added to entries, by default ``False``.
+    entries_background_color
+        Background color of entries if ``add_background_rectangles_to_entries`` is ``True``.
+    include_background_rectangle
+        ``True`` if the table should have a background rectangle, by default ``False``.
+    background_rectangle_color
+        Background color of table if ``include_background_rectangle`` is ``True``.
+    element_to_mobject
+        The :class:`~.Mobject` class applied to the table entries. by default :class:`~.Paragraph`. For common choices, see :mod:`~.text_mobject`/:mod:`~.tex_mobject`.
+    element_to_mobject_config
+        Custom configuration passed to :attr:`element_to_mobject`, by default {}.
+    arrange_in_grid_config
+        Dict passed to :meth:`~.Mobject.arrange_in_grid`, customizes the arrangement of the table.
+    line_config
+        Dict passed to :class:`~.Line`, customizes the lines of the table.
+    kwargs
+        Additional arguments to be passed to :class:`~.VGroup`.
+
     Examples
     --------
 
@@ -172,45 +209,6 @@ class Table(VGroup):
         line_config: dict = {},
         **kwargs,
     ):
-        """
-        Parameters
-        ----------
-        table
-            A 2D array or list of lists. Content of the table has to be a valid input
-            for the callable set in ``element_to_mobject``.
-        row_labels
-            List of :class:`~.VMobject` representing the labels of each row.
-        col_labels
-            List of :class:`~.VMobject` representing the labels of each column.
-        top_left_entry
-            The top-left entry of the table, can only be specified if row and
-            column labels are given.
-        v_buff
-            Vertical buffer passed to :meth:`~.Mobject.arrange_in_grid`, by default 0.8.
-        h_buff
-            Horizontal buffer passed to :meth:`~.Mobject.arrange_in_grid`, by default 1.3.
-        include_outer_lines
-            ``True`` if the table should include outer lines, by default False.
-        add_background_rectangles_to_entries
-            ``True`` if background rectangles should be added to entries, by default ``False``.
-        entries_background_color
-            Background color of entries if ``add_background_rectangles_to_entries`` is ``True``.
-        include_background_rectangle
-            ``True`` if the table should have a background rectangle, by default ``False``.
-        background_rectangle_color
-            Background color of table if ``include_background_rectangle`` is ``True``.
-        element_to_mobject
-            The :class:`~.Mobject` class applied to the table entries. by default :class:`~.Paragraph`. For common choices, see :mod:`~.text_mobject`/:mod:`~.tex_mobject`.
-        element_to_mobject_config
-            Custom configuration passed to :attr:`element_to_mobject`, by default {}.
-        arrange_in_grid_config
-            Dict passed to :meth:`~.Mobject.arrange_in_grid`, customizes the arrangement of the table.
-        line_config
-            Dict passed to :class:`~.Line`, customizes the lines of the table.
-        kwargs
-            Additional arguments to be passed to :class:`~.VGroup`.
-        """
-
         self.row_labels = row_labels
         self.col_labels = col_labels
         self.top_left_entry = top_left_entry
