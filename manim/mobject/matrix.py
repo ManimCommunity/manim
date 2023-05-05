@@ -74,6 +74,39 @@ def matrix_to_mobject(matrix):
 class Matrix(VMobject, metaclass=ConvertToOpenGL):
     """A mobject that displays a matrix on the screen.
 
+    Parameters
+    ----------
+    matrix
+        A numpy 2d array or list of lists.
+    v_buff
+        Vertical distance between elements, by default 0.8.
+    h_buff
+        Horizontal distance between elements, by default 1.3.
+    bracket_h_buff
+        Distance of the brackets from the matrix, by default ``MED_SMALL_BUFF``.
+    bracket_v_buff
+        Height of the brackets, by default ``MED_SMALL_BUFF``.
+    add_background_rectangles_to_entries
+        ``True`` if should add backgraound rectangles to entries, by default ``False``.
+    include_background_rectangle
+        ``True`` if should include background rectangle, by default ``False``.
+    element_to_mobject
+        The mobject class used to construct the elements, by default :class:`~.MathTex`.
+    element_to_mobject_config
+        Additional arguments to be passed to the constructor in ``element_to_mobject``,
+        by default ``{}``.
+    element_alignment_corner
+        The corner to which elements are aligned, by default ``DR``.
+    left_bracket
+        The left bracket type, by default ``"["``.
+    right_bracket
+        The right bracket type, by default ``"]"``.
+    stretch_brackets
+        ``True`` if should stretch the brackets to fit the height of matrix contents, by default ``True``.
+    bracket_config
+        Additional arguments to be passed to :class:`~.MathTex` when constructing
+        the brackets.
+
     Examples
     --------
     The first example shows a variety of uses of this module while the second example
@@ -146,43 +179,6 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         bracket_config: dict = {},
         **kwargs,
     ):
-        """
-
-        Parameters
-        ----------
-        matrix
-            A numpy 2d array or list of lists.
-        v_buff
-            Vertical distance between elements, by default 0.8.
-        h_buff
-            Horizontal distance between elements, by default 1.3.
-        bracket_h_buff
-            Distance of the brackets from the matrix, by default ``MED_SMALL_BUFF``.
-        bracket_v_buff
-            Height of the brackets, by default ``MED_SMALL_BUFF``.
-        add_background_rectangles_to_entries
-            ``True`` if should add backgraound rectangles to entries, by default ``False``.
-        include_background_rectangle
-            ``True`` if should include background rectangle, by default ``False``.
-        element_to_mobject
-            The mobject class used to construct the elements, by default :class:`~.MathTex`.
-        element_to_mobject_config
-            Additional arguments to be passed to the constructor in ``element_to_mobject``,
-            by default ``{}``.
-        element_alignment_corner
-            The corner to which elements are aligned, by default ``DR``.
-        left_bracket
-            The left bracket type, by default ``"["``.
-        right_bracket
-            The right bracket type, by default ``"]"``.
-        stretch_brackets
-            ``True`` if should stretch the brackets to fit the height of matrix contents, by default ``True``.
-        bracket_config
-            Additional arguments to be passed to :class:`~.MathTex` when constructing
-            the brackets.
-
-        """
-
         self.v_buff = v_buff
         self.h_buff = h_buff
         self.bracket_h_buff = bracket_h_buff
