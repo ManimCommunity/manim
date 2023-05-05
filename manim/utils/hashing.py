@@ -207,7 +207,7 @@ class _CustomEncoder(json.JSONEncoder):
                     del cvardict[i]
             try:
                 code = inspect.getsource(obj)
-            except OSError:
+            except (OSError, TypeError):
                 # This happens when rendering videos included in the documentation
                 # within doctests and should be replaced by a solution avoiding
                 # hash collision (due to the same, empty, code strings) at some point.
