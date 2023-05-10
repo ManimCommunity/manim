@@ -84,6 +84,7 @@ class AbstractImageMobject(Mobject):
                 "Available algorithms: 'bicubic', 'nearest', 'box', 'bilinear', "
                 "'hamming', 'lanczos'.",
             )
+        return self
 
     def reset_points(self):
         # Corresponding corners of image are fixed to these 3 points
