@@ -366,6 +366,62 @@ class TangentLine(Line):
         self.scale(self.length / self.get_length())
 
 
+#TODO: Find a way to prevent the label in LabeledLine and LabeledArrow from growing in size when the arrow is expanded.
+
+class LabeledLine(Line):
+    def __init__(
+        self, 
+        label, 
+        label_position:float=0.5, 
+        font_size=15,
+        label_color=WHITE,
+        label_frame=True,
+        frame_fill_color=None,
+        frame_fill_opacity=1,
+        *args, 
+        **kwargs,
+    ) -> None:
+        
+        if isinstance(label, str):
+            from manim import MathTex
+
+            rendered_label = MathTex(label, color=label_color, font_size=font_size)
+        else:
+            rendered_label = label
+
+        super().__init__(*args, **kwargs)
+
+        #calculating the vector for the label position
+        line_start, line_end = self.get_start_and_end()
+        new_vec = (line_end - line_start) * label_position
+        label_coords = line_start + new_vec
+
+        #rendered_label.move_to(self.get_vector() * label_position)
+        rendered_label.move_to(label_coords)
+
+        box = BackgroundRectangle(rendered_label, buff=0.05, color=frame_fill_color, fill_opacity=frame_fill_opacity, stroke_width=0.5)
+        self.add(box)
+        
+        if label_frame:
+            box_frame = SurroundingRectangle(rendered_label, buff=0.05, color=label_color, stroke_width=0.5)
+
+            self.add(box_frame)
+            
+        self.add(rendered_label)
+
+        #self.label_position = label_position
+
+
+class LabeledArrow(LabeledLine, Arrow):
+    def __init__(
+        self, 
+        *args,
+        **kwargs,
+    ) -> None:
+        
+        super().__init__(*args, **kwargs)
+
+
 class Elbow(VMobject, metaclass=ConvertToOpenGL):
     """Two lines that create a right angle about each other: L-shape.
 
