@@ -369,6 +369,19 @@ class TangentLine(Line):
 #TODO: Find a way to prevent the label in LabeledLine and LabeledArrow from growing in size when the arrow is expanded.
 
 class LabeledLine(Line):
+    """Constructs a line containing a label box somewhere along its length.
+
+    Parameters
+    ----------
+    label: str | Tex | MathTex | Text
+        xxxxxxx
+    label_position: float
+        xxxxxxx
+    font_size: int | float
+        xxxxxx
+    label_color: 
+    
+    """
     def __init__(
         self, 
         label, 
@@ -413,6 +426,9 @@ class LabeledLine(Line):
 
 
 class LabeledArrow(LabeledLine, Arrow):
+    """Constructs an arrow containing a label box somewhere along its length.
+
+    """
     def __init__(
         self, 
         *args,
