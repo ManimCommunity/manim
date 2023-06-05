@@ -366,7 +366,6 @@ class TangentLine(Line):
         self.scale(self.length / self.get_length())
 
 
-
 class LabeledLine(Line):
     """Constructs a line containing a label box somewhere along its length.
 
@@ -398,32 +397,32 @@ class LabeledLine(Line):
         class LabeledLineExample(Scene):
             def construct(self):
                 line = LabeledLine(
-                    label          = '0.5', 
+                    label          = '0.5',
                     label_position = 0.8,
-                    font_size      = 20, 
-                    label_color    = WHITE, 
-                    label_frame    = True, 
+                    font_size      = 20,
+                    label_color    = WHITE,
+                    label_frame    = True,
 
-                    start=LEFT+DOWN, 
+                    start=LEFT+DOWN,
                     end=RIGHT+UP)
 
 
                 line.set_length(line.get_length() * 2)
                 self.add(line)
     """
+
     def __init__(
-        self, 
-        label, 
-        label_position:float=0.5, 
+        self,
+        label,
+        label_position: float = 0.5,
         font_size=15,
         label_color=WHITE,
         label_frame=True,
         frame_fill_color=None,
         frame_fill_opacity=1,
-        *args, 
+        *args,
         **kwargs,
     ) -> None:
-        
         if isinstance(label, str):
             from manim import MathTex
 
@@ -433,31 +432,39 @@ class LabeledLine(Line):
 
         super().__init__(*args, **kwargs)
 
-        #calculating the vector for the label position
+        # calculating the vector for the label position
         line_start, line_end = self.get_start_and_end()
         new_vec = (line_end - line_start) * label_position
         label_coords = line_start + new_vec
 
-        #rendered_label.move_to(self.get_vector() * label_position)
+        # rendered_label.move_to(self.get_vector() * label_position)
         rendered_label.move_to(label_coords)
 
-        box = BackgroundRectangle(rendered_label, buff=0.05, color=frame_fill_color, fill_opacity=frame_fill_opacity, stroke_width=0.5)
+        box = BackgroundRectangle(
+            rendered_label,
+            buff=0.05,
+            color=frame_fill_color,
+            fill_opacity=frame_fill_opacity,
+            stroke_width=0.5,
+        )
         self.add(box)
-        
+
         if label_frame:
-            box_frame = SurroundingRectangle(rendered_label, buff=0.05, color=label_color, stroke_width=0.5)
+            box_frame = SurroundingRectangle(
+                rendered_label, buff=0.05, color=label_color, stroke_width=0.5
+            )
 
             self.add(box_frame)
-            
+
         self.add(rendered_label)
 
-        #self.label_position = label_position
+        # self.label_position = label_position
 
 
 class LabeledArrow(LabeledLine, Arrow):
     """Constructs an arrow containing a label box somewhere along its length.
-    This class inherits its label properties from `LabeledLine`, so the main parameters controlling it are the same. 
-    
+    This class inherits its label properties from `LabeledLine`, so the main parameters controlling it are the same.
+
     Parameters
     ----------
     label : str | Tex | MathTex | Text
@@ -490,12 +497,12 @@ class LabeledArrow(LabeledLine, Arrow):
 
                 self.add(l_arrow)
     """
+
     def __init__(
-        self, 
+        self,
         *args,
         **kwargs,
     ) -> None:
-        
         super().__init__(*args, **kwargs)
 
 
