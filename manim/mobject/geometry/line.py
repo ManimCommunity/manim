@@ -905,8 +905,8 @@ class DoubleArrow(Arrow):
 
 class LabeledArrow(LabeledLine, Arrow):
     """Constructs an arrow containing a label box somewhere along its length.
-    This class inherits its label properties from `LabeledLine`, so the main parameters controlling it are the same. 
-    
+    This class inherits its label properties from `LabeledLine`, so the main parameters controlling it are the same.
+
     Parameters
     ----------
     label : str | Tex | MathTex | Text
@@ -940,11 +940,11 @@ class LabeledArrow(LabeledLine, Arrow):
                 self.add(l_arrow)
     """
     def __init__(
-        self, 
+        self,
         *args,
         **kwargs,
     ) -> None:
-        
+
         super().__init__(*args, **kwargs)
 
 
