@@ -891,12 +891,12 @@ class LabeledArrow(LabeledLine, Arrow):
 
                 self.add(l_arrow)
     """
+
     def __init__(
         self,
         *args,
         **kwargs,
     ) -> None:
-
         super().__init__(*args, **kwargs)
 
 
