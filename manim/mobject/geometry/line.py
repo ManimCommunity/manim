@@ -461,54 +461,6 @@ class LabeledLine(Line):
         # self.label_position = label_position
 
 
-<<<<<<< HEAD
-=======
-class LabeledArrow(LabeledLine, Arrow):
-    """Constructs an arrow containing a label box somewhere along its length.
-    This class inherits its label properties from `LabeledLine`, so the main parameters controlling it are the same.
-
-    Parameters
-    ----------
-    label : str | Tex | MathTex | Text
-        Label that will be displayed on the line.
-    label_position : float | optional
-        A ratio in the range [0-1] to indicate the positon of the labelwith respect to the length of the line. Default value is 0.5.
-    font_size : int | float | optional
-        Control font size for the label. This parameter is only used when `label` is of type `str`.
-    label_color: numpy.ndarray | optional
-        The color of the label's text. This parameter is only used when `label` is of type `str`.
-    label_frame : Bool | optional
-        Add a `SurroundingRectangle` frame to the label box.
-    frame_fill_color : numpy.ndarray | optional
-        Background color to fill the label box. If no value is provided, the background color of the canvas will be used.
-    frame_fill_opacity : float | optional
-        Determine the opacity of the label box by passing a value in the range [0-1], where 0 indicates complete transparency and 1 means full opacity.
-
-
-    .. seealso::
-        :class:`LabeledLine`
-
-    Examples
-    --------
-    .. manim:: LabeledArrowExample
-        :save_last_frame:
-
-        class LabeledArrowExample(Scene):
-            def construct(self):
-                l_arrow = LabeledArrow("0.5", start=LEFT*3, end=RIGHT*3 + UP*2, label_position=0.5)
-
-                self.add(l_arrow)
-    """
-
-    def __init__(
-        self,
-        *args,
-        **kwargs,
-    ) -> None:
-        super().__init__(*args, **kwargs)
-
-
->>>>>>> e0a6e205b779d8bd76f58fb8bb06e94b98250623
 class Elbow(VMobject, metaclass=ConvertToOpenGL):
     """Two lines that create a right angle about each other: L-shape.
 
