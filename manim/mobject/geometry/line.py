@@ -6,10 +6,12 @@ __all__ = [
     "Line",
     "DashedLine",
     "TangentLine",
+    "LabeledLine",
     "Elbow",
     "Arrow",
     "Vector",
     "DoubleArrow",
+    "LabeledArrow",
     "Angle",
     "RightAngle",
 ]
