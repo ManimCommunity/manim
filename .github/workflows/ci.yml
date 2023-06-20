@@ -30,7 +30,7 @@ jobs:
 
       - name: Install Poetry
         run: |
-          pipx install poetry
+          pipx install "poetry==1.5.*"
           poetry config virtualenvs.prefer-active-python true
 
       - name: Setup Python ${{ matrix.python }}
@@ -151,7 +151,7 @@ jobs:
 
       - name: Install manim
         run: |
-          poetry config experimental.new-installer false
+          poetry config installer.modern-installation false
           poetry install
 
       - name: Run tests
