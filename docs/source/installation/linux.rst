@@ -145,6 +145,12 @@ installed by running:
 
    sudo apt install texlive texlive-latex-extra
 
+For Fedora (see `docs <https://docs.fedoraproject.org/en-US/neurofedora/latex/>`__):
+
+.. code-block:: bash
+
+   sudo dnf install texlive-scheme-full
+
 Should you choose to work with some smaller TeX distribution like
 `TinyTeX <https://yihui.org/tinytex/>`__ , the full list
 of LaTeX packages which Manim interacts with in some way (a subset might
