@@ -24,10 +24,6 @@ from colour import Color
 from manim import config
 from manim.constants import *
 from manim.mobject.geometry.arc import Arc, ArcBetweenPoints, Dot, TipableVMobject
-from manim.mobject.geometry.shape_matchers import (
-    BackgroundRectangle,
-    SurroundingRectangle,
-)
 from manim.mobject.geometry.tips import ArrowTriangleFilledTip
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
