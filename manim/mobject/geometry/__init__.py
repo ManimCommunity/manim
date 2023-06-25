@@ -8,6 +8,7 @@ Modules
 
     ~arc
     ~boolean_ops
+    ~labeled_shapes
     ~line
     ~polygram
     ~shape_matchers

@@ -1,4 +1,4 @@
-r"""Mobjects that are lines or variations of them."""
+r"""Mobjects that inherit from lines and contain a label along the length."""
 
 from __future__ import annotations
 
