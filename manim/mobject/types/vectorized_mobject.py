@@ -670,7 +670,11 @@ class VMobject(Mobject):
         # TODO, check that number new points is a multiple of 4?
         # or else that if len(self.points) % 4 == 1, then
         # len(new_points) % 4 == 3?
-        self.points = np.append(self.points, new_points, axis=0)
+        n = len(self.points)
+        points = np.empty((n + len(new_points), 3))
+        points[:n] = self.points
+        points[n:] = new_points
+        self.points = points
         return self
 
     def start_new_path(self, point):
