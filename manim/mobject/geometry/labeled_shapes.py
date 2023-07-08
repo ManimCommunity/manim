@@ -11,7 +11,6 @@ from manim.mobject.geometry.shape_matchers import (
     SurroundingRectangle,
 )
 from manim.utils.color import *
-from manim.utils.color import Colors
 
 
 class LabeledLine(Line):
