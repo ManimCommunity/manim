@@ -41,6 +41,7 @@ from ...utils.bezier import (
 from ...utils.color import BLACK, WHITE, color_to_rgba
 from ...utils.deprecation import deprecated
 from ...utils.iterables import make_even, resize_array, stretch_array_to_length, tuplify
+from ...utils.simple_functions import binary_search
 from ...utils.space_ops import rotate_vector, shoelace_direction
 
 # TODO
@@ -966,7 +967,7 @@ class VMobject(Mobject):
 
     def add_subpath(self, points: np.ndarray):
         assert len(points) % 4 == 0
-        self.points = np.append(self.points, points, axis=0)
+        self.append_points(points)
         return self
 
     def append_vectorized_mobject(self, vectorized_mobject):
@@ -1018,7 +1019,7 @@ class VMobject(Mobject):
             ``self``
         """
         for submob in self.family_members_with_points():
-            if len(submob.points) < self.n_points_per_cubic_curve:
+            if submob.n_points < self.n_points_per_cubic_curve:
                 # The case that a bezier quad is not complete (there is no bezier curve as there is not enough control points.)
                 continue
             a1, h1, h2, a2 = submob.get_anchors_and_handles()
@@ -1227,7 +1228,8 @@ class VMobject(Mobject):
             sample_points = 10
 
         curve = self.get_nth_curve_function(n)
-        points = np.array([curve(a) for a in np.linspace(0, 1, sample_points)])
+        t = np.linspace(0, 1, sample_points)
+        points = curve(t.reshape(-1, 1))
         diffs = points[1:] - points[:-1]
         norms = np.linalg.norm(diffs, axis=1)
 
@@ -1252,9 +1254,7 @@ class VMobject(Mobject):
         length : :class:`float`
             The length of the nth curve.
         """
-
-        _, length = self.get_nth_curve_function_with_length(n, sample_points)
-
+        length = np.sum(self.get_nth_curve_length_pieces(n, sample_points))
         return length
 
     def get_nth_curve_function_with_length(
@@ -1280,8 +1280,7 @@ class VMobject(Mobject):
         """
 
         curve = self.get_nth_curve_function(n)
-        norms = self.get_nth_curve_length_pieces(n, sample_points=sample_points)
-        length = np.sum(norms)
+        length = self.get_nth_curve_length(n, sample_points)
 
         return curve, length
 
@@ -1358,24 +1357,31 @@ class VMobject(Mobject):
             raise ValueError(f"Alpha {alpha} not between 0 and 1.")
 
         self.throw_error_if_no_points()
+        if alpha == 0:
+            return self.points[0]
         if alpha == 1:
             return self.points[-1]
 
-        curves_and_lengths = tuple(self.get_curve_functions_with_lengths())
+        num_curves = self.get_num_curves()
+        lengths = [self.get_nth_curve_length(n) for n in range(num_curves)]
+        acc_lengths = np.add.accumulate(lengths)
+        target_length = alpha * acc_lengths[-1]
 
-        target_length = alpha * sum(length for _, length in curves_and_lengths)
-        current_length = 0
+        # Binary search
+        left, right = 0, num_curves - 1
+        while right > left:
+            mid = (left + right) // 2
+            if acc_lengths[mid] >= target_length:
+                right = mid
+            else:
+                left = mid + 1
 
-        for curve, length in curves_and_lengths:
-            if current_length + length >= target_length:
-                if length != 0:
-                    residue = (target_length - current_length) / length
-                else:
-                    residue = 0
-
-                return curve(residue)
-
-            current_length += length
+        nth_curve = self.get_nth_curve_function(left)
+        if left == 0:
+            t = target_length / lengths[left]
+        else:
+            t = (target_length - acc_lengths[left - 1]) / lengths[left]
+        return nth_curve(t)
 
     def proportion_from_point(
         self,
