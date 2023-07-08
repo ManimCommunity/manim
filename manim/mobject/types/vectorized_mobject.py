@@ -837,8 +837,29 @@ class VMobject(Mobject):
             self.add_line_to(self.get_subpaths()[-1][0])
 
     def add_points_as_corners(self, points: np.ndarray) -> VMobject:
-        for point in points:
-            self.add_line_to(point)
+        points = np.asarray(points).reshape(-1, self.dim)
+        if self.has_new_path_started():
+            start_corners = np.empty((len(points), self.dim))
+            start_corners[0] = self.points[-1]
+            start_corners[1:] = points[:-1]
+            end_corners = points
+            self.points = self.points[:-1]
+        else:
+            start_corners = points[:-1]
+            end_corners = points[1:]
+
+        nppcc = self.n_points_per_cubic_curve
+        new_points = np.empty((nppcc * len(start_corners), self.dim))
+        new_points[::nppcc] = start_corners
+        new_points[nppcc - 1 :: nppcc] = end_corners
+        for i in range(1, nppcc - 1):
+            new_points[i::nppcc] = interpolate(
+                start_corners,
+                end_corners,
+                i / (nppcc - 1),
+            )
+
+        self.append_points(new_points)
         return points
 
     def set_points_as_corners(self, points: Sequence[float]):
