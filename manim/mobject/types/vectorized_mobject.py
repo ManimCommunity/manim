@@ -657,7 +657,7 @@ class VMobject(Mobject):
         assert len(anchors1) == len(handles1) == len(handles2) == len(anchors2)
         nppcc = self.n_points_per_cubic_curve  # 4
         total_len = nppcc * len(anchors1)
-        self.points = np.zeros((total_len, self.dim))
+        self.points = np.empty((total_len, self.dim))
         # the following will, from the four sets, dispatch them in points such that
         # self.points = [
         #     anchors1[0], handles1[0], handles2[0], anchors1[0], anchors1[1],
@@ -889,11 +889,18 @@ class VMobject(Mobject):
             ``self``
         """
         nppcc = self.n_points_per_cubic_curve
-        points = np.array(points)
+        points = np.asarray(points)
+        start_anchors = points[:-1]
+        end_anchors = points[1:]
         # This will set the handles aligned with the anchors.
         # Id est, a bezier curve will be the segment from the two anchors such that the handles belongs to this segment.
         self.set_anchors_and_handles(
-            *(interpolate(points[:-1], points[1:], a) for a in np.linspace(0, 1, nppcc))
+            start_anchors,
+            *(
+                interpolate(start_anchors, end_anchors, i / (nppcc - 1))
+                for i in range(1, nppcc - 1)
+            ),
+            end_anchors,
         )
         return self
 
