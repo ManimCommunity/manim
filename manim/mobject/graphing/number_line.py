@@ -572,18 +572,18 @@ class NumberLine(Line):
         if label_constructor is None:
             label_constructor = self.label_constructor
 
-        numbers = VGroup()
-        for x in x_values:
-            if x in excluding:
-                continue
-            numbers.add(
+        numbers = VGroup(
+            *[
                 self.get_number_mobject(
                     x,
                     font_size=font_size,
                     label_constructor=label_constructor,
                     **kwargs,
                 )
-            )
+                for x in x_values
+                if x not in excluding
+            ]
+        )
         self.add(numbers)
         self.numbers = numbers
         return self
@@ -628,7 +628,7 @@ class NumberLine(Line):
         if label_constructor is None:
             label_constructor = self.label_constructor
 
-        labels = VGroup()
+        labels = []
         for x, label in dict_values.items():
             # TODO: remove this check and ability to call
             # this method via CoordinateSystem.add_coordinates()
@@ -643,8 +643,9 @@ class NumberLine(Line):
             else:
                 raise AttributeError(f"{label} is not compatible with add_labels.")
             label.next_to(self.number_to_point(x), direction=direction, buff=buff)
-            labels.add(label)
+            labels.append(label)
 
+        labels = VGroup(*labels)
         self.labels = labels
         self.add(labels)
         return self
