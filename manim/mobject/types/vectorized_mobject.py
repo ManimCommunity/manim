@@ -978,13 +978,11 @@ class VMobject(Mobject):
         return self
 
     def append_vectorized_mobject(self, vectorized_mobject):
-        new_points = list(vectorized_mobject.points)
-
         if self.has_new_path_started():
             # Remove last point, which is starting
             # a new path
             self.points = self.points[:-1]
-        self.append_points(new_points)
+        self.append_points(vectorized_mobject.points)
 
     def apply_function(self, function):
         factor = self.pre_function_handle_to_anchor_scale_factor
