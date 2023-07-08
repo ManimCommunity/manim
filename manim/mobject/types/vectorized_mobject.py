@@ -1088,10 +1088,10 @@ class VMobject(Mobject):
         return True
 
     # Information about line
-    def get_cubic_bezier_tuples_from_points(self, points):
-        return np.array(list(self.gen_cubic_bezier_tuples_from_points(points)))
+    def get_cubic_bezier_tuples_from_points(self, points: np.ndarray) -> np.ndarray:
+        return self.gen_cubic_bezier_tuples_from_points(points)
 
-    def gen_cubic_bezier_tuples_from_points(self, points: np.ndarray) -> tuple:
+    def gen_cubic_bezier_tuples_from_points(self, points: np.ndarray) -> np.ndarray:
         """Returns the bezier tuples from an array of points.
 
         self.points is a list of the anchors and handles of the bezier curves of the mobject (ie [anchor1, handle1, handle2, anchor2, anchor3 ..])
@@ -1109,11 +1109,13 @@ class VMobject(Mobject):
         typing.Tuple
             Bezier control points.
         """
+        points = np.asarray(points)
         nppcc = self.n_points_per_cubic_curve
-        remainder = len(points) % nppcc
-        points = points[: len(points) - remainder]
-        # Basically take every nppcc element.
-        return (points[i : i + nppcc] for i in range(0, len(points), nppcc))
+        n_curves = points.shape[0] // nppcc
+        n_points = nppcc * n_curves
+        points = points[:n_points]
+
+        return points.reshape(n_curves, nppcc, self.dim)
 
     def get_cubic_bezier_tuples(self):
         return self.get_cubic_bezier_tuples_from_points(self.points)
