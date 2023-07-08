@@ -452,7 +452,7 @@ class NumberLine(Line):
         end = self.points[-1]
         direction = end - start
         proportion = np.dot(point - start, direction) / np.dot(direction, direction)
-        return interpolate(self.x_min, self.x_max, proportion)
+        return interpolate(self.x_min_no_tips, self.x_max_no_tips, proportion)
 
     def n2p(self, number: float | np.ndarray) -> np.ndarray:
         """Abbreviation for :meth:`~.NumberLine.number_to_point`."""
@@ -463,7 +463,9 @@ class NumberLine(Line):
         return self.point_to_number(point)
 
     def get_unit_size(self) -> float:
-        return self.get_length() / (self.x_range[1] - self.x_range[0])
+        return (self.points[-1] - self.points[0]) / (
+            self.x_max_no_tip - self.x_min_no_tip
+        )
 
     def get_unit_vector(self) -> np.ndarray:
         return super().get_unit_vector() * self.unit_size
