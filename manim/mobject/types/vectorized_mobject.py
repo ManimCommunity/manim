@@ -134,6 +134,10 @@ class VMobject(Mobject):
     def n_points_per_curve(self):
         return self.n_points_per_cubic_curve
 
+    @property
+    def n_points(self):
+        return self.points.shape[0]
+
     def get_group_class(self):
         return VGroup
 
@@ -625,7 +629,7 @@ class VMobject(Mobject):
             (the target size) to a Numpy array. The default implementation
             is based on Numpy's ``resize`` function.
         """
-        if new_length != len(self.points):
+        if new_length != self.n_points:
             self.points = resize_func(self.points, new_length)
         return self
 
@@ -668,9 +672,9 @@ class VMobject(Mobject):
 
     def append_points(self, new_points):
         # TODO, check that number new points is a multiple of 4?
-        # or else that if len(self.points) % 4 == 1, then
-        # len(new_points) % 4 == 3?
-        n = len(self.points)
+        # or else that if self.n_points % 4 == 1, then
+        # self.n_points % 4 == 3?
+        n = self.n_points
         points = np.empty((n + len(new_points), self.dim))
         points[:n] = self.points
         points[n:] = new_points
@@ -678,13 +682,14 @@ class VMobject(Mobject):
         return self
 
     def start_new_path(self, point):
-        if len(self.points) % 4 != 0:
+        if self.n_points % 4 != 0:
             # close the open path by appending the last
             # start anchor sufficiently often
             last_anchor = self.get_start_anchors()[-1]
-            for _ in range(4 - (len(self.points) % 4)):
-                self.append_points([last_anchor])
-        self.append_points([point])
+            closure = [last_anchor] * (4 - (self.n_points % 4))
+            self.append_points(closure + [point])
+        else:
+            self.append_points([point])
         return self
 
     def add_cubic_bezier_curve(
@@ -694,7 +699,7 @@ class VMobject(Mobject):
         handle2: np.ndarray,
         anchor2,
     ) -> None:
-        # TODO, check the len(self.points) % 4 == 0?
+        # TODO, check the self.n_points % 4 == 0?
         self.append_points([anchor1, handle1, handle2, anchor2])
 
     def add_cubic_bezier_curves(self, curves):
@@ -775,8 +780,8 @@ class VMobject(Mobject):
         nppcc = self.n_points_per_cubic_curve
         self.add_cubic_bezier_curve_to(
             *(
-                interpolate(self.get_last_point(), point, a)
-                for a in np.linspace(0, 1, nppcc)[1:]
+                interpolate(self.get_last_point(), point, i / (nppcc - 1))
+                for i in range(1, nppcc - 1)
             )
         )
         return self
@@ -827,7 +832,7 @@ class VMobject(Mobject):
     def has_new_path_started(self):
         nppcc = self.n_points_per_cubic_curve  # 4
         # A new path starting is defined by a control point which is not part of a bezier subcurve.
-        return len(self.points) % nppcc == 1
+        return self.n_points % nppcc == 1
 
     def get_last_point(self):
         return self.points[-1]
@@ -1266,7 +1271,7 @@ class VMobject(Mobject):
             number of curves. of the vmobject.
         """
         nppcc = self.n_points_per_cubic_curve
-        return len(self.points) // nppcc
+        return self.n_points // nppcc
 
     def get_curve_functions(
         self,
