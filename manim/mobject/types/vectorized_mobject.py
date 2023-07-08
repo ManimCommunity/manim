@@ -1484,12 +1484,19 @@ class VMobject(Mobject):
         """
         if self.points.shape[0] == 1:
             return self.points
+        anchors = np.empty((2 * self.get_num_curves(), self.dim))
+        anchors[0::2] = self.get_start_anchors()
+        anchors[1::2] = self.get_end_anchors()
+        return anchors
+        """
         return np.array(
             list(it.chain(*zip(self.get_start_anchors(), self.get_end_anchors()))),
         )
+        """
 
     def get_points_defining_boundary(self):
-        # Probably returns all anchors, but this is weird regarding  the name of the method.
+        # TODO: this function is probably not returning the expected array
+        # Probably returns all anchors, but this is weird regarding the name of the method.
         return np.array(list(it.chain(*(sm.get_anchors() for sm in self.get_family()))))
 
     def get_arc_length(self, sample_points_per_curve: int | None = None) -> float:
@@ -1506,12 +1513,7 @@ class VMobject(Mobject):
             The length of the :class:`VMobject`.
         """
 
-        return sum(
-            length
-            for _, length in self.get_curve_functions_with_lengths(
-                sample_points=sample_points_per_curve,
-            )
-        )
+        return sum([self.get_nth_curve_length(n) for n in range(num_curves)])
 
     # Alignment
     def align_points(self, vmobject: VMobject):
