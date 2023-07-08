@@ -978,7 +978,30 @@ class VMobject(Mobject):
 
     #
     def consider_points_equals(self, p0, p1):
-        return np.allclose(p0, p1, atol=self.tolerance_for_point_equality)
+        """Determine if two points are close enough to be considered equal.
+
+        This function reimplements np.allclose, because repeated calling of
+        np.allclose for only 2 points is inefficient.
+        ----------
+        p0
+            first point
+        p1
+            second point
+
+        Returns
+        -------
+        bool
+            Whether the points p0 and p1 are considered close or not.
+        """
+        rtol = 1.0e-5  # default from np.isclose()
+        atol = self.tolerance_for_point_equality
+        if abs(p0[0] - p1[0]) > atol + rtol * abs(p1[0]):
+            return False
+        if abs(p0[1] - p1[1]) > atol + rtol * abs(p1[1]):
+            return False
+        if abs(p0[2] - p1[2]) > atol + rtol * abs(p1[2]):
+            return False
+        return True
 
     def consider_points_equals_2d(self, p0: np.ndarray, p1: np.ndarray) -> bool:
         """Determine if two points are close enough to be considered equal.
@@ -995,7 +1018,7 @@ class VMobject(Mobject):
         Returns
         -------
         bool
-            whether two points considered close.
+            Whether the points p0 and p1 are considered close or not.
         """
         rtol = 1.0e-5  # default from np.isclose()
         atol = self.tolerance_for_point_equality
