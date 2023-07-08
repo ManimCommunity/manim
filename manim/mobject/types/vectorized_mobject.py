@@ -671,7 +671,7 @@ class VMobject(Mobject):
         # or else that if len(self.points) % 4 == 1, then
         # len(new_points) % 4 == 3?
         n = len(self.points)
-        points = np.empty((n + len(new_points), 3))
+        points = np.empty((n + len(new_points), self.dim))
         points[:n] = self.points
         points[n:] = new_points
         self.points = points
