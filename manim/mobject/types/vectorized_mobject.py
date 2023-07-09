@@ -1967,35 +1967,45 @@ class VMobject(Mobject):
         if a <= 0 and b >= 1:
             self.set_points(vmobject.points)
             return self
-        bezier_quads = vmobject.get_cubic_bezier_tuples()
-        num_cubics = len(bezier_quads)
-
-        # The following two lines will compute which bezier curves of the given mobject need to be processed.
-        # The residue basically indicates de proportion of the selected bezier curve that have to be selected.
-        # Ex : if lower_index is 3, and lower_residue is 0.4, then the algorithm will append to the points 0.4 of the third bezier curve
-        lower_index, lower_residue = integer_interpolate(0, num_cubics, a)
-        upper_index, upper_residue = integer_interpolate(0, num_cubics, b)
-
-        self.clear_points()
-        if num_cubics == 0:
+        num_curves = vmobject.get_num_curves()
+        if num_curves == 0:
+            self.clear_points()
             return self
+
+        # The following two lines will compute which Bezier curves of the given mobject need to be processed.
+        # The residue basically indicates the proportion of the selected Bezier curve that has to be selected.
+        #
+        # Example: if num_curves is 10, a is 3.4 and b is 7.8, then:
+        # - lower_index is 3 and lower_residue is 0.4, which means the algorithm will look at the 3rd Bezier
+        #   and select its part from t=0.4 to t=1.
+        # - upper_index is 7 and upper_residue is 0.8, which means the algorithm will look at the 7th Bezier
+        #   and select its part from t=0 to t=0.8.
+        lower_index, lower_residue = integer_interpolate(0, num_curves, a)
+        upper_index, upper_residue = integer_interpolate(0, num_curves, b)
+
+        nppcc = self.n_points_per_cubic_curve
         if lower_index == upper_index:
-            self.append_points(
-                partial_bezier_points(
-                    bezier_quads[lower_index],
-                    lower_residue,
-                    upper_residue,
-                ),
+            self.points = partial_bezier_points(
+                vmobject.points[nppcc * lower_index : nppcc * lower_index + nppcc],
+                lower_residue,
+                upper_residue,
             )
         else:
-            self.append_points(
-                partial_bezier_points(bezier_quads[lower_index], lower_residue, 1),
+            self.points = np.empty((nppcc * (upper_index - lower_index + 1), self.dim))
+            self.points[:nppcc] = partial_bezier_points(
+                vmobject.points[nppcc * lower_index : nppcc * lower_index + nppcc],
+                lower_residue,
+                1,
             )
-            for quad in bezier_quads[lower_index + 1 : upper_index]:
-                self.append_points(quad)
-            self.append_points(
-                partial_bezier_points(bezier_quads[upper_index], 0, upper_residue),
+            self.points[nppcc:-nppcc] = vmobject.points[
+                nppcc * (lower_index + 1) : nppcc * upper_index
+            ]
+            self.points[-nppcc:] = partial_bezier_points(
+                vmobject.points[nppcc * upper_index : nppcc * upper_index + nppcc],
+                0,
+                upper_residue,
             )
+
         return self
 
     def get_subcurve(self, a: float, b: float) -> VMobject:
