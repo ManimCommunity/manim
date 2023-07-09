@@ -1569,16 +1569,24 @@ class VMobject(Mobject):
         anchors[0::2] = self.get_start_anchors()
         anchors[1::2] = self.get_end_anchors()
         return anchors
-        """
-        return np.array(
-            list(it.chain(*zip(self.get_start_anchors(), self.get_end_anchors()))),
-        )
-        """
 
     def get_points_defining_boundary(self):
         # TODO: this function is probably not returning the expected array
         # Probably returns all anchors, but this is weird regarding the name of the method.
-        return np.array(list(it.chain(*(sm.get_anchors() for sm in self.get_family()))))
+        family = self.get_family()
+        n_anchors_per_submob = [
+            (submob.n_points // submob.n_points_per_cubic_curve) * 2
+            for submob in family
+        ]
+        acc_n_anchors = np.add.accumulate(n_anchors_per_submob)
+
+        boundary = np.empty((acc_n_anchors[-1], self.dim))
+        start_i = 0
+        for submob, end_i in zip(family, acc_n_anchors):
+            boundary[start_i:end_i] = submob.get_anchors()
+            start_i = end_i
+
+        return boundary
 
     def get_arc_length(self, sample_points_per_curve: int | None = None) -> float:
         """Return the approximated length of the whole curve.
