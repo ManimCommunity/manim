@@ -1180,6 +1180,74 @@ class VMobject(Mobject):
         """
         return self.get_subpaths_from_points(self.points)
 
+    def _init_curve_memory(self, sample_points: int = 10):
+        num_curves = self.get_num_curves()
+        lengths = np.array(
+            [self.get_nth_curve_length(n, sample_points) for n in range(num_curves)]
+        )
+
+        self.memory["piece_curves"] = {
+            "points": self.points,
+            "sample_points": sample_points,
+            "lengths": lengths,
+            "acc_lengths": np.add.accumulate(lengths),
+        }
+
+    def _update_curve_memory(self, sample_points: int = 10):
+        if sample_points != self.memory["piece_curves"]["sample_points"]:
+            self._init_curve_memory(sample_points)
+            return
+
+        curr_points = self.points
+        memo_points = self.memory["piece_curves"]["points"]
+
+        curr_n_points = self.n_points
+        memo_n_points = memo_points.shape[0]
+
+        nppcc = self.n_points_per_cubic_curve
+        n_points = min(curr_n_points, memo_n_points)
+        n_curves = n_points // nppcc
+        n_points = n_points * nppcc
+
+        # Check if any Bezier had its points changed to recalculate its length.
+        neq = curr_points[:n_points] != memo_points[:n_points]
+        # Collapse every 3D point group into a single value per point.
+        neq = neq.reshape(-1, self.dim)
+        neq2 = neq[:, 0]
+        for i in range(1, self.dim):
+            neq2 |= neq[:, i]
+        # Collapse every group of 4 values into a single value per curve.
+        neq2 = neq2.reshape(-1, nppcc)
+        differences = neq2[:, 0]
+        for i in range(1, nppcc):
+            differences |= neq2[:, i]
+        differences = np.arange(n_curves)[differences]
+
+        # If the amount of points has changed, adjust lengths
+        curr_n_curves = curr_n_points / nppcc
+        memo_n_curves = memo_n_points / nppcc
+        if curr_n_points < memo_n_points:
+            new_lengths = self.memory["piece_curves"]["lengths"][:curr_n_curves]
+            self.memory["piece_curves"]["lengths"] = new_lengths
+        elif curr_n_points > memo_n_points:
+            new_lengths = np.empty(curr_n_curves)
+            new_lengths[:memo_n_curves] = self.memory["piece_curves"]
+            new_lengths[memo_n_curves:] = [
+                self.get_nth_curve_length(n, sample_points)
+                for n in range(memo_n_curves, curr_n_curves)
+            ]
+            self.memory["piece_curves"]["lengths"] = new_lengths
+
+        # Update memo, recalculating only the lengths which have changed
+        self.memory["piece_curves"]["points"] = curr_points
+        self.memory["piece_curves"]["lengths"][differences] = [
+            self.get_nth_curve_length(n) for n in differences
+        ]
+        if differences.shape[0] > 0:
+            self.memory["piece_curves"]["acc_lengths"] = np.add.accumulate(
+                self.memory["piece_curves"]["lengths"]
+            )
+
     def get_nth_curve_points(self, n: int) -> np.ndarray:
         """Returns the points defining the nth curve of the vmobject.
 
@@ -1261,6 +1329,17 @@ class VMobject(Mobject):
         length : :class:`float`
             The length of the nth curve.
         """
+        if (
+            "piece_curves" in self.memory
+            and self.memory["piece_curves"]["sample_points"] == sample_points
+            and self.memory["piece_curves"]["lengths"].shape[0] > n
+            and (
+                self.points[nppcc * n :: nppcc]
+                == self.memory["piece_curves"]["points"][nppcc * n :: nppcc]
+            ).all()
+        ):
+            return self.memory["piece_curves"]["lengths"][n]
+
         length = np.sum(self.get_nth_curve_length_pieces(n, sample_points))
         return length
 
@@ -1369,10 +1448,16 @@ class VMobject(Mobject):
         if alpha == 1:
             return self.points[-1]
 
-        num_curves = self.get_num_curves()
-        lengths = [self.get_nth_curve_length(n) for n in range(num_curves)]
-        acc_lengths = np.add.accumulate(lengths)
+        if "piece_curves" not in self.memory:
+            self._init_curve_memory()
+        else:
+            self._update_curve_memory()
+
+        lengths = self.memory["piece_curves"]["lengths"]
+        acc_lengths = self.memory["piece_curves"]["acc_lengths"]
         target_length = alpha * acc_lengths[-1]
+
+        num_curves = self.get_num_curves()
 
         # Binary search
         left, right = 0, num_curves - 1

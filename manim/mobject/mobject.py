@@ -101,6 +101,7 @@ class Mobject:
         self.updaters = []
         self.updating_suspended = False
         self.color = Color(color) if color else None
+        self.memory = {}
 
         self.reset_points()
         self.generate_points()
