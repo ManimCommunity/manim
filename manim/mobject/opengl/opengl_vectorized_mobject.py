@@ -1200,7 +1200,7 @@ class OpenGLVMobject(OpenGLMobject):
         def get_nth_subpath(path_list, n):
             if n >= len(path_list):
                 # Create a null path at the very end
-                return [path_list[-1][-1]] * nppc
+                return np.array([path_list[-1][-1]] * nppc)
             path = path_list[n]
             # Check for useless points at the end of the path and remove them
             # https://github.com/ManimCommunity/manim/issues/1959
