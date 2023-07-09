@@ -1707,19 +1707,23 @@ class VMobject(Mobject):
            ``self``
         """
         self.align_rgbas(vmobject)
-        # TODO: This shortcut can be a bit over eager. What if they have the same length, but different subpath lengths?
-        if self.get_num_points() == vmobject.get_num_points():
-            return
 
-        for mob in self, vmobject:
-            # If there are no points, add one to
-            # wherever the "center" is
-            if mob.has_no_points():
-                mob.start_new_path(mob.get_center())
-            # If there's only one point, turn it into
-            # a null curve
-            if mob.has_new_path_started():
-                mob.add_line_to(mob.get_last_point())
+        # If there are no points, add one to
+        # wherever the "center" is.
+        if self.has_no_points():
+            # If both Mobjects have no points, do not continue.
+            if vmobject.has_no_points():
+                return self
+            self.start_new_path(self.get_center())
+        if vmobject.has_no_points():
+            vmobject.start_new_path(vmobject.get_center())
+
+        # If there's only one point, turn it into
+        # a null curve.
+        if self.has_new_path_started():
+            self.add_line_to(self.get_last_point())
+        if vmobject.has_new_path_started():
+            vmobject.add_line_to(vmobject.get_last_point())
 
         # Figure out what the subpaths are.
         self_split_i = self.get_subpath_split_indices()
@@ -1727,7 +1731,7 @@ class VMobject(Mobject):
         vmob_split_i = vmobject.get_subpath_split_indices()
         vmob_n_subpaths = vmob_split_i.shape[0]
 
-        # If they have the same subpaths, do nothing.
+        # If they have the same subpaths, do not continue.
         if self_n_subpaths == vmob_n_subpaths and (self_split_i == vmob_split_i).all():
             return
 
