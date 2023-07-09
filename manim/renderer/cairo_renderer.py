@@ -159,7 +159,7 @@ class CairoRenderer:
             NumPy array of pixel values of each pixel in screen.
             The shape of the array is height x width x 3
         """
-        return np.array(self.camera.pixel_array)
+        return np.array(self.camera.pixel_array, copy=False)
 
     def add_frame(self, frame: np.ndarray, num_frames: int = 1):
         """

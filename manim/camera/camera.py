@@ -297,7 +297,7 @@ class Camera:
         np.array
             The new, converted pixel array.
         """
-        retval = np.array(pixel_array)
+        retval = np.array(pixel_array, copy=False)
         if convert_from_floats:
             retval = np.apply_along_axis(
                 lambda f: (f * self.rgb_max_val).astype(self.pixel_array_dtype),
