@@ -1731,7 +1731,8 @@ class VMobject(Mobject):
         vmob_split_i = vmobject.get_subpath_split_indices()
         vmob_n_subpaths = vmob_split_i.shape[0]
 
-        # If they have the same subpaths, do not continue.
+        # If they have the same number of subpaths and the same number of points
+        # per subpath, do not continue.
         if self_n_subpaths == vmob_n_subpaths and (self_split_i == vmob_split_i).all():
             return
 
