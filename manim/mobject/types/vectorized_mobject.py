@@ -1329,17 +1329,6 @@ class VMobject(Mobject):
         length : :class:`float`
             The length of the nth curve.
         """
-        if (
-            "piece_curves" in self.memory
-            and self.memory["piece_curves"]["sample_points"] == sample_points
-            and self.memory["piece_curves"]["lengths"].shape[0] > n
-            and (
-                self.points[nppcc * n :: nppcc]
-                == self.memory["piece_curves"]["points"][nppcc * n :: nppcc]
-            ).all()
-        ):
-            return self.memory["piece_curves"]["lengths"][n]
-
         length = np.sum(self.get_nth_curve_length_pieces(n, sample_points))
         return length
 
