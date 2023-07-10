@@ -47,28 +47,50 @@ def bezier(
     typing.Callable[[float], typing.Union[int, typing.Iterable]]
         function describing the bezier curve.
     """
-    n = len(points) - 1
+    P = np.asarray(points)
+    n = P.shape[0] - 1
+
+    # Grade 0 Bezier curve
+    if n == 0:
+        return lambda T: P[0]
+
+    # Linear Bezier curve
+    if n == 1:
+        return lambda t: interpolate(P[0], P[1], t)
+
+    # Quadratic Bezier curve
+    if n == 2:
+
+        def quadratic_bezier(t):
+            mt = 1 - t
+            return mt * mt * P[0] + 2 * t * mt * P[1] + t * t * P[2]
+
+        return quadratic_bezier
 
     # Cubic Bezier curve
     if n == 3:
-        return (
-            lambda t: (1 - t) ** 3 * points[0]
-            + 3 * t * (1 - t) ** 2 * points[1]
-            + 3 * (1 - t) * t**2 * points[2]
-            + t**3 * points[3]
-        )
-    # Quadratic Bezier curve
-    if n == 2:
-        return (
-            lambda t: (1 - t) ** 2 * points[0]
-            + 2 * t * (1 - t) * points[1]
-            + t**2 * points[2]
-        )
 
-    return lambda t: sum(
-        ((1 - t) ** (n - k)) * (t**k) * choose(n, k) * point
-        for k, point in enumerate(points)
-    )
+        def cubic_bezier(t):
+            t2 = t * t
+            t3 = t2 * t
+            mt = 1 - t
+            mt2 = mt * mt
+            mt3 = mt2 * mt
+            return mt3 * P[0] + 3 * t * mt2 * P[1] + 3 * t2 * mt * P[2] + t3 * P[3]
+
+        return cubic_bezier
+
+    def nth_grade_bezier(t):
+        B = P.copy()
+        for i in range(n):
+            # After the i-th iteration (i in [0, ..., n-1]) there are (n-i)
+            # Bezier curves of grade (i+1) stored in the first n-i slots of B
+            B[: n - i] += t * (B[1 : n - i + 1] - B[: n - i])
+        # In the end, there shall be a single Bezier curve of grade n
+        # stored in the first slot of B
+        return B[0]
+
+    return nth_grade_bezier
 
 
 def partial_bezier_points(points: np.ndarray, a: float, b: float) -> np.ndarray:
@@ -107,11 +129,8 @@ def partial_quadratic_bezier_points(points, a, b):
         return 3 * [points[-1]]
 
     def curve(t):
-        return (
-            points[0] * (1 - t) * (1 - t)
-            + 2 * points[1] * t * (1 - t)
-            + points[2] * t * t
-        )
+        mt = 1 - t
+        return points[0] * mt * mt + 2 * points[1] * t * mt + points[2] * t * t
 
     # bezier(points)
     h0 = curve(a) if a > 0 else points[0]
@@ -198,7 +217,7 @@ def quadratic_bezier_remap(
     difference = new_number_of_curves - len(triplets)
     if difference <= 0:
         return triplets
-    new_triplets = np.zeros((new_number_of_curves, 3, 3))
+    new_triplets = np.empty((new_number_of_curves, 3, 3))
     idx = 0
     for triplet in triplets:
         if difference > 0:
@@ -236,7 +255,7 @@ def quadratic_bezier_remap(
 
 # Linear interpolation variants
 def interpolate(start: np.ndarray, end: np.ndarray, alpha: float) -> np.ndarray:
-    return (1 - alpha) * start + alpha * end
+    return start + alpha * (end - start)
 
 
 def integer_interpolate(
@@ -650,7 +669,7 @@ def get_quadratic_approximation_of_cubic(a0, h0, h1, a1):
     # Search for inflection points.  If none are found, use the
     # midpoint as a cut point.
     # Based on http://www.caffeineowl.com/graphics/2d/vectorial/cubic-inflexion.html
-    has_infl = np.ones(len(a0), dtype=bool)
+    has_infl = np.ones(a0.shape[0], dtype=bool)
 
     p = h0 - a0
     q = h1 - 2 * h0 + a0
@@ -679,7 +698,7 @@ def get_quadratic_approximation_of_cubic(a0, h0, h1, a1):
     # but is updated to one of the inflection points
     # if they lie between 0 and 1
 
-    t_mid = 0.5 * np.ones(len(a0))
+    t_mid = np.full(a0.shape[0], 0.5)
     t_mid[ti_min_in_range] = ti_min[ti_min_in_range]
     t_mid[ti_max_in_range] = ti_max[ti_max_in_range]
 
@@ -696,7 +715,7 @@ def get_quadratic_approximation_of_cubic(a0, h0, h1, a1):
     i1 = find_intersection(a1, T1, mid, Tm)
 
     m, n = np.shape(a0)
-    result = np.zeros((6 * m, n))
+    result = np.empty((6 * m, n))
     result[0::6] = a0
     result[1::6] = i0
     result[2::6] = mid
