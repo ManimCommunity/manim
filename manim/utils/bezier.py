@@ -97,7 +97,33 @@ def partial_bezier_points(points: np.ndarray, a: float, b: float) -> np.ndarray:
     """Given an array of points which define bezier curve, and two numbers 0<=a<b<=1, return an array of the same size,
     which describes the portion of the original bezier curve on the interval [a, b].
 
-    This algorithm is pretty nifty, and pretty dense.
+    This algorithm is pretty nifty, and pretty dense, so let's break this down
+    with an example: a cubic Bezier.
+
+    Let P0, P1, P2, P3 be the points needed for the curve C0 = [P0, P1, P2, P3].
+    Define the 3 linear Beziers L0, L1, L2 as interpolations of P0, P1, P2, P3:
+    L0(t) = P0 + t(P1 - P0)
+    L1(t) = P1 + t(P2 - P1)
+    L2(t) = P2 + t(P3 - P2)
+    Define the 2 quadratic Beziers Q0, Q1 as interpolations of L0, L1, L2:
+    Q0(t) = L0(t) + t(L1(t) - L0(t))
+    Q1(t) = L1(t) + t(L2(t) - L1(t))
+    Then C0 is the following interpolation of Q0 and Q1:
+    C0(t) = Q0(t) + t(Q1(t) - Q0(t))
+
+    Evaluating C0 at a value t=s splits C0 into two cubic Beziers H0 and H1, defined
+    by some of the points we calculated earlier:
+    - H0 = [P0, L0(s), Q0(s), C0(s)]
+    - H1 = [C0(s), Q1(s), L2(s), P3]
+
+    With that in mind, to find the portion of C0 with t between a and b:
+    1. Split C0 at t = a and extract the 2nd curve H1 = [C0(a), Q1(a), L2(a), P3].
+    2. Define C0' = H1, and [P0', P1', P2', P3'] = [C0(a), Q1(a), L2(a), P3].
+    3. We cannot evaluate C0' at t = b because its range of values for t is different.
+       To find the correct value, we need to transform the interval [a, 1] into [0, 1]
+       by first subtracting a to get [0, 1-a] and then dividing by 1-a. Thus, our new
+       value must be t = (b - a) / (1 - a). Define u = (b-a) / (1-a).
+    4. Split C0' at t = u and extract the 1st curve H0' = [P0', L0'(u), Q0'(u), C0'(u)].
 
     Parameters
     ----------
@@ -113,12 +139,46 @@ def partial_bezier_points(points: np.ndarray, a: float, b: float) -> np.ndarray:
     np.ndarray
         Set of points defining the partial bezier curve.
     """
+    arr = np.array(points)  # It is convenient that np.array copies points
+    n = arr.shape[0] - 1  # Bezier grade
     if a == 1:
-        return [points[-1]] * len(points)
+        return [arr[-1]] * (n + 1)
 
-    a_to_1 = np.array([bezier(points[i:])(a) for i in range(len(points))])
+    # Current state:
+    # arr = [P0, P1, P2, P3]
+    for i in range(n):
+        # 1st iter: arr = [L0(a), L1(a), L2(a), P3]
+        # 2nd iter: arr = [Q0(a), Q1(a), L2(a), P3]
+        # 3rd iter: arr = [C0(a), Q1(a), L2(a), P3]
+        arr[: n - i] += a * (arr[1 : n - i + 1] - arr[: n - i])
+
+    # For faster calculations we shall define mu = 1 - u = (1 - b) / (1 - a).
+    # This is because:
+    #   L0'(u) = P0' + u(P1' - P0')
+    #          = (1-u)P0' + uP1'
+    #          = muP0' + (1-mu)P1'
+    #          = P1' + mu(P0' - P1)
+    # In this way, one can carry something similar to the first loop.
+    #
+    # Current state:
+    # arr = [C0(a), Q1(a), L2(a), P3]
+    #     = [P0', P1', P2', P3']
+    mu = (1 - b) / (1.0 - a)
+    for i in range(n):
+        # 1st iter: arr = [P0', L0'(u), L1'(u), L2'(u)]
+        # 2nd iter: arr = [P0', L0'(u), Q0'(u), Q1'(u)]
+        # 3rd iter: arr = [P0', L0'(u), Q0'(u), C0'(u)]
+        arr[i + 1 :] += mu * (arr[i:-1] - arr[i + 1 :])
+
+    return arr
+
+    """
+    Original algorithm:
+
+    a_to_1 = np.array([bezier(points[i:])(a) for i in range(n)])
     end_prop = (b - a) / (1.0 - a)
-    return np.array([bezier(a_to_1[: i + 1])(end_prop) for i in range(len(points))])
+    return np.array([bezier(a_to_1[: i + 1])(end_prop) for i in range(n+1)])
+    """
 
 
 # Shortened version of partial_bezier_points just for quadratics,
