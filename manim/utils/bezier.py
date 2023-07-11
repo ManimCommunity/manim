@@ -228,7 +228,10 @@ def partial_quadratic_bezier_points(points, a, b):
         arr[1:] += mu * (arr[:-1] - arr[1:])  # arr = [P0' L0' L1']
         arr[2] += mu * (arr[1] - arr[2])  # arr = [P0' L0' Q0']
 
-    return arr
+    # TODO: this is converted to a list because the current implementation in
+    # OpenGLVMobject.insert_n_curves_to_point_list does a list concatenation with +=.
+    # Using an ndarray breaks many test cases. This should probably change.
+    return list(arr)
     """
     Original algorithm:
 
