@@ -221,7 +221,7 @@ def partial_quadratic_bezier_points(points, a, b):
         arr[0] += a * (arr[1] - arr[0])  # arr = [Q0 L1 P2]
 
     # Current state: arr = [Q0 L1 P2] = [P0' P1' P2']
-    if b != 0:
+    if b != 1:
         if a != 0:
             mu = (1 - b) / (1 - a)
         else:
