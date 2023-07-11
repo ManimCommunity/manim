@@ -942,16 +942,16 @@ def is_closed(points: tuple[np.ndarray, np.ndarray]) -> bool:
     """Returns True if the curve given by the points is closed, by checking if its
     first and last points are close to each other.
 
-    This function reimplements np.allclose, because repeated calling of np.allclose
-    for only 2 points is inefficient.
+    This function reimplements np.allclose (without a relative tolerance rtol),
+    because repeated calling of np.allclose for only 2 points is inefficient.
     """
     start, end = points[0], points[-1]
-    atol, rtol = 1e-8, 1e-5
-    if abs(end[0] - start[0]) > atol + rtol * abs(end[0]):
+    atol = 1e-8
+    if abs(end[0] - start[0]) > atol:
         return False
-    if abs(end[1] - start[1]) > atol + rtol * abs(end[1]):
+    if abs(end[1] - start[1]) > atol:
         return False
-    if abs(end[2] - start[2]) > atol + rtol * abs(end[2]):
+    if abs(end[2] - start[2]) > atol:
         return False
     return True
 
