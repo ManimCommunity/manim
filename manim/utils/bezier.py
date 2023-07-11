@@ -6,6 +6,10 @@ __all__ = [
     "bezier",
     "partial_bezier_points",
     "partial_quadratic_bezier_points",
+    "split_bezier",
+    "split_quadratic_bezier",
+    "subdivide_bezier",
+    "subdivide_quadratic_bezier",
     "interpolate",
     "integer_interpolate",
     "mid",
@@ -28,7 +32,6 @@ from typing import Iterable
 
 import numpy as np
 
-from ..utils.simple_functions import choose
 from ..utils.space_ops import cross2d, find_intersection
 
 
@@ -50,24 +53,30 @@ def bezier(
     P = np.asarray(points)
     n = P.shape[0] - 1
 
-    # Grade 0 Bezier curve
     if n == 0:
-        return lambda T: P[0]
 
-    # Linear Bezier curve
+        def zero_bezier(t):
+            return P[0]
+
+        return zero_bezier
+
     if n == 1:
-        return lambda t: interpolate(P[0], P[1], t)
 
-    # Quadratic Bezier curve
+        def linear_bezier(t):
+            return P[0] + t * (P[1] - P[0])
+
+        return linear_bezier
+
     if n == 2:
 
         def quadratic_bezier(t):
+            t2 = t * t
             mt = 1 - t
-            return mt * mt * P[0] + 2 * t * mt * P[1] + t * t * P[2]
+            mt2 = mt * mt
+            return mt2 * P[0] + 2 * t * mt * P[1] + t2 * P[2]
 
         return quadratic_bezier
 
-    # Cubic Bezier curve
     if n == 3:
 
         def cubic_bezier(t):
@@ -94,27 +103,11 @@ def bezier(
 
 
 def partial_bezier_points(points: np.ndarray, a: float, b: float) -> np.ndarray:
-    """Given an array of points which define bezier curve, and two numbers 0<=a<b<=1, return an array of the same size,
-    which describes the portion of the original bezier curve on the interval [a, b].
+    """Given an array of points which define a Bézier curve, and two numbers 0<=a<b<=1,
+    return an array of the same size, which describes the portion of the original Bézier
+    curve on the interval [a, b].
 
-    This algorithm is pretty nifty, and pretty dense, so let's break this down
-    with an example: a cubic Bezier.
-
-    Let P0, P1, P2, P3 be the points needed for the curve C0 = [P0, P1, P2, P3].
-    Define the 3 linear Beziers L0, L1, L2 as interpolations of P0, P1, P2, P3:
-    L0(t) = P0 + t(P1 - P0)
-    L1(t) = P1 + t(P2 - P1)
-    L2(t) = P2 + t(P3 - P2)
-    Define the 2 quadratic Beziers Q0, Q1 as interpolations of L0, L1, L2:
-    Q0(t) = L0(t) + t(L1(t) - L0(t))
-    Q1(t) = L1(t) + t(L2(t) - L1(t))
-    Then C0 is the following interpolation of Q0 and Q1:
-    C0(t) = Q0(t) + t(Q1(t) - Q0(t))
-
-    Evaluating C0 at a value t=s splits C0 into two cubic Beziers H0 and H1, defined
-    by some of the points we calculated earlier:
-    - H0 = [P0, L0(s), Q0(s), C0(s)]
-    - H1 = [C0(s), Q1(s), L2(s), P3]
+    To understand what's going on, see split_bezier for an explanation.
 
     With that in mind, to find the portion of C0 with t between a and b:
     1. Split C0 at t = a and extract the 2nd curve H1 = [C0(a), Q1(a), L2(a), P3].
@@ -140,35 +133,45 @@ def partial_bezier_points(points: np.ndarray, a: float, b: float) -> np.ndarray:
         Set of points defining the partial bezier curve.
     """
     arr = np.array(points)  # It is convenient that np.array copies points
-    n = arr.shape[0] - 1  # Bezier grade
+    N = arr.shape[0]
+    # Border cases
     if a == 1:
-        return [arr[-1]] * (n + 1)
+        arr[:] = arr[-1]
+        return arr
+    if b == 0:
+        arr[:] = arr[0]
+        return arr
 
-    # Current state:
+    # Current state for an example Bezier curve C0 = [P0, P1, P2, P3]:
     # arr = [P0, P1, P2, P3]
-    for i in range(n):
-        # 1st iter: arr = [L0(a), L1(a), L2(a), P3]
-        # 2nd iter: arr = [Q0(a), Q1(a), L2(a), P3]
-        # 3rd iter: arr = [C0(a), Q1(a), L2(a), P3]
-        arr[: n - i] += a * (arr[1 : n - i + 1] - arr[: n - i])
+    if a != 0:
+        for i in range(1, N):
+            # 1st iter: arr = [L0(a), L1(a), L2(a), P3]
+            # 2nd iter: arr = [Q0(a), Q1(a), L2(a), P3]
+            # 3rd iter: arr = [C0(a), Q1(a), L2(a), P3]
+            arr[: N - i] += a * (arr[1 : N - i + 1] - arr[: N - i])
 
     # For faster calculations we shall define mu = 1 - u = (1 - b) / (1 - a).
     # This is because:
-    #   L0'(u) = P0' + u(P1' - P0')
-    #          = (1-u)P0' + uP1'
-    #          = muP0' + (1-mu)P1'
-    #          = P1' + mu(P0' - P1)
-    # In this way, one can carry something similar to the first loop.
+    # L0'(u) = P0' + u(P1' - P0')
+    #        = (1-u)P0' + uP1'
+    #        = muP0' + (1-mu)P1'
+    #        = P1' + mu(P0' - P1)
+    # In this way, one can do something similar to the first loop.
     #
     # Current state:
     # arr = [C0(a), Q1(a), L2(a), P3]
     #     = [P0', P1', P2', P3']
-    mu = (1 - b) / (1.0 - a)
-    for i in range(n):
-        # 1st iter: arr = [P0', L0'(u), L1'(u), L2'(u)]
-        # 2nd iter: arr = [P0', L0'(u), Q0'(u), Q1'(u)]
-        # 3rd iter: arr = [P0', L0'(u), Q0'(u), C0'(u)]
-        arr[i + 1 :] += mu * (arr[i:-1] - arr[i + 1 :])
+    if b != 1:
+        if a != 0:
+            mu = (1 - b) / (1 - a)
+        else:
+            mu = 1 - b
+        for i in range(1, N):
+            # 1st iter: arr = [P0', L0'(u), L1'(u), L2'(u)]
+            # 2nd iter: arr = [P0', L0'(u), Q0'(u), Q1'(u)]
+            # 3rd iter: arr = [P0', L0'(u), Q0'(u), C0'(u)]
+            arr[i:] += mu * (arr[i - 1 : -1] - arr[i:])
 
     return arr
 
@@ -181,12 +184,53 @@ def partial_bezier_points(points: np.ndarray, a: float, b: float) -> np.ndarray:
     """
 
 
-# Shortened version of partial_bezier_points just for quadratics,
-# since this is called a fair amount
 def partial_quadratic_bezier_points(points, a, b):
-    points = np.asarray(points, dtype=np.float64)
+    """Shortened version of partial_bezier_points just for quadratics,
+    since this is called a fair amount.
+
+    To see an explanation, see split_bezier.
+
+    Parameters
+    ----------
+    points
+        set of points defining the quadratic Bézier curve.
+    a
+        lower bound of the desired partial quadratic Bézier curve.
+    b
+        upper bound of the desired partial quadratic Bézier curve.
+
+    Returns
+    -------
+    np.ndarray
+        Set of points defining the partial quadratic Bézier curve.
+    """
+
+    arr = np.array(points, dtype=np.float64)
+    # Border cases
     if a == 1:
-        return 3 * [points[-1]]
+        arr[:] = arr[-1]
+        return arr
+    if b == 0:
+        arr[:] = arr[0]
+        return arr
+
+    # Current state: arr = [P0 P1 P2]
+    if a != 0:
+        arr[:-1] += a * (arr[1:] - arr[:-1])  # arr = [L0 L1 P2]
+        arr[0] += a * (arr[1] - arr[0])  # arr = [Q0 L1 P2]
+
+    # Current state: arr = [Q0 L1 P2] = [P0' P1' P2']
+    if b != 0:
+        if a != 0:
+            mu = (1 - b) / (1 - a)
+        else:
+            mu = 1 - b
+        arr[1:] += mu * (arr[:-1] - arr[1:])  # arr = [P0' L0' L1']
+        arr[2] += mu * (arr[1] - arr[2])  # arr = [P0' L0' Q0']
+
+    return arr
+    """
+    Original algorithm:
 
     def curve(t):
         mt = 1 - t
@@ -199,6 +243,115 @@ def partial_quadratic_bezier_points(points, a, b):
     end_prop = (b - a) / (1.0 - a)
     h1 = (1 - end_prop) * h0 + end_prop * h1_prime
     return [h0, h1, h2]
+    """
+
+
+def split_bezier(points: Iterable[float], t: float) -> np.ndarray:
+    """Split a Bézier curve at argument ``t`` into two curves.
+
+    To understand what's going on, let's break this down with an example: a cubic Bézier.
+
+    Let P0, P1, P2, P3 be the points needed for the curve :math:`C_0 = [P_0, P_1, P_2, P_3]`.
+    Define the 3 linear Béziers :math:`L_0, L1, L2` as interpolations of :math:`P_0, P_1, P_2, P_3`:
+    :math:`L_0(t) = P_0 + t(P_1 - P_0)`
+    :math:`L_1(t) = P_1 + t(P_2 - P_1)`
+    :math:`L_2(t) = P_2 + t(P_3 - P_2)`
+    Define the 2 quadratic Béziers :math:`Q_0, Q_1` as interpolations of :math:`L_0, L_1, L_2`:
+    :math:`Q_0(t) = L_0(t) + t(L_1(t) - L_0(t))`
+    :math:`Q_1(t) = L_1(t) + t(L_2(t) - L_1(t))`
+    Then :math:`C_0` is the following interpolation of :math:`Q_0` and :math:`Q_1`:
+    :math:`C_0(t) = Q_0(t) + t(Q_1(t) - Q_0(t))`
+
+    Evaluating :math:`C_0` at a value :math:`t=s` splits :math:`C_0` into two cubic Béziers :math:`H_0`
+    and :math:`H_1`, defined by some of the points we calculated earlier:
+    - :math:`H_0 = [P_0, L_0(s), Q_0(s), C_0(s)]`
+    - :math:`H_1 = [C_0(s), Q_1(s), L_2(s), P_3]`
+
+    Parameters
+    ----------
+    points
+        The control points of the Bézier curve.
+
+    t
+        The ``t``-value at which to split the Bézier curve.
+
+    Returns
+    -------
+        The two Bézier curves as a list of tuples.
+    """
+
+    points = np.asarray(points)
+    N, dim = old_points.shape
+    arr = np.empty((2, N, dim))
+    arr[1] = points
+    arr[0, 0] = points[0]
+
+    # Example for a cubic Bezier
+    # arr[0] = [P0 .. .. ..]
+    # arr[1] = [P0 P1 P2 P3]
+    for i in range(1, N):
+        # 1st iter: arr[1] = [L0 L1 L2 P3]
+        # 2nd iter: arr[1] = [Q0 Q1 L2 P3]
+        # 3rd iter: arr[1] = [C0 Q1 L2 P3]
+        arr[1, : N - i] += t * (arr[1, 1 : N - i + 1] - arr[1, : N - i])
+        # 1st iter: arr[0] = [P0 L0 .. ..]
+        # 2nd iter: arr[0] = [P0 L0 Q0 ..]
+        # 3rd iter: arr[0] = [P0 L0 Q0 C0]
+        arr[0, i] = arr[1, 0]
+
+    return arr
+
+
+def subdivide_bezier(points: Iterable[float], n_divisions: int) -> np.ndarray:
+    """Subdivide a Bézier curve into ``n`` subcurves which have the same shape.
+
+    The points at which the curve is split are located at the
+    arguments :math:`t = i/n` for :math:`i = 1, ..., n-1`.
+
+    To see an explanation, see split_bezier.
+
+    Parameters
+    ----------
+    points
+        The control points of the Bézier curve.
+
+    n
+        The number of curves to subdivide the Bézier curve into
+
+    Returns
+    -------
+        The new points for the Bézier curve.
+
+    .. image:: /_static/bezier_subdivision_example.png
+
+    """
+    points = np.asarray(points)
+    if n_divisions == 1:
+        return points
+
+    N, dim = points.shape
+
+    beziers = np.empty((n_divisions, N, dim))
+    beziers[-1] = points
+    for curve_num in range(n_divisions - 1, 0, -1):
+        curr = beziers[curve_num]
+        prev = beziers[curve_num - 1]
+        prev[0] = curr[0]
+        # Current state for an example cubic Bézier curve:
+        # prev = [P0 .. .. ..]
+        # curr = [P0 P1 P2 P3]
+        for i in range(1, N):
+            a = (n_divisions - curve_num - 1) / (n_divisions - curve_num)
+            # 1st iter: curr = [L0 L1 L2 P3]
+            # 2nd iter: curr = [Q0 Q1 L2 P3]
+            # 3rd iter: curr = [C0 Q1 L2 P3]
+            curr[: N - i] += a * (curr[1 : N - i + 1] - curr[: N - i])
+            # 1st iter: prev = [P0 L0 .. ..]
+            # 2nd iter: prev = [P0 L0 Q0 ..]
+            # 3rd iter: prev = [P0 L0 Q0 C0]
+            prev[i] = curr[0]
+
+    return beziers.reshape(n_divisions * N, dim)
 
 
 def split_quadratic_bezier(points: np.ndarray, t: float) -> np.ndarray:
