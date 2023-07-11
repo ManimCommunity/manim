@@ -284,7 +284,7 @@ def split_bezier(points: Iterable[float], t: float) -> np.ndarray:
     """
 
     points = np.asarray(points)
-    N, dim = old_points.shape
+    N, dim = points.shape
     arr = np.empty((2, N, dim))
     arr[1] = points
     arr[0, 0] = points[0]
