@@ -32,6 +32,7 @@ from typing import Iterable
 
 import numpy as np
 
+from ..utils.simple_functions import choose
 from ..utils.space_ops import cross2d, find_intersection
 
 
