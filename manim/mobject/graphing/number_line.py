@@ -188,6 +188,7 @@ class NumberLine(Line):
         # turn into a NumPy array to scale by just applying the function
         self.x_range = np.array(x_range, dtype=float)
         self.x_min, self.x_max, self.x_step = scaling.function(self.x_range)
+        self.x_range_no_tips = self.x_range.copy()
         self.x_min_no_tips = self.x_min
         self.x_max_no_tips = self.x_max
         self.length = length
@@ -290,10 +291,10 @@ class NumberLine(Line):
             direction, direction
         )
 
-        self.x_min_no_tips = self.x_min + new_start_proportion * (
-            self.x_max - self.x_min
-        )
-        self.x_max_no_tips = self.x_min + new_end_proportion * (self.x_max - self.x_min)
+        x_max, x_min, _ = self.x_range_no_tips
+        self.x_range_no_tips[0] = x_min + new_start_proportion * (x_max - x_min)
+        self.x_range_no_tips[1] = x_max + new_start_proportion * (x_max - x_min)
+        self.x_min_no_tips, self.x_max_no_tips, _ = self.x_range_no_tips
 
         return self
 
@@ -305,6 +306,7 @@ class NumberLine(Line):
         returns the removed tips.
         """
         result = super().pop_tips()
+        self.x_range_no_tips[:] = self.x_range
         self.x_min_no_tips = self.x_min
         self.x_max_no_tips = self.x_max
         return result
@@ -412,12 +414,16 @@ class NumberLine(Line):
                    [2., 0., 0.],
                    [3., 0., 0.]])
         """
+        print(self.x_range_no_tips)
+        print(self.x_min_no_tips)
+        print(self.x_max_no_tips)
         number = np.asarray(number)
         scalar = number.ndim == 0
         number = self.scaling.inverse_function(number)
-        alphas = (number - self.x_min_no_tips) / (
-            self.x_max_no_tips - self.x_min_no_tips
-        )
+        print("Number(s):", number)
+        x_min, x_max, _ = self.x_range_no_tips
+        alphas = (number - x_min) / (x_max - x_min)
+        print("Alpha(s): ", alphas)
         alphas = float(alphas) if scalar else alphas.reshape(-1, 1)
         val = interpolate(self.points[0], self.points[-1], alphas)
         return val
