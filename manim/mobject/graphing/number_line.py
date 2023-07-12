@@ -17,7 +17,7 @@ import numpy as np
 from manim import config
 from manim.constants import *
 from manim.mobject.geometry.line import Line
-from manim.mobject.graphing.scale import LinearBase, _ScaleBase
+from manim.mobject.graphing.scale import UnitLinearBase, _ScaleBase
 from manim.mobject.text.numbers import DecimalNumber
 from manim.mobject.text.tex_mobject import MathTex, Tex
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
@@ -155,7 +155,7 @@ class NumberLine(Line):
         font_size: float = 36,
         label_direction: Sequence[float] = DOWN,
         label_constructor: VMobject = MathTex,
-        scaling: _ScaleBase = LinearBase(),
+        scaling: _ScaleBase = UnitLinearBase(),
         line_to_number_buff: float = MED_SMALL_BUFF,
         decimal_number_config: dict | None = None,
         numbers_to_exclude: Iterable[float] | None = None,
@@ -464,7 +464,7 @@ class NumberLine(Line):
 
     def get_unit_size(self) -> float:
         return (self.points[-1] - self.points[0]) / (
-            self.x_max_no_tip - self.x_min_no_tip
+            self.x_max_no_tips - self.x_min_no_tips
         )
 
     def get_unit_vector(self) -> np.ndarray:

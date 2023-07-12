@@ -114,6 +114,33 @@ class LinearBase(_ScaleBase):
         return value / self.scale_factor
 
 
+class UnitLinearBase(LinearBase):
+    def __init__(self):
+        """The default scaling class."""
+
+        super().__init__(scale_factor=1.0)
+
+    def function(self, value: float) -> float:
+        """Multiplies the value by 1.0, i.e. returns the value as is.
+
+        Parameters
+        ----------
+        value
+            Value to be multiplied by the scale factor.
+        """
+        return value
+
+    def inverse_function(self, value: float) -> float:
+        """Inverse of function. Divides the value by 1.0, i.e. returns the value as is.
+
+        Parameters
+        ----------
+        value
+            value to be divided by the scale factor.
+        """
+        return value
+
+
 class LogBase(_ScaleBase):
     def __init__(self, base: float = 10, custom_labels: bool = True):
         """Scale for logarithmic graphs/functions.
