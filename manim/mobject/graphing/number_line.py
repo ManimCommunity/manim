@@ -12,6 +12,8 @@ from typing import TYPE_CHECKING, Callable, Iterable, Sequence
 if TYPE_CHECKING:
     from manim.mobject.geometry.tips import ArrowTip
 
+from math import sqrt
+
 import numpy as np
 
 from manim import config
@@ -463,12 +465,13 @@ class NumberLine(Line):
         return self.point_to_number(point)
 
     def get_unit_size(self) -> float:
+        v = self.get_unit_vector()
+        return sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2])
+
+    def get_unit_vector(self) -> np.ndarray:
         return (self.points[-1] - self.points[0]) / (
             self.x_max_no_tips - self.x_min_no_tips
         )
-
-    def get_unit_vector(self) -> np.ndarray:
-        return super().get_unit_vector() * self.unit_size
 
     def get_number_mobject(
         self,
