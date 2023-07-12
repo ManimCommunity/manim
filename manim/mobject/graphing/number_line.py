@@ -284,16 +284,14 @@ class NumberLine(Line):
         new_end = self.points[-1]
 
         direction = old_end - old_start
-        new_start_proportion = np.dot(new_start - old_start, direction) / np.dot(
-            direction, direction
-        )
-        new_end_proportion = np.dot(new_end - old_start, direction) / np.dot(
-            direction, direction
-        )
+        length2 = np.dot(direction, direction)
+        new_start_proportion = np.dot(new_start - old_start, direction) / length2
+        new_end_proportion = np.dot(new_end - old_start, direction) / length2
 
-        x_max, x_min, _ = self.x_range_no_tips
-        self.x_range_no_tips[0] = x_min + new_start_proportion * (x_max - x_min)
-        self.x_range_no_tips[1] = x_max + new_start_proportion * (x_max - x_min)
+        range_min, range_max, _ = self.x_range_no_tips
+        diff = range_max - range_min
+        self.x_range_no_tips[0] = range_min + new_start_proportion * diff
+        self.x_range_no_tips[1] = range_min + new_end_proportion * diff
         self.x_min_no_tips, self.x_max_no_tips, _ = self.scaling.function(
             self.x_range_no_tips
         )
