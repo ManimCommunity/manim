@@ -294,7 +294,9 @@ class NumberLine(Line):
         x_max, x_min, _ = self.x_range_no_tips
         self.x_range_no_tips[0] = x_min + new_start_proportion * (x_max - x_min)
         self.x_range_no_tips[1] = x_max + new_start_proportion * (x_max - x_min)
-        self.x_min_no_tips, self.x_max_no_tips, _ = self.x_range_no_tips
+        self.x_min_no_tips, self.x_max_no_tips, _ = self.scaling.function(
+            self.x_range_no_tips
+        )
 
         return self
 
