@@ -1686,7 +1686,7 @@ class VMobject(Mobject):
             The length of the :class:`VMobject`.
         """
 
-        return sum([self.get_nth_curve_length(n) for n in range(num_curves)])
+        return sum([self.get_nth_curve_length(n) for n in range(self.get_num_curves())])
 
     # Alignment
     def align_points(self, vmobject: VMobject):
