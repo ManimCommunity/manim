@@ -416,16 +416,11 @@ class NumberLine(Line):
                    [2., 0., 0.],
                    [3., 0., 0.]])
         """
-        print(self.x_range_no_tips)
-        print(self.x_min_no_tips)
-        print(self.x_max_no_tips)
         number = np.asarray(number)
         scalar = number.ndim == 0
         number = self.scaling.inverse_function(number)
-        print("Number(s):", number)
-        x_min, x_max, _ = self.x_range_no_tips
-        alphas = (number - x_min) / (x_max - x_min)
-        print("Alpha(s): ", alphas)
+        range_min, range_max, _ = self.x_range_no_tips
+        alphas = (number - range_min) / (range_max - range_min)
         alphas = float(alphas) if scalar else alphas.reshape(-1, 1)
         val = interpolate(self.points[0], self.points[-1], alphas)
         return val
@@ -477,9 +472,8 @@ class NumberLine(Line):
         return sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2])
 
     def get_unit_vector(self) -> np.ndarray:
-        return (self.points[-1] - self.points[0]) / (
-            self.x_max_no_tips - self.x_min_no_tips
-        )
+        range_min, range_max, _ = self.x_range_no_tips
+        return (self.points[-1] - self.points[0]) / (range_max - range_min)
 
     def get_number_mobject(
         self,
