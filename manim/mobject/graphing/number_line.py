@@ -273,9 +273,10 @@ class NumberLine(Line):
     ):
         """Wrapper for TipableVMobject.add_tip.
 
-        Adds a tip to the NumberLine, and recalculates x_min and x_max
-        from the new line component without its tips, storing the new
-        values in x_min_no_tips and x_max_no_tips.
+        Adds a tip to the NumberLine, and recalculates the range of the portion of
+        the new line component excluding its tips, storing the new range in
+        self.x_range_no_tips. This also calculates a new min and max, and stores
+        their values in self.x_min_no_tips and self.x_max_no_tips.
         """
         old_start = self.points[0].copy()
         old_end = self.points[-1].copy()
@@ -301,9 +302,9 @@ class NumberLine(Line):
     def pop_tips(self):
         """Wrapper for TipableVMobject.pop_tips.
 
-        After removing the tips from NumberLine, x_min_no_tips and x_max_no_tips
-        are reset to their original values: x_min and x_max. Then, pop_tips
-        returns the removed tips.
+        After removing the tips from NumberLine, x_range_no_tips, x_min_no_tips and
+        x_max_no_tips are reset to their original values: x_range, x_min and x_max.
+        Then, pop_tips returns the removed tips.
         """
         result = super().pop_tips()
         self.x_range_no_tips[:] = self.x_range
