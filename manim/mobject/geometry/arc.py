@@ -282,8 +282,8 @@ class Arc(TipableVMobject):
     def __init__(
         self,
         radius: float = 1.0,
-        start_angle=0,
-        angle=TAU / 4,
+        start_angle: float = 0,
+        angle: float = TAU / 4,
         num_components=9,
         arc_center=ORIGIN,
         **kwargs,

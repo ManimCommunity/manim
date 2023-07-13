@@ -59,7 +59,7 @@ in order for Manim to work properly, some additional system
 dependencies need to be installed first. The following pages have
 operating system specific instructions for you to follow.
 
-Manim requires Python version ``3.7`` or above to run.
+Manim requires Python version ``3.8`` or above to run.
 
 .. hint::
 
