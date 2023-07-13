@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, Iterable
 
 import numpy as np
 
-__all__ = ["LogBase", "LinearBase"]
+__all__ = ["LogBase", "LinearBase", "UnitLinearBase"]
 
 from manim.mobject.text.numbers import Integer
 
