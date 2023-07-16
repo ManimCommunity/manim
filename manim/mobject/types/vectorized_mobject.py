@@ -1278,6 +1278,8 @@ class VMobject(Mobject):
         # for an empty list of points, when it should instead return [].
         if n_curves == 0:
             return np.empty((0, 2), dtype=int)
+        if n_curves == 1:
+            return np.array([[0, nppcc]])
 
         if n_dims == 2:
             is_equal = self.consider_points_equals_2d
@@ -1716,7 +1718,7 @@ class VMobject(Mobject):
         # Probably returns all anchors, but this is weird regarding the name of the method.
         family = self.get_family()
         n_anchors_per_submob = [
-            2 * (len(submob.points) // submob.n_points_per_cubic_curve)
+            2 * submob.get_num_curves() if submob.points.shape[0] != 1 else 1
             for submob in family
         ]
         acc_n_anchors = np.add.accumulate(n_anchors_per_submob)
@@ -1726,7 +1728,6 @@ class VMobject(Mobject):
         for submob, end_i in zip(family, acc_n_anchors):
             boundary[start_i:end_i] = submob.get_anchors()
             start_i = end_i
-
         return boundary
 
     def get_arc_length(self, sample_points_per_curve: int | None = None) -> float:
