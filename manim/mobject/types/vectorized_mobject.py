@@ -1277,8 +1277,11 @@ class VMobject(Mobject):
         if strip_null_end_curves:
             for i in range(split_indices.shape[0]):
                 start_i, end_i = split_indices[i]
-                while end_i > start_i + 1 and is_equal(
-                    points[nppcc * (end_i - 1) : nppcc * end_i], ends[end_i - 2]
+                while (
+                    end_i > start_i + 1
+                    and is_equal(
+                        points[nppcc * (end_i - 1) : nppcc * end_i], ends[end_i - 2]
+                    ).all()
                 ):
                     end_i -= 1
                 split_indices[i, 1] = end_i
