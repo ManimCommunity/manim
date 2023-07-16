@@ -2031,7 +2031,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             points += axis.number_to_point(nums) - origin
 
         # Return points as is, except if coords originally looked like
-        # ([x1 x2 ...] [y1 y2 ...] [z1 z2 ...]), which is determined by the conditions below. In
+        # ([x1 x2 ...], [y1 y2 ...], [z1 z2 ...]), which is determined by the conditions below. In
         # that case, the current implementation requires that the results have to be transposed.
         if are_coordinates_transposed or points.ndim == 1:
             return points
