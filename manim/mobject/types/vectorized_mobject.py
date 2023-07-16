@@ -2033,14 +2033,14 @@ class VMobject(Mobject):
             self.clear_points()
             return self
 
-        # The following two lines will compute which Bezier curves of the given mobject need to be processed.
-        # The residue basically indicates the proportion of the selected Bezier curve that has to be selected.
+        # The following two lines will compute which Bézier curves of the given Mobject must be processed.
+        # The residue indicates the proportion of the selected Bézier curve which must be selected.
         #
-        # Example: if num_curves is 10, a is 3.4 and b is 7.8, then:
+        # Example: if num_curves is 10, a is 0.34 and b is 0.78, then:
         # - lower_index is 3 and lower_residue is 0.4, which means the algorithm will look at the 3rd Bezier
-        #   and select its part from t=0.4 to t=1.
+        #   and select its part which ranges from t=0.4 to t=1.
         # - upper_index is 7 and upper_residue is 0.8, which means the algorithm will look at the 7th Bezier
-        #   and select its part from t=0 to t=0.8.
+        #   and select its part which ranges from t=0 to t=0.8.
         lower_index, lower_residue = integer_interpolate(0, num_curves, a)
         upper_index, upper_residue = integer_interpolate(0, num_curves, b)
 
