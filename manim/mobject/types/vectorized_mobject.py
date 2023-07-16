@@ -671,7 +671,7 @@ class VMobject(Mobject):
     def append_points(self, new_points):
         # TODO, check that number new points is a multiple of 4?
         # or else that if len(self.points) % 4 == 1, then
-        # len(self.points) % 4 == 3?
+        # len(new_points) % 4 == 3?
         n = len(self.points)
         points = np.empty((n + len(new_points), self.dim))
         points[:n] = self.points
