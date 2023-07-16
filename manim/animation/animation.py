@@ -241,6 +241,10 @@ class Animation:
         scene
             The scene the animation should be cleaned up from.
         """
+
+        # Register handle scene to access scene methods from within animation loop
+        self.scene = scene
+
         if scene is None:
             return
         if (
