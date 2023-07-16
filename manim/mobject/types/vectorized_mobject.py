@@ -1353,13 +1353,12 @@ class VMobject(Mobject):
             self._init_curve_memory(sample_points)
             return
 
+        nppcc = self.n_points_per_cubic_curve
         curr_points = self.points
         memo_points = self.memory["piece_curves"]["points"]
-
         curr_n_points = len(self.points)
         memo_n_points = memo_points.shape[0]
 
-        nppcc = self.n_points_per_cubic_curve
         n_points = min(curr_n_points, memo_n_points)
         n_curves = n_points // nppcc
         n_points = n_points * nppcc
@@ -1377,6 +1376,9 @@ class VMobject(Mobject):
         for i in range(1, nppcc):
             differences |= neq2[:, i]
         differences = np.arange(n_curves)[differences]
+
+        if curr_n_points == memo_n_points and differences.shape[0] == 0:
+            return
 
         # If the amount of points has changed, adjust lengths
         curr_n_curves = curr_n_points // nppcc
