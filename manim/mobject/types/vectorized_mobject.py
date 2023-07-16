@@ -928,8 +928,10 @@ class VMobject(Mobject):
                 # thus making the Bézier curves straight lines
                 starts = submob.get_start_anchors()
                 ends = submob.get_end_anchors()
-                for a in self.bezier_alphas[1:-1]:
-                    submob.points[1::nppcc] = interpolate(starts, ends, a)
+                for i in range(1, nppcc - 1):
+                    submob.points[i::nppcc] = interpolate(
+                        starts, ends, self.bezier_alphas[i]
+                    )
 
             elif mode == "smooth":
                 # Divide into subpaths and for each subpath compute smooth handles.
