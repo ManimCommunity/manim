@@ -1342,7 +1342,7 @@ class VMobject(Mobject):
         )
 
         self.memory["piece_curves"] = {
-            "points": self.points,
+            "points": self.points.copy(),
             "sample_points": sample_points,
             "lengths": lengths,
             "acc_lengths": np.add.accumulate(lengths),
@@ -1371,7 +1371,7 @@ class VMobject(Mobject):
         neq2 = neq[:, 0]
         for i in range(1, self.dim):
             neq2 |= neq[:, i]
-        # Collapse every group of 4 values into a single value per curve.
+        # Collapse every group of 4 (or nppcc) values into a single value per curve.
         neq2 = neq2.reshape(-1, nppcc)
         differences = neq2[:, 0]
         for i in range(1, nppcc):
@@ -1379,29 +1379,39 @@ class VMobject(Mobject):
         differences = np.arange(n_curves)[differences]
 
         # If the amount of points has changed, adjust lengths
-        curr_n_curves = curr_n_points / nppcc
-        memo_n_curves = memo_n_points / nppcc
-        if curr_n_points < memo_n_points:
-            new_lengths = self.memory["piece_curves"]["lengths"][:curr_n_curves]
-            self.memory["piece_curves"]["lengths"] = new_lengths
-        elif curr_n_points > memo_n_points:
+        curr_n_curves = curr_n_points // nppcc
+        memo_n_curves = memo_n_points // nppcc
+        if curr_n_points > memo_n_points:
             new_lengths = np.empty(curr_n_curves)
-            new_lengths[:memo_n_curves] = self.memory["piece_curves"]
+            new_lengths[:memo_n_curves] = self.memory["piece_curves"]["lengths"]
             new_lengths[memo_n_curves:] = [
                 self.get_nth_curve_length(n, sample_points)
                 for n in range(memo_n_curves, curr_n_curves)
             ]
+            new_lengths[differences] = [
+                self.get_nth_curve_length(n, sample_points) for n in differences
+            ]
             self.memory["piece_curves"]["lengths"] = new_lengths
-
-        # Update memo, recalculating only the lengths which have changed
-        self.memory["piece_curves"]["points"] = curr_points
-        self.memory["piece_curves"]["lengths"][differences] = [
-            self.get_nth_curve_length(n) for n in differences
-        ]
-        if differences.shape[0] > 0:
             self.memory["piece_curves"]["acc_lengths"] = np.add.accumulate(
                 self.memory["piece_curves"]["lengths"]
             )
+
+        else:
+            new_lengths = self.memory["piece_curves"]["lengths"][:curr_n_curves]
+            new_lengths[differences] = [
+                self.get_nth_curve_length(n, sample_points) for n in differences
+            ]
+            self.memory["piece_curves"]["lengths"] = new_lengths
+            if differences.shape[0] == 0:
+                self.memory["piece_curves"]["acc_lengths"] = self.memory[
+                    "piece_curves"
+                ]["acc_lengths"][:curr_n_curves]
+            else:
+                self.memory["piece_curves"]["acc_lengths"] = np.add.accumulate(
+                    self.memory["piece_curves"]["lengths"]
+                )
+
+        self.memory["piece_curves"]["points"] = curr_points.copy()
 
     def get_nth_curve_points(self, n: int) -> np.ndarray:
         """Returns the points defining the nth curve of the vmobject.
