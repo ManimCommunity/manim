@@ -452,7 +452,7 @@ def quadratic_bezier_remap(
             new_triplets.append(triplet)
     return new_triplets
     """
-    
+
     difference = new_number_of_curves - len(triplets)
     if difference <= 0:
         return triplets
