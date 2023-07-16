@@ -888,7 +888,6 @@ class VMobject(Mobject):
         :class:`VMobject`
             ``self``
         """
-        nppcc = self.n_points_per_cubic_curve
         points = np.asarray(points)
         start_anchors = points[:-1]
         end_anchors = points[1:]
@@ -1021,8 +1020,11 @@ class VMobject(Mobject):
     ) -> bool | np.ndarray:
         """Determine if two points are close enough to be considered equal.
 
-        This function reimplements np.allclose, because repeated calling of
-        np.allclose for only 2 points is inefficient.
+        This function reimplements ``numpy.allclose``, because repeated calling of
+        ``np.allclose`` for only 2 points is inefficient. The tolerance is governed
+        by the :attr:`.tolerance_for_point_equality` attribute.
+
+        Parameters
         ----------
         p0
             first point
@@ -1261,7 +1263,10 @@ class VMobject(Mobject):
         return self.get_subpaths_from_points(self.points)
 
     def get_subpath_split_indices_from_points(
-        self, points: np.ndarray, n_dims: int = 3, strip_null_end_curves: bool = False
+        self,
+        points: np.ndarray,
+        n_dims: int = 3,
+        strip_null_end_curves: bool = False,
     ) -> np.ndarray:
         nppcc = self.n_points_per_cubic_curve
         starts = points[::nppcc]
@@ -1313,7 +1318,9 @@ class VMobject(Mobject):
         return split_indices
 
     def get_subpath_split_indices(
-        self, n_dims: int = 3, strip_null_end_curves: bool = False
+        self,
+        n_dims: int = 3,
+        strip_null_end_curves: bool = False,
     ) -> np.ndarray:
         return self.get_subpath_split_indices_from_points(
             self.points, n_dims, strip_null_end_curves
@@ -1349,7 +1356,7 @@ class VMobject(Mobject):
         n_curves = n_points // nppcc
         n_points = n_points * nppcc
 
-        # Check if any Bezier had its points changed to recalculate its length.
+        # Check if any Bézier curve had its points changed to recalculate its length.
         neq = curr_points[:n_points] != memo_points[:n_points]
         # Collapse every 3D point group into a single value per point.
         neq = neq.reshape(-1, self.dim)
