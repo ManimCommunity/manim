@@ -1274,33 +1274,39 @@ class VMobject(Mobject):
         starts = points[::nppcc]
         ends = points[nppcc - 1 :: nppcc]
         # This ensures that there are no more starts than ends.
-        # TODO: ends.shape[0] would be more efficient, but some test cases regarding
-        # Flash and ShowPassing flash expect a Python list instead of an ndarray, so
-        # ends.shape[0] breaks those test cases. Fix these inconsistencies.
+        # TODO: ends.shape[0] would be more efficient, but some test cases
+        # regarding Flash and ShowPassingFlash expect a Python list instead of
+        # an ndarray, so ends.shape[0] breaks those test cases.
+        # Fix these inconsistencies.
         n_curves = len(ends)
         starts = starts[:n_curves]
 
-        # DO NOT DELETE THIS! Or else, a [[0 0]] ndarray will be returned
-        # for an empty list of points, when it should instead return [].
+        # Zero curves case: if nothing was done to handle this, the statement
+        # split_indices = np.empty((diff_indices.shape[0] + 1, 2), dtype=int)
+        # and later statements would incorrectly generate the ndarray [[0 0]],
+        # which WILL break other methods.
+        # Instead, an empty (0, 2)-shaped ndarray must be returned immediately.
         if n_curves == 0:
             return np.empty((0, 2), dtype=int)
+        # Single curve case: are_points_different(starts[1:], ends[:-1]) will
+        # fail, so return immediately. The split indices are just [[0 nppcc]].
         if n_curves == 1:
             return np.array([[0, nppcc]])
 
         if n_dims == 2:
-            is_equal = self.consider_points_equals_2d
-            is_different = self.consider_points_different_2d
+            are_points_equal = self.consider_points_equals_2d
+            are_points_different = self.consider_points_different_2d
         else:
-            is_equal = self.consider_points_equals
-            is_different = self.consider_points_different
+            are_points_equal = self.consider_points_equals
+            are_points_different = self.consider_points_different
 
-        is_far = is_different(starts[1:], ends[:-1])
-        aux = np.arange(1, is_far.shape[0] + 1)[is_far]
+        diff_bools = are_points_different(starts[1:], ends[:-1])
+        diff_indices = np.arange(1, diff_bools.shape[0] + 1)[diff_bools]
 
-        split_indices = np.empty((aux.shape[0] + 1, 2), dtype=int)
+        split_indices = np.empty((diff_indices.shape[0] + 1, 2), dtype=int)
         split_indices[0, 0] = 0
-        split_indices[1:, 0] = aux
-        split_indices[:-1, 1] = aux
+        split_indices[1:, 0] = diff_indices
+        split_indices[:-1, 1] = diff_indices
         split_indices[-1, 1] = n_curves
 
         if strip_null_end_curves:
@@ -1308,7 +1314,7 @@ class VMobject(Mobject):
                 start_i, end_i = split_indices[i]
                 while (
                     end_i > start_i + 1
-                    and is_equal(
+                    and are_points_equal(
                         points[nppcc * (end_i - 1) : nppcc * end_i], ends[end_i - 2]
                     ).all()
                 ):
