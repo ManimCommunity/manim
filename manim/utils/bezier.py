@@ -143,6 +143,14 @@ def partial_bezier_points(points: np.ndarray, a: float, b: float) -> np.ndarray:
         arr[:] = arr[0]
         return arr
 
+    """
+    Original algorithm (replace n with N, and points with arr):
+
+    a_to_1 = np.array([bezier(points[i:])(a) for i in range(n)])
+    end_prop = (b - a) / (1.0 - a)
+    return np.array([bezier(a_to_1[: i + 1])(end_prop) for i in range(n+1)])
+    """
+
     # Current state for an example Bezier curve C0 = [P0, P1, P2, P3]:
     # arr = [P0, P1, P2, P3]
     if a != 0:
@@ -176,14 +184,6 @@ def partial_bezier_points(points: np.ndarray, a: float, b: float) -> np.ndarray:
 
     return arr
 
-    """
-    Original algorithm:
-
-    a_to_1 = np.array([bezier(points[i:])(a) for i in range(n)])
-    end_prop = (b - a) / (1.0 - a)
-    return np.array([bezier(a_to_1[: i + 1])(end_prop) for i in range(n+1)])
-    """
-
 
 def partial_quadratic_bezier_points(points, a, b):
     """Shortened version of partial_bezier_points just for quadratics,
@@ -215,6 +215,22 @@ def partial_quadratic_bezier_points(points, a, b):
         arr[:] = arr[0]
         return arr
 
+    """
+    Original algorithm (replace points with arr):
+
+    def curve(t):
+        mt = 1 - t
+        return points[0] * mt * mt + 2 * points[1] * t * mt + points[2] * t * t
+
+    # bezier(points)
+    h0 = curve(a) if a > 0 else points[0]
+    h2 = curve(b) if b < 1 else points[2]
+    h1_prime = (1 - a) * points[1] + a * points[2]
+    end_prop = (b - a) / (1.0 - a)
+    h1 = (1 - end_prop) * h0 + end_prop * h1_prime
+    return [h0, h1, h2]
+    """
+
     # Current state: arr = [P0 P1 P2]
     if a != 0:
         arr[:-1] += a * (arr[1:] - arr[:-1])  # arr = [L0 L1 P2]
@@ -233,21 +249,6 @@ def partial_quadratic_bezier_points(points, a, b):
     # OpenGLVMobject.insert_n_curves_to_point_list does a list concatenation with +=.
     # Using an ndarray breaks many test cases. This should probably change.
     return list(arr)
-    """
-    Original algorithm:
-
-    def curve(t):
-        mt = 1 - t
-        return points[0] * mt * mt + 2 * points[1] * t * mt + points[2] * t * t
-
-    # bezier(points)
-    h0 = curve(a) if a > 0 else points[0]
-    h2 = curve(b) if b < 1 else points[2]
-    h1_prime = (1 - a) * points[1] + a * points[2]
-    end_prop = (b - a) / (1.0 - a)
-    h1 = (1 - end_prop) * h0 + end_prop * h1_prime
-    return [h0, h1, h2]
-    """
 
 
 def split_bezier(points: Iterable[float], t: float) -> np.ndarray:
@@ -431,23 +432,6 @@ def quadratic_bezier_remap(
     -------
         The new triplets for the quadratic bezier curves.
     """
-    difference = new_number_of_curves - len(triplets)
-    if difference <= 0:
-        return triplets
-    new_triplets = np.empty((new_number_of_curves, 3, 3))
-    idx = 0
-    for triplet in triplets:
-        if difference > 0:
-            tmp_noc = int(np.ceil(difference / len(triplets))) + 1
-            tmp = subdivide_quadratic_bezier(triplet, tmp_noc).reshape(-1, 3, 3)
-            for i in range(tmp_noc):
-                new_triplets[idx + i] = tmp[i]
-            difference -= tmp_noc - 1
-            idx += tmp_noc
-        else:
-            new_triplets[idx] = triplet
-            idx += 1
-    return new_triplets
 
     """
     This is an alternate version of the function just for documentation purposes
@@ -468,6 +452,24 @@ def quadratic_bezier_remap(
             new_triplets.append(triplet)
     return new_triplets
     """
+    
+    difference = new_number_of_curves - len(triplets)
+    if difference <= 0:
+        return triplets
+    new_triplets = np.empty((new_number_of_curves, 3, 3))
+    idx = 0
+    for triplet in triplets:
+        if difference > 0:
+            tmp_noc = int(np.ceil(difference / len(triplets))) + 1
+            tmp = subdivide_quadratic_bezier(triplet, tmp_noc).reshape(-1, 3, 3)
+            for i in range(tmp_noc):
+                new_triplets[idx + i] = tmp[i]
+            difference -= tmp_noc - 1
+            idx += tmp_noc
+        else:
+            new_triplets[idx] = triplet
+            idx += 1
+    return new_triplets
 
 
 # Linear interpolation variants
@@ -575,8 +577,6 @@ UP_CLOSED_MEMO = np.array([1 / 3])
 def get_smooth_cubic_bezier_handle_points_for_closed_curve(
     anchors: np.ndarray,
 ) -> tuple[np.ndarray, np.ndarray]:
-    global CP_CLOSED_MEMO
-    global UP_CLOSED_MEMO
     """
     A system of equations must be solved to get the first handles of
     every Bèzier curve (referred to as H1).
@@ -685,6 +685,8 @@ def get_smooth_cubic_bezier_handle_points_for_closed_curve(
     cannot make a memo for q either, but we can calculate it faster because u'
     can be memoized.
     """
+    global CP_CLOSED_MEMO
+    global UP_CLOSED_MEMO
 
     A = np.asarray(anchors)
     N = len(anchors) - 1
@@ -754,7 +756,6 @@ CP_OPEN_MEMO = np.array([0.5])
 def get_smooth_cubic_bezier_handle_points_for_open_curve(
     anchors: np.ndarray,
 ) -> tuple[np.ndarray, np.ndarray]:
-    global CP_OPEN_MEMO
     """
     A system of equations must be solved to get the first handles of
     every Bèzier curve (referred to as H1).
@@ -813,6 +814,7 @@ def get_smooth_cubic_bezier_handle_points_for_open_curve(
     for c' to avoid recalculation. We cannot do the same for d, however,
     because it is always a different vector.
     """
+    global CP_OPEN_MEMO
 
     A = np.asarray(anchors)
     N = len(anchors) - 1
