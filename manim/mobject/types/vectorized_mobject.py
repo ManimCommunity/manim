@@ -41,7 +41,6 @@ from ...utils.bezier import (
 from ...utils.color import BLACK, WHITE, color_to_rgba
 from ...utils.deprecation import deprecated
 from ...utils.iterables import make_even, resize_array, stretch_array_to_length, tuplify
-from ...utils.simple_functions import binary_search
 from ...utils.space_ops import rotate_vector, shoelace_direction
 
 # TODO
