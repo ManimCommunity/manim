@@ -1015,7 +1015,11 @@ class VMobject(Mobject):
         return self
 
     #
-    def consider_points_equals(self, p0, p1):
+    def consider_points_equals(
+        self,
+        p0: Iterable[float] | Iterable[Iterable[float]],
+        p1: Iterable[float] | Iterable[Iterable[float]],
+    ) -> bool | np.ndarray:
         """Determine if two points are close enough to be considered equal.
 
         This function reimplements np.allclose, because repeated calling of
@@ -1028,9 +1032,11 @@ class VMobject(Mobject):
 
         Returns
         -------
-        bool
+        bool | np.ndarray
             Whether the points p0 and p1 are considered close or not.
         """
+        p0 = np.asarray(p0)
+        p1 = np.asarray(p1)
         atol = self.tolerance_for_point_equality
 
         # Case 1: single pair of points
@@ -1048,7 +1054,9 @@ class VMobject(Mobject):
         return is_close[:, 0] & is_close[:, 1] & is_close[:, 2]
 
     def consider_points_equals_2d(
-        self, p0: np.ndarray, p1: np.ndarray
+        self,
+        p0: Iterable[float] | Iterable[Iterable[float]],
+        p1: Iterable[float] | Iterable[Iterable[float]],
     ) -> bool | np.ndarray:
         """Determine if two points are close enough to be considered equal.
 
@@ -1063,10 +1071,11 @@ class VMobject(Mobject):
 
         Returns
         -------
-        bool
+        bool | np.ndarray
             Whether the points p0 and p1 are considered close or not.
         """
-        # Case 1: single pair of points (returns a bool)
+        p0 = np.asarray(p0)
+        p1 = np.asarray(p1)
         atol = self.tolerance_for_point_equality
 
         # Case 1: single pair of points
@@ -1084,7 +1093,11 @@ class VMobject(Mobject):
         is_close = abs(p1 - p0) <= atol
         return is_close[:, 0] & is_close[:, 1]
 
-    def consider_points_different(self, p0, p1):
+    def consider_points_different(
+        self,
+        p0: Iterable[float] | Iterable[Iterable[float]],
+        p1: Iterable[float] | Iterable[Iterable[float]],
+    ) -> bool | np.ndarray:
         """Determine if two points are distant enough to be considered different.
 
         This function reimplements np.allclose, because repeated calling of
@@ -1097,9 +1110,11 @@ class VMobject(Mobject):
 
         Returns
         -------
-        bool
+        bool | np.ndarray
             Whether the points p0 and p1 are considered different or not.
         """
+        p0 = np.asarray(p0)
+        p1 = np.asarray(p1)
         atol = self.tolerance_for_point_equality
 
         # Case 1: single pair of points
@@ -1116,7 +1131,11 @@ class VMobject(Mobject):
         is_far = abs(p1 - p0) > atol
         return is_far[:, 0] | is_far[:, 1] | is_far[:, 2]
 
-    def consider_points_different_2d(self, p0: np.ndarray, p1: np.ndarray) -> bool:
+    def consider_points_different_2d(
+        self,
+        p0: Iterable[float] | Iterable[Iterable[float]],
+        p1: Iterable[float] | Iterable[Iterable[float]],
+    ) -> bool | np.ndarray:
         """Determine if two points are distant enough to be considered different.
 
         This uses the algorithm from np.isclose(), but expanded here for the
@@ -1130,9 +1149,11 @@ class VMobject(Mobject):
 
         Returns
         -------
-        bool
+        bool | np.ndarray
             Whether the points p0 and p1 are considered different or not.
         """
+        p0 = np.asarray(p0)
+        p1 = np.asarray(p1)
         atol = self.tolerance_for_point_equality
 
         # Case 1: single pair of points
