@@ -1096,84 +1096,6 @@ class VMobject(Mobject):
         is_close = abs(p1 - p0) <= atol
         return is_close[:, 0] & is_close[:, 1]
 
-    def consider_points_different(
-        self,
-        p0: Iterable[float] | Iterable[Iterable[float]],
-        p1: Iterable[float] | Iterable[Iterable[float]],
-    ) -> bool | np.ndarray:
-        """Determine if two points are distant enough to be considered different.
-
-        This function reimplements np.allclose, because repeated calling of
-        np.allclose for only 2 points is inefficient.
-        ----------
-        p0
-            first point
-        p1
-            second point
-
-        Returns
-        -------
-        bool | np.ndarray
-            Whether the points p0 and p1 are considered different or not.
-        """
-        p0 = np.asarray(p0)
-        p1 = np.asarray(p1)
-        atol = self.tolerance_for_point_equality
-
-        # Case 1: single pair of points
-        if p0.ndim == 1 and p1.ndim == 1:
-            if abs(p0[0] - p1[0]) > atol:
-                return True
-            if abs(p0[1] - p1[1]) > atol:
-                return True
-            if abs(p0[2] - p1[2]) > atol:
-                return True
-            return False
-
-        # Case 2: multiple pairs of points
-        is_far = abs(p1 - p0) > atol
-        return is_far[:, 0] | is_far[:, 1] | is_far[:, 2]
-
-    def consider_points_different_2d(
-        self,
-        p0: Iterable[float] | Iterable[Iterable[float]],
-        p1: Iterable[float] | Iterable[Iterable[float]],
-    ) -> bool | np.ndarray:
-        """Determine if two points are distant enough to be considered different.
-
-        This uses the algorithm from np.isclose(), but expanded here for the
-        2D point case. NumPy is overkill for such a small question.
-        Parameters
-        ----------
-        p0
-            first point
-        p1
-            second point
-
-        Returns
-        -------
-        bool | np.ndarray
-            Whether the points p0 and p1 are considered different or not.
-        """
-        p0 = np.asarray(p0)
-        p1 = np.asarray(p1)
-        atol = self.tolerance_for_point_equality
-
-        # Case 1: single pair of points
-        if p0.ndim == 1 and p1.ndim == 1:
-            if abs(p0[0] - p1[0]) > atol:
-                return True
-            if abs(p0[1] - p1[1]) > atol:
-                return True
-            return False
-
-        # Case 2: multiple pairs of points
-        # Ensure that we're only working with 2D components
-        p0 = p0.reshape(-1, self.dim)[:, :2]
-        p1 = p1.reshape(-1, self.dim)[:, :2]
-        is_far = abs(p1 - p0) > atol
-        return is_far[:, 0] | is_far[:, 1]
-
     # Information about line
     def get_cubic_bezier_tuples_from_points(self, points: np.ndarray) -> np.ndarray:
         return self.gen_cubic_bezier_tuples_from_points(points)
@@ -1295,12 +1217,10 @@ class VMobject(Mobject):
 
         if n_dims == 2:
             are_points_equal = self.consider_points_equals_2d
-            are_points_different = self.consider_points_different_2d
         else:
             are_points_equal = self.consider_points_equals
-            are_points_different = self.consider_points_different
 
-        diff_bools = are_points_different(starts[1:], ends[:-1])
+        diff_bools = ~are_points_equal(starts[1:], ends[:-1])
         diff_indices = np.arange(1, diff_bools.shape[0] + 1)[diff_bools]
 
         split_indices = np.empty((diff_indices.shape[0] + 1, 2), dtype=int)
@@ -1330,6 +1250,18 @@ class VMobject(Mobject):
         n_dims: int = 3,
         strip_null_end_curves: bool = False,
     ) -> np.ndarray:
+        """Returns the necessary indices to split :attr:`.VMobject.points` into
+        the corresponding subpaths.
+
+        Subpaths are ranges of curves with each pair of consecutive curves
+        having their end/start points coincident.
+
+        Returns
+        -------
+        np.ndarray
+            (n_subpaths, 2)-shaped array, where the first and second columns
+            indicate respectively the start and end indices for each subpath.
+        """
         return self.get_subpath_split_indices_from_points(
             self.points, n_dims, strip_null_end_curves
         )
