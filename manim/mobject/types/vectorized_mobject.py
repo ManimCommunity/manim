@@ -1055,6 +1055,7 @@ class VMobject(Mobject):
 
         # Case 2: multiple pairs of points
         is_close = abs(p1 - p0) <= atol
+        # This is actually more efficient than np.all(is_close, axis=1)
         return is_close[:, 0] & is_close[:, 1] & is_close[:, 2]
 
     def consider_points_equals_2d(
@@ -1095,6 +1096,7 @@ class VMobject(Mobject):
         p0 = p0.reshape(-1, self.dim)[:, :2]
         p1 = p1.reshape(-1, self.dim)[:, :2]
         is_close = abs(p1 - p0) <= atol
+        # This is actually more efficient than np.all(is_close, axis=1)
         return is_close[:, 0] & is_close[:, 1]
 
     # Information about line
