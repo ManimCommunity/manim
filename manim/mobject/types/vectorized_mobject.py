@@ -15,6 +15,7 @@ __all__ = [
 import itertools as it
 import sys
 import typing
+from bisect import bisect_left
 from typing import Callable, Optional, Sequence, Union
 
 import colour
@@ -1545,23 +1546,14 @@ class VMobject(Mobject):
         acc_lengths = self.memory["piece_curves"]["acc_lengths"]
         target_length = alpha * acc_lengths[-1]
 
-        num_curves = self.get_num_curves()
-
         # Binary search
-        left = 0
-        right = num_curves - 1
-        while right > left:
-            mid = (left + right) // 2
-            if acc_lengths[mid] >= target_length:
-                right = mid
-            else:
-                left = mid + 1
+        i = bisect_left(acc_lengths, target_length)
 
-        nth_curve = self.get_nth_curve_function(left)
-        if left == 0:
-            t = target_length / lengths[left]
+        nth_curve = self.get_nth_curve_function(i)
+        if i == 0:
+            t = target_length / lengths[i]
         else:
-            t = (target_length - acc_lengths[left - 1]) / lengths[left]
+            t = (target_length - acc_lengths[i - 1]) / lengths[i]
         return nth_curve(t)
 
     def proportion_from_point(
@@ -1667,6 +1659,10 @@ class VMobject(Mobject):
             return self.points
         num_curves = self.get_num_curves()
         anchors = np.empty((2 * num_curves, self.dim))
+        # Every end anchor ends a Bézier curve, but not every start anchor
+        # begins a full Bézier curve (it can be incomplete). So the start
+        # anchors must be sliced in case there are lonely points at the end,
+        # but the end anchors don't really need to be sliced.
         anchors[0::2] = self.get_start_anchors()[:num_curves]
         anchors[1::2] = self.get_end_anchors()
         return anchors
