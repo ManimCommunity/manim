@@ -3,20 +3,21 @@ the actual check implementations."""
 
 from __future__ import annotations
 
-from ..._config import config
-
 import os
 import shutil
 import subprocess
 
+from ..._config import config
+
 HEALTH_CHECKS = []
 
+
 def check(
-        description: str,
-        recommendation: str,
-        skip_on_failed: list[callable] | None = None,
-        post_fail_fix_hook: callable | None = None
-    ):
+    description: str,
+    recommendation: str,
+    skip_on_failed: list[callable] | None = None,
+    post_fail_fix_hook: callable | None = None,
+):
     """Decorator used for declaring health checks.
 
     This decorator attaches some data to a function,
@@ -44,9 +45,9 @@ def check(
     if skip_on_failed is None:
         skip_on_failed = []
     skip_on_failed = [
-        skip.__name__ if callable(skip) else skip
-        for skip in skip_on_failed
+        skip.__name__ if callable(skip) else skip for skip in skip_on_failed
     ]
+
     def decorator(func):
         func.description = description
         func.recommendation = recommendation
@@ -54,7 +55,9 @@ def check(
         func.post_fail_fix_hook = post_fail_fix_hook
         HEALTH_CHECKS.append(func)
         return func
+
     return decorator
+
 
 @check(
     description="Checking whether manim is on your PATH",
@@ -75,6 +78,7 @@ def is_manim_on_path():
     path_to_manim = shutil.which("manim")
     return path_to_manim is not None
 
+
 @check(
     description="Checking whether the executable belongs to manim",
     recommendation="TODO",
@@ -82,9 +86,10 @@ def is_manim_on_path():
 )
 def is_manim_executable_associated_to_this_library():
     path_to_manim = shutil.which("manim")
-    with open(path_to_manim, "r") as f:
+    with open(path_to_manim) as f:
         manim_exec = f.read()
     return "manim.__main__" in manim_exec
+
 
 @check(
     description="Checking whether ffmpeg is available",
@@ -93,6 +98,7 @@ def is_manim_executable_associated_to_this_library():
 def is_ffmpeg_available():
     path_to_ffmpeg = shutil.which(config.ffmpeg_executable)
     return path_to_ffmpeg is not None and os.access(path_to_ffmpeg, os.X_OK)
+
 
 @check(
     description="Checking whether ffmpeg is working",
@@ -105,9 +111,10 @@ def is_ffmpeg_working():
         stdout=subprocess.PIPE,
     ).stdout.decode()
     return (
-        ffmpeg_version.startswith("ffmpeg version") and
-        "--enable-libx264" in ffmpeg_version
+        ffmpeg_version.startswith("ffmpeg version")
+        and "--enable-libx264" in ffmpeg_version
     )
+
 
 @check(
     description="Checking whether latex is available",
@@ -116,6 +123,7 @@ def is_ffmpeg_working():
 def is_latex_available():
     path_to_latex = shutil.which("latex")
     return path_to_latex is not None and os.access(path_to_latex, os.X_OK)
+
 
 @check(
     description="Checking whether dvisvgm is available",

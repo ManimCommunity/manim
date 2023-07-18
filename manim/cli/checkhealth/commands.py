@@ -18,10 +18,7 @@ def checkhealth():
     """This subcommand checks whether Manim is installed correctly
     and has access to its required (and optional) system dependencies.
     """
-    click.echo(
-        "Checking whether your installation of Manim Community "
-        "is healthy..."
-    )
+    click.echo("Checking whether your installation of Manim Community " "is healthy...")
     failed_checks = []
 
     for check in HEALTH_CHECKS:
@@ -38,9 +35,9 @@ def checkhealth():
         else:
             click.secho("FAILED", fg="red")
             failed_checks.append(check)
-    
+
     click.echo()
-    
+
     if failed_checks:
         click.echo(
             "There are problems with your installation, "
@@ -50,14 +47,14 @@ def checkhealth():
             click.echo(failed_check.recommendation)
             if ind + 1 < len(failed_checks):
                 click.confirm("Continue with next recommendation?")
-    
+
     else:  # no problems detected!
         click.echo("No problems detected, your installation seems healthy!")
         render_test_scene = click.confirm(
             "Would you like to render and preview a test scene?"
         )
         if render_test_scene:
-            from manim import tempconfig, Scene, ManimBanner, FadeOut, UP
+            from manim import UP, FadeOut, ManimBanner, Scene, tempconfig
 
             class CheckHealthDemo(Scene):
                 def construct(self):
@@ -67,6 +64,6 @@ def checkhealth():
                     self.play(banner.expand())
                     self.wait()
                     self.play(FadeOut(banner, shift=UP))
-            
+
             with tempconfig({"preview": True, "disable_caching": True}):
                 CheckHealthDemo().render()
