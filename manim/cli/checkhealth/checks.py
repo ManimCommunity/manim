@@ -6,6 +6,7 @@ from __future__ import annotations
 import os
 import shutil
 import subprocess
+from typing import Callable
 
 from ..._config import config
 
@@ -15,8 +16,8 @@ HEALTH_CHECKS = []
 def healthcheck(
     description: str,
     recommendation: str,
-    skip_on_failed: list[callable] | None = None,
-    post_fail_fix_hook: callable | None = None,
+    skip_on_failed: list[Callable] | None = None,
+    post_fail_fix_hook: Callable | None = None,
 ):
     """Decorator used for declaring health checks.
 
