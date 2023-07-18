@@ -209,7 +209,7 @@ class ManimBanner(VGroup):
             for letter in mob.anim:
                 if mob.square.get_center()[0] > letter.get_center()[0]:
                     letter.set_opacity(1)
-                    self.add(letter)
+                    self.add_to_back(letter)
 
             # Finish animation
             if alpha == 1:
