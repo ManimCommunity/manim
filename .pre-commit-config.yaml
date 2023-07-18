@@ -24,7 +24,7 @@ repos:
         name: isort (pyi)
         types: [pyi]
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.8.0
+    rev: v3.9.0
     hooks:
       - id: pyupgrade
         name: Update code to new python versions
@@ -39,7 +39,7 @@ repos:
     hooks:
       - id: black
   - repo: https://github.com/asottile/blacken-docs
-    rev: 1.14.0
+    rev: 1.15.0
     hooks:
       - id: blacken-docs
         additional_dependencies: [black==22.3.0]
