@@ -12,7 +12,7 @@ from ..._config import config
 HEALTH_CHECKS = []
 
 
-def check(
+def healthcheck(
     description: str,
     recommendation: str,
     skip_on_failed: list[callable] | None = None,
@@ -59,7 +59,7 @@ def check(
     return decorator
 
 
-@check(
+@healthcheck(
     description="Checking whether manim is on your PATH",
     recommendation=(
         "The command <manim> is currently not on your system's PATH.\n\n"
@@ -79,7 +79,7 @@ def is_manim_on_path():
     return path_to_manim is not None
 
 
-@check(
+@healthcheck(
     description="Checking whether the executable belongs to manim",
     recommendation="TODO",
     skip_on_failed=[is_manim_on_path],
@@ -91,7 +91,7 @@ def is_manim_executable_associated_to_this_library():
     return "manim.__main__" in manim_exec
 
 
-@check(
+@healthcheck(
     description="Checking whether ffmpeg is available",
     recommendation="TODO",
 )
@@ -100,7 +100,7 @@ def is_ffmpeg_available():
     return path_to_ffmpeg is not None and os.access(path_to_ffmpeg, os.X_OK)
 
 
-@check(
+@healthcheck(
     description="Checking whether ffmpeg is working",
     recommendation="TODO",
     skip_on_failed=[is_ffmpeg_available],
@@ -116,7 +116,7 @@ def is_ffmpeg_working():
     )
 
 
-@check(
+@healthcheck(
     description="Checking whether latex is available",
     recommendation="TODO",
 )
@@ -125,7 +125,7 @@ def is_latex_available():
     return path_to_latex is not None and os.access(path_to_latex, os.X_OK)
 
 
-@check(
+@healthcheck(
     description="Checking whether dvisvgm is available",
     recommendation="TODO",
 )
