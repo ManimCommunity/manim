@@ -63,6 +63,7 @@ Made with <3 by Manim Community developers.
 """
     assert dedent(expected_output) == result.output
 
+
 def test_executable_check():
     path_to_manim = shutil.which("manim")
     with open(path_to_manim, "rb") as f:
