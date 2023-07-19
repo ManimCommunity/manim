@@ -88,7 +88,7 @@ def is_manim_on_path():
 )
 def is_manim_executable_associated_to_this_library():
     path_to_manim = Path(shutil.which("manim"))
-    if not path_to_manim.exists():   # windows has manim.exe instead of just manim
+    if not path_to_manim.exists():  # windows has manim.exe instead of just manim
         path_to_manim = path_to_manim.with_suffix(".exe")
     with open(path_to_manim, "rb") as f:
         manim_exec = f.read()
