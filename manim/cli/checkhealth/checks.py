@@ -6,7 +6,6 @@ from __future__ import annotations
 import os
 import shutil
 import subprocess
-from pathlib import Path
 from typing import Callable
 
 from ..._config import config
@@ -90,7 +89,6 @@ def is_manim_executable_associated_to_this_library():
     path_to_manim = shutil.which("manim")
     with open(path_to_manim, "rb") as f:
         manim_exec = f.read()
-    assert False, str(manim_exec)
     return b"manim.__main__" in manim_exec
 
 

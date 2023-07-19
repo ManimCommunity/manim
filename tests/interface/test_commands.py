@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import shutil
 import sys
 from pathlib import Path
 from textwrap import dedent
@@ -61,6 +62,12 @@ Options:
 Made with <3 by Manim Community developers.
 """
     assert dedent(expected_output) == result.output
+
+def test_executable_check():
+    path_to_manim = shutil.which("manim")
+    with open(path_to_manim, "rb") as f:
+        manim_exec = f.read()
+    assert b"manim.__main__" in manim_exec, str(manim_exec)
 
 
 def test_manim_checkhealth_subcommand():
