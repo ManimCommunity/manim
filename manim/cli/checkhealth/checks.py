@@ -17,7 +17,7 @@ HEALTH_CHECKS = []
 def healthcheck(
     description: str,
     recommendation: str,
-    skip_on_failed: list[Callable] | None = None,
+    skip_on_failed: list[Callable | str] | None = None,
     post_fail_fix_hook: Callable | None = None,
 ):
     """Decorator used for declaring health checks.
