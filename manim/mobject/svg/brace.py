@@ -335,10 +335,12 @@ class ArcBrace(Brace):
 
     def __init__(
         self,
-        arc: Arc = Arc(start_angle=-1, angle=2, radius=1),
+        arc: Arc | None = None,
         direction: Sequence[float] = RIGHT,
         **kwargs,
     ):
+        if arc is None:
+            arc = Arc(start_angle=-1, angle=2, radius=1)
         arc_end_angle = arc.start_angle + arc.angle
         line = Line(UP * arc.start_angle, UP * arc_end_angle)
         scale_shift = RIGHT * np.log(arc.radius)

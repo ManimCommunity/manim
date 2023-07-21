@@ -385,7 +385,7 @@ describing the control points in between ("handles").
 .. hint::
   To learn more about Bézier curves, take a look at the excellent
   online textbook `A Primer on Bézier curves <https://pomax.github.io/bezierinfo/>`__
-  by `Pomax <https://twitter.com/TheRealPomax>`__ -- there is an playground representing
+  by `Pomax <https://twitter.com/TheRealPomax>`__ -- there is a playground representing
   cubic Bézier curves `in §1 <https://pomax.github.io/bezierinfo/#introduction>`__,
   the red and yellow points are "anchors", and the green and blue
   points are "handles".

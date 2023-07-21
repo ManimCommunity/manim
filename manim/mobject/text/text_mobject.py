@@ -6,7 +6,7 @@
 
 .. important::
 
-   See the corresponding tutorial :ref:`rendering-with-latex`
+   See the corresponding tutorial :ref:`using-text-objects`, especially for information about fonts.
 
 
 The simplest way to add text to your animations is to use the :class:`~.Text` class. It uses the Pango library to render text.
@@ -301,6 +301,13 @@ class Text(SVGMobject):
     ----------
     text
         The text that needs to be created as a mobject.
+    font
+        The font family to be used to render the text. This is either a system font or
+        one loaded with `register_font()`. Note that font family names may be different
+        across operating systems.
+    warn_missing_font
+        If True (default), Manim will issue a warning if the font does not exist in the
+        (case-sensitive) list of fonts returned from `manimpango.list_fonts()`.
 
     Returns
     -------
@@ -419,6 +426,7 @@ class Text(SVGMobject):
         t2w: dict[str, str] = None,
         gradient: tuple = None,
         tab_width: int = 4,
+        warn_missing_font: bool = True,
         # Mobject
         height: float = None,
         width: float = None,
@@ -427,6 +435,10 @@ class Text(SVGMobject):
         **kwargs,
     ) -> None:
         self.line_spacing = line_spacing
+        if font and warn_missing_font:
+            fonts_list = manimpango.list_fonts()
+            if font not in fonts_list:
+                logger.warning(f"Font {font} not in {fonts_list}.")
         self.font = font
         self._font_size = float(font_size)
         # needs to be a float or else size is inflated when font_size = 24
@@ -480,6 +492,7 @@ class Text(SVGMobject):
             height=height,
             width=width,
             should_center=should_center,
+            use_svg_cache=False,
             **kwargs,
         )
         self.text = text
@@ -492,18 +505,58 @@ class Text(SVGMobject):
             if len(each.points) == 0:
                 continue
             points = each.points
-            last = points[0]
-            each.clear_points()
+            curve_start = points[0]
+            assert len(curve_start) == self.dim, curve_start
+            # Some of the glyphs in this text might not be closed,
+            # so we close them by identifying when one curve ends
+            # but it is not where the next curve starts.
+            # It is more efficient to temporarily create a list
+            # of points and add them one at a time, then turn them
+            # into a numpy array at the end, rather than creating
+            # new numpy arrays every time a point or fixing line
+            # is added (which is O(n^2) for numpy arrays).
+            closed_curve_points = []
+            # OpenGL has points be part of quadratic Bezier curves;
+            # Cairo uses cubic Bezier curves.
+            if nppc == 3:  # RendererType.OPENGL
+
+                def add_line_to(end):
+                    nonlocal closed_curve_points
+                    start = closed_curve_points[-1]
+                    closed_curve_points += [
+                        start,
+                        (start + end) / 2,
+                        end,
+                    ]
+
+            else:  # RendererType.CAIRO
+
+                def add_line_to(end):
+                    nonlocal closed_curve_points
+                    start = closed_curve_points[-1]
+                    closed_curve_points += [
+                        start,
+                        (start + start + end) / 3,
+                        (start + end + end) / 3,
+                        end,
+                    ]
+
             for index, point in enumerate(points):
-                each.append_points([point])
+                closed_curve_points.append(point)
                 if (
                     index != len(points) - 1
                     and (index + 1) % nppc == 0
                     and any(point != points[index + 1])
                 ):
-                    each.add_line_to(last)
-                    last = points[index + 1]
-            each.add_line_to(last)
+                    # Add straight line from last point on this curve to the
+                    # start point on the next curve. We represent the line
+                    # as a cubic bezier curve where the two control points
+                    # are half-way between the start and stop point.
+                    add_line_to(curve_start)
+                    curve_start = points[index + 1]
+            # Make sure last curve is closed
+            add_line_to(curve_start)
+            each.points = np.array(closed_curve_points, ndmin=2)
         # anti-aliasing
         if height is None and width is None:
             self.scale(TEXT_MOB_SCALE_FACTOR)
@@ -910,7 +963,9 @@ class MarkupText(SVGMobject):
         Global weight setting, e.g. `NORMAL` or `BOLD`. Local overrides are possible.
     gradient
         Global gradient setting. Local overrides are possible.
-
+    warn_missing_font
+        If True (default), Manim will issue a warning if the font does not exist in the
+        (case-sensitive) list of fonts returned from `manimpango.list_fonts()`.
 
     Returns
     -------
@@ -1094,10 +1149,15 @@ class MarkupText(SVGMobject):
         width: int = None,
         should_center: bool = True,
         disable_ligatures: bool = False,
+        warn_missing_font: bool = True,
         **kwargs,
     ) -> None:
         self.text = text
         self.line_spacing = line_spacing
+        if font and warn_missing_font:
+            fonts_list = manimpango.list_fonts()
+            if font not in fonts_list:
+                logger.warning(f"Font {font} not in {fonts_list}.")
         self.font = font
         self._font_size = float(font_size)
         self.slant = slant
@@ -1151,18 +1211,56 @@ class MarkupText(SVGMobject):
             if len(each.points) == 0:
                 continue
             points = each.points
-            last = points[0]
-            each.clear_points()
+            curve_start = points[0]
+            assert len(curve_start) == self.dim, curve_start
+            # Some of the glyphs in this text might not be closed,
+            # so we close them by identifying when one curve ends
+            # but it is not where the next curve starts.
+            # It is more efficient to temporarily create a list
+            # of points and add them one at a time, then turn them
+            # into a numpy array at the end, rather than creating
+            # new numpy arrays every time a point or fixing line
+            # is added (which is O(n^2) for numpy arrays).
+            closed_curve_points = []
+            # OpenGL has points be part of quadratic Bezier curves;
+            # Cairo uses cubic Bezier curves.
+            if nppc == 3:  # RendererType.OPENGL
+
+                def add_line_to(end):
+                    nonlocal closed_curve_points
+                    start = closed_curve_points[-1]
+                    closed_curve_points += [
+                        start,
+                        (start + end) / 2,
+                        end,
+                    ]
+
+            else:  # RendererType.CAIRO
+
+                def add_line_to(end):
+                    nonlocal closed_curve_points
+                    start = closed_curve_points[-1]
+                    closed_curve_points += [
+                        start,
+                        (start + start + end) / 3,
+                        (start + end + end) / 3,
+                        end,
+                    ]
+
             for index, point in enumerate(points):
-                each.append_points([point])
+                closed_curve_points.append(point)
                 if (
                     index != len(points) - 1
                     and (index + 1) % nppc == 0
                     and any(point != points[index + 1])
                 ):
-                    each.add_line_to(last)
-                    last = points[index + 1]
-            each.add_line_to(last)
+                    # Add straight line from last point on this curve to the
+                    # start point on the next curve.
+                    add_line_to(curve_start)
+                    curve_start = points[index + 1]
+            # Make sure last curve is closed
+            add_line_to(curve_start)
+            each.points = np.array(closed_curve_points, ndmin=2)
 
         if self.gradient:
             self.set_color_by_gradient(*self.gradient)

@@ -1840,6 +1840,17 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
                 # x_min must be > 0 because log is undefined at 0.
                 graph = ax.plot(lambda x: x ** 2, x_range=[0.001, 10], use_smoothing=False)
                 self.add(ax, graph)
+
+    Styling arguments can be passed to the underlying :class:`.NumberLine`
+    mobjects that represent the axes:
+
+    .. manim:: AxesWithDifferentTips
+        :save_last_frame:
+
+        class AxesWithDifferentTips(Scene):
+            def construct(self):
+                ax = Axes(axis_config={'tip_shape': StealthTip})
+                self.add(ax)
     """
 
     def __init__(
@@ -2041,40 +2052,47 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
 
                     self.add(plane, dot_scene, ax, dot_axes, lines)
         """
+        coords = np.asarray(coords)
         origin = self.x_axis.number_to_point(
             self._origin_shift([self.x_axis.x_min, self.x_axis.x_max]),
         )
 
-        coords = np.asarray(coords)
+        # Is coords in the format ([[x1 y1 z1] [x2 y2 z2] ...])? (True)
+        # Or is coords in the format (x, y, z) or ([x1 x2 ...], [y1 y2 ...], [z1 z2 ...])? (False)
+        # The latter is preferred.
+        are_coordinates_transposed = False
 
-        # if called like coords_to_point(1, 2, 3), then coords is a 1x3 array
-        transposed = False
-        if coords.ndim == 1:
-            # original implementation of coords_to_point for performance in the legacy case
-            result = np.array(origin)
-            for axis, number in zip(self.get_axes(), coords):
-                result += axis.number_to_point(number) - origin
-            return result
-        # if called like coords_to_point([1, 2, 3],[4, 5, 6]), then it shall be used as [1,4], [2,5], [3,6] and return the points as ([x_0,x_1],[y_0,y_1],[z_0,z_1])
-        elif coords.ndim == 2:
-            coords = coords.T
-            transposed = True
-        # if called like coords_to_point(np.array([[1, 2, 3],[4,5,6]])), reduce dimension by 1
-        elif coords.ndim == 3:
-            coords = np.squeeze(coords)
-        # else the coords is a Nx1, Nx2, Nx3 array so we do not need to modify the array
+        # If coords is in the format ([[x1 y1 z1] [x2 y2 z2] ...]):
+        if coords.ndim == 3:
+            # Extract from original tuple: now coords looks like [[x y z]] or [[x1 y1 z1] [x2 y2 z2] ...].
+            coords = coords[0]
+            # If there's a single coord (coords = [[x y z]]), extract it so that
+            # coords = [x y z] and coords_to_point returns a single point.
+            if coords.shape[0] == 1:
+                coords = coords[0]
+            # Else, if coords looks more like [[x1 y1 z1] [x2 y2 z2] ...], transform them (by
+            # transposing) into the format [[x1 x2 ...] [y1 y2 ...] [z1 z2 ...]] for later processing.
+            else:
+                coords = coords.T
+                are_coordinates_transposed = True
+        # Otherwise, coords already looked like (x, y, z) or ([x1 x2 ...], [y1 y2 ...], [z1 z2 ...]),
+        # so no further processing is needed.
 
-        points = origin + np.sum(
-            [
-                axis.number_to_point(number) - origin
-                for number, axis in zip(coords.T, self.get_axes())
-            ],
-            axis=0,
-        )
-        # if called with single coord, then return a point instead of a list of points
-        if transposed:
-            return points.T
-        return points
+        # Now coords should either look like [x y z] or [[x1 x2 ...] [y1 y2 ...] [z1 z2 ...]],
+        # so it can be iterated directly. Each element is either a float representing a single
+        # coordinate, or a float ndarray of coordinates corresponding to a single axis.
+        # Although "points" and "nums" are in plural, there might be a single point or number.
+        points = self.x_axis.number_to_point(coords[0])
+        other_axes = self.axes.submobjects[1:]
+        for axis, nums in zip(other_axes, coords[1:]):
+            points += axis.number_to_point(nums) - origin
+
+        # Return points as is, except if coords originally looked like
+        # ([x1 x2 ...], [y1 y2 ...], [z1 z2 ...]), which is determined by the conditions below. In
+        # that case, the current implementation requires that the results have to be transposed.
+        if are_coordinates_transposed or points.ndim == 1:
+            return points
+        return points.T
 
     def point_to_coords(self, point: Sequence[float]) -> np.ndarray:
         """Accepts a point from the scene and returns its coordinates with respect to the axes.
@@ -2144,10 +2162,11 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         x_label: float | str | Mobject = "x",
         y_label: float | str | Mobject = "y",
     ) -> VGroup:
-        """Defines labels for the x_axis and y_axis of the graph.
+        """Defines labels for the x-axis and y-axis of the graph.
 
         For increased control over the position of the labels,
-        use :meth:`get_x_axis_label` and :meth:`get_y_axis_label`.
+        use :meth:`~.CoordinateSystem.get_x_axis_label` and
+        :meth:`~.CoordinateSystem.get_y_axis_label`.
 
         Parameters
         ----------
@@ -2163,8 +2182,8 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
 
 
         .. seealso::
-            :meth:`.get_x_axis_label`
-            :meth:`.get_y_axis_label`
+            :meth:`~.CoordinateSystem.get_x_axis_label`
+            :meth:`~.CoordinateSystem.get_y_axis_label`
 
         Examples
         --------
@@ -2533,7 +2552,9 @@ class ThreeDAxes(Axes):
         """Defines labels for the x_axis and y_axis of the graph.
 
         For increased control over the position of the labels,
-        use :meth:`.get_x_axis_label` and :meth:`.get_y_axis_label`.
+        use :meth:`~.CoordinateSystem.get_x_axis_label`,
+        :meth:`~.ThreeDAxes.get_y_axis_label`, and
+        :meth:`~.ThreeDAxes.get_z_axis_label`.
 
         Parameters
         ----------
@@ -2551,9 +2572,9 @@ class ThreeDAxes(Axes):
 
 
         .. seealso::
-            :meth:`.get_x_axis_label`
-            :meth:`.get_y_axis_label`
-            :meth:`.get_z_axis_label`
+            :meth:`~.CoordinateSystem.get_x_axis_label`
+            :meth:`~.ThreeDAxes.get_y_axis_label`
+            :meth:`~.ThreeDAxes.get_z_axis_label`
 
         Examples
         --------

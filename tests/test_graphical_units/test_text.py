@@ -24,8 +24,8 @@ def test_text_color_inheritance():
     their parent class."""
     VMobject.set_default(color=RED)
     # set both to a singular font so that the tests agree.
-    text = Text("test_color_inheritance", font="Dejavu Sans")
-    markup_text = MarkupText("test_color_inheritance", font="Dejavu Sans")
+    text = Text("test_color_inheritance", font="Sans")
+    markup_text = MarkupText("test_color_inheritance", font="Sans")
 
     assert all(char.fill_color == Color(RED) for char in text)
     assert all(char.fill_color == Color(RED) for char in markup_text)

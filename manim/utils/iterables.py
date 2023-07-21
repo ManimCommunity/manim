@@ -65,7 +65,7 @@ def all_elements_are_instances(iterable: Iterable, Class) -> bool:
     """Returns ``True`` if all elements of iterable are instances of Class.
     False otherwise.
     """
-    return all([isinstance(e, Class) for e in iterable])
+    return all(isinstance(e, Class) for e in iterable)
 
 
 def batch_by_property(
