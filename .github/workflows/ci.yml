@@ -68,7 +68,7 @@ jobs:
         uses: teatimeguest/setup-texlive-action@v2
         with:
           cache: true
-          packages: scheme-basic fontspec inputenc fontenc tipa mathrsfs calligra xcolor standalone preview doublestroke ms everysel setspace rsfs relsize ragged2e fundus-calligra microtype wasysym physics dvisvgm jknapltx wasy cm-super babel-english gnu-freefont mathastext cbfonts-fd
+          packages: scheme-basic fontspec inputenc fontenc tipa mathrsfs calligra xcolor standalone preview doublestroke ms everysel setspace rsfs relsize ragged2e fundus-calligra microtype wasysym physics dvisvgm jknapltx wasy cm-super babel-english gnu-freefont mathastext cbfonts-fd xetex
 
       - name: Start virtual display (Linux)
         if: runner.os == 'Linux'
