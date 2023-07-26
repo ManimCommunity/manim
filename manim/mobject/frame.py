@@ -34,5 +34,7 @@ class ScreenRectangle(Rectangle):
 
 class FullScreenRectangle(ScreenRectangle):
     def __init__(self, **kwargs):
+        kwargs["aspect_ratio"] = config["frame_width"] / config["frame_height"]
+        kwargs["height"] = config["frame_height"]
         super().__init__(**kwargs)
         self.height = config["frame_height"]
