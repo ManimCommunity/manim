@@ -266,6 +266,6 @@ def test_LabeledLine(scene):
 @frames_comparison
 def test_LabeledArrow(scene):
     l_arrow = LabeledArrow(
-        "0.5", start=LEFT * 3, end=RIGHT * 3 + UP * 2, label_position=0.5
+        "0.5", start=LEFT * 3, end=RIGHT * 3 + UP * 2, label_position=0.5, font_size=15
     )
     scene.add(l_arrow)
