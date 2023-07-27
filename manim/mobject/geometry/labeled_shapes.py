@@ -10,10 +10,11 @@ from manim.mobject.geometry.shape_matchers import (
     BackgroundRectangle,
     SurroundingRectangle,
 )
-from manim.utils.color import *
-from manim.mobject.text.tex_mobject import Tex, MathTex
+from manim.mobject.text.tex_mobject import MathTex, Tex
 from manim.mobject.text.text_mobject import Text
+from manim.utils.color import *
 from manim.utils.color import Color
+
 
 class LabeledLine(Line):
     """Constructs a line containing a label box somewhere along its length.
