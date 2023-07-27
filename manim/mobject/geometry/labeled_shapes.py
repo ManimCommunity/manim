@@ -116,7 +116,7 @@ class LabeledArrow(LabeledLine, Arrow):
         Label that will be displayed on the line.
     label_position : float | optional
         A ratio in the range [0-1] to indicate the position of the label with respect to the length of the line. Default value is 0.5.
-    font_size : int | float | optional
+    font_size : float | optional
         Control font size for the label. This parameter is only used when `label` is of type `str`.
     label_color: numpy.ndarray | optional
         The color of the label's text. This parameter is only used when `label` is of type `str`.
