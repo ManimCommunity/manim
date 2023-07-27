@@ -65,7 +65,7 @@ class LabeledLine(Line):
         label: str | Tex | MathTex | Text,
         label_position: float = 0.5,
         font_size: float = 15,
-        label_color: Color | str | None = WHITE,
+        label_color: Color | str | None = None,
         label_frame: bool = True,
         frame_fill_color: Color | str | None = None,
         frame_fill_opacity: float = 1,
