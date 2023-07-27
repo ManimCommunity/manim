@@ -60,13 +60,13 @@ class LabeledLine(Line):
 
     def __init__(
         self,
-        label,
+        label: str | Tex | MathTex | Text,
         label_position: float = 0.5,
-        font_size=15,
-        label_color=WHITE,
-        label_frame=True,
-        frame_fill_color=None,
-        frame_fill_opacity=1,
+        font_size: float = 15,
+        label_color: Color | str | None = WHITE,
+        label_frame: bool = True,
+        frame_fill_color: Color | str | None = None,
+        frame_fill_opacity: float = 1,
         *args,
         **kwargs,
     ) -> None:
