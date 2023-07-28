@@ -89,7 +89,11 @@ def is_manim_executable_associated_to_this_library():
     path_to_manim = shutil.which("manim")
     with open(path_to_manim, "rb") as f:
         manim_exec = f.read()
-    return b"manim.__main__" in manim_exec
+
+    # first condition below corresponds to the executable being
+    # some sort of python script. second condition happens when
+    # the executable is actually a Windows batch file.
+    return b"manim.__main__" in manim_exec or b'"%~dp0\\manim"' in manim_exec
 
 
 @healthcheck(
