@@ -690,6 +690,8 @@ class CoordinateSystem:
             **kwargs,
         )
 
+        graph.underlying_function = function
+
         if colorscale:
             if type(colorscale[0]) in (list, tuple):
                 new_colors, pivots = [
@@ -734,8 +736,6 @@ class CoordinateSystem:
                                 mob.set_color(mob_color, family=False)
                             break
             graph = new_graph
-
-        graph.underlying_function = function
 
         return graph
 
