@@ -82,7 +82,13 @@ def is_manim_on_path():
 
 @healthcheck(
     description="Checking whether the executable belongs to manim",
-    recommendation="TODO",
+    recommendation=(
+        "The command <manim> does not belong to your installed version "
+        "of this library, it likely belongs to manimgl / manimlib.\n\n"
+        "Run manim via <python -m manim> or via <manimce>, or uninstall "
+        "and reinstall manim via <pip install --upgrade "
+        "--force-reinstall manim> to fix this."
+    ),
     skip_on_failed=[is_manim_on_path],
 )
 def is_manim_executable_associated_to_this_library():
@@ -98,7 +104,16 @@ def is_manim_executable_associated_to_this_library():
 
 @healthcheck(
     description="Checking whether ffmpeg is available",
-    recommendation="TODO",
+    recommendation=(
+        "Manim does not work without ffmpeg. Please follow our "
+        "installation instructions "
+        "at https://docs.manim.community/en/stable/installation.html "
+        "to download ffmpeg. Then, either ...\n\n"
+        "(a) ... make the ffmpeg executable available to your system's PATH,\n"
+        "(b) or, alternatively, use <manim cfg write --open> to create a "
+        "custom configuration and set the ffmpeg_executable variable to the "
+        "full absolute path to the ffmpeg executable."
+    ),
 )
 def is_ffmpeg_available():
     path_to_ffmpeg = shutil.which(config.ffmpeg_executable)
@@ -107,7 +122,12 @@ def is_ffmpeg_available():
 
 @healthcheck(
     description="Checking whether ffmpeg is working",
-    recommendation="TODO",
+    recommendation=(
+        "Your installed version of ffmpeg does not support x264 encoding, "
+        "which manim requires. Please follow our installation instructions "
+        "at https://docs.manim.community/en/stable/installation.html "
+        "to download and install a newer version of ffmpeg."
+    ),
     skip_on_failed=[is_ffmpeg_available],
 )
 def is_ffmpeg_working():
@@ -123,7 +143,15 @@ def is_ffmpeg_working():
 
 @healthcheck(
     description="Checking whether latex is available",
-    recommendation="TODO",
+    recommendation=(
+        "Manim cannot find <latex> on your system's PATH. "
+        "You will not be able to use Tex and MathTex mobjects "
+        "in your scenes.\n\n"
+        "Consult our installation instructions "
+        "at https://docs.manim.community/en/stable/installation.html "
+        "or search the web for instructions on how to install a "
+        "LaTeX distribution on your operating system."
+    ),
 )
 def is_latex_available():
     path_to_latex = shutil.which("latex")
@@ -132,7 +160,13 @@ def is_latex_available():
 
 @healthcheck(
     description="Checking whether dvisvgm is available",
-    recommendation="TODO",
+    recommendation=(
+        "Manim could find <latex>, but not <dvisvgm> on your system's "
+        "PATH. Make sure your installed LaTeX distribution comes with "
+        "dvisvgm and consider installing a larger distribution if it "
+        "does not."
+    ),
+    skip_on_failed=[is_latex_available],
 )
 def is_dvisvgm_available():
     path_to_dvisvgm = shutil.which("dvisvgm")
