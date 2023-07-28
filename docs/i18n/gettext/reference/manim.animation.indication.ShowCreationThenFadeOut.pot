@@ -19,19 +19,7 @@ msgid "Bases: :py:class:`manim.animation.composition.Succession`"
 msgstr ""
 
 #: ../../../manim/animation/indication.py:docstring of manim.animation.indication.ShowCreationThenFadeOut:1
-msgid "Deprecated"
-msgstr ""
-
-#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.ShowCreationThenFadeOut:4
-msgid "The class ShowCreationThenFadeOut has been deprecated since v0.15.0 and is expected to be removed after v0.16.0. Use Create then FadeOut to achieve this effect."
-msgstr ""
-
-#: ../../source/reference/manim.animation.indication.ShowCreationThenFadeOut.rst:14
-msgid "Methods"
-msgstr ""
-
-#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.ShowCreationThenFadeOut:0
-msgid "Parameters"
+msgid "Deprecated The class ShowCreationThenFadeOut has been deprecated since v0.15.0 and is expected to be removed after v0.16.0. Use Create then FadeOut to achieve this effect."
 msgstr ""
 
 

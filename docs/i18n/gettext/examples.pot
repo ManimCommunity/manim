@@ -42,7 +42,7 @@ msgstr ""
 msgid "Plotting with Manim"
 msgstr ""
 
-#: ../../source/examples.rst:438
+#: ../../source/examples.rst:496
 msgid "Special Camera Settings"
 msgstr ""
 

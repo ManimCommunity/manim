@@ -7,6 +7,7 @@ from pathlib import Path
 import numpy as np
 
 from manim import WHITE, Scene, Square, Tex, Text, config, tempconfig
+from manim._config.utils import ManimConfig
 from tests.assert_utils import assert_dir_exists, assert_dir_filled, assert_file_exists
 
 
@@ -28,7 +29,7 @@ def test_tempconfig():
     # check that config is correctly restored
     for k, v in original.items():
         if isinstance(v, np.ndarray):
-            assert np.allclose(config[k], v)
+            np.testing.assert_allclose(config[k], v)
         else:
             assert config[k] == v
 
@@ -50,13 +51,13 @@ def test_transparent():
         scene = MyScene()
         scene.render()
         frame = scene.renderer.get_frame()
-    assert np.allclose(frame[0, 0], [0, 0, 0, 255])
+    np.testing.assert_allclose(frame[0, 0], [0, 0, 0, 255])
 
     with tempconfig({"transparent": True, "dry_run": True}):
         scene = MyScene()
         scene.render()
         frame = scene.renderer.get_frame()
-        assert np.allclose(frame[0, 0], [0, 0, 0, 0])
+        np.testing.assert_allclose(frame[0, 0], [0, 0, 0, 0])
 
     config["verbosity"] = orig_verbosity
 
@@ -67,7 +68,7 @@ def test_background_color():
         scene = MyScene()
         scene.render()
         frame = scene.renderer.get_frame()
-        assert np.allclose(frame[0, 0], [255, 255, 255, 255])
+        np.testing.assert_allclose(frame[0, 0], [255, 255, 255, 255])
 
 
 def test_digest_file(tmp_path):
@@ -98,6 +99,7 @@ def test_custom_dirs(tmp_path):
         {
             "media_dir": tmp_path,
             "save_sections": True,
+            "log_to_file": True,
             "frame_rate": 15,
             "pixel_height": 854,
             "pixel_width": 480,
@@ -108,36 +110,37 @@ def test_custom_dirs(tmp_path):
             "images_dir": "{media_dir}/test_images",
             "text_dir": "{media_dir}/test_text",
             "tex_dir": "{media_dir}/test_tex",
+            "log_dir": "{media_dir}/test_log",
         }
     ):
         scene = MyScene()
         scene.render()
+        tmp_path = Path(tmp_path)
+        assert_dir_filled(tmp_path / "test_sections")
+        assert_file_exists(tmp_path / "test_sections/MyScene.json")
 
-        assert_dir_filled(os.path.join(tmp_path, "test_sections"))
-        assert_file_exists(os.path.join(tmp_path, "test_sections", "MyScene.json"))
+        assert_dir_filled(tmp_path / "test_video")
+        assert_file_exists(tmp_path / "test_video/MyScene.mp4")
 
-        assert_dir_filled(os.path.join(tmp_path, "test_video"))
-        assert_file_exists(os.path.join(tmp_path, "test_video", "MyScene.mp4"))
-
-        assert_dir_filled(os.path.join(tmp_path, "test_partial_movie_dir"))
+        assert_dir_filled(tmp_path / "test_partial_movie_dir")
         assert_file_exists(
-            os.path.join(
-                tmp_path, "test_partial_movie_dir", "partial_movie_file_list.txt"
-            )
+            tmp_path / "test_partial_movie_dir/partial_movie_file_list.txt"
         )
 
         # TODO: another example with image output would be nice
-        assert_dir_exists(os.path.join(tmp_path, "test_images"))
+        assert_dir_exists(tmp_path / "test_images")
 
-        assert_dir_filled(os.path.join(tmp_path, "test_text"))
-        assert_dir_filled(os.path.join(tmp_path, "test_tex"))
-        # TODO: testing the log dir would be nice but it doesn't get generated for some reason and test crashes when setting "log_to_file" to True
+        assert_dir_filled(tmp_path / "test_text")
+        assert_dir_filled(tmp_path / "test_tex")
+        assert_dir_filled(tmp_path / "test_log")
 
 
 def test_frame_size(tmp_path):
     """Test that the frame size can be set via config file."""
-    assert np.allclose(config.aspect_ratio, config.pixel_width / config.pixel_height)
-    assert np.allclose(config.frame_height, 8.0)
+    np.testing.assert_allclose(
+        config.aspect_ratio, config.pixel_width / config.pixel_height
+    )
+    np.testing.assert_allclose(config.frame_height, 8.0)
 
     with tempconfig({}):
         tmp_cfg = tempfile.NamedTemporaryFile("w", dir=tmp_path, delete=False)
@@ -152,10 +155,10 @@ def test_frame_size(tmp_path):
         config.digest_file(tmp_cfg.name)
 
         # aspect ratio is set using pixel measurements
-        assert np.allclose(config.aspect_ratio, 1.0)
+        np.testing.assert_allclose(config.aspect_ratio, 1.0)
         # if not specified in the cfg file, frame_width is set using the aspect ratio
-        assert np.allclose(config.frame_height, 8.0)
-        assert np.allclose(config.frame_width, 8.0)
+        np.testing.assert_allclose(config.frame_height, 8.0)
+        np.testing.assert_allclose(config.frame_width, 8.0)
 
     with tempconfig({}):
         tmp_cfg = tempfile.NamedTemporaryFile("w", dir=tmp_path, delete=False)
@@ -171,10 +174,10 @@ def test_frame_size(tmp_path):
         tmp_cfg.close()
         config.digest_file(tmp_cfg.name)
 
-        assert np.allclose(config.aspect_ratio, 1.0)
+        np.testing.assert_allclose(config.aspect_ratio, 1.0)
         # if both are specified in the cfg file, the aspect ratio is ignored
-        assert np.allclose(config.frame_height, 10.0)
-        assert np.allclose(config.frame_width, 10.0)
+        np.testing.assert_allclose(config.frame_height, 10.0)
+        np.testing.assert_allclose(config.frame_width, 10.0)
 
 
 def test_temporary_dry_run():
@@ -208,3 +211,22 @@ def test_dry_run_with_png_format_skipped_animations():
         assert config["dry_run"] is True
         scene = MyScene(skip_animations=True)
         scene.render()
+
+
+def test_tex_template_file(tmp_path):
+    """Test that a custom tex template file can be set from a config file."""
+    tex_file = Path(tmp_path / "my_template.tex")
+    tex_file.write_text("Hello World!")
+    tmp_cfg = tempfile.NamedTemporaryFile("w", dir=tmp_path, delete=False)
+    tmp_cfg.write(
+        f"""
+        [CLI]
+        tex_template_file = { tex_file }
+        """,
+    )
+    tmp_cfg.close()
+
+    custom_config = ManimConfig().digest_file(tmp_cfg.name)
+
+    assert Path(custom_config.tex_template_file) == tex_file
+    assert custom_config.tex_template.body == "Hello World!"

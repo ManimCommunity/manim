@@ -66,9 +66,9 @@ msgid "Additional arguments to be passed to :class:`CoordinateSystem` and :class
 msgstr ""
 
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes:14
-#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.coords_to_point:9
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.coords_to_point:16
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.plot_line_graph:21
-#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.point_to_coords:9
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.point_to_coords:11
 msgid "Examples"
 msgstr ""
 
@@ -121,7 +121,23 @@ msgid "The width of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.coords_to_point:3
+msgid "The coordinates. Each coord is passed as a separate argument: ``ax.coords_to_point(1, 2, 3)``.  Also accepts a list of coordinates  ``ax.coords_to_point( [x_0, x_1, ...], [y_0, y_1, ...], ... )``  ``ax.coords_to_point( [[x_0, y_0, z_0], [x_1, y_1, z_1]] )``"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.coords_to_point:3
 msgid "The coordinates. Each coord is passed as a separate argument: ``ax.coords_to_point(1, 2, 3)``."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.coords_to_point:5
+msgid "Also accepts a list of coordinates"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.coords_to_point:7
+msgid "``ax.coords_to_point( [x_0, x_1, ...], [y_0, y_1, ...], ... )``"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.coords_to_point:9
+msgid "``ax.coords_to_point( [[x_0, y_0, z_0], [x_1, y_1, z_1]] )``"
 msgstr ""
 
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.coords_to_point:0
@@ -131,8 +147,8 @@ msgstr ""
 msgid "Returns"
 msgstr ""
 
-#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.coords_to_point:5
-msgid "A point with respect to the scene's coordinate system."
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.coords_to_point:11
+msgid "A point with respect to the scene's coordinate system. The shape of the array will be similar to the shape of the input."
 msgstr ""
 
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.coords_to_point:0
@@ -187,7 +203,7 @@ msgid "A VDict containing both the line and dots (if specified). The line can be
 msgstr ""
 
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.point_to_coords:3
-msgid "The point, i.e. ``RIGHT`` or ``[0, 1, 0]``."
+msgid "The point, i.e. ``RIGHT`` or ``[0, 1, 0]``. Also accepts a list of points as ``[RIGHT, [0, 1, 0]]``."
 msgstr ""
 
 

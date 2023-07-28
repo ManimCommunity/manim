@@ -12,7 +12,7 @@ import moderngl
 import numpy as np
 from colour import Color
 
-from manim import config
+from manim import config, logger
 from manim.constants import *
 from manim.utils.bezier import integer_interpolate, interpolate
 from manim.utils.color import *
@@ -37,6 +37,17 @@ from manim.utils.space_ops import (
     normalize,
     rotation_matrix_transpose,
 )
+
+
+def affects_shader_info_id(func):
+    @wraps(func)
+    def wrapper(self):
+        for mob in self.get_family():
+            func(mob)
+            mob.refresh_shader_wrapper_id()
+        return self
+
+    return wrapper
 
 
 class OpenGLMobject:
@@ -93,8 +104,10 @@ class OpenGLMobject:
         listen_to_events=False,
         model_matrix=None,
         should_render=True,
+        name: str | None = None,
         **kwargs,
     ):
+        self.name = self.__class__.__name__ if name is None else name
         # getattr in case data/uniforms are already defined in parent classes.
         self.data = getattr(self, "data", {})
         self.uniforms = getattr(self, "uniforms", {})
@@ -152,19 +165,19 @@ class OpenGLMobject:
         return self.__class__.__name__
 
     def __repr__(self):
-        return self.__class__.__name__
+        return str(self.name)
 
     def __sub__(self, other):
-        raise NotImplementedError
+        return NotImplemented
 
     def __isub__(self, other):
-        raise NotImplementedError
+        return NotImplemented
 
     def __add__(self, mobject):
-        raise NotImplementedError
+        return NotImplemented
 
     def __iadd__(self, mobject):
-        raise NotImplementedError
+        return NotImplemented
 
     @classmethod
     def set_default(cls, **kwargs):
@@ -570,7 +583,7 @@ class OpenGLMobject:
         self.set_points(mobject.points)
 
     def clear_points(self):
-        self.resize_points(0)
+        self.points = np.empty((0, 3))
 
     def get_num_points(self):
         return len(self.points)
@@ -726,6 +739,11 @@ class OpenGLMobject:
 
         if self in mobjects:
             raise ValueError("OpenGLMobject cannot contain self")
+        if any(mobjects.count(elem) > 1 for elem in mobjects):
+            logger.warning(
+                "Attempted adding some Mobject as a child more than once, "
+                "this is not possible. Repetitions are ignored.",
+            )
         for mobject in mobjects:
             if not isinstance(mobject, OpenGLMobject):
                 raise TypeError("All submobjects must be of type OpenGLMobject")
@@ -733,6 +751,42 @@ class OpenGLMobject:
                 self.submobjects.append(mobject)
             if self not in mobject.parents:
                 mobject.parents.append(self)
+        self.assemble_family()
+        return self
+
+    def insert(self, index: int, mobject: OpenGLMobject, update_parent: bool = False):
+        """Inserts a mobject at a specific position into self.submobjects
+
+        Effectively just calls  ``self.submobjects.insert(index, mobject)``,
+        where ``self.submobjects`` is a list.
+
+        Highly adapted from ``OpenGLMobject.add``.
+
+        Parameters
+        ----------
+        index
+            The index at which
+        mobject
+            The mobject to be inserted.
+        update_parent
+            Whether or not to set ``mobject.parent`` to ``self``.
+        """
+
+        if update_parent:
+            mobject.parent = self
+
+        if mobject is self:
+            raise ValueError("OpenGLMobject cannot contain self")
+
+        if not isinstance(mobject, OpenGLMobject):
+            raise TypeError("All submobjects must be of type OpenGLMobject")
+
+        if mobject not in self.submobjects:
+            self.submobjects.insert(index, mobject)
+
+        if self not in mobject.parents:
+            mobject.parents.append(self)
+
         self.assemble_family()
         return self
 
@@ -2240,6 +2294,11 @@ class OpenGLMobject:
     def get_group_class(self):
         return OpenGLGroup
 
+    @staticmethod
+    def get_mobject_type_class():
+        """Return the base class of this mobject type."""
+        return OpenGLMobject
+
     # Alignment
 
     def align_data_and_family(self, mobject):
@@ -2353,6 +2412,7 @@ class OpenGLMobject:
                 func = interpolate
 
             self.data[key][:] = func(mobject1.data[key], mobject2.data[key], alpha)
+
         for key in self.uniforms:
             if key != "fixed_orientation_center":
                 self.uniforms[key] = interpolate(
@@ -2484,16 +2544,6 @@ class OpenGLMobject:
 
     # Operations touching shader uniforms
 
-    def affects_shader_info_id(func):
-        @wraps(func)
-        def wrapper(self):
-            for mob in self.get_family():
-                func(mob)
-                # mob.refresh_shader_wrapper_id()
-            return self
-
-        return wrapper
-
     @affects_shader_info_id
     def fix_in_frame(self):
         self.is_fixed_in_frame = 1.0
@@ -2576,12 +2626,15 @@ class OpenGLMobject:
 
     # For shader data
 
-    # def refresh_shader_wrapper_id(self):
-    #     self.shader_wrapper.refresh_id()
-    #     return self
+    def refresh_shader_wrapper_id(self):
+        self.get_shader_wrapper().refresh_id()
+        return self
 
     def get_shader_wrapper(self):
         from manim.renderer.shader_wrapper import ShaderWrapper
+
+        # if hasattr(self, "__shader_wrapper"):
+        # return self.__shader_wrapper
 
         self.shader_wrapper = ShaderWrapper(
             vert_data=self.get_shader_data(),
@@ -2672,7 +2725,7 @@ class OpenGLMobject:
 
 class OpenGLGroup(OpenGLMobject):
     def __init__(self, *mobjects, **kwargs):
-        if not all([isinstance(m, OpenGLMobject) for m in mobjects]):
+        if not all(isinstance(m, OpenGLMobject) for m in mobjects):
             raise Exception("All submobjects must be of type OpenGLMobject")
         super().__init__(**kwargs)
         self.add(*mobjects)
@@ -2729,7 +2782,6 @@ class _AnimationBuilder:
 
     def __getattr__(self, method_name):
         method = getattr(self.mobject.target, method_name)
-        self.methods.append(method)
         has_overridden_animation = hasattr(method, "_override_animate")
 
         if (self.is_chaining and has_overridden_animation) or self.overridden_animation:
@@ -2747,6 +2799,7 @@ class _AnimationBuilder:
                     **method_kwargs,
                 )
             else:
+                self.methods.append([method, method_args, method_kwargs])
                 method(*method_args, **method_kwargs)
             return self
 

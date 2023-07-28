@@ -70,23 +70,43 @@ msgstr ""
 msgid "For example ``rate_func(0.5)`` is the proportion of the animation that is done after half of the animations run time."
 msgstr ""
 
-#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation:17
-msgid "The name of the animation. This gets displayed while rendering the animation. Defaults to <class-name>(<Mobject-name>)."
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation:21
+msgid "reverse_rate_function"
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation:19
-msgid "Whether the given mobject should be removed from the scene after this animation."
-msgstr ""
-
-#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation:20
-msgid "Whether updaters of the mobject should be suspended during the animation."
+msgid "Reverses the rate function of the animation. Setting ``reverse_rate_function`` does not have any effect on ``remover`` or ``introducer``. These need to be set explicitly if an introducer-animation should be turned into a remover one and vice versa."
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation:24
+msgid "name"
+msgstr ""
+
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation:24
+msgid "The name of the animation. This gets displayed while rendering the animation. Defaults to <class-name>(<Mobject-name>)."
+msgstr ""
+
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation:26
+msgid "remover"
+msgstr ""
+
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation:27
+msgid "Whether the given mobject should be removed from the scene after this animation."
+msgstr ""
+
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation:30
+msgid "suspend_mobject_updating"
+msgstr ""
+
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation:29
+msgid "Whether updaters of the mobject should be suspended during the animation."
+msgstr ""
+
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation:34
 msgid "In the current implementation of this class, the specified rate function is applied within :meth:`.Animation.interpolate_mobject` call as part of the call to :meth:`.Animation.interpolate_submobject`. For subclasses of :class:`.Animation` that are implemented by overriding :meth:`interpolate_mobject`, the rate function has to be applied manually (e.g., by passing ``self.rate_func(alpha)`` instead of just ``alpha``)."
 msgstr ""
 
-#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation:33
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation:43
 msgid "Examples"
 msgstr ""
 
@@ -150,10 +170,13 @@ msgid "Interpolates the mobject of the :class:`Animation` based on alpha value."
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
-#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.is_introducer:1
+msgid "Test if the animation is an introducer."
+msgstr ""
+
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.is_remover:1
-msgid "Test if a the animation is a remover."
+msgid "Test if the animation is a remover."
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
@@ -278,6 +301,9 @@ msgid "A float between 0 and 1 expressing the ratio to which the animation is co
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.is_introducer:3
+msgid "``True`` if the animation is an introducer, ``False`` otherwise."
+msgstr ""
+
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.is_remover:3
 msgid "``True`` if the animation is a remover, ``False`` otherwise."
 msgstr ""

@@ -45,7 +45,7 @@ from mapbox_earcut import triangulate_float32 as earcut
 from scipy.spatial.transform import Rotation
 
 from .. import config
-from ..constants import DOWN, OUT, PI, RIGHT, TAU, UP
+from ..constants import DOWN, OUT, PI, RIGHT, TAU, UP, RendererType
 from ..utils.iterables import adjacent_pairs
 
 
@@ -69,7 +69,7 @@ def quaternion_mult(
     Union[np.ndarray, List[Union[float, np.ndarray]]]
         Returns a list of product of two quaternions.
     """
-    if config.renderer == "opengl":
+    if config.renderer == RendererType.OPENGL:
         if len(quats) == 0:
             return [1, 0, 0, 0]
         result = quats[0]
@@ -83,7 +83,7 @@ def quaternion_mult(
                 w1 * z2 + z1 * w2 + x1 * y2 - y1 * x2,
             ]
         return result
-    else:
+    elif config.renderer == RendererType.CAIRO:
         q1 = quats[0]
         q2 = quats[1]
 
@@ -114,7 +114,7 @@ def quaternion_from_angle_axis(
         The angle for the quaternion.
     axis
         The axis for the quaternion
-    axis_normalized : bool, optional
+    axis_normalized
         Checks whether the axis is normalized, by default False
 
     Returns
@@ -122,11 +122,11 @@ def quaternion_from_angle_axis(
     List[float]
         Gives back a quaternion from the angle and axis
     """
-    if config.renderer == "opengl":
+    if config.renderer == RendererType.OPENGL:
         if not axis_normalized:
             axis = normalize(axis)
         return [math.cos(angle / 2), *(math.sin(angle / 2) * axis)]
-    else:
+    elif config.renderer == RendererType.CAIRO:
         return np.append(np.cos(angle / 2), np.sin(angle / 2) * normalize(axis))
 
 
@@ -267,7 +267,7 @@ def rotation_about_z(angle: float) -> np.ndarray:
 
     Parameters
     ----------
-    angle : float
+    angle
         Angle for the rotation matrix.
 
     Returns
@@ -301,7 +301,7 @@ def z_to_vector(vector: np.ndarray) -> np.ndarray:
     return np.array([axis_x, axis_y, axis_z]).T
 
 
-def angle_of_vector(vector: Sequence[float]) -> float:
+def angle_of_vector(vector: Sequence[float] | np.ndarray) -> float:
     """Returns polar coordinate theta when vector is projected on xy plane.
 
     Parameters
@@ -314,10 +314,17 @@ def angle_of_vector(vector: Sequence[float]) -> float:
     float
         The angle of the vector projected.
     """
+    if isinstance(vector, np.ndarray) and len(vector.shape) > 1:
+        if vector.shape[0] < 2:
+            raise ValueError("Vector must have the correct dimensions. (2, n)")
+        c_vec = np.empty(vector.shape[1], dtype=np.complex128)
+        c_vec.real = vector[0]
+        c_vec.imag = vector[1]
+        return np.angle(c_vec)
     return np.angle(complex(*vector[:2]))
 
 
-def angle_between_vectors(v1: np.ndarray, v2: np.ndarray) -> np.ndarray:
+def angle_between_vectors(v1: np.ndarray, v2: np.ndarray) -> float:
     """Returns the angle between two vectors.
     This angle will always be between 0 and pi
 
@@ -330,7 +337,7 @@ def angle_between_vectors(v1: np.ndarray, v2: np.ndarray) -> np.ndarray:
 
     Returns
     -------
-    np.ndarray
+    float
         The angle between the vectors.
     """
 
@@ -575,7 +582,29 @@ def find_intersection(
     return result
 
 
-def get_winding_number(points: Sequence[float]) -> float:
+def get_winding_number(points: Sequence[np.ndarray]) -> float:
+    """Determine the number of times a polygon winds around the origin.
+
+    The orientation is measured mathematically positively, i.e.,
+    counterclockwise.
+
+    Parameters
+    ----------
+    points
+        The vertices of the polygon being queried.
+
+    Examples
+    --------
+
+    >>> from manim import Square, get_winding_number
+    >>> polygon = Square()
+    >>> get_winding_number(polygon.get_vertices())
+    1.0
+    >>> polygon.shift(2*UP)
+    Square
+    >>> get_winding_number(polygon.get_vertices())
+    0.0
+    """
     total_angle = 0
     for p1, p2 in adjacent_pairs(points):
         d_angle = angle_of_vector(p2) - angle_of_vector(p1)
@@ -628,7 +657,7 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
         verts is a numpy array of points.
     ring_ends
         ring_ends is a list of indices indicating where
-    the ends of new paths are.
+        the ends of new paths are.
 
     Returns
     -------

@@ -218,12 +218,6 @@ class OpenGLCamera(OpenGLMobject):
 
 
 points_per_curve = 3
-JOINT_TYPE_MAP = {
-    "auto": 0,
-    "round": 1,
-    "bevel": 2,
-    "miter": 3,
-}
 
 
 class OpenGLRenderer:
@@ -246,7 +240,7 @@ class OpenGLRenderer:
         # Initialize texture map.
         self.path_to_texture_id = {}
 
-        self._background_color = color_to_rgba(config["background_color"], 1.0)
+        self.background_color = config["background_color"]
 
     def init_scene(self, scene):
         self.partial_movie_files = []
@@ -255,6 +249,7 @@ class OpenGLRenderer:
             scene.__class__.__name__,
         )
         self.scene = scene
+        self.background_color = config["background_color"]
         if not hasattr(self, "window"):
             if self.should_create_window():
                 from .opengl_renderer_window import Window
@@ -380,18 +375,21 @@ class OpenGLRenderer:
             mesh.render()
 
     def get_texture_id(self, path):
-        if path not in self.path_to_texture_id:
-            # A way to increase tid's sequentially
+        if repr(path) not in self.path_to_texture_id:
             tid = len(self.path_to_texture_id)
-            im = Image.open(path)
             texture = self.context.texture(
-                size=im.size,
-                components=len(im.getbands()),
-                data=im.tobytes(),
+                size=path.size,
+                components=len(path.getbands()),
+                data=path.tobytes(),
             )
+            texture.repeat_x = False
+            texture.repeat_y = False
+            texture.filter = (moderngl.NEAREST, moderngl.NEAREST)
+            texture.swizzle = "RRR1" if path.mode == "L" else "RGBA"
             texture.use(location=tid)
-            self.path_to_texture_id[path] = tid
-        return self.path_to_texture_id[path]
+            self.path_to_texture_id[repr(path)] = tid
+
+        return self.path_to_texture_id[repr(path)]
 
     def update_skipping_status(self):
         """

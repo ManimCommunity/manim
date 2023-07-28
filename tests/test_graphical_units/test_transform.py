@@ -159,7 +159,100 @@ def test_AnimationBuilder(scene):
 
 @frames_comparison(last_frame=False)
 def test_ReplacementTransform(scene):
-    v1 = Vector()
-    v2 = Vector()
-    v3 = Line()
-    scene.play(ReplacementTransform(VGroup(v1, v2), v3))
+    yellow = Square(fill_opacity=1.0, fill_color=YELLOW)
+    yellow.move_to([0, 0.75, 0])
+
+    green = Square(fill_opacity=1.0, fill_color=GREEN)
+    green.move_to([-0.75, 0, 0])
+
+    blue = Square(fill_opacity=1.0, fill_color=BLUE)
+    blue.move_to([0.75, 0, 0])
+
+    orange = Square(fill_opacity=1.0, fill_color=ORANGE)
+    orange.move_to([0, -0.75, 0])
+
+    scene.add(yellow)
+    scene.add(VGroup(green, blue))
+    scene.add(orange)
+
+    purple = Circle(fill_opacity=1.0, fill_color=PURPLE)
+    purple.move_to(green)
+
+    scene.play(ReplacementTransform(green, purple))
+    # This pause is important to verify the purple circle remains behind
+    # the blue and orange squares, and the blue square remains behind the
+    # orange square after the transform fully completes.
+    scene.pause()
+
+
+@frames_comparison(last_frame=False)
+def test_TransformWithPathFunc(scene):
+    dots_start = VGroup(*[Dot(LEFT, color=BLUE), Dot(3 * RIGHT, color=RED)])
+    dots_end = VGroup(*[Dot(LEFT + 2 * DOWN, color=BLUE), Dot(2 * UP, color=RED)])
+    scene.play(Transform(dots_start, dots_end, path_func=clockwise_path()))
+
+
+@frames_comparison(last_frame=False)
+def test_TransformWithPathArcCenters(scene):
+    dots_start = VGroup(*[Dot(LEFT, color=BLUE), Dot(3 * RIGHT, color=RED)])
+    dots_end = VGroup(*[Dot(LEFT + 2 * DOWN, color=BLUE), Dot(2 * UP, color=RED)])
+    scene.play(
+        Transform(
+            dots_start,
+            dots_end,
+            path_arc=2 * PI,
+            path_arc_centers=ORIGIN,
+        )
+    )
+
+
+@frames_comparison(last_frame=False)
+def test_TransformWithConflictingPaths(scene):
+    dots_start = VGroup(*[Dot(LEFT, color=BLUE), Dot(3 * RIGHT, color=RED)])
+    dots_end = VGroup(*[Dot(LEFT + 2 * DOWN, color=BLUE), Dot(2 * UP, color=RED)])
+    scene.play(
+        Transform(
+            dots_start,
+            dots_end,
+            path_func=clockwise_path(),
+            path_arc=2 * PI,
+            path_arc_centers=ORIGIN,
+        )
+    )
+
+
+@frames_comparison(last_frame=False)
+def test_FadeTransformPieces(scene):
+    src = VGroup(Square(), Circle().shift(LEFT + UP))
+    src.shift(3 * LEFT)
+
+    target = VGroup(Circle(), Triangle().shift(RIGHT + DOWN))
+    target.shift(3 * RIGHT)
+
+    scene.add(src)
+    scene.play(FadeTransformPieces(src, target))
+
+
+@frames_comparison(last_frame=False)
+def test_FadeTransform(scene):
+    src = Square(fill_opacity=1.0)
+    src.shift(3 * LEFT)
+
+    target = Circle(fill_opacity=1.0, color=ORANGE)
+    target.shift(3 * RIGHT)
+
+    scene.add(src)
+    scene.play(FadeTransform(src, target))
+
+
+@frames_comparison(last_frame=False)
+def test_FadeTransform_TargetIsEmpty_FadesOutInPlace(scene):
+    # https://github.com/ManimCommunity/manim/issues/2845
+    src = Square(fill_opacity=1.0)
+    src.shift(3 * LEFT)
+
+    target = VGroup()
+    target.shift(3 * RIGHT)
+
+    scene.add(src)
+    scene.play(FadeTransform(src, target))

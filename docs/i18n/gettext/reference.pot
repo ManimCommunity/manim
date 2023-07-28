@@ -11,7 +11,7 @@ msgid "Reference Manual"
 msgstr ""
 
 #: ../../source/reference.rst:4
-msgid "This reference manual details modules, functions, and variables included in Manim, describing what they are and what they do.  For learning how to use Manim, see :doc:`tutorials`.  For a list of changes since the last release, see the :doc:`changelog`."
+msgid "This reference manual details modules, functions, and variables included in Manim, describing what they are and what they do.  For learning how to use Manim, see :doc:`tutorials/index`.  For a list of changes since the last release, see the :doc:`changelog`."
 msgstr ""
 
 #: ../../source/reference.rst:9
@@ -26,15 +26,15 @@ msgstr ""
 msgid "Animations"
 msgstr ""
 
-#: ../../source/reference.rst:37
+#: ../../source/reference.rst:38
 msgid "Cameras"
 msgstr ""
 
-#: ../../source/reference.rst:49
+#: ../../source/reference.rst:50
 msgid "Mobjects"
 msgstr ""
 
-#: ../../source/reference.rst:87
+#: ../../source/reference.rst:88
 msgid "Scenes"
 msgstr ""
 

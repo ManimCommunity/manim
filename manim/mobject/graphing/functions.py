@@ -31,6 +31,11 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
     use_smoothing
         Whether to interpolate between the points of the function after they have been created.
         (Will have odd behaviour with a low number of points)
+    use_vectorized
+        Whether to pass in the generated t value array to the function as ``[t_0, t_1, ...]``.
+        Only use this if your function supports it. Output should be a numpy array
+        of shape ``[[x_0, x_1, ...], [y_0, y_1, ...], [z_0, z_1, ...]]`` but ``z`` can
+        also be 0 if the Axes is 2D
     discontinuities
         Values of t at which the function experiences discontinuity.
     dt
@@ -98,6 +103,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
         dt: float = 1e-8,
         discontinuities: Iterable[float] | None = None,
         use_smoothing: bool = True,
+        use_vectorized: bool = False,
         **kwargs,
     ):
         self.function = function
@@ -110,6 +116,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
         self.dt = dt
         self.discontinuities = discontinuities
         self.use_smoothing = use_smoothing
+        self.use_vectorized = use_vectorized
         self.t_min, self.t_max, self.t_step = t_range
 
         super().__init__(**kwargs)
@@ -121,7 +128,6 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
         return self.function(t)
 
     def generate_points(self):
-
         if self.discontinuities is not None:
             discontinuities = filter(
                 lambda t: self.t_min <= t <= self.t_max,
@@ -147,7 +153,15 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
                     self.scaling.function(t2),
                 ],
             )
-            points = np.array([self.function(t) for t in t_range])
+
+            if self.use_vectorized:
+                x, y, z = self.function(t_range)
+                if not isinstance(z, np.ndarray):
+                    z = np.zeros_like(x)
+                points = np.stack([x, y, z], axis=1)
+            else:
+                points = np.array([self.function(t) for t in t_range])
+
             self.start_new_path(points[0])
             self.add_points_as_corners(points[1:])
         if self.use_smoothing:
@@ -188,7 +202,6 @@ class FunctionGraph(ParametricFunction):
     """
 
     def __init__(self, function, x_range=None, color=YELLOW, **kwargs):
-
         if x_range is None:
             x_range = np.array([-config["frame_x_radius"], config["frame_x_radius"]])
 

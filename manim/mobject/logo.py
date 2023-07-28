@@ -128,7 +128,7 @@ class ManimBanner(VGroup):
             An animation to be used in a :meth:`.Scene.play` call.
         """
         return AnimationGroup(
-            SpiralIn(self.shapes),
+            SpiralIn(self.shapes, run_time=run_time),
             FadeIn(self.M, run_time=run_time / 2),
             lag_ratio=0.1,
         )
@@ -209,7 +209,7 @@ class ManimBanner(VGroup):
             for letter in mob.anim:
                 if mob.square.get_center()[0] > letter.get_center()[0]:
                     letter.set_opacity(1)
-                    self.add(letter)
+                    self.add_to_back(letter)
 
             # Finish animation
             if alpha == 1:

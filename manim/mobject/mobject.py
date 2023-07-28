@@ -1,5 +1,5 @@
 """Base classes for objects that can be displayed."""
-
+from __future__ import annotations
 
 __all__ = ["Mobject", "Group", "override_animate"]
 
@@ -33,7 +33,7 @@ from colour import Color
 
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 
-from .. import config
+from .. import config, logger
 from ..constants import *
 from ..utils.color import (
     BLACK,
@@ -84,9 +84,9 @@ class Mobject:
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
 
-        cls.animation_overrides: Dict[
-            Type["Animation"],
-            Callable[["Mobject"], "Animation"],
+        cls.animation_overrides: dict[
+            type[Animation],
+            Callable[[Mobject], Animation],
         ] = {}
         cls._add_intrinsic_animation_overrides()
         cls._original__init__ = cls.__init__
@@ -109,8 +109,8 @@ class Mobject:
     @classmethod
     def animation_override_for(
         cls,
-        animation_class: Type["Animation"],
-    ) -> "Optional[Callable[[Mobject, ...], Animation]]":
+        animation_class: type[Animation],
+    ) -> Callable[[Mobject, ...], Animation] | None:
         """Returns the function defining a specific animation override for this class.
 
         Parameters
@@ -147,8 +147,8 @@ class Mobject:
     @classmethod
     def add_animation_override(
         cls,
-        animation_class: Type["Animation"],
-        override_func: "Callable[[Mobject, ...], Animation]",
+        animation_class: type[Animation],
+        override_func: Callable[[Mobject, ...], Animation],
     ):
         """Add an animation override.
 
@@ -160,7 +160,7 @@ class Mobject:
             The animation type to be overridden
         override_func
             The function returning an animation replacing the default animation. It gets
-            passed the parameters given to the animnation constructor.
+            passed the parameters given to the animation constructor.
 
         Raises
         ------
@@ -226,7 +226,7 @@ class Mobject:
             cls.__init__ = cls._original__init__
 
     @property
-    def animate(self):
+    def animate(self) -> _AnimationBuilder | T:
         """Used to animate the application of any method of :code:`self`.
 
         Any method called on :code:`animate` is converted to an animation of applying
@@ -333,10 +333,7 @@ class Mobject:
         return result
 
     def __repr__(self):
-        if config["renderer"] == "opengl":
-            return super().__repr__()
-        else:
-            return str(self.name)
+        return str(self.name)
 
     def reset_points(self):
         """Sets :attr:`points` to be an empty array."""
@@ -358,7 +355,7 @@ class Mobject:
         """
         pass
 
-    def add(self, *mobjects: "Mobject"):
+    def add(self, *mobjects: Mobject):
         """Add mobjects as submobjects.
 
         The mobjects are added to :attr:`submobjects`.
@@ -416,14 +413,54 @@ class Mobject:
             ...
             ValueError: Mobject cannot contain self
 
+        A given mobject cannot be added as a submobject
+        twice to some parent::
+
+            >>> parent = Mobject(name="parent")
+            >>> child = Mobject(name="child")
+            >>> parent.add(child, child)
+            [...] WARNING  ...
+            parent
+            >>> parent.submobjects
+            [child]
+
         """
         for m in mobjects:
             if not isinstance(m, Mobject):
                 raise TypeError("All submobjects must be of type Mobject")
             if m is self:
                 raise ValueError("Mobject cannot contain self")
-        self.submobjects = list_update(self.submobjects, mobjects)
+
+        unique_mobjects = remove_list_redundancies(mobjects)
+        if len(mobjects) != len(unique_mobjects):
+            logger.warning(
+                "Attempted adding some Mobject as a child more than once, "
+                "this is not possible. Repetitions are ignored.",
+            )
+
+        self.submobjects = list_update(self.submobjects, unique_mobjects)
         return self
+
+    def insert(self, index: int, mobject: Mobject):
+        """Inserts a mobject at a specific position into self.submobjects
+
+        Effectively just calls  ``self.submobjects.insert(index, mobject)``,
+        where ``self.submobjects`` is a list.
+
+        Highly adapted from ``Mobject.add``.
+
+        Parameters
+        ----------
+        index
+            The index at which
+        mobject
+            The mobject to be inserted.
+        """
+        if not isinstance(mobject, Mobject):
+            raise TypeError("All submobjects must be of type Mobject")
+        if mobject is self:
+            raise ValueError("Mobject cannot contain self")
+        self.submobjects.insert(index, mobject)
 
     def __add__(self, mobject):
         raise NotImplementedError
@@ -431,7 +468,7 @@ class Mobject:
     def __iadd__(self, mobject):
         raise NotImplementedError
 
-    def add_to_back(self, *mobjects: "Mobject"):
+    def add_to_back(self, *mobjects: Mobject):
         """Add all passed mobjects to the back of the submobjects.
 
         If :attr:`submobjects` already contains the given mobjects, they just get moved
@@ -487,7 +524,7 @@ class Mobject:
         self.submobjects = list(dict.fromkeys(mobjects)) + self.submobjects
         return self
 
-    def remove(self, *mobjects: "Mobject"):
+    def remove(self, *mobjects: Mobject):
         """Remove :attr:`submobjects`.
 
         The mobjects are removed from :attr:`submobjects`, if they exist.
@@ -809,7 +846,7 @@ class Mobject:
                 submob.update(dt, recursive)
         return self
 
-    def get_time_based_updaters(self) -> List[Updater]:
+    def get_time_based_updaters(self) -> list[Updater]:
         """Return all updaters using the ``dt`` parameter.
 
         The updaters use this parameter as the input for difference in time.
@@ -843,7 +880,7 @@ class Mobject:
         """
         return any("dt" in get_parameters(updater) for updater in self.updaters)
 
-    def get_updaters(self) -> List[Updater]:
+    def get_updaters(self) -> list[Updater]:
         """Return all updaters.
 
         Returns
@@ -865,7 +902,7 @@ class Mobject:
     def add_updater(
         self,
         update_function: Updater,
-        index: Optional[int] = None,
+        index: int | None = None,
         call_updater: bool = False,
     ):
         """Add an update function to this mobject.
@@ -934,7 +971,11 @@ class Mobject:
         else:
             self.updaters.insert(index, update_function)
         if call_updater:
-            update_function(self, 0)
+            parameters = get_parameters(update_function)
+            if "dt" in parameters:
+                update_function(self, 0)
+            else:
+                update_function(self)
         return self
 
     def remove_updater(self, update_function: Updater):
@@ -990,7 +1031,7 @@ class Mobject:
                 submob.clear_updaters()
         return self
 
-    def match_updaters(self, mobject: "Mobject"):
+    def match_updaters(self, mobject: Mobject):
         """Match the updaters of the given mobject.
 
         Parameters
@@ -1075,7 +1116,7 @@ class Mobject:
 
     # Transforming operations
 
-    def apply_to_family(self, func: Callable[["Mobject"], None]):
+    def apply_to_family(self, func: Callable[[Mobject], None]):
         """Apply a function to ``self`` and every submobject with points recursively.
 
         Parameters
@@ -1177,7 +1218,7 @@ class Mobject:
         self,
         angle,
         axis=OUT,
-        about_point: Optional[Sequence[float]] = None,
+        about_point: Sequence[float] | None = None,
         **kwargs,
     ):
         """Rotates the :class:`~.Mobject` about a certain point."""
@@ -1611,7 +1652,7 @@ class Mobject:
 
     def surround(
         self,
-        mobject: "Mobject",
+        mobject: Mobject,
         dim_to_match=0,
         stretch=False,
         buff=MED_SMALL_BUFF,
@@ -1646,7 +1687,7 @@ class Mobject:
 
     # Background rectangle
     def add_background_rectangle(
-        self, color: Optional[Colors] = None, opacity: float = 0.75, **kwargs
+        self, color: Colors | None = None, opacity: float = 0.75, **kwargs
     ):
         """Add a BackgroundRectangle as submobject.
 
@@ -1801,16 +1842,29 @@ class Mobject:
         self.become(self.saved_state)
         return self
 
-    ##
-
-    def reduce_across_dimension(self, points_func, reduce_func, dim):
-        points = self.get_all_points()
-        if points is None or len(points) == 0:
-            # Note, this default means things like empty VGroups
-            # will appear to have a center at [0, 0, 0]
+    def reduce_across_dimension(self, reduce_func, dim: int) -> float:
+        """Find the min or max value from a dimension across all points in this and submobjects."""
+        assert dim >= 0 and dim <= 2
+        if len(self.submobjects) == 0 and len(self.points) == 0:
+            # If we have no points and no submobjects, return 0 (e.g. center)
             return 0
-        values = points_func(points[:, dim])
-        return reduce_func(values)
+
+        # If we do not have points (but do have submobjects)
+        # use only the points from those.
+        if len(self.points) == 0:
+            rv = None
+        else:
+            # Otherwise, be sure to include our own points
+            rv = reduce_func(self.points[:, dim])
+        # Recursively ask submobjects (if any) for the biggest/
+        # smallest dimension they have and compare it to the return value.
+        for mobj in self.submobjects:
+            value = mobj.reduce_across_dimension(reduce_func, dim)
+            if rv is None:
+                rv = value
+            else:
+                rv = reduce_func([value, rv])
+        return rv
 
     def nonempty_submobjects(self):
         return [
@@ -1819,13 +1873,23 @@ class Mobject:
             if len(submob.submobjects) != 0 or len(submob.points) != 0
         ]
 
-    def get_merged_array(self, array_attr):
+    def get_merged_array(self, array_attr) -> np.ndarray:
+        """Return all of a given attribute from this mobject and all submobjects.
+
+        May contain duplicates; the order is in a depth-first (pre-order)
+        traversal of the submobjects.
+        """
         result = getattr(self, array_attr)
         for submob in self.submobjects:
             result = np.append(result, submob.get_merged_array(array_attr), axis=0)
         return result
 
-    def get_all_points(self):
+    def get_all_points(self) -> np.ndarray:
+        """Return all points from this mobject and all submobjects.
+
+        May contain duplicates; the order is in a depth-first (pre-order)
+        traversal of the submobjects.
+        """
         return self.get_merged_array("points")
 
     # Getters
@@ -1946,10 +2010,9 @@ class Mobject:
     def length_over_dim(self, dim):
         """Measure the length of an :class:`~.Mobject` in a certain direction."""
         return self.reduce_across_dimension(
-            np.max,
-            np.max,
+            max,
             dim,
-        ) - self.reduce_across_dimension(np.min, np.min, dim)
+        ) - self.reduce_across_dimension(min, dim)
 
     def get_coord(self, dim, direction=ORIGIN):
         """Meant to generalize ``get_x``, ``get_y`` and ``get_z``"""
@@ -2013,27 +2076,27 @@ class Mobject:
 
     # Match other mobject properties
 
-    def match_color(self, mobject: "Mobject"):
+    def match_color(self, mobject: Mobject):
         """Match the color with the color of another :class:`~.Mobject`."""
         return self.set_color(mobject.get_color())
 
-    def match_dim_size(self, mobject: "Mobject", dim, **kwargs):
+    def match_dim_size(self, mobject: Mobject, dim, **kwargs):
         """Match the specified dimension with the dimension of another :class:`~.Mobject`."""
         return self.rescale_to_fit(mobject.length_over_dim(dim), dim, **kwargs)
 
-    def match_width(self, mobject: "Mobject", **kwargs):
+    def match_width(self, mobject: Mobject, **kwargs):
         """Match the width with the width of another :class:`~.Mobject`."""
         return self.match_dim_size(mobject, 0, **kwargs)
 
-    def match_height(self, mobject: "Mobject", **kwargs):
+    def match_height(self, mobject: Mobject, **kwargs):
         """Match the height with the height of another :class:`~.Mobject`."""
         return self.match_dim_size(mobject, 1, **kwargs)
 
-    def match_depth(self, mobject: "Mobject", **kwargs):
+    def match_depth(self, mobject: Mobject, **kwargs):
         """Match the depth with the depth of another :class:`~.Mobject`."""
         return self.match_dim_size(mobject, 2, **kwargs)
 
-    def match_coord(self, mobject: "Mobject", dim, direction=ORIGIN):
+    def match_coord(self, mobject: Mobject, dim, direction=ORIGIN):
         """Match the coordinates with the coordinates of another :class:`~.Mobject`."""
         return self.set_coord(
             mobject.get_coord(dim, direction),
@@ -2041,33 +2104,28 @@ class Mobject:
             direction=direction,
         )
 
-    def match_x(self, mobject: "Mobject", direction=ORIGIN):
+    def match_x(self, mobject: Mobject, direction=ORIGIN):
         """Match x coord. to the x coord. of another :class:`~.Mobject`."""
         return self.match_coord(mobject, 0, direction)
 
-    def match_y(self, mobject: "Mobject", direction=ORIGIN):
+    def match_y(self, mobject: Mobject, direction=ORIGIN):
         """Match y coord. to the x coord. of another :class:`~.Mobject`."""
         return self.match_coord(mobject, 1, direction)
 
-    def match_z(self, mobject: "Mobject", direction=ORIGIN):
+    def match_z(self, mobject: Mobject, direction=ORIGIN):
         """Match z coord. to the x coord. of another :class:`~.Mobject`."""
         return self.match_coord(mobject, 2, direction)
 
     def align_to(
         self,
-        mobject_or_point: Union["Mobject", np.ndarray, List],
+        mobject_or_point: Mobject | np.ndarray | list,
         direction=ORIGIN,
-        alignment_vect=UP,
     ):
         """Aligns mobject to another :class:`~.Mobject` in a certain direction.
 
         Examples:
         mob1.align_to(mob2, UP) moves mob1 vertically so that its
         top edge lines ups with mob2's top edge.
-
-        mob1.align_to(mob2, alignment_vect = RIGHT) moves mob1
-        horizontally so that it's center is directly above/below
-        the center of mob2
         """
         if isinstance(mobject_or_point, Mobject):
             point = mobject_or_point.get_critical_point(direction)
@@ -2096,6 +2154,11 @@ class Mobject:
 
     def get_group_class(self):
         return Group
+
+    @staticmethod
+    def get_mobject_type_class():
+        """Return the base class of this mobject type."""
+        return Mobject
 
     def split(self):
         result = [self] if len(self.points) > 0 else []
@@ -2141,14 +2204,14 @@ class Mobject:
 
     def arrange_in_grid(
         self,
-        rows: Optional[int] = None,
-        cols: Optional[int] = None,
-        buff: Union[float, Tuple[float, float]] = MED_SMALL_BUFF,
+        rows: int | None = None,
+        cols: int | None = None,
+        buff: float | tuple[float, float] = MED_SMALL_BUFF,
         cell_alignment: np.ndarray = ORIGIN,
-        row_alignments: Optional[str] = None,  # "ucd"
-        col_alignments: Optional[str] = None,  # "lcr"
-        row_heights: Optional[Iterable[Optional[float]]] = None,
-        col_widths: Optional[Iterable[Optional[float]]] = None,
+        row_alignments: str | None = None,  # "ucd"
+        col_alignments: str | None = None,  # "lcr"
+        row_heights: Iterable[float | None] | None = None,
+        col_widths: Iterable[float | None] | None = None,
         flow_order: str = "rd",
         **kwargs,
     ):
@@ -2468,7 +2531,7 @@ class Mobject:
         return self.shuffle(*args, **kwargs)
 
     # Alignment
-    def align_data(self, mobject: "Mobject", skip_point_alignment: bool = False):
+    def align_data(self, mobject: Mobject, skip_point_alignment: bool = False):
         """Aligns the data of this mobject with another mobject.
 
         Afterwards, the two mobjects will have the same number of submobjects
@@ -2520,7 +2583,7 @@ class Mobject:
         mob2.add_n_more_submobjects(max(0, n1 - n2))
         return self
 
-    def null_point_align(self, mobject: "Mobject"):
+    def null_point_align(self, mobject: Mobject):
         """If a :class:`~.Mobject` with points is being aligned to
         one without, treat both as groups, and push
         the one with points into its own submobjects
@@ -2599,7 +2662,7 @@ class Mobject:
 
     def become(
         self,
-        mobject: "Mobject",
+        mobject: Mobject,
         copy_submobjects: bool = True,
         match_height: bool = False,
         match_width: bool = False,
@@ -2663,7 +2726,7 @@ class Mobject:
             sm1.interpolate_color(sm1, sm2, 1)
         return self
 
-    def match_points(self, mobject: "Mobject", copy_submobjects: bool = True):
+    def match_points(self, mobject: Mobject, copy_submobjects: bool = True):
         """Edit points, positions, and submobjects to be identical
         to another :class:`~.Mobject`, while keeping the style unchanged.
 
@@ -2697,7 +2760,7 @@ class Mobject:
         self,
         z_index_value: float,
         family: bool = True,
-    ) -> "VMobject":
+    ) -> VMobject:
         """Sets the :class:`~.Mobject`'s :attr:`z_index` to the value specified in `z_index_value`.
 
         Parameters
@@ -2750,7 +2813,14 @@ class Mobject:
 
 
 class Group(Mobject, metaclass=ConvertToOpenGL):
-    """Groups together multiple :class:`Mobjects <.Mobject>`."""
+    """Groups together multiple :class:`Mobjects <.Mobject>`.
+
+    Notes
+    -----
+    When adding the same mobject more than once, repetitions are ignored.
+    Use :meth:`.Mobject.copy` to create a separate copy which can then
+    be added to the group.
+    """
 
     def __init__(self, *mobjects, **kwargs):
         super().__init__(**kwargs)
@@ -2783,7 +2853,6 @@ class _AnimationBuilder:
 
     def __getattr__(self, method_name):
         method = getattr(self.mobject.target, method_name)
-        self.methods.append(method)
         has_overridden_animation = hasattr(method, "_override_animate")
 
         if (self.is_chaining and has_overridden_animation) or self.overridden_animation:
@@ -2801,6 +2870,7 @@ class _AnimationBuilder:
                     **method_kwargs,
                 )
             else:
+                self.methods.append([method, method_args, method_kwargs])
                 method(*method_args, **method_kwargs)
             return self
 

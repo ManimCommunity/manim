@@ -6,7 +6,7 @@
 
 .. important::
 
-   See the corresponding tutorial :ref:`rendering-with-latex`
+   See the corresponding tutorial :ref:`using-text-objects`, especially for information about fonts.
 
 
 The simplest way to add text to your animations is to use the :class:`~.Text` class. It uses the Pango library to render text.
@@ -79,12 +79,12 @@ DEFAULT_LINE_SPACING_SCALE = 0.3
 TEXT2SVG_ADJUSTMENT_FACTOR = 4.8
 
 
-def remove_invisible_chars(mobject):
+def remove_invisible_chars(mobject: SVGMobject) -> SVGMobject:
     """Function to remove unwanted invisible characters from some mobjects.
 
     Parameters
     ----------
-    mobject : :class:`~.SVGMobject`
+    mobject
         Any SVGMobject from which we want to remove unwanted invisible characters.
 
     Returns
@@ -92,7 +92,7 @@ def remove_invisible_chars(mobject):
     :class:`~.SVGMobject`
         The SVGMobject without unwanted invisible characters.
     """
-
+    # TODO: Refactor needed
     iscode = False
     if mobject.__class__.__name__ == "Text":
         mobject = mobject[:]
@@ -102,7 +102,7 @@ def remove_invisible_chars(mobject):
         mobject = mobject.code
     mobject_without_dots = VGroup()
     if mobject[0].__class__ == VGroup:
-        for i in range(mobject.__len__()):
+        for i in range(len(mobject)):
             mobject_without_dots.add(VGroup())
             mobject_without_dots[i].add(*(k for k in mobject[i] if k.__class__ != Dot))
     else:
@@ -123,10 +123,10 @@ class Paragraph(VGroup):
 
     Parameters
     ----------
-    line_spacing : :class:`float`, optional
-        Represents the spacing between lines. Default to -1, which means auto.
-    alignment : :class:`str`, optional
-        Defines the alignment of paragraph. Default to "left". Possible values are "left", "right", "center"
+    line_spacing
+        Represents the spacing between lines. Defaults to -1, which means auto.
+    alignment
+        Defines the alignment of paragraph. Defaults to None. Possible values are "left", "right" or "center".
 
     Examples
     --------
@@ -144,50 +144,37 @@ class Paragraph(VGroup):
 
     """
 
-    def __init__(self, *text, line_spacing=-1, alignment=None, **config):
+    def __init__(
+        self,
+        *text: Sequence[str],
+        line_spacing: float = -1,
+        alignment: Optional[str] = None,
+        **kwargs,
+    ) -> None:
         self.line_spacing = line_spacing
         self.alignment = alignment
+        self.consider_spaces_as_chars = kwargs.get("disable_ligatures", False)
         super().__init__()
 
         lines_str = "\n".join(list(text))
-        self.lines_text = Text(lines_str, line_spacing=line_spacing, **config)
+        self.lines_text = Text(lines_str, line_spacing=line_spacing, **kwargs)
         lines_str_list = lines_str.split("\n")
         self.chars = self._gen_chars(lines_str_list)
 
-        chars_lines_text_list = self.get_group_class()()
-        char_index_counter = 0
-        for line_index in range(lines_str_list.__len__()):
-            chars_lines_text_list.add(
-                self.lines_text[
-                    char_index_counter : char_index_counter
-                    + lines_str_list[line_index].__len__()
-                    + 1
-                ],
-            )
-            char_index_counter += lines_str_list[line_index].__len__() + 1
-        self.lines = []
-        self.lines.append([])
-        for line_no in range(chars_lines_text_list.__len__()):
-            self.lines[0].append(chars_lines_text_list[line_no])
-        self.lines_initial_positions = []
-        for line_no in range(self.lines[0].__len__()):
-            self.lines_initial_positions.append(self.lines[0][line_no].get_center())
-        self.lines.append([])
-        self.lines[1].extend(
-            [self.alignment for _ in range(chars_lines_text_list.__len__())],
-        )
+        self.lines = [list(self.chars), [self.alignment] * len(self.chars)]
+        self.lines_initial_positions = [line.get_center() for line in self.lines[0]]
         self.add(*self.lines[0])
         self.move_to(np.array([0, 0, 0]))
         if self.alignment:
             self._set_all_lines_alignments(self.alignment)
 
-    def _gen_chars(self, lines_str_list):
-        """Function to convert plain string to 2d-VGroup of chars. 2d-VGroup mean "VGroup of VGroup".
+    def _gen_chars(self, lines_str_list: list) -> VGroup:
+        """Function to convert a list of plain strings to a VGroup of VGroups of chars.
 
         Parameters
         ----------
-        lines_str_list : :class:`str`
-            Plain text string.
+        lines_str_list
+            List of plain text strings.
 
         Returns
         -------
@@ -196,72 +183,85 @@ class Paragraph(VGroup):
         """
         char_index_counter = 0
         chars = self.get_group_class()()
-        for line_no in range(lines_str_list.__len__()):
+        for line_no in range(len(lines_str_list)):
+            line_str = lines_str_list[line_no]
+            # Count all the characters in line_str
+            # Spaces may or may not count as characters
+            if self.consider_spaces_as_chars:
+                char_count = len(line_str)
+            else:
+                char_count = 0
+                for char in line_str:
+                    if not char.isspace():
+                        char_count += 1
+
             chars.add(self.get_group_class()())
             chars[line_no].add(
                 *self.lines_text.chars[
-                    char_index_counter : char_index_counter
-                    + lines_str_list[line_no].__len__()
-                    + 1
+                    char_index_counter : char_index_counter + char_count
                 ]
             )
-            char_index_counter += lines_str_list[line_no].__len__() + 1
+            char_index_counter += char_count
+            if self.consider_spaces_as_chars:
+                # If spaces count as characters, count the extra \n character
+                # which separates Paragraph's lines to avoid issues
+                char_index_counter += 1
         return chars
 
-    def _set_all_lines_alignments(self, alignment):
+    def _set_all_lines_alignments(self, alignment: str) -> Paragraph:
         """Function to set all line's alignment to a specific value.
 
         Parameters
         ----------
-        alignment : :class:`str`
+        alignment
             Defines the alignment of paragraph. Possible values are "left", "right", "center".
         """
-        for line_no in range(0, self.lines[0].__len__()):
+        for line_no in range(len(self.lines[0])):
             self._change_alignment_for_a_line(alignment, line_no)
         return self
 
-    def _set_line_alignment(self, alignment, line_no):
+    def _set_line_alignment(self, alignment: str, line_no: int) -> Paragraph:
         """Function to set one line's alignment to a specific value.
 
         Parameters
         ----------
-        alignment : :class:`str`
+        alignment
             Defines the alignment of paragraph. Possible values are "left", "right", "center".
-        line_no : :class:`int`
+        line_no
             Defines the line number for which we want to set given alignment.
         """
         self._change_alignment_for_a_line(alignment, line_no)
         return self
 
-    def _set_all_lines_to_initial_positions(self):
+    def _set_all_lines_to_initial_positions(self) -> Paragraph:
         """Set all lines to their initial positions."""
-        self.lines[1] = [None for _ in range(self.lines[0].__len__())]
-        for line_no in range(0, self.lines[0].__len__()):
+        self.lines[1] = [None] * len(self.lines[0])
+        for line_no in range(len(self.lines[0])):
             self[line_no].move_to(
                 self.get_center() + self.lines_initial_positions[line_no],
             )
         return self
 
-    def _set_line_to_initial_position(self, line_no):
+    def _set_line_to_initial_position(self, line_no: int) -> Paragraph:
         """Function to set one line to initial positions.
 
         Parameters
         ----------
-        line_no : :class:`int`
+        line_no
             Defines the line number for which we want to set given alignment.
         """
         self.lines[1][line_no] = None
         self[line_no].move_to(self.get_center() + self.lines_initial_positions[line_no])
         return self
 
-    def _change_alignment_for_a_line(self, alignment, line_no):
+    def _change_alignment_for_a_line(self, alignment: str, line_no: int) -> None:
         """Function to change one line's alignment to a specific value.
 
         Parameters
         ----------
-        alignment : :class:`str`
+        alignment
             Defines the alignment of paragraph. Possible values are "left", "right", "center".
-        line_no : :class:`int`
+        line_no
             Defines the line number for which we want to set given alignment.
         """
         self.lines[1][line_no] = alignment
@@ -299,13 +299,20 @@ class Text(SVGMobject):
 
     Parameters
     ----------
-    text : :class:`str`
-        The text that need to created as mobject.
+    text
+        The text that needs to be created as a mobject.
+    font
+        The font family to be used to render the text. This is either a system font or
+        one loaded with `register_font()`. Note that font family names may be different
+        across operating systems.
+    warn_missing_font
+        If True (default), Manim will issue a warning if the font does not exist in the
+        (case-sensitive) list of fonts returned from `manimpango.list_fonts()`.
 
     Returns
     -------
     :class:`Text`
-        The mobject like :class:`.VGroup`.
+        The mobject-like :class:`.VGroup`.
 
     Examples
     ---------
@@ -419,16 +426,19 @@ class Text(SVGMobject):
         t2w: dict[str, str] = None,
         gradient: tuple = None,
         tab_width: int = 4,
+        warn_missing_font: bool = True,
         # Mobject
         height: float = None,
         width: float = None,
         should_center: bool = True,
-        unpack_groups: bool = True,
         disable_ligatures: bool = False,
         **kwargs,
-    ):
-
+    ) -> None:
         self.line_spacing = line_spacing
+        if font and warn_missing_font:
+            fonts_list = manimpango.list_fonts()
+            if font not in fonts_list:
+                logger.warning(f"Font {font} not in {fonts_list}.")
         self.font = font
         self._font_size = float(font_size)
         # needs to be a float or else size is inflated when font_size = 24
@@ -482,7 +492,7 @@ class Text(SVGMobject):
             height=height,
             width=width,
             should_center=should_center,
-            unpack_groups=unpack_groups,
+            use_svg_cache=False,
             **kwargs,
         )
         self.text = text
@@ -490,26 +500,63 @@ class Text(SVGMobject):
             self.submobjects = [*self._gen_chars()]
         self.chars = self.get_group_class()(*self.submobjects)
         self.text = text_without_tabs.replace(" ", "").replace("\n", "")
-        if config.renderer == "opengl":
-            nppc = self.n_points_per_curve
-        else:
-            nppc = self.n_points_per_cubic_curve
+        nppc = self.n_points_per_curve
         for each in self:
             if len(each.points) == 0:
                 continue
             points = each.points
-            last = points[0]
-            each.clear_points()
+            curve_start = points[0]
+            assert len(curve_start) == self.dim, curve_start
+            # Some of the glyphs in this text might not be closed,
+            # so we close them by identifying when one curve ends
+            # but it is not where the next curve starts.
+            # It is more efficient to temporarily create a list
+            # of points and add them one at a time, then turn them
+            # into a numpy array at the end, rather than creating
+            # new numpy arrays every time a point or fixing line
+            # is added (which is O(n^2) for numpy arrays).
+            closed_curve_points = []
+            # OpenGL has points be part of quadratic Bezier curves;
+            # Cairo uses cubic Bezier curves.
+            if nppc == 3:  # RendererType.OPENGL
+
+                def add_line_to(end):
+                    nonlocal closed_curve_points
+                    start = closed_curve_points[-1]
+                    closed_curve_points += [
+                        start,
+                        (start + end) / 2,
+                        end,
+                    ]
+
+            else:  # RendererType.CAIRO
+
+                def add_line_to(end):
+                    nonlocal closed_curve_points
+                    start = closed_curve_points[-1]
+                    closed_curve_points += [
+                        start,
+                        (start + start + end) / 3,
+                        (start + end + end) / 3,
+                        end,
+                    ]
+
             for index, point in enumerate(points):
-                each.append_points([point])
+                closed_curve_points.append(point)
                 if (
                     index != len(points) - 1
                     and (index + 1) % nppc == 0
                     and any(point != points[index + 1])
                 ):
-                    each.add_line_to(last)
-                    last = points[index + 1]
-            each.add_line_to(last)
+                    # Add straight line from last point on this curve to the
+                    # start point on the next curve. We represent the line
+                    # as a cubic bezier curve where the two control points
+                    # are half-way between the start and stop point.
+                    add_line_to(curve_start)
+                    curve_start = points[index + 1]
+            # Make sure last curve is closed
+            add_line_to(curve_start)
+            each.points = np.array(closed_curve_points, ndmin=2)
         # anti-aliasing
         if height is None and width is None:
             self.scale(TEXT_MOB_SCALE_FACTOR)
@@ -540,8 +587,8 @@ class Text(SVGMobject):
     def _gen_chars(self):
         chars = self.get_group_class()()
         submobjects_char_index = 0
-        for char_index in range(self.text.__len__()):
-            if self.text[char_index] in (" ", "\t", "\n"):
+        for char_index in range(len(self.text)):
+            if self.text[char_index].isspace():
                 space = Dot(radius=0, fill_opacity=0, stroke_opacity=0)
                 if char_index == 0:
                     space.move_to(self.submobjects[submobjects_char_index].get_center())
@@ -752,13 +799,13 @@ class Text(SVGMobject):
         line_spacing /= TEXT2SVG_ADJUSTMENT_FACTOR
 
         dir_name = config.get_dir("text_dir")
-        if not os.path.exists(dir_name):
-            os.makedirs(dir_name)
+        if not dir_name.is_dir():
+            dir_name.mkdir(parents=True)
         hash_name = self._text2hash(color)
-        file_name = os.path.join(dir_name, hash_name) + ".svg"
+        file_name = dir_name / (hash_name + ".svg")
 
-        if os.path.exists(file_name):
-            svg_file = file_name
+        if file_name.exists():
+            svg_file = str(file_name.resolve())
         else:
             settings = self._text2settings(color)
             width = config["pixel_width"]
@@ -769,7 +816,7 @@ class Text(SVGMobject):
                 size,
                 line_spacing,
                 self.disable_ligatures,
-                file_name,
+                str(file_name.resolve()),
                 START_X,
                 START_Y,
                 width,
@@ -780,7 +827,10 @@ class Text(SVGMobject):
         return svg_file
 
     def init_colors(self, propagate_colors=True):
-        super().init_colors(propagate_colors=propagate_colors)
+        if config.renderer == RendererType.OPENGL:
+            super().init_colors()
+        elif config.renderer == RendererType.CAIRO:
+            super().init_colors(propagate_colors=propagate_colors)
 
 
 class MarkupText(SVGMobject):
@@ -888,32 +938,34 @@ class MarkupText(SVGMobject):
 
     You can find more information about Pango markup formatting at the
     corresponding documentation page:
-    `Pango Markup <https://developer.gnome.org/pango/stable/pango-Markup.html>`_.
+    `Pango Markup <https://docs.gtk.org/Pango/pango_markup.html>`_.
     Please be aware that not all features are supported by this class and that
     the ``<gradient>`` tag mentioned above is not supported by Pango.
 
     Parameters
     ----------
 
-    text : :class:`str`
-        The text that need to created as mobject.
-    fill_opacity : :class:`int`
-        The fill opacity with 1 meaning opaque and 0 meaning transparent.
-    stroke_width : :class:`int`
+    text
+        The text that needs to be created as mobject.
+    fill_opacity
+        The fill opacity, with 1 meaning opaque and 0 meaning transparent.
+    stroke_width
         Stroke width.
-    font_size : :class:`float`
+    font_size
         Font size.
-    line_spacing : :class:`int`
+    line_spacing
         Line spacing.
-    font : :class:`str`
+    font
         Global font setting for the entire text. Local overrides are possible.
-    slant : :class:`str`
+    slant
         Global slant setting, e.g. `NORMAL` or `ITALIC`. Local overrides are possible.
-    weight : :class:`str`
+    weight
         Global weight setting, e.g. `NORMAL` or `BOLD`. Local overrides are possible.
-    gradient: :class:`tuple`
+    gradient
         Global gradient setting. Local overrides are possible.
-
+    warn_missing_font
+        If True (default), Manim will issue a warning if the font does not exist in the
+        (case-sensitive) list of fonts returned from `manimpango.list_fonts()`.
 
     Returns
     -------
@@ -1054,10 +1106,7 @@ class MarkupText(SVGMobject):
                     "Praesent feugiat metus sit amet iaculis pulvinar. Nulla posuere "
                     "quam a ex aliquam, eleifend consectetur tellus viverra. Aliquam "
                     "fermentum interdum justo, nec rutrum elit pretium ac. Nam quis "
-                    "leo pulvinar, dignissim est at, venenatis nisi. Quisque mattis "
-                    "dolor ut euismod hendrerit. Nullam eu ante sollicitudin, commodo "
-                    "risus a, vehicula odio. Nam urna tortor, aliquam a nibh eu, commodo "
-                    "imperdiet arcu. Donec tincidunt commodo enim a tincidunt."
+                    "leo pulvinar, dignissim est at, venenatis nisi."
                 )
                 justified_text = MarkupText(ipsum_text, justify=True).scale(0.4)
                 not_justified_text = MarkupText(ipsum_text, justify=False).scale(0.4)
@@ -1065,15 +1114,10 @@ class MarkupText(SVGMobject):
                 njust_title = Title("Not Justified")
                 self.add(njust_title, not_justified_text)
                 self.play(
-                    Transform(
-                        not_justified_text,
-                        justified_text,
-                    ),
-                    Transform(
-                        njust_title,
-                        just_title,
-                    ),
-                    run_time=2,
+                    FadeOut(not_justified_text),
+                    FadeIn(justified_text),
+                    FadeOut(njust_title),
+                    FadeIn(just_title),
                 )
                 self.wait(1)
 
@@ -1104,13 +1148,16 @@ class MarkupText(SVGMobject):
         height: int = None,
         width: int = None,
         should_center: bool = True,
-        unpack_groups: bool = True,
         disable_ligatures: bool = False,
+        warn_missing_font: bool = True,
         **kwargs,
-    ):
-
+    ) -> None:
         self.text = text
         self.line_spacing = line_spacing
+        if font and warn_missing_font:
+            fonts_list = manimpango.list_fonts()
+            if font not in fonts_list:
+                logger.warning(f"Font {font} not in {fonts_list}.")
         self.font = font
         self._font_size = float(font_size)
         self.slant = slant
@@ -1153,33 +1200,67 @@ class MarkupText(SVGMobject):
             height=height,
             width=width,
             should_center=should_center,
-            unpack_groups=unpack_groups,
             **kwargs,
         )
 
         self.chars = self.get_group_class()(*self.submobjects)
         self.text = text_without_tabs.replace(" ", "").replace("\n", "")
 
-        if config.renderer == "opengl":
-            nppc = self.n_points_per_curve
-        else:
-            nppc = self.n_points_per_cubic_curve
+        nppc = self.n_points_per_curve
         for each in self:
             if len(each.points) == 0:
                 continue
             points = each.points
-            last = points[0]
-            each.clear_points()
+            curve_start = points[0]
+            assert len(curve_start) == self.dim, curve_start
+            # Some of the glyphs in this text might not be closed,
+            # so we close them by identifying when one curve ends
+            # but it is not where the next curve starts.
+            # It is more efficient to temporarily create a list
+            # of points and add them one at a time, then turn them
+            # into a numpy array at the end, rather than creating
+            # new numpy arrays every time a point or fixing line
+            # is added (which is O(n^2) for numpy arrays).
+            closed_curve_points = []
+            # OpenGL has points be part of quadratic Bezier curves;
+            # Cairo uses cubic Bezier curves.
+            if nppc == 3:  # RendererType.OPENGL
+
+                def add_line_to(end):
+                    nonlocal closed_curve_points
+                    start = closed_curve_points[-1]
+                    closed_curve_points += [
+                        start,
+                        (start + end) / 2,
+                        end,
+                    ]
+
+            else:  # RendererType.CAIRO
+
+                def add_line_to(end):
+                    nonlocal closed_curve_points
+                    start = closed_curve_points[-1]
+                    closed_curve_points += [
+                        start,
+                        (start + start + end) / 3,
+                        (start + end + end) / 3,
+                        end,
+                    ]
+
             for index, point in enumerate(points):
-                each.append_points([point])
+                closed_curve_points.append(point)
                 if (
                     index != len(points) - 1
                     and (index + 1) % nppc == 0
                     and any(point != points[index + 1])
                 ):
-                    each.add_line_to(last)
-                    last = points[index + 1]
-            each.add_line_to(last)
+                    # Add straight line from last point on this curve to the
+                    # start point on the next curve.
+                    add_line_to(curve_start)
+                    curve_start = points[index + 1]
+            # Make sure last curve is closed
+            add_line_to(curve_start)
+            each.points = np.array(closed_curve_points, ndmin=2)
 
         if self.gradient:
             self.set_color_by_gradient(*self.gradient)
@@ -1245,12 +1326,12 @@ class MarkupText(SVGMobject):
         line_spacing /= TEXT2SVG_ADJUSTMENT_FACTOR
 
         dir_name = config.get_dir("text_dir")
-        if not os.path.exists(dir_name):
-            os.makedirs(dir_name)
+        if not dir_name.exists():
+            dir_name.mkdir(parents=True)
         hash_name = self._text2hash(color)
-        file_name = os.path.join(dir_name, hash_name) + ".svg"
-        if os.path.exists(file_name):
-            svg_file = file_name
+        file_name = dir_name / (hash_name + ".svg")
+        if file_name.exists():
+            svg_file = str(file_name.resolve())
         else:
             final_text = (
                 f'<span foreground="{color}">{self.text}</span>'
@@ -1266,7 +1347,7 @@ class MarkupText(SVGMobject):
                 size,
                 line_spacing,
                 self.disable_ligatures,
-                file_name,
+                str(file_name.resolve()),
                 START_X,
                 START_Y,
                 600,  # width
@@ -1385,7 +1466,7 @@ def register_font(font_file: str | Path):
 
     Parameters
     ----------
-    font_file :
+    font_file
         The font file to add.
 
     Examples

@@ -35,11 +35,6 @@ msgstr ""
 msgid "The parent Configurable instance of this object."
 msgstr ""
 
-#: ../../../manim/utils/ipython_magic.py:docstring of manim.utils.ipython_magic.ManimMagic:0
-#: ../../../manim/utils/ipython_magic.py:docstring of manim.utils.ipython_magic.ManimMagic.manim:0
-msgid "Return type"
-msgstr ""
-
 #: ../../../manim/utils/ipython_magic.py:docstring of manim.utils.ipython_magic.ManimMagic:11
 msgid "Notes"
 msgstr ""
@@ -119,6 +114,10 @@ msgstr ""
 
 #: ../../../manim/utils/ipython_magic.py:docstring of manim.utils.ipython_magic.ManimMagic.manim:64
 msgid "Evaluating this cell will render and display the ``BannerExample`` scene defined in the body of the cell."
+msgstr ""
+
+#: ../../../manim/utils/ipython_magic.py:docstring of manim.utils.ipython_magic.ManimMagic.manim:68
+msgid "In case you want to hide the red box containing the output progress bar, the ``progress_bar`` config option should be set to ``None``. This can also be done by passing ``--progress_bar None`` as a CLI flag."
 msgstr ""
 
 

@@ -19,7 +19,7 @@ msgid "Bases: :py:class:`object`"
 msgstr ""
 
 #: ../../../manim/scene/section.py:docstring of manim.scene.section.Section:1
-msgid "A :class:`.Scene` can be segmented into multiple Sections. Refer to :doc:`the documentation</tutorials/a_deeper_look>` for more info. It consists of multiple animations."
+msgid "A :class:`.Scene` can be segmented into multiple Sections. Refer to :doc:`the documentation</tutorials/output_and_config>` for more info. It consists of multiple animations."
 msgstr ""
 
 #: ../../../manim/scene/section.py:docstring of manim.scene.section.Section:0

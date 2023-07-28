@@ -9,6 +9,12 @@ examples.po
 reference.po
 tutorials.po
 tutorials/building_blocks.po
-tutorials/a_deeper_look.po
 tutorials/quickstart.po
-tutorials/configuration.po
+guides/output_and_config.po
+guides/configuration.po
+guides/deep_dive.po
+guides/using_text.po
+faq/general.po
+faq/help.po
+faq/installation.po
+faq/opengl.po

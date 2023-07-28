@@ -28,7 +28,9 @@ from manim.mobject.graphing.functions import ImplicitFunction, ParametricFunctio
 from manim.mobject.graphing.number_line import NumberLine
 from manim.mobject.graphing.scale import LinearBase
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
+from manim.mobject.opengl.opengl_surface import OpenGLSurface
 from manim.mobject.text.tex_mobject import MathTex
+from manim.mobject.three_d.three_dimensions import Surface
 from manim.mobject.types.vectorized_mobject import (
     VDict,
     VectorizedPoint,
@@ -54,8 +56,7 @@ if TYPE_CHECKING:
 
 
 class CoordinateSystem:
-    r"""
-    Abstract class for Axes and NumberPlane
+    r"""Abstract base class for Axes and NumberPlane.
 
     Examples
     --------
@@ -193,11 +194,11 @@ class CoordinateSystem:
         return np.sqrt(x**2 + y**2), np.arctan2(y, x)
 
     def c2p(self, *coords):
-        """Abbreviation for coords_to_point"""
+        """Abbreviation for :meth:`coords_to_point`"""
         return self.coords_to_point(*coords)
 
     def p2c(self, point):
-        """Abbreviation for point_to_coords"""
+        """Abbreviation for :meth:`point_to_coords`"""
         return self.point_to_coords(point)
 
     def pr2pt(self, radius: float, azimuth: float) -> np.ndarray:
@@ -363,50 +364,8 @@ class CoordinateSystem:
         label.shift_onto_screen(buff=MED_SMALL_BUFF)
         return label
 
-    def get_axis_labels(
-        self,
-        x_label: float | str | Mobject = "x",
-        y_label: float | str | Mobject = "y",
-    ) -> VGroup:
-        """Defines labels for the x_axis and y_axis of the graph. For increased control over the position of the labels,
-        use :meth:`get_x_axis_label` and :meth:`get_y_axis_label`.
-
-        Parameters
-        ----------
-        x_label
-            The label for the x_axis. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs.
-        y_label
-            The label for the y_axis. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs.
-
-        Returns
-        -------
-        :class:`~.VGroup`
-            A :class:`~.Vgroup` of the labels for the x_axis and y_axis.
-
-
-        .. seealso::
-            :class:`get_x_axis_label`
-            :class:`get_y_axis_label`
-
-        Examples
-        --------
-        .. manim:: GetAxisLabelsExample
-            :save_last_frame:
-
-            class GetAxisLabelsExample(Scene):
-                def construct(self):
-                    ax = Axes()
-                    labels = ax.get_axis_labels(
-                        Tex("x-axis").scale(0.7), Text("y-axis").scale(0.45)
-                    )
-                    self.add(ax, labels)
-        """
-
-        self.axis_labels = VGroup(
-            self.get_x_axis_label(x_label),
-            self.get_y_axis_label(y_label),
-        )
-        return self.axis_labels
+    def get_axis_labels(self):
+        raise NotImplementedError()
 
     def add_coordinates(
         self,
@@ -438,7 +397,7 @@ class CoordinateSystem:
             ax = Axes(x_range=[0, 7])
             x_pos = [x for x in range(1, 8)]
 
-            # strings are automatically converted into a `Tex` mobject.
+            # strings are automatically converted into a Tex mobject.
             x_vals = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
             x_dict = dict(zip(x_pos, x_vals))
             ax.add_coordinates(x_dict)
@@ -628,6 +587,7 @@ class CoordinateSystem:
         self,
         function: Callable[[float], float],
         x_range: Sequence[float] | None = None,
+        use_vectorized: bool = False,
         **kwargs,
     ):
         """Generates a curve based on a function.
@@ -638,6 +598,9 @@ class CoordinateSystem:
             The function used to construct the :class:`~.ParametricFunction`.
         x_range
             The range of the curve along the axes. ``x_range = [x_min, x_max, x_step]``.
+        use_vectorized
+            Whether to pass in the generated t value array to the function. Only use this if your function supports it.
+            Output should be a numpy array of shape ``[y_0, y_1, ...]``
         kwargs
             Additional parameters to be passed to :class:`~.ParametricFunction`.
 
@@ -713,6 +676,7 @@ class CoordinateSystem:
             lambda t: self.coords_to_point(t, function(t)),
             t_range=t_range,
             scaling=self.x_axis.scaling,
+            use_vectorized=use_vectorized,
             **kwargs,
         )
         graph.underlying_function = function
@@ -751,8 +715,10 @@ class CoordinateSystem:
                     )
                     self.add(ax, a)
         """
+        x_scale = self.get_x_axis().scaling
+        y_scale = self.get_y_axis().scaling
         graph = ImplicitFunction(
-            func=func,
+            func=(lambda x, y: func(x_scale.function(x), y_scale.function(y))),
             x_range=self.x_range[:2],
             y_range=self.y_range[:2],
             min_depth=min_depth,
@@ -766,10 +732,50 @@ class CoordinateSystem:
         )
         return graph
 
-    def plot_parametric_curve(self, function, **kwargs):
+    def plot_parametric_curve(
+        self,
+        function: Callable[[float], np.ndarray],
+        use_vectorized: bool = False,
+        **kwargs,
+    ) -> ParametricFunction:
+        """A parametric curve.
+
+        Parameters
+        ----------
+        function
+            A parametric function mapping a number to a point in the
+            coordinate system.
+        use_vectorized
+            Whether to pass in the generated t value array to the function. Only use this if your function supports it.
+        kwargs
+            Any further keyword arguments are passed to :class:`.ParametricFunction`.
+
+        Example
+        -------
+        .. manim:: ParametricCurveExample
+            :save_last_frame:
+
+            class ParametricCurveExample(Scene):
+                def construct(self):
+                    ax = Axes()
+                    cardioid = ax.plot_parametric_curve(
+                        lambda t: np.array(
+                            [
+                                np.exp(1) * np.cos(t) * (1 - np.cos(t)),
+                                np.exp(1) * np.sin(t) * (1 - np.cos(t)),
+                                0,
+                            ]
+                        ),
+                        t_range=[0, 2 * PI],
+                        color="#0FF1CE",
+                    )
+                    self.add(ax, cardioid)
+        """
         dim = self.dimension
         graph = ParametricFunction(
-            lambda t: self.coords_to_point(*function(t)[:dim]), **kwargs
+            lambda t: self.coords_to_point(*function(t)[:dim]),
+            use_vectorized=use_vectorized,
+            **kwargs,
         )
         graph.underlying_function = function
         return graph
@@ -811,6 +817,90 @@ class CoordinateSystem:
         )
         graph.underlying_function = r_func
         return graph
+
+    def plot_surface(
+        self,
+        function: Callable[[float], float],
+        u_range: Sequence[float] | None = None,
+        v_range: Sequence[float] | None = None,
+        colorscale: Sequence[[color], float] | None = None,
+        colorscale_axis: int = 2,
+        **kwargs,
+    ):
+        """Generates a surface based on a function.
+
+        Parameters
+        ----------
+        function
+            The function used to construct the :class:`~.Surface`.
+        u_range
+            The range of the ``u`` variable: ``(u_min, u_max)``.
+        v_range
+            The range of the ``v`` variable: ``(v_min, v_max)``.
+        colorscale
+            Colors of the surface. Passing a list of colors will color the surface by z-value.
+            Passing a list of tuples in the form ``(color, pivot)`` allows user-defined pivots
+            where the color transitions.
+        colorscale_axis
+            Defines the axis on which the colorscale is applied (0 = x, 1 = y, 2 = z), default
+            is z-axis (2).
+        kwargs
+            Additional parameters to be passed to :class:`~.Surface`.
+
+        Returns
+        -------
+        :class:`~.Surface`
+            The plotted surface.
+
+        Examples
+        --------
+        .. manim:: PlotSurfaceExample
+            :save_last_frame:
+
+            class PlotSurfaceExample(ThreeDScene):
+                def construct(self):
+                    resolution_fa = 16
+                    self.set_camera_orientation(phi=75 * DEGREES, theta=-60 * DEGREES)
+                    axes = ThreeDAxes(x_range=(-3, 3, 1), y_range=(-3, 3, 1), z_range=(-5, 5, 1))
+                    def param_trig(u, v):
+                        x = u
+                        y = v
+                        z = 2 * np.sin(x) + 2 * np.cos(y)
+                        return z
+                    trig_plane = axes.plot_surface(
+                        param_trig,
+                        resolution=(resolution_fa, resolution_fa),
+                        u_range = (-3, 3),
+                        v_range = (-3, 3),
+                        colorscale = [BLUE, GREEN, YELLOW, ORANGE, RED],
+                        )
+                    self.add(axes, trig_plane)
+        """
+        if config.renderer == RendererType.CAIRO:
+            surface = Surface(
+                lambda u, v: self.c2p(u, v, function(u, v)),
+                u_range=u_range,
+                v_range=v_range,
+                **kwargs,
+            )
+            if colorscale:
+                surface.set_fill_by_value(
+                    axes=self.copy(),
+                    colorscale=colorscale,
+                    axis=colorscale_axis,
+                )
+        elif config.renderer == RendererType.OPENGL:
+            surface = OpenGLSurface(
+                lambda u, v: self.c2p(u, v, function(u, v)),
+                u_range=u_range,
+                v_range=v_range,
+                axes=self.copy(),
+                colorscale=colorscale,
+                colorscale_axis=colorscale_axis,
+                **kwargs,
+            )
+
+        return surface
 
     def input_to_graph_point(
         self,
@@ -881,7 +971,7 @@ class CoordinateSystem:
 
             >>> from manim import Axes
             >>> ax = Axes()
-            >>> parabola = ax.plot(lambda x: x ** 2)
+            >>> parabola = ax.plot(lambda x: x**2)
             >>> ax.input_to_graph_coords(x=3, graph=parabola)
             (3, 9)
         """
@@ -1255,7 +1345,7 @@ class CoordinateSystem:
         .. code-block:: python
 
             ax = Axes()
-            curve = ax.plot(lambda x: x ** 2)
+            curve = ax.plot(lambda x: x**2)
             ax.angle_of_tangent(x=3, graph=curve)
             # 1.4056476493802699
         """
@@ -1285,7 +1375,7 @@ class CoordinateSystem:
         .. code-block:: python
 
             ax = Axes()
-            curve = ax.plot(lambda x: x ** 2)
+            curve = ax.plot(lambda x: x**2)
             ax.slope_of_tangent(x=-2, graph=curve)
             # -3.5000000259052038
         """
@@ -1341,6 +1431,7 @@ class CoordinateSystem:
         graph: ParametricFunction,
         y_intercept: float = 0,
         samples: int = 50,
+        use_vectorized: bool = False,
         **kwargs,
     ):
         """Plots an antiderivative graph.
@@ -1353,6 +1444,10 @@ class CoordinateSystem:
             The y-value at which the graph intercepts the y-axis.
         samples
             The number of points to take the area under the graph.
+        use_vectorized
+            Whether to use the vectorized version of the antiderivative. This means
+            to pass in the generated t value array to the function. Only use this if your function supports it.
+            Output should be a numpy array of shape ``[y_0, y_1, ...]``
         kwargs
             Any valid keyword argument of :class:`~.ParametricFunction`.
 
@@ -1384,12 +1479,12 @@ class CoordinateSystem:
         """
 
         def antideriv(x):
-            x_vals = np.linspace(0, x, samples)
+            x_vals = np.linspace(0, x, samples, axis=1 if use_vectorized else 0)
             f_vec = np.vectorize(graph.underlying_function)
             y_vals = f_vec(x_vals)
             return np.trapz(y_vals, x_vals) + y_intercept
 
-        return self.plot(antideriv, **kwargs)
+        return self.plot(antideriv, use_vectorized=use_vectorized, **kwargs)
 
     def get_secant_slope_group(
         self,
@@ -1610,10 +1705,10 @@ class CoordinateSystem:
 
         Examples
         --------
-        .. manim:: T_labelExample
+        .. manim:: TLabelExample
             :save_last_frame:
 
-            class T_labelExample(Scene):
+            class TLabelExample(Scene):
                 def construct(self):
                     # defines the axes and linear function
                     axes = Axes(x_range=[-1, 10], y_range=[-1, 10], x_length=9, y_length=6)
@@ -1688,6 +1783,17 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
                 # x_min must be > 0 because log is undefined at 0.
                 graph = ax.plot(lambda x: x ** 2, x_range=[0.001, 10], use_smoothing=False)
                 self.add(ax, graph)
+
+    Styling arguments can be passed to the underlying :class:`.NumberLine`
+    mobjects that represent the axes:
+
+    .. manim:: AxesWithDifferentTips
+        :save_last_frame:
+
+        class AxesWithDifferentTips(Scene):
+            def construct(self):
+                ax = Axes(axis_config={'tip_shape': StealthTip})
+                self.add(ax)
     """
 
     def __init__(
@@ -1828,7 +1934,9 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         axis.shift(-axis.number_to_point(self._origin_shift([axis.x_min, axis.x_max])))
         return axis
 
-    def coords_to_point(self, *coords: Sequence[float]) -> np.ndarray:
+    def coords_to_point(
+        self, *coords: float | Sequence[float] | Sequence[Sequence[float]] | np.ndarray
+    ) -> np.ndarray:
         """Accepts coordinates from the axes and returns a point with respect to the scene.
 
         Parameters
@@ -1836,13 +1944,39 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         coords
             The coordinates. Each coord is passed as a separate argument: ``ax.coords_to_point(1, 2, 3)``.
 
+            Also accepts a list of coordinates
+
+            ``ax.coords_to_point( [x_0, x_1, ...], [y_0, y_1, ...], ... )``
+
+            ``ax.coords_to_point( [[x_0, y_0, z_0], [x_1, y_1, z_1]] )``
+
         Returns
         -------
         np.ndarray
             A point with respect to the scene's coordinate system.
+            The shape of the array will be similar to the shape of the input.
 
         Examples
         --------
+
+        .. code-block:: pycon
+
+            >>> from manim import Axes
+            >>> import numpy as np
+            >>> ax = Axes()
+            >>> np.around(ax.coords_to_point(1, 0, 0), 2)
+            array([0.86, 0.  , 0.  ])
+            >>> np.around(ax.coords_to_point([[0, 1], [1, 1], [1, 0]]), 2)
+            array([[0.  , 0.75, 0.  ],
+                   [0.86, 0.75, 0.  ],
+                   [0.86, 0.  , 0.  ]])
+            >>> np.around(
+            ...     ax.coords_to_point([0, 1, 1], [1, 1, 0]), 2
+            ... )  # Transposed version of the above
+            array([[0.  , 0.86, 0.86],
+                   [0.75, 0.75, 0.  ],
+                   [0.  , 0.  , 0.  ]])
+
         .. manim:: CoordsToPointExample
             :save_last_frame:
 
@@ -1861,29 +1995,78 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
 
                     self.add(plane, dot_scene, ax, dot_axes, lines)
         """
+        coords = np.asarray(coords)
         origin = self.x_axis.number_to_point(
             self._origin_shift([self.x_axis.x_min, self.x_axis.x_max]),
         )
-        result = np.array(origin)
-        for axis, coord in zip(self.get_axes(), coords):
-            result += axis.number_to_point(coord) - origin
-        return result
 
-    def point_to_coords(self, point: Sequence[float]) -> tuple[float]:
+        # Is coords in the format ([[x1 y1 z1] [x2 y2 z2] ...])? (True)
+        # Or is coords in the format (x, y, z) or ([x1 x2 ...], [y1 y2 ...], [z1 z2 ...])? (False)
+        # The latter is preferred.
+        are_coordinates_transposed = False
+
+        # If coords is in the format ([[x1 y1 z1] [x2 y2 z2] ...]):
+        if coords.ndim == 3:
+            # Extract from original tuple: now coords looks like [[x y z]] or [[x1 y1 z1] [x2 y2 z2] ...].
+            coords = coords[0]
+            # If there's a single coord (coords = [[x y z]]), extract it so that
+            # coords = [x y z] and coords_to_point returns a single point.
+            if coords.shape[0] == 1:
+                coords = coords[0]
+            # Else, if coords looks more like [[x1 y1 z1] [x2 y2 z2] ...], transform them (by
+            # transposing) into the format [[x1 x2 ...] [y1 y2 ...] [z1 z2 ...]] for later processing.
+            else:
+                coords = coords.T
+                are_coordinates_transposed = True
+        # Otherwise, coords already looked like (x, y, z) or ([x1 x2 ...], [y1 y2 ...], [z1 z2 ...]),
+        # so no further processing is needed.
+
+        # Now coords should either look like [x y z] or [[x1 x2 ...] [y1 y2 ...] [z1 z2 ...]],
+        # so it can be iterated directly. Each element is either a float representing a single
+        # coordinate, or a float ndarray of coordinates corresponding to a single axis.
+        # Although "points" and "nums" are in plural, there might be a single point or number.
+        points = self.x_axis.number_to_point(coords[0])
+        other_axes = self.axes.submobjects[1:]
+        for axis, nums in zip(other_axes, coords[1:]):
+            points += axis.number_to_point(nums) - origin
+
+        # Return points as is, except if coords originally looked like
+        # ([x1 x2 ...], [y1 y2 ...], [z1 z2 ...]), which is determined by the conditions below. In
+        # that case, the current implementation requires that the results have to be transposed.
+        if are_coordinates_transposed or points.ndim == 1:
+            return points
+        return points.T
+
+    def point_to_coords(self, point: Sequence[float]) -> np.ndarray:
         """Accepts a point from the scene and returns its coordinates with respect to the axes.
 
         Parameters
         ----------
         point
             The point, i.e. ``RIGHT`` or ``[0, 1, 0]``.
+            Also accepts a list of points as ``[RIGHT, [0, 1, 0]]``.
 
         Returns
         -------
-        Tuple[float]
-            The coordinates on the axes, i.e. ``(4.0, 7.0)``.
+        np.ndarray[float]
+            The coordinates on the axes, i.e. ``[4.0, 7.0]``.
+            Or a list of coordinates if `point` is a list of points.
 
         Examples
         --------
+
+        .. code-block:: pycon
+
+            >>> from manim import Axes, RIGHT
+            >>> import numpy as np
+            >>> ax = Axes(x_range=[0, 10, 2])
+            >>> np.around(ax.point_to_coords(RIGHT), 2)
+            array([5.83, 0.  ])
+            >>> np.around(ax.point_to_coords([[0, 0, 1], [1, 0, 0]]), 2)
+            array([[5.  , 0.  ],
+                   [5.83, 0.  ]])
+
+
         .. manim:: PointToCoordsExample
             :save_last_frame:
 
@@ -1901,7 +2084,11 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
 
                     self.add(ax, circ, label, Dot(circ.get_right()))
         """
-        return tuple(axis.point_to_number(point) for axis in self.get_axes())
+        point = np.asarray(point)
+        result = np.asarray([axis.point_to_number(point) for axis in self.get_axes()])
+        if point.ndim == 2:
+            return result.T
+        return result
 
     def get_axes(self) -> VGroup:
         """Gets the axes.
@@ -1912,6 +2099,54 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             A pair of axes.
         """
         return self.axes
+
+    def get_axis_labels(
+        self,
+        x_label: float | str | Mobject = "x",
+        y_label: float | str | Mobject = "y",
+    ) -> VGroup:
+        """Defines labels for the x-axis and y-axis of the graph.
+
+        For increased control over the position of the labels,
+        use :meth:`~.CoordinateSystem.get_x_axis_label` and
+        :meth:`~.CoordinateSystem.get_y_axis_label`.
+
+        Parameters
+        ----------
+        x_label
+            The label for the x_axis. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs.
+        y_label
+            The label for the y_axis. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs.
+
+        Returns
+        -------
+        :class:`~.VGroup`
+            A :class:`~.VGroup` of the labels for the x_axis and y_axis.
+
+
+        .. seealso::
+            :meth:`~.CoordinateSystem.get_x_axis_label`
+            :meth:`~.CoordinateSystem.get_y_axis_label`
+
+        Examples
+        --------
+        .. manim:: GetAxisLabelsExample
+            :save_last_frame:
+
+            class GetAxisLabelsExample(Scene):
+                def construct(self):
+                    ax = Axes()
+                    labels = ax.get_axis_labels(
+                        Tex("x-axis").scale(0.7), Text("y-axis").scale(0.45)
+                    )
+                    self.add(ax, labels)
+        """
+
+        self.axis_labels = VGroup(
+            self.get_x_axis_label(x_label),
+            self.get_y_axis_label(y_label),
+        )
+        return self.axis_labels
 
     def plot_line_graph(
         self,
@@ -2073,7 +2308,6 @@ class ThreeDAxes(Axes):
         gloss=0.5,
         **kwargs,
     ):
-
         super().__init__(
             x_range=x_range,
             x_length=x_length,
@@ -2125,7 +2359,7 @@ class ThreeDAxes(Axes):
         self.add(z_axis)
         self.z_axis = z_axis
 
-        if config.renderer != "opengl":
+        if config.renderer == RendererType.CAIRO:
             self._add_3d_pieces()
             self._set_axis_shading()
 
@@ -2150,6 +2384,57 @@ class ThreeDAxes(Axes):
                 submob.get_unit_normal = lambda a: np.ones(3)
                 submob.set_sheen(0.2)
 
+    def get_y_axis_label(
+        self,
+        label: float | str | Mobject,
+        edge: Sequence[float] = UR,
+        direction: Sequence[float] = UR,
+        buff: float = SMALL_BUFF,
+        rotation=PI / 2,
+        rotation_axis=OUT,
+        **kwargs,
+    ) -> Mobject:
+        """Generate a y-axis label.
+
+        Parameters
+        ----------
+        label
+            The label. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs.
+        edge
+            The edge of the y-axis to which the label will be added, by default ``UR``.
+        direction
+            Allows for further positioning of the label from an edge, by default ``UR``.
+        buff
+            The distance of the label from the line, by default ``SMALL_BUFF``.
+        rotation
+            The angle at which to rotate the label, by default ``PI/2``.
+        rotation_axis
+            The axis about which to rotate the label, by default ``OUT``.
+
+        Returns
+        -------
+        :class:`~.Mobject`
+            The positioned label.
+
+        Examples
+        --------
+        .. manim:: GetYAxisLabelExample
+            :save_last_frame:
+
+            class GetYAxisLabelExample(ThreeDScene):
+                def construct(self):
+                    ax = ThreeDAxes()
+                    lab = ax.get_y_axis_label(Tex("$y$-label"))
+                    self.set_camera_orientation(phi=2*PI/5, theta=PI/5)
+                    self.add(ax, lab)
+        """
+
+        positioned_label = self._get_axis_label(
+            label, self.get_y_axis(), edge, direction, buff=buff, **kwargs
+        )
+        positioned_label.rotate(rotation, axis=rotation_axis)
+        return positioned_label
+
     def get_z_axis_label(
         self,
         label: float | str | Mobject,
@@ -2167,11 +2452,11 @@ class ThreeDAxes(Axes):
         label
             The label. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs.
         edge
-            The edge of the x-axis to which the label will be added, by default ``UR``.
+            The edge of the z-axis to which the label will be added, by default ``OUT``.
         direction
-            Allows for further positioning of the label from an edge, by default ``UR``.
+            Allows for further positioning of the label from an edge, by default ``RIGHT``.
         buff
-            The distance of the label from the line.
+            The distance of the label from the line, by default ``SMALL_BUFF``.
         rotation
             The angle at which to rotate the label, by default ``PI/2``.
         rotation_axis
@@ -2201,6 +2486,61 @@ class ThreeDAxes(Axes):
         positioned_label.rotate(rotation, axis=rotation_axis)
         return positioned_label
 
+    def get_axis_labels(
+        self,
+        x_label: float | str | Mobject = "x",
+        y_label: float | str | Mobject = "y",
+        z_label: float | str | Mobject = "z",
+    ) -> VGroup:
+        """Defines labels for the x_axis and y_axis of the graph.
+
+        For increased control over the position of the labels,
+        use :meth:`~.CoordinateSystem.get_x_axis_label`,
+        :meth:`~.ThreeDAxes.get_y_axis_label`, and
+        :meth:`~.ThreeDAxes.get_z_axis_label`.
+
+        Parameters
+        ----------
+        x_label
+            The label for the x_axis. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs.
+        y_label
+            The label for the y_axis. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs.
+        z_label
+            The label for the z_axis. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs.
+
+        Returns
+        -------
+        :class:`~.VGroup`
+            A :class:`~.VGroup` of the labels for the x_axis, y_axis, and z_axis.
+
+
+        .. seealso::
+            :meth:`~.CoordinateSystem.get_x_axis_label`
+            :meth:`~.ThreeDAxes.get_y_axis_label`
+            :meth:`~.ThreeDAxes.get_z_axis_label`
+
+        Examples
+        --------
+        .. manim:: GetAxisLabelsExample
+            :save_last_frame:
+
+            class GetAxisLabelsExample(ThreeDScene):
+                def construct(self):
+                    self.set_camera_orientation(phi=2*PI/5, theta=PI/5)
+                    axes = ThreeDAxes()
+                    labels = axes.get_axis_labels(
+                        Tex("x-axis").scale(0.7), Text("y-axis").scale(0.45), Text("z-axis").scale(0.45)
+                    )
+                    self.add(axes, labels)
+        """
+
+        self.axis_labels = VGroup(
+            self.get_x_axis_label(x_label),
+            self.get_y_axis_label(y_label),
+            self.get_z_axis_label(z_label),
+        )
+        return self.axis_labels
+
 
 class NumberPlane(Axes):
     """Creates a cartesian plane with background lines.
@@ -2228,8 +2568,8 @@ class NumberPlane(Axes):
 
 
     .. note::
-        If :attr:`x_length` or :attr:`y_length` are not defined, the plane automatically adjusts its lengths based
-        on the :attr:`x_range` and :attr:`y_range` values to set the ``unit_size`` to 1.
+        If :attr:`x_length` or :attr:`y_length` are not defined, they are automatically calculated such that
+        one unit on each axis is one Manim unit long.
 
     Examples
     --------
@@ -2239,8 +2579,6 @@ class NumberPlane(Axes):
         class NumberPlaneExample(Scene):
             def construct(self):
                 number_plane = NumberPlane(
-                    x_range=[-10, 10, 1],
-                    y_range=[-10, 10, 1],
                     background_line_style={
                         "stroke_color": TEAL,
                         "stroke_width": 4,
@@ -2248,6 +2586,27 @@ class NumberPlane(Axes):
                     }
                 )
                 self.add(number_plane)
+
+    .. manim:: NumberPlaneScaled
+        :save_last_frame:
+
+        class NumberPlaneScaled(Scene):
+            def construct(self):
+                number_plane = NumberPlane(
+                    x_range=(-4, 11, 1),
+                    y_range=(-3, 3, 1),
+                    x_length=5,
+                    y_length=2,
+                ).move_to(LEFT*3)
+
+                number_plane_scaled_y = NumberPlane(
+                    x_range=(-4, 11, 1),
+                    x_length=5,
+                    y_length=4,
+                ).move_to(RIGHT*3)
+
+                self.add(number_plane)
+                self.add(number_plane_scaled_y)
     """
 
     def __init__(
@@ -2272,7 +2631,6 @@ class NumberPlane(Axes):
         make_smooth_after_applying_functions: bool = True,
         **kwargs,
     ):
-
         # configs
         self.axis_config = {
             "stroke_width": 2,
@@ -2422,15 +2780,16 @@ class NumberPlane(Axes):
         # min/max used in case range does not include 0. i.e. if (2,6):
         # the range becomes (0,4), not (0,6).
         ranges = (
-            np.arange(0, min(x_max - x_min, x_max), step),
-            np.arange(0, max(x_min - x_max, x_min), -step),
+            [0],
+            np.arange(step, min(x_max - x_min, x_max), step),
+            np.arange(-step, max(x_min - x_max, x_min), -step),
         )
 
         for inputs in ranges:
             for k, x in enumerate(inputs):
                 new_line = line.copy()
                 new_line.shift(unit_vector_axis_perp_to * x)
-                if k % ratio_faded_lines == 0:
+                if (k + 1) % ratio_faded_lines == 0:
                     lines1.add(new_line)
                 else:
                     lines2.add(new_line)

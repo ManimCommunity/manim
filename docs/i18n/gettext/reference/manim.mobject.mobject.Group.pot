@@ -22,6 +22,14 @@ msgstr ""
 msgid "Groups together multiple :class:`Mobjects <.Mobject>`."
 msgstr ""
 
+#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Group:4
+msgid "Notes"
+msgstr ""
+
+#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Group:5
+msgid "When adding the same mobject more than once, repetitions are ignored. Use :meth:`.Mobject.copy` to create a separate copy which can then be added to the group."
+msgstr ""
+
 #: ../../source/reference/manim.mobject.mobject.Group.rst:14
 msgid "Methods"
 msgstr ""

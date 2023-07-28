@@ -70,4 +70,8 @@ msgstr ""
 msgid "Animation that makes a mobject shrink to center."
 msgstr ""
 
+#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
+msgid "A Transform transforms a Mobject into a target Mobject."
+msgstr ""
+
 
