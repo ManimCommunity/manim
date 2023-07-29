@@ -5,9 +5,10 @@ your Manim installation.
 
 from __future__ import annotations
 
+import sys
+
 import click
 import cloup
-import sys
 
 from .checks import HEALTH_CHECKS
 

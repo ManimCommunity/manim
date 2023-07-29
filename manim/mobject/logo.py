@@ -19,7 +19,6 @@ from ..mobject.svg.svg_mobject import VMobjectFromSVGPath
 from ..mobject.types.vectorized_mobject import VGroup
 from ..utils.rate_functions import ease_in_out_cubic, ease_out_sine, smooth
 
-
 MANIM_SVG_PATHS: list[se.Path] = [
     se.Path(  # double stroke letter M
         "M4.64259-2.092154L2.739726-6.625156C2.660025-6.824408 2.650062-6.824408 "
