@@ -54,16 +54,25 @@ def checkhealth():
             "Would you like to render and preview a test scene?"
         )
         if render_test_scene:
-            from manim import UP, FadeOut, ManimBanner, Scene, tempconfig
+            import manim as mn
 
-            class CheckHealthDemo(Scene):
+            class CheckHealthDemo(mn.Scene):
                 def construct(self):
-                    banner = ManimBanner()
+                    banner = mn.ManimBanner().shift(mn.UP * 0.5)
                     self.play(banner.create())
-                    self.wait()
+                    self.wait(0.5)
                     self.play(banner.expand())
-                    self.wait()
-                    self.play(FadeOut(banner, shift=UP))
+                    self.wait(0.5)
+                    text_left = mn.Text("All systems operational!")
+                    formula_right = mn.MathTex(r"\oint_{\gamma} f(z)~dz = 0")
+                    text_tex_group = mn.VGroup(text_left, formula_right)
+                    text_tex_group.arrange(mn.RIGHT, buff=1).next_to(banner, mn.DOWN)
+                    self.play(mn.Write(text_tex_group))
+                    self.wait(0.5)
+                    self.play(
+                        mn.FadeOut(banner, shift=mn.UP),
+                        mn.FadeOut(text_tex_group, shift=mn.DOWN),
+                    )
 
-            with tempconfig({"preview": True, "disable_caching": True}):
+            with mn.tempconfig({"preview": True, "disable_caching": True}):
                 CheckHealthDemo().render()
