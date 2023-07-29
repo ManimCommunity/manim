@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import click
 import cloup
+import sys
 
 from .checks import HEALTH_CHECKS
 
@@ -18,7 +19,8 @@ def checkhealth():
     """This subcommand checks whether Manim is installed correctly
     and has access to its required (and optional) system dependencies.
     """
-    click.echo("Checking whether your installation of Manim Community " "is healthy...")
+    click.echo(f"Python executable: {sys.executable}\n")
+    click.echo("Checking whether your installation of Manim Community is healthy...")
     failed_checks = []
 
     for check in HEALTH_CHECKS:
