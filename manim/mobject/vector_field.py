@@ -613,7 +613,7 @@ class ArrowVectorField(VectorField):
             The root point of the vector.
 
         """
-        output = np.asarray(self.func(point))
+        output = np.array(self.func(point))
         norm = np.linalg.norm(output)
         if norm != 0:
             output *= self.length_func(norm) / norm
