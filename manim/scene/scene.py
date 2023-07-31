@@ -1326,7 +1326,7 @@ class Scene:
         cfg = Config()
         cfg.TerminalInteractiveShell.confirm_exit = False
         if get_ipython() is None:
-            shell = InteractiveShellEmbed.instance()
+            shell = InteractiveShellEmbed.instance(config=cfg)
         else:
             shell = InteractiveShellEmbed(config=cfg)
         hist = get_ipython().history_manager
