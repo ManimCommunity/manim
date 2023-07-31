@@ -272,10 +272,13 @@ class ManimDirective(Directive):
             f"{clsname}().render()",
         ]
 
-        with tempconfig(example_config):
-            run_time = timeit(lambda: exec("\n".join(code), globals()), number=1)
-            video_dir = config.get_dir("video_dir")
-            images_dir = config.get_dir("images_dir")
+        try:
+            with tempconfig(example_config):
+                run_time = timeit(lambda: exec("\n".join(code), globals()), number=1)
+                video_dir = config.get_dir("video_dir")
+                images_dir = config.get_dir("images_dir")
+        except Exception as e:
+            raise RuntimeError(f"Error while rendering example {clsname}") from e
 
         _write_rendering_stats(
             clsname,

@@ -30,7 +30,7 @@ jobs:
 
       - name: Install Poetry
         run: |
-          pipx install poetry
+          pipx install "poetry==1.5.*"
           poetry config virtualenvs.prefer-active-python true
 
       - name: Setup Python ${{ matrix.python }}
@@ -68,7 +68,7 @@ jobs:
         uses: teatimeguest/setup-texlive-action@v2
         with:
           cache: true
-          packages: scheme-basic fontspec inputenc fontenc tipa mathrsfs calligra xcolor standalone preview doublestroke ms everysel setspace rsfs relsize ragged2e fundus-calligra microtype wasysym physics dvisvgm jknapltx wasy cm-super babel-english gnu-freefont mathastext cbfonts-fd
+          packages: scheme-basic fontspec inputenc fontenc tipa mathrsfs calligra xcolor standalone preview doublestroke ms everysel setspace rsfs relsize ragged2e fundus-calligra microtype wasysym physics dvisvgm jknapltx wasy cm-super babel-english gnu-freefont mathastext cbfonts-fd xetex
 
       - name: Start virtual display (Linux)
         if: runner.os == 'Linux'
@@ -151,7 +151,7 @@ jobs:
 
       - name: Install manim
         run: |
-          poetry config experimental.new-installer false
+          poetry config installer.modern-installation false
           poetry install
 
       - name: Run tests

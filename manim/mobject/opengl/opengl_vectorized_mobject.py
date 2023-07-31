@@ -1301,7 +1301,7 @@ class OpenGLVMobject(OpenGLMobject):
             if self.has_fill():
                 tri1 = mobject1.get_triangulation()
                 tri2 = mobject2.get_triangulation()
-                if len(tri1) != len(tri1) or not np.all(tri1 == tri2):
+                if len(tri1) != len(tri2) or not np.all(tri1 == tri2):
                     self.refresh_triangulation()
         return self
 
@@ -1676,7 +1676,7 @@ class OpenGLVGroup(OpenGLVMobject):
     """
 
     def __init__(self, *vmobjects, **kwargs):
-        if not all([isinstance(m, OpenGLVMobject) for m in vmobjects]):
+        if not all(isinstance(m, OpenGLVMobject) for m in vmobjects):
             raise Exception("All submobjects must be of type OpenGLVMobject")
         super().__init__(**kwargs)
         self.add(*vmobjects)

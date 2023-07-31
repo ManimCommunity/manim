@@ -34,7 +34,8 @@ EPSILON = 0.0001
 
 
 class SampleSpace(Rectangle):
-    """
+    """A mobject representing a twodimensional rectangular
+    sampling space.
 
     Examples
     --------

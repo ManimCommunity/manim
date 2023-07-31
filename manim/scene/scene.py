@@ -385,10 +385,8 @@ class Scene:
                 or self.updaters
                 or wait_animation.stop_condition is not None
                 or any(
-                    [
-                        mob.has_time_based_updater()
-                        for mob in self.get_mobject_family_members()
-                    ],
+                    mob.has_time_based_updater()
+                    for mob in self.get_mobject_family_members()
                 )
             )
             wait_animation.is_static_wait = not should_update
