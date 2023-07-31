@@ -50,7 +50,6 @@ msgid "A parser containing any .cfg files in use."
 msgstr ""
 
 #: ../../../manim/_config/logger_utils.py:docstring of manim._config.logger_utils.make_logger:5
-#: ../../../manim/_config/logger_utils.py:docstring of manim._config.logger_utils.set_file_logger:7
 msgid "The verbosity level of the logger."
 msgstr ""
 
@@ -70,7 +69,6 @@ msgid "Return type"
 msgstr ""
 
 #: ../../../manim/_config/logger_utils.py:docstring of manim._config.logger_utils.make_logger:16
-#: ../../../manim/_config/logger_utils.py:docstring of manim._config.logger_utils.set_file_logger:11
 msgid "Notes"
 msgstr ""
 
@@ -92,10 +90,6 @@ msgstr ""
 
 #: ../../../manim/_config/logger_utils.py:docstring of manim._config.logger_utils.set_file_logger:3
 msgid "The path to the file is built using ``config.log_dir``."
-msgstr ""
-
-#: ../../../manim/_config/logger_utils.py:docstring of manim._config.logger_utils.set_file_logger:5
-msgid "The global config, used to determine the log file path."
 msgstr ""
 
 

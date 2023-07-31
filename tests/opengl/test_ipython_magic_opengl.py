@@ -29,7 +29,7 @@ def test_jupyter_file_output(tmp_path):
     with tempconfig({"scene_names": [scene_name], "renderer": "opengl"}):
         file_name = _generate_file_name()
         actual_path = tmp_path.with_name(file_name)
-        with open(actual_path, "w") as outfile:
+        with actual_path.open("w") as outfile:
             outfile.write("")
             assert actual_path.exists()
             assert actual_path.is_file()

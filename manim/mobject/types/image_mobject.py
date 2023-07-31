@@ -9,6 +9,7 @@ import pathlib
 import colour
 import numpy as np
 from PIL import Image
+from PIL.Image import Resampling
 
 from manim.mobject.geometry.shape_matchers import SurroundingRectangle
 
@@ -17,7 +18,7 @@ from ...constants import *
 from ...mobject.mobject import Mobject
 from ...utils.bezier import interpolate
 from ...utils.color import WHITE, color_to_int_rgb
-from ...utils.images import get_full_raster_image_path
+from ...utils.images import change_to_rgba_array, get_full_raster_image_path
 
 
 class AbstractImageMobject(Mobject):
@@ -26,7 +27,7 @@ class AbstractImageMobject(Mobject):
 
     Parameters
     ----------
-    scale_to_resolution : :class:`int`
+    scale_to_resolution
         At this resolution the image is placed pixel by pixel onto the screen, so it
         will look the sharpest and best.
         This is a custom parameter of ImageMobject so that rendering a scene with
@@ -36,9 +37,9 @@ class AbstractImageMobject(Mobject):
 
     def __init__(
         self,
-        scale_to_resolution,
+        scale_to_resolution: int,
         pixel_array_dtype="uint8",
-        resampling_algorithm=Image.BICUBIC,
+        resampling_algorithm=Resampling.BICUBIC,
         **kwargs,
     ):
         self.pixel_array_dtype = pixel_array_dtype
@@ -53,7 +54,7 @@ class AbstractImageMobject(Mobject):
         # Likely to be implemented in subclasses, but no obligation
         pass
 
-    def set_resampling_algorithm(self, resampling_algorithm):
+    def set_resampling_algorithm(self, resampling_algorithm: int):
         """
         Sets the interpolation method for upscaling the image. By default the image is
         interpolated using bicubic algorithm. This method lets you change it.
@@ -62,15 +63,17 @@ class AbstractImageMobject(Mobject):
 
         Parameters
         ----------
-        resampling_algorithm : :class:`int`, an integer constant described in the
-        Pillow library, or one from the RESAMPLING_ALGORITHMS global dictionary, under
-        the following keys:
-         * 'bicubic' or 'cubic'
-         * 'nearest' or 'none'
-         * 'box'
-         * 'bilinear' or 'linear'
-         * 'hamming'
-         * 'lanczos' or 'antialias'
+        resampling_algorithm
+            An integer constant described in the Pillow library,
+            or one from the RESAMPLING_ALGORITHMS global dictionary,
+            under the following keys:
+
+            * 'bicubic' or 'cubic'
+            * 'nearest' or 'none'
+            * 'box'
+            * 'bilinear' or 'linear'
+            * 'hamming'
+            * 'lanczos' or 'antialias'
         """
         if isinstance(resampling_algorithm, int):
             self.resampling_algorithm = resampling_algorithm
@@ -81,6 +84,7 @@ class AbstractImageMobject(Mobject):
                 "Available algorithms: 'bicubic', 'nearest', 'box', 'bilinear', "
                 "'hamming', 'lanczos'.",
             )
+        return self
 
     def reset_points(self):
         # Corresponding corners of image are fixed to these 3 points
@@ -106,7 +110,7 @@ class ImageMobject(AbstractImageMobject):
 
     Parameters
     ----------
-    scale_to_resolution : :class:`int`
+    scale_to_resolution
         At this resolution the image is placed pixel by pixel onto the screen, so it
         will look the sharpest and best.
         This is a custom parameter of ImageMobject so that rendering a scene with
@@ -166,7 +170,7 @@ class ImageMobject(AbstractImageMobject):
     def __init__(
         self,
         filename_or_array,
-        scale_to_resolution=QUALITIES[DEFAULT_QUALITY]["pixel_height"],
+        scale_to_resolution: int = QUALITIES[DEFAULT_QUALITY]["pixel_height"],
         invert=False,
         image_mode="RGBA",
         **kwargs,
@@ -183,25 +187,12 @@ class ImageMobject(AbstractImageMobject):
         else:
             self.pixel_array = np.array(filename_or_array)
         self.pixel_array_dtype = kwargs.get("pixel_array_dtype", "uint8")
-        self.change_to_rgba_array()
+        self.pixel_array = change_to_rgba_array(
+            self.pixel_array, self.pixel_array_dtype
+        )
         if self.invert:
             self.pixel_array[:, :, :3] = 255 - self.pixel_array[:, :, :3]
         super().__init__(scale_to_resolution, **kwargs)
-
-    def change_to_rgba_array(self):
-        """Converts an RGB array into RGBA with the alpha value opacity maxed."""
-        pa = self.pixel_array
-        if len(pa.shape) == 2:
-            pa = pa.reshape(list(pa.shape) + [1])
-        if pa.shape[2] == 1:
-            pa = pa.repeat(3, axis=2)
-        if pa.shape[2] == 3:
-            alphas = 255 * np.ones(
-                list(pa.shape[:2]) + [1],
-                dtype=self.pixel_array_dtype,
-            )
-            pa = np.append(pa, alphas, axis=2)
-        self.pixel_array = pa
 
     def get_pixel_array(self):
         """A simple getter method."""
@@ -217,12 +208,12 @@ class ImageMobject(AbstractImageMobject):
         self.color = color
         return self
 
-    def set_opacity(self, alpha):
+    def set_opacity(self, alpha: float):
         """Sets the image's opacity.
 
         Parameters
         ----------
-        alpha : float
+        alpha
             The alpha value of the object, 1 being opaque and 0 being
             transparent.
         """
@@ -231,34 +222,36 @@ class ImageMobject(AbstractImageMobject):
         self.stroke_opacity = alpha
         return self
 
-    def fade(self, darkness=0.5, family=True):
+    def fade(self, darkness: float = 0.5, family: bool = True):
         """Sets the image's opacity using a 1 - alpha relationship.
 
         Parameters
         ----------
-        darkness : float
+        darkness
             The alpha value of the object, 1 being transparent and 0 being
             opaque.
-        family : Boolean
+        family
             Whether the submobjects of the ImageMobject should be affected.
         """
         self.set_opacity(1 - darkness)
         super().fade(darkness, family)
         return self
 
-    def interpolate_color(self, mobject1, mobject2, alpha):
-        """Interpolates an array of pixel color values into another array of
-        equal size.
+    def interpolate_color(
+        self, mobject1: ImageMobject, mobject2: ImageMobject, alpha: float
+    ):
+        """Interpolates the array of pixel color values from one ImageMobject
+        into an array of equal size in the target ImageMobject.
 
         Parameters
         ----------
-        mobject1 : ImageMobject
+        mobject1
             The ImageMobject to transform from.
 
-        mobject1 : ImageMobject
-
+        mobject2
             The ImageMobject to transform into.
-        alpha : float
+
+        alpha
             Used to track the lerp relationship. Not opacity related.
         """
         assert mobject1.pixel_array.shape == mobject2.pixel_array.shape, (

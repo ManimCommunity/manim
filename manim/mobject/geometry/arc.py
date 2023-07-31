@@ -101,13 +101,15 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
 
     # Adding, Creating, Modifying tips
 
-    def add_tip(self, tip=None, tip_shape=None, tip_length=None, at_start=False):
+    def add_tip(
+        self, tip=None, tip_shape=None, tip_length=None, tip_width=None, at_start=False
+    ):
         """Adds a tip to the TipableVMobject instance, recognising
         that the endpoints might need to be switched if it's
         a 'starting tip' or not.
         """
         if tip is None:
-            tip = self.create_tip(tip_shape, tip_length, at_start)
+            tip = self.create_tip(tip_shape, tip_length, tip_width, at_start)
         else:
             self.position_tip(tip, at_start)
         self.reset_endpoints_based_on_tip(tip, at_start)
@@ -115,26 +117,36 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         self.add(tip)
         return self
 
-    def create_tip(self, tip_shape=None, tip_length=None, at_start=False):
+    def create_tip(
+        self, tip_shape=None, tip_length=None, tip_width=None, at_start=False
+    ):
         """Stylises the tip, positions it spatially, and returns
         the newly instantiated tip to the caller.
         """
-        tip = self.get_unpositioned_tip(tip_shape, tip_length)
+        tip = self.get_unpositioned_tip(tip_shape, tip_length, tip_width)
         self.position_tip(tip, at_start)
         return tip
 
-    def get_unpositioned_tip(self, tip_shape=None, tip_length=None):
+    def get_unpositioned_tip(self, tip_shape=None, tip_length=None, tip_width=None):
         """Returns a tip that has been stylistically configured,
         but has not yet been given a position in space.
         """
         from manim.mobject.geometry.tips import ArrowTriangleFilledTip
 
+        style = {}
+
         if tip_shape is None:
             tip_shape = ArrowTriangleFilledTip
+
+        if tip_shape is ArrowTriangleFilledTip:
+            if tip_width is None:
+                tip_width = self.get_default_tip_length()
+            style.update({"width": tip_width})
         if tip_length is None:
             tip_length = self.get_default_tip_length()
+
         color = self.get_color()
-        style = {"fill_color": color, "stroke_color": color}
+        style.update({"fill_color": color, "stroke_color": color})
         style.update(self.tip_style)
         tip = tip_shape(length=tip_length, **style)
         return tip
@@ -270,8 +282,8 @@ class Arc(TipableVMobject):
     def __init__(
         self,
         radius: float = 1.0,
-        start_angle=0,
-        angle=TAU / 4,
+        start_angle: float = 0,
+        angle: float = TAU / 4,
         num_components=9,
         arc_center=ORIGIN,
         **kwargs,
@@ -765,7 +777,9 @@ class Ellipse(Circle):
 
 
 class AnnularSector(Arc):
-    """
+    """A sector of an annulus.
+
+
     Parameters
     ----------
     inner_radius
@@ -850,7 +864,8 @@ class AnnularSector(Arc):
 
 
 class Sector(AnnularSector):
-    """
+    """A sector of a circle.
+
     Examples
     --------
     .. manim:: ExampleSector
@@ -923,7 +938,8 @@ class Annulus(Circle):
 
 
 class CubicBezier(VMobject, metaclass=ConvertToOpenGL):
-    """
+    """A cubic Bézier curve.
+
     Example
     -------
     .. manim:: BezierSplineExample

@@ -60,13 +60,12 @@ cfg_file_contents = textwrap.dedent(
 
 @pytest.fixture
 def simple_scenes_path():
-    yield str(Path(__file__).parent / "simple_scenes.py")
+    yield Path(__file__).parent / "simple_scenes.py"
 
 
 def cfg_file_create(cfg_file_contents, path):
     file_loc = (path / "manim.cfg").absolute()
-    with open(file_loc, "w") as f:
-        f.write(cfg_file_contents)
+    file_loc.write_text(cfg_file_contents)
     return file_loc
 
 
@@ -93,7 +92,7 @@ def test_plugin_warning(tmp_path, python_version, simple_scenes_path):
         str(cfg_file.parent),
         "--config_file",
         str(cfg_file),
-        simple_scenes_path,
+        str(simple_scenes_path),
         scene_name,
     ]
     out, err, exit_code = capture(command, cwd=str(cfg_file.parent))
@@ -110,21 +109,19 @@ def create_plugin(tmp_path, python_version, random_string):
         entry_point = entry_point.format(plugin_name=plugin_name)
         module_dir = plugin_dir / plugin_name
         module_dir.mkdir(parents=True)
-        with open(module_dir / "__init__.py", "w") as f:
-            f.write(
-                plugin_init_template.format(
-                    class_name=class_name,
-                    function_name=function_name,
-                    all_dec=all_dec,
-                ),
-            )
-        with open(plugin_dir / "pyproject.toml", "w") as f:
-            f.write(
-                plugin_pyproject_template.format(
-                    plugin_name=plugin_name,
-                    plugin_entrypoint=entry_point,
-                ),
-            )
+        (module_dir / "__init__.py").write_text(
+            plugin_init_template.format(
+                class_name=class_name,
+                function_name=function_name,
+                all_dec=all_dec,
+            ),
+        )
+        (plugin_dir / "pyproject.toml").write_text(
+            plugin_pyproject_template.format(
+                plugin_name=plugin_name,
+                plugin_entrypoint=entry_point,
+            ),
+        )
         command = [
             python_version,
             "-m",
@@ -173,7 +170,7 @@ def test_plugin_function_like(
         str(cfg_file.parent),
         "--config_file",
         str(cfg_file),
-        simple_scenes_path,
+        str(simple_scenes_path),
         scene_name,
     ]
     out, err, exit_code = capture(command, cwd=str(cfg_file.parent))
@@ -251,7 +248,7 @@ def test_plugin_with_all(tmp_path, create_plugin, python_version, simple_scenes_
         str(cfg_file.parent),
         "--config_file",
         str(cfg_file),
-        simple_scenes_path,
+        str(simple_scenes_path),
         scene_name,
     ]
     out, err, exit_code = capture(command, cwd=str(cfg_file.parent))

@@ -15,6 +15,7 @@ __all__ = [
     "Cutout",
 ]
 
+from math import ceil
 from typing import Iterable, Sequence
 
 import numpy as np
@@ -133,17 +134,51 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
 
         return np.array(vertex_groups)
 
-    def round_corners(self, radius: float = 0.5):
+    def round_corners(
+        self,
+        radius: float | list[float] = 0.5,
+        evenly_distribute_anchors: bool = False,
+        components_per_rounded_corner: int = 2,
+    ):
         """Rounds off the corners of the :class:`Polygram`.
 
         Parameters
         ----------
         radius
             The curvature of the corners of the :class:`Polygram`.
+        evenly_distribute_anchors
+            Break long line segments into proportionally-sized segments.
+        components_per_rounded_corner
+            The number of points used to represent the rounded corner curve.
 
 
         .. seealso::
             :class:`.~RoundedRectangle`
+
+        .. note::
+            If `radius` is supplied as a single value, then the same radius
+            will be applied to all corners.  If `radius` is a list, then the
+            individual values will be applied sequentially, with the first
+            corner receiving `radius[0]`, the second corner receiving
+            `radius[1]`, etc.  The radius list will be repeated as necessary.
+
+            The `components_per_rounded_corner` value is provided so that the
+            fidelity of the rounded corner may be fine-tuned as needed.  2 is
+            an appropriate value for most shapes, however a larger value may be
+            need if the rounded corner is particularly large.  2 is the minimum
+            number allowed, representing the start and end of the curve.  3 will
+            result in a start, middle, and end point, meaning 2 curves will be
+            generated.
+
+            The option to `evenly_distribute_anchors` is provided so that the
+            line segments (the part part of each line remaining after rounding
+            off the corners) can be subdivided to a density similar to that of
+            the average density of the rounded corners.  This may be desirable
+            in situations in which an even distribution of curves is desired
+            for use in later transformation animations.  Be aware, though, that
+            enabling this option can result in an an object containing
+            significantly more points than the original, especially when the
+            rounded corner curves are small.
 
         Examples
         --------
@@ -169,7 +204,17 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
 
         for vertices in self.get_vertex_groups():
             arcs = []
-            for v1, v2, v3 in adjacent_n_tuples(vertices, 3):
+
+            # Repeat the radius list as necessary in order to provide a radius
+            # for each vertex.
+            if isinstance(radius, (int, float)):
+                radius_list = [radius] * len(vertices)
+            else:
+                radius_list = radius * ceil(len(vertices) / len(radius))
+
+            for currentRadius, (v1, v2, v3) in zip(
+                radius_list, adjacent_n_tuples(vertices, 3)
+            ):
                 vect1 = v2 - v1
                 vect2 = v3 - v2
                 unit_vect1 = normalize(vect1)
@@ -177,10 +222,10 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
 
                 angle = angle_between_vectors(vect1, vect2)
                 # Negative radius gives concave curves
-                angle *= np.sign(radius)
+                angle *= np.sign(currentRadius)
 
                 # Distance between vertex and start of the arc
-                cut_off_length = radius * np.tan(angle / 2)
+                cut_off_length = currentRadius * np.tan(angle / 2)
 
                 # Determines counterclockwise vs. clockwise
                 sign = np.sign(np.cross(vect1, vect2)[2])
@@ -189,8 +234,23 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
                     v2 - unit_vect1 * cut_off_length,
                     v2 + unit_vect2 * cut_off_length,
                     angle=sign * angle,
+                    num_components=components_per_rounded_corner,
                 )
                 arcs.append(arc)
+
+            if evenly_distribute_anchors:
+                # Determine the average length of each curve
+                nonZeroLengthArcs = [arc for arc in arcs if len(arc.points) > 4]
+                if len(nonZeroLengthArcs):
+                    totalArcLength = sum(
+                        [arc.get_arc_length() for arc in nonZeroLengthArcs]
+                    )
+                    totalCurveCount = (
+                        sum([len(arc.points) for arc in nonZeroLengthArcs]) / 4
+                    )
+                    averageLengthPerCurve = totalArcLength / totalCurveCount
+                else:
+                    averageLengthPerCurve = 1
 
             # To ensure that we loop through starting with last
             arcs = [arcs[-1], *arcs[:-1]]
@@ -201,10 +261,11 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
 
                 line = Line(arc1.get_end(), arc2.get_start())
 
-                # Make sure anchors are evenly distributed
-                len_ratio = line.get_length() / arc1.get_arc_length()
-
-                line.insert_n_curves(int(arc1.get_num_curves() * len_ratio))
+                # Make sure anchors are evenly distributed, if necessary
+                if evenly_distribute_anchors:
+                    line.insert_n_curves(
+                        ceil(line.get_length() / averageLengthPerCurve)
+                    )
 
                 new_points.extend(line.points)
 
@@ -478,7 +539,7 @@ class Triangle(RegularPolygon):
 
     Parameters
     ----------
-    kwargs : Any
+    kwargs
         Additional arguments to be passed to :class:`RegularPolygon`
 
     Examples
@@ -503,21 +564,21 @@ class Rectangle(Polygon):
 
     Parameters
     ----------
-    color : :class:`~.Colors`, optional
+    color
         The color of the rectangle.
-    height : :class:`float`, optional
+    height
         The vertical height of the rectangle.
-    width : :class:`float`, optional
+    width
         The horizontal width of the rectangle.
-    grid_xstep : :class:`float`, optional
+    grid_xstep
         Space between vertical grid lines.
-    grid_ystep : :class:`float`, optional
+    grid_ystep
         Space between horizontal grid lines.
-    mark_paths_closed : :class:`bool`, optional
+    mark_paths_closed
         No purpose.
-    close_new_points : :class:`bool`, optional
+    close_new_points
         No purpose.
-    kwargs : Any
+    kwargs
         Additional arguments to be passed to :class:`Polygon`
 
     Examples
@@ -541,8 +602,8 @@ class Rectangle(Polygon):
         width: float = 4.0,
         grid_xstep: float | None = None,
         grid_ystep: float | None = None,
-        mark_paths_closed=True,
-        close_new_points=True,
+        mark_paths_closed: bool = True,
+        close_new_points: bool = True,
         **kwargs,
     ):
         super().__init__(UR, UL, DL, DR, color=color, **kwargs)
@@ -586,9 +647,9 @@ class Square(Rectangle):
 
     Parameters
     ----------
-    side_length : :class:`float`, optional
+    side_length
         The length of the sides of the square.
-    kwargs : Any
+    kwargs
         Additional arguments to be passed to :class:`Rectangle`.
 
     Examples
@@ -604,7 +665,7 @@ class Square(Rectangle):
                 self.add(square_1, square_2, square_3)
     """
 
-    def __init__(self, side_length=2.0, **kwargs):
+    def __init__(self, side_length: float = 2.0, **kwargs):
         self.side_length = side_length
         super().__init__(height=side_length, width=side_length, **kwargs)
 
@@ -614,9 +675,9 @@ class RoundedRectangle(Rectangle):
 
     Parameters
     ----------
-    corner_radius : :class:`float`, optional
+    corner_radius
         The curvature of the corners of the rectangle.
-    kwargs : Any
+    kwargs
         Additional arguments to be passed to :class:`Rectangle`
 
     Examples
@@ -633,7 +694,7 @@ class RoundedRectangle(Rectangle):
                 self.add(rect_group)
     """
 
-    def __init__(self, corner_radius=0.5, **kwargs):
+    def __init__(self, corner_radius: float | list[float] = 0.5, **kwargs):
         super().__init__(**kwargs)
         self.corner_radius = corner_radius
         self.round_corners(self.corner_radius)
@@ -644,9 +705,9 @@ class Cutout(VMobject, metaclass=ConvertToOpenGL):
 
     Parameters
     ----------
-    main_shape : :class:`~.VMobject`
+    main_shape
         The primary shape from which cutouts are made.
-    mobjects : :class:`~.VMobject`
+    mobjects
         The smaller shapes which are to be cut out of the ``main_shape``.
     kwargs
         Further keyword arguments that are passed to the constructor of
@@ -674,7 +735,7 @@ class Cutout(VMobject, metaclass=ConvertToOpenGL):
                 self.wait()
     """
 
-    def __init__(self, main_shape, *mobjects, **kwargs):
+    def __init__(self, main_shape: VMobject, *mobjects: VMobject, **kwargs):
         super().__init__(**kwargs)
         self.append_points(main_shape.points)
         if main_shape.get_direction() == "CW":

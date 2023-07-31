@@ -3,7 +3,18 @@ from math import cos, sin
 import numpy as np
 import pytest
 
-from manim import Circle, Line, Mobject, RegularPolygon, Square, VDict, VGroup, VMobject
+from manim import (
+    Circle,
+    CurvesAsSubmobjects,
+    Line,
+    Mobject,
+    Polygon,
+    RegularPolygon,
+    Square,
+    VDict,
+    VGroup,
+    VMobject,
+)
 from manim.constants import PI
 
 
@@ -21,7 +32,7 @@ def test_vmobject_point_from_propotion():
 
     # Total length of 6, so halfway along the object
     # would be at length 3, which lands in the first, long line.
-    assert np.all(obj.point_from_proportion(0.5) == np.array([3, 0, 0]))
+    np.testing.assert_array_equal(obj.point_from_proportion(0.5), np.array([3, 0, 0]))
 
     with pytest.raises(ValueError, match="between 0 and 1"):
         obj.point_from_proportion(2)
@@ -29,6 +40,38 @@ def test_vmobject_point_from_propotion():
     obj.clear_points()
     with pytest.raises(Exception, match="with no points"):
         obj.point_from_proportion(0)
+
+
+def test_curves_as_submobjects_point_from_proportion():
+    obj = CurvesAsSubmobjects(VGroup())
+
+    with pytest.raises(ValueError, match="between 0 and 1"):
+        obj.point_from_proportion(2)
+    with pytest.raises(Exception, match="with no submobjects"):
+        obj.point_from_proportion(0)
+
+    obj.add(VMobject())
+    with pytest.raises(Exception, match="have no points"):
+        obj.point_from_proportion(0)
+
+    # submobject[0] is a line of length 4
+    obj.submobjects[0].set_points_as_corners(
+        [
+            np.array([0, 0, 0]),
+            np.array([4, 0, 0]),
+        ],
+    )
+    obj.add(VMobject())
+    # submobject[1] is a line of length 2
+    obj.submobjects[1].set_points_as_corners(
+        [
+            np.array([4, 0, 0]),
+            np.array([4, 2, 0]),
+        ],
+    )
+
+    # point at proportion 0.5 should be at length 3, point [3, 0, 0]
+    np.testing.assert_array_equal(obj.point_from_proportion(0.5), np.array([3, 0, 0]))
 
 
 def test_vgroup_init():
@@ -271,7 +314,7 @@ def test_vmobject_same_points_become():
     a = Square()
     b = Circle()
     a.become(b)
-    assert np.array_equal(a.points, b.points)
+    np.testing.assert_array_equal(a.points, b.points)
     assert len(a.submobjects) == len(b.submobjects)
 
 
@@ -279,7 +322,7 @@ def test_vmobject_same_num_submobjects_become():
     a = Square()
     b = RegularPolygon(n=6)
     a.become(b)
-    assert np.array_equal(a.points, b.points)
+    np.testing.assert_array_equal(a.points, b.points)
     assert len(a.submobjects) == len(b.submobjects)
 
 
@@ -287,11 +330,22 @@ def test_vmobject_different_num_points_and_submobjects_become():
     a = Square()
     b = VGroup(Circle(), Square())
     a.become(b)
-    assert np.array_equal(a.points, b.points)
+    np.testing.assert_array_equal(a.points, b.points)
     assert len(a.submobjects) == len(b.submobjects)
 
 
 def test_vmobject_point_at_angle():
     a = Circle()
     p = a.point_at_angle(4 * PI)
-    assert np.array_equal(a.points[0], p)
+    np.testing.assert_array_equal(a.points[0], p)
+
+
+def test_proportion_from_point():
+    A = np.sqrt(3) * np.array([0, 1, 0])
+    B = np.array([-1, 0, 0])
+    C = np.array([1, 0, 0])
+    abc = Polygon(A, B, C)
+    abc.shift(np.array([-1, 0, 0]))
+    abc.scale(0.8)
+    props = [abc.proportion_from_point(p) for p in abc.get_vertices()]
+    np.testing.assert_allclose(props, [0, 1 / 3, 2 / 3])

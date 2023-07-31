@@ -19,7 +19,7 @@ msgid "Bases: :py:class:`manim.mobject.table.Table`"
 msgstr ""
 
 #: ../../../manim/mobject/table.py:docstring of manim.mobject.table.IntegerTable:1
-msgid "A specialized :class:`~.Table` mobject for use with with :class:`~.Integer`."
+msgid "A specialized :class:`~.Table` mobject for use with :class:`~.Integer`."
 msgstr ""
 
 #: ../../../manim/mobject/table.py:docstring of manim.mobject.table.IntegerTable:4

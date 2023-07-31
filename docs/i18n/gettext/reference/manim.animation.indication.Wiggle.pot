@@ -54,10 +54,6 @@ msgstr ""
 msgid "The duration of the animation"
 msgstr ""
 
-#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Wiggle:0
-msgid "Return type"
-msgstr ""
-
 #: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Wiggle:13
 msgid "Examples"
 msgstr ""

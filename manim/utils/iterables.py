@@ -65,7 +65,7 @@ def all_elements_are_instances(iterable: Iterable, Class) -> bool:
     """Returns ``True`` if all elements of iterable are instances of Class.
     False otherwise.
     """
-    return all([isinstance(e, Class) for e in iterable])
+    return all(isinstance(e, Class) for e in iterable)
 
 
 def batch_by_property(
@@ -182,10 +182,12 @@ def make_even(iterable_1: Iterable, iterable_2: Iterable) -> tuple[list, list]:
         # ([1, 1, 1, 2, 2], [3, 4, 5, 6, 7])
     """
     list_1, list_2 = list(iterable_1), list(iterable_2)
-    length = max(len(list_1), len(list_2))
+    len_list_1 = len(list_1)
+    len_list_2 = len(list_2)
+    length = max(len_list_1, len_list_2)
     return (
-        [list_1[(n * len(list_1)) // length] for n in range(length)],
-        [list_2[(n * len(list_2)) // length] for n in range(length)],
+        [list_1[(n * len_list_1) // length] for n in range(length)],
+        [list_2[(n * len_list_2) // length] for n in range(length)],
     )
 
 
@@ -259,21 +261,16 @@ def resize_array(nparray: np.ndarray, length: int) -> np.ndarray:
     --------
     Normal usage::
 
-        nparray = np.array([[1, 2],
-                            [3, 4]])
-
-        resize_array(nparray, 1)
-        # np.array([[1, 2]])
-
-        resize_array(nparray, 3)
-        # np.array([[1, 2],
-        #           [3, 4],
-        #           [1, 2]])
-
-        nparray = np.array([[[1, 2],[3, 4]]])
-        resize_array(nparray, 2)
-        # np.array([[[1, 2], [3, 4]],
-        #           [[1, 2], [3, 4]]])
+        >>> points = np.array([[1, 2], [3, 4]])
+        >>> resize_array(points, 1)
+        array([[1, 2]])
+        >>> resize_array(points, 3)
+        array([[1, 2],
+               [3, 4],
+               [1, 2]])
+        >>> resize_array(points, 2)
+        array([[1, 2],
+               [3, 4]])
     """
     if len(nparray) == length:
         return nparray
@@ -424,3 +421,17 @@ def uniq_chain(*args: Iterable) -> Generator:
             continue
         unique_items.add(x)
         yield x
+
+
+def hash_obj(obj: object) -> int:
+    """Determines a hash, even of potentially mutable objects."""
+    if isinstance(obj, dict):
+        return hash(tuple(sorted((hash_obj(k), hash_obj(v)) for k, v in obj.items())))
+
+    if isinstance(obj, set):
+        return hash(tuple(sorted(hash_obj(e) for e in obj)))
+
+    if isinstance(obj, (tuple, list)):
+        return hash(tuple(hash_obj(e) for e in obj))
+
+    return hash(obj)

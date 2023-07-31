@@ -3,7 +3,6 @@ from __future__ import annotations
 from colour import Color
 
 from manim import *
-from manim.mobject.svg.svg_path import string_to_numbers
 from tests.helpers.path_utils import get_svg_resource
 
 
@@ -59,21 +58,81 @@ def test_stroke_overrides_color():
     assert svg.stroke_color == Color(expected_color)
 
 
-def test_string_to_numbers():
-    cases = {
-        "3, 14, 159": [3.0, 14.0, 159.0],
-        "2.7 1828-1828": [2.7, 1828.0, -1828.0],
-        "1-.618.033": [1.0, -0.618, 0.033],
-        # this one is a real-world example!
-        "1.5938,1.5938,0,0,1-.1559.6874": [
-            1.5938,
-            1.5938,
-            0.0,
-            0.0,
-            1.0,
-            -0.1559,
-            0.6874,
-        ],
-    }
-    for case, result in cases.items():
-        assert string_to_numbers(case) == result
+def test_single_path_turns_into_sequence_of_points():
+    svg = SVGMobject(
+        get_svg_resource("cubic_and_lineto.svg"),
+    )
+    assert len(svg.points) == 0, svg.points
+    assert len(svg.submobjects) == 1, svg.submobjects
+    path = svg.submobjects[0]
+    np.testing.assert_almost_equal(
+        path.points,
+        np.array(
+            [
+                [-0.166666666666666, 0.66666666666666, 0.0],
+                [-0.166666666666666, 0.0, 0.0],
+                [0.5, 0.66666666666666, 0.0],
+                [0.5, 0.0, 0.0],
+                [0.5, 0.0, 0.0],
+                [-0.16666666666666666, 0.0, 0.0],
+                [0.5, -0.6666666666666666, 0.0],
+                [-0.166666666666666, -0.66666666666666, 0.0],
+                [-0.166666666666666, -0.66666666666666, 0.0],
+                [-0.27777777777777, -0.77777777777777, 0.0],
+                [-0.38888888888888, -0.88888888888888, 0.0],
+                [-0.5, -1.0, 0.0],
+                [-0.5, -1.0, 0.0],
+                [-0.5, -0.333333333333, 0.0],
+                [-0.5, 0.3333333333333, 0.0],
+                [-0.5, 1.0, 0.0],
+                [-0.5, 1.0, 0.0],
+                [-0.38888888888888, 0.8888888888888, 0.0],
+                [-0.27777777777777, 0.7777777777777, 0.0],
+                [-0.16666666666666, 0.6666666666666, 0.0],
+            ]
+        ),
+        decimal=5,
+    )
+
+
+def test_closed_path_does_not_have_extra_point():
+    # This dash.svg is the output of a "-" as generated from LaTex.
+    # It ends back where it starts, so we shouldn't see a final line.
+    svg = SVGMobject(
+        get_svg_resource("dash.svg"),
+    )
+    assert len(svg.points) == 0, svg.points
+    assert len(svg.submobjects) == 1, svg.submobjects
+    dash = svg.submobjects[0]
+    np.testing.assert_almost_equal(
+        dash.points,
+        np.array(
+            [
+                [13.524988331417841, -1.0, 0],
+                [14.374988080480586, -1.0, 0],
+                [15.274984567359079, -1.0, 0],
+                [15.274984567359079, 0.0, 0.0],
+                [15.274984567359079, 0.0, 0.0],
+                [15.274984567359079, 1.0, 0.0],
+                [14.374988080480586, 1.0, 0.0],
+                [13.524988331417841, 1.0, 0.0],
+                [13.524988331417841, 1.0, 0.0],
+                [4.508331116720995, 1.0, 0],
+                [-4.508326097975995, 1.0, 0.0],
+                [-13.524983312672841, 1.0, 0.0],
+                [-13.524983312672841, 1.0, 0.0],
+                [-14.374983061735586, 1.0, 0.0],
+                [-15.274984567359079, 1.0, 0.0],
+                [-15.274984567359079, 0.0, 0.0],
+                [-15.274984567359079, 0.0, 0.0],
+                [-15.274984567359079, -1.0, 0],
+                [-14.374983061735586, -1.0, 0],
+                [-13.524983312672841, -1.0, 0],
+                [-13.524983312672841, -1.0, 0],
+                [-4.508326097975995, -1.0, 0],
+                [4.508331116720995, -1.0, 0],
+                [13.524988331417841, -1.0, 0],
+            ]
+        ),
+        decimal=5,
+    )

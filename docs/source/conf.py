@@ -35,7 +35,6 @@ author = "The Manim Community Dev Team"
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
-    "recommonmark",
     "sphinx_copybutton",
     "sphinx.ext.napoleon",
     "sphinx.ext.autosummary",
@@ -47,6 +46,7 @@ extensions = [
     "sphinx.ext.graphviz",
     "sphinx.ext.inheritance_diagram",
     "sphinxcontrib.programoutput",
+    "myst_parser",
 ]
 
 # Automatically generate stub pages when using the .. autosummary directive
@@ -99,6 +99,10 @@ html_favicon = str(Path("_static/favicon.ico"))
 html_static_path = ["_static"]
 
 html_theme_options = {
+    "source_repository": "https://github.com/ManimCommunity/manim/",
+    "source_branch": "main",
+    "source_directory": "docs/source/",
+    "top_of_page_button": None,
     "light_logo": "manim-logo-sidebar.svg",
     "dark_logo": "manim-logo-sidebar-dark.svg",
     "light_css_variables": {
@@ -134,14 +138,16 @@ html_css_files = ["custom.css"]
 
 # external links
 extlinks = {
-    "issue": ("https://github.com/ManimCommunity/manim/issues/%s", "#"),
-    "pr": ("https://github.com/ManimCommunity/manim/pull/%s", "#"),
+    "issue": ("https://github.com/ManimCommunity/manim/issues/%s", "#%s"),
+    "pr": ("https://github.com/ManimCommunity/manim/pull/%s", "#%s"),
 }
 
 # opengraph settings
-ogp_image = "https://www.manim.community/logo.png"
 ogp_site_name = "Manim Community | Documentation"
 ogp_site_url = "https://docs.manim.community/"
+ogp_social_cards = {
+    "image": "_static/logo.png",
+}
 
 
 # inheritance_graph settings

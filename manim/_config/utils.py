@@ -6,7 +6,7 @@ height/width, frame rate), output (e.g. directories, logging), styling
 (e.g. background color, transparency), and general behavior (e.g. writing a
 movie vs writing a single frame).
 
-See :doc:`/tutorials/configuration` for an introduction to Manim's configuration system.
+See :doc:`/guides/configuration` for an introduction to Manim's configuration system.
 
 """
 from __future__ import annotations
@@ -27,6 +27,7 @@ import colour
 import numpy as np
 
 from .. import constants
+from ..constants import RendererType
 from ..utils.tex import TexTemplate, TexTemplateFromFile
 from ..utils.tex_templates import TexTemplateLibrary
 
@@ -74,7 +75,9 @@ def config_file_paths() -> list[Path]:
     return [library_wide, user_wide, folder_wide]
 
 
-def make_config_parser(custom_file: str = None) -> configparser.ConfigParser:
+def make_config_parser(
+    custom_file: str | os.PathLike | None = None,
+) -> configparser.ConfigParser:
     """Make a :class:`ConfigParser` object and load any ``.cfg`` files.
 
     The user-wide file, if it exists, overrides the library-wide file.  The
@@ -85,7 +88,7 @@ def make_config_parser(custom_file: str = None) -> configparser.ConfigParser:
 
     Parameters
     ----------
-    custom_file : :class:`str`
+    custom_file
         Path to a custom config file.  If used, the folder-wide file in the
         relevant directory will be ignored, if it exists.  If None, the
         folder-wide file will be used, if it exists.
@@ -108,10 +111,10 @@ def make_config_parser(custom_file: str = None) -> configparser.ConfigParser:
     # read_file() before calling read() for any optional files."
     # https://docs.python.org/3/library/configparser.html#configparser.ConfigParser.read
     parser = configparser.ConfigParser()
-    with open(library_wide) as file:
+    with library_wide.open() as file:
         parser.read_file(file)  # necessary file
 
-    other_files = [user_wide, custom_file if custom_file else folder_wide]
+    other_files = [user_wide, Path(custom_file) if custom_file else folder_wide]
     parser.read(other_files)  # optional files
 
     return parser
@@ -150,12 +153,22 @@ class ManimConfig(MutableMapping):
 
     Examples
     --------
+    We use a copy of the global configuration object in the following
+    examples for the sake of demonstration; you can skip these lines
+    and just import ``config`` directly if you actually want to modify
+    the configuration:
+
+    .. code-block:: pycon
+
+        >>> from manim import config as global_config
+        >>> config = global_config.copy()
+
     Each config option allows for dict syntax and attribute syntax.  For
     example, the following two lines are equivalent,
 
     .. code-block:: pycon
 
-        >>> from manim import config, WHITE
+        >>> from manim import WHITE
         >>> config.background_color = WHITE
         >>> config["background_color"] = WHITE
 
@@ -242,6 +255,7 @@ class ManimConfig(MutableMapping):
         "dry_run",
         "enable_wireframe",
         "ffmpeg_loglevel",
+        "ffmpeg_executable",
         "format",
         "flush_cache",
         "frame_height",
@@ -275,11 +289,11 @@ class ManimConfig(MutableMapping):
         "scene_names",
         "show_in_file_browser",
         "tex_dir",
+        "tex_template",
         "tex_template_file",
         "text_dir",
         "upto_animation_number",
         "renderer",
-        "use_opengl_renderer",
         "enable_gui",
         "gui_location",
         "use_projection_fill_shaders",
@@ -328,7 +342,7 @@ class ManimConfig(MutableMapping):
 
         Parameters
         ----------
-        obj : Union[:class:`ManimConfig`, :class:`dict`]
+        obj
             The object to copy values from.
 
         Returns
@@ -350,6 +364,8 @@ class ManimConfig(MutableMapping):
 
         if isinstance(obj, ManimConfig):
             self._d.update(obj._d)
+            if obj.tex_template:
+                self.tex_template = obj.tex_template
 
         elif isinstance(obj, dict):
             # First update the underlying _d, then update other properties
@@ -408,6 +424,31 @@ class ManimConfig(MutableMapping):
             self._d[key] = val
         else:
             raise ValueError(f"attempted to set {key} to {val}; must be in {values}")
+
+    def _set_from_enum(self, key: str, enum_value: Any, enum_class: EnumMeta) -> None:
+        """Set ``key`` to the enum object with value ``enum_value`` in the given
+        ``enum_class``.
+
+        Tests::
+
+            >>> from enum import Enum
+            >>> class Fruit(Enum):
+            ...     APPLE = 1
+            ...     BANANA = 2
+            ...     CANTALOUPE = 3
+            >>> test_config = ManimConfig()
+            >>> test_config._set_from_enum("fruit", 1, Fruit)
+            >>> test_config._d['fruit']
+            <Fruit.APPLE: 1>
+            >>> test_config._set_from_enum("fruit", Fruit.BANANA, Fruit)
+            >>> test_config._d['fruit']
+            <Fruit.BANANA: 2>
+            >>> test_config._set_from_enum("fruit", 42, Fruit)
+            Traceback (most recent call last):
+            ...
+            ValueError: 42 is not a valid Fruit
+        """
+        self._d[key] = enum_class(enum_value)
 
     def _set_boolean(self, key: str | int, val: Any) -> None:
         """Set ``key`` to ``val`` if ``val`` is Boolean."""
@@ -474,7 +515,7 @@ class ManimConfig(MutableMapping):
 
         Parameters
         ----------
-        parser : :class:`ConfigParser`
+        parser
             An object reflecting the contents of one or many ``.cfg`` files.  In
             particular, it may reflect the contents of multiple files that have
             been parsed in a cascading fashion.
@@ -533,7 +574,6 @@ class ManimConfig(MutableMapping):
             "disable_caching_warning",
             "flush_cache",
             "custom_folders",
-            "use_opengl_renderer",
             "enable_gui",
             "fullscreen",
             "use_projection_fill_shaders",
@@ -623,6 +663,10 @@ class ManimConfig(MutableMapping):
         if val:
             self.ffmpeg_loglevel = val
 
+        # TODO: Fix the mess above and below
+        val = parser["ffmpeg"].get("ffmpeg_executable")
+        setattr(self, "ffmpeg_executable", val)
+
         try:
             val = parser["jupyter"].getboolean("media_embed")
         except ValueError:
@@ -644,7 +688,7 @@ class ManimConfig(MutableMapping):
 
         Parameters
         ----------
-        args : :class:`argparse.Namespace`
+        args
             An object returned by :func:`.main_utils.parse_args()`.
 
         Returns
@@ -704,7 +748,6 @@ class ManimConfig(MutableMapping):
             "verbosity",
             "renderer",
             "background_color",
-            "use_opengl_renderer",
             "enable_gui",
             "fullscreen",
             "use_projection_fill_shaders",
@@ -781,7 +824,10 @@ class ManimConfig(MutableMapping):
         if args.tex_template:
             self.tex_template = TexTemplateFromFile(tex_filename=args.tex_template)
 
-        if self.renderer == "opengl" and getattr(args, "write_to_movie") is None:
+        if (
+            self.renderer == RendererType.OPENGL
+            and getattr(args, "write_to_movie") is None
+        ):
             # --write_to_movie was not passed on the command line, so don't generate video.
             self["write_to_movie"] = False
 
@@ -791,7 +837,7 @@ class ManimConfig(MutableMapping):
 
         return self
 
-    def digest_file(self, filename: str) -> ManimConfig:
+    def digest_file(self, filename: str | os.PathLike) -> ManimConfig:
         """Process the config options present in a ``.cfg`` file.
 
         This method processes a single ``.cfg`` file, whereas
@@ -800,7 +846,7 @@ class ManimConfig(MutableMapping):
 
         Parameters
         ----------
-        filename : :class:`str`
+        filename
             Path to the ``.cfg`` file.
 
         Returns
@@ -822,11 +868,11 @@ class ManimConfig(MutableMapping):
         multiple times.
 
         """
-        if not os.path.isfile(filename):
+        if not Path(filename).is_file():
             raise FileNotFoundError(
                 errno.ENOENT,
                 "Error: --config_file could not find a valid config file.",
-                filename,
+                str(filename),
             )
 
         return self.digest_parser(make_config_parser(filename))
@@ -955,6 +1001,12 @@ class ManimConfig(MutableMapping):
             ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
         ),
         doc="Verbosity level of ffmpeg (no flag).",
+    )
+
+    ffmpeg_executable = property(
+        lambda self: self._d["ffmpeg_executable"],
+        lambda self, val: self._set_str("ffmpeg_executable", val),
+        doc="Manually specify the path to the ffmpeg executable",
     )
 
     media_embed = property(
@@ -1120,7 +1172,7 @@ class ManimConfig(MutableMapping):
         keys = ["pixel_width", "pixel_height", "frame_rate"]
         q = {k: self[k] for k in keys}
         for qual in constants.QUALITIES:
-            if all([q[k] == constants.QUALITIES[qual][k] for k in keys]):
+            if all(q[k] == constants.QUALITIES[qual][k] for k in keys):
                 return qual
         return None
 
@@ -1160,12 +1212,40 @@ class ManimConfig(MutableMapping):
 
     @property
     def renderer(self):
-        """Renderer: "cairo", "opengl"""
+        """The currently active renderer.
+
+        Populated with one of the available renderers in :class:`.RendererType`.
+
+        Tests::
+
+            >>> test_config = ManimConfig()
+            >>> test_config.renderer is None  # a new ManimConfig is unpopulated
+            True
+            >>> test_config.renderer = 'opengl'
+            >>> test_config.renderer
+            <RendererType.OPENGL: 'opengl'>
+            >>> test_config.renderer = 42
+            Traceback (most recent call last):
+            ...
+            ValueError: 42 is not a valid RendererType
+
+        Check that capitalization of renderer types is irrelevant::
+
+            >>> test_config.renderer = 'OpenGL'
+            >>> test_config.renderer = 'cAirO'
+        """
         return self._d["renderer"]
 
     @renderer.setter
-    def renderer(self, val: str) -> None:
-        """Renderer for animations."""
+    def renderer(self, val: str | RendererType) -> None:
+        """The setter of the renderer property.
+
+        Takes care of switching inheritance bases using the
+        :class:`.ConvertToOpenGL` metaclass.
+        """
+        if isinstance(val, str):
+            val = val.lower()
+        renderer = RendererType(val)
         try:
             from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
             from manim.mobject.opengl.opengl_mobject import OpenGLMobject
@@ -1175,7 +1255,7 @@ class ManimConfig(MutableMapping):
             from ..mobject.types.vectorized_mobject import VMobject
 
             for cls in ConvertToOpenGL._converted_classes:
-                if val == "opengl":
+                if renderer == RendererType.OPENGL:
                     conversion_dict = {
                         Mobject: OpenGLMobject,
                         VMobject: OpenGLVMobject,
@@ -1197,26 +1277,7 @@ class ManimConfig(MutableMapping):
             # can just do nothing.
             pass
 
-        self._set_from_list(
-            "renderer",
-            val,
-            ["cairo", "opengl"],
-        )
-
-    @property
-    def use_opengl_renderer(self):
-        """Whether or not to use the OpenGL renderer."""
-        return self._d["use_opengl_renderer"]
-
-    @use_opengl_renderer.setter
-    def use_opengl_renderer(self, val: bool) -> None:
-        self._d["use_opengl_renderer"] = val
-        if val:
-            self._set_from_list(
-                "renderer",
-                "opengl",
-                ["cairo", "opengl"],
-            )
+        self._set_from_enum("renderer", renderer, RendererType)
 
     media_dir = property(
         lambda self: self._d["media_dir"],
@@ -1290,11 +1351,11 @@ class ManimConfig(MutableMapping):
 
         Parameters
         ----------
-        key : :class:`str`
+        key
             The config option to be resolved.  Must be an option ending in
             ``'_dir'``, for example ``'media_dir'`` or ``'video_dir'``.
 
-        kwargs : :class:`str`
+        kwargs
             Any strings to be used when resolving the directory.
 
         Returns
@@ -1326,7 +1387,8 @@ class ManimConfig(MutableMapping):
 
         .. code-block:: pycon
 
-            >>> from manim import config
+            >>> from manim import config as globalconfig
+            >>> config = globalconfig.copy()
             >>> config.tex_dir
             '{media_dir}/Tex'
             >>> config.media_dir
@@ -1516,9 +1578,9 @@ class ManimConfig(MutableMapping):
         if not hasattr(self, "_tex_template") or not self._tex_template:
             fn = self._d["tex_template_file"]
             if fn:
-                self._tex_template = TexTemplateFromFile(filename=fn)
+                self._tex_template = TexTemplateFromFile(tex_filename=fn)
             else:
-                self._tex_template = TexTemplateLibrary.default.copy()
+                self._tex_template = TexTemplate()
         return self._tex_template
 
     @tex_template.setter
@@ -1540,10 +1602,8 @@ class ManimConfig(MutableMapping):
                 )
             else:
                 self._d["tex_template_file"] = Path(val)
-                self._tex_template = TexTemplateFromFile(filename=val)
         else:
             self._d["tex_template_file"] = val  # actually set the falsy value
-            self._tex_template = TexTemplate()  # but don't use it
 
     @property
     def plugins(self):

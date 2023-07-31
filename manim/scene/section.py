@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import os
 from enum import Enum
+from pathlib import Path
 from typing import Any
 
 from manim import get_video_metadata
@@ -33,7 +33,7 @@ class DefaultSectionType(str, Enum):
 
 class Section:
     """A :class:`.Scene` can be segmented into multiple Sections.
-    Refer to :doc:`the documentation</tutorials/a_deeper_look>` for more info.
+    Refer to :doc:`the documentation</tutorials/output_and_config>` for more info.
     It consists of multiple animations.
 
     Attributes
@@ -76,7 +76,7 @@ class Section:
         """Return all partial movie files that are not ``None``."""
         return [el for el in self.partial_movie_files if el is not None]
 
-    def get_dict(self, sections_dir: str) -> dict[str, Any]:
+    def get_dict(self, sections_dir: Path) -> dict[str, Any]:
         """Get dictionary representation with metadata of output video.
 
         The output from this function is used from every section to build the sections index file.
@@ -88,7 +88,7 @@ class Section:
                 f"Section '{self.name}' cannot be exported as dict, it does not have a video path assigned to it"
             )
 
-        video_metadata = get_video_metadata(os.path.join(sections_dir, self.video))
+        video_metadata = get_video_metadata(sections_dir / self.video)
         return dict(
             {
                 "name": self.name,

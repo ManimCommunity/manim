@@ -6,10 +6,11 @@ from __future__ import annotations
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 
 from .. import config, logger
+from ..constants import RendererType
 from ..mobject import mobject
 from ..mobject.mobject import Mobject
 from ..mobject.opengl import opengl_mobject
-from ..utils.rate_functions import smooth
+from ..utils.rate_functions import linear, smooth
 
 __all__ = ["Animation", "Wait", "override_animation"]
 
@@ -149,7 +150,7 @@ class Animation:
         self.suspend_mobject_updating: bool = suspend_mobject_updating
         self.lag_ratio: float = lag_ratio
         self._on_finish: Callable[[Scene], None] = _on_finish
-        if config["renderer"] == "opengl":
+        if config["renderer"] == RendererType.OPENGL:
             self.starting_mobject: OpenGLMobject = OpenGLMobject()
             self.mobject: OpenGLMobject = (
                 mobject if mobject is not None else OpenGLMobject()
@@ -265,7 +266,7 @@ class Animation:
         return self.mobject, self.starting_mobject
 
     def get_all_families_zipped(self) -> Iterable[tuple]:
-        if config["renderer"] == "opengl":
+        if config["renderer"] == RendererType.OPENGL:
             return zip(*(mob.get_family() for mob in self.get_all_mobjects()))
         return zip(
             *(mob.family_members_with_points() for mob in self.get_all_mobjects())
@@ -415,9 +416,9 @@ class Animation:
 
         Parameters
         ----------
-        run_time
-            The new time the animation should take in seconds.
-
+        rate_func
+            The new function defining the animation progress based on the
+            relative runtime (see :mod:`~.rate_functions`).
 
         Returns
         -------
@@ -456,7 +457,7 @@ class Animation:
         return self
 
     def is_remover(self) -> bool:
-        """Test if a the animation is a remover.
+        """Test if the animation is a remover.
 
         Returns
         -------
@@ -466,7 +467,7 @@ class Animation:
         return self.remover
 
     def is_introducer(self) -> bool:
-        """Test if a the animation is an introducer.
+        """Test if the animation is an introducer.
 
         Returns
         -------
@@ -527,8 +528,8 @@ class Wait(Animation):
     stop_condition
         A function without positional arguments that evaluates to a boolean.
         The function is evaluated after every new frame has been rendered.
-        Playing the animation only stops after the return value is truthy.
-        Overrides the specified ``run_time``.
+        Playing the animation stops after the return value is truthy, or
+        after the specified ``run_time`` has passed.
     frozen_frame
         Controls whether or not the wait animation is static, i.e., corresponds
         to a frozen frame. If ``False`` is passed, the render loop still
@@ -545,6 +546,7 @@ class Wait(Animation):
         run_time: float = 1,
         stop_condition: Callable[[], bool] | None = None,
         frozen_frame: bool | None = None,
+        rate_func: Callable[[float], float] = linear,
         **kwargs,
     ):
         if stop_condition and frozen_frame:
@@ -553,7 +555,7 @@ class Wait(Animation):
         self.duration: float = run_time
         self.stop_condition = stop_condition
         self.is_static_wait: bool = frozen_frame
-        super().__init__(None, run_time=run_time, **kwargs)
+        super().__init__(None, run_time=run_time, rate_func=rate_func, **kwargs)
         # quick fix to work in opengl setting:
         self.mobject.shader_wrapper_list = []
 

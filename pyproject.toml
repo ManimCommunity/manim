@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "manim"
-version = "0.15.1"
+version = "0.17.3"
 description = "Animation engine for explanatory math videos."
 authors = ["The Manim Community Developers <contact@manim.community>", "3b1b <grant@3blue1brown.com>"]
 license="MIT"
@@ -14,10 +14,10 @@ classifiers= [
     "Topic :: Scientific/Engineering",
     "Topic :: Multimedia :: Video",
     "Topic :: Multimedia :: Graphics",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "Natural Language :: English",
     ]
 exclude = ["scripts/","logo/","readme-assets/"]
@@ -26,26 +26,27 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.7,<3.11"
-click = ">=7.1<=9.0"
+python = ">=3.8,<3.12"
+click = ">=7.2,<=9.0"
 click-default-group = "^1.2.2"
 colour = "^0.1.5"
-numpy = "^1.9"
-Pillow = ">=8.4,<10.0"
+numpy = "^1.19"
+Pillow = ">=9.1,<10.0"
 scipy = "^1.7.3"
 tqdm = "^4.62.3"
 pydub = "^0.25.1"
 rich = ">=6.0,!=12.0.0"
-pycairo = "^1.19"
+pycairo = "^1.21"
 manimpango = "^0.4.0.post0"
 networkx = "^2.5"
 decorator = "^5.0.7"
 importlib-metadata = { version = "^4.10.0", python = "<3.8" }
 watchdog = "^2.1.6"
 jupyterlab = { version = "^3.0", optional = true }
+notebook = { version = "^6.4", optional = true }
 moderngl = "^5.6.3"
 moderngl-window = "^2.3.0"
-mapbox-earcut = "^0.12.10"
+mapbox-earcut = "^1.0.0"
 cloup = "^0.13.0"
 requests = "^2.26.0"
 dearpygui = { version = "^1.3.1", optional = true }
@@ -54,20 +55,21 @@ isosurfaces = "0.1.0"
 srt = "^3.5.0"
 screeninfo = "^0.8"
 Pygments = "^2.10.0"
-"backports.cached-property" = "^1.0.1"
+"backports.cached-property" = { version = "^1.0.1", python = "<3.8" }
+svgelements = "^1.8.0"
 
 [tool.poetry.extras]
-jupyterlab = ["jupyterlab"]
+jupyterlab = ["jupyterlab", "notebook"]
 gui = ["dearpygui"]
 
 [tool.poetry.dev-dependencies]
 pytest-cov = "^3.0.0"
-pytest = "^6.0"
+pytest = "^7.2"
 pylint = "^2.12.2"
 Sphinx = "^4"
 sphinx-copybutton = "^0.4.0"
-sphinxext-opengraph = "^0.5.1"
-furo = "^2021.11.23"
+sphinxext-opengraph = "^0.8"
+furo = "^2022.06.21"
 recommonmark = "^0.7.1"
 matplotlib = "^3.3.2"
 pre-commit = "^2.11.1"
@@ -94,6 +96,7 @@ sphinxcontrib-programoutput = "^0.17"
 data-science-types = "^0.2.23"
 psutil-wheels = {version = "5.8.0", python = ">=3.10"}
 psutil = {version = "^5.8.0", python = "<3.10"}
+myst-parser = "^0.17.2"
 
 
 [tool.poetry.urls]
@@ -110,7 +113,7 @@ markers = "platform_python_implementation == 'CPython'"
 
 [tool.pytest.ini_options]
 markers = "slow: Mark the test as slow. Can be skipped with --skip_slow"
-addopts = "--no-cov-on-fail --cov=manim --cov-report xml --cov-report term -n auto --dist=loadfile"
+addopts = "--no-cov-on-fail --cov=manim --cov-report xml --cov-report term -n auto --dist=loadfile --durations=0"
 
 [tool.isort]
 # from https://black.readthedocs.io/en/stable/compatible_configs.html

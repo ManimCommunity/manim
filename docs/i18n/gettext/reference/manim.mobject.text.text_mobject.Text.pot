@@ -31,34 +31,34 @@ msgid "Parameters"
 msgstr ""
 
 #: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.Text:6
-msgid "The text that need to created as mobject."
+msgid "The text that needs to be created as a mobject."
 msgstr ""
 
 #: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.Text:0
 msgid "Returns"
 msgstr ""
 
-#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.Text:9
-msgid "The mobject like :class:`.VGroup`."
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.Text:8
+msgid "The mobject-like :class:`.VGroup`."
 msgstr ""
 
 #: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.Text:0
 msgid "Return type"
 msgstr ""
 
-#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.Text:13
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.Text:12
 msgid "Examples"
 msgstr ""
 
-#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.Text:62
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.Text:61
 msgid "As :class:`Text` uses Pango to render text, rendering non-English characters is easily possible:"
 msgstr ""
 
-#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.Text:95
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.Text:94
 msgid "Tests"
 msgstr ""
 
-#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.Text:96
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.Text:95
 msgid "Check that the creation of :class:`~.Text` works::"
 msgstr ""
 

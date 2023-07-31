@@ -54,50 +54,54 @@ msgid "Examples"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig:25
+msgid "We use a copy of the global configuration object in the following examples for the sake of demonstration; you can skip these lines and just import ``config`` directly if you actually want to modify the configuration:"
+msgstr ""
+
+#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig:35
 msgid "Each config option allows for dict syntax and attribute syntax.  For example, the following two lines are equivalent,"
 msgstr ""
 
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig:34
+#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig:44
 msgid "The former is preferred; the latter is provided mostly for backwards compatibility."
 msgstr ""
 
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig:37
+#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig:47
 msgid "The config options are designed to keep internal consistency.  For example, setting ``frame_y_radius`` will affect ``frame_height``:"
 msgstr ""
 
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig:48
+#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig:58
 msgid "There are many ways of interacting with config options.  Take for example the config option ``background_color``.  There are three ways to change it: via a config file, via CLI flags, or programmatically."
 msgstr ""
 
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig:52
+#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig:62
 msgid "To set the background color via a config file, save the following ``manim.cfg`` file with the following contents."
 msgstr ""
 
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig:60
+#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig:70
 msgid "In order to have this ``.cfg`` file apply to a manim scene, it needs to be placed in the same directory as the script,"
 msgstr ""
 
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig:69
+#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig:79
 msgid "Now, when the user executes"
 msgstr ""
 
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig:75
+#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig:85
 msgid "the background of the scene will be set to ``WHITE``.  This applies regardless of where the manim command is invoked from."
 msgstr ""
 
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig:78
+#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig:88
 msgid "Command line arguments override ``.cfg`` files.  In the previous example, executing"
 msgstr ""
 
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig:85
+#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig:95
 msgid "will set the background color to BLUE, regardless of the contents of ``manim.cfg``."
 msgstr ""
 
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig:88
+#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig:98
 msgid "Finally, any programmatic changes made within the scene script itself will override the command line arguments.  For example, if ``scene.py`` contains the following"
 msgstr ""
 
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig:101
+#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig:111
 msgid "the background color will be set to RED, regardless of the contents of ``manim.cfg`` or the CLI arguments used when invoking manim."
 msgstr ""
 
@@ -194,6 +198,11 @@ msgstr ""
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.enable_wireframe:1
 msgid "Enable wireframe debugging mode in opengl."
+msgstr ""
+
+#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
+#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.ffmpeg_executable:1
+msgid "Manually specify the path to the ffmpeg executable"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
@@ -348,7 +357,7 @@ msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.renderer:1
-msgid "\"cairo\", \"opengl\", \"webgl"
+msgid "\"cairo\", \"opengl"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
@@ -436,22 +445,12 @@ msgid "Use shaders for OpenGLVMobject stroke which are compatible with transform
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.use_webgl_renderer:1
-msgid "Whether or not to use WebGL renderer."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.verbosity:1
 msgid "Logger verbosity; \"DEBUG\", \"INFO\", \"WARNING\", \"ERROR\", or \"CRITICAL\" (-v)."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 msgid "Directory to place videos (no flag)."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.webgl_renderer_path:1
-msgid "Path to WebGL renderer."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
@@ -597,23 +596,23 @@ msgstr ""
 msgid "The value of ``config.tex_dir`` is ``'{media_dir}/Tex'`` by default, i.e. it is a subfolder of wherever ``config.media_dir`` is located.  In order to get the *actual* directory, use :meth:`~ManimConfig.get_dir`."
 msgstr ""
 
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.get_dir:40
+#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.get_dir:41
 msgid "Resolving directories is done in a lazy way, at the last possible moment, to reflect any changes in other config options:"
 msgstr ""
 
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.get_dir:49
+#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.get_dir:50
 msgid "Some directories depend on information that is not available to :class:`ManimConfig`. For example, the default value of `video_dir` includes the name of the input file and the video quality (e.g. 480p15). This informamtion has to be supplied via ``kwargs``:"
 msgstr ""
 
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.get_dir:64
+#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.get_dir:65
 msgid "Note the quality does not need to be passed as keyword argument since :class:`ManimConfig` does store information about quality."
 msgstr ""
 
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.get_dir:67
+#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.get_dir:68
 msgid "Directories may be recursively defined.  For example, the config option ``partial_movie_dir`` depends on ``video_dir``, which in turn depends on ``media_dir``:"
 msgstr ""
 
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.get_dir:83
+#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.get_dir:84
 msgid "Standard f-string syntax is used.  Arbitrary names can be used when defining directories, as long as the corresponding values are passed to :meth:`ManimConfig.get_dir` via ``kwargs``."
 msgstr ""
 

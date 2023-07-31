@@ -8,6 +8,9 @@ __all__ = [
     "ArrowCircleTip",
     "ArrowSquareTip",
     "ArrowSquareFilledTip",
+    "ArrowTriangleTip",
+    "ArrowTriangleFilledTip",
+    "StealthTip",
 ]
 
 import numpy as np
@@ -30,6 +33,7 @@ class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
         :class:`ArrowCircleFilledTip`
         :class:`ArrowSquareTip`
         :class:`ArrowSquareFilledTip`
+        :class:`StealthTip`
 
     Examples
     --------
@@ -72,23 +76,34 @@ class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
     .. manim:: ArrowTipsShowcase
         :save_last_frame:
 
-        from manim.mobject.geometry.tips import ArrowTriangleTip,\
-                                                ArrowSquareTip, ArrowSquareFilledTip,\
-                                                ArrowCircleTip, ArrowCircleFilledTip
         class ArrowTipsShowcase(Scene):
             def construct(self):
-                a00 = Arrow(start=[-2, 3, 0], end=[2, 3, 0], color=YELLOW)
-                a11 = Arrow(start=[-2, 2, 0], end=[2, 2, 0], tip_shape=ArrowTriangleTip)
-                a12 = Arrow(start=[-2, 1, 0], end=[2, 1, 0])
-                a21 = Arrow(start=[-2, 0, 0], end=[2, 0, 0], tip_shape=ArrowSquareTip)
-                a22 = Arrow([-2, -1, 0], [2, -1, 0], tip_shape=ArrowSquareFilledTip)
-                a31 = Arrow([-2, -2, 0], [2, -2, 0], tip_shape=ArrowCircleTip)
-                a32 = Arrow([-2, -3, 0], [2, -3, 0], tip_shape=ArrowCircleFilledTip)
-                b11 = a11.copy().scale(0.5, scale_tips=True).next_to(a11, RIGHT)
-                b12 = a12.copy().scale(0.5, scale_tips=True).next_to(a12, RIGHT)
-                b21 = a21.copy().scale(0.5, scale_tips=True).next_to(a21, RIGHT)
-                self.add(a00, a11, a12, a21, a22, a31, a32, b11, b12, b21)
+                tip_names = [
+                    'Default (YELLOW)', 'ArrowTriangleTip', 'Default', 'ArrowSquareTip',
+                    'ArrowSquareFilledTip', 'ArrowCircleTip', 'ArrowCircleFilledTip', 'StealthTip'
+                ]
 
+                big_arrows = [
+                    Arrow(start=[-4, 3.5, 0], end=[2, 3.5, 0], color=YELLOW),
+                    Arrow(start=[-4, 2.5, 0], end=[2, 2.5, 0], tip_shape=ArrowTriangleTip),
+                    Arrow(start=[-4, 1.5, 0], end=[2, 1.5, 0]),
+                    Arrow(start=[-4, 0.5, 0], end=[2, 0.5, 0], tip_shape=ArrowSquareTip),
+
+                    Arrow([-4, -0.5, 0], [2, -0.5, 0], tip_shape=ArrowSquareFilledTip),
+                    Arrow([-4, -1.5, 0], [2, -1.5, 0], tip_shape=ArrowCircleTip),
+                    Arrow([-4, -2.5, 0], [2, -2.5, 0], tip_shape=ArrowCircleFilledTip),
+                    Arrow([-4, -3.5, 0], [2, -3.5, 0], tip_shape=StealthTip)
+                ]
+
+                small_arrows = (
+                    arrow.copy().scale(0.5, scale_tips=True).next_to(arrow, RIGHT) for arrow in big_arrows
+                )
+
+                labels = (
+                    Text(tip_names[i], font='monospace', font_size=20, color=BLUE).next_to(big_arrows[i], LEFT) for i in range(len(big_arrows))
+                )
+
+                self.add(*big_arrows, *small_arrows, *labels)
     """
 
     def __init__(self, *args, **kwargs):
@@ -177,6 +192,47 @@ class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
         return np.linalg.norm(self.vector)
 
 
+class StealthTip(ArrowTip):
+    r"""'Stealth' fighter / kite arrow shape.
+
+    Naming is inspired by the corresponding
+    `TikZ arrow shape <https://tikz.dev/tikz-arrows#sec-16.3>`__.
+    """
+
+    def __init__(
+        self,
+        fill_opacity=1,
+        stroke_width=3,
+        length=DEFAULT_ARROW_TIP_LENGTH / 2,
+        start_angle=PI,
+        **kwargs,
+    ):
+        self.start_angle = start_angle
+        VMobject.__init__(
+            self, fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
+        )
+        self.set_points_as_corners(
+            [
+                [2, 0, 0],  # tip
+                [-1.2, 1.6, 0],
+                [0, 0, 0],  # base
+                [-1.2, -1.6, 0],
+                [2, 0, 0],  # close path, back to tip
+            ]
+        )
+        self.scale(length / self.length)
+
+    @property
+    def length(self):
+        """The length of the arrow tip.
+
+        In this case, the length is computed as the height of
+        the triangle encompassing the stealth tip (otherwise,
+        the tip is scaled too large).
+        """
+        return np.linalg.norm(self.vector) * 1.6
+
+
 class ArrowTriangleTip(ArrowTip, Triangle):
     r"""Triangular arrow tip."""
 
@@ -185,6 +241,7 @@ class ArrowTriangleTip(ArrowTip, Triangle):
         fill_opacity=0,
         stroke_width=3,
         length=DEFAULT_ARROW_TIP_LENGTH,
+        width=DEFAULT_ARROW_TIP_LENGTH,
         start_angle=PI,
         **kwargs,
     ):
@@ -195,8 +252,10 @@ class ArrowTriangleTip(ArrowTip, Triangle):
             start_angle=start_angle,
             **kwargs,
         )
-        self.width = length
-        self.stretch_to_fit_height(length)
+        self.width = width
+
+        self.stretch_to_fit_width(length)
+        self.stretch_to_fit_height(width)
 
 
 class ArrowTriangleFilledTip(ArrowTriangleTip):

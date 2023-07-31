@@ -67,6 +67,7 @@ __all__ = [
     "ShowIncreasingSubsets",
     "SpiralIn",
     "AddTextLetterByLetter",
+    "RemoveTextLetterByLetter",
     "ShowSubmobjectsOneByOne",
     "AddTextWordByWord",
 ]
@@ -84,6 +85,7 @@ if TYPE_CHECKING:
 from manim.mobject.opengl.opengl_surface import OpenGLSurface
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 
+from .. import config
 from ..animation.animation import Animation
 from ..animation.composition import Succession
 from ..constants import TAU
@@ -136,7 +138,7 @@ class Create(ShowPartial):
 
     Parameters
     ----------
-    mobject : :class:`~.VMobject`
+    mobject
         The VMobject to animate.
 
     Raises
@@ -299,7 +301,16 @@ class Write(DrawBorderThenFill):
 
         class ShowWriteReversed(Scene):
             def construct(self):
-                self.play(Write(Text("Hello", font_size=144), reverse=True))
+                self.play(Write(Text("Hello", font_size=144), reverse=True, remover=False))
+
+    Tests
+    -----
+
+    Check that creating empty :class:`.Write` animations works::
+
+        >>> from manim import Write, Text
+        >>> Write(Text(''))
+        Write(Text(''))
     """
 
     def __init__(
@@ -341,7 +352,7 @@ class Write(DrawBorderThenFill):
             else:
                 run_time = 2
         if lag_ratio is None:
-            lag_ratio = min(4.0 / length, 0.2)
+            lag_ratio = min(4.0 / max(1.0, length), 0.2)
         return run_time, lag_ratio
 
     def reverse_submobjects(self) -> None:
@@ -363,7 +374,7 @@ class Unwrite(Write):
 
     Parameters
     ----------
-    reverse : :class:`bool`
+    reverse
         Set True to have the animation start erasing from the last submobject first.
 
     Examples
@@ -393,7 +404,6 @@ class Unwrite(Write):
         reverse: bool = True,
         **kwargs,
     ) -> None:
-
         run_time: float | None = kwargs.pop("run_time", None)
         lag_ratio: float | None = kwargs.pop("lag_ratio", None)
         run_time, lag_ratio = self._set_default_config_from_length(
@@ -459,9 +469,10 @@ class SpiralIn(Animation):
             shape.move_to(shape.initial_position)
             shape.save_state()
 
-        super().__init__(shapes, **kwargs)
+        super().__init__(shapes, introducer=True, **kwargs)
 
     def interpolate_mobject(self, alpha: float) -> None:
+        alpha = self.rate_func(alpha)
         for shape in self.shapes:
             shape.restore()
             shape.save_state()
@@ -494,6 +505,7 @@ class ShowIncreasingSubsets(Animation):
         group: Mobject,
         suspend_mobject_updating: bool = False,
         int_func: Callable[[np.ndarray], np.ndarray] = np.floor,
+        reverse_rate_function=False,
         **kwargs,
     ) -> None:
         self.all_submobs = list(group.submobjects)
@@ -501,17 +513,27 @@ class ShowIncreasingSubsets(Animation):
         for mobj in self.all_submobs:
             mobj.set_opacity(0)
         super().__init__(
-            group, suspend_mobject_updating=suspend_mobject_updating, **kwargs
+            group,
+            suspend_mobject_updating=suspend_mobject_updating,
+            reverse_rate_function=reverse_rate_function,
+            **kwargs,
         )
 
     def interpolate_mobject(self, alpha: float) -> None:
         n_submobs = len(self.all_submobs)
-        index = int(self.int_func(self.rate_func(alpha) * n_submobs))
+        value = (
+            1 - self.rate_func(alpha)
+            if self.reverse_rate_function
+            else self.rate_func(alpha)
+        )
+        index = int(self.int_func(value * n_submobs))
         self.update_submobject_list(index)
 
     def update_submobject_list(self, index: int) -> None:
         for mobj in self.all_submobs[:index]:
             mobj.set_opacity(1)
+        for mobj in self.all_submobs[index:]:
+            mobj.set_opacity(0)
 
 
 class AddTextLetterByLetter(ShowIncreasingSubsets):
@@ -519,7 +541,7 @@ class AddTextLetterByLetter(ShowIncreasingSubsets):
 
     Parameters
     ----------
-    time_per_char : :class:`float`
+    time_per_char
         Frequency of appearance of the letters.
 
     .. tip::
@@ -536,19 +558,64 @@ class AddTextLetterByLetter(ShowIncreasingSubsets):
         rate_func: Callable[[float], float] = linear,
         time_per_char: float = 0.1,
         run_time: float | None = None,
+        reverse_rate_function=False,
+        introducer=True,
         **kwargs,
     ) -> None:
-        # time_per_char must be above 0.06, or the animation won't finish
         self.time_per_char = time_per_char
         if run_time is None:
-            run_time = np.max((0.06, self.time_per_char)) * len(text)
-
+            # minimum time per character is 1/frame_rate, otherwise
+            # the animation does not finish.
+            run_time = np.max((1 / config.frame_rate, self.time_per_char)) * len(text)
         super().__init__(
             text,
             suspend_mobject_updating=suspend_mobject_updating,
             int_func=int_func,
             rate_func=rate_func,
             run_time=run_time,
+            reverse_rate_function=reverse_rate_function,
+            introducer=introducer,
+            **kwargs,
+        )
+
+
+class RemoveTextLetterByLetter(AddTextLetterByLetter):
+    """Remove a :class:`~.Text` letter by letter from the scene.
+
+    Parameters
+    ----------
+    time_per_char
+        Frequency of appearance of the letters.
+
+    .. tip::
+
+        This is currently only possible for class:`~.Text` and not for class:`~.MathTex`
+
+    """
+
+    def __init__(
+        self,
+        text: Text,
+        suspend_mobject_updating: bool = False,
+        int_func: Callable[[np.ndarray], np.ndarray] = np.ceil,
+        rate_func: Callable[[float], float] = linear,
+        time_per_char: float = 0.1,
+        run_time: float | None = None,
+        reverse_rate_function=True,
+        introducer=False,
+        remover=True,
+        **kwargs,
+    ) -> None:
+        super().__init__(
+            text,
+            suspend_mobject_updating=suspend_mobject_updating,
+            int_func=int_func,
+            rate_func=rate_func,
+            time_per_char=time_per_char,
+            run_time=run_time,
+            reverse_rate_function=reverse_rate_function,
+            introducer=introducer,
+            remover=remover,
             **kwargs,
         )
 

@@ -46,10 +46,6 @@ msgstr ""
 msgid "Additional arguments to be passed to the :class:`~.Succession` constructor"
 msgstr ""
 
-#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.FocusOn:0
-msgid "Return type"
-msgstr ""
-
 #: ../../../manim/animation/indication.py:docstring of manim.animation.indication.FocusOn:11
 msgid "Examples"
 msgstr ""

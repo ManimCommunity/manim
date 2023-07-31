@@ -18,39 +18,43 @@ msgstr ""
 msgid "Classes"
 msgstr ""
 
-#: ../../source/reference/manim.animation.creation.rst:38:<autosummary>:1
+#: ../../source/reference/manim.animation.creation.rst:40:<autosummary>:1
 msgid "Show a :class:`~.Text` letter by letter on the scene."
 msgstr ""
 
-#: ../../source/reference/manim.animation.creation.rst:38:<autosummary>:1
+#: ../../source/reference/manim.animation.creation.rst:40:<autosummary>:1
 msgid "Show a :class:`~.Text` word by word on the scene."
 msgstr ""
 
-#: ../../source/reference/manim.animation.creation.rst:38:<autosummary>:1
+#: ../../source/reference/manim.animation.creation.rst:40:<autosummary>:1
 msgid "Incrementally show a VMobject."
 msgstr ""
 
-#: ../../source/reference/manim.animation.creation.rst:38:<autosummary>:1
+#: ../../source/reference/manim.animation.creation.rst:40:<autosummary>:1
 msgid "Draw the border first and then show the fill."
 msgstr ""
 
-#: ../../source/reference/manim.animation.creation.rst:38:<autosummary>:1
+#: ../../source/reference/manim.animation.creation.rst:40:<autosummary>:1
 msgid "Show one submobject at a time, leaving all previous ones displayed on screen."
 msgstr ""
 
-#: ../../source/reference/manim.animation.creation.rst:38:<autosummary>:1
+#: ../../source/reference/manim.animation.creation.rst:40:<autosummary>:1
 msgid "Abstract class for Animations that show the VMobject partially."
 msgstr ""
 
-#: ../../source/reference/manim.animation.creation.rst:38:<autosummary>:1
+#: ../../source/reference/manim.animation.creation.rst:40:<autosummary>:1
 msgid "Show one submobject at a time, removing all previously displayed ones from screen."
 msgstr ""
 
-#: ../../source/reference/manim.animation.creation.rst:38:<autosummary>:1
+#: ../../source/reference/manim.animation.creation.rst:40:<autosummary>:1
+msgid "Create the Mobject with sub-Mobjects flying in on spiral trajectories."
+msgstr ""
+
+#: ../../source/reference/manim.animation.creation.rst:40:<autosummary>:1
 msgid "Like :class:`Create` but in reverse."
 msgstr ""
 
-#: ../../source/reference/manim.animation.creation.rst:38:<autosummary>:1
+#: ../../source/reference/manim.animation.creation.rst:40:<autosummary>:1
 msgid "Simulate erasing by hand a :class:`~.Text` or a :class:`~.VMobject`."
 msgstr ""
 
