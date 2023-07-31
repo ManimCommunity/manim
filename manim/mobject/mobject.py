@@ -1767,7 +1767,7 @@ class Mobject:
         Parameters
         ----------
         colors
-            The colors to use for the gradient. Use like 
+            The colors to use for the gradient. Use like
             ``set_color_by_gradient(RED, BLUE, GREEN)``.
 
         """
