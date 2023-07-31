@@ -17,7 +17,7 @@ is exposed to Manim's global name space):
 List of Color Constants
 -----------------------
 
-These hex values (taken from `https://www.w3schools.com/colors/colors_australia.asp`__)
+These hex values (taken from https://www.w3schools.com/colors/colors_australia.asp)
 are non official approximate values intended to simulate AS 2700 colors:
 
 .. automanimcolormodule:: manim.utils.color.AS2700

@@ -2,7 +2,7 @@
 
 This module contains colors defined in one of the British Standards
 for colors, BS381C. This standard specifies colors used in identification,
-coding, and other special purposes. See `https://www.britishstandardcolour.com/`__
+coding, and other special purposes. See https://www.britishstandardcolour.com/
 for more information.
 
 To use the colors from this list, access them directly from the module (which
@@ -17,7 +17,7 @@ is exposed to Manim's global name space):
 List of Color Constants
 -----------------------
 
-These hex values (taken from `https://www.w3schools.com/colors/colors_british.asp`__)
+These hex values (taken from https://www.w3schools.com/colors/colors_british.asp)
 are non official approximate values intended to simulate the ones defined
 in the standard:
 

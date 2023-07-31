@@ -1763,7 +1763,9 @@ class Mobject:
         return self
 
     def set_color_by_gradient(self, *colors: Iterable[ParsableManimColor]):
-        """
+        """Set the color of this mobject's submobjects along the specified
+        gradient.
+
         Parameters
         ----------
         colors

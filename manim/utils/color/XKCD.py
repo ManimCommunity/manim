@@ -18,7 +18,7 @@ List of Color Constants
 -----------------------
 
 These hex values are non official approximate values intended to simulate the colors in HTML,
-taken from `https://www.w3schools.com/colors/colors_xkcd.asp`__.
+taken from https://www.w3schools.com/colors/colors_xkcd.asp.
 
 .. automanimcolormodule:: manim.utils.color.XKCD
 

@@ -3,7 +3,7 @@
 """X11 Colors
 
 These color and their names (taken from
-`https://www.w3schools.com/colors/colors_x11.asp`__) were developed at the
+https://www.w3schools.com/colors/colors_x11.asp) were developed at the
 Massachusetts Intitute of Technology (MIT) during
 the development of color based computer display system.
 
