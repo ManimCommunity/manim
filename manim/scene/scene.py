@@ -1317,10 +1317,12 @@ class Scene:
             # Allow for calling scene methods without prepending 'self.'.
             local_namespace[method] = embedded_method
 
-        from IPython.terminal.embed import InteractiveShellEmbed
-        from IPython.core.getipython import get_ipython
-        from traitlets.config import Config
         from sqlite3 import connect
+
+        from IPython.core.getipython import get_ipython
+        from IPython.terminal.embed import InteractiveShellEmbed
+        from traitlets.config import Config
+
         cfg = Config()
         cfg.TerminalInteractiveShell.confirm_exit = False
         if get_ipython() is None:
