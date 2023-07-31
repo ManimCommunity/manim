@@ -1318,11 +1318,17 @@ class Scene:
             local_namespace[method] = embedded_method
 
         from IPython.terminal.embed import InteractiveShellEmbed
+        from IPython.core.getipython import get_ipython
         from traitlets.config import Config
-
+        from sqlite3 import connect
         cfg = Config()
         cfg.TerminalInteractiveShell.confirm_exit = False
-        shell = InteractiveShellEmbed(config=cfg)
+        if get_ipython() is None:
+            shell = InteractiveShellEmbed.instance()
+        else:
+            shell = InteractiveShellEmbed(config=cfg)
+        hist = get_ipython().history_manager
+        hist.db = connect(hist.hist_file, check_same_thread=False)
 
         keyboard_thread = threading.Thread(
             target=ipython,
