@@ -3,11 +3,10 @@ from __future__ import annotations
 import sys
 
 import click
-import cloup
+from click_default_group import DefaultGroup
 
-from . import __version__, cli_ctx_settings, console
+from . import __version__, console
 from .cli.cfg.group import cfg
-from .cli.default_group import DefaultGroup
 from .cli.init.commands import init
 from .cli.new.group import new
 from .cli.plugins.commands import plugins
@@ -23,16 +22,12 @@ def exit_early(ctx, param, value):
 console.print(f"Manim Community [green]v{__version__}[/green]\n")
 
 
-@cloup.group(
-    context_settings=cli_ctx_settings,
+@click.group(
     cls=DefaultGroup,
     default="render",
     no_args_is_help=True,
-    help="Animation engine for explanatory math videos.",
-    epilog="See 'manim <command>' to read about a specific subcommand.\n\n"
-    "Note: the subcommand 'manim render' is called if no other subcommand "
-    "is specified. Run 'manim render --help' if you would like to know what the "
-    f"'-ql' or '-p' flags do, for example.\n\n{EPILOG}",
+    help="Animation engine for explanatory math videos",
+    epilog=EPILOG,
 )
 @click.option(
     "--version",

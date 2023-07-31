@@ -11,8 +11,7 @@ import numpy as np
 from manim import config
 from manim.constants import *
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.text.tex_mobject import MathTex, SingleStringMathTex, Tex
-from manim.mobject.text.text_mobject import Text
+from manim.mobject.text.tex_mobject import MathTex, SingleStringMathTex
 from manim.mobject.types.vectorized_mobject import VMobject
 from manim.mobject.value_tracker import ValueTracker
 
@@ -66,7 +65,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         fill_opacity: float = 1.0,
         **kwargs,
     ):
-        super().__init__(**kwargs, stroke_width=stroke_width)
+        super().__init__(**kwargs)
         self.number = number
         self.num_decimal_places = num_decimal_places
         self.include_sign = include_sign
@@ -78,6 +77,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         self.include_background_rectangle = include_background_rectangle
         self.edge_to_fix = edge_to_fix
         self._font_size = font_size
+        self.stroke_width = stroke_width
         self.fill_opacity = fill_opacity
 
         self.initial_config = kwargs.copy()
@@ -173,6 +173,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         return num_string
 
     def _string_to_mob(self, string: str, mob_class: VMobject | None = None, **kwargs):
+
         if mob_class is None:
             mob_class = self.mob_class
 
@@ -250,7 +251,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         for sm1, sm2 in zip(self.submobjects, old_submobjects):
             sm1.match_style(sm2)
 
-        if config.renderer == RendererType.CAIRO:
+        if config.renderer != "opengl":
             for mob in old_family:
                 # Dumb hack...due to how scene handles families
                 # of animated mobjects
@@ -298,21 +299,21 @@ class Variable(VMobject, metaclass=ConvertToOpenGL):
 
     Parameters
     ----------
-    var
+    var : Union[:class:`int`, :class:`float`]
         The initial value you need to keep track of and display.
-    label
+    label : Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`, :class:`~.Text`, :class:`~.TexSymbol`, :class:`~.SingleStringMathTex`]
         The label for your variable. Raw strings are convertex to :class:`~.MathTex` objects.
-    var_type
+    var_type : Union[:class:`DecimalNumber`, :class:`Integer`], optional
         The class used for displaying the number. Defaults to :class:`DecimalNumber`.
-    num_decimal_places
+    num_decimal_places : :class:`int`, optional
         The number of decimal places to display in your variable. Defaults to 2.
         If `var_type` is an :class:`Integer`, this parameter is ignored.
-    kwargs
+    kwargs : Any
             Other arguments to be passed to `~.Mobject`.
 
     Attributes
     ----------
-    label : Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`, :class:`~.Text`, :class:`~.SingleStringMathTex`]
+    label : Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`, :class:`~.Text`, :class:`~.TexSymbol`, :class:`~.SingleStringMathTex`]
         The label for your variable, for example ``x = ...``.
     tracker : :class:`~.ValueTracker`
         Useful in updating the value of your variable on-screen.
@@ -396,13 +397,9 @@ class Variable(VMobject, metaclass=ConvertToOpenGL):
     """
 
     def __init__(
-        self,
-        var: float,
-        label: str | Tex | MathTex | Text | SingleStringMathTex,
-        var_type: DecimalNumber | Integer = DecimalNumber,
-        num_decimal_places: int = 2,
-        **kwargs,
+        self, var, label, var_type=DecimalNumber, num_decimal_places=2, **kwargs
     ):
+
         self.label = MathTex(label) if isinstance(label, str) else label
         equals = MathTex("=").next_to(self.label, RIGHT)
         self.label.add(equals)

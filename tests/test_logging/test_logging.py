@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 from manim import capture
@@ -9,10 +10,14 @@ from ..utils.logging_tester import *
 
 @logs_comparison(
     "BasicSceneLoggingTest.txt",
-    "logs/basic_scenes_square_to_circle_SquareToCircle.log",
+    os.path.join("logs", "basic_scenes_square_to_circle_SquareToCircle.log"),
 )
 def test_logging_to_file(tmp_path, python_version):
-    path_basic_scene = Path("tests/test_logging/basic_scenes_square_to_circle.py")
+    path_basic_scene = os.path.join(
+        "tests",
+        "test_logging",
+        "basic_scenes_square_to_circle.py",
+    )
     command = [
         python_version,
         "-m",
@@ -23,7 +28,7 @@ def test_logging_to_file(tmp_path, python_version):
         "--log_to_file",
         "--media_dir",
         str(tmp_path),
-        str(path_basic_scene),
+        path_basic_scene,
         "SquareToCircle",
     ]
     _, err, exitcode = capture(command)
@@ -49,10 +54,10 @@ def test_error_logging(tmp_path, python_version):
 
 @logs_comparison(
     "bad_tex_scene_BadTex.txt",
-    "logs/bad_tex_scene_BadTex.log",
+    Path("logs/bad_tex_scene_BadTex.log"),
 )
 def test_tex_error_logs(tmp_path, python_version):
-    bad_tex_scene = Path("tests/test_logging/bad_tex_scene.py")
+    bad_tex_scene = os.path.join("tests", "test_logging", "bad_tex_scene.py")
     command = [
         python_version,
         "-m",
@@ -63,7 +68,7 @@ def test_tex_error_logs(tmp_path, python_version):
         "INFO",
         "--media_dir",
         str(tmp_path),
-        str(bad_tex_scene),
+        bad_tex_scene,
         "BadTex",
     ]
     _, err, exitcode = capture(command)

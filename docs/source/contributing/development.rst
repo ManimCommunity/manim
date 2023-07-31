@@ -9,11 +9,9 @@ For first-time contributors
    For instructions see https://git-scm.com/.
 
 
-#. Fork the project:
-
-   Go to https://github.com/ManimCommunity/manim and click the "fork" button
-   to create a copy of the project for you to work on. You will need a
-   GitHub account. This will allow you to make a "Pull Request" (PR)
+#. Fork the project. Go to https://github.com/ManimCommunity/manim and
+   click the "fork" button to create a copy of the project for you to work on. You will
+   need a GitHub account. This will allow you to make a "Pull Request" (PR)
    to the ManimCommunity repo later on.
 
 #. Clone your fork to your local computer:
@@ -68,10 +66,6 @@ For first-time contributors
      as create and enter a virtual environment. You can always re-enter
      that environment by running ``poetry shell``.
 
-   - In case you want to install extra dependencies that are defined in
-     the ``[tool.poetry.extras]``  section of ``pyproject.toml``, this can be done by passing
-     the ``-E`` flag, for example ``poetry install -E jupyterlab -E gui``.
-
    - In case you decided against Poetry, you can install Manim via pip
      by running ``python3 -m pip install .``. Note that due to our
      development infrastructure being based on Poetry, we currently
@@ -94,7 +88,7 @@ For first-time contributors
    formatted against our linter and formatters, ``black``, ``flake8``,
    ``isort`` and ``codespell``.
 
-You are now ready to work on Manim!
+You are now ready to work on manim!
 
 Develop your contribution
 -------------------------
@@ -155,6 +149,11 @@ Develop your contribution
 
       Use the :mod:`manim directive for Sphinx <manim.utils.docbuild.manim_directive>` to add examples
       to the documentation!
+
+      .. autosummary::
+         :toctree: ../reference
+
+         manim.utils.docbuild.manim_directive
 
 As far as development on your local machine goes, these are the main steps you
 should follow.
@@ -219,7 +218,7 @@ generates any merge conflicts, you need to resolve them and push an
 updated version of the branch to your fork of the repository.
 
 Our pipeline consists of a series of different tests that ensure
-that Manim still works as intended and that the code you added
+that manim still works as intended and that the code you added
 sticks to our coding conventions.
 
 - **Code style**: We use the code style imposed
@@ -231,8 +230,8 @@ sticks to our coding conventions.
   To fix code style problems, run ``flake8 <file or directory>`` for a style report, and then fix the problems
   manually that were detected by ``flake8``.
 
-- **Tests**: The pipeline runs Manim's test suite on different operating systems
-  (the latest versions of Ubuntu, macOS, and Windows) for different versions of Python.
+- **Tests**: The pipeline runs manim's test suite on different operating systems
+  (the latest versions of Ubuntu, MacOS, and Windows) for different versions of Python.
   The test suite consists of two different kinds of tests: integration tests
   and doctests. You can run them locally by executing ``poetry run pytest``
   and ``poetry run pytest --doctest-modules manim``, respectively, from the
@@ -242,8 +241,8 @@ sticks to our coding conventions.
   to your pull request. Make sure not to introduce any Sphinx errors, and have
   a look at the built HTML files to see whether the formatting of the documentation
   you added looks as you intended. You can build the documentation locally
-  by running ``make html`` from the ``docs`` directory. Make sure you have `Graphviz <https://graphviz.org/>`_
-  installed locally in order to build the inheritance diagrams.
+  by running ``make html`` from the ``docs`` directory. Since the inheritance diagrams
+  require you to have `Graphviz <https://graphviz.org/>`_ installed locally.
 
 Finally, if the pipeline passes and you are satisfied with your changes: wait for
 feedback and iterate over any requested changes. You will likely be asked to
@@ -257,7 +256,7 @@ Further useful guidelines
 #. When submitting a PR, please mention explicitly if it includes breaking changes.
 
 #. When submitting a PR, make sure that your proposed changes are as general as
-   possible, and ready to be taken advantage of by all of Manim's users. In
+   possible, and ready to be taken advantage of by all of manim's users. In
    particular, leave out any machine-specific configurations, or any personal
    information it may contain.
 
@@ -279,7 +278,14 @@ Further useful guidelines
 
 
 You can find examples for the ``docs`` in several places:
-the :doc:`Example Gallery <../examples>`, :doc:`Tutorials <../tutorials/index>`,
+the :doc:`Example Gallery <../examples>`, :doc:`Tutorials <../tutorials>`,
 and :doc:`Reference Classes <../reference>`.
+
+In case you are contributing, please have a look at this flowchart:
+
+.. raw:: html
+
+    <div class="mxgraph" style="max-width:100%;border:1px solid transparent;" data-mxgraph="{&quot;highlight&quot;:&quot;#0000ff&quot;,&quot;nav&quot;:true,&quot;resize&quot;:true,&quot;toolbar&quot;:&quot;zoom layers lightbox&quot;,&quot;edit&quot;:&quot;_blank&quot;,&quot;url&quot;:&quot;https://drive.google.com/uc?id=1aKyJTloYB97IhrzwqEENOu-WQyuVWMjM&amp;export=download&quot;}"></div>
+    <script type="text/javascript" src="https://viewer.diagrams.net/embed2.js?&fetch=https%3A%2F%2Fdrive.google.com%2Fuc%3Fid%3D1aKyJTloYB97IhrzwqEENOu-WQyuVWMjM%26export%3Ddownload"></script>
 
 **Thank you for contributing!**

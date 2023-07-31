@@ -4,7 +4,7 @@ from __future__ import annotations
 
 __all__ = ["SurroundingRectangle", "BackgroundRectangle", "Cross", "Underline"]
 
-from manim import config, logger
+from manim import config
 from manim.constants import *
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import RoundedRectangle
@@ -104,20 +104,21 @@ class BackgroundRectangle(SurroundingRectangle):
         self.set_fill(opacity=b * self.original_fill_opacity)
         return self
 
-    def set_style(self, fill_opacity, **kwargs):
+    def set_style(
+        self,
+        stroke_color=None,
+        stroke_width=None,
+        fill_color=None,
+        fill_opacity=None,
+        family=True,
+    ):
         # Unchangeable style, except for fill_opacity
-        # All other style arguments are ignored
         super().set_style(
             stroke_color=BLACK,
             stroke_width=0,
             fill_color=BLACK,
             fill_opacity=fill_opacity,
         )
-        if len(kwargs) > 0:
-            logger.info(
-                "Argument %s is ignored in BackgroundRectangle.set_style.",
-                kwargs,
-            )
         return self
 
     def get_fill_color(self):
@@ -168,6 +169,11 @@ class Cross(VGroup):
 
 class Underline(Line):
     """Creates an underline.
+
+    Parameters
+    ----------
+    Line
+        The underline.
 
     Examples
     --------

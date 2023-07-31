@@ -13,7 +13,7 @@ class SomeClass:
 
     Parameters
     ----------
-    scale_factor
+    scale_factor : :class:`float`
         The factor used for scaling.
 
     Returns

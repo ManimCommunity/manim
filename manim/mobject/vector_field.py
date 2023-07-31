@@ -19,16 +19,15 @@ from PIL import Image
 
 from manim.animation.updaters.update import UpdateFromAlphaFunc
 from manim.mobject.geometry.line import Vector
-from manim.mobject.graphing.coordinate_systems import CoordinateSystem
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 
 from .. import config
 from ..animation.composition import AnimationGroup, Succession
 from ..animation.creation import Create
 from ..animation.indication import ShowPassingFlash
-from ..constants import OUT, RIGHT, UP, RendererType
+from ..constants import OUT, RIGHT, UP
 from ..mobject.mobject import Mobject
-from ..mobject.types.vectorized_mobject import VGroup
-from ..mobject.utils import get_vectorized_mobject_class
+from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import BLUE_E, GREEN, RED, YELLOW, color_to_rgb, rgb_to_color
 from ..utils.rate_functions import ease_out_sine, linear
@@ -58,7 +57,7 @@ class VectorField(VGroup):
         The value of the color_scheme function to be mapped to the last color in `colors`. Higher values also result in the last color of the gradient.
     colors
         The colors defining the color gradient of the vector field.
-    kwargs
+    kwargs : Any
         Additional arguments to be passed to the :class:`~.VGroup` constructor
 
     """
@@ -143,7 +142,7 @@ class VectorField(VGroup):
         ----------
         func
             The function defining a vector field.
-        scalar
+        shift_vector
             The scalar to be applied to the vector field.
 
         Examples
@@ -168,22 +167,6 @@ class VectorField(VGroup):
 
         """
         return lambda p: func(p * scalar)
-
-    def fit_to_coordinate_system(self, coordinate_system: CoordinateSystem):
-        """Scale the vector field to fit a coordinate system.
-
-        This method is useful when the vector field is defined in a coordinate system
-        different from the one used to display the vector field.
-
-        This method can only be used once because it transforms the origin of each vector.
-
-        Parameters
-        ----------
-        coordinate_system
-            The coordinate system to fit the vector field to.
-
-        """
-        self.apply_function(lambda pos: coordinate_system.coords_to_point(*pos))
 
     def nudge(
         self,
@@ -486,7 +469,7 @@ class ArrowVectorField(VectorField):
         The opacity of the arrows.
     vector_config
         Additional arguments to be passed to the :class:`~.Vector` constructor
-    kwargs
+    kwargs : Any
         Additional arguments to be passed to the :class:`~.VGroup` constructor
 
     Examples
@@ -592,12 +575,8 @@ class ArrowVectorField(VectorField):
         x_range = np.arange(*self.x_range)
         y_range = np.arange(*self.y_range)
         z_range = np.arange(*self.z_range)
-        self.add(
-            *[
-                self.get_vector(x * RIGHT + y * UP + z * OUT)
-                for x, y, z in it.product(x_range, y_range, z_range)
-            ]
-        )
+        for x, y, z in it.product(x_range, y_range, z_range):
+            self.add(self.get_vector(x * RIGHT + y * UP + z * OUT))
         self.set_opacity(self.opacity)
 
     def get_vector(self, point: np.ndarray):
@@ -611,6 +590,8 @@ class ArrowVectorField(VectorField):
         ----------
         point
             The root point of the vector.
+        kwargs : Any
+            Additional arguments to be passed to the :class:`~.Vector` constructor
 
         """
         output = np.array(self.func(point))
@@ -799,7 +780,7 @@ class StreamLines(VectorField):
         max_steps = ceil(virtual_time / dt) + 1
         if not self.single_color:
             self.background_img = self.get_colored_background_image()
-            if config["renderer"] == RendererType.OPENGL:
+            if config["renderer"] == "opengl":
                 self.values_to_rgbas = self.get_vectorized_rgba_gradient_function(
                     min_color_scheme_value,
                     max_color_scheme_value,
@@ -816,14 +797,17 @@ class StreamLines(VectorField):
             step = max_steps
             if not step:
                 continue
-            line = get_vectorized_mobject_class()()
+            if config["renderer"] == "opengl":
+                line = OpenGLVMobject()
+            else:
+                line = VMobject()
             line.duration = step * dt
             step = max(1, int(len(points) / self.max_anchors_per_line))
             line.set_points_smoothly(points[::step])
             if self.single_color:
                 line.set_stroke(self.color)
             else:
-                if config.renderer == RendererType.OPENGL:
+                if config["renderer"] == "opengl":
                     # scaled for compatibility with cairo
                     line.set_stroke(width=self.stroke_width / 4.0)
                     norms = np.array(
@@ -902,7 +886,7 @@ class StreamLines(VectorField):
 
     def start_animation(
         self,
-        warm_up: bool = True,
+        warm_up=True,
         flow_speed: float = 1,
         time_width: float = 0.3,
         rate_func: Callable[[float], float] = linear,
@@ -915,7 +899,7 @@ class StreamLines(VectorField):
 
         Parameters
         ----------
-        warm_up
+        warm_up : bool, optional
             If `True` the animation is initialized line by line. Otherwise it starts with all lines shown.
         flow_speed
             At `flow_speed=1` the distance the flow moves per second is equal to the magnitude of the vector field along its path. The speed value scales the speed of this flow.

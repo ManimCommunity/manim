@@ -7,19 +7,19 @@ group.
 """
 from __future__ import annotations
 
-import cloup
+import click
 
 from ...constants import CONTEXT_SETTINGS, EPILOG
 from ...plugins.plugins_flags import list_plugins
 
 
-@cloup.command(
+@click.command(
     context_settings=CONTEXT_SETTINGS,
     no_args_is_help=True,
     epilog=EPILOG,
     help="Manages Manim plugins.",
 )
-@cloup.option(
+@click.option(
     "-l",
     "--list",
     "list_available",

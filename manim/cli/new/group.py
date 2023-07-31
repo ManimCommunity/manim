@@ -4,7 +4,6 @@ import configparser
 from pathlib import Path
 
 import click
-import cloup
 
 from ... import console
 from ...constants import CONTEXT_SETTINGS, EPILOG, QUALITIES
@@ -47,14 +46,14 @@ def select_resolution():
     return [res for res in resolution_options if f"{res[0]}p" == choice][0]
 
 
-def update_cfg(cfg_dict: dict, project_cfg_path: Path):
+def update_cfg(cfg_dict, project_cfg_path):
     """Updates the manim.cfg file after reading it from the project_cfg_path.
 
     Parameters
     ----------
-    cfg_dict
+    cfg : :class:`dict`
         values used to update manim.cfg found project_cfg_path.
-    project_cfg_path
+    project_cfg_path : :class:`Path`
         Path of manim.cfg file.
     """
     config = configparser.ConfigParser()
@@ -67,16 +66,16 @@ def update_cfg(cfg_dict: dict, project_cfg_path: Path):
         else:
             cli_config[key] = str(value)
 
-    with project_cfg_path.open("w") as conf:
+    with open(project_cfg_path, "w") as conf:
         config.write(conf)
 
 
-@cloup.command(
+@click.command(
     context_settings=CONTEXT_SETTINGS,
     epilog=EPILOG,
 )
-@cloup.argument("project_name", type=Path, required=False)
-@cloup.option(
+@click.argument("project_name", type=Path, required=False)
+@click.option(
     "-d",
     "--default",
     "default_settings",
@@ -128,13 +127,13 @@ def project(default_settings, **args):
             update_cfg(CFG_DEFAULTS, new_cfg_path)
 
 
-@cloup.command(
+@click.command(
     context_settings=CONTEXT_SETTINGS,
     no_args_is_help=True,
     epilog=EPILOG,
 )
-@cloup.argument("scene_name", type=str, required=True)
-@cloup.argument("file_name", type=str, required=False)
+@click.argument("scene_name", type=str, required=True)
+@click.argument("file_name", type=str, required=False)
 def scene(**args):
     """Inserts a SCENE to an existing FILE or creates a new FILE.
 
@@ -150,37 +149,39 @@ def scene(**args):
         type=click.Choice(get_template_names(), False),
         default="Default",
     )
-    scene = (get_template_path() / f"{template_name}.mtp").resolve().read_text()
-    scene = scene.replace(template_name + "Template", args["scene_name"], 1)
+    scene = ""
+    with open(Path.resolve(get_template_path() / f"{template_name}.mtp")) as f:
+        scene = f.read()
+        scene = scene.replace(template_name + "Template", args["scene_name"], 1)
 
     if args["file_name"]:
         file_name = Path(args["file_name"] + ".py")
 
         if file_name.is_file():
             # file exists so we are going to append new scene to that file
-            with file_name.open("a") as f:
+            with open(file_name, "a") as f:
                 f.write("\n\n\n" + scene)
         else:
             # file does not exist so we create a new file, append the scene and prepend the import statement
-            file_name.write_text("\n\n\n" + scene)
+            with open(file_name, "w") as f:
+                f.write("\n\n\n" + scene)
 
             add_import_statement(file_name)
     else:
         # file name is not provided so we assume it is main.py
         # if main.py does not exist we do not continue
-        with Path("main.py").open("a") as f:
+        with open(Path("main.py"), "a") as f:
             f.write("\n\n\n" + scene)
 
 
-@cloup.group(
+@click.group(
     context_settings=CONTEXT_SETTINGS,
     invoke_without_command=True,
     no_args_is_help=True,
     epilog=EPILOG,
     help="Create a new project or insert a new scene.",
-    deprecated=True,
 )
-@cloup.pass_context
+@click.pass_context
 def new(ctx):
     pass
 

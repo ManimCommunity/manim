@@ -16,8 +16,7 @@ import cloup
 import requests
 
 from ... import __version__, config, console, error_console, logger
-from ..._config import tempconfig
-from ...constants import EPILOG, RendererType
+from ...constants import EPILOG
 from ...utils.module_ops import scene_classes_from_file
 from .ease_of_access_options import ease_of_access_options
 from .global_options import global_options
@@ -27,7 +26,6 @@ from .render_options import render_options
 
 @cloup.command(
     context_settings=None,
-    no_args_is_help=True,
     epilog=EPILOG,
 )
 @click.argument("file", type=Path, required=True)
@@ -45,6 +43,12 @@ def render(
 
     SCENES is an optional list of scenes in the file.
     """
+
+    if args["use_opengl_renderer"]:
+        logger.warning(
+            "--use_opengl_renderer is deprecated, please use --renderer=opengl instead!",
+        )
+        args["renderer"] = "opengl"
 
     if args["save_as_gif"]:
         logger.warning("--save_as_gif is deprecated, please use --format=gif instead!")
@@ -84,7 +88,7 @@ def render(
 
     config.digest_args(click_args)
     file = Path(config.input_file)
-    if config.renderer == RendererType.OPENGL:
+    if config.renderer == "opengl":
         from manim.renderer.opengl_renderer import OpenGLRenderer
 
         try:
@@ -92,9 +96,8 @@ def render(
             keep_running = True
             while keep_running:
                 for SceneClass in scene_classes_from_file(file):
-                    with tempconfig({}):
-                        scene = SceneClass(renderer)
-                        rerun = scene.render()
+                    scene = SceneClass(renderer)
+                    rerun = scene.render()
                     if rerun or config["write_all"]:
                         renderer.num_plays = 0
                         continue
@@ -110,9 +113,8 @@ def render(
     else:
         for SceneClass in scene_classes_from_file(file):
             try:
-                with tempconfig({}):
-                    scene = SceneClass()
-                    scene.render()
+                scene = SceneClass()
+                scene.render()
             except Exception:
                 error_console.print_exception()
                 sys.exit(1)
@@ -123,7 +125,7 @@ def render(
         req_info = {}
 
         try:
-            req_info = requests.get(manim_info_url, timeout=10)
+            req_info = requests.get(manim_info_url)
             req_info.raise_for_status()
 
             stable = req_info.json()["info"]["version"]

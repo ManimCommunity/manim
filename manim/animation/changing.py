@@ -158,5 +158,8 @@ class TracedPath(VMobject, metaclass=ConvertToOpenGL):
         if self.dissipating_time:
             self.time += dt
             if self.time - 1 > self.dissipating_time:
-                nppcc = self.n_points_per_curve
+                if config["renderer"] == "opengl":
+                    nppcc = self.n_points_per_curve
+                else:
+                    nppcc = self.n_points_per_cubic_curve
                 self.set_points(self.points[nppcc:])

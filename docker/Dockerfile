@@ -12,8 +12,7 @@ RUN apt-get update -qq \
         freeglut3-dev \
         pkg-config \
         make \
-        wget \
-        ghostscript
+        wget
 
 # setup a minimal texlive installation
 COPY docker/texlive-profile.txt /tmp/

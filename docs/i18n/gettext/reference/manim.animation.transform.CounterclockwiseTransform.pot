@@ -34,4 +34,8 @@ msgstr ""
 msgid "Attributes"
 msgstr ""
 
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.CounterclockwiseTransform:0
+msgid "Parameters"
+msgstr ""
+
 

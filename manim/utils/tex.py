@@ -8,9 +8,7 @@ __all__ = [
 ]
 
 import copy
-import os
 import re
-from pathlib import Path
 
 
 class TexTemplate:
@@ -18,17 +16,17 @@ class TexTemplate:
 
     Parameters
     ----------
-    tex_compiler
+    tex_compiler : Optional[:class:`str`], optional
         The TeX compiler to be used, e.g. ``latex``, ``pdflatex`` or ``lualatex``
-    output_format
+    output_format : Optional[:class:`str`], optional
         The output format resulting from compilation, e.g. ``.dvi`` or ``.pdf``
-    documentclass
+    documentclass : Optional[:class:`str`], optional
         The command defining the documentclass, e.g. ``\\documentclass[preview]{standalone}``
-    preamble
+    preamble : Optional[:class:`str`], optional
         The document's preamble, i.e. the part between ``\\documentclass`` and ``\\begin{document}``
-    placeholder_text
+    placeholder_text : Optional[:class:`str`], optional
         Text in the document that will be replaced by the expression to be rendered
-    post_doc_commands
+    post_doc_commands : Optional[:class:`str`], optional
         Text (definitions, commands) to be inserted at right after ``\\begin{document}``, e.g. ``\\boldmath``
 
     Attributes
@@ -60,12 +58,12 @@ class TexTemplate:
 
     def __init__(
         self,
-        tex_compiler: str | None = None,
-        output_format: str | None = None,
-        documentclass: str | None = None,
-        preamble: str | None = None,
-        placeholder_text: str | None = None,
-        post_doc_commands: str | None = None,
+        tex_compiler=None,
+        output_format=None,
+        documentclass=None,
+        preamble=None,
+        placeholder_text=None,
+        post_doc_commands=None,
         **kwargs,
     ):
         self.tex_compiler = (
@@ -98,14 +96,6 @@ class TexTemplate:
         )
         self._rebuild()
 
-    def __eq__(self, other: TexTemplate) -> bool:
-        return (
-            self.body == other.body
-            and self.tex_compiler == other.tex_compiler
-            and self.output_format == other.output_format
-            and self.post_doc_commands == other.post_doc_commands
-        )
-
     def _rebuild(self):
         """Rebuilds the entire TeX template text from ``\\documentclass`` to ``\\end{document}`` according to all settings and choices."""
         self.body = (
@@ -124,14 +114,14 @@ class TexTemplate:
             + "\n"
         )
 
-    def add_to_preamble(self, txt: str, prepend: bool = False):
+    def add_to_preamble(self, txt, prepend=False):
         """Adds stuff to the TeX template's preamble (e.g. definitions, packages). Text can be inserted at the beginning or at the end of the preamble.
 
         Parameters
         ----------
-        txt
+        txt : :class:`string`
             String containing the text to be added, e.g. ``\\usepackage{hyperref}``
-        prepend
+        prepend : Optional[:class:`bool`], optional
             Whether the text should be added at the beginning of the preamble, i.e. right after ``\\documentclass``. Default is to add it at the end of the preamble, i.e. right before ``\\begin{document}``
         """
         if prepend:
@@ -140,23 +130,23 @@ class TexTemplate:
             self.preamble += "\n" + txt
         self._rebuild()
 
-    def add_to_document(self, txt: str):
+    def add_to_document(self, txt):
         """Adds txt to the TeX template just after \\begin{document}, e.g. ``\\boldmath``
 
         Parameters
         ----------
-        txt
+        txt : :class:`str`
             String containing the text to be added.
         """
         self.post_doc_commands += "\n" + txt + "\n"
         self._rebuild()
 
-    def get_texcode_for_expression(self, expression: str):
+    def get_texcode_for_expression(self, expression):
         """Inserts expression verbatim into TeX template.
 
         Parameters
         ----------
-        expression
+        expression : :class:`str`
             The string containing the expression to be typeset, e.g. ``$\\sqrt{2}$``
 
         Returns
@@ -166,13 +156,13 @@ class TexTemplate:
         """
         return self.body.replace(self.placeholder_text, expression)
 
-    def _texcode_for_environment(self, environment: str):
+    def _texcode_for_environment(self, environment):
         """Processes the tex_environment string to return the correct ``\\begin{environment}[extra]{extra}`` and
         ``\\end{environment}`` strings
 
         Parameters
         ----------
-        environment
+        environment : :class:`str`
             The tex_environment as a string. Acceptable formats include:
             ``{align*}``, ``align*``, ``{tabular}[t]{cccl}``, ``tabular}{cccl``, ``\\begin{tabular}[t]{cccl}``.
 
@@ -204,14 +194,14 @@ class TexTemplate:
 
         return begin, end
 
-    def get_texcode_for_expression_in_env(self, expression: str, environment: str):
+    def get_texcode_for_expression_in_env(self, expression, environment):
         r"""Inserts expression into TeX template wrapped in \begin{environment} and \end{environment}
 
         Parameters
         ----------
-        expression
+        expression : :class:`str`
             The string containing the expression to be typeset, e.g. ``$\\sqrt{2}$``
-        environment
+        environment : :class:`str`
             The string containing the environment in which the expression should be typeset, e.g. ``align*``
 
         Returns
@@ -231,10 +221,25 @@ class TexTemplateFromFile(TexTemplate):
 
     Parameters
     ----------
-    tex_filename
+    tex_compiler : Optional[:class:`str`], optional
+        The TeX compiler to be used, e.g. ``latex``, ``pdflatex`` or ``lualatex``
+    output_format : Optional[:class:`str`], optional
+        The output format resulting from compilation, e.g. ``.dvi`` or ``.pdf``
+    documentclass : Optional[:class:`str`], optional
+        The command defining the documentclass, e.g. ``\\documentclass[preview]{standalone}``
+    preamble : Optional[:class:`str`], optional
+        The document's preamble, i.e. the part between ``\\documentclass`` and ``\\begin{document}``
+    placeholder_text : Optional[:class:`str`], optional
+        Text in the document that will be replaced by the expression to be rendered
+    post_doc_commands : Optional[:class:`str`], optional
+        Text (definitions, commands) to be inserted at right after ``\\begin{document}``, e.g. ``\\boldmath``
+    kwargs : :class:`str`
+        The kwargs specified can only be strings.
+
+    Other Parameters
+    ----------------
+    tex_filename : Optional[:class:`str`], optional
         Path to a valid TeX template file
-    kwargs
-        Arguments for :class:`~.TexTemplate`.
 
     Attributes
     ----------
@@ -248,14 +253,13 @@ class TexTemplateFromFile(TexTemplate):
         The output format resulting from compilation, e.g. ``.dvi`` or ``.pdf``
     """
 
-    def __init__(
-        self, *, tex_filename: str | os.PathLike = "tex_template.tex", **kwargs
-    ):
-        self.template_file = Path(tex_filename)
+    def __init__(self, **kwargs):
+        self.template_file = kwargs.pop("tex_filename", "tex_template.tex")
         super().__init__(**kwargs)
 
     def _rebuild(self):
-        self.body = self.template_file.read_text()
+        with open(self.template_file) as infile:
+            self.body = infile.read()
 
     def file_not_mutable(self):
         raise Exception("Cannot modify TexTemplate when using a template file.")

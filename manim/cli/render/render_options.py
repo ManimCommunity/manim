@@ -5,7 +5,7 @@ import re
 import click
 from cloup import option, option_group
 
-from manim.constants import QUALITIES, RendererType
+from manim.constants import QUALITIES
 
 from ... import logger
 
@@ -83,7 +83,7 @@ render_options = option_group(
         "--resolution",
         callback=validate_resolution,
         default=None,
-        help='Resolution in "W,H" for when 16:9 aspect ratio isn\'t possible.',
+        help="Resolution in (W,H) for when 16:9 aspect ratio isn't possible.",
     ),
     option(
         "--fps",
@@ -95,12 +95,15 @@ render_options = option_group(
     ),
     option(
         "--renderer",
-        type=click.Choice(
-            [renderer_type.value for renderer_type in RendererType],
-            case_sensitive=False,
-        ),
+        type=click.Choice(["cairo", "opengl"], case_sensitive=False),
         help="Select a renderer for your Scene.",
-        default="cairo",
+        default=None,
+    ),
+    option(
+        "--use_opengl_renderer",
+        is_flag=True,
+        help="Render scenes using OpenGL (Deprecated).",
+        default=None,
     ),
     option(
         "-g",

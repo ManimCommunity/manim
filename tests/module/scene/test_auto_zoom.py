@@ -4,6 +4,7 @@ from manim import *
 
 
 def test_zoom():
+
     s1 = Square()
     s1.set_x(-10)
     s2 = Square()

@@ -2,15 +2,9 @@
 
 from __future__ import annotations
 
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
-
 __all__ = ["NumberLine", "UnitInterval"]
 
-
-from typing import TYPE_CHECKING, Callable, Iterable, Sequence
-
-if TYPE_CHECKING:
-    from manim.mobject.geometry.tips import ArrowTip
+from typing import Iterable, Sequence
 
 import numpy as np
 
@@ -55,10 +49,6 @@ class NumberLine(Line):
         The width of the tip.
     tip_height
         The height of the tip.
-    tip_shape
-        The mobject class used to construct the tip, or ``None`` (the
-        default) for the default arrow tip. Passed classes have to inherit
-        from :class:`.ArrowTip`.
     include_numbers
         Whether to add numbers to the tick marks. The number of decimal places is determined
         by the step size, this default can be overridden by ``decimal_number_config``.
@@ -148,9 +138,8 @@ class NumberLine(Line):
         stroke_width: float = 2.0,
         # tip
         include_tip: bool = False,
-        tip_width: float = DEFAULT_ARROW_TIP_LENGTH,
-        tip_height: float = DEFAULT_ARROW_TIP_LENGTH,
-        tip_shape: type[ArrowTip] | None = None,
+        tip_width: float = 0.25,
+        tip_height: float = 0.25,
         # numbers/labels
         include_numbers: bool = False,
         font_size: float = 36,
@@ -184,7 +173,7 @@ class NumberLine(Line):
                 "num_decimal_places": self._decimal_places_from_step(x_range[2]),
             }
 
-        # turn into a NumPy array to scale by just applying the function
+        # turn into into an np array to scale by just applying the function
         self.x_range = np.array(x_range, dtype=float)
         self.x_min, self.x_max, self.x_step = scaling.function(self.x_range)
         self.length = length
@@ -228,11 +217,7 @@ class NumberLine(Line):
         self.center()
 
         if self.include_tip:
-            self.add_tip(
-                tip_length=self.tip_height,
-                tip_width=self.tip_width,
-                tip_shape=tip_shape,
-            )
+            self.add_tip()
             self.tip.set_stroke(self.stroke_color, self.stroke_width)
 
         if self.include_ticks:
@@ -339,40 +324,24 @@ class NumberLine(Line):
 
         return self.scaling.function(tick_range)
 
-    def number_to_point(self, number: float | np.ndarray) -> np.ndarray:
+    def number_to_point(self, number: float) -> np.ndarray:
         """Accepts a value along the number line and returns a point with
         respect to the scene.
 
         Parameters
         ----------
         number
-            The value to be transformed into a coordinate. Or a list of values.
+            The value to be transformed into a coordinate.
 
         Returns
         -------
         np.ndarray
-            A point with respect to the scene's coordinate system. Or a list of points.
-
-        Examples
-        --------
-
-            >>> from manim import NumberLine
-            >>> number_line = NumberLine()
-            >>> number_line.number_to_point(0)
-            array([0., 0., 0.])
-            >>> number_line.number_to_point(1)
-            array([1., 0., 0.])
-            >>> number_line.number_to_point([1,2,3])
-            array([[1., 0., 0.],
-                   [2., 0., 0.],
-                   [3., 0., 0.]])
+            A point with respect to the scene's coordinate system.
         """
-        number = np.asarray(number)
-        scalar = number.ndim == 0
+
         number = self.scaling.inverse_function(number)
-        alphas = (number - self.x_range[0]) / (self.x_range[1] - self.x_range[0])
-        alphas = float(alphas) if scalar else np.vstack(alphas)
-        val = interpolate(self.get_start(), self.get_end(), alphas)
+        alpha = float(number - self.x_range[0]) / (self.x_range[1] - self.x_range[0])
+        val = interpolate(self.get_start(), self.get_end(), alpha)
         return val
 
     def point_to_number(self, point: Sequence[float]) -> float:
@@ -388,27 +357,13 @@ class NumberLine(Line):
         -------
         float
             A float representing a value along the number line.
-
-        Examples
-        --------
-
-            >>> from manim import NumberLine
-            >>> number_line = NumberLine()
-            >>> number_line.point_to_number((0,0,0))
-            0.0
-            >>> number_line.point_to_number((1,0,0))
-            1.0
-            >>> number_line.point_to_number([[0.5,0,0],[1,0,0],[1.5,0,0]])
-            array([0.5, 1. , 1.5])
-
         """
-        point = np.asarray(point)
         start, end = self.get_start_and_end()
         unit_vect = normalize(end - start)
         proportion = np.dot(point - start, unit_vect) / np.dot(end - start, unit_vect)
         return interpolate(self.x_min, self.x_max, proportion)
 
-    def n2p(self, number: float | np.ndarray) -> np.ndarray:
+    def n2p(self, number: float) -> np.ndarray:
         """Abbreviation for :meth:`~.NumberLine.number_to_point`."""
         return self.number_to_point(number)
 
@@ -577,18 +532,20 @@ class NumberLine(Line):
         direction = self.label_direction if direction is None else direction
         buff = self.line_to_number_buff if buff is None else buff
         font_size = self.font_size if font_size is None else font_size
-        if label_constructor is None:
-            label_constructor = self.label_constructor
+        label_constructor = (
+            self.label_constructor if label_constructor is None else label_constructor
+        )
 
         labels = VGroup()
         for x, label in dict_values.items():
+
             # TODO: remove this check and ability to call
             # this method via CoordinateSystem.add_coordinates()
             # must be explicitly called
-            if isinstance(label, str) and label_constructor is MathTex:
+            if isinstance(label, str) and self.label_constructor is MathTex:
                 label = Tex(label)
             else:
-                label = self._create_label_tex(label, label_constructor)
+                label = self._create_label_tex(label)
 
             if hasattr(label, "font_size"):
                 label.font_size = font_size
@@ -602,36 +559,28 @@ class NumberLine(Line):
         return self
 
     def _create_label_tex(
-        self,
-        label_tex: str | float | VMobject,
-        label_constructor: Callable | None = None,
-        **kwargs,
+        self, label_tex: str | float | VMobject, **kwargs
     ) -> VMobject:
         """Checks if the label is a :class:`~.VMobject`, otherwise, creates a
-        label by passing ``label_tex`` to ``label_constructor``.
+        label according to the ``label_constructor``.
 
         Parameters
         ----------
         label_tex
-            The label for which a mobject should be created. If the label already
-            is a mobject, no new mobject is created.
+            The label to be compared against the above types.
         label_constructor
-            Optional. A class or function returning a mobject when
-            passing ``label_tex`` as an argument. If ``None`` is passed
-            (the default), the label constructor from the :attr:`.label_constructor`
-            attribute is used.
+            The VMobject class used to construct the label.
 
         Returns
         -------
         :class:`~.VMobject`
             The label.
         """
-        if label_constructor is None:
-            label_constructor = self.label_constructor
-        if isinstance(label_tex, (VMobject, OpenGLVMobject)):
+
+        if isinstance(label_tex, VMobject):
             return label_tex
         else:
-            return label_constructor(label_tex, **kwargs)
+            return self.label_constructor(label_tex, **kwargs)
 
     @staticmethod
     def _decimal_places_from_step(step) -> int:

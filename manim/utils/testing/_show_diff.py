@@ -1,8 +1,5 @@
 from __future__ import annotations
 
-import logging
-import warnings
-
 import numpy as np
 
 
@@ -10,7 +7,6 @@ def show_diff_helper(
     frame_number: int,
     frame_data: np.ndarray,
     expected_frame_data: np.ndarray,
-    control_data_filename: str,
 ):
     """Will visually display with matplotlib differences between frame generated and the one expected."""
     import matplotlib.gridspec as gridspec
@@ -22,11 +18,11 @@ def show_diff_helper(
 
     ax = fig.add_subplot(gs[0, 0])
     ax.imshow(frame_data)
-    ax.set_title("Generated")
+    ax.set_title("Generated :")
 
     ax = fig.add_subplot(gs[0, 1])
     ax.imshow(expected_frame_data)
-    ax.set_title("Expected")
+    ax.set_title("Expected :")
 
     ax = fig.add_subplot(gs[1, :])
     diff_im = expected_frame_data.copy()
@@ -41,16 +37,6 @@ def show_diff_helper(
         np.array([255, 0, 0, 255], dtype="uint8"),
     )  # Set any different pixels to red
     ax.imshow(diff_im, interpolation="nearest")
-    ax.set_title("Difference summary: (green = same, red = different)")
+    ax.set_title("Differences summary : (green = same, red = different)")
 
-    with warnings.catch_warnings():
-        warnings.simplefilter("error")
-        try:
-            plt.show()
-        except UserWarning:
-            filename = f"{control_data_filename[:-4]}-diff.pdf"
-            plt.savefig(filename)
-            logging.warning(
-                "Interactive matplotlib interface not available,"
-                f" diff saved to {filename}."
-            )
+    plt.show()

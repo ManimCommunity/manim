@@ -4,19 +4,19 @@ from pathlib import Path
 
 import pytest
 
-from manim import MathTex, SingleStringMathTex, Tex, TexTemplate, config, tempconfig
+from manim import MathTex, SingleStringMathTex, Tex, TexTemplate, config
 from manim.mobject.types.vectorized_mobject import VMobject
 from manim.utils.color import RED
 
 
 def test_MathTex():
     MathTex("a^2 + b^2 = c^2")
-    assert Path(config.media_dir, "Tex", "eb38bdba08f46c80.svg").exists()
+    assert Path(config.media_dir, "Tex", "3879f6b03bc495cd.svg").exists()
 
 
 def test_SingleStringMathTex():
     SingleStringMathTex("test")
-    assert Path(config.media_dir, "Tex", "5b2faa68ebf42d1e.svg").exists()
+    assert Path(config.media_dir, "Tex", "79822967f1fa1935.svg").exists()
 
 
 @pytest.mark.parametrize(  # : PT006
@@ -30,25 +30,12 @@ def test_double_braces_testing(text_input, length_sub):
 
 def test_tex():
     Tex("The horse does not eat cucumber salad.")
-    assert Path(config.media_dir, "Tex", "f2e45e6e82d750e6.svg").exists()
-
-
-def test_tex_temp_directory(tmpdir, monkeypatch):
-    # Adds a test for #3060
-    # It's not possible to reproduce the issue normally, because we use
-    # tempconfig to change media directory to temporary directory by default
-    # we partially, revert that change here.
-    monkeypatch.chdir(tmpdir)
-    Path(tmpdir, "media").mkdir()
-    with tempconfig({"media_dir": "media"}):
-        Tex("The horse does not eat cucumber salad.")
-        assert Path("media", "Tex").exists()
-        assert Path("media", "Tex", "f2e45e6e82d750e6.svg").exists()
+    assert Path(config.media_dir, "Tex", "983949cac5bdd272.svg").exists()
 
 
 def test_percent_char_rendering():
     Tex(r"\%")
-    assert Path(config.media_dir, "Tex", "3f48edf8ebaf82c8.tex").exists()
+    assert Path(config.media_dir, "Tex", "ce6e53f2d9c537bb.tex").exists()
 
 
 def test_tex_whitespace_arg():
@@ -184,13 +171,3 @@ def test_error_in_nested_context(capsys):
     stdout = str(capsys.readouterr().out)
     # validate useless context is not included
     assert r"\begin{frame}" not in stdout
-
-
-def test_tempconfig_resetting_tex_template():
-    my_template = TexTemplate()
-    my_template.preamble = "Custom preamble!"
-    tex_template_config_value = config.tex_template
-    with tempconfig({"tex_template": my_template}):
-        assert config.tex_template.preamble == "Custom preamble!"
-
-    assert config.tex_template.preamble != "Custom preamble!"

@@ -18,7 +18,7 @@ def test_unicode_partial_movie(tmpdir, simple_scenes_path):
         "manim",
         "--media_dir",
         str(tmpdir / unicode_str),
-        str(simple_scenes_path),
+        simple_scenes_path,
         scene_name,
     ]
 

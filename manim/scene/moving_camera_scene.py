@@ -70,8 +70,6 @@ from __future__ import annotations
 
 __all__ = ["MovingCameraScene"]
 
-from manim.animation.animation import Animation
-
 from ..camera.moving_camera import MovingCamera
 from ..scene.scene import Scene
 from ..utils.family import extract_mobject_family_members
@@ -91,14 +89,14 @@ class MovingCameraScene(Scene):
     def __init__(self, camera_class=MovingCamera, **kwargs):
         super().__init__(camera_class=camera_class, **kwargs)
 
-    def get_moving_mobjects(self, *animations: Animation):
+    def get_moving_mobjects(self, *animations):
         """
         This method returns a list of all of the Mobjects in the Scene that
         are moving, that are also in the animations passed.
 
         Parameters
         ----------
-        *animations
+        *animations : Animation
             The Animations whose mobjects will be checked.
         """
         moving_mobjects = super().get_moving_mobjects(*animations)

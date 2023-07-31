@@ -41,11 +41,7 @@ def test_family(using_opengl_renderer):
 
 def test_overlapping_family(using_opengl_renderer):
     """Check that each member of the family is only gathered once."""
-    (
-        mob,
-        child1,
-        child2,
-    ) = (
+    mob, child1, child2, = (
         OpenGLMobject(),
         OpenGLMobject(),
         OpenGLMobject(),
@@ -69,11 +65,7 @@ def test_shift_family(using_opengl_renderer):
     """
     # Note shift() needs the OpenGLMobject to have a non-empty `points` attribute, so
     # we cannot use a plain OpenGLMobject or OpenGLVMobject.  We use Circle instead.
-    (
-        mob,
-        child1,
-        child2,
-    ) = (
+    mob, child1, child2, = (
         Circle(),
         Circle(),
         Circle(),
@@ -90,4 +82,4 @@ def test_shift_family(using_opengl_renderer):
     positions_after = {m: m.get_center().copy() for m in family}
 
     for m in family:
-        np.testing.assert_allclose(positions_before[m] + RIGHT, positions_after[m])
+        assert np.allclose(positions_before[m] + RIGHT, positions_after[m])

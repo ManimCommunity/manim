@@ -183,10 +183,6 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         index = alpha * (self.get_num_points() - 1)
         return self.points[index]
 
-    @staticmethod
-    def get_mobject_type_class():
-        return PMobject
-
     # Alignment
     def align_points_with_larger(self, larger_mobject):
         assert isinstance(larger_mobject, PMobject)
@@ -244,8 +240,7 @@ class Mobject2D(PMobject, metaclass=ConvertToOpenGL):
 
 
 class PGroup(PMobject):
-    """A group for several point mobjects.
-
+    """
     Examples
     --------
 
@@ -267,7 +262,7 @@ class PGroup(PMobject):
     """
 
     def __init__(self, *pmobs, **kwargs):
-        if not all(isinstance(m, (PMobject, OpenGLPMobject)) for m in pmobs):
+        if not all([isinstance(m, (PMobject, OpenGLPMobject)) for m in pmobs]):
             raise ValueError(
                 "All submobjects must be of type PMobject or OpenGLPMObject"
                 " if using the opengl renderer",
@@ -282,8 +277,7 @@ class PGroup(PMobject):
 
 
 class PointCloudDot(Mobject1D):
-    """A disc made of a cloud of dots.
-
+    """A disc made of a cloud of Dots
     Examples
     --------
     .. manim:: PointCloudDotExample
@@ -349,7 +343,7 @@ class PointCloudDot(Mobject1D):
 
 
 class Point(PMobject):
-    """A mobject representing a point.
+    """
 
     Examples
     --------

@@ -18,21 +18,15 @@ def test_background_color(using_opengl_renderer):
     S = Scene()
     S.renderer.background_color = "#ff0000"
     S.renderer.update_frame(S)
-    np.testing.assert_array_equal(
-        S.renderer.get_frame()[0, 0], np.array([255, 0, 0, 255])
-    )
+    assert np.all(S.renderer.get_frame()[0, 0] == np.array([255, 0, 0, 255]))
 
     S.renderer.background_color = "#436f80"
     S.renderer.update_frame(S)
-    np.testing.assert_array_equal(
-        S.renderer.get_frame()[0, 0], np.array([67, 111, 128, 255])
-    )
+    assert np.all(S.renderer.get_frame()[0, 0] == np.array([67, 111, 128, 255]))
 
     S.renderer.background_color = "#fff"
     S.renderer.update_frame(S)
-    np.testing.assert_array_equal(
-        S.renderer.get_frame()[0, 0], np.array([255, 255, 255, 255])
-    )
+    assert np.all(S.renderer.get_frame()[0, 0] == np.array([255, 255, 255, 255]))
 
 
 def test_set_color(using_opengl_renderer):

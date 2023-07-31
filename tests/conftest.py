@@ -1,7 +1,7 @@
 from __future__ import annotations
 
+import os
 import sys
-from pathlib import Path
 
 import pytest
 
@@ -55,10 +55,12 @@ def python_version():
 
 @pytest.fixture
 def reset_cfg_file():
-    cfgfilepath = Path(__file__).parent / "test_cli" / "manim.cfg"
-    original = cfgfilepath.read_text()
+    cfgfilepath = os.path.join(os.path.dirname(__file__), "test_cli", "manim.cfg")
+    with open(cfgfilepath) as cfgfile:
+        original = cfgfile.read()
     yield
-    cfgfilepath.write_text(original)
+    with open(cfgfilepath, "w") as cfgfile:
+        cfgfile.write(original)
 
 
 @pytest.fixture

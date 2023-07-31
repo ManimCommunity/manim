@@ -1,16 +1,15 @@
 from __future__ import annotations
 
 import itertools as it
-from typing import Iterable
 
 from ..mobject.mobject import Mobject
 from ..utils.iterables import remove_list_redundancies
 
 
 def extract_mobject_family_members(
-    mobjects: Iterable[Mobject],
+    mobjects,
     use_z_index=False,
-    only_those_with_points: bool = False,
+    only_those_with_points=False,
 ):
     """Returns a list of the types of mobjects and their family members present.
     A "family" in this context refers to a mobject, its submobjects, and their
@@ -18,9 +17,9 @@ def extract_mobject_family_members(
 
     Parameters
     ----------
-    mobjects
+    mobjects : Mobject
         The Mobjects currently in the Scene
-    only_those_with_points
+    only_those_with_points : bool, optional
         Whether or not to only do this for
         those mobjects that have points. By default False
 

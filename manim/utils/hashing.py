@@ -14,14 +14,7 @@ from typing import Any
 
 import numpy as np
 
-from manim.animation.animation import Animation
-from manim.camera.camera import Camera
-from manim.mobject.mobject import Mobject
-
 from .. import config, logger
-
-if typing.TYPE_CHECKING:
-    from manim.scene.scene import Scene
 
 # Sometimes there are elements that are not suitable for hashing (too long or
 # run-dependent).  This is used to filter them out.
@@ -57,14 +50,14 @@ class _Memoizer:
         cls._already_processed.clear()
 
     @classmethod
-    def check_already_processed_decorator(cls: _Memoizer, is_method: bool = False):
+    def check_already_processed_decorator(cls: _Memoizer, is_method=False):
         """Decorator to handle the arguments that goes through the decorated function.
         Returns _ALREADY_PROCESSED_PLACEHOLDER if the obj has been processed, or lets
         the decorated function call go ahead.
 
         Parameters
         ----------
-        is_method
+        is_method : bool, optional
             Whether the function passed is a method, by default False.
         """
 
@@ -88,7 +81,7 @@ class _Memoizer:
 
         Parameters
         ----------
-        obj
+        obj : Any
             The object to check.
 
         Returns
@@ -105,7 +98,7 @@ class _Memoizer:
 
         Parameters
         ----------
-        obj
+        obj : Any
             The object to mark as processed.
         """
         cls._handle_already_processed(obj, lambda x: x)
@@ -171,7 +164,7 @@ class _Memoizer:
 
 
 class _CustomEncoder(json.JSONEncoder):
-    def default(self, obj: Any):
+    def default(self, obj):
         """
         This method is used to serialize objects to JSON format.
 
@@ -185,7 +178,7 @@ class _CustomEncoder(json.JSONEncoder):
 
         Parameters
         ----------
-        obj
+        obj : Any
             Arbitrary object to convert
 
         Returns
@@ -207,7 +200,7 @@ class _CustomEncoder(json.JSONEncoder):
                     del cvardict[i]
             try:
                 code = inspect.getsource(obj)
-            except (OSError, TypeError):
+            except OSError:
                 # This happens when rendering videos included in the documentation
                 # within doctests and should be replaced by a solution avoiding
                 # hash collision (due to the same, empty, code strings) at some point.
@@ -232,7 +225,7 @@ class _CustomEncoder(json.JSONEncoder):
         # Serialize it with only the type of the object. You can change this to whatever string when debugging the serialization process.
         return str(type(obj))
 
-    def _cleaned_iterable(self, iterable: typing.Iterable[Any]):
+    def _cleaned_iterable(self, iterable):
         """Check for circular reference at each iterable that will go through the JSONEncoder, as well as key of the wrong format.
 
         If a key with a bad format is found (i.e not a int, string, or float), it gets replaced byt its hash using the same process implemented here.
@@ -240,7 +233,7 @@ class _CustomEncoder(json.JSONEncoder):
 
         Parameters
         ----------
-        iterable
+        iterable : Iterable[Any]
             The iterable to check.
         """
 
@@ -285,12 +278,12 @@ class _CustomEncoder(json.JSONEncoder):
         elif isinstance(iterable, dict):
             return _iter_check_dict(iterable)
 
-    def encode(self, obj: Any):
+    def encode(self, obj):
         """Overriding of :meth:`JSONEncoder.encode`, to make our own process.
 
         Parameters
         ----------
-        obj
+        obj: Any
             The object to encode in JSON.
 
         Returns
@@ -304,12 +297,12 @@ class _CustomEncoder(json.JSONEncoder):
         return super().encode(obj)
 
 
-def get_json(obj: dict):
+def get_json(obj):
     """Recursively serialize `object` to JSON using the :class:`CustomEncoder` class.
 
     Parameters
     ----------
-    obj
+    dict_config : :class:`dict`
         The dict to flatten
 
     Returns
@@ -321,25 +314,25 @@ def get_json(obj: dict):
 
 
 def get_hash_from_play_call(
-    scene_object: Scene,
-    camera_object: Camera,
-    animations_list: typing.Iterable[Animation],
-    current_mobjects_list: typing.Iterable[Mobject],
+    scene_object,
+    camera_object,
+    animations_list,
+    current_mobjects_list,
 ) -> str:
     """Take the list of animations and a list of mobjects and output their hashes. This is meant to be used for `scene.play` function.
 
     Parameters
     -----------
-    scene_object
+    scene_object : :class:`~.Scene`
         The scene object.
 
-    camera_object
+    camera_object : :class:`~.Camera`
         The camera object used in the scene.
 
-    animations_list
+    animations_list : Iterable[:class:`~.Animation`]
         The list of animations.
 
-    current_mobjects_list
+    current_mobjects_list : Iterable[:class:`~.Mobject`]
         The list of mobjects.
 
     Returns

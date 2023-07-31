@@ -1,12 +1,10 @@
 from __future__ import annotations
 
-from typing import Callable
-
 from .. import config, logger
 from ..utils.hashing import get_hash_from_play_call
 
 
-def handle_caching_play(func: Callable[..., None]):
+def handle_caching_play(func):
     """Decorator that returns a wrapped version of func that will compute
     the hash of the play invocation.
 
@@ -16,7 +14,7 @@ def handle_caching_play(func: Callable[..., None]):
 
     Parameters
     ----------
-    func
+    func : Callable[[...], None]
         The play like function that has to be written to the video file stream.
         Take the same parameters as `scene.play`.
     """

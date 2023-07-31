@@ -15,7 +15,6 @@ __all__ = [
     "is_webm_format",
     "is_mov_format",
     "write_to_movie",
-    "ensure_executable",
 ]
 
 import os
@@ -122,27 +121,17 @@ def write_to_movie() -> bool:
     )
 
 
-def ensure_executable(path_to_exe: Path) -> bool:
-    if path_to_exe.parent == Path("."):
-        executable = shutil.which(path_to_exe.stem)
-        if executable is None:
-            return False
-    else:
-        executable = path_to_exe
-    return os.access(executable, os.X_OK)
-
-
 def add_extension_if_not_present(file_name: Path, extension: str) -> Path:
     if file_name.suffix != extension:
-        return file_name.with_suffix(file_name.suffix + extension)
+        return file_name.with_suffix(extension)
     else:
         return file_name
 
 
 def add_version_before_extension(file_name: Path) -> Path:
-    return file_name.with_name(
-        f"{file_name.stem}_ManimCE_v{__version__}{file_name.suffix}"
-    )
+    file_name = Path(file_name)
+    path, name, suffix = file_name.parent, file_name.stem, file_name.suffix
+    return Path(path, f"{name}_ManimCE_v{__version__}{suffix}")
 
 
 def guarantee_existence(path: Path) -> Path:
@@ -161,29 +150,26 @@ def guarantee_empty_existence(path: Path) -> Path:
 def seek_full_path_from_defaults(
     file_name: str, default_dir: Path, extensions: list[str]
 ) -> Path:
-    possible_paths = [Path(file_name).expanduser()]
+    possible_paths = [Path(file_name)]
     possible_paths += [
         Path(default_dir) / f"{file_name}{extension}" for extension in ["", *extensions]
     ]
     for path in possible_paths:
         if path.exists():
             return path
-    error = (
-        f"From: {Path.cwd()}, could not find {file_name} at either "
-        f"of these locations: {list(map(str, possible_paths))}"
-    )
+    error = f"From: {os.getcwd()}, could not find {file_name} at either of these locations: {possible_paths}"
     raise OSError(error)
 
 
-def modify_atime(file_path: str) -> None:
+def modify_atime(file_path) -> None:
     """Will manually change the accessed time (called `atime`) of the file, as on a lot of OS the accessed time refresh is disabled by default.
 
     Parameters
     ----------
-    file_path
+    file_path : :class:`str`
         The path of the file.
     """
-    os.utime(file_path, times=(time.time(), Path(file_path).stat().st_mtime))
+    os.utime(file_path, times=(time.time(), os.path.getmtime(file_path)))
 
 
 def open_file(file_path, in_browser=False):
@@ -248,18 +234,18 @@ def get_template_path() -> Path:
     return Path.resolve(Path(__file__).parent.parent / "templates")
 
 
-def add_import_statement(file: Path):
+def add_import_statement(file):
     """Prepends an import statement in a file
 
     Parameters
     ----------
-        file
+        file : :class:`Path`
     """
-    with file.open("r+") as f:
+    with open(file, "r+") as f:
         import_line = "from manim import *"
         content = f.read()
-        f.seek(0)
-        f.write(import_line + "\n" + content)
+        f.seek(0, 0)
+        f.write(import_line.rstrip("\r\n") + "\n" + content)
 
 
 def copy_template_files(
@@ -269,9 +255,9 @@ def copy_template_files(
 
     Parameters
     ----------
-        project_dir
+        project_dir : :class:`Path`
             Path to project directory.
-        template_name
+        template_name : :class:`str`
             Name of template.
     """
     template_cfg_path = Path.resolve(

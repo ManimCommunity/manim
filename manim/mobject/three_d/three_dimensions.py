@@ -16,11 +16,13 @@ __all__ = [
     "Torus",
 ]
 
-from typing import TYPE_CHECKING
+
+from typing import *
 
 import numpy as np
+from colour import Color
 
-from manim import config, logger
+from manim import config
 from manim.constants import *
 from manim.mobject.geometry.arc import Circle
 from manim.mobject.geometry.polygram import Square
@@ -32,14 +34,9 @@ from manim.utils.color import *
 from manim.utils.iterables import tuplify
 from manim.utils.space_ops import normalize, perpendicular_bisector, z_to_vector
 
-if TYPE_CHECKING:
-    from typing import *
-
-    from colour import Color
-
 
 class ThreeDVMobject(VMobject, metaclass=ConvertToOpenGL):
-    def __init__(self, shade_in_3d: bool = True, **kwargs):
+    def __init__(self, shade_in_3d=True, **kwargs):
         super().__init__(shade_in_3d=shade_in_3d, **kwargs)
 
 
@@ -48,31 +45,16 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
 
     Parameters
     ----------
-    func
-        The function defining the :class:`Surface`.
-    u_range
+    func :
+        The function that defines the surface.
+    u_range :
         The range of the ``u`` variable: ``(u_min, u_max)``.
-    v_range
+    v_range :
         The range of the ``v`` variable: ``(v_min, v_max)``.
-    resolution
-        The number of samples taken of the :class:`Surface`. A tuple can be
-        used to define different resolutions for ``u`` and ``v`` respectively.
-    fill_color
-        The color of the :class:`Surface`. Ignored if ``checkerboard_colors``
-        is set.
-    fill_opacity
-        The opacity of the :class:`Surface`, from 0 being fully transparent
-        to 1 being fully opaque. Defaults to 1.
-    checkerboard_colors
-        ng individual faces alternating colors. Overrides ``fill_color``.
-    stroke_color
-        Color of the stroke surrounding each face of :class:`Surface`.
-    stroke_width
-        Width of the stroke surrounding each face of :class:`Surface`.
-        Defaults to 0.5.
-    should_make_jagged
-        Changes the anchor mode of the Bézier curves from smooth to jagged.
-        Defaults to ``False``.
+    resolution :
+        The number of samples taken of the surface. A tuple
+        can be used to define different resolutions for ``u`` and
+        ``v`` respectively.
 
     Examples
     --------
@@ -88,8 +70,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
                 surface = Surface(
                     lambda u, v: axes.c2p(*self.func(u, v)),
                     u_range=[-PI, PI],
-                    v_range=[0, TAU],
-                    resolution=8,
+                    v_range=[0, TAU]
                 )
                 self.set_camera_orientation(theta=70 * DEGREES, phi=75 * DEGREES)
                 self.add(axes, surface)
@@ -125,21 +106,11 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         self.pre_function_handle_to_anchor_scale_factor = (
             pre_function_handle_to_anchor_scale_factor
         )
-        self._func = func
+        self.func = func
         self._setup_in_uv_space()
         self.apply_function(lambda p: func(p[0], p[1]))
         if self.should_make_jagged:
             self.make_jagged()
-
-    def func(self, u: float, v: float) -> np.ndarray:
-        """The z values defining the :class:`Surface` being plotted.
-
-        Returns
-        -------
-        :class:`numpy.array`
-            The z values defining the :class:`Surface`.
-        """
-        return self._func(u, v)
 
     def _get_u_values_and_v_values(self):
         res = tuplify(self.resolution)
@@ -187,25 +158,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         if self.checkerboard_colors:
             self.set_fill_by_checkerboard(*self.checkerboard_colors)
 
-    def set_fill_by_checkerboard(
-        self, *colors: Sequence[Color], opacity: float = None
-    ) -> Mobject:
-        """Sets the fill_color of each face of :class:`Surface` in
-        an alternating pattern.
-
-        Parameters
-        ----------
-        colors
-            List of colors for alternating pattern.
-        opacity
-            The fill_opacity of :class:`Surface`, from 0 being fully transparent
-            to 1 being fully opaque.
-
-        Returns
-        -------
-        :class:`~.Surface`
-            The parametric surface with an alternating pattern.
-        """
+    def set_fill_by_checkerboard(self, *colors, opacity=None):
         n_colors = len(colors)
         for face in self:
             c_index = (face.u_index + face.v_index) % n_colors
@@ -215,23 +168,19 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
     def set_fill_by_value(
         self,
         axes: Mobject,
-        colorscale: Union[Iterable[Color], Color] | None = None,
+        colors: Union[Iterable[Color], Color],
         axis: int = 2,
-        **kwargs,
-    ) -> Mobject:
-        """Sets the color of each mobject of a parametric surface to a color
-        relative to its axis-value.
+    ):
+        """Sets the color of each mobject of a parametric surface to a color relative to its axis-value
 
         Parameters
         ----------
-        axes
-            The axes for the parametric surface, which will be used to map
-            axis-values to colors.
-        colorscale
-            A list of colors, ordered from lower axis-values to higher axis-values.
-            If a list of tuples is passed containing colors paired with numbers,
-            then those numbers will be used as the pivots.
-        axis
+        axes :
+            The axes for the parametric surface, which will be used to map axis-values to colors.
+        colors :
+            A list of colors, ordered from lower axis-values to higher axis-values. If a list of tuples is passed
+            containing colors paired with numbers, then those numbers will be used as the pivots.
+        axis :
             The chosen axis to use for the color mapping. (0 = x, 1 = y, 2 = z)
 
         Returns
@@ -246,7 +195,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
 
             class FillByValueExample(ThreeDScene):
                 def construct(self):
-                    resolution_fa = 8
+                    resolution_fa = 42
                     self.set_camera_orientation(phi=75 * DEGREES, theta=-160 * DEGREES)
                     axes = ThreeDAxes(x_range=(0, 5, 1), y_range=(0, 5, 1), z_range=(-1, 1, 0.5))
                     def param_surface(u, v):
@@ -261,32 +210,16 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
                         u_range=[0, 5],
                         )
                     surface_plane.set_style(fill_opacity=1)
-                    surface_plane.set_fill_by_value(axes=axes, colorscale=[(RED, -0.5), (YELLOW, 0), (GREEN, 0.5)], axis=2)
+                    surface_plane.set_fill_by_value(axes=axes, colors=[(RED, -0.5), (YELLOW, 0), (GREEN, 0.5)], axis=2)
                     self.add(axes, surface_plane)
         """
-        if "colors" in kwargs and colorscale is None:
-            colorscale = kwargs.pop("colors")
-            if kwargs:
-                raise ValueError(
-                    "Unsupported keyword argument(s): "
-                    f"{', '.join(str(key) for key in kwargs)}"
-                )
-        if colorscale is None:
-            logger.warning(
-                "The value passed to the colorscale keyword argument was None, "
-                "the surface fill color has not been changed"
-            )
-            return self
 
         ranges = [axes.x_range, axes.y_range, axes.z_range]
 
-        if type(colorscale[0]) is tuple:
-            new_colors, pivots = [
-                [i for i, j in colorscale],
-                [j for i, j in colorscale],
-            ]
+        if type(colors[0]) is tuple:
+            new_colors, pivots = [[i for i, j in colors], [j for i, j in colors]]
         else:
-            new_colors = colorscale
+            new_colors = colors
 
             pivot_min = ranges[axis][0]
             pivot_max = ranges[axis][1]
@@ -315,9 +248,9 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
                             new_colors[i],
                             color_index,
                         )
-                        if config.renderer == RendererType.OPENGL:
+                        if config.renderer == "opengl":
                             mob.set_color(mob_color, recurse=False)
-                        elif config.renderer == RendererType.CAIRO:
+                        else:
                             mob.set_color(mob_color, family=False)
                         break
 
@@ -328,24 +261,10 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
 
 
 class Sphere(Surface):
-    """A three-dimensional sphere.
-
-    Parameters
-    ----------
-    center
-        Center of the :class:`Sphere`.
-    radius
-        The radius of the :class:`Sphere`.
-    resolution
-        The number of samples taken of the :class:`Sphere`. A tuple can be used
-        to define different resolutions for ``u`` and ``v`` respectively.
-    u_range
-        The range of the ``u`` variable: ``(u_min, u_max)``.
-    v_range
-        The range of the ``v`` variable: ``(v_min, v_max)``.
+    """A mobject representing a three-dimensional sphere.
 
     Examples
-    --------
+    ---------
 
     .. manim:: ExampleSphere
         :save_last_frame:
@@ -372,19 +291,17 @@ class Sphere(Surface):
 
     def __init__(
         self,
-        center: Sequence[float] = ORIGIN,
-        radius: float = 1,
-        resolution: Sequence[int] = None,
-        u_range: Sequence[float] = (0, TAU),
-        v_range: Sequence[float] = (0, PI),
+        center=ORIGIN,
+        radius=1,
+        resolution=None,
+        u_range=(0, TAU),
+        v_range=(0, PI),
         **kwargs,
-    ) -> None:
-        if config.renderer == RendererType.OPENGL:
+    ):
+        if config.renderer == "opengl":
             res_value = (101, 51)
-        elif config.renderer == RendererType.CAIRO:
-            res_value = (24, 12)
         else:
-            raise Exception("Unknown renderer")
+            res_value = (24, 12)
 
         resolution = resolution if resolution is not None else res_value
 
@@ -400,14 +317,7 @@ class Sphere(Surface):
 
         self.shift(center)
 
-    def func(self, u: float, v: float) -> np.ndarray:
-        """The z values defining the :class:`Sphere` being plotted.
-
-        Returns
-        -------
-        :class:`numpy.array`
-            The z values defining the :class:`Sphere`.
-        """
+    def func(self, u, v):
         return self.radius * np.array(
             [np.cos(u) * np.sin(v), np.sin(u) * np.sin(v), -np.cos(v)],
         )
@@ -417,16 +327,13 @@ class Dot3D(Sphere):
     """A spherical dot.
 
     Parameters
-    ----------
-    point
+    --------
+    point : Union[:class:`list`, :class:`numpy.ndarray`], optional
         The location of the dot.
-    radius
+    radius : :class:`float`, optional
         The radius of the dot.
-    color
-        The color of the :class:`Dot3D`.
-    resolution
-        The number of samples taken of the :class:`Dot3D`. A tuple can be
-        used to define different resolutions for ``u`` and ``v`` respectively.
+    color : :class:`~.Colors`, optional
+        The color of the :class:`Dot3D`
 
     Examples
     --------
@@ -447,54 +354,25 @@ class Dot3D(Sphere):
 
     def __init__(
         self,
-        point: list | np.ndarray = ORIGIN,
-        radius: float = DEFAULT_DOT_RADIUS,
-        color: Color = WHITE,
-        resolution: Sequence[int] = (8, 8),
+        point=ORIGIN,
+        radius=DEFAULT_DOT_RADIUS,
+        color=WHITE,
+        resolution=(8, 8),
         **kwargs,
-    ) -> None:
+    ):
         super().__init__(center=point, radius=radius, resolution=resolution, **kwargs)
         self.set_color(color)
 
 
 class Cube(VGroup):
-    """A three-dimensional cube.
-
-    Parameters
-    ----------
-    side_length
-        Length of each side of the :class:`Cube`.
-    fill_opacity
-        The opacity of the :class:`Cube`, from 0 being fully transparent to 1 being
-        fully opaque. Defaults to 0.75.
-    fill_color
-        The color of the :class:`Cube`.
-    stroke_width
-        The width of the stroke surrounding each face of the :class:`Cube`.
-
-    Examples
-    --------
-
-    .. manim:: CubeExample
-        :save_last_frame:
-
-        class CubeExample(ThreeDScene):
-            def construct(self):
-                self.set_camera_orientation(phi=75*DEGREES, theta=-45*DEGREES)
-
-                axes = ThreeDAxes()
-                cube = Cube(side_length=3, fill_opacity=0.7, fill_color=BLUE)
-                self.add(cube)
-    """
-
     def __init__(
         self,
-        side_length: float = 2,
-        fill_opacity: float = 0.75,
-        fill_color: Color = BLUE,
-        stroke_width: float = 0,
+        side_length=2,
+        fill_opacity=0.75,
+        fill_color=BLUE,
+        stroke_width=0,
         **kwargs,
-    ) -> None:
+    ):
         self.side_length = side_length
         super().__init__(
             fill_color=fill_color,
@@ -503,8 +381,7 @@ class Cube(VGroup):
             **kwargs,
         )
 
-    def generate_points(self) -> None:
-        """Creates the sides of the :class:`Cube`."""
+    def generate_points(self):
         for vect in IN, OUT, LEFT, RIGHT, UP, DOWN:
             face = Square(
                 side_length=self.side_length,
@@ -520,13 +397,7 @@ class Cube(VGroup):
 
 
 class Prism(Cube):
-    """A right rectangular prism (or rectangular cuboid).
-    Defined by the length of each side in ``[x, y, z]`` format.
-
-    Parameters
-    ----------
-    dimensions
-        Dimensions of the :class:`Prism` in ``[x, y, z]`` format.
+    """A cuboid.
 
     Examples
     --------
@@ -542,12 +413,11 @@ class Prism(Cube):
                 self.add(prismSmall, prismLarge)
     """
 
-    def __init__(self, dimensions: Sequence[int] = [3, 2, 1], **kwargs) -> None:
+    def __init__(self, dimensions=[3, 2, 1], **kwargs):
         self.dimensions = dimensions
         super().__init__(**kwargs)
 
-    def generate_points(self) -> None:
-        """Creates the sides of the :class:`Prism`."""
+    def generate_points(self):
         super().generate_points()
         for dim, value in enumerate(self.dimensions):
             self.rescale_to_fit(value, dim, stretch=True)
@@ -560,24 +430,6 @@ class Cone(Surface):
     height) The spherical radius, r, is calculated using the pythagorean
     theorem.
 
-    Parameters
-    ----------
-    base_radius
-        The base radius from which the cone tapers.
-    height
-        The height measured from the plane formed by the base_radius to
-        the apex of the cone.
-    direction
-        The direction of the apex.
-    show_base
-        Whether to show the base plane or not.
-    v_range
-        The azimuthal angle to start and end at.
-    u_min
-        The radius at the apex.
-    checkerboard_colors
-        Show checkerboard grid texture on the cone.
-
     Examples
     --------
     .. manim:: ExampleCone
@@ -586,20 +438,37 @@ class Cone(Surface):
         class ExampleCone(ThreeDScene):
             def construct(self):
                 axes = ThreeDAxes()
-                cone = Cone(direction=X_AXIS+Y_AXIS+2*Z_AXIS, resolution=8)
+                cone = Cone(direction=X_AXIS+Y_AXIS+2*Z_AXIS)
                 self.set_camera_orientation(phi=5*PI/11, theta=PI/9)
                 self.add(axes, cone)
+
+    Parameters
+    --------
+    base_radius : :class:`float`
+        The base radius from which the cone tapers.
+    height : :class:`float`
+        The height measured from the plane formed by the base_radius to the apex of the cone.
+    direction : :class:`numpy.array`
+        The direction of the apex.
+    show_base : :class:`bool`
+        Whether to show the base plane or not.
+    v_range : :class:`Sequence[float]`
+        The azimuthal angle to start and end at.
+    u_min : :class:`float`
+        The radius at the apex.
+    checkerboard_colors : :class:`bool`
+        Show checkerboard grid texture on the cone.
     """
 
     def __init__(
         self,
-        base_radius: float = 1,
-        height: float = 1,
-        direction: np.ndarray = Z_AXIS,
-        show_base: bool = False,
-        v_range: Sequence[float] = [0, TAU],
-        u_min: float = 0,
-        checkerboard_colors: bool = False,
+        base_radius=1,
+        height=1,
+        direction=Z_AXIS,
+        show_base=False,
+        v_range=[0, TAU],
+        u_min=0,
+        checkerboard_colors=False,
         **kwargs,
     ):
         self.direction = direction
@@ -628,20 +497,14 @@ class Cone(Surface):
 
         self._rotate_to_direction()
 
-    def func(self, u: float, v: float) -> np.ndarray:
+    def func(self, u, v):
         """Converts from spherical coordinates to cartesian.
-
         Parameters
-        ----------
-        u
+        ---------
+        u : :class:`float`
             The radius.
-        v
+        v : :class:`float`
             The azimuthal angle.
-
-        Returns
-        -------
-        :class:`numpy.array`
-            Points defining the :class:`Cone`.
         """
         r = u
         phi = v
@@ -686,49 +549,19 @@ class Cone(Surface):
         self._current_theta = theta
         self._current_phi = phi
 
-    def set_direction(self, direction: np.ndarray) -> None:
-        """Changes the direction of the apex of the :class:`Cone`.
-
-        Parameters
-        ----------
-        direction
-            The direction of the apex.
-        """
+    def set_direction(self, direction):
         self.direction = direction
         self._rotate_to_direction()
 
-    def get_direction(self) -> np.ndarray:
-        """Returns the current direction of the apex of the :class:`Cone`.
-
-        Returns
-        -------
-        direction : :class:`numpy.array`
-            The direction of the apex.
-        """
+    def get_direction(self):
         return self.direction
 
 
 class Cylinder(Surface):
     """A cylinder, defined by its height, radius and direction,
 
-    Parameters
-    ----------
-    radius
-        The radius of the cylinder.
-    height
-        The height of the cylinder.
-    direction
-        The direction of the central axis of the cylinder.
-    v_range
-        The height along the height axis (given by direction) to start and end on.
-    show_ends
-        Whether to show the end caps or not.
-    resolution
-        The number of samples taken of the :class:`Cylinder`. A tuple can be used
-        to define different resolutions for ``u`` and ``v`` respectively.
-
     Examples
-    --------
+    ---------
     .. manim:: ExampleCylinder
         :save_last_frame:
 
@@ -738,18 +571,31 @@ class Cylinder(Surface):
                 cylinder = Cylinder(radius=2, height=3)
                 self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
                 self.add(axes, cylinder)
+
+    Parameters
+    ---------
+    radius : :class:`float`
+        The radius of the cylinder.
+    height : :class:`float`
+        The height of the cylinder.
+    direction : :class:`numpy.array`
+        The direction of the central axis of the cylinder.
+    v_range : :class:`Sequence[float]`
+        The height along the height axis (given by direction) to start and end on.
+    show_ends : :class:`bool`
+        Whether to show the end caps or not.
     """
 
     def __init__(
         self,
-        radius: float = 1,
-        height: float = 2,
-        direction: np.ndarray = Z_AXIS,
-        v_range: Sequence[float] = [0, TAU],
-        show_ends: bool = True,
-        resolution: Sequence[int] = (24, 24),
+        radius=1,
+        height=2,
+        direction=Z_AXIS,
+        v_range=[0, TAU],
+        show_ends=True,
+        resolution=(24, 24),
         **kwargs,
-    ) -> None:
+    ):
         self._height = height
         self.radius = radius
         super().__init__(
@@ -765,35 +611,24 @@ class Cylinder(Surface):
         self._current_theta = 0
         self.set_direction(direction)
 
-    def func(self, u: float, v: float) -> np.ndarray:
+    def func(self, u, v):
         """Converts from cylindrical coordinates to cartesian.
-
         Parameters
-        ----------
-        u
+        ---------
+        u : :class:`float`
             The height.
-        v
+        v : :class:`float`
             The azimuthal angle.
-
-        Returns
-        -------
-        :class:`numpy.ndarray`
-            Points defining the :class:`Cylinder`.
         """
         height = u
         phi = v
         r = self.radius
         return np.array([r * np.cos(phi), r * np.sin(phi), height])
 
-    def add_bases(self) -> None:
+    def add_bases(self):
         """Adds the end caps of the cylinder."""
-        if config.renderer == RendererType.OPENGL:
-            color = self.color
-            opacity = self.opacity
-        elif config.renderer == RendererType.CAIRO:
-            color = self.fill_color
-            opacity = self.fill_opacity
-
+        color = self.color if config["renderer"] == "opengl" else self.fill_color
+        opacity = self.opacity if config["renderer"] == "opengl" else self.fill_opacity
         self.base_top = Circle(
             radius=self.radius,
             color=color,
@@ -845,46 +680,21 @@ class Cylinder(Surface):
         self._current_theta = theta
         self._current_phi = phi
 
-    def set_direction(self, direction: np.ndarray) -> None:
-        """Sets the direction of the central axis of the :class:`Cylinder`.
-
-        Parameters
-        ----------
-        direction : :class:`numpy.array`
-            The direction of the central axis of the :class:`Cylinder`.
-        """
+    def set_direction(self, direction):
         # if get_norm(direction) is get_norm(self.direction):
         #     pass
         self.direction = direction
         self._rotate_to_direction()
 
-    def get_direction(self) -> np.ndarray:
-        """Returns the direction of the central axis of the :class:`Cylinder`.
-
-        Returns
-        -------
-        direction : :class:`numpy.array`
-            The direction of the central axis of the :class:`Cylinder`.
-        """
+    def get_direction(self):
         return self.direction
 
 
 class Line3D(Cylinder):
     """A cylindrical line, for use in ThreeDScene.
 
-    Parameters
-    ----------
-    start
-        The start point of the line.
-    end
-        The end point of the line.
-    thickness
-        The thickness of the line.
-    color
-        The color of the line.
-
     Examples
-    --------
+    ---------
     .. manim:: ExampleLine3D
         :save_last_frame:
 
@@ -894,35 +704,27 @@ class Line3D(Cylinder):
                 line = Line3D(start=np.array([0, 0, 0]), end=np.array([2, 2, 2]))
                 self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
                 self.add(axes, line)
+
+    Parameters
+    ---------
+    start : :class:`numpy.array`
+        The start position of the line.
+    end : :class:`numpy.array`
+        The end position of the line.
+    thickness : :class:`float`
+        The thickness of the line.
     """
 
-    def __init__(
-        self,
-        start: np.ndarray = LEFT,
-        end: np.ndarray = RIGHT,
-        thickness: float = 0.02,
-        color: Color = None,
-        **kwargs,
-    ):
+    def __init__(self, start=LEFT, end=RIGHT, thickness=0.02, color=None, **kwargs):
         self.thickness = thickness
         self.set_start_and_end_attrs(start, end, **kwargs)
         if color is not None:
             self.set_color(color)
 
-    def set_start_and_end_attrs(
-        self, start: np.ndarray, end: np.ndarray, **kwargs
-    ) -> None:
+    def set_start_and_end_attrs(self, start, end, **kwargs):
         """Sets the start and end points of the line.
 
-        If either ``start`` or ``end`` are :class:`Mobjects <.Mobject>`,
-        this gives their centers.
-
-        Parameters
-        ----------
-        start
-            Starting point or :class:`Mobject`.
-        end
-            Ending point or :class:`Mobject`.
+        If either ``start`` or ``end`` are :class:`Mobjects <.Mobject>`, this gives their centers.
         """
         rough_start = self.pointify(start)
         rough_end = self.pointify(end)
@@ -942,23 +744,7 @@ class Line3D(Cylinder):
         )
         self.shift((self.start + self.end) / 2)
 
-    def pointify(
-        self, mob_or_point: Mobject | float, direction: np.ndarray = None
-    ) -> np.ndarray:
-        """Gets a point representing the center of the :class:`Mobjects <.Mobject>`.
-
-        Parameters
-        ----------
-        mob_or_point
-            :class:`Mobjects <.Mobject>` or point whose center should be returned.
-        direction
-            If an edge of a :class:`Mobjects <.Mobject>` should be returned, the direction of the edge.
-
-        Returns
-        -------
-        :class:`numpy.array`
-            Center of the :class:`Mobjects <.Mobject>` or point, or edge if direction is given.
-        """
+    def pointify(self, mob_or_point, direction=None):
         if isinstance(mob_or_point, (Mobject, OpenGLMobject)):
             mob = mob_or_point
             if direction is None:
@@ -967,30 +753,16 @@ class Line3D(Cylinder):
                 return mob.get_boundary_point(direction)
         return np.array(mob_or_point)
 
-    def get_start(self) -> np.ndarray:
-        """Returns the starting point of the :class:`Line3D`.
-
-        Returns
-        -------
-        start : :class:`numpy.array`
-            Starting point of the :class:`Line3D`.
-        """
+    def get_start(self):
         return self.start
 
-    def get_end(self) -> np.ndarray:
-        """Returns the ending point of the :class:`Line3D`.
-
-        Returns
-        -------
-        end : :class:`numpy.array`
-            Ending point of the :class:`Line3D`.
-        """
+    def get_end(self):
         return self.end
 
     @classmethod
     def parallel_to(
         cls, line: Line3D, point: Sequence[float] = ORIGIN, length: float = 5, **kwargs
-    ) -> Line3D:
+    ):
         """Returns a line parallel to another line going through
         a given point.
 
@@ -1000,15 +772,8 @@ class Line3D(Cylinder):
             The line to be parallel to.
         point
             The point to pass through.
-        length
-            Length of the parallel line.
         kwargs
             Additional parameters to be passed to the class.
-
-        Returns
-        -------
-        :class:`Line3D`
-            Line parallel to ``line``.
 
         Examples
         --------
@@ -1034,7 +799,7 @@ class Line3D(Cylinder):
     @classmethod
     def perpendicular_to(
         cls, line: Line3D, point: Sequence[float] = ORIGIN, length: float = 5, **kwargs
-    ) -> Line3D:
+    ):
         """Returns a line perpendicular to another line going through
         a given point.
 
@@ -1044,15 +809,8 @@ class Line3D(Cylinder):
             The line to be perpendicular to.
         point
             The point to pass through.
-        length
-            Length of the perpendicular line.
         kwargs
             Additional parameters to be passed to the class.
-
-        Returns
-        -------
-        :class:`Line3D`
-            Line perpendicular to ``line``.
 
         Examples
         --------
@@ -1085,48 +843,42 @@ class Line3D(Cylinder):
 class Arrow3D(Line3D):
     """An arrow made out of a cylindrical line and a conical tip.
 
-    Parameters
-    ----------
-    start
-        The start position of the arrow.
-    end
-        The end position of the arrow.
-    thickness
-        The thickness of the arrow.
-    height
-        The height of the conical tip.
-    base_radius
-        The base radius of the conical tip.
-    color
-        The color of the arrow.
-
     Examples
-    --------
+    ---------
     .. manim:: ExampleArrow3D
         :save_last_frame:
 
         class ExampleArrow3D(ThreeDScene):
             def construct(self):
                 axes = ThreeDAxes()
-                arrow = Arrow3D(
-                    start=np.array([0, 0, 0]),
-                    end=np.array([2, 2, 2]),
-                    resolution=8
-                )
+                arrow = Arrow3D(start=np.array([0, 0, 0]), end=np.array([2, 2, 2]))
                 self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
                 self.add(axes, arrow)
+
+    Parameters
+    ---------
+    start : :class:`numpy.array`
+        The start position of the arrow.
+    end : :class:`numpy.array`
+        The end position of the arrow.
+    thickness : :class:`float`
+        The thickness of the arrow.
+    height : :class:`float`
+        The height of the conical tip.
+    base_radius: :class:`float`
+        The base radius of the conical tip.
     """
 
     def __init__(
         self,
-        start: np.ndarray = LEFT,
-        end: np.ndarray = RIGHT,
-        thickness: float = 0.02,
-        height: float = 0.3,
-        base_radius: float = 0.08,
-        color: Color = WHITE,
+        start=LEFT,
+        end=RIGHT,
+        thickness=0.02,
+        height=0.3,
+        base_radius=0.08,
+        color=WHITE,
         **kwargs,
-    ) -> None:
+    ):
         super().__init__(
             start=start, end=end, thickness=thickness, color=color, **kwargs
         )
@@ -1149,22 +901,8 @@ class Arrow3D(Line3D):
 class Torus(Surface):
     """A torus.
 
-    Parameters
-    ----------
-    major_radius
-        Distance from the center of the tube to the center of the torus.
-    minor_radius
-        Radius of the tube.
-    u_range
-        The range of the ``u`` variable: ``(u_min, u_max)``.
-    v_range
-        The range of the ``v`` variable: ``(v_min, v_max)``.
-    resolution
-        The number of samples taken of the :class:`Torus`. A tuple can be
-        used to define different resolutions for ``u`` and ``v`` respectively.
-
     Examples
-    --------
+    ---------
     .. manim :: ExampleTorus
         :save_last_frame:
 
@@ -1174,20 +912,27 @@ class Torus(Surface):
                 torus = Torus()
                 self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
                 self.add(axes, torus)
+
+    Parameters
+    ---------
+    major_radius : :class:`float`
+        Distance from the center of the tube to the center of the torus.
+    minor_radius : :class:`float`
+        Radius of the tube.
     """
 
     def __init__(
         self,
-        major_radius: float = 3,
-        minor_radius: float = 1,
-        u_range: Sequence[float] = (0, TAU),
-        v_range: Sequence[float] = (0, TAU),
-        resolution: Sequence[int] = None,
+        major_radius=3,
+        minor_radius=1,
+        u_range=(0, TAU),
+        v_range=(0, TAU),
+        resolution=None,
         **kwargs,
-    ) -> None:
-        if config.renderer == RendererType.OPENGL:
+    ):
+        if config.renderer == "opengl":
             res_value = (101, 101)
-        elif config.renderer == RendererType.CAIRO:
+        else:
             res_value = (24, 24)
 
         resolution = resolution if resolution is not None else res_value
@@ -1202,13 +947,6 @@ class Torus(Surface):
             **kwargs,
         )
 
-    def func(self, u: float, v: float) -> np.ndarray:
-        """The z values defining the :class:`Torus` being plotted.
-
-        Returns
-        -------
-        :class:`numpy.ndarray`
-            The z values defining the :class:`Torus`.
-        """
+    def func(self, u, v):
         P = np.array([np.cos(u), np.sin(u), 0])
         return (self.R - self.r * np.cos(v)) * P - self.r * np.sin(v) * OUT

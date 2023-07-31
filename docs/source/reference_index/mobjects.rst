@@ -18,6 +18,5 @@ Mobjects
    ~mobject.text
    ~mobject.three_d
    ~mobject.types
-   ~mobject.utils
    ~mobject.value_tracker
    ~mobject.vector_field

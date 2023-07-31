@@ -12,8 +12,6 @@ from manim import config
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VMobject
 
-from ...constants import RendererType
-
 __all__ = ["Union", "Intersection", "Difference", "Exclusion"]
 
 
@@ -84,7 +82,7 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
             return path
 
         # In OpenGL it's quadratic beizer curves while on Cairo it's cubic...
-        if config.renderer == RendererType.OPENGL:
+        if config.renderer == "opengl":
             subpaths = vmobject.get_subpaths_from_points(points)
             for subpath in subpaths:
                 quads = vmobject.get_bezier_tuples_from_points(subpath)
@@ -94,7 +92,7 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
                     path.quadTo(*p1[:2], *p2[:2])
                 if vmobject.consider_points_equals(subpath[0], subpath[-1]):
                     path.close()
-        elif config.renderer == RendererType.CAIRO:
+        else:
             subpaths = vmobject.gen_subpaths_from_points_2d(points)
             for subpath in subpaths:
                 quads = vmobject.gen_cubic_bezier_tuples_from_points(subpath)

@@ -40,11 +40,7 @@ def test_family():
 
 def test_overlapping_family():
     """Check that each member of the family is only gathered once."""
-    (
-        mob,
-        child1,
-        child2,
-    ) = (
+    mob, child1, child2, = (
         Mobject(),
         Mobject(),
         Mobject(),
@@ -68,11 +64,7 @@ def test_shift_family():
     """
     # Note shift() needs the mobject to have a non-empty `points` attribute, so
     # we cannot use a plain Mobject or VMobject.  We use Circle instead.
-    (
-        mob,
-        child1,
-        child2,
-    ) = (
+    mob, child1, child2, = (
         Circle(),
         Circle(),
         Circle(),
@@ -89,4 +81,4 @@ def test_shift_family():
     positions_after = {m: m.get_center() for m in family}
 
     for m in family:
-        np.testing.assert_allclose(positions_before[m] + RIGHT, positions_after[m])
+        assert np.allclose(positions_before[m] + RIGHT, positions_after[m])

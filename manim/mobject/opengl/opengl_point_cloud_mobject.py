@@ -155,14 +155,10 @@ class OpenGLPMobject(OpenGLMobject):
         self.read_data_to_shader(shader_data, "color", "rgbas")
         return shader_data
 
-    @staticmethod
-    def get_mobject_type_class():
-        return OpenGLPMobject
-
 
 class OpenGLPGroup(OpenGLPMobject):
     def __init__(self, *pmobs, **kwargs):
-        if not all(isinstance(m, OpenGLPMobject) for m in pmobs):
+        if not all([isinstance(m, OpenGLPMobject) for m in pmobs]):
             raise Exception("All submobjects must be of type OpenglPMObject")
         super().__init__(**kwargs)
         self.add(*pmobs)

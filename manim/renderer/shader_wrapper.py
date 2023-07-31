@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import os
 import re
 from pathlib import Path
 
@@ -20,13 +21,13 @@ def get_shader_dir():
     return Path(__file__).parent / "shaders"
 
 
-def find_file(file_name: Path, directories: list[Path]) -> Path:
+def find_file(file_name, directories=None):
     # Check if what was passed in is already a valid path to a file
-    if file_name.exists():
+    if os.path.exists(file_name):
         return file_name
-    possible_paths = (directory / file_name for directory in directories)
+    possible_paths = (os.path.join(directory, file_name) for directory in directories)
     for path in possible_paths:
-        if path.exists():
+        if os.path.exists(path):
             return path
         else:
             logger.debug(f"{path} does not exist.")
@@ -47,7 +48,7 @@ class ShaderWrapper:
         self.vert_data = vert_data
         self.vert_indices = vert_indices
         self.vert_attributes = vert_data.dtype.names
-        self.shader_folder = Path(shader_folder or "")
+        self.shader_folder = shader_folder
         self.uniforms = uniforms or {}
         self.texture_paths = texture_paths or {}
         self.depth_test = depth_test
@@ -109,9 +110,9 @@ class ShaderWrapper:
         )
 
     def init_program_code(self):
-        def get_code(name: str) -> str | None:
+        def get_code(name):
             return get_shader_code_from_file(
-                self.shader_folder / f"{name}.glsl",
+                os.path.join(self.shader_folder, f"{name}.glsl"),
             )
 
         self.program_code = {
@@ -125,7 +126,7 @@ class ShaderWrapper:
 
     def replace_code(self, old, new):
         code_map = self.program_code
-        for name, _code in code_map.items():
+        for (name, _code) in code_map.items():
             if code_map[name] is None:
                 continue
             code_map[name] = re.sub(old, new, code_map[name])
@@ -156,19 +157,22 @@ class ShaderWrapper:
 filename_to_code_map: dict = {}
 
 
-def get_shader_code_from_file(filename: Path) -> str | None:
+def get_shader_code_from_file(filename):
+    if not filename:
+        return None
     if filename in filename_to_code_map:
         return filename_to_code_map[filename]
 
     try:
         filepath = find_file(
             filename,
-            directories=[get_shader_dir(), Path("/")],
+            directories=[get_shader_dir(), "/"],
         )
     except OSError:
         return None
 
-    result = filepath.read_text()
+    with open(filepath) as f:
+        result = f.read()
 
     # To share functionality between shaders, some functions are read in
     # from other files an inserted into the relevant strings before
@@ -181,10 +185,8 @@ def get_shader_code_from_file(filename: Path) -> str | None:
     )
     for line in insertions:
         inserted_code = get_shader_code_from_file(
-            Path() / "include" / line.replace("#include ../include/", ""),
+            os.path.join("include", line.replace("#include ../include/", "")),
         )
-        if inserted_code is None:
-            return None
         result = result.replace(line, inserted_code)
     filename_to_code_map[filename] = result
     return result

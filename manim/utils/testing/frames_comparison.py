@@ -45,6 +45,10 @@ def frames_comparison(
 
     Parameters
     ----------
+    test_name
+        The name of the test.
+    module_name
+        The module which the test belongs to.
     last_frame
         whether the test should test the last frame, by default True.
     renderer_class
@@ -85,12 +89,10 @@ def frames_comparison(
             construct = functools.partial(tested_scene_construct, *args, **kwargs)
 
             # Kwargs contains the eventual parametrization arguments.
-            # This modifies the test_name so that it is defined by the parametrization
-            # arguments too.
-            # Example: if "length" is parametrized from 0 to 20, the kwargs
-            # will be once with {"length" : 1}, etc.
+            # This modify the test_name so the it is defined by the parametrization arguments too.
+            # Ex : if "length" is parametrized from 0 to 20, the kwargs will be with once with {"length" : 1}, etc.
             test_name_with_param = test_name + "_".join(
-                f"_{str(tup[0])}[{str(tup[1])}]" for tup in kwargs.items()
+                map(lambda tup: f"{str(tup[0])}:{str(tup[1])}", kwargs.items()),
             )
 
             config_tests = _config_test(last_frame)
@@ -157,7 +159,7 @@ def _make_test_comparing_frames(
     file_path: Path,
     base_scene: type[Scene],
     construct: Callable[[Scene], None],
-    renderer_class: type,  # Renderer type, there is no superclass renderer yet .....
+    renderer_class,  # Renderer type, there is no superclass renderer yet .....
     is_set_test_data_test: bool,
     last_frame: bool,
     show_diff: bool,
@@ -167,15 +169,15 @@ def _make_test_comparing_frames(
 
     Parameters
     ----------
-    file_path
+    file_path : Path
         The path of the control frames.
-    base_scene
+    base_scene : Type[Scene]
         The base scene class.
-    construct
+    construct : Callable[[Scene], None]
         The construct method (= the test function)
-    renderer_class
+    renderer_class : [type]
         The renderer base class.
-    show_diff
+    show_diff : bool
         whether to visually show_diff (see --show_diff)
 
     Returns

@@ -83,48 +83,10 @@ from ..animation.creation import Create, Write
 from ..animation.fading import FadeIn
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import BLACK, YELLOW
-from .utils import get_vectorized_mobject_class
 
 
 class Table(VGroup):
     """A mobject that displays a table on the screen.
-
-    Parameters
-    ----------
-    table
-        A 2D array or list of lists. Content of the table has to be a valid input
-        for the callable set in ``element_to_mobject``.
-    row_labels
-        List of :class:`~.VMobject` representing the labels of each row.
-    col_labels
-        List of :class:`~.VMobject` representing the labels of each column.
-    top_left_entry
-        The top-left entry of the table, can only be specified if row and
-        column labels are given.
-    v_buff
-        Vertical buffer passed to :meth:`~.Mobject.arrange_in_grid`, by default 0.8.
-    h_buff
-        Horizontal buffer passed to :meth:`~.Mobject.arrange_in_grid`, by default 1.3.
-    include_outer_lines
-        ``True`` if the table should include outer lines, by default False.
-    add_background_rectangles_to_entries
-        ``True`` if background rectangles should be added to entries, by default ``False``.
-    entries_background_color
-        Background color of entries if ``add_background_rectangles_to_entries`` is ``True``.
-    include_background_rectangle
-        ``True`` if the table should have a background rectangle, by default ``False``.
-    background_rectangle_color
-        Background color of table if ``include_background_rectangle`` is ``True``.
-    element_to_mobject
-        The :class:`~.Mobject` class applied to the table entries. by default :class:`~.Paragraph`. For common choices, see :mod:`~.text_mobject`/:mod:`~.tex_mobject`.
-    element_to_mobject_config
-        Custom configuration passed to :attr:`element_to_mobject`, by default {}.
-    arrange_in_grid_config
-        Dict passed to :meth:`~.Mobject.arrange_in_grid`, customizes the arrangement of the table.
-    line_config
-        Dict passed to :class:`~.Line`, customizes the lines of the table.
-    kwargs
-        Additional arguments to be passed to :class:`~.VGroup`.
 
     Examples
     --------
@@ -209,6 +171,45 @@ class Table(VGroup):
         line_config: dict = {},
         **kwargs,
     ):
+        """
+        Parameters
+        ----------
+        table
+            A 2D array or list of lists. Content of the table has to be a valid input
+            for the callable set in ``element_to_mobject``.
+        row_labels
+            List of :class:`~.VMobject` representing the labels of each row.
+        col_labels
+            List of :class:`~.VMobject` representing the labels of each column.
+        top_left_entry
+            The top-left entry of the table, can only be specified if row and
+            column labels are given.
+        v_buff
+            Vertical buffer passed to :meth:`~.Mobject.arrange_in_grid`, by default 0.8.
+        h_buff
+            Horizontal buffer passed to :meth:`~.Mobject.arrange_in_grid`, by default 1.3.
+        include_outer_lines
+            ``True`` if the table should include outer lines, by default False.
+        add_background_rectangles_to_entries
+            ``True`` if background rectangles should be added to entries, by default ``False``.
+        entries_background_color
+            Background color of entries if ``add_background_rectangles_to_entries`` is ``True``.
+        include_background_rectangle
+            ``True`` if the table should have a background rectangle, by default ``False``.
+        background_rectangle_color
+            Background color of table if ``include_background_rectangle`` is ``True``.
+        element_to_mobject
+            The :class:`~.Mobject` class applied to the table entries. by default :class:`~.Paragraph`. For common choices, see :mod:`~.text_mobject`/:mod:`~.tex_mobject`.
+        element_to_mobject_config
+            Custom configuration passed to :attr:`element_to_mobject`, by default {}.
+        arrange_in_grid_config
+            Dict passed to :meth:`~.Mobject.arrange_in_grid`, customizes the arrangement of the table.
+        line_config
+            Dict passed to :class:`~.Line`, customizes the lines of the table.
+        kwargs : Any
+            Additional arguments to be passed to :class:`~.VGroup`.
+        """
+
         self.row_labels = row_labels
         self.col_labels = col_labels
         self.top_left_entry = top_left_entry
@@ -327,7 +328,13 @@ class Table(VGroup):
                 else:
                     # Placeholder to use arrange_in_grid if top_left_entry is not set.
                     # Import OpenGLVMobject to work with --renderer=opengl
-                    dummy_mobject = get_vectorized_mobject_class()()
+                    if config.renderer == "opengl":
+                        from manim.opengl import OpenGLVMobject
+
+                        dummy_class = OpenGLVMobject
+                    else:
+                        dummy_class = VMobject
+                    dummy_mobject = dummy_class()
                     col_labels = [dummy_mobject] + self.col_labels
                     mob_table.insert(0, col_labels)
             else:
@@ -766,7 +773,7 @@ class Table(VGroup):
         pos
             The position of a specific entry on the table. ``(1,1)`` being the top left entry
             of the table.
-        kwargs
+        kwargs : Any
             Additional arguments to be passed to :class:`~.Polygon`.
 
         Returns
@@ -827,7 +834,7 @@ class Table(VGroup):
             of the table.
         color
             The color used to highlight the cell.
-        kwargs
+        kwargs : Any
             Additional arguments to be passed to :class:`~.BackgroundRectangle`.
 
         Examples
@@ -863,7 +870,7 @@ class Table(VGroup):
             of the table.
         color
             The color used to highlight the cell.
-        kwargs
+        kwargs : Any
             Additional arguments to be passed to :class:`~.BackgroundRectangle`.
 
         Examples
@@ -894,13 +901,15 @@ class Table(VGroup):
         line_animation: Callable[[VMobject | VGroup], Animation] = Create,
         label_animation: Callable[[VMobject | VGroup], Animation] = Write,
         element_animation: Callable[[VMobject | VGroup], Animation] = Create,
-        entry_animation: Callable[[VMobject | VGroup], Animation] = FadeIn,
+        entry_animation=FadeIn,
         **kwargs,
     ) -> AnimationGroup:
         """Customized create-type function for tables.
 
         Parameters
         ----------
+        run_time
+            The run time of the line creation and the writing of the elements.
         lag_ratio
             The lag ratio of the animation.
         line_animation
@@ -909,9 +918,7 @@ class Table(VGroup):
             The animation style of the table labels, see :mod:`~.creation` for examples.
         element_animation
             The animation style of the table elements, see :mod:`~.creation` for examples.
-        entry_animation
-            The entry animation of the table background, see :mod:`~.creation` for examples.
-        kwargs
+        kwargs : Any
             Further arguments passed to the creation animations.
 
         Returns
@@ -972,7 +979,7 @@ class Table(VGroup):
 
 
 class MathTable(Table):
-    """A specialized :class:`~.Table` mobject for use with LaTeX.
+    """A specialized :class:`~.Table` mobject for use with with LaTeX.
 
     Examples
     --------
@@ -1008,7 +1015,7 @@ class MathTable(Table):
             for :class:`~.MathTex`.
         element_to_mobject
             The :class:`~.Mobject` class applied to the table entries. Set as :class:`~.MathTex`.
-        kwargs
+        kwargs : Any
             Additional arguments to be passed to :class:`~.Table`.
         """
         super().__init__(
@@ -1019,7 +1026,7 @@ class MathTable(Table):
 
 
 class MobjectTable(Table):
-    """A specialized :class:`~.Table` mobject for use with :class:`~.Mobject`.
+    """A specialized :class:`~.Table` mobject for use with with :class:`~.Mobject`.
 
     Examples
     --------
@@ -1062,14 +1069,14 @@ class MobjectTable(Table):
             A 2D array or list of lists. Content of the table must be of type :class:`~.Mobject`.
         element_to_mobject
             The :class:`~.Mobject` class applied to the table entries. Set as ``lambda m : m`` to return itself.
-        kwargs
+        kwargs : Any
             Additional arguments to be passed to :class:`~.Table`.
         """
         super().__init__(table, element_to_mobject=element_to_mobject, **kwargs)
 
 
 class IntegerTable(Table):
-    """A specialized :class:`~.Table` mobject for use with :class:`~.Integer`.
+    """A specialized :class:`~.Table` mobject for use with with :class:`~.Integer`.
 
     Examples
     --------
@@ -1111,14 +1118,14 @@ class IntegerTable(Table):
             for :class:`~.Integer`.
         element_to_mobject
             The :class:`~.Mobject` class applied to the table entries. Set as :class:`~.Integer`.
-        kwargs
+        kwargs : Any
             Additional arguments to be passed to :class:`~.Table`.
         """
         super().__init__(table, element_to_mobject=element_to_mobject, **kwargs)
 
 
 class DecimalTable(Table):
-    """A specialized :class:`~.Table` mobject for use with :class:`~.DecimalNumber` to display decimal entries.
+    """A specialized :class:`~.Table` mobject for use with with :class:`~.DecimalNumber` to display decimal entries.
 
     Examples
     --------
@@ -1159,7 +1166,7 @@ class DecimalTable(Table):
             The :class:`~.Mobject` class applied to the table entries. Set as :class:`~.DecimalNumber`.
         element_to_mobject_config
             Element to mobject config, here set as {"num_decimal_places": 1}.
-        kwargs
+        kwargs : Any
             Additional arguments to be passed to :class:`~.Table`.
         """
         super().__init__(

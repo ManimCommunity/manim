@@ -14,16 +14,15 @@ def test_axes(scene):
         x_length=6,
         y_length=6,
         color=WHITE,
-        y_axis_config={"tip_shape": StealthTip},
     )
     labels = graph.get_axis_labels()
     scene.add(graph, labels)
 
 
 @frames_comparison
-def test_plot_functions(scene, use_vectorized):
+def test_plot_functions(scene):
     ax = Axes(x_range=(-10, 10.3), y_range=(-1.5, 1.5))
-    graph = ax.plot(lambda x: x**2, use_vectorized=use_vectorized)
+    graph = ax.plot(lambda x: x**2)
     scene.add(ax, graph)
 
 
@@ -69,42 +68,18 @@ def test_get_y_axis_label(scene):
 
 
 @frames_comparison
-def test_axis_tip_default_width_height(scene):
-    ax = Axes(
-        x_range=(0, 4),
-        y_range=(0, 4),
-        axis_config={"include_numbers": True, "include_tip": True},
-    )
-
-    scene.add(ax)
-
-
-@frames_comparison
-def test_axis_tip_custom_width_height(scene):
-    ax = Axes(
-        x_range=(0, 4),
-        y_range=(0, 4),
-        axis_config={"include_numbers": True, "include_tip": True},
-        x_axis_config={"tip_width": 1, "tip_height": 0.1},
-        y_axis_config={"tip_width": 0.1, "tip_height": 1},
-    )
-
-    scene.add(ax)
-
-
-@frames_comparison
-def test_plot_derivative_graph(scene, use_vectorized):
+def test_plot_derivative_graph(scene):
     ax = NumberPlane(y_range=[-1, 7], background_line_style={"stroke_opacity": 0.4})
 
-    curve_1 = ax.plot(lambda x: x**2, color=PURPLE_B, use_vectorized=use_vectorized)
-    curve_2 = ax.plot_derivative_graph(curve_1, use_vectorized=use_vectorized)
-    curve_3 = ax.plot_antiderivative_graph(curve_1, use_vectorized=use_vectorized)
+    curve_1 = ax.plot(lambda x: x**2, color=PURPLE_B)
+    curve_2 = ax.plot_derivative_graph(curve_1)
+    curve_3 = ax.plot_antiderivative_graph(curve_1)
     curves = VGroup(curve_1, curve_2, curve_3)
     scene.add(ax, curves)
 
 
 @frames_comparison
-def test_plot(scene, use_vectorized):
+def test_plot(scene):
     # construct the axes
     ax_1 = Axes(
         x_range=[0.001, 6],
@@ -127,22 +102,15 @@ def test_plot(scene, use_vectorized):
         return np.log(x)
 
     # a curve without adjustments; poor interpolation.
-    curve_1 = ax_1.plot(log_func, color=PURE_RED, use_vectorized=use_vectorized)
+    curve_1 = ax_1.plot(log_func, color=PURE_RED)
 
     # disabling interpolation makes the graph look choppy as not enough
     # inputs are available
-    curve_2 = ax_2.plot(
-        log_func, use_smoothing=False, color=ORANGE, use_vectorized=use_vectorized
-    )
+    curve_2 = ax_2.plot(log_func, use_smoothing=False, color=ORANGE)
 
     # taking more inputs of the curve by specifying a step for the
     # x_range yields expected results, but increases rendering time.
-    curve_3 = ax_3.plot(
-        log_func,
-        x_range=(0.001, 6, 0.001),
-        color=PURE_GREEN,
-        use_vectorized=use_vectorized,
-    )
+    curve_3 = ax_3.plot(log_func, x_range=(0.001, 6, 0.001), color=PURE_GREEN)
 
     curves = VGroup(curve_1, curve_2, curve_3)
 
@@ -246,9 +214,9 @@ def test_get_area_with_boundary_and_few_plot_points(scene):
 
 
 @frames_comparison
-def test_get_riemann_rectangles(scene, use_vectorized):
+def test_get_riemann_rectangles(scene):
     ax = Axes(y_range=[-2, 10])
-    quadratic = ax.plot(lambda x: 0.5 * x**2 - 0.5, use_vectorized=use_vectorized)
+    quadratic = ax.plot(lambda x: 0.5 * x**2 - 0.5)
 
     # the rectangles are constructed from their top right corner.
     # passing an iterable to `color` produces a gradient

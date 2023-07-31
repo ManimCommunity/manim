@@ -38,4 +38,8 @@ msgstr ""
 msgid "Attributes"
 msgstr ""
 
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.MoveToTarget:0
+msgid "Parameters"
+msgstr ""
+
 

@@ -2,9 +2,8 @@ from __future__ import annotations
 
 import json
 import os
+import pathlib
 from functools import wraps
-from pathlib import Path
-from typing import Any
 
 from manim import get_video_metadata
 
@@ -12,12 +11,12 @@ from ..assert_utils import assert_shallow_dict_compare
 from ..helpers.video_utils import get_section_dir_layout, get_section_index
 
 
-def load_control_data(path_to_data: Path) -> Any:
-    with path_to_data.open() as f:
+def load_control_data(path_to_data):
+    with open(path_to_data) as f:
         return json.load(f)
 
 
-def check_video_data(path_control_data: Path, path_video_gen: Path) -> None:
+def check_video_data(path_control_data, path_video_gen):
     """Compare control data with generated output.
     Used abbreviations:
         exp  -> expected
@@ -26,7 +25,10 @@ def check_video_data(path_control_data: Path, path_video_gen: Path) -> None:
         meta -> metadata
     """
     # movie file specification
-    path_sec_gen = path_video_gen.parent.absolute() / "sections"
+    path_sec_gen = os.path.join(
+        pathlib.Path(path_video_gen).parent.absolute(),
+        "sections",
+    )
     control_data = load_control_data(path_control_data)
     movie_meta_gen = get_video_metadata(path_video_gen)
     movie_meta_exp = control_data["movie_metadata"]
@@ -49,8 +51,8 @@ def check_video_data(path_control_data: Path, path_video_gen: Path) -> None:
         raise AssertionError(f"Sections don't match:\n{mismatch}")
 
     # sections index file
-    scene_name = path_video_gen.stem
-    path_sec_index_gen = path_sec_gen / f"{scene_name}.json"
+    scene_name = "".join(os.path.basename(path_video_gen).split(".")[:-1])
+    path_sec_index_gen = os.path.join(path_sec_gen, f"{scene_name}.json")
     sec_index_gen = get_section_index(path_sec_index_gen)
     sec_index_exp = control_data["section_index"]
 
@@ -68,9 +70,7 @@ def check_video_data(path_control_data: Path, path_video_gen: Path) -> None:
         )
 
 
-def video_comparison(
-    control_data_file: str | os.PathLike, scene_path_from_media_dir: str | os.PathLike
-):
+def video_comparison(control_data_file, scene_path_from_media_dir):
     """Decorator used for any test that needs to check a rendered scene/video.
 
     .. warning::
@@ -79,11 +79,11 @@ def video_comparison(
 
     Parameters
     ----------
-    control_data_file
+    control_data_file : :class:`str`
         Name of the control data file, i.e. the .json containing all the pre-rendered references of the scene tested.
         .. warning:: You don't have to pass the path here.
 
-    scene_path_from_media_dir
+    scene_path_from_media_dir : :class:`str`
         The path of the scene generated, from the media dir. Example: /videos/1080p60/SquareToCircle.mp4.
 
     See Also
@@ -91,29 +91,31 @@ def video_comparison(
     tests/helpers/video_utils.py : create control data
     """
 
-    control_data_file = Path(control_data_file)
-    scene_path_from_media_dir = Path(scene_path_from_media_dir)
-
     def decorator(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
             # NOTE : Every args goes seemingly in kwargs instead of args; this is perhaps Pytest.
             result = f(*args, **kwargs)
             tmp_path = kwargs["tmp_path"]
-            tests_directory = Path(__file__).absolute().parent.parent
-            path_control_data = (
-                tests_directory / "control_data" / "videos_data" / control_data_file
+            tests_directory = os.path.dirname(
+                os.path.dirname(os.path.abspath(__file__)),
+            )
+            path_control_data = os.path.join(
+                tests_directory,
+                "control_data",
+                "videos_data",
+                control_data_file,
             )
             path_video_gen = tmp_path / scene_path_from_media_dir
-            if not path_video_gen.exists():
+            if not os.path.exists(path_video_gen):
                 for parent in reversed(path_video_gen.parents):
                     if not parent.exists():
                         raise AssertionError(
                             f"'{parent.name}' does not exist in '{parent.parent}' (which exists). ",
                         )
             # TODO: use when pytest --set_test option
-            # save_control_data_from_video(path_video_gen, control_data_file.stem)
-            check_video_data(path_control_data, path_video_gen)
+            # save_control_data_from_video(path_video_gen, control_data_file[:-5])
+            check_video_data(path_control_data, str(path_video_gen))
             return result
 
         return wrapper

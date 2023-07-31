@@ -26,7 +26,7 @@ def test_tempconfig(using_opengl_renderer):
     # check that config is correctly restored
     for k, v in original.items():
         if isinstance(v, np.ndarray):
-            np.testing.assert_allclose(config[k], v)
+            assert np.allclose(config[k], v)
         else:
             assert config[k] == v
 
@@ -43,7 +43,7 @@ def test_background_color(using_opengl_renderer):
         scene = MyScene()
         scene.render()
         frame = scene.renderer.get_frame()
-        np.testing.assert_allclose(frame[0, 0], [255, 255, 255, 255])
+        assert np.allclose(frame[0, 0], [255, 255, 255, 255])
 
 
 def test_digest_file(using_opengl_renderer, tmp_path):
@@ -67,10 +67,8 @@ def test_digest_file(using_opengl_renderer, tmp_path):
 
 def test_frame_size(using_opengl_renderer, tmp_path):
     """Test that the frame size can be set via config file."""
-    np.testing.assert_allclose(
-        config.aspect_ratio, config.pixel_width / config.pixel_height
-    )
-    np.testing.assert_allclose(config.frame_height, 8.0)
+    assert np.allclose(config.aspect_ratio, config.pixel_width / config.pixel_height)
+    assert np.allclose(config.frame_height, 8.0)
 
     with tempconfig({}):
         tmp_cfg = tempfile.NamedTemporaryFile("w", dir=tmp_path, delete=False)
@@ -85,10 +83,10 @@ def test_frame_size(using_opengl_renderer, tmp_path):
         config.digest_file(tmp_cfg.name)
 
         # aspect ratio is set using pixel measurements
-        np.testing.assert_allclose(config.aspect_ratio, 1.0)
+        assert np.allclose(config.aspect_ratio, 1.0)
         # if not specified in the cfg file, frame_width is set using the aspect ratio
-        np.testing.assert_allclose(config.frame_height, 8.0)
-        np.testing.assert_allclose(config.frame_width, 8.0)
+        assert np.allclose(config.frame_height, 8.0)
+        assert np.allclose(config.frame_width, 8.0)
 
     with tempconfig({}):
         tmp_cfg = tempfile.NamedTemporaryFile("w", dir=tmp_path, delete=False)
@@ -104,10 +102,10 @@ def test_frame_size(using_opengl_renderer, tmp_path):
         tmp_cfg.close()
         config.digest_file(tmp_cfg.name)
 
-        np.testing.assert_allclose(config.aspect_ratio, 1.0)
+        assert np.allclose(config.aspect_ratio, 1.0)
         # if both are specified in the cfg file, the aspect ratio is ignored
-        np.testing.assert_allclose(config.frame_height, 10.0)
-        np.testing.assert_allclose(config.frame_width, 10.0)
+        assert np.allclose(config.frame_height, 10.0)
+        assert np.allclose(config.frame_width, 10.0)
 
 
 def test_temporary_dry_run(using_opengl_renderer):

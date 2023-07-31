@@ -9,16 +9,14 @@ from __future__ import annotations
 
 import os
 from ast import literal_eval
-from pathlib import Path
 
 import click
-import cloup
 from rich.errors import StyleSyntaxError
 from rich.style import Style
 
-from ... import cli_ctx_settings, console
+from ... import console
 from ..._config.utils import config_file_paths, make_config_parser
-from ...constants import EPILOG
+from ...constants import CONTEXT_SETTINGS, EPILOG
 from ...utils.file_ops import guarantee_existence, open_file
 
 RICH_COLOUR_INSTRUCTIONS: str = """
@@ -33,7 +31,7 @@ def value_from_string(value: str) -> str | int | bool:
     """Extracts the literal of proper datatype from a string.
     Parameters
     ----------
-    value
+    value : :class:`str`
         The value to check get the literal from.
 
     Returns
@@ -54,12 +52,12 @@ def _is_expected_datatype(value: str, expected: str, style: bool = False) -> boo
 
     Parameters
     ----------
-    value
+    value : :class:`str`
         The string of the value to check (obtained from reading the user input).
-    expected
+    expected : :class:`str`
         The string of the literal datatype must be matched by `value`. Obtained from
         reading the cfg file.
-    style
+    style : :class:`bool`, optional
         Whether or not to confirm if `value` is a style, by default False
 
     Returns
@@ -77,7 +75,7 @@ def is_valid_style(style: str) -> bool:
     """Checks whether the entered color is a valid color according to rich
     Parameters
     ----------
-    style
+    style : :class:`str`
         The style to check whether it is valid.
     Returns
     -------
@@ -95,7 +93,7 @@ def replace_keys(default: dict) -> dict:
     """Replaces _ to . and vice versa in a dictionary for rich
     Parameters
     ----------
-    default
+    default : :class:`dict`
         The dictionary to check and replace
     Returns
     -------
@@ -116,8 +114,8 @@ def replace_keys(default: dict) -> dict:
     return default
 
 
-@cloup.group(
-    context_settings=cli_ctx_settings,
+@click.group(
+    context_settings=CONTEXT_SETTINGS,
     invoke_without_command=True,
     no_args_is_help=True,
     epilog=EPILOG,
@@ -129,7 +127,7 @@ def cfg(ctx):
     pass
 
 
-@cfg.command(context_settings=cli_ctx_settings, no_args_is_help=True)
+@cfg.command(context_settings=CONTEXT_SETTINGS, no_args_is_help=True)
 @click.option(
     "-l",
     "--level",
@@ -233,13 +231,13 @@ modify write_cfg_subcmd_input to account for it.""",
         cfg_file_path = config_paths[2]
         guarantee_existence(config_paths[2].parents[0])
         console.print(CWD_CONFIG_MSG)
-    with cfg_file_path.open("w") as fp:
+    with open(cfg_file_path, "w") as fp:
         parser.write(fp)
     if openfile:
         open_file(cfg_file_path)
 
 
-@cfg.command(context_settings=cli_ctx_settings)
+@cfg.command(context_settings=CONTEXT_SETTINGS)
 def show():
     parser = make_config_parser()
     rich_non_style_entries = [a.replace(".", "_") for a in RICH_NON_STYLE_ENTRIES]
@@ -257,12 +255,11 @@ def show():
         console.print("\n")
 
 
-@cfg.command(context_settings=cli_ctx_settings)
-@click.option("-d", "--directory", default=Path.cwd())
+@cfg.command(context_settings=CONTEXT_SETTINGS)
+@click.option("-d", "--directory", default=os.getcwd())
 @click.pass_context
 def export(ctx, directory):
-    directory_path = Path(directory)
-    if directory_path.absolute == Path.cwd().absolute:
+    if os.path.abspath(directory) == os.path.abspath(os.getcwd()):
         console.print(
             """You are reading the config from the same directory you are exporting to.
 This means that the exported config will overwrite the config for this directory.
@@ -274,14 +271,13 @@ Are you sure you want to continue? (y/n)""",
     else:
         proceed = True
     if proceed:
-        if not directory_path.is_dir():
+        if not os.path.isdir(directory):
             console.print(f"Creating folder: {directory}.", style="red bold")
-            directory_path.mkdir(parents=True)
-
-        ctx.invoke(write)
-        from_path = Path.cwd() / "manim.cfg"
-        to_path = directory_path / "manim.cfg"
-
+            os.mkdir(directory)
+        with open(os.path.join(directory, "manim.cfg"), "w") as outpath:
+            ctx.invoke(write)
+            from_path = os.path.join(os.getcwd(), "manim.cfg")
+            to_path = os.path.join(directory, "manim.cfg")
         console.print(f"Exported final Config at {from_path} to {to_path}.")
     else:
         console.print("Aborted...", style="red bold")

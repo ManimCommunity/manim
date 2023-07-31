@@ -415,8 +415,8 @@ Plotting with Manim
             return [
                 (top_right[0], top_right[1]),
                 (bottom_left[0], top_right[1]),
-                (bottom_left[0], bottom_left[1]),
-                (top_right[0], bottom_left[1]),
+                (bottom_left[0], bottom_left[0]),
+                (top_right[0], bottom_left[0]),
             ]
 
         def construct(self):
@@ -667,7 +667,7 @@ Special Camera Settings
 
    class ThreeDSurfacePlot(ThreeDScene):
        def construct(self):
-           resolution_fa = 24
+           resolution_fa = 42
            self.set_camera_orientation(phi=75 * DEGREES, theta=-30 * DEGREES)
 
            def param_gauss(u, v):

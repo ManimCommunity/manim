@@ -218,6 +218,12 @@ class OpenGLCamera(OpenGLMobject):
 
 
 points_per_curve = 3
+JOINT_TYPE_MAP = {
+    "auto": 0,
+    "round": 1,
+    "bevel": 2,
+    "miter": 3,
+}
 
 
 class OpenGLRenderer:
@@ -375,21 +381,18 @@ class OpenGLRenderer:
             mesh.render()
 
     def get_texture_id(self, path):
-        if repr(path) not in self.path_to_texture_id:
+        if path not in self.path_to_texture_id:
+            # A way to increase tid's sequentially
             tid = len(self.path_to_texture_id)
+            im = Image.open(path)
             texture = self.context.texture(
-                size=path.size,
-                components=len(path.getbands()),
-                data=path.tobytes(),
+                size=im.size,
+                components=len(im.getbands()),
+                data=im.tobytes(),
             )
-            texture.repeat_x = False
-            texture.repeat_y = False
-            texture.filter = (moderngl.NEAREST, moderngl.NEAREST)
-            texture.swizzle = "RRR1" if path.mode == "L" else "RGBA"
             texture.use(location=tid)
-            self.path_to_texture_id[repr(path)] = tid
-
-        return self.path_to_texture_id[repr(path)]
+            self.path_to_texture_id[path] = tid
+        return self.path_to_texture_id[path]
 
     def update_skipping_status(self):
         """

@@ -8,12 +8,12 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v2
 
     - name: Set up Python 3.8
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v2
       with:
-        python-version: 3.9
+        python-version: 3.8
 
     - name: Install dependencies
       run: python -m pip install --upgrade poetry
@@ -30,7 +30,7 @@ jobs:
         poetry build
 
     - name: Store artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v2
       with:
           path: dist/*.tar.gz
           name: manim.tar.gz
@@ -54,9 +54,8 @@ jobs:
           url = f"https://api.github.com/repos/ManimCommunity/manim/releases/tags/{ref_tag}"
           c = requests.get(url,headers=headers)
           upload_url=c.json()['upload_url']
-          with open(os.getenv('GITHUB_OUTPUT'), 'w') as f:
-            print(f"upload_url={upload_url}", file=f)
-            print(f"tag_name={ref_tag[1:]}", file=f)
+          print(f"::set-output name=upload_url::{upload_url}")
+          print(f"::set-output name=tag_name::{ref_tag[1:]}")
 
     - name: Upload Release Asset
       id: upload-release

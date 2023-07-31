@@ -14,7 +14,7 @@ __all__ = [
     "RightAngle",
 ]
 
-from typing import Any, Sequence
+from typing import Sequence
 
 import numpy as np
 from colour import Color
@@ -28,7 +28,6 @@ from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.types.vectorized_mobject import DashedVMobject, VGroup, VMobject
 from manim.utils.color import *
-from manim.utils.color import Colors
 from manim.utils.space_ops import angle_of_vector, line_intersection, normalize
 
 
@@ -191,13 +190,13 @@ class DashedLine(Line):
 
     Parameters
     ----------
-    args
+    args : Any
         Arguments to be passed to :class:`Line`
-    dash_length
+    dash_length : :class:`float`, optional
         The length of each individual dash of the line.
-    dashed_ratio
+    dashed_ratio : :class:`float`, optional
         The ratio of dash space to empty space. Range of 0-1.
-    kwargs
+    kwargs : Any
         Additional arguments to be passed to :class:`Line`
 
 
@@ -222,9 +221,9 @@ class DashedLine(Line):
 
     def __init__(
         self,
-        *args: Any,
-        dash_length: float = DEFAULT_DASH_LENGTH,
-        dashed_ratio: float = 0.5,
+        *args,
+        dash_length=DEFAULT_DASH_LENGTH,
+        dashed_ratio=0.5,
         **kwargs,
     ):
         self.dash_length = dash_length
@@ -319,15 +318,15 @@ class TangentLine(Line):
 
     Parameters
     ----------
-    vmob
+    vmob : :class:`~.VMobject`
         The VMobject on which the tangent line is drawn.
-    alpha
+    alpha : :class:`float`
         How far along the shape that the line will be constructed. range: 0-1.
-    length
+    length : :class:`float`, optional
         Length of the tangent line.
-    d_alpha
+    d_alpha: :class:`float`, optional
         The ``dx`` value
-    kwargs
+    kwargs : Any
         Additional arguments to be passed to :class:`Line`
 
 
@@ -347,14 +346,7 @@ class TangentLine(Line):
                 self.add(circle, line_1, line_2)
     """
 
-    def __init__(
-        self,
-        vmob: VMobject,
-        alpha: float,
-        length: float = 1,
-        d_alpha: float = 1e-6,
-        **kwargs,
-    ):
+    def __init__(self, vmob, alpha, length=1, d_alpha=1e-6, **kwargs):
         self.length = length
         self.d_alpha = d_alpha
         da = self.d_alpha
@@ -371,11 +363,11 @@ class Elbow(VMobject, metaclass=ConvertToOpenGL):
 
     Parameters
     ----------
-    width
+    width : :class:`float`, optional
         The length of the elbow's sides.
-    angle
+    angle : :class:`float`, optional
         The rotation of the elbow.
-    kwargs
+    kwargs : Any
         Additional arguments to be passed to :class:`~.VMobject`
 
     .. seealso::
@@ -396,7 +388,7 @@ class Elbow(VMobject, metaclass=ConvertToOpenGL):
                 self.add(elbow_group)
     """
 
-    def __init__(self, width: float = 0.2, angle: float = 0, **kwargs):
+    def __init__(self, width=0.2, angle=0, **kwargs):
         self.angle = angle
         super().__init__(**kwargs)
         self.set_points_as_corners([UP, UP + RIGHT, RIGHT])
@@ -409,17 +401,17 @@ class Arrow(Line):
 
     Parameters
     ----------
-    args
+    args : Any
         Arguments to be passed to :class:`Line`.
-    stroke_width
+    stroke_width : :class:`float`, optional
         The thickness of the arrow. Influenced by :attr:`max_stroke_width_to_length_ratio`.
-    buff
+    buff : :class:`float`, optional
         The distance of the arrow from its start and end points.
-    max_tip_length_to_length_ratio
+    max_tip_length_to_length_ratio : :class:`float`, optional
         :attr:`tip_length` scales with the length of the arrow. Increasing this ratio raises the max value of :attr:`tip_length`.
-    max_stroke_width_to_length_ratio
+    max_stroke_width_to_length_ratio : :class:`float`, optional
         :attr:`stroke_width` scales with the length of the arrow. Increasing this ratio ratios the max value of :attr:`stroke_width`.
-    kwargs
+    kwargs : Any
         Additional arguments to be passed to :class:`Line`.
 
 
@@ -494,11 +486,11 @@ class Arrow(Line):
 
     def __init__(
         self,
-        *args: Any,
-        stroke_width: float = 6,
-        buff: float = MED_SMALL_BUFF,
-        max_tip_length_to_length_ratio: float = 0.25,
-        max_stroke_width_to_length_ratio: float = 5,
+        *args,
+        stroke_width=6,
+        buff=MED_SMALL_BUFF,
+        max_tip_length_to_length_ratio=0.25,
+        max_stroke_width_to_length_ratio=5,
         **kwargs,
     ):
         self.max_tip_length_to_length_ratio = max_tip_length_to_length_ratio
@@ -598,7 +590,7 @@ class Arrow(Line):
     def _set_stroke_width_from_length(self):
         """Sets stroke width based on length."""
         max_ratio = self.max_stroke_width_to_length_ratio
-        if config.renderer == RendererType.OPENGL:
+        if config.renderer == "opengl":
             self.set_stroke(
                 width=min(self.initial_stroke_width, max_ratio * self.get_length()),
                 recurse=False,
@@ -616,11 +608,11 @@ class Vector(Arrow):
 
     Parameters
     ----------
-    direction
+    direction : Union[:class:`list`, :class:`numpy.ndarray`]
         The direction of the arrow.
-    buff
+    buff : :class:`float`
          The distance of the vector from its endpoints.
-    kwargs
+    kwargs : Any
         Additional arguments to be passed to :class:`Arrow`
 
     Examples
@@ -636,7 +628,7 @@ class Vector(Arrow):
                 self.add(plane, vector_1, vector_2)
     """
 
-    def __init__(self, direction: list | np.ndarray = RIGHT, buff: float = 0, **kwargs):
+    def __init__(self, direction=RIGHT, buff=0, **kwargs):
         self.buff = buff
         if len(direction) == 2:
             direction = np.hstack([direction, 0])
@@ -712,9 +704,9 @@ class DoubleArrow(Arrow):
 
     Parameters
     ----------
-    args
+    args : Any
         Arguments to be passed to :class:`Arrow`
-    kwargs
+    kwargs : Any
         Additional arguments to be passed to :class:`Arrow`
 
 
@@ -752,7 +744,7 @@ class DoubleArrow(Arrow):
                 self.add(box, d1, d2, d3)
     """
 
-    def __init__(self, *args: Any, **kwargs):
+    def __init__(self, *args, **kwargs):
         if "tip_shape_end" in kwargs:
             kwargs["tip_shape"] = kwargs.pop("tip_shape_end")
         tip_shape_start = kwargs.pop("tip_shape_start", ArrowTriangleFilledTip)
@@ -771,7 +763,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         The second line.
     radius :
         The radius of the :class:`Arc`.
-    quadrant
+    quadrant : Sequence[:class:`int`]
         A sequence of two :class:`int` numbers determining which of the 4 quadrants should be used.
         The first value indicates whether to anchor the arc on the first line closer to the end point (1)
         or start point (-1), and the second value functions similarly for the
@@ -781,16 +773,16 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         Toggles between the two possible angles defined by two points and an arc center. If set to
         False (default), the arc will always go counterclockwise from the point on line1 until
         the point on line2 is reached. If set to True, the angle will go clockwise from line1 to line2.
-    dot
+    dot : :class:`bool`
         Allows for a :class:`Dot` in the arc. Mainly used as an convention to indicate a right angle.
         The dot can be customized in the next three parameters.
-    dot_radius
+    dot_radius : :class:`float`
         The radius of the :class:`Dot`. If not specified otherwise, this radius will be 1/10 of the arc radius.
-    dot_distance
+    dot_distance : :class:`float`
         Relative distance from the center to the arc: 0 puts the dot in the center and 1 on the arc itself.
-    dot_color
+    dot_color : :class:`~.Colors`
         The color of the :class:`Dot`.
-    elbow
+    elbow : :class:`bool`
         Produces an elbow-type mobject indicating a right angle, see :class:`RightAngle` for more information
         and a shorthand.
     **kwargs
@@ -874,13 +866,13 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         line1: Line,
         line2: Line,
         radius: float = None,
-        quadrant: Sequence[int] = (1, 1),
+        quadrant=(1, 1),
         other_angle: bool = False,
-        dot: bool = False,
-        dot_radius: float | None = None,
-        dot_distance: float = 0.55,
-        dot_color: Colors = WHITE,
-        elbow: bool = False,
+        dot=False,
+        dot_radius=None,
+        dot_distance=0.55,
+        dot_color=WHITE,
+        elbow=False,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -1022,46 +1014,6 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         if degrees:
             return self.angle_value / DEGREES
         return self.angle_value
-
-    @staticmethod
-    def from_three_points(
-        A: np.ndarray, B: np.ndarray, C: np.ndarray, **kwargs
-    ) -> Angle:
-        """The angle between the lines AB and BC.
-
-        This constructs the angle :math:`\\angle ABC`.
-
-        Parameters
-        ----------
-        A
-            The endpoint of the first angle leg
-        B
-            The vertex of the angle
-        C
-            The endpoint of the second angle leg
-
-        **kwargs
-            Further keyword arguments are passed to :class:`.Angle`
-
-        Returns
-        -------
-        The Angle calculated from the three points
-
-                    Angle(line1, line2, radius=0.5, quadrant=(-1,1), stroke_width=8),
-                    Angle(line1, line2, radius=0.7, quadrant=(-1,-1), color=RED, other_angle=True),
-
-        Examples
-        --------
-        .. manim:: AngleFromThreePointsExample
-            :save_last_frame:
-
-            class AngleFromThreePointsExample(Scene):
-                def construct(self):
-                    sample_angle = Angle.from_three_points(UP, ORIGIN, LEFT)
-                    red_angle = Angle.from_three_points(LEFT + UP, ORIGIN, RIGHT, radius=.8, quadrant=(-1,-1), color=RED, stroke_width=8, other_angle=True)
-                    self.add(red_angle, sample_angle)
-        """
-        return Angle(Line(B, A), Line(B, C), **kwargs)
 
 
 class RightAngle(Angle):

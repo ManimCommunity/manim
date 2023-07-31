@@ -30,7 +30,7 @@ def test_Dot3D(scene):
 
 @frames_comparison(base_scene=ThreeDScene)
 def test_Cone(scene):
-    scene.add(Cone(resolution=16))
+    scene.add(Cone())
 
 
 @frames_comparison(base_scene=ThreeDScene)
@@ -40,16 +40,15 @@ def test_Cylinder(scene):
 
 @frames_comparison(base_scene=ThreeDScene)
 def test_Line3D(scene):
-    line1 = Line3D(resolution=16).shift(LEFT * 2)
-    line2 = Line3D(resolution=16).shift(RIGHT * 2)
-    perp_line = Line3D.perpendicular_to(line1, UP + OUT, resolution=16)
-    parallel_line = Line3D.parallel_to(line2, DOWN + IN, resolution=16)
+    line1, line2 = Line3D().shift(LEFT * 2), Line3D().shift(RIGHT * 2)
+    perp_line = Line3D.perpendicular_to(line1, UP + OUT)
+    parallel_line = Line3D.parallel_to(line2, DOWN + IN)
     scene.add(line1, line2, perp_line, parallel_line)
 
 
 @frames_comparison(base_scene=ThreeDScene)
 def test_Arrow3D(scene):
-    scene.add(Arrow3D(resolution=16))
+    scene.add(Arrow3D())
 
 
 @frames_comparison(base_scene=ThreeDScene)
@@ -104,7 +103,7 @@ def test_MovingVertices(scene):
 
 @frames_comparison(base_scene=ThreeDScene)
 def test_SurfaceColorscale(scene):
-    resolution_fa = 16
+    resolution_fa = 50
     scene.set_camera_orientation(phi=75 * DEGREES, theta=-30 * DEGREES)
     axes = ThreeDAxes(x_range=(-3, 3, 1), y_range=(-3, 3, 1), z_range=(-4, 4, 1))
 
@@ -120,15 +119,13 @@ def test_SurfaceColorscale(scene):
         v_range=[-3, 3],
         u_range=[-3, 3],
     )
-    trig_plane.set_fill_by_value(
-        axes=axes, colorscale=[BLUE, GREEN, YELLOW, ORANGE, RED]
-    )
+    trig_plane.set_fill_by_value(axes=axes, colors=[BLUE, GREEN, YELLOW, ORANGE, RED])
     scene.add(axes, trig_plane)
 
 
 @frames_comparison(base_scene=ThreeDScene)
 def test_Y_Direction(scene):
-    resolution_fa = 16
+    resolution_fa = 42
     scene.set_camera_orientation(phi=75 * DEGREES, theta=-120 * DEGREES)
     axes = ThreeDAxes(x_range=(0, 5, 1), y_range=(0, 5, 1), z_range=(-1, 1, 0.5))
 
@@ -146,6 +143,6 @@ def test_Y_Direction(scene):
     )
     surface_plane.set_style(fill_opacity=1)
     surface_plane.set_fill_by_value(
-        axes=axes, colorscale=[(RED, -0.4), (YELLOW, 0), (GREEN, 0.4)], axis=1
+        axes=axes, colors=[(RED, -0.4), (YELLOW, 0), (GREEN, 0.4)], axis=1
     )
     scene.add(axes, surface_plane)
