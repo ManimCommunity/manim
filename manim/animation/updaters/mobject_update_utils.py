@@ -57,7 +57,7 @@ def f_always(method, *arg_generators, **kwargs):
 
 def always_redraw(func):
     """Always redraw a mobject
-        
+
     .. manim:: TangentAnimation
 
         class TangentAnimation(Scene):
