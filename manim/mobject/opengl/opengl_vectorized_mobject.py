@@ -1301,7 +1301,7 @@ class OpenGLVMobject(OpenGLMobject):
             if self.has_fill():
                 tri1 = mobject1.get_triangulation()
                 tri2 = mobject2.get_triangulation()
-                if len(tri1) != len(tri1) or not np.all(tri1 == tri2):
+                if len(tri1) != len(tri2) or not np.all(tri1 == tri2):
                     self.refresh_triangulation()
         return self
 
