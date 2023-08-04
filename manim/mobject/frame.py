@@ -14,7 +14,12 @@ from .. import config
 
 
 class ScreenRectangle(Rectangle):
-    def __init__(self, aspect_ratio=config["frame_width"] / config["frame_height"], height=config["frame_height"], **kwargs):
+    def __init__(
+        self,
+        aspect_ratio=config["frame_width"] / config["frame_height"],
+        height=config["frame_height"],
+        **kwargs,
+    ):
         super().__init__(width=aspect_ratio * height, height=height, **kwargs)
 
     @property
