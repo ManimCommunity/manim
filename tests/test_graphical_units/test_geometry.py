@@ -247,3 +247,25 @@ def test_CurvedArrowCustomTip(scene):
         tip_shape_end=ArrowSquareFilledTip,
     )
     scene.add(arrow, double_arrow)
+
+
+@frames_comparison
+def test_LabeledLine(scene):
+    line = LabeledLine(
+        label="0.5",
+        label_position=0.8,
+        font_size=20,
+        label_color=WHITE,
+        label_frame=True,
+        start=LEFT + DOWN,
+        end=RIGHT + UP,
+    )
+    scene.add(line)
+
+
+@frames_comparison
+def test_LabeledArrow(scene):
+    l_arrow = LabeledArrow(
+        "0.5", start=LEFT * 3, end=RIGHT * 3 + UP * 2, label_position=0.5, font_size=15
+    )
+    scene.add(l_arrow)
