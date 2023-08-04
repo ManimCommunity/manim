@@ -56,8 +56,33 @@ def f_always(method, *arg_generators, **kwargs):
 
 
 def always_redraw(func):
+    """Always redraw a mobject
+        
+    .. manim:: TangentAnimation
+
+        class TangentAnimation(Scene):
+            def construct(self):
+                ax = Axes()
+                sine = ax.plot(np.sin, color=RED)
+                alpha = ValueTracker(0)
+                d = Dot(color=BLUE)
+                d.add_updater(
+                    lambda m: m.move_to(
+                        sine.point_from_proportion(alpha.get_value())),
+                        call_updater=True
+                )
+                t = always_redraw(
+                    lambda: TangentLine(
+                        sine,
+                        alpha=alpha.get_value(),
+                        color=YELLOW,
+                        length=4)
+                )
+                self.play(Create(ax), Create(sine), Create(d), Create(t))
+                self.play(alpha.animate.set_value(1), rate_func=linear, run_time=10)
+    """
     mob = func()
-    mob.add_updater(lambda m: mob.become(func()))
+    mob.add_updater(lambda _: mob.become(func()))
     return mob
 
 
