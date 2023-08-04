@@ -78,7 +78,7 @@ def always_redraw(func):
                         length=4)
                 )
                 self.play(Create(ax), Create(sine), Create(point), Create(tangent))
-                self.play(alpha.animate.set_value(1), rate_func=linear, run_time=10)
+                self.play(alpha.animate.set_value(1), rate_func=linear, run_time=3)
     """
     mob = func()
     mob.add_updater(lambda _: mob.become(func()))
