@@ -144,7 +144,7 @@ def test_number_plane_log(scene):
 
 
 @frames_comparison
-def test_gradient_line_graph(scene):
+def test_gradient_line_graph_x_axis(scene):
     """Test that using `colorscale` generates a line whose gradient matches the y-axis"""
     axes = Axes(x_range=[-3, 3], y_range=[-3, 3])
 
@@ -152,6 +152,22 @@ def test_gradient_line_graph(scene):
         lambda x: 0.1 * x**3,
         x_range=(-3, 3, 0.001),
         colorscale=[BLUE, GREEN, YELLOW, ORANGE, RED],
+        colorscale_axis=0,
+    )
+
+    scene.add(axes, curve)
+
+
+@frames_comparison
+def test_gradient_line_graph_y_axis(scene):
+    """Test that using `colorscale` generates a line whose gradient matches the y-axis"""
+    axes = Axes(x_range=[-3, 3], y_range=[-3, 3])
+
+    curve = axes.plot(
+        lambda x: 0.1 * x**3,
+        x_range=(-3, 3, 0.001),
+        colorscale=[BLUE, GREEN, YELLOW, ORANGE, RED],
+        colorscale_axis=1,
     )
 
     scene.add(axes, curve)
