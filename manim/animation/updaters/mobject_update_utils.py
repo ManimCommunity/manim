@@ -18,6 +18,8 @@ import inspect
 
 import numpy as np
 
+from collections.abc import Callable
+
 from manim.constants import DEGREES, RIGHT
 from manim.mobject.mobject import Mobject
 from manim.opengl import OpenGLMobject
@@ -55,7 +57,7 @@ def f_always(method, *arg_generators, **kwargs):
     return mobject
 
 
-def always_redraw(func):
+def always_redraw(func: Callable[[], Mobject]):
     """Redraw a mobject every frame.
 
     .. manim:: TangentAnimation
