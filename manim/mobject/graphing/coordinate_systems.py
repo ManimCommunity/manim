@@ -734,8 +734,11 @@ class CoordinateSystem:
                             )
                             color_list.append(mob_color)
                             break
-            graph.set_stroke(color_list)
-            graph.set_sheen_direction(RIGHT)
+            if config.renderer == RendererType.OPENGL:
+                graph.set_color(color_list)
+            else:
+                graph.set_stroke(color_list)
+                graph.set_sheen_direction(RIGHT)
 
         return graph
 
