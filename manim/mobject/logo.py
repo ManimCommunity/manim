@@ -166,7 +166,9 @@ class ManimBanner(VGroup):
         anim = VGroup()
         for ind, path in enumerate(MANIM_SVG_PATHS[1:]):
             tex = VMobjectFromSVGPath(path).flip(cst.RIGHT).center()
-            tex.set(stroke_width=0).scale(48 / 960)
+            tex.set(stroke_width=0).scale(
+                cst.DEFAULT_FONT_SIZE * cst.SCALE_FACTOR_PER_FONT_POINT
+            )
             if ind > 0:
                 tex.next_to(anim, buff=0.01)
             tex.align_to(self.M, cst.DOWN)
