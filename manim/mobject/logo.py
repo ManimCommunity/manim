@@ -11,7 +11,6 @@ from manim.mobject.geometry.arc import Circle
 from manim.mobject.geometry.polygram import Square, Triangle
 
 from .. import constants as cst
-
 from ..animation.animation import override_animation
 from ..animation.composition import AnimationGroup, Succession
 from ..animation.creation import Create, SpiralIn
@@ -153,7 +152,9 @@ class ManimBanner(VGroup):
         self.M.set(stroke_width=0).scale(
             7 * cst.DEFAULT_FONT_SIZE * cst.SCALE_FACTOR_PER_FONT_POINT
         )
-        self.M.set_fill(color=self.font_color, opacity=1).shift(2.25 * cst.LEFT + 1.5 * cst.UP)
+        self.M.set_fill(color=self.font_color, opacity=1).shift(
+            2.25 * cst.LEFT + 1.5 * cst.UP
+        )
 
         self.circle = Circle(color=logo_green, fill_opacity=1).shift(cst.LEFT)
         self.square = Square(color=logo_blue, fill_opacity=1).shift(cst.UP)
