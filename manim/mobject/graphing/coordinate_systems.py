@@ -711,13 +711,15 @@ class CoordinateSystem:
                     step=pivot_frequency,
                 )
 
-            new_graph = CurvesAsSubmobjects(graph)
-            for mob in new_graph.family_members_with_points():
-                axis_value = self.point_to_coords(mob.get_midpoint())[colorscale_axis]
+            resolution = 0.01 if len(x_range) == 2 else x_range[2]
+            sample_points = np.arange(x_range[0], x_range[1] + resolution, resolution)
+            color_list = []
+            for samp_x in sample_points:
+                axis_value = (samp_x, function(samp_x))[colorscale_axis]
                 if axis_value <= pivots[0]:
-                    mob.set_color(new_colors[0])
+                    color_list.append(new_colors[0])
                 elif axis_value >= pivots[-1]:
-                    mob.set_color(new_colors[-1])
+                    color_list.append(new_colors[-1])
                 else:
                     for i, pivot in enumerate(pivots):
                         if pivot > axis_value:
@@ -730,12 +732,10 @@ class CoordinateSystem:
                                 new_colors[i],
                                 color_index,
                             )
-                            if config.renderer == RendererType.OPENGL:
-                                mob.set_color(mob_color, recurse=False)
-                            elif config.renderer == RendererType.CAIRO:
-                                mob.set_color(mob_color, family=False)
+                            color_list.append(mob_color)
                             break
-            graph = new_graph
+            graph.set_stroke(color_list)
+            graph.set_sheen_direction(RIGHT)
 
         return graph
 
