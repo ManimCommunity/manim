@@ -10,14 +10,15 @@ from manim.animation.updaters.update import UpdateFromAlphaFunc
 from manim.mobject.geometry.arc import Circle
 from manim.mobject.geometry.polygram import Square, Triangle
 
+from .. import constants as cst
+
 from ..animation.animation import override_animation
 from ..animation.composition import AnimationGroup, Succession
 from ..animation.creation import Create, SpiralIn
 from ..animation.fading import FadeIn
-from ..constants import DOWN, LEFT, ORIGIN, RIGHT, TAU, UP
 from ..mobject.svg.svg_mobject import VMobjectFromSVGPath
 from ..mobject.types.vectorized_mobject import VGroup
-from ..utils.rate_functions import ease_in_out_cubic, ease_out_sine, smooth
+from ..utils.rate_functions import ease_in_out_cubic, smooth
 
 MANIM_SVG_PATHS: list[se.Path] = [
     se.Path(  # double stroke letter M
@@ -148,24 +149,26 @@ class ManimBanner(VGroup):
         self.font_color = "#ece6e2" if dark_theme else "#343434"
         self.scale_factor = 1
 
-        self.M = VMobjectFromSVGPath(MANIM_SVG_PATHS[0]).flip(RIGHT).center()
-        self.M.set(stroke_width=0).scale(7 * 48 / 960)
-        self.M.set_fill(color=self.font_color, opacity=1).shift(2.25 * LEFT + 1.5 * UP)
+        self.M = VMobjectFromSVGPath(MANIM_SVG_PATHS[0]).flip(cst.RIGHT).center()
+        self.M.set(stroke_width=0).scale(
+            7 * cst.DEFAULT_FONT_SIZE * cst.SCALE_FACTOR_PER_FONT_POINT
+        )
+        self.M.set_fill(color=self.font_color, opacity=1).shift(2.25 * cst.LEFT + 1.5 * cst.UP)
 
-        self.circle = Circle(color=logo_green, fill_opacity=1).shift(LEFT)
-        self.square = Square(color=logo_blue, fill_opacity=1).shift(UP)
-        self.triangle = Triangle(color=logo_red, fill_opacity=1).shift(RIGHT)
+        self.circle = Circle(color=logo_green, fill_opacity=1).shift(cst.LEFT)
+        self.square = Square(color=logo_blue, fill_opacity=1).shift(cst.UP)
+        self.triangle = Triangle(color=logo_red, fill_opacity=1).shift(cst.RIGHT)
         self.shapes = VGroup(self.triangle, self.square, self.circle)
         self.add(self.shapes, self.M)
-        self.move_to(ORIGIN)
+        self.move_to(cst.ORIGIN)
 
         anim = VGroup()
         for ind, path in enumerate(MANIM_SVG_PATHS[1:]):
-            tex = VMobjectFromSVGPath(path).flip(RIGHT).center()
+            tex = VMobjectFromSVGPath(path).flip(cst.RIGHT).center()
             tex.set(stroke_width=0).scale(48 / 960)
             if ind > 0:
                 tex.next_to(anim, buff=0.01)
-            tex.align_to(self.M, DOWN)
+            tex.align_to(self.M, cst.DOWN)
             anim.add(tex)
         anim.set_fill(color=self.font_color, opacity=1)
         anim.height = m_height_over_anim_height * self.M.height
@@ -261,7 +264,7 @@ class ManimBanner(VGroup):
         m_shape_offset = 6.25 * self.scale_factor
         shape_sliding_overshoot = self.scale_factor * 0.8
         m_anim_buff = 0.06
-        self.anim.next_to(self.M, buff=m_anim_buff).align_to(self.M, DOWN)
+        self.anim.next_to(self.M, buff=m_anim_buff).align_to(self.M, cst.DOWN)
         self.anim.set_opacity(0)
         self.shapes.save_state()
         m_clone = self.anim[-1].copy()
@@ -273,7 +276,7 @@ class ManimBanner(VGroup):
 
         def shift(vector):
             self.shapes.restore()
-            left_group.align_to(self.M.saved_state, LEFT)
+            left_group.align_to(self.M.saved_state, cst.LEFT)
             if direction == "right":
                 self.shapes.shift(vector)
             elif direction == "center":
@@ -283,7 +286,7 @@ class ManimBanner(VGroup):
                 left_group.shift(-vector)
 
         def slide_and_uncover(mob, alpha):
-            shift(alpha * (m_shape_offset + shape_sliding_overshoot) * RIGHT)
+            shift(alpha * (m_shape_offset + shape_sliding_overshoot) * cst.RIGHT)
 
             # Add letters when they are covered
             for letter in mob.anim:
@@ -305,7 +308,7 @@ class ManimBanner(VGroup):
                 m_clone.move_to(mob.anim[-1])
                 mob.anim.set_opacity(1)
 
-            shift(alpha * shape_sliding_overshoot * LEFT)
+            shift(alpha * shape_sliding_overshoot * cst.LEFT)
 
             if alpha == 1:
                 mob.remove(m_clone)
