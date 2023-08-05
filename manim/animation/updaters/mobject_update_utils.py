@@ -15,10 +15,9 @@ __all__ = [
 
 
 import inspect
+from collections.abc import Callable
 
 import numpy as np
-
-from collections.abc import Callable
 
 from manim.constants import DEGREES, RIGHT
 from manim.mobject.mobject import Mobject
