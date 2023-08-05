@@ -1405,7 +1405,7 @@ class VMobject(Mobject):
 
         s = self.get_start_anchors()
         e = self.get_end_anchors()
-        return [s[i // 2] if i % 2 == 0 else e[i // 2] for i in range(len(s) + len(e))]
+        return list(it.chain.from_iterable(zip(s, e)))
 
     def get_points_defining_boundary(self):
         # Probably returns all anchors, but this is weird regarding  the name of the method.
