@@ -385,10 +385,10 @@ class Scene:
                 or self.updaters
                 or wait_animation.stop_condition is not None
                 or any(
-                    [
+                    (
                         mob.has_time_based_updater()
                         for mob in self.get_mobject_family_members()
-                    ],
+                    ),
                 )
             )
             wait_animation.is_static_wait = not should_update
@@ -1524,8 +1524,10 @@ class Scene:
         subtitle = srt.Subtitle(
             index=len(self.renderer.file_writer.subcaptions),
             content=content,
-            start=datetime.timedelta(seconds=self.renderer.time + offset),
-            end=datetime.timedelta(seconds=self.renderer.time + offset + duration),
+            start=datetime.timedelta(seconds=float(self.renderer.time + offset)),
+            end=datetime.timedelta(
+                seconds=float(self.renderer.time + offset + duration)
+            ),
         )
         self.renderer.file_writer.subcaptions.append(subtitle)
 
