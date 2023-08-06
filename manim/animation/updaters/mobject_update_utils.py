@@ -56,7 +56,7 @@ def f_always(method, *arg_generators, **kwargs):
     return mobject
 
 
-def always_redraw(func: Callable[[], Mobject]):
+def always_redraw(func: Callable[[], Mobject]) -> Mobject:
     """Redraw the mobject constructed by a function every frame.
 
     This function returns a mobject with an attached updater that
