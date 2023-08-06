@@ -558,11 +558,12 @@ class LinearTransformationScene(VectorScene):
     .. manim:: LinearTransformationSceneExample
 
         class LinearTransformationSceneExample(LinearTransformationScene):
-            def __init__(self):
+            def __init__(self, **kwargs):
                 LinearTransformationScene.__init__(
                     self,
                     show_coordinates=True,
                     leave_ghost_vectors=True,
+                    *kwargs
                 )
 
             def construct(self):

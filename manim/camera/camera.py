@@ -886,8 +886,10 @@ class Camera:
         thickness: float,
         pixel_array: np.ndarray,
     ):
-        """Displays a PMobject by modifying the Pixel array suitably..
+        """Displays a PMobject by modifying the pixel array suitably.
+
         TODO: Write a description for the rgbas argument.
+
         Parameters
         ----------
         pmobject
@@ -1122,17 +1124,19 @@ class Camera:
             ],
         )
 
-    def adjusted_thickness(self, thickness: float):
-        """
+    def adjusted_thickness(self, thickness: float) -> float:
+        """Computes the adjusted stroke width for a zoomed camera.
 
         Parameters
         ----------
         thickness
+            The stroke width of a mobject.
 
         Returns
         -------
         float
-
+            The adjusted stroke width that reflects zooming in with
+            the camera.
         """
         # TODO: This seems...unsystematic
         big_sum = op.add(config["pixel_height"], config["pixel_width"])
@@ -1141,7 +1145,8 @@ class Camera:
         return 1 + (thickness - 1) * factor
 
     def get_thickening_nudges(self, thickness: float):
-        """
+        """Determine a list of vectors used to nudge
+        two-dimensional pixel coordinates.
 
         Parameters
         ----------
@@ -1215,13 +1220,16 @@ class Camera:
 # NOTE: The methods of the following class have not been mentioned outside of their definitions.
 # Their DocStrings are not as detailed as preferred.
 class BackgroundColoredVMobjectDisplayer:
+    """Auxiliary class that handles displaying vectorized mobjects with
+    a set background image.
+
+    Parameters
+    ----------
+    camera
+        Camera object to use.
+    """
+
     def __init__(self, camera: Camera):
-        """
-        Parameters
-        ----------
-        camera
-            Camera object to use.
-        """
         self.camera = camera
         self.file_name_to_pixel_array_map = {}
         self.pixel_array = np.array(camera.pixel_array)

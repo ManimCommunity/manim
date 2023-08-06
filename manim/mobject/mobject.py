@@ -160,7 +160,7 @@ class Mobject:
             The animation type to be overridden
         override_func
             The function returning an animation replacing the default animation. It gets
-            passed the parameters given to the animnation constructor.
+            passed the parameters given to the animation constructor.
 
         Raises
         ------
