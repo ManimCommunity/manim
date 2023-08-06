@@ -1530,8 +1530,10 @@ class Scene:
         subtitle = srt.Subtitle(
             index=len(self.renderer.file_writer.subcaptions),
             content=content,
-            start=datetime.timedelta(seconds=self.renderer.time + offset),
-            end=datetime.timedelta(seconds=self.renderer.time + offset + duration),
+            start=datetime.timedelta(seconds=float(self.renderer.time + offset)),
+            end=datetime.timedelta(
+                seconds=float(self.renderer.time + offset + duration)
+            ),
         )
         self.renderer.file_writer.subcaptions.append(subtitle)
 
