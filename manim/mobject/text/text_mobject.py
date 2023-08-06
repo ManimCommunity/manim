@@ -433,6 +433,7 @@ class Text(SVGMobject):
         width: float = None,
         should_center: bool = True,
         disable_ligatures: bool = False,
+        use_svg_cache: bool = False,
         **kwargs,
     ) -> None:
         self.line_spacing = line_spacing
@@ -495,7 +496,7 @@ class Text(SVGMobject):
             height=height,
             width=width,
             should_center=should_center,
-            use_svg_cache=False,
+            use_svg_cache=use_svg_cache,
             **kwargs,
         )
         self.text = text
@@ -1161,8 +1162,8 @@ class MarkupText(SVGMobject):
             Text.font_list = (
                 Text.font_list if len(Text.font_list) > 0 else manimpango.list_fonts()
             )
-            if font not in Text.fonts_list:
-                logger.warning(f"Font {font} not in {Text.fonts_list}.")
+            if font not in Text.font_list:
+                logger.warning(f"Font {font} not in {Text.font_list}.")
         self.font = font
         self._font_size = float(font_size)
         self.slant = slant
