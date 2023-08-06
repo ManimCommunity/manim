@@ -57,7 +57,20 @@ def f_always(method, *arg_generators, **kwargs):
 
 
 def always_redraw(func: Callable[[], Mobject]):
-    """Redraw a mobject every frame.
+    """Redraw the mobject constructed by a function every frame.
+
+    This function returns a mobject with an attached updater that
+    continuously regenerates the mobject according to the
+    specified function.
+
+    Parameters
+    ----------
+    func
+        A function without (required) input arguments that returns
+        a mobject.
+
+    Examples
+    --------
 
     .. manim:: TangentAnimation
 
