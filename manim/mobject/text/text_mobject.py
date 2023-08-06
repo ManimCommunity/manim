@@ -407,6 +407,7 @@ class Text(SVGMobject):
         Text('The horse does not eat cucumber salad.')
 
     """
+    font_list = []
 
     def __init__(
         self,
@@ -436,9 +437,11 @@ class Text(SVGMobject):
     ) -> None:
         self.line_spacing = line_spacing
         if font and warn_missing_font:
-            fonts_list = manimpango.list_fonts()
-            if font not in fonts_list:
-                logger.warning(f"Font {font} not in {fonts_list}.")
+            Text.font_list = (
+                Text.font_list if len(Text.font_list) > 0 else manimpango.list_fonts()
+            )
+            if font not in Text.font_list:
+                logger.warning(f"Font {font} not in {Text.font_list}.")
         self.font = font
         self._font_size = float(font_size)
         # needs to be a float or else size is inflated when font_size = 24
@@ -1155,9 +1158,11 @@ class MarkupText(SVGMobject):
         self.text = text
         self.line_spacing = line_spacing
         if font and warn_missing_font:
-            fonts_list = manimpango.list_fonts()
-            if font not in fonts_list:
-                logger.warning(f"Font {font} not in {fonts_list}.")
+            Text.font_list = (
+                Text.font_list if len(Text.font_list) > 0 else manimpango.list_fonts()
+            )
+            if font not in Text.fonts_list:
+                logger.warning(f"Font {font} not in {Text.fonts_list}.")
         self.font = font
         self._font_size = float(font_size)
         self.slant = slant
