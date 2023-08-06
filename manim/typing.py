@@ -83,3 +83,14 @@ MatrixMN: TypeAlias = npt.NDArray[PointDType]
 # Due to current limitations (see https://github.com/python/mypy/issues/14656 / 8263), we don't specify the first argument type (Mobject).
 FunctionOverride: TypeAlias = Callable[..., Animation]
 """Function type returning an animation for the specified Mobject."""
+
+
+# Misc
+PathFuncType = Callable[[Point3D, Point3D, float], Point3D]
+"""Function type taking two points and an alpha value, and returning a new `Point3D`"""
+
+MappingFunction = Callable[[Point3D], Point3D]
+"""A function taking mapping a Point3D to another Point3D"""
+
+Image = np.ndarray
+"""An Image"""
