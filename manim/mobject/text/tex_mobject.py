@@ -38,8 +38,6 @@ from manim.mobject.types.vectorized_mobject import VectorizedPoint, VGroup, VMob
 from manim.utils.tex import TexTemplate
 from manim.utils.tex_file_writing import tex_to_svg_file
 
-SCALE_FACTOR_PER_FONT_POINT = 1 / 960
-
 tex_string_to_mob_map = {}
 
 

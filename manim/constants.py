@@ -62,6 +62,7 @@ __all__ = [
     "DEFAULT_POINT_DENSITY_1D",
     "DEFAULT_STROKE_WIDTH",
     "DEFAULT_FONT_SIZE",
+    "SCALE_FACTOR_PER_FONT_POINT",
     "PI",
     "TAU",
     "DEGREES",
@@ -183,6 +184,7 @@ DEFAULT_POINT_DENSITY_2D: int = 25
 DEFAULT_POINT_DENSITY_1D: int = 10
 DEFAULT_STROKE_WIDTH: int = 4
 DEFAULT_FONT_SIZE: float = 48
+SCALE_FACTOR_PER_FONT_POINT: float = 1 / 960
 
 # Mathematical constants
 PI: float = np.pi
