@@ -9,7 +9,6 @@ import pathlib
 import colour
 import numpy as np
 from PIL import Image
-from PIL.Image import Resampling
 
 from manim.mobject.geometry.shape_matchers import SurroundingRectangle
 
@@ -39,7 +38,7 @@ class AbstractImageMobject(Mobject):
         self,
         scale_to_resolution: int,
         pixel_array_dtype="uint8",
-        resampling_algorithm=Resampling.BICUBIC,
+        resampling_algorithm=Image.BICUBIC,
         **kwargs,
     ):
         self.pixel_array_dtype = pixel_array_dtype
@@ -166,6 +165,8 @@ class ImageMobject(AbstractImageMobject):
                 x.arrange()
                 self.add(x)
     """
+
+    image_cache = {}
 
     def __init__(
         self,

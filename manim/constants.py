@@ -8,7 +8,9 @@ from enum import Enum
 
 import numpy as np
 from cloup import Context
-from PIL.Image import Resampling
+
+# from PIL.Image import Resampling
+from PIL import Image
 
 __all__ = [
     "SCENE_NOT_FOUND_MESSAGE",
@@ -107,16 +109,16 @@ HEAVY: str = "HEAVY"
 ULTRAHEAVY: str = "ULTRAHEAVY"
 
 RESAMPLING_ALGORITHMS = {
-    "nearest": Resampling.NEAREST,
-    "none": Resampling.NEAREST,
-    "lanczos": Resampling.LANCZOS,
-    "antialias": Resampling.LANCZOS,
-    "bilinear": Resampling.BILINEAR,
-    "linear": Resampling.BILINEAR,
-    "bicubic": Resampling.BICUBIC,
-    "cubic": Resampling.BICUBIC,
-    "box": Resampling.BOX,
-    "hamming": Resampling.HAMMING,
+    "nearest": Image.NEAREST,
+    "none": Image.NEAREST,
+    "lanczos": Image.LANCZOS,
+    "antialias": Image.LANCZOS,
+    "bilinear": Image.BILINEAR,
+    "linear": Image.BILINEAR,
+    "bicubic": Image.BICUBIC,
+    "cubic": Image.BICUBIC,
+    "box": Image.BOX,
+    "hamming": Image.HAMMING,
 }
 
 # Geometry: directions
