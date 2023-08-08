@@ -956,9 +956,9 @@ def random_color() -> ManimColor:
     ManimColor
         _description_
     """
-    from .manim_colors import _all_manim_colors
+    import manim.utils.color.manim_colors as manim_colors
 
-    return random.choice(_all_manim_colors)
+    return random.choice(manim_colors._all_manim_colors)
 
 
 def get_shaded_rgb(
