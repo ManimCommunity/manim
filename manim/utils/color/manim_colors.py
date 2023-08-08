@@ -121,6 +121,8 @@ These colors form Manim's default color space.
 
 """
 
+from typing import List
+
 from .core import ManimColor
 
 WHITE: ManimColor = ManimColor("#FFFFFF")
@@ -213,6 +215,6 @@ LOGO_BLUE = ManimColor("#525893")
 LOGO_RED = ManimColor("#E07A5F")
 LOGO_BLACK = ManimColor("#343434")
 
-_all_manim_colors: list[ManimColor] = [
+_all_manim_colors: List[ManimColor] = [
     x for x in globals().values() if isinstance(x, ManimColor)
 ]
