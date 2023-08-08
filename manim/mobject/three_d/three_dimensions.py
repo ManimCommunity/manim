@@ -16,7 +16,7 @@ __all__ = [
     "Torus",
 ]
 
-from typing import TYPE_CHECKING
+from typing import Callable, Sequence
 
 import numpy as np
 
@@ -28,14 +28,18 @@ from manim.mobject.mobject import *
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
-from manim.utils.color import *
+from manim.utils.color import (
+    BLUE,
+    BLUE_D,
+    BLUE_E,
+    LIGHT_GREY,
+    WHITE,
+    ManimColor,
+    ParsableManimColor,
+    interpolate_color,
+)
 from manim.utils.iterables import tuplify
 from manim.utils.space_ops import normalize, perpendicular_bisector, z_to_vector
-
-if TYPE_CHECKING:
-    from typing import *
-
-    from colour import Color
 
 
 class ThreeDVMobject(VMobject, metaclass=ConvertToOpenGL):
@@ -102,10 +106,10 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         v_range: Sequence[float] = [0, 1],
         resolution: Sequence[int] = 32,
         surface_piece_config: dict = {},
-        fill_color: Color = BLUE_D,
+        fill_color: ParsableManimColor = BLUE_D,
         fill_opacity: float = 1.0,
-        checkerboard_colors: Sequence[Color] = [BLUE_D, BLUE_E],
-        stroke_color: Color = LIGHT_GREY,
+        checkerboard_colors: Sequence[ParsableManimColor] | bool = [BLUE_D, BLUE_E],
+        stroke_color: ParsableManimColor = LIGHT_GREY,
         stroke_width: float = 0.5,
         should_make_jagged: bool = False,
         pre_function_handle_to_anchor_scale_factor: float = 0.00001,
@@ -116,10 +120,15 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         super().__init__(**kwargs)
         self.resolution = resolution
         self.surface_piece_config = surface_piece_config
-        self.fill_color = fill_color
+        self.fill_color: ManimColor = ManimColor(fill_color)
         self.fill_opacity = fill_opacity
-        self.checkerboard_colors = checkerboard_colors
-        self.stroke_color = stroke_color
+        if checkerboard_colors:
+            self.checkerboard_colors: list[ManimColor] = [
+                ManimColor(x) for x in checkerboard_colors
+            ]
+        else:
+            self.checkerboard_colors = checkerboard_colors
+        self.stroke_color: ManimColor = ManimColor(stroke_color)
         self.stroke_width = stroke_width
         self.should_make_jagged = should_make_jagged
         self.pre_function_handle_to_anchor_scale_factor = (
@@ -188,7 +197,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
             self.set_fill_by_checkerboard(*self.checkerboard_colors)
 
     def set_fill_by_checkerboard(
-        self, *colors: Sequence[Color], opacity: float = None
+        self, *colors: Sequence[ParsableManimColor], opacity: float = None
     ) -> Mobject:
         """Sets the fill_color of each face of :class:`Surface` in
         an alternating pattern.
@@ -215,7 +224,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
     def set_fill_by_value(
         self,
         axes: Mobject,
-        colorscale: Union[Iterable[Color], Color] | None = None,
+        colorscale: list[ParsableManimColor] | ParsableManimColor | None = None,
         axis: int = 2,
         **kwargs,
     ) -> Mobject:
@@ -449,8 +458,8 @@ class Dot3D(Sphere):
         self,
         point: list | np.ndarray = ORIGIN,
         radius: float = DEFAULT_DOT_RADIUS,
-        color: Color = WHITE,
-        resolution: Sequence[int] = (8, 8),
+        color: ParsableManimColor = WHITE,
+        resolution=(8, 8),
         **kwargs,
     ) -> None:
         super().__init__(center=point, radius=radius, resolution=resolution, **kwargs)
@@ -491,7 +500,7 @@ class Cube(VGroup):
         self,
         side_length: float = 2,
         fill_opacity: float = 0.75,
-        fill_color: Color = BLUE,
+        fill_color: ParsableManimColor = BLUE,
         stroke_width: float = 0,
         **kwargs,
     ) -> None:
@@ -901,7 +910,7 @@ class Line3D(Cylinder):
         start: np.ndarray = LEFT,
         end: np.ndarray = RIGHT,
         thickness: float = 0.02,
-        color: Color = None,
+        color: ParsableManimColor = None,
         **kwargs,
     ):
         self.thickness = thickness
@@ -1124,7 +1133,7 @@ class Arrow3D(Line3D):
         thickness: float = 0.02,
         height: float = 0.3,
         base_radius: float = 0.08,
-        color: Color = WHITE,
+        color: ParsableManimColor = WHITE,
         **kwargs,
     ) -> None:
         super().__init__(

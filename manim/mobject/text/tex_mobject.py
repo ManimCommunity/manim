@@ -12,6 +12,8 @@ r"""Mobjects representing text rendered using LaTeX.
 
 from __future__ import annotations
 
+from manim.utils.color import ManimColor
+
 __all__ = [
     "SingleStringMathTex",
     "MathTex",
@@ -28,8 +30,6 @@ from functools import reduce
 from textwrap import dedent
 from typing import Dict, Iterable, Optional
 
-from colour import Color
-
 from manim import config, logger
 from manim.constants import *
 from manim.mobject.geometry.line import Line
@@ -37,8 +37,6 @@ from manim.mobject.svg.svg_mobject import SVGMobject
 from manim.mobject.types.vectorized_mobject import VectorizedPoint, VGroup, VMobject
 from manim.utils.tex import TexTemplate
 from manim.utils.tex_file_writing import tex_to_svg_file
-
-SCALE_FACTOR_PER_FONT_POINT = 1 / 960
 
 tex_string_to_mob_map = {}
 
@@ -255,7 +253,7 @@ class MathTex(SingleStringMathTex):
         *tex_strings,
         arg_separator: str = " ",
         substrings_to_isolate: Iterable[str] | None = None,
-        tex_to_color_map: dict[str, Color] = None,
+        tex_to_color_map: dict[str, ManimColor] = None,
         tex_environment: str = "align*",
         **kwargs,
     ):
