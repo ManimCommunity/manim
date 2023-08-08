@@ -15,7 +15,7 @@ __all__ = [
 import itertools as it
 import sys
 import typing
-from typing import Callable, Optional, Sequence, Union
+from typing import Callable, Sequence
 
 import numpy as np
 from PIL.Image import Image
@@ -37,8 +37,7 @@ from ...utils.bezier import (
     partial_bezier_points,
     proportions_along_bezier_curve_for_point,
 )
-from ...utils.color import BLACK, WHITE, ManimColor, ParsableManimColor, color_to_rgba
-from ...utils.deprecation import deprecated
+from ...utils.color import BLACK, WHITE, ManimColor, ParsableManimColor
 from ...utils.iterables import make_even, resize_array, stretch_array_to_length, tuplify
 from ...utils.space_ops import rotate_vector, shoelace_direction
 
