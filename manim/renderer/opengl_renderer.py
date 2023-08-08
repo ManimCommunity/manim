@@ -257,6 +257,12 @@ class OpenGLRenderer:
                 self.window = Window(self)
                 self.context = self.window.ctx
                 self.frame_buffer_object = self.context.detect_framebuffer()
+                self.frame_buffer_object_msaa = self.get_frame_buffer_object(
+                    self.context,
+                    4,
+                    self.frame_buffer_object.width,
+                    self.frame_buffer_object.height,
+                )
             else:
                 self.window = None
                 try:
@@ -267,7 +273,10 @@ class OpenGLRenderer:
                         backend="egl",
                     )
                 self.frame_buffer_object = self.get_frame_buffer_object(self.context, 0)
-                self.frame_buffer_object.use()
+                self.frame_buffer_object_msaa = self.get_frame_buffer_object(
+                    self.context, 4
+                )
+                self.frame_buffer_object_msaa.use()
             self.context.enable(moderngl.BLEND)
             self.context.wireframe = config["enable_wireframe"]
             self.context.blend_func = (
@@ -461,7 +470,7 @@ class OpenGLRenderer:
                 self.window.swap_buffers()
 
     def update_frame(self, scene):
-        self.frame_buffer_object.clear(*self.background_color)
+        self.frame_buffer_object_msaa.clear(*self.background_color)
         self.refresh_perspective_uniforms(scene.camera)
 
         for mobject in scene.mobjects:
@@ -474,6 +483,9 @@ class OpenGLRenderer:
                 mesh.set_uniforms(self)
                 mesh.render()
 
+        self.context.copy_framebuffer(
+            self.frame_buffer_object, self.frame_buffer_object_msaa
+        )
         self.animation_elapsed_time = time.time() - self.animation_start_time
 
     def scene_finished(self, scene):
@@ -524,9 +536,9 @@ class OpenGLRenderer:
     def save_static_frame_data(self, scene, static_mobjects):
         pass
 
-    def get_frame_buffer_object(self, context, samples=0):
-        pixel_width = config["pixel_width"]
-        pixel_height = config["pixel_height"]
+    def get_frame_buffer_object(self, context, samples=0, width=None, height=None):
+        pixel_width = width or config["pixel_width"]
+        pixel_height = height or config["pixel_height"]
         num_channels = 4
         return context.framebuffer(
             color_attachments=context.texture(
@@ -548,6 +560,9 @@ class OpenGLRenderer:
         # gl.glBlitFramebuffer(
         #     0, 0, pw, ph, 0, 0, pw, ph, gl.GL_COLOR_BUFFER_BIT, gl.GL_LINEAR
         # )
+        self.context.copy_framebuffer(
+            self.frame_buffer_object, self.frame_buffer_object_msaa
+        )
         num_channels = 4
         ret = self.frame_buffer_object.read(
             viewport=self.frame_buffer_object.viewport,
@@ -558,6 +573,9 @@ class OpenGLRenderer:
 
     def get_frame(self):
         # get current pixel values as numpy data in order to test output
+        self.context.copy_framebuffer(
+            self.frame_buffer_object, self.frame_buffer_object_msaa
+        )
         raw = self.get_raw_frame_buffer_object_data(dtype="f1")
         pixel_shape = self.get_pixel_shape()
         result_dimensions = (pixel_shape[1], pixel_shape[0], 4)
