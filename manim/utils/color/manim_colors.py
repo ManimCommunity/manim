@@ -205,7 +205,7 @@ DARK_BROWN: ManimColor = ManimColor("#8B4513")
 GRAY_BROWN: ManimColor = ManimColor("#736357")
 GREY_BROWN: ManimColor = ManimColor("#736357")
 
-"""The colormap of manim community"""
+# Colors used for Manim Community's logo and banner
 
 LOGO_WHITE = ManimColor("#ECE7E2")
 LOGO_GREEN = ManimColor("#87C2A5")
