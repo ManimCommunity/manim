@@ -12,7 +12,7 @@ from manim.mobject.geometry.shape_matchers import (
 )
 from manim.mobject.text.tex_mobject import MathTex, Tex
 from manim.mobject.text.text_mobject import Text
-from manim.utils.color import WHITE, Color
+from manim.utils.color import WHITE, ManimColor, ParsableManimColor
 
 
 class LabeledLine(Line):
@@ -26,11 +26,11 @@ class LabeledLine(Line):
         A ratio in the range [0-1] to indicate the position of the label with respect to the length of the line. Default value is 0.5.
     font_size : float | optional
         Control font size for the label. This parameter is only used when `label` is of type `str`.
-    label_color: numpy.ndarray | optional
+    label_color: ParsableManimColor | optional
         The color of the label's text. This parameter is only used when `label` is of type `str`.
     label_frame : Bool | optional
         Add a `SurroundingRectangle` frame to the label box.
-    frame_fill_color : numpy.ndarray | optional
+    frame_fill_color : ParsableManimColor | optional
         Background color to fill the label box. If no value is provided, the background color of the canvas will be used.
     frame_fill_opacity : float | optional
         Determine the opacity of the label box by passing a value in the range [0-1], where 0 indicates complete transparency and 1 means full opacity.
@@ -65,13 +65,15 @@ class LabeledLine(Line):
         label: str | Tex | MathTex | Text,
         label_position: float = 0.5,
         font_size: float = DEFAULT_FONT_SIZE,
-        label_color: Color | str | None = WHITE,
+        label_color: ParsableManimColor = WHITE,
         label_frame: bool = True,
-        frame_fill_color: Color | str | None = None,
+        frame_fill_color: ParsableManimColor = None,
         frame_fill_opacity: float = 1,
         *args,
         **kwargs,
     ) -> None:
+        label_color = ManimColor(label_color)
+        frame_fill_color = ManimColor(frame_fill_color)
         if isinstance(label, str):
             from manim import MathTex
 
@@ -120,11 +122,11 @@ class LabeledArrow(LabeledLine, Arrow):
         A ratio in the range [0-1] to indicate the position of the label with respect to the length of the line. Default value is 0.5.
     font_size : float | optional
         Control font size for the label. This parameter is only used when `label` is of type `str`.
-    label_color: numpy.ndarray | optional
+    label_color: ParsableManimColor | optional
         The color of the label's text. This parameter is only used when `label` is of type `str`.
     label_frame : Bool | optional
         Add a `SurroundingRectangle` frame to the label box.
-    frame_fill_color : numpy.ndarray | optional
+    frame_fill_color : ParsableManimColor | optional
         Background color to fill the label box. If no value is provided, the background color of the canvas will be used.
     frame_fill_opacity : float | optional
         Determine the opacity of the label box by passing a value in the range [0-1], where 0 indicates complete transparency and 1 means full opacity.

@@ -1,4 +1,5 @@
 """Base classes for objects that can be displayed."""
+
 from __future__ import annotations
 
 __all__ = ["Mobject", "Group", "override_animate"]
@@ -29,7 +30,6 @@ from typing import (
 )
 
 import numpy as np
-from colour import Color
 
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 
@@ -39,7 +39,8 @@ from ..utils.color import (
     BLACK,
     WHITE,
     YELLOW_C,
-    Colors,
+    ManimColor,
+    ParsableManimColor,
     color_gradient,
     interpolate_color,
 )
@@ -91,7 +92,14 @@ class Mobject:
         cls._add_intrinsic_animation_overrides()
         cls._original__init__ = cls.__init__
 
-    def __init__(self, color=WHITE, name=None, dim=3, target=None, z_index=0):
+    def __init__(
+        self,
+        color: ParsableManimColor | list[ParsableManimColor] = WHITE,
+        name=None,
+        dim=3,
+        target=None,
+        z_index=0,
+    ):
         self.name = self.__class__.__name__ if name is None else name
         self.dim = dim
         self.target = target
@@ -100,7 +108,7 @@ class Mobject:
         self.submobjects = []
         self.updaters = []
         self.updating_suspended = False
-        self.color = Color(color) if color else None
+        self.color: ManimColor = ManimColor.parse(color)
 
         self.reset_points()
         self.generate_points()
@@ -201,10 +209,10 @@ class Mobject:
             >>> from manim import Square, GREEN
             >>> Square.set_default(color=GREEN, fill_opacity=0.25)
             >>> s = Square(); s.color, s.fill_opacity
-            (<Color #83c167>, 0.25)
+            (ManimColor('#83C167'), 0.25)
             >>> Square.set_default()
             >>> s = Square(); s.color, s.fill_opacity
-            (<Color white>, 0.0)
+            (ManimColor('#FFFFFF'), 0.0)
 
         .. manim:: ChangedDefaultTextcolor
             :save_last_frame:
@@ -1687,7 +1695,7 @@ class Mobject:
 
     # Background rectangle
     def add_background_rectangle(
-        self, color: Colors | None = None, opacity: float = 0.75, **kwargs
+        self, color: ParsableManimColor | None = None, opacity: float = 0.75, **kwargs
     ):
         """Add a BackgroundRectangle as submobject.
 
@@ -1739,7 +1747,9 @@ class Mobject:
 
     # Color functions
 
-    def set_color(self, color: Color = YELLOW_C, family: bool = True):
+    def set_color(
+        self, color: ParsableManimColor = YELLOW_C, family: bool = True
+    ) -> Mobject:
         """Condition is function which takes in one arguments, (x, y, z).
         Here it just recurses to submobjects, but in subclasses this
         should be further implemented based on the the inner workings
@@ -1748,19 +1758,30 @@ class Mobject:
         if family:
             for submob in self.submobjects:
                 submob.set_color(color, family=family)
-        self.color = Color(color)
+
+        self.color = ManimColor.parse(color)
         return self
 
-    def set_color_by_gradient(self, *colors):
+    def set_color_by_gradient(self, *colors: Iterable[ParsableManimColor]):
+        """Set the color of this mobject's submobjects along the specified
+        gradient.
+
+        Parameters
+        ----------
+        colors
+            The colors to use for the gradient. Use like
+            ``set_color_by_gradient(RED, BLUE, GREEN)``.
+
+        """
         self.set_submobject_colors_by_gradient(*colors)
         return self
 
     def set_colors_by_radial_gradient(
         self,
         center=None,
-        radius=1,
-        inner_color=WHITE,
-        outer_color=BLACK,
+        radius: float = 1,
+        inner_color: ParsableManimColor = WHITE,
+        outer_color: ParsableManimColor = BLACK,
     ):
         self.set_submobject_colors_by_radial_gradient(
             center,
@@ -1770,7 +1791,7 @@ class Mobject:
         )
         return self
 
-    def set_submobject_colors_by_gradient(self, *colors):
+    def set_submobject_colors_by_gradient(self, *colors: Iterable[ParsableManimColor]):
         if len(colors) == 0:
             raise ValueError("Need at least one color")
         elif len(colors) == 1:
@@ -1786,9 +1807,9 @@ class Mobject:
     def set_submobject_colors_by_radial_gradient(
         self,
         center=None,
-        radius=1,
-        inner_color=WHITE,
-        outer_color=BLACK,
+        radius: float = 1,
+        inner_color: ParsableManimColor = WHITE,
+        outer_color: ParsableManimColor = BLACK,
     ):
         if center is None:
             center = self.get_center()
@@ -1805,7 +1826,7 @@ class Mobject:
         self.set_color(self.color)
         return self
 
-    def fade_to(self, color, alpha, family=True):
+    def fade_to(self, color: ParsableManimColor, alpha: float, family: bool = True):
         if self.get_num_points() > 0:
             new_color = interpolate_color(self.get_color(), color, alpha)
             self.set_color(new_color, family=False)
@@ -1814,13 +1835,13 @@ class Mobject:
                 submob.fade_to(color, alpha)
         return self
 
-    def fade(self, darkness=0.5, family=True):
+    def fade(self, darkness: float = 0.5, family: bool = True):
         if family:
             for submob in self.submobjects:
                 submob.fade(darkness, family)
         return self
 
-    def get_color(self):
+    def get_color(self) -> ManimColor:
         """Returns the color of the :class:`~.Mobject`"""
         return self.color
 
@@ -2169,7 +2190,7 @@ class Mobject:
         all_mobjects = [self] + list(it.chain(*sub_families))
         return remove_list_redundancies(all_mobjects)
 
-    def family_members_with_points(self):
+    def family_members_with_points(self) -> list[Mobject]:
         return [m for m in self.get_family() if m.get_num_points() > 0]
 
     def arrange(
@@ -2760,7 +2781,7 @@ class Mobject:
         self,
         z_index_value: float,
         family: bool = True,
-    ) -> VMobject:
+    ) -> T:
         """Sets the :class:`~.Mobject`'s :attr:`z_index` to the value specified in `z_index_value`.
 
         Parameters

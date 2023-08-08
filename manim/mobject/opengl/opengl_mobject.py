@@ -10,13 +10,11 @@ from typing import Iterable, Sequence
 
 import moderngl
 import numpy as np
-from colour import Color
 
 from manim import config, logger
 from manim.constants import *
 from manim.utils.bezier import integer_interpolate, interpolate
 from manim.utils.color import *
-from manim.utils.color import Colors
 from manim.utils.config_ops import _Data, _Uniforms
 
 # from ..utils.iterables import batch_by_property
@@ -146,7 +144,7 @@ class OpenGLMobject:
         self.init_updaters()
         # self.init_event_listners()
         self.init_points()
-        self.color = Color(color) if color else None
+        self.color = ManimColor.parse(color)
         self.init_colors()
 
         self.shader_indices = None
@@ -203,10 +201,10 @@ class OpenGLMobject:
             >>> from manim import Square, GREEN
             >>> Square.set_default(color=GREEN, fill_opacity=0.25)
             >>> s = Square(); s.color, s.fill_opacity
-            (<Color #83c167>, 0.25)
+            (ManimColor('#83C167'), 0.25)
             >>> Square.set_default()
             >>> s = Square(); s.color, s.fill_opacity
-            (<Color white>, 0.0)
+            (ManimColor('#FFFFFF'), 0.0)
 
         .. manim:: ChangedDefaultTextcolor
             :save_last_frame:
@@ -1971,12 +1969,12 @@ class OpenGLMobject:
         for mob in self.get_family(recurse):
             mob.data[name] = rgbas.copy()
 
-    def set_color(self, color, opacity=None, recurse=True):
+    def set_color(self, color: ParsableManimColor | None, opacity=None, recurse=True):
         self.set_rgba_array(color, opacity, recurse=False)
         # Recurse to submobjects differently from how set_rgba_array
         # in case they implement set_color differently
         if color is not None:
-            self.color = Color(color)
+            self.color: ManimColor = ManimColor.parse(color)
         if opacity is not None:
             self.opacity = opacity
         if recurse:
@@ -2037,7 +2035,7 @@ class OpenGLMobject:
     # Background rectangle
 
     def add_background_rectangle(
-        self, color: Colors | None = None, opacity: float = 0.75, **kwargs
+        self, color: ParsableManimColor | None = None, opacity: float = 0.75, **kwargs
     ):
         # TODO, this does not behave well when the mobject has points,
         # since it gets displayed on top
