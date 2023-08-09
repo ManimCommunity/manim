@@ -102,4 +102,10 @@ global_options: OptionGroupDecorator = option_group(
         help="Renders animations without outputting image or video files and disables the window",
         default=False,
     ),
+    option(
+        "--no_latex_cleanup",
+        is_flag=True,
+        help="Deletes .aux, .dvi, .log, and .tex files produced by Tex and MathTex.",
+        default=False
+    ),
 )
