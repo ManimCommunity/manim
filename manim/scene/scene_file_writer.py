@@ -92,7 +92,7 @@ class SceneFileWriter:
                 "or set path to the ffmpeg executable under the ffmpeg header in Manim's configuration."
             )
 
-    def init_output_directories(self, scene_name):
+    def init_output_directories(self, scene_name: str):
         """Initialise output directories.
 
         Notes
@@ -127,13 +127,6 @@ class SceneFileWriter:
                 self.output_name, ".png"
             )
         
-        self.tex_files_directory = guarantee_existence(
-                config.get_dir(
-                    "tex_dir",
-                    module_name=module_name,
-                    scene_name=scene_name
-                )
-            )
 
         if write_to_movie():
             movie_dir = guarantee_existence(
@@ -180,11 +173,13 @@ class SceneFileWriter:
                     scene_name=scene_name, module_name=module_name, log_dir=log_dir
                 )
 
-    def delete_tex_files(self, additional_endings: list[str] = ()) -> int:
-        '''Deletes the .dvi, .aux, .log, and .tex files produced when using `Tex` or `MathTex`
+    def delete_tex_files(self, scene_name: str, additional_endings: tuple[str] = ()) -> int:
+        '''Deletes the .dvi, .aux, and .log files produced when using `Tex` or `MathTex`
         
         Parameters:
         -----------
+        scene_name
+            Name of class inheriting from `Scene`
         additional_endings
             Additional Endings to remove in Tex folder
                 
@@ -193,14 +188,29 @@ class SceneFileWriter:
         :class:`int`
             How many files were deleted
         '''
-        file_endings = (".dvi", ".aux", ".log", ".tex", *additional_endings)
-        files_deleted = 0
-        for file_name in self.tex_files_directory.iterdir():
-            file = self.tex_files_directory / file_name
-            if any(file.suffix==s for s in file_endings):
-                file.unlink()
-                files_deleted+=1
-        return files_deleted
+        # ideally placed in self.init_output_directories, but when running tests that method isn't called?
+        # resulting in an AttributeError. Instead, just get directory here.
+        try:
+            tex_files_directory = guarantee_existence(
+                    config.get_dir(
+                        "tex_dir",
+                        module_name=config.get_dir("input_file").stem if config["input_file"] else '',
+                        scene_name=scene_name
+                    )
+                )
+            
+            
+            file_endings = (".dvi", ".aux", ".log", *additional_endings)
+            files_deleted = 0
+            for file_name in tex_files_directory.iterdir():
+                file = tex_files_directory / file_name
+                if any(file.suffix==s for s in file_endings):
+                    file.unlink()
+                    files_deleted+=1
+            return files_deleted
+        except Exception as e:
+            logger.info("An error occured while trying to clean up LaTeX files")
+            return 0
 
     def finish_last_section(self) -> None:
         """Delete current section if it is empty."""

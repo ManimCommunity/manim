@@ -210,7 +210,7 @@ class Scene:
         return result
 
     def delete_old_latex(self) -> int: 
-        return self.renderer.file_writer.delete_tex_files()
+        return self.renderer.file_writer.delete_tex_files(self.__class__.__name__)
 
     def render(self, preview: bool = False):
         """

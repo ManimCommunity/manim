@@ -105,7 +105,7 @@ global_options: OptionGroupDecorator = option_group(
     option(
         "--no_latex_cleanup",
         is_flag=True,
-        help="Deletes .aux, .dvi, .log, and .tex files produced by Tex and MathTex.",
+        help="Deletes .aux, .dvi, and .log files produced by Tex and MathTex.",
         default=False
     ),
 )
