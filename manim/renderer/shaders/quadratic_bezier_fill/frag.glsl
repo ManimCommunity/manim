@@ -22,7 +22,7 @@ float sdf(){
     float sgn = orientation;
     float q = (p.x * p.x - p.y);
 #if defined(ANTI_ALIASING)
-    return q / sqrt(dFdx(q) * dFdx(q) + dFdy(q) * dFdy(q));
+    return sgn * q / sqrt(dFdx(q) * dFdx(q) + dFdy(q) * dFdy(q));
 #elif
     return sgn * q;
 #endif

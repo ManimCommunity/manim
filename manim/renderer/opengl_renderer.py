@@ -263,6 +263,7 @@ class OpenGLRenderer:
                     self.frame_buffer_object.width,
                     self.frame_buffer_object.height,
                 )
+                self.frame_buffer_object_msaa.use()
             else:
                 self.window = None
                 try:
@@ -452,7 +453,10 @@ class OpenGLRenderer:
         self.num_plays += 1
 
     def clear_screen(self):
-        self.frame_buffer_object.clear(*self.background_color)
+        self.frame_buffer_object_msaa.clear(*self.background_color)
+        self.context.copy_framebuffer(
+            self.frame_buffer_object, self.frame_buffer_object_msaa
+        )
         self.window.swap_buffers()
 
     def render(self, scene, frame_offset, moving_mobjects):
