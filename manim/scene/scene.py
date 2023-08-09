@@ -242,7 +242,9 @@ class Scene:
             or config["format"] == "png"
             or config["save_last_frame"]
         ):
-            logger.info(f"{deleted_latex} non-essential LaTeX files deleted.{' To keep these LaTeX files, try passing in `--no_latex_cleanup`' if deleted_latex else ''}")
+            logger.info(
+                f"{deleted_latex} non-essential LaTeX files deleted.{' To keep these LaTeX files, try passing in `--no_latex_cleanup`' if deleted_latex else ''}"
+            )
             logger.info(
                 f"Rendered {str(self)}\nPlayed {self.renderer.num_plays} animations",
             )

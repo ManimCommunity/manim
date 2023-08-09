@@ -962,11 +962,11 @@ class ManimConfig(MutableMapping):
         lambda self, val: self._set_boolean("force_window", val),
         doc="Set to force window when using the opengl renderer",
     )
-    
+
     no_latex_cleanup = property(
         lambda self: self._d["no_latex_cleanup"],
         lambda self, val: self._set_boolean("no_latex_cleanup", val),
-        doc="Deletes .aux, .dvi, and .log files produced by Tex and MathTex."
+        doc="Deletes .aux, .dvi, and .log files produced by Tex and MathTex.",
     )
 
     @property
