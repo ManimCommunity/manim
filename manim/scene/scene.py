@@ -209,7 +209,7 @@ class Scene:
                 result.mobject_updater_lists.append((mobject_clone, cloned_updaters))
         return result
 
-    def delete_old_latex(self) -> int: 
+    def delete_old_latex(self) -> int:
         return self.renderer.file_writer.delete_tex_files()
 
     def render(self, preview: bool = False):
@@ -242,7 +242,9 @@ class Scene:
             or config["format"] == "png"
             or config["save_last_frame"]
         ):
-            logger.info(f"{deleted_latex} non-essential LaTeX files deleted.{' To keep these LaTeX files, try passing in `--no_latex_cleanup`' if deleted_latex else ''}")
+            logger.info(
+                f"{deleted_latex} non-essential LaTeX files deleted.{' To keep these LaTeX files, try passing in `--no_latex_cleanup`' if deleted_latex else ''}"
+            )
             logger.info(
                 f"Rendered {str(self)}\nPlayed {self.renderer.num_plays} animations",
             )
