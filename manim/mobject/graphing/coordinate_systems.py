@@ -673,14 +673,19 @@ class CoordinateSystem:
         # tick frequency.  But for functions, it indicates a
         # sample frequency
 
+        
+        self.function_graph = lambda t: self.coords_to_point(t, function(t))
+        # self.add_to_stash("function_graph") ??
+
         graph = ParametricFunction(
-            lambda t: self.coords_to_point(t, function(t)),
+            function=self.function_graph,
             t_range=t_range,
             scaling=self.x_axis.scaling,
             use_vectorized=use_vectorized,
             **kwargs,
         )
         graph.underlying_function = function
+        # graph.add_to_stash("underlying_function") ??
         return graph
 
     def plot_implicit_curve(

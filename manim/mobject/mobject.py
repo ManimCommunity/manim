@@ -8,6 +8,7 @@ __all__ = ["Mobject", "Group", "override_animate"]
 import copy
 import itertools as it
 import operator as op
+import pickle
 import random
 import sys
 import types
@@ -109,10 +110,19 @@ class Mobject:
         self.updaters = []
         self.updating_suspended = False
         self.color: ManimColor = ManimColor.parse(color)
+        self.pickle_stash = ["submobjects", "updaters"]
 
         self.reset_points()
         self.generate_points()
         self.init_colors()
+
+    def __setattr__(self, attr_name, value):
+        if callable(value):
+            try:
+                pickle.dumps(value)
+            except:
+                self.add_to_stash(attr_name)
+        super().__setattr__(attr_name, value)
 
     @classmethod
     def animation_override_for(
@@ -330,15 +340,6 @@ class Mobject:
 
         """
         return _AnimationBuilder(self)
-
-    def __deepcopy__(self, clone_from_id):
-        cls = self.__class__
-        result = cls.__new__(cls)
-        clone_from_id[id(self)] = result
-        for k, v in self.__dict__.items():
-            setattr(result, k, copy.deepcopy(v, clone_from_id))
-        result.original_id = str(id(self))
-        return result
 
     def __repr__(self):
         return str(self.name)
@@ -792,6 +793,20 @@ class Mobject:
             Path(config.get_dir("video_dir")).joinpath((name or str(self)) + ".png"),
         )
 
+    def pickle(self: T) -> tuple[bytes, dict]:
+        unpickleable_data = {
+            key: getattr(self, key)
+            for key in self.pickle_stash
+        }
+        for key in self.pickle_stash:
+            del self.__dict__[key]
+        pickled_mobject = pickle.dumps(self)
+        self.__dict__.update(unpickleable_data)
+        return pickled_mobject, copy.deepcopy(unpickleable_data)
+    
+    def add_to_stash(self, stash_key: str):
+        self.pickle_stash.append(stash_key)
+
     def copy(self: T) -> T:
         """Create and return an identical copy of the :class:`Mobject` including all
         :attr:`submobjects`.
@@ -802,10 +817,19 @@ class Mobject:
             The copy.
 
         Note
-        ----
+        ----F
         The clone is initially not visible in the Scene, even if the original was.
         """
-        return copy.deepcopy(self)
+        pickled_mobject, data = self.pickle()
+        copied_mobject = pickle.loads(pickled_mobject)
+        copied_mobject.__dict__.update(data)
+        return copied_mobject
+    
+    def __copy__(self):
+        return self.copy()
+    
+    def __deepcopy__(self, *args):
+        return self.copy()
 
     def generate_target(self, use_deepcopy=False):
         self.target = None  # Prevent unbounded linear recursion
