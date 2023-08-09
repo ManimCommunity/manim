@@ -235,15 +235,15 @@ class Scene:
         # We have to reset these settings in case of multiple renders.
         self.renderer.scene_finished(self)
 
-        deleted_latex = self.delete_old_latex() if not config["no_latex_cleanup"] else 0
+        if not config["no_latex_cleanup"]:
+            self.delete_old_latex()
+        
         # Show info only if animations are rendered or to get image
         if (
             self.renderer.num_plays
             or config["format"] == "png"
             or config["save_last_frame"]
         ):
-            # Maybe add this logging output to tests?
-            # logger.info(f"{deleted_latex} non-essential LaTeX files deleted.{' To keep these LaTeX files, try passing in `--no_latex_cleanup`' if deleted_latex else ''}")
             logger.info(
                 f"Rendered {str(self)}\nPlayed {self.renderer.num_plays} animations",
             )
