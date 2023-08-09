@@ -126,6 +126,14 @@ class SceneFileWriter:
             self.image_file_path = image_dir / add_extension_if_not_present(
                 self.output_name, ".png"
             )
+        
+        self.tex_files_directory = guarantee_existence(
+                config.get_dir(
+                    "tex_dir",
+                    module_name=module_name,
+                    scene_name=scene_name
+                )
+            )
 
         if write_to_movie():
             movie_dir = guarantee_existence(
@@ -171,6 +179,28 @@ class SceneFileWriter:
                 set_file_logger(
                     scene_name=scene_name, module_name=module_name, log_dir=log_dir
                 )
+
+    def delete_tex_files(self, additional_endings: list[str] = ()) -> int:
+        '''Deletes the .dvi, .aux, .log, and .tex files produced when using `Tex` or `MathTex`
+        
+        Parameters:
+        -----------
+        additional_endings
+            Additional Endings to remove in Tex folder
+                
+        Returns:
+        --------
+        :class:`int`
+            How many files were deleted
+        '''
+        file_endings = (".dvi", ".aux", ".log", ".tex", *additional_endings)
+        files_deleted = 0
+        for file_name in self.tex_files_directory.iterdir():
+            file = self.tex_files_directory / file_name
+            if any(file.suffix==s for s in file_endings):
+                file.unlink()
+                files_deleted+=1
+        return files_deleted
 
     def finish_last_section(self) -> None:
         """Delete current section if it is empty."""
@@ -700,8 +730,9 @@ class SceneFileWriter:
             )
             oldest_files_to_delete = sorted(
                 cached_partial_movies,
-                key=lambda path: path.stat().st_atime,
+                key=os.path.getatime,
             )[:number_files_to_delete]
+            # oldest_file_path = min(cached_partial_movies, key=os.path.getatime)
             for file_to_delete in oldest_files_to_delete:
                 file_to_delete.unlink()
             logger.info(

@@ -209,6 +209,9 @@ class Scene:
                 result.mobject_updater_lists.append((mobject_clone, cloned_updaters))
         return result
 
+    def delete_old_latex(self) -> int: 
+        return self.renderer.file_writer.delete_tex_files()
+
     def render(self, preview: bool = False):
         """
         Renders this Scene.
@@ -232,12 +235,14 @@ class Scene:
         # We have to reset these settings in case of multiple renders.
         self.renderer.scene_finished(self)
 
+        deleted_latex = self.delete_old_latex() if not config["no_latex_cleanup"] else 0
         # Show info only if animations are rendered or to get image
         if (
             self.renderer.num_plays
             or config["format"] == "png"
             or config["save_last_frame"]
         ):
+            logger.info(f"{deleted_latex} non-essential LaTeX files deleted.{' To keep these LaTeX files, try passing in `--keep_latex_files`' if deleted_latex else ''}")
             logger.info(
                 f"Rendered {str(self)}\nPlayed {self.renderer.num_plays} animations",
             )
