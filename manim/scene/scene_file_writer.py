@@ -211,7 +211,7 @@ class SceneFileWriter:
                     files_deleted += 1
             return files_deleted
         except Exception as e:
-            logger.info("An error occured while trying to clean up LaTeX files")
+            logger.info("An error occurred while trying to clean up LaTeX files")
             return 0
 
     def finish_last_section(self) -> None:
