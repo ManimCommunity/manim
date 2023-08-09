@@ -237,7 +237,7 @@ class Scene:
 
         if not config["no_latex_cleanup"]:
             self.delete_old_latex()
-        
+
         # Show info only if animations are rendered or to get image
         if (
             self.renderer.num_plays
