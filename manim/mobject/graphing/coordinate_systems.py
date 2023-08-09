@@ -673,7 +673,6 @@ class CoordinateSystem:
         # tick frequency.  But for functions, it indicates a
         # sample frequency
 
-        
         self.function_graph = lambda t: self.coords_to_point(t, function(t))
         # self.add_to_stash("function_graph") ??
 

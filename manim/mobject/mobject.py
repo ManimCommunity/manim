@@ -794,16 +794,13 @@ class Mobject:
         )
 
     def pickle(self: T) -> tuple[bytes, dict]:
-        unpickleable_data = {
-            key: getattr(self, key)
-            for key in self.pickle_stash
-        }
+        unpickleable_data = {key: getattr(self, key) for key in self.pickle_stash}
         for key in self.pickle_stash:
             del self.__dict__[key]
         pickled_mobject = pickle.dumps(self)
         self.__dict__.update(unpickleable_data)
         return pickled_mobject, copy.deepcopy(unpickleable_data)
-    
+
     def add_to_stash(self, stash_key: str):
         self.pickle_stash.append(stash_key)
 
@@ -824,10 +821,10 @@ class Mobject:
         copied_mobject = pickle.loads(pickled_mobject)
         copied_mobject.__dict__.update(data)
         return copied_mobject
-    
+
     def __copy__(self):
         return self.copy()
-    
+
     def __deepcopy__(self, *args):
         return self.copy()
 
