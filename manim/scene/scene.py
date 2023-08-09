@@ -242,8 +242,10 @@ class Scene:
             or config["format"] == "png"
             or config["save_last_frame"]
         ):
+            # Maybe add this logging output to tests?
+            # logger.info(f"{deleted_latex} non-essential LaTeX files deleted.{' To keep these LaTeX files, try passing in `--no_latex_cleanup`' if deleted_latex else ''}")
             logger.info(
-                f"Rendered {str(self)}\nPlayed {self.renderer.num_plays} animations\n{deleted_latex} non-essential LaTeX files deleted.{' To keep these LaTeX files, try passing in `--no_latex_cleanup`' if deleted_latex else ''}",
+                f"Rendered {str(self)}\nPlayed {self.renderer.num_plays} animations",
             )
 
         # If preview open up the render after rendering.
