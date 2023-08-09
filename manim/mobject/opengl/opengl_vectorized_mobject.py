@@ -7,7 +7,6 @@ from typing import Callable, Iterable, Optional, Sequence
 
 import moderngl
 import numpy as np
-from colour import Color
 
 from manim import config
 from manim.constants import *
@@ -81,9 +80,9 @@ class OpenGLVMobject(OpenGLMobject):
 
     def __init__(
         self,
-        fill_color: Color | None = None,
+        fill_color: ParsableManimColor | None = None,
         fill_opacity: float = 0.0,
-        stroke_color: Color | None = None,
+        stroke_color: ParsableManimColor | None = None,
         stroke_opacity: float = 1.0,
         stroke_width: float = DEFAULT_STROKE_WIDTH,
         draw_stroke_behind_fill: bool = False,
@@ -146,10 +145,10 @@ class OpenGLVMobject(OpenGLMobject):
         super().__init__(**kwargs)
         self.refresh_unit_normal()
 
-        if fill_color:
-            self.fill_color = Color(fill_color)
-        if stroke_color:
-            self.stroke_color = Color(stroke_color)
+        if fill_color is not None:
+            self.fill_color = ManimColor.parse(fill_color)
+        if stroke_color is not None:
+            self.stroke_color = ManimColor.parse(stroke_color)
 
     def get_group_class(self):
         return OpenGLVGroup
@@ -184,7 +183,7 @@ class OpenGLVMobject(OpenGLMobject):
 
     def set_fill(
         self,
-        color: Color | None = None,
+        color: ParsableManimColor | None = None,
         opacity: float | None = None,
         recurse: bool = True,
     ) -> OpenGLVMobject:
@@ -350,14 +349,15 @@ class OpenGLVMobject(OpenGLMobject):
         super().fade(darkness, recurse)
         return self
 
+    # Todo im not quite sure why we are doing this
     def get_fill_colors(self):
-        return [Color(rgb_to_hex(rgba[:3])) for rgba in self.fill_rgba]
+        return [ManimColor.from_rgb(rgba[:3]) for rgba in self.fill_rgba]
 
     def get_fill_opacities(self):
         return self.fill_rgba[:, 3]
 
     def get_stroke_colors(self):
-        return [Color(rgb_to_hex(rgba[:3])) for rgba in self.stroke_rgba]
+        return [ManimColor.from_rgb(rgba[:3]) for rgba in self.stroke_rgba]
 
     def get_stroke_opacities(self):
         return self.stroke_rgba[:, 3]
@@ -1881,7 +1881,7 @@ class OpenGLDashedVMobject(OpenGLVMobject):
         vmobject: OpenGLVMobject,
         num_dashes: int = 15,
         dashed_ratio: float = 0.5,
-        color: Color = WHITE,
+        color: ParsableManimColor = WHITE,
         **kwargs,
     ):
         self.dashed_ratio = dashed_ratio
