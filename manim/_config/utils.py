@@ -966,7 +966,7 @@ class ManimConfig(MutableMapping):
     no_latex_cleanup = property(
         lambda self: self._d["no_latex_cleanup"],
         lambda self, val: self._set_boolean("no_latex_cleanup", val),
-        doc="Deletes .aux, .dvi, and .log files produced by Tex and MathTex.",
+        doc="Deletes .aux, .dvi, and .log files produced by Tex and MathTex."
     )
 
     @property
