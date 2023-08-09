@@ -172,40 +172,43 @@ class SceneFileWriter:
                     scene_name=scene_name, module_name=module_name, log_dir=log_dir
                 )
 
-    def delete_tex_files(self, scene_name: str, additional_endings: tuple[str] = ()) -> int:
-        '''Deletes the .dvi, .aux, and .log files produced when using `Tex` or `MathTex`
-        
+    def delete_tex_files(
+        self, scene_name: str, additional_endings: tuple[str] = ()
+    ) -> int:
+        """Deletes the .dvi, .aux, and .log files produced when using `Tex` or `MathTex`
+
         Parameters:
         -----------
         scene_name
             Name of class inheriting from `Scene`
         additional_endings
             Additional Endings to remove in Tex folder
-                
+
         Returns:
         --------
         :class:`int`
             How many files were deleted
-        '''
+        """
         # ideally placed in self.init_output_directories, but when running tests that method isn't called?
         # resulting in an AttributeError. Instead, just get directory here.
         try:
             tex_files_directory = guarantee_existence(
-                    config.get_dir(
-                        "tex_dir",
-                        module_name=config.get_dir("input_file").stem if config["input_file"] else '',
-                        scene_name=scene_name
-                    )
+                config.get_dir(
+                    "tex_dir",
+                    module_name=config.get_dir("input_file").stem
+                    if config["input_file"]
+                    else "",
+                    scene_name=scene_name,
                 )
-            
-            
+            )
+
             file_endings = (".dvi", ".aux", ".log", *additional_endings)
             files_deleted = 0
             for file_name in tex_files_directory.iterdir():
                 file = tex_files_directory / file_name
-                if any(file.suffix==s for s in file_endings):
+                if any(file.suffix == s for s in file_endings):
                     file.unlink()
-                    files_deleted+=1
+                    files_deleted += 1
             return files_deleted
         except Exception as e:
             logger.info("An error occured while trying to clean up LaTeX files")
