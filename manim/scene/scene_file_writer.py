@@ -126,7 +126,6 @@ class SceneFileWriter:
             self.image_file_path = image_dir / add_extension_if_not_present(
                 self.output_name, ".png"
             )
-        
 
         if write_to_movie():
             movie_dir = guarantee_existence(
@@ -174,8 +173,8 @@ class SceneFileWriter:
                 )
 
     def delete_tex_files(self, additional_endings: list[str] = ()) -> int:
-        '''Deletes the .dvi, .aux, .log, and .tex files produced when using `Tex` or `MathTex`
-        
+        """Deletes the .dvi, .aux, .log, and .tex files produced when using `Tex` or `MathTex`
+
         Parameters:
         -----------
         scene_name
@@ -187,14 +186,14 @@ class SceneFileWriter:
         --------
         :class:`int`
             How many files were deleted
-        '''
+        """
         file_endings = (".dvi", ".aux", ".log", ".tex", *additional_endings)
         files_deleted = 0
         for file_name in self.tex_files_directory.iterdir():
             file = self.tex_files_directory / file_name
-            if any(file.suffix==s for s in file_endings):
+            if any(file.suffix == s for s in file_endings):
                 file.unlink()
-                files_deleted+=1
+                files_deleted += 1
         return files_deleted
 
     def finish_last_section(self) -> None:
