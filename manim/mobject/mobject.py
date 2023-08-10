@@ -21,7 +21,8 @@ from typing import (
     Iterable,
     TypeVar,
     Literal,
-    Self
+    Self,
+    Never
 )
 
 import numpy as np
@@ -2755,7 +2756,7 @@ class Mobject:
         return self
 
     # Errors
-    def throw_error_if_no_points(self) -> None:
+    def throw_error_if_no_points(self) -> None | Never:
         if self.has_no_points():
             caller_name = sys._getframe(1).f_code.co_name
             raise Exception(

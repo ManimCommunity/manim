@@ -1,8 +1,7 @@
-from typing import Callable, Tuple, TYPE_CHECKING
+from typing import Callable, Tuple, TYPE_CHECKING, TypeAlias
 
 import numpy as np
 import numpy.typing as npt
-from typing_extensions import TypeAlias
 
 if TYPE_CHECKING:
     from .animation.animation import Animation
@@ -80,17 +79,20 @@ ColVector: TypeAlias = npt.NDArray[PointDType]
 MatrixMN: TypeAlias = npt.NDArray[PointDType]
 """ `shape: (M,N)` A Matrix `[[float,...],[float,...],...]`. """
 
+Zeros: TypeAlias = npt.NDArray[ManimFloat]
+"""A Matrix of Zeros. Typically created with `numpy.zeros((M,N))`"""
+
 # Due to current limitations (see https://github.com/python/mypy/issues/14656 / 8263), we don't specify the first argument type (Mobject).
-FunctionOverride: TypeAlias = Callable[..., Animation]
+FunctionOverride: TypeAlias = Callable[..., None]
 """Function type returning an animation for the specified Mobject."""
 
 
 # Misc
-PathFuncType = Callable[[Point3D, Point3D, float], Point3D]
-"""Function type taking two points and an alpha value, and returning a new `Point3D`"""
+PathFuncType: TypeAlias = Callable[[Point3D, Point3D, float], Point3D]
+"""Function mapping two points and an alpha value to a new point"""
 
-MappingFunction = Callable[[Point3D], Point3D]
-"""A function taking mapping a Point3D to another Point3D"""
+MappingFunction: TypeAlias = Callable[[Point3D], Point3D]
+"""A function mapping a Point3D to another Point3D"""
 
-Image = np.ndarray
+Image: TypeAlias = np.ndarray
 """An Image"""
