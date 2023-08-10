@@ -24,13 +24,13 @@ from manim.mobject.mobject import Mobject
 from manim.opengl import OpenGLMobject
 
 
-def assert_is_mobject_method(method):
+def assert_is_mobject_method(method: Callable) -> None:
     assert inspect.ismethod(method)
     mobject = method.__self__
     assert isinstance(mobject, (Mobject, OpenGLMobject))
 
 
-def always(method, *args, **kwargs):
+def always(method: Callable, *args, **kwargs) -> Mobject:
     assert_is_mobject_method(method)
     mobject = method.__self__
     func = method.__func__
@@ -38,7 +38,7 @@ def always(method, *args, **kwargs):
     return mobject
 
 
-def f_always(method, *arg_generators, **kwargs):
+def f_always(method: Callable[[Mobject], None], *arg_generators, **kwargs) -> Mobject:
     """
     More functional version of always, where instead
     of taking in args, it takes in functions which output
@@ -99,7 +99,36 @@ def always_redraw(func: Callable[[], Mobject]) -> Mobject:
     return mob
 
 
-def always_shift(mobject, direction=RIGHT, rate=0.1):
+def always_shift(mobject: Mobject, direction: np.ndarray[np.float64] = RIGHT, rate: float = 0.1) -> Mobject:
+    """Shift the mobject by `rate*direction` every second
+
+    Parameters
+    ----------
+    mobject
+        The mobject to shift
+    direction
+        The direction to shift
+    rate
+        Amount of direction to be covered in one second
+
+    Examples
+    --------
+
+    .. manim:: ShiftingSquare
+
+        class ShiftingSquare(Scene):
+            def construct(self):
+                sq = Square().set_fill(opacity=1)
+                tri = Triangle()
+                VGroup(sq, tri).arrange(LEFT)
+
+                # always shift square one unit to the right
+                # even if there is an animation going on
+                always_shift(sq, RIGHT, rate=5)
+                
+                self.add(sq)
+                self.play(tri.animate.set_fill(opacity=1))
+    """
     def normalize(v):
         norm = np.linalg.norm(v)
         if norm == 0:
@@ -110,18 +139,57 @@ def always_shift(mobject, direction=RIGHT, rate=0.1):
     return mobject
 
 
-def always_rotate(mobject, rate=20 * DEGREES, **kwargs):
+def always_rotate(mobject: Mobject, rate: float = 20 * DEGREES, **kwargs) -> Mobject:
+    """Rotate the mobject by `rate` every second
+
+    Parameters
+    ----------
+    mobject
+        The mobject to rotate
+
+    Examples
+    --------
+
+    .. manim:: SpinningTriangle
+
+        class SpinningTriangle(Scene):
+            def construct(self):
+                tri = Triangle().set_fill(opacity=1).set_z_index(2)
+                sq = Square().to_edge(LEFT)
+
+                # will keep spinning while there is an animation going on
+                always_rotate(tri, rate=2*PI, about_point=ORIGIN)
+
+                self.add(tri, sq)
+                self.play(sq.animate.to_edge(RIGHT), rate_func=linear, run_time=1)
+    """
     mobject.add_updater(lambda m, dt: m.rotate(dt * rate, **kwargs))
     return mobject
 
 
-def turn_animation_into_updater(animation, cycle=False, **kwargs):
+def turn_animation_into_updater(animation, cycle=False, **kwargs) -> Mobject:
     """
     Add an updater to the animation's mobject which applies
     the interpolation and update functions of the animation
 
     If cycle is True, this repeats over and over.  Otherwise,
     the updater will be popped upon completion
+    
+    Examples
+    --------
+    
+    .. manim:: WelcomeToManim
+
+        class WelcomeToManim(Scene):
+            def construct(self):
+                words = Text("Welcome to")
+                banner = ManimBanner().scale(0.5)
+                VGroup(words, banner).arrange(DOWN)
+
+                turn_animation_into_updater(Write(words, run_time=0.9))
+                self.add(words)
+                self.wait(0.5)
+                self.play(banner.expand(), run_time=0.5)
     """
     mobject = animation.mobject
     animation.suspend_mobject_updating = False
@@ -147,5 +215,5 @@ def turn_animation_into_updater(animation, cycle=False, **kwargs):
     return mobject
 
 
-def cycle_animation(animation, **kwargs):
+def cycle_animation(animation, **kwargs) -> Mobject:
     return turn_animation_into_updater(animation, cycle=True, **kwargs)
