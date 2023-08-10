@@ -99,7 +99,9 @@ def always_redraw(func: Callable[[], Mobject]) -> Mobject:
     return mob
 
 
-def always_shift(mobject: Mobject, direction: np.ndarray[np.float64] = RIGHT, rate: float = 0.1) -> Mobject:
+def always_shift(
+    mobject: Mobject, direction: np.ndarray[np.float64] = RIGHT, rate: float = 0.1
+) -> Mobject:
     """Shift the mobject by `rate*direction` every second
 
     Parameters
@@ -125,10 +127,11 @@ def always_shift(mobject: Mobject, direction: np.ndarray[np.float64] = RIGHT, ra
                 # always shift square one unit to the right
                 # even if there is an animation going on
                 always_shift(sq, RIGHT, rate=5)
-                
+
                 self.add(sq)
                 self.play(tri.animate.set_fill(opacity=1))
     """
+
     def normalize(v):
         norm = np.linalg.norm(v)
         if norm == 0:
@@ -174,10 +177,10 @@ def turn_animation_into_updater(animation, cycle=False, **kwargs) -> Mobject:
 
     If cycle is True, this repeats over and over.  Otherwise,
     the updater will be popped upon completion
-    
+
     Examples
     --------
-    
+
     .. manim:: WelcomeToManim
 
         class WelcomeToManim(Scene):
