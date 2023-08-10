@@ -39,7 +39,6 @@ __all__ = [
 
 
 import itertools as it
-import math
 from typing import Sequence
 
 import numpy as np
@@ -127,7 +126,7 @@ def quaternion_from_angle_axis(
     if config.renderer == RendererType.OPENGL:
         if not axis_normalized:
             axis = normalize(axis)
-        return [math.cos(angle / 2), *(math.sin(angle / 2) * axis)]
+        return [np.cos(angle / 2), *(np.sin(angle / 2) * axis)]
     elif config.renderer == RendererType.CAIRO:
         return np.append(np.cos(angle / 2), np.sin(angle / 2) * normalize(axis))
 
@@ -277,7 +276,7 @@ def rotation_about_z(angle: float) -> np.ndarray:
     np.ndarray
         Gives back the rotated matrix.
     """
-    c, s = math.cos(angle), math.sin(angle)
+    c, s = np.cos(angle), np.sin(angle)
     return np.array(
         [
             [c, -s, 0],

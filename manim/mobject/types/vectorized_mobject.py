@@ -648,8 +648,8 @@ class VMobject(Mobject):
                 submob.z_index_group = self
         return self
 
-    def set_points(self, points: Iterable[Point3D]) -> Self:
-        self.points = np.array(points)
+    def set_points(self, points: Point3D_Array) -> Self:
+        self.points: Point3D_Array = np.array(points)
         return self
 
     def resize_points(

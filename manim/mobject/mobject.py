@@ -13,7 +13,6 @@ import sys
 import types
 import warnings
 from functools import partialmethod, reduce
-from math import ceil
 from pathlib import Path
 from typing import (
     TYPE_CHECKING,
@@ -21,8 +20,7 @@ from typing import (
     Iterable,
     TypeVar,
     Literal,
-    Self,
-    Never
+    Self
 )
 
 import numpy as np
@@ -2324,15 +2322,15 @@ class Mobject:
 
         # calculate rows cols
         if rows is None and cols is None:
-            cols = ceil(np.sqrt(len(mobs)))
+            cols = np.ceil(np.sqrt(len(mobs)))
             # make the grid as close to quadratic as possible.
             # choosing cols first can results in cols>rows.
             # This is favored over rows>cols since in general
             # the sceene is wider than high.
         if rows is None:
-            rows = ceil(len(mobs) / cols)
+            rows = np.ceil(len(mobs) / cols)
         if cols is None:
-            cols = ceil(len(mobs) / rows)
+            cols = np.ceil(len(mobs) / rows)
         if rows * cols < len(mobs):
             raise ValueError("Too few rows and columns to fit all submobjetcs.")
         # rows and cols are now finally valid.
@@ -2756,7 +2754,7 @@ class Mobject:
         return self
 
     # Errors
-    def throw_error_if_no_points(self) -> None | Never:
+    def throw_error_if_no_points(self) -> None:
         if self.has_no_points():
             caller_name = sys._getframe(1).f_code.co_name
             raise Exception(
