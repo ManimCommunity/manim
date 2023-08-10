@@ -1,4 +1,4 @@
-from typing import Callable, Tuple, TYPE_CHECKING, TypeAlias
+from typing import Callable, Tuple, TYPE_CHECKING, TypeAlias, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -54,8 +54,14 @@ BezierPoints: TypeAlias = npt.NDArray[PointDType]
 FlatBezierPoints: TypeAlias = npt.NDArray[PointDType]
 """ `shape: (N)` An Array of Bezier Handles but flattened `[float,...]`."""
 
+Point2D_Array: TypeAlias = npt.NDArray[PointDType]
+""" `shape: (N,2)` An Array of Points in 2D Space `[[float,float],...]`.
+
+(Please refer to the documentation of the function you are using for further type Information)
+"""
+
 Point3D_Array: TypeAlias = npt.NDArray[PointDType]
-""" `shape: (N,3)` An Array Points in 3D Space `[[float,float,float],...]`.
+""" `shape: (N,3)` An Array of Points in 3D Space `[[float,float,float],...]`.
 
 (Please refer to the documentation of the function you are using for further type Information)
 """
