@@ -51,11 +51,11 @@ def tex_to_svg_file(
     if tex_template is None:
         tex_template = config["tex_template"]
     tex_file, svg = generate_tex_file(expression, environment, tex_template)
-    
+
     # check if svg already exists
     if isinstance(svg, Path):
         return svg
-    
+
     dvi_file = compile_tex(
         tex_file,
         tex_template.tex_compiler,
@@ -89,7 +89,7 @@ def generate_tex_file(
     -------
     :class:`Path`
         Path to generated TeX file
-    
+
     :class:`Path` | `None`
         Path to svg file if it exists, else None
     """
@@ -110,7 +110,7 @@ def generate_tex_file(
     if svg_path.exists():
         # svg for expression found
         return "_", svg_path
-    
+
     result = tex_dir / (output_hash + ".tex")
     if not result.exists():
         logger.info(
