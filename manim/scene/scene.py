@@ -235,9 +235,6 @@ class Scene:
         # We have to reset these settings in case of multiple renders.
         self.renderer.scene_finished(self)
 
-        if not config["no_latex_cleanup"]:
-            self.delete_old_latex()
-
         # Show info only if animations are rendered or to get image
         if (
             self.renderer.num_plays
