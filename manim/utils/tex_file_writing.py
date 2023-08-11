@@ -50,7 +50,12 @@ def tex_to_svg_file(
     """
     if tex_template is None:
         tex_template = config["tex_template"]
-    tex_file = generate_tex_file(expression, environment, tex_template)
+    tex_file, svg = generate_tex_file(expression, environment, tex_template)
+    
+    # check if svg already exists
+    if isinstance(svg, Path):
+        return svg
+    
     dvi_file = compile_tex(
         tex_file,
         tex_template.tex_compiler,
@@ -66,9 +71,10 @@ def generate_tex_file(
     expression: str,
     environment: str | None = None,
     tex_template: TexTemplate | None = None,
-):
+) -> tuple[Path, Path | None]:
     """Takes a tex expression (and an optional tex environment),
     and returns a fully formed tex file ready for compilation.
+    Along the way, checks if an svg file for the expression already exists.
 
     Parameters
     ----------
@@ -83,6 +89,9 @@ def generate_tex_file(
     -------
     :class:`Path`
         Path to generated TeX file
+    
+    :class:`Path` | `None`
+        Path to svg file if it exists, else None
     """
     if tex_template is None:
         tex_template = config["tex_template"]
@@ -95,14 +104,21 @@ def generate_tex_file(
     if not tex_dir.exists():
         tex_dir.mkdir()
 
-    result = tex_dir / (tex_hash(output) + ".tex")
+    output_hash = tex_hash(output)
+    # check if svg for expression already exists
+    svg_path = tex_dir / (output_hash + ".svg")
+    if svg_path.exists():
+        # svg for expression found
+        return "_", svg_path
+    
+    result = tex_dir / (output_hash + ".tex")
     if not result.exists():
         logger.info(
             "Writing %(expression)s to %(path)s",
             {"expression": expression, "path": f"{result}"},
         )
         result.write_text(output, encoding="utf-8")
-    return result
+    return result, None
 
 
 def tex_compilation_command(
