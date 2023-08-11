@@ -14,8 +14,9 @@ __all__ = [
 ]
 
 
+from typing import TYPE_CHECKING, Literal
+
 import numpy as np
-from typing import Literal, TYPE_CHECKING
 
 from manim.constants import ORIGIN, UP
 from manim.utils.space_ops import get_unit_normal
