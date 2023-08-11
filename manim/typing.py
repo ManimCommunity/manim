@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING, Callable, Tuple, TypeAlias, Union
 
 import numpy as np
