@@ -14,7 +14,7 @@ __all__ = [
     "RightAngle",
 ]
 
-from typing import TYPE_CHECKING, Sequence, Self
+from typing import TYPE_CHECKING, Self, Sequence
 
 import numpy as np
 
@@ -26,12 +26,14 @@ from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.types.vectorized_mobject import DashedVMobject, VGroup, VMobject
-from manim.utils.color import WHITE, ParsableManimColor
+from manim.utils.color import WHITE
 from manim.utils.space_ops import angle_of_vector, line_intersection, normalize
 
 if TYPE_CHECKING:
-    from ..matrix import Matrix  # Avoid circular import
     from manim.typing import Point2D, Point3D, Vector
+    from manim.utils.color import ParsableManimColor
+
+    from ..matrix import Matrix  # Avoid circular import
 
 
 class Line(TipableVMobject):
@@ -89,11 +91,7 @@ class Line(TipableVMobject):
         self.pointwise_become_partial(self, buff_proportion, 1 - buff_proportion)
         return self
 
-    def _set_start_and_end_attrs(
-        self,
-        start: Point3D,
-        end: Point3D
-    ) -> None:
+    def _set_start_and_end_attrs(self, start: Point3D, end: Point3D) -> None:
         # If either start or end are Mobjects, this
         # gives their centers
         rough_start = self._pointify(start)
@@ -133,11 +131,7 @@ class Line(TipableVMobject):
         self.path_arc = new_value
         self.init_points()
 
-    def put_start_and_end_on(
-        self,
-        start: Point3D,
-        end: Point3D
-    ) -> Self:
+    def put_start_and_end_on(self, start: Point3D, end: Point3D) -> Self:
         """Sets starts and end coordinates of a line.
 
         Examples
@@ -194,11 +188,7 @@ class Line(TipableVMobject):
     def get_slope(self) -> float:
         return np.tan(self.get_angle())
 
-    def set_angle(
-        self,
-        angle: float,
-        about_point: Point3D | None = None
-    ) -> Self:
+    def set_angle(self, angle: float, about_point: Point3D | None = None) -> Self:
         if about_point is None:
             about_point = self.get_start()
 
@@ -663,12 +653,7 @@ class Vector(Arrow):
                 self.add(plane, vector_1, vector_2)
     """
 
-    def __init__(
-        self,
-        direction: Vector = RIGHT,
-        buff: float = 0,
-        **kwargs
-    ) -> None:
+    def __init__(self, direction: Vector = RIGHT, buff: float = 0, **kwargs) -> None:
         self.buff = buff
         if len(direction) == 2:
             direction = np.hstack([direction, 0])
@@ -1054,12 +1039,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         return self.angle_value / DEGREES if degrees else self.angle_value
 
     @staticmethod
-    def from_three_points(
-        A: Point3D,
-        B: Point3D,
-        C: Point3D,
-        **kwargs
-    ) -> Angle:
+    def from_three_points(A: Point3D, B: Point3D, C: Point3D, **kwargs) -> Angle:
         """The angle between the lines AB and BC.
 
         This constructs the angle :math:`\\angle ABC`.
@@ -1135,10 +1115,6 @@ class RightAngle(Angle):
     """
 
     def __init__(
-        self,
-        line1: Line,
-        line2: Line,
-        length: float | None = None,
-        **kwargs
+        self, line1: Line, line2: Line, length: float | None = None, **kwargs
     ) -> None:
         super().__init__(line1, line2, radius=length, elbow=True, **kwargs)

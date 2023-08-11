@@ -190,13 +190,14 @@ def subdivide_quadratic_bezier(points: QuadraticBezierPoints, n: int) -> BezierP
     .. image:: /_static/bezier_subdivision_example.png
 
     """
-    beziers = []
+    beziers = np.empty((n, 3, 3))
     current = points
-    for i in range(n, 0, -1):
+    for j in range(0, n):
+        i = n - j
         tmp = split_quadratic_bezier(current, 1 / i)
-        beziers.append(tmp[:3])
+        beziers[j] = tmp[:3]
         current = tmp[3:]
-    return np.asarray(beziers).reshape(-1, 3)
+    return beziers.reshape(-1, 3)
 
 
 def quadratic_bezier_remap(
@@ -207,7 +208,7 @@ def quadratic_bezier_remap(
     Parameters
     ----------
     triplets
-        The triplets of the quadratic bezier curves to be remapped
+        The triplets of the quadratic bezier curves to be remapped shape(n, 3, 3)
 
     new_number_of_curves
         The number of curves that the output will contain. This needs to be higher than the current number.

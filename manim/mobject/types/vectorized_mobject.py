@@ -15,15 +15,15 @@ __all__ = [
 import itertools as it
 import sys
 from typing import (
+    TYPE_CHECKING,
     Callable,
+    Generator,
     Hashable,
     Iterable,
+    Literal,
     Mapping,
-    Sequence,
     Self,
-    TYPE_CHECKING,
-    Generator,
-    Literal
+    Sequence,
 )
 
 import numpy as np
@@ -52,17 +52,17 @@ from ...utils.space_ops import rotate_vector, shoelace_direction
 
 if TYPE_CHECKING:
     from manim.typing import (
+        BezierPoints,
+        CubicBezierPoints,
         ManimFloat,
+        MappingFunction,
         Point2D,
         Point3D,
         Point3D_Array,
-        Vector,
-        RGBA_Array_Float,
-        Zeros,
-        CubicBezierPoints,
         QuadraticBezierPoints,
-        BezierPoints,
-        MappingFunction
+        RGBA_Array_Float,
+        Vector,
+        Zeros,
     )
 
 # TODO
@@ -124,9 +124,9 @@ class VMobject(Mobject):
         n_points_per_cubic_curve: int = 4,
         **kwargs,
     ):
-        self.fill_opacity: float = fill_opacity
-        self.stroke_opacity: float = stroke_opacity
-        self.stroke_width: float = stroke_width
+        self.fill_opacity = fill_opacity
+        self.stroke_opacity = stroke_opacity
+        self.stroke_width = stroke_width
         if background_stroke_color is not None:
             self.background_stroke_color: ManimColor = ManimColor(
                 background_stroke_color
@@ -134,13 +134,17 @@ class VMobject(Mobject):
         self.background_stroke_opacity: float = background_stroke_opacity
         self.background_stroke_width: float = background_stroke_width
         self.sheen_factor: float = sheen_factor
-        self.joint_type: LineJointType = LineJointType.AUTO if joint_type is None else joint_type
+        self.joint_type: LineJointType = (
+            LineJointType.AUTO if joint_type is None else joint_type
+        )
         self.sheen_direction: Vector = sheen_direction
         self.close_new_points: bool = close_new_points
         self.pre_function_handle_to_anchor_scale_factor: float = (
             pre_function_handle_to_anchor_scale_factor
         )
-        self.make_smooth_after_applying_functions: bool = make_smooth_after_applying_functions
+        self.make_smooth_after_applying_functions: bool = (
+            make_smooth_after_applying_functions
+        )
         self.background_image: Image | str | None = background_image
         self.shade_in_3d: bool = shade_in_3d
         self.tolerance_for_point_equality: float = tolerance_for_point_equality
@@ -200,7 +204,9 @@ class VMobject(Mobject):
 
         return self
 
-    def generate_rgbas_array(self, color: ManimColor | list[ManimColor], opacity: float | tuple[float]) -> RGBA_Array_Float:
+    def generate_rgbas_array(
+        self, color: ManimColor | list[ManimColor], opacity: float | Iterable[float]
+    ) -> RGBA_Array_Float:
         """
         First arg can be either a color, or a tuple/list of colors.
         Likewise, opacity can either be a float, or a tuple of floats.
@@ -211,7 +217,9 @@ class VMobject(Mobject):
         colors: list[ManimColor] = [
             ManimColor(c) if (c is not None) else BLACK for c in tuplify(color)
         ]
-        opacities: list[float] = [o if (o is not None) else 0.0 for o in tuplify(opacity)]
+        opacities: list[float] = [
+            o if (o is not None) else 0.0 for o in tuplify(opacity)
+        ]
         rgbas: np.ndarray[RGBA_Array_Float] = np.array(
             [c.to_rgba_with_alpha(o) for c, o in zip(*make_even(colors, opacities))],
         )
@@ -228,7 +236,7 @@ class VMobject(Mobject):
         self,
         array_name: str,
         color: ManimColor | None = None,
-        opacity: float | None =None
+        opacity: float | None = None,
     ) -> Self:
         rgbas = self.generate_rgbas_array(color, opacity)
         if not hasattr(self, array_name):
@@ -458,6 +466,7 @@ class VMobject(Mobject):
         return self.get_fill_opacities()[0]
 
     # TODO: Does this just do a copy?
+    # TODO: I have the feeling that this function should not return None, does that have any usage ?
     def get_fill_colors(self) -> list[ManimColor | None]:
         return [
             ManimColor(rgba[:3]) if rgba.any() else None
@@ -541,7 +550,9 @@ class VMobject(Mobject):
             self.sheen_direction: Vector = direction
         return self
 
-    def rotate_sheen_direction(self, angle: float, axis: Vector = OUT, family: bool = True) -> Self:
+    def rotate_sheen_direction(
+        self, angle: float, axis: Vector = OUT, family: bool = True
+    ) -> Self:
         """Rotates the direction of the applied sheen.
 
         Parameters
@@ -572,7 +583,9 @@ class VMobject(Mobject):
             self.sheen_direction = rotate_vector(self.sheen_direction, angle, axis)
         return self
 
-    def set_sheen(self, factor: float, direction: Vector | None = None, family: bool = True) -> Self:
+    def set_sheen(
+        self, factor: float, direction: Vector | None = None, family: bool = True
+    ) -> Self:
         """Applies a color gradient from a direction.
 
         Parameters
@@ -641,7 +654,9 @@ class VMobject(Mobject):
         self.color_using_background_image(vmobject.get_background_image())
         return self
 
-    def set_shade_in_3d(self, value: bool = True, z_index_as_group: bool = False) -> Self:
+    def set_shade_in_3d(
+        self, value: bool = True, z_index_as_group: bool = False
+    ) -> Self:
         for submob in self.get_family():
             submob.shade_in_3d = value
             if z_index_as_group:
@@ -926,7 +941,7 @@ class VMobject(Mobject):
         :class:`VMobject`
             ``self``
         """
-        assert mode in ["jagged", "smooth"], "mode must be either \"jagged\" or \"smooth\""
+        assert mode in ["jagged", "smooth"], 'mode must be either "jagged" or "smooth"'
         nppcc = self.n_points_per_cubic_curve
         for submob in self.family_members_with_points():
             subpaths = submob.get_subpaths()
@@ -938,7 +953,7 @@ class VMobject(Mobject):
                 anchors = np.append(subpath[::nppcc], subpath[-1:], 0)
                 if mode == "smooth":
                     h1, h2 = get_smooth_handle_points(anchors)
-                else: # mode == "jagged"
+                else:  # mode == "jagged"
                     # The following will make the handles aligned with the anchors, thus making the bezier curve a segment
                     a1 = anchors[:-1]
                     a2 = anchors[1:]
@@ -1051,10 +1066,14 @@ class VMobject(Mobject):
         return True
 
     # Information about line
-    def get_cubic_bezier_tuples_from_points(self, points: Point3D_Array) -> np.ndarray[Point3D_Array]:
+    def get_cubic_bezier_tuples_from_points(
+        self, points: Point3D_Array
+    ) -> np.ndarray[Point3D_Array]:
         return np.array(self.gen_cubic_bezier_tuples_from_points(points))
 
-    def gen_cubic_bezier_tuples_from_points(self, points: Point3D_Array) -> tuple[Point3D_Array]:
+    def gen_cubic_bezier_tuples_from_points(
+        self, points: Point3D_Array
+    ) -> tuple[Point3D_Array]:
         """Returns the bezier tuples from an array of points.
 
         self.points is a list of the anchors and handles of the bezier curves of the mobject (ie [anchor1, handle1, handle2, anchor2, anchor3 ..])
@@ -1123,7 +1142,9 @@ class VMobject(Mobject):
             ),
         )
 
-    def gen_subpaths_from_points_2d(self, points: Point3D_Array) -> Generator[Point3D_Array]:
+    def gen_subpaths_from_points_2d(
+        self, points: Point3D_Array
+    ) -> Generator[Point3D_Array]:
         return self._gen_subpaths_from_points(
             points,
             lambda n: not self.consider_points_equals_2d(points[n - 1], points[n]),
@@ -1282,8 +1303,7 @@ class VMobject(Mobject):
             yield self.get_nth_curve_function(n)
 
     def get_curve_functions_with_lengths(
-        self,
-        **kwargs
+        self, **kwargs
     ) -> Generator[tuple[Callable[[float], Point3D], float]]:
         """Gets the functions and lengths of the curves for the mobject.
 
@@ -1425,7 +1445,7 @@ class VMobject(Mobject):
         Point3D_Array
             Starting anchors
         """
-        return self.points[::self.n_points_per_cubic_curve]
+        return self.points[:: self.n_points_per_cubic_curve]
 
     def get_end_anchors(self) -> Point3D_Array:
         """Return the end anchors of the bezier curves.
@@ -1454,7 +1474,9 @@ class VMobject(Mobject):
 
     def get_points_defining_boundary(self) -> Point3D_Array:
         # Probably returns all anchors, but this is weird regarding  the name of the method.
-        return np.array(tuple(it.chain(*(sm.get_anchors() for sm in self.get_family()))))
+        return np.array(
+            tuple(it.chain(*(sm.get_anchors() for sm in self.get_family())))
+        )
 
     def get_arc_length(self, sample_points_per_curve: int | None = None) -> float:
         """Return the approximated length of the whole curve.
@@ -1573,7 +1595,9 @@ class VMobject(Mobject):
             self.append_points([new_path_point])
         return self
 
-    def insert_n_curves_to_point_list(self, n: int, points: Point3D_Array) -> np.ndarray[BezierPoints]:
+    def insert_n_curves_to_point_list(
+        self, n: int, points: Point3D_Array
+    ) -> np.ndarray[BezierPoints]:
         """Given an array of k points defining a bezier curves (anchors and handles), returns points defining exactly k + n bezier curves.
 
         Parameters
@@ -1641,14 +1665,16 @@ class VMobject(Mobject):
                 setattr(self, attr, new_a1)
         return self
 
-    def get_point_mobject(self, center: Vector | None = None) -> "VectorizedPoint":
+    def get_point_mobject(self, center: Vector | None = None) -> VectorizedPoint:
         if center is None:
             center = self.get_center()
         point = VectorizedPoint(center)
         point.match_style(self)
         return point
 
-    def interpolate_color(self, mobject1: VMobject, mobject2: VMobject, alpha: float) -> None:
+    def interpolate_color(
+        self, mobject1: VMobject, mobject2: VMobject, alpha: float
+    ) -> None:
         attrs = [
             "fill_rgbas",
             "stroke_rgbas",
@@ -2383,6 +2409,69 @@ class CurvesAsSubmobjects(VGroup):
             part.set_points(tup)
             part.match_style(vmobject)
             self.add(part)
+
+    def point_from_proportion(self, alpha: float) -> np.ndarray:
+        """Gets the point at a proportion along the path of the :class:`CurvesAsSubmobjects`.
+
+        Parameters
+        ----------
+        alpha
+            The proportion along the the path of the :class:`CurvesAsSubmobjects`.
+
+        Returns
+        -------
+        :class:`numpy.ndarray`
+            The point on the :class:`CurvesAsSubmobjects`.
+
+        Raises
+        ------
+        :exc:`ValueError`
+            If ``alpha`` is not between 0 and 1.
+        :exc:`Exception`
+            If the :class:`CurvesAsSubmobjects` has no submobjects, or no submobject has points.
+        """
+        if alpha < 0 or alpha > 1:
+            raise ValueError(f"Alpha {alpha} not between 0 and 1.")
+
+        self._throw_error_if_no_submobjects()
+        submobjs_with_pts = self._get_submobjects_with_points()
+
+        if alpha == 1:
+            return submobjs_with_pts[-1].points[-1]
+
+        submobjs_arc_lengths = tuple(
+            part.get_arc_length() for part in submobjs_with_pts
+        )
+
+        total_length = sum(submobjs_arc_lengths)
+        target_length = alpha * total_length
+        current_length = 0
+
+        for i, part in enumerate(submobjs_with_pts):
+            part_length = submobjs_arc_lengths[i]
+            if current_length + part_length >= target_length:
+                residue = (target_length - current_length) / part_length
+                return part.point_from_proportion(residue)
+
+            current_length += part_length
+
+    def _throw_error_if_no_submobjects(self):
+        if len(self.submobjects) == 0:
+            caller_name = sys._getframe(1).f_code.co_name
+            raise Exception(
+                f"Cannot call CurvesAsSubmobjects.{caller_name} for a CurvesAsSubmobject with no submobjects"
+            )
+
+    def _get_submobjects_with_points(self):
+        submobjs_with_pts = tuple(
+            part for part in self.submobjects if len(part.points) > 0
+        )
+        if len(submobjs_with_pts) == 0:
+            caller_name = sys._getframe(1).f_code.co_name
+            raise Exception(
+                f"Cannot call CurvesAsSubmobjects.{caller_name} for a CurvesAsSubmobject whose submobjects have no points"
+            )
+        return submobjs_with_pts
 
 
 class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):

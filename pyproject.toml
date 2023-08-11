@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "manim"
-version = "0.17.1"
+version = "0.17.3"
 description = "Animation engine for explanatory math videos."
 authors = ["The Manim Community Developers <contact@manim.community>", "3b1b <grant@3blue1brown.com>"]
 license="MIT"
@@ -14,10 +14,10 @@ classifiers= [
     "Topic :: Scientific/Engineering",
     "Topic :: Multimedia :: Video",
     "Topic :: Multimedia :: Graphics",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "Natural Language :: English",
     ]
 exclude = ["scripts/","logo/","readme-assets/"]
@@ -29,7 +29,6 @@ packages = [
 python = ">=3.8,<3.12"
 click = ">=7.2,<=9.0"
 click-default-group = "^1.2.2"
-colour = "^0.1.5"
 numpy = "^1.19"
 Pillow = ">=9.1,<10.0"
 scipy = "^1.7.3"
@@ -68,7 +67,7 @@ pytest = "^7.2"
 pylint = "^2.12.2"
 Sphinx = "^4"
 sphinx-copybutton = "^0.4.0"
-sphinxext-opengraph = "^0.5.1"
+sphinxext-opengraph = "^0.8"
 furo = "^2022.06.21"
 recommonmark = "^0.7.1"
 matplotlib = "^3.3.2"

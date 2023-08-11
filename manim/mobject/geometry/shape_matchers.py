@@ -4,7 +4,7 @@ from __future__ import annotations
 
 __all__ = ["SurroundingRectangle", "BackgroundRectangle", "Cross", "Underline"]
 
-from typing import Self, Any
+from typing import Any, Self
 
 from manim import config, logger
 from manim.constants import *
@@ -12,7 +12,7 @@ from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import RoundedRectangle
 from manim.mobject.mobject import Mobject
 from manim.mobject.types.vectorized_mobject import VGroup
-from manim.utils.color import BLACK, RED, YELLOW, ParsableManimColor, ManimColor
+from manim.utils.color import BLACK, RED, YELLOW, ManimColor, ParsableManimColor
 
 
 class SurroundingRectangle(RoundedRectangle):
@@ -45,7 +45,7 @@ class SurroundingRectangle(RoundedRectangle):
         color: ParsableManimColor = YELLOW,
         buff: float = SMALL_BUFF,
         corner_radius: float = 0.0,
-        **kwargs
+        **kwargs,
     ) -> None:
         super().__init__(
             color=color,

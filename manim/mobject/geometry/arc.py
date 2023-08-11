@@ -50,7 +50,7 @@ import numpy as np
 
 from manim.constants import *
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.types.vectorized_mobject import VMobject, VGroup
+from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import BLACK, BLUE, RED, WHITE, ParsableManimColor
 from manim.utils.iterables import adjacent_pairs
 from manim.utils.space_ops import (
@@ -65,7 +65,7 @@ if TYPE_CHECKING:
     from manim.mobject.mobject import Mobject
     from manim.mobject.text.tex_mobject import SingleStringMathTex, Tex
     from manim.mobject.text.text_mobject import Text
-    from manim.typing import Vector, Point3D, QuadraticBezierPoints, CubicBezierPoints
+    from manim.typing import CubicBezierPoints, Point3D, QuadraticBezierPoints, Vector
 
 
 Angle: TypeAlias = float | np.float64
@@ -109,7 +109,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         tip_shape=None,
         tip_length: float = None,
         tip_width: float = None,
-        at_start: bool = False
+        at_start: bool = False,
     ) -> Self:
         """Adds a tip to the TipableVMobject instance, recognising
         that the endpoints might need to be switched if it's
@@ -129,7 +129,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         tip_shape=None,
         tip_length: float = None,
         tip_width: float = None,
-        at_start: bool = False
+        at_start: bool = False,
     ):
         """Stylises the tip, positions it spatially, and returns
         the newly instantiated tip to the caller.
@@ -139,10 +139,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         return tip
 
     def get_unpositioned_tip(
-        self,
-        tip_shape=None,
-        tip_length: float = None,
-        tip_width: float = None
+        self, tip_shape=None, tip_length: float = None, tip_width: float = None
     ):
         """Returns a tip that has been stylistically configured,
         but has not yet been given a position in space.
@@ -306,7 +303,7 @@ class Arc(TipableVMobject):
     ):
         if radius is None:  # apparently None is passed by ArcBetweenPoints
             radius = 1.0
-        self.radius: float = radius
+        self.radius = radius
         self.num_components: int = num_components
         self.arc_center: Point3D = arc_center
         self.start_angle: float = start_angle
@@ -334,7 +331,9 @@ class Arc(TipableVMobject):
         self.shift(self.arc_center)
 
     @staticmethod
-    def _create_quadratic_bezier_points(angle: float, start_angle: float = 0, n_components: int = 8) -> QuadraticBezierPoints:
+    def _create_quadratic_bezier_points(
+        angle: float, start_angle: float = 0, n_components: int = 8
+    ) -> QuadraticBezierPoints:
         samples = np.array(
             [
                 [np.cos(a), np.sin(a), 0]
@@ -436,7 +435,7 @@ class ArcBetweenPoints(Arc):
         end: Point3D,
         angle: float = TAU / 4,
         radius: float = None,
-        **kwargs
+        **kwargs,
     ) -> None:
         if radius is not None:
             self.radius = radius
@@ -615,12 +614,7 @@ class Circle(Arc):
         return self.point_from_proportion(proportion)
 
     @staticmethod
-    def from_three_points(
-        p1: Point3D,
-        p2: Point3D,
-        p3: Point3D,
-        **kwargs
-    ) -> Self:
+    def from_three_points(p1: Point3D, p2: Point3D, p3: Point3D, **kwargs) -> Self:
         """Returns a circle passing through the specified
         three points.
 
@@ -803,7 +797,9 @@ class Ellipse(Circle):
 
 
 class AnnularSector(Arc):
-    """
+    """A sector of an annulus.
+
+
     Parameters
     ----------
     inner_radius
@@ -888,7 +884,8 @@ class AnnularSector(Arc):
 
 
 class Sector(AnnularSector):
-    """
+    """A sector of a circle.
+
     Examples
     --------
     .. manim:: ExampleSector
@@ -903,7 +900,9 @@ class Sector(AnnularSector):
                 self.add(sector, sector2)
     """
 
-    def __init__(self, outer_radius: float = 1, inner_radius: float = 0, **kwargs) -> None:
+    def __init__(
+        self, outer_radius: float = 1, inner_radius: float = 0, **kwargs
+    ) -> None:
         super().__init__(inner_radius=inner_radius, outer_radius=outer_radius, **kwargs)
 
 
@@ -961,7 +960,8 @@ class Annulus(Circle):
 
 
 class CubicBezier(VMobject, metaclass=ConvertToOpenGL):
-    """
+    """A cubic Bézier curve.
+
     Example
     -------
     .. manim:: BezierSplineExample
@@ -988,7 +988,7 @@ class CubicBezier(VMobject, metaclass=ConvertToOpenGL):
         start_handle: CubicBezierPoints,
         end_handle: CubicBezierPoints,
         end_anchor: CubicBezierPoints,
-        **kwargs
+        **kwargs,
     ) -> None:
         super().__init__(**kwargs)
         self.add_cubic_bezier_curve(start_anchor, start_handle, end_handle, end_anchor)

@@ -48,7 +48,7 @@ def test_resolution_flag(tmp_path, manim_cfg_file, simple_scenes_path):
         # (800, 600, ";"),
     ]
 
-    for (width, height, separator) in resolutions:
+    for width, height, separator in resolutions:
         command = [
             sys.executable,
             "-m",

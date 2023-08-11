@@ -383,11 +383,10 @@ class Scene:
             should_update = (
                 self.always_update_mobjects
                 or self.updaters
+                or wait_animation.stop_condition is not None
                 or any(
-                    [
-                        mob.has_time_based_updater()
-                        for mob in self.get_mobject_family_members()
-                    ],
+                    mob.has_time_based_updater()
+                    for mob in self.get_mobject_family_members()
                 )
             )
             wait_animation.is_static_wait = not should_update
@@ -518,6 +517,53 @@ class Scene:
             for list_name in "mobjects", "foreground_mobjects":
                 self.restructure_mobjects(mobjects, list_name, False)
             return self
+
+    def replace(self, old_mobject: Mobject, new_mobject: Mobject) -> None:
+        """Replace one mobject in the scene with another, preserving draw order.
+
+        If ``old_mobject`` is a submobject of some other Mobject (e.g. a
+        :class:`.Group`), the new_mobject will replace it inside the group,
+        without otherwise changing the parent mobject.
+
+        Parameters
+        ----------
+        old_mobject
+            The mobject to be replaced. Must be present in the scene.
+        new_mobject
+            A mobject which must not already be in the scene.
+
+        """
+        if old_mobject is None or new_mobject is None:
+            raise ValueError("Specified mobjects cannot be None")
+
+        def replace_in_list(
+            mobj_list: list[Mobject], old_m: Mobject, new_m: Mobject
+        ) -> bool:
+            # We use breadth-first search because some Mobjects get very deep and
+            # we expect top-level elements to be the most common targets for replace.
+            for i in range(0, len(mobj_list)):
+                # Is this the old mobject?
+                if mobj_list[i] == old_m:
+                    # If so, write the new object to the same spot and stop looking.
+                    mobj_list[i] = new_m
+                    return True
+            # Now check all the children of all these mobs.
+            for mob in mobj_list:  # noqa: SIM110
+                if replace_in_list(mob.submobjects, old_m, new_m):
+                    # If we found it in a submobject, stop looking.
+                    return True
+            # If we did not find the mobject in the mobject list or any submobjects,
+            # (or the list was empty), indicate we did not make the replacement.
+            return False
+
+        # Make use of short-circuiting conditionals to check mobjects and then
+        # foreground_mobjects
+        replaced = replace_in_list(
+            self.mobjects, old_mobject, new_mobject
+        ) or replace_in_list(self.foreground_mobjects, old_mobject, new_mobject)
+
+        if not replaced:
+            raise ValueError(f"Could not find {old_mobject} in scene")
 
     def add_updater(self, func: Callable[[float], None]) -> None:
         """Add an update function to the scene.
@@ -974,10 +1020,7 @@ class Scene:
         """
 
         if len(animations) == 1 and isinstance(animations[0], Wait):
-            if animations[0].stop_condition is not None:
-                return 0
-            else:
-                return animations[0].duration
+            return animations[0].duration
 
         else:
             return np.max([animation.run_time for animation in animations])
@@ -1011,8 +1054,12 @@ class Scene:
             All other keywords are passed to the renderer.
 
         """
-        # Make sure this is running on the main thread
-        if threading.current_thread().name != "MainThread":
+        # If we are in interactive embedded mode, make sure this is running on the main thread (required for OpenGL)
+        if (
+            self.interactive_mode
+            and config.renderer == RendererType.OPENGL
+            and threading.current_thread().name != "MainThread"
+        ):
             kwargs.update(
                 {
                     "subcaption": subcaption,
@@ -1060,7 +1107,8 @@ class Scene:
         stop_condition
             A function without positional arguments that is evaluated every time
             a frame is rendered. The animation only stops when the return value
-            of the function is truthy. Overrides any value passed to ``duration``.
+            of the function is truthy, or when the time specified in ``duration``
+            passes.
         frozen_frame
             If True, updater functions are not evaluated, and the animation outputs
             a frozen frame. If False, updater functions are called and frames
@@ -1097,18 +1145,15 @@ class Scene:
         self.wait(duration=duration, frozen_frame=True)
 
     def wait_until(self, stop_condition: Callable[[], bool], max_time: float = 60):
-        """
-        Like a wrapper for wait().
-        You pass a function that determines whether to continue waiting,
-        and a max wait time if that is never fulfilled.
+        """Wait until a condition is satisfied, up to a given maximum duration.
 
         Parameters
         ----------
         stop_condition
-            The function whose boolean return value determines whether to continue waiting
-
+            A function with no arguments that determines whether or not the
+            scene should keep waiting.
         max_time
-            The maximum wait time in seconds, if the stop_condition is never fulfilled.
+            The maximum wait time in seconds.
         """
         self.wait(max_time, stop_condition=stop_condition)
 
@@ -1272,12 +1317,20 @@ class Scene:
             # Allow for calling scene methods without prepending 'self.'.
             local_namespace[method] = embedded_method
 
+        from sqlite3 import connect
+
+        from IPython.core.getipython import get_ipython
         from IPython.terminal.embed import InteractiveShellEmbed
         from traitlets.config import Config
 
         cfg = Config()
         cfg.TerminalInteractiveShell.confirm_exit = False
-        shell = InteractiveShellEmbed(config=cfg)
+        if get_ipython() is None:
+            shell = InteractiveShellEmbed.instance(config=cfg)
+        else:
+            shell = InteractiveShellEmbed(config=cfg)
+        hist = get_ipython().history_manager
+        hist.db = connect(hist.hist_file, check_same_thread=False)
 
         keyboard_thread = threading.Thread(
             target=ipython,
@@ -1477,8 +1530,10 @@ class Scene:
         subtitle = srt.Subtitle(
             index=len(self.renderer.file_writer.subcaptions),
             content=content,
-            start=datetime.timedelta(seconds=self.renderer.time + offset),
-            end=datetime.timedelta(seconds=self.renderer.time + offset + duration),
+            start=datetime.timedelta(seconds=float(self.renderer.time + offset)),
+            end=datetime.timedelta(
+                seconds=float(self.renderer.time + offset + duration)
+            ),
         )
         self.renderer.file_writer.subcaptions.append(subtitle)
 

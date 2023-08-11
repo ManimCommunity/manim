@@ -301,7 +301,7 @@ class Write(DrawBorderThenFill):
 
         class ShowWriteReversed(Scene):
             def construct(self):
-                self.play(Write(Text("Hello", font_size=144), reverse=True))
+                self.play(Write(Text("Hello", font_size=144), reverse=True, remover=False))
 
     Tests
     -----

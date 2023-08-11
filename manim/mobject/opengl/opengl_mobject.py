@@ -589,7 +589,7 @@ class OpenGLMobject:
         self.set_points(mobject.points)
 
     def clear_points(self):
-        self.resize_points(0)
+        self.points = np.empty((0, 3))
 
     def get_num_points(self):
         return len(self.points)
@@ -2633,11 +2633,14 @@ class OpenGLMobject:
     # For shader data
 
     def refresh_shader_wrapper_id(self):
-        self.shader_wrapper.refresh_id()
+        self.get_shader_wrapper().refresh_id()
         return self
 
     def get_shader_wrapper(self):
         from manim.renderer.shader_wrapper import ShaderWrapper
+
+        # if hasattr(self, "__shader_wrapper"):
+        # return self.__shader_wrapper
 
         self.shader_wrapper = ShaderWrapper(
             vert_data=self.get_shader_data(),
@@ -2728,7 +2731,7 @@ class OpenGLMobject:
 
 class OpenGLGroup(OpenGLMobject):
     def __init__(self, *mobjects, **kwargs):
-        if not all([isinstance(m, OpenGLMobject) for m in mobjects]):
+        if not all(isinstance(m, OpenGLMobject) for m in mobjects):
             raise Exception("All submobjects must be of type OpenGLMobject")
         super().__init__(**kwargs)
         self.add(*mobjects)

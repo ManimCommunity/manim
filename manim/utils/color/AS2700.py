@@ -1,23 +1,27 @@
-# from https://www.w3schools.com/colors/colors_australia.asp
-"""
-Australian Color Standard
+"""Australian Color Standard
 
-Before 1985, Australians used the British color standard BS 381C.
+In 1985 the Australian Independent Color Standard AS 2700 was created. In
+this standard, all colors can be identified via a category code (one of
+B -- Blue, G -- Green, N -- Neutrals (grey), P -- Purple, R -- Red, T -- Blue/Green,
+X -- Yellow/Red, Y -- Yellow) and a number. The colors also have (natural) names.
 
-In 1985 the Australian Independent Colour Standard AS 2700 was created:
-Code	Color
-B	Blue
-G	Green
-N	Neutrals (grey)
-P	Purple
-R	Red
-T	Blue/Green
-X	Yellow/Red
-Y	Yellow
+To use the colors from this list, access them directly from the module (which
+is exposed to Manim's global name space):
 
-The codes (or names) cannot be used in HTML.
+.. code:: pycon
 
-These hex values are non official approximate values intended to simulate AS 2700 colors
+    >>> from manim import AS2700
+    >>> AS2700.B23_BRIGHT_BLUE
+    ManimColor('#174F90')
+
+List of Color Constants
+-----------------------
+
+These hex values (taken from https://www.w3schools.com/colors/colors_australia.asp)
+are non official approximate values intended to simulate AS 2700 colors:
+
+.. automanimcolormodule:: manim.utils.color.AS2700
+
 """
 
 from .core import ManimColor

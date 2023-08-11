@@ -1,9 +1,26 @@
 # from https://www.w3schools.com/colors/colors_x11.asp
 
-"""
-This list of X11 color names was developed at the
+"""X11 Colors
+
+These color and their names (taken from
+https://www.w3schools.com/colors/colors_x11.asp) were developed at the
 Massachusetts Intitute of Technology (MIT) during
-the development of color based computer display system:
+the development of color based computer display system.
+
+To use the colors from this list, access them directly from the module (which
+is exposed to Manim's global name space):
+
+.. code:: pycon
+
+    >>> from manim import X11
+    >>> X11.BEIGE
+    ManimColor('#F5F5DC')
+
+
+List of Color Constants
+-----------------------
+
+.. automanimcolormodule:: manim.utils.color.X11
 """
 from .core import ManimColor
 

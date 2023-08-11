@@ -1,4 +1,4 @@
-from typing import Callable, Tuple, TYPE_CHECKING, TypeAlias, Union
+from typing import TYPE_CHECKING, Callable, Tuple, TypeAlias, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -23,6 +23,9 @@ RGBA_Tuple_Float: TypeAlias = Tuple[float, float, float, float]
 
 RGBA_Array_Int: TypeAlias = npt.NDArray[ManimInt]
 RGBA_Tuple_Int: TypeAlias = Tuple[int, int, int, int]
+
+HSV_Array_Float: TypeAlias = RGB_Array_Float
+HSV_Tuple_Float: TypeAlias = RGB_Tuple_Float
 
 ManimColorInternal: TypeAlias = npt.NDArray[ManimColorDType]
 
@@ -73,6 +76,9 @@ BezierPoints_Array: TypeAlias = npt.NDArray[PointDType]
 """
 
 # Vector Types
+Vector3: TypeAlias = npt.NDArray[PointDType]
+""" `shape: (3,)` A Vector `[float, float]`. """
+
 Vector: TypeAlias = npt.NDArray[PointDType]
 """ `shape: (N,)` A Vector `[float,...]`. """
 
