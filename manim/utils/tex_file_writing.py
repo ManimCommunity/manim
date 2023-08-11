@@ -283,7 +283,7 @@ def delete_nonsvg_files(additional_endings: tuple[str] = ()) -> None:
 
     file_endings = (".dvi", ".aux", ".log", *additional_endings)
     for file_name in tex_files_directory.iterdir():
-        if any(file_name.suffix == s for s in file_endings):
+        if file_name.suffix in file_endings:
             file_name.unlink()
 
 
