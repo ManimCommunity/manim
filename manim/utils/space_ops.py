@@ -705,7 +705,7 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
             and is_in(verts[rings[ring_a][0]], ring_b)
         )
 
-    children = [[] for i in rings]
+    children = [[]] * len(rings)
     for idx, i in enumerate(rings_sorted):
         for j in rings_sorted[:idx][::-1]:
             if is_in_fast(i, j):
