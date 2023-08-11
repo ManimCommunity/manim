@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Callable, Tuple, Union
-from typing_extensions import TypeAlias
 
 import numpy as np
 import numpy.typing as npt
+from typing_extensions import TypeAlias
 
 if TYPE_CHECKING:
     from .animation.animation import Animation
