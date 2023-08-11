@@ -253,6 +253,7 @@ def convert_to_svg(dvi_file: Path, extension: str, page: int = 1):
 
     return result
 
+
 def delete_tex_files(additional_endings: tuple[str] = ()) -> None:
     """Deletes the .dvi, .aux, and .log files produced when using `Tex` or `MathTex`
 
@@ -261,6 +262,7 @@ def delete_tex_files(additional_endings: tuple[str] = ()) -> None:
     additional_endings
         Additional Endings to remove in Tex folder
     """
+
     def delete_file(f: Path):
         f2 = Path(str(f))
         try:
@@ -268,13 +270,14 @@ def delete_tex_files(additional_endings: tuple[str] = ()) -> None:
         except FileNotFoundError:
             newdir = tex_files_directory / f2
             newdir.unlink()
-        
+
     tex_files_directory = config.get_dir("tex_dir")
 
     file_endings = (".dvi", ".aux", ".log", *additional_endings)
     for file_name in tex_files_directory.iterdir():
         if any(file_name.suffix == s for s in file_endings):
             file_name.unlink()
+
 
 def print_all_tex_errors(log_file: Path, tex_compiler: str, tex_file: Path) -> None:
     if not log_file.exists():
