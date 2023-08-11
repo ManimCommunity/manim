@@ -63,7 +63,7 @@ def tex_to_svg_file(
     )
     svg_file = convert_to_svg(dvi_file, tex_template.output_format)
     if not config["no_latex_cleanup"]:
-        delete_tex_files()
+        delete_nonsvg_files()
     return svg_file
 
 
@@ -270,7 +270,7 @@ def convert_to_svg(dvi_file: Path, extension: str, page: int = 1):
     return result
 
 
-def delete_tex_files(additional_endings: tuple[str] = ()) -> None:
+def delete_nonsvg_files(additional_endings: tuple[str] = ()) -> None:
     """Deletes the .dvi, .aux, and .log files produced when using `Tex` or `MathTex`
 
     Parameters:
@@ -278,14 +278,6 @@ def delete_tex_files(additional_endings: tuple[str] = ()) -> None:
     additional_endings
         Additional Endings to remove in Tex folder
     """
-
-    def delete_file(f: Path):
-        f2 = Path(str(f))
-        try:
-            f.unlink()
-        except FileNotFoundError:
-            newdir = tex_files_directory / f2
-            newdir.unlink()
 
     tex_files_directory = config.get_dir("tex_dir")
 
