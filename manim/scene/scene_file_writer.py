@@ -92,7 +92,7 @@ class SceneFileWriter:
                 "or set path to the ffmpeg executable under the ffmpeg header in Manim's configuration."
             )
 
-    def init_output_directories(self, scene_name: str):
+    def init_output_directories(self, scene_name):
         """Initialise output directories.
 
         Notes
