@@ -13,57 +13,6 @@ on:
       - main
 
 jobs:
-  test-arm:
-    runs-on: self-hosted
-    env:
-      DISPLAY: :0
-      PYTEST_ADDOPTS: "--color=yes" # colors in pytest
-    strategy:
-      fail-fast: false
-      matrix:
-        python: ["3.8.16", "3.11.1"]
-    steps:
-      - name: Checkout the repository
-        uses: actions/checkout@v3
-
-      - name: Check Runner
-        run: |
-          which latex
-          which ffmpeg
-          latex --version
-          ffmpeg -version
-          which python
-          python --version
-
-      - name: Activate Python ${{ matrix.python }}
-        run: |
-          echo "/root/.pyenv/versions/${{ matrix.python }}/bin:/root/.local/bin:$PATH" > $GITHUB_PATH
-
-      - name: Show Python Version
-        run: |
-          python --version --version
-
-      - name: Install Manim
-        run: |
-          poetry config virtualenvs.prefer-active-python true
-          poetry install
-
-      - name: Run tests
-        run: |
-          poetry run pytest
-
-      - name: Run module doctests
-        run: |
-          poetry run pytest --cov-append --doctest-modules --ignore-glob="*opengl*" manim
-
-      - name: Run doctests in rst files
-        run: |
-          cd docs && poetry run make doctest O=-tskip-manim
-
-      # upload coverage report
-      - name: Upload coverage
-        uses: codecov/codecov-action@v3
-
   test:
     runs-on: ${{ matrix.os }}
     env:
@@ -81,7 +30,7 @@ jobs:
 
       - name: Install Poetry
         run: |
-          pipx install poetry
+          pipx install "poetry==1.5.*"
           poetry config virtualenvs.prefer-active-python true
 
       - name: Setup Python ${{ matrix.python }}
@@ -119,7 +68,7 @@ jobs:
         uses: teatimeguest/setup-texlive-action@v2
         with:
           cache: true
-          packages: scheme-basic fontspec inputenc fontenc tipa mathrsfs calligra xcolor standalone preview doublestroke ms everysel setspace rsfs relsize ragged2e fundus-calligra microtype wasysym physics dvisvgm jknapltx wasy cm-super babel-english gnu-freefont mathastext cbfonts-fd
+          packages: scheme-basic fontspec inputenc fontenc tipa mathrsfs calligra xcolor standalone preview doublestroke ms everysel setspace rsfs relsize ragged2e fundus-calligra microtype wasysym physics dvisvgm jknapltx wasy cm-super babel-english gnu-freefont mathastext cbfonts-fd xetex
 
       - name: Start virtual display (Linux)
         if: runner.os == 'Linux'
@@ -184,7 +133,7 @@ jobs:
           echo "Install Tinytex"
           Invoke-WebRequest "https://github.com/yihui/tinytex-releases/releases/download/daily/TinyTeX-1.zip" -O "$($env:TMP)\TinyTex.zip"
           Expand-Archive -LiteralPath "$($env:TMP)\TinyTex.zip" -DestinationPath "$($PWD)\ManimCache\LatexWindows"
-          $env:Path = "$($PWD)\ManimCache\LatexWindows\TinyTeX\bin\win32;$($env:PATH)"
+          $env:Path = "$($PWD)\ManimCache\LatexWindows\TinyTeX\bin\windows;$($env:PATH)"
           tlmgr update --self
           foreach ($c in $tinyTexPackages){
             $c=$c.Trim()
@@ -196,13 +145,13 @@ jobs:
       - name: Add Windows dependencies to PATH
         if: runner.os == 'Windows'
         run: |
-          $env:Path += ";" + "$($PWD)\ManimCache\LatexWindows\TinyTeX\bin\win32"
+          $env:Path += ";" + "$($PWD)\ManimCache\LatexWindows\TinyTeX\bin\windows"
           $env:Path = "$env:USERPROFILE\.poetry\bin;$($env:PATH)"
           echo "$env:Path" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       - name: Install manim
         run: |
-          poetry config experimental.new-installer false
+          poetry config installer.modern-installation false
           poetry install
 
       - name: Run tests

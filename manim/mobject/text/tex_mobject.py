@@ -12,6 +12,8 @@ r"""Mobjects representing text rendered using LaTeX.
 
 from __future__ import annotations
 
+from manim.utils.color import ManimColor
+
 __all__ = [
     "SingleStringMathTex",
     "MathTex",
@@ -28,8 +30,6 @@ from functools import reduce
 from textwrap import dedent
 from typing import Dict, Iterable, Optional
 
-from colour import Color
-
 from manim import config, logger
 from manim.constants import *
 from manim.mobject.geometry.line import Line
@@ -37,8 +37,6 @@ from manim.mobject.svg.svg_mobject import SVGMobject
 from manim.mobject.types.vectorized_mobject import VectorizedPoint, VGroup, VMobject
 from manim.utils.tex import TexTemplate
 from manim.utils.tex_file_writing import tex_to_svg_file
-
-SCALE_FACTOR_PER_FONT_POINT = 1 / 960
 
 tex_string_to_mob_map = {}
 
@@ -66,7 +64,6 @@ class SingleStringMathTex(SVGMobject):
         font_size: float = DEFAULT_FONT_SIZE,
         **kwargs,
     ):
-
         if kwargs.get("color") is None:
             # makes it so that color isn't explicitly passed for these mobs,
             # and can instead inherit from the parent
@@ -256,7 +253,7 @@ class MathTex(SingleStringMathTex):
         *tex_strings,
         arg_separator: str = " ",
         substrings_to_isolate: Iterable[str] | None = None,
-        tex_to_color_map: dict[str, Color] = None,
+        tex_to_color_map: dict[str, ManimColor] = None,
         tex_environment: str = "align*",
         **kwargs,
     ):
@@ -382,6 +379,29 @@ class MathTex(SingleStringMathTex):
             part.set_color(color)
         return self
 
+    def set_opacity_by_tex(
+        self, tex: str, opacity: float = 0.5, remaining_opacity: float = None, **kwargs
+    ):
+        """
+        Sets the opacity of the tex specified. If 'remaining_opacity' is specified,
+        then the remaining tex will be set to that opacity.
+
+        Parameters
+        ----------
+        tex
+            The tex to set the opacity of.
+        opacity
+            Default 0.5. The opacity to set the tex to
+        remaining_opacity
+            Default None. The opacity to set the remaining tex to.
+            If None, then the remaining tex will not be changed
+        """
+        if remaining_opacity is not None:
+            self.set_opacity(opacity=remaining_opacity)
+        for part in self.get_parts_by_tex(tex):
+            part.set_opacity(opacity)
+        return self
+
     def set_color_by_tex_to_color_map(self, texs_to_color_map, **kwargs):
         for texs, color in list(texs_to_color_map.items()):
             try:
@@ -433,7 +453,8 @@ class Tex(MathTex):
 
 
 class BulletedList(Tex):
-    """
+    """A bulleted list.
+
     Examples
     --------
 
@@ -486,7 +507,8 @@ class BulletedList(Tex):
 
 
 class Title(Tex):
-    """
+    """A mobject representing an underlined title.
+
     Examples
     --------
     .. manim:: TitleExample
@@ -510,7 +532,6 @@ class Title(Tex):
         underline_buff=MED_SMALL_BUFF,
         **kwargs,
     ):
-
         self.include_underline = include_underline
         self.match_underline_width_to_text = match_underline_width_to_text
         self.underline_buff = underline_buff

@@ -77,13 +77,13 @@ import itertools as it
 from typing import TYPE_CHECKING, Callable, Iterable, Sequence
 
 import numpy as np
-from colour import Color
 
 if TYPE_CHECKING:
     from manim.mobject.text.text_mobject import Text
 
 from manim.mobject.opengl.opengl_surface import OpenGLSurface
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+from manim.utils.color import ManimColor
 
 from .. import config
 from ..animation.animation import Animation
@@ -259,7 +259,7 @@ class DrawBorderThenFill(Animation):
             sm.set_stroke(color=self.get_stroke_color(sm), width=self.stroke_width)
         return outline
 
-    def get_stroke_color(self, vmobject: VMobject | OpenGLVMobject) -> Color:
+    def get_stroke_color(self, vmobject: VMobject | OpenGLVMobject) -> ManimColor:
         if self.stroke_color:
             return self.stroke_color
         elif vmobject.get_stroke_width() > 0:
@@ -301,7 +301,7 @@ class Write(DrawBorderThenFill):
 
         class ShowWriteReversed(Scene):
             def construct(self):
-                self.play(Write(Text("Hello", font_size=144), reverse=True))
+                self.play(Write(Text("Hello", font_size=144), reverse=True, remover=False))
 
     Tests
     -----
@@ -404,7 +404,6 @@ class Unwrite(Write):
         reverse: bool = True,
         **kwargs,
     ) -> None:
-
         run_time: float | None = kwargs.pop("run_time", None)
         lag_ratio: float | None = kwargs.pop("lag_ratio", None)
         run_time, lag_ratio = self._set_default_config_from_length(

@@ -34,7 +34,7 @@ are required, namely:
 
 .. code-block:: bash
 
-   brew install pango scipy
+   brew install pango pkg-config scipy
 
 After all required dependencies are installed, simply run:
 

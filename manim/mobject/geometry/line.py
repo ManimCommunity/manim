@@ -17,7 +17,6 @@ __all__ = [
 from typing import Any, Sequence
 
 import numpy as np
-from colour import Color
 
 from manim import config
 from manim.constants import *
@@ -28,7 +27,6 @@ from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.types.vectorized_mobject import DashedVMobject, VGroup, VMobject
 from manim.utils.color import *
-from manim.utils.color import Colors
 from manim.utils.space_ops import angle_of_vector, line_intersection, normalize
 
 
@@ -647,7 +645,7 @@ class Vector(Arrow):
         self,
         integer_labels: bool = True,
         n_dim: int = 2,
-        color: Color | None = None,
+        color: ParsableManimColor | None = None,
         **kwargs,
     ):
         """Creates a label based on the coordinates of the vector.
@@ -879,7 +877,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         dot: bool = False,
         dot_radius: float | None = None,
         dot_distance: float = 0.55,
-        dot_color: Colors = WHITE,
+        dot_color: ParsableManimColor = WHITE,
         elbow: bool = False,
         **kwargs,
     ):

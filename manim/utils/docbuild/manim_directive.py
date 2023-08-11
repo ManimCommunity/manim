@@ -26,7 +26,7 @@ render scenes that are defined within doctests, for example::
         >>> from manim import Create, Dot, RED, Scene
         >>> dot = Dot(color=RED)
         >>> dot.color
-        <Color #fc6255>
+        ManimColor('#FC6255')
         >>> class DirectiveDoctestExample(Scene):
         ...     def construct(self):
         ...         self.play(Create(dot))
@@ -272,10 +272,13 @@ class ManimDirective(Directive):
             f"{clsname}().render()",
         ]
 
-        with tempconfig(example_config):
-            run_time = timeit(lambda: exec("\n".join(code), globals()), number=1)
-            video_dir = config.get_dir("video_dir")
-            images_dir = config.get_dir("images_dir")
+        try:
+            with tempconfig(example_config):
+                run_time = timeit(lambda: exec("\n".join(code), globals()), number=1)
+                video_dir = config.get_dir("video_dir")
+                images_dir = config.get_dir("images_dir")
+        except Exception as e:
+            raise RuntimeError(f"Error while rendering example {clsname}") from e
 
         _write_rendering_stats(
             clsname,

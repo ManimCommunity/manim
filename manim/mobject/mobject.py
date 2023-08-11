@@ -1,4 +1,5 @@
 """Base classes for objects that can be displayed."""
+
 from __future__ import annotations
 
 __all__ = ["Mobject", "Group", "override_animate"]
@@ -29,7 +30,6 @@ from typing import (
 )
 
 import numpy as np
-from colour import Color
 
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 
@@ -39,7 +39,8 @@ from ..utils.color import (
     BLACK,
     WHITE,
     YELLOW_C,
-    Colors,
+    ManimColor,
+    ParsableManimColor,
     color_gradient,
     interpolate_color,
 )
@@ -91,7 +92,14 @@ class Mobject:
         cls._add_intrinsic_animation_overrides()
         cls._original__init__ = cls.__init__
 
-    def __init__(self, color=WHITE, name=None, dim=3, target=None, z_index=0):
+    def __init__(
+        self,
+        color: ParsableManimColor | list[ParsableManimColor] = WHITE,
+        name=None,
+        dim=3,
+        target=None,
+        z_index=0,
+    ):
         self.name = self.__class__.__name__ if name is None else name
         self.dim = dim
         self.target = target
@@ -100,7 +108,7 @@ class Mobject:
         self.submobjects = []
         self.updaters = []
         self.updating_suspended = False
-        self.color = Color(color) if color else None
+        self.color: ManimColor = ManimColor.parse(color)
 
         self.reset_points()
         self.generate_points()
@@ -160,7 +168,7 @@ class Mobject:
             The animation type to be overridden
         override_func
             The function returning an animation replacing the default animation. It gets
-            passed the parameters given to the animnation constructor.
+            passed the parameters given to the animation constructor.
 
         Raises
         ------
@@ -201,10 +209,10 @@ class Mobject:
             >>> from manim import Square, GREEN
             >>> Square.set_default(color=GREEN, fill_opacity=0.25)
             >>> s = Square(); s.color, s.fill_opacity
-            (<Color #83c167>, 0.25)
+            (ManimColor('#83C167'), 0.25)
             >>> Square.set_default()
             >>> s = Square(); s.color, s.fill_opacity
-            (<Color white>, 0.0)
+            (ManimColor('#FFFFFF'), 0.0)
 
         .. manim:: ChangedDefaultTextcolor
             :save_last_frame:
@@ -430,13 +438,15 @@ class Mobject:
                 raise TypeError("All submobjects must be of type Mobject")
             if m is self:
                 raise ValueError("Mobject cannot contain self")
-            if any(mobjects.count(elem) > 1 for elem in mobjects):
-                logger.warning(
-                    "Attempted adding some Mobject as a child more than once, "
-                    "this is not possible. Repetitions are ignored.",
-                )
-                mobjects = remove_list_redundancies(mobjects)
-        self.submobjects = list_update(self.submobjects, mobjects)
+
+        unique_mobjects = remove_list_redundancies(mobjects)
+        if len(mobjects) != len(unique_mobjects):
+            logger.warning(
+                "Attempted adding some Mobject as a child more than once, "
+                "this is not possible. Repetitions are ignored.",
+            )
+
+        self.submobjects = list_update(self.submobjects, unique_mobjects)
         return self
 
     def insert(self, index: int, mobject: Mobject):
@@ -969,7 +979,11 @@ class Mobject:
         else:
             self.updaters.insert(index, update_function)
         if call_updater:
-            update_function(self, 0)
+            parameters = get_parameters(update_function)
+            if "dt" in parameters:
+                update_function(self, 0)
+            else:
+                update_function(self)
         return self
 
     def remove_updater(self, update_function: Updater):
@@ -1681,7 +1695,7 @@ class Mobject:
 
     # Background rectangle
     def add_background_rectangle(
-        self, color: Colors | None = None, opacity: float = 0.75, **kwargs
+        self, color: ParsableManimColor | None = None, opacity: float = 0.75, **kwargs
     ):
         """Add a BackgroundRectangle as submobject.
 
@@ -1733,7 +1747,9 @@ class Mobject:
 
     # Color functions
 
-    def set_color(self, color: Color = YELLOW_C, family: bool = True):
+    def set_color(
+        self, color: ParsableManimColor = YELLOW_C, family: bool = True
+    ) -> Mobject:
         """Condition is function which takes in one arguments, (x, y, z).
         Here it just recurses to submobjects, but in subclasses this
         should be further implemented based on the the inner workings
@@ -1742,19 +1758,30 @@ class Mobject:
         if family:
             for submob in self.submobjects:
                 submob.set_color(color, family=family)
-        self.color = Color(color)
+
+        self.color = ManimColor.parse(color)
         return self
 
-    def set_color_by_gradient(self, *colors):
+    def set_color_by_gradient(self, *colors: Iterable[ParsableManimColor]):
+        """Set the color of this mobject's submobjects along the specified
+        gradient.
+
+        Parameters
+        ----------
+        colors
+            The colors to use for the gradient. Use like
+            ``set_color_by_gradient(RED, BLUE, GREEN)``.
+
+        """
         self.set_submobject_colors_by_gradient(*colors)
         return self
 
     def set_colors_by_radial_gradient(
         self,
         center=None,
-        radius=1,
-        inner_color=WHITE,
-        outer_color=BLACK,
+        radius: float = 1,
+        inner_color: ParsableManimColor = WHITE,
+        outer_color: ParsableManimColor = BLACK,
     ):
         self.set_submobject_colors_by_radial_gradient(
             center,
@@ -1764,7 +1791,7 @@ class Mobject:
         )
         return self
 
-    def set_submobject_colors_by_gradient(self, *colors):
+    def set_submobject_colors_by_gradient(self, *colors: Iterable[ParsableManimColor]):
         if len(colors) == 0:
             raise ValueError("Need at least one color")
         elif len(colors) == 1:
@@ -1780,9 +1807,9 @@ class Mobject:
     def set_submobject_colors_by_radial_gradient(
         self,
         center=None,
-        radius=1,
-        inner_color=WHITE,
-        outer_color=BLACK,
+        radius: float = 1,
+        inner_color: ParsableManimColor = WHITE,
+        outer_color: ParsableManimColor = BLACK,
     ):
         if center is None:
             center = self.get_center()
@@ -1799,7 +1826,7 @@ class Mobject:
         self.set_color(self.color)
         return self
 
-    def fade_to(self, color, alpha, family=True):
+    def fade_to(self, color: ParsableManimColor, alpha: float, family: bool = True):
         if self.get_num_points() > 0:
             new_color = interpolate_color(self.get_color(), color, alpha)
             self.set_color(new_color, family=False)
@@ -1808,13 +1835,13 @@ class Mobject:
                 submob.fade_to(color, alpha)
         return self
 
-    def fade(self, darkness=0.5, family=True):
+    def fade(self, darkness: float = 0.5, family: bool = True):
         if family:
             for submob in self.submobjects:
                 submob.fade(darkness, family)
         return self
 
-    def get_color(self):
+    def get_color(self) -> ManimColor:
         """Returns the color of the :class:`~.Mobject`"""
         return self.color
 
@@ -1836,16 +1863,29 @@ class Mobject:
         self.become(self.saved_state)
         return self
 
-    ##
-
-    def reduce_across_dimension(self, points_func, reduce_func, dim):
-        points = self.get_all_points()
-        if points is None or len(points) == 0:
-            # Note, this default means things like empty VGroups
-            # will appear to have a center at [0, 0, 0]
+    def reduce_across_dimension(self, reduce_func, dim: int) -> float:
+        """Find the min or max value from a dimension across all points in this and submobjects."""
+        assert dim >= 0 and dim <= 2
+        if len(self.submobjects) == 0 and len(self.points) == 0:
+            # If we have no points and no submobjects, return 0 (e.g. center)
             return 0
-        values = points_func(points[:, dim])
-        return reduce_func(values)
+
+        # If we do not have points (but do have submobjects)
+        # use only the points from those.
+        if len(self.points) == 0:
+            rv = None
+        else:
+            # Otherwise, be sure to include our own points
+            rv = reduce_func(self.points[:, dim])
+        # Recursively ask submobjects (if any) for the biggest/
+        # smallest dimension they have and compare it to the return value.
+        for mobj in self.submobjects:
+            value = mobj.reduce_across_dimension(reduce_func, dim)
+            if rv is None:
+                rv = value
+            else:
+                rv = reduce_func([value, rv])
+        return rv
 
     def nonempty_submobjects(self):
         return [
@@ -1854,13 +1894,23 @@ class Mobject:
             if len(submob.submobjects) != 0 or len(submob.points) != 0
         ]
 
-    def get_merged_array(self, array_attr):
+    def get_merged_array(self, array_attr) -> np.ndarray:
+        """Return all of a given attribute from this mobject and all submobjects.
+
+        May contain duplicates; the order is in a depth-first (pre-order)
+        traversal of the submobjects.
+        """
         result = getattr(self, array_attr)
         for submob in self.submobjects:
             result = np.append(result, submob.get_merged_array(array_attr), axis=0)
         return result
 
-    def get_all_points(self):
+    def get_all_points(self) -> np.ndarray:
+        """Return all points from this mobject and all submobjects.
+
+        May contain duplicates; the order is in a depth-first (pre-order)
+        traversal of the submobjects.
+        """
         return self.get_merged_array("points")
 
     # Getters
@@ -1981,10 +2031,9 @@ class Mobject:
     def length_over_dim(self, dim):
         """Measure the length of an :class:`~.Mobject` in a certain direction."""
         return self.reduce_across_dimension(
-            np.max,
-            np.max,
+            max,
             dim,
-        ) - self.reduce_across_dimension(np.min, np.min, dim)
+        ) - self.reduce_across_dimension(min, dim)
 
     def get_coord(self, dim, direction=ORIGIN):
         """Meant to generalize ``get_x``, ``get_y`` and ``get_z``"""
@@ -2092,17 +2141,12 @@ class Mobject:
         self,
         mobject_or_point: Mobject | np.ndarray | list,
         direction=ORIGIN,
-        alignment_vect=UP,
     ):
         """Aligns mobject to another :class:`~.Mobject` in a certain direction.
 
         Examples:
         mob1.align_to(mob2, UP) moves mob1 vertically so that its
         top edge lines ups with mob2's top edge.
-
-        mob1.align_to(mob2, alignment_vect = RIGHT) moves mob1
-        horizontally so that it's center is directly above/below
-        the center of mob2
         """
         if isinstance(mobject_or_point, Mobject):
             point = mobject_or_point.get_critical_point(direction)
@@ -2146,7 +2190,7 @@ class Mobject:
         all_mobjects = [self] + list(it.chain(*sub_families))
         return remove_list_redundancies(all_mobjects)
 
-    def family_members_with_points(self):
+    def family_members_with_points(self) -> list[Mobject]:
         return [m for m in self.get_family() if m.get_num_points() > 0]
 
     def arrange(
@@ -2737,7 +2781,7 @@ class Mobject:
         self,
         z_index_value: float,
         family: bool = True,
-    ) -> VMobject:
+    ) -> T:
         """Sets the :class:`~.Mobject`'s :attr:`z_index` to the value specified in `z_index_value`.
 
         Parameters

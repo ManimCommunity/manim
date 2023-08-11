@@ -66,7 +66,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         fill_opacity: float = 1.0,
         **kwargs,
     ):
-        super().__init__(**kwargs)
+        super().__init__(**kwargs, stroke_width=stroke_width)
         self.number = number
         self.num_decimal_places = num_decimal_places
         self.include_sign = include_sign
@@ -78,7 +78,6 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         self.include_background_rectangle = include_background_rectangle
         self.edge_to_fix = edge_to_fix
         self._font_size = font_size
-        self.stroke_width = stroke_width
         self.fill_opacity = fill_opacity
 
         self.initial_config = kwargs.copy()
@@ -174,7 +173,6 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         return num_string
 
     def _string_to_mob(self, string: str, mob_class: VMobject | None = None, **kwargs):
-
         if mob_class is None:
             mob_class = self.mob_class
 
@@ -405,7 +403,6 @@ class Variable(VMobject, metaclass=ConvertToOpenGL):
         num_decimal_places: int = 2,
         **kwargs,
     ):
-
         self.label = MathTex(label) if isinstance(label, str) else label
         equals = MathTex("=").next_to(self.label, RIGHT)
         self.label.add(equals)
