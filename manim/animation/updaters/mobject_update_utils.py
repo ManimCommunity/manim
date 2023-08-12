@@ -22,6 +22,7 @@ import numpy as np
 from manim.constants import DEGREES, RIGHT
 from manim.mobject.mobject import Mobject
 from manim.opengl import OpenGLMobject
+from manim.utils.space_ops import normalize
 
 
 def assert_is_mobject_method(method: Callable) -> None:
@@ -134,13 +135,6 @@ def always_shift(
                 self.add(sq)
                 self.play(tri.animate.set_fill(opacity=1))
     """
-
-    def normalize(v):
-        norm = np.linalg.norm(v)
-        if norm == 0:
-            return v
-        return v / norm
-
     mobject.add_updater(lambda m, dt: m.shift(dt * rate * normalize(direction)))
     return mobject
 
