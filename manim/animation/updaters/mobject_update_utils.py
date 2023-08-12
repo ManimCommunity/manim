@@ -102,7 +102,8 @@ def always_redraw(func: Callable[[], Mobject]) -> Mobject:
 def always_shift(
     mobject: Mobject, direction: np.ndarray[np.float64] = RIGHT, rate: float = 0.1
 ) -> Mobject:
-    """Shift the mobject by `rate*direction` every second
+    """A mobject which is continuously shifted along some direction
+    at a certain rate.
 
     Parameters
     ----------
