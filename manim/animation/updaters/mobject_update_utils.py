@@ -126,8 +126,8 @@ def always_shift(
                 tri = Triangle()
                 VGroup(sq, tri).arrange(LEFT)
 
-                # always shift square one unit to the right
-                # even if there is an animation going on
+                # construct a square which is continuously
+                # shifted to the right
                 always_shift(sq, RIGHT, rate=5)
 
                 self.add(sq)
