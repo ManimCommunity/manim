@@ -145,7 +145,7 @@ def always_shift(
 
 
 def always_rotate(mobject: Mobject, rate: float = 20 * DEGREES, **kwargs) -> Mobject:
-    """Rotate the mobject by `rate` every second
+    """A mobject which is continuously rotated at a certain rate.
 
     Parameters
     ----------
