@@ -15,7 +15,7 @@ __all__ = [
 
 
 import inspect
-from collections.abc import Callable
+from typing import Callable, TYPE_CHECKING
 
 import numpy as np
 
@@ -24,6 +24,8 @@ from manim.mobject.mobject import Mobject
 from manim.opengl import OpenGLMobject
 from manim.utils.space_ops import normalize
 
+if TYPE_CHECKING:
+    from manim.animation.animation import Animation
 
 def assert_is_mobject_method(method: Callable) -> None:
     assert inspect.ismethod(method)
@@ -103,7 +105,9 @@ def always_redraw(func: Callable[[], Mobject]) -> Mobject:
 
 
 def always_shift(
-    mobject: Mobject, direction: np.ndarray[np.float64] = RIGHT, rate: float = 0.1
+    mobject: Mobject,
+    direction: np.ndarray[np.float64] = RIGHT,
+    rate: float = 0.1
 ) -> Mobject:
     """A mobject which is continuously shifted along some direction
     at a certain rate.
@@ -174,7 +178,7 @@ def always_rotate(mobject: Mobject, rate: float = 20 * DEGREES, **kwargs) -> Mob
     return mobject
 
 
-def turn_animation_into_updater(animation, cycle=False, **kwargs) -> Mobject:
+def turn_animation_into_updater(animation: Animation, cycle: bool = False, **kwargs) -> Mobject:
     """
     Add an updater to the animation's mobject which applies
     the interpolation and update functions of the animation
@@ -203,7 +207,7 @@ def turn_animation_into_updater(animation, cycle=False, **kwargs) -> Mobject:
     animation.begin()
     animation.total_time = 0
 
-    def update(m, dt):
+    def update(m: Mobject, dt: float):
         run_time = animation.get_run_time()
         time_ratio = animation.total_time / run_time
         if cycle:
@@ -222,5 +226,5 @@ def turn_animation_into_updater(animation, cycle=False, **kwargs) -> Mobject:
     return mobject
 
 
-def cycle_animation(animation, **kwargs) -> Mobject:
+def cycle_animation(animation: Animation, **kwargs) -> Mobject:
     return turn_animation_into_updater(animation, cycle=True, **kwargs)
