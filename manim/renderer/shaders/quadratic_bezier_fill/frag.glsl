@@ -12,7 +12,7 @@ in float bezier_degree;
 
 out vec4 frag_color;
 
-#define ANTI_ALIASING
+// #define ANTI_ALIASING
 
 float sdf(){
     if(bezier_degree < 2){
