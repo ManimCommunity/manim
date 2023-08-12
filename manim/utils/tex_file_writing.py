@@ -271,7 +271,7 @@ def delete_nonsvg_files(additional_endings: Iterable[str] = ()) -> None:
     """
 
     tex_dir = config.get_dir("tex_dir")
-    file_suffix_whitelist = (".svg", ".tex", *additional_endings)
+    file_suffix_whitelist = {".svg", ".tex", *additional_endings}
 
     for f in tex_dir.iterdir():
         if f.suffix not in file_suffix_whitelist:
