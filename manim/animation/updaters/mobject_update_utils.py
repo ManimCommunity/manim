@@ -107,7 +107,7 @@ def always_shift(
     Parameters
     ----------
     mobject
-        The mobject to shift
+        The mobject to shift.
     direction
         The direction to shift. The vector is normalized, the specified magnitude
         is not relevant.
