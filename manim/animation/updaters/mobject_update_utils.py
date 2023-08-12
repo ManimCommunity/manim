@@ -150,7 +150,12 @@ def always_rotate(mobject: Mobject, rate: float = 20 * DEGREES, **kwargs) -> Mob
     Parameters
     ----------
     mobject
-        The mobject to rotate
+        The mobject to be rotated.
+    rate
+        The angle which the mobject is rotated by
+        over one second.
+    kwags
+        Further arguments to be passed to :meth:`.Mobject.rotate`.
 
     Examples
     --------
