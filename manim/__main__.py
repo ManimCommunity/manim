@@ -21,7 +21,9 @@ def exit_early(ctx, param, value):
         sys.exit()
 
 
-console.print(f"Manim Community [green]v{__version__}[/green]\n")
+def show_splash(ctx, param, value):
+    if value:
+        console.print(f"Manim Community [green]v{__version__}[/green]\n")
 
 
 @cloup.group(
@@ -40,6 +42,15 @@ console.print(f"Manim Community [green]v{__version__}[/green]\n")
     is_flag=True,
     help="Show version and exit.",
     callback=exit_early,
+    is_eager=True,
+    expose_value=False,
+)
+@click.option(
+    "--show-splash/--hide-splash",
+    is_flag=True,
+    default=True,
+    help="Print splash message with version information.",
+    callback=show_splash,
     is_eager=True,
     expose_value=False,
 )
