@@ -15,7 +15,7 @@ __all__ = [
 
 
 import inspect
-from typing import Callable, TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable
 
 import numpy as np
 
@@ -26,6 +26,7 @@ from manim.utils.space_ops import normalize
 
 if TYPE_CHECKING:
     from manim.animation.animation import Animation
+
 
 def assert_is_mobject_method(method: Callable) -> None:
     assert inspect.ismethod(method)
@@ -105,9 +106,7 @@ def always_redraw(func: Callable[[], Mobject]) -> Mobject:
 
 
 def always_shift(
-    mobject: Mobject,
-    direction: np.ndarray[np.float64] = RIGHT,
-    rate: float = 0.1
+    mobject: Mobject, direction: np.ndarray[np.float64] = RIGHT, rate: float = 0.1
 ) -> Mobject:
     """A mobject which is continuously shifted along some direction
     at a certain rate.
@@ -178,7 +177,9 @@ def always_rotate(mobject: Mobject, rate: float = 20 * DEGREES, **kwargs) -> Mob
     return mobject
 
 
-def turn_animation_into_updater(animation: Animation, cycle: bool = False, **kwargs) -> Mobject:
+def turn_animation_into_updater(
+    animation: Animation, cycle: bool = False, **kwargs
+) -> Mobject:
     """
     Add an updater to the animation's mobject which applies
     the interpolation and update functions of the animation
