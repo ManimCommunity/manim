@@ -109,7 +109,8 @@ def always_shift(
     mobject
         The mobject to shift
     direction
-        The direction to shift
+        The direction to shift. The vector is normalized, the specified magnitude
+        is not relevant.
     rate
         Amount of direction to be covered in one second
 
