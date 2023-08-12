@@ -21,10 +21,11 @@ float sdf(){
     vec2 p = uv_coords;
     float sgn = orientation;
     float q = (p.x * p.x - p.y);
-#if defined(ANTI_ALIASING)
+#ifdef ANTI_ALIASING
     return sgn * q / sqrt(dFdx(q) * dFdx(q) + dFdy(q) * dFdy(q));
-#elif
-    return sgn * q;
+#endif
+#ifndef ANTI_ALIASING
+    return -sgn * q;
 #endif
 }
 
@@ -33,9 +34,10 @@ void main() {
     if (color.a == 0) discard;
     frag_color = color;
     if (fill_all == 1.0) return;
-#if defined(ANTI_ALIASING)
+#ifdef ANTI_ALIASING
     frag_color.a *= 0.5 - sdf(); // Anti-aliasing
-#elif
+#endif
+#ifndef ANTI_ALIASING
     frag_color.a *= float(sdf() > 0); // No anti-aliasing
 #endif
 }
