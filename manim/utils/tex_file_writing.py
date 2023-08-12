@@ -262,7 +262,7 @@ def convert_to_svg(dvi_file: Path, extension: str, page: int = 1):
 
 
 def delete_nonsvg_files(additional_endings: Iterable[str] = ()) -> None:
-    """Deletes every file that does not have a suffix in ``(".svg", ".log", *additional_endings)``
+    """Deletes every file that does not have a suffix in ``(".svg", ".tex", *additional_endings)``
 
     Parameters:
     -----------
