@@ -13,6 +13,7 @@ import os
 import re
 import unicodedata
 from pathlib import Path
+from typing import Iterable
 
 from manim.utils.tex import TexTemplate
 
@@ -261,21 +262,21 @@ def convert_to_svg(dvi_file: Path, extension: str, page: int = 1):
     return result
 
 
-def delete_nonsvg_files(additional_endings: tuple[str] = ()) -> None:
-    """Deletes the .dvi, .aux, and .log files produced when using `Tex` or `MathTex`
+def delete_nonsvg_files(additional_endings: Iterable[str] = ()) -> None:
+    """Deletes every file that does not have a suffix in ``(".svg", ".log", *additional_endings)``
 
     Parameters:
     -----------
     additional_endings
-        Additional Endings to remove in Tex folder
+        Additional endings to whitelist
     """
 
-    tex_files_directory = config.get_dir("tex_dir")
-
-    file_endings = (".dvi", ".aux", ".log", *additional_endings)
-    for file_name in tex_files_directory.iterdir():
-        if file_name.suffix in file_endings:
-            file_name.unlink()
+    tex_dir = config.get_dir("tex_dir")
+    file_suffix_whitelist = (".svg", ".tex", *additional_endings)
+    
+    for f in tex_dir.iterdir():
+        if f.suffix not in file_suffix_whitelist:
+            f.unlink()
 
 
 def print_all_tex_errors(log_file: Path, tex_compiler: str, tex_file: Path) -> None:
