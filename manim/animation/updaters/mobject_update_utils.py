@@ -112,7 +112,8 @@ def always_shift(
         The direction to shift. The vector is normalized, the specified magnitude
         is not relevant.
     rate
-        Amount of direction to be covered in one second
+        Length in Manim units which the mobject travels in one
+        second along the specified direction.
 
     Examples
     --------
