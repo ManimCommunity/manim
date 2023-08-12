@@ -76,7 +76,6 @@ def generate_tex_file(
 ) -> Path:
     """Takes a tex expression (and an optional tex environment),
     and returns a fully formed tex file ready for compilation.
-    Along the way, checks if an svg file for the expression already exists.
 
     Parameters
     ----------
