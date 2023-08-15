@@ -34,6 +34,7 @@ from colour import Color
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 
 from .. import config, logger
+from ..bezier.types.cubic import CubicBezierHandler
 from ..constants import *
 from ..utils.color import (
     BLACK,
@@ -101,10 +102,23 @@ class Mobject:
         self.updaters = []
         self.updating_suspended = False
         self.color = Color(color) if color else None
+        self.bezier = CubicBezierHandler(points=None, dim=self.dim)
 
         self.reset_points()
         self.generate_points()
         self.init_colors()
+
+    @property
+    def points(self):
+        return self.bezier._internal
+
+    @points.setter
+    def points(self, new_points):
+        self.bezier._internal = np.asarray(new_points)
+
+    @points.deleter
+    def points(self):
+        self.bezier._internal = np.empty((0, self.dim))
 
     @classmethod
     def animation_override_for(

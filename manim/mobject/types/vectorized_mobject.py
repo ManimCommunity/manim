@@ -1107,11 +1107,10 @@ class VMobject(Mobject):
         Returns
         -------
         np.ndarray
-            points defininf the nth bezier curve (anchors, handles)
+            points defining the nth bezier curve (anchors, handles)
         """
         assert n < self.get_num_curves()
-        nppcc = self.n_points_per_cubic_curve
-        return self.points[nppcc * n : nppcc * (n + 1)]
+        return self.bezier.get_nth_curve_points(n)
 
     def get_nth_curve_function(self, n: int) -> typing.Callable[[float], np.ndarray]:
         """Returns the expression of the nth curve.
@@ -1126,7 +1125,7 @@ class VMobject(Mobject):
         typing.Callable[float]
             expression of the nth bezier curve.
         """
-        return bezier(self.get_nth_curve_points(n))
+        return self.bezier.get_nth_curve_function(n)
 
     def get_nth_curve_length_pieces(
         self,
