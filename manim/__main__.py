@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import sys
-
 import click
 import cloup
 
@@ -16,14 +14,15 @@ from .cli.render.commands import render
 from .constants import EPILOG
 
 
-def exit_early(ctx, param, value):
-    if value:
-        sys.exit()
-
-
 def show_splash(ctx, param, value):
     if value:
         console.print(f"Manim Community [green]v{__version__}[/green]\n")
+
+
+def print_version_and_exit(ctx, param, value):
+    show_splash(ctx, param, value)
+    if value:
+        ctx.exit()
 
 
 @cloup.group(
@@ -41,7 +40,7 @@ def show_splash(ctx, param, value):
     "--version",
     is_flag=True,
     help="Show version and exit.",
-    callback=exit_early,
+    callback=print_version_and_exit,
     is_eager=True,
     expose_value=False,
 )
