@@ -165,24 +165,19 @@ jobs:
           name: control-output-pngs
           path: control_output
 
-      - name: Post Comment with PNG Artifacts
+      - name: Comment Hello
         uses: actions/github-script@v4
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const artifactUrl = `https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
-            const osUsed = `${process.env.os}`;
-
-            const commentBody = `
-              The PNG artifacts were generated using ${osUsed}.
-              ![Generated PNGs](${artifactUrl}/artifacts/control-output-pngs)
-            `;
+            const commentBody = "Hello from the GitHub Actions workflow!";
             github.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: commentBody
             });
+
 
       - name: Run module doctests
         run: |
