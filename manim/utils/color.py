@@ -27,7 +27,7 @@ from typing import Iterable
 import numpy as np
 from colour import Color
 
-from ..utils.bezier import interpolate
+from ..utils.linear_interpolation import interpolate
 from ..utils.space_ops import normalize
 
 

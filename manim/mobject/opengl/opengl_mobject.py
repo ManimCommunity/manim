@@ -14,7 +14,6 @@ from colour import Color
 
 from manim import config, logger
 from manim.constants import *
-from manim.utils.bezier import integer_interpolate, interpolate
 from manim.utils.color import *
 from manim.utils.color import Colors
 from manim.utils.config_ops import _Data, _Uniforms
@@ -30,6 +29,7 @@ from manim.utils.iterables import (
     resize_with_interpolation,
     uniq_chain,
 )
+from manim.utils.linear_interpolation import integer_interpolate, interpolate
 from manim.utils.paths import straight_path
 from manim.utils.simple_functions import get_parameters
 from manim.utils.space_ops import (

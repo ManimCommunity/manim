@@ -21,8 +21,8 @@ from manim.mobject.graphing.scale import LinearBase, _ScaleBase
 from manim.mobject.text.numbers import DecimalNumber
 from manim.mobject.text.tex_mobject import MathTex, Tex
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
-from manim.utils.bezier import interpolate
 from manim.utils.config_ops import merge_dicts_recursively
+from manim.utils.linear_interpolation import interpolate
 from manim.utils.space_ops import normalize
 
 

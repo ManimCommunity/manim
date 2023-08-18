@@ -191,17 +191,3 @@ class ManimQuadraticBezier(ManimBezier):
 
     def make_approximately_smooth(self):
         raise NotImplementedError
-
-    @classmethod
-    def get_approx_smooth_handle_points(
-        cls,
-        anchors: np.ndarray,
-    ) -> tuple[np.ndarray, np.ndarray]:
-        raise NotImplementedError
-
-    @classmethod
-    def get_smooth_handle_points(
-        cls,
-        anchors: np.ndarray,
-    ) -> tuple[np.ndarray, np.ndarray]:
-        return cls._smooth_cubic(anchors)

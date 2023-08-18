@@ -91,7 +91,7 @@ from ..animation.composition import Succession
 from ..constants import TAU
 from ..mobject.mobject import Group, Mobject
 from ..mobject.types.vectorized_mobject import VMobject
-from ..utils.bezier import integer_interpolate
+from ..utils.linear_interpolation import integer_interpolate
 from ..utils.rate_functions import double_smooth, linear, smooth
 
 

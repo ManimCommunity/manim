@@ -17,8 +17,6 @@ from manim.utils.bezier import (
     bezier,
     get_quadratic_approximation_of_cubic,
     get_smooth_cubic_bezier_handle_points,
-    integer_interpolate,
-    interpolate,
     partial_quadratic_bezier_points,
     proportions_along_bezier_curve_for_point,
     quadratic_bezier_remap,
@@ -26,6 +24,7 @@ from manim.utils.bezier import (
 from manim.utils.color import *
 from manim.utils.config_ops import _Data
 from manim.utils.iterables import listify, make_even, resize_with_interpolation
+from manim.utils.linear_interpolation import integer_interpolate, interpolate
 from manim.utils.space_ops import (
     angle_between_vectors,
     cross2d,

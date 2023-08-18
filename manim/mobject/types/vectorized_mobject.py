@@ -33,14 +33,13 @@ from ...mobject.mobject import Mobject
 from ...utils.bezier import (
     bezier,
     get_smooth_handle_points,
-    integer_interpolate,
-    interpolate,
     partial_bezier_points,
     proportions_along_bezier_curve_for_point,
 )
 from ...utils.color import BLACK, WHITE, color_to_rgba
 from ...utils.deprecation import deprecated
 from ...utils.iterables import make_even, resize_array, stretch_array_to_length, tuplify
+from ...utils.linear_interpolation import integer_interpolate, interpolate
 from ...utils.space_ops import rotate_vector, shoelace_direction
 
 # TODO
@@ -1027,14 +1026,10 @@ class VMobject(Mobject):
         typing.Tuple
             Bezier control points.
         """
-        nppcc = self.n_points_per_cubic_curve
-        remainder = len(points) % nppcc
-        points = points[: len(points) - remainder]
-        # Basically take every nppcc element.
-        return (points[i : i + nppcc] for i in range(0, len(points), nppcc))
+        return self.bezier.get_bezier_tuples_from_points(points)
 
     def get_cubic_bezier_tuples(self):
-        return self.get_cubic_bezier_tuples_from_points(self.points)
+        return self.bezier.get_bezier_tuples()
 
     def _gen_subpaths_from_points(
         self,

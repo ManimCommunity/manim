@@ -283,23 +283,9 @@ class ManimCubicBezier(ManimBezier):
         return self
 
     def make_smooth(self):
-        h1, h2 = self._smooth_cubic(self._internal)
+        h1, h2 = self.get_smooth_cubic_bezier_handle_points(self._internal)
         self._internal[1:4] = h1
         self._internal[2:4] = h2
 
     def make_approximately_smooth(self):
         raise NotImplementedError
-
-    @classmethod
-    def get_approx_smooth_handle_points(
-        cls,
-        anchors: np.ndarray,
-    ) -> tuple[np.ndarray, np.ndarray]:
-        raise NotImplementedError
-
-    @classmethod
-    def get_smooth_handle_points(
-        cls,
-        anchors: np.ndarray,
-    ) -> tuple[np.ndarray, np.ndarray]:
-        return cls._smooth_cubic(anchors)

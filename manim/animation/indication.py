@@ -57,9 +57,9 @@ from ..animation.transform import Transform
 from ..constants import *
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
-from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import GREY, YELLOW
 from ..utils.deprecation import deprecated
+from ..utils.linear_interpolation import interpolate, inverse_interpolate
 from ..utils.rate_functions import smooth, there_and_back, wiggle
 from ..utils.space_ops import normalize
 

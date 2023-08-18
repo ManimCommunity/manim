@@ -352,59 +352,6 @@ class ManimBezier:
 
         return degree_n_bezier
 
-    # Linear interpolation variants
-    @staticmethod
-    def interpolate(start: np.ndarray, end: np.ndarray, alpha: float) -> np.ndarray:
-        return start + alpha * (end - start)
-
-    # TODO: fix typing - it should be always tuple[int, float],
-    # but mypy complains because start and end are typed as floats, not ints
-    @classmethod
-    def integer_interpolate(
-        cls, start: float, end: float, alpha: float
-    ) -> tuple[int, float] | tuple[float, float]:
-        """
-        Alpha is a float between 0 and 1.  This returns
-        an integer between start and end (inclusive) representing
-        appropriate interpolation between them, along with a
-        "residue" representing a new proportion between the
-        returned integer and the next one of the
-        list.
-
-        For example, if start=0, end=10, alpha=0.46, This
-        would return (4, 0.6).
-        """
-        if alpha >= 1:
-            return (end - 1, 1.0)
-        if alpha <= 0:
-            return (start, 0)
-        value = int(cls.interpolate(start, end, alpha))
-        residue = ((end - start) * alpha) % 1
-        return (value, residue)
-
-    @staticmethod
-    def mid(self, start: float, end: float) -> float:
-        return (start + end) / 2.0
-
-    @staticmethod
-    def inverse_interpolate(start: float, end: float, value: float) -> np.ndarray:
-        return np.true_divide(value - start, end - start)
-
-    @classmethod
-    def match_interpolate(
-        cls,
-        new_start: float,
-        new_end: float,
-        old_start: float,
-        old_end: float,
-        old_value: float,
-    ) -> np.ndarray:
-        return cls.interpolate(
-            new_start,
-            new_end,
-            cls.inverse_interpolate(old_start, old_end, old_value),
-        )
-
     def make_jagged(self):
         raise NotImplementedError
 
@@ -414,22 +361,34 @@ class ManimBezier:
     def make_approximately_smooth(self):
         raise NotImplementedError
 
-    @classmethod
-    def get_approx_smooth_handle_points(
-        cls,
-        anchors: np.ndarray,
-    ) -> tuple[np.ndarray, np.ndarray]:
-        raise NotImplementedError
+    def change_anchor_mode(self, mode: str):
+        """Changes the anchor mode of the bezier curves. This will modify the handles.
+
+        There can be only two modes, "jagged", and "smooth".
+
+        Returns
+        -------
+        :class:`ManimBezier`
+            ``self``
+        """
+        if mode == "jagged":
+            return self.make_jagged()
+        if mode in ["smooth", "true_smooth"]:
+            return self.make_smooth()
+        if mode == "approx_smooth":
+            return self.make_approximately_smooth()
+        raise ValueError(
+            "Mode must be 'jagged', 'smooth'/'true_smooth' or 'approx_smooth'."
+        )
+
+    # Helper functions for make_smooth and make_approximately_smooth,
+    # intended to be used in subclasses
+    @staticmethod
+    def get_smooth_quadratic_bezier_handle_points(anchors: np.ndarray) -> np.ndarray:
+        pass
 
     @classmethod
-    def get_smooth_handle_points(
-        cls,
-        anchors: np.ndarray,
-    ) -> tuple[np.ndarray, np.ndarray]:
-        raise NotImplementedError
-
-    @classmethod
-    def _smooth_cubic(
+    def get_smooth_cubic_bezier_handle_points(
         cls,
         anchors: np.ndarray,
     ) -> tuple[np.ndarray, np.ndarray]:
@@ -458,7 +417,9 @@ class ManimBezier:
         # they can only be an interpolation of these two anchors with alphas
         # 1/3 and 2/3, which will draw a straight line between the anchors.
         if n_handles == 1:
-            return cls.interpolate(anchors[0], anchors[1], np.array([[1 / 3], [2 / 3]]))
+            h1 = (2 * anchors[0] + anchors[1]) / 3
+            h2 = (anchors[0] + 2 * anchors[1]) / 3
+            return h1, h2
 
         # Handle different cases depending on whether the points form a closed
         # curve or not
@@ -961,7 +922,6 @@ class ManimBezier:
 
         return
 
-    # Methods to implement in QuadraticBezierHandler and CubicBezierHandler
     @staticmethod
     def partial_bezier_points(points: np.ndarray, a: float, b: float) -> np.ndarray:
         raise NotImplementedError
@@ -975,19 +935,84 @@ class ManimBezier:
         raise NotImplementedError
 
     @classmethod
+    def get_bezier_tuples_from_points(cls, points):
+        nppc = cls.degree + 1
+        points = np.asarray(points)
+        num_points, dim = points.shape
+        num_curves = num_points // nppc
+        return points[: num_curves * nppc].reshape(-1, nppc, dim)
+
+    def get_bezier_tuples(self):
+        return self.get_bezier_tuples_from_points(self._internal)
+
+    @classmethod
+    def insert_n_curves_to_point_list(cls, n: int, points: np.ndarray) -> np.ndarray:
+        """Given an array of k points defining Bézier curves (anchors and handles), returns points defining exactly k + n Bézier curves.
+
+        Parameters
+        ----------
+        n
+            Number of desired curves.
+        points
+            Starting points.
+
+        Returns
+        -------
+        np.ndarray
+            Points generated.
+        """
+        points = np.asarray(points)
+        if points.shape[0] == 1:
+            return np.repeat(points, n * (cls.degree + 1), 0)
+
+        bezier_tuples = cls.get_bezier_tuples_from_points(points)
+        curr_num_curves, nppc, dim = bezier_tuples.shape
+        target_num_curves = curr_num_curves + n
+        # This is an array with values ranging from 0
+        # up to curr_num_curves,  with repeats such that
+        # it's total length is target_num_curves.  For example,
+        # with curr_num_curves = 10, target_num_curves = 15, this
+        # would be [0, 0, 1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 8, 8, 9].
+        repeat_indices = (
+            np.arange(target_num_curves, dtype="i") * curr_num_curves
+        ) // target_num_curves
+
+        # If the nth term of this list is k, it means
+        # that the nth curve of our path should be split
+        # into k pieces.
+        # In the above example our array had the following elements
+        # [0, 0, 1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 8, 8, 9]
+        # We have two 0s, one 1, two 2s and so on.
+        # The split factors array would hence be:
+        # [2, 1, 2, 1, 2, 1, 2, 1, 2, 1]
+        split_factors = np.zeros(curr_num_curves, dtype="i")
+        np.add.at(split_factors, repeat_indices, 1)
+
+        new_points = np.empty((target_num_curves, dim))
+        index = 0
+        for curve, sf in zip(bezier_tuples, split_factors):
+            if sf == 1:
+                new_points[index] = curve
+            else:
+                new_points[index : index + sf] = cls.subdivide_bezier(curve, sf)
+            index += sf
+
+        return new_points
+
+    @classmethod
     def bezier_remap(
         cls,
         curves: np.ndarray,
-        new_number_of_curves: int,
-    ):
-        """Subdivides each curve in curves into as many parts as necessary, until the final number of curves reaches a desired amount, new_number_of_curves.
+        target_num_curves: int,
+    ) -> np.ndarray:
+        """Subdivides each curve in curves into as many parts as necessary, until the final number of curves reaches a desired amount, target_num_curves.
 
         Parameters
         ----------
         curves
-            An array of n Bézier curves to be remapped. The shape of this array must be (n, degree+1, dimension).
+            An array of n Bézier curves to be remapped. The shape of this array must be (current_num_curves, degree+1, dimension).
 
-        new_number_of_curves
+        target_num_curves
             The number of curves that the output will contain. This needs to be higher than the current number.
 
         Returns
@@ -996,42 +1021,11 @@ class ManimBezier:
         """
         curves = np.asarray(curves)
         # NPPC: Number of Points Per Curve = degree + 1
-        n, nppc, dim = curves.shape
-        difference = new_number_of_curves - n
-        if difference <= 0:
+        current_num_curves, nppc, dim = curves.shape
+        num_curves_to_insert = target_num_curves - current_num_curves
+        if num_curves_to_insert <= 0:
             return curves
 
-        new_curves = np.empty((new_number_of_curves, nppc, dim))
-        idx = 0
-        for curve in curves:
-            if difference > 0:
-                tmp_noc = int(np.ceil(difference / n)) + 1
-                tmp = cls.subdivide_bezier(curve, tmp_noc).reshape(-1, 3, 3)
-                for i in range(tmp_noc):
-                    new_curves[idx + i] = tmp[i]
-                difference -= tmp_noc - 1
-                idx += tmp_noc
-            else:
-                new_curves[idx] = curve
-                idx += 1
-        return new_curves
-
-        """
-        This is an alternate version of the function just for documentation purposes
-        --------
-
-        difference = new_number_of_curves - len(triplets)
-        if difference <= 0:
-            return triplets
-        new_triplets = []
-        for triplet in triplets:
-            if difference > 0:
-                tmp_noc = int(np.ceil(difference / len(triplets))) + 1
-                tmp = subdivide_quadratic_bezier(triplet, tmp_noc).reshape(-1, 3, 3)
-                for i in range(tmp_noc):
-                    new_triplets.append(tmp[i])
-                difference -= tmp_noc - 1
-            else:
-                new_triplets.append(triplet)
-        return new_triplets
-        """
+        return cls.insert_n_curves_to_point_list(
+            curves.flat, num_curves_to_insert
+        ).reshape(target_num_curves, nppc, dim)

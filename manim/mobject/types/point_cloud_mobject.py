@@ -12,7 +12,6 @@ from manim.mobject.opengl.opengl_point_cloud_mobject import OpenGLPMobject
 
 from ...constants import *
 from ...mobject.mobject import Mobject
-from ...utils.bezier import interpolate
 from ...utils.color import (
     BLACK,
     WHITE,
@@ -22,6 +21,7 @@ from ...utils.color import (
     rgba_to_color,
 )
 from ...utils.iterables import stretch_array_to_length
+from ...utils.linear_interpolation import interpolate
 
 
 class PMobject(Mobject, metaclass=ConvertToOpenGL):

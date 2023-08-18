@@ -10,7 +10,7 @@ import typing
 from manim.mobject.text.numbers import DecimalNumber
 
 from ..animation.animation import Animation
-from ..utils.bezier import interpolate
+from ..utils.linear_interpolation import interpolate
 
 
 class ChangingDecimal(Animation):
