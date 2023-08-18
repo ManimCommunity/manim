@@ -19,7 +19,8 @@ class ManimBezier:
     # Placeholder value
     degree = 1
 
-    negative_pascal_coefficients = np.array(
+    # Memo for get_function_from_points
+    negative_pascal_triangle = np.array(
         [
             [1, 0, 0, 0, 0, 0],
             [1, -1, 0, 0, 0, 0],
@@ -30,25 +31,25 @@ class ManimBezier:
         ]
     )
 
-    # LUT (Look-Up Table)-related attributes
-    num_segments_per_curve = 10
-    nspc = num_segments_per_curve
-    t_range = (np.arange(nspc + 1) / nspc).reshape(-1, 1)
-
     # Memos for get_smooth_cubic_bezier_handles_for_(open/closed)_curve
     _cp_open_memo = np.array([0.5])
     _cp_closed_memo = np.array([1 / 3])
     _up_closed_memo = np.array([1 / 3])
 
+    # Memo for subdivide_bezier, to be redefined in subclasses
+    subdivision_matrices: dict[int, np.ndarray] = {}
+
     tolerance_for_point_equality = 1e-8
 
-    def __new__(cls):
-        if cls(*args, **kwargs).__class__ == cls:
+    def __new__(cls, *args, **kwargs):
+        if cls.__name__ == "ManimBezier":
             raise NotImplementedError(
-                f"The class {self.__class__.__name__} is not intended to be "
+                f"The class {cls.__name__} is not intended to be "
                 f"instantiated directly. Only its subclasses with the class "
                 f"attribute degree should be instantiated."
             )
+
+        return super().__new__(cls)
 
     def __init__(
         self,
@@ -60,19 +61,96 @@ class ManimBezier:
         self._internal = points
         self.dim = dim
 
+        # LUT (Look-Up Table)-related attributes
+        self._num_segments_per_curve = 10
+        nspc = self._num_segments_per_curve
+        self._t_range = (np.arange(nspc + 1) / nspc).reshape(-1, 1)
+
+        self._lut = np.empty((0, nspc + 1, dim))
+        self._arc_length_pieces = np.empty((0, nspc))
+        self._accumulated_arc_length_pieces = np.empty((0, nspc))
+        self._arc_lengths = np.empty(0)
+        self._total_arc_length = 0.0
+
         self.needs_new_lut = True
         self.needs_new_arc_length_pieces = True
         self.needs_new_accumulated_arc_length_pieces = True
         self.needs_new_arc_lengths = True
         self.needs_new_total_arc_length = True
 
-        self._lut = np.empty((0, self.nspc + 1, dim))
-        self._arc_length_pieces = np.empty((0, self.nspc))
-        self._accumulated_arc_length_pieces = np.empty((0, self.nspc))
-        self._arc_lengths = np.empty(0)
-        self._total_arc_length = 0
+    def __add__(self, shift_vector: np.ndarray):
+        shift_vector = np.asarray(shift_vector)
+        self._internal += shift_vector
+        if shift_vector.ndim > 1:
+            self.needs_new_lut = True
+            self.needs_new_arc_length_pieces = True
+            self.needs_new_accumulated_arc_length_pieces = True
+            self.needs_new_arc_lengths = True
+            self.needs_new_total_arc_length = True
+        elif not self.needs_new_lut:
+            self._lut += shift_vector
+        return self
 
-    # Methods related to the LUT (Look-Up Table) and arc lengths
+    def __sub__(self, shift_vector: np.ndarray):
+        return self.__add__(-np.asarray(shift_vector))
+
+    def __mul__(self, factor: float | np.ndarray):
+        factor_as_arr = np.asarray(factor)
+        if factor_as_arr.ndim == 1:
+            self._internal *= factor
+            if not self.needs_new_lut:
+                self._lut *= factor
+            if not self.needs_new_arc_length_pieces:
+                self._arc_length_pieces *= factor
+            if not self.needs_new_accumulated_arc_length_pieces:
+                self._accumulated_arc_length_pieces *= factor
+            if not self.needs_new_arc_lengths:
+                self._arc_lengths *= factor
+            if not self.needs_new_total_arc_length:
+                self._total_arc_length *= factor
+        else:
+            self._internal *= factor_as_arr
+            self.needs_new_lut = True
+            self.needs_new_arc_length_pieces = True
+            self.needs_new_accumulated_arc_length_pieces = True
+            self.needs_new_arc_lengths = True
+            self.needs_new_total_arc_length = True
+
+        return self
+
+    def __div__(self, factor: float | np.ndarray):
+        if type(factor) == float:
+            return self.__mul__(1 / factor)
+        return self.__mul__(1 / np.asarray(factor))
+
+    def __array__(self):
+        return self._internal
+
+    def __ufunc__(self, method, *args, **kwargs):
+        return self.__class__(method(self._internal), *args, **kwargs)
+
+    # Properties and methods related to the LUT (Look-Up Table) and arc lengths
+    @property
+    def num_segments_per_curve(self):
+        return self._num_segments_per_curve
+
+    @num_segments_per_curve.setter
+    def num_segments_per_curve(self, new_value):
+        if new_value != self._num_segments_per_curve:
+            self._num_segments_per_curve = new_value
+            self._t_range = (np.arange(new_value + 1) / new_value).reshape(-1, 1)
+            for attr in self._private_lut_attrs:
+                self.__dict__["_" + attr] = None
+                self.__dict__["needs_new_" + attr] = True
+
+    @property
+    def nspc(self):
+        return self._num_segments_per_curve
+
+    @nspc.setter
+    def nspc(self, new_value):
+        self._num_segments_per_curve = new_value
+
     @property
     def lut(self):
         if self.degree is None:
@@ -92,9 +170,7 @@ class ManimBezier:
                 bezier_function = self.get_function_from_points(
                     self._internal[i * nppc : (i + 1) * nppc]
                 )
-                self._lut[i : i + 1] = bezier_function(self.t_range)
-
-            self.needs_new_lut = False
+                self._lut[i : i + 1] = bezier_function(self._t_range)
 
         return self._lut
 
@@ -149,6 +225,49 @@ class ManimBezier:
     @property
     def num_curves(self):
         return self._internal.shape[0] / (self.degree + 1)
+
+    def get_nth_curve_points(self, n: int) -> np.ndarray:
+        nppc = self.degree + 1
+        return self._internal[nppc * n : nppc * (n + 1)]
+
+    def get_nth_curve_function(self, n: int) -> Callable[[float], np.ndarray]:
+        nppc = self.degree + 1
+        return self.get_function_from_points(self._internal[nppc * n : nppc * (n + 1)])
+
+    def get_nth_curve_length_pieces(
+        self, n: int, num_segments_per_curve: int | None = None
+    ) -> float:
+        if num_segments_per_curve is None:
+            num_segments_per_curve = 10
+        self.num_segments_per_curve = num_segments_per_curve
+        arc_length_pieces = self.arc_length_pieces
+        return arc_length_pieces[n]
+
+    def get_nth_curve_length(self, n: int) -> float:
+        arc_lengths = self.arc_lengths
+        return arc_lengths[n]
+
+    def get_nth_curve_function_with_length(
+        self,
+        n: int,
+    ) -> tuple[Callable[[float], np.ndarray], float]:
+        return (self.get_nth_curve_function(n), self.get_nth_curve_length(n))
+
+    def get_curve_functions(
+        self,
+    ) -> Iterable[Callable[[float], np.ndarray]]:
+        """Gets the functions for the curves of the mobject.
+
+        Returns
+        -------
+        typing.Iterable[typing.Callable[[float], np.ndarray]]
+            The functions for the curves.
+        """
+
+        num_curves = self.num_curves
+
+        for n in range(num_curves):
+            yield self.get_nth_curve_function(n)
 
     # Bezier to Function
     @classmethod
@@ -213,17 +332,17 @@ class ManimBezier:
 
         # Degree n Bézier curve
         # Memoize coefficients for later use
-        old_n = cls.negative_pascal_coefficients.shape[0] - 1
+        old_n = cls.negative_pascal_triangle.shape[0] - 1
         if n > old_n:
-            coeffs = np.zeros((n + 1, n + 1))
-            coeffs[: old_n + 1, : old_n + 1] = cls.negative_pascal_coefficients
+            new_triangle = np.zeros((n + 1, n + 1))
+            new_triangle[: old_n + 1, : old_n + 1] = cls.negative_pascal_triangle
             for i in range(old_n + 1, n + 1):
-                coeffs[i, : i + 1] = coeffs[i - 1, :i]
-                coeffs[i, 1 : i + 2] -= coeffs[i - 1, :i]
-            cls.negative_pascal_coefficients = coeffs
+                new_triangle[i, : i + 1] = new_triangle[i - 1, :i]
+                new_triangle[i, 1 : i + 2] -= new_triangle[i - 1, :i]
+            cls.negative_pascal_triangle = new_triangle
 
-        coeffs = cls.negative_pascal_coefficients[: n + 1, : n + 1]
-        C = np.dot(coeffs, points) * coeffs[-1:].T
+        neg_binomials = cls.negative_pascal_triangle[: n + 1, : n + 1]
+        C = np.dot(neg_binomials, points) * neg_binomials[-1:].T
         exponents = np.arange(n + 1)
 
         def degree_n_bezier(t):
@@ -231,60 +350,13 @@ class ManimBezier:
 
         return degree_n_bezier
 
-    def get_nth_curve_points(self, n: int) -> np.ndarray:
-        nppc = self.degree + 1
-        return self._internal[nppc * n : nppc * (n + 1)]
-
-    def get_nth_curve_function(self, n: int) -> Callable[[float], np.ndarray]:
-        nppc = self.degree + 1
-        return self.get_function_from_points(self._internal[nppc * n : nppc * (n + 1)])
-
-    def get_nth_curve_length(self, n: int) -> float:
-        arc_lengths = self.arc_lengths
-        return arc_lengths[n]
-
-    def get_nth_curve_length_pieces(self, n: int) -> float:
-        arc_length_pieces = self.arc_length_pieces
-        return arc_length_pieces[n]
-
-    def get_nth_curve_function_with_length(
-        self,
-        n: int,
-    ) -> tuple[Callable[[float], np.ndarray], float]:
-        return (self.get_nth_curve_function(n), self.get_nth_curve_length(n))
-
-    def get_curve_functions(
-        self,
-    ) -> Iterable[Callable[[float], np.ndarray]]:
-        """Gets the functions for the curves of the mobject.
-
-        Returns
-        -------
-        typing.Iterable[typing.Callable[[float], np.ndarray]]
-            The functions for the curves.
-        """
-
-        num_curves = self.num_curves
-
-        for n in range(num_curves):
-            yield self.get_nth_curve_function(n)
-
-    def bezier_path_to_function(self):
-        num_curves = self.num_curves
-        curve_functions = [self.get_nth_curve_function(n) for n in num_curves]
-
-        def path_function(t):
-            curve_function = curve_functions(t // num_curves)
-            return curve_function(t % num_curves)
-
-        return path_function
-
     # Linear interpolation variants
     @staticmethod
     def interpolate(start: np.ndarray, end: np.ndarray, alpha: float) -> np.ndarray:
         return start + alpha * (end - start)
 
-    # TODO: fix typing - it should be always tuple[int, float]
+    # TODO: fix typing - it should be always tuple[int, float],
+    # but mypy complains because start and end are typed as floats, not ints
     @classmethod
     def integer_interpolate(
         cls, start: float, end: float, alpha: float
@@ -331,6 +403,15 @@ class ManimBezier:
             cls.inverse_interpolate(old_start, old_end, old_value),
         )
 
+    def make_jagged(self):
+        raise NotImplementedError
+
+    def make_smooth(self):
+        raise NotImplementedError
+
+    def make_approximately_smooth(self):
+        raise NotImplementedError
+
     @classmethod
     def get_approx_smooth_handle_points(
         cls,
@@ -346,7 +427,7 @@ class ManimBezier:
         raise NotImplementedError
 
     @classmethod
-    def _smooth_cubic_handles(
+    def _smooth_cubic(
         cls,
         anchors: np.ndarray,
     ) -> tuple[np.ndarray, np.ndarray]:
@@ -381,12 +462,12 @@ class ManimBezier:
         # curve or not
         curve_is_closed = cls.is_closed(anchors)
         if curve_is_closed:
-            return cls._smooth_closed_cubic_handles(anchors)
+            return cls._smooth_closed_cubic(anchors)
         else:
-            return cls._smooth_open_cubic_handles(anchors)
+            return cls._smooth_open_cubic(anchors)
 
     @classmethod
-    def _smooth_closed_cubic_handles(
+    def _smooth_closed_cubic(
         cls,
         anchors: np.ndarray,
     ) -> tuple[np.ndarray, np.ndarray]:
@@ -560,7 +641,7 @@ class ManimBezier:
         return H1, H2
 
     @classmethod
-    def _smooth_open_cubic_handles(
+    def _smooth_open_cubic(
         cls,
         anchors: np.ndarray,
     ) -> tuple[np.ndarray, np.ndarray]:
@@ -883,17 +964,72 @@ class ManimBezier:
     def partial_bezier_points(points: np.ndarray, a: float, b: float) -> np.ndarray:
         raise NotImplementedError
 
-    @classmethod
-    def split_bezier(cls, points: np.ndarray, t: float) -> np.ndarray:
+    @staticmethod
+    def split_bezier(points: np.ndarray, t: float) -> np.ndarray:
         raise NotImplementedError
 
     @classmethod
     def subdivide_bezier(cls, points: Iterable[float], n: int) -> np.ndarray:
         raise NotImplementedError
 
-    @staticmethod
+    @classmethod
     def bezier_remap(
-        triplets: Iterable[Iterable[float]],
+        cls,
+        curves: np.ndarray,
         new_number_of_curves: int,
-    ) -> np.ndarray:
-        raise NotImplementedError
+    ):
+        """Subdivides each curve in curves into as many parts as necessary, until the final number of curves reaches a desired amount, new_number_of_curves.
+
+        Parameters
+        ----------
+        curves
+            An array of n Bézier curves to be remapped. The shape of this array must be (n, degree+1, dimension).
+
+        new_number_of_curves
+            The number of curves that the output will contain. This needs to be higher than the current number.
+
+        Returns
+        -------
+            The new Bézier curves after the remap.
+        """
+        curves = np.asarray(curves)
+        # NPPC: Number of Points Per Curve = degree + 1
+        n, nppc, dim = curves.shape
+        difference = new_number_of_curves - n
+        if difference <= 0:
+            return curves
+
+        new_curves = np.empty((new_number_of_curves, nppc, dim))
+        idx = 0
+        for curve in curves:
+            if difference > 0:
+                tmp_noc = int(np.ceil(difference / n)) + 1
+                tmp = cls.subdivide_bezier(curve, tmp_noc).reshape(-1, 3, 3)
+                for i in range(tmp_noc):
+                    new_curves[idx + i] = tmp[i]
+                difference -= tmp_noc - 1
+                idx += tmp_noc
+            else:
+                new_curves[idx] = curve
+                idx += 1
+        return new_curves
+
+        """
+        This is an alternate version of the function just for documentation purposes
+        --------
+
+        difference = new_number_of_curves - len(triplets)
+        if difference <= 0:
+            return triplets
+        new_triplets = []
+        for triplet in triplets:
+            if difference > 0:
+                tmp_noc = int(np.ceil(difference / len(triplets))) + 1
+                tmp = subdivide_quadratic_bezier(triplet, tmp_noc).reshape(-1, 3, 3)
+                for i in range(tmp_noc):
+                    new_triplets.append(tmp[i])
+                difference -= tmp_noc - 1
+            else:
+                new_triplets.append(triplet)
+        return new_triplets
+        """

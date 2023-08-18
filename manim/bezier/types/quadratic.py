@@ -17,6 +17,51 @@ from ..bezier import ManimBezier
 class ManimQuadraticBezier(ManimBezier):
     degree = 2
 
+    subdivision_matrices = {
+        2: np.array(
+            [
+                [4, 0, 0],
+                [2, 2, 0],
+                [1, 2, 1],
+                [1, 2, 1],
+                [0, 2, 2],
+                [0, 0, 4],
+            ]
+        )
+        / 4,
+        3: np.array(
+            [
+                [9, 0, 0],
+                [6, 3, 0],
+                [4, 4, 1],
+                [4, 4, 1],
+                [2, 5, 2],
+                [1, 4, 4],
+                [1, 4, 4],
+                [0, 3, 6],
+                [0, 0, 9],
+            ]
+        )
+        / 9,
+        4: np.array(
+            [
+                [16, 0, 0],
+                [12, 4, 0],
+                [9, 6, 1],
+                [9, 6, 1],
+                [6, 8, 2],
+                [4, 8, 4],
+                [4, 8, 4],
+                [2, 8, 6],
+                [1, 6, 9],
+                [1, 6, 9],
+                [0, 4, 12],
+                [0, 0, 16],
+            ]
+        )
+        / 16,
+    }
+
     @staticmethod
     def partial_bezier_points(points, a, b):
         """Shortened version of partial_bezier_points just for quadratics,
@@ -58,8 +103,8 @@ class ManimQuadraticBezier(ManimBezier):
         h1 = (1 - end_prop) * h0 + end_prop * h1_prime
         return [h0, h1, h2]
 
-    @classmethod
-    def split_bezier(cls, points: np.ndarray, t: float) -> np.ndarray:
+    @staticmethod
+    def split_bezier(points: np.ndarray, t: float) -> np.ndarray:
         """Split a quadratic Bézier curve at argument ``t`` into two quadratic curves.
 
         Parameters
@@ -76,15 +121,26 @@ class ManimQuadraticBezier(ManimBezier):
             The two Bézier curves as a list of tuples,
             has the shape ``[a1, h1, b1], [a2, h2, b2]``
         """
-        a1, h1, a2 = points
-        s1 = cls.interpolate(a1, h1, t)
-        s2 = cls.interpolate(h1, a2, t)
-        p = cls.interpolate(s1, s2, t)
+        mt = 1 - t
+        mt2 = mt * mt
+        t2 = t * t
+        two_mt_t = 2 * mt * t
 
-        return np.array([a1, s1, p, p, s2, a2])
+        split_matrix = np.array(
+            [
+                [1, 0, 0],
+                [mt, t, 0],
+                [mt2, two_mt_t, t2],
+                [mt2, two_mt_t, t2],
+                [0, mt, t],
+                [0, 0, 1],
+            ]
+        )
+
+        return split_matrix @ points
 
     @classmethod
-    def subdivide_bezier(cls, points: Iterable[float], n: int) -> np.ndarray:
+    def subdivide_bezier(cls, points: np.ndarray, n: int) -> np.ndarray:
         """Subdivide a quadratic Bézier curve into ``n`` subcurves which have the same shape.
 
         The points at which the curve is split are located at the
@@ -105,69 +161,47 @@ class ManimQuadraticBezier(ManimBezier):
         .. image:: /_static/bezier_subdivision_example.png
 
         """
-        beziers = np.empty((n, 3, 3))
-        current = points
-        for j in range(0, n):
-            i = n - j
-            tmp = cls.split_bezier(current, 1 / i)
-            beziers[j] = tmp[:3]
-            current = tmp[3:]
-        return beziers.reshape(-1, 3)
+        if n == 1:
+            return points
+
+        subdivision_matrix = cls.subdivision_matrices.get(n, None)
+        if subdivision_matrix is None:
+            subdivision_matrix = np.empty((3 * n, 3))
+            for i in range(n):
+                ip1 = i + 1
+                nmi = n - i
+                nmim1 = nmi - 1
+                subdivision_matrix[3 * i : 3 * (i + 1)] = np.array(
+                    [
+                        [nmi * nmi, 2 * i * nmi, i * i],
+                        [nmi * nmim1, i * nmim1 + ip1 * nmi, i * ip1],
+                        [nmim1 * nmim1, 2 * ip1 * nmim1, ip1 * ip1],
+                    ]
+                )
+            subdivision_matrix /= n * n
+            cls.subdivision_matrices[n] = subdivision_matrix
+
+        return subdivision_matrix @ points
+
+    def make_jagged(self):
+        self._internal[1:3] = 0.5 * (self._internal[0:3] + self._internal[2:3])
+
+    def make_smooth(self):
+        raise NotImplementedError
+
+    def make_approximately_smooth(self):
+        raise NotImplementedError
 
     @classmethod
-    def bezier_remap(
+    def get_approx_smooth_handle_points(
         cls,
-        triplets: np.ndarray,
-        new_number_of_curves: int,
-    ):
-        """Remaps the number of curves to a higher amount by splitting bezier curves
+        anchors: np.ndarray,
+    ) -> tuple[np.ndarray, np.ndarray]:
+        raise NotImplementedError
 
-        Parameters
-        ----------
-        triplets
-            The triplets of the quadratic bezier curves to be remapped shape(n, 3, 3)
-
-        new_number_of_curves
-            The number of curves that the output will contain. This needs to be higher than the current number.
-
-        Returns
-        -------
-            The new triplets for the quadratic bezier curves.
-        """
-        difference = new_number_of_curves - len(triplets)
-        if difference <= 0:
-            return triplets
-        new_triplets = np.zeros((new_number_of_curves, 3, 3))
-        idx = 0
-        for triplet in triplets:
-            if difference > 0:
-                tmp_noc = int(np.ceil(difference / len(triplets))) + 1
-                tmp = cls.subdivide_bezier(triplet, tmp_noc).reshape(-1, 3, 3)
-                for i in range(tmp_noc):
-                    new_triplets[idx + i] = tmp[i]
-                difference -= tmp_noc - 1
-                idx += tmp_noc
-            else:
-                new_triplets[idx] = triplet
-                idx += 1
-        return new_triplets
-
-        """
-        This is an alternate version of the function just for documentation purposes
-        --------
-
-        difference = new_number_of_curves - len(triplets)
-        if difference <= 0:
-            return triplets
-        new_triplets = []
-        for triplet in triplets:
-            if difference > 0:
-                tmp_noc = int(np.ceil(difference / len(triplets))) + 1
-                tmp = subdivide_quadratic_bezier(triplet, tmp_noc).reshape(-1, 3, 3)
-                for i in range(tmp_noc):
-                    new_triplets.append(tmp[i])
-                difference -= tmp_noc - 1
-            else:
-                new_triplets.append(triplet)
-        return new_triplets
-        """
+    @classmethod
+    def get_smooth_handle_points(
+        cls,
+        anchors: np.ndarray,
+    ) -> tuple[np.ndarray, np.ndarray]:
+        return cls._smooth_cubic(anchors)
