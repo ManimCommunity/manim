@@ -165,19 +165,16 @@ jobs:
           name: control-output-pngs
           path: control_output
 
-      - name: Comment Hello
-        uses: actions/github-script@v4
+      - name: Comment Test
+        uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const commentBody = "Hello from the GitHub Actions workflow!";
-            github.issues.createComment({
+            github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: commentBody
-            });
-
+              body: '👋 Thanks for reporting!'
+            })
 
       - name: Run module doctests
         run: |
