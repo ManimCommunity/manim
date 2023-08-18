@@ -29,7 +29,7 @@ class OpenGLImageMobject(OpenGLTexturedSurface):
     ):
         self.image = filename_or_array
         self.resampling_algorithm = resampling_algorithm
-        if type(filename_or_array) == np.ndarray:
+        if isinstance(filename_or_array, np.ndarray):
             self.size = self.image.shape[1::-1]
         elif isinstance(filename_or_array, (str, Path)):
             path = get_full_raster_image_path(filename_or_array)
