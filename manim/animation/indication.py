@@ -40,7 +40,6 @@ __all__ = [
 from typing import Callable, Iterable, Optional, Tuple, Type, Union
 
 import numpy as np
-from colour import Color
 
 from manim.mobject.geometry.arc import Circle, Dot
 from manim.mobject.geometry.line import Line
@@ -58,7 +57,7 @@ from ..constants import *
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.bezier import interpolate, inverse_interpolate
-from ..utils.color import GREY, YELLOW
+from ..utils.color import GREY, YELLOW, ParsableManimColor
 from ..utils.deprecation import deprecated
 from ..utils.rate_functions import smooth, there_and_back, wiggle
 from ..utils.space_ops import normalize
@@ -609,7 +608,7 @@ class Circumscribe(Succession):
         fade_out=False,
         time_width=0.3,
         buff: float = SMALL_BUFF,
-        color: Color = YELLOW,
+        color: ParsableManimColor = YELLOW,
         run_time=1,
         stroke_width=DEFAULT_STROKE_WIDTH,
         **kwargs
