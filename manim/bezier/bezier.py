@@ -139,9 +139,11 @@ class ManimBezier:
         if new_value != self._num_segments_per_curve:
             self._num_segments_per_curve = new_value
             self._t_range = (np.arange(new_value + 1) / new_value).reshape(-1, 1)
-            for attr in self._private_lut_attrs:
-                self.__dict__["_" + attr] = None
-                self.__dict__["needs_new_" + attr] = True
+            self.needs_new_lut = True
+            self.needs_new_arc_length_pieces = True
+            self.needs_new_accumulated_arc_length_pieces = True
+            self.needs_new_arc_lengths = True
+            self.needs_new_total_arc_length = True
 
     @property
     def nspc(self):
