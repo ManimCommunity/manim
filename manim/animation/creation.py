@@ -77,13 +77,13 @@ import itertools as it
 from typing import TYPE_CHECKING, Callable, Iterable, Sequence
 
 import numpy as np
-from colour import Color
 
 if TYPE_CHECKING:
     from manim.mobject.text.text_mobject import Text
 
 from manim.mobject.opengl.opengl_surface import OpenGLSurface
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+from manim.utils.color import ManimColor
 
 from .. import config
 from ..animation.animation import Animation
@@ -259,7 +259,7 @@ class DrawBorderThenFill(Animation):
             sm.set_stroke(color=self.get_stroke_color(sm), width=self.stroke_width)
         return outline
 
-    def get_stroke_color(self, vmobject: VMobject | OpenGLVMobject) -> Color:
+    def get_stroke_color(self, vmobject: VMobject | OpenGLVMobject) -> ManimColor:
         if self.stroke_color:
             return self.stroke_color
         elif vmobject.get_stroke_width() > 0:

@@ -6,7 +6,6 @@ __all__ = ["AbstractImageMobject", "ImageMobject", "ImageMobjectFromCamera"]
 
 import pathlib
 
-import colour
 import numpy as np
 from PIL import Image
 from PIL.Image import Resampling
@@ -16,7 +15,7 @@ from manim.mobject.geometry.shape_matchers import SurroundingRectangle
 from ... import config
 from ...constants import *
 from ...mobject.mobject import Mobject
-from ...utils.color import WHITE, color_to_int_rgb
+from ...utils.color import WHITE, ManimColor, color_to_int_rgb
 from ...utils.images import change_to_rgba_array, get_full_raster_image_path
 from ...utils.linear_interpolation import interpolate
 
@@ -277,7 +276,7 @@ class ImageMobject(AbstractImageMobject):
 
     def get_style(self):
         return {
-            "fill_color": colour.rgb2hex(self.color.get_rgb()),
+            "fill_color": ManimColor(self.color.get_rgb()).to_hex(),
             "fill_opacity": self.fill_opacity,
         }
 
