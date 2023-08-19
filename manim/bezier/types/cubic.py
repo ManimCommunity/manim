@@ -2,11 +2,6 @@ from __future__ import annotations
 
 __all__ = ["ManimCubicBezier"]
 
-import sys
-import typing
-from functools import reduce
-from typing import Iterable
-
 import numpy as np
 
 from ...utils.simple_functions import choose
@@ -256,7 +251,12 @@ class ManimCubicBezier(ManimBezier):
 
                 subdivision_matrix[4 * i : 4 * (i + 1)] = np.array(
                     [
-                        [nmi3, 3 * nmi2 * i, 3 * nmi * i2, i3],
+                        [
+                            nmi3,
+                            3 * nmi2 * i,
+                            3 * nmi * i2,
+                            i3,
+                        ],
                         [
                             nmi2 * nmim1,
                             2 * nmi * nmim1 * i + nmi2 * ip1,
@@ -269,7 +269,12 @@ class ManimCubicBezier(ManimBezier):
                             2 * nmim1 * i * ip1 + nmi * ip12,
                             i * ip12,
                         ],
-                        [nmim13, 3 * nmim12 * ip1, 3 * nmim1 * ip12, ip12],
+                        [
+                            nmim13,
+                            3 * nmim12 * ip1,
+                            3 * nmim1 * ip12,
+                            ip13,
+                        ],
                     ]
                 )
             subdivision_matrix /= n * n * n

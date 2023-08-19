@@ -2,11 +2,6 @@ from __future__ import annotations
 
 __all__ = ["ManimQuadraticBezier"]
 
-import sys
-import typing
-from functools import reduce
-from typing import Iterable
-
 import numpy as np
 
 from ...utils.simple_functions import choose

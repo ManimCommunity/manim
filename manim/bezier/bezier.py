@@ -4,10 +4,7 @@ from __future__ import annotations
 
 __all__ = ["ManimBezier"]
 
-import sys
-import typing
-from functools import reduce
-from typing import Callable, Dict, Iterable
+from typing import Callable, Iterable
 
 import numpy as np
 
@@ -119,7 +116,8 @@ class ManimBezier:
         return self
 
     def __div__(self, factor: float | np.ndarray):
-        if type(factor) == float:
+        # factor's a scalar (int, float) if it doesn't have a __len__ method
+        if not hasattr(factor, "__len__"):
             return self.__mul__(1 / factor)
         return self.__mul__(1 / np.asarray(factor))
 
@@ -352,6 +350,24 @@ class ManimBezier:
 
         return degree_n_bezier
 
+    @classmethod
+    def is_closed(cls, points: tuple[np.ndarray, np.ndarray]) -> bool:
+        """Returns True if the curve given by the points is closed, by checking if its
+        first and last points are close to each other.
+
+        This function reimplements np.allclose (without a relative tolerance rtol),
+        because repeated calling of np.allclose for only 2 points is inefficient.
+        """
+        start, end = points[0], points[-1]
+        atol = cls.tolerance_for_point_equality
+        if abs(end[0] - start[0]) > atol:
+            return False
+        if abs(end[1] - start[1]) > atol:
+            return False
+        if abs(end[2] - start[2]) > atol:
+            return False
+        return True
+
     def make_jagged(self):
         raise NotImplementedError
 
@@ -383,8 +399,11 @@ class ManimBezier:
 
     # Helper functions for make_smooth and make_approximately_smooth,
     # intended to be used in subclasses
-    @staticmethod
-    def get_smooth_quadratic_bezier_handle_points(anchors: np.ndarray) -> np.ndarray:
+    @classmethod
+    def get_smooth_quadratic_bezier_handle_points(
+        cls,
+        anchors: np.ndarray,
+    ) -> np.ndarray:
         pass
 
     @classmethod
@@ -781,29 +800,11 @@ class ManimBezier:
         result[5::6] = a1
         return result
 
-    @classmethod
-    def is_closed(cls, points: tuple[np.ndarray, np.ndarray]) -> bool:
-        """Returns True if the curve given by the points is closed, by checking if its
-        first and last points are close to each other.
-
-        This function reimplements np.allclose (without a relative tolerance rtol),
-        because repeated calling of np.allclose for only 2 points is inefficient.
-        """
-        start, end = points[0], points[-1]
-        atol = cls.tolerance_for_point_equality
-        if abs(end[0] - start[0]) > atol:
-            return False
-        if abs(end[1] - start[1]) > atol:
-            return False
-        if abs(end[2] - start[2]) > atol:
-            return False
-        return True
-
     def proportion_from_point(
         self,
         point: np.ndarray,
         round_to: float | int | None = 1e-6,
-    ) -> np.ndarray:
+    ) -> float:
         """Returns the proportion along the path of the :class:`VMobject`
         a particular given point is at.
 
@@ -824,11 +825,15 @@ class ManimBezier:
         :exc:`Exception`
             If the :class:`VMobject` has no points.
         """
+
+        # TODO: why have I changed the algorithm, maybe this is not the best idea
+
         point = np.asarray(point)
         square_atol = 1e-15
 
         lut = self.lut
-        arc_length_pieces = self.arc_length_pieces
+        # TODO: use arc_length_pieces later
+        # arc_length_pieces = self.arc_length_pieces
         acc_arc_length_pieces = self.accumulated_arc_length_pieces
         total_arc_length = self.total_arc_length
 
@@ -847,15 +852,11 @@ class ManimBezier:
 
         if min_dist_index == 0:
             curve_function = self.get_nth_curve_function(0)
-            left = curr_min
-            right = initial_square_dists[1]
             mid = curve_function(step)
             curve_t = step
 
         elif min_dist_index == num_samples - 1:
             curve_function = self.get_nth_curve_function(num_curves - 1)
-            left = initial_square_dists[-2]
-            right = curr_min
             mid = curve_function(1 - step)
             curve_index -= 1
             curve_t = 1 - step
@@ -879,15 +880,11 @@ class ManimBezier:
                     return acc_arc_length_pieces[min_dist_index - 1] / total_arc_length
                 else:
                     curve_function = left_func
-                    left = initial_square_dists[min_dist_index - 1]
-                    right = mid
                     mid = mid_left
                     curve_index -= 1
                     curve_t = 1 - step
             else:
                 curve_function = right_func
-                left = mid
-                right = initial_square_dists[min_dist_index + 1]
                 mid = mid_right
                 curve_t = step
 
@@ -906,13 +903,9 @@ class ManimBezier:
                     if mid > square_atol:
                         raise ValueError(f"Point {point} does not lie on this curve.")
                 else:
-                    # left = left
-                    right = mid
                     mid = mid_left
                     curve_t -= step
             else:
-                left = mid
-                # right = right
                 mid = mid_right
                 curve_t += step
 
@@ -920,7 +913,8 @@ class ManimBezier:
             curr_min = mid
             step /= 2
 
-        return
+        # TODO: what to return, exactly?
+        return 0.5
 
     @staticmethod
     def partial_bezier_points(points: np.ndarray, a: float, b: float) -> np.ndarray:
