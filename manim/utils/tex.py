@@ -139,6 +139,7 @@ class TexTemplate:
         else:
             self.preamble += "\n" + txt
         self._rebuild()
+        return self
 
     def add_to_document(self, txt: str):
         """Adds txt to the TeX template just after \\begin{document}, e.g. ``\\boldmath``
@@ -150,6 +151,7 @@ class TexTemplate:
         """
         self.post_doc_commands += "\n" + txt + "\n"
         self._rebuild()
+        return self
 
     def get_texcode_for_expression(self, expression: str):
         """Inserts expression verbatim into TeX template.
