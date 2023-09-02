@@ -291,6 +291,7 @@ def test_ImageMobject_points_length():
     im1 = ImageMobject(file_path)
     assert len(im1.points) == 4
 
+
 def test_ImageMobject_rotation():
     # see https://github.com/ManimCommunity/manim/issues/3067
     # rotating an image to and from the same angle should not change the image
