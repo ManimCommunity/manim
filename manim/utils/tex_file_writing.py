@@ -123,9 +123,17 @@ def tex_compilation_command(
     :class:`str`
         Compilation command according to given parameters
     """
+    # If the tex_bin_dir is set, prefix all tex executables with it
+    # Otherwise, default to using the ones on PATH
+    tex_bin_prefix = ""
+    if config.get_dir("tex_bin_dir") is not None:
+        tex_bin_prefix = config.get_dir("tex_bin_dir")
+
     if tex_compiler in {"latex", "pdflatex", "luatex", "lualatex"}:
         commands = [
-            tex_compiler,
+            tex_compiler
+            if tex_bin_prefix == ""
+            else (tex_bin_prefix / tex_compiler).as_posix(),
             "-interaction=batchmode",
             f'-output-format="{output_format[1:]}"',
             "-halt-on-error",
@@ -142,7 +150,9 @@ def tex_compilation_command(
         else:
             raise ValueError("xelatex output is either pdf or xdv")
         commands = [
-            "xelatex",
+            "xelatex"
+            if tex_bin_prefix == ""
+            else (tex_bin_prefix / "xelatex").as_posix(),
             outflag,
             "-interaction=batchmode",
             "-halt-on-error",
@@ -223,10 +233,18 @@ def convert_to_svg(dvi_file: Path, extension: str, page: int = 1):
     :class:`Path`
         Path to generated SVG file.
     """
+    # If the tex_bin_dir is set, prefix all tex executables with it
+    # Otherwise, default to using the ones on PATH
+    tex_bin_prefix = ""
+    if config.get_dir("tex_bin_dir") is not None:
+        tex_bin_prefix = config.get_dir("tex_bin_dir")
+
     result = dvi_file.with_suffix(".svg")
     if not result.exists():
         commands = [
-            "dvisvgm",
+            "dvisvgm"
+            if tex_bin_prefix == ""
+            else (tex_bin_prefix / "dvisvgm").as_posix(),
             "--pdf" if extension == ".pdf" else "",
             "-p " + str(page),
             f'"{dvi_file.as_posix()}"',

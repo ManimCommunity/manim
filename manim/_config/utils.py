@@ -288,6 +288,7 @@ class ManimConfig(MutableMapping):
         "save_pngs",
         "scene_names",
         "show_in_file_browser",
+        "tex_bin_dir",
         "tex_dir",
         "tex_template",
         "tex_template_file",
@@ -614,6 +615,7 @@ class ManimConfig(MutableMapping):
             "background_color",
             "renderer",
             "window_position",
+            "tex_bin_dir",
         ]:
             setattr(self, key, parser["CLI"].get(key, fallback="", raw=True))
 
@@ -834,6 +836,10 @@ class ManimConfig(MutableMapping):
         # Handle --gui_location flag.
         if getattr(args, "gui_location") is not None:
             self.gui_location = args.gui_location
+
+        # Handle --tex_bin_dir flag.
+        if hasattr(args, "tex_bin_dir") and getattr(args, "tex_bin_dir") is not None:
+            self.tex_bin_dir = args.tex_bin_dir
 
         return self
 
@@ -1468,6 +1474,7 @@ class ManimConfig(MutableMapping):
             "input_file",
             "output_file",
             "partial_movie_dir",
+            "tex_bin_dir",
         ]
         if key not in dirs:
             raise KeyError(
@@ -1564,6 +1571,12 @@ class ManimConfig(MutableMapping):
         lambda self: self._d["output_file"],
         lambda self, val: self._set_dir("output_file", val),
         doc="Output file name (-o).",
+    )
+
+    tex_bin_dir = property(
+        lambda self: self._d["tex_bin_dir"],
+        lambda self, val: self._set_dir("tex_bin_dir", val),
+        doc="Path to custom TeX binaries folder.",
     )
 
     scene_names = property(
