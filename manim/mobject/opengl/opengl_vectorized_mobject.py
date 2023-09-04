@@ -90,6 +90,7 @@ class OpenGLVMobject(OpenGLMobject):
 
     def __init__(
         self,
+        color: ParsableManimColor | None = None,
         fill_color: ParsableManimColor | None = None,
         fill_opacity: float = 0.0,
         stroke_color: ParsableManimColor | None = None,
