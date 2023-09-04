@@ -5,22 +5,14 @@ import numpy as np
 from manim.constants import *
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_vectorized_mobject import (
-    OpenGLDashedVMobject,
-    OpenGLVGroup,
-    OpenGLVMobject,
-)
+    OpenGLDashedVMobject, OpenGLVGroup, OpenGLVMobject)
 from manim.utils.color import *
 from manim.utils.iterables import adjacent_n_tuples, adjacent_pairs
 from manim.utils.simple_functions import clip
-from manim.utils.space_ops import (
-    angle_between_vectors,
-    angle_of_vector,
-    compass_directions,
-    find_intersection,
-    normalize,
-    rotate_vector,
-    rotation_matrix_transpose,
-)
+from manim.utils.space_ops import (angle_between_vectors, angle_of_vector,
+                                   compass_directions, find_intersection,
+                                   normalize, rotate_vector,
+                                   rotation_matrix_transpose)
 
 DEFAULT_DOT_RADIUS = 0.08
 DEFAULT_SMALL_DOT_RADIUS = 0.04

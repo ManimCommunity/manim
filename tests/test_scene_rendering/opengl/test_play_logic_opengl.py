@@ -7,14 +7,9 @@ import pytest
 from manim import *
 from manim import config
 
-from ..simple_scenes import (
-    SceneForFrozenFrameTests,
-    SceneWithMultipleCalls,
-    SceneWithNonStaticWait,
-    SceneWithSceneUpdater,
-    SceneWithStaticWait,
-    SquareToCircle,
-)
+from ..simple_scenes import (SceneForFrozenFrameTests, SceneWithMultipleCalls,
+                             SceneWithNonStaticWait, SceneWithSceneUpdater,
+                             SceneWithStaticWait, SquareToCircle)
 
 
 @pytest.mark.skipif(

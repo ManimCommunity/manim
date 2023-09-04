@@ -18,16 +18,9 @@ from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.svg.brace import Brace
 from manim.mobject.text.tex_mobject import MathTex, Tex
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
-from manim.utils.color import (
-    BLUE_E,
-    DARK_GREY,
-    GREEN_E,
-    LIGHT_GREY,
-    MAROON_B,
-    YELLOW,
-    ParsableManimColor,
-    color_gradient,
-)
+from manim.utils.color import (BLUE_E, DARK_GREY, GREEN_E, LIGHT_GREY,
+                               MAROON_B, YELLOW, ParsableManimColor,
+                               color_gradient)
 from manim.utils.iterables import tuplify
 
 EPSILON = 0.0001

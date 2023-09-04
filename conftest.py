@@ -12,7 +12,6 @@ except ModuleNotFoundError:  # windows
     pass
 
 import moderngl
-
 # If it is running Doctest the current directory
 # is changed because it also tests the config module
 # itself. If it's a normal test then it uses the

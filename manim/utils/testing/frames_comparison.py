@@ -15,12 +15,10 @@ from manim.renderer.cairo_renderer import CairoRenderer
 from manim.scene.three_d_scene import ThreeDScene
 
 from ._frames_testers import _ControlDataWriter, _FramesTester
-from ._test_class_makers import (
-    DummySceneFileWriter,
-    _make_scene_file_writer_class,
-    _make_test_renderer_class,
-    _make_test_scene_class,
-)
+from ._test_class_makers import (DummySceneFileWriter,
+                                 _make_scene_file_writer_class,
+                                 _make_test_renderer_class,
+                                 _make_test_scene_class)
 
 SCENE_PARAMETER_NAME = "scene"
 _tests_root_dir_path = Path(__file__).absolute().parents[2]

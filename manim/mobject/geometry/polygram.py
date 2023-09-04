@@ -26,7 +26,8 @@ from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import *
 from manim.utils.iterables import adjacent_n_tuples, adjacent_pairs
-from manim.utils.space_ops import angle_between_vectors, normalize, regular_vertices
+from manim.utils.space_ops import (angle_between_vectors, normalize,
+                                   regular_vertices)
 
 
 class Polygram(VMobject, metaclass=ConvertToOpenGL):

@@ -10,40 +10,24 @@ import numpy as np
 
 from manim import config
 from manim.constants import *
-from manim.mobject.opengl.opengl_mobject import (
-    UNIFORM_DTYPE,
-    OpenGLMobject,
-    OpenGLPoint,
-)
+from manim.mobject.opengl.opengl_mobject import (UNIFORM_DTYPE, OpenGLMobject,
+                                                 OpenGLPoint)
 from manim.renderer.shader_wrapper import ShaderWrapper
-from manim.utils.bezier import (
-    bezier,
-    get_quadratic_approximation_of_cubic,
-    get_smooth_cubic_bezier_handle_points,
-    get_smooth_quadratic_bezier_handle_points,
-    integer_interpolate,
-    interpolate,
-    inverse_interpolate,
-    partial_quadratic_bezier_points,
-    proportions_along_bezier_curve_for_point,
-    quadratic_bezier_remap,
-)
+from manim.utils.bezier import (bezier, get_quadratic_approximation_of_cubic,
+                                get_smooth_cubic_bezier_handle_points,
+                                get_smooth_quadratic_bezier_handle_points,
+                                integer_interpolate, interpolate,
+                                inverse_interpolate,
+                                partial_quadratic_bezier_points,
+                                proportions_along_bezier_curve_for_point,
+                                quadratic_bezier_remap)
 from manim.utils.color import *
-from manim.utils.iterables import (
-    listify,
-    make_even,
-    resize_array,
-    resize_with_interpolation,
-)
-from manim.utils.space_ops import (
-    angle_between_vectors,
-    cross2d,
-    earclip_triangulation,
-    get_norm,
-    get_unit_normal,
-    shoelace_direction,
-    z_to_vector,
-)
+from manim.utils.iterables import (listify, make_even, resize_array,
+                                   resize_with_interpolation)
+from manim.utils.space_ops import (angle_between_vectors, cross2d,
+                                   earclip_triangulation, get_norm,
+                                   get_unit_normal, shoelace_direction,
+                                   z_to_vector)
 
 if TYPE_CHECKING:
     from typing import Callable, Iterable, Optional, Sequence

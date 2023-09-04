@@ -1,12 +1,12 @@
-import numpy as np
-
 from abc import ABC, abstractclassmethod, abstractstaticmethod
 from typing import TYPE_CHECKING
 
-from manim.scene import Scene
+import numpy as np
+
 from manim import config
-from manim.mobject.types.vectorized_mobject import VMobject
 from manim.mobject.types.image_mobject import ImageMobject
+from manim.mobject.types.vectorized_mobject import VMobject
+from manim.scene import Scene
 
 if TYPE_CHECKING:
     from typing import TypeAlias
@@ -33,7 +33,7 @@ class Renderer(ABC):
                 self.capabilities[type(mob)](mob)
             else:
                 print("WARNING: NOT SUPPORTED")
-                
+
         return self.fbo.get_pixels()
 
 
@@ -46,7 +46,7 @@ class Renderer(ABC):
 
     def render_image(self, mob):
         raise NotImplementedError
-    
+
 
 # NOTE: The user should expect depth between renderers not to be handled discussed at 03.09.2023 Between jsonv and MrDiver
 # NOTE: Cairo_camera overlay_PIL_image for MultiRenderer
@@ -66,7 +66,7 @@ class Renderer(ABC):
 
 #     def mix():
 #         raise NotImplementedError
-    
+
 #     def multiply():
 #         raise NotImplementedError
 
@@ -76,7 +76,7 @@ class Renderer(ABC):
 
 # class GraphScene(Scene):
 #     def construct(self):
-#         config.renderer = 
+#         config.renderer =
 
 # class VolumetricScene(Scene):
 #     def construct(self):
@@ -87,4 +87,3 @@ class Renderer(ABC):
 # compositor.add_capability(VolumetricScene, Blender, ) # 3 sec
 # compositor.addPostFX(CustomShader)
 # compositor.render()
-

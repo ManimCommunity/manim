@@ -8,7 +8,8 @@ import numpy as np
 from manim.constants import *
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.utils.bezier import interpolate
-from manim.utils.color import BLACK, WHITE, YELLOW, color_gradient, color_to_rgba
+from manim.utils.color import (BLACK, WHITE, YELLOW, color_gradient,
+                               color_to_rgba)
 from manim.utils.config_ops import _Uniforms
 from manim.utils.iterables import resize_with_interpolation
 

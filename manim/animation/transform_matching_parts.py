@@ -9,7 +9,8 @@ from typing import TYPE_CHECKING
 import numpy as np
 
 from manim.mobject.opengl.opengl_mobject import OpenGLGroup, OpenGLMobject
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup, OpenGLVMobject
+from manim.mobject.opengl.opengl_vectorized_mobject import (OpenGLVGroup,
+                                                            OpenGLVMobject)
 
 from .._config import config
 from ..constants import RendererType

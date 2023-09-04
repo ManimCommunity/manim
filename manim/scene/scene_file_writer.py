@@ -15,11 +15,9 @@ from tqdm import tqdm as ProgressDisplay
 from manim import config
 from manim._config import logger as log
 from manim.mobject.mobject import Mobject
-from manim.utils.file_ops import (
-    add_extension_if_not_present,
-    get_sorted_integer_files,
-    guarantee_existence,
-)
+from manim.utils.file_ops import (add_extension_if_not_present,
+                                  get_sorted_integer_files,
+                                  guarantee_existence)
 from manim.utils.sounds import get_full_sound_file_path
 
 if TYPE_CHECKING:

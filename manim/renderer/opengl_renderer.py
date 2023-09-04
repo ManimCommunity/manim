@@ -1,8 +1,8 @@
 import numpy as np
-from renderer import Renderer
+from renderer import Renderer, RendererData
 
 from manim.mobject.types.vectorized_mobject import VMobject
-from renderer import RendererData 
+
 
 class GLRenderData(RendererData):
     def __init__(self) -> None:
@@ -13,7 +13,7 @@ class GLRenderData(RendererData):
         self.mesh = np.zeros((0,3))
         self.bounding_box = np.zeros((3,3))
 
-class OpenGLRenderer(Renderer): 
+class OpenGLRenderer(Renderer):
     def __init__(
         self,
         ctx: moderngl.Context | None = None,
@@ -71,11 +71,11 @@ class OpenGLRenderer(Renderer):
 
         if mob.colors_changed:
             mob.renderer_data.fill_rgbas = np.resize(mob.fill_color, (len(mob.renderer_data.mesh),4))
-        
+
         if mob.points_changed:
             if(mob.has_fill()):
                 mob.renderer_data.mesh = ... # Triangulation todo
-        
+
         # set shader
         # use vbo
         # render fill

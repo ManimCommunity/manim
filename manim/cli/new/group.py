@@ -8,12 +8,8 @@ import cloup
 
 from ... import console
 from ...constants import CONTEXT_SETTINGS, EPILOG, QUALITIES
-from ...utils.file_ops import (
-    add_import_statement,
-    copy_template_files,
-    get_template_names,
-    get_template_path,
-)
+from ...utils.file_ops import (add_import_statement, copy_template_files,
+                               get_template_names, get_template_path)
 
 CFG_DEFAULTS = {
     "frame_rate": 30,

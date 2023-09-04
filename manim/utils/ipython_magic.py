@@ -18,12 +18,8 @@ from ..constants import RendererType
 try:
     from IPython import get_ipython
     from IPython.core.interactiveshell import InteractiveShell
-    from IPython.core.magic import (
-        Magics,
-        line_cell_magic,
-        magics_class,
-        needs_local_scope,
-    )
+    from IPython.core.magic import (Magics, line_cell_magic, magics_class,
+                                    needs_local_scope)
     from IPython.display import Image, Video, display
 except ImportError:
     pass

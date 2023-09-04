@@ -15,19 +15,8 @@ import warnings
 from functools import partialmethod, reduce
 from math import ceil
 from pathlib import Path
-from typing import (
-    TYPE_CHECKING,
-    Callable,
-    Dict,
-    Iterable,
-    List,
-    Optional,
-    Sequence,
-    Tuple,
-    Type,
-    TypeVar,
-    Union,
-)
+from typing import (TYPE_CHECKING, Callable, Dict, Iterable, List, Optional,
+                    Sequence, Tuple, Type, TypeVar, Union)
 
 import numpy as np
 
@@ -35,15 +24,9 @@ from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 
 from .. import config, logger
 from ..constants import *
-from ..utils.color import (
-    BLACK,
-    WHITE,
-    YELLOW_C,
-    ManimColor,
-    ParsableManimColor,
-    color_gradient,
-    interpolate_color,
-)
+from ..utils.color import (BLACK, WHITE, YELLOW_C, ManimColor,
+                           ParsableManimColor, color_gradient,
+                           interpolate_color)
 from ..utils.exceptions import MultiAnimationOverrideException
 from ..utils.iterables import list_update, remove_list_redundancies
 from ..utils.paths import straight_path

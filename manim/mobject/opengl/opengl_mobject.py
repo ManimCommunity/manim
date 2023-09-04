@@ -23,27 +23,16 @@ from manim.renderer.shader_wrapper import ShaderWrapper, get_colormap_code
 from manim.utils.bezier import integer_interpolate, interpolate
 from manim.utils.color import *
 from manim.utils.deprecation import deprecated
-
 # from ..utils.iterables import batch_by_property
-from manim.utils.iterables import (
-    batch_by_property,
-    list_update,
-    listify,
-    make_even,
-    resize_array,
-    resize_preserving_order,
-    resize_with_interpolation,
-    uniq_chain,
-)
+from manim.utils.iterables import (batch_by_property, list_update, listify,
+                                   make_even, resize_array,
+                                   resize_preserving_order,
+                                   resize_with_interpolation, uniq_chain)
 from manim.utils.paths import straight_path
 from manim.utils.simple_functions import get_parameters
-from manim.utils.space_ops import (
-    angle_between_vectors,
-    angle_of_vector,
-    get_norm,
-    normalize,
-    rotation_matrix_transpose,
-)
+from manim.utils.space_ops import (angle_between_vectors, angle_of_vector,
+                                   get_norm, normalize,
+                                   rotation_matrix_transpose)
 
 if TYPE_CHECKING:
     from typing import Callable, Iterable, Sequence, Tuple, Union
