@@ -1342,15 +1342,11 @@ class OpenGLVMobject(OpenGLMobject):
 
     def interpolate(self, mobject1, mobject2, alpha, *args, **kwargs):
         super().interpolate(mobject1, mobject2, alpha, *args, **kwargs)
-        # TODO: Do we still need this? Because for many scenes it just doesn't work
-        if config["use_projection_fill_shaders"]:
-            self.refresh_triangulation()
-        else:
-            if self.has_fill():
-                tri1 = mobject1.get_triangulation()
-                tri2 = mobject2.get_triangulation()
-                if len(tri1) != len(tri1) or not np.all(tri1 == tri2):
-                    self.refresh_triangulation()
+        if self.has_fill():
+            tri1 = mobject1.get_triangulation()
+            tri2 = mobject2.get_triangulation()
+            if len(tri1) != len(tri2) or not np.all(tri1 == tri2):
+                self.refresh_triangulation()
         return self
 
     # TODO: compare to 3b1b/manim again check if something changed so we don't need the cairo interpolation anymore

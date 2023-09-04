@@ -12,6 +12,11 @@ if TYPE_CHECKING:
     from typing import TypeAlias
     Image : TypeAlias = np.ndarray
 
+
+
+class RendererData:
+    pass
+
 class Renderer(ABC):
 
     def __init__(self):
@@ -21,15 +26,19 @@ class Renderer(ABC):
             ImageMobject: self.render_imobject,
         }
 
-    def render(self, renderables: [VMobject]) -> Image: # Image
+    def render(self, camera, renderables: [VMobject]) -> Image: # Image
         for mob in renderables:
             if type(mob) in self.capabilities:
+                mob.points
                 self.capabilities[type(mob)](mob)
+            else:
+                print("WARNING: NOT SUPPORTED")
+                
         return self.fbo.get_pixels()
 
 
     @abstractclassmethod
-    def render_vmobject(self, mob):
+    def render_vmobject(self, mob:VMobject):
         raise NotImplementedError
 
     def render_mesh(self, mob):
@@ -37,6 +46,7 @@ class Renderer(ABC):
 
     def render_image(self, mob):
         raise NotImplementedError
+    
 
 # NOTE: The user should expect depth between renderers not to be handled discussed at 03.09.2023 Between jsonv and MrDiver
 # NOTE: Cairo_camera overlay_PIL_image for MultiRenderer
