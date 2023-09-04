@@ -468,7 +468,7 @@ class Animation:
         return self
 
     def is_remover(self) -> bool:
-        """Test if a the animation is a remover.
+        """Test if the animation is a remover.
 
         Returns
         -------
@@ -478,7 +478,7 @@ class Animation:
         return self.remover
 
     def is_introducer(self) -> bool:
-        """Test if a the animation is an introducer.
+        """Test if the animation is an introducer.
 
         Returns
         -------
@@ -539,8 +539,8 @@ class Wait(Animation):
     stop_condition
         A function without positional arguments that evaluates to a boolean.
         The function is evaluated after every new frame has been rendered.
-        Playing the animation only stops after the return value is truthy.
-        Overrides the specified ``run_time``.
+        Playing the animation stops after the return value is truthy, or
+        after the specified ``run_time`` has passed.
     frozen_frame
         Controls whether or not the wait animation is static, i.e., corresponds
         to a frozen frame. If ``False`` is passed, the render loop still

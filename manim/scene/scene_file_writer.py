@@ -439,6 +439,59 @@ class SceneFileWriter:
             ]
         )
 
+    def combine_to_section_videos(self) -> None:
+        """Concatenate partial movie files for each section."""
+
+        self.finish_last_section()
+        sections_index: list[dict[str, Any]] = []
+        for section in self.sections:
+            # only if section does want to be saved
+            if section.video is not None:
+                logger.info(f"Combining partial files for section '{section.name}'")
+                self.combine_files(
+                    section.get_clean_partial_movie_files(),
+                    self.sections_output_dir / section.video,
+                )
+                sections_index.append(section.get_dict(self.sections_output_dir))
+        with (self.sections_output_dir / f"{self.output_name}.json").open("w") as file:
+            json.dump(sections_index, file, indent=4)
+
+    def clean_cache(self):
+        """Will clean the cache by removing the oldest partial_movie_files."""
+        cached_partial_movies = [
+            (self.partial_movie_directory / file_name)
+            for file_name in self.partial_movie_directory.iterdir()
+            if file_name != "partial_movie_file_list.txt"
+        ]
+        if len(cached_partial_movies) > config["max_files_cached"]:
+            number_files_to_delete = (
+                len(cached_partial_movies) - config["max_files_cached"]
+            )
+            oldest_files_to_delete = sorted(
+                cached_partial_movies,
+                key=lambda path: path.stat().st_atime,
+            )[:number_files_to_delete]
+            for file_to_delete in oldest_files_to_delete:
+                file_to_delete.unlink()
+            logger.info(
+                f"The partial movie directory is full (> {config['max_files_cached']} files). Therefore, manim has removed the {number_files_to_delete} oldest file(s)."
+                " You can change this behaviour by changing max_files_cached in config.",
+            )
+
+    def flush_cache_directory(self):
+        """Delete all the cached partial movie files"""
+        cached_partial_movies = [
+            self.partial_movie_directory / file_name
+            for file_name in self.partial_movie_directory.iterdir()
+            if file_name != "partial_movie_file_list.txt"
+        ]
+        for f in cached_partial_movies:
+            f.unlink()
+        logger.info(
+            f"Cache flushed. {len(cached_partial_movies)} file(s) deleted in %(par_dir)s.",
+            {"par_dir": self.partial_movie_directory},
+        )
+
     def open_file(self) -> None:
         if self.quiet:
             curr_stdout = sys.stdout

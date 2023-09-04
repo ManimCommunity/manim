@@ -25,11 +25,11 @@ from collections.abc import Mapping, MutableMapping
 from pathlib import Path
 from typing import Any, Iterable, Iterator
 
-import colour
 import numpy as np
 
 from .. import constants
 from ..constants import RendererType
+from ..utils.color import ManimColor
 from ..utils.tex import TexTemplate, TexTemplateFromFile
 from ..utils.tex_templates import TexTemplateLibrary
 
@@ -1098,7 +1098,7 @@ class ManimConfig(MutableMapping):
 
     background_color = property(
         lambda self: self._d["background_color"],
-        lambda self, val: self._d.__setitem__("background_color", colour.Color(val)),
+        lambda self, val: self._d.__setitem__("background_color", ManimColor(val)),
         doc="Background color of the scene (-c).",
     )
 
@@ -1174,7 +1174,7 @@ class ManimConfig(MutableMapping):
         keys = ["pixel_width", "pixel_height", "frame_rate"]
         q = {k: self[k] for k in keys}
         for qual in constants.QUALITIES:
-            if all([q[k] == constants.QUALITIES[qual][k] for k in keys]):
+            if all(q[k] == constants.QUALITIES[qual][k] for k in keys):
                 return qual
         return None
 

@@ -325,9 +325,22 @@ class Scene:
             mobject.update(dt)
 
     def should_update_mobjects(self) -> bool:
-        return self.always_update_mobjects or any(
-            [len(mob.get_family_updaters()) > 0 for mob in self.mobjects]
-        )
+        """
+        This is only called when a single Wait animation is played.
+        """
+        wait_animation = self.animations[0]
+        if wait_animation.is_static_wait is None:
+            should_update = (
+                self.always_update_mobjects
+                or self.updaters
+                or wait_animation.stop_condition is not None
+                or any(
+                    mob.has_time_based_updater()
+                    for mob in self.get_mobject_family_members()
+                )
+            )
+            wait_animation.is_static_wait = not should_update
+        return not wait_animation.is_static_wait
 
     def has_time_based_updaters(self) -> bool:
         return any(
@@ -384,16 +397,6 @@ class Scene:
         self.add(*filter(lambda m: isinstance(m, Mobject), values))
         return self
 
-    def replace(self, mobject: Mobject, *replacements: Mobject):
-        if mobject in self.mobjects:
-            index = self.mobjects.index(mobject)
-            self.mobjects = [
-                *self.mobjects[:index],
-                *replacements,
-                *self.mobjects[index + 1 :],
-            ]
-        return self
-
     def remove(self, *mobjects_to_remove: Mobject):
         """
         Removes anything in mobjects from scenes mobject list, but in the event that one
@@ -403,9 +406,161 @@ class Scene:
         For example, if the scene includes Group(m1, m2, m3), and we call scene.remove(m1),
         the desired behavior is for the scene to then include m2 and m3 (ungrouped).
         """
-        to_remove = set(extract_mobject_family_members(mobjects_to_remove))
-        new_mobjects, _ = recursive_mobject_remove(self.mobjects, to_remove)
-        self.mobjects = new_mobjects
+        if config.renderer == RendererType.OPENGL:
+            mobjects_to_remove = []
+            meshes_to_remove = set()
+            for mobject_or_mesh in mobjects:
+                if isinstance(mobject_or_mesh, Object3D):
+                    meshes_to_remove.add(mobject_or_mesh)
+                else:
+                    mobjects_to_remove.append(mobject_or_mesh)
+            self.mobjects = restructure_list_to_exclude_certain_family_members(
+                self.mobjects,
+                mobjects_to_remove,
+            )
+            self.meshes = list(
+                filter(lambda mesh: mesh not in set(meshes_to_remove), self.meshes),
+            )
+            return self
+        elif config.renderer == RendererType.CAIRO:
+            for list_name in "mobjects", "foreground_mobjects":
+                self.restructure_mobjects(mobjects, list_name, False)
+            return self
+
+    def replace(self, old_mobject: Mobject, new_mobject: Mobject) -> None:
+        """Replace one mobject in the scene with another, preserving draw order.
+
+        If ``old_mobject`` is a submobject of some other Mobject (e.g. a
+        :class:`.Group`), the new_mobject will replace it inside the group,
+        without otherwise changing the parent mobject.
+
+        Parameters
+        ----------
+        old_mobject
+            The mobject to be replaced. Must be present in the scene.
+        new_mobject
+            A mobject which must not already be in the scene.
+
+        """
+        if old_mobject is None or new_mobject is None:
+            raise ValueError("Specified mobjects cannot be None")
+
+        def replace_in_list(
+            mobj_list: list[Mobject], old_m: Mobject, new_m: Mobject
+        ) -> bool:
+            # We use breadth-first search because some Mobjects get very deep and
+            # we expect top-level elements to be the most common targets for replace.
+            for i in range(0, len(mobj_list)):
+                # Is this the old mobject?
+                if mobj_list[i] == old_m:
+                    # If so, write the new object to the same spot and stop looking.
+                    mobj_list[i] = new_m
+                    return True
+            # Now check all the children of all these mobs.
+            for mob in mobj_list:  # noqa: SIM110
+                if replace_in_list(mob.submobjects, old_m, new_m):
+                    # If we found it in a submobject, stop looking.
+                    return True
+            # If we did not find the mobject in the mobject list or any submobjects,
+            # (or the list was empty), indicate we did not make the replacement.
+            return False
+
+        # Make use of short-circuiting conditionals to check mobjects and then
+        # foreground_mobjects
+        replaced = replace_in_list(
+            self.mobjects, old_mobject, new_mobject
+        ) or replace_in_list(self.foreground_mobjects, old_mobject, new_mobject)
+
+        if not replaced:
+            raise ValueError(f"Could not find {old_mobject} in scene")
+
+    def add_updater(self, func: Callable[[float], None]) -> None:
+        """Add an update function to the scene.
+
+        The scene updater functions are run every frame,
+        and they are the last type of updaters to run.
+
+        .. WARNING::
+
+            When using the Cairo renderer, scene updaters that
+            modify mobjects are not detected in the same way
+            that mobject updaters are. To be more concrete,
+            a mobject only modified via a scene updater will
+            not necessarily be added to the list of *moving
+            mobjects* and thus might not be updated every frame.
+
+            TL;DR: Use mobject updaters to update mobjects.
+
+        Parameters
+        ----------
+        func
+            The updater function. It takes a float, which is the
+            time difference since the last update (usually equal
+            to the frame rate).
+
+        See also
+        --------
+        :meth:`.Scene.remove_updater`
+        :meth:`.Scene.update_self`
+        """
+        self.updaters.append(func)
+
+    def remove_updater(self, func: Callable[[float], None]) -> None:
+        """Remove an update function from the scene.
+
+        Parameters
+        ----------
+        func
+            The updater function to be removed.
+
+        See also
+        --------
+        :meth:`.Scene.add_updater`
+        :meth:`.Scene.update_self`
+        """
+        self.updaters = [f for f in self.updaters if f is not func]
+
+    def restructure_mobjects(
+        self,
+        to_remove: Mobject,
+        mobject_list_name: str = "mobjects",
+        extract_families: bool = True,
+    ):
+        """
+        tl:wr
+            If your scene has a Group(), and you removed a mobject from the Group,
+            this dissolves the group and puts the rest of the mobjects directly
+            in self.mobjects or self.foreground_mobjects.
+
+        In cases where the scene contains a group, e.g. Group(m1, m2, m3), but one
+        of its submobjects is removed, e.g. scene.remove(m1), the list of mobjects
+        will be edited to contain other submobjects, but not m1, e.g. it will now
+        insert m2 and m3 to where the group once was.
+
+        Parameters
+        ----------
+        to_remove
+            The Mobject to remove.
+
+        mobject_list_name
+            The list of mobjects ("mobjects", "foreground_mobjects" etc) to remove from.
+
+        extract_families
+            Whether the mobject's families should be recursively extracted.
+
+        Returns
+        -------
+        Scene
+            The Scene mobject with restructured Mobjects.
+        """
+        if extract_families:
+            to_remove = extract_mobject_family_members(
+                to_remove,
+                use_z_index=self.renderer.camera.use_z_index,
+            )
+        _list = getattr(self, mobject_list_name)
+        new_list = self.get_restructured_mobject_list(_list, to_remove)
+        setattr(self, mobject_list_name, new_list)
 
     def bring_to_front(self, *mobjects: Mobject):
         self.add(*mobjects)
@@ -531,7 +686,7 @@ class Scene:
             kw["override_skip_animations"] = True
         return self.get_time_progression(duration, **kw)
 
-    def pre_play(self):
+    def pre_play(self): # Doesn't exist in Main
         if self.presenter_mode and self.num_plays == 0:
             self.hold_loop()
 

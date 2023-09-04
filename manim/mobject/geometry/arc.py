@@ -48,7 +48,6 @@ import warnings
 from typing import TYPE_CHECKING, Sequence
 
 import numpy as np
-from colour import Color
 
 from manim.constants import *
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
@@ -282,8 +281,8 @@ class Arc(TipableVMobject):
     def __init__(
         self,
         radius: float = 1.0,
-        start_angle=0,
-        angle=TAU / 4,
+        start_angle: float = 0,
+        angle: float = TAU / 4,
         num_components=9,
         arc_center=ORIGIN,
         **kwargs,
@@ -492,7 +491,7 @@ class Circle(Arc):
     def __init__(
         self,
         radius: float | None = None,
-        color: Color | str = RED,
+        color: ParsableManimColor = RED,
         **kwargs,
     ):
         super().__init__(
@@ -658,7 +657,7 @@ class Dot(Circle):
         radius: float = DEFAULT_DOT_RADIUS,
         stroke_width: float = 0,
         fill_opacity: float = 1.0,
-        color: Color | str = WHITE,
+        color: ParsableManimColor = WHITE,
         **kwargs,
     ):
         super().__init__(
@@ -777,7 +776,9 @@ class Ellipse(Circle):
 
 
 class AnnularSector(Arc):
-    """
+    """A sector of an annulus.
+
+
     Parameters
     ----------
     inner_radius
@@ -862,7 +863,8 @@ class AnnularSector(Arc):
 
 
 class Sector(AnnularSector):
-    """
+    """A sector of a circle.
+
     Examples
     --------
     .. manim:: ExampleSector
@@ -935,7 +937,8 @@ class Annulus(Circle):
 
 
 class CubicBezier(VMobject, metaclass=ConvertToOpenGL):
-    """
+    """A cubic Bézier curve.
+
     Example
     -------
     .. manim:: BezierSplineExample

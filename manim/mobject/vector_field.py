@@ -14,7 +14,6 @@ from math import ceil, floor
 from typing import Callable, Iterable, Sequence
 
 import numpy as np
-from colour import Color
 from PIL import Image
 
 from manim.animation.updaters.update import UpdateFromAlphaFunc
@@ -29,7 +28,16 @@ from ..constants import OUT, RIGHT, UP, RendererType
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.bezier import interpolate, inverse_interpolate
-from ..utils.color import BLUE_E, GREEN, RED, YELLOW, color_to_rgb, rgb_to_color
+from ..utils.color import (
+    BLUE_E,
+    GREEN,
+    RED,
+    YELLOW,
+    ManimColor,
+    ParsableManimColor,
+    color_to_rgb,
+    rgb_to_color,
+)
 from ..utils.rate_functions import ease_out_sine, linear
 from ..utils.simple_functions import sigmoid
 
@@ -65,11 +73,11 @@ class VectorField(VGroup):
     def __init__(
         self,
         func: Callable[[np.ndarray], np.ndarray],
-        color: Color | None = None,
+        color: ParsableManimColor | None = None,
         color_scheme: Callable[[np.ndarray], float] | None = None,
         min_color_scheme_value: float = 0,
         max_color_scheme_value: float = 2,
-        colors: Sequence[Color] = DEFAULT_SCALAR_FIELD_COLORS,
+        colors: Sequence[ParsableManimColor] = DEFAULT_SCALAR_FIELD_COLORS,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -106,7 +114,7 @@ class VectorField(VGroup):
             self.pos_to_color = lambda pos: rgb_to_color(self.pos_to_rgb(pos))
         else:
             self.single_color = True
-            self.color = color
+            self.color = ManimColor.parse(color)
         self.submob_movement_updater = None
 
     @staticmethod
@@ -408,7 +416,7 @@ class VectorField(VGroup):
         self,
         start: float,
         end: float,
-        colors: Iterable,
+        colors: Iterable[ParsableManimColor],
     ):
         """
         Generates a gradient of rgbas as a numpy array
@@ -532,11 +540,11 @@ class ArrowVectorField(VectorField):
     def __init__(
         self,
         func: Callable[[np.ndarray], np.ndarray],
-        color: Color | None = None,
+        color: ParsableManimColor | None = None,
         color_scheme: Callable[[np.ndarray], float] | None = None,
         min_color_scheme_value: float = 0,
         max_color_scheme_value: float = 2,
-        colors: Sequence[Color] = DEFAULT_SCALAR_FIELD_COLORS,
+        colors: Sequence[ParsableManimColor] = DEFAULT_SCALAR_FIELD_COLORS,
         # Determining Vector positions:
         x_range: Sequence[float] = None,
         y_range: Sequence[float] = None,
@@ -612,7 +620,7 @@ class ArrowVectorField(VectorField):
             The root point of the vector.
 
         """
-        output = np.asarray(self.func(point))
+        output = np.array(self.func(point))
         norm = np.linalg.norm(output)
         if norm != 0:
             output *= self.length_func(norm) / norm
@@ -706,11 +714,11 @@ class StreamLines(VectorField):
     def __init__(
         self,
         func: Callable[[np.ndarray], np.ndarray],
-        color: Color | None = None,
+        color: ParsableManimColor | None = None,
         color_scheme: Callable[[np.ndarray], float] | None = None,
         min_color_scheme_value: float = 0,
         max_color_scheme_value: float = 2,
-        colors: Sequence[Color] = DEFAULT_SCALAR_FIELD_COLORS,
+        colors: Sequence[ParsableManimColor] = DEFAULT_SCALAR_FIELD_COLORS,
         # Determining stream line starting positions:
         x_range: Sequence[float] = None,
         y_range: Sequence[float] = None,

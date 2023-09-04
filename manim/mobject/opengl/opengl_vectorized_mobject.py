@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING
 
 import moderngl
 import numpy as np
-from colour import Color
 
 from manim import config
 from manim.constants import *
@@ -91,10 +90,9 @@ class OpenGLVMobject(OpenGLMobject):
 
     def __init__(
         self,
-        color: Color | None = None,
-        fill_color: Color | None = None,
+        fill_color: ParsableManimColor | None = None,
         fill_opacity: float = 0.0,
-        stroke_color: Color | None = None,
+        stroke_color: ParsableManimColor | None = None,
         stroke_opacity: float = 1.0,
         stroke_width: float = DEFAULT_STROKE_WIDTH,
         draw_stroke_behind_fill: bool = False,
@@ -122,6 +120,12 @@ class OpenGLVMobject(OpenGLMobject):
         self.triangulation = np.zeros(0, dtype="i4")
 
         super().__init__(**kwargs)
+        self.refresh_unit_normal()
+
+        if fill_color is not None:
+            self.fill_color = ManimColor.parse(fill_color)
+        if stroke_color is not None:
+            self.stroke_color = ManimColor.parse(stroke_color)
 
     def get_group_class(self):
         return OpenGLVGroup
@@ -220,8 +224,8 @@ class OpenGLVMobject(OpenGLMobject):
 
     def set_fill(
         self,
-        color: Color | Iterable[Color] | None = None,
-        opacity: float | Iterable[float] | None = None,
+        color: ParsableManimColor | None = None,
+        opacity: float | None = None,
         recurse: bool = True,
     ) -> Self:
         """Set the fill color and fill opacity of a :class:`OpenGLVMobject`.
@@ -398,14 +402,15 @@ class OpenGLVMobject(OpenGLMobject):
             )
         return self
 
-    def get_fill_colors(self) -> list[str]:
-        return [rgb_to_hex(rgba[:3]) for rgba in self.data["fill_rgba"]]
+    # Todo im not quite sure why we are doing this
+    def get_fill_colors(self):
+        return [ManimColor.from_rgb(rgba[:3]) for rgba in self.fill_rgba]
 
     def get_fill_opacities(self) -> np.ndarray:
         return self.data["fill_rgba"][:, 3]
 
-    def get_stroke_colors(self) -> list[str]:
-        return [rgb_to_hex(rgba[:3]) for rgba in self.data["stroke_rgba"]]
+    def get_stroke_colors(self):
+        return [ManimColor.from_rgb(rgba[:3]) for rgba in self.stroke_rgba]
 
     def get_stroke_opacities(self) -> np.ndarray:
         return self.data["stroke_rgba"][:, 3]
@@ -1715,7 +1720,7 @@ class OpenGLVGroup(OpenGLVMobject):
     """
 
     def __init__(self, *vmobjects, **kwargs):
-        if not all([isinstance(m, OpenGLVMobject) for m in vmobjects]):
+        if not all(isinstance(m, OpenGLVMobject) for m in vmobjects):
             raise Exception("All submobjects must be of type OpenGLVMobject")
         super().__init__(**kwargs)
         self.add(*vmobjects)
@@ -1919,7 +1924,8 @@ class OpenGLDashedVMobject(OpenGLVMobject):
         self,
         vmobject: OpenGLVMobject,
         num_dashes: int = 15,
-        positive_space_ratio: float = 0.5,
+        dashed_ratio: float = 0.5,
+        color: ParsableManimColor = WHITE,
         **kwargs,
     ):
         super().__init__(**kwargs)

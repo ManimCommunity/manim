@@ -5,7 +5,7 @@ The installation instructions depend on your particular operating
 system and package manager. If you happen to know exactly what you are doing,
 you can also simply ensure that your system has:
 
-- a reasonably recent version of Python 3 (3.7–3.10),
+- a reasonably recent version of Python 3 (3.8 or above),
 - with working Cairo bindings in the form of
   `pycairo <https://cairographics.org/pycairo/>`__,
 - FFmpeg accessible from the command line as ``ffmpeg``,
@@ -144,6 +144,12 @@ installed by running:
 .. code-block:: bash
 
    sudo apt install texlive texlive-latex-extra
+
+For Fedora (see `docs <https://docs.fedoraproject.org/en-US/neurofedora/latex/>`__):
+
+.. code-block:: bash
+
+   sudo dnf install texlive-scheme-full
 
 Should you choose to work with some smaller TeX distribution like
 `TinyTeX <https://yihui.org/tinytex/>`__ , the full list

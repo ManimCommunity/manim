@@ -14,6 +14,7 @@ def test_axes(scene):
         x_length=6,
         y_length=6,
         color=WHITE,
+        y_axis_config={"tip_shape": StealthTip},
     )
     labels = graph.get_axis_labels()
     scene.add(graph, labels)

@@ -43,6 +43,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinxext.opengraph",
     "manim.utils.docbuild.manim_directive",
+    "manim.utils.docbuild.autocolor_directive",
     "sphinx.ext.graphviz",
     "sphinx.ext.inheritance_diagram",
     "sphinxcontrib.programoutput",
@@ -138,14 +139,16 @@ html_css_files = ["custom.css"]
 
 # external links
 extlinks = {
-    "issue": ("https://github.com/ManimCommunity/manim/issues/%s", "#"),
-    "pr": ("https://github.com/ManimCommunity/manim/pull/%s", "#"),
+    "issue": ("https://github.com/ManimCommunity/manim/issues/%s", "#%s"),
+    "pr": ("https://github.com/ManimCommunity/manim/pull/%s", "#%s"),
 }
 
 # opengraph settings
-ogp_image = "https://www.manim.community/logo.png"
 ogp_site_name = "Manim Community | Documentation"
 ogp_site_url = "https://docs.manim.community/"
+ogp_social_cards = {
+    "image": "_static/logo.png",
+}
 
 
 # inheritance_graph settings
