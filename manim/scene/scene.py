@@ -883,6 +883,9 @@ class Scene:
             Animations to be played.
         """
         animations = []
+        # Allow passing a generator to self.play instead of comma separated arguments
+        if isinstance(args[0], types.GeneratorType) or hasattr(args[0], "__iter__"):
+            args = args[0]
         for arg in args:
             try:
                 animations.append(prepare_animation(arg))
