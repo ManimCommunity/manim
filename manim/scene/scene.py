@@ -884,7 +884,7 @@ class Scene:
         """
         animations = []
         # Allow passing a generator to self.play instead of comma separated arguments
-        if isinstance(args[0], types.GeneratorType) or hasattr(args[0], "__iter__"):
+        if isinstance(args[0], (types.GeneratorType, list, tuple)):
             args = args[0]
         for arg in args:
             try:
