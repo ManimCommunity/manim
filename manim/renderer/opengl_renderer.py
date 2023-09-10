@@ -207,14 +207,14 @@ class OpenGLRenderer(Renderer):
         self.target_fbo = self.ctx.simple_framebuffer(
             (self.pixel_width, self.pixel_height),
             samples=self.samples,
-            dtype="f4",
+            dtype="f1",
             components=4,
         )
 
         self.output_fbo = self.ctx.framebuffer(
             color_attachments=[
                 self.ctx.renderbuffer(
-                    (self.pixel_width, self.pixel_height), dtype="f4", components=4
+                    (self.pixel_width, self.pixel_height), dtype="f1", components=4
                 )
             ]
         )
