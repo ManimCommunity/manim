@@ -426,7 +426,7 @@ class OpenGLMobject:
         about_point=None,
         about_edge=ORIGIN,
         works_on_bounding_box=False,
-    ):
+    ) -> Self:
         if about_point is None and about_edge is not None:
             about_point = self.get_bounding_box_point(about_edge)
 

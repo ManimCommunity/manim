@@ -5,6 +5,7 @@ import numpy as np
 from typing_extensions import TypeAlias
 
 from manim import config
+from manim._config import logger
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.types.image_mobject import ImageMobject
 from manim.mobject.types.vectorized_mobject import VMobject
@@ -18,20 +19,23 @@ class RendererData:
 
 class Renderer(ABC):
     def __init__(self):
-        self.fbo = np.zeros((config.height, config.width))
-        self.capabilities = {
-            VMobject: self.render_vmobject,
-            ImageMobject: self.render_image,
-        }
+        self.capabilities = [
+            (OpenGLVMobject, self.render_vmobject),
+            (ImageMobject, self.render_image),
+        ]
 
-    def render(self, camera, renderables: [VMobject]) -> ImageType:  # Image
+    def render(self, camera, renderables: list[OpenGLVMobject]) -> ImageType:  # Image
         for mob in renderables:
-            if type(mob) in self.capabilities:
-                self.capabilities[type(mob)](mob)
+            for type, render_func in self.capabilities:
+                if isinstance(mob, type):
+                    render_func(mob)
+                    break
             else:
-                print("WARNING: NOT SUPPORTED")
+                logger.warn(
+                    f"The type{type(mob)} is not supported in Renderer: {self.__class__}"
+                )
 
-        return self.fbo.get_pixels()
+        return self.get_pixels()
 
     @abstractclassmethod
     def render_vmobject(self, mob: OpenGLVMobject) -> None:
@@ -41,6 +45,9 @@ class Renderer(ABC):
         raise NotImplementedError
 
     def render_image(self, mob) -> None:
+        raise NotImplementedError
+
+    def get_pixels(self) -> ImageType:
         raise NotImplementedError
 
 

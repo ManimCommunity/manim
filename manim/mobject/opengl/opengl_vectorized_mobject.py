@@ -58,8 +58,9 @@ DEFAULT_FILL_COLOR = GREY_C
 def triggers_refreshed_triangulation(func: Callable):
     @wraps(func)
     def wrapper(self, *args, **kwargs):
-        func(self, *args, **kwargs)
+        res = func(self, *args, **kwargs)
         self.refresh_triangulation()
+        return res
 
     return wrapper
 

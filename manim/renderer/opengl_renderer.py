@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING
 
 import moderngl as gl
 import numpy as np
-from PIL import Image
 from typing_extensions import override
 
 import manim.constants as const
@@ -190,7 +189,9 @@ class OpenGLRenderer(Renderer):
         background_color: c.ManimColor = color.BLACK,
         background_opacity: float = 1.0,
         background_image: str | None = None,
+        substitute_output_fbo: gl.Framebuffer | None = None,
     ) -> None:
+        super().__init__()
         logger.debug("Initializing OpenGLRenderer")
         self.pixel_width = pixel_width
         self.pixel_height = pixel_height
@@ -204,18 +205,19 @@ class OpenGLRenderer(Renderer):
         logger.debug("Initializing OpenGL context and framebuffers")
         self.ctx = gl.create_context()
         self.target_fbo = self.ctx.simple_framebuffer(
-            (self.pixel_width, self.pixel_height), samples=self.samples
+            (self.pixel_width, self.pixel_height),
+            samples=self.samples,
+            dtype="f4",
+            components=4,
         )
 
-        fbo = self.ctx.detect_framebuffer()
-        if not fbo:
-            self.output_fbo = self.ctx.framebuffer(
-                color_attachments=[
-                    self.ctx.renderbuffer((self.pixel_width, self.pixel_height))
-                ]
-            )
-        else:
-            self.output_fbo = fbo
+        self.output_fbo = self.ctx.framebuffer(
+            color_attachments=[
+                self.ctx.renderbuffer(
+                    (self.pixel_width, self.pixel_height), dtype="f4", components=4
+                )
+            ]
+        )
 
         # Preparing vmobject shader
         logger.debug("Initializing Shader Programs")
@@ -225,6 +227,10 @@ class OpenGLRenderer(Renderer):
         self.vmobject_stroke_program = load_shader_program_by_folder(
             self.ctx, "quadratic_bezier_stroke"
         )
+
+    def substitute_fbo(self):
+        self.output_fbo.release()
+        self.output_fbo = self.ctx.detect_framebuffer()
 
     def set_camera(self, camera: OpenGLCameraFrame) -> ImageType:
         self.vmobject_fill_program["is_fixed_in_frame"] = 0.0
@@ -280,7 +286,18 @@ class OpenGLRenderer(Renderer):
         fill_data["vert_index"] = np.reshape(range(len(mob.points)), (-1, 1))
         return fill_data
 
-    @override
+    def render(self, camera, renderables: list[OpenGLVMobject]) -> ImageType:
+        self.set_camera(camera=camera)
+        self.target_fbo.use()
+        self.target_fbo.clear(*self.background_color)
+
+        super().render(camera, renderables)
+
+        self.ctx.copy_framebuffer(self.output_fbo, self.target_fbo)
+        # from PIL import Image
+        # Image.frombytes('RGB', self.output_fbo.size, self.output_fbo.read(), 'raw', 'RGB', 0, -1).show()
+        return self.get_pixels()
+
     def render_vmobject(self, mob: OpenGLVMobject) -> None:
         # Setting camera uniforms
 
@@ -306,10 +323,6 @@ class OpenGLRenderer(Renderer):
             )
             mob.renderer_data.bounding_box = compute_bounding_box(mob)
             print(mob.renderer_data)
-
-            # print(mob.renderer_data.mesh)
-            # print(mob.renderer_data.orientation)
-            # print(mob.points)
 
         # if mob.colors_changed:
         #     mob.renderer_data.fill_rgbas = np.resize(mob.fill_color, (len(mob.renderer_data.mesh),4))
@@ -352,36 +365,28 @@ class OpenGLRenderer(Renderer):
                 ibo.release()
             vao.release()
 
-        # print(self.get_fill_shader_data(mob))
         self.ctx.enable(gl.BLEND)
-        self.ctx.blend_func = (
-            gl.SRC_ALPHA,
-            gl.ONE_MINUS_SRC_ALPHA,
-            gl.ONE,
-            gl.ONE,
-        )
+        # self.ctx.blend_func = (
+        #     gl.SRC_ALPHA,
+        #     gl.ONE_MINUS_SRC_ALPHA,
+        #     gl.ONE,
+        #     gl.ONE,
+        # )
         # self.ctx.enable(gl.DEPTH_TEST)
-
-        self.target_fbo.use()
-        self.target_fbo.clear(*self.background_color)
+        # TODO: Handle Submobjects
         render_shader(
             self.vmobject_fill_program, mob, self.get_fill_shader_data(mob), True
         )
         render_shader(
             self.vmobject_stroke_program, mob, self.get_stroke_shader_data(mob), False
         )
-        # print(self.target_fbo.read())
-        self.ctx.copy_framebuffer(self.output_fbo, self.target_fbo)
-        # Image.frombytes('RGBA', self.output_fbo.size, self.output_fbo.read(components=4), 'raw', 'RGBA', 0, -1).show()
 
-        # set shader
-        # use vbo
-        # render fill
-
-        # set shader
-        # use vbo
-        # render stroke
-        # self.fbo ...
+    def get_pixels(self) -> ImageType:
+        raw = self.output_fbo.read(components=4, dtype="f4")  # RGBA, floats
+        buf = np.frombuffer(raw, dtype="f4").reshape(
+            (self.pixel_height, self.pixel_width, 4)
+        )
+        return buf
 
 
 #     def init_frame(self, **config) -> None:
