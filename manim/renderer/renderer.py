@@ -9,7 +9,7 @@ from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.types.image_mobject import ImageMobject
 from manim.mobject.types.vectorized_mobject import VMobject
 
-Image: TypeAlias = np.ndarray
+ImageType: TypeAlias = np.ndarray
 
 
 class RendererData:
@@ -21,13 +21,12 @@ class Renderer(ABC):
         self.fbo = np.zeros((config.height, config.width))
         self.capabilities = {
             VMobject: self.render_vmobject,
-            ImageMobject: self.render_imobject,
+            ImageMobject: self.render_image,
         }
 
-    def render(self, camera, renderables: [VMobject]) -> Image:  # Image
+    def render(self, camera, renderables: [VMobject]) -> ImageType:  # Image
         for mob in renderables:
             if type(mob) in self.capabilities:
-                mob.points
                 self.capabilities[type(mob)](mob)
             else:
                 print("WARNING: NOT SUPPORTED")

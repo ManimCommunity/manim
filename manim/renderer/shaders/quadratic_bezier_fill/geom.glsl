@@ -1,24 +1,23 @@
 #version 330
 
-layout(triangles) in;
-layout(triangle_strip, max_vertices = 5) out;
+layout (triangles) in;
+layout (triangle_strip, max_vertices = 5) out;
 
 uniform float anti_alias_width;
 
 // Needed for get_gl_Position
 uniform vec2 frame_shape;
-uniform vec2 pixel_shape;
 uniform float focal_distance;
 uniform float is_fixed_in_frame;
+uniform float is_fixed_orientation;
+uniform vec3 fixed_orientation_center;
 // Needed for finalize_color
 uniform vec3 light_source_position;
-uniform vec3 camera_position;
-uniform float reflectiveness;
 uniform float gloss;
 uniform float shadow;
 
 in vec3 bp[3];
-in float v_orientation[3];
+in vec3 v_global_unit_normal[3];
 in vec4 v_color[3];
 in float v_vert_index[3];
 
@@ -30,14 +29,10 @@ out vec2 uv_coords;
 out float bezier_degree;
 
 // Analog of import for manim only
-// Comment to prevent formatting
-#include "../include/quadratic_bezier_geometry_functions.glsl"
-//
-#include "../include/get_gl_Position.glsl"
-//
-#include "../include/get_unit_normal.glsl"
-//
-#include "../include/finalize_color.glsl"
+#include ../include/quadratic_bezier_geometry_functions.glsl
+#include ../include/get_gl_Position.glsl
+#include ../include/get_unit_normal.glsl
+#include ../include/finalize_color.glsl
 
 const vec2 uv_coords_arr[3] = vec2[3](vec2(0, 0), vec2(0.5, 0), vec2(1, 1));
 
@@ -51,31 +46,31 @@ void emit_vertex_wrapper(vec3 point, int index)
 
 void emit_simple_triangle()
 {
-    for (int i = 0; i < 3; i++)
+    for(int i = 0; i < 3; i++)
     {
         emit_vertex_wrapper(bp[i], i);
     }
     EndPrimitive();
 }
 
-void main()
-{
+void main(){
     // If vert indices are sequential, don't fill all
-    fill_all = float((v_vert_index[1] - v_vert_index[0]) != 1.0 || (v_vert_index[2] - v_vert_index[1]) != 1.0);
+    fill_all = float(
+        (v_vert_index[1] - v_vert_index[0]) != 1.0 ||
+        (v_vert_index[2] - v_vert_index[1]) != 1.0
+    );
 
-    if (fill_all == 1.0)
-    {
+    if(fill_all == 1.0){
         emit_simple_triangle();
         return;
     }
 
     vec3 new_bp[3];
     bezier_degree = get_reduced_control_points(vec3[3](bp[0], bp[1], bp[2]), new_bp);
-    unit_normal = get_unit_normal(new_bp);
-    orientation = v_orientation[0];
+    vec3 local_unit_normal = get_unit_normal(new_bp);
+    orientation = sign(dot(v_global_unit_normal[0], local_unit_normal));
 
-    if (bezier_degree >= 1)
-    {
+    if(bezier_degree >= 1){
         emit_simple_triangle();
     }
     // Don't emit any vertices for bezier_degree 0

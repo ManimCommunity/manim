@@ -5,14 +5,18 @@ from typing import TYPE_CHECKING
 
 import moderngl as gl
 import numpy as np
+from PIL import Image
 from typing_extensions import override
 
 import manim.constants as const
 import manim.utils.color.manim_colors as color
 from manim._config import config, logger
 from manim.camera.camera import OpenGLCameraFrame
+from manim.mobject.types.vectorized_mobject import VMobject
 from manim.renderer.opengl_shader_program import load_shader_program_by_folder
-from manim.renderer.renderer import Renderer, RendererData
+from manim.renderer.renderer import ImageType, Renderer, RendererData
+from manim.renderer.shader_wrapper import ShaderWrapper
+from manim.utils.iterables import listify, resize_array, resize_with_interpolation
 from manim.utils.space_ops import cross2d, earclip_triangulation, z_to_vector
 
 if TYPE_CHECKING:
@@ -21,15 +25,31 @@ if TYPE_CHECKING:
 import manim.utils.color.core as c
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 
+fill_dtype = [
+    ("point", np.float32, (3,)),
+    # ("orientation", np.float32, (3,)),
+    ("unit_normal", np.float32, (3,)),
+    ("color", np.float32, (4,)),
+    ("vert_index", np.float32, (1,)),
+]
+stroke_dtype = [
+    ("point", np.float32, (3,)),
+    ("prev_point", np.float32, (3,)),
+    ("next_point", np.float32, (3,)),
+    ("stroke_width", np.float32, (1,)),
+    ("color", np.float32, (4,)),
+]
+
 
 class GLRenderData(RendererData):
     def __init__(self) -> None:
         super().__init__()
         self.fill_rgbas = np.zeros((1, 4))
         self.stroke_rgbas = np.zeros((1, 4))
+        self.stroke_widths = np.zeros((1, 1))
         self.normals = np.zeros((1, 4))
-        self.orientation = None
-        self.mesh = np.zeros((0, 3))
+        self.orientation = np.zeros((1, 1))
+        self.vert_indices = np.zeros((0, 3))
         self.bounding_box = np.zeros((3, 3))
 
     def __repr__(self) -> str:
@@ -43,7 +63,7 @@ normals:
 orientation:
 {self.orientation}
 mesh:
-{self.mesh}
+{self.vert_indices}
 bounding_box:
 {self.bounding_box}
         """
@@ -165,22 +185,27 @@ class OpenGLRenderer(Renderer):
         self.pixel_width = pixel_width
         self.pixel_height = pixel_height
         self.samples = samples
-        self.background_color = (color.BLACK,)
+        self.background_color = background_color.to_rgba()
         self.background_image = background_image
 
         self.rgb_max_val: float = np.iinfo(self.pixel_array_dtype).max
 
         # Initializing Context
         logger.debug("Initializing OpenGL context and framebuffers")
-        self.ctx = gl.create_context(standalone=True)
+        self.ctx = gl.create_context()
         self.target_fbo = self.ctx.simple_framebuffer(
             (self.pixel_width, self.pixel_height), samples=self.samples
         )
-        self.output_fbo = self.ctx.framebuffer(
-            color_attachments=[
-                self.ctx.renderbuffer((self.pixel_width, self.pixel_height))
-            ]
-        )
+
+        fbo = self.ctx.detect_framebuffer()
+        if not fbo:
+            self.output_fbo = self.ctx.framebuffer(
+                color_attachments=[
+                    self.ctx.renderbuffer((self.pixel_width, self.pixel_height))
+                ]
+            )
+        else:
+            self.output_fbo = fbo
 
         # Preparing vmobject shader
         logger.debug("Initializing Shader Programs")
@@ -191,8 +216,70 @@ class OpenGLRenderer(Renderer):
             self.ctx, "quadratic_bezier_stroke"
         )
 
+    def set_camera(self, camera: OpenGLCameraFrame) -> ImageType:
+        self.vmobject_fill_program["is_fixed_in_frame"] = 0.0
+        self.vmobject_fill_program["frame_shape"] = camera.frame_shape
+        self.vmobject_fill_program["focal_distance"] = float(
+            camera.get_focal_distance()
+        )
+        self.vmobject_fill_program["camera_center"] = tuple(camera.get_center())
+        self.vmobject_fill_program["camera_rotation"] = tuple(
+            np.array(camera.get_inverse_camera_rotation_matrix()).T.flatten()
+        )
+        self.vmobject_fill_program["light_source_position"] = (-10, 10, 10)
+        # TODO: convert to singular 4x4 matrix after getting *something* to render
+        # self.vmobject_fill_program['view'].value = camera.get_view()?
+        self.vmobject_stroke_program["is_fixed_in_frame"].value = 0.0
+        self.vmobject_stroke_program["anti_alias_width"].value = 1.0
+        self.vmobject_stroke_program["frame_shape"].value = np.asarray(
+            camera.frame_shape
+        )
+        # self.vmobject_stroke_program['pixel_shape'].value = camera.frame_shape
+        self.vmobject_stroke_program["focal_distance"].value = np.asarray(
+            camera.get_focal_distance()
+        )
+        self.vmobject_stroke_program["camera_center"].value = np.asarray(
+            camera.get_center()
+        )
+        self.vmobject_stroke_program["camera_rotation"].value = np.array(
+            camera.get_inverse_camera_rotation_matrix()
+        ).T.flatten()
+        self.vmobject_stroke_program["light_source_position"].value = np.array(
+            [-10, 10, 10]
+        )
+
+    def get_stroke_shader_data(self, mob: OpenGLVMobject) -> np.ndarray:
+        if not isinstance(mob.renderer_data, GLRenderData):
+            raise TypeError()
+
+        points = mob.points
+        stroke_data = np.zeros(len(points), dtype=stroke_dtype)
+
+        nppc = mob.n_points_per_curve
+        stroke_data["point"] = points
+        stroke_data["prev_point"][:nppc] = points[-nppc:]
+        stroke_data["prev_point"][nppc:] = points[:-nppc]
+        stroke_data["next_point"][:-nppc] = points[nppc:]
+        stroke_data["next_point"][-nppc:] = points[:nppc]
+        stroke_data["color"] = mob.renderer_data.stroke_rgbas
+        stroke_data["stroke_width"] = mob.renderer_data.stroke_widths
+
+        return stroke_data
+
+    def get_fill_shader_data(self, mob: OpenGLVMobject) -> np.ndarray:
+        if not isinstance(mob.renderer_data, GLRenderData):
+            raise TypeError()
+
+        fill_data = np.zeros(len(mob.points), dtype=fill_dtype)
+        fill_data["point"] = mob.points
+        fill_data["color"] = mob.renderer_data.fill_rgbas
+        # fill_data["orientation"] = mob.renderer_data.orientation
+        fill_data["unit_normal"] = mob.renderer_data.normals
+        fill_data["vert_index"] = np.reshape(range(len(mob.points)), (-1, 1))
+        return fill_data
+
     @override
-    def render_vmobject(self, mob: OpenGLVMobject, camera: OpenGLCameraFrame) -> None:
+    def render_vmobject(self, mob: OpenGLVMobject) -> None:
         # Setting camera uniforms
 
         if mob.renderer_data is None:
@@ -201,20 +288,25 @@ class OpenGLRenderer(Renderer):
             logger.debug("Initializing GLRenderData")
             mob.renderer_data = GLRenderData()
             # Generate Mesh
-            mob.renderer_data.mesh, mob.renderer_data.orientation = get_triangulation(
-                mob
-            )
-            mesh_length = len(mob.renderer_data.mesh)
+            (
+                mob.renderer_data.vert_indices,
+                mob.renderer_data.orientation,
+            ) = get_triangulation(mob)
+            points_length = len(mob.points)
 
             # Generate Fill Color
             fill_color = np.array([c._internal_value for c in mob.fill_color])
             stroke_color = np.array([c._internal_value for c in mob.stroke_color])
-            mob.renderer_data.fill_rgbas = prepare_array(fill_color, mesh_length)
-            mob.renderer_data.stroke_rgbas = prepare_array(stroke_color, mesh_length)
+            mob.renderer_data.fill_rgbas = prepare_array(fill_color, points_length)
+            mob.renderer_data.stroke_rgbas = prepare_array(stroke_color, points_length)
+            mob.renderer_data.stroke_widths = prepare_array(
+                np.asarray(listify(mob.stroke_width)), points_length
+            )
             mob.renderer_data.normals = np.repeat(
-                [mob.get_unit_normal()], mesh_length, axis=0
+                [mob.get_unit_normal()], points_length, axis=0
             )
             mob.renderer_data.bounding_box = compute_bounding_box(mob)
+            print(mob.renderer_data)
 
             # print(mob.renderer_data.mesh)
             # print(mob.renderer_data.orientation)
@@ -226,6 +318,46 @@ class OpenGLRenderer(Renderer):
         # if mob.points_changed:3357
         #     if(mob.has_fill()):
         #         mob.renderer_data.mesh = ... # Triangulation todo
+
+        # self.vmobject_fill_program['reflectiveness'].value = mob.reflectiveness
+        self.vmobject_fill_program["gloss"].value = mob.gloss
+        self.vmobject_fill_program["shadow"].value = mob.shadow
+
+        # self.vmobject_stroke_program['reflectiveness'].value = mob.reflectiveness
+        self.vmobject_stroke_program["gloss"].value = mob.gloss
+        self.vmobject_stroke_program["shadow"].value = mob.shadow
+        self.vmobject_stroke_program["joint_type"].value = float(
+            mob.joint_type.value
+        )  # TODO: This maybe breaks
+        self.vmobject_stroke_program["flat_stroke"].value = mob.flat_stroke
+
+        def render_shader(prog, mob, data):
+            vbo = self.ctx.buffer(data.tobytes())
+            ibo = self.ctx.buffer(mob.renderer_data.vert_indices)
+            # print(prog,vbo,data)
+            vert_format = gl.detect_format(prog, data.dtype.names)
+            # print(vert_format)
+            vao = self.ctx.vertex_array(
+                program=prog,
+                content=[(vbo, vert_format, *data.dtype.names)],
+                index_buffer=ibo,
+            )
+            self.target_fbo.use()
+            self.target_fbo.clear(*self.background_color)
+            vao.render(gl.TRIANGLES)
+            vbo.release()
+            ibo.release()
+            vao.release()
+
+        # print(self.get_fill_shader_data(mob))
+        self.ctx.enable(gl.BLEND)
+        self.ctx.enable(gl.DEPTH_TEST)
+
+        render_shader(self.vmobject_fill_program, mob, self.get_fill_shader_data(mob))
+        # render_shader(self.vmobject_stroke_program, mob, stroke_dtype, self.get_stroke_shader_data(mob))
+        # print(self.target_fbo.read())
+        self.ctx.copy_framebuffer(self.output_fbo, self.target_fbo)
+        # Image.frombytes('RGBA', self.output_fbo.size, self.output_fbo.read(components=4), 'raw', 'RGBA', 0, -1).show()
 
         # set shader
         # use vbo
