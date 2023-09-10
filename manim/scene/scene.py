@@ -25,8 +25,10 @@ from manim.mobject.mobject import Group, Mobject, Point, _AnimationBuilder
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.scene.scene_file_writer import SceneFileWriter
 from manim.utils.color import RED
-from manim.utils.family_ops import (extract_mobject_family_members,
-                                    recursive_mobject_remove)
+from manim.utils.family_ops import (
+    extract_mobject_family_members,
+    recursive_mobject_remove,
+)
 from manim.utils.module_ops import get_module
 
 if TYPE_CHECKING:
@@ -684,7 +686,7 @@ class Scene:
             kw["override_skip_animations"] = True
         return self.get_time_progression(duration, **kw)
 
-    def pre_play(self): # Doesn't exist in Main
+    def pre_play(self):  # Doesn't exist in Main
         if self.presenter_mode and self.num_plays == 0:
             self.hold_loop()
 

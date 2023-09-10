@@ -22,19 +22,23 @@ from PIL.Image import Image
 
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
-from manim.mobject.three_d.three_d_utils import \
-    get_3d_vmob_gradient_start_and_end_points
+from manim.mobject.three_d.three_d_utils import (
+    get_3d_vmob_gradient_start_and_end_points,
+)
 
 from ... import config
 from ...constants import *
 from ...mobject.mobject import Mobject
-from ...utils.bezier import (bezier, get_smooth_handle_points,
-                             integer_interpolate, interpolate,
-                             partial_bezier_points,
-                             proportions_along_bezier_curve_for_point)
+from ...utils.bezier import (
+    bezier,
+    get_smooth_handle_points,
+    integer_interpolate,
+    interpolate,
+    partial_bezier_points,
+    proportions_along_bezier_curve_for_point,
+)
 from ...utils.color import BLACK, WHITE, ManimColor, ParsableManimColor
-from ...utils.iterables import (make_even, resize_array,
-                                stretch_array_to_length, tuplify)
+from ...utils.iterables import make_even, resize_array, stretch_array_to_length, tuplify
 from ...utils.space_ops import rotate_vector, shoelace_direction
 
 # TODO

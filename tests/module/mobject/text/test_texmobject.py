@@ -4,8 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from manim import (MathTex, SingleStringMathTex, Tex, TexTemplate, config,
-                   tempconfig)
+from manim import MathTex, SingleStringMathTex, Tex, TexTemplate, config, tempconfig
 from manim.mobject.types.vectorized_mobject import VMobject
 from manim.utils.color import RED
 

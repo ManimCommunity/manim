@@ -3,8 +3,7 @@ from __future__ import annotations
 import numpy as np
 
 from manim.mobject.opengl.opengl_surface import OpenGLSurface
-from manim.mobject.opengl.opengl_vectorized_mobject import (OpenGLVGroup,
-                                                            OpenGLVMobject)
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup, OpenGLVMobject
 
 
 class OpenGLSurfaceMesh(OpenGLVGroup):

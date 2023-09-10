@@ -6,8 +6,10 @@ __all__ = ["LabeledLine", "LabeledArrow"]
 
 from manim.constants import *
 from manim.mobject.geometry.line import Arrow, Line
-from manim.mobject.geometry.shape_matchers import (BackgroundRectangle,
-                                                   SurroundingRectangle)
+from manim.mobject.geometry.shape_matchers import (
+    BackgroundRectangle,
+    SurroundingRectangle,
+)
 from manim.mobject.text.tex_mobject import MathTex, Tex
 from manim.mobject.text.text_mobject import Text
 from manim.utils.color import WHITE, ManimColor, ParsableManimColor

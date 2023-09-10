@@ -3,8 +3,18 @@ from math import cos, sin
 import numpy as np
 import pytest
 
-from manim import (Circle, CurvesAsSubmobjects, Line, Mobject, Polygon,
-                   RegularPolygon, Square, VDict, VGroup, VMobject)
+from manim import (
+    Circle,
+    CurvesAsSubmobjects,
+    Line,
+    Mobject,
+    Polygon,
+    RegularPolygon,
+    Square,
+    VDict,
+    VGroup,
+    VMobject,
+)
 from manim.constants import PI
 
 

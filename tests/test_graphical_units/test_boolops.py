@@ -1,7 +1,17 @@
 from __future__ import annotations
 
-from manim import (BLUE, Circle, Difference, Exclusion, Intersection,
-                   Rectangle, Square, Triangle, Union)
+from manim import (
+    BLUE,
+    Circle,
+    Difference,
+    Exclusion,
+    Intersection,
+    Rectangle,
+    Square,
+    Triangle,
+    Union,
+)
+
 # not exported by default, so directly import
 from manim.utils.testing.frames_comparison import frames_comparison
 

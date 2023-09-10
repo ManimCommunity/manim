@@ -23,21 +23,32 @@ from manim.constants import *
 from manim.mobject.geometry.arc import Circle, Dot
 from manim.mobject.geometry.line import Arrow, DashedLine, Line
 from manim.mobject.geometry.polygram import Polygon, Rectangle, RegularPolygon
-from manim.mobject.graphing.functions import (ImplicitFunction,
-                                              ParametricFunction)
+from manim.mobject.graphing.functions import ImplicitFunction, ParametricFunction
 from manim.mobject.graphing.number_line import NumberLine
 from manim.mobject.graphing.scale import LinearBase
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_surface import OpenGLSurface
 from manim.mobject.text.tex_mobject import MathTex
 from manim.mobject.three_d.three_dimensions import Surface
-from manim.mobject.types.vectorized_mobject import (VDict, VectorizedPoint,
-                                                    VGroup, VMobject)
-from manim.utils.color import (BLACK, BLUE, BLUE_D, GREEN, WHITE, YELLOW,
-                               ManimColor, ParsableManimColor, color_gradient,
-                               invert_color)
-from manim.utils.config_ops import (merge_dicts_recursively,
-                                    update_dict_recursively)
+from manim.mobject.types.vectorized_mobject import (
+    VDict,
+    VectorizedPoint,
+    VGroup,
+    VMobject,
+)
+from manim.utils.color import (
+    BLACK,
+    BLUE,
+    BLUE_D,
+    GREEN,
+    WHITE,
+    YELLOW,
+    ManimColor,
+    ParsableManimColor,
+    color_gradient,
+    invert_color,
+)
+from manim.utils.config_ops import merge_dicts_recursively, update_dict_recursively
 from manim.utils.simple_functions import binary_search
 from manim.utils.space_ops import angle_of_vector
 

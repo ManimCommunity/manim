@@ -54,9 +54,13 @@ from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VMobject
 from manim.utils.color import *
 from manim.utils.iterables import adjacent_pairs
-from manim.utils.space_ops import (angle_of_vector, cartesian_to_spherical,
-                                   line_intersection, perpendicular_bisector,
-                                   rotate_vector)
+from manim.utils.space_ops import (
+    angle_of_vector,
+    cartesian_to_spherical,
+    line_intersection,
+    perpendicular_bisector,
+    rotate_vector,
+)
 
 if TYPE_CHECKING:
     from manim.mobject.mobject import Mobject

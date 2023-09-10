@@ -19,8 +19,7 @@ __all__ = [
 ]
 
 import itertools as it
-from typing import (Any, Callable, Collection, Generator, Iterable, Reversible,
-                    Sequence)
+from typing import Any, Callable, Collection, Generator, Iterable, Reversible, Sequence
 
 import numpy as np
 

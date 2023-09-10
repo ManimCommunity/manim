@@ -1249,11 +1249,9 @@ class ManimConfig(MutableMapping):
             val = val.lower()
         renderer = RendererType(val)
         try:
-            from manim.mobject.opengl.opengl_compatibility import \
-                ConvertToOpenGL
+            from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
             from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-            from manim.mobject.opengl.opengl_vectorized_mobject import \
-                OpenGLVMobject
+            from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 
             from ..mobject.mobject import Mobject
             from ..mobject.types.vectorized_mobject import VMobject
