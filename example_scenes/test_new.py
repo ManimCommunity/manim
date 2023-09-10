@@ -16,7 +16,7 @@ if __name__ == "__main__":
         win = Window(width=1920, height=1080)
         renderer = OpenGLRenderer(1920, 1080)
         # vm = OpenGLVMobject([col.RED, col.GREEN])
-        vm = Circle(radius=1)
+        vm = Circle(radius=1,stroke_color=col.YELLOW,fill_opacity=1, fill_color=col.RED)
         # vm.set_points_as_corners([[-1920/2, 0, 0], [1920/2, 0, 0], [0, 1080/2, 0]])
         # print(vm.color)
         # print(vm.fill_color)

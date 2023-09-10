@@ -239,24 +239,16 @@ class OpenGLRenderer(Renderer):
         self.vmobject_fill_program["light_source_position"] = (-10, 10, 10)
         # TODO: convert to singular 4x4 matrix after getting *something* to render
         # self.vmobject_fill_program['view'].value = camera.get_view()?
-        self.vmobject_stroke_program["is_fixed_in_frame"].value = 0.0
-        self.vmobject_stroke_program["anti_alias_width"].value = 1.0
-        self.vmobject_stroke_program["frame_shape"].value = np.asarray(
-            camera.frame_shape
-        )
+        self.vmobject_stroke_program["is_fixed_in_frame"] = 0.0
+        self.vmobject_stroke_program["anti_alias_width"] = 0.01977
+        self.vmobject_stroke_program["frame_shape"] = camera.frame_shape
         # self.vmobject_stroke_program['pixel_shape'].value = camera.frame_shape
-        self.vmobject_stroke_program["focal_distance"].value = np.asarray(
-            camera.get_focal_distance()
-        )
-        self.vmobject_stroke_program["camera_center"].value = np.asarray(
-            camera.get_center()
-        )
-        self.vmobject_stroke_program["camera_rotation"].value = np.array(
-            camera.get_inverse_camera_rotation_matrix()
-        ).T.flatten()
-        self.vmobject_stroke_program["light_source_position"].value = np.array(
-            [-10, 10, 10]
-        )
+        self.vmobject_stroke_program["focal_distance"] = camera.get_focal_distance()
+        self.vmobject_stroke_program["camera_center"] = camera.get_center()
+        self.vmobject_stroke_program[
+            "camera_rotation"
+        ] = camera.get_inverse_camera_rotation_matrix().T.flatten()
+        self.vmobject_stroke_program["light_source_position"] = [-10, 10, 10]
 
     def get_stroke_shader_data(self, mob: OpenGLVMobject) -> np.ndarray:
         if not isinstance(mob.renderer_data, GLRenderData):
@@ -272,7 +264,7 @@ class OpenGLRenderer(Renderer):
         stroke_data["next_point"][:-nppc] = points[nppc:]
         stroke_data["next_point"][-nppc:] = points[:nppc]
         stroke_data["color"] = mob.renderer_data.stroke_rgbas
-        stroke_data["stroke_width"] = mob.renderer_data.stroke_widths
+        stroke_data["stroke_width"] = mob.renderer_data.stroke_widths.reshape((-1, 1))
 
         return stroke_data
 
@@ -294,7 +286,7 @@ class OpenGLRenderer(Renderer):
 
         if mob.renderer_data is None:
             # Initialize
-            # TODO: Intialize all the data also for submobjects
+            # TODO: Initialize all the data also for submobjects
             logger.debug("Initializing GLRenderData")
             mob.renderer_data = GLRenderData()
             # Generate Mesh
@@ -338,9 +330,13 @@ class OpenGLRenderer(Renderer):
         )  # TODO: This maybe breaks
         self.vmobject_stroke_program["flat_stroke"].value = mob.flat_stroke
 
-        def render_shader(prog, mob, data):
+        def render_shader(prog, mob, data, use_ibo):
             vbo = self.ctx.buffer(data.tobytes())
-            ibo = self.ctx.buffer(mob.renderer_data.vert_indices.astype("i4").tobytes())
+            ibo = (
+                self.ctx.buffer(mob.renderer_data.vert_indices.astype("i4").tobytes())
+                if use_ibo
+                else None
+            )
             # print(prog,vbo,data)
             vert_format = gl.detect_format(prog, data.dtype.names)
             # print(vert_format)
@@ -349,19 +345,31 @@ class OpenGLRenderer(Renderer):
                 content=[(vbo, vert_format, *data.dtype.names)],
                 index_buffer=ibo,
             )
-            self.target_fbo.use()
-            self.target_fbo.clear(*self.background_color)
+
             vao.render(gl.TRIANGLES)
             vbo.release()
-            ibo.release()
+            if use_ibo:
+                ibo.release()
             vao.release()
 
         # print(self.get_fill_shader_data(mob))
         self.ctx.enable(gl.BLEND)
-        self.ctx.enable(gl.DEPTH_TEST)
+        self.ctx.blend_func = (
+            gl.SRC_ALPHA,
+            gl.ONE_MINUS_SRC_ALPHA,
+            gl.ONE,
+            gl.ONE,
+        )
+        # self.ctx.enable(gl.DEPTH_TEST)
 
-        render_shader(self.vmobject_fill_program, mob, self.get_fill_shader_data(mob))
-        # render_shader(self.vmobject_stroke_program, mob, stroke_dtype, self.get_stroke_shader_data(mob))
+        self.target_fbo.use()
+        self.target_fbo.clear(*self.background_color)
+        render_shader(
+            self.vmobject_fill_program, mob, self.get_fill_shader_data(mob), True
+        )
+        render_shader(
+            self.vmobject_stroke_program, mob, self.get_stroke_shader_data(mob), False
+        )
         # print(self.target_fbo.read())
         self.ctx.copy_framebuffer(self.output_fbo, self.target_fbo)
         # Image.frombytes('RGBA', self.output_fbo.size, self.output_fbo.read(components=4), 'raw', 'RGBA', 0, -1).show()
