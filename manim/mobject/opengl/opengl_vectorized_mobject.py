@@ -10,24 +10,41 @@ import numpy as np
 
 from manim import config
 from manim.constants import *
-from manim.mobject.opengl.opengl_mobject import (UNIFORM_DTYPE, OpenGLMobject,
-                                                 OpenGLPoint)
+from manim.mobject.opengl.opengl_mobject import (
+    UNIFORM_DTYPE,
+    OpenGLMobject,
+    OpenGLPoint,
+)
 from manim.renderer.shader_wrapper import ShaderWrapper
-from manim.utils.bezier import (bezier, get_quadratic_approximation_of_cubic,
-                                get_smooth_cubic_bezier_handle_points,
-                                get_smooth_quadratic_bezier_handle_points,
-                                integer_interpolate, interpolate,
-                                inverse_interpolate,
-                                partial_quadratic_bezier_points,
-                                proportions_along_bezier_curve_for_point,
-                                quadratic_bezier_remap)
+from manim.utils.bezier import (
+    bezier,
+    get_quadratic_approximation_of_cubic,
+    get_smooth_cubic_bezier_handle_points,
+    get_smooth_quadratic_bezier_handle_points,
+    integer_interpolate,
+    interpolate,
+    inverse_interpolate,
+    partial_quadratic_bezier_points,
+    proportions_along_bezier_curve_for_point,
+    quadratic_bezier_remap,
+)
 from manim.utils.color import *
-from manim.utils.iterables import (listify, make_even, resize_array,
-                                   resize_with_interpolation)
-from manim.utils.space_ops import (angle_between_vectors, cross2d,
-                                   earclip_triangulation, get_norm,
-                                   get_unit_normal, shoelace_direction,
-                                   z_to_vector)
+from manim.utils.iterables import (
+    listify,
+    make_even,
+    resize_array,
+    resize_with_interpolation,
+    tuplify,
+)
+from manim.utils.space_ops import (
+    angle_between_vectors,
+    cross2d,
+    earclip_triangulation,
+    get_norm,
+    get_unit_normal,
+    shoelace_direction,
+    z_to_vector,
+)
 
 if TYPE_CHECKING:
     from typing import Callable, Iterable, Optional, Sequence
@@ -74,43 +91,42 @@ class OpenGLVMobject(OpenGLMobject):
 
     def __init__(
         self,
-        color: ParsableManimColor | None = None,
-        fill_color: ParsableManimColor | None = None,
-        fill_opacity: float = 0.0,
-        stroke_color: ParsableManimColor | None = None,
-        stroke_opacity: float = 1.0,
+        color: ParsableManimColor | list[ParsableManimColor] | None = None,
+        fill_color: ParsableManimColor | list[ParsableManimColor] | None = None,
+        fill_opacity: float | None = None,
+        stroke_color: ParsableManimColor | list[ParsableManimColor] | None = None,
+        stroke_opacity: float | None = None,
         stroke_width: float = DEFAULT_STROKE_WIDTH,
         draw_stroke_behind_fill: bool = False,
         background_image_file: str | None = None,
         long_lines: bool = False,
         joint_type: LineJointType = LineJointType.AUTO,
         flat_stroke: bool = False,
-        # Measured in pixel widths
-        anti_alias_width: float = 1.0,
         **kwargs,
     ):
-        self.fill_color = fill_color or color or DEFAULT_FILL_COLOR
-        self.fill_opacity = fill_opacity
-        self.stroke_color = stroke_color or color or DEFAULT_STROKE_COLOR
-        self.stroke_opacity = stroke_opacity
+        if fill_color is None:
+            fill_color = color
+        if stroke_color is None:
+            stroke_color = color
+        self.fill_color: Iterable[ManimColor] = listify(ManimColor.parse(fill_color))
+        self.set_fill(opacity=fill_opacity)
+        self.stroke_color = listify(ManimColor.parse(stroke_color))
+        self.set_stroke(opacity=stroke_opacity)
+
         self.stroke_width = stroke_width
         self.draw_stroke_behind_fill = draw_stroke_behind_fill
         self.background_image_file = background_image_file
         self.long_lines = long_lines
         self.joint_type = joint_type
         self.flat_stroke = flat_stroke
-        self.anti_alias_width = anti_alias_width
+        # TODO: Remove this because the new shader doesn't need it
+        self.anti_alias_width = 1.0
 
         self.needs_new_triangulation = True
         self.triangulation = np.zeros(0, dtype="i4")
 
         super().__init__(**kwargs)
-        self.refresh_unit_normal()
-
-        if fill_color is not None:
-            self.fill_color = ManimColor.parse(fill_color)
-        if stroke_color is not None:
-            self.stroke_color = ManimColor.parse(stroke_color)
+        # self.refresh_unit_normal()
 
     def get_group_class(self):
         return OpenGLVGroup
@@ -177,19 +193,19 @@ class OpenGLVMobject(OpenGLMobject):
 
     # Colors
     def init_colors(self):
-        self.set_fill(
-            color=self.fill_color or self.color,
-            opacity=self.fill_opacity,
-        )
-        self.set_stroke(
-            color=self.stroke_color or self.color,
-            width=self.stroke_width,
-            opacity=self.stroke_opacity,
-            background=self.draw_stroke_behind_fill,
-        )
-        self.set_gloss(self.gloss)
-        self.set_flat_stroke(self.flat_stroke)
-        self.color = self.get_color()
+        # self.set_fill(
+        #     color=self.fill_color or self.color,
+        #     opacity=self.fill_opacity,
+        # )
+        # self.set_stroke(
+        #     color=self.stroke_color or self.color,
+        #     width=self.stroke_width,
+        #     opacity=self.stroke_opacity,
+        #     background=self.draw_stroke_behind_fill,
+        # )
+        # self.set_gloss(self.gloss)
+        # self.set_flat_stroke(self.flat_stroke)
+        # self.color = self.get_color()
         return self
 
     def set_rgba_array(
@@ -209,7 +225,7 @@ class OpenGLVMobject(OpenGLMobject):
 
     def set_fill(
         self,
-        color: ParsableManimColor | None = None,
+        color: ParsableManimColor | Iterable[ParsableManimColor] | None = None,
         opacity: float | None = None,
         recurse: bool = True,
     ) -> Self:
@@ -248,7 +264,12 @@ class OpenGLVMobject(OpenGLMobject):
         --------
         :meth:`~.OpenGLVMobject.set_style`
         """
-        self.set_rgba_array_by_color(color, opacity, "fill_rgba", recurse)
+        for mob in self.get_family(recurse):
+            if color is not None:
+                mob.fill_color = listify(ManimColor.parse(color))
+            if opacity is not None:
+                for c in mob.fill_color:
+                    c.set_opacity(opacity)
         return self
 
     def set_stroke(
@@ -259,18 +280,17 @@ class OpenGLVMobject(OpenGLMobject):
         background=None,
         recurse=True,
     ):
-        self.set_rgba_array_by_color(color, opacity, "stroke_rgba", recurse)
+        for mob in self.get_family(recurse):
+            if color is not None:
+                mob.stroke_color = listify(ManimColor.parse(color))
+            if opacity is not None:
+                for c in mob.stroke_color:
+                    c.set_opacity(opacity)
 
-        if width is not None:
-            for mob in self.get_family(recurse):
-                if isinstance(width, np.ndarray):
-                    arr = width.reshape((len(width), 1))
-                else:
-                    arr = np.array([[w] for w in listify(width)], dtype=float)
-                mob.data["stroke_width"] = arr
+            if width is not None:
+                mob.stroke_width = listify(width)
 
-        if background is not None:
-            for mob in self.get_family(recurse):
+            if background is not None:
                 mob.draw_stroke_behind_fill = background
         return self
 
@@ -389,19 +409,19 @@ class OpenGLVMobject(OpenGLMobject):
 
     # Todo im not quite sure why we are doing this
     def get_fill_colors(self):
-        return [ManimColor.from_rgb(rgba[:3]) for rgba in self.fill_rgba]
+        return self.fill_color
 
     def get_fill_opacities(self) -> np.ndarray:
-        return self.data["fill_rgba"][:, 3]
+        return (c.to_rgba()[3] for c in self.fill_color)
 
     def get_stroke_colors(self):
-        return [ManimColor.from_rgb(rgba[:3]) for rgba in self.stroke_rgba]
+        return self.stroke_color
 
     def get_stroke_opacities(self) -> np.ndarray:
-        return self.data["stroke_rgba"][:, 3]
+        return (c.to_rgba()[3] for c in self.stroke_color)
 
     def get_stroke_widths(self) -> np.ndarray:
-        return self.data["stroke_width"][:, 0]
+        return self.stroke_width
 
     # TODO, it's weird for these to return the first of various lists
     # rather than the full information
@@ -434,6 +454,7 @@ class OpenGLVMobject(OpenGLMobject):
         return self.get_stroke_color()
 
     def has_stroke(self) -> bool:
+        # TODO: This currently doesn't make sense needs fixing
         return any(self.data["stroke_width"]) and any(self.data["stroke_rgba"][:, 3])
 
     def has_fill(self) -> bool:

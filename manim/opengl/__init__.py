@@ -14,5 +14,4 @@ from manim.mobject.opengl.opengl_surface import *
 from manim.mobject.opengl.opengl_three_dimensions import *
 from manim.mobject.opengl.opengl_vectorized_mobject import *
 
-from ..renderer.shader import *
 from ..utils.opengl import *

@@ -13,6 +13,7 @@ from typing import TYPE_CHECKING
 
 import moderngl
 import numpy as np
+from typing_extensions import TypeVar
 
 from manim import config, logger
 from manim.constants import *
@@ -23,16 +24,27 @@ from manim.renderer.shader_wrapper import ShaderWrapper, get_colormap_code
 from manim.utils.bezier import integer_interpolate, interpolate
 from manim.utils.color import *
 from manim.utils.deprecation import deprecated
+
 # from ..utils.iterables import batch_by_property
-from manim.utils.iterables import (batch_by_property, list_update, listify,
-                                   make_even, resize_array,
-                                   resize_preserving_order,
-                                   resize_with_interpolation, uniq_chain)
+from manim.utils.iterables import (
+    batch_by_property,
+    list_update,
+    listify,
+    make_even,
+    resize_array,
+    resize_preserving_order,
+    resize_with_interpolation,
+    uniq_chain,
+)
 from manim.utils.paths import straight_path
 from manim.utils.simple_functions import get_parameters
-from manim.utils.space_ops import (angle_between_vectors, angle_of_vector,
-                                   get_norm, normalize,
-                                   rotation_matrix_transpose)
+from manim.utils.space_ops import (
+    angle_between_vectors,
+    angle_of_vector,
+    get_norm,
+    normalize,
+    rotation_matrix_transpose,
+)
 
 if TYPE_CHECKING:
     from typing import Callable, Iterable, Sequence, Tuple, Union
@@ -43,6 +55,9 @@ if TYPE_CHECKING:
     NonTimeUpdater: TypeAlias = Callable[[OpenGLMobject], OpenGLMobject | None]
     Updater: TypeAlias = Union[TimeBasedUpdater, NonTimeUpdater]
     PointUpdateFunction: TypeAlias = Callable[[np.ndarray], np.ndarray]
+    from manim.renderer.renderer import RendererData
+
+    T = TypeVar("T", bound=RendererData)
 
 UNIFORM_DTYPE = np.float64
 
@@ -135,6 +150,10 @@ class OpenGLMobject:
         self.data: dict[str, np.ndarray] = {}
         self.uniforms: dict[str, float | np.ndarray] = {}
 
+        self.renderer_data: T | None = None
+        self.colors_changed: bool = False
+        self.points_changed: bool = False
+
         self.init_data()
         self.init_uniforms()
         self.init_updaters()
@@ -156,7 +175,7 @@ class OpenGLMobject:
         return self.__class__.__name__
 
     def __repr__(self):
-        return str(self.name)
+        return str(self)
 
     def __add__(self, other: OpenGLMobject) -> Self:
         if not isinstance(other, OpenGLMobject):

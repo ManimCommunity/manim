@@ -30,6 +30,7 @@ from ..utils.simple_functions import fdiv
 from ..utils.space_ops import normalize
 
 
+# TODO: This becomes the new camera in the future
 class OpenGLCameraFrame(OpenGLMobject):
     def __init__(
         self,
@@ -41,13 +42,11 @@ class OpenGLCameraFrame(OpenGLMobject):
         self.frame_shape = frame_shape
         self.center_point = center_point
         self.focal_dist_to_height = focal_dist_to_height
+        self.orientation = Rotation.identity().as_quat()
         super().__init__(**kwargs)
 
     def init_uniforms(self):
         super().init_uniforms()
-        # as a quarternion
-        self.uniforms["orientation"] = Rotation.identity().as_quat()
-        self.uniforms["focal_dist_to_height"] = self.focal_dist_to_height
 
     def init_points(self) -> None:
         self.set_points([ORIGIN, LEFT, RIGHT, DOWN, UP])
@@ -56,11 +55,11 @@ class OpenGLCameraFrame(OpenGLMobject):
         self.move_to(self.center_point)
 
     def set_orientation(self, rotation: Rotation):
-        self.uniforms["orientation"] = rotation.as_quat()
+        self.orientation = rotation.as_quat()
         return self
 
     def get_orientation(self):
-        return Rotation.from_quat(self.uniforms["orientation"])
+        return Rotation.from_quat(self.orientation)
 
     def to_default_state(self):
         self.center()
@@ -137,11 +136,11 @@ class OpenGLCameraFrame(OpenGLMobject):
         return self
 
     def set_focal_distance(self, focal_distance: float):
-        self.uniforms["focal_dist_to_height"] = focal_distance / self.get_height()
+        self.focal_dist_to_height = focal_distance / self.get_height()
         return self
 
     def set_field_of_view(self, field_of_view: float):
-        self.uniforms["focal_dist_to_height"] = 2 * math.tan(field_of_view / 2)
+        self.focal_dist_to_height = 2 * math.tan(field_of_view / 2)
         return self
 
     def get_shape(self):
@@ -160,10 +159,10 @@ class OpenGLCameraFrame(OpenGLMobject):
         return points[4, 1] - points[3, 1]
 
     def get_focal_distance(self) -> float:
-        return self.uniforms["focal_dist_to_height"] * self.get_height()  # type: ignore
+        return self.focal_dist_to_height * self.get_height()  # type: ignore
 
     def get_field_of_view(self) -> float:
-        return 2 * math.atan(self.uniforms["focal_dist_to_height"] / 2)
+        return 2 * math.atan(self.focal_dist_to_height / 2)
 
     def get_implied_camera_location(self) -> np.ndarray:
         to_camera = self.get_inverse_camera_rotation_matrix()[2]
@@ -171,6 +170,7 @@ class OpenGLCameraFrame(OpenGLMobject):
         return self.get_center() + dist * to_camera
 
 
+# TODO: This is already ported to the renderer and now is useless, leavefor now for compoatibilty reasons
 class OpenGLCamera:
     def __init__(
         self,

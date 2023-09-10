@@ -87,7 +87,7 @@ class ManimColor:
         alpha: float = 1.0,
     ) -> None:
         if value is None:
-            self._internal_value = np.array((0, 0, 0, alpha), dtype=ManimColorDType)
+            self._internal_value = np.array((1, 1, 1, alpha), dtype=ManimColorDType)
         elif isinstance(value, ManimColor):
             # logger.info(
             #     "ManimColor was passed another ManimColor. This is probably not what "
@@ -508,6 +508,29 @@ class ManimColor:
         return ManimColor(
             self._internal_value * (1 - alpha) + other._internal_value * alpha
         )
+
+    def set_opacity(self, opacity: float) -> ManimColor:
+        """Sets the alpha value for the current ManimColor
+
+        Parameters
+        ----------
+        opacity : float
+
+
+        Returns
+        -------
+        ManimColor
+            The color with the changed opacity value
+
+        Raises
+        ------
+        ValueError
+            Raises an exception if the opacity value is not in range 0 to 1
+        """
+        if opacity < 0 or opacity > 1:
+            raise ValueError(f"Alpha value is not in range 0-1 it is {opacity}")
+        self._internal_value[3] = opacity
+        return self
 
     @classmethod
     def from_rgb(

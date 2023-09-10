@@ -2,31 +2,29 @@ from abc import ABC, abstractclassmethod, abstractstaticmethod
 from typing import TYPE_CHECKING
 
 import numpy as np
+from typing_extensions import TypeAlias
 
 from manim import config
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.types.image_mobject import ImageMobject
 from manim.mobject.types.vectorized_mobject import VMobject
-from manim.scene import Scene
 
-if TYPE_CHECKING:
-    from typing import TypeAlias
-    Image : TypeAlias = np.ndarray
-
+Image: TypeAlias = np.ndarray
 
 
 class RendererData:
     pass
 
-class Renderer(ABC):
 
+class Renderer(ABC):
     def __init__(self):
         self.fbo = np.zeros((config.height, config.width))
-        self.capabilities= {
+        self.capabilities = {
             VMobject: self.render_vmobject,
             ImageMobject: self.render_imobject,
         }
 
-    def render(self, camera, renderables: [VMobject]) -> Image: # Image
+    def render(self, camera, renderables: [VMobject]) -> Image:  # Image
         for mob in renderables:
             if type(mob) in self.capabilities:
                 mob.points
@@ -36,15 +34,14 @@ class Renderer(ABC):
 
         return self.fbo.get_pixels()
 
-
     @abstractclassmethod
-    def render_vmobject(self, mob:VMobject):
+    def render_vmobject(self, mob: OpenGLVMobject) -> None:
         raise NotImplementedError
 
-    def render_mesh(self, mob):
+    def render_mesh(self, mob) -> None:
         raise NotImplementedError
 
-    def render_image(self, mob):
+    def render_image(self, mob) -> None:
         raise NotImplementedError
 
 

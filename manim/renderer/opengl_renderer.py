@@ -1,80 +1,231 @@
-import numpy as np
-from renderer import Renderer, RendererData
+import re
+from functools import lru_cache
+from pathlib import Path
+from typing import TYPE_CHECKING
 
-from manim.mobject.types.vectorized_mobject import VMobject
+import moderngl as gl
+import numpy as np
+from typing_extensions import override
+
+import manim.constants as const
+import manim.utils.color.manim_colors as color
+from manim._config import config, logger
+from manim.camera.camera import OpenGLCameraFrame
+from manim.renderer.opengl_shader_program import load_shader_program_by_folder
+from manim.renderer.renderer import Renderer, RendererData
+from manim.utils.space_ops import cross2d, earclip_triangulation, z_to_vector
+
+if TYPE_CHECKING:
+    from manim.mobject.types.vectorized_mobject import VMobject
+
+import manim.utils.color.core as c
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 
 
 class GLRenderData(RendererData):
     def __init__(self) -> None:
         super().__init__()
-        self.fill_rgbas = np.zeros((1,4))
-        self.stroke_rgbas = np.zeros((1,4))
-        self.normals = np.zeros((1,4))
-        self.mesh = np.zeros((0,3))
-        self.bounding_box = np.zeros((3,3))
+        self.fill_rgbas = np.zeros((1, 4))
+        self.stroke_rgbas = np.zeros((1, 4))
+        self.normals = np.zeros((1, 4))
+        self.orientation = None
+        self.mesh = np.zeros((0, 3))
+        self.bounding_box = np.zeros((3, 3))
+
+    def __repr__(self) -> str:
+        return f"""GLRenderData
+fill:
+{self.fill_rgbas}
+stroke:
+{self.stroke_rgbas}
+normals:
+{self.normals}
+orientation:
+{self.orientation}
+mesh:
+{self.mesh}
+bounding_box:
+{self.bounding_box}
+        """
+
+
+def get_triangulation(vmobject: OpenGLVMobject):
+    # Figure out how to triangulate the interior to know
+    # how to send the points as to the vertex shader.
+    # First triangles come directly from the points
+    points = vmobject.points
+
+    if len(points) <= 1:
+        vmobject.triangulation = np.zeros(0, dtype="i4")
+        vmobject.needs_new_triangulation = False
+        return vmobject.triangulation
+
+    normal_vector = vmobject.get_unit_normal()
+    indices = np.arange(len(points), dtype=int)
+
+    # Rotate points such that unit normal vector is OUT
+    if not np.isclose(normal_vector, const.OUT).all():
+        points = np.dot(points, z_to_vector(normal_vector))
+
+    atol = vmobject.tolerance_for_point_equality
+    end_of_loop = np.zeros(len(points) // 3, dtype=bool)
+    end_of_loop[:-1] = (np.abs(points[2:-3:3] - points[3::3]) > atol).any(1)
+    end_of_loop[-1] = True
+
+    v01s = points[1::3] - points[0::3]
+    v12s = points[2::3] - points[1::3]
+    curve_orientations = np.sign(cross2d(v01s, v12s))
+    orientation = np.transpose([curve_orientations.repeat(3)])
+
+    concave_parts = curve_orientations < 0
+
+    # These are the vertices to which we'll apply a polygon triangulation
+    inner_vert_indices = np.hstack(
+        [
+            indices[0::3],
+            indices[1::3][concave_parts],
+            indices[2::3][end_of_loop],
+        ]
+    )
+    inner_vert_indices.sort()
+    rings = np.arange(1, len(inner_vert_indices) + 1)[inner_vert_indices % 3 == 2]
+
+    # Triangulate
+    inner_verts = points[inner_vert_indices]
+    inner_tri_indices = inner_vert_indices[earclip_triangulation(inner_verts, rings)]
+
+    tri_indices = np.hstack([indices, inner_tri_indices])
+    return tri_indices, orientation
+
+
+def prepare_array(values: np.ndarray, desired_length: int):
+    """Interpolates a given list of colors to match the desired length
+
+    Parameters
+    ----------
+    values : np.ndarray
+        a 2 dimensional numpy array where values are interpolated on the y axis
+    desired_length : int
+        the desired length for the array
+
+    Returns
+    -------
+    np.ndarray
+        the interpolated array of values
+    """
+    fill_length = len(values)
+    if fill_length == 1:
+        return np.repeat(values, desired_length, axis=0)
+    xm = np.linspace(0, fill_length - 1, desired_length)
+    rgbas = []
+    for x in xm:
+        minimum = int(np.floor(x))
+        maximum = int(np.ceil(x))
+        alpha = x - minimum
+        if alpha == 0:
+            rgbas.append(values[minimum])
+            continue
+
+        val_a = values[minimum]
+        val_b = values[maximum]
+        rgbas.append(val_a * (1 - alpha) + val_b * alpha)
+    return np.array(rgbas)
+
+
+def compute_bounding_box(mob):
+    all_points = np.vstack(
+        [
+            mob.points,
+            *(m.get_bounding_box() for m in mob.get_family()[1:] if m.has_points()),
+        ],
+    )
+    if len(all_points) == 0:
+        return np.zeros((3, mob.dim))
+    else:
+        # Lower left and upper right corners
+        mins = all_points.min(0)
+        maxs = all_points.max(0)
+        mids = (mins + maxs) / 2
+        return np.array([mins, mids, maxs])
+
 
 class OpenGLRenderer(Renderer):
+    pixel_array_dtype = np.uint8
+
     def __init__(
         self,
-        ctx: moderngl.Context | None = None,
-        background_image: str | None = None,
-        frame_config: dict = {},
         pixel_width: int = config.pixel_width,
         pixel_height: int = config.pixel_height,
-        fps: int = config.frame_rate,
-        # Note: frame height and width will be resized to match the pixel aspect rati
-        background_color=BLACK,
+        samples=4,
+        background_color: c.ManimColor = color.BLACK,
         background_opacity: float = 1.0,
-        # Points in vectorized mobjects with norm greater
-        # than this value will be rescaled
-        max_allowable_norm: float = 1.0,
-        image_mode: str = "RGBA",
-        n_channels: int = 4,
-        pixel_array_dtype: type = np.uint8,
-        light_source_position: np.ndarray = np.array([-10, 10, 10]),
-        # Although vector graphics handle antialiasing fine
-        # without multisampling, for 3d scenes one might want
-        # to set samples to be greater than 0.
-        samples: int = 0,
+        background_image: str | None = None,
     ) -> None:
-        self.background_image = background_image
+        logger.debug("Initializing OpenGLRenderer")
         self.pixel_width = pixel_width
         self.pixel_height = pixel_height
-        self.fps = fps
-        self.max_allowable_norm = max_allowable_norm
-        self.image_mode = image_mode
-        self.n_channels = n_channels
-        self.pixel_array_dtype = pixel_array_dtype
-        self.light_source_position = light_source_position
         self.samples = samples
+        self.background_color = (color.BLACK,)
+        self.background_image = background_image
 
         self.rgb_max_val: float = np.iinfo(self.pixel_array_dtype).max
-        self.background_color: list[float] = list(
-            color_to_rgba(background_color, background_opacity)
+
+        # Initializing Context
+        logger.debug("Initializing OpenGL context and framebuffers")
+        self.ctx = gl.create_context(standalone=True)
+        self.target_fbo = self.ctx.simple_framebuffer(
+            (self.pixel_width, self.pixel_height), samples=self.samples
         )
-        # self.init_frame(**frame_config)
-        # self.init_context(ctx)
-        # self.init_shaders()
-        # self.init_textures()
-        # self.init_light_source()
-        # self.refresh_perspective_uniforms()
-        # A cached map from mobjects to their associated list of render groups
-        # so that these render groups are not regenerated unnecessarily for static
-        # mobjects
-        self.mob_to_render_groups: dict = {}
+        self.output_fbo = self.ctx.framebuffer(
+            color_attachments=[
+                self.ctx.renderbuffer((self.pixel_width, self.pixel_height))
+            ]
+        )
 
-    def render_vmobject(self, mob: VMobject) -> None:
-        # Should be in OpenGL renderer
-        if not mob.renderer_data:
-            # Initalization
+        # Preparing vmobject shader
+        logger.debug("Initializing Shader Programs")
+        self.vmobject_fill_program = load_shader_program_by_folder(
+            self.ctx, "quadratic_bezier_fill"
+        )
+        self.vmobject_stroke_program = load_shader_program_by_folder(
+            self.ctx, "quadratic_bezier_stroke"
+        )
+
+    @override
+    def render_vmobject(self, mob: OpenGLVMobject, camera: OpenGLCameraFrame) -> None:
+        # Setting camera uniforms
+
+        if mob.renderer_data is None:
+            # Initialize
+            # TODO: Intialize all the data also for submobjects
+            logger.debug("Initializing GLRenderData")
             mob.renderer_data = GLRenderData()
+            # Generate Mesh
+            mob.renderer_data.mesh, mob.renderer_data.orientation = get_triangulation(
+                mob
+            )
+            mesh_length = len(mob.renderer_data.mesh)
 
-        if mob.colors_changed:
-            mob.renderer_data.fill_rgbas = np.resize(mob.fill_color, (len(mob.renderer_data.mesh),4))
+            # Generate Fill Color
+            fill_color = np.array([c._internal_value for c in mob.fill_color])
+            stroke_color = np.array([c._internal_value for c in mob.stroke_color])
+            mob.renderer_data.fill_rgbas = prepare_array(fill_color, mesh_length)
+            mob.renderer_data.stroke_rgbas = prepare_array(stroke_color, mesh_length)
+            mob.renderer_data.normals = np.repeat(
+                [mob.get_unit_normal()], mesh_length, axis=0
+            )
+            mob.renderer_data.bounding_box = compute_bounding_box(mob)
 
-        if mob.points_changed:
-            if(mob.has_fill()):
-                mob.renderer_data.mesh = ... # Triangulation todo
+            # print(mob.renderer_data.mesh)
+            # print(mob.renderer_data.orientation)
+            # print(mob.points)
+
+        # if mob.colors_changed:
+        #     mob.renderer_data.fill_rgbas = np.resize(mob.fill_color, (len(mob.renderer_data.mesh),4))
+
+        # if mob.points_changed:3357
+        #     if(mob.has_fill()):
+        #         mob.renderer_data.mesh = ... # Triangulation todo
 
         # set shader
         # use vbo
@@ -83,7 +234,8 @@ class OpenGLRenderer(Renderer):
         # set shader
         # use vbo
         # render stroke
-        self.fbo ...
+        # self.fbo ...
+
 
 #     def init_frame(self, **config) -> None:
 #         self.frame = OpenGLCameraFrame(**config)
