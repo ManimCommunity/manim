@@ -24,16 +24,10 @@ in float v_vert_index[3];
 
 out vec4 color;
 out float fill_all;
-out float uv_anti_alias_width;
 
-out vec3 xyz_coords;
 out float orientation;
-// uv space is where b0 = (0, 0), b1 = (1, 0), and transform is orthogonal
 out vec2 uv_coords;
-out vec2 uv_b2;
 out float bezier_degree;
-
-vec3 unit_normal;
 
 // Analog of import for manim only
 // Comment to prevent formatting
@@ -45,12 +39,13 @@ vec3 unit_normal;
 //
 #include "../include/finalize_color.glsl"
 
+const vec2 uv_coords_arr[3] = vec2[3](vec2(0, 0), vec2(0.5, 0), vec2(1, 1));
+
 void emit_vertex_wrapper(vec3 point, int index)
 {
-    color = finalize_color(v_color[index], point, unit_normal, light_source_position, camera_position, reflectiveness,
-                           gloss, shadow);
-    xyz_coords = point;
-    gl_Position = get_gl_Position(xyz_coords);
+    color = finalize_color(v_color[index], point, v_global_unit_normal[index], light_source_position, gloss, shadow);
+    gl_Position = get_gl_Position(point);
+    uv_coords = uv_coords_arr[index];
     EmitVertex();
 }
 
@@ -59,52 +54,6 @@ void emit_simple_triangle()
     for (int i = 0; i < 3; i++)
     {
         emit_vertex_wrapper(bp[i], i);
-    }
-    EndPrimitive();
-}
-
-void emit_pentagon(vec3[3] points, vec3 normal)
-{
-    vec3 p0 = points[0];
-    vec3 p1 = points[1];
-    vec3 p2 = points[2];
-    // Tangent vectors
-    vec3 t01 = normalize(p1 - p0);
-    vec3 t12 = normalize(p2 - p1);
-    // Vectors perpendicular to the curve in the plane of the curve pointing
-    // outside the curve
-    vec3 p0_perp = cross(t01, normal);
-    vec3 p2_perp = cross(t12, normal);
-
-    bool fill_inside = orientation > 0.0;
-    float aaw = anti_alias_width * frame_shape.y / pixel_shape.y;
-    vec3 corners[5];
-    if (bezier_degree == 1.0)
-    {
-        // For straight lines, buff out in both directions
-        corners = vec3[5](p0 + aaw * p0_perp, p0 - aaw * p0_perp, p1 + 0.5 * aaw * (p0_perp + p2_perp),
-                          p2 - aaw * p2_perp, p2 + aaw * p2_perp);
-    }
-    else if (fill_inside)
-    {
-        // If curved, and filling insight, just buff out away interior
-        corners = vec3[5](p0 + aaw * p0_perp, p0, p1 + 0.5 * aaw * (p0_perp + p2_perp), p2, p2 + aaw * p2_perp);
-    }
-    else
-    {
-        corners = vec3[5](p0, p0 - aaw * p0_perp, p1, p2 - aaw * p2_perp, p2);
-    }
-
-    mat4 xyz_to_uv = get_xyz_to_uv(p0, p1, normal);
-    uv_b2 = (xyz_to_uv * vec4(p2, 1)).xy;
-    uv_anti_alias_width = aaw / length(p1 - p0);
-
-    for (int i = 0; i < 5; i++)
-    {
-        vec3 corner = corners[i];
-        uv_coords = (xyz_to_uv * vec4(corner, 1)).xy;
-        int j = int(sign(i - 1) + 1); // Maps i = [0, 1, 2, 3, 4] onto j = [0, 0, 1, 2, 2]
-        emit_vertex_wrapper(corner, j);
     }
     EndPrimitive();
 }
@@ -127,7 +76,7 @@ void main()
 
     if (bezier_degree >= 1)
     {
-        emit_pentagon(new_bp, unit_normal);
+        emit_simple_triangle();
     }
     // Don't emit any vertices for bezier_degree 0
 }
