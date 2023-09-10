@@ -69,35 +69,43 @@ bounding_box:
         """
 
 
-def get_triangulation(vmobject: OpenGLVMobject):
+def get_triangulation(self, normal_vector=None):
     # Figure out how to triangulate the interior to know
     # how to send the points as to the vertex shader.
     # First triangles come directly from the points
-    points = vmobject.points
+    if normal_vector is None:
+        normal_vector = self.get_unit_normal()
+
+    if not self.needs_new_triangulation:
+        return self.triangulation
+
+    points = self.points
 
     if len(points) <= 1:
-        vmobject.triangulation = np.zeros(0, dtype="i4")
-        vmobject.needs_new_triangulation = False
-        return vmobject.triangulation
+        self.triangulation = np.zeros(0, dtype="i4")
+        self.needs_new_triangulation = False
+        return self.triangulation
 
-    normal_vector = vmobject.get_unit_normal()
+    if not np.isclose(normal_vector, const.OUT).all():
+        # Rotate points such that unit normal vector is OUT
+        points = np.dot(points, z_to_vector(normal_vector))
     indices = np.arange(len(points), dtype=int)
 
-    # Rotate points such that unit normal vector is OUT
-    if not np.isclose(normal_vector, const.OUT).all():
-        points = np.dot(points, z_to_vector(normal_vector))
+    b0s = points[0::3]
+    b1s = points[1::3]
+    b2s = points[2::3]
+    v01s = b1s - b0s
+    v12s = b2s - b1s
 
-    atol = vmobject.tolerance_for_point_equality
-    end_of_loop = np.zeros(len(points) // 3, dtype=bool)
-    end_of_loop[:-1] = (np.abs(points[2:-3:3] - points[3::3]) > atol).any(1)
+    crosses = cross2d(v01s, v12s)
+    convexities = np.sign(crosses)
+
+    atol = self.tolerance_for_point_equality
+    end_of_loop = np.zeros(len(b0s), dtype=bool)
+    end_of_loop[:-1] = (np.abs(b2s[:-1] - b0s[1:]) > atol).any(1)
     end_of_loop[-1] = True
 
-    v01s = points[1::3] - points[0::3]
-    v12s = points[2::3] - points[1::3]
-    curve_orientations = np.sign(cross2d(v01s, v12s))
-    orientation = np.transpose([curve_orientations.repeat(3)])
-
-    concave_parts = curve_orientations < 0
+    concave_parts = convexities < 0
 
     # These are the vertices to which we'll apply a polygon triangulation
     inner_vert_indices = np.hstack(
@@ -105,7 +113,7 @@ def get_triangulation(vmobject: OpenGLVMobject):
             indices[0::3],
             indices[1::3][concave_parts],
             indices[2::3][end_of_loop],
-        ]
+        ],
     )
     inner_vert_indices.sort()
     rings = np.arange(1, len(inner_vert_indices) + 1)[inner_vert_indices % 3 == 2]
@@ -115,7 +123,9 @@ def get_triangulation(vmobject: OpenGLVMobject):
     inner_tri_indices = inner_vert_indices[earclip_triangulation(inner_verts, rings)]
 
     tri_indices = np.hstack([indices, inner_tri_indices])
-    return tri_indices, orientation
+    self.triangulation = tri_indices
+    self.needs_new_triangulation = False
+    return tri_indices
 
 
 def prepare_array(values: np.ndarray, desired_length: int):
@@ -288,10 +298,7 @@ class OpenGLRenderer(Renderer):
             logger.debug("Initializing GLRenderData")
             mob.renderer_data = GLRenderData()
             # Generate Mesh
-            (
-                mob.renderer_data.vert_indices,
-                mob.renderer_data.orientation,
-            ) = get_triangulation(mob)
+            mob.renderer_data.vert_indices = get_triangulation(mob)
             points_length = len(mob.points)
 
             # Generate Fill Color
@@ -333,7 +340,7 @@ class OpenGLRenderer(Renderer):
 
         def render_shader(prog, mob, data):
             vbo = self.ctx.buffer(data.tobytes())
-            ibo = self.ctx.buffer(mob.renderer_data.vert_indices)
+            ibo = self.ctx.buffer(mob.renderer_data.vert_indices.astype("i4").tobytes())
             # print(prog,vbo,data)
             vert_format = gl.detect_format(prog, data.dtype.names)
             # print(vert_format)
