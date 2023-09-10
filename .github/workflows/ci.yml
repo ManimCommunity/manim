@@ -159,23 +159,6 @@ jobs:
           mkdir control_output
           poetry run python -m pytest --show_diff
 
-      - name: Upload PNGs as Artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: control-output-pngs
-          path: control_output
-
-      - name: Comment Test
-        uses: actions/github-script@v6
-        with:
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: '👋 Thanks for reporting!'
-            })
-
       - name: Run module doctests
         run: |
           poetry run python -m pytest -v --cov-append --ignore-glob="*opengl*" --doctest-modules manim
