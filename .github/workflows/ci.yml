@@ -156,8 +156,7 @@ jobs:
 
       - name: Run tests
         run: |
-          mkdir control_output
-          poetry run python -m pytest --show_diff
+          poetry run python -m pytest
 
       - name: Run module doctests
         run: |
