@@ -25,6 +25,7 @@ class Renderer(ABC):
         ]
 
     def render(self, camera, renderables: list[OpenGLVMobject]) -> ImageType:  # Image
+        self.pre_render(camera)
         for mob in renderables:
             for type, render_func in self.capabilities:
                 if isinstance(mob, type):
@@ -34,8 +35,14 @@ class Renderer(ABC):
                 logger.warn(
                     f"The type{type(mob)} is not supported in Renderer: {self.__class__}"
                 )
-
+        self.post_render()
         return self.get_pixels()
+
+    def pre_render(self, camera):
+        raise NotImplementedError
+
+    def post_render(self):
+        raise NotImplementedError
 
     @abstractclassmethod
     def render_vmobject(self, mob: OpenGLVMobject) -> None:

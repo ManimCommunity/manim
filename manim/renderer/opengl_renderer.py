@@ -228,11 +228,11 @@ class OpenGLRenderer(Renderer):
             self.ctx, "quadratic_bezier_stroke"
         )
 
-    def substitute_fbo(self):
+    def use_window_fbo(self):
         self.output_fbo.release()
         self.output_fbo = self.ctx.detect_framebuffer()
 
-    def set_camera(self, camera: OpenGLCameraFrame) -> ImageType:
+    def init_camera(self, camera: OpenGLCameraFrame) -> ImageType:
         self.vmobject_fill_program["is_fixed_in_frame"] = 0.0
         self.vmobject_fill_program["frame_shape"] = camera.frame_shape
         self.vmobject_fill_program["focal_distance"] = float(
@@ -286,17 +286,13 @@ class OpenGLRenderer(Renderer):
         fill_data["vert_index"] = np.reshape(range(len(mob.points)), (-1, 1))
         return fill_data
 
-    def render(self, camera, renderables: list[OpenGLVMobject]) -> ImageType:
-        self.set_camera(camera=camera)
+    def pre_render(self, camera):
+        self.init_camera(camera=camera)
         self.target_fbo.use()
         self.target_fbo.clear(*self.background_color)
 
-        super().render(camera, renderables)
-
+    def post_render(self):
         self.ctx.copy_framebuffer(self.output_fbo, self.target_fbo)
-        # from PIL import Image
-        # Image.frombytes('RGB', self.output_fbo.size, self.output_fbo.read(), 'raw', 'RGB', 0, -1).show()
-        return self.get_pixels()
 
     def render_vmobject(self, mob: OpenGLVMobject) -> None:
         # Setting camera uniforms
@@ -322,7 +318,7 @@ class OpenGLRenderer(Renderer):
                 [mob.get_unit_normal()], points_length, axis=0
             )
             mob.renderer_data.bounding_box = compute_bounding_box(mob)
-            print(mob.renderer_data)
+            # print(mob.renderer_data)
 
         # if mob.colors_changed:
         #     mob.renderer_data.fill_rgbas = np.resize(mob.fill_color, (len(mob.renderer_data.mesh),4))

@@ -1,8 +1,10 @@
 import time
 
 from PIL import Image
+import pyglet
 from pyglet.gl import Config
 from pyglet.window import Window
+from pyglet import shapes
 
 import manim.utils.color.manim_colors as col
 from manim._config import tempconfig
@@ -14,10 +16,12 @@ from manim.mobject.logo import ManimBanner
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.renderer.opengl_renderer import OpenGLRenderer
 
+
 if __name__ == "__main__":
     with tempconfig({"renderer": "opengl"}):
         win = Window(width=1920, height=1080)
         renderer = OpenGLRenderer(1920, 1080)
+        renderer.use_window_fbo()
         # vm = OpenGLVMobject([col.RED, col.GREEN])
         vm = Circle(
             radius=1, stroke_color=col.YELLOW, fill_opacity=1, fill_color=col.RED
@@ -30,13 +34,42 @@ if __name__ == "__main__":
         # print(vm.stroke_color)
 
         camera = OpenGLCameraFrame()
-        renderer.set_camera(camera)
+        renderer.init_camera(camera)
 
-        image = renderer.render(camera, [vm, vm2])
+        # image = renderer.render(camera, [vm, vm2])
         # print(image.shape)
         # Image.fromarray(image,"RGBA").show()
-        for _ in range(4):
+
+        label = pyglet.text.Label('Hello, world',
+                      font_name='Times New Roman',
+                      font_size=36,
+                      x=0, y=0,
+                      anchor_x='center', anchor_y='center')
+
+        @win.event
+        def on_close():
+            win.close()
+            pass
+
+        @win.event
+        def on_mouse_motion(x, y, dx, dy):
+            vm.move_to((14.2222*(x/1920-0.5),8*(y/1080-0.5),0))
+            vm.set_color(col.RED.interpolate(col.GREEN,x/1920))
+            # print(x,y)
+
+        @win.event
+        def on_draw():
             image = renderer.render(camera, [vm, vm2])
+            pass
+
+        @win.event
+        def on_resize(width,height):
+            pass
+
+        while True:
+            pyglet.clock.tick()
+            pyglet.app.platform_event_loop.step()
+            win.switch_to()
+            win.dispatch_event('on_draw')
             win.dispatch_events()
             win.flip()
-            time.sleep(1)
