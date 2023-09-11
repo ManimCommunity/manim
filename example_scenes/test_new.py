@@ -1,10 +1,10 @@
 import time
 
-from PIL import Image
 import pyglet
+from PIL import Image
+from pyglet import shapes
 from pyglet.gl import Config
 from pyglet.window import Window
-from pyglet import shapes
 
 import manim.utils.color.manim_colors as col
 from manim._config import tempconfig
@@ -15,7 +15,6 @@ from manim.mobject.geometry.polygram import Square
 from manim.mobject.logo import ManimBanner
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.renderer.opengl_renderer import OpenGLRenderer
-
 
 if __name__ == "__main__":
     with tempconfig({"renderer": "opengl"}):
@@ -40,11 +39,15 @@ if __name__ == "__main__":
         # print(image.shape)
         # Image.fromarray(image,"RGBA").show()
 
-        label = pyglet.text.Label('Hello, world',
-                      font_name='Times New Roman',
-                      font_size=36,
-                      x=0, y=0,
-                      anchor_x='center', anchor_y='center')
+        label = pyglet.text.Label(
+            "Hello, world",
+            font_name="Times New Roman",
+            font_size=36,
+            x=0,
+            y=0,
+            anchor_x="center",
+            anchor_y="center",
+        )
 
         @win.event
         def on_close():
@@ -53,8 +56,8 @@ if __name__ == "__main__":
 
         @win.event
         def on_mouse_motion(x, y, dx, dy):
-            vm.move_to((14.2222*(x/1920-0.5),8*(y/1080-0.5),0))
-            vm.set_color(col.RED.interpolate(col.GREEN,x/1920))
+            vm.move_to((14.2222 * (x / 1920 - 0.5), 8 * (y / 1080 - 0.5), 0))
+            vm.set_color(col.RED.interpolate(col.GREEN, x / 1920))
             # print(x,y)
 
         @win.event
@@ -63,13 +66,13 @@ if __name__ == "__main__":
             pass
 
         @win.event
-        def on_resize(width,height):
+        def on_resize(width, height):
             pass
 
         while True:
             pyglet.clock.tick()
             pyglet.app.platform_event_loop.step()
             win.switch_to()
-            win.dispatch_event('on_draw')
+            win.dispatch_event("on_draw")
             win.dispatch_events()
             win.flip()
