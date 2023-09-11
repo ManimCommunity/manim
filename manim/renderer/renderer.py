@@ -24,7 +24,7 @@ class Renderer(ABC):
             (ImageMobject, self.render_image),
         ]
 
-    def render(self, camera, renderables: list[OpenGLVMobject])->None : # Image
+    def render(self, camera, renderables: list[OpenGLVMobject]) -> None:  # Image
         self.pre_render(camera)
         for mob in renderables:
             for type, render_func in self.capabilities:

@@ -378,8 +378,8 @@ class OpenGLRenderer(Renderer):
         )
 
     def get_pixels(self) -> ImageType:
-        raw = self.output_fbo.read(components=4, dtype='f1',clamp=True) # RGBA, floats
-        buf = np.frombuffer(raw, dtype=np.uint8).reshape((1080,1920,-1))
+        raw = self.output_fbo.read(components=4, dtype="f1", clamp=True)  # RGBA, floats
+        buf = np.frombuffer(raw, dtype=np.uint8).reshape((1080, 1920, -1))
         return buf
 
 
