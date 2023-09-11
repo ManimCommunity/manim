@@ -1,10 +1,10 @@
 import time
 
-from PIL import Image
 import pyglet
+from PIL import Image
+from pyglet import shapes
 from pyglet.gl import Config
 from pyglet.window import Window
-from pyglet import shapes
 
 import manim.utils.color.manim_colors as col
 from manim._config import tempconfig
@@ -15,7 +15,6 @@ from manim.mobject.geometry.polygram import Square
 from manim.mobject.logo import ManimBanner
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.renderer.opengl_renderer import OpenGLRenderer
-
 
 if __name__ == "__main__":
     with tempconfig({"renderer": "opengl"}):
@@ -58,13 +57,13 @@ if __name__ == "__main__":
             pass
 
         @win.event
-        def on_resize(width,height):
+        def on_resize(width, height):
             pass
 
         while True:
             pyglet.clock.tick()
             pyglet.app.platform_event_loop.step()
             win.switch_to()
-            win.dispatch_event('on_draw')
+            win.dispatch_event("on_draw")
             win.dispatch_events()
             win.flip()
