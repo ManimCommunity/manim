@@ -19,9 +19,7 @@ from manim.renderer.opengl_renderer import OpenGLRenderer
 
 if __name__ == "__main__":
     with tempconfig({"renderer": "opengl"}):
-        win = Window(width=1920, height=1080)
         renderer = OpenGLRenderer(1920, 1080)
-        renderer.use_window_fbo()
         # vm = OpenGLVMobject([col.RED, col.GREEN])
         vm = Circle(
             radius=1, stroke_color=col.YELLOW, fill_opacity=1, fill_color=col.RED
@@ -36,16 +34,13 @@ if __name__ == "__main__":
         camera = OpenGLCameraFrame()
         renderer.init_camera(camera)
 
-        # image = renderer.render(camera, [vm, vm2])
-        # print(image.shape)
-        # Image.fromarray(image,"RGBA").show()
-
-        label = pyglet.text.Label('Hello, world',
-                      font_name='Times New Roman',
-                      font_size=36,
-                      x=0, y=0,
-                      anchor_x='center', anchor_y='center')
-
+        renderer.render(camera, [vm, vm2])
+        image = renderer.get_pixels()
+        print(image.shape)
+        Image.fromarray(image,'RGBA').show()
+        exit(0)
+        win = Window(width=1920, height=1080,vsync=True, config= Config(double_buffer=True,samples=4))
+        renderer.use_window_fbo()
         @win.event
         def on_close():
             win.close()
@@ -54,7 +49,7 @@ if __name__ == "__main__":
         @win.event
         def on_mouse_motion(x, y, dx, dy):
             vm.move_to((14.2222*(x/1920-0.5),8*(y/1080-0.5),0))
-            vm.set_color(col.RED.interpolate(col.GREEN,x/1920))
+            # vm.set_color(col.RED.interpolate(col.GREEN,x/1920))
             # print(x,y)
 
         @win.event

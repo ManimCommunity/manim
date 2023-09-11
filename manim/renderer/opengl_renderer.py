@@ -362,12 +362,12 @@ class OpenGLRenderer(Renderer):
             vao.release()
 
         self.ctx.enable(gl.BLEND)
-        # self.ctx.blend_func = (
-        #     gl.SRC_ALPHA,
-        #     gl.ONE_MINUS_SRC_ALPHA,
-        #     gl.ONE,
-        #     gl.ONE,
-        # )
+        self.ctx.blend_func = (
+            gl.SRC_ALPHA,
+            gl.ONE_MINUS_SRC_ALPHA,
+            gl.ONE,
+            gl.ONE,
+        )
         # self.ctx.enable(gl.DEPTH_TEST)
         # TODO: Handle Submobjects
         render_shader(
@@ -378,10 +378,8 @@ class OpenGLRenderer(Renderer):
         )
 
     def get_pixels(self) -> ImageType:
-        raw = self.output_fbo.read(components=4, dtype="f4")  # RGBA, floats
-        buf = np.frombuffer(raw, dtype="f4").reshape(
-            (self.pixel_height, self.pixel_width, 4)
-        )
+        raw = self.output_fbo.read(components=4, dtype='f1',clamp=True) # RGBA, floats
+        buf = np.frombuffer(raw, dtype=np.uint8).reshape((1080,1920,-1))
         return buf
 
 
