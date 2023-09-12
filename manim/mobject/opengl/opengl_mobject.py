@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 import copy
-from dataclasses import dataclass
 import itertools as it
 import numbers
 import os
 import pickle
 import random
 import sys
+from dataclasses import dataclass
 from functools import partialmethod, wraps
 from math import ceil
 from typing import TYPE_CHECKING
@@ -52,7 +52,9 @@ if TYPE_CHECKING:
 
     from typing_extensions import Self, TypeAlias
 
-    TimeBasedUpdater: TypeAlias = Callable[["OpenGLMobject", float], "OpenGLMobject" | None]
+    TimeBasedUpdater: TypeAlias = Callable[
+        ["OpenGLMobject", float], "OpenGLMobject" | None
+    ]
     NonTimeUpdater: TypeAlias = Callable[["OpenGLMobject"], "OpenGLMobject" | None]
     Updater: TypeAlias = Union[TimeBasedUpdater, NonTimeUpdater]
     PointUpdateFunction: TypeAlias = Callable[[np.ndarray], np.ndarray]
@@ -91,6 +93,7 @@ def affects_shader_info_id(func):
 
     return wrapper
 
+
 @dataclass
 class MobjectStatus:
     color_changed: bool = False
@@ -98,6 +101,7 @@ class MobjectStatus:
     rotation_changed: bool = False
     scale_changed: bool = False
     points_changed: bool = False
+
 
 class OpenGLMobject:
     """Mathematical Object: base class for objects that can be displayed on screen.

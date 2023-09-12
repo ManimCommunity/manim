@@ -224,23 +224,37 @@ class OpenGLRenderer(Renderer):
         self.ctx = gl.create_context()
 
         # Those are the actual buffers that are used for rendering
-        self.stencil_texture = self.ctx.texture((self.pixel_width, self.pixel_height), components=1, samples=0, dtype='f1')
-        self.stencil_buffer = self.ctx.renderbuffer((self.pixel_width, self.pixel_height), components=1, samples=0, dtype='f1')
-        self.color_buffer = self.ctx.renderbuffer((self.pixel_width, self.pixel_height), components=4,samples=0,dtype='f1')
+        self.stencil_texture = self.ctx.texture(
+            (self.pixel_width, self.pixel_height), components=1, samples=0, dtype="f1"
+        )
+        self.stencil_buffer = self.ctx.renderbuffer(
+            (self.pixel_width, self.pixel_height), components=1, samples=0, dtype="f1"
+        )
+        self.color_buffer = self.ctx.renderbuffer(
+            (self.pixel_width, self.pixel_height), components=4, samples=0, dtype="f1"
+        )
 
         # Here we create different fbos that can be reused which are basically just targets to use for rendering and copy
         # render_target_fbo is used for rendering it can write to color and stencil
         self.render_target_fbo = self.ctx.framebuffer(
-            color_attachments=[ self.color_buffer,self.stencil_buffer]
-            ,depth_attachment=self.ctx.depth_renderbuffer((self.pixel_width, self.pixel_height), samples=0)
+            color_attachments=[self.color_buffer, self.stencil_buffer],
+            depth_attachment=self.ctx.depth_renderbuffer(
+                (self.pixel_width, self.pixel_height), samples=0
+            ),
         )
 
         # this is used as source for stencil copy
-        self.stencil_buffer_fbo = self.ctx.framebuffer(color_attachments=[self.stencil_buffer])
+        self.stencil_buffer_fbo = self.ctx.framebuffer(
+            color_attachments=[self.stencil_buffer]
+        )
         # this is used as destination for stencil copy
-        self.stencil_texture_fbo = self.ctx.framebuffer(color_attachments=[self.stencil_texture])
+        self.stencil_texture_fbo = self.ctx.framebuffer(
+            color_attachments=[self.stencil_texture]
+        )
         # this is used as source for copying color to the output
-        self.color_buffer_fbo = self.ctx.framebuffer(color_attachments=[self.color_buffer])
+        self.color_buffer_fbo = self.ctx.framebuffer(
+            color_attachments=[self.color_buffer]
+        )
 
         self.output_fbo = self.ctx.framebuffer(
             color_attachments=[
@@ -266,7 +280,7 @@ class OpenGLRenderer(Renderer):
     def init_camera(self, camera: OpenGLCameraFrame):
         uniforms = dict()
         uniforms["frame_shape"] = camera.frame_shape
-        uniforms['pixel_shape'] = (self.pixel_width,self.pixel_height)
+        uniforms["pixel_shape"] = (self.pixel_width, self.pixel_height)
         uniforms["focal_distance"] = camera.get_focal_distance()
         uniforms["camera_center"] = tuple(camera.get_center())
         uniforms["camera_rotation"] = tuple(
@@ -319,9 +333,13 @@ class OpenGLRenderer(Renderer):
     def post_render(self):
         self.ctx.copy_framebuffer(self.output_fbo, self.color_buffer_fbo)
 
-    def render_program(self, prog, data, indices = None):
+    def render_program(self, prog, data, indices=None):
         vbo = self.ctx.buffer(data.tobytes())
-        ibo = self.ctx.buffer(np.asarray(indices).astype("i4").tobytes()) if indices is not None else None
+        ibo = (
+            self.ctx.buffer(np.asarray(indices).astype("i4").tobytes())
+            if indices is not None
+            else None
+        )
         # print(prog,vbo,data)
         vert_format = gl.detect_format(prog, data.dtype.names)
         # print(vert_format)
@@ -337,7 +355,7 @@ class OpenGLRenderer(Renderer):
             ibo.release()
         vao.release()
 
-    def render_vmobject(self, mob: OpenGLVMobject) -> None: #type: ignore
+    def render_vmobject(self, mob: OpenGLVMobject) -> None:  # type: ignore
         self.stencil_buffer_fbo.use()
         self.stencil_buffer_fbo.clear()
         self.render_target_fbo.use()
@@ -360,7 +378,7 @@ class OpenGLRenderer(Renderer):
             #         mob.renderer_data.mesh = ... # Triangulation todo
 
             # self.ctx.enable(gl.CULL_FACE)
-            self.ctx.enable(gl.BLEND) #type: ignore
+            self.ctx.enable(gl.BLEND)  # type: ignore
             # TODO: Because the Triangulation is messing up the normals this won't work
             # self.ctx.blend_func = (   #type: ignore
             #     gl.SRC_ALPHA,
@@ -369,40 +387,43 @@ class OpenGLRenderer(Renderer):
             #     gl.ONE,
             # )
             if sub.depth_test:
-                self.ctx.enable(gl.DEPTH_TEST) #type: ignore
+                self.ctx.enable(gl.DEPTH_TEST)  # type: ignore
             else:
-                self.ctx.disable(gl.DEPTH_TEST) #type: ignore
-
+                self.ctx.disable(gl.DEPTH_TEST)  # type: ignore
 
         num_mobs = len(mob.family_members_with_points())
-        for counter,sub in enumerate(mob.family_members_with_points()):
+        for counter, sub in enumerate(mob.family_members_with_points()):
             if not isinstance(sub.renderer_data, GLRenderData):
                 return
             uniforms = GLVMobjectManager.read_uniforms(sub)
             # uniforms['z_shift'] = counter/9
-            uniforms['index'] = (counter + 1)/num_mobs
-            self.ctx.copy_framebuffer(self.stencil_texture_fbo,self.stencil_buffer_fbo)
+            uniforms["index"] = (counter + 1) / num_mobs
+            self.ctx.copy_framebuffer(self.stencil_texture_fbo, self.stencil_buffer_fbo)
             self.stencil_texture.use(0)
-            self.vmobject_fill_program['stencil_texture'] = 0
+            self.vmobject_fill_program["stencil_texture"] = 0
             if sub.has_fill():
                 ProgramManager.write_uniforms(self.vmobject_fill_program, uniforms)
                 self.render_program(
-                    self.vmobject_fill_program, self.get_fill_shader_data(sub), sub.renderer_data.vert_indices
+                    self.vmobject_fill_program,
+                    self.get_fill_shader_data(sub),
+                    sub.renderer_data.vert_indices,
                 )
 
-        for counter,sub in enumerate(mob.family_members_with_points()):
+        for counter, sub in enumerate(mob.family_members_with_points()):
             if not isinstance(sub.renderer_data, GLRenderData):
                 return
             uniforms = GLVMobjectManager.read_uniforms(sub)
-            uniforms['index'] = (counter + 1)/num_mobs
+            uniforms["index"] = (counter + 1) / num_mobs
             # uniforms['z_shift'] = counter/9 + 1/20
-            self.ctx.copy_framebuffer(self.stencil_texture_fbo,self.stencil_buffer_fbo)
+            self.ctx.copy_framebuffer(self.stencil_texture_fbo, self.stencil_buffer_fbo)
             self.stencil_texture.use(0)
-            self.vmobject_stroke_program['stencil_texture'] = 0
+            self.vmobject_stroke_program["stencil_texture"] = 0
             if sub.has_stroke():
                 ProgramManager.write_uniforms(self.vmobject_stroke_program, uniforms)
                 self.render_program(
-                    self.vmobject_stroke_program, self.get_stroke_shader_data(sub), np.array(range(len(sub.points)))[::-1]
+                    self.vmobject_stroke_program,
+                    self.get_stroke_shader_data(sub),
+                    np.array(range(len(sub.points)))[::-1],
                 )
 
             counter += 1
@@ -415,7 +436,7 @@ class OpenGLRenderer(Renderer):
 
 class GLVMobjectManager:
     @staticmethod
-    def init_render_data(mob:OpenGLVMobject):
+    def init_render_data(mob: OpenGLVMobject):
         logger.debug("Initializing GLRenderData")
         mob.renderer_data = GLRenderData()
 
@@ -440,7 +461,7 @@ class GLVMobjectManager:
     @staticmethod
     def read_uniforms(mob: OpenGLVMobject):
         uniforms = {}
-        uniforms['reflectiveness'] = mob.reflectiveness
+        uniforms["reflectiveness"] = mob.reflectiveness
         uniforms["is_fixed_in_frame"] = float(mob.is_fixed_in_frame)
         uniforms["is_fixed_orientation"] = float(mob.is_fixed_orientation)
         uniforms["gloss"] = mob.gloss
