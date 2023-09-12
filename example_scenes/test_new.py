@@ -33,6 +33,7 @@ if __name__ == "__main__":
             (0, 0, -0.5)
         )
         vm3 = ManimBanner().set_opacity(0.5)
+        vm4 = Circle(0.5,col.GREEN).set_opacity(0.6).shift(OUT).set_fill(col.BLUE, opacity=0.2)
         # vm.set_points_as_corners([[-1920/2, 0, 0], [1920/2, 0, 0], [0, 1080/2, 0]])
         # print(vm.color)
         # print(vm.fill_color)
@@ -55,9 +56,6 @@ if __name__ == "__main__":
         )
         renderer.use_window()
 
-        vm.apply_depth_test()
-        vm2.apply_depth_test()
-        vm3.apply_depth_test()
         clock = pyglet.clock.get_default()
 
         def update_circle(dt):
@@ -94,7 +92,7 @@ if __name__ == "__main__":
 
         @win.event
         def on_draw():
-            renderer.render(camera, [vm, vm2, vm3])
+            renderer.render(camera, [vm, vm2, vm3, vm4])
             pass
 
         @win.event

@@ -136,7 +136,7 @@ class OpenGLMobject:
         texture_paths: dict[str, str] | None = None,
         is_fixed_in_frame: bool = False,
         is_fixed_orientation: bool = False,
-        depth_test: bool = False,
+        depth_test: bool = True,
         name: str | None = None,
         **kwargs,
     ):
