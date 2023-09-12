@@ -33,7 +33,12 @@ if __name__ == "__main__":
             (0, 0, -0.5)
         )
         vm3 = ManimBanner().set_opacity(0.5)
-        vm4 = Circle(0.5,col.GREEN).set_opacity(0.6).shift(OUT).set_fill(col.BLUE, opacity=0.2)
+        vm4 = (
+            Circle(0.5, col.GREEN)
+            .set_opacity(0.6)
+            .shift(OUT)
+            .set_fill(col.BLUE, opacity=0.2)
+        )
         # vm.set_points_as_corners([[-1920/2, 0, 0], [1920/2, 0, 0], [0, 1080/2, 0]])
         # print(vm.color)
         # print(vm.fill_color)
