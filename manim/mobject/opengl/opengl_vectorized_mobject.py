@@ -456,10 +456,10 @@ class OpenGLVMobject(OpenGLMobject):
 
     def has_stroke(self) -> bool:
         # TODO: This currently doesn't make sense needs fixing
-        return any(self.data["stroke_width"]) and any(self.data["stroke_rgba"][:, 3])
+        return self.stroke_width>0 and any(self.get_stroke_opacities())
 
     def has_fill(self) -> bool:
-        return any(self.data["fill_rgba"][:, 3])
+        return any(self.get_fill_opacities())
 
     def get_opacity(self) -> float:
         if self.has_fill():

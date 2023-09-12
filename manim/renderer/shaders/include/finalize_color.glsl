@@ -15,7 +15,8 @@ vec4 add_light(vec4 color,
                vec3 light_coords,
                float gloss,
                float shadow){
-    if(gloss == 0.0 && shadow == 0.0) return color;
+    if (gloss == 0.0 && shadow == 0.0 && reflectiveness == 0.0)
+        return color;
 
     // TODO, do we actually want this?  It effectively treats surfaces as two-sided
     if(unit_normal.z < 0){

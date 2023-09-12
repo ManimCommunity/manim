@@ -15,6 +15,7 @@ uniform vec3 fixed_orientation_center;
 uniform vec3 light_source_position;
 uniform float gloss;
 uniform float shadow;
+uniform float reflectiveness;
 
 in vec3 bp[3];
 in vec3 v_global_unit_normal[3];

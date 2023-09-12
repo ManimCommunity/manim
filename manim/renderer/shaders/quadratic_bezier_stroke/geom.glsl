@@ -6,8 +6,6 @@ layout (triangle_strip, max_vertices = 5) out;
 // Needed for get_gl_Position
 uniform vec2 frame_shape;
 uniform float focal_distance;
-uniform float is_fixed_in_frame;
-uniform float is_fixed_orientation;
 uniform vec3 fixed_orientation_center;
 
 uniform float anti_alias_width;
@@ -15,9 +13,12 @@ uniform float flat_stroke;
 
 //Needed for lighting
 uniform vec3 light_source_position;
-uniform float joint_type;
 uniform float gloss;
 uniform float shadow;
+uniform float joint_type;
+uniform float reflectiveness;
+uniform float is_fixed_in_frame;
+uniform float is_fixed_orientation;
 
 in vec3 bp[3];
 in vec3 prev_bp[3];
@@ -264,10 +265,7 @@ void main() {
             gloss,
             shadow
         );
-        gl_Position = vec4(
-            get_gl_Position(vec3(corners[i], 0.0)).xy,
-            get_gl_Position(controls[index_map[i]]).zw
-        );
+        gl_Position = vec4(get_gl_Position(vec3(corners[i], 0.0)).xy, get_gl_Position(controls[index_map[i]]).zw);
         EmitVertex();
     }
     EndPrimitive();

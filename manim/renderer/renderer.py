@@ -43,6 +43,9 @@ class Renderer(ABC):
     def post_render(self):
         raise NotImplementedError
 
+    def use_window(self):
+        raise NotImplementedError
+
     @abstractclassmethod
     def render_vmobject(self, mob: OpenGLVMobject) -> None:
         raise NotImplementedError

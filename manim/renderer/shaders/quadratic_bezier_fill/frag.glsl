@@ -40,4 +40,8 @@ void main() {
 #ifndef ANTI_ALIASING
     frag_color.a *= float(sdf() > 0); // No anti-aliasing
 #endif
+    if (frag_color.a <= 0.0)
+    {
+        discard;
+    }
 }

@@ -26,7 +26,6 @@ from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 
 fill_dtype = [
     ("point", np.float32, (3,)),
-    # ("orientation", np.float32, (3,)),
     ("unit_normal", np.float32, (3,)),
     ("color", np.float32, (4,)),
     ("vert_index", np.float32, (1,)),
@@ -178,6 +177,24 @@ def compute_bounding_box(mob):
         return np.array([mins, mids, maxs])
 
 
+class ProgramManager:
+    @staticmethod
+    def get_available_uniforms(prog):
+        names = []
+        for name in prog:
+            member = prog[name]
+            if isinstance(member, gl.Uniform):
+                names.append(name)
+
+    @staticmethod
+    def write_uniforms(prog, uniforms):
+        for name in prog:
+            member = prog[name]
+            if isinstance(member, gl.Uniform):
+                if name in uniforms:
+                    member.value = uniforms[name]
+
+
 class OpenGLRenderer(Renderer):
     pixel_array_dtype = np.uint8
 
@@ -198,24 +215,23 @@ class OpenGLRenderer(Renderer):
         self.samples = samples
         self.background_color = background_color.to_rgba()
         self.background_image = background_image
-
         self.rgb_max_val: float = np.iinfo(self.pixel_array_dtype).max
 
         # Initializing Context
         logger.debug("Initializing OpenGL context and framebuffers")
         self.ctx = gl.create_context()
-        self.target_fbo = self.ctx.simple_framebuffer(
-            (self.pixel_width, self.pixel_height),
-            samples=self.samples,
-            dtype="f1",
-            components=4,
+
+        self.stencil_texture = self.ctx.texture((self.pixel_width, self.pixel_height), components=4,dtype='f1')
+        self.target_fbo = self.ctx.framebuffer(
+            color_attachments=[self.ctx.renderbuffer((self.pixel_width, self.pixel_height), components=4,samples=4,dtype='f1')]
+            ,depth_attachment=self.ctx.depth_texture((self.pixel_width, self.pixel_height), samples=4)
         )
 
         self.output_fbo = self.ctx.framebuffer(
             color_attachments=[
                 self.ctx.renderbuffer(
                     (self.pixel_width, self.pixel_height), dtype="f1", components=4
-                )
+                ),
             ]
         )
 
@@ -228,33 +244,25 @@ class OpenGLRenderer(Renderer):
             self.ctx, "quadratic_bezier_stroke"
         )
 
-    def use_window_fbo(self):
+    def use_window(self):
         self.output_fbo.release()
         self.output_fbo = self.ctx.detect_framebuffer()
 
-    def init_camera(self, camera: OpenGLCameraFrame) -> ImageType:
-        self.vmobject_fill_program["is_fixed_in_frame"] = 0.0
-        self.vmobject_fill_program["frame_shape"] = camera.frame_shape
-        self.vmobject_fill_program["focal_distance"] = float(
-            camera.get_focal_distance()
-        )
-        self.vmobject_fill_program["camera_center"] = tuple(camera.get_center())
-        self.vmobject_fill_program["camera_rotation"] = tuple(
+    def init_camera(self, camera: OpenGLCameraFrame):
+        uniforms = dict()
+        uniforms["frame_shape"] = camera.frame_shape
+        uniforms['pixel_shape'] = (self.pixel_width,self.pixel_height)
+        uniforms["focal_distance"] = camera.get_focal_distance()
+        uniforms["camera_center"] = tuple(camera.get_center())
+        uniforms["camera_rotation"] = tuple(
             np.array(camera.get_inverse_camera_rotation_matrix()).T.flatten()
         )
-        self.vmobject_fill_program["light_source_position"] = (-10, 10, 10)
+        uniforms["light_source_position"] = (-10, 10, 10)
+        uniforms["anti_alias_width"] = 0.01977
         # TODO: convert to singular 4x4 matrix after getting *something* to render
         # self.vmobject_fill_program['view'].value = camera.get_view()?
-        self.vmobject_stroke_program["is_fixed_in_frame"] = 0.0
-        self.vmobject_stroke_program["anti_alias_width"] = 0.01977
-        self.vmobject_stroke_program["frame_shape"] = camera.frame_shape
-        # self.vmobject_stroke_program['pixel_shape'].value = camera.frame_shape
-        self.vmobject_stroke_program["focal_distance"] = camera.get_focal_distance()
-        self.vmobject_stroke_program["camera_center"] = camera.get_center()
-        self.vmobject_stroke_program[
-            "camera_rotation"
-        ] = camera.get_inverse_camera_rotation_matrix().T.flatten()
-        self.vmobject_stroke_program["light_source_position"] = [-10, 10, 10]
+        ProgramManager.write_uniforms(self.vmobject_fill_program, uniforms)
+        ProgramManager.write_uniforms(self.vmobject_stroke_program, uniforms)
 
     def get_stroke_shader_data(self, mob: OpenGLVMobject) -> np.ndarray:
         if not isinstance(mob.renderer_data, GLRenderData):
@@ -286,101 +294,130 @@ class OpenGLRenderer(Renderer):
         fill_data["vert_index"] = np.reshape(range(len(mob.points)), (-1, 1))
         return fill_data
 
+    def copy_frame_to_stencil(self):
+        self.stencil_texture = self.target_fbo.depth_attachment
+
     def pre_render(self, camera):
         self.init_camera(camera=camera)
         self.target_fbo.use()
         self.target_fbo.clear(*self.background_color)
+        self.copy_frame_to_stencil()
 
     def post_render(self):
         self.ctx.copy_framebuffer(self.output_fbo, self.target_fbo)
 
-    def render_vmobject(self, mob: OpenGLVMobject) -> None:
+    def render_program(self, prog, data, indices = None):
+        vbo = self.ctx.buffer(data.tobytes())
+        ibo = self.ctx.buffer(np.asarray(indices).astype("i4").tobytes()) if indices is not None else None
+        # print(prog,vbo,data)
+        vert_format = gl.detect_format(prog, data.dtype.names)
+        # print(vert_format)
+        vao = self.ctx.vertex_array(
+            program=prog,
+            content=[(vbo, vert_format, *data.dtype.names)],
+            index_buffer=ibo,
+        )
+
+        vao.render(gl.TRIANGLES)
+        vbo.release()
+        if ibo is not None:
+            ibo.release()
+        vao.release()
+
+    def render_vmobject(self, mob: OpenGLVMobject) -> None: #type: ignore
         # Setting camera uniforms
+        counter = 0
+        num_mobs = len(mob.family_members_with_points())
+        for sub in mob.family_members_with_points():
+            if sub.renderer_data is None:
+                # Initialize
+                GLVMobjectManager.init_render_data(sub)
 
-        if mob.renderer_data is None:
-            # Initialize
-            # TODO: Initialize all the data also for submobjects
-            logger.debug("Initializing GLRenderData")
-            mob.renderer_data = GLRenderData()
-            # Generate Mesh
-            mob.renderer_data.vert_indices = get_triangulation(mob)
-            points_length = len(mob.points)
+            if not isinstance(sub.renderer_data, GLRenderData):
+                return
 
-            # Generate Fill Color
-            fill_color = np.array([c._internal_value for c in mob.fill_color])
-            stroke_color = np.array([c._internal_value for c in mob.stroke_color])
-            mob.renderer_data.fill_rgbas = prepare_array(fill_color, points_length)
-            mob.renderer_data.stroke_rgbas = prepare_array(stroke_color, points_length)
-            mob.renderer_data.stroke_widths = prepare_array(
-                np.asarray(listify(mob.stroke_width)), points_length
-            )
-            mob.renderer_data.normals = np.repeat(
-                [mob.get_unit_normal()], points_length, axis=0
-            )
-            mob.renderer_data.bounding_box = compute_bounding_box(mob)
-            # print(mob.renderer_data)
+            # if mob.colors_changed:
 
-        # if mob.colors_changed:
-        #     mob.renderer_data.fill_rgbas = np.resize(mob.fill_color, (len(mob.renderer_data.mesh),4))
+            #     mob.renderer_data.fill_rgbas = np.resize(mob.fill_color, (len(mob.renderer_data.mesh),4))
 
-        # if mob.points_changed:3357
-        #     if(mob.has_fill()):
-        #         mob.renderer_data.mesh = ... # Triangulation todo
+            # if mob.points_changed:3357
+            #     if(mob.has_fill()):
+            #         mob.renderer_data.mesh = ... # Triangulation todo
 
-        # self.vmobject_fill_program['reflectiveness'].value = mob.reflectiveness
-        self.vmobject_fill_program["gloss"].value = mob.gloss
-        self.vmobject_fill_program["shadow"].value = mob.shadow
+            # self.ctx.enable(gl.CULL_FACE)
+            self.ctx.enable(gl.BLEND) #type: ignore
+            # TODO: Because the Triangulation is messing up the normals this won't work
+            # self.ctx.blend_func = (   #type: ignore
+            #     gl.SRC_ALPHA,
+            #     gl.ONE_MINUS_SRC_ALPHA,
+            #     gl.ONE,
+            #     gl.ONE,
+            # )
+            if sub.depth_test:
+                self.ctx.enable(gl.DEPTH_TEST) #type: ignore
+            else:
+                self.ctx.disable(gl.DEPTH_TEST) #type: ignore
+            uniforms = GLVMobjectManager.read_uniforms(sub)
+            uniforms['z_shift'] = counter/9
+            if sub.has_fill():
+                ProgramManager.write_uniforms(self.vmobject_fill_program, uniforms)
+                self.render_program(
+                    self.vmobject_fill_program, self.get_fill_shader_data(sub), sub.renderer_data.vert_indices
+                )
+            uniforms["z_shift"] -= 1/20
 
-        # self.vmobject_stroke_program['reflectiveness'].value = mob.reflectiveness
-        self.vmobject_stroke_program["gloss"].value = mob.gloss
-        self.vmobject_stroke_program["shadow"].value = mob.shadow
-        self.vmobject_stroke_program["joint_type"].value = float(
-            mob.joint_type.value
-        )  # TODO: This maybe breaks
-        self.vmobject_stroke_program["flat_stroke"].value = mob.flat_stroke
+            self.copy_frame_to_stencil()
+            self.stencil_texture.use(1)
+            self.vmobject_stroke_program['stencil_texture'] = 1
+            if sub.has_stroke():
+                ProgramManager.write_uniforms(self.vmobject_stroke_program, uniforms)
+                self.render_program(
+                    self.vmobject_stroke_program, self.get_stroke_shader_data(sub), np.array(range(len(sub.points)))[::-1]
+                )
 
-        def render_shader(prog, mob, data, use_ibo):
-            vbo = self.ctx.buffer(data.tobytes())
-            ibo = (
-                self.ctx.buffer(mob.renderer_data.vert_indices.astype("i4").tobytes())
-                if use_ibo
-                else None
-            )
-            # print(prog,vbo,data)
-            vert_format = gl.detect_format(prog, data.dtype.names)
-            # print(vert_format)
-            vao = self.ctx.vertex_array(
-                program=prog,
-                content=[(vbo, vert_format, *data.dtype.names)],
-                index_buffer=ibo,
-            )
-
-            vao.render(gl.TRIANGLES)
-            vbo.release()
-            if use_ibo:
-                ibo.release()
-            vao.release()
-
-        self.ctx.enable(gl.BLEND)
-        self.ctx.blend_func = (
-            gl.SRC_ALPHA,
-            gl.ONE_MINUS_SRC_ALPHA,
-            gl.ONE,
-            gl.ONE,
-        )
-        # self.ctx.enable(gl.DEPTH_TEST)
-        # TODO: Handle Submobjects
-        render_shader(
-            self.vmobject_fill_program, mob, self.get_fill_shader_data(mob), True
-        )
-        render_shader(
-            self.vmobject_stroke_program, mob, self.get_stroke_shader_data(mob), False
-        )
+            counter += 1
 
     def get_pixels(self) -> ImageType:
         raw = self.output_fbo.read(components=4, dtype="f1", clamp=True)  # RGBA, floats
         buf = np.frombuffer(raw, dtype=np.uint8).reshape((1080, 1920, -1))
         return buf
+
+
+class GLVMobjectManager:
+    @staticmethod
+    def init_render_data(mob:OpenGLVMobject):
+        logger.debug("Initializing GLRenderData")
+        mob.renderer_data = GLRenderData()
+
+        # Generate Mesh
+        mob.renderer_data.vert_indices = get_triangulation(mob)
+        points_length = len(mob.points)
+
+        # Generate Fill Color
+        fill_color = np.array([c._internal_value for c in mob.fill_color])
+        stroke_color = np.array([c._internal_value for c in mob.stroke_color])
+        mob.renderer_data.fill_rgbas = prepare_array(fill_color, points_length)
+        mob.renderer_data.stroke_rgbas = prepare_array(stroke_color, points_length)
+        mob.renderer_data.stroke_widths = prepare_array(
+            np.asarray(listify(mob.stroke_width)), points_length
+        )
+        mob.renderer_data.normals = np.repeat(
+            [mob.get_unit_normal()], points_length, axis=0
+        )
+        mob.renderer_data.bounding_box = compute_bounding_box(mob)
+        # print(mob.renderer_data)
+
+    @staticmethod
+    def read_uniforms(mob: OpenGLVMobject):
+        uniforms = {}
+        uniforms['reflectiveness'] = mob.reflectiveness
+        uniforms["is_fixed_in_frame"] = float(mob.is_fixed_in_frame)
+        uniforms["is_fixed_orientation"] = float(mob.is_fixed_orientation)
+        uniforms["gloss"] = mob.gloss
+        uniforms["shadow"] = mob.shadow
+        uniforms["flat_stroke"] = float(mob.flat_stroke)
+        uniforms["joint_type"] = float(mob.joint_type.value)
+        return uniforms
 
 
 #     def init_frame(self, **config) -> None:

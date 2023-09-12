@@ -1,6 +1,7 @@
 #version 330
 
 #include ../include/camera_uniform_declarations.glsl
+uniform vec2 pixel_shape;
 
 in vec2 uv_coords;
 in vec2 uv_b2;
@@ -15,6 +16,8 @@ in float bevel_start;
 in float bevel_end;
 in float angle_from_prev;
 in float angle_to_next;
+
+uniform sampler2D stencil_texture;
 
 in float bezier_degree;
 
@@ -83,11 +86,21 @@ float modify_distance_for_endpoints(vec2 p, float dist, float t){
 
 
 void main() {
-    if (uv_stroke_width == 0) discard;
+    if (uv_stroke_width == 0)
+        discard;
     float dist_to_curve = min_dist_to_curve(uv_coords, uv_b2, bezier_degree);
     // An sdf for the region around the curve we wish to color.
     float signed_dist = abs(dist_to_curve) - 0.5 * uv_stroke_width;
 
-    frag_color = color;
+    frag_color =
+        // TODO: The incoming texture should be the depth buffer, discard the pixel on any value this needs to be
+        // rewritten
+        vec4(texture2D(stencil_texture, vec2(gl_FragCoord.x / pixel_shape.x, gl_FragCoord.y / pixel_shape.y)).a, 0, 0,
+             1) +
+        color / 1000;
     frag_color.a *= smoothstep(0.5, -0.5, signed_dist / uv_anti_alias_width);
+    if (frag_color.a <= 0.0)
+    {
+        discard;
+    }
 }
