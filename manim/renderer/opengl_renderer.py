@@ -221,10 +221,21 @@ class OpenGLRenderer(Renderer):
         logger.debug("Initializing OpenGL context and framebuffers")
         self.ctx = gl.create_context()
 
-        self.stencil_texture = self.ctx.texture((self.pixel_width, self.pixel_height), components=4,dtype='f1')
+        self.stencil_texture = self.ctx.texture(
+            (self.pixel_width, self.pixel_height), components=4, dtype="f1"
+        )
         self.target_fbo = self.ctx.framebuffer(
-            color_attachments=[self.ctx.renderbuffer((self.pixel_width, self.pixel_height), components=4,samples=4,dtype='f1')]
-            ,depth_attachment=self.ctx.depth_texture((self.pixel_width, self.pixel_height), samples=4)
+            color_attachments=[
+                self.ctx.renderbuffer(
+                    (self.pixel_width, self.pixel_height),
+                    components=4,
+                    samples=4,
+                    dtype="f1",
+                )
+            ],
+            depth_attachment=self.ctx.depth_texture(
+                (self.pixel_width, self.pixel_height), samples=4
+            ),
         )
 
         self.output_fbo = self.ctx.framebuffer(
@@ -251,7 +262,7 @@ class OpenGLRenderer(Renderer):
     def init_camera(self, camera: OpenGLCameraFrame):
         uniforms = dict()
         uniforms["frame_shape"] = camera.frame_shape
-        uniforms['pixel_shape'] = (self.pixel_width,self.pixel_height)
+        uniforms["pixel_shape"] = (self.pixel_width, self.pixel_height)
         uniforms["focal_distance"] = camera.get_focal_distance()
         uniforms["camera_center"] = tuple(camera.get_center())
         uniforms["camera_rotation"] = tuple(
@@ -306,9 +317,13 @@ class OpenGLRenderer(Renderer):
     def post_render(self):
         self.ctx.copy_framebuffer(self.output_fbo, self.target_fbo)
 
-    def render_program(self, prog, data, indices = None):
+    def render_program(self, prog, data, indices=None):
         vbo = self.ctx.buffer(data.tobytes())
-        ibo = self.ctx.buffer(np.asarray(indices).astype("i4").tobytes()) if indices is not None else None
+        ibo = (
+            self.ctx.buffer(np.asarray(indices).astype("i4").tobytes())
+            if indices is not None
+            else None
+        )
         # print(prog,vbo,data)
         vert_format = gl.detect_format(prog, data.dtype.names)
         # print(vert_format)
@@ -324,7 +339,7 @@ class OpenGLRenderer(Renderer):
             ibo.release()
         vao.release()
 
-    def render_vmobject(self, mob: OpenGLVMobject) -> None: #type: ignore
+    def render_vmobject(self, mob: OpenGLVMobject) -> None:  # type: ignore
         # Setting camera uniforms
         counter = 0
         num_mobs = len(mob.family_members_with_points())
@@ -345,7 +360,7 @@ class OpenGLRenderer(Renderer):
             #         mob.renderer_data.mesh = ... # Triangulation todo
 
             # self.ctx.enable(gl.CULL_FACE)
-            self.ctx.enable(gl.BLEND) #type: ignore
+            self.ctx.enable(gl.BLEND)  # type: ignore
             # TODO: Because the Triangulation is messing up the normals this won't work
             # self.ctx.blend_func = (   #type: ignore
             #     gl.SRC_ALPHA,
@@ -354,25 +369,29 @@ class OpenGLRenderer(Renderer):
             #     gl.ONE,
             # )
             if sub.depth_test:
-                self.ctx.enable(gl.DEPTH_TEST) #type: ignore
+                self.ctx.enable(gl.DEPTH_TEST)  # type: ignore
             else:
-                self.ctx.disable(gl.DEPTH_TEST) #type: ignore
+                self.ctx.disable(gl.DEPTH_TEST)  # type: ignore
             uniforms = GLVMobjectManager.read_uniforms(sub)
-            uniforms['z_shift'] = counter/9
+            uniforms["z_shift"] = counter / 9
             if sub.has_fill():
                 ProgramManager.write_uniforms(self.vmobject_fill_program, uniforms)
                 self.render_program(
-                    self.vmobject_fill_program, self.get_fill_shader_data(sub), sub.renderer_data.vert_indices
+                    self.vmobject_fill_program,
+                    self.get_fill_shader_data(sub),
+                    sub.renderer_data.vert_indices,
                 )
-            uniforms["z_shift"] -= 1/20
+            uniforms["z_shift"] -= 1 / 20
 
             self.copy_frame_to_stencil()
             self.stencil_texture.use(1)
-            self.vmobject_stroke_program['stencil_texture'] = 1
+            self.vmobject_stroke_program["stencil_texture"] = 1
             if sub.has_stroke():
                 ProgramManager.write_uniforms(self.vmobject_stroke_program, uniforms)
                 self.render_program(
-                    self.vmobject_stroke_program, self.get_stroke_shader_data(sub), np.array(range(len(sub.points)))[::-1]
+                    self.vmobject_stroke_program,
+                    self.get_stroke_shader_data(sub),
+                    np.array(range(len(sub.points)))[::-1],
                 )
 
             counter += 1
@@ -385,7 +404,7 @@ class OpenGLRenderer(Renderer):
 
 class GLVMobjectManager:
     @staticmethod
-    def init_render_data(mob:OpenGLVMobject):
+    def init_render_data(mob: OpenGLVMobject):
         logger.debug("Initializing GLRenderData")
         mob.renderer_data = GLRenderData()
 
@@ -410,7 +429,7 @@ class GLVMobjectManager:
     @staticmethod
     def read_uniforms(mob: OpenGLVMobject):
         uniforms = {}
-        uniforms['reflectiveness'] = mob.reflectiveness
+        uniforms["reflectiveness"] = mob.reflectiveness
         uniforms["is_fixed_in_frame"] = float(mob.is_fixed_in_frame)
         uniforms["is_fixed_orientation"] = float(mob.is_fixed_orientation)
         uniforms["gloss"] = mob.gloss
