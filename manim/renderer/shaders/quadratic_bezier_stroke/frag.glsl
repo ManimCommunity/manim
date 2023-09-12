@@ -2,6 +2,7 @@
 
 #include ../include/camera_uniform_declarations.glsl
 uniform vec2 pixel_shape;
+uniform float index;
 
 in vec2 uv_coords;
 in vec2 uv_b2;
@@ -21,8 +22,8 @@ uniform sampler2D stencil_texture;
 
 in float bezier_degree;
 
-out vec4 frag_color;
-
+layout(location = 0) out vec4 frag_color;
+layout(location = 1) out float stencil_value;
 
 float cross2d(vec2 v, vec2 w){
     return v.x * w.y - w.x * v.y;
@@ -86,21 +87,39 @@ float modify_distance_for_endpoints(vec2 p, float dist, float t){
 
 
 void main() {
+    // Use the default value as standard output
+    gl_FragDepth = gl_FragCoord.z;
+    // Get the previous index that was written to this fragment
+    float previous_index =
+        texture2D(stencil_texture, vec2(gl_FragCoord.x / pixel_shape.x, gl_FragCoord.y / pixel_shape.y)).r;
+    // If the index is the same that means we are overlapping with the fill and crossing through so we push the stroke
+    // forward a tiny bit
+    if (previous_index < index && previous_index != 0)
+    {
+        gl_FragDepth = gl_FragCoord.z - 1.7 * index / 1000.0;
+    }
+    if (previous_index == index)
+    {
+        gl_FragDepth = gl_FragCoord.z - index / 1000.0;
+    }
+    // If the stroke is overlapping with a shape that is of higher index that means it is behind another mobject on the
+    // same plane so we discard the fragment
+    if (previous_index > index)
+    {
+        discard;
+    }
+    stencil_value = index;
     if (uv_stroke_width == 0)
         discard;
     float dist_to_curve = min_dist_to_curve(uv_coords, uv_b2, bezier_degree);
     // An sdf for the region around the curve we wish to color.
     float signed_dist = abs(dist_to_curve) - 0.5 * uv_stroke_width;
 
-    frag_color =
-        // TODO: The incoming texture should be the depth buffer, discard the pixel on any value this needs to be
-        // rewritten
-        vec4(texture2D(stencil_texture, vec2(gl_FragCoord.x / pixel_shape.x, gl_FragCoord.y / pixel_shape.y)).a, 0, 0,
-             1) +
-        color / 1000;
+    frag_color = color;
     frag_color.a *= smoothstep(0.5, -0.5, signed_dist / uv_anti_alias_width);
     if (frag_color.a <= 0.0)
     {
         discard;
     }
+    // stencil_value = 1;
 }

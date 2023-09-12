@@ -24,7 +24,7 @@ vec4 get_gl_Position(vec3 point)
             // TODO, what's the better way to do this?
             // This is to keep vertices too far out of frame from getting cut.
             // TODO This will be done by the clipping plane in the future with the transformation matrix
-            result.z -= z_shift;
+            result.z += z_shift;
             result.z *= (1.0 / 100.0);
         }
     }

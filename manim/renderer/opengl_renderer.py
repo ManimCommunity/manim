@@ -67,6 +67,7 @@ bounding_box:
         """
 
 
+# TODO: Move into GLVMobjectManager
 def get_triangulation(self, normal_vector=None):
     # Figure out how to triangulate the interior to know
     # how to send the points as to the vertex shader.
@@ -160,6 +161,7 @@ def prepare_array(values: np.ndarray, desired_length: int):
     return np.array(rgbas)
 
 
+# TODO: Move into GLVMobjectManager
 def compute_bounding_box(mob):
     all_points = np.vstack(
         [
@@ -221,11 +223,24 @@ class OpenGLRenderer(Renderer):
         logger.debug("Initializing OpenGL context and framebuffers")
         self.ctx = gl.create_context()
 
-        self.stencil_texture = self.ctx.texture((self.pixel_width, self.pixel_height), components=4,dtype='f1')
-        self.target_fbo = self.ctx.framebuffer(
-            color_attachments=[self.ctx.renderbuffer((self.pixel_width, self.pixel_height), components=4,samples=4,dtype='f1')]
-            ,depth_attachment=self.ctx.depth_texture((self.pixel_width, self.pixel_height), samples=4)
+        # Those are the actual buffers that are used for rendering
+        self.stencil_texture = self.ctx.texture((self.pixel_width, self.pixel_height), components=1, samples=0, dtype='f1')
+        self.stencil_buffer = self.ctx.renderbuffer((self.pixel_width, self.pixel_height), components=1, samples=0, dtype='f1')
+        self.color_buffer = self.ctx.renderbuffer((self.pixel_width, self.pixel_height), components=4,samples=0,dtype='f1')
+
+        # Here we create different fbos that can be reused which are basically just targets to use for rendering and copy
+        # render_target_fbo is used for rendering it can write to color and stencil
+        self.render_target_fbo = self.ctx.framebuffer(
+            color_attachments=[ self.color_buffer,self.stencil_buffer]
+            ,depth_attachment=self.ctx.depth_renderbuffer((self.pixel_width, self.pixel_height), samples=0)
         )
+
+        # this is used as source for stencil copy
+        self.stencil_buffer_fbo = self.ctx.framebuffer(color_attachments=[self.stencil_buffer])
+        # this is used as destination for stencil copy
+        self.stencil_texture_fbo = self.ctx.framebuffer(color_attachments=[self.stencil_texture])
+        # this is used as source for copying color to the output
+        self.color_buffer_fbo = self.ctx.framebuffer(color_attachments=[self.color_buffer])
 
         self.output_fbo = self.ctx.framebuffer(
             color_attachments=[
@@ -264,6 +279,7 @@ class OpenGLRenderer(Renderer):
         ProgramManager.write_uniforms(self.vmobject_fill_program, uniforms)
         ProgramManager.write_uniforms(self.vmobject_stroke_program, uniforms)
 
+    # TODO: Move into GLVMobjectManager
     def get_stroke_shader_data(self, mob: OpenGLVMobject) -> np.ndarray:
         if not isinstance(mob.renderer_data, GLRenderData):
             raise TypeError()
@@ -282,6 +298,7 @@ class OpenGLRenderer(Renderer):
 
         return stroke_data
 
+    # TODO: Move into GLVMobjectManager
     def get_fill_shader_data(self, mob: OpenGLVMobject) -> np.ndarray:
         if not isinstance(mob.renderer_data, GLRenderData):
             raise TypeError()
@@ -294,17 +311,13 @@ class OpenGLRenderer(Renderer):
         fill_data["vert_index"] = np.reshape(range(len(mob.points)), (-1, 1))
         return fill_data
 
-    def copy_frame_to_stencil(self):
-        self.stencil_texture = self.target_fbo.depth_attachment
-
     def pre_render(self, camera):
         self.init_camera(camera=camera)
-        self.target_fbo.use()
-        self.target_fbo.clear(*self.background_color)
-        self.copy_frame_to_stencil()
+        self.render_target_fbo.use()
+        self.render_target_fbo.clear(*self.background_color)
 
     def post_render(self):
-        self.ctx.copy_framebuffer(self.output_fbo, self.target_fbo)
+        self.ctx.copy_framebuffer(self.output_fbo, self.color_buffer_fbo)
 
     def render_program(self, prog, data, indices = None):
         vbo = self.ctx.buffer(data.tobytes())
@@ -325,9 +338,11 @@ class OpenGLRenderer(Renderer):
         vao.release()
 
     def render_vmobject(self, mob: OpenGLVMobject) -> None: #type: ignore
+        self.stencil_buffer_fbo.use()
+        self.stencil_buffer_fbo.clear()
+        self.render_target_fbo.use()
         # Setting camera uniforms
-        counter = 0
-        num_mobs = len(mob.family_members_with_points())
+
         for sub in mob.family_members_with_points():
             if sub.renderer_data is None:
                 # Initialize
@@ -357,18 +372,33 @@ class OpenGLRenderer(Renderer):
                 self.ctx.enable(gl.DEPTH_TEST) #type: ignore
             else:
                 self.ctx.disable(gl.DEPTH_TEST) #type: ignore
+
+
+        num_mobs = len(mob.family_members_with_points())
+        for counter,sub in enumerate(mob.family_members_with_points()):
+            if not isinstance(sub.renderer_data, GLRenderData):
+                return
             uniforms = GLVMobjectManager.read_uniforms(sub)
-            uniforms['z_shift'] = counter/9
+            # uniforms['z_shift'] = counter/9
+            uniforms['index'] = (counter + 1)/num_mobs
+            self.ctx.copy_framebuffer(self.stencil_texture_fbo,self.stencil_buffer_fbo)
+            self.stencil_texture.use(0)
+            self.vmobject_fill_program['stencil_texture'] = 0
             if sub.has_fill():
                 ProgramManager.write_uniforms(self.vmobject_fill_program, uniforms)
                 self.render_program(
                     self.vmobject_fill_program, self.get_fill_shader_data(sub), sub.renderer_data.vert_indices
                 )
-            uniforms["z_shift"] -= 1/20
 
-            self.copy_frame_to_stencil()
-            self.stencil_texture.use(1)
-            self.vmobject_stroke_program['stencil_texture'] = 1
+        for counter,sub in enumerate(mob.family_members_with_points()):
+            if not isinstance(sub.renderer_data, GLRenderData):
+                return
+            uniforms = GLVMobjectManager.read_uniforms(sub)
+            uniforms['index'] = (counter + 1)/num_mobs
+            # uniforms['z_shift'] = counter/9 + 1/20
+            self.ctx.copy_framebuffer(self.stencil_texture_fbo,self.stencil_buffer_fbo)
+            self.stencil_texture.use(0)
+            self.vmobject_stroke_program['stencil_texture'] = 0
             if sub.has_stroke():
                 ProgramManager.write_uniforms(self.vmobject_stroke_program, uniforms)
                 self.render_program(
