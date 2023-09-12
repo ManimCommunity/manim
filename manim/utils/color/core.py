@@ -529,8 +529,7 @@ class ManimColor:
         """
         if opacity < 0 or opacity > 1:
             raise ValueError(f"Alpha value is not in range 0-1 it is {opacity}")
-        self._internal_value[3] = opacity
-        return self
+        return ManimColor(self._internal_value[:3], opacity)
 
     @classmethod
     def from_rgb(

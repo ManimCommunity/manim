@@ -269,8 +269,7 @@ class OpenGLVMobject(OpenGLMobject):
             if color is not None:
                 mob.fill_color = listify(ManimColor.parse(color))
             if opacity is not None:
-                for c in mob.fill_color:
-                    c.set_opacity(opacity)
+                mob.fill_color = [c.set_opacity(opacity) for c in mob.fill_color]
         return self
 
     def set_stroke(
@@ -285,8 +284,7 @@ class OpenGLVMobject(OpenGLMobject):
             if color is not None:
                 mob.stroke_color = listify(ManimColor.parse(color))
             if opacity is not None:
-                for c in mob.stroke_color:
-                    c.set_opacity(opacity)
+                mob.stroke_color = [c.set_opacity(opacity) for c in mob.stroke_color]
 
             if width is not None:
                 mob.stroke_width = listify(width)
