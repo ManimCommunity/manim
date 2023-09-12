@@ -38,8 +38,7 @@ float sdf(){
 void main() {
     gl_FragDepth = gl_FragCoord.z;
     if (color.a == 0) discard;
-    stencil_value.xyz = vec3(index);
-    stencil_value.a = 1.0;
+
     float previous_index =
         texture2D(stencil_texture, vec2(gl_FragCoord.x / pixel_shape.x, gl_FragCoord.y / pixel_shape.y)).r;
 
@@ -54,15 +53,18 @@ void main() {
     {
         gl_FragDepth = gl_FragCoord.z - index / 1000.0;
     }
+    stencil_value.r = index;
+    stencil_value.a = 1.0;
     frag_color = color;
     if (fill_all == 1.0) return;
 #ifdef ANTI_ALIASING
-    frag_color.a *= 0.5 - sdf(); // Anti-aliasing
+    float fac = max(0.0, min(1.0, 0.5 - sdf()));
+    frag_color.a *= fac; // Anti-aliasing
 #endif
 #ifndef ANTI_ALIASING
     frag_color.a *= float(sdf() > 0); // No anti-aliasing
 #endif
-    if (frag_color.a < 0.0)
+    if (frag_color.a <= 0.0)
     {
         discard;
     }

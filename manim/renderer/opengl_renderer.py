@@ -401,7 +401,6 @@ class OpenGLRenderer(Renderer):
             if not isinstance(sub.renderer_data, GLRenderData):
                 return
             enable_depth(sub)
-            self.ctx.enable(gl.DEPTH_TEST)
             uniforms = GLVMobjectManager.read_uniforms(sub)
             # uniforms['z_shift'] = counter/9
             uniforms["index"] = (counter + 1) / num_mobs
@@ -420,7 +419,6 @@ class OpenGLRenderer(Renderer):
             if not isinstance(sub.renderer_data, GLRenderData):
                 return
             enable_depth(sub)
-            self.ctx.enable(gl.DEPTH_TEST)
             uniforms = GLVMobjectManager.read_uniforms(sub)
             uniforms["index"] = (counter + 1) / num_mobs
             # uniforms['z_shift'] = counter/9 + 1/20

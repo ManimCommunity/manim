@@ -118,7 +118,7 @@ void main() {
 
     frag_color = color;
     frag_color.a *= smoothstep(0.5, -0.5, signed_dist / uv_anti_alias_width);
-    if (frag_color.a < 0.0)
+    if (frag_color.a <= 0.0)
     {
         discard;
     }
