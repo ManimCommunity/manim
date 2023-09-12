@@ -21,13 +21,18 @@ if __name__ == "__main__":
     with tempconfig({"renderer": "opengl"}):
         renderer = OpenGLRenderer(1920, 1080, background_color=col.GRAY)
         # vm = OpenGLVMobject([col.RED, col.GREEN])
-        vm = Circle(
-            radius=1, stroke_color=col.YELLOW, fill_opacity=1, fill_color=col.RED
-        ).shift(RIGHT)
+        vm = (
+            Circle(
+                radius=1,
+                stroke_color=col.YELLOW,
+            )
+            .shift(RIGHT)
+            .set_opacity(0.5)
+        )
         vm2 = Square(stroke_color=col.GREEN, fill_opacity=0, stroke_opacity=1).move_to(
             (0, 0, -0.5)
         )
-        vm3 = ManimBanner()
+        vm3 = ManimBanner().set_opacity(0.5)
         # vm.set_points_as_corners([[-1920/2, 0, 0], [1920/2, 0, 0], [0, 1080/2, 0]])
         # print(vm.color)
         # print(vm.fill_color)
@@ -46,7 +51,7 @@ if __name__ == "__main__":
             width=1920,
             height=1080,
             vsync=True,
-            config=Config(double_buffer=True, samples=4),
+            config=Config(double_buffer=True, samples=0),
         )
         renderer.use_window()
 

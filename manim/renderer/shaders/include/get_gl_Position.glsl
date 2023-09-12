@@ -2,7 +2,7 @@
 // uniform vec2 frame_shape;
 // uniform float focal_distance;
 // uniform float is_fixed_in_frame;
-uniform float z_shift;
+// uniform float z_shift;
 const vec2 DEFAULT_FRAME_SHAPE = vec2(8.0 * 16.0 / 9.0, 8.0);
 
 float perspective_scale_factor(float z, float focal_distance)
@@ -24,7 +24,7 @@ vec4 get_gl_Position(vec3 point)
             // TODO, what's the better way to do this?
             // This is to keep vertices too far out of frame from getting cut.
             // TODO This will be done by the clipping plane in the future with the transformation matrix
-            result.z += z_shift;
+            // result.z += z_shift;
             result.z *= (1.0 / 100.0);
         }
     }

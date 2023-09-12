@@ -23,7 +23,7 @@ uniform sampler2D stencil_texture;
 in float bezier_degree;
 
 layout(location = 0) out vec4 frag_color;
-layout(location = 1) out float stencil_value;
+layout(location = 1) out vec4 stencil_value;
 
 float cross2d(vec2 v, vec2 w){
     return v.x * w.y - w.x * v.y;
@@ -88,6 +88,8 @@ float modify_distance_for_endpoints(vec2 p, float dist, float t){
 
 void main() {
     // Use the default value as standard output
+    stencil_value.xyz = vec3(index);
+    stencil_value.a = 1.0;
     gl_FragDepth = gl_FragCoord.z;
     // Get the previous index that was written to this fragment
     float previous_index =
@@ -108,7 +110,6 @@ void main() {
     {
         discard;
     }
-    stencil_value = index;
     if (uv_stroke_width == 0)
         discard;
     float dist_to_curve = min_dist_to_curve(uv_coords, uv_b2, bezier_degree);
@@ -117,9 +118,8 @@ void main() {
 
     frag_color = color;
     frag_color.a *= smoothstep(0.5, -0.5, signed_dist / uv_anti_alias_width);
-    if (frag_color.a <= 0.0)
+    if (frag_color.a < 0.0)
     {
         discard;
     }
-    // stencil_value = 1;
 }

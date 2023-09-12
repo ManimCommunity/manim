@@ -15,7 +15,7 @@ in float bezier_degree;
 uniform sampler2D stencil_texture;
 
 layout(location = 0) out vec4 frag_color;
-layout(location = 1) out float stencil_value;
+layout(location = 1) out vec4 stencil_value;
 
 #define ANTI_ALIASING
 
@@ -38,7 +38,8 @@ float sdf(){
 void main() {
     gl_FragDepth = gl_FragCoord.z;
     if (color.a == 0) discard;
-    stencil_value = index;
+    stencil_value.xyz = vec3(index);
+    stencil_value.a = 1.0;
     float previous_index =
         texture2D(stencil_texture, vec2(gl_FragCoord.x / pixel_shape.x, gl_FragCoord.y / pixel_shape.y)).r;
 
@@ -61,7 +62,7 @@ void main() {
 #ifndef ANTI_ALIASING
     frag_color.a *= float(sdf() > 0); // No anti-aliasing
 #endif
-    if (frag_color.a <= 0.0)
+    if (frag_color.a < 0.0)
     {
         discard;
     }

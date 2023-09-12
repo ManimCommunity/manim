@@ -68,15 +68,12 @@ bounding_box:
 
 
 # TODO: Move into GLVMobjectManager
-def get_triangulation(self, normal_vector=None):
+def get_triangulation(self: OpenGLVMobject, normal_vector=None):
     # Figure out how to triangulate the interior to know
     # how to send the points as to the vertex shader.
     # First triangles come directly from the points
     if normal_vector is None:
         normal_vector = self.get_unit_normal()
-
-    if not self.needs_new_triangulation:
-        return self.triangulation
 
     points = self.points
 
@@ -204,7 +201,7 @@ class OpenGLRenderer(Renderer):
         self,
         pixel_width: int = config.pixel_width,
         pixel_height: int = config.pixel_height,
-        samples=4,
+        samples=0,
         background_color: c.ManimColor = color.BLACK,
         background_opacity: float = 1.0,
         background_image: str | None = None,
@@ -228,19 +225,26 @@ class OpenGLRenderer(Renderer):
             (self.pixel_width, self.pixel_height), components=1, samples=0, dtype="f1"
         )
         self.stencil_buffer = self.ctx.renderbuffer(
-            (self.pixel_width, self.pixel_height), components=1, samples=0, dtype="f1"
+            (self.pixel_width, self.pixel_height),
+            components=1,
+            samples=samples,
+            dtype="f1",
         )
         self.color_buffer = self.ctx.renderbuffer(
-            (self.pixel_width, self.pixel_height), components=4, samples=0, dtype="f1"
+            (self.pixel_width, self.pixel_height),
+            components=4,
+            samples=samples,
+            dtype="f1",
+        )
+        self.depth_buffer = self.ctx.depth_renderbuffer(
+            (self.pixel_width, self.pixel_height), samples=samples
         )
 
         # Here we create different fbos that can be reused which are basically just targets to use for rendering and copy
         # render_target_fbo is used for rendering it can write to color and stencil
         self.render_target_fbo = self.ctx.framebuffer(
             color_attachments=[self.color_buffer, self.stencil_buffer],
-            depth_attachment=self.ctx.depth_renderbuffer(
-                (self.pixel_width, self.pixel_height), samples=0
-            ),
+            depth_attachment=self.depth_buffer,
         )
 
         # this is used as source for stencil copy
@@ -361,6 +365,21 @@ class OpenGLRenderer(Renderer):
         self.render_target_fbo.use()
         # Setting camera uniforms
 
+        self.ctx.enable(gl.BLEND)  # type: ignore
+        # TODO: Because the Triangulation is messing up the normals this won't work
+        self.ctx.blend_func = (  # type: ignore
+            gl.SRC_ALPHA,
+            gl.ONE_MINUS_SRC_ALPHA,
+            gl.ONE,
+            gl.ONE,
+        )
+
+        def enable_depth(mob):
+            if sub.depth_test:
+                self.ctx.enable(gl.DEPTH_TEST)  # type: ignore
+            else:
+                self.ctx.disable(gl.DEPTH_TEST)  # type: ignore
+
         for sub in mob.family_members_with_points():
             if sub.renderer_data is None:
                 # Initialize
@@ -377,24 +396,12 @@ class OpenGLRenderer(Renderer):
             #     if(mob.has_fill()):
             #         mob.renderer_data.mesh = ... # Triangulation todo
 
-            # self.ctx.enable(gl.CULL_FACE)
-            self.ctx.enable(gl.BLEND)  # type: ignore
-            # TODO: Because the Triangulation is messing up the normals this won't work
-            # self.ctx.blend_func = (   #type: ignore
-            #     gl.SRC_ALPHA,
-            #     gl.ONE_MINUS_SRC_ALPHA,
-            #     gl.ONE,
-            #     gl.ONE,
-            # )
-            if sub.depth_test:
-                self.ctx.enable(gl.DEPTH_TEST)  # type: ignore
-            else:
-                self.ctx.disable(gl.DEPTH_TEST)  # type: ignore
-
         num_mobs = len(mob.family_members_with_points())
         for counter, sub in enumerate(mob.family_members_with_points()):
             if not isinstance(sub.renderer_data, GLRenderData):
                 return
+            enable_depth(sub)
+            self.ctx.enable(gl.DEPTH_TEST)
             uniforms = GLVMobjectManager.read_uniforms(sub)
             # uniforms['z_shift'] = counter/9
             uniforms["index"] = (counter + 1) / num_mobs
@@ -412,6 +419,8 @@ class OpenGLRenderer(Renderer):
         for counter, sub in enumerate(mob.family_members_with_points()):
             if not isinstance(sub.renderer_data, GLRenderData):
                 return
+            enable_depth(sub)
+            self.ctx.enable(gl.DEPTH_TEST)
             uniforms = GLVMobjectManager.read_uniforms(sub)
             uniforms["index"] = (counter + 1) / num_mobs
             # uniforms['z_shift'] = counter/9 + 1/20
@@ -423,7 +432,7 @@ class OpenGLRenderer(Renderer):
                 self.render_program(
                     self.vmobject_stroke_program,
                     self.get_stroke_shader_data(sub),
-                    np.array(range(len(sub.points)))[::-1],
+                    np.array(range(len(sub.points))),
                 )
 
             counter += 1
@@ -468,6 +477,7 @@ class GLVMobjectManager:
         uniforms["shadow"] = mob.shadow
         uniforms["flat_stroke"] = float(mob.flat_stroke)
         uniforms["joint_type"] = float(mob.joint_type.value)
+        uniforms["flat_stroke"] = float(mob.flat_stroke)
         return uniforms
 
 
