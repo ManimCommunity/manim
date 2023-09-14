@@ -110,7 +110,15 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         use_svg_cache: bool = True,
         **kwargs,
     ):
-        super().__init__(color=color, stroke_color=stroke_color,stroke_opacity=stroke_opacity, stroke_width=stroke_width, fill_opacity=fill_opacity, fill_color=fill_color, **kwargs)
+        super().__init__(
+            color=color,
+            stroke_color=stroke_color,
+            stroke_opacity=stroke_opacity,
+            stroke_width=stroke_width,
+            fill_opacity=fill_opacity,
+            fill_color=fill_color,
+            **kwargs,
+        )
 
         # process keyword arguments
         self.file_name = Path(file_name) if file_name is not None else None
