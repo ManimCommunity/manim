@@ -149,7 +149,7 @@ class ManimBanner(VGroup):
         self.scale_factor = 1
 
         self.M = VMobjectFromSVGPath(MANIM_SVG_PATHS[0]).flip(cst.RIGHT).center()
-        self.M.set(stroke_width=0).scale(
+        self.M.set_stroke(width=0).scale(
             7 * cst.DEFAULT_FONT_SIZE * cst.SCALE_FACTOR_PER_FONT_POINT
         )
         self.M.set_fill(color=self.font_color, opacity=1).shift(
@@ -166,7 +166,7 @@ class ManimBanner(VGroup):
         anim = VGroup()
         for ind, path in enumerate(MANIM_SVG_PATHS[1:]):
             tex = VMobjectFromSVGPath(path).flip(cst.RIGHT).center()
-            tex.set(stroke_width=0).scale(
+            tex.set_stroke(width=0).scale(
                 cst.DEFAULT_FONT_SIZE * cst.SCALE_FACTOR_PER_FONT_POINT
             )
             if ind > 0:
