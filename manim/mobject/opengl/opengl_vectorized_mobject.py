@@ -113,8 +113,9 @@ class OpenGLVMobject(OpenGLMobject):
         self.set_fill(opacity=fill_opacity)
         self.stroke_color = listify(ManimColor.parse(stroke_color))
         self.set_stroke(opacity=stroke_opacity)
-
-        self.stroke_width = stroke_width
+        if stroke_width is None:
+            stroke_width = DEFAULT_STROKE_WIDTH
+        self.stroke_width = listify(stroke_width)
         self.draw_stroke_behind_fill = draw_stroke_behind_fill
         self.background_image_file = background_image_file
         self.long_lines = long_lines
@@ -310,10 +311,10 @@ class OpenGLVMobject(OpenGLMobject):
 
     def set_style(
         self,
-        fill_color: Color | Iterable[Color] | None = None,
+        fill_color: ParsableManimColor | Iterable[ParsableManimColor] | None = None,
         fill_opacity: float | Iterable[float] | None = None,
         fill_rgba: np.ndarray | None = None,
-        stroke_color: Color | Iterable[Color] | None = None,
+        stroke_color: ParsableManimColor | Iterable[ParsableManimColor] | None = None,
         stroke_opacity: float | Iterable[float] | None = None,
         stroke_rgba: np.ndarray | None = None,
         stroke_width: float | Iterable[float] | None = None,
@@ -324,31 +325,14 @@ class OpenGLVMobject(OpenGLMobject):
         recurse: bool = True,
     ) -> Self:
         for mob in self.get_family(recurse):
-            if fill_rgba is not None:
-                mob.data["fill_rgba"] = resize_with_interpolation(
-                    fill_rgba, len(fill_rgba)
-                )
-            else:
-                mob.set_fill(color=fill_color, opacity=fill_opacity, recurse=False)
-
-            if stroke_rgba is not None:
-                mob.data["stroke_rgba"] = resize_with_interpolation(
-                    stroke_rgba, len(stroke_rgba)
-                )
-                mob.set_stroke(
-                    width=stroke_width,
-                    background=stroke_background,
-                    recurse=False,
-                )
-            else:
-                mob.set_stroke(
-                    color=stroke_color,
-                    width=stroke_width,
-                    opacity=stroke_opacity,
-                    recurse=False,
-                    background=stroke_background,
-                )
-
+            mob.set_fill(color=fill_color, opacity=fill_opacity, recurse=False)
+            mob.set_stroke(
+                color=stroke_color,
+                width=stroke_width,
+                opacity=stroke_opacity,
+                recurse=False,
+                background=stroke_background,
+            )
             if reflectiveness is not None:
                 mob.set_reflectiveness(reflectiveness, recurse=False)
             if gloss is not None:
@@ -454,7 +438,7 @@ class OpenGLVMobject(OpenGLMobject):
 
     def has_stroke(self) -> bool:
         # TODO: This currently doesn't make sense needs fixing
-        return self.stroke_width > 0 and any(self.get_stroke_opacities())
+        return len(self.stroke_width) > 0 and any(self.get_stroke_opacities())
 
     def has_fill(self) -> bool:
         return any(self.get_fill_opacities())

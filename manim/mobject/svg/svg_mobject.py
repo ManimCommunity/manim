@@ -110,21 +110,14 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         use_svg_cache: bool = True,
         **kwargs,
     ):
-        super().__init__(color=None, stroke_color=None, fill_color=None, **kwargs)
+        super().__init__(color=color, stroke_color=stroke_color,stroke_opacity=stroke_opacity, stroke_width=stroke_width, fill_opacity=fill_opacity, fill_color=fill_color, **kwargs)
 
         # process keyword arguments
         self.file_name = Path(file_name) if file_name is not None else None
-
         self.should_center = should_center
         self.svg_height = height
         self.svg_width = width
-        self.color = color
         self.opacity = opacity
-        self.fill_color = fill_color
-        self.fill_opacity = fill_opacity
-        self.stroke_color = stroke_color
-        self.stroke_opacity = stroke_opacity
-        self.stroke_width = stroke_width
 
         if svg_default is None:
             svg_default = {
@@ -132,7 +125,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
                 "opacity": None,
                 "fill_color": None,
                 "fill_opacity": None,
-                "stroke_width": 0,
+                "stroke_width": [0],
                 "stroke_color": None,
                 "stroke_opacity": None,
             }
@@ -145,11 +138,9 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         self.init_svg_mobject(use_svg_cache=use_svg_cache)
 
         self.set_style(
-            fill_color=fill_color,
-            fill_opacity=fill_opacity,
-            stroke_color=stroke_color,
-            stroke_opacity=stroke_opacity,
-            stroke_width=stroke_width,
+            fill_color=self.fill_color,
+            stroke_color=self.stroke_color,
+            stroke_width=self.stroke_width,
         )
         self.move_into_position()
 
