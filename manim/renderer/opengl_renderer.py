@@ -268,7 +268,6 @@ class OpenGLRenderer(Renderer):
             ]
         )
 
-
         # Preparing vmobject shader
         logger.debug("Initializing Shader Programs")
         self.vmobject_fill_program = load_shader_program_by_folder(

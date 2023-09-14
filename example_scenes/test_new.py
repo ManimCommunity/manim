@@ -6,8 +6,6 @@ from PIL import Image
 from pyglet import shapes
 from pyglet.gl import Config
 from pyglet.window import Window
-from manim.mobject.text.numbers import DecimalNumber
-from manim.mobject.text.text_mobject import Text
 
 import manim.utils.color.manim_colors as col
 from manim._config import config, tempconfig
@@ -17,6 +15,8 @@ from manim.mobject.geometry.arc import Circle
 from manim.mobject.geometry.polygram import Square
 from manim.mobject.logo import ManimBanner
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+from manim.mobject.text.numbers import DecimalNumber
+from manim.mobject.text.text_mobject import Text
 from manim.renderer.opengl_renderer import OpenGLRenderer
 
 if __name__ == "__main__":
@@ -66,7 +66,7 @@ if __name__ == "__main__":
         clock = pyglet.clock.get_default()
 
         def update_circle(dt):
-            vm.move_to((np.sin(dt)*4, np.cos(dt)*4, -1))
+            vm.move_to((np.sin(dt) * 4, np.cos(dt) * 4, -1))
 
         def p2m(x, y, z):
             from manim._config import config
@@ -102,7 +102,6 @@ if __name__ == "__main__":
             fps.fix_in_frame()
             renderer.render(camera, [vm, vm2, vm3, vm4, fps])
             # update_circle(counter)
-
 
         @win.event
         def on_resize(width, height):
