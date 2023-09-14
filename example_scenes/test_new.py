@@ -6,6 +6,8 @@ from PIL import Image
 from pyglet import shapes
 from pyglet.gl import Config
 from pyglet.window import Window
+from manim.mobject.text.numbers import DecimalNumber
+from manim.mobject.text.text_mobject import Text
 
 import manim.utils.color.manim_colors as col
 from manim._config import config, tempconfig
@@ -19,6 +21,12 @@ from manim.renderer.opengl_renderer import OpenGLRenderer
 
 if __name__ == "__main__":
     with tempconfig({"renderer": "opengl"}):
+        win = Window(
+            width=1920,
+            height=1080,
+            vsync=True,
+            config=Config(double_buffer=True, samples=0),
+        )
         renderer = OpenGLRenderer(1920, 1080, background_color=col.GRAY)
         # vm = OpenGLVMobject([col.RED, col.GREEN])
         vm = (
@@ -32,7 +40,7 @@ if __name__ == "__main__":
         vm2 = Square(stroke_color=col.GREEN, fill_opacity=0, stroke_opacity=1).move_to(
             (0, 0, -0.5)
         )
-        vm3 = ManimBanner().set_opacity(0.5)
+        vm3 = ManimBanner().set_opacity(1.0)
         vm4 = (
             Circle(0.5, col.GREEN)
             .set_opacity(0.6)
@@ -53,20 +61,12 @@ if __name__ == "__main__":
         # print(image.shape)
         # Image.fromarray(image, "RGBA").show()
         # exit(0)
-        win = Window(
-            width=1920,
-            height=1080,
-            vsync=True,
-            config=Config(double_buffer=True, samples=0),
-        )
         renderer.use_window()
 
         clock = pyglet.clock.get_default()
 
         def update_circle(dt):
-            vm.move_to((np.sin(dt), np.cos(dt), -1))
-
-        clock.schedule(update_circle)
+            vm.move_to((np.sin(dt)*4, np.cos(dt)*4, -1))
 
         def p2m(x, y, z):
             from manim._config import config
@@ -97,17 +97,24 @@ if __name__ == "__main__":
 
         @win.event
         def on_draw():
-            renderer.render(camera, [vm, vm2, vm3, vm4])
-            pass
+            dt = clock.update_time()
+            fps: OpenGLVMobject = DecimalNumber(dt)
+            fps.fix_in_frame()
+            renderer.render(camera, [vm, vm2, vm3, vm4, fps])
+            # update_circle(counter)
+
 
         @win.event
         def on_resize(width, height):
-            pass
+            super(Window, win).on_resize(width, height)
 
-        while True:
-            pyglet.clock.tick()
-            pyglet.app.platform_event_loop.step()
-            win.switch_to()
-            win.dispatch_event("on_draw")
-            win.dispatch_events()
-            win.flip()
+        pyglet.app.run()
+        # while True:
+        #     pyglet.clock.tick()
+        #     pyglet.app.platform_event_loop.step()
+        #     win.switch_to()
+        #     counter += 0.01
+        #     update_circle(counter)
+        #     win.dispatch_event("on_draw")
+        #     win.dispatch_events()
+        #     win.flip()
