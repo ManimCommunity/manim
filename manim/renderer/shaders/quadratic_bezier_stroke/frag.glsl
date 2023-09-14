@@ -108,10 +108,12 @@ void main() {
     // same plane so we discard the fragment
     if (previous_index > index)
     {
+        // But for stroke transparency we shouldn't discard but move the stroke in front so it is not discarded by the depth test
+        // TODO: This is highly experimental and should later be rethought and if no good solution is found it should just be a discard;
         if (color.a == 1.0)
-        discard;
+            discard;
         else
-        gl_FragDepth = gl_FragCoord.z - 3*index / 1000.0;
+            gl_FragDepth = gl_FragCoord.z - 3*index / 1000.0;
     }
     if (uv_stroke_width == 0)
         discard;
