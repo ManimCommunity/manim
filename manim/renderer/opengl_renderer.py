@@ -201,7 +201,7 @@ class OpenGLRenderer(Renderer):
         self,
         pixel_width: int = config.pixel_width,
         pixel_height: int = config.pixel_height,
-        samples=0,
+        samples=4,
         background_color: c.ManimColor = color.BLACK,
         background_opacity: float = 1.0,
         background_image: str | None = None,
@@ -267,6 +267,7 @@ class OpenGLRenderer(Renderer):
                 ),
             ]
         )
+
 
         # Preparing vmobject shader
         logger.debug("Initializing Shader Programs")
@@ -432,8 +433,6 @@ class OpenGLRenderer(Renderer):
                     self.get_stroke_shader_data(sub),
                     np.array(range(len(sub.points))),
                 )
-
-            counter += 1
 
     def get_pixels(self) -> ImageType:
         raw = self.output_fbo.read(components=4, dtype="f1", clamp=True)  # RGBA, floats

@@ -53,7 +53,7 @@ void main() {
     {
         gl_FragDepth = gl_FragCoord.z - index / 1000.0;
     }
-    stencil_value.r = index;
+    stencil_value.rgb = vec3(index);
     stencil_value.a = 1.0;
     frag_color = color;
     if (fill_all == 1.0) return;
