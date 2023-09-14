@@ -17,10 +17,10 @@ in float bevel_start;
 in float bevel_end;
 in float angle_from_prev;
 in float angle_to_next;
+in float bezier_degree;
 
 uniform sampler2D stencil_texture;
 
-in float bezier_degree;
 
 layout(location = 0) out vec4 frag_color;
 layout(location = 1) out vec4 stencil_value;
@@ -88,7 +88,7 @@ float modify_distance_for_endpoints(vec2 p, float dist, float t){
 
 void main() {
     // Use the default value as standard output
-    stencil_value.xyz = vec3(index);
+    stencil_value.rgb = vec3(index);
     stencil_value.a = 1.0;
     gl_FragDepth = gl_FragCoord.z;
     // Get the previous index that was written to this fragment
@@ -108,7 +108,10 @@ void main() {
     // same plane so we discard the fragment
     if (previous_index > index)
     {
+        if (color.a == 1.0)
         discard;
+        else
+        gl_FragDepth = gl_FragCoord.z - 3*index / 1000.0;
     }
     if (uv_stroke_width == 0)
         discard;
