@@ -711,11 +711,11 @@ class OpenGLVMobject(OpenGLMobject):
         return self
 
     def get_bezier_tuples_from_points(self, points):
-            nppc = self.n_points_per_curve
-            remainder = len(points) % nppc
-            points = points[: len(points) - remainder]
-            points_np = np.array(points)
-            return points_np.reshape((-1, nppc, 3))
+        nppc = self.n_points_per_curve
+        remainder = len(points) % nppc
+        points = points[: len(points) - remainder]
+        points_np = np.array(points)
+        return points_np.reshape((-1, nppc, 3))
 
     def get_bezier_tuples(self):
         return self.get_bezier_tuples_from_points(self.points)
@@ -1302,7 +1302,11 @@ class OpenGLVMobject(OpenGLMobject):
             if self.has_fill():
                 tri1 = mobject1.get_triangulation()
                 tri2 = mobject2.get_triangulation()
-                if len(tri1) != len(tri2) or tri1.shape != tri2.shape or not np.all(tri1 == tri2):
+                if (
+                    len(tri1) != len(tri2)
+                    or tri1.shape != tri2.shape
+                    or not np.all(tri1 == tri2)
+                ):
                     self.refresh_triangulation()
         return self
 
