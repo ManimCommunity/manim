@@ -607,7 +607,11 @@ class OpenGLMobject:
         all_points = np.vstack(
             [
                 self.points,
-                *(mob.get_bounding_box() for mob in self.get_family()[1:] if mob.has_points()),
+                *(
+                    mob.get_bounding_box()
+                    for mob in self.get_family()[1:]
+                    if mob.has_points()
+                ),
             ],
         )
         if len(all_points) == 0:
@@ -668,7 +672,9 @@ class OpenGLMobject:
     def family_members_with_points(self):
         return [m for m in self.get_family() if m.has_points()]
 
-    def add(self, *mobjects: OpenGLMobject, update_parent: bool = False) -> OpenGLMobject:
+    def add(
+        self, *mobjects: OpenGLMobject, update_parent: bool = False
+    ) -> OpenGLMobject:
         """Add mobjects as submobjects.
 
         The mobjects are added to :attr:`submobjects`.
@@ -735,7 +741,8 @@ class OpenGLMobject:
             raise ValueError("OpenGLMobject cannot contain self")
         if any(mobjects.count(elem) > 1 for elem in mobjects):
             logger.warning(
-                "Attempted adding some Mobject as a child more than once, " "this is not possible. Repetitions are ignored.",
+                "Attempted adding some Mobject as a child more than once, "
+                "this is not possible. Repetitions are ignored.",
             )
         for mobject in mobjects:
             if not isinstance(mobject, OpenGLMobject):
@@ -783,7 +790,9 @@ class OpenGLMobject:
         self.assemble_family()
         return self
 
-    def remove(self, *mobjects: OpenGLMobject, update_parent: bool = False) -> OpenGLMobject:
+    def remove(
+        self, *mobjects: OpenGLMobject, update_parent: bool = False
+    ) -> OpenGLMobject:
         """Remove :attr:`submobjects`.
 
         The mobjects are removed from :attr:`submobjects`, if they exist.
@@ -1129,8 +1138,12 @@ class OpenGLMobject:
         mobs.extend([placeholder] * (rows * cols - len(mobs)))
         grid = [[mobs[flow_order(r, c)] for c in range(cols)] for r in range(rows)]
 
-        measured_heigths = [max(grid[r][c].height for c in range(cols)) for r in range(rows)]
-        measured_widths = [max(grid[r][c].width for r in range(rows)) for c in range(cols)]
+        measured_heigths = [
+            max(grid[r][c].height for c in range(cols)) for r in range(rows)
+        ]
+        measured_widths = [
+            max(grid[r][c].width for r in range(rows)) for c in range(cols)
+        ]
 
         # Initialize row_heights / col_widths correctly using measurements as fallback
         def init_sizes(sizes, num, measures, name):
@@ -1138,7 +1151,9 @@ class OpenGLMobject:
                 sizes = [None] * num
             if len(sizes) != num:
                 raise ValueError(f"{name} has a mismatching size.")
-            return [sizes[i] if sizes[i] is not None else measures[i] for i in range(num)]
+            return [
+                sizes[i] if sizes[i] is not None else measures[i] for i in range(num)
+            ]
 
         heights = init_sizes(row_heights, rows, measured_heigths, "row_heights")
         widths = init_sizes(col_widths, cols, measured_widths, "col_widths")
@@ -1284,7 +1299,11 @@ class OpenGLMobject:
         # Make sure any mobject or numpy array attributes are copied
         family = self.get_family()
         for attr, value in list(self.__dict__.items()):
-            if isinstance(value, OpenGLMobject) and value in family and value is not self:
+            if (
+                isinstance(value, OpenGLMobject)
+                and value in family
+                and value is not self
+            ):
                 setattr(copy_mobject, attr, value.copy())
             if isinstance(value, np.ndarray):
                 setattr(copy_mobject, attr, value.copy())
@@ -1539,7 +1558,9 @@ class OpenGLMobject:
         # Default to applying matrix about the origin, not mobjects center
         if len(kwargs) == 0:
             kwargs["about_point"] = ORIGIN
-        self.apply_points_function(lambda points: np.array([function(p) for p in points]), **kwargs)
+        self.apply_points_function(
+            lambda points: np.array([function(p) for p in points]), **kwargs
+        )
         return self
 
     def apply_function_to_position(self, function):
@@ -1558,7 +1579,9 @@ class OpenGLMobject:
         full_matrix = np.identity(self.dim)
         matrix = np.array(matrix)
         full_matrix[: matrix.shape[0], : matrix.shape[1]] = matrix
-        self.apply_points_function(lambda points: np.dot(points, full_matrix.T), **kwargs)
+        self.apply_points_function(
+            lambda points: np.dot(points, full_matrix.T), **kwargs
+        )
         return self
 
     def apply_complex_function(self, function, **kwargs):
@@ -1882,7 +1905,11 @@ class OpenGLMobject:
         if np.all(curr_vect == 0):
             raise Exception("Cannot position endpoints of closed loop")
         target_vect = np.array(end) - np.array(start)
-        axis = normalize(np.cross(curr_vect, target_vect)) if np.linalg.norm(np.cross(curr_vect, target_vect)) != 0 else OUT
+        axis = (
+            normalize(np.cross(curr_vect, target_vect))
+            if np.linalg.norm(np.cross(curr_vect, target_vect)) != 0
+            else OUT
+        )
         self.scale(
             np.linalg.norm(target_vect) / np.linalg.norm(curr_vect),
             about_point=curr_start,
@@ -1906,7 +1933,9 @@ class OpenGLMobject:
         # Color only
         if color is not None and opacity is None:
             for mob in self.get_family(recurse):
-                mob.data[name] = resize_array(mob.data[name] if name in mob.data else np.empty((1, 3)), len(rgbs))
+                mob.data[name] = resize_array(
+                    mob.data[name] if name in mob.data else np.empty((1, 3)), len(rgbs)
+                )
                 mob.data[name][:, :3] = rgbs
 
         # Opacity only
@@ -2007,7 +2036,9 @@ class OpenGLMobject:
 
     # Background rectangle
 
-    def add_background_rectangle(self, color: Colors | None = None, opacity: float = 0.75, **kwargs):
+    def add_background_rectangle(
+        self, color: Colors | None = None, opacity: float = 0.75, **kwargs
+    ):
         # TODO, this does not behave well when the mobject has points,
         # since it gets displayed on top
         """Add a BackgroundRectangle as submobject.
@@ -2039,7 +2070,9 @@ class OpenGLMobject:
         """
         from manim.mobject.geometry.shape_matchers import BackgroundRectangle
 
-        self.background_rectangle = BackgroundRectangle(self, color=color, fill_opacity=opacity, **kwargs)
+        self.background_rectangle = BackgroundRectangle(
+            self, color=color, fill_opacity=opacity, **kwargs
+        )
         self.add_to_back(self.background_rectangle)
         return self
 
@@ -2180,7 +2213,12 @@ class OpenGLMobject:
         template = self.copy()
         template.submobjects = []
         alphas = np.linspace(0, 1, n_pieces + 1)
-        return OpenGLGroup(*(template.copy().pointwise_become_partial(self, a1, a2) for a1, a2 in zip(alphas[:-1], alphas[1:])))
+        return OpenGLGroup(
+            *(
+                template.copy().pointwise_become_partial(self, a1, a2)
+                for a1, a2 in zip(alphas[:-1], alphas[1:])
+            )
+        )
 
     def get_z_index_reference_point(self):
         # TODO, better place to define default z_index_group?
@@ -2680,7 +2718,9 @@ class OpenGLMobject:
 
     def throw_error_if_no_points(self):
         if not self.has_points():
-            message = "Cannot call OpenGLMobject.{} " + "for a OpenGLMobject with no points"
+            message = (
+                "Cannot call OpenGLMobject.{} " + "for a OpenGLMobject with no points"
+            )
             caller_name = sys._getframe(1).f_code.co_name
             raise Exception(message.format(caller_name))
 
@@ -2694,7 +2734,9 @@ class OpenGLGroup(OpenGLMobject):
 
 
 class OpenGLPoint(OpenGLMobject):
-    def __init__(self, location=ORIGIN, artificial_width=1e-6, artificial_height=1e-6, **kwargs):
+    def __init__(
+        self, location=ORIGIN, artificial_width=1e-6, artificial_height=1e-6, **kwargs
+    ):
         self.artificial_width = artificial_width
         self.artificial_height = artificial_height
         super().__init__(**kwargs)
@@ -2746,7 +2788,8 @@ class _AnimationBuilder:
 
         if (self.is_chaining and has_overridden_animation) or self.overridden_animation:
             raise NotImplementedError(
-                "Method chaining is currently not supported for " "overridden animations",
+                "Method chaining is currently not supported for "
+                "overridden animations",
             )
 
         def update_target(*method_args, **method_kwargs):
