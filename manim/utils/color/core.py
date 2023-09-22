@@ -128,7 +128,7 @@ The preferred way of using these colors is by importing their constants from man
 
     >>> from manim import RED, GREEN, BLUE
     >>> print(RED)
-    '#FC6255'
+    #FC6255
 
 Note this way uses the name of the colors in UPPERCASE.
 
