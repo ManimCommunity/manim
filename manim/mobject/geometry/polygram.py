@@ -16,6 +16,7 @@ __all__ = [
 ]
 
 
+from math import ceil
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -141,7 +142,12 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
 
         return np.array(vertex_groups)
 
-    def round_corners(self, radius: float = 0.5) -> Self:
+    def round_corners(
+        self,
+        radius: float | list[float] = 0.5,
+        evenly_distribute_anchors: bool = False,
+        components_per_rounded_corner: int = 2,
+    ) -> Self:
         """Rounds off the corners of the :class:`Polygram`.
 
         Parameters

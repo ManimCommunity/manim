@@ -1021,6 +1021,8 @@ def color_gradient(
     length_of_output: int,
 ) -> list[ManimColor] | ManimColor:
     """Creates a list of colors interpolated between the input array of colors with a specific number of colors
+
+    Parameters
     ----------
     reference_colors : Sequence[ParsableManimColor]
         The colors to be interpolated between or spread apart
@@ -1034,6 +1036,7 @@ def color_gradient(
     """
     if length_of_output == 0:
         return ManimColor(reference_colors[0])
+    if len(reference_colors) == 1:
         return [ManimColor(reference_colors[0])] * length_of_output
     rgbs = list(map(color_to_rgb, reference_colors))
     alphas = np.linspace(0, (len(rgbs) - 1), length_of_output)
