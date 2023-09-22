@@ -1887,7 +1887,7 @@ class Mobject:
         return self
 
     def reduce_across_dimension(
-        self, points_func: Callable, reduce_func: Callable, dim: int
+        self, reduce_func: Callable, dim: int
     ):
         """Find the min or max value from a dimension across all points in this and submobjects."""
         assert dim >= 0 and dim <= 2
