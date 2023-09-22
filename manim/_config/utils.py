@@ -27,9 +27,9 @@ import numpy as np
 
 from .. import constants
 from ..constants import RendererType
+from ..typing import StrPath
 from ..utils.color import ManimColor
 from ..utils.tex import TexTemplate, TexTemplateFromFile
-from ..utils.tex_templates import TexTemplateLibrary
 
 
 def config_file_paths() -> list[Path]:
@@ -76,7 +76,7 @@ def config_file_paths() -> list[Path]:
 
 
 def make_config_parser(
-    custom_file: str | os.PathLike | None = None,
+    custom_file: StrPath | None = None,
 ) -> configparser.ConfigParser:
     """Make a :class:`ConfigParser` object and load any ``.cfg`` files.
 

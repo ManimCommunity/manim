@@ -44,9 +44,10 @@ __all__ = [
 
 import itertools
 import warnings
-from typing import TYPE_CHECKING, Self, TypeAlias
+from typing import TYPE_CHECKING
 
 import numpy as np
+from typing_extensions import Self, TypeAlias
 
 from manim.constants import *
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL

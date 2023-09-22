@@ -14,9 +14,10 @@ import types
 import warnings
 from functools import partialmethod, reduce
 from pathlib import Path
-from typing import TYPE_CHECKING, Callable, Iterable, Literal, Self, TypeVar
+from typing import TYPE_CHECKING, Callable, Iterable, Literal, TypeVar
 
 import numpy as np
+from typing_extensions import Self
 
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 

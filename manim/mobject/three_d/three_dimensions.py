@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pyrr import Vector3
 
-from manim.typing import Point3D, Vector
+from manim.typing import Point3D
 from manim.utils.color import BLUE, BLUE_D, BLUE_E, LIGHT_GREY, WHITE, interpolate_color
 
 __all__ = [
@@ -21,9 +21,10 @@ __all__ = [
     "Torus",
 ]
 
-from typing import Callable, Sequence, Tuple
+from typing import Any, Callable, Iterable, Sequence
 
 import numpy as np
+from typing_extensions import Self
 
 from manim import config, logger
 from manim.constants import *

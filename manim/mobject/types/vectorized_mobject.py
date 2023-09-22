@@ -22,12 +22,12 @@ from typing import (
     Iterable,
     Literal,
     Mapping,
-    Self,
     Sequence,
 )
 
 import numpy as np
 from PIL.Image import Image
+from typing_extensions import Self
 
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject

@@ -14,9 +14,10 @@ __all__ = [
     "RightAngle",
 ]
 
-from typing import TYPE_CHECKING, Self, Sequence
+from typing import TYPE_CHECKING
 
 import numpy as np
+from typing_extensions import Self
 
 from manim import config
 from manim.constants import *
