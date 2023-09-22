@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from os import PathLike
-from typing import Callable, Tuple, Union
+from typing import Callable, Tuple
 
 import numpy as np
 import numpy.typing as npt
@@ -110,5 +110,5 @@ MappingFunction: TypeAlias = Callable[[Point3D], Point3D]
 Image: TypeAlias = np.ndarray
 """An Image"""
 
-StrPath: TypeAlias = Union[str, PathLike[str]]
-StrOrBytesPath: TypeAlias = Union[str, bytes, PathLike[str], PathLike[bytes]]
+StrPath: TypeAlias = "str | PathLike[str]"
+StrOrBytesPath: TypeAlias = "str | bytes | PathLike[str] | PathLike[bytes]"
