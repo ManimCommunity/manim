@@ -1,13 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Callable, Tuple, Union
+from typing import Callable
+from os import PathLike
 
 import numpy as np
 import numpy.typing as npt
 from typing_extensions import TypeAlias
-
-if TYPE_CHECKING:
-    from .animation.animation import Animation
 
 # Color Types
 
@@ -16,16 +14,16 @@ ManimInt: TypeAlias = np.int64
 ManimColorDType: TypeAlias = ManimFloat
 
 RGB_Array_Float: TypeAlias = npt.NDArray[ManimFloat]
-RGB_Tuple_Float: TypeAlias = Tuple[float, float, float]
+RGB_Tuple_Float: TypeAlias = tuple[float, float, float]
 
 RGB_Array_Int: TypeAlias = npt.NDArray[ManimInt]
-RGB_Tuple_Int: TypeAlias = Tuple[int, int, int]
+RGB_Tuple_Int: TypeAlias = tuple[int, int, int]
 
 RGBA_Array_Float: TypeAlias = npt.NDArray[ManimFloat]
-RGBA_Tuple_Float: TypeAlias = Tuple[float, float, float, float]
+RGBA_Tuple_Float: TypeAlias = tuple[float, float, float, float]
 
 RGBA_Array_Int: TypeAlias = npt.NDArray[ManimInt]
-RGBA_Tuple_Int: TypeAlias = Tuple[int, int, int, int]
+RGBA_Tuple_Int: TypeAlias = tuple[int, int, int, int]
 
 HSV_Array_Float: TypeAlias = RGB_Array_Float
 HSV_Tuple_Float: TypeAlias = RGB_Tuple_Float
@@ -111,3 +109,6 @@ MappingFunction: TypeAlias = Callable[[Point3D], Point3D]
 
 Image: TypeAlias = np.ndarray
 """An Image"""
+
+StrPath: TypeAlias = str | PathLike[str]
+StrOrBytesPath: TypeAlias = str | bytes | PathLike[str] | PathLike[bytes]

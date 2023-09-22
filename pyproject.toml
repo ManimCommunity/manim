@@ -111,11 +111,6 @@ allow-prereleases = false
 python = "^3.6"
 markers = "platform_python_implementation == 'CPython'"
 
-
-[tool.poetry.group.dev.dependencies]
-mypy = "^0.991"
-types-tqdm = "^4.64.7.9"
-
 [tool.pytest.ini_options]
 markers = "slow: Mark the test as slow. Can be skipped with --skip_slow"
 addopts = "--no-cov-on-fail --cov=manim --cov-report xml --cov-report term -n auto --dist=loadfile --durations=0"

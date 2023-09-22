@@ -156,10 +156,10 @@ import colorsys
 # logger = _config.logger
 import random
 import re
-from typing import Any, Sequence, Union
+from typing import Any, Sequence, Union, overload
 
 import numpy as np
-from typing_extensions import TypeAlias
+from typing_extensions import Self, TypeAlias
 
 from manim.typing import (
     HSV_Array_Float,
@@ -223,7 +223,7 @@ class ManimColor:
 
     def __init__(
         self,
-        value: ParsableManimColor,
+        value: ParsableManimColor | None,
         alpha: float = 1.0,
     ) -> None:
         if value is None:
@@ -654,7 +654,7 @@ class ManimColor:
         cls,
         rgb: RGB_Array_Float | RGB_Tuple_Float | RGB_Array_Int | RGB_Tuple_Int,
         alpha: float = 1.0,
-    ) -> ManimColor:
+    ) -> Self:
         """Creates a ManimColor from an RGB Array. Automagically decides which type it is int/float
 
         .. warning::
@@ -679,7 +679,7 @@ class ManimColor:
     @classmethod
     def from_rgba(
         cls, rgba: RGBA_Array_Float | RGBA_Tuple_Float | RGBA_Array_Int | RGBA_Tuple_Int
-    ) -> ManimColor:
+    ) -> Self:
         """Creates a ManimColor from an RGBA Array. Automagically decides which type it is int/float
 
         .. warning::
@@ -699,7 +699,7 @@ class ManimColor:
         return cls(rgba)
 
     @classmethod
-    def from_hex(cls, hex: str, alpha: float = 1.0) -> ManimColor:
+    def from_hex(cls, hex: str, alpha: float = 1.0) -> Self:
         """Creates a Manim Color from a hex string, prefixes allowed # and 0x
 
         Parameters
@@ -719,7 +719,7 @@ class ManimColor:
     @classmethod
     def from_hsv(
         cls, hsv: HSV_Array_Float | HSV_Tuple_Float, alpha: float = 1.0
-    ) -> ManimColor:
+    ) -> Self:
         """Creates a ManimColor from an HSV Array
 
         Parameters
@@ -737,12 +737,30 @@ class ManimColor:
         rgb = colorsys.hsv_to_rgb(*hsv)
         return cls(rgb, alpha)
 
+    @overload
+    @classmethod
+    def parse(
+        cls,
+        color: ParsableManimColor | None,
+        alpha: float = ...,
+    ) -> Self:
+        ...
+
+    @overload
+    @classmethod
+    def parse(
+        cls,
+        color: Sequence[ParsableManimColor],
+        alpha: float = ...,
+    ) -> list[Self]:
+        ...
+
     @classmethod
     def parse(
         cls,
         color: ParsableManimColor | list[ParsableManimColor] | None,
         alpha: float = 1.0,
-    ) -> ManimColor | list[ManimColor]:
+    ) -> Self | list[Self]:
         """
         Handles the parsing of a list of colors or a single color.
 
