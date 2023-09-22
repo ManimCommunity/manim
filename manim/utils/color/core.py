@@ -127,20 +127,10 @@ The preferred way of using these colors is by importing their constants from man
 .. code-block:: pycon
 
     >>> from manim import RED, GREEN, BLUE
-    >>> RED
+    >>> print(RED)
     '#FC6255'
 
 Note this way uses the name of the colors in UPPERCASE.
-
-Alternatively, you can also import this Enum directly and use its members
-directly, through the use of :code:`color.value`.  Note this way uses the
-name of the colors in lowercase.
-
-.. code-block:: pycon
-
-    >>> from manim.utils.color import Colors
-    >>> Colors.red.value
-    '#FC6255'
 
 .. note::
 

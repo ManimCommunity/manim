@@ -1089,7 +1089,7 @@ class ArcPolygon(VMobject, metaclass=ConvertToOpenGL):
             if radius:
                 all_arc_configs = itertools.repeat({"radius": radius}, len(point_pairs))
             else:
-                all_arc_configs = itertools.repeat({"angle": float}, len(point_pairs))
+                all_arc_configs = itertools.repeat({"angle": angle}, len(point_pairs))
         elif isinstance(arc_config, dict):
             all_arc_configs = itertools.repeat(arc_config, len(point_pairs))
         else:
