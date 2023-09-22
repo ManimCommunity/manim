@@ -44,7 +44,7 @@ __all__ = [
 
 import itertools
 import warnings
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 
 import numpy as np
 from typing_extensions import Self, TypeAlias
@@ -69,7 +69,7 @@ if TYPE_CHECKING:
     from manim.typing import CubicBezierPoints, Point3D, QuadraticBezierPoints, Vector
 
 
-Angle: TypeAlias = float | np.float64
+Angle: TypeAlias = Union[float, np.float64]
 
 
 class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
