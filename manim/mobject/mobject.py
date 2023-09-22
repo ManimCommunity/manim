@@ -14,10 +14,10 @@ import types
 import warnings
 from functools import partialmethod, reduce
 from pathlib import Path
-from typing import TYPE_CHECKING, Callable, Iterable, Literal, TypeVar
+from typing import TYPE_CHECKING, Callable, Iterable, Literal, TypeVar, Union
 
 import numpy as np
-from typing_extensions import Self
+from typing_extensions import Self, TypeAlias
 
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 
@@ -40,13 +40,12 @@ from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
 
 # TODO: Explain array_attrs
 
-TimeBasedUpdater = Callable[["Mobject", float], None]
-NonTimeBasedUpdater = Callable[["Mobject"], None]
-Updater = NonTimeBasedUpdater | TimeBasedUpdater
+TimeBasedUpdater: TypeAlias = Callable[["Mobject", float], None]
+NonTimeBasedUpdater: TypeAlias = Callable[["Mobject"], None]
+Updater: TypeAlias = Union[NonTimeBasedUpdater, TimeBasedUpdater]
 T = TypeVar("T", bound="Mobject")
 
 if TYPE_CHECKING:
-    from manim.mobject.types.vectorized_mobject import VMobject
     from manim.typing import (
         FunctionOverride,
         Image,
@@ -111,7 +110,7 @@ class Mobject:
         self.submobjects = []
         self.updaters: list[Updater] = []
         self.updating_suspended = False
-        self.color: ManimColor = ManimColor.parse(color)
+        self.color = ManimColor.parse(color)
 
         self.reset_points()
         self.generate_points()
