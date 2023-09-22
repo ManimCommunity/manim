@@ -54,5 +54,5 @@ from .core import *
 from .manim_colors import *
 
 _all_color_dict: Dict[str, ManimColor] = {
-   k: v for k, v in globals().items() if isinstance(v, ManimColor)
+    k: v for k, v in globals().items() if isinstance(v, ManimColor)
 }
