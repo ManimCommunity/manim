@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import sys
 
-import click
 import cloup
 
 from . import __version__, cli_ctx_settings, console
@@ -35,7 +34,7 @@ console.print(f"Manim Community [green]v{__version__}[/green]\n")
     "is specified. Run 'manim render --help' if you would like to know what the "
     f"'-ql' or '-p' flags do, for example.\n\n{EPILOG}",
 )
-@click.option(
+@cloup.option(
     "--version",
     is_flag=True,
     help="Show version and exit.",
@@ -43,7 +42,7 @@ console.print(f"Manim Community [green]v{__version__}[/green]\n")
     is_eager=True,
     expose_value=False,
 )
-@click.pass_context
+@cloup.pass_context
 def main(ctx):
     """The entry point for manim."""
     pass

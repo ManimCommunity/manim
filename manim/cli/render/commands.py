@@ -11,7 +11,6 @@ import json
 import sys
 from pathlib import Path
 
-import click
 import cloup
 import requests
 
@@ -30,8 +29,8 @@ from .render_options import render_options
     no_args_is_help=True,
     epilog=EPILOG,
 )
-@click.argument("file", type=Path, required=True)
-@click.argument("scene_names", required=False, nargs=-1)
+@cloup.argument("file", type=Path, required=True)
+@cloup.argument("scene_names", required=False, nargs=-1)
 @global_options
 @output_options
 @render_options  # type: ignore
