@@ -7,6 +7,7 @@ __all__ = ["Mobject", "Group", "override_animate"]
 
 import copy
 import itertools as it
+import math
 import operator as op
 import random
 import sys
@@ -2368,15 +2369,15 @@ class Mobject:
 
         # calculate rows cols
         if rows is None and cols is None:
-            cols = np.ceil(np.sqrt(len(mobs)))
+            cols = math.ceil(math.sqrt(len(mobs)))
             # make the grid as close to quadratic as possible.
             # choosing cols first can results in cols>rows.
             # This is favored over rows>cols since in general
             # the sceene is wider than high.
         if rows is None:
-            rows = np.ceil(len(mobs) / cols)
+            rows = math.ceil(len(mobs) / cols)
         if cols is None:
-            cols = np.ceil(len(mobs) / rows)
+            cols = math.ceil(len(mobs) / rows)
         if rows * cols < len(mobs):
             raise ValueError("Too few rows and columns to fit all submobjetcs.")
         # rows and cols are now finally valid.
@@ -2658,7 +2659,7 @@ class Mobject:
         self.add(copy)
         return self
 
-    def add_n_more_submobjects(self, n: int) -> Self:
+    def add_n_more_submobjects(self, n: int) -> Self | None:
         if n == 0:
             return
 
