@@ -7,13 +7,13 @@ can specify options, and arguments for the render command.
 """
 from __future__ import annotations
 
+import http.client
 import json
 import sys
-import http.client
-import urllib.request
 import urllib.error
-from typing import cast
+import urllib.request
 from pathlib import Path
+from typing import cast
 
 import cloup
 
@@ -135,7 +135,9 @@ def render(
         except urllib.error.URLError:
             logger.debug("URL Error: %s", warn_prompt)
         except json.JSONDecodeError:
-            logger.debug("Error while decoding JSON from %r: %s", manim_info_url, warn_prompt)
+            logger.debug(
+                "Error while decoding JSON from %r: %s", manim_info_url, warn_prompt
+            )
         except Exception:
             logger.debug("Something went wrong: %s", warn_prompt)
 
