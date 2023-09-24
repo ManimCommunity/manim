@@ -35,9 +35,9 @@ ManimColorInternal: TypeAlias = npt.NDArray[ManimColorDType]
 PointDType: TypeAlias = ManimFloat
 """ DType for all points. """
 Point2D: TypeAlias = npt.NDArray[PointDType]
-""" `shape: (2,) A 2D point. [float,float] """
+""" `shape: (2,)` A 2D point. `[float,float]` """
 Point3D: TypeAlias = npt.NDArray[PointDType]
-""" `shape: (3,) A 3D point. `[float,float,float]` """
+""" `shape: (3,)` A 3D point. `[float,float,float]` """
 
 # Bezier Types
 QuadraticBezierPoints: TypeAlias = npt.NDArray[PointDType]
