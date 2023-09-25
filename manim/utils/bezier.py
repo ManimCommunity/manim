@@ -32,9 +32,10 @@ __all__ = [
 
 
 from functools import reduce
-from typing import Callable, Sequence, overload
+from typing import Any, Callable, Sequence, overload
 
 import numpy as np
+import numpy.typing as npt
 from scipy import linalg
 
 from ..utils.simple_functions import choose
@@ -260,11 +261,6 @@ def quadratic_bezier_remap(
 
 
 @overload
-def interpolate(start: int, end: int, alpha: float) -> float:
-    ...
-
-
-@overload
 def interpolate(start: float, end: float, alpha: float) -> float:
     ...
 
@@ -280,19 +276,9 @@ def interpolate(
     return (1 - alpha) * start + alpha * end
 
 
-@overload
-def integer_interpolate(start: int, end: int, alpha: float) -> tuple[int, float]:
-    ...
-
-
-@overload
-def integer_interpolate(start: float, end: float, alpha: float) -> tuple[int, float]:
-    ...
-
-
 def integer_interpolate(
-    start: int | float,
-    end: int | float,
+    start: float,
+    end: float,
     alpha: float,
 ) -> tuple[int, float]:
     """
@@ -329,11 +315,6 @@ def integer_interpolate(
 
 
 @overload
-def mid(start: int, end: int) -> float:
-    ...
-
-
-@overload
 def mid(start: float, end: float) -> float:
     ...
 
@@ -343,7 +324,7 @@ def mid(start: Point3D, end: Point3D) -> Point3D:
     ...
 
 
-def mid(start: int | float | Point3D, end: int | float | Point3D) -> float | Point3D:
+def mid(start: float | Point3D, end: float | Point3D) -> float | Point3D:
     """Returns the midpoint between two values.
 
     Parameters
@@ -361,11 +342,6 @@ def mid(start: int | float | Point3D, end: int | float | Point3D) -> float | Poi
 
 
 @overload
-def inverse_interpolate(start: float, end: float, value: int) -> float:
-    ...
-
-
-@overload
 def inverse_interpolate(start: float, end: float, value: float) -> float:
     ...
 
@@ -377,20 +353,9 @@ def inverse_interpolate(start: float, end: float, value: Point3D) -> Point3D:
 
 # !TODO: Add documentation to this function
 def inverse_interpolate(
-    start: float, end: float, value: int | float | Point3D
+    start: float, end: float, value: float | Point3D
 ) -> float | Point3D:
     return np.true_divide(value - start, end - start)
-
-
-@overload
-def match_interpolate(
-    new_start: float,
-    new_end: float,
-    old_start: float,
-    old_end: float,
-    old_value: int,
-) -> float:
-    ...
 
 
 @overload
@@ -420,7 +385,7 @@ def match_interpolate(
     new_end: float,
     old_start: float,
     old_end: float,
-    old_value: int | float | Point3D,
+    old_value: float | Point3D,
 ) -> float | Point3D:
     return interpolate(
         new_start,
@@ -565,7 +530,7 @@ def get_smooth_handle_points(
     return handle_pairs[0::2], handle_pairs[1::2]
 
 
-def diag_to_matrix(l_and_u: tuple[int, int], diag: np.ndarray) -> np.ndarray:
+def diag_to_matrix(l_and_u: tuple[int, int], diag: npt.NDArray[Any]) -> npt.NDArray[Any]:
     """
     Converts array whose rows represent diagonal
     entries of a matrix into the matrix itself.
@@ -661,8 +626,8 @@ def is_closed(points: Point3D_Array) -> bool:
 def proportions_along_bezier_curve_for_point(
     point: Point3D,
     control_points: BezierPoints,
-    round_to: float | int = 1e-6,
-) -> np.ndarray:
+    round_to: float = 1e-6,
+) -> npt.NDArray[Any]:
     """Obtains the proportion along the bezier curve corresponding to a given point
     given the bezier curve's control points.
 
@@ -747,7 +712,7 @@ def proportions_along_bezier_curve_for_point(
 def point_lies_on_bezier(
     point: Point3D,
     control_points: BezierPoints,
-    round_to: float | int = 1e-6,
+    round_to: float = 1e-6,
 ) -> bool:
     """Checks if a given point lies on the bezier curves with the given control points.
 

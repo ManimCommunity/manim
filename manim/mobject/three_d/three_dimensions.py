@@ -2,9 +2,7 @@
 
 from __future__ import annotations
 
-from pyrr import Vector3
-
-from manim.typing import Point3D
+from manim.typing import Point3D, Vector3
 from manim.utils.color import BLUE, BLUE_D, BLUE_E, LIGHT_GREY, WHITE, interpolate_color
 
 __all__ = [

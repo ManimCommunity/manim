@@ -35,62 +35,62 @@ ManimColorInternal: TypeAlias = npt.NDArray[ManimColorDType]
 PointDType: TypeAlias = ManimFloat
 """ DType for all points. """
 Point2D: TypeAlias = npt.NDArray[PointDType]
-""" `shape: (2,)` A 2D point. `[float,float]` """
+""" `shape: (2,)` A 2D point. `[float, float]` """
 Point3D: TypeAlias = npt.NDArray[PointDType]
-""" `shape: (3,)` A 3D point. `[float,float,float]` """
+""" `shape: (3,)` A 3D point. `[float, float, float]` """
 
 # Bezier Types
 QuadraticBezierPoints: TypeAlias = npt.NDArray[PointDType]
-""" `shape: (3,3)` An Array of Quadratic Bezier Handles `[[float,float,float], [float,float,float], [float,float,float]]`. """
+""" `shape: (3,3)` An Array of Quadratic Bezier Handles `[[float, float, float], [float, float, float], [float, float, float]]`. """
 
 QuadraticBezierPoints_Array: TypeAlias = npt.NDArray[PointDType]
-""" `shape: (N,3,3)` An Array of Quadratic Bezier Handles `[[[float,float,float], [float,float,float], [float,float,float]], ...]`. """
+""" `shape: (N,3,3)` An Array of Quadratic Bezier Handles `[[[float, float, float], [float, float, float], [float, float, float]], ...]`. """
 
 CubicBezierPoints: TypeAlias = npt.NDArray[PointDType]
-""" `shape: (4,3)` An Array of Cubic Bezier Handles `[[float,float,float], [float,float,float], [float,float,float], [float,float,float]]`. """
+""" `shape: (4,3)` An Array of Cubic Bezier Handles `[[float, float, float], [float, float, float], [float, float, float], [float, float, float]]`. """
 
 BezierPoints: TypeAlias = npt.NDArray[PointDType]
-""" `shape: (N,3)` An Array of Cubic Bezier Handles `[[float,float,float],...]`.
+""" `shape: (N,3)` An Array of Cubic Bezier Handles `[[float, float, float], ...]`.
 `N` Is always multiples of the degree of the Bezier curve.
 (Please refer to the documentation of the function you are using for further type Information)
 """
 
 FlatBezierPoints: TypeAlias = npt.NDArray[PointDType]
-""" `shape: (N)` An Array of Bezier Handles but flattened `[float,...]`."""
+""" `shape: (N)` An Array of Bezier Handles but flattened `[float, ...]`."""
 
 Point2D_Array: TypeAlias = npt.NDArray[PointDType]
-""" `shape: (N,2)` An Array of Points in 2D Space `[[float,float],...]`.
+""" `shape: (N,2)` An Array of Points in 2D Space `[[float, float], ...]`.
 
 (Please refer to the documentation of the function you are using for further type Information)
 """
 
 Point3D_Array: TypeAlias = npt.NDArray[PointDType]
-""" `shape: (N,3)` An Array of Points in 3D Space `[[float,float,float],...]`.
+""" `shape: (N,3)` An Array of Points in 3D Space `[[float, float, float], ...]`.
 
 (Please refer to the documentation of the function you are using for further type Information)
 """
 
 BezierPoints_Array: TypeAlias = npt.NDArray[PointDType]
-""" `shape: (N,PPC,3)` An Array of Bezier Handles `[[[float,float,float],...],...]`.
+""" `shape: (N,PPC,3)` An Array of Bezier Handles `[[[float, float, float], ...], ...]`.
 `PPC` Is the number of points per bezier curve. `N` Is the number of bezier curves.
 (Please refer to the documentation of the function you are using for further type Information)
 """
 
 # Vector Types
 Vector3: TypeAlias = npt.NDArray[PointDType]
-""" `shape: (3,)` A Vector `[float, float]`. """
+""" `shape: (3,)` A Vector `[float, float, float]`. """
 
 Vector: TypeAlias = npt.NDArray[PointDType]
-""" `shape: (N,)` A Vector `[float,...]`. """
+""" `shape: (N,)` A Vector `[float, ...]`. """
 
 RowVector: TypeAlias = npt.NDArray[PointDType]
-""" `shape: (1,N)` A Row Vector `[[float,...]]`. """
+""" `shape: (1,N)` A Row Vector `[[float, ...]]`. """
 
 ColVector: TypeAlias = npt.NDArray[PointDType]
-""" `shape: (N,1)` A Column Vector `[[float],[float],...]`. """
+""" `shape: (N,1)` A Column Vector `[[float], [float], ...]`. """
 
 MatrixMN: TypeAlias = npt.NDArray[PointDType]
-""" `shape: (M,N)` A Matrix `[[float,...],[float,...],...]`. """
+""" `shape: (M,N)` A Matrix `[[float, ...], [float, ...], ...]`. """
 
 Zeros: TypeAlias = npt.NDArray[ManimFloat]
 """A Matrix of Zeros. Typically created with `numpy.zeros((M,N))`"""

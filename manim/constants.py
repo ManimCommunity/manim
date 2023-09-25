@@ -7,7 +7,7 @@ from __future__ import annotations
 from enum import Enum
 
 import numpy as np
-from cloup import Context  # type: ignore
+from cloup import Context
 from PIL.Image import Resampling
 
 from manim.typing import Vector3
@@ -79,34 +79,34 @@ __all__ = [
 ]
 # Messages
 
-SCENE_NOT_FOUND_MESSAGE: str = """
+SCENE_NOT_FOUND_MESSAGE = """
    {} is not in the script
 """
-CHOOSE_NUMBER_MESSAGE: str = """
+CHOOSE_NUMBER_MESSAGE = """
 Choose number corresponding to desired scene/arguments.
 (Use comma separated list for multiple entries)
 Choice(s): """
-INVALID_NUMBER_MESSAGE: str = "Invalid scene numbers have been specified. Aborting."
-NO_SCENE_MESSAGE: str = """
+INVALID_NUMBER_MESSAGE = "Invalid scene numbers have been specified. Aborting."
+NO_SCENE_MESSAGE = """
    There are no scenes inside that module
 """
 
 # Pango stuff
-NORMAL: str = "NORMAL"
-ITALIC: str = "ITALIC"
-OBLIQUE: str = "OBLIQUE"
-BOLD: str = "BOLD"
+NORMAL = "NORMAL"
+ITALIC = "ITALIC"
+OBLIQUE = "OBLIQUE"
+BOLD = "BOLD"
 # Only for Pango from below
-THIN: str = "THIN"
-ULTRALIGHT: str = "ULTRALIGHT"
-LIGHT: str = "LIGHT"
-SEMILIGHT: str = "SEMILIGHT"
-BOOK: str = "BOOK"
-MEDIUM: str = "MEDIUM"
-SEMIBOLD: str = "SEMIBOLD"
-ULTRABOLD: str = "ULTRABOLD"
-HEAVY: str = "HEAVY"
-ULTRAHEAVY: str = "ULTRAHEAVY"
+THIN = "THIN"
+ULTRALIGHT = "ULTRALIGHT"
+LIGHT = "LIGHT"
+SEMILIGHT = "SEMILIGHT"
+BOOK = "BOOK"
+MEDIUM = "MEDIUM"
+SEMIBOLD = "SEMIBOLD"
+ULTRABOLD = "ULTRABOLD"
+HEAVY = "HEAVY"
+ULTRAHEAVY = "ULTRAHEAVY"
 
 RESAMPLING_ALGORITHMS = {
     "nearest": Resampling.NEAREST,
@@ -162,40 +162,40 @@ DR: Vector3 = DOWN + RIGHT
 """One step down plus one step right."""
 
 # Geometry
-START_X: int = 30
-START_Y: int = 20
-DEFAULT_DOT_RADIUS: float = 0.08
-DEFAULT_SMALL_DOT_RADIUS: float = 0.04
-DEFAULT_DASH_LENGTH: float = 0.05
-DEFAULT_ARROW_TIP_LENGTH: float = 0.35
+START_X = 30
+START_Y = 20
+DEFAULT_DOT_RADIUS = 0.08
+DEFAULT_SMALL_DOT_RADIUS = 0.04
+DEFAULT_DASH_LENGTH = 0.05
+DEFAULT_ARROW_TIP_LENGTH = 0.35
 
 # Default buffers (padding)
-SMALL_BUFF: float = 0.1
-MED_SMALL_BUFF: float = 0.25
-MED_LARGE_BUFF: float = 0.5
-LARGE_BUFF: float = 1
-DEFAULT_MOBJECT_TO_EDGE_BUFFER: float = MED_LARGE_BUFF
-DEFAULT_MOBJECT_TO_MOBJECT_BUFFER: float = MED_SMALL_BUFF
+SMALL_BUFF = 0.1
+MED_SMALL_BUFF = 0.25
+MED_LARGE_BUFF = 0.5
+LARGE_BUFF = 1
+DEFAULT_MOBJECT_TO_EDGE_BUFFER = MED_LARGE_BUFF
+DEFAULT_MOBJECT_TO_MOBJECT_BUFFER = MED_SMALL_BUFF
 
 # Times in seconds
-DEFAULT_POINTWISE_FUNCTION_RUN_TIME: float = 3.0
-DEFAULT_WAIT_TIME: float = 1.0
+DEFAULT_POINTWISE_FUNCTION_RUN_TIME = 3.0
+DEFAULT_WAIT_TIME = 1.0
 
 # Misc
-DEFAULT_POINT_DENSITY_2D: int = 25
-DEFAULT_POINT_DENSITY_1D: int = 10
-DEFAULT_STROKE_WIDTH: int = 4
-DEFAULT_FONT_SIZE: float = 48
-SCALE_FACTOR_PER_FONT_POINT: float = 1 / 960
+DEFAULT_POINT_DENSITY_2D = 25
+DEFAULT_POINT_DENSITY_1D = 10
+DEFAULT_STROKE_WIDTH = 4
+DEFAULT_FONT_SIZE = 48
+SCALE_FACTOR_PER_FONT_POINT = 1 / 960
 
 # Mathematical constants
-PI: float = np.pi
+PI = np.pi
 """The ratio of the circumference of a circle to its diameter."""
 
-TAU: float = 2 * PI
+TAU = 2 * PI
 """The ratio of the circumference of a circle to its radius."""
 
-DEGREES: float = TAU / 360
+DEGREES = TAU / 360
 """The exchange rate between radians and degrees."""
 
 # Video qualities
@@ -238,7 +238,7 @@ QUALITIES: dict[str, dict[str, str | int | None]] = {
     },
 }
 
-DEFAULT_QUALITY: str = "high_quality"
+DEFAULT_QUALITY = "high_quality"
 
 EPILOG = "Made with <3 by Manim Community developers."
 SHIFT_VALUE = 65505
