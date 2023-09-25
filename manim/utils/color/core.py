@@ -789,7 +789,9 @@ def color_to_int_rgba(color: ParsableManimColor, alpha: float = 1.0) -> RGBA_Arr
     return ManimColor(color).to_int_rgba_with_alpha(alpha)
 
 
-def rgb_to_color(rgb: RGB_Array_Float | RGB_Tuple_Float | RGB_Array_Int | RGB_Tuple_Int) -> ManimColor:
+def rgb_to_color(
+    rgb: RGB_Array_Float | RGB_Tuple_Float | RGB_Array_Int | RGB_Tuple_Int,
+) -> ManimColor:
     """Helper function for use in functional style programming refer to :meth:`from_rgb` in :class:`ManimColor`
 
     Parameters
@@ -805,7 +807,9 @@ def rgb_to_color(rgb: RGB_Array_Float | RGB_Tuple_Float | RGB_Array_Int | RGB_Tu
     return ManimColor.from_rgb(rgb)
 
 
-def rgba_to_color(rgba: RGBA_Array_Float | RGBA_Tuple_Float | RGBA_Array_Int | RGBA_Tuple_Int) -> ManimColor:
+def rgba_to_color(
+    rgba: RGBA_Array_Float | RGBA_Tuple_Float | RGBA_Array_Int | RGBA_Tuple_Int,
+) -> ManimColor:
     """Helper function for use in functional style programming refer to :meth:`from_rgba` in :class:`ManimColor`
 
     Parameters
@@ -821,7 +825,9 @@ def rgba_to_color(rgba: RGBA_Array_Float | RGBA_Tuple_Float | RGBA_Array_Int | R
     return ManimColor.from_rgba(rgba)
 
 
-def rgb_to_hex(rgb: RGB_Array_Float | RGB_Tuple_Float | RGB_Array_Int | RGB_Tuple_Int) -> str:
+def rgb_to_hex(
+    rgb: RGB_Array_Float | RGB_Tuple_Float | RGB_Array_Int | RGB_Tuple_Int,
+) -> str:
     """Helper function for use in functional style programming refer to :meth:`from_rgb` in :class:`ManimColor`
 
     Parameters

@@ -530,7 +530,9 @@ def get_smooth_handle_points(
     return handle_pairs[0::2], handle_pairs[1::2]
 
 
-def diag_to_matrix(l_and_u: tuple[int, int], diag: npt.NDArray[Any]) -> npt.NDArray[Any]:
+def diag_to_matrix(
+    l_and_u: tuple[int, int], diag: npt.NDArray[Any]
+) -> npt.NDArray[Any]:
     """
     Converts array whose rows represent diagonal
     entries of a matrix into the matrix itself.
