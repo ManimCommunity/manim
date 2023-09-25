@@ -82,7 +82,7 @@ This type alias is mostly made available for internal use and only includes the 
 """
 
 Point3D_Array: TypeAlias = Union[
-    InternalPoint3D_Array, tuple[tuple[float, float, float], ...]
+    InternalPoint3D_Array, Tuple[Tuple[float, float, float], ...]
 ]
 """ `shape: (N,3)` An Array of Points in 3D Space `[[float, float, float], ...]`.
 
