@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from os import PathLike
-from typing import Callable, Tuple
+from typing import Callable, Tuple, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -34,9 +34,21 @@ ManimColorInternal: TypeAlias = npt.NDArray[ManimColorDType]
 
 PointDType: TypeAlias = ManimFloat
 """ DType for all points. """
-Point2D: TypeAlias = npt.NDArray[PointDType]
-""" `shape: (2,)` A 2D point. `[float, float]` """
-Point3D: TypeAlias = npt.NDArray[PointDType]
+
+InternalPoint2D: TypeAlias = npt.NDArray[PointDType]
+""" `shape: (2,)` A 2D point. `[float, float]`.
+This type alias is mostly made available for internal use and only includes the numpy type.
+"""
+
+Point2D: TypeAlias = Union[InternalPoint2D, Tuple[float, float]]
+""" `shape: (2,)` A 2D point. `[float, float]`. """
+
+InternalPoint3D: TypeAlias = npt.NDArray[PointDType]
+""" `shape: (3,)` A 3D point. `[float, float, float]`.
+This type alias is mostly made available for internal use and only includes the numpy type.
+"""
+
+Point3D: TypeAlias = Union[InternalPoint3D, Tuple[float, float, float]]
 """ `shape: (3,)` A 3D point. `[float, float, float]` """
 
 # Bezier Types
@@ -64,7 +76,12 @@ Point2D_Array: TypeAlias = npt.NDArray[PointDType]
 (Please refer to the documentation of the function you are using for further type Information)
 """
 
-Point3D_Array: TypeAlias = npt.NDArray[PointDType]
+InternalPoint3D_Array: TypeAlias = npt.NDArray[PointDType]
+""" `shape: (N,3)` An Array of Points in 3D Space `[[float, float, float], ...]`.
+This type alias is mostly made available for internal use and only includes the numpy type.
+"""
+
+Point3D_Array: TypeAlias = Union[InternalPoint3D_Array, tuple[tuple[float, float, float], ...]]
 """ `shape: (N,3)` An Array of Points in 3D Space `[[float, float, float], ...]`.
 
 (Please refer to the documentation of the function you are using for further type Information)
