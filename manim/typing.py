@@ -81,7 +81,9 @@ InternalPoint3D_Array: TypeAlias = npt.NDArray[PointDType]
 This type alias is mostly made available for internal use and only includes the numpy type.
 """
 
-Point3D_Array: TypeAlias = Union[InternalPoint3D_Array, tuple[tuple[float, float, float], ...]]
+Point3D_Array: TypeAlias = Union[
+    InternalPoint3D_Array, tuple[tuple[float, float, float], ...]
+]
 """ `shape: (N,3)` An Array of Points in 3D Space `[[float, float, float], ...]`.
 
 (Please refer to the documentation of the function you are using for further type Information)
