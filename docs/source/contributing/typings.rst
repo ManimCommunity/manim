@@ -17,7 +17,7 @@ https://realpython.com/python-type-checking/#hello-types.
 Typing standards
 ~~~~~~~~~~~~~~~~
 
-Manim uses `mypy`_ to type check its codebase. You will find a list of configuration values in the ``.mypy.ini`` configuration file.
+Manim uses `mypy`_ to type check its codebase. You will find a list of configuration values in the ``mypy.ini`` configuration file.
 
 To be able to use the newest typing features not available in the lowest supported Python version, make use of `typing_extensions`_.
 
@@ -30,7 +30,7 @@ Typing guidelines
 ~~~~~~~~~~~~~~~~~
 
 * Manim has a dedicated :mod:`~.typing` module where type alias are provided. Most of them may seem redundant, in particular the ones related to ``numpy``. This is in anticipation of the
-support for shape type hinting (`related issue <https://github.com/numpy/numpy/issues/16544>_`). Besides the pending shape support, using the correct type aliases will help users understand
+support for shape type hinting (`related issue <https://github.com/numpy/numpy/issues/16544>`_). Besides the pending shape support, using the correct type aliases will help users understand
 which shape should be used.
 
 * Always use a type hint of ``None`` for functions that does not return a value (this also applies to ``__init__``), e.g.:
@@ -44,7 +44,7 @@ which shape should be used.
 
 * ``*args`` and ``**kwargs`` shouldn't be left untyped (in most cases you can use ``Any``).
 
-* As `PEP 484 <https://peps.python.org/pep-0484/#the-numeric-tower>_` implies that ``int`` can be used ``float`` is specified, use ``float`` instead of ``int | float``.
+* Following `PEP 484 <https://peps.python.org/pep-0484/#the-numeric-tower>`_, use ``float`` instead of ``int | float``.
 
 * Mobjects have the typehint ``Mobject``, e.g.:
 
@@ -54,7 +54,7 @@ which shape should be used.
         """Match the color with the color of another :class:`~.Mobject`."""
         return self.set_color(mobject.get_color())
 
-* Functions and lambda functions should get the type hint ``Callable``, e.g.:
+* Always parametrize generics (``list[int]`` instead of ``list``, ``type[Any]`` instead of ``type``, etc.). This also applies to callables:
 
 .. code:: py
 
