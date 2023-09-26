@@ -52,7 +52,7 @@ Loading the default color configuration.[/logging.level.error]
 def make_logger(
     parser: configparser.ConfigParser,
     verbosity: str,
-) -> tuple[logging.Logger, Console]:
+) -> tuple[logging.Logger, Console, Console]:
     """Make the manim logger and console.
 
     Parameters
@@ -84,14 +84,13 @@ def make_logger(
     theme = parse_theme(parser)
     console = Console(theme=theme)
 
-    # With rich 9.5.0+ we could pass stderr=True instead
-    error_console = Console(theme=theme, file=sys.stderr)
+    error_console = Console(theme=theme, stderr=True)
 
     # set the rich handler
-    RichHandler.KEYWORDS = HIGHLIGHTED_KEYWORDS
     rich_handler = RichHandler(
         console=console,
         show_time=parser.getboolean("log_timestamps"),
+        keywords=HIGHLIGHTED_KEYWORDS,
     )
 
     # finally, the logger
@@ -178,7 +177,7 @@ class JSONFormatter(logging.Formatter):
 
     """
 
-    def format(self, record: dict) -> str:
+    def format(self, record: logging.LogRecord) -> str:
         """Format the record in a custom JSON format."""
         record_c = copy.deepcopy(record)
         if record_c.args:
