@@ -211,7 +211,7 @@ is imported and Python has read and defined the ``ToyExample`` class (but,
 read carefully: *no instance of this class has been created yet*).
 
 At this point, the interpreter is about to enter the ``tempconfig`` context
-manager. Even if you have not seen Manim's ``tempconfig`` before, it's name
+manager. Even if you have not seen Manim's ``tempconfig`` before, its name
 already suggests what it does: it creates a copy of the current state of the
 configuration, applies the changes to the key-value pairs in the passed
 dictionary, and upon leaving the context the original version of the
