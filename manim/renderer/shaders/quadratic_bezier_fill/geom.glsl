@@ -6,9 +6,9 @@ layout (triangle_strip, max_vertices = 5) out;
 uniform float anti_alias_width;
 
 // Needed for get_gl_Position
-uniform vec2 frame_shape;
-uniform float focal_distance;
-uniform float is_fixed_in_frame;
+// uniform vec2 frame_shape;
+// uniform float focal_distance;
+// uniform float is_fixed_in_frame;
 // uniform float is_fixed_orientation;
 // uniform vec3 fixed_orientation_center;
 // Needed for finalize_color
@@ -30,6 +30,7 @@ out vec2 uv_coords;
 out float bezier_degree;
 
 // Analog of import for manim only
+#include ../include/camera_uniform_declarations.glsl
 #include ../include/quadratic_bezier_geometry_functions.glsl
 #include ../include/get_gl_Position.glsl
 #include ../include/get_unit_normal.glsl

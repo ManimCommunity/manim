@@ -4,9 +4,9 @@ layout (triangles) in;
 layout (triangle_strip, max_vertices = 5) out;
 
 // Needed for get_gl_Position
-uniform vec2 frame_shape;
-uniform float focal_distance;
-uniform vec3 fixed_orientation_center;
+// uniform vec2 frame_shape;
+// uniform float focal_distance;
+// uniform vec3 fixed_orientation_center;
 
 uniform float anti_alias_width;
 uniform float flat_stroke;
@@ -17,8 +17,8 @@ uniform float gloss;
 uniform float shadow;
 uniform float joint_type;
 uniform float reflectiveness;
-uniform float is_fixed_in_frame;
-uniform float is_fixed_orientation;
+// uniform float is_fixed_in_frame;
+// uniform float is_fixed_orientation;
 
 in vec3 bp[3];
 in vec3 prev_bp[3];
@@ -52,6 +52,8 @@ const float MITER_JOINT = 3;
 const float PI = 3.141592653;
 
 
+
+#include ../include/camera_uniform_declarations.glsl
 #include ../include/quadratic_bezier_geometry_functions.glsl
 #include ../include/get_gl_Position.glsl
 #include ../include/get_unit_normal.glsl
