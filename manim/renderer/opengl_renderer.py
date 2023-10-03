@@ -208,7 +208,6 @@ class OpenGLRenderer(Renderer):
         substitute_output_fbo: gl.Framebuffer | None = None,
     ) -> None:
         super().__init__()
-        logger.debug("Initializing OpenGLRenderer")
         self.pixel_width = pixel_width
         self.pixel_height = pixel_height
         self.samples = samples
@@ -282,16 +281,19 @@ class OpenGLRenderer(Renderer):
         self.output_fbo = self.ctx.detect_framebuffer()
 
     def init_camera(self, camera: OpenGLCameraFrame):
-        uniforms = dict()
-        uniforms["frame_shape"] = camera.frame_shape
+        # uniforms = dict()
+        # uniforms["frame_shape"] = camera.frame_shape
+        # uniforms["focal_distance"] = camera.get_focal_distance()
+        # uniforms["camera_center"] = tuple(camera.get_center())
+        # uniforms["camera_rotation"] = tuple(
+        #     np.array(camera.get_inverse_camera_rotation_matrix()).T.flatten()
+        # )
+        # uniforms["light_source_position"] = (-10, 10, 10)
+        # uniforms["anti_alias_width"] = 0.01977
+        uniforms = camera.ubo._data_dict_
+        print("UNIS",uniforms)
         uniforms["pixel_shape"] = (self.pixel_width, self.pixel_height)
-        uniforms["focal_distance"] = camera.get_focal_distance()
-        uniforms["camera_center"] = tuple(camera.get_center())
-        uniforms["camera_rotation"] = tuple(
-            np.array(camera.get_inverse_camera_rotation_matrix()).T.flatten()
-        )
-        uniforms["light_source_position"] = (-10, 10, 10)
-        uniforms["anti_alias_width"] = 0.01977
+
         # TODO: convert to singular 4x4 matrix after getting *something* to render
         # self.vmobject_fill_program['view'].value = camera.get_view()?
         ProgramManager.write_uniforms(self.vmobject_fill_program, uniforms)

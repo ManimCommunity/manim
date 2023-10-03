@@ -24,6 +24,7 @@ from manim import config, logger
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject, OpenGLPoint
 from manim.utils.color import BLACK, color_to_rgba
 
+from ..renderer.buffers.ubo import UniformBufferObject
 from ..constants import *
 from ..utils.config_ops import _Data
 from ..utils.simple_functions import fdiv
@@ -44,6 +45,27 @@ class OpenGLCameraFrame(OpenGLMobject):
         self.focal_dist_to_height = focal_dist_to_height
         self.orientation = Rotation.identity().as_quat()
         super().__init__(**kwargs)
+        self.ubo = UniformBufferObject(
+            name="ubo_camera",
+            fields=[
+                "vec2 frame_shape",
+                "vec3 camera_center",
+                "mat3 camera_rotation",
+                "float is_fixed_in_frame",
+                "float is_fixed_orientation",
+                "vec3 fixed_orientation_center",
+                "float focal_distance",
+            ],
+            data={
+                "frame_shape": frame_shape,
+                "camera_center": tuple(self.get_center()),
+                "camera_rotation": tuple(np.array(self.get_inverse_camera_rotation_matrix()).T.flatten()),
+                "is_fixed_in_frame": 0.0,
+                "is_fixed_orientation": 0.0,
+                "fixed_orientation_center": (0, 0, 0),
+                "focal_distance": self.get_focal_distance(),
+            }
+        )
 
     def init_uniforms(self):
         super().init_uniforms()
