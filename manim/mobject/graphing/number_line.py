@@ -279,7 +279,7 @@ class NumberLine(Line):
         elongated_tick_size = self.tick_size * self.longer_tick_multiple
         for x in self.get_tick_range():
             size = self.tick_size
-            if x in self.numbers_with_elongated_ticks:
+            if np.any(np.isclose(x, self.numbers_with_elongated_ticks)):
                 size = elongated_tick_size
             ticks.add(self.get_tick(x, size))
         self.add(ticks)
