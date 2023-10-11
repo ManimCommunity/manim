@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-import numpy as np
 import math
+
+import numpy as np
 
 from manim import PI, Axes, NumberLine
 
@@ -24,7 +25,7 @@ def test_elongated_ticks_float_equality():
         include_ticks=True,
     )
 
-    tick_heights = set(tick.height for tick in nline.ticks)
+    tick_heights = {tick.height for tick in nline.ticks}
     default_tick_height, elongated_tick_height = min(tick_heights), max(tick_heights)
 
     assert all(
