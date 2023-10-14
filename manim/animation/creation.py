@@ -93,6 +93,8 @@ from ..mobject.mobject import Group, Mobject
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.bezier import integer_interpolate
 from ..utils.rate_functions import double_smooth, linear, smooth
+from manim import MarkupText
+import re
 
 
 class ShowPartial(Animation):
@@ -549,6 +551,13 @@ class AddTextLetterByLetter(ShowIncreasingSubsets):
         This is currently only possible for class:`~.Text` and not for class:`~.MathTex`
 
     """
+    
+    # Added an edge case exception catch for blank / empty input characters.
+    # As when the input is blank, the AddTextLetterByLetter will have an error in which it will try to render a video file with a run_time of 0.
+    # As a result this will cause an error in the video rendering process (i.e., "Output file does not contain any stream"). To add more error feedback
+    # For this class, I have opted to include an exception catch for this edge case. 
+    # If either an input with the data type Text or MarkupText has blank input, 
+    # examples would be Text() and MarkupText('<span bgcolor="#777777"></span>') respectively, then an error will be raised.
 
     def __init__(
         self,
@@ -563,20 +572,35 @@ class AddTextLetterByLetter(ShowIncreasingSubsets):
         **kwargs,
     ) -> None:
         self.time_per_char = time_per_char
-        if run_time is None:
-            # minimum time per character is 1/frame_rate, otherwise
-            # the animation does not finish.
+        
+        if self.is_text_empty(text) or self.is_markup_text_empty(text): # If input is empty, i.e., (Text("") or MarkupText("")), provide error feedback
+            raise ValueError("The input text is empty i.e., input has no characters to read thus cannot render a video file.")
+            run_time = 1  # Set the run_time to 1. 
+            # This will render a blank video with a duration of 1 second. Just in case the user wants to render a blank animation instead of throwing an error.
+            # To do so, just comment out the raise ValueError line and keep the run_time code.
+        elif run_time is None:  
             run_time = np.max((1 / config.frame_rate, self.time_per_char)) * len(text)
+
         super().__init__(
             text,
             suspend_mobject_updating=suspend_mobject_updating,
             int_func=int_func,
             rate_func=rate_func,
+            time_per_char=time_per_char,
             run_time=run_time,
             reverse_rate_function=reverse_rate_function,
             introducer=introducer,
             **kwargs,
         )
+
+    def is_text_empty(self, text: Text):
+        # Directly checking if the text attribute is empty or contains only whitespace
+        return not text.text.strip()
+
+    def is_markup_text_empty(self, markup_text: MarkupText):
+        # Removing all tags and checking if the stripped text is empty or contains only whitespace
+        stripped_text = re.sub("<[^>]+>", "", markup_text.text)
+        return not stripped_text.strip()
 
 
 class RemoveTextLetterByLetter(AddTextLetterByLetter):
