@@ -62,7 +62,6 @@ class CairoRenderer:
         if self.skip_animations:
             logger.debug(f"Skipping animation {self.num_plays}")
             hash_current_animation = None
-            self.time += scene.duration
         else:
             if config["disable_caching"]:
                 logger.info("Caching disabled.")

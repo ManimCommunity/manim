@@ -439,7 +439,8 @@ class OpenGLRenderer:
             scene.play_internal()
 
         self.file_writer.end_animation(not self.skip_animations)
-        self.time += scene.duration
+        if not self.skip_animations:
+            self.time += scene.duration
         self.num_plays += 1
 
     def clear_screen(self):
