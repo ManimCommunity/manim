@@ -1451,7 +1451,7 @@ class Mobject:
 
             class ToEdgeExample(Scene):
                 def construct(self):
-                    tex_top = Tex("I am at the top!)")
+                    tex_top = Tex("I am at the top!")
                     tex_top.to_edge(UP)
                     tex_side = Tex("I am moving to the side!")
                     c = Circle().shift(2*DOWN)
