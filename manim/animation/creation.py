@@ -552,6 +552,7 @@ class AddTextLetterByLetter(ShowIncreasingSubsets):
         This is currently only possible for class:`~.Text` and not for class:`~.MathTex`
 
     """
+
     def __init__(
         self,
         text: Text,
