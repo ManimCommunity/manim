@@ -81,9 +81,6 @@ import numpy as np
 if TYPE_CHECKING:
     from manim.mobject.text.text_mobject import Text
 
-import re
-
-from manim import MarkupText
 from manim.mobject.opengl.opengl_surface import OpenGLSurface
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.utils.color import ManimColor
@@ -96,7 +93,6 @@ from ..mobject.mobject import Group, Mobject
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.bezier import integer_interpolate
 from ..utils.rate_functions import double_smooth, linear, smooth
-
 
 class ShowPartial(Animation):
     """Abstract class for Animations that show the VMobject partially.
