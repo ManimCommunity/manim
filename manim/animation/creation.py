@@ -94,6 +94,7 @@ from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.bezier import integer_interpolate
 from ..utils.rate_functions import double_smooth, linear, smooth
 
+
 class ShowPartial(Animation):
     """Abstract class for Animations that show the VMobject partially.
 
