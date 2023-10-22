@@ -77,7 +77,7 @@ should look like this:
            square.flip(RIGHT)                   # flip horizontally
            square.rotate(-3 * TAU / 8)          # rotate a certain amount
 
-           self.play(Create(square))      # animate the creation of the square
+           self.play(Create(square))            # animate the creation of the square
            self.play(Transform(square, circle)) # interpolate the square into the circle
            self.play(FadeOut(square))           # fade out animation
 
@@ -259,10 +259,10 @@ You can also skip rendering all animations belonging to a section like this:
 .. code-block:: python
 
     def construct(self):
-        self.next_section(skip_animations=True)
         # play some animations that shall be skipped...
-        self.next_section()
+        self.next_section(skip_animations=True)
         # play some animations that won't get skipped...
+        self.next_section()
 
 
 
