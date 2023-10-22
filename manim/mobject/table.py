@@ -237,9 +237,6 @@ class Table(VGroup):
         self._organize_mob_table(mob_table)
         self.elements = VGroup(*it.chain(*mob_table))
 
-        if len(self.elements[0].get_all_points()) == 0:
-            self.elements.remove(self.elements[0])
-
         self.add(self.elements)
         self.center()
         self.mob_table = mob_table
