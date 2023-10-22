@@ -78,7 +78,7 @@ Your default movie player will play the MP4 file, displaying the following anima
        def construct(self):
            circle = Circle()                   # create a circle
            circle.set_fill(PINK, opacity=0.5)  # set the color and transparency
-           self.play(Create(circle))     # show the circle on screen
+           self.play(Create(circle))           # show the circle on screen
 
 If you see an animation of a pink circle being drawn, congratulations!
 You just wrote your first Manim scene from scratch.
