@@ -4248,6 +4248,57 @@ files = [
 testing = ["coverage", "pytest", "pytest-randomly", "pytest-xdist"]
 
 [[package]]
+name = "skia-pathops"
+version = "0.8.0.post1"
+description = "Python access to operations on paths using the Skia library"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "skia-pathops-0.8.0.post1.zip", hash = "sha256:a056249de2f61fa55116b9ee55513c6a36b878aee00c91450e404d1606485cbb"},
+    {file = "skia_pathops-0.8.0.post1-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:952a03a19e687caa341ce6966eac03b167de8faea48574d3cf4bb758c2cefcfb"},
+    {file = "skia_pathops-0.8.0.post1-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:003efdbbc4400fffba00e0f9523b6b762269d7e257a6ad45cefbe4844fe04e4a"},
+    {file = "skia_pathops-0.8.0.post1-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:77e8b60380a94bc277a50177f70392646e0cce83c5c8fa8ab5817d813eef0224"},
+    {file = "skia_pathops-0.8.0.post1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:8d7b3361338f80bea1529698c2c66df1bdffc89339b90257d9a8e8e1cbda7f2c"},
+    {file = "skia_pathops-0.8.0.post1-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:8ccd03685b08e2ba7e65005911f0eac224eec3eabff18f9aeb8d757188dc5cbb"},
+    {file = "skia_pathops-0.8.0.post1-cp310-cp310-win32.whl", hash = "sha256:e273b565544b801219bbea6b32c5b1f3f9c2ce4f43870700a859174aa1f6564b"},
+    {file = "skia_pathops-0.8.0.post1-cp310-cp310-win_amd64.whl", hash = "sha256:35b3f990e9f0fc861e962b9bca959ab0de68c095959e0dccc21d7e5076141c12"},
+    {file = "skia_pathops-0.8.0.post1-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:934fafd7e8552b40cf7c6a02b8d3b40ead6dff2f2c0426a26e4b9a031b880a65"},
+    {file = "skia_pathops-0.8.0.post1-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:db4e3a9af2bbd76d2522909cf6d32c84a0a5c6e1f8d3eff18305a960b3645293"},
+    {file = "skia_pathops-0.8.0.post1-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:8973b7dccc96a9273b529f1ccea70f6d05e5b4ff90d0fe7e424a4fcff2134bd6"},
+    {file = "skia_pathops-0.8.0.post1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:27861201a5eabcd50b1d4c94be9cd28749d9236cbbab797e5ca6a293b6c15178"},
+    {file = "skia_pathops-0.8.0.post1-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:30cb3286ff91325f1ae452f9d1bc58b92e4a5c5beeca3bd17b269c6376a0dbfa"},
+    {file = "skia_pathops-0.8.0.post1-cp311-cp311-win32.whl", hash = "sha256:960a387300550a4fed0a66d5c29d26a02d9df965caf9e5ccd1eeef4e225b06c6"},
+    {file = "skia_pathops-0.8.0.post1-cp311-cp311-win_amd64.whl", hash = "sha256:8235e313199be4b250ed32799d3de5a4be7ed60ecd62f19d426518814e6853a7"},
+    {file = "skia_pathops-0.8.0.post1-cp312-cp312-macosx_10_9_universal2.whl", hash = "sha256:3dc8febcb792c2542f05e12a3cee409ae421cdf865878c19d7b525291fa93348"},
+    {file = "skia_pathops-0.8.0.post1-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:25fd0e8a18bc021f5b0b9cab37d607ea5c61f503b9e860d223906954b0c53c43"},
+    {file = "skia_pathops-0.8.0.post1-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:9005f5dc5b162cac0d782e9adb5ecb304ab7ae5c873d2ed2a9895e89bf660ee2"},
+    {file = "skia_pathops-0.8.0.post1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b7b6873b65b682f8cf94a3baf8fccf98219f689e09a08967075bda36da128d57"},
+    {file = "skia_pathops-0.8.0.post1-cp312-cp312-musllinux_1_1_x86_64.whl", hash = "sha256:3a4f111f55811ab9f8cb4ee057823db95355c8a424a2c2272ccda56ec0c48ba4"},
+    {file = "skia_pathops-0.8.0.post1-cp312-cp312-win32.whl", hash = "sha256:69ff7abe4ba02b0c7159ae04d8173b4186336f3809d512e660f5569f39e08572"},
+    {file = "skia_pathops-0.8.0.post1-cp312-cp312-win_amd64.whl", hash = "sha256:bc8792c342795c8d90a71d7df641513372954562b3a851b21c501400dba60dcc"},
+    {file = "skia_pathops-0.8.0.post1-cp38-cp38-macosx_10_9_universal2.whl", hash = "sha256:a5e7dd0b372c72a2c4b15505c31c1cfa0476ae2b46c8d52932a3278653e0afc4"},
+    {file = "skia_pathops-0.8.0.post1-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:08d73f6a6568e1ac486c927035166d9c3bcb6c60bcc10c081d626c05397d2c21"},
+    {file = "skia_pathops-0.8.0.post1-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:7ecece9b39ca2d4ed03bc49364f291f8e94bcd832cbd1e23d5539570d6f22daf"},
+    {file = "skia_pathops-0.8.0.post1-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2af80580d722032e650ffa535173e58c16ac7a222eb8886786c9b6f6b7e1df63"},
+    {file = "skia_pathops-0.8.0.post1-cp38-cp38-musllinux_1_1_x86_64.whl", hash = "sha256:27746a5d18c908f54778654be5a09c2af52b5655977b04650089c962c1700c25"},
+    {file = "skia_pathops-0.8.0.post1-cp38-cp38-win32.whl", hash = "sha256:dab68a6ca259e87a3787ebdb18ebb198711419894cd591d01d3599e036847823"},
+    {file = "skia_pathops-0.8.0.post1-cp38-cp38-win_amd64.whl", hash = "sha256:4c97ae7c611b39641de0aaf7340441615327480eb90dea3ca03dc3ca6aa82b44"},
+    {file = "skia_pathops-0.8.0.post1-cp39-cp39-macosx_10_9_universal2.whl", hash = "sha256:307a94ba2f72601273c187f7fa934b1747dbfeb348dca175c7b40873823711a1"},
+    {file = "skia_pathops-0.8.0.post1-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:5d7acb97291c2107046027fb0671870b7ca0428f55fc550a13cf262d621b8f17"},
+    {file = "skia_pathops-0.8.0.post1-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:434037b8b5ab1824b79d09d2e19a80ad8d2561018d5fb1d167b320e0bb1be7ac"},
+    {file = "skia_pathops-0.8.0.post1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4a3f62afaef14e4a1f02aef3c8d194a04d7735a0e2c700bb4ce39b6c42e8c1ea"},
+    {file = "skia_pathops-0.8.0.post1-cp39-cp39-musllinux_1_1_x86_64.whl", hash = "sha256:143da8261ea047d0752f406448216cf490e4642a9798e7adfadd0bed855c464a"},
+    {file = "skia_pathops-0.8.0.post1-cp39-cp39-win32.whl", hash = "sha256:83091a316bc5d24ee02ba9f4ca5b690478d1b43a50285bd8afcf623a3f58e87e"},
+    {file = "skia_pathops-0.8.0.post1-cp39-cp39-win_amd64.whl", hash = "sha256:01939106a9aa8e756dd4bf376f16fd9ce616cda16aed1ab34d13e67a498db0aa"},
+    {file = "skia_pathops-0.8.0.post1-pp310-pypy310_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2c5b66e5644a4f791e3b1fb1e78559130c042f15f744bc1867c18f9268aafab3"},
+    {file = "skia_pathops-0.8.0.post1-pp38-pypy38_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2d48fd852f3ac7e30f6221ff93e0cfb8593ea897027fd6b36987479eb406fb22"},
+    {file = "skia_pathops-0.8.0.post1-pp39-pypy39_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ed911ba99e2113574b6314d424696e6e302d427c65136ff8df14359bacb794c7"},
+]
+
+[package.extras]
+testing = ["coverage", "pytest", "pytest-randomly", "pytest-xdist"]
+
+[[package]]
 name = "smmap"
 version = "5.0.1"
 description = "A pure Python implementation of a sliding window memory map manager"
@@ -5092,4 +5143,4 @@ jupyterlab = ["jupyterlab", "notebook"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<3.13"
-content-hash = "9eebc98202771710167b3fc07188ffdebc070e90f565bcae2879013c15bbc4d3"
+content-hash = "9f8bf8b9bec22c1032ec1aabd332bb2a961d627df0b69431e28383f6308b5b47"
