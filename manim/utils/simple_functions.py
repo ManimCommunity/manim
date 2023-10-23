@@ -125,7 +125,8 @@ def get_parameters(function: Callable) -> MappingProxyType[str, inspect.Paramete
     --------
     ::
 
-        >>> get_parameters(get_parameters)
+        >>> # Skipping test because of gh-101446 (cypthon)
+        >>> get_parameters(get_parameters)  # doctest: +SKIP
         mappingproxy(OrderedDict([('function', <Parameter "function: 'Callable'">)]))
 
         >>> tuple(get_parameters(choose))
