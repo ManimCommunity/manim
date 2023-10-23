@@ -559,6 +559,11 @@ class Text(SVGMobject):
         # anti-aliasing
         if height is None and width is None:
             self.scale(TEXT_MOB_SCALE_FACTOR)
+
+        # Just a temporary hack to get better triangulation
+        # See pr #1552 for details
+        for i in self.submobjects:
+            i.insert_n_curves(len(i.get_all_points()))
         self.initial_height = self.height
 
     def __repr__(self):
