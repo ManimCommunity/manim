@@ -24,7 +24,7 @@ from ..mobject.mobject import Mobject
 from ..mobject.types.image_mobject import AbstractImageMobject
 from ..mobject.types.point_cloud_mobject import PMobject
 from ..mobject.types.vectorized_mobject import VMobject
-from ..utils.color import color_to_int_rgba
+from ..utils.color import ManimColor, ParsableManimColor, color_to_int_rgba
 from ..utils.family import extract_mobject_family_members
 from ..utils.images import get_full_raster_image_path
 from ..utils.iterables import list_difference_update
@@ -75,6 +75,8 @@ class Camera:
         frame_height: float | None = None,
         frame_width: float | None = None,
         frame_rate: float | None = None,
+        background_color: ParsableManimColor | None = None,
+        background_opacity: float | None = None,
         **kwargs,
     ):
         self.background_image = background_image
@@ -106,9 +108,14 @@ class Camera:
             frame_rate = config["frame_rate"]
         self.frame_rate = frame_rate
 
-        # TODO: change this to not use kwargs.get
-        for attr in ["background_color", "background_opacity"]:
-            setattr(self, f"_{attr}", kwargs.get(attr, config[attr]))
+        if background_color is None:
+            self._background_color = ManimColor.parse(config["background_color"])
+        else:
+            self._background_color = ManimColor.parse(background_color)
+        if background_opacity is None:
+            self._background_opacity = config["background_opacity"]
+        else:
+            self._background_opacity = background_opacity
 
         # This one is in the same boat as the above, but it doesn't have the
         # same name as the corresponding key so it has to be handled on its own
