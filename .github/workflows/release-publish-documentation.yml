@@ -19,7 +19,8 @@ jobs:
 
     - name: Install system dependencies
       run: |
-        sudo apt update && sudo apt install -y pkg-config libcairo-dev libpango1.0-dev ffmpeg wget
+        sudo apt update && sudo apt install -y \
+          pkg-config libcairo-dev libpango1.0-dev ffmpeg wget fonts-roboto
         wget -qO- "https://yihui.org/tinytex/install-bin-unix.sh" | sh
         echo ${HOME}/.TinyTeX/bin/x86_64-linux >> $GITHUB_PATH
 
@@ -37,7 +38,7 @@ jobs:
         cd docs/
         poetry run make html
         cd build/html/
-        tar -czvf ../html-docs.tar.gz
+        tar -czvf ../html-docs.tar.gz *
 
     - name: Store artifacts
       uses: actions/upload-artifact@v3
