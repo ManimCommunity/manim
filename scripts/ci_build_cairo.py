@@ -39,13 +39,12 @@ def is_ci():
 def download_file(url, path):
     logger.info(f"Downloading {url} to {path}")
     block_size = 1024 * 1024
-    with urllib.request.urlopen(url) as response:
-        with open(path, "wb") as file:
-            while True:
-                data = response.read(block_size)
-                if not data:
-                    break
-                file.write(data)
+    with urllib.request.urlopen(url) as response, open(path, "wb") as file:
+        while True:
+            data = response.read(block_size)
+            if not data:
+                break
+            file.write(data)
 
 
 def verify_sha256sum(path, sha256sum):
@@ -94,7 +93,7 @@ def set_env_var_gha(name: str, value: str) -> None:
 
 def main():
     if sys.platform == "win32":
-        logger.info(f"Skipping build on windows")
+        logger.info("Skipping build on windows")
         return
 
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -102,22 +101,22 @@ def main():
             logger.info(f"Downloading cairo version {CAIRO_VERSION}")
             download_file(CAIRO_URL, os.path.join(tmpdir, "cairo.tar.xz"))
 
-            logger.info(f"Downloading cairo sha256sum")
+            logger.info("Downloading cairo sha256sum")
             download_file(CAIRO_SHA256_URL, os.path.join(tmpdir, "cairo.sha256sum"))
 
-            logger.info(f"Verifying cairo sha256sum")
+            logger.info("Verifying cairo sha256sum")
             with open(os.path.join(tmpdir, "cairo.sha256sum")) as file:
                 sha256sum = file.read().split()[0]
             verify_sha256sum(os.path.join(tmpdir, "cairo.tar.xz"), sha256sum)
 
-            logger.info(f"Extracting cairo")
+            logger.info("Extracting cairo")
             extract_tar_xz(os.path.join(tmpdir, "cairo.tar.xz"), tmpdir)
 
         with gha_group("Installing meson and ninja"):
-            logger.info(f"Creating virtual environment")
+            logger.info("Creating virtual environment")
             run_command([sys.executable, "-m", "venv", os.path.join(tmpdir, VENV_NAME)])
 
-            logger.info(f"Installing meson and ninja")
+            logger.info("Installing meson and ninja")
             run_command(
                 [
                     os.path.join(tmpdir, VENV_NAME, "bin", "pip"),
@@ -134,7 +133,7 @@ def main():
         }
 
         with gha_group("Building and Installing Cairo"):
-            logger.info(f"Running meson setup")
+            logger.info("Running meson setup")
             run_command(
                 [
                     os.path.join(tmpdir, VENV_NAME, "bin", "meson"),
@@ -148,7 +147,7 @@ def main():
                 env=env_vars,
             )
 
-            logger.info(f"Running meson compile")
+            logger.info("Running meson compile")
             run_command(
                 [
                     os.path.join(tmpdir, VENV_NAME, "bin", "meson"),
@@ -160,7 +159,7 @@ def main():
                 env=env_vars,
             )
 
-            logger.info(f"Running meson install")
+            logger.info("Running meson install")
             run_command(
                 [
                     os.path.join(tmpdir, VENV_NAME, "bin", "meson"),
