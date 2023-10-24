@@ -172,8 +172,8 @@ def main():
             # append the pkgconfig directory to PKG_CONFIG_PATH
             set_env_var_gha(
                 "PKG_CONFIG_PATH",
-                f'{os.getenv("PKG_CONFIG_PATH", "")}{os.pathsep}'
-                f'{(INSTALL_PREFIX / "lib" / "pkgconfig").absolute().as_posix()}',
+                f'{(INSTALL_PREFIX / "lib" / "pkgconfig").absolute()}{os.pathsep}'
+                f'{os.getenv("PKG_CONFIG_PATH", "")}',
             )
             set_env_var_gha("CAIRO_PREFIX", INSTALL_PREFIX)
 
