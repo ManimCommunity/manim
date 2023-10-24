@@ -86,6 +86,17 @@ def gha_group(title: str) -> typing.Generator:
         stdout.flush()
 
 
+def set_env_var_gha(name: str, value: str) -> None:
+    if not is_ci():
+        return
+    env_file = os.getenv("GITHUB_ENV", None)
+    if env_file is None:
+        return
+    with open(env_file, "a") as file:
+        file.write(f"{name}={value}\n")
+    stdout.flush()
+
+
 def main():
     with tempfile.TemporaryDirectory() as tmpdir:
         with gha_group("Downloading and Extracting Cairo"):
@@ -161,6 +172,15 @@ def main():
             )
 
         logger.info(f"Successfully built cairo and installed it to {INSTALL_PREFIX}")
+
+        with gh_group("Setting environment variables"):
+            # append the pkgconfig directory to PKG_CONFIG_PATH
+            set_env_var_gha(
+                "PKG_CONFIG_PATH",
+                f'{os.getenv("PKG_CONFIG_PATH", "")}{os.pathsep}'
+                f'{(INSTALL_PREFIX / "lib" / "pkgconfig").absolute().as_posix()}',
+            )
+            set_env_var_gha("CAIRO_PREFIX", INSTALL_PREFIX)
 
 
 if __name__ == "__main__":
