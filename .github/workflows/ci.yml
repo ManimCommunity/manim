@@ -85,7 +85,7 @@ jobs:
           key: ${{ runner.os }}-dependencies-cairo-${{ hashFiles('scripts/ci_build_cairo.py') }}
 
       - name: Build and install Cairo (Linux and macOS)
-        if: runner.os == 'Linux' || runner.os == 'macOS'
+        if: (runner.os == 'Linux' || runner.os == 'macOS') && steps.cache-cairo.outputs.cache-hit != 'true'
         run: python scripts/ci_build_cairo.py
 
       - name: Setup macOS cache
