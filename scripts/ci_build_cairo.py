@@ -1,0 +1,167 @@
+# Logic is as follows:
+# 1. Download cairo source code: https://cairographics.org/releases/cairo-<version>.tar.xz
+# 2. Verify the downloaded file using the sha256sums file: https://cairographics.org/releases/cairo-<version>.tar.xz.sha256sum
+# 3. Extract the downloaded file.
+# 4. Create a virtual environment and install meson and ninja.
+# 5. Run meson build in the extracted directory. Also, set required prefix.
+# 6. Run meson compile -C build.
+# 7. Run meson install -C build.
+
+import hashlib
+import logging
+import os
+import subprocess
+import sys
+import tarfile
+import tempfile
+import typing
+from contextlib import contextmanager
+from pathlib import Path
+from sys import stdout
+
+import requests
+from tqdm import tqdm
+
+CAIRO_VERSION = "1.18.0"
+CAIRO_URL = f"https://cairographics.org/releases/cairo-{CAIRO_VERSION}.tar.xz"
+CAIRO_SHA256_URL = f"{CAIRO_URL}.sha256sum"
+
+VENV_NAME = "meson-venv"
+BUILD_DIR = "build"
+INSTALL_PREFIX = Path(__file__).parent.parent / "third_party" / "cairo"
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+logger = logging.getLogger(__name__)
+
+
+def is_ci():
+    return os.getenv("CI", None) is not None
+
+
+def download_file(url, path):
+    logger.info(f"Downloading {url} to {path}")
+    response = requests.get(url, stream=True)
+    total_size_in_bytes = int(response.headers.get("content-length", 0))
+    block_size = 1024
+    progress_bar = tqdm(total=total_size_in_bytes, unit="iB", unit_scale=True)
+    with open(path, "wb") as file:
+        for data in response.iter_content(block_size):
+            progress_bar.update(len(data))
+            file.write(data)
+    progress_bar.close()
+    if total_size_in_bytes != 0 and progress_bar.n != total_size_in_bytes:
+        raise Exception("Download failed")
+
+
+def verify_sha256sum(path, sha256sum):
+    with open(path, "rb") as file:
+        file_hash = hashlib.sha256(file.read()).hexdigest()
+    if file_hash != sha256sum:
+        raise Exception("SHA256SUM does not match")
+
+
+def extract_tar_xz(path, directory):
+    with tarfile.open(path) as file:
+        file.extractall(directory)
+
+
+def run_command(command, cwd=None, env=None):
+    process = subprocess.Popen(command, cwd=cwd, env=env)
+    process.communicate()
+    if process.returncode != 0:
+        raise Exception("Command failed")
+
+
+@contextmanager
+def gha_group(title: str) -> typing.Generator:
+    if not is_ci():
+        yield
+        return
+    print(f"\n::group::{title}")
+    stdout.flush()
+    try:
+        yield
+    finally:
+        print("::endgroup::")
+        stdout.flush()
+
+
+def main():
+    with tempfile.TemporaryDirectory() as tmpdir:
+        with gha_group("Downloading and Extracting Cairo"):
+            logger.info(f"Downloading cairo version {CAIRO_VERSION}")
+            download_file(CAIRO_URL, os.path.join(tmpdir, "cairo.tar.xz"))
+
+            logger.info(f"Downloading cairo sha256sum")
+            download_file(CAIRO_SHA256_URL, os.path.join(tmpdir, "cairo.sha256sum"))
+
+            logger.info(f"Verifying cairo sha256sum")
+            with open(os.path.join(tmpdir, "cairo.sha256sum")) as file:
+                sha256sum = file.read().split()[0]
+            verify_sha256sum(os.path.join(tmpdir, "cairo.tar.xz"), sha256sum)
+
+            logger.info(f"Extracting cairo")
+            extract_tar_xz(os.path.join(tmpdir, "cairo.tar.xz"), tmpdir)
+
+        with gha_group("Installing meson and ninja"):
+            logger.info(f"Creating virtual environment")
+            run_command([sys.executable, "-m", "venv", os.path.join(tmpdir, VENV_NAME)])
+
+            logger.info(f"Installing meson and ninja")
+            run_command(
+                [
+                    os.path.join(tmpdir, VENV_NAME, "bin", "pip"),
+                    "install",
+                    "meson",
+                    "ninja",
+                ]
+            )
+
+        env_vars = {
+            "PKG_CONFIG_PATH": INSTALL_PREFIX / "lib" / "pkgconfig",
+            # add the venv bin directory to PATH so that meson can find ninja
+            "PATH": f"{os.path.join(tmpdir, VENV_NAME, 'bin')}{os.pathsep}{os.environ['PATH']}",
+        }
+
+        with gha_group("Building and Installing Cairo"):
+            logger.info(f"Running meson setup")
+            run_command(
+                [
+                    os.path.join(tmpdir, VENV_NAME, "bin", "meson"),
+                    "setup",
+                    BUILD_DIR,
+                    f"--prefix={INSTALL_PREFIX.absolute().as_posix()}",
+                ],
+                cwd=os.path.join(tmpdir, f"cairo-{CAIRO_VERSION}"),
+                env=env_vars,
+            )
+
+            logger.info(f"Running meson compile")
+            run_command(
+                [
+                    os.path.join(tmpdir, VENV_NAME, "bin", "meson"),
+                    "compile",
+                    "-C",
+                    BUILD_DIR,
+                ],
+                cwd=os.path.join(tmpdir, f"cairo-{CAIRO_VERSION}"),
+                env=env_vars,
+            )
+
+            logger.info(f"Running meson install")
+            run_command(
+                [
+                    os.path.join(tmpdir, VENV_NAME, "bin", "meson"),
+                    "install",
+                    "-C",
+                    BUILD_DIR,
+                ],
+                cwd=os.path.join(tmpdir, f"cairo-{CAIRO_VERSION}"),
+                env=env_vars,
+            )
+
+        logger.info(f"Successfully built cairo and installed it to {INSTALL_PREFIX}")
+
+
+if __name__ == "__main__":
+    main()
