@@ -52,7 +52,7 @@ class STD140BufferFormat:
             base_char, base_bytesize, shape = self._GL_DTYPES[data_type]
             shape = dict(enumerate(shape))
             col_len, row_len = shape.get(0, 1), shape.get(1, 1)
-            col_padding = 0 if row_len == 1 and col_len == 1 else 4 - col_len
+            col_padding = 0 if row_len == 1 and (col_len == 1 or col_len == 2) else 4 - col_len
             self._offsets[var_name] = col_padding
             shape = (col_len + col_padding,)
             if row_len > 1:
@@ -63,6 +63,7 @@ class STD140BufferFormat:
                 self.dtype.append(
                     (f"padding-{byte_offset}", base_bytesize, padding_for_alignment)
                 )
+                byte_offset += padding_for_alignment[0]*4
             self.dtype.append((var_name, base_bytesize, final_shape))
             byte_offset += math.prod(final_shape + (base_bytesize(0).nbytes,))
         self.data = np.zeros(1, dtype=self.dtype)
@@ -77,4 +78,6 @@ class STD140BufferFormat:
 
     def write(self, data: dict) -> None:
         for key, val in data.items():
+
+            # print("WRITING", key,val)
             self.data[key] = self._write_padded(val, key)
