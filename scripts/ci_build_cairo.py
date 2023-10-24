@@ -141,6 +141,8 @@ def main():
                     "setup",
                     BUILD_DIR,
                     f"--prefix={INSTALL_PREFIX.absolute().as_posix()}",
+                    "--buildtype=release",
+                    "-Dtests=disabled",
                 ],
                 cwd=os.path.join(tmpdir, f"cairo-{CAIRO_VERSION}"),
                 env=env_vars,
