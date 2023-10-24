@@ -21,7 +21,7 @@ jobs:
       run: |
         sudo apt update && sudo apt install -y pkg-config libcairo-dev libpango1.0-dev ffmpeg wget
         wget -qO- "https://yihui.org/tinytex/install-bin-unix.sh" | sh
-        export PATH=$PATH:$HOME/bin
+        echo ${HOME}/bin >> $GITHUB_PATH
         tlmgr install \
           babel-english ctex doublestroke dvisvgm frcursive fundus-calligra jknapltx \
           mathastext physics preview ragged2e relsize rsfs setspace standalone wasy \
