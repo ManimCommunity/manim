@@ -98,7 +98,7 @@ def get_ld_library_path(prefix: Path) -> str:
 
     # first, check if the ld library path exists at <prefix>/lib/*
     ld_library_paths = list(prefix.glob("lib/*"))
-    if len(ld_library_paths) != 0:
+    if len(ld_library_paths) == 1:
         return ld_library_paths[0].absolute().as_posix()
 
     # if the ld library path does not exist at <prefix>/lib/*,
