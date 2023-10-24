@@ -12,6 +12,7 @@ except ModuleNotFoundError:  # windows
     pass
 
 import moderngl
+import pycairo
 
 # If it is running Doctest the current directory
 # is changed because it also tests the config module
@@ -39,6 +40,7 @@ def pytest_report_header(config):
     info = ctx.info
     ctx.release()
     return (
+        f"\nCairo Version: {pycairo.cairo_version()}",
         "\nOpenGL information",
         "------------------",
         f"vendor: {info['GL_VENDOR'].strip()}",
