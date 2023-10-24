@@ -27,8 +27,8 @@ jobs:
       run: |
         tlmgr install \
           babel-english ctex doublestroke dvisvgm frcursive fundus-calligra jknapltx \
-          mathastext physics preview ragged2e relsize rsfs setspace standalone wasy \
-          wasysym
+          mathastext microtype physics preview ragged2e relsize rsfs setspace standalone \
+          wasy wasysym
         python -m pip install --upgrade poetry
         poetry install
 
