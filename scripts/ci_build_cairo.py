@@ -91,6 +91,24 @@ def set_env_var_gha(name: str, value: str) -> None:
     stdout.flush()
 
 
+def get_pkg_config_path(prefix: Path) -> str:
+    # given a prefix, the pkgconfig directory can be found at
+    # <prefix>/lib/pkgconfig or <prefix>/lib/*/pkgconfig
+    # this function returns the path to the pkgconfig directory
+
+    # first, check if the pkgconfig directory exists at <prefix>/lib/pkgconfig
+    pkgconfig_path = prefix / "lib" / "pkgconfig"
+    if pkgconfig_path.exists():
+        return pkgconfig_path.absolute().as_posix()
+
+    # if the pkgconfig directory does not exist at <prefix>/lib/pkgconfig,
+    # check if it exists at <prefix>/lib/*/pkgconfig
+    pkgconfig_paths = list(prefix.glob("lib/*/pkgconfig"))
+    if len(pkgconfig_paths) == 0:
+        raise Exception("pkgconfig directory not found")
+    return pkgconfig_paths[0].absolute().as_posix()
+
+
 def main():
     if sys.platform == "win32":
         logger.info("Skipping build on windows")
@@ -127,7 +145,6 @@ def main():
             )
 
         env_vars = {
-            "PKG_CONFIG_PATH": INSTALL_PREFIX / "lib" / "pkgconfig",
             # add the venv bin directory to PATH so that meson can find ninja
             "PATH": f"{os.path.join(tmpdir, VENV_NAME, 'bin')}{os.pathsep}{os.environ['PATH']}",
         }
@@ -177,7 +194,7 @@ def main():
             # append the pkgconfig directory to PKG_CONFIG_PATH
             set_env_var_gha(
                 "PKG_CONFIG_PATH",
-                f'{(INSTALL_PREFIX / "lib" / "pkgconfig").absolute()}{os.pathsep}'
+                f"{get_pkg_config_path(INSTALL_PREFIX)}{os.pathsep}"
                 f'{os.getenv("PKG_CONFIG_PATH", "")}',
             )
             set_env_var_gha("CAIRO_PREFIX", INSTALL_PREFIX)
