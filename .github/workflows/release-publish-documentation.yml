@@ -7,7 +7,7 @@ on:
     branches: [main, fix-docbuild-zip]
 
 jobs:
-  release:
+  build-and-publish-htmldocs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -32,7 +32,7 @@ jobs:
     - name: Build and package documentation
       run: |
         cd docs/
-        make html
+        poetry run make html
         cd build/html/
         tar -czvf ../html-docs.tar.gz
 
