@@ -5,6 +5,8 @@ import inspect
 from pathlib import Path
 from typing import Callable
 
+import cairo
+import pytest
 from _pytest.fixtures import FixtureRequest
 
 from manim import Scene
@@ -81,6 +83,9 @@ def frames_comparison(
         @functools.wraps(tested_scene_construct)
         # The "request" parameter is meant to be used as a fixture by pytest. See below.
         def wrapper(*args, request: FixtureRequest, tmp_path, **kwargs):
+            # check for cairo version
+            if renderer_class is CairoRenderer and cairo.cairo_version() < 11800:
+                pytest.skip("Cairo version is too old. Skipping cairo graphical tests.")
             # Wraps the test_function to a construct method, to "freeze" the eventual additional arguments (parametrizations fixtures).
             construct = functools.partial(tested_scene_construct, *args, **kwargs)
 
