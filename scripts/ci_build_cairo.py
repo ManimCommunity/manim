@@ -194,7 +194,7 @@ def main():
             # append the pkgconfig directory to PKG_CONFIG_PATH
             set_env_var_gha(
                 "PKG_CONFIG_PATH",
-                f"{get_ld_library_path(INSTALL_PREFIX) / 'pkgconfig'}{os.pathsep}"
+                f"{Path(get_ld_library_path(INSTALL_PREFIX), 'pkgconfig').as_posix()}{os.pathsep}"
                 f'{os.getenv("PKG_CONFIG_PATH", "")}',
             )
             set_env_var_gha(
