@@ -91,22 +91,22 @@ def set_env_var_gha(name: str, value: str) -> None:
     stdout.flush()
 
 
-def get_pkg_config_path(prefix: Path) -> str:
-    # given a prefix, the pkgconfig directory can be found at
-    # <prefix>/lib/pkgconfig or <prefix>/lib/*/pkgconfig
-    # this function returns the path to the pkgconfig directory
+def get_ld_library_path(prefix: Path) -> str:
+    # given a prefix, the ld library path can be found at
+    # <prefix>/lib/* or sometimes just <prefix>/lib
+    # this function returns the path to the ld library path
 
-    # first, check if the pkgconfig directory exists at <prefix>/lib/pkgconfig
-    pkgconfig_path = prefix / "lib" / "pkgconfig"
-    if pkgconfig_path.exists():
-        return pkgconfig_path.absolute().as_posix()
+    # first, check if the ld library path exists at <prefix>/lib/*
+    ld_library_paths = list(prefix.glob("lib/*"))
+    if len(ld_library_paths) != 0:
+        return ld_library_paths[0].absolute().as_posix()
 
-    # if the pkgconfig directory does not exist at <prefix>/lib/pkgconfig,
-    # check if it exists at <prefix>/lib/*/pkgconfig
-    pkgconfig_paths = list(prefix.glob("lib/*/pkgconfig"))
-    if len(pkgconfig_paths) == 0:
-        raise Exception("pkgconfig directory not found")
-    return pkgconfig_paths[0].absolute().as_posix()
+    # if the ld library path does not exist at <prefix>/lib/*,
+    # return <prefix>/lib
+    ld_library_path = prefix / "lib"
+    if ld_library_path.exists():
+        return ld_library_path.absolute().as_posix()
+    return ""
 
 
 def main():
@@ -194,8 +194,13 @@ def main():
             # append the pkgconfig directory to PKG_CONFIG_PATH
             set_env_var_gha(
                 "PKG_CONFIG_PATH",
-                f"{get_pkg_config_path(INSTALL_PREFIX)}{os.pathsep}"
+                f"{get_ld_library_path(INSTALL_PREFIX) / 'pkgconfig'}{os.pathsep}"
                 f'{os.getenv("PKG_CONFIG_PATH", "")}',
+            )
+            set_env_var_gha(
+                "LD_LIBRARY_PATH",
+                f"{get_ld_library_path(INSTALL_PREFIX)}{os.pathsep}"
+                f'{os.getenv("LD_LIBRARY_PATH", "")}',
             )
             set_env_var_gha("CAIRO_PREFIX", INSTALL_PREFIX)
 
