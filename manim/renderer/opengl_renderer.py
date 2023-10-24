@@ -9,6 +9,7 @@ from typing_extensions import override
 
 import manim.constants as const
 import manim.utils.color.manim_colors as color
+from manim.renderer.buffers.buffer import STD140BufferFormat 
 from manim._config import config, logger
 from manim.camera.camera import OpenGLCameraFrame
 from manim.mobject.types.vectorized_mobject import VMobject
@@ -23,6 +24,19 @@ if TYPE_CHECKING:
 
 import manim.utils.color.core as c
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+
+ubo_camera = STD140BufferFormat(
+    "ubo_camera",
+    (
+        ("vec2", "frame_shape"), 
+        ("vec3", "camera_center"), 
+        ("mat3", "camera_rotation"), 
+        ("float", "focal_distance"),
+        ("float", "is_fixed_in_frame"),
+        ("float", "is_fixed_orientation"),
+        ("vec3", "fixed_orientation_center"),
+    )
+)
 
 fill_dtype = [
     ("point", np.float32, (3,)),
@@ -193,6 +207,10 @@ class ProgramManager:
                 if name in uniforms:
                     member.value = uniforms[name]
 
+    @staticmethod
+    def bind_to_uniform_block(uniform_buffer_object: gl.Buffer, idx: int = 0):
+        uniform_buffer_object.bind_to_uniform_block(idx)
+
 
 class OpenGLRenderer(Renderer):
     pixel_array_dtype = np.uint8
@@ -217,7 +235,7 @@ class OpenGLRenderer(Renderer):
 
         # Initializing Context
         logger.debug("Initializing OpenGL context and framebuffers")
-        self.ctx = gl.create_context()
+        self.ctx: gl.Context = gl.create_context()
 
         # Those are the actual buffers that are used for rendering
         self.stencil_texture = self.ctx.texture(
@@ -281,21 +299,26 @@ class OpenGLRenderer(Renderer):
         self.output_fbo = self.ctx.detect_framebuffer()
 
     def init_camera(self, camera: OpenGLCameraFrame):
-        # uniforms = dict()
-        # uniforms["frame_shape"] = camera.frame_shape
-        # uniforms["focal_distance"] = camera.get_focal_distance()
-        # uniforms["camera_center"] = tuple(camera.get_center())
-        # uniforms["camera_rotation"] = tuple(
-        #     np.array(camera.get_inverse_camera_rotation_matrix()).T.flatten()
-        # )
-        # uniforms["light_source_position"] = (-10, 10, 10)
-        # uniforms["anti_alias_width"] = 0.01977
-        uniforms = camera.ubo._data_dict_
-        print("UNIS",uniforms)
+        camera_data = {
+            "frame_shape": (14.2222222221, 8.0),
+            "camera_center": camera.get_center(),
+            "camera_rotation": camera.get_inverse_camera_rotation_matrix().T,
+            "focal_distance": camera.get_focal_distance(),
+            "is_fixed_in_frame": 0.0,
+            "is_fixed_orientation": 0.0,
+            "fixed_orientation_center": np.array([0.0, 0.0, 0.0])
+        }
+        ubo_camera.write(camera_data)
+
+        uniforms = dict()
+        uniforms["anti_alias_width"] = 0.01977
+        uniforms["light_source_position"] = (-10, 10, 10)
         uniforms["pixel_shape"] = (self.pixel_width, self.pixel_height)
 
+        buffer = self.ctx.buffer(ubo_camera.data)
         # TODO: convert to singular 4x4 matrix after getting *something* to render
         # self.vmobject_fill_program['view'].value = camera.get_view()?
+        ProgramManager.bind_to_uniform_block(buffer)
         ProgramManager.write_uniforms(self.vmobject_fill_program, uniforms)
         ProgramManager.write_uniforms(self.vmobject_stroke_program, uniforms)
 
