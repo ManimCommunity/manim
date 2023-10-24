@@ -93,6 +93,10 @@ def set_env_var_gha(name: str, value: str) -> None:
 
 
 def main():
+    if sys.platform == "win32":
+        logger.info(f"Skipping build on windows")
+        return
+
     with tempfile.TemporaryDirectory() as tmpdir:
         with gha_group("Downloading and Extracting Cairo"):
             logger.info(f"Downloading cairo version {CAIRO_VERSION}")
