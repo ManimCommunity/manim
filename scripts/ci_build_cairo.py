@@ -15,12 +15,10 @@ import sys
 import tarfile
 import tempfile
 import typing
+import urllib.request
 from contextlib import contextmanager
 from pathlib import Path
 from sys import stdout
-
-import requests
-from tqdm import tqdm
 
 CAIRO_VERSION = "1.18.0"
 CAIRO_URL = f"https://cairographics.org/releases/cairo-{CAIRO_VERSION}.tar.xz"
@@ -40,17 +38,14 @@ def is_ci():
 
 def download_file(url, path):
     logger.info(f"Downloading {url} to {path}")
-    response = requests.get(url, stream=True)
-    total_size_in_bytes = int(response.headers.get("content-length", 0))
-    block_size = 1024
-    progress_bar = tqdm(total=total_size_in_bytes, unit="iB", unit_scale=True)
-    with open(path, "wb") as file:
-        for data in response.iter_content(block_size):
-            progress_bar.update(len(data))
-            file.write(data)
-    progress_bar.close()
-    if total_size_in_bytes != 0 and progress_bar.n != total_size_in_bytes:
-        raise Exception("Download failed")
+    block_size = 1024 * 1024
+    with urllib.request.urlopen(url) as response:
+        with open(path, "wb") as file:
+            while True:
+                data = response.read(block_size)
+                if not data:
+                    break
+                file.write(data)
 
 
 def verify_sha256sum(path, sha256sum):
@@ -173,7 +168,7 @@ def main():
 
         logger.info(f"Successfully built cairo and installed it to {INSTALL_PREFIX}")
 
-        with gh_group("Setting environment variables"):
+        with gha_group("Setting environment variables"):
             # append the pkgconfig directory to PKG_CONFIG_PATH
             set_env_var_gha(
                 "PKG_CONFIG_PATH",
