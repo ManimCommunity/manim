@@ -80,6 +80,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: /home/runner/work/manim/manim/docs/build/html-docs.tar.gz
+          asset_path: ${{ github.workspace }}/manim/docs/build/html-docs.tar.gz
           asset_name: manim-htmldocs-${{ steps.create_release.outputs.tag_name }}.tar.gz
           asset_content_type: application/gzip
