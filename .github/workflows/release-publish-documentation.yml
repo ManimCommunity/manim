@@ -3,8 +3,7 @@ name: Publish downloadable documentation
 on:
   release:
     types: [released]
-  pull_request:
-    branches: [main, fix-docbuild-zip]
+  workflow_dispatch:
 
 jobs:
   build-and-publish-htmldocs:
