@@ -46,38 +46,64 @@ class STD140BufferFormat:
         struct: tuple[(str, str), ...],
     ) -> None:
         self.dtype = []
-        self._offsets = dict()
-        byte_offset = 0
+        self._paddings = dict()  # LUT for future writes
+        byte_offset = 0  # Track the offset so we can calculate padding for alignment -- NOTE: use RenderDoc to debug
         for data_type, var_name in struct:
             base_char, base_bytesize, shape = self._GL_DTYPES[data_type]
             shape = dict(enumerate(shape))
             col_len, row_len = shape.get(0, 1), shape.get(1, 1)
-            col_padding = 0 if row_len == 1 and (col_len == 1 or col_len == 2) else 4 - col_len
-            self._offsets[var_name] = col_padding
+            # Calculate padding for NON (float/vec2) items
+            col_padding = (
+                0 if row_len == 1 and (col_len == 1 or col_len == 2) else 4 - col_len
+            )
+            # Store padding in LUT
+            self._paddings[var_name] = col_padding
             shape = (col_len + col_padding,)
             if row_len > 1:
                 shape = (row_len,) + shape
             final_shape = shape
-            if byte_offset % 16 != 0 and col_len != 1:
+            if (
+                byte_offset % 16 != 0 and col_len != 1
+            ):  # Ensure NON (float/vec2) items are aligned to the next 16 bytes alignment
                 padding_for_alignment = (((16 - byte_offset) % 16) // 4,)
                 self.dtype.append(
                     (f"padding-{byte_offset}", base_bytesize, padding_for_alignment)
                 )
-                byte_offset += padding_for_alignment[0]*4
+                byte_offset += padding_for_alignment[0] * 4  # padding adds to offset
             self.dtype.append((var_name, base_bytesize, final_shape))
-            byte_offset += math.prod(final_shape + (base_bytesize(0).nbytes,))
+            byte_offset += math.prod(
+                final_shape + (base_bytesize(0).nbytes,)
+            )  # data adds to offset
         self.data = np.zeros(1, dtype=self.dtype)
 
+    def _write_padded(self, data: tuple | np.ndarray, var: str) -> np.ndarray:
+        """Automatically adds padding to data if necessary. Used internally by write
 
-    def _write_padded(self, data, var: str) -> np.ndarray:
-        """Automatically adds padding to data if necessary. Used by write"""
+        Parameters
+        ----------
+        data : tuple | np.ndarray
+            tuple or numpy array containing int/float values
+        var : str
+            the variable name used to reference the data. used in LUT to determine required padding
+
+        Returns
+        -------
+        np.ndarray
+            the same data with 0 or 1 columns of 0s appended
+        """
         try:
-            return np.pad(data, ((0, 0), (0, self._offsets[var])), mode="constant")
+            # This fails for 1D data (python or np.array)
+            return np.pad(data, ((0, 0), (0, self._paddings[var])), mode="constant")
         except:
-            return np.pad(data, ((0, self._offsets[var])), mode="constant")
+            return np.pad(data, ((0, self._paddings[var])), mode="constant")
 
     def write(self, data: dict) -> None:
-        for key, val in data.items():
+        """Write a dictionary of key value pairs to the STD140BufferFormat's data attribute
 
-            # print("WRITING", key,val)
+        Parameters
+        ----------
+        data : dict
+            keys/values in the dictionary must match the variable names/data shapes in the constructor
+        """
+        for key, val in data.items():
             self.data[key] = self._write_padded(val, key)

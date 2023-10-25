@@ -9,7 +9,7 @@ from typing_extensions import override
 
 import manim.constants as const
 import manim.utils.color.manim_colors as color
-from manim.renderer.buffers.buffer import STD140BufferFormat 
+from manim.renderer.buffers.buffer import STD140BufferFormat
 from manim._config import config, logger
 from manim.camera.camera import OpenGLCameraFrame
 from manim.mobject.types.vectorized_mobject import VMobject
@@ -28,14 +28,14 @@ from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 ubo_camera = STD140BufferFormat(
     "ubo_camera",
     (
-        ("vec2", "frame_shape"), 
-        ("vec3", "camera_center"), 
-        ("mat3", "camera_rotation"), 
+        ("vec2", "frame_shape"),
+        ("vec3", "camera_center"),
+        ("mat3", "camera_rotation"),
         ("float", "focal_distance"),
         ("float", "is_fixed_in_frame"),
         ("float", "is_fixed_orientation"),
         ("vec3", "fixed_orientation_center"),
-    )
+    ),
 )
 
 fill_dtype = [
@@ -306,7 +306,7 @@ class OpenGLRenderer(Renderer):
             "focal_distance": camera.get_focal_distance(),
             "is_fixed_in_frame": 0.0,
             "is_fixed_orientation": 0.0,
-            "fixed_orientation_center": np.array([0.0, 0.0, 0.0])
+            "fixed_orientation_center": np.array([0.0, 0.0, 0.0]),
         }
         ubo_camera.write(camera_data)
 
