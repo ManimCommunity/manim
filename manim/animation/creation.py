@@ -94,6 +94,7 @@ from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.bezier import integer_interpolate
 from ..utils.rate_functions import double_smooth, linear, smooth
 
+
 class ShowPartial(Animation):
     """Abstract class for Animations that show the VMobject partially.
 
@@ -562,22 +563,20 @@ class AddTextLetterByLetter(ShowIncreasingSubsets):
         **kwargs,
     ) -> None:
         self.time_per_char = time_per_char
-
         # Check for empty text using family_members_with_points()
         if not text.family_members_with_points():
             raise ValueError(
-                "The input text is empty i.e., input has no characters to read thus cannot render a video file."
+                f"The text mobject {text} does not seem to contain any characters."
             )
-
         if run_time is None:
+            # minimum time per character is 1/frame_rate, otherwise
+            # the animation does not finish.
             run_time = np.max((1 / config.frame_rate, self.time_per_char)) * len(text)
-
         super().__init__(
             text,
             suspend_mobject_updating=suspend_mobject_updating,
             int_func=int_func,
             rate_func=rate_func,
-            time_per_char=time_per_char,
             run_time=run_time,
             reverse_rate_function=reverse_rate_function,
             introducer=introducer,
