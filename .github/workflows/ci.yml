@@ -82,11 +82,11 @@ jobs:
         if: runner.os == 'Linux' || runner.os == 'macOS'
         with:
           path: ${{ github.workspace }}/third_party
-          key: ${{ runner.os }}-dependencies-cairo-${{ hashFiles('scripts/ci_build_cairo.py') }}
+          key: ${{ runner.os }}-dependencies-cairo-${{ hashFiles('.github/scripts/ci_build_cairo.py') }}
 
       - name: Build and install Cairo (Linux and macOS)
         if: (runner.os == 'Linux' || runner.os == 'macOS') && steps.cache-cairo.outputs.cache-hit != 'true'
-        run: python scripts/ci_build_cairo.py
+        run: python .github/scripts/ci_build_cairo.py
 
       - name: Setup macOS cache
         uses: actions/cache@v3
