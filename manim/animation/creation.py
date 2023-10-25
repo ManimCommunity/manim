@@ -583,6 +583,7 @@ class AddTextLetterByLetter(ShowIncreasingSubsets):
             **kwargs,
         )
 
+
 class RemoveTextLetterByLetter(AddTextLetterByLetter):
     """Remove a :class:`~.Text` letter by letter from the scene.
 

@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-import pytest
-from manim import Text, AddTextLetterByLetter, config
 import numpy as np
+import pytest
+
+from manim import AddTextLetterByLetter, Text, config
 
 
 def test_non_empty_text_creation():
