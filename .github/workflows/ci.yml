@@ -88,6 +88,10 @@ jobs:
         if: (runner.os == 'Linux' || runner.os == 'macOS') && steps.cache-cairo.outputs.cache-hit != 'true'
         run: python .github/scripts/ci_build_cairo.py
 
+      - name: Set env vars for Cairo (Linux and macOS)
+        if: runner.os == 'Linux' || runner.os == 'macOS'
+        run: python .github/scripts/ci_build_cairo.py --set-env-vars
+
       - name: Setup macOS cache
         uses: actions/cache@v3
         id: cache-macos

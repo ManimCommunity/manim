@@ -190,6 +190,9 @@ def main():
 
         logger.info(f"Successfully built cairo and installed it to {INSTALL_PREFIX}")
 
+
+if __name__ == "__main__":
+    if "--set-env-vars" in sys.argv:
         with gha_group("Setting environment variables"):
             # append the pkgconfig directory to PKG_CONFIG_PATH
             set_env_var_gha(
@@ -202,8 +205,5 @@ def main():
                 f"{get_ld_library_path(INSTALL_PREFIX)}{os.pathsep}"
                 f'{os.getenv("LD_LIBRARY_PATH", "")}',
             )
-            set_env_var_gha("CAIRO_PREFIX", INSTALL_PREFIX)
-
-
-if __name__ == "__main__":
+        sys.exit(0)
     main()
