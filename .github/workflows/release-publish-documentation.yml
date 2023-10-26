@@ -1,11 +1,12 @@
-name: Publish Release
+name: Publish downloadable documentation
 
 on:
   release:
     types: [released]
+  workflow_dispatch:
 
 jobs:
-  release:
+  build-and-publish-htmldocs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -15,28 +16,40 @@ jobs:
       with:
         python-version: 3.11
 
-    - name: Install dependencies
-      run: python -m pip install --upgrade poetry
-
-    # TODO: Set PYPI_API_TOKEN to api token from pip in secrets
-    - name: Configure pypi credentials
-      env:
-        PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
-      run: poetry config http-basic.pypi __token__ "$PYPI_API_TOKEN"
-
-    - name: Publish release to pypi
+    - name: Install system dependencies
       run: |
-        poetry publish --build
-        poetry build
+        sudo apt update && sudo apt install -y \
+          pkg-config libcairo-dev libpango1.0-dev ffmpeg wget fonts-roboto
+        wget -qO- "https://yihui.org/tinytex/install-bin-unix.sh" | sh
+        echo ${HOME}/.TinyTeX/bin/x86_64-linux >> $GITHUB_PATH
+
+    - name: Install LaTeX and Python dependencies
+      run: |
+        tlmgr install \
+          babel-english ctex doublestroke dvisvgm frcursive fundus-calligra jknapltx \
+          mathastext microtype physics preview ragged2e relsize rsfs setspace standalone \
+          wasy wasysym
+        python -m pip install --upgrade poetry
+        poetry install
+
+    - name: Build and package documentation
+      run: |
+        cd docs/
+        poetry run make html
+        cd build/html/
+        tar -czvf ../html-docs.tar.gz *
 
     - name: Store artifacts
       uses: actions/upload-artifact@v3
       with:
-          path: dist/*.tar.gz
-          name: manim.tar.gz
+          path: ${{ github.workspace }}/manim/docs/build/html-docs.tar.gz
+          name: html-docs.tar.gz
+
     - name: Install Dependency
       run: pip install requests
+
     - name: Get Upload URL
+      if: github.event == 'release'
       id: create_release
       shell: python
       env:
@@ -59,12 +72,13 @@ jobs:
             print(f"tag_name={ref_tag[1:]}", file=f)
 
     - name: Upload Release Asset
+      if: github.event == 'release'
       id: upload-release
       uses: actions/upload-release-asset@v1
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: dist/manim-${{ steps.create_release.outputs.tag_name }}.tar.gz
-          asset_name: manim-${{ steps.create_release.outputs.tag_name }}.tar.gz
+          asset_path: ${{ github.workspace }}/manim/docs/build/html-docs.tar.gz
+          asset_name: manim-htmldocs-${{ steps.create_release.outputs.tag_name }}.tar.gz
           asset_content_type: application/gzip
