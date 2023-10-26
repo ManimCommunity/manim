@@ -42,7 +42,7 @@ jobs:
     - name: Store artifacts
       uses: actions/upload-artifact@v3
       with:
-          path: /home/runner/work/manim/manim/docs/build/html-docs.tar.gz
+          path: ${{ github.workspace }}/manim/docs/build/html-docs.tar.gz
           name: html-docs.tar.gz
 
     - name: Install Dependency
