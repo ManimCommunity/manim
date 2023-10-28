@@ -55,7 +55,7 @@ from manim.utils.space_ops import angle_of_vector
 
 if TYPE_CHECKING:
     from manim.mobject.mobject import Mobject
-    from manim.typing import Point2D
+    from manim.typing import ManimFloat, Point2D, Point3D, Vector3
 
     LineType = TypeVar("LineType", bound=Line)
 
@@ -145,10 +145,10 @@ class CoordinateSystem:
         self.y_length = y_length
         self.num_sampled_graph_points_per_tick = 10
 
-    def coords_to_point(self, *coords):
+    def coords_to_point(self, *coords: Sequence[ManimFloat]):
         raise NotImplementedError()
 
-    def point_to_coords(self, point):
+    def point_to_coords(self, point: Point3D):
         raise NotImplementedError()
 
     def polar_to_point(self, radius: float, azimuth: float) -> Point2D:
@@ -204,7 +204,7 @@ class CoordinateSystem:
         """Abbreviation for :meth:`coords_to_point`"""
         return self.coords_to_point(*coords)
 
-    def p2c(self, point: np.ndarray):
+    def p2c(self, point: Point3D):
         """Abbreviation for :meth:`point_to_coords`"""
         return self.point_to_coords(point)
 
@@ -2341,7 +2341,7 @@ class ThreeDAxes(Axes):
         y_length: float | None = config.frame_height + 2.5,
         z_length: float | None = config.frame_height - 1.5,
         z_axis_config: dict[str, Any] | None = None,
-        z_normal: Sequence[float] = DOWN,
+        z_normal: Vector3 = DOWN,
         num_axis_pieces: int = 20,
         light_source: Sequence[float] = 9 * DOWN + 7 * LEFT + 10 * OUT,
         # opengl stuff (?)
@@ -2431,8 +2431,8 @@ class ThreeDAxes(Axes):
         edge: Sequence[float] = UR,
         direction: Sequence[float] = UR,
         buff: float = SMALL_BUFF,
-        rotation=PI / 2,
-        rotation_axis=OUT,
+        rotation: float = PI / 2,
+        rotation_axis: Vector3 = OUT,
         **kwargs,
     ) -> Mobject:
         """Generate a y-axis label.
@@ -2479,11 +2479,11 @@ class ThreeDAxes(Axes):
     def get_z_axis_label(
         self,
         label: float | str | Mobject,
-        edge: Sequence[float] = OUT,
-        direction: Sequence[float] = RIGHT,
+        edge: Vector3 = OUT,
+        direction: Vector3 = RIGHT,
         buff: float = SMALL_BUFF,
         rotation: float = PI / 2,
-        rotation_axis: Sequence[float] = RIGHT,
+        rotation_axis: Vector3 = RIGHT,
         **kwargs: Any,
     ) -> Mobject:
         """Generate a z-axis label.
@@ -2836,7 +2836,7 @@ class NumberPlane(Axes):
                     lines2.add(new_line)
         return lines1, lines2
 
-    def get_vector(self, coords: Sequence[float], **kwargs: Any) -> Arrow:
+    def get_vector(self, coords: Sequence[ManimFloat], **kwargs: Any) -> Arrow:
         kwargs["buff"] = 0
         return Arrow(
             self.coords_to_point(0, 0), self.coords_to_point(*coords), **kwargs
@@ -3093,7 +3093,7 @@ class PolarPlane(Axes):
         """
         return self.axes
 
-    def get_vector(self, coords: Sequence[float], **kwargs: Any) -> Arrow:
+    def get_vector(self, coords: Sequence[ManimFloat], **kwargs: Any) -> Arrow:
         kwargs["buff"] = 0
         return Arrow(
             self.coords_to_point(0, 0), self.coords_to_point(*coords), **kwargs
@@ -3320,7 +3320,7 @@ class ComplexPlane(NumberPlane):
         """Abbreviation for :meth:`number_to_point`."""
         return self.number_to_point(number)
 
-    def point_to_number(self, point: Sequence[float]) -> complex:
+    def point_to_number(self, point: Point3D) -> complex:
         """Accepts a point and returns a complex number equivalent to that point on the plane.
 
         Parameters
@@ -3337,7 +3337,7 @@ class ComplexPlane(NumberPlane):
         x, y = self.point_to_coords(point)
         return complex(x, y)
 
-    def p2n(self, point: Sequence[float]) -> complex:
+    def p2n(self, point: Point3D) -> complex:
         """Abbreviation for :meth:`point_to_number`."""
         return self.point_to_number(point)
 
