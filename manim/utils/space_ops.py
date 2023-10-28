@@ -622,8 +622,37 @@ def shoelace_direction(x_y: np.ndarray) -> str:
     return "CW" if area > 0 else "CCW"
 
 
-# !TODO: Probably needs retyping but idk what it does at the moment
-def cross2d(a: Vector, b: Vector) -> Vector:
+def cross2d(
+        a: Sequence[Vector] | Vector,
+        b: Sequence[Vector] | Vector
+    ) -> Sequence[float] | float:
+    """Compute the determinant(s) of the passed
+    vector (sequences).
+
+    Parameters
+    ----------
+    a
+        A vector or a sequence of vectors.
+    b
+        A vector or a sequence of vectors.
+    
+    Returns
+    -------
+    Sequence[float] | float
+        The determinant or sequence of determinants
+        of the first two components of the specified
+        vectors.
+
+    Examples
+    --------
+    >>> cross2d(np.array([1, 2]), np.array([3, 4]))
+    -2
+    >>> cross2d(
+    ...   np.array([[1, 2, 0], [1, 0, 0]]),
+    ...   np.array([[3, 4, 0], [0, 1, 0]]),
+    ... )
+    array([-2,  1])
+    """
     if len(a.shape) == 2:
         return a[:, 0] * b[:, 1] - a[:, 1] * b[:, 0]
     else:
