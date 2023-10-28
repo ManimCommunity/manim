@@ -623,9 +623,8 @@ def shoelace_direction(x_y: np.ndarray) -> str:
 
 
 def cross2d(
-        a: Sequence[Vector] | Vector,
-        b: Sequence[Vector] | Vector
-    ) -> Sequence[float] | float:
+    a: Sequence[Vector] | Vector, b: Sequence[Vector] | Vector
+) -> Sequence[float] | float:
     """Compute the determinant(s) of the passed
     vector (sequences).
 
@@ -635,7 +634,7 @@ def cross2d(
         A vector or a sequence of vectors.
     b
         A vector or a sequence of vectors.
-    
+
     Returns
     -------
     Sequence[float] | float
@@ -650,8 +649,8 @@ def cross2d(
         >>> cross2d(np.array([1, 2]), np.array([3, 4]))
         -2
         >>> cross2d(
-        ...   np.array([[1, 2, 0], [1, 0, 0]]),
-        ...   np.array([[3, 4, 0], [0, 1, 0]]),
+        ...     np.array([[1, 2, 0], [1, 0, 0]]),
+        ...     np.array([[3, 4, 0], [0, 1, 0]]),
         ... )
         array([-2,  1])
     """

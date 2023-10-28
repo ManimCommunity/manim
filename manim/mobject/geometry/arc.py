@@ -63,12 +63,11 @@ from manim.utils.space_ops import (
 )
 
 if TYPE_CHECKING:
+    import manim.mobject.geometry.tips as tips
     from manim.mobject.mobject import Mobject
     from manim.mobject.text.tex_mobject import SingleStringMathTex, Tex
     from manim.mobject.text.text_mobject import Text
     from manim.typing import CubicBezierPoints, Point3D, QuadraticBezierPoints, Vector
-
-    import manim.mobject.geometry.tips as tips
 
 
 Angle: TypeAlias = Union[float, np.float64]
@@ -170,9 +169,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         tip = tip_shape(length=tip_length, **style)
         return tip
 
-    def position_tip(
-            self, tip: tips.ArrowTip, at_start: bool = False
-        ):
+    def position_tip(self, tip: tips.ArrowTip, at_start: bool = False):
         # Last two control points, defining both
         # the end, and the tangency direction
         if at_start:
@@ -199,9 +196,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         tip.shift(anchor - tip.tip_point)
         return tip
 
-    def reset_endpoints_based_on_tip(
-            self, tip: tips.ArrowTip, at_start: bool
-        ) -> Self:
+    def reset_endpoints_based_on_tip(self, tip: tips.ArrowTip, at_start: bool) -> Self:
         if self.get_length() == 0:
             # Zero length, put_start_and_end_on wouldn't work
             return self
@@ -212,9 +207,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
             self.put_start_and_end_on(self.get_start(), tip.base)
         return self
 
-    def asign_tip_attr(
-            self, tip: tips.ArrowTip, at_start: bool
-        ) -> Self:
+    def asign_tip_attr(self, tip: tips.ArrowTip, at_start: bool) -> Self:
         if at_start:
             self.start_tip = tip
         else:

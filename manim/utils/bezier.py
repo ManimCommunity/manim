@@ -350,14 +350,14 @@ def inverse_interpolate(start: float, end: float, value: float) -> float:
 def inverse_interpolate(start: float, end: float, value: Point3D) -> Point3D:
     ...
 
+
 @overload
 def inverse_interpolate(start: Point3D, end: Point3D, value: Point3D) -> Point3D:
     ...
 
+
 def inverse_interpolate(
-    start: float | Point3D,
-    end: float | Point3D,
-    value: float | Point3D
+    start: float | Point3D, end: float | Point3D, value: float | Point3D
 ) -> float | Point3D:
     """Perform inverse interpolation to determine the alpha
     values that would produce the specified ``value``
@@ -372,7 +372,7 @@ def inverse_interpolate(
     value
         The value or point for which the alpha value
         should be determined.
-    
+
     Returns
     -------
         The alpha values producing the given input
