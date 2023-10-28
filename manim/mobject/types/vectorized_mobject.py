@@ -26,6 +26,7 @@ from typing import (
 )
 
 import numpy as np
+import numpy.typing as npt
 from PIL.Image import Image
 from typing_extensions import Self
 
@@ -220,7 +221,7 @@ class VMobject(Mobject):
         opacities: list[float] = [
             o if (o is not None) else 0.0 for o in tuplify(opacity)
         ]
-        rgbas: np.ndarray[RGBA_Array_Float] = np.array(
+        rgbas: npt.NDArray[RGBA_Array_Float] = np.array(
             [c.to_rgba_with_alpha(o) for c, o in zip(*make_even(colors, opacities))],
         )
 
@@ -473,7 +474,7 @@ class VMobject(Mobject):
             for rgba in self.get_fill_rgbas()
         ]
 
-    def get_fill_opacities(self) -> np.ndarray[ManimFloat]:
+    def get_fill_opacities(self) -> npt.NDArray[ManimFloat]:
         return self.get_fill_rgbas()[:, 3]
 
     def get_stroke_rgbas(self, background: bool = False) -> RGBA_Array_float | Zeros:
@@ -512,7 +513,7 @@ class VMobject(Mobject):
             for rgba in self.get_stroke_rgbas(background)
         ]
 
-    def get_stroke_opacities(self, background: bool = False) -> np.ndarray[ManimFloat]:
+    def get_stroke_opacities(self, background: bool = False) -> npt.NDArray[ManimFloat]:
         return self.get_stroke_rgbas(background)[:, 3]
 
     def get_color(self) -> ManimColor:
@@ -670,7 +671,7 @@ class VMobject(Mobject):
     def resize_points(
         self,
         new_length: int,
-        resize_func: Callable[[np.ndarray, int], np.ndarray] = resize_array,
+        resize_func: Callable[[Point3D, int], Point3D] = resize_array,
     ) -> Self:
         """Resize the array of anchor points and handles to have
         the specified size.
@@ -1068,7 +1069,7 @@ class VMobject(Mobject):
     # Information about line
     def get_cubic_bezier_tuples_from_points(
         self, points: Point3D_Array
-    ) -> np.ndarray[Point3D_Array]:
+    ) -> npt.NDArray[Point3D_Array]:
         return np.array(self.gen_cubic_bezier_tuples_from_points(points))
 
     def gen_cubic_bezier_tuples_from_points(
@@ -1097,7 +1098,7 @@ class VMobject(Mobject):
         # Basically take every nppcc element.
         return tuple(points[i : i + nppcc] for i in range(0, len(points), nppcc))
 
-    def get_cubic_bezier_tuples(self) -> np.ndarray[Point3D_Array]:
+    def get_cubic_bezier_tuples(self) -> npt.NDArray[Point3D_Array]:
         return self.get_cubic_bezier_tuples_from_points(self.points)
 
     def _gen_subpaths_from_points(
@@ -1198,7 +1199,7 @@ class VMobject(Mobject):
         self,
         n: int,
         sample_points: int | None = None,
-    ) -> np.ndarray[ManimFloat]:
+    ) -> npt.NDArray[ManimFloat]:
         """Returns the array of short line lengths used for length approximation.
 
         Parameters
@@ -1210,7 +1211,6 @@ class VMobject(Mobject):
 
         Returns
         -------
-        np.ndarray[ManimFloat]
             The short length-pieces of the nth curve.
         """
         if sample_points is None:
@@ -1597,7 +1597,7 @@ class VMobject(Mobject):
 
     def insert_n_curves_to_point_list(
         self, n: int, points: Point3D_Array
-    ) -> np.ndarray[BezierPoints]:
+    ) -> npt.NDArray[BezierPoints]:
         """Given an array of k points defining a bezier curves (anchors and handles), returns points defining exactly k + n bezier curves.
 
         Parameters
@@ -1609,7 +1609,6 @@ class VMobject(Mobject):
 
         Returns
         -------
-        np.ndarray
             Points generated.
         """
 
@@ -2410,7 +2409,7 @@ class CurvesAsSubmobjects(VGroup):
             part.match_style(vmobject)
             self.add(part)
 
-    def point_from_proportion(self, alpha: float) -> np.ndarray:
+    def point_from_proportion(self, alpha: float) -> Point3D:
         """Gets the point at a proportion along the path of the :class:`CurvesAsSubmobjects`.
 
         Parameters
