@@ -424,14 +424,38 @@ def match_interpolate(
     old_end: float,
     old_value: float | Point3D,
 ) -> float | Point3D:
+    """Interpolate a value from an old range to a new range.
+
+    Parameters
+    ----------
+    new_start
+        The start of the new range.
+    new_end
+        The end of the new range.
+    old_start
+        The start of the old range.
+    old_end
+        The end of the old range.
+    old_value
+        The value within the old range whose corresponding
+        value in the new range (with the same alpha value)
+        is desired.
+
+    Returns
+    -------
+        The interpolated value within the new range.
+
+    Examples
+    --------
+    >>> match_interpolate(0, 100, 10, 20, 15)
+    50.0
+    """
+    old_alpha = inverse_interpolate(old_start, old_end, old_value)
     return interpolate(
         new_start,
         new_end,
-        inverse_interpolate(old_start, old_end, old_value),  # type: ignore
+        old_alpha,  # type: ignore
     )
-
-
-# Figuring out which bezier curves most smoothly connect a sequence of points
 
 
 def get_smooth_cubic_bezier_handle_points(
