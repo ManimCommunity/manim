@@ -350,11 +350,48 @@ def inverse_interpolate(start: float, end: float, value: float) -> float:
 def inverse_interpolate(start: float, end: float, value: Point3D) -> Point3D:
     ...
 
+@overload
+def inverse_interpolate(start: Point3D, end: Point3D, value: Point3D) -> Point3D:
+    ...
 
-# !TODO: Add documentation to this function
 def inverse_interpolate(
-    start: float, end: float, value: float | Point3D
+    start: float | Point3D,
+    end: float | Point3D,
+    value: float | Point3D
 ) -> float | Point3D:
+    """Perform inverse interpolation to determine the alpha
+    values that would produce the specified ``value``
+    given the ``start`` and ``end`` values or points.
+
+    Parameters
+    ----------
+    start
+        The start value or point of the interpolation.
+    end
+        The end value or point of the interpolation.
+    value
+        The value or point for which the alpha value
+        should be determined.
+    
+    Returns
+    -------
+        The alpha values producing the given input
+        when interpolating between ``start`` and ``end``.
+
+    Example
+    -------
+
+    .. code-block:: pycon
+
+        >>> inverse_interpolate(start=2, end=6, value=4)
+        0.5
+
+        >>> start = np.array([1, 2, 1])
+        >>> end = np.array([7, 8, 11])
+        >>> value = np.array([4, 5, 5])
+        >>> inverse_interpolate(start, end, value)
+        array([0.5, 0.5, 0.4])
+    """
     return np.true_divide(value - start, end - start)
 
 
