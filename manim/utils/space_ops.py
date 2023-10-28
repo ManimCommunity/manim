@@ -645,13 +645,15 @@ def cross2d(
 
     Examples
     --------
-    >>> cross2d(np.array([1, 2]), np.array([3, 4]))
-    -2
-    >>> cross2d(
-    ...   np.array([[1, 2, 0], [1, 0, 0]]),
-    ...   np.array([[3, 4, 0], [0, 1, 0]]),
-    ... )
-    array([-2,  1])
+    .. code-block:: pycon
+
+        >>> cross2d(np.array([1, 2]), np.array([3, 4]))
+        -2
+        >>> cross2d(
+        ...   np.array([[1, 2, 0], [1, 0, 0]]),
+        ...   np.array([[3, 4, 0], [0, 1, 0]]),
+        ... )
+        array([-2,  1])
     """
     if len(a.shape) == 2:
         return a[:, 0] * b[:, 1] - a[:, 1] * b[:, 0]
