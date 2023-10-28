@@ -21,11 +21,6 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
     helps to convert to and from skia objects and manim
     objects (:class:`~.VMobject`).
     """
-
-    # Can this be deleted?
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     def _convert_2d_to_3d_array(
         self,
         points: Point2D_Array,
