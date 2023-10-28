@@ -68,6 +68,8 @@ if TYPE_CHECKING:
     from manim.mobject.text.text_mobject import Text
     from manim.typing import CubicBezierPoints, Point3D, QuadraticBezierPoints, Vector
 
+    import manim.mobject.geometry.tips as tips
+
 
 Angle: TypeAlias = Union[float, np.float64]
 
@@ -106,10 +108,10 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
 
     def add_tip(
         self,
-        tip=None,
-        tip_shape=None,
-        tip_length: float = None,
-        tip_width: float = None,
+        tip: tips.ArrowTip | None = None,
+        tip_shape: type[tips.ArrowTip] | None = None,
+        tip_length: float | None = None,
+        tip_width: float | None = None,
         at_start: bool = False,
     ) -> Self:
         """Adds a tip to the TipableVMobject instance, recognising
@@ -127,7 +129,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
 
     def create_tip(
         self,
-        tip_shape=None,
+        tip_shape: type[tips.ArrowTip] | None = None,
         tip_length: float = None,
         tip_width: float = None,
         at_start: bool = False,
@@ -140,7 +142,10 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         return tip
 
     def get_unpositioned_tip(
-        self, tip_shape=None, tip_length: float = None, tip_width: float = None
+        self,
+        tip_shape: type[tips.ArrowTip] | None = None,
+        tip_length: float | None = None,
+        tip_width: float | None = None,
     ):
         """Returns a tip that has been stylistically configured,
         but has not yet been given a position in space.
@@ -165,7 +170,9 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         tip = tip_shape(length=tip_length, **style)
         return tip
 
-    def position_tip(self, tip, at_start: bool = False):
+    def position_tip(
+            self, tip: tips.ArrowTip, at_start: bool = False
+        ):
         # Last two control points, defining both
         # the end, and the tangency direction
         if at_start:
@@ -192,7 +199,9 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         tip.shift(anchor - tip.tip_point)
         return tip
 
-    def reset_endpoints_based_on_tip(self, tip, at_start: bool) -> Self:
+    def reset_endpoints_based_on_tip(
+            self, tip: tips.ArrowTip, at_start: bool
+        ) -> Self:
         if self.get_length() == 0:
             # Zero length, put_start_and_end_on wouldn't work
             return self
@@ -203,7 +212,9 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
             self.put_start_and_end_on(self.get_start(), tip.base)
         return self
 
-    def asign_tip_attr(self, tip, at_start: bool) -> Self:
+    def asign_tip_attr(
+            self, tip: tips.ArrowTip, at_start: bool
+        ) -> Self:
         if at_start:
             self.start_tip = tip
         else:
