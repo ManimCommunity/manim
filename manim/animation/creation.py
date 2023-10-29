@@ -563,6 +563,11 @@ class AddTextLetterByLetter(ShowIncreasingSubsets):
         **kwargs,
     ) -> None:
         self.time_per_char = time_per_char
+        # Check for empty text using family_members_with_points()
+        if not text.family_members_with_points():
+            raise ValueError(
+                f"The text mobject {text} does not seem to contain any characters."
+            )
         if run_time is None:
             # minimum time per character is 1/frame_rate, otherwise
             # the animation does not finish.
