@@ -70,7 +70,6 @@ if TYPE_CHECKING:
     from manim.typing import CubicBezierPoints, Point3D, QuadraticBezierPoints, Vector
 
 
-
 class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
     """Meant for shared functionality between Arc and Line.
     Functionality can be classified broadly into these groups:
