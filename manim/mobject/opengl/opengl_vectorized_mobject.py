@@ -1284,17 +1284,14 @@ class OpenGLVMobject(OpenGLMobject):
         for _ in range(-diff):
             ipc[np.argmax(ipc)] -= 1
 
-        new_length = sum(x + 1 for x in ipc)
-        new_points = np.empty((new_length, nppc, 3))
-        i = 0
+        new_points = []
         for group, n_inserts in zip(bezier_groups, ipc):
             # What was once a single quadratic curve defined
             # by "group" will now be broken into n_inserts + 1
             # smaller quadratic curves
             alphas = np.linspace(0, 1, n_inserts + 2)
             for a1, a2 in zip(alphas, alphas[1:]):
-                new_points[i] = partial_quadratic_bezier_points(group, a1, a2)
-                i = i + 1
+                new_points += partial_quadratic_bezier_points(group, a1, a2)
         return np.vstack(new_points)
 
     def interpolate(self, mobject1, mobject2, alpha, *args, **kwargs):

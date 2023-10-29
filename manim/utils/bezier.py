@@ -302,8 +302,11 @@ def integer_interpolate(
         returned integer and the next one of the
         list.
 
-        For example, if start=0, end=10, alpha=0.46, This
-        would return (4, 0.6).
+    Example
+    -------
+    .. code-block:: pycon
+        >>> integer_interpolate(start=0, end=10, alpha=0.46)
+        (4, 0.6)
     """
     if alpha >= 1:
         return (int(end - 1), 1.0)

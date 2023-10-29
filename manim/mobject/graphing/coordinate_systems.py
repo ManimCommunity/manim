@@ -1713,7 +1713,6 @@ class CoordinateSystem:
         label_color: ParsableManimColor | None = None,
         triangle_size: float = MED_SMALL_BUFF,
         triangle_color: ParsableManimColor | None = WHITE,
-        # TODO: May have to be made a generic but it can be more than just a line.
         line_func: type[Line] = Line,
         line_color: ParsableManimColor = YELLOW,
     ) -> VGroup:

@@ -1094,7 +1094,6 @@ class ManimConfig(MutableMapping):
         doc="Frame rate in frames per second.",
     )
 
-    # TODO: This was parsed before maybe add ManimColor(val), but results in circular import
     background_color = property(
         lambda self: self._d["background_color"],
         lambda self, val: self._d.__setitem__("background_color", ManimColor(val)),
