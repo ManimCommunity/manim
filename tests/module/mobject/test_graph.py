@@ -1,7 +1,9 @@
 from __future__ import annotations
+
 import pytest
 
 from manim import DiGraph, Graph, Scene, Text, tempconfig
+
 
 def test_graph_creation():
     vertices = [1, 2, 3, 4]
@@ -101,10 +103,12 @@ def test_custom_animation_mobject_list():
         assert str(G) == "Undirected graph on 3 vertices and 0 edges"
         assert scene.mobjects == [G]
 
+
 def test_tree_layout_no_root_error():
     with pytest.raises(ValueError) as excinfo:
         G = Graph([1, 2, 3], [(1, 2), (2, 3)], layout="tree")
     assert str(excinfo.value) == "The tree layout requires the root_vertex parameter"
+
 
 def test_tree_layout_not_tree_error():
     with pytest.raises(ValueError) as excinfo:
