@@ -26,7 +26,7 @@ CAIRO_SHA256_URL = f"{CAIRO_URL}.sha256sum"
 
 VENV_NAME = "meson-venv"
 BUILD_DIR = "build"
-INSTALL_PREFIX = Path(__file__).parent.parent / "third_party" / "cairo"
+INSTALL_PREFIX = Path(__file__).parent.parent.parent / "third_party" / "cairo"
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
