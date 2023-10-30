@@ -436,8 +436,15 @@ class Text(SVGMobject):
         self.line_spacing = line_spacing
         if font and warn_missing_font:
             fonts_list = manimpango.list_fonts()
+            # handle special case of sans/sans-serif
+            if font == "sans-serif":
+                font = "sans"
             if font not in fonts_list:
-                logger.warning(f"Font {font} not in {fonts_list}.")
+                # check if the capitalized version is in the supported fonts
+                if font.capitalize() in fonts_list:
+                    font = font.capitalize()
+                else:
+                    logger.warning(f"Font {font} not in {fonts_list}.")
         self.font = font
         self._font_size = float(font_size)
         # needs to be a float or else size is inflated when font_size = 24
@@ -1158,8 +1165,15 @@ class MarkupText(SVGMobject):
         self.line_spacing = line_spacing
         if font and warn_missing_font:
             fonts_list = manimpango.list_fonts()
+            # handle special case of sans/sans-serif
+            if font == "sans-serif":
+                font = "sans"
             if font not in fonts_list:
-                logger.warning(f"Font {font} not in {fonts_list}.")
+                # check if the capitalized version is in the supported fonts
+                if font.capitalize() in fonts_list:
+                    font = font.capitalize()
+                else:
+                    logger.warning(f"Font {font} not in {fonts_list}.")
         self.font = font
         self._font_size = float(font_size)
         self.slant = slant
