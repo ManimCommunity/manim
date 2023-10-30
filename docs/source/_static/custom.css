@@ -92,7 +92,6 @@ h4, h5, h6{
 .manim-binder-wrapper {
     background-color: var(--color-code-background);
     color: var(--color-code-foreground);
-    margin: 0 -0.5rem;
 }
 
 .manim-binder-title {
