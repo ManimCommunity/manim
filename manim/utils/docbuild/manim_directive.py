@@ -168,16 +168,24 @@ class ManimDirective(Directive):
             or self.state.document.settings.env.app.builder.name == "gettext"
         )
         if should_skip:
+            clsname = self.arguments[0]
             node = SkipManimNode()
             self.state.nested_parse(
                 StringList(
                     [
                         f"Placeholder block for ``{self.arguments[0]}``.",
                         "",
-                        ".. code-block:: python",
+                        ".. raw:: html",
                         "",
+                        "    <pre data-interactive>",
                     ]
                     + ["    " + line for line in self.content]
+                    + [
+                        "",
+                        "    # don't remove below command for run button to work\n",
+                        f"    %manim -qm {clsname}",
+                        "    </pre>",
+                    ],
                 ),
                 self.content_offset,
                 node,
@@ -231,10 +239,15 @@ class ManimDirective(Directive):
             dest_dir.mkdir(parents=True, exist_ok=True)
 
         source_block = [
-            ".. code-block:: python",
+            ".. raw:: html",
             "",
+            "    <pre data-interactive>",
             "    from manim import *\n",
             *("    " + line for line in self.content),
+            "",
+            "    # don't remove below command for run button to work",
+            f"    %manim -qm {clsname}",
+            "    </pre>",
         ]
         source_block = "\n".join(source_block)
 
