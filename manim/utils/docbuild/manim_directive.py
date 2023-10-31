@@ -342,7 +342,7 @@ def _log_rendering_times(*args):
             sys.exit()
 
         print("\nRendering Summary\n-----------------\n")
-        
+
         # filter out empty lists caused by csv reader
         data = [row for row in data if row]
 
