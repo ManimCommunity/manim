@@ -9,12 +9,12 @@ from PIL import Image
 
 from manim.constants import *
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-from manim.utils.bezier import integer_interpolate, interpolate
 from manim.utils.color import *
 from manim.utils.config_ops import _Data, _Uniforms
 from manim.utils.deprecation import deprecated
 from manim.utils.images import change_to_rgba_array, get_full_raster_image_path
 from manim.utils.iterables import listify
+from manim.utils.linear_interpolation import integer_interpolate, interpolate
 from manim.utils.space_ops import normalize_along_axis
 
 

@@ -32,13 +32,12 @@ from ...mobject.mobject import Mobject
 from ...utils.bezier import (
     bezier,
     get_smooth_handle_points,
-    integer_interpolate,
-    interpolate,
     partial_bezier_points,
     proportions_along_bezier_curve_for_point,
 )
 from ...utils.color import BLACK, WHITE, ManimColor, ParsableManimColor
 from ...utils.iterables import make_even, resize_array, stretch_array_to_length, tuplify
+from ...utils.linear_interpolation import integer_interpolate, interpolate
 from ...utils.space_ops import rotate_vector, shoelace_direction
 
 # TODO
@@ -1042,14 +1041,10 @@ class VMobject(Mobject):
         typing.Tuple
             Bezier control points.
         """
-        nppcc = self.n_points_per_cubic_curve
-        remainder = len(points) % nppcc
-        points = points[: len(points) - remainder]
-        # Basically take every nppcc element.
-        return (points[i : i + nppcc] for i in range(0, len(points), nppcc))
+        return self.bezier.get_bezier_tuples_from_points(points)
 
     def get_cubic_bezier_tuples(self):
-        return self.get_cubic_bezier_tuples_from_points(self.points)
+        return self.bezier.get_bezier_tuples()
 
     def _gen_subpaths_from_points(
         self,
@@ -1122,11 +1117,10 @@ class VMobject(Mobject):
         Returns
         -------
         np.ndarray
-            points defininf the nth bezier curve (anchors, handles)
+            points defining the nth bezier curve (anchors, handles)
         """
         assert n < self.get_num_curves()
-        nppcc = self.n_points_per_cubic_curve
-        return self.points[nppcc * n : nppcc * (n + 1)]
+        return self.bezier.get_nth_curve_points(n)
 
     def get_nth_curve_function(self, n: int) -> typing.Callable[[float], np.ndarray]:
         """Returns the expression of the nth curve.
@@ -1141,7 +1135,7 @@ class VMobject(Mobject):
         typing.Callable[float]
             expression of the nth bezier curve.
         """
-        return bezier(self.get_nth_curve_points(n))
+        return self.bezier.get_nth_curve_function(n)
 
     def get_nth_curve_length_pieces(
         self,
@@ -1162,15 +1156,7 @@ class VMobject(Mobject):
         np.ndarray
             The short length-pieces of the nth curve.
         """
-        if sample_points is None:
-            sample_points = 10
-
-        curve = self.get_nth_curve_function(n)
-        points = np.array([curve(a) for a in np.linspace(0, 1, sample_points)])
-        diffs = points[1:] - points[:-1]
-        norms = np.linalg.norm(diffs, axis=1)
-
-        return norms
+        return self.bezier.get_nth_curve_length_pieces(n, sample_points)
 
     def get_nth_curve_length(
         self,
@@ -1191,10 +1177,7 @@ class VMobject(Mobject):
         length : :class:`float`
             The length of the nth curve.
         """
-
-        _, length = self.get_nth_curve_function_with_length(n, sample_points)
-
-        return length
+        return self.bezier.get_nth_curve_length(n, sample_points)
 
     def get_nth_curve_function_with_length(
         self,
@@ -1592,7 +1575,7 @@ class VMobject(Mobject):
             for a1, a2 in zip(alphas, alphas[1:]):
                 new_points = np.append(
                     new_points,
-                    partial_bezier_points(quad, a1, a2),
+                    self.bezier.partial_bezier_points(quad, a1, a2),
                     axis=0,
                 )
         return new_points
@@ -1681,7 +1664,7 @@ class VMobject(Mobject):
             return self
         if lower_index == upper_index:
             self.append_points(
-                partial_bezier_points(
+                self.bezier.partial_bezier_points(
                     bezier_quads[lower_index],
                     lower_residue,
                     upper_residue,
@@ -1689,12 +1672,16 @@ class VMobject(Mobject):
             )
         else:
             self.append_points(
-                partial_bezier_points(bezier_quads[lower_index], lower_residue, 1),
+                self.bezier.partial_bezier_points(
+                    bezier_quads[lower_index], lower_residue, 1
+                ),
             )
             for quad in bezier_quads[lower_index + 1 : upper_index]:
                 self.append_points(quad)
             self.append_points(
-                partial_bezier_points(bezier_quads[upper_index], 0, upper_residue),
+                self.bezier.partial_bezier_points(
+                    bezier_quads[upper_index], 0, upper_residue
+                ),
             )
         return self
 

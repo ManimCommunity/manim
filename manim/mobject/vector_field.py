@@ -28,7 +28,6 @@ from ..constants import OUT, RIGHT, UP, RendererType
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup
 from ..mobject.utils import get_vectorized_mobject_class
-from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import (
     BLUE_E,
     GREEN,
@@ -39,6 +38,7 @@ from ..utils.color import (
     color_to_rgb,
     rgb_to_color,
 )
+from ..utils.linear_interpolation import interpolate, inverse_interpolate
 from ..utils.rate_functions import ease_out_sine, linear
 from ..utils.simple_functions import sigmoid
 
