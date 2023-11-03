@@ -26,62 +26,14 @@ from manim.mobject.types.vectorized_mobject import VMobject
 from manim.utils.color import BLACK
 
 class LayoutFunction(Protocol):
-    def __call__(self, graph: nx.classes.graph.Graph | nx.classes.digraph.DiGraph, *args: Any, **kwargs: Any) -> dict[Hashable, np.ndarray]:
+    def __call__(self, graph: nx.classes.graph.Graph | nx.classes.digraph.DiGraph, scale: float = 2, *args: Any, **kwargs: Any) -> dict[Hashable, np.ndarray]:
         ...
-
-def _determine_graph_layout(
-    nx_graph: nx.classes.graph.Graph | nx.classes.digraph.DiGraph,
-    layout: str | dict[Hashable, np.ndarray] | LayoutFunction = "spring",
-    layout_scale: float = 2,
-    layout_config: dict | None = None,
-) -> dict[Hashable, np.ndarray]:  
-    
-    layouts = {
-        "circular": nx.layout.circular_layout,
-        "kamada_kawai": nx.layout.kamada_kawai_layout,
-        "partite": _partite_layout,
-        "planar": nx.layout.planar_layout,
-        "random": _random_layout,
-        "shell": nx.layout.shell_layout,
-        "spectral": nx.layout.spectral_layout,
-        "spiral": nx.layout.spiral_layout,
-        "spring": nx.layout.spring_layout,
-        "tree": _tree_layout,
-    }
-
-    if layout_config is None:
-        layout_config = {}
-    if layout_config.get("scale") is None:
-        layout_config["scale"] = layout_scale
-
-    if isinstance(layout, dict):
-        return layout
-    elif layout in layouts:
-        layout_f, prepare = layouts[layout]
-        prepare(layout_config)
-        auto_layout = layout_f(
-            nx_graph, **layout_config
-        )
-        # NetworkX returns a dictionary of 3D points if the dimension
-        # is specified to be 3. Otherwise, it returns a dictionary of
-        # 2D points, so adjusting is required.
-        if layout_config.get("dim") == 3 or auto_layout[next(auto_layout.__iter__())].shape[0] == 3:
-            return auto_layout
-        else:
-            return {k: np.append(v, [0]) for k, v in auto_layout.items()}
-    else:
-        try:
-            return layout(nx_graph, **layout_config)
-        except TypeError as e:
-            raise ValueError(
-                f"The layout '{layout}' is neither a recognized layout, a layout function,"
-                "nor a vertex placement dictionary.",
-            )
-       
-def _partite_layout(nx_graph: nx.classes.graph.Graph, partitions: list[list[Hashable]] | None = None, **kwargs) -> dict[Hashable, np.ndarray]:
+ 
+        
+def _partite_layout(nx_graph: nx.classes.graph.Graph, scale: float=2, partitions: list[list[Hashable]] | None = None, **kwargs) -> dict[Hashable, np.ndarray]:
     if partitions is None or len(partitions) == 0:
         raise ValueError(
-            "The partite layout requires `layout_config['partitions']` parameter to contain the partition of the vertices",
+            "The partite layout requires partitions parameter to contain the partition of the vertices",
         )
     partition_count = len(partitions)
     for i in range(partition_count):
@@ -96,9 +48,10 @@ def _partite_layout(nx_graph: nx.classes.graph.Graph, partitions: list[list[Hash
         if "subset" not in nx_graph.nodes[v]:
             nx_graph.nodes[v]["subset"] = partition_count
             
-    return nx.layout.multipartite_layout(nx_graph, **kwargs)
+    return nx.layout.multipartite_layout(nx_graph, scale=scale, **kwargs)
 
-def _random_layout(nx_graph, scale, **kwargs):
+
+def _random_layout(nx_graph, scale: float=2, **kwargs):
     # the random layout places coordinates in [0, 1)
     # we need to rescale manually afterwards...
     auto_layout = nx.layout.random_layout(nx_graph, **kwargs)
@@ -106,15 +59,16 @@ def _random_layout(nx_graph, scale, **kwargs):
         auto_layout[k] = 2 * scale * (v - np.array([0.5, 0.5]))
     return {k: np.append(v, [0]) for k, v in auto_layout.items()}
 
+
 def _tree_layout(
     T: nx.classes.graph.Graph | nx.classes.digraph.DiGraph,
-    root_vertex: Hashable | None,
+    root_vertex: Hashable | None = None,
     scale: float | tuple | None = 2,
     vertex_spacing: tuple | None = None,
     orientation: str = "down",
 ):
     if root_vertex is None:
-        raise ValueError("The tree layout requires the layout_config['root_vertex'] parameter")
+        raise ValueError("The tree layout requires the root_vertex parameter")
     if not nx.is_tree(T):
         raise ValueError("The tree layout must be used with trees")
 
@@ -212,6 +166,51 @@ def _tree_layout(
         sf = np.array([sx, sy, 0])
     return {v: (np.array([x, y, 0]) - center) * sf for v, (x, y) in pos.items()}
 
+
+_layouts = {
+    "circular": nx.layout.circular_layout,
+    "kamada_kawai": nx.layout.kamada_kawai_layout,
+    "partite": _partite_layout,
+    "planar": nx.layout.planar_layout,
+    "random": _random_layout,
+    "shell": nx.layout.shell_layout,
+    "spectral": nx.layout.spectral_layout,
+    "spiral": nx.layout.spiral_layout,
+    "spring": nx.layout.spring_layout,
+    "tree": _tree_layout,
+}
+
+
+def _determine_graph_layout(
+    nx_graph: nx.classes.graph.Graph | nx.classes.digraph.DiGraph,
+    layout: str | dict[Hashable, np.ndarray] | LayoutFunction = "spring",
+    layout_scale: float = 2,
+    layout_config: dict | None = None,
+) -> dict[Hashable, np.ndarray]:  
+    if layout_config is None:
+        layout_config = {}
+
+    if isinstance(layout, dict):
+        return layout
+    elif layout in _layouts:
+        auto_layout = _layouts[layout](
+            nx_graph, scale=layout_scale, **layout_config
+        )
+        # NetworkX returns a dictionary of 3D points if the dimension
+        # is specified to be 3. Otherwise, it returns a dictionary of
+        # 2D points, so adjusting is required.
+        if layout_config.get("dim") == 3 or auto_layout[next(auto_layout.__iter__())].shape[0] == 3:
+            return auto_layout
+        else:
+            return {k: np.append(v, [0]) for k, v in auto_layout.items()}
+    else:
+        try:
+            return layout(nx_graph, scale=layout_scale, **layout_config)
+        except TypeError as e:
+            raise ValueError(
+                f"The layout '{layout}' is neither a recognized layout, a layout function,"
+                "nor a vertex placement dictionary.",
+            )
 
 class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
     """Abstract base class for graphs (that is, a collection of vertices
@@ -320,8 +319,11 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         nx_graph.add_edges_from(edges)
         self._graph = nx_graph
         
-        layout_config['partitions'] = partitions
-        layout_config['root_vertex'] = root_vertex
+        layout_config = {} if layout_config is None else layout_config
+        if partitions is not None and 'partitions' not in layout_config:
+            layout_config['partitions'] = partitions
+        if root_vertex is not None and 'root_vertex' not in layout_config:
+            layout_config['root_vertex'] = root_vertex
 
         self._layout = _determine_graph_layout(
             nx_graph,
