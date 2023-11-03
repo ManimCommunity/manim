@@ -304,7 +304,9 @@ def integer_interpolate(
 
     Example
     -------
+
     .. code-block:: pycon
+
         >>> integer, residue = integer_interpolate(start=0, end=10, alpha=0.46)
         >>> np.allclose((integer, residue), (4, 0.6))
         True
