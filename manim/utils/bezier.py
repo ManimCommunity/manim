@@ -363,7 +363,6 @@ def split_bezier(points: Iterable[float], t: float) -> np.ndarray:
     points = np.asarray(points)
     N, dim = points.shape
     degree = N - 1
-    tuple_shape = (2, N, dim)
 
     if degree == 3:
         mt = 1 - t
