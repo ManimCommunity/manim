@@ -37,16 +37,16 @@ pydub = "^0.25.1"
 rich = ">=6.0,!=12.0.0"
 pycairo = "^1.21"
 manimpango = ">=0.5.0,<1.0.0"
-networkx = "^2.5"
+networkx = ">=2.5,<3.3"
 decorator = "^5.0.7"
 importlib-metadata = { version = "^4.10.0", python = "<3.8" }
-watchdog = "^2.1.6"
+watchdog = ">=2.1,<=3.0.0"
 jupyterlab = { version = "^3.0", optional = true }
 notebook = { version = "^6.4", optional = true }
 moderngl = "^5.6.3"
 moderngl-window = "^2.3.0"
 mapbox-earcut = "^1.0.0"
-cloup = "^0.13.0"
+cloup = ">=0.13,<2.2"
 requests = "^2.26.0"
 dearpygui = { version = "^1.3.1", optional = true }
 skia-pathops = "^0.7.0"
