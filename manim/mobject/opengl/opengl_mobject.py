@@ -13,8 +13,16 @@ import numpy as np
 
 from manim import config, logger
 from manim.constants import *
+from manim.renderer.shader_wrapper import get_colormap_code
 from manim.utils.bezier import integer_interpolate, interpolate
-from manim.utils.color import *
+from manim.utils.color import (
+    WHITE,
+    ManimColor,
+    ParsableManimColor,
+    color_gradient,
+    color_to_rgb,
+    rgb_to_hex,
+)
 from manim.utils.config_ops import _Data, _Uniforms
 
 # from ..utils.iterables import batch_by_property
