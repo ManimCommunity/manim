@@ -829,7 +829,7 @@ class StreamLines(VectorField):
             step = max(1, int(len(points) / self.max_anchors_per_line))
             line.set_points_smoothly(points[::step])
             if self.single_color:
-                line.set_stroke(self.color)
+                line.set_stroke(color=self.color, width=self.stroke_width, opacity=opacity)
             else:
                 if config.renderer == RendererType.OPENGL:
                     # scaled for compatibility with cairo
