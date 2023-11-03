@@ -616,6 +616,8 @@ class LinearTransformationScene(VectorScene):
             },
         }
 
+        self.ghost_vectors = VGroup()
+
         self.foreground_plane_kwargs = {
             "x_range": np.array([-config["frame_width"], config["frame_width"], 1.0]),
             "y_range": np.array([-config["frame_width"], config["frame_width"], 1.0]),
@@ -997,7 +999,9 @@ class LinearTransformationScene(VectorScene):
         start = VGroup(*pieces)
         target = VGroup(*(mob.target for mob in pieces))
         if self.leave_ghost_vectors:
-            self.add(start.copy().fade(0.7))
+            # start.copy() gives a VGroup of Vectors
+            self.ghost_vectors.add(start.copy().fade(0.7))
+            self.add(self.ghost_vectors[-1])
         return Transform(start, target, lag_ratio=0)
 
     def get_moving_mobject_movement(self, func: Callable[[np.ndarray], np.ndarray]):
