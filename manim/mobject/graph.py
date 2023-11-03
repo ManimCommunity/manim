@@ -9,7 +9,7 @@ __all__ = [
 
 import itertools as it
 from copy import copy
-from typing import Hashable, Iterable
+from typing import Any, Callable, Hashable, Iterable, Protocol
 
 import networkx as nx
 import numpy as np
@@ -25,85 +25,86 @@ from manim.mobject.text.tex_mobject import MathTex
 from manim.mobject.types.vectorized_mobject import VMobject
 from manim.utils.color import BLACK
 
+class LayoutFunction(Protocol):
+    def __call__(self, graph: nx.classes.graph.Graph | nx.classes.digraph.DiGraph, *args: Any, **kwargs: Any) -> dict[Hashable, np.ndarray]:
+        ...
 
 def _determine_graph_layout(
     nx_graph: nx.classes.graph.Graph | nx.classes.digraph.DiGraph,
-    layout: str | dict = "spring",
+    layout: str | dict[Hashable, np.ndarray] | LayoutFunction = "spring",
     layout_scale: float = 2,
     layout_config: dict | None = None,
-    partitions: list[list[Hashable]] | None = None,
-    root_vertex: Hashable | None = None,
-) -> dict:
-    automatic_layouts = {
+) -> dict[Hashable, np.ndarray]:  
+    
+    layouts = {
         "circular": nx.layout.circular_layout,
         "kamada_kawai": nx.layout.kamada_kawai_layout,
+        "partite": _partite_layout,
         "planar": nx.layout.planar_layout,
-        "random": nx.layout.random_layout,
+        "random": _random_layout,
         "shell": nx.layout.shell_layout,
         "spectral": nx.layout.spectral_layout,
-        "partite": nx.layout.multipartite_layout,
-        "tree": _tree_layout,
         "spiral": nx.layout.spiral_layout,
         "spring": nx.layout.spring_layout,
+        "tree": _tree_layout,
     }
-
-    custom_layouts = ["random", "partite", "tree"]
 
     if layout_config is None:
         layout_config = {}
+    if layout_config.get("scale") is None:
+        layout_config["scale"] = layout_scale
 
     if isinstance(layout, dict):
         return layout
-    elif layout in automatic_layouts and layout not in custom_layouts:
-        auto_layout = automatic_layouts[layout](
-            nx_graph, scale=layout_scale, **layout_config
+    elif layout in layouts:
+        layout_f, prepare = layouts[layout]
+        prepare(layout_config)
+        auto_layout = layout_f(
+            nx_graph, **layout_config
         )
         # NetworkX returns a dictionary of 3D points if the dimension
         # is specified to be 3. Otherwise, it returns a dictionary of
         # 2D points, so adjusting is required.
-        if layout_config.get("dim") == 3:
+        if layout_config.get("dim") == 3 or auto_layout[next(auto_layout.__iter__())].shape[0] == 3:
             return auto_layout
         else:
             return {k: np.append(v, [0]) for k, v in auto_layout.items()}
-    elif layout == "tree":
-        return _tree_layout(
-            nx_graph, root_vertex=root_vertex, scale=layout_scale, **layout_config
-        )
-    elif layout == "partite":
-        if partitions is None or len(partitions) == 0:
-            raise ValueError(
-                "The partite layout requires the 'partitions' parameter to contain the partition of the vertices",
-            )
-        partition_count = len(partitions)
-        for i in range(partition_count):
-            for v in partitions[i]:
-                if nx_graph.nodes[v] is None:
-                    raise ValueError(
-                        "The partition must contain arrays of vertices in the graph",
-                    )
-                nx_graph.nodes[v]["subset"] = i
-        # Add missing vertices to their own side
-        for v in nx_graph.nodes:
-            if "subset" not in nx_graph.nodes[v]:
-                nx_graph.nodes[v]["subset"] = partition_count
-
-        auto_layout = automatic_layouts["partite"](
-            nx_graph, scale=layout_scale, **layout_config
-        )
-        return {k: np.append(v, [0]) for k, v in auto_layout.items()}
-    elif layout == "random":
-        # the random layout places coordinates in [0, 1)
-        # we need to rescale manually afterwards...
-        auto_layout = automatic_layouts["random"](nx_graph, **layout_config)
-        for k, v in auto_layout.items():
-            auto_layout[k] = 2 * layout_scale * (v - np.array([0.5, 0.5]))
-        return {k: np.append(v, [0]) for k, v in auto_layout.items()}
     else:
+        try:
+            return layout(nx_graph, **layout_config)
+        except TypeError as e:
+            raise ValueError(
+                f"The layout '{layout}' is neither a recognized layout, a layout function,"
+                "nor a vertex placement dictionary.",
+            )
+       
+def _partite_layout(nx_graph: nx.classes.graph.Graph, partitions: list[list[Hashable]] | None = None, **kwargs) -> dict[Hashable, np.ndarray]:
+    if partitions is None or len(partitions) == 0:
         raise ValueError(
-            f"The layout '{layout}' is neither a recognized automatic layout, "
-            "nor a vertex placement dictionary.",
+            "The partite layout requires `layout_config['partitions']` parameter to contain the partition of the vertices",
         )
+    partition_count = len(partitions)
+    for i in range(partition_count):
+        for v in partitions[i]:
+            if nx_graph.nodes[v] is None:
+                raise ValueError(
+                    "The partition must contain arrays of vertices in the graph",
+                )
+            nx_graph.nodes[v]["subset"] = i
+    # Add missing vertices to their own side
+    for v in nx_graph.nodes:
+        if "subset" not in nx_graph.nodes[v]:
+            nx_graph.nodes[v]["subset"] = partition_count
+            
+    return nx.layout.multipartite_layout(nx_graph, **kwargs)
 
+def _random_layout(nx_graph, scale, **kwargs):
+    # the random layout places coordinates in [0, 1)
+    # we need to rescale manually afterwards...
+    auto_layout = nx.layout.random_layout(nx_graph, **kwargs)
+    for k, v in auto_layout.items():
+        auto_layout[k] = 2 * scale * (v - np.array([0.5, 0.5]))
+    return {k: np.append(v, [0]) for k, v in auto_layout.items()}
 
 def _tree_layout(
     T: nx.classes.graph.Graph | nx.classes.digraph.DiGraph,
@@ -113,7 +114,7 @@ def _tree_layout(
     orientation: str = "down",
 ):
     if root_vertex is None:
-        raise ValueError("The tree layout requires the root_vertex parameter")
+        raise ValueError("The tree layout requires the layout_config['root_vertex'] parameter")
     if not nx.is_tree(T):
         raise ValueError("The tree layout must be used with trees")
 
@@ -301,7 +302,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         edges: list[tuple[Hashable, Hashable]],
         labels: bool | dict = False,
         label_fill_color: str = BLACK,
-        layout: str | dict = "spring",
+        layout: str | dict[Hashable, np.ndarray] | LayoutFunction = "spring",
         layout_scale: float | tuple = 2,
         layout_config: dict | None = None,
         vertex_type: type[Mobject] = Dot,
@@ -318,14 +319,15 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         nx_graph.add_nodes_from(vertices)
         nx_graph.add_edges_from(edges)
         self._graph = nx_graph
+        
+        layout_config['partitions'] = partitions
+        layout_config['root_vertex'] = root_vertex
 
         self._layout = _determine_graph_layout(
             nx_graph,
             layout=layout,
             layout_scale=layout_scale,
             layout_config=layout_config,
-            partitions=partitions,
-            root_vertex=root_vertex,
         )
 
         if isinstance(labels, dict):
@@ -944,7 +946,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
 
     def change_layout(
         self,
-        layout: str | dict = "spring",
+        layout: str | dict[Hashable, np.ndarray] | LayoutFunction = "spring",
         layout_scale: float = 2,
         layout_config: dict | None = None,
         partitions: list[list[Hashable]] | None = None,
