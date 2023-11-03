@@ -120,6 +120,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
         self.t_min, self.t_max, self.t_step = t_range
 
         super().__init__(**kwargs)
+        ## self.add_to_stash("function") ??
 
     def get_function(self):
         return self.function
