@@ -1381,6 +1381,13 @@ class Mobject:
     # Positioning methods
 
     def center(self):
+        """Moves the center of the mobject to the center of the scene.
+
+        Returns
+        -------
+        :class:`.Mobject`
+            The centered mobject.
+        """
         self.shift(-self.get_center())
         return self
 

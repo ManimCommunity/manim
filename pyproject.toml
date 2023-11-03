@@ -36,7 +36,7 @@ tqdm = "^4.62.3"
 pydub = "^0.25.1"
 rich = ">=6.0,!=12.0.0"
 pycairo = "^1.21"
-manimpango = "^0.4.0.post0"
+manimpango = ">=0.5.0,<1.0.0"
 networkx = "^2.5"
 decorator = "^5.0.7"
 importlib-metadata = { version = "^4.10.0", python = "<3.8" }
@@ -56,6 +56,7 @@ screeninfo = "^0.8"
 Pygments = "^2.10.0"
 "backports.cached-property" = { version = "^1.0.1", python = "<3.8" }
 svgelements = "^1.8.0"
+typing-extensions = "^4.7.1"
 
 [tool.poetry.extras]
 jupyterlab = ["jupyterlab", "notebook"]
