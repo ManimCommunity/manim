@@ -25,12 +25,24 @@ from manim.mobject.text.tex_mobject import MathTex
 from manim.mobject.types.vectorized_mobject import VMobject
 from manim.utils.color import BLACK
 
+
 class LayoutFunction(Protocol):
-    def __call__(self, graph: nx.classes.graph.Graph | nx.classes.digraph.DiGraph, scale: float = 2, *args: Any, **kwargs: Any) -> dict[Hashable, np.ndarray]:
+    def __call__(
+        self,
+        graph: nx.classes.graph.Graph | nx.classes.digraph.DiGraph,
+        scale: float = 2,
+        *args: Any,
+        **kwargs: Any,
+    ) -> dict[Hashable, np.ndarray]:
         ...
- 
-        
-def _partite_layout(nx_graph: nx.classes.graph.Graph, scale: float=2, partitions: list[list[Hashable]] | None = None, **kwargs) -> dict[Hashable, np.ndarray]:
+
+
+def _partite_layout(
+    nx_graph: nx.classes.graph.Graph,
+    scale: float = 2,
+    partitions: list[list[Hashable]] | None = None,
+    **kwargs,
+) -> dict[Hashable, np.ndarray]:
     if partitions is None or len(partitions) == 0:
         raise ValueError(
             "The partite layout requires partitions parameter to contain the partition of the vertices",
@@ -47,11 +59,11 @@ def _partite_layout(nx_graph: nx.classes.graph.Graph, scale: float=2, partitions
     for v in nx_graph.nodes:
         if "subset" not in nx_graph.nodes[v]:
             nx_graph.nodes[v]["subset"] = partition_count
-            
+
     return nx.layout.multipartite_layout(nx_graph, scale=scale, **kwargs)
 
 
-def _random_layout(nx_graph, scale: float=2, **kwargs):
+def _random_layout(nx_graph, scale: float = 2, **kwargs):
     # the random layout places coordinates in [0, 1)
     # we need to rescale manually afterwards...
     auto_layout = nx.layout.random_layout(nx_graph, **kwargs)
@@ -186,20 +198,21 @@ def _determine_graph_layout(
     layout: str | dict[Hashable, np.ndarray] | LayoutFunction = "spring",
     layout_scale: float = 2,
     layout_config: dict | None = None,
-) -> dict[Hashable, np.ndarray]:  
+) -> dict[Hashable, np.ndarray]:
     if layout_config is None:
         layout_config = {}
 
     if isinstance(layout, dict):
         return layout
     elif layout in _layouts:
-        auto_layout = _layouts[layout](
-            nx_graph, scale=layout_scale, **layout_config
-        )
+        auto_layout = _layouts[layout](nx_graph, scale=layout_scale, **layout_config)
         # NetworkX returns a dictionary of 3D points if the dimension
         # is specified to be 3. Otherwise, it returns a dictionary of
         # 2D points, so adjusting is required.
-        if layout_config.get("dim") == 3 or auto_layout[next(auto_layout.__iter__())].shape[0] == 3:
+        if (
+            layout_config.get("dim") == 3
+            or auto_layout[next(auto_layout.__iter__())].shape[0] == 3
+        ):
             return auto_layout
         else:
             return {k: np.append(v, [0]) for k, v in auto_layout.items()}
@@ -211,6 +224,7 @@ def _determine_graph_layout(
                 f"The layout '{layout}' is neither a recognized layout, a layout function,"
                 "nor a vertex placement dictionary.",
             )
+
 
 class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
     """Abstract base class for graphs (that is, a collection of vertices
@@ -318,12 +332,12 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         nx_graph.add_nodes_from(vertices)
         nx_graph.add_edges_from(edges)
         self._graph = nx_graph
-        
+
         layout_config = {} if layout_config is None else layout_config
-        if partitions is not None and 'partitions' not in layout_config:
-            layout_config['partitions'] = partitions
-        if root_vertex is not None and 'root_vertex' not in layout_config:
-            layout_config['root_vertex'] = root_vertex
+        if partitions is not None and "partitions" not in layout_config:
+            layout_config["partitions"] = partitions
+        if root_vertex is not None and "root_vertex" not in layout_config:
+            layout_config["root_vertex"] = root_vertex
 
         self._layout = _determine_graph_layout(
             nx_graph,
