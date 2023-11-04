@@ -29,7 +29,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
     num_decimal_places
         The number of decimal places after the decimal separator. Values are automatically rounded.
     mob_class
-        The class for rendering digits and units, by default `MathTex`.
+        The class for rendering digits and units, by default :class:`.MathTex`.
     include_sign
         Set to `True` to include a sign for positive numbers and zero.
     group_with_commas
