@@ -1088,7 +1088,7 @@ class ManimConfig(MutableMapping):
 
     @pixel_width.setter
     def pixel_width(self, value: int) -> None:
-        self._set_pos_number("pixel_width", value)
+        self._set_pos_number("pixel_width", value, False)
 
     @property
     def pixel_height(self) -> int:
@@ -1097,7 +1097,7 @@ class ManimConfig(MutableMapping):
 
     @pixel_height.setter
     def pixel_height(self, value: int) -> None:
-        self._set_pos_number("pixel_height", value)
+        self._set_pos_number("pixel_height", value, False)
 
     @property
     def aspect_ratio(self) -> int:
@@ -1226,7 +1226,7 @@ class ManimConfig(MutableMapping):
 
     @flush_cache.setter
     def flush_cache(self, value: bool) -> None:
-        self._set_boolean("flush_cache", value, True)
+        self._set_boolean("flush_cache", value)
 
     @property
     def disable_caching(self) -> bool:
