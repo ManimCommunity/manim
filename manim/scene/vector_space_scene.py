@@ -743,6 +743,13 @@ class LinearTransformationScene(VectorScene):
         mobject.target = target_mobject
         self.add_special_mobjects(self.moving_mobjects, mobject)
 
+    def get_ghost_vectors(self) -> VGroup:
+        """
+        Returns all ghost vectors ever added to ``self``. Each element is a ``VGroup`` of
+        two ghost vectors.
+        """
+        return self.ghost_vectors
+
     def get_unit_square(
         self, color: str = YELLOW, opacity: float = 0.3, stroke_width: float = 3
     ):
@@ -998,7 +1005,8 @@ class LinearTransformationScene(VectorScene):
         """
         start = VGroup(*pieces)
         target = VGroup(*(mob.target for mob in pieces))
-        if self.leave_ghost_vectors:
+        # don't add empty VGroups
+        if self.leave_ghost_vectors and start.submobjects:
             # start.copy() gives a VGroup of Vectors
             self.ghost_vectors.add(start.copy().fade(0.7))
             self.add(self.ghost_vectors[-1])
