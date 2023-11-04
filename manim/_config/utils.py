@@ -1129,7 +1129,9 @@ class ManimConfig(MutableMapping):
 
     @frame_y_radius.setter
     def frame_y_radius(self, value: float) -> None:
-        self._d.__setitem__("frame_y_radius", value) or self._d.__setitem__("frame_height", 2 * value)
+        self._d.__setitem__("frame_y_radius", value) or self._d.__setitem__(
+            "frame_height", 2 * value
+        )
 
     @property
     def frame_x_radius(self) -> float:
@@ -1138,7 +1140,9 @@ class ManimConfig(MutableMapping):
 
     @frame_x_radius.setter
     def frame_x_radius(self, value: float) -> None:
-        self._d.__setitem__("frame_x_radius", value) or self._d.__setitem__("frame_width", 2 * value)
+        self._d.__setitem__("frame_x_radius", value) or self._d.__setitem__(
+            "frame_width", 2 * value
+        )
 
     @property
     def top(self) -> Vector3:
@@ -1253,7 +1257,7 @@ class ManimConfig(MutableMapping):
 
     @property
     def background_opacity(self) -> float:
-        """"A number between 0.0 (fully transparent) and 1.0 (fully opaque)."""
+        """ "A number between 0.0 (fully transparent) and 1.0 (fully opaque)."""
         return self._d["background_opacity"]
 
     @background_opacity.setter
@@ -1262,12 +1266,14 @@ class ManimConfig(MutableMapping):
 
     @property
     def frame_size(self) -> tuple[int, int]:
-        """"Tuple with (pixel width, pixel height) (no flag)."""
+        """ "Tuple with (pixel width, pixel height) (no flag)."""
         return (self._d["pixel_width"], self._d["pixel_height"])
 
     @frame_size.setter
     def frame_size(self, value: tuple[int, int]) -> None:
-        self._d.__setitem__("pixel_width", value[0]) or self._d.__setitem__("pixel_height", value[1])
+        self._d.__setitem__("pixel_width", value[0]) or self._d.__setitem__(
+            "pixel_height", value[1]
+        )
 
     @property
     def quality(self) -> str | None:
