@@ -13,7 +13,7 @@ time.
 
 * Abulafia +
 * Adhyyan Sekhsaria +
-* Adrien LUDWIG +
+* Adrien Ludwig +
 * Alex Kempen +
 * Andres Berejnoi +
 * Anousheh Moonen +
@@ -62,7 +62,6 @@ the following contributors.
 * Tristan Schulz
 * Uwe Zimmermann
 * Viicos
-* github-advanced-security[bot]
 * icedcoffeeee
 
 Pull requests merged
@@ -85,60 +84,58 @@ Highlights
 New features
 ------------
 
-* :pr:`3361`: feat: adding three new rate_functions based on the SmoothStep function
+* :pr:`3361`: Added three new rate functions
+    This adds the rate functions :func:`.smoothstep`, :func:`.smootherstep`,
+    :func:`.smoothererstep` based on the SmoothStep sigmoid functions.
 
+* :pr:`3264`: Added new mobjects :class:`.LabeledLine` and :class:`.LabeledArrow`
 
 Enhancements
 ------------
 
-* :pr:`3190`: Enables Use of input_to_graph_point() by CurvesAsSubmobjects Instances
-
-
-* :pr:`3205`: Bugfix: Fix arc start angle type
-
-
-* :pr:`3264`: Two New Classes in geometry module: :class:`.LabeledLine` and :class:`.LabeledArrow`
+* :pr:`3190`: Made :class:`.CurvesAsSubmobjects` mobjects compatible with :meth:`.input_to_graph_point`
 
 
 Fixed bugs
 ----------
 
-* :pr:`3210`: Fix `DecimalNumber` with `show_ellipsis=True` work on OpenGL renderer
+* :pr:`3205`: Fixed type hint of ``angle`` in :class:`.Arc`
 
 
-* :pr:`3211`: Fixed Display Issue with Custom Axis Labels When ```renderer=opengl```
+* :pr:`3210`: Fixed :class:`.DecimalNumber` with ``show_ellipsis=True`` with the OpenGL renderer
+
+
+* :pr:`3211`: Fixed display issues with custom labels for :class:`.Axes` with the OpenGL renderer
 
 
 * :pr:`3298`: Fixed expand animation for :class:`.ManimBanner`
 
 
-* :pr:`3306`: Fixed IPython terminal history and embedded shell instatiation for interactive_embed scenes
+* :pr:`3306`: Fixed IPython terminal history and embedded shell instantiation for scenes using :meth:`.Scene.interactive_embed`
 
 
-* :pr:`3315`: Fix subcaption Type Mismatch
+* :pr:`3315`: Fixed issue with parameter types in :meth:`.Scene.add_subcaption`
 
 
-* :pr:`3423`: Fix incorrect submobject count of multi-part Tex/MathTex mobjects by stopping them from adding empty submobjects
+* :pr:`3423`: Fixed incorrect submobject count of multi-part :class:`.Tex` mobjects
+   This resolves various issues where formulas were not displayed completely,
+   like it was the case with ``MathTex("1", "^{", "0")``.
 
 
 Documentation-related changes
 -----------------------------
 
-* :pr:`3219`: Enable social cards in documentation
+* :pr:`3219`: Enable social cards for links to documentation
 
 
 * :pr:`3274`: Replaced incorrect mentions of Python 3.7 as the minimally required version
 
 
-* :pr:`3297`: Improved Arrow Tip Showcase example for :class:`.ArrowTip`
-   - Improve an example in the docstring for the `ArrowTip` class, by
-   1. Adding an example of the new `StealthTip`
-   2. Adding smaller-scale versions for all tips,
-   3. Adjusting the layout
+* :pr:`3297`: Improved arrow tip sowcase example for :class:`.ArrowTip`
 
-* :pr:`3312`: Added Docstring/Example for :meth:`always_redraw`
-   * Added an example to `always_redraw`
-   * Changed `lambda m: mob.become(func())` to `lambda _: mob.become(func())` for clarity
+
+* :pr:`3312`: Added documentation for :func:`.always_redraw`
+
 
 Changes concerning the testing system
 -------------------------------------
@@ -149,7 +146,8 @@ Changes concerning the testing system
 Code quality improvements and similar refactors
 -----------------------------------------------
 
-* :pr:`3086`: Fix Typing
+* :pr:`3086`: Introduced a new module :mod:`.typing` for type hints
+   This also adds various type hints to integral parts of the code base.
 
 
 * :pr:`3226`: Avoid using a mobject as a default argument of :class:`.ArcBrace`
