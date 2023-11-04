@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import inspect
 import itertools as it
 import random
 import sys
@@ -37,7 +38,6 @@ from manim.utils.iterables import (
     uniq_chain,
 )
 from manim.utils.paths import straight_path
-from manim.utils.simple_functions import get_parameters
 from manim.utils.space_ops import (
     angle_between_vectors,
     normalize,
@@ -1383,7 +1383,7 @@ class OpenGLMobject:
         return list(it.chain(*(sm.get_updaters() for sm in self.get_family())))
 
     def add_updater(self, update_function, index=None, call_updater=False):
-        if "dt" in get_parameters(update_function):
+        if "dt" in inspect.signature(update_function).parameters:
             updater_list = self.time_based_updaters
         else:
             updater_list = self.non_time_updaters

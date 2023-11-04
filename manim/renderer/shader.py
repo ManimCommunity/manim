@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import inspect
 import re
 import textwrap
 from pathlib import Path
@@ -9,7 +10,6 @@ import numpy as np
 
 from .. import config
 from ..utils import opengl
-from ..utils.simple_functions import get_parameters
 
 SHADER_FOLDER = Path(__file__).parent / "shaders"
 shader_program_cache: dict = {}
@@ -199,7 +199,7 @@ class Object3D:
         return self.time_based_updaters + self.non_time_updaters
 
     def add_updater(self, update_function, index=None, call_updater=True):
-        if "dt" in get_parameters(update_function):
+        if "dt" in inspect.signature(update_function).parameters:
             updater_list = self.time_based_updaters
         else:
             updater_list = self.non_time_updaters
