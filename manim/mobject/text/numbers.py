@@ -37,7 +37,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
     digit_buff_per_font_unit
         Additional spacing between digits. Scales with font size.
     show_ellipsis
-        When a number has been truncated by rounding, indicate with an ellipsis (...).
+        When a number has been truncated by rounding, indicate with an ellipsis (``...``).
     unit
         A unit string which can be placed to the right of the numerical values.
     unit_buff_per_font_unit
