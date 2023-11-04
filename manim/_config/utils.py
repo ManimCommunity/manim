@@ -309,6 +309,7 @@ class ManimConfig(MutableMapping):
         "write_to_movie",
         "zero_pad",
         "force_window",
+        "no_latex_cleanup",
     }
 
     def __init__(self) -> None:
@@ -580,6 +581,7 @@ class ManimConfig(MutableMapping):
             "use_projection_stroke_shaders",
             "enable_wireframe",
             "force_window",
+            "no_latex_cleanup",
         ]:
             setattr(self, key, parser["CLI"].getboolean(key, fallback=False))
 
@@ -756,6 +758,7 @@ class ManimConfig(MutableMapping):
             "enable_wireframe",
             "force_window",
             "dry_run",
+            "no_latex_cleanup",
         ]:
             if hasattr(args, key):
                 attr = getattr(args, key)
@@ -958,6 +961,12 @@ class ManimConfig(MutableMapping):
         lambda self: self._d["force_window"],
         lambda self, val: self._set_boolean("force_window", val),
         doc="Set to force window when using the opengl renderer",
+    )
+
+    no_latex_cleanup = property(
+        lambda self: self._d["no_latex_cleanup"],
+        lambda self, val: self._set_boolean("no_latex_cleanup", val),
+        doc="Prevents deletion of .aux, .dvi, and .log files produced by Tex and MathTex.",
     )
 
     @property
