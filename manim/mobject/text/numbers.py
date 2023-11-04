@@ -42,7 +42,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         A unit string which can be placed to the right of the numerical values.
     unit_buff_per_font_unit
         An additional spacing between the numerical values and the unit. A value
-        of `unit_buff_per_font_unit=0.003` gives a decent spacing. Scales with font size.
+        of ``unit_buff_per_font_unit=0.003`` gives a decent spacing. Scales with font size.
     include_background_rectangle
         Adds a background rectangle to increase contrast on busy scenes.
     edge_to_fix
