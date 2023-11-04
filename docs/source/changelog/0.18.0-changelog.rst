@@ -1,0 +1,291 @@
+*******
+v0.18.0
+*******
+
+:Date: November 04, 2023
+
+Contributors
+============
+
+A total of 41 people contributed to this
+release. People with a '+' by their names authored a patch for the first
+time.
+
+* Abulafia +
+* Adhyyan Sekhsaria +
+* Adrien LUDWIG +
+* Alex Kempen +
+* Andres Berejnoi +
+* Anousheh Moonen +
+* Benjamin Hackl
+* Francisco Manríquez Novoa
+* Harald Schilly +
+* Immanuel-Alvaro-Bhirawa +
+* Jason Grace +
+* Jason Villanueva
+* Jinchu Li
+* John Lynch +
+* Jérome Eertmans
+* Matt Turner +
+* Narahari Rao +
+* Naveen M K
+* Nikhil Iyer +
+* Ron Li +
+* Sujal Singh +
+* Tristan Schulz
+* Uwe Zimmermann +
+* Václav Blažej +
+* Zachary Winkeler +
+
+
+The patches included in this release have been reviewed by
+the following contributors.
+
+* Alex Lembcke
+* Andres Berejnoi
+* Axel
+* Benjamin Hackl
+* Francisco Manríquez Novoa
+* Immanuel-Alvaro-Bhirawa
+* Jan-Hendrik Müller
+* Jason Grace
+* Jason Villanueva
+* Jinchu Li
+* John Lynch
+* Jérome Eertmans
+* Kevin Lubick
+* Narahari Rao
+* Naveen M K
+* NotWearingPants
+* SsNiPeR1
+* TheMathematicFanatic
+* Tristan Schulz
+* Uwe Zimmermann
+* Viicos
+* github-advanced-security[bot]
+* icedcoffeeee
+
+Pull requests merged
+====================
+
+A total of 58 pull requests were merged for this release.
+
+Breaking changes
+----------------
+
+* :pr:`3020`: Adding :class: ManimColor to manim and converting all types
+
+
+Highlights
+----------
+
+* :pr:`3299`: Added new ``manim checkhealth`` CLI subcommand
+   This adds a new command line interface subcommand which can be used to check whether a local installation of Manim has been configured correctly, and all required (and optional) dependencies are available. To try it, run it via ``manim checkhealth`` or ``python -m manim checkhealth``.
+
+New features
+------------
+
+* :pr:`3361`: feat: adding three new rate_functions based on the SmoothStep function
+
+
+Enhancements
+------------
+
+* :pr:`3190`: Enables Use of input_to_graph_point() by CurvesAsSubmobjects Instances
+
+
+* :pr:`3205`: Bugfix: Fix arc start angle type
+
+
+* :pr:`3264`: Two New Classes in geometry module: :class:`.LabeledLine` and :class:`.LabeledArrow` 
+
+
+Fixed bugs
+----------
+
+* :pr:`3210`: Fix `DecimalNumber` with `show_ellipsis=True` work on OpenGL renderer
+
+
+* :pr:`3211`: Fixed Display Issue with Custom Axis Labels When ```renderer=opengl```
+
+
+* :pr:`3298`: Fixed expand animation for :class:`.ManimBanner`
+
+
+* :pr:`3306`: Fixed IPython terminal history and embedded shell instatiation for interactive_embed scenes
+
+
+* :pr:`3315`: Fix subcaption Type Mismatch
+
+
+* :pr:`3423`: Fix incorrect submobject count of multi-part Tex/MathTex mobjects by stopping them from adding empty submobjects
+
+
+Documentation-related changes
+-----------------------------
+
+* :pr:`3219`: Enable social cards in documentation
+
+
+* :pr:`3274`: Replaced incorrect mentions of Python 3.7 as the minimally required version
+
+
+* :pr:`3297`: Improved Arrow Tip Showcase example for :class:`.ArrowTip`
+   - Improve an example in the docstring for the `ArrowTip` class, by
+   1. Adding an example of the new `StealthTip`
+   2. Adding smaller-scale versions for all tips,
+   3. Adjusting the layout
+
+* :pr:`3312`: Added Docstring/Example for :meth:`always_redraw`
+   * Added an example to `always_redraw`
+   * Changed `lambda m: mob.become(func())` to `lambda _: mob.become(func())` for clarity
+
+Changes concerning the testing system
+-------------------------------------
+
+* :pr:`3416`: Fix tests to run on Cairo 1.18.0
+
+
+Code quality improvements and similar refactors
+-----------------------------------------------
+
+* :pr:`3086`: Fix Typing
+
+
+* :pr:`3226`: Avoid using a mobject as a default argument of :class:`.ArcBrace`
+
+
+* :pr:`3229`: Made docbuild errors easier to debug + fixed error from changed exception class
+
+
+* :pr:`3231`: Fixed errors reported by ``flake8``
+
+
+* :pr:`3232`: Upgrade ReadTheDocs build environment to use newer image
+
+
+* :pr:`3286`: Optimized :meth:`.Axes.coords_to_point`
+   As the title says, I optimized `Axes.coords_to_point`. Best results if combined with PR [#3285: Optimized :meth:`NumberLine.number_to_point`](https://github.com/ManimCommunity/manim/pull/3285).
+
+New releases
+------------
+
+* :pr:`3198`: Prepare new release: v0.17.3
+
+
+Unclassified changes
+--------------------
+
+* :pr:`3218`: Small grammar change to deep_dive doc
+
+
+* :pr:`3224`: Replace last `os.path` occurrencies by `pathlib`
+
+
+* :pr:`3236`: Minor fix, return self
+
+
+* :pr:`3251`: Add LaTeX installation instructions for Fedora
+
+
+* :pr:`3253`: Bump tornado from 6.3.1 to 6.3.2
+
+
+* :pr:`3257`: CI: fix a config error from poetry
+
+
+* :pr:`3272`: Bump docker/build-push-action from 3 to 4
+
+
+* :pr:`3282`: fix: prevent vector position array from being modified (#3273)
+
+
+* :pr:`3284`: fixed the use of the LinearTransformationSceneExample in Jupyter notebooks
+
+
+* :pr:`3287`: Bump cryptography from 41.0.1 to 41.0.2
+
+
+* :pr:`3290`: Update dependencies for apple silicon in macos.rst
+   Adds `pkg-config` to the list of needed dependencies for apple silicon. 
+   According to https://pypi.org/project/ManimPango/ manim-pango needs pkg-config
+
+* :pr:`3302`: fix: changed minor typo in OpenGLVMobject
+
+
+* :pr:`3322`: Added ability to remove non-svg LaTeX files
+   * Made manim auto-remove non-tex and non-svg files by default. This behavior can be prevented with the CLI flag `--no_latex_cleanup`
+   * Made manim check if an svg for a TeX expression already exists BEFORE creating `.aux`, `.dvi`, and other files.
+     * This makes sure that even the user already has the svg for an expression and runs their code with `--no_latex_cleanup`, they will not get cluttered with the `.aux`, `.dvi`, and other files for that expression.
+
+* :pr:`3325`: Added docs for functions in `mobject_update_utils`
+   * Added docstrings for:
+     * :meth:`always_rotate`
+     * :meth:`always_shift`
+     * :meth:`turn_animation_into_updater`
+   * Added typehints to above functions
+
+* :pr:`3340`: fix: issue with ImageMobject bounding box
+
+
+* :pr:`3343`: fix: return value of TexTemplate.add_to...
+
+
+* :pr:`3350`: Added missing dependency ``typing-extensions``
+
+
+* :pr:`3353`: Added docstring to Mobject.center
+
+
+* :pr:`3355`: rtd: enable htmlzip build
+
+
+* :pr:`3366`: feat: DecimalNumber() - added spacing between values and unit
+   - added the parameter `unit_buff_per_font_unit` to add additional space between the numeric values and the unit
+   - default value `unit_buff_per_font_unit=0` ensures backward compatibility
+   - also added parameter documentation in docstring
+
+* :pr:`3377`: fix a typo in deep_dive.rst
+   Fix a simple typo
+
+* :pr:`3389`: fix(docs): Remove extra curly bracket in LaTeX math expression
+
+
+* :pr:`3392`: Bug fix: Use np.isclose for float equality in number line elongated ticks
+   Resolves #3394 by using `np.isclose` to check for float equality instead of using default float equality, which sometimes is not one might expect (see `0.1 + 0.2 != 0.3` for example).
+
+* :pr:`3395`: chore(deps): add Python 3.12 support
+   Currently, Manim can only be installed on Python 3.11 and below. As Python 3.12 just came out, I think it is good time to update a bit Python requirements so that newer Python versions can install Manim.
+
+   I updated the dependencies, and test workflows.
+
+* :pr:`3397`: Several GitHub actions updates
+
+
+* :pr:`3399`: Updated several dependencies
+
+
+* :pr:`3404`: Fix: Fixed a bug in regards to empty inputs in AddTextLetterByLetter class. 
+
+
+* :pr:`3405`: pyproject.toml: update manimpango version
+
+
+* :pr:`3417`: Introduce new workflow creating a downloadable version of the documentation
+
+
+* :pr:`3419`: CI: fix caching of cairo
+
+
+* :pr:`3421`: Fix None check order in _tree_layout
+
+
+* :pr:`3430`: Fix CSV reader adding empty lists in rendering summary
+
+
+* :pr:`3431`: Bump teatimeguest/setup-texlive-action from 2 to 3
+
+
+* :pr:`3433`: bump dependencies
+
+
