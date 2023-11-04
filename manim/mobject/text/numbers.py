@@ -25,7 +25,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
     Parameters
     ----------
     number
-        The numeric value to be displayed. It can later be modified using `.set_value()`.
+        The numeric value to be displayed. It can later be modified using :meth:`.set_value`.
     num_decimal_places
         The number of decimal places after the decimal separator. Values are automatically rounded.
     mob_class
