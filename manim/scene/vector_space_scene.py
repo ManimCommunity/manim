@@ -572,7 +572,7 @@ class LinearTransformationScene(VectorScene):
                     self,
                     show_coordinates=True,
                     leave_ghost_vectors=True,
-                    *kwargs
+                    **kwargs
                 )
 
             def construct(self):
