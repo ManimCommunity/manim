@@ -870,7 +870,8 @@ class Mobject:
 
         """
         return [
-            updater for updater in self.updaters
+            updater
+            for updater in self.updaters
             if "dt" in inspect.signature(updater).parameters
         ]
 
@@ -889,8 +890,7 @@ class Mobject:
 
         """
         return any(
-            "dt" in inspect.signature(updater).parameters
-            for updater in self.updaters
+            "dt" in inspect.signature(updater).parameters for updater in self.updaters
         )
 
     def get_updaters(self) -> list[Updater]:
