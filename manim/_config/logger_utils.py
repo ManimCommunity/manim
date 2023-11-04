@@ -26,6 +26,7 @@ from rich.theme import Theme
 
 if TYPE_CHECKING:
     from pathlib import Path
+
 HIGHLIGHTED_KEYWORDS = [  # these keywords are highlighted specially
     "Played",
     "animations",
