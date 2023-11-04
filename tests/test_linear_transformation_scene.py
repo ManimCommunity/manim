@@ -1,8 +1,6 @@
-from manim import LinearTransformationScene, Vector, VGroup, UP, RIGHT
-
+from manim import RIGHT, UP, LinearTransformationScene, Vector, VGroup
 
 __module_test__ = "vector_space_scene"
-
 
 
 def test_ghost_vectors_len_and_types():
@@ -24,5 +22,3 @@ def test_ghost_vectors_len_and_types():
     # check types of ghost vectors
     assert isinstance(ghosts, VGroup) and isinstance(ghosts[0], VGroup)
     assert all(isinstance(x, Vector) for x in ghosts[0])
-
-
