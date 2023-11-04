@@ -58,7 +58,7 @@ repos:
             flake8-simplify==0.14.1,
           ]
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.4.1
+    rev: v1.5.1
     hooks:
       - id: mypy
         additional_dependencies:
@@ -69,6 +69,7 @@ repos:
             types-requests,
             types-setuptools,
           ]
+        files: ^manim/
 
   - repo: https://github.com/codespell-project/codespell
     rev: v2.2.5

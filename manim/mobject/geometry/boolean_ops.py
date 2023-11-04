@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import typing
-
 import numpy as np
 from pathops import Path as SkiaPath
 from pathops import PathVerb, difference, intersection, union, xor
@@ -11,6 +9,7 @@ from pathops import PathVerb, difference, intersection, union, xor
 from manim import config
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VMobject
+from manim.typing import Point2D_Array
 
 from ...constants import RendererType
 
@@ -23,12 +22,9 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
     objects (:class:`~.VMobject`).
     """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     def _convert_2d_to_3d_array(
         self,
-        points: typing.Iterable,
+        points: Point2D_Array,
         z_dim: float = 0.0,
     ) -> list[np.ndarray]:
         """Converts an iterable with coordinates in 2d to 3d by adding
@@ -43,7 +39,7 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
 
         Returns
         -------
-        typing.List[np.ndarray]
+        Point2D_Array
             A list of array converted to 3d.
 
         Example
@@ -216,7 +212,7 @@ class Difference(_BooleanOps):
 
     """
 
-    def __init__(self, subject, clip, **kwargs) -> None:
+    def __init__(self, subject: VMobject, clip: VMobject, **kwargs) -> None:
         super().__init__(**kwargs)
         outpen = SkiaPath()
         difference(
@@ -258,7 +254,7 @@ class Intersection(_BooleanOps):
 
     """
 
-    def __init__(self, *vmobjects, **kwargs) -> None:
+    def __init__(self, *vmobjects: VMobject, **kwargs) -> None:
         if len(vmobjects) < 2:
             raise ValueError("At least 2 mobjects needed for Intersection.")
 
@@ -311,7 +307,7 @@ class Exclusion(_BooleanOps):
 
     """
 
-    def __init__(self, subject, clip, **kwargs) -> None:
+    def __init__(self, subject: VMobject, clip: VMobject, **kwargs) -> None:
         super().__init__(**kwargs)
         outpen = SkiaPath()
         xor(

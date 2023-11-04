@@ -9,7 +9,6 @@ import copy
 import itertools as it
 import operator as op
 import pathlib
-import time
 from functools import reduce
 from typing import Any, Callable, Iterable
 
@@ -966,7 +965,7 @@ class Camera:
             The Pixel array to put the imagemobject in.
         """
         corner_coords = self.points_to_pixel_coords(image_mobject, image_mobject.points)
-        ul_coords, ur_coords, dl_coords = corner_coords
+        ul_coords, ur_coords, dl_coords, _ = corner_coords
         right_vect = ur_coords - ul_coords
         down_vect = dl_coords - ul_coords
         center_coords = ul_coords + (right_vect + down_vect) / 2
