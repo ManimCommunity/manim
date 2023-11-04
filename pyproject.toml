@@ -18,6 +18,7 @@ classifiers= [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Natural Language :: English",
     ]
 exclude = ["scripts/","logo/","readme-assets/"]
@@ -26,12 +27,18 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.8,<3.12"
+python = ">=3.8,<3.13"
 click = ">=7.2,<=9.0"
 click-default-group = "^1.2.2"
-numpy = ">=1.22"
+numpy = [
+    { version = "^1.22", python = "<3.12" },
+    { version = "^1.26", python = ">=3.12" }
+]
 Pillow = ">=9.1,<10.0"
-scipy = "^1.7.3"
+scipy = [
+    { version = "^1.7.3", python = "<3.12" },
+    { version = "^1.11", python = ">=3.12" }
+]
 tqdm = "^4.62.3"
 pydub = "^0.25.1"
 rich = ">=6.0,!=12.0.0"
@@ -49,7 +56,10 @@ mapbox-earcut = "^1.0.0"
 cloup = ">=0.13,<2.2"
 requests = "^2.26.0"
 dearpygui = { version = "^1.3.1", optional = true }
-skia-pathops = "^0.7.0"
+skia-pathops = [
+    { version = "^0.7.0", python = "<3.12" },
+    { version = "^0.8.0.post1", python = ">=3.12" }
+]
 isosurfaces = "0.1.0"
 srt = "^3.5.0"
 screeninfo = "^0.8"

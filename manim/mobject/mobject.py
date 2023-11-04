@@ -6,6 +6,7 @@ __all__ = ["Mobject", "Group", "override_animate"]
 
 
 import copy
+import inspect
 import itertools as it
 import math
 import operator as op
@@ -36,7 +37,6 @@ from ..utils.color import (
 from ..utils.exceptions import MultiAnimationOverrideException
 from ..utils.iterables import list_update, remove_list_redundancies
 from ..utils.paths import straight_path
-from ..utils.simple_functions import get_parameters
 from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
 
 # TODO: Explain array_attrs
@@ -847,8 +847,7 @@ class Mobject:
         if self.updating_suspended:
             return self
         for updater in self.updaters:
-            parameters = get_parameters(updater)
-            if "dt" in parameters:
+            if "dt" in inspect.signature(updater).parameters:
                 updater(self, dt)
             else:
                 updater(self)
@@ -873,7 +872,11 @@ class Mobject:
         :meth:`has_time_based_updater`
 
         """
-        return [updater for updater in self.updaters if "dt" in get_parameters(updater)]
+        return [
+            updater
+            for updater in self.updaters
+            if "dt" in inspect.signature(updater).parameters
+        ]
 
     def has_time_based_updater(self) -> bool:
         """Test if ``self`` has a time based updater.
@@ -889,7 +892,9 @@ class Mobject:
         :meth:`get_time_based_updaters`
 
         """
-        return any("dt" in get_parameters(updater) for updater in self.updaters)
+        return any(
+            "dt" in inspect.signature(updater).parameters for updater in self.updaters
+        )
 
     def get_updaters(self) -> list[Updater]:
         """Return all updaters.
@@ -982,7 +987,7 @@ class Mobject:
         else:
             self.updaters.insert(index, update_function)
         if call_updater:
-            parameters = get_parameters(update_function)
+            parameters = inspect.signature(update_function).parameters
             if "dt" in parameters:
                 update_function(self, 0)
             else:
