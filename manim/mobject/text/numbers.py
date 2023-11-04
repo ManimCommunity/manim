@@ -31,7 +31,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
     mob_class
         The class for rendering digits and units, by default :class:`.MathTex`.
     include_sign
-        Set to `True` to include a sign for positive numbers and zero.
+        Set to ``True`` to include a sign for positive numbers and zero.
     group_with_commas
         When `True` thousands groups are separated by commas for readability.
     digit_buff_per_font_unit
