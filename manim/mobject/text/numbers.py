@@ -48,7 +48,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
     edge_to_fix
         Assuring right- or left-alignment of the full object.
     font_size
-        Size of the font
+        Size of the font.
 
     Examples
     --------
