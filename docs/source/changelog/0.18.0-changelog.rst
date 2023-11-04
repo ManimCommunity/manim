@@ -97,7 +97,7 @@ Enhancements
 * :pr:`3205`: Bugfix: Fix arc start angle type
 
 
-* :pr:`3264`: Two New Classes in geometry module: :class:`.LabeledLine` and :class:`.LabeledArrow` 
+* :pr:`3264`: Two New Classes in geometry module: :class:`.LabeledLine` and :class:`.LabeledArrow`
 
 
 Fixed bugs
@@ -207,7 +207,7 @@ Unclassified changes
 
 
 * :pr:`3290`: Update dependencies for apple silicon in macos.rst
-   Adds `pkg-config` to the list of needed dependencies for apple silicon. 
+   Adds `pkg-config` to the list of needed dependencies for apple silicon.
    According to https://pypi.org/project/ManimPango/ manim-pango needs pkg-config
 
 * :pr:`3302`: fix: changed minor typo in OpenGLVMobject
@@ -265,7 +265,7 @@ Unclassified changes
 * :pr:`3399`: Updated several dependencies
 
 
-* :pr:`3404`: Fix: Fixed a bug in regards to empty inputs in AddTextLetterByLetter class. 
+* :pr:`3404`: Fix: Fixed a bug in regards to empty inputs in AddTextLetterByLetter class.
 
 
 * :pr:`3405`: pyproject.toml: update manimpango version
@@ -287,5 +287,3 @@ Unclassified changes
 
 
 * :pr:`3433`: bump dependencies
-
-
