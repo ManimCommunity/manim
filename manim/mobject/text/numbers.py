@@ -33,7 +33,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
     include_sign
         Set to ``True`` to include a sign for positive numbers and zero.
     group_with_commas
-        When `True` thousands groups are separated by commas for readability.
+        When ``True`` thousands groups are separated by commas for readability.
     digit_buff_per_font_unit
         Additional spacing between digits. Scales with font size.
     show_ellipsis
