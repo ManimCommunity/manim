@@ -9,7 +9,6 @@ import copy
 import itertools as it
 import operator as op
 import pathlib
-import time
 from functools import reduce
 from typing import Any, Callable, Iterable
 

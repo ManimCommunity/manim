@@ -343,6 +343,9 @@ def _log_rendering_times(*args):
 
         print("\nRendering Summary\n-----------------\n")
 
+        # filter out empty lists caused by csv reader
+        data = [row for row in data if row]
+
         max_file_length = max(len(row[0]) for row in data)
         for key, group in it.groupby(data, key=lambda row: row[0]):
             key = key.ljust(max_file_length + 1, ".")

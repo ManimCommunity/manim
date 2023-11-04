@@ -20,7 +20,6 @@ __all__ = [
 ]
 
 parser = make_config_parser()
-logger: logging.Logger
 
 # The logger can be accessed from anywhere as manim.logger, or as
 # logging.getLogger("manim").  The console must be accessed as manim.console.
