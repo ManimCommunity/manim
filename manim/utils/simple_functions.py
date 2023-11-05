@@ -11,6 +11,7 @@ __all__ = [
 
 
 import inspect
+import bisect
 from functools import lru_cache
 from types import MappingProxyType
 from typing import Callable
@@ -54,28 +55,15 @@ def binary_search(
         >>> binary_search(lambda x: x**2 + 3*x + 1, 71, 0, 5) is None
         True
     """
-    lh = lower_bound
-    rh = upper_bound
-    mh = np.mean(np.array([lh, rh]))
-    while abs(rh - lh) > tolerance:
-        mh = np.mean(np.array([lh, rh]))
-        lx, mx, rx = (function(h) for h in (lh, mh, rh))
-        if lx == target:
-            return lh
-        if rx == target:
-            return rh
+    inputs = [lower_bound + i * (upper_bound - lower_bound) / 10000 for i in range(10001)]
+    print(inputs)
+    outputs = [function(x) for x in inputs]
 
-        if lx <= target <= rx:
-            if mx > target:
-                rh = mh
-            else:
-                lh = mh
-        elif lx > target > rx:
-            lh, rh = rh, lh
-        else:
-            return None
-
-    return mh
+    index = bisect.bisect_left(outputs, target)
+    if index != len(outputs) and abs(outputs[index] - target) <= tolerance:
+        return inputs[index]
+    else:
+        return None
 
 
 @lru_cache(maxsize=10)
