@@ -18,6 +18,7 @@ classifiers= [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Natural Language :: English",
     ]
 exclude = ["scripts/","logo/","readme-assets/"]
@@ -26,24 +27,22 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.8,<3.12"
-"backports.cached-property" = { version = ">=1.0.0", python = "<3.8" }
+python = ">=3.9,<4.0"
 click = ">=8.0"
 cloup = ">=2.0.0"
 dearpygui = { version = ">=1.0.0", optional = true }
 decorator = ">=4.3.2"
-importlib-metadata = { version = "^4.10.0", python = "<3.8" }
 isosurfaces = ">=0.1.0"
 jupyterlab = { version = ">=3.0.0", optional = true }
 manimpango = "<=1.0.0"  # Complete API change in 1.0.0
 mapbox-earcut = ">=1.0.0"
-moderngl = ">=5.0.0"
+moderngl = ">=5.0.0,<6.0.0"
 moderngl-window = ">=2.0.0"
 networkx = ">=2.6"
 notebook = { version = ">=6.0.0", optional = true }
 numpy = ">=1.22"
 Pillow = ">=9.1"
-pycairo = ">=1.13"
+pycairo = ">=1.13,<2.0.0"
 pydub = ">=0.20.0"
 Pygments = ">=2.0.0"
 rich = ">=6.0,!=12.0.0"
@@ -60,7 +59,7 @@ watchdog = ">=2.0.0"
 jupyterlab = ["jupyterlab", "notebook"]
 gui = ["dearpygui"]
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 pytest-cov = "^3.0.0"
 pytest = "^7.2"
 pylint = "^2.12.2"
@@ -76,12 +75,11 @@ pygithub = "^1"
 flake8 = "^3.9.0"
 isort = "^5.8.0"
 pytest-xdist = "^2.2"
-mypy = "^0.931"
 types-requests = "^2.25.6"
 types-protobuf = "^3.17.4"
 types-decorator = "^0.1.7"
 types-setuptools = "^57.0.2"
-types-Pillow = "^8.3.3"
+types-Pillow = "^9.3.0.4"
 types-Pygments = "^2.9.2"
 flake8-builtins = "^1.5.3"
 flake8-bugbear = "^21.4.3"
@@ -95,7 +93,6 @@ data-science-types = "^0.2.23"
 psutil-wheels = {version = "5.8.0", python = ">=3.10"}
 psutil = {version = "^5.8.0", python = "<3.10"}
 myst-parser = "^0.17.2"
-
 
 [tool.poetry.urls]
 "Bug Tracker" = "https://github.com/ManimCommunity/manim/issues"

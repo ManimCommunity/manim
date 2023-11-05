@@ -284,3 +284,20 @@ def test_ImageInterpolation(scene):
     scene.add(img1, img2, img3, img4, img5)
     [s.shift(4 * LEFT + pos * 2 * RIGHT) for pos, s in enumerate(scene.mobjects)]
     scene.wait()
+
+
+def test_ImageMobject_points_length():
+    file_path = get_svg_resource("tree_img_640x351.png")
+    im1 = ImageMobject(file_path)
+    assert len(im1.points) == 4
+
+
+def test_ImageMobject_rotation():
+    # see https://github.com/ManimCommunity/manim/issues/3067
+    # rotating an image to and from the same angle should not change the image
+    file_path = get_svg_resource("tree_img_640x351.png")
+    im1 = ImageMobject(file_path)
+    im2 = im1.copy()
+    im1.rotate(PI / 2)
+    im1.rotate(-PI / 2)
+    np.testing.assert_array_equal(im1.points, im2.points)

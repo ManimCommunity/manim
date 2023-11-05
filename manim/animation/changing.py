@@ -6,7 +6,6 @@ __all__ = ["AnimatedBoundary", "TracedPath"]
 
 from typing import Callable
 
-from manim._config import config
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import (
