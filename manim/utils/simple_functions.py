@@ -10,8 +10,8 @@ __all__ = [
 ]
 
 
-import inspect
 import bisect
+import inspect
 from functools import lru_cache
 from types import MappingProxyType
 from typing import Callable
@@ -56,6 +56,7 @@ def binary_search(
         True
     """
     inputs = [lower_bound + i * (upper_bound - lower_bound) / 10000 for i in range(10001)]
+    print(inputs)
     outputs = [function(x) for x in inputs]
 
     index = bisect.bisect_left(outputs, target)
