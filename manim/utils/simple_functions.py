@@ -55,16 +55,18 @@ def binary_search(
         >>> binary_search(lambda x: x**2 + 3*x + 1, 71, 0, 5) is None
         True
     """
-    inputs = [
-        lower_bound + i * (upper_bound - lower_bound) / 10000 for i in range(10001)
-    ]
-    outputs = [function(x) for x in inputs]
+    while lower_bound <= upper_bound:
+        mid_point = (lower_bound + upper_bound) / 2
+        mid_value = function(mid_point)
 
-    index = bisect.bisect_left(outputs, target)
-    if index != len(outputs) and abs(outputs[index] - target) <= tolerance:
-        return inputs[index]
-    else:
-        return None
+        if abs(mid_value - target) <= tolerance:
+            return mid_point
+        elif mid_value < target:
+            lower_bound = mid_point + tolerance
+        else:
+            upper_bound = mid_point - tolerance
+
+    return None
 
 
 @lru_cache(maxsize=10)
