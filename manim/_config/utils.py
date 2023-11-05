@@ -1004,7 +1004,7 @@ class ManimConfig(MutableMapping):
     @property
     def no_latex_cleanup(self) -> bool:
         """Prevents deletion of .aux, .dvi, and .log files produced by Tex and MathTex."""
-        return self._d["force_window"]
+        return self._d["no_latex_cleanup"]
 
     @no_latex_cleanup.setter
     def no_latex_cleanup(self, value: bool) -> None:
