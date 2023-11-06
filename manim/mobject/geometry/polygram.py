@@ -577,8 +577,6 @@ class Rectangle(Polygon):
         No purpose.
     close_new_points
         No purpose.
-    grid_line_stroke_width
-        Stroke width of grid lines.
     kwargs
         Additional arguments to be passed to :class:`Polygon`
 
@@ -591,7 +589,8 @@ class Rectangle(Polygon):
             def construct(self):
                 rect1 = Rectangle(width=4.0, height=2.0, grid_xstep=1.0, grid_ystep=0.5)
                 rect2 = Rectangle(width=1.0, height=4.0)
-                rect3 = Rectangle(width=2.0, height=2.0, grid_xstep=1.0, grid_ystep=1.0, grid_line_stroke_width=1)
+                rect3 = Rectangle(width=2.0, height=2.0, grid_xstep=1.0, grid_ystep=1.0)
+                rect3.grid_lines.set_stroke(width=1)
 
                 rects = Group(rect1, rect2, rect3).arrange(buff=1)
                 self.add(rects)
@@ -606,13 +605,14 @@ class Rectangle(Polygon):
         grid_ystep: float | None = None,
         mark_paths_closed: bool = True,
         close_new_points: bool = True,
-        grid_line_stroke_width: int = DEFAULT_STROKE_WIDTH,
         **kwargs,
     ):
         super().__init__(UR, UL, DL, DR, color=color, **kwargs)
         self.stretch_to_fit_width(width)
         self.stretch_to_fit_height(height)
         v = self.get_vertices()
+        self.grid_lines = VGroup()
+
         if grid_xstep is not None:
             from manim.mobject.geometry.line import Line
 
@@ -624,12 +624,11 @@ class Rectangle(Polygon):
                         v[1] + i * grid_xstep * RIGHT,
                         v[1] + i * grid_xstep * RIGHT + height * DOWN,
                         color=color,
-                        stroke_width=grid_line_stroke_width,
                     )
                     for i in range(1, count)
                 )
             )
-            self.add(grid)
+            self.grid_lines.add(grid)
         if grid_ystep is not None:
             grid_ystep = abs(grid_ystep)
             count = int(height / grid_ystep)
@@ -639,12 +638,14 @@ class Rectangle(Polygon):
                         v[1] + i * grid_ystep * DOWN,
                         v[1] + i * grid_ystep * DOWN + width * RIGHT,
                         color=color,
-                        stroke_width=grid_line_stroke_width,
                     )
                     for i in range(1, count)
                 )
             )
-            self.add(grid)
+            self.grid_lines.add(grid)
+
+        if self.grid_lines:
+            self.add(self.grid_lines)
 
 
 class Square(Rectangle):
