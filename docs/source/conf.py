@@ -172,6 +172,6 @@ inheritance_edge_attrs = {
     "penwidth": 1,
 }
 
-html_js_files = ["responsiveSvg.js", "manim-binder.min.js"]
+html_js_files = ["responsiveSvg.js"]
 
 graphviz_output_format = "svg"

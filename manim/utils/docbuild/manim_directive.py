@@ -85,6 +85,7 @@ import os
 import re
 import shutil
 import sys
+import textwrap
 from pathlib import Path
 from timeit import timeit
 
@@ -93,7 +94,7 @@ from docutils import nodes
 from docutils.parsers.rst import Directive, directives  # type: ignore
 from docutils.statemachine import StringList
 
-from manim import QUALITIES
+from manim import QUALITIES, __version__ as manim_version
 
 classnamedict = {}
 
@@ -175,17 +176,18 @@ class ManimDirective(Directive):
                     [
                         f"Placeholder block for ``{clsname}``.",
                         "",
-                        ".. raw:: html",
+                        ".. code-block:: python",
                         "",
-                        "    <pre data-interactive>",
                     ]
                     + ["    " + line for line in self.content]
                     + [
                         "",
-                        "    # don't remove below command for run button to work\n",
-                        f"    %manim -qm {clsname}",
-                        "    </pre>",
-                    ],
+                        ".. raw:: html",
+                        "",
+                        f'    <pre data-manim-binder data-manim-classname="{clsname}">',
+                    ]
+                    + ["    " + line for line in self.content]
+                    + ["    </pre>"],
                 ),
                 self.content_offset,
                 node,
@@ -239,14 +241,16 @@ class ManimDirective(Directive):
             dest_dir.mkdir(parents=True, exist_ok=True)
 
         source_block = [
-            ".. raw:: html",
+            ".. code-block:: python",
             "",
-            "    <pre data-interactive>",
             "    from manim import *\n",
             *("    " + line for line in self.content),
             "",
-            "    # don't remove below command for run button to work",
-            f"    %manim -qm {clsname}",
+            ".. raw:: html",
+            "",
+            f'    <pre data-manim-binder data-manim-classname="{clsname}">',
+            *("    " + line for line in self.content),
+            "",
             "    </pre>",
         ]
         source_block = "\n".join(source_block)
@@ -392,6 +396,16 @@ def setup(app):
 
     app.connect("builder-inited", _delete_rendering_times)
     app.connect("build-finished", _log_rendering_times)
+
+    app.add_js_file("manim-binder.min.js")
+    app.add_js_file(
+        None,
+        body=textwrap.dedent(
+            f"""\
+                window.initManimBinder({{branch: "v{manim_version}"}})
+            """
+        ).strip(),
+    )
 
     metadata = {"parallel_read_safe": False, "parallel_write_safe": True}
     return metadata

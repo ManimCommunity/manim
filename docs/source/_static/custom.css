@@ -97,3 +97,8 @@ h4, h5, h6{
 .manim-binder-title {
     margin-top: 0;
 }
+
+.manim-binder-button-wrapper {
+    margin-top: -1em;
+    margin-bottom: -0.5em;
+}
