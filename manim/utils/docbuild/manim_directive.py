@@ -94,7 +94,8 @@ from docutils import nodes
 from docutils.parsers.rst import Directive, directives  # type: ignore
 from docutils.statemachine import StringList
 
-from manim import QUALITIES, __version__ as manim_version
+from manim import QUALITIES
+from manim import __version__ as manim_version
 
 classnamedict = {}
 
