@@ -173,7 +173,7 @@ class ManimDirective(Directive):
             self.state.nested_parse(
                 StringList(
                     [
-                        f"Placeholder block for ``{self.arguments[0]}``.",
+                        f"Placeholder block for ``{clsname}``.",
                         "",
                         ".. raw:: html",
                         "",
