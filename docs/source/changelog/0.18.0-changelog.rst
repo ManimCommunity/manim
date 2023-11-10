@@ -78,6 +78,9 @@ Breaking changes
    the newly added :class:`.ManimColor`. This also adds hundreds
    of new predefined colors, see :mod:`.utils.color` for more
    details.
+   This should only be a breaking change if you have interacted
+   directly with the ``colour`` module before. The general interface
+   has been kept stable.
 
 
 Highlights
@@ -167,10 +170,10 @@ Fixed bugs
 * :pr:`3343`: Fixed return value of :meth:`.TexTemplate.add_to_preamble` and :meth:`.TexTemplate.add_to_document`
 
 
-* :pr:`3282`: fix: prevent vector position array from being modified (#3273)
+* :pr:`3282`: Ensure that :meth:`.ArrowVectorField.get_vector` does not modify the passed inputs
 
 
-* :pr:`3392`: Bug fix: Use np.isclose for float equality in number line elongated ticks
+* :pr:`3392`: Fixed behavior of elongated tick lines for :class:`.NumberLine`
 
 
 * :pr:`3430`: Fixed CSV reader adding empty lists in rendering summary during documentation build
@@ -182,7 +185,7 @@ Fixed bugs
 Documentation-related changes
 -----------------------------
 
-* :pr:`3219`: Enable social cards for links to documentation
+* :pr:`3219`: Enabled social cards for links to documentation
 
 
 * :pr:`3274`: Replaced incorrect mentions of Python 3.7 as the minimally required version
@@ -288,4 +291,4 @@ Code quality improvements and similar refactors
 New releases
 ------------
 
-* :pr:`3198`: Prepare new release: v0.17.3
+* :pr:`3439`: Prepared new release: v0.18.0
