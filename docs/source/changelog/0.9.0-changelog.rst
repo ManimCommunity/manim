@@ -176,7 +176,7 @@ Fixed bugs
 * :pr:`1782`: Fixed :class:`~.Tex` not working properly with the OpenGL renderer
 
 
-* :pr:`1783`: Fixed :meth:`~.OpenGLMobject.shuffle` function and added :meth:`~.invert` to OpenGL
+* :pr:`1783`: Fixed :meth:`~.OpenGLMobject.shuffle` function and added :meth:`~.Mobject.invert` to OpenGL
 
 
 * :pr:`1786`: Fixed :class:`~.DecimalNumber` not working properly when the number of digits changes
