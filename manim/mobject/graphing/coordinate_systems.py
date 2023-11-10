@@ -1928,7 +1928,9 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             The dict that will be updated.
         passed_configs
             The dict that will be used to update.
-
+        
+        Examples
+        --------
         To create a tuple with one dictionary, add a comma after the element:
 
         .. code-block:: python
