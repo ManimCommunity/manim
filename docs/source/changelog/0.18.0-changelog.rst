@@ -67,19 +67,44 @@ the following contributors.
 Pull requests merged
 ====================
 
-A total of 58 pull requests were merged for this release.
+A total of 59 pull requests were merged for this release.
 
 Breaking changes
 ----------------
 
-* :pr:`3020`: Adding :class: ManimColor to manim and converting all types
+* :pr:`3020`: Rewrote Manim's color system
+   This change removed the ``colour`` library as a dependency
+   of Manim and replaced the internal handling of colors with
+   the newly added :class:`.ManimColor`. This also adds hundreds
+   of new predefined colors, see :mod:`.utils.color` for more
+   details.
 
 
 Highlights
 ----------
 
 * :pr:`3299`: Added new ``manim checkhealth`` CLI subcommand
-   This adds a new command line interface subcommand which can be used to check whether a local installation of Manim has been configured correctly, and all required (and optional) dependencies are available. To try it, run it via ``manim checkhealth`` or ``python -m manim checkhealth``.
+   This adds a new command line interface subcommand which can be used to check
+   whether a local installation of Manim has been configured correctly, and all
+   required (and optional) dependencies are available. To try it, run it via
+   ``manim checkhealth`` or ``python -m manim checkhealth``.
+
+* :pr:`3427`: New feature: rendered examples in documentation can now be run directly via binder
+   This adds a "Make interactive" button below the examples in our documentation
+   that establishes a connection to binder such that examples can be modified and
+   rerendered directly from your browser.
+
+* :pr:`3086`: Introduced a new module :mod:`.typing` for type hints
+   This also adds various type hints to integral parts of the code base.
+
+* :pr:`3322`: Implemented auto-removal of auxiliary LaTeX files, enabled by default
+   This automatically removes auxiliary files creating during the compilation of
+   LaTeX documents like ``.aux`` or ``.dvi`` files. This behavior can be controlled
+   via the newly introduced ``no_latex_cleanup`` config key (``False`` by default).
+   On the command line, the autoremoval can be disabled via the ``--no_latex_cleanup``
+   CLI flag.
+
+* :pr:`3395`: Added support for Python 3.12
 
 New features
 ------------
@@ -90,11 +115,20 @@ New features
 
 * :pr:`3264`: Added new mobjects :class:`.LabeledLine` and :class:`.LabeledArrow`
 
+
 Enhancements
 ------------
 
 * :pr:`3190`: Made :class:`.CurvesAsSubmobjects` mobjects compatible with :meth:`.input_to_graph_point`
 
+
+* :pr:`3226`: Avoid using a mobject as a default argument of :class:`.ArcBrace`
+
+
+* :pr:`3366`: Added spacing between values and unit in :class:`.DecimalNumber`
+   This adds the new keyword argument ``unit_buff_per_font_unit`` (default: 0, for
+   backwards compatibility). Setting it to some positive number creates additional
+   space between the numeric value and the displayed unit.
 
 Fixed bugs
 ----------
@@ -121,6 +155,29 @@ Fixed bugs
    This resolves various issues where formulas were not displayed completely,
    like it was the case with ``MathTex("1", "^{", "0")``.
 
+* :pr:`3284`: Fixed ``LinearTransformationSceneExample`` in Jupyter notebooks
+
+
+* :pr:`3302`: Fixed typo in comparison in :meth:`.OpenGLVMobject.interpolate`
+
+
+* :pr:`3340`: Fixed incorrect computation of bounding box for rotated :class:`.ImageMobject`
+
+
+* :pr:`3343`: Fixed return value of :meth:`.TexTemplate.add_to_preamble` and :meth:`.TexTemplate.add_to_document`
+
+
+* :pr:`3282`: fix: prevent vector position array from being modified (#3273)
+
+
+* :pr:`3392`: Bug fix: Use np.isclose for float equality in number line elongated ticks
+
+
+* :pr:`3430`: Fixed CSV reader adding empty lists in rendering summary during documentation build
+
+
+* :pr:`3404`: Properly raise an exception on empty inputs to :class:`.AddTextLetterByLetter`
+
 
 Documentation-related changes
 -----------------------------
@@ -137,23 +194,50 @@ Documentation-related changes
 * :pr:`3312`: Added documentation for :func:`.always_redraw`
 
 
+* :pr:`3218`: Improved grammar in the :doc:`deep dive guide </guides/deep_dive>`
+
+
+* :pr:`3251`: Add LaTeX installation instructions for Fedora
+
+
+* :pr:`3290`: Updated required dependencies for MacOS installations
+
+
+* :pr:`3325`: Added documentation for functions in :mod:`.mobject_update_utils`
+   This adds docstrings and typehints to :func:`.always_rotate`,
+   :func:`.always_shift`, :func:`.turn_animation_into_updater`
+
+* :pr:`3353`: Added documentation for :meth:`.Mobject.center`
+
+
+* :pr:`3355`: Temporarily enabled ``htmlzip`` build on ReadTheDocs
+
+
+* :pr:`3377`: Fixed a typo in the :doc:`deep dive guide </guides/deep_dive>`
+
+
+* :pr:`3389`: Removed superfluous curly braces in a LaTeX expression
+
+
+* :pr:`3417`: Replaced ``htmlzip`` ReadTheDocs build with workflow attaching downloadable documentation to GitHub releases
+
+
 Changes concerning the testing system
 -------------------------------------
 
-* :pr:`3416`: Fix tests to run on Cairo 1.18.0
+* :pr:`3416`: Fixed tests to run on Cairo 1.18.0
+
+
+* :pr:`3257`: Fix a configuration error concerning poetry
+
+
+* :pr:`3419`: Fixed caching of Cairo builds on CI runners
 
 
 Code quality improvements and similar refactors
 -----------------------------------------------
 
-* :pr:`3086`: Introduced a new module :mod:`.typing` for type hints
-   This also adds various type hints to integral parts of the code base.
-
-
-* :pr:`3226`: Avoid using a mobject as a default argument of :class:`.ArcBrace`
-
-
-* :pr:`3229`: Made docbuild errors easier to debug + fixed error from changed exception class
+* :pr:`3229`: Made docbuild errors easier to debug and fixed error from changed exception class
 
 
 * :pr:`3231`: Fixed errors reported by ``flake8``
@@ -163,125 +247,45 @@ Code quality improvements and similar refactors
 
 
 * :pr:`3286`: Optimized :meth:`.Axes.coords_to_point`
-   As the title says, I optimized `Axes.coords_to_point`. Best results if combined with PR [#3285: Optimized :meth:`NumberLine.number_to_point`](https://github.com/ManimCommunity/manim/pull/3285).
-
-New releases
-------------
-
-* :pr:`3198`: Prepare new release: v0.17.3
 
 
-Unclassified changes
---------------------
-
-* :pr:`3218`: Small grammar change to deep_dive doc
+* :pr:`3224`: Replace final few occurrences of ``os.path`` by ``pathlib.Path``
 
 
-* :pr:`3224`: Replace last `os.path` occurrencies by `pathlib`
-
-
-* :pr:`3236`: Minor fix, return self
-
-
-* :pr:`3251`: Add LaTeX installation instructions for Fedora
+* :pr:`3236`: Return self in :meth:`.AbstractImageMobject.set_resampling_algorithm`
 
 
 * :pr:`3253`: Bump tornado from 6.3.1 to 6.3.2
 
 
-* :pr:`3257`: CI: fix a config error from poetry
-
-
 * :pr:`3272`: Bump docker/build-push-action from 3 to 4
-
-
-* :pr:`3282`: fix: prevent vector position array from being modified (#3273)
-
-
-* :pr:`3284`: fixed the use of the LinearTransformationSceneExample in Jupyter notebooks
 
 
 * :pr:`3287`: Bump cryptography from 41.0.1 to 41.0.2
 
 
-* :pr:`3290`: Update dependencies for apple silicon in macos.rst
-   Adds `pkg-config` to the list of needed dependencies for apple silicon.
-   According to https://pypi.org/project/ManimPango/ manim-pango needs pkg-config
-
-* :pr:`3302`: fix: changed minor typo in OpenGLVMobject
-
-
-* :pr:`3322`: Added ability to remove non-svg LaTeX files
-   * Made manim auto-remove non-tex and non-svg files by default. This behavior can be prevented with the CLI flag `--no_latex_cleanup`
-   * Made manim check if an svg for a TeX expression already exists BEFORE creating `.aux`, `.dvi`, and other files.
-     * This makes sure that even the user already has the svg for an expression and runs their code with `--no_latex_cleanup`, they will not get cluttered with the `.aux`, `.dvi`, and other files for that expression.
-
-* :pr:`3325`: Added docs for functions in `mobject_update_utils`
-   * Added docstrings for:
-     * :meth:`always_rotate`
-     * :meth:`always_shift`
-     * :meth:`turn_animation_into_updater`
-   * Added typehints to above functions
-
-* :pr:`3340`: fix: issue with ImageMobject bounding box
-
-
-* :pr:`3343`: fix: return value of TexTemplate.add_to...
-
-
 * :pr:`3350`: Added missing dependency ``typing-extensions``
-
-
-* :pr:`3353`: Added docstring to Mobject.center
-
-
-* :pr:`3355`: rtd: enable htmlzip build
-
-
-* :pr:`3366`: feat: DecimalNumber() - added spacing between values and unit
-   - added the parameter `unit_buff_per_font_unit` to add additional space between the numeric values and the unit
-   - default value `unit_buff_per_font_unit=0` ensures backward compatibility
-   - also added parameter documentation in docstring
-
-* :pr:`3377`: fix a typo in deep_dive.rst
-   Fix a simple typo
-
-* :pr:`3389`: fix(docs): Remove extra curly bracket in LaTeX math expression
-
-
-* :pr:`3392`: Bug fix: Use np.isclose for float equality in number line elongated ticks
-   Resolves #3394 by using `np.isclose` to check for float equality instead of using default float equality, which sometimes is not one might expect (see `0.1 + 0.2 != 0.3` for example).
-
-* :pr:`3395`: chore(deps): add Python 3.12 support
-   Currently, Manim can only be installed on Python 3.11 and below. As Python 3.12 just came out, I think it is good time to update a bit Python requirements so that newer Python versions can install Manim.
-
-   I updated the dependencies, and test workflows.
-
-* :pr:`3397`: Several GitHub actions updates
-
-
-* :pr:`3399`: Updated several dependencies
-
-
-* :pr:`3404`: Fix: Fixed a bug in regards to empty inputs in AddTextLetterByLetter class.
-
-
-* :pr:`3405`: pyproject.toml: update manimpango version
-
-
-* :pr:`3417`: Introduce new workflow creating a downloadable version of the documentation
-
-
-* :pr:`3419`: CI: fix caching of cairo
-
-
-* :pr:`3421`: Fix None check order in _tree_layout
-
-
-* :pr:`3430`: Fix CSV reader adding empty lists in rendering summary
 
 
 * :pr:`3431`: Bump teatimeguest/setup-texlive-action from 2 to 3
 
 
-* :pr:`3433`: bump dependencies
+* :pr:`3433`: Bump dependencies
+
+
+* :pr:`3399`: Updated several dependencies
+
+
+* :pr:`3397`: Several GitHub actions updates
+
+
+* :pr:`3405`: Updated manimpango version to fix error regarding type strictness
+
+
+* :pr:`3421`: Improved order of input checks when creating a tree graph
+
+
+New releases
+------------
+
+* :pr:`3198`: Prepare new release: v0.17.3
