@@ -224,7 +224,12 @@ class NumberLine(Line):
             self.unit_size = self.get_unit_size()
         else:
             self.scale(self.unit_size)
-
+        if self.unit_size < 0.1:
+            self.font_size = 9
+        elif self.unit_size < 0.15:
+            self.font_size = 15
+        elif self.unit_size < 0.3:
+            self.font_size = 18
         self.center()
 
         if self.include_tip:
