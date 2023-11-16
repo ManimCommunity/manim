@@ -415,52 +415,15 @@ class Scene:
             self.mobjects = list_difference_update(self.mobjects, mob.get_family())
         return self
 
-    def replace(self, old_mobject: Mobject, new_mobject: Mobject) -> None:
-        """Replace one mobject in the scene with another, preserving draw order.
-
-        If ``old_mobject`` is a submobject of some other Mobject (e.g. a
-        :class:`.Group`), the new_mobject will replace it inside the group,
-        without otherwise changing the parent mobject.
-
-        Parameters
-        ----------
-        old_mobject
-            The mobject to be replaced. Must be present in the scene.
-        new_mobject
-            A mobject which must not already be in the scene.
-
-        """
-        if old_mobject is None or new_mobject is None:
-            raise ValueError("Specified mobjects cannot be None")
-
-        def replace_in_list(
-            mobj_list: list[Mobject], old_m: Mobject, new_m: Mobject
-        ) -> bool:
-            # We use breadth-first search because some Mobjects get very deep and
-            # we expect top-level elements to be the most common targets for replace.
-            for i in range(0, len(mobj_list)):
-                # Is this the old mobject?
-                if mobj_list[i] == old_m:
-                    # If so, write the new object to the same spot and stop looking.
-                    mobj_list[i] = new_m
-                    return True
-            # Now check all the children of all these mobs.
-            for mob in mobj_list:  # noqa: SIM110
-                if replace_in_list(mob.submobjects, old_m, new_m):
-                    # If we found it in a submobject, stop looking.
-                    return True
-            # If we did not find the mobject in the mobject list or any submobjects,
-            # (or the list was empty), indicate we did not make the replacement.
-            return False
-
-        # Make use of short-circuiting conditionals to check mobjects and then
-        # foreground_mobjects
-        replaced = replace_in_list(
-            self.mobjects, old_mobject, new_mobject
-        ) or replace_in_list(self.foreground_mobjects, old_mobject, new_mobject)
-
-        if not replaced:
-            raise ValueError(f"Could not find {old_mobject} in scene")
+    def replace(self, mobject: Mobject, *replacements: Mobject):
+        if mobject in self.mobjects:
+            index = self.mobjects.index(mobject)
+            self.mobjects = [
+                *self.mobjects[:index],
+                *replacements,
+                *self.mobjects[index + 1:]
+            ]
+        return self
 
     def add_updater(self, func: Callable[[float], None]) -> None:
         """Add an update function to the scene.
