@@ -29,6 +29,7 @@ from manim.utils.family_ops import (
     extract_mobject_family_members,
     recursive_mobject_remove,
 )
+from manim.utils.iterables import list_difference_update
 from manim.utils.module_ops import get_module
 
 if TYPE_CHECKING:
@@ -406,26 +407,13 @@ class Scene:
         For example, if the scene includes Group(m1, m2, m3), and we call scene.remove(m1),
         the desired behavior is for the scene to then include m2 and m3 (ungrouped).
         """
-        if config.renderer == RendererType.OPENGL:
-            mobjects_to_remove = []
-            meshes_to_remove = set()
-            for mobject_or_mesh in mobjects:
-                if isinstance(mobject_or_mesh, Object3D):
-                    meshes_to_remove.add(mobject_or_mesh)
-                else:
-                    mobjects_to_remove.append(mobject_or_mesh)
-            self.mobjects = restructure_list_to_exclude_certain_family_members(
-                self.mobjects,
-                mobjects_to_remove,
-            )
-            self.meshes = list(
-                filter(lambda mesh: mesh not in set(meshes_to_remove), self.meshes),
-            )
-            return self
-        elif config.renderer == RendererType.CAIRO:
-            for list_name in "mobjects", "foreground_mobjects":
-                self.restructure_mobjects(mobjects, list_name, False)
-            return self
+        for mob in mobjects_to_remove:
+            # First restructure self.mobjects so that parents/grandparents/etc. are replaced
+            # with their children, likewise for all ancestors in the extended family.
+            for ancestor in mob.get_ancestors(extended=True):
+                self.replace(ancestor, *ancestor.submobjects)
+            self.mobjects = list_difference_update(self.mobjects, mob.get_family())
+        return self
 
     def replace(self, old_mobject: Mobject, new_mobject: Mobject) -> None:
         """Replace one mobject in the scene with another, preserving draw order.
