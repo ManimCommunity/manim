@@ -1049,7 +1049,7 @@ class ManimConfig(MutableMapping):
     @ffmpeg_loglevel.setter
     def ffmpeg_loglevel(self, val: str) -> None:
         self._set_from_list(
-            "verbosity",
+            "ffmpeg_loglevel",
             val,
             ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
         )
