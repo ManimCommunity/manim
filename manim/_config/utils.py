@@ -1257,7 +1257,7 @@ class ManimConfig(MutableMapping):
 
     @property
     def background_opacity(self) -> float:
-        """ "A number between 0.0 (fully transparent) and 1.0 (fully opaque)."""
+        """A number between 0.0 (fully transparent) and 1.0 (fully opaque)."""
         return self._d["background_opacity"]
 
     @background_opacity.setter
@@ -1266,7 +1266,7 @@ class ManimConfig(MutableMapping):
 
     @property
     def frame_size(self) -> tuple[int, int]:
-        """ "Tuple with (pixel width, pixel height) (no flag)."""
+        """Tuple with (pixel width, pixel height) (no flag)."""
         return (self._d["pixel_width"], self._d["pixel_height"])
 
     @frame_size.setter
