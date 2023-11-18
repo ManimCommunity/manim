@@ -73,7 +73,7 @@ class OpenGLVMobject(OpenGLMobject):
     fill_shader_folder = "quadratic_bezier_fill"
     fill_dtype = [
         ("point", np.float32, (3,)),
-        ("orientation", np.float32, (3,)),
+        ("unit_normal", np.float32, (3,)),
         ("color", np.float32, (4,)),
         ("vert_index", np.float32, (1,)),
     ]
@@ -157,7 +157,7 @@ class OpenGLVMobject(OpenGLMobject):
                 "fill_rgba": np.zeros((1, 4)),
                 "stroke_rgba": np.zeros((1, 4)),
                 "stroke_width": np.zeros((1, 1)),
-                "orientation": np.zeros((1, 1)),
+                "unit_normal": np.zeros((1, 3)),
             }
         )
 
@@ -1438,8 +1438,8 @@ class OpenGLVMobject(OpenGLMobject):
     def refresh_triangulation(self):
         for mob in self.get_family():
             mob.needs_new_triangulation = True
-            mob.data["orientation"] = resize_array(
-                mob.data["orientation"], mob.get_num_points()
+            mob.data["unit_normal"] = resize_array(
+                mob.data["unit_normal"], mob.get_num_points()
             )
         return self
 
@@ -1472,7 +1472,7 @@ class OpenGLVMobject(OpenGLMobject):
         v01s = points[1::3] - points[0::3]
         v12s = points[2::3] - points[1::3]
         curve_orientations = np.sign(cross2d(v01s, v12s))
-        self.data["orientation"] = np.transpose([curve_orientations.repeat(3)])
+        self.data["unit_normal"] = np.transpose([curve_orientations.repeat(3)])
 
         concave_parts = curve_orientations < 0
 
@@ -1633,7 +1633,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         self.read_data_to_shader(self.fill_data, "point", "points")
         self.read_data_to_shader(self.fill_data, "color", "fill_rgba")
-        self.read_data_to_shader(self.fill_data, "orientation", "orientation")
+        self.read_data_to_shader(self.fill_data, "unit_normal", "unit_normal")
 
         return self.fill_data
 
