@@ -154,7 +154,10 @@ def is_ffmpeg_working():
     ),
 )
 def is_latex_available():
-    path_to_latex = shutil.which("latex")
+    if config.get_dir("tex_bin_dir") is not None:
+        path_to_latex = config.get_dir("tex_bin_dir") / "latex.exe"
+    else:
+        path_to_latex = shutil.which("latex")
     return path_to_latex is not None and os.access(path_to_latex, os.X_OK)
 
 
@@ -169,5 +172,8 @@ def is_latex_available():
     skip_on_failed=[is_latex_available],
 )
 def is_dvisvgm_available():
-    path_to_dvisvgm = shutil.which("dvisvgm")
+    if config.get_dir("tex_bin_dir") is not None:
+        path_to_dvisvgm = config.get_dir("tex_bin_dir") / "dvisvgm.exe"
+    else:
+        path_to_dvisvgm = shutil.which("dvisvgm")
     return path_to_dvisvgm is not None and os.access(path_to_dvisvgm, os.X_OK)
