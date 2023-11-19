@@ -131,7 +131,7 @@ class Indicate(Transform):
     color
         The color the mobject temporally takes.
     rate_func
-        The function definig the animation progress at every point in time.
+        The function defining the animation progress at every point in time.
     kwargs
         Additional arguments to be passed to the :class:`~.Succession` constructor
 
