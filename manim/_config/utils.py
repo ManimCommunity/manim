@@ -324,7 +324,7 @@ class ManimConfig(MutableMapping):
     def __len__(self) -> int:
         return len(self._d)
 
-    def __contains__(self, key: str) -> bool:
+    def __contains__(self, key: object) -> bool:
         try:
             self.__getitem__(key)
             return True
@@ -337,7 +337,7 @@ class ManimConfig(MutableMapping):
     def __setitem__(self, key: str, val: Any) -> None:
         getattr(ManimConfig, key).fset(self, val)  # fset is the property's setter
 
-    def update(self, obj: ManimConfig | dict[str, Any]) -> None:
+    def update(self, obj: ManimConfig | dict[str, Any]) -> None:  # type: ignore[override]
         """Digest the options found in another :class:`ManimConfig` or in a dict.
 
         Similar to :meth:`dict.update`, replaces the values of this object with
