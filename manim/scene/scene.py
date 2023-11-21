@@ -435,7 +435,7 @@ class Scene:
             self.mobjects = [
                 *self.mobjects[:index],
                 *replacements,
-                *self.mobjects[index + 1:]
+                *self.mobjects[index + 1 :],
             ]
         return self
 
