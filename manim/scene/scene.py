@@ -416,6 +416,20 @@ class Scene:
         return self
 
     def replace(self, mobject: Mobject, *replacements: Mobject):
+        """Replace one mobject in the scene with another, preserving draw order.
+
+        If ``old_mobject`` is a submobject of some other Mobject (e.g. a
+        :class:`.Group`), the new_mobject will replace it inside the group,
+        without otherwise changing the parent mobject.
+
+        Parameters
+        ----------
+        old_mobject
+            The mobject to be replaced. Must be present in the scene.
+        new_mobject
+            A mobject which must not already be in the scene.
+
+        """
         if mobject in self.mobjects:
             index = self.mobjects.index(mobject)
             self.mobjects = [
