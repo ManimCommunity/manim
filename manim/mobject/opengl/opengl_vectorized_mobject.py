@@ -328,10 +328,10 @@ class OpenGLVMobject(OpenGLMobject):
 
     def get_style(self):
         return {
-            "fill_rgba": self.data["fill_rgba"].copy(),
-            "stroke_rgba": self.data["stroke_rgba"].copy(),
-            "stroke_width": self.data["stroke_width"].copy(),
-            "stroke_background": self.draw_stroke_behind_fill,
+            "fill_color": self.fill_color.copy(),
+            "stroke_color": self.stroke_color.copy(),
+            "stroke_width": self.stroke_width.copy(),
+            # "stroke_background": self.draw_stroke_behind_fill,
             "reflectiveness": self.get_reflectiveness(),
             "gloss": self.get_gloss(),
             "shadow": self.get_shadow(),
