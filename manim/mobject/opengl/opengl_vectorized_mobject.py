@@ -1346,15 +1346,16 @@ class OpenGLVMobject(OpenGLMobject):
             if alpha == 1.0:
                 setattr(self, attr, getattr(mobject2, attr))
                 continue
-            
+
             attr1 = getattr(mobject1, attr)
             attr2 = getattr(mobject2, attr)
             if isinstance(attr1, list) or isinstance(attr2, list):
-                result = [interp(elem1, elem2, alpha) for elem1, elem2 in zip(attr1, attr2)]
+                result = [
+                    interp(elem1, elem2, alpha) for elem1, elem2 in zip(attr1, attr2)
+                ]
             else:
                 result = interp(attr1, attr2, alpha)
             setattr(self, attr, result)
-
 
     # TODO: compare to 3b1b/manim again check if something changed so we don't need the cairo interpolation anymore
     def pointwise_become_partial(

@@ -9,10 +9,10 @@ from typing_extensions import override
 
 import manim.constants as const
 import manim.utils.color.manim_colors as color
-from manim.renderer.buffers.buffer import STD140BufferFormat
 from manim._config import config, logger
 from manim.camera.camera import OpenGLCameraFrame
 from manim.mobject.types.vectorized_mobject import VMobject
+from manim.renderer.buffers.buffer import STD140BufferFormat
 from manim.renderer.opengl_shader_program import load_shader_program_by_folder
 from manim.renderer.renderer import ImageType, Renderer, RendererData
 from manim.renderer.shader_wrapper import ShaderWrapper
@@ -407,7 +407,7 @@ class OpenGLRenderer(Renderer):
 
         for sub in mob.family_members_with_points():
             # TODO: review this renderer data optimization attempt
-            if True: # if sub.renderer_data is None:
+            if True:  # if sub.renderer_data is None:
                 # Initialize
                 GLVMobjectManager.init_render_data(sub)
 

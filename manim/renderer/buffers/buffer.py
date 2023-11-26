@@ -1,5 +1,6 @@
-import numpy as np
 import math
+
+import numpy as np
 
 
 class STD140BufferFormat:
