@@ -10,10 +10,10 @@ from pyglet.window import Window
 import manim.utils.color.manim_colors as col
 from manim._config import config, tempconfig
 from manim.animation.creation import Create, DrawBorderThenFill, Write
-from manim.animation.transform import Transform
 from manim.animation.fading import FadeIn
+from manim.animation.transform import Transform
 from manim.camera.camera import OpenGLCameraFrame
-from manim.constants import OUT, RIGHT, LEFT, UP
+from manim.constants import LEFT, OUT, RIGHT, UP
 from manim.mobject.geometry.arc import Circle
 from manim.mobject.geometry.polygram import Square
 from manim.mobject.logo import ManimBanner
