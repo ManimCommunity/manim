@@ -380,13 +380,13 @@ class OpenGLVMobject(OpenGLMobject):
         return self.fill_color
 
     def get_fill_opacities(self) -> np.ndarray:
-        return (c.to_rgba()[3] for c in self.fill_color)
+        return [c.to_rgba()[3] for c in self.fill_color]
 
     def get_stroke_colors(self):
         return self.stroke_color
 
     def get_stroke_opacities(self) -> np.ndarray:
-        return (c.to_rgba()[3] for c in self.stroke_color)
+        return [c.to_rgba()[3] for c in self.stroke_color]
 
     def get_stroke_widths(self) -> np.ndarray:
         return self.stroke_width
