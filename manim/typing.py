@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from os import PathLike
-from typing import Callable, Tuple, Union
+from typing import Callable, Tuple, Union, Literal, TypedDict
 
 import numpy as np
 import numpy.typing as npt
@@ -128,6 +128,22 @@ MappingFunction: TypeAlias = Callable[[Point3D], Point3D]
 
 Image: TypeAlias = np.ndarray
 """An Image"""
+
+QualityLiteral: TypeAlias = Literal[
+    "example_quality",
+    "low_quality",
+    "medium_quality",
+    "high_quality",
+    "production_quality",
+    "fourk_quality",
+]
+
+class QualityDict(TypedDict):
+    flag: str
+    pixel_height: int
+    pixel_width: int
+    frame_rate: int
+
 
 StrPath: TypeAlias = "str | PathLike[str]"
 StrOrBytesPath: TypeAlias = "str | bytes | PathLike[str] | PathLike[bytes]"

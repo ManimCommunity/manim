@@ -10,7 +10,7 @@ import numpy as np
 from cloup import Context
 from PIL.Image import Resampling
 
-from manim.typing import Vector3
+from manim.typing import Vector3, QualityDict, QualityLiteral
 
 __all__ = [
     "SCENE_NOT_FOUND_MESSAGE",
@@ -200,7 +200,7 @@ DEGREES = TAU / 360
 """The exchange rate between radians and degrees."""
 
 # Video qualities
-QUALITIES: dict[str, dict[str, str | int | None]] = {
+QUALITIES: dict[QualityLiteral, QualityDict] = {
     "fourk_quality": {
         "flag": "k",
         "pixel_height": 2160,
