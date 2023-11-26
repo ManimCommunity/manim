@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from os import PathLike
-from typing import Callable, Tuple, Union, Literal, TypedDict
+from typing import Callable, Literal, Tuple, TypedDict, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -137,6 +137,7 @@ QualityLiteral: TypeAlias = Literal[
     "production_quality",
     "fourk_quality",
 ]
+
 
 class QualityDict(TypedDict):
     flag: str

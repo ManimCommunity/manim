@@ -73,6 +73,7 @@ class CfgProvider(ConfigProvider):
     """A config provider responsible for loading ``.cfg`` files, using
     :class:`ConfigParser`.
     """
+
     file_extension: ClassVar[str] = "cfg"
 
     @override

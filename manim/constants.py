@@ -10,7 +10,7 @@ import numpy as np
 from cloup import Context
 from PIL.Image import Resampling
 
-from manim.typing import Vector3, QualityDict, QualityLiteral
+from manim.typing import QualityDict, QualityLiteral, Vector3
 
 __all__ = [
     "SCENE_NOT_FOUND_MESSAGE",
