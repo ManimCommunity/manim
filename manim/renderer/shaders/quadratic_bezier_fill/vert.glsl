@@ -3,7 +3,6 @@
 #include ../include/camera_uniform_declarations.glsl
 
 in vec3 point;
-in float orientation;
 in vec3 unit_normal;
 in vec4 color;
 in float vert_index;
