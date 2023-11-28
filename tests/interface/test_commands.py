@@ -152,7 +152,7 @@ Manim Community v{__version__}
 
 Usage: manim new [OPTIONS] COMMAND [ARGS]...
 
-  (DEPRECATED) Create a new project or insert a new scene.
+  (Deprecated) Create a new project or insert a new scene.
 
 Options:
   --help  Show this message and exit.

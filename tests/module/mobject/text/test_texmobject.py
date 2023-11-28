@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import numpy as np
 import pytest
 
 from manim import MathTex, SingleStringMathTex, Tex, TexTemplate, config, tempconfig
@@ -94,6 +95,23 @@ def test_tex_white_space_and_non_whitespace_args():
     assert len(tex[1]) == len("".join((str_part_2 + separator).split()))
     assert len(tex[2]) == len("".join((str_part_3 + separator).split()))
     assert len(tex[3]) == len("".join(str_part_4.split()))
+
+
+def test_multi_part_tex_with_empty_parts():
+    """Check that if a Tex or MathTex Mobject with multiple
+    string arguments is created where some of the parts render
+    as empty SVGs, then the number of family members with points
+    should still be the same as the snipped in one singular part.
+    """
+    tex_parts = ["(-1)", "^{", "0}"]
+    one_part_fomula = MathTex("".join(tex_parts))
+    multi_part_formula = MathTex(*tex_parts)
+
+    for one_part_glyph, multi_part_glyph in zip(
+        one_part_fomula.family_members_with_points(),
+        multi_part_formula.family_members_with_points(),
+    ):
+        np.testing.assert_allclose(one_part_glyph.points, multi_part_glyph.points)
 
 
 def test_tex_size():
@@ -194,3 +212,17 @@ def test_tempconfig_resetting_tex_template():
         assert config.tex_template.preamble == "Custom preamble!"
 
     assert config.tex_template.preamble != "Custom preamble!"
+
+
+def test_tex_garbage_collection(tmpdir, monkeypatch):
+    monkeypatch.chdir(tmpdir)
+    Path(tmpdir, "media").mkdir()
+
+    with tempconfig({"media_dir": "media"}):
+        tex_without_log = Tex("Hello World!")  # f7bc61042256dea9.tex
+        assert Path("media", "Tex", "f7bc61042256dea9.tex").exists()
+        assert not Path("media", "Tex", "f7bc61042256dea9.log").exists()
+
+    with tempconfig({"media_dir": "media", "no_latex_cleanup": True}):
+        tex_with_log = Tex("Hello World, again!")  # 3ef79eaaa2d0b15b.tex
+        assert Path("media", "Tex", "3ef79eaaa2d0b15b.log").exists()

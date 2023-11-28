@@ -13,6 +13,7 @@ import os
 import re
 import unicodedata
 from pathlib import Path
+from typing import Iterable
 
 from manim.utils.tex import TexTemplate
 
@@ -51,19 +52,28 @@ def tex_to_svg_file(
     if tex_template is None:
         tex_template = config["tex_template"]
     tex_file = generate_tex_file(expression, environment, tex_template)
+
+    # check if svg already exists
+    svg_file = tex_file.with_suffix(".svg")
+    if svg_file.exists():
+        return svg_file
+
     dvi_file = compile_tex(
         tex_file,
         tex_template.tex_compiler,
         tex_template.output_format,
     )
-    return convert_to_svg(dvi_file, tex_template.output_format)
+    svg_file = convert_to_svg(dvi_file, tex_template.output_format)
+    if not config["no_latex_cleanup"]:
+        delete_nonsvg_files()
+    return svg_file
 
 
 def generate_tex_file(
     expression: str,
     environment: str | None = None,
     tex_template: TexTemplate | None = None,
-):
+) -> Path:
     """Takes a tex expression (and an optional tex environment),
     and returns a fully formed tex file ready for compilation.
 
@@ -249,6 +259,23 @@ def convert_to_svg(dvi_file: Path, extension: str, page: int = 1):
         )
 
     return result
+
+
+def delete_nonsvg_files(additional_endings: Iterable[str] = ()) -> None:
+    """Deletes every file that does not have a suffix in ``(".svg", ".tex", *additional_endings)``
+
+    Parameters
+    ----------
+    additional_endings
+        Additional endings to whitelist
+    """
+
+    tex_dir = config.get_dir("tex_dir")
+    file_suffix_whitelist = {".svg", ".tex", *additional_endings}
+
+    for f in tex_dir.iterdir():
+        if f.suffix not in file_suffix_whitelist:
+            f.unlink()
 
 
 def print_all_tex_errors(log_file: Path, tex_compiler: str, tex_file: Path) -> None:
