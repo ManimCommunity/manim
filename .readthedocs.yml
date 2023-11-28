@@ -9,7 +9,7 @@ build:
     - libpango1.0-dev
     - ffmpeg
     - graphviz
-  
+
   jobs:
     pre_build:
       - export MANIM_SKIP_EXAMPLES=1
