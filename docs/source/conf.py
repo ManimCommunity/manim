@@ -50,7 +50,7 @@ extensions = [
     "myst_parser",
 ]
 
-print("Manim skipping status: " + os.getenv("MANIM_SKIP_EXAMPLES"))
+print(f"RTD version name: {os.getenv('READTHEDOCS_VERSION_NAME')}")
 
 # Automatically generate stub pages when using the .. autosummary directive
 autosummary_generate = True
