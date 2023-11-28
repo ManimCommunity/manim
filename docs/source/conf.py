@@ -50,6 +50,8 @@ extensions = [
     "myst_parser",
 ]
 
+print("Manim skipping status: " + os.getenv("MANIM_SKIP_EXAMPLES"))
+
 # Automatically generate stub pages when using the .. autosummary directive
 autosummary_generate = True
 
