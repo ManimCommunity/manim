@@ -166,6 +166,7 @@ class ManimDirective(Directive):
         should_skip = (
             "skip-manim" in self.state.document.settings.env.app.builder.tags.tags
             or self.state.document.settings.env.app.builder.name == "gettext"
+            or os.getenv("MANIM_SKIP_EXAMPLES", False)
         )
         if should_skip:
             node = SkipManimNode()
