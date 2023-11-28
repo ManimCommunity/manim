@@ -10,10 +10,6 @@ build:
     - ffmpeg
     - graphviz
 
-  jobs:
-    pre_build:
-      - export MANIM_SKIP_EXAMPLES=1
-
 python:
    install:
       - requirements: docs/rtd-requirements.txt
