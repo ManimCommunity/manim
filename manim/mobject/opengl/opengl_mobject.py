@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import inspect
 import itertools as it
 import random
 import sys
@@ -13,8 +14,16 @@ import numpy as np
 
 from manim import config, logger
 from manim.constants import *
+from manim.renderer.shader_wrapper import get_colormap_code
 from manim.utils.bezier import integer_interpolate, interpolate
-from manim.utils.color import *
+from manim.utils.color import (
+    WHITE,
+    ManimColor,
+    ParsableManimColor,
+    color_gradient,
+    color_to_rgb,
+    rgb_to_hex,
+)
 from manim.utils.config_ops import _Data, _Uniforms
 
 # from ..utils.iterables import batch_by_property
@@ -29,7 +38,6 @@ from manim.utils.iterables import (
     uniq_chain,
 )
 from manim.utils.paths import straight_path
-from manim.utils.simple_functions import get_parameters
 from manim.utils.space_ops import (
     angle_between_vectors,
     normalize,
@@ -1375,7 +1383,7 @@ class OpenGLMobject:
         return list(it.chain(*(sm.get_updaters() for sm in self.get_family())))
 
     def add_updater(self, update_function, index=None, call_updater=False):
-        if "dt" in get_parameters(update_function):
+        if "dt" in inspect.signature(update_function).parameters:
             updater_list = self.time_based_updaters
         else:
             updater_list = self.non_time_updaters

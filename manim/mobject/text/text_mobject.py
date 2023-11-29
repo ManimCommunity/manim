@@ -462,7 +462,7 @@ class Text(SVGMobject):
         t2g = kwargs.pop("text2gradient", t2g)
         t2s = kwargs.pop("text2slant", t2s)
         t2w = kwargs.pop("text2weight", t2w)
-        self.t2c = t2c
+        self.t2c = {k: ManimColor(v).to_hex() for k, v in t2c.items()}
         self.t2f = t2f
         self.t2g = t2g
         self.t2s = t2s
@@ -482,7 +482,7 @@ class Text(SVGMobject):
             self.line_spacing = self._font_size + self._font_size * self.line_spacing
 
         color: ManimColor = ManimColor(color) if color else VMobject().color
-        file_name = self._text2svg(color)
+        file_name = self._text2svg(color.to_hex())
         PangoUtils.remove_last_M(file_name)
         super().__init__(
             file_name,
@@ -737,7 +737,7 @@ class Text(SVGMobject):
         # setting_args requires values to be strings
 
         default_args = {
-            arg: getattr(self, arg) if arg != "color" else str(color) for _, arg in t2xs
+            arg: getattr(self, arg) if arg != "color" else color for _, arg in t2xs
         }
 
         settings = self._get_settings_from_t2xs(t2xs, default_args)
@@ -1307,7 +1307,7 @@ class MarkupText(SVGMobject):
         else:
             self.scale(font_val / self.font_size)
 
-    def _text2hash(self, color: ManimColor):
+    def _text2hash(self, color: ParsableManimColor):
         """Generates ``sha256`` hash for file name."""
         settings = (
             "MARKUPPANGO"
@@ -1324,8 +1324,9 @@ class MarkupText(SVGMobject):
         hasher.update(id_str.encode())
         return hasher.hexdigest()[:16]
 
-    def _text2svg(self, color: ManimColor):
+    def _text2svg(self, color: ParsableManimColor | None):
         """Convert the text to SVG using Pango."""
+        color = ManimColor(color)
         size = self._font_size
         line_spacing = self.line_spacing
         size /= TEXT2SVG_ADJUSTMENT_FACTOR
