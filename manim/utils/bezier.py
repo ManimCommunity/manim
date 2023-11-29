@@ -120,7 +120,7 @@ def bezier(
 # TODO: Deprecate and only use partial_bezier_points for handling everything?
 def partial_quadratic_bezier_points(
     points: QuadraticBezierPoints, a: float, b: float
-) -> list[Point3D]: # should've been QuadraticBezierPoints
+) -> list[Point3D]:  # should've been QuadraticBezierPoints
     """Shortened version of partial_bezier_points just for quadratics,
     since this is called a fair amount.
 
@@ -693,7 +693,8 @@ def subdivide_bezier(points: BezierPoints, n_divisions: int) -> Point3D_Array:
 
 
 def bezier_remap(
-  bezier_tuples: BezierPoints_Array, new_number_of_curves: int,
+    bezier_tuples: BezierPoints_Array,
+    new_number_of_curves: int,
 ) -> BezierPoints_Array:
     """Subdivides each curve in ``bezier_tuples`` into as many parts as necessary, until the final number of
     curves reaches a desired amount, ``new_number_of_curves``.
@@ -958,7 +959,7 @@ def get_smooth_handle_points(
     """Given an array of anchors for a spline (array of connected cubic
     Bézier curves), compute the handles for every curve, so that the resulting
     spline is smooth.
-    
+
     Currently this function only redirects to
     :func:`get_smooth_cubic_bezier_handle_points`, because the algorithm is
     only implemented for cubic splines. In the future, this should also include
@@ -1029,7 +1030,7 @@ def get_smooth_cubic_bezier_handle_points_for_closed_curve(
 ) -> tuple[Point3D_Array, Point3D_Array]:
     """Special case of :func:`get_smooth_cubic_bezier_handle_points`,
     when the `anchors` form a closed loop.
-    
+
     A system of equations must be solved to get the first handles of
     every Bèzier curve (referred to as H1).
     Then H2 (the second handles) can be obtained separately.
@@ -1136,7 +1137,7 @@ def get_smooth_cubic_bezier_handle_points_for_closed_curve(
     memoize d and y, however, because they are always different vectors. We
     cannot make a memo for q either, but we can calculate it faster because u'
     can be memoized.
-    
+
     Parameters
     ----------
     anchors
@@ -1221,7 +1222,7 @@ def get_smooth_cubic_bezier_handle_points_for_open_curve(
 ) -> tuple[Point3D_Array, Point3D_Array]:
     """Special case of :func:`get_smooth_cubic_bezier_handle_points`,
     when the `anchors` do not form a closed loop.
-    
+
     A system of equations must be solved to get the first handles of
     every Bèzier curve (referred to as `H1`).
     Then `H2` (the second handles) can be obtained separately.
@@ -1278,7 +1279,7 @@ def get_smooth_cubic_bezier_handle_points_for_open_curve(
     As the matrix :math:`M` always follows the same pattern, we can define a memo list
     for :math:`c'` to avoid recalculation. We cannot do the same for :math:`d`, however,
     because it is always a different vector.
-    
+
     Parameters
     ----------
     anchors
@@ -1340,12 +1341,12 @@ def diag_to_matrix(
     Converts array whose rows represent diagonal
     entries of a matrix into the matrix itself.
     See `scipy.linalg.solve_banded`.
-    
+
     Parameters
     ----------
     l_and_u
         Tuple containing `l` (n° of subdiagonals) and `u` (n° of superdiagonals).
-    diag    
+    diag
         2D-array containing the diagonals of the matrix.
 
     Returns
@@ -1442,7 +1443,7 @@ def is_closed(points: Point3D_Array) -> bool:
 
     This function reimplements np.allclose (without a relative tolerance rtol),
     because repeated calling of np.allclose for only 2 points is inefficient.
-    
+
     Parameters
     ----------
     points
