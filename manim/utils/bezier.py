@@ -1365,11 +1365,43 @@ def diag_to_matrix(
     return matrix
 
 
-# Given 4 control points for a cubic bezier curve (or arrays of such)
-# return control points for 2 quadratics (or 2n quadratics) approximating them.
 def get_quadratic_approximation_of_cubic(
-    a0: Point3D, h0: Point3D, h1: Point3D, a1: Point3D
-) -> BezierPoints:
+    a0: Point3D | Point3D_Array,
+    h0: Point3D | Point3D_Array,
+    h1: Point3D | Point3D_Array,
+    a1: Point3D | Point3D_Array,
+) -> Point3D_Array:
+    """If a0, h0, h1 and a1 are `(3,)`-ndarrays representing control points for a
+    cubic Bézier curve, returns a `(6, 3)-ndarray of 6 control points
+    [a'0, h', a'1, a''0, h'', a''1] for 2 quadratic Bézier curves approximating it.
+
+    If a0, h0, h1 and a1 are `(m, 3)`-ndarrays of `m` control points for `m`
+    cubic Bézier curves, returns instead a `(6*m, 3)`-ndarray of `6*m` control
+    points, where each one of the `m` groups of 6 control points defines the 2
+    quadratic curves approximating the respective cubic curve.
+
+    Parameters
+    ----------
+    a0
+        A (3,) or (m, 3)-ndarray of the start anchor(s) of the cubic Bézier curve(s).
+    h0
+        A (3,) or (m, 3)-ndarray of the first handle(s) of the cubic Bézier curve(s).
+    h1
+        A (3,) or (m, 3)-ndarray of the second handle(s) of the cubic Bézier curve(s).
+    a1
+        A (3,) or (m, 3)-ndarray of the end anchor(s) of the cubic Bézier curve(s).
+
+    Returns
+    -------
+    Point3D_Array
+        A `(6*m, 3)`-ndarray, where each one of the `m` groups of
+        consecutive 6 points defines the 2 quadratic curves which
+        approximate the respective cubic curve.
+    """
+    # If a0 is a Point3D, it's converted into a Point3D_Array of a single point:
+    # its shape is now (1, 3).
+    # If it was already a Point3D_Array of m points, it keeps its (m, 3) shape.
+    # Same with the other parameters.
     a0 = np.array(a0, ndmin=2)
     h0 = np.array(h0, ndmin=2)
     h1 = np.array(h1, ndmin=2)
@@ -1378,60 +1410,74 @@ def get_quadratic_approximation_of_cubic(
     T0 = h0 - a0
     T1 = a1 - h1
 
-    # Search for inflection points.  If none are found, use the
-    # midpoint as a cut point.
-    # Based on http://www.caffeineowl.com/graphics/2d/vectorial/cubic-inflexion.html
-    has_infl = np.ones(a0.shape[0], dtype=bool)
+    # Search for inflection points. This happens when the acceleration (2nd derivative)
+    # is either zero or perpendicular to the velocity (1st derivative), captured
+    # in the cross product equation C'(t) x C''(t) = 0.
+    # If no inflection points are found, use the midpoint as the split point instead.
+    # Based on https://pomax.github.io/bezierinfo/#inflections
+    t_split = np.full(a0.shape[0], 0.5)
 
+    # Let C(t) be a cubic Bézier curve defined by [a0, h0, h1, a1].
+    # The below variables p, q, r allow for expressing the curve in a
+    # polynomial form convenient for derivatives:
+    # C(t) = a0 + 3tp + 3t²q + t³r
     p = h0 - a0
     q = h1 - 2 * h0 + a0
     r = a1 - 3 * h1 + 3 * h0 - a0
 
+    # Velocity:      C'(t) = 3p + 6tq + 3t²r
+    # Acceleration: C''(t) = 6q + 6tr
+    #       C'(t) x C''(t) = 18 (t²(qxr) + t(pxr) + (pxq)) = 0
+    # Define a = (qxr), b = (pxr) and c = (pxq).
+    # If C(t) is a 2D curve, then a, b and c are real numbers and
+    # this is a simple quadratic equation.
+    # However, if it's a 3D curve, then a, b and c are 3D vectors
+    # and this would require solving 3 quadratic equations.
+    # TODO: this simplifies by considering the 2D case. It might fail with 3D curves!
     a = cross2d(q, r)
     b = cross2d(p, r)
     c = cross2d(p, q)
 
-    disc = b * b - 4 * a * c
-    has_infl &= disc > 0
-    sqrt_disc = np.sqrt(np.abs(disc))
-    settings = np.seterr(all="ignore")
-    ti_bounds = []
-    for sgn in [-1, +1]:
-        ti = (-b + sgn * sqrt_disc) / (2 * a)
-        ti[a == 0] = (-c / b)[a == 0]
-        ti[(a == 0) & (b == 0)] = 0
-        ti_bounds.append(ti)
-    ti_min, ti_max = ti_bounds
-    np.seterr(**settings)
-    ti_min_in_range = has_infl & (0 < ti_min) & (ti_min < 1)
-    ti_max_in_range = has_infl & (0 < ti_max) & (ti_max < 1)
+    # Case a == 0: degenerate 1st degree equation bt + c = 0 => t = -c/b
+    is_quadratic = a != 0
+    is_linear = (~is_quadratic) & (b != 0)
+    t_split[is_linear] = -c[is_linear] / b[is_linear]
+    # Note: If a == 0 and b == 0, there are 0 or infinite solutions.
+    # Thus there are no inflection points. Just leave as is: t = 0.5
 
-    # Choose a value of t which starts at 0.5,
-    # but is updated to one of the inflection points
-    # if they lie between 0 and 1
+    # Case a != 0: 2nd degree equation at² + bt + c = 0
+    # => t = -(b/2a) +- sqrt((b/2a)² - c/a)
+    # Define u = b/2a and v = c/a, so that t = -u +- sqrt(u² - v).
+    u = 0.5 * b[is_quadratic] / a[is_quadratic]
+    v = c[is_quadratic] / a[is_quadratic]
+    radical = u * u - v
+    is_real = radical >= 0
+    sqrt_radical = np.sqrt(radical[is_real])
 
-    t_mid = np.full(a0.shape[0], 0.5)
-    t_mid[ti_min_in_range] = ti_min[ti_min_in_range]
-    t_mid[ti_max_in_range] = ti_max[ti_max_in_range]
+    t_minus = u[is_real] - sqrt_radical
+    t_plus = u[is_real] + sqrt_radical
+    is_t_minus_valid = (t_minus > 0) & (t_minus < 1)
+    is_t_plus_valid = (t_plus > 0) & (t_plus < 1)
 
-    m, n = a0.shape
-    t_mid = t_mid.repeat(n).reshape((m, n))
+    t_split[is_quadratic][is_real][is_t_minus_valid] = t_minus[is_t_minus_valid]
+    t_split[is_quadratic][is_real][is_t_plus_valid] = t_plus[is_t_plus_valid]
 
     # Compute bezier point and tangent at the chosen value of t (these are vectorized)
-    mid = bezier([a0, h0, h1, a1])(t_mid)  # type: ignore
-    Tm = bezier([h0 - a0, h1 - h0, a1 - h1])(t_mid)  # type: ignore
+    t_split = t_split.reshape(-1, 1)
+    split_point = bezier([a0, h0, h1, a1])(t_split)  # type: ignore
+    tangent_at_split = bezier([h0 - a0, h1 - h0, a1 - h1])(t_split)  # type: ignore
 
     # Intersection between tangent lines at end points
     # and tangent in the middle
-    i0 = find_intersection(a0, T0, mid, Tm)
-    i1 = find_intersection(a1, T1, mid, Tm)
+    i0 = find_intersection(a0, T0, split_point, tangent_at_split)
+    i1 = find_intersection(a1, T1, split_point, tangent_at_split)
 
     m, n = np.shape(a0)
     result = np.empty((6 * m, n))
     result[0::6] = a0
     result[1::6] = i0
-    result[2::6] = mid
-    result[3::6] = mid
+    result[2::6] = split_point
+    result[3::6] = split_point
     result[4::6] = i1
     result[5::6] = a1
     return result
