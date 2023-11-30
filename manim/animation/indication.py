@@ -415,7 +415,7 @@ class ApplyWave(Homotopy):
             # This wave is build up as follows:
             # The time is split into 2*ripples phases. In every phase the amplitude
             # either rises to one or goes down to zero. Consecutive ripples will have
-            # their amplitudes in oppising directions (first ripple from 0 to 1 to 0,
+            # their amplitudes in opposing directions (first ripple from 0 to 1 to 0,
             # second from 0 to -1 to 0 and so on). This is how two ripples would be
             # divided into phases:
 
@@ -454,7 +454,7 @@ class ApplyWave(Homotopy):
                 return wave_func(t * phases)
             elif phase == phases - 1:
                 # last ripple. Rising or falling depending on the number of ripples
-                # The (ripples % 2)-term is used to make this destinction.
+                # The (ripples % 2)-term is used to make this distinction.
                 t -= phase / phases  # Time relative to the phase
                 return (1 - wave_func(t * phases)) * (2 * (ripples % 2) - 1)
             else:
