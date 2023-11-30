@@ -51,40 +51,43 @@ from ..utils.space_ops import cross2d, find_intersection
 
 
 def bezier(
-    points: Sequence[Point3D] | Point3D_Array,
-) -> Callable[[float], Point3D]:
-    """Classic implementation of a bezier curve.
+    points: BezierPoints | BezierPoints_Array,
+) -> Callable[[float | ColVector], Point3D | Point3D_Array]:
+    """Classic implementation of a Bézier curve.
 
     Parameters
     ----------
     points
-        points defining the desired bezier curve.
+        Points defining the desired Bézier curve.
 
     Returns
     -------
-        function describing the bezier curve.
-        You can pass a t value between 0 and 1 to get the corresponding point on the curve.
+    Callable[[float | ColVector], Point3D | Point3D_Array]
+        Function describing the Bézier curve.
+        You can either pass a single `t` value between 0 and 1 to get the corresponding
+        point on the curve, or an `(N, 1)` column vector of `t` values to get an array
+        of points from the curve evaluated at each one of the values.
     """
     P = np.asarray(points)
     n = P.shape[0] - 1
 
     if n == 0:
 
-        def zero_bezier(t):
-            return P[0]
+        def zero_bezier(t: float | ColVector) -> Point3D | Point3D_Array:
+            return np.ones_like(t) * P[0]
 
         return zero_bezier
 
     if n == 1:
 
-        def linear_bezier(t):
+        def linear_bezier(t: float | ColVector) -> Point3D | Point3D_Array:
             return P[0] + t * (P[1] - P[0])
 
         return linear_bezier
 
     if n == 2:
 
-        def quadratic_bezier(t):
+        def quadratic_bezier(t: float | ColVector) -> Point3D | Point3D_Array:
             t2 = t * t
             mt = 1 - t
             mt2 = mt * mt
@@ -94,7 +97,7 @@ def bezier(
 
     if n == 3:
 
-        def cubic_bezier(t):
+        def cubic_bezier(t: float | ColVector) -> Point3D | Point3D_Array:
             t2 = t * t
             t3 = t2 * t
             mt = 1 - t
@@ -104,7 +107,7 @@ def bezier(
 
         return cubic_bezier
 
-    def nth_grade_bezier(t):
+    def nth_grade_bezier(t: float | ColVector) -> Point3D | Point3D_Array:
         B = P.copy()
         for i in range(n):
             # After the i-th iteration (i in [0, ..., n-1]) there are (n-i)
