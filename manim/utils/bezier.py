@@ -41,9 +41,21 @@ from ..utils.simple_functions import choose
 from ..utils.space_ops import cross2d, find_intersection
 
 
+@overload
 def bezier(
-    points: BezierPoints | BezierPoints_Array,
+    points: BezierPoints,
 ) -> Callable[[float | ColVector], Point3D | Point3D_Array]:
+    ...
+
+
+@overload
+def bezier(
+    points: BezierPoints_Array,
+) -> Callable[[float | ColVector], Point3D_Array]:
+    ...
+
+
+def bezier(points):
     """Classic implementation of a Bézier curve.
 
     Parameters
@@ -53,7 +65,6 @@ def bezier(
 
     Returns
     -------
-    Callable[[float | ColVector], Point3D | Point3D_Array]
         Function describing the Bézier curve.
         You can either pass a single `t` value between 0 and 1 to get the corresponding
         point on the curve, or an `(N, 1)` column vector of `t` values to get an array
@@ -64,21 +75,21 @@ def bezier(
 
     if n == 0:
 
-        def zero_bezier(t: float | ColVector) -> Point3D | Point3D_Array:
+        def zero_bezier(t):
             return np.ones_like(t) * P[0]
 
         return zero_bezier
 
     if n == 1:
 
-        def linear_bezier(t: float | ColVector) -> Point3D | Point3D_Array:
+        def linear_bezier(t):
             return P[0] + t * (P[1] - P[0])
 
         return linear_bezier
 
     if n == 2:
 
-        def quadratic_bezier(t: float | ColVector) -> Point3D | Point3D_Array:
+        def quadratic_bezier(t):
             t2 = t * t
             mt = 1 - t
             mt2 = mt * mt
@@ -88,7 +99,7 @@ def bezier(
 
     if n == 3:
 
-        def cubic_bezier(t: float | ColVector) -> Point3D | Point3D_Array:
+        def cubic_bezier(t):
             t2 = t * t
             t3 = t2 * t
             mt = 1 - t
@@ -98,7 +109,7 @@ def bezier(
 
         return cubic_bezier
 
-    def nth_grade_bezier(t: float | ColVector) -> Point3D | Point3D_Array:
+    def nth_grade_bezier(t):
         B = P.copy()
         for i in range(n):
             # After the i-th iteration (i in [0, ..., n-1]) there are (n-i)
@@ -144,7 +155,6 @@ def partial_bezier_points(points: BezierPoints, a: float, b: float) -> BezierPoi
 
     Returns
     -------
-    BezierPoints
         An array containing the control points defining the partial Bézier curve.
     """
     # Border cases
@@ -275,7 +285,6 @@ def split_bezier(points: BezierPoints, t: float) -> Point3D_Array:
 
     Returns
     -------
-    Point3D_Array
         An array containing the control points defining the two Bézier curves.
     """
 
@@ -481,7 +490,6 @@ def subdivide_bezier(points: BezierPoints, n_divisions: int) -> Point3D_Array:
 
     Returns
     -------
-    Point3D_Array
         An array containing the points defining the new `n` subcurves.
     """
     if n_divisions == 1:
@@ -611,7 +619,6 @@ def bezier_remap(
 
     Returns
     -------
-    BezierPoints_Array
         The new Bézier curves after the remap.
     """
     bezier_tuples = np.asarray(bezier_tuples)
@@ -670,9 +677,7 @@ def interpolate(start: Point3D, end: Point3D, alpha: ColVector) -> Point3D_Array
     ...
 
 
-def interpolate(
-    start: float | Point3D, end: float | Point3D, alpha: float | ColVector
-) -> float | ColVector | Point3D | Point3D_Array:
+def interpolate(start, end, alpha):
     """Linearly interpolates between two values ``start`` and ``end``.
 
     Parameters
@@ -687,13 +692,12 @@ def interpolate(
 
     Returns
     -------
-    float | ColVector | Point3D | Point3D_Array
         The result of the linear interpolation.
 
         * If ``start`` and ``end`` are of type :class:`float`, and:
 
             * ``alpha`` is also a :class:`float`, the return is simply a :class:`float`.
-            * ``alpha`` is a :class:`ColumnVector`
+            * ``alpha`` is a :class:`ColumnVector`, the return is a `Point3D`.
     """
     return start + alpha * (end - start)
 
@@ -716,7 +720,6 @@ def integer_interpolate(
 
     Returns
     -------
-    tuple[int, float]
         This returns an integer between start and end (inclusive) representing
         appropriate interpolation between them, along with a
         "residue" representing a new proportion between the
@@ -728,8 +731,9 @@ def integer_interpolate(
 
     .. code-block:: pycon
 
-        >>> integer_interpolate(start=0, end=10, alpha=0.46)
-        (4, 0.6)
+        >>> integer, residue = integer_interpolate(start=0, end=10, alpha=0.46)
+        >>> np.allclose((integer, residue), (4, 0.6))
+        True
     """
     if alpha >= 1:
         return (int(end - 1), 1.0)
@@ -762,7 +766,6 @@ def mid(start: float | Point3D, end: float | Point3D) -> float | Point3D:
 
     Returns
     -------
-    float | Point3D
         The midpoint between the two values.
     """
     return (start + end) / 2.0
@@ -783,9 +786,7 @@ def inverse_interpolate(start: Point3D, end: Point3D, value: Point3D) -> Point3D
     ...
 
 
-def inverse_interpolate(
-    start: float | Point3D, end: float | Point3D, value: float | Point3D
-) -> float | Point3D:
+def inverse_interpolate(start, end, value):
     """Perform inverse interpolation to determine the alpha
     values that would produce the specified ``value``
     given the ``start`` and ``end`` values or points.
@@ -802,7 +803,6 @@ def inverse_interpolate(
 
     Returns
     -------
-    float | Point3D
         The alpha values producing the given input
         when interpolating between ``start`` and ``end``.
 
@@ -845,13 +845,7 @@ def match_interpolate(
     ...
 
 
-def match_interpolate(
-    new_start: float,
-    new_end: float,
-    old_start: float,
-    old_end: float,
-    old_value: float | Point3D,
-) -> float | Point3D:
+def match_interpolate(new_start, new_end, old_start, old_end, old_value):
     """Interpolate a value from an old range to a new range.
 
     Parameters
@@ -871,7 +865,6 @@ def match_interpolate(
 
     Returns
     -------
-    float | Point3D
         The interpolated value within the new range.
 
     Examples
@@ -902,7 +895,6 @@ def get_handles_for_smooth_cubic_spline(
 
     Returns
     -------
-    tuple[Point3D_Array, Point3D_Array]
         A tuple of two arrays: one containing the 1st handle for every curve in
         the cubic spline, and the other containing the 2nd handles.
     """
@@ -1073,7 +1065,6 @@ def get_handles_for_smooth_closed_cubic_spline(
 
     Returns
     -------
-    tuple[Point3D_Array, Point3D_Array]
         A tuple of two arrays: one containing the 1st handle for every curve in
         the closed cubic spline, and the other containing the 2nd handles.
     """
@@ -1248,7 +1239,6 @@ def get_handles_for_smooth_open_cubic_spline(
 
     Returns
     -------
-    tuple[Point3D_Array, Point3D_Array]
         A tuple of two arrays: one containing the 1st handle for every curve in
         the open cubic spline, and the other containing the 2nd handles.
     """
@@ -1293,12 +1283,27 @@ def get_handles_for_smooth_open_cubic_spline(
     return H1, H2
 
 
+@overload
 def get_quadratic_approximation_of_cubic(
-    a0: Point3D | Point3D_Array,
-    h0: Point3D | Point3D_Array,
-    h1: Point3D | Point3D_Array,
-    a1: Point3D | Point3D_Array,
+    a0: Point3D,
+    h0: Point3D,
+    h1: Point3D,
+    a1: Point3D,
 ) -> Point3D_Array:
+    ...
+
+
+@overload
+def get_quadratic_approximation_of_cubic(
+    a0: Point3D_Array,
+    h0: Point3D_Array,
+    h1: Point3D_Array,
+    a1: Point3D_Array,
+) -> Point3D_Array:
+    ...
+
+
+def get_quadratic_approximation_of_cubic(a0, h0, h1, a1):
     r"""If :math:`a_0, h_0, h_1, a_1` are :math:`(3,)`-ndarrays representing control points
     for a cubic Bézier curve, returns a :math:`(6, 3)`-ndarray of 6 control points
     :math:`[a^{(1)}_0 \ h^{(1)} \ a^{(1)}_1 \ a^{(2)}_0 \ h^{(2)} \ a^{(2)}_1]` for 2 quadratic
@@ -1322,7 +1327,6 @@ def get_quadratic_approximation_of_cubic(
 
     Returns
     -------
-    Point3D_Array
         A :math:`(6m, 3)`-ndarray, where each one of the :math:`m` groups of
         consecutive 6 points defines the 2 quadratic Bézier curves which
         approximate the respective cubic Bézier curve.
@@ -1429,7 +1433,6 @@ def is_closed(points: Point3D_Array) -> bool:
 
     Returns
     -------
-    bool
         Whether the first and last points of the array are close enough or not
         to be considered the same, thus considering the defined spline as closed.
     """
@@ -1473,12 +1476,11 @@ def proportions_along_bezier_curve_for_point(
 
     Returns
     -------
-        np.ndarray[float]
-            List containing possible parameters (the proportions along the Bézier curve)
-            for the given point on the given Bézier curve.
-            This list usually only contains one or zero elements, but if the
-            point is, say, at the beginning/end of a closed loop, this may contain more
-            than 1 value, corresponding to the beginning, end, etc. of the loop.
+        List containing possible parameters (the proportions along the Bézier curve)
+        for the given point on the given Bézier curve.
+        This list usually only contains one or zero elements, but if the
+        point is, say, at the beginning/end of a closed loop, this may contain more
+        than 1 value, corresponding to the beginning, end, etc. of the loop.
 
     Raises
     ------
@@ -1555,7 +1557,6 @@ def point_lies_on_bezier(
 
     Returns
     -------
-    bool
         Whether the point lies on the Bézier curve or not.
     """
 
