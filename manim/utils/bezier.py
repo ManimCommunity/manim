@@ -37,7 +37,6 @@ from typing import Any, Callable, Sequence, overload
 
 import numpy as np
 import numpy.typing as npt
-from scipy import linalg
 
 from ..utils.simple_functions import choose
 from ..utils.space_ops import cross2d, find_intersection
