@@ -65,6 +65,7 @@ def bezier(points):
 
     Returns
     -------
+    :class:`Callable[[float | ColVector], Point3D | Point3D_Array]`
         Function describing the Bézier curve.
         You can either pass a single `t` value between 0 and 1 to get the corresponding
         point on the curve, or an `(N, 1)` column vector of `t` values to get an array
@@ -123,7 +124,7 @@ def bezier(points):
 
 
 def partial_bezier_points(points: BezierPoints, a: float, b: float) -> BezierPoints:
-    r"""Given an array of ``points`` which define a Bézier curve, and two numbers ``a``, ``b``
+    r"""Given an array of ``points`` which define a Bézier curve, and two numbers :math:`a, b`
     such that :math:`0 \le a < b \le 1`, return an array of the same size, which describes the
     portion of the original Bézier curve on the interval :math:`[a, b]`.
 
@@ -155,6 +156,7 @@ def partial_bezier_points(points: BezierPoints, a: float, b: float) -> BezierPoi
 
     Returns
     -------
+    :class:`BezierPoints`
         An array containing the control points defining the partial Bézier curve.
     """
     # Border cases
@@ -246,7 +248,7 @@ def partial_bezier_points(points: BezierPoints, a: float, b: float) -> BezierPoi
 
 
 def split_bezier(points: BezierPoints, t: float) -> Point3D_Array:
-    """Split a Bézier curve at argument ``t`` into two curves.
+    r"""Split a Bézier curve at argument ``t`` into two curves.
 
     .. note::
         To understand what's going on, let's break this down with an example: a cubic Bézier.
@@ -254,23 +256,28 @@ def split_bezier(points: BezierPoints, t: float) -> Point3D_Array:
         Let :math:`p_0, p_1, p_2, p_3` be the points needed for the curve :math:`C_0 = [p_0, p_1, p_2, p_3]`.
         Define the 3 linear Béziers :math:`L_0, L_1, L_2` as interpolations of :math:`p_0, p_1, p_2, p_3`:
 
-        * :math:`L_0(t) = p_0 + t(p_1 - p_0)`
-        * :math:`L_1(t) = p_1 + t(p_2 - p_1)`
-        * :math:`L_2(t) = p_2 + t(p_3 - p_2)`
+        .. math::
+            L_0(t) &= p_0 + t(p_1 - p_0) \\
+            L_1(t) &= p_1 + t(p_2 - p_1) \\
+            L_2(t) &= p_2 + t(p_3 - p_2)
 
         Define the 2 quadratic Béziers :math:`Q_0, Q_1` as interpolations of :math:`L_0, L_1, L_2`:
-        * :math:`Q_0(t) = L_0(t) + t(L_1(t) - L_0(t))`
-        * :math:`Q_1(t) = L_1(t) + t(L_2(t) - L_1(t))`
+
+        .. math::
+            Q_0(t) &= L_0(t) + t(L_1(t) - L_0(t)) \\
+            Q_1(t) &= L_1(t) + t(L_2(t) - L_1(t))
 
         Then :math:`C_0` is the following interpolation of :math:`Q_0` and :math:`Q_1`:
 
-        :math:`C_0(t) = Q_0(t) + t(Q_1(t) - Q_0(t))`
+        .. math::
+            C_0(t) = Q_0(t) + t(Q_1(t) - Q_0(t))
 
         Evaluating :math:`C_0` at a value :math:`t=s` splits :math:`C_0` into two cubic Béziers :math:`H_0`
         and :math:`H_1`, defined by some of the points we calculated earlier:
 
-        * :math:`H_0 = [p_0, L_0(s), Q_0(s), C_0(s)]`
-        * :math:`H_1 = [p_0(s), Q_1(s), L_2(s), p_3]`
+        .. math::
+            H_0 = [p_0, L_0(s), Q_0(s), C_0(s)] \\
+            H_1 = [p_0(s), Q_1(s), L_2(s), p_3]
 
         As the resulting curves are obtained from linear combinations of ``points``, everything can
         be encoded into a matrix for efficiency.
@@ -285,6 +292,7 @@ def split_bezier(points: BezierPoints, t: float) -> Point3D_Array:
 
     Returns
     -------
+    :class:`Point3D_Array`
         An array containing the control points defining the two Bézier curves.
     """
 
@@ -490,6 +498,7 @@ def subdivide_bezier(points: BezierPoints, n_divisions: int) -> Point3D_Array:
 
     Returns
     -------
+    :class:`Point3D_Array`
         An array containing the points defining the new `n` subcurves.
     """
     if n_divisions == 1:
@@ -619,6 +628,7 @@ def bezier_remap(
 
     Returns
     -------
+    :class:`BezierPoints_Array`
         The new Bézier curves after the remap.
     """
     bezier_tuples = np.asarray(bezier_tuples)
@@ -692,12 +702,19 @@ def interpolate(start, end, alpha):
 
     Returns
     -------
+    :class:`float` | :class:`ColVector` | :class:`Point3D` | :class:`Point3D_Array`
         The result of the linear interpolation.
 
         * If ``start`` and ``end`` are of type :class:`float`, and:
 
-            * ``alpha`` is also a :class:`float`, the return is simply a :class:`float`.
-            * ``alpha`` is a :class:`ColumnVector`, the return is a `Point3D`.
+            * ``alpha`` is also a :class:`float`, the return is simply another :class:`float`.
+            * ``alpha`` is a :class:`ColVector`, the return is another :class:`ColVector`.
+
+        * If ``start`` and ``end`` are of type :class:`Point3D`, and:
+
+            * ``alpha`` is a :class:`float`, the return is another :class:`Point3D`.
+            * ``alpha`` is a :class:`ColVector`, the return is a :class:`Point3D_Array`.
+
     """
     return start + alpha * (end - start)
 
@@ -720,6 +737,7 @@ def integer_interpolate(
 
     Returns
     -------
+    :class:`tuple[int, float]`
         This returns an integer between start and end (inclusive) representing
         appropriate interpolation between them, along with a
         "residue" representing a new proportion between the
@@ -754,7 +772,7 @@ def mid(start: Point3D, end: Point3D) -> Point3D:
     ...
 
 
-def mid(start: float | Point3D, end: float | Point3D) -> float | Point3D:
+def mid(start, end):
     """Returns the midpoint between two values.
 
     Parameters
@@ -766,6 +784,7 @@ def mid(start: float | Point3D, end: float | Point3D) -> float | Point3D:
 
     Returns
     -------
+    :class:`float` | :class:`Point3D`
         The midpoint between the two values.
     """
     return (start + end) / 2.0
@@ -803,6 +822,7 @@ def inverse_interpolate(start, end, value):
 
     Returns
     -------
+    :class:`float` | :class:`Point3D`
         The alpha values producing the given input
         when interpolating between ``start`` and ``end``.
 
@@ -865,6 +885,7 @@ def match_interpolate(new_start, new_end, old_start, old_end, old_value):
 
     Returns
     -------
+    :class:`float` | :class:`Point3D`
         The interpolated value within the new range.
 
     Examples
@@ -895,6 +916,7 @@ def get_handles_for_smooth_cubic_spline(
 
     Returns
     -------
+    :class:`tuple[Point3D_Array, Point3D_Array]`
         A tuple of two arrays: one containing the 1st handle for every curve in
         the cubic spline, and the other containing the 2nd handles.
     """
@@ -934,50 +956,108 @@ def get_handles_for_smooth_closed_cubic_spline(
 
     .. note::
         A system of equations must be solved to get the first handles of
-        every Bèzier curve (referred to as H1).
-        Then H2 (the second handles) can be obtained separately.
+        every Bézier curve (referred to as :math:`H_1`).
+        Then :math:`H_2` (the second handles) can be obtained separately.
 
         .. seealso::
             The equations were obtained from:
 
-            * [Conditions on control points for continuous curvature. (2016). Jaco Stuifbergen.](http://www.jacos.nl/jacos_html/spline/theory/theory_2.html)
+            * `Conditions on control points for continuous curvature. (2016). Jaco Stuifbergen. <http://www.jacos.nl/jacos_html/spline/theory/theory_2.html>`_
 
-        In general, if there are N+1 anchors there will be N Bezier curves
-        and thus N pairs of handles to find. We must solve the following
-        system of equations for the 1st handles (example for N = 5):
+        In general, if there are :math:`n+1` anchors there will be :math:`n` Bezier curves
+        and thus :math:`n` pairs of handles to find. We must solve the following
+        system of equations for the 1st handles (example for :math:`n = 5`):
 
         .. math::
-
-            [4 1 0 0 1]   [H1[0]]   [4*A[0] + 2*A[1]]
-            [1 4 1 0 0]   [H1[1]]   [4*A[1] + 2*A[2]]
-            [0 1 4 1 0]   [H1[2]]   [4*A[2] + 2*A[3]]
-            [0 0 1 4 1] @ [H1[3]] = [4*A[3] + 2*A[4]]
-            [1 0 0 1 4]   [H1[4]]   [4*A[4] + 2*A[5]]
+            \begin{pmatrix}
+                4 & 1 & 0 & 0 & 1 \\
+                1 & 4 & 1 & 0 & 0 \\
+                0 & 1 & 4 & 1 & 0 \\
+                0 & 0 & 1 & 4 & 1 \\
+                1 & 0 & 0 & 1 & 4
+            \end{pmatrix}
+            \begin{pmatrix}
+                H_{1,0} \\
+                H_{1,1} \\
+                H_{1,2} \\
+                H_{1,3} \\
+                H_{1,4}
+            \end{pmatrix}
+            =
+            \begin{pmatrix}
+                4A_0 + 2A_1 \\
+                4A_1 + 2A_2 \\
+                4A_2 + 2A_3 \\
+                4A_3 + 2A_4 \\
+                4A_4 + 2A_5
+            \end{pmatrix}
 
         which will be expressed as :math:`MH_1 = D`.
-        M is almost a tridiagonal matrix, so we could use Thomas' algorithm:
-        see https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm
 
-        However, M has ones at the opposite corners. A solution to this is
-        the first decomposition proposed here, with alpha = 1:
-        https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm#Variants
+        :math:`M` is almost a tridiagonal matrix, so we could use Thomas' algorithm.
+
+        .. seealso::
+            `Tridiagonal matrix algorithm. Wikipedia. <https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm>`_
+
+        However, :math:`M` has ones at the opposite corners. A solution to this is
+        the first decomposition proposed in the link below, with :math:`\alpha = 1`:
+
+        .. seealso::
+            `Tridiagonal matrix algorithm # Variants. Wikipedia. <https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm#Variants>`_
 
         .. math::
-            [4 1 0 0 1]   [3 1 0 0 0]   [1 0 0 0 1]
-            [1 4 1 0 0]   [1 4 1 0 0]   [0 0 0 0 0]
-            [0 1 4 1 0] = [0 1 4 1 0] + [0 0 0 0 0]
-            [0 0 1 4 1]   [0 0 1 4 1]   [0 0 0 0 0]
-            [1 0 0 1 4]   [0 0 0 1 3]   [1 0 0 0 1]
+            M
+            =
+            \begin{pmatrix}
+                4 & 1 & 0 & 0 & 1 \\
+                1 & 4 & 1 & 0 & 0 \\
+                0 & 1 & 4 & 1 & 0 \\
+                0 & 0 & 1 & 4 & 1 \\
+                1 & 0 & 0 & 1 & 4
+            \end{pmatrix}
+            &=
+            \begin{pmatrix}
+                3 & 1 & 0 & 0 & 0 \\
+                1 & 4 & 1 & 0 & 0 \\
+                0 & 1 & 4 & 1 & 0 \\
+                0 & 0 & 1 & 4 & 1 \\
+                0 & 0 & 0 & 1 & 3
+            \end{pmatrix}
+            +
+            \begin{pmatrix}
+                1 & 0 & 0 & 0 & 1 \\
+                0 & 0 & 0 & 0 & 0 \\
+                0 & 0 & 0 & 0 & 0 \\
+                0 & 0 & 0 & 0 & 0 \\
+                1 & 0 & 0 & 0 & 1
+            \end{pmatrix}
+            \\
+            &=
+            \begin{pmatrix}
+                3 & 1 & 0 & 0 & 0 \\
+                1 & 4 & 1 & 0 & 0 \\
+                0 & 1 & 4 & 1 & 0 \\
+                0 & 0 & 1 & 4 & 1 \\
+                0 & 0 & 0 & 1 & 3
+            \end{pmatrix}
+            +
+            \begin{pmatrix}
+                1 \\
+                0 \\
+                0 \\
+                0 \\
+                0
+            \end{pmatrix}
+            \begin{pmatrix}
+                1 & 0 & 0 & 0 & 1
+            \end{pmatrix}
+            \\
+            &=
+            N + uv^T
 
-            [3 1 0 0 0]   [1]
-            [1 4 1 0 0]   [0]
-            = [0 1 4 1 0] + [0] @ [1 0 0 0 1]
-            [0 0 1 4 1]   [0]
-            [0 0 0 1 3]   [1]
-
-        We decompose :math:`M = N + uv^T`, where N is a tridiagonal matrix, and u
-        and v are N-D vectors such that u[0]=u[N-1]=v[0]=v[N-1] = 1, and
-        u[i] = v[i] = 0 for all i in {1, ..., N-2}.
+        We decompose :math:`M = N + uv^T`, where :math:`N` is a tridiagonal matrix, and
+        :math:`u, v` are :math:`n`-D vectors such that `u_0 = u_{n-1} = v_0 = v_{n-1} = 1`,
+        and `u_i = v_i = 0, \forall i \in \{1, ..., n-2\}`.
 
         Thus:
 
@@ -992,70 +1072,84 @@ def get_handles_for_smooth_closed_cubic_spline(
             \Rightarrow N(I + qv^T)H_1 &= D
             \Rightarrow H_1 &= (I + qv^T)^{-1} N^{-1} D
 
-        According to Sherman-Morrison's formula, which is explained here:
-        https://en.wikipedia.org/wiki/Sherman%E2%80%93Morrison_formula
+        According to Sherman-Morrison's formula:
+
+        .. seealso::
+            `Sherman-Morrison's formula. Wikipedia. <https://en.wikipedia.org/wiki/Sherman%E2%80%93Morrison_formula>`_
 
         .. math::
             (I + qv^T)^{-1} = I - \frac{1}{1 + v^Tq} qv^T
 
-        If we find :math:`Y = N^{-1}D`, or in other words, if we solve for
+        If we find :math:`Y = N^{-1} D`, or in other words, if we solve for
         :math:`Y` in :math:`NY = D`:
 
         .. math::
-            \Rightarrow H1 = y - 1/(1 + v.T @ q) * (q @ v.T @ y)
+            \Rightarrow H_1 = Y - \frac{1}{1 + v^Tq} qv^TY
 
-        So we must solve for q and y in N @ q = u and N @ y = d.
-        As N is now tridiagonal, we shall use Thomas' algorithm.
+        Therefore we must solve for :math:`q` and :math:`Y` in :math:`Nq = u` and :math:`NY = D`.
+        As :math:`N` is now tridiagonal, we shall use Thomas' algorithm.
 
-        Let a = [a[0], a[1], ..., a[N-2]] be the lower diagonal of N-1 elements,
-        such that a[0]=a[1]=...=a[N-2] = 1, so this diagonal is filled with ones;
-        b = [b[0], b[1], ..., b[N-2], b[N-1]] the main diagonal of N elements,
-        such that b[0]=b[N-1] = 3, and b[1]=b[2]=...=b[N-2] = 4;
-        and c = [c[0], c[1], ..., c[N-2]] the upper diagonal of N-1 elements,
-        such that c[0]=c[1]=...=c[N-2] = 1: this diagonal is also filled with ones.
+        Let:
+
+        *   :math:`a = [a_0, \ a_1, \ ..., \ a_{n-2}]` be the lower diagonal of :math:`n-1` elements,
+            such that :math:`a_0 = a_1 = ... = a_{N-2} = 1`, so this diagonal is filled with ones;
+        *   :math:`b = [b_0, \ b_1, \ ..., \ b_{n-2}, \ b_{n-1}]` the main diagonal of :math:`n` elements,
+            such that :math:`b_0 = b_{n-1} = 3`, and :math:`b_1 = b_2 = ... = b_{N-2} = 4`;
+        *   :math:`c = [c_0, \ c_1, \ ..., \ c_{n-2}] the upper diagonal of :math:{n-1} elements,
+            such that :math:`c_0 = c_1 = ... = c_{n-2} = 1`: this diagonal is also filled with ones.
 
         If, according to Thomas' algorithm, we define:
-        c'[0] = c[0] / b[0]
-        c'[i] = c[i] / (b[i] - a[i-1]*c'[i-1]) = 1/(4-c'[i-1]),  i in [1, ..., N-2]
-        u'[0] = u[0] / b[0]
-        u'[i] = (u[i] - a[i-1]*u'[i-1]) / (b[i] - a[i-1]*c'[i-1]), i in [1, ..., N-1]
-        d'[0] = d[0] / b[0]
-        d'[i] = (d[i] - a[i-1]*d'[i-1]) / (b[i] - a[i-1]*c'[i-1]), i in [1, ..., N-1]
+        .. math::
+            c'_0 &= \frac{c_0}{b_0} & \\
+            c'_i &= \frac{c_i}{b_i - a_{i-1} c'_{i-1}} = \frac{1}{4 - c'_{i-1}}, & \forall i \in \{1, ..., n-2\} \\
+            & & \\
+            u'_0 &= \frac{u_0}{b_0} & \\
+            u'_i &= \frac{u_i - a_{i-1} u'_{i-1}}{b_i - a_{i-1} c'_{i-1}), & \forall i \in \{1, ..., n-1\} \\
+            & & \\
+            D'_0 &= \frac{1}{b_0} D_0 & \\
+            D'_i &= \frac{1}{b_i - a_{i-1} c'{i-1}} (D_i - a_{i-1} D'_{i-1}), & \forall i \in \{1, ..., n-1\}
 
         Then:
+
         .. math::
-            c'_0 &= \frac{1}{3} & \\
-            c'_i &= \frac{1}{4 - c'_{i-1}}, & \forall i \in \{1, ..., N-2\} \\
+            c'_0     &= \frac{1}{3} & \\
+            c'_i     &= \frac{1}{4 - c'_{i-1}}, & \forall i \in \{1, ..., n-2\} \\
             & & \\
-            u'_0 &= \frac{1}{3} &
-            u'_i &= \frac{-u'_{i-1}}{4 - c'{i-1}} &\\
-            &= -c'[i]*u'[i-1], & \forall i \in \{1, ..., N-2\} \\
-            u'_{N-1} &= \frac{1 - u'_{N-2}}{3 - c'_{N-2}} & \\
+            u'_0     &= \frac{1}{3} &
+            u'_i     &= \frac{-u'_{i-1}}{4 - c'{i-1}} = -c'_i u'_{i-1}, & \forall i \in \{1, ..., n-2\} \\
+            u'_{n-1} &= \frac{1 - u'_{n-2}}{3 - c'_{n-2}} & \\
             & & \\
-            D'_0   = (4*A[0] + 2*A[1]) / 3
-            d'[i]   = (4*A[i] + 2*A[i+1] - d'[i-1]) / (4 - c'[i-1])
-                    = c'[i] * (4*A[i] + 2*A[i+1] - d'[i-1]),         i in [1, ..., N-2]
-            d'[N-1] = (4*A[N-1] + 2*A[N] - d'[N-2]) / (3 - c'[N-2])
+            D'_0     &= \frac{1}{3} (4A_0 + 2A_1) & \\
+            D'_i     &= \frac{1}{4 - c'_{i-1}} (4A_i + 2A_{i+1} - D'_{i-1}) = c_i (4A_i + 2A_{i+1} - D'_{i-1}), & \forall i \in \{1, ..., n-2\} \\
+            D'_{n-1} &= \frac{1}{3 - c'_{n-2}} (4A_{n-1} + 2A_n - D'_{n-2}) &
 
-        Finally, we can do Backward Substitution to find q and y:
-        q[N-1] = u'[N-1]
-        q[i]   = u'[i] - c'[i]*q[i+1], for i in [N-2, ..., 0]
-        y[N-1] = d'[N-1]
-        y[i]   = d'[i] - c'[i]*y[i+1], for i in [N-2, ..., 0]
+        Finally, we can do Backward Substitution to find :math:`q` and :math:`Y`:
 
-        With those values, we can calculate H1 = y - 1/(1 + v.T @ q) * (q @ v.T @ y).
-        Given that v[0]=v[N-1] = 1, and v[1]=v[2]=...=v[N-2] = 0, its dot products
-        with q and y are respectively q[0]+q[N-1] and y[0]+y[N-1]. Thus:
-        H1 = y - (y[0]+y[N-1]) / (1+q[0]+q[N-1]) * q
+        .. math::
+            q_{n-1} &= u'_{n-1} & \\
+            q_i     &= u'_{i} - c'_i q_{i+1}, & \forall i \in \{n-2, ..., 0\} \\
+            & & \\
+            Y_{n-1} &= D'_{n-1} & \\
+            Y_i     &= D'_i - c'_i Y_{i+1},   & \forall i \in \{n-2, ..., 0\}
 
-        Once we have H1, we can get H2 (the array of second handles) as follows:
-        H2[i]   = 2*A[i+1] - H1[i+1], for i in [0, ..., N-2]
-        H2[N-1] = 2*A[0]   - H1[0]
+        With those values, we can finally calculate :math:`H_1 = Y - \frac{1}{1 + v^Tq} qv^TY`.
+        Given that :math:`v_0 = v_{n-1} = 1`, and :math:`v_1 = v_2 = ... = v_{n-2} = 0`, its dot products
+        with :math:`q` and :math:`Y` are respectively :math:`v^Tq = q_0 + q_{n-1}` and
+        :math:`v^TY = Y_0 + Y_{n-1}`. Thus:
 
-        Because the matrix M (and thus N, u and v) always follows the same pattern,
-        we can define a memo list for c' and u' to avoid recalculation. We cannot
-        memoize d and y, however, because they are always different vectors. We
-        cannot make a memo for q either, but we can calculate it faster because u'
+        .. math::
+            H_1 = Y - \frac{1}{1 + q_0 + q_{n-1}} q(Y_0 + Y_{n-1})
+
+        Once we have :math:`H_1`, we can get :math:`H_2` (the array of second handles) as follows:
+
+        .. math::
+            H_{2, i}   &= 2A_{i+1} - H_{1, i+1}, & for i in [0, ..., N-2] \\
+            H_{2, n-1} &= 2A_0 - H_{1, 0} &
+
+        Because the matrix :math:`M` (and thus :math:`N, u, v`) always follows the same pattern,
+        we can define a memo list for :math:`c'` and :math:`u'` to avoid recalculation. We cannot
+        memoize :math:`D` and :math:`Y`, however, because they are always different matrices. We
+        cannot make a memo for :math:`q` either, but we can calculate it faster because :math:`u'`
         can be memoized.
 
     Parameters
@@ -1065,6 +1159,7 @@ def get_handles_for_smooth_closed_cubic_spline(
 
     Returns
     -------
+    :class:`tuple[Point3D_Array, Point3D_Array]`
         A tuple of two arrays: one containing the 1st handle for every curve in
         the closed cubic spline, and the other containing the 2nd handles.
     """
@@ -1150,87 +1245,91 @@ def get_handles_for_smooth_open_cubic_spline(
         .. seealso::
             The equations were obtained from:
 
-            * [Smooth Bézier Spline Through Prescribed Points. (2012). Particle in Cell Consulting LLC.](https://www.particleincell.com/2012/bezier-splines/)
-            * [Conditions on control points for continuous curvature. (2016). Jaco Stuifbergen.](http://www.jacos.nl/jacos_html/spline/theory/theory_2.html)
+            * `Smooth Bézier Spline Through Prescribed Points. (2012). Particle in Cell Consulting LLC. <https://www.particleincell.com/2012/bezier-splines/>`_
+            * `Conditions on control points for continuous curvature. (2016). Jaco Stuifbergen. <http://www.jacos.nl/jacos_html/spline/theory/theory_2.html>`_
 
         .. warning::
-            The equations in the first webpage have some typos which
-            were corrected in the comments.
+            The equations in the first webpage have some typos which were corrected in the comments.
 
-        In general, if there are :math:`N+1` anchors there will be N Bezier curves
-        and thus :math:`N` pairs of handles to find. We must solve the following
-        system of equations for the 1st handles (example for :math:`N = 5`):
+        In general, if there are :math:`n+1` anchors there will be :math:`n` Bézier curves
+        and thus :math:`n` pairs of handles to find. We must solve the following
+        system of equations for the 1st handles (example for :math:`n = 5`):
 
         .. math::
-
             \begin{pmatrix}
                 2 & 1 & 0 & 0 & 0 \\
                 1 & 4 & 1 & 0 & 0 \\
                 0 & 1 & 4 & 1 & 0 \\
                 0 & 0 & 1 & 4 & 1 \\
-                0 & 0 % 0 & 2 & 7
+                0 & 0 & 0 & 2 & 7
             \end{pmatrix}
             \begin{pmatrix}
                 H_{1,0} \\
                 H_{1,1} \\
                 H_{1,2} \\
                 H_{1,3} \\
-                H_{1,4} \\
+                H_{1,4}
             \end{pmatrix}
             =
             \begin{pmatrix}
-                a_0 + 2a_1 \\
-                4a_1 + 2a_2 \\
-                4a_2 + 2a_3 \\
-                4a_3 + 2a_4 \\
-                8a_4 + a_5 \\
+                A_0 + 2A_1 \\
+                4A_1 + 2A_2 \\
+                4A_2 + 2A_3 \\
+                4A_3 + 2A_4 \\
+                8A_4 + A_5
             \end{pmatrix}
 
         which will be expressed as :math:`MH_1 = D`.
         :math:`M` is a tridiagonal matrix, so the system can be solved in :math`O(n)`
         operations. Here we shall use Thomas' algorithm or the tridiagonal matrix
-        algorithm. See: <https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm>
+        algorithm.
 
-        Let `a = [a[0], a[1], ..., a[N-2]]` be the lower diagonal of :math:`N-1` elements,
-        such that `a[0]=a[1]=...=a[N-3] = 1`, and `A[N-2] = 2`;
-        `b = [b[0], b[1], ..., b[N-2], b[N-1]]` the main diagonal of :math:`N` elements,
-        such that `b[0] = 2, b[1]=b[2]=...=b[N-2] = 4`, and `b[N-1] = 7`;
-        and `c = [c[0], c[1], ..., c[N-2]]` the upper diagonal of :math:`N-1` elements,
-        such that `c[0]=c[1]=...=c[N-2] = 1`: this diagonal is filled with ones.
+        .. seealso::
+            `Tridiagonal matrix algorithm. Wikipedia. <https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm>`_
+
+        Let:
+
+        *   :math:`a = [a_0, \ a_1, \ ..., \ a_{n-2}]` be the lower diagonal of :math:`n-1` elements,
+            such that :math:`a_0 = a_1 = ... = a_{N-3} = 1`, and :math:`a_{n-2} = 2`;
+        *   :math:`b = [b_0, \ b_1, \ ..., \ b_{n-2}, \ b_{n-1}]` the main diagonal of :math:`n` elements,
+            such that :math:`b_0 = 2`, :math:`b_1 = b_2 = ... = b_{N-2} = 4`, and :math:`b_{n-1} = 7`;
+        *   :math:`c = [c_0, \ c_1, \ ..., \ c_{n-2}] the upper diagonal of :math:{n-1} elements,
+            such that :math:`c_0 = c_1 = ... = c_{n-2} = 1`: this diagonal is filled with ones.
 
         If, according to Thomas' algorithm, we define:
 
         .. math::
-            c'[0] = c[0] / b[0]
-            c'[i] = c[i] / (b[i] - a[i-1]*c'[i-1]) = 1/(4-c'[i-1]),  i in [1, ..., N-2]
-            d'[0] = d[0] / b[0]
-            d'[i] = (d[i] - a[i-1]*d'[i-1]) / (b[i] - a[i-1]*c'[i-1]), i in [1, ..., N-1]
+            c'_0 &= \frac{c_0}{b_0} & \\
+            c'_i &= \frac{c_i}{b_i - a_{i-1} c'_{i-1}} = \frac{1}{4 - c'_{i-1}}, & \forall i \in \{1, ..., n-2\} \\
+            & & \\
+            D'_0 &= \frac{1}{b_0} D_0 & \\
+            D'_i &= \frac{1}{b_i - a_{i-1} c'{i-1}} (D_i - a_{i-1} D'_{i-1}), & \forall i \in \{1, ..., n-1\}
 
         Then:
 
         .. math::
-            c'[0]   = 0.5
-            c'[i]   = 1 / (4 - c'[i-1]), if i in {1, ..., N-2}
-            d'[0]   = 0.5*A[0] + A[1]
-            d'[i]   = (4*A[i] + 2*A[i+1] - d'[i-1]) / (4 - c'[i-1])
-                    = c'[i] * (4*A[i] + 2*A[i+1] - d'[i-1]),         i in [1, ..., N-2]
-            d'[N-1] = (8*A[N-1] + A[N] - 2*d'[N-2]) / (7 - 2*c'[N-2])
+            c'_0     &= 0.5 & \\
+            c'_i     &= \frac{1}{4 - c'_{i-1}}, & \forall i \in \{1, ..., n-2\} \\
+            & & \\
+            D'_0     &= 0.5A_0 + A_1 & \\
+            D'_i     &= \frac{1}{4 - c'_{i-1}} (4A_i + 2A_{i+1} - D'_{i-1}) = c_i (4A_i + 2A_{i+1} - D'_{i-1}), & \forall i \in \{1, ..., n-2\} \\
+            D'_{n-1} &= \frac{1}{7 - 2c'_{n-2}} (8A_{n-1} + A_n - 2D'_{n-2}) &
 
-        Finally, we can do Backward Substitution to find `H1`:
-
-        .. math::
-            H1[N-1] = d'[N-1]
-            H1[i]   = d'[i] - c'[i]*H1[i+1], for i in [N-2, ..., 0]
-
-        Once we have `H1`, we can get `H2` (the array of second handles) as follows:
+        Finally, we can do Backward Substitution to find :math:`H_1`:
 
         .. math::
-            H2[i]   =   2*A[i+1]     - H1[i+1], for i in [0, ..., N-2]
-            H2[N-1] = 0.5*A[N]   + 0.5*H1[N-1]
+            H_{1, n-1} &= D'_{n-1} & \\
+            H_{1, i}   &= D'_i - c'_i H_{1, i+1}, & \forall i \in \{n-2, ..., 0\}
+
+        Once we have :math:`H_1`, we can get :math:`H_2` (the array of second handles) as follows:
+
+        .. math::
+            H_{2, i}   &= 2A_{i+1} - H_{1, i+1}, & \forall i \in \{0, ..., N-2\} \\
+            H_{2, n-1} &= 0.5A_n   + 0.5H_{1, n-1} &
 
         As the matrix :math:`M` always follows the same pattern, we can define a memo list
-        for :math:`c'` to avoid recalculation. We cannot do the same for :math:`d`, however,
-        because it is always a different vector.
+        for :math:`c'` to avoid recalculation. We cannot do the same for :math:`D`, however,
+        because it is always a different matrix.
 
     Parameters
     ----------
@@ -1239,6 +1338,7 @@ def get_handles_for_smooth_open_cubic_spline(
 
     Returns
     -------
+    :class:`tuple[Point3D_Array, Point3D_Array]`
         A tuple of two arrays: one containing the 1st handle for every curve in
         the open cubic spline, and the other containing the 2nd handles.
     """
@@ -1306,8 +1406,8 @@ def get_quadratic_approximation_of_cubic(
 def get_quadratic_approximation_of_cubic(a0, h0, h1, a1):
     r"""If :math:`a_0, h_0, h_1, a_1` are :math:`(3,)`-ndarrays representing control points
     for a cubic Bézier curve, returns a :math:`(6, 3)`-ndarray of 6 control points
-    :math:`[a^{(1)}_0 \ h^{(1)} \ a^{(1)}_1 \ a^{(2)}_0 \ h^{(2)} \ a^{(2)}_1]` for 2 quadratic
-    Bézier curves approximating it.
+    :math:`[a'_0, \ h', \ a'_1, \quad a''_0, \ h'', \ a''_1]` for 2 quadratic Bézier curves
+    approximating it.
 
     If :math:`a_0, h_0, h_1, a_1` are :math:`(m, 3)`-ndarrays of :math:`m` control points
     for :math:`m` cubic Bézier curves, returns instead a :math:`(6m, 3)`-ndarray of :math:`6m`
@@ -1327,6 +1427,7 @@ def get_quadratic_approximation_of_cubic(a0, h0, h1, a1):
 
     Returns
     -------
+    :class:`Point3D_Array`
         A :math:`(6m, 3)`-ndarray, where each one of the :math:`m` groups of
         consecutive 6 points defines the 2 quadratic Bézier curves which
         approximate the respective cubic Bézier curve.
@@ -1433,6 +1534,7 @@ def is_closed(points: Point3D_Array) -> bool:
 
     Returns
     -------
+    :class:`bool`
         Whether the first and last points of the array are close enough or not
         to be considered the same, thus considering the defined spline as closed.
     """
@@ -1451,9 +1553,9 @@ def proportions_along_bezier_curve_for_point(
     point: Point3D,
     control_points: BezierPoints,
     round_to: float = 1e-6,
-) -> npt.NDArray[Any]:
-    """Obtains the proportion along the Bézier curve corresponding to a given point,
-    given the Bézier curve's control points.
+) -> Vector:
+    """Obtains the proportion along the Bézier curve corresponding to a given ``point``,
+    given the Bézier curve's ``control_points``.
 
     .. note::
         The Bézier polynomial is constructed using the coordinates of the given point,
@@ -1464,28 +1566,27 @@ def proportions_along_bezier_curve_for_point(
     Parameters
     ----------
     point
-        The Cartesian Coordinates of the point whose parameter
-        should be obtained.
+        The Cartesian Coordinates of the point whose parameter should be obtained.
     control_points
-        The Cartesian Coordinates of the ordered control
-        points of the Bézier curve on which the point may
-        or may not lie.
+        The Cartesian Coordinates of the ordered control points of the Bézier curve
+        on which the point may or may not lie.
     round_to
-        A float whose number of decimal places all values
-        such as coordinates of points will be rounded.
+        A float whose number of decimal places all values such as coordinates of
+        points will be rounded.
 
     Returns
     -------
-        List containing possible parameters (the proportions along the Bézier curve)
-        for the given point on the given Bézier curve.
-        This list usually only contains one or zero elements, but if the
+    :class:`Vector`
+        Array containing possible parameters (the proportions along the Bézier curve)
+        for the given ``point`` on the given Bézier curve.
+        This array usually only contains one or zero elements, but if the
         point is, say, at the beginning/end of a closed loop, this may contain more
         than 1 value, corresponding to the beginning, end, etc. of the loop.
 
     Raises
     ------
     :class:`ValueError`
-        When ``point`` and the control points have different shapes.
+        When ``point`` and the elements of ``control_points`` have different shapes.
     """
     # Method taken from
     # http://polymathprogrammer.com/2012/04/03/does-point-lie-on-bezier-curve/
@@ -1537,7 +1638,7 @@ def point_lies_on_bezier(
     control_points: BezierPoints,
     round_to: float = 1e-6,
 ) -> bool:
-    """Checks if a given point lies on the Bézier curves with the given control points.
+    """Checks if a given ``point`` lies on the Bézier curve defined by ``control_points``.
 
     .. note::
         This is done by solving the Bézier polynomial with the point as the constant term.
@@ -1548,16 +1649,16 @@ def point_lies_on_bezier(
     point
         The Cartesian Coordinates of the point to check.
     control_points
-        The Cartesian Coordinates of the ordered control
-        points of the Bézier curve on which the point may
-        or may not lie.
+        The Cartesian Coordinates of the ordered control points of the Bézier curve on
+        which the point may or may not lie.
     round_to
-        A float whose number of decimal places all values
-        such as coordinates of points will be rounded.
+        A float whose number of decimal places all values such as coordinates of points
+        will be rounded.
 
     Returns
     -------
-        Whether the point lies on the Bézier curve or not.
+    :class:`bool`
+        Whether ``point`` lies on the Bézier curve or not.
     """
 
     roots = proportions_along_bezier_curve_for_point(point, control_points, round_to)
