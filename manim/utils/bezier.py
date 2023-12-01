@@ -24,8 +24,7 @@ __all__ = [
     "mid",
     "inverse_interpolate",
     "match_interpolate",
-    "get_smooth_handle_points",
-    "get_smooth_cubic_bezier_handle_points",
+    "get_handles_for_smooth_cubic_spline",
     "is_closed",
     "proportions_along_bezier_curve_for_point",
     "point_lies_on_bezier",
@@ -657,13 +656,45 @@ def interpolate(start: float, end: float, alpha: float) -> float:
 
 
 @overload
+def interpolate(start: float, end: float, alpha: ColVector) -> ColVector:
+    ...
+
+
+@overload
 def interpolate(start: Point3D, end: Point3D, alpha: float) -> Point3D:
     ...
 
 
+@overload
+def interpolate(start: Point3D, end: Point3D, alpha: ColVector) -> Point3D_Array:
+    ...
+
+
 def interpolate(
-    start: int | float | Point3D, end: int | float | Point3D, alpha: float | Point3D
-) -> float | Point3D:
+    start: float | Point3D, end: float | Point3D, alpha: float | ColVector
+) -> float | ColVector | Point3D | Point3D_Array:
+    """Linearly interpolates between two values ``start`` and ``end``.
+
+    Parameters
+    ----------
+    start
+        The start of the range.
+    end
+        The end of the range.
+    alpha
+        A float between 0 and 1, or an :math:`(n, 1)` column vector containing
+        :math:`n` floats between 0 and 1 to interpolate in a vectorized fashion.
+
+    Returns
+    -------
+    float | ColVector | Point3D | Point3D_Array
+        The result of the linear interpolation.
+
+        * If ``start`` and ``end`` are of type :class:`float`, and:
+
+            * ``alpha`` is also a :class:`float`, the return is simply a :class:`float`.
+            * ``alpha`` is a :class:`ColumnVector`
+    """
     return start + alpha * (end - start)
 
 
@@ -731,6 +762,7 @@ def mid(start: float | Point3D, end: float | Point3D) -> float | Point3D:
 
     Returns
     -------
+    float | Point3D
         The midpoint between the two values.
     """
     return (start + end) / 2.0
@@ -770,6 +802,7 @@ def inverse_interpolate(
 
     Returns
     -------
+    float | Point3D
         The alpha values producing the given input
         when interpolating between ``start`` and ``end``.
 
@@ -838,6 +871,7 @@ def match_interpolate(
 
     Returns
     -------
+    float | Point3D
         The interpolated value within the new range.
 
     Examples
@@ -854,33 +888,7 @@ def match_interpolate(
 
 
 # Figuring out which Bezier curves most smoothly connect a sequence of points
-def get_smooth_handle_points(
-    anchors: Point3D_Array,
-) -> tuple[Point3D_Array, Point3D_Array]:
-    """Given an array of ``anchors`` for a spline (array of connected Bézier
-    curves), compute the handles for every curve, so that the resulting
-    spline is smooth.
-
-    Currently this function only redirects to
-    :func:`get_smooth_cubic_bezier_handle_points`, because the algorithm is
-    only implemented for cubic splines. In the future, this should also include
-    at least the case for quadratic splines.
-
-    Parameters
-    ----------
-    anchors
-        Anchors of a cubic spline.
-
-    Returns
-    -------
-    tuple[Point3D_Array, Point3D_Array]
-        A tuple of two arrays: one containing the 1st handle for every curve in
-        the cubic spline, and the other containing the 2nd handles.
-    """
-    return get_smooth_cubic_bezier_handle_points(anchors)
-
-
-def get_smooth_cubic_bezier_handle_points(
+def get_handles_for_smooth_cubic_spline(
     anchors: Point3D_Array,
 ) -> tuple[Point3D_Array, Point3D_Array]:
     """Given an array of anchors for a cubic spline (array of connected cubic
@@ -917,39 +925,44 @@ def get_smooth_cubic_bezier_handle_points(
     # curve or not
     curve_is_closed = is_closed(anchors)
     if curve_is_closed:
-        return get_smooth_cubic_bezier_handle_points_for_closed_curve(anchors)
+        return get_handles_for_smooth_closed_cubic_spline(anchors)
     else:
-        return get_smooth_cubic_bezier_handle_points_for_open_curve(anchors)
+        return get_handles_for_smooth_open_cubic_spline(anchors)
 
 
 CP_CLOSED_MEMO = np.array([1 / 3])
 UP_CLOSED_MEMO = np.array([1 / 3])
 
 
-def get_smooth_cubic_bezier_handle_points_for_closed_curve(
+def get_handles_for_smooth_closed_cubic_spline(
     anchors: Point3D_Array,
 ) -> tuple[Point3D_Array, Point3D_Array]:
-    r"""Special case of :func:`get_smooth_cubic_bezier_handle_points`,
-    when the `anchors` form a closed loop.
+    r"""Special case of :func:`get_handles_for_smooth_cubic_spline`,
+    when the ``anchors`` form a closed loop.
 
     .. note::
         A system of equations must be solved to get the first handles of
         every Bèzier curve (referred to as H1).
         Then H2 (the second handles) can be obtained separately.
-        The equations were obtained from:
-        http://www.jacos.nl/jacos_html/spline/theory/theory_2.html
+
+        .. seealso::
+            The equations were obtained from:
+
+            * [Conditions on control points for continuous curvature. (2016). Jaco Stuifbergen.](http://www.jacos.nl/jacos_html/spline/theory/theory_2.html)
 
         In general, if there are N+1 anchors there will be N Bezier curves
         and thus N pairs of handles to find. We must solve the following
         system of equations for the 1st handles (example for N = 5):
 
-        [4 1 0 0 1]   [H1[0]]   [4*A[0] + 2*A[1]]
-        [1 4 1 0 0]   [H1[1]]   [4*A[1] + 2*A[2]]
-        [0 1 4 1 0]   [H1[2]]   [4*A[2] + 2*A[3]]
-        [0 0 1 4 1] @ [H1[3]] = [4*A[3] + 2*A[4]]
-        [1 0 0 1 4]   [H1[4]]   [4*A[4] + 2*A[5]]
+        .. math::
 
-        which will be expressed as M @ H1 = d.
+            [4 1 0 0 1]   [H1[0]]   [4*A[0] + 2*A[1]]
+            [1 4 1 0 0]   [H1[1]]   [4*A[1] + 2*A[2]]
+            [0 1 4 1 0]   [H1[2]]   [4*A[2] + 2*A[3]]
+            [0 0 1 4 1] @ [H1[3]] = [4*A[3] + 2*A[4]]
+            [1 0 0 1 4]   [H1[4]]   [4*A[4] + 2*A[5]]
+
+        which will be expressed as :math:`MH_1 = D`.
         M is almost a tridiagonal matrix, so we could use Thomas' algorithm:
         see https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm
 
@@ -957,44 +970,54 @@ def get_smooth_cubic_bezier_handle_points_for_closed_curve(
         the first decomposition proposed here, with alpha = 1:
         https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm#Variants
 
-        [4 1 0 0 1]   [3 1 0 0 0]   [1 0 0 0 1]
-        [1 4 1 0 0]   [1 4 1 0 0]   [0 0 0 0 0]
-        [0 1 4 1 0] = [0 1 4 1 0] + [0 0 0 0 0]
-        [0 0 1 4 1]   [0 0 1 4 1]   [0 0 0 0 0]
-        [1 0 0 1 4]   [0 0 0 1 3]   [1 0 0 0 1]
+        .. math::
+            [4 1 0 0 1]   [3 1 0 0 0]   [1 0 0 0 1]
+            [1 4 1 0 0]   [1 4 1 0 0]   [0 0 0 0 0]
+            [0 1 4 1 0] = [0 1 4 1 0] + [0 0 0 0 0]
+            [0 0 1 4 1]   [0 0 1 4 1]   [0 0 0 0 0]
+            [1 0 0 1 4]   [0 0 0 1 3]   [1 0 0 0 1]
 
-                    [3 1 0 0 0]   [1]
-                    [1 4 1 0 0]   [0]
-                    = [0 1 4 1 0] + [0] @ [1 0 0 0 1]
-                    [0 0 1 4 1]   [0]
-                    [0 0 0 1 3]   [1]
+            [3 1 0 0 0]   [1]
+            [1 4 1 0 0]   [0]
+            = [0 1 4 1 0] + [0] @ [1 0 0 0 1]
+            [0 0 1 4 1]   [0]
+            [0 0 0 1 3]   [1]
 
-        We decompose M = N + u @ v.T, where N is a tridiagonal matrix, and u
+        We decompose :math:`M = N + uv^T`, where N is a tridiagonal matrix, and u
         and v are N-D vectors such that u[0]=u[N-1]=v[0]=v[N-1] = 1, and
         u[i] = v[i] = 0 for all i in {1, ..., N-2}.
 
         Thus:
-        M @ H1 = d
-        => (N + u @ v.T) @ H1 = d
 
-        If we find a vector q such that N @ q = u:
-        => (N + N @ q @ v.T) @ H1 = d
-        => N @ (I + q @ v.T) @ H1 = d
-        => H1 = (I + q @ v.T)⁻¹ @ N⁻¹ @ d
+        .. math::
+            MH_1 &= D
+            \Rightarrow (N + uv^T)H_1 = D
+
+        If we find a vector :math:`q` such that :math:`Nq = u`:
+
+        .. math::
+            \Rightarrow (N + Nqv^T)H_1 &= D
+            \Rightarrow N(I + qv^T)H_1 &= D
+            \Rightarrow H_1 &= (I + qv^T)^{-1} N^{-1} D
 
         According to Sherman-Morrison's formula, which is explained here:
         https://en.wikipedia.org/wiki/Sherman%E2%80%93Morrison_formula
-        (I + q @ v.T)⁻¹ = I - 1/(1 + v.T @ q) * (q @ v.T)
 
-        If we find y = N⁻¹ @ d, or in other words, if we solve for y in N @ y = d:
-        => H1 = y - 1/(1 + v.T @ q) * (q @ v.T @ y)
+        .. math::
+            (I + qv^T)^{-1} = I - \frac{1}{1 + v^Tq} qv^T
+
+        If we find :math:`Y = N^{-1}D`, or in other words, if we solve for
+        :math:`Y` in :math:`NY = D`:
+
+        .. math::
+            \Rightarrow H1 = y - 1/(1 + v.T @ q) * (q @ v.T @ y)
 
         So we must solve for q and y in N @ q = u and N @ y = d.
         As N is now tridiagonal, we shall use Thomas' algorithm.
 
         Let a = [a[0], a[1], ..., a[N-2]] be the lower diagonal of N-1 elements,
         such that a[0]=a[1]=...=a[N-2] = 1, so this diagonal is filled with ones;
-            b = [b[0], b[1], ..., b[N-2], b[N-1]] the main diagonal of N elements,
+        b = [b[0], b[1], ..., b[N-2], b[N-1]] the main diagonal of N elements,
         such that b[0]=b[N-1] = 3, and b[1]=b[2]=...=b[N-2] = 4;
         and c = [c[0], c[1], ..., c[N-2]] the upper diagonal of N-1 elements,
         such that c[0]=c[1]=...=c[N-2] = 1: this diagonal is also filled with ones.
@@ -1008,16 +1031,19 @@ def get_smooth_cubic_bezier_handle_points_for_closed_curve(
         d'[i] = (d[i] - a[i-1]*d'[i-1]) / (b[i] - a[i-1]*c'[i-1]), i in [1, ..., N-1]
 
         Then:
-        c'[0]   = 1/3
-        c'[i]   = 1 / (4 - c'[i-1]), if i in {1, ..., N-2}
-        u'[0]   = 1/3
-        u'[i]   = -u'[i-1] / (4 - c'[i-1])
-                = -c'[i]*u'[i-1],                                i in [1, ..., N-2]
-        u'[N-1] = (1-u'[N-2]) / (3 - c'[N-2])
-        d'[0]   = (4*A[0] + 2*A[1]) / 3
-        d'[i]   = (4*A[i] + 2*A[i+1] - d'[i-1]) / (4 - c'[i-1])
-                = c'[i] * (4*A[i] + 2*A[i+1] - d'[i-1]),         i in [1, ..., N-2]
-        d'[N-1] = (4*A[N-1] + 2*A[N] - d'[N-2]) / (3 - c'[N-2])
+        .. math::
+            c'_0 &= \frac{1}{3} & \\
+            c'_i &= \frac{1}{4 - c'_{i-1}}, & \forall i \in \{1, ..., N-2\} \\
+            & & \\
+            u'_0 &= \frac{1}{3} &
+            u'_i &= \frac{-u'_{i-1}}{4 - c'{i-1}} &\\
+            &= -c'[i]*u'[i-1], & \forall i \in \{1, ..., N-2\} \\
+            u'_{N-1} &= \frac{1 - u'_{N-2}}{3 - c'_{N-2}} & \\
+            & & \\
+            D'_0   = (4*A[0] + 2*A[1]) / 3
+            d'[i]   = (4*A[i] + 2*A[i+1] - d'[i-1]) / (4 - c'[i-1])
+                    = c'[i] * (4*A[i] + 2*A[i+1] - d'[i-1]),         i in [1, ..., N-2]
+            d'[N-1] = (4*A[N-1] + 2*A[N] - d'[N-2]) / (3 - c'[N-2])
 
         Finally, we can do Backward Substitution to find q and y:
         q[N-1] = u'[N-1]
@@ -1119,65 +1145,97 @@ def get_smooth_cubic_bezier_handle_points_for_closed_curve(
 CP_OPEN_MEMO = np.array([0.5])
 
 
-def get_smooth_cubic_bezier_handle_points_for_open_curve(
+def get_handles_for_smooth_open_cubic_spline(
     anchors: Point3D_Array,
 ) -> tuple[Point3D_Array, Point3D_Array]:
-    r"""Special case of :func:`get_smooth_cubic_bezier_handle_points`,
+    r"""Special case of :func:`get_handles_for_smooth_cubic_spline`,
     when the `anchors` do not form a closed loop.
 
     .. note::
         A system of equations must be solved to get the first handles of
-        every Bèzier curve (referred to as `H1`).
-        Then `H2` (the second handles) can be obtained separately.
-        The equations were obtained from:
-        https://www.particleincell.com/2012/bezier-splines/
-        http://www.jacos.nl/jacos_html/spline/theory/theory_2.html
-        WARNING: the equations in the first webpage have some typos which
-        were corrected in the comments.
+        every Bèzier curve (referred to as :math:`H_1`).
+        Then :math:`H_2` (the second handles) can be obtained separately.
+
+        .. seealso::
+            The equations were obtained from:
+
+            * [Smooth Bézier Spline Through Prescribed Points. (2012). Particle in Cell Consulting LLC.](https://www.particleincell.com/2012/bezier-splines/)
+            * [Conditions on control points for continuous curvature. (2016). Jaco Stuifbergen.](http://www.jacos.nl/jacos_html/spline/theory/theory_2.html)
+
+        .. warning::
+            The equations in the first webpage have some typos which
+            were corrected in the comments.
 
         In general, if there are :math:`N+1` anchors there will be N Bezier curves
         and thus :math:`N` pairs of handles to find. We must solve the following
         system of equations for the 1st handles (example for :math:`N = 5`):
 
-        [2 1 0 0 0]   [H1[0]]   [  A[0] + 2*A[1]]
-        [1 4 1 0 0]   [H1[1]]   [4*A[1] + 2*A[2]]
-        [0 1 4 1 0] @ [H1[2]] = [4*A[2] + 2*A[3]]
-        [0 0 1 4 1]   [H1[3]]   [4*A[3] + 2*A[4]]
-        [0 0 0 2 7]   [H1[4]]   [8*A[4] +   A[5]]
+        .. math::
 
-        which will be expressed as `M @ H1 = d`.
+            \begin{pmatrix}
+                2 & 1 & 0 & 0 & 0 \\
+                1 & 4 & 1 & 0 & 0 \\
+                0 & 1 & 4 & 1 & 0 \\
+                0 & 0 & 1 & 4 & 1 \\
+                0 & 0 % 0 & 2 & 7
+            \end{pmatrix}
+            \begin{pmatrix}
+                H_{1,0} \\
+                H_{1,1} \\
+                H_{1,2} \\
+                H_{1,3} \\
+                H_{1,4} \\
+            \end{pmatrix}
+            =
+            \begin{pmatrix}
+                a_0 + 2a_1 \\
+                4a_1 + 2a_2 \\
+                4a_2 + 2a_3 \\
+                4a_3 + 2a_4 \\
+                8a_4 + a_5 \\
+            \end{pmatrix}
+
+        which will be expressed as :math:`MH_1 = D`.
         :math:`M` is a tridiagonal matrix, so the system can be solved in :math`O(n)`
         operations. Here we shall use Thomas' algorithm or the tridiagonal matrix
         algorithm. See: <https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm>
 
         Let `a = [a[0], a[1], ..., a[N-2]]` be the lower diagonal of :math:`N-1` elements,
         such that `a[0]=a[1]=...=a[N-3] = 1`, and `A[N-2] = 2`;
-            `b = [b[0], b[1], ..., b[N-2], b[N-1]]` the main diagonal of :math:`N` elements,
+        `b = [b[0], b[1], ..., b[N-2], b[N-1]]` the main diagonal of :math:`N` elements,
         such that `b[0] = 2, b[1]=b[2]=...=b[N-2] = 4`, and `b[N-1] = 7`;
         and `c = [c[0], c[1], ..., c[N-2]]` the upper diagonal of :math:`N-1` elements,
         such that `c[0]=c[1]=...=c[N-2] = 1`: this diagonal is filled with ones.
 
         If, according to Thomas' algorithm, we define:
-        c'[0] = c[0] / b[0]
-        c'[i] = c[i] / (b[i] - a[i-1]*c'[i-1]) = 1/(4-c'[i-1]),  i in [1, ..., N-2]
-        d'[0] = d[0] / b[0]
-        d'[i] = (d[i] - a[i-1]*d'[i-1]) / (b[i] - a[i-1]*c'[i-1]), i in [1, ..., N-1]
+
+        .. math::
+            c'[0] = c[0] / b[0]
+            c'[i] = c[i] / (b[i] - a[i-1]*c'[i-1]) = 1/(4-c'[i-1]),  i in [1, ..., N-2]
+            d'[0] = d[0] / b[0]
+            d'[i] = (d[i] - a[i-1]*d'[i-1]) / (b[i] - a[i-1]*c'[i-1]), i in [1, ..., N-1]
 
         Then:
-        c'[0]   = 0.5
-        c'[i]   = 1 / (4 - c'[i-1]), if i in {1, ..., N-2}
-        d'[0]   = 0.5*A[0] + A[1]
-        d'[i]   = (4*A[i] + 2*A[i+1] - d'[i-1]) / (4 - c'[i-1])
-                = c'[i] * (4*A[i] + 2*A[i+1] - d'[i-1]),         i in [1, ..., N-2]
-        d'[N-1] = (8*A[N-1] + A[N] - 2*d'[N-2]) / (7 - 2*c'[N-2])
+
+        .. math::
+            c'[0]   = 0.5
+            c'[i]   = 1 / (4 - c'[i-1]), if i in {1, ..., N-2}
+            d'[0]   = 0.5*A[0] + A[1]
+            d'[i]   = (4*A[i] + 2*A[i+1] - d'[i-1]) / (4 - c'[i-1])
+                    = c'[i] * (4*A[i] + 2*A[i+1] - d'[i-1]),         i in [1, ..., N-2]
+            d'[N-1] = (8*A[N-1] + A[N] - 2*d'[N-2]) / (7 - 2*c'[N-2])
 
         Finally, we can do Backward Substitution to find `H1`:
-        H1[N-1] = d'[N-1]
-        H1[i]   = d'[i] - c'[i]*H1[i+1], for i in [N-2, ..., 0]
+
+        .. math::
+            H1[N-1] = d'[N-1]
+            H1[i]   = d'[i] - c'[i]*H1[i+1], for i in [N-2, ..., 0]
 
         Once we have `H1`, we can get `H2` (the array of second handles) as follows:
-        H2[i]   =   2*A[i+1]     - H1[i+1], for i in [0, ..., N-2]
-        H2[N-1] = 0.5*A[N]   + 0.5*H1[N-1]
+
+        .. math::
+            H2[i]   =   2*A[i+1]     - H1[i+1], for i in [0, ..., N-2]
+            H2[N-1] = 0.5*A[N]   + 0.5*H1[N-1]
 
         As the matrix :math:`M` always follows the same pattern, we can define a memo list
         for :math:`c'` to avoid recalculation. We cannot do the same for :math:`d`, however,
@@ -1241,32 +1299,33 @@ def get_quadratic_approximation_of_cubic(
     h1: Point3D | Point3D_Array,
     a1: Point3D | Point3D_Array,
 ) -> Point3D_Array:
-    """If `a_0`, `h_0`, `h_1` and `a_1` are `(3,)`-ndarrays representing control points for a
-    cubic Bézier curve, returns a `(6, 3)`-ndarray of 6 control points
-    `[a'_0, h', a'_1, a''_0, h'', a''_1]` for 2 quadratic Bézier curves approximating it.
+    r"""If :math:`a_0, h_0, h_1, a_1` are :math:`(3,)`-ndarrays representing control points
+    for a cubic Bézier curve, returns a :math:`(6, 3)`-ndarray of 6 control points
+    :math:`[a^{(1)}_0 \ h^{(1)} \ a^{(1)}_1 \ a^{(2)}_0 \ h^{(2)} \ a^{(2)}_1]` for 2 quadratic
+    Bézier curves approximating it.
 
-    If `a_0`, `h_0`, `h_1` and `a_1` are `(m, 3)`-ndarrays of `m` control points for `m`
-    cubic Bézier curves, returns instead a `(6m, 3)`-ndarray of `6m` control
-    points, where each one of the `m` groups of 6 control points defines the 2
-    quadratic curves approximating the respective cubic curve.
+    If :math:`a_0, h_0, h_1, a_1` are :math:`(m, 3)`-ndarrays of :math:`m` control points
+    for :math:`m` cubic Bézier curves, returns instead a :math:`(6m, 3)`-ndarray of :math:`6m`
+    control points, where each one of the :math:`m` groups of 6 control points defines the 2
+    quadratic Bézier curves approximating the respective cubic Bézier curve.
 
     Parameters
     ----------
     a0
-        A `(3,)` or `(m, 3)`-ndarray of the start anchor(s) of the cubic Bézier curve(s).
+        A :math:`(3,)` or :math:`(m, 3)`-ndarray of the start anchor(s) of the cubic Bézier curve(s).
     h0
-        A `(3,)` or `(m, 3)`-ndarray of the first handle(s) of the cubic Bézier curve(s).
+        A :math:`(3,)` or :math:`(m, 3)`-ndarray of the first handle(s) of the cubic Bézier curve(s).
     h1
-        A `(3,)` or `(m, 3)`-ndarray of the second handle(s) of the cubic Bézier curve(s).
+        A :math:`(3,)` or :math:`(m, 3)`-ndarray of the second handle(s) of the cubic Bézier curve(s).
     a1
-        A `(3,)` or `(m, 3)`-ndarray of the end anchor(s) of the cubic Bézier curve(s).
+        A :math:`(3,)` or :math:`(m, 3)`-ndarray of the end anchor(s) of the cubic Bézier curve(s).
 
     Returns
     -------
     Point3D_Array
-        A `(6m, 3)`-ndarray, where each one of the `m` groups of
-        consecutive 6 points defines the 2 quadratic curves which
-        approximate the respective cubic curve.
+        A :math:`(6m, 3)`-ndarray, where each one of the :math:`m` groups of
+        consecutive 6 points defines the 2 quadratic Bézier curves which
+        approximate the respective cubic Bézier curve.
     """
     # If a0 is a Point3D, it's converted into a Point3D_Array of a single point:
     # its shape is now (1, 3).
@@ -1354,7 +1413,7 @@ def get_quadratic_approximation_of_cubic(
 
 
 def is_closed(points: Point3D_Array) -> bool:
-    """Returns ``True`` if the curve given by the points is closed, by checking if its
+    """Returns ``True`` if the spline given by ``points`` is closed, by checking if its
     first and last points are close to each other, or ``False`` otherwise.
 
     .. note::
@@ -1366,13 +1425,13 @@ def is_closed(points: Point3D_Array) -> bool:
     Parameters
     ----------
     points
-        An array of points.
+        An array of points defining a spline.
 
     Returns
     -------
     bool
         Whether the first and last points of the array are close enough or not
-        to be considered the same, thus considering the defined curve as closed.
+        to be considered the same, thus considering the defined spline as closed.
     """
     start, end = points[0], points[-1]
     atol = 1e-8
