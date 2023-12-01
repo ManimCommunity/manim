@@ -19,7 +19,6 @@ __all__ = [
     "split_bezier",
     "subdivide_bezier",
     "bezier_remap",
-    "partial_quadratic_bezier_points",
     "split_quadratic_bezier",
     "subdivide_quadratic_bezier",
     "quadratic_bezier_remap",
@@ -118,35 +117,6 @@ def bezier(
         return B[0]
 
     return nth_grade_bezier
-
-
-# TODO: Deprecate and only use partial_bezier_points for handling everything?
-def partial_quadratic_bezier_points(
-    points: QuadraticBezierPoints, a: float, b: float
-) -> list[Point3D]:  # should've been QuadraticBezierPoints
-    """Shortened version of partial_bezier_points just for quadratics,
-    since this is called a fair amount.
-
-    To understand the mathematics behind splitting curves, see split_bezier.
-
-    Parameters
-    ----------
-    points
-        An array of points defining the quadratic Bézier curve.
-    a
-        The lower bound of the desired partial quadratic Bézier curve.
-    b
-        The upper bound of the desired partial quadratic Bézier curve.
-
-    Returns
-    -------
-    list[Point3D]
-        A list of the 3 control points defining the partial quadratic Bézier curve.
-    """
-    # TODO: this is converted to a list because the current implementation in
-    # OpenGLVMobject.insert_n_curves_to_point_list does a list concatenation with +=.
-    # Using an ndarray breaks many test cases. This should probably change.
-    return list(partial_bezier_points(points, a, b))
 
 
 # TODO: Deprecate and only use split_bezier for handling everything?

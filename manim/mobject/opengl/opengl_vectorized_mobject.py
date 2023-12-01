@@ -18,9 +18,10 @@ from manim.utils.bezier import (
     get_smooth_cubic_bezier_handle_points,
     integer_interpolate,
     interpolate,
-    partial_quadratic_bezier_points,
+    partial_bezier_points,
     proportions_along_bezier_curve_for_point,
     quadratic_bezier_remap,
+    subdivide_bezier,
 )
 from manim.utils.color import BLACK, WHITE, ManimColor, ParsableManimColor
 from manim.utils.config_ops import _Data
@@ -537,21 +538,23 @@ class OpenGLVMobject(OpenGLMobject):
     def subdivide_sharp_curves(self, angle_threshold=30 * DEGREES, recurse=True):
         vmobs = [vm for vm in self.get_family(recurse) if vm.has_points()]
         for vmob in vmobs:
-            new_points = []
-            for tup in vmob.get_bezier_tuples():
-                angle = angle_between_vectors(tup[1] - tup[0], tup[2] - tup[1])
-                if angle > angle_threshold:
-                    n = int(np.ceil(angle / angle_threshold))
-                    alphas = np.linspace(0, 1, n + 1)
-                    new_points.extend(
-                        [
-                            partial_quadratic_bezier_points(tup, a1, a2)
-                            for a1, a2 in zip(alphas, alphas[1:])
-                        ],
-                    )
-                else:
-                    new_points.append(tup)
-            vmob.set_points(np.vstack(new_points))
+            beziers = vmob.get_bezier_tuples()
+            angles = np.empty(beziers.shape[0])
+            for i, bez in enumerate(beziers):
+                angles[i] = angle_between_vectors(bez[1] - bez[0], bez[2] - bez[1])
+
+            num_parts_per_bezier = np.ceil(angles / angle_threshold).astype(int)
+            acc_parts = np.add.accumulate(num_parts_per_bezier)
+            end_indices = self.n_points_per_curve * acc_parts
+            num_final_points = end_indices[-1]
+            new_points = np.empty((num_final_points, vmob.points.shape[1]))
+
+            start = 0
+            for bez, end, n in zip(beziers, end_indices, num_parts_per_bezier):
+                new_points[start:end] = subdivide_bezier(bez, n)
+                start = end
+
+            vmob.set_points(new_points)
         return self
 
     def add_points_as_corners(self, points):
@@ -1293,7 +1296,7 @@ class OpenGLVMobject(OpenGLMobject):
             # smaller quadratic curves
             alphas = np.linspace(0, 1, n_inserts + 2)
             for a1, a2 in zip(alphas, alphas[1:]):
-                new_points[i] = partial_quadratic_bezier_points(group, a1, a2)
+                new_points[i] = partial_bezier_points(group, a1, a2)
                 i = i + 1
         return np.vstack(new_points)
 
@@ -1348,7 +1351,7 @@ class OpenGLVMobject(OpenGLMobject):
             return self
         if lower_index == upper_index:
             self.append_points(
-                partial_quadratic_bezier_points(
+                partial_bezier_points(
                     bezier_triplets[lower_index],
                     lower_residue,
                     upper_residue,
@@ -1356,9 +1359,7 @@ class OpenGLVMobject(OpenGLMobject):
             )
         else:
             self.append_points(
-                partial_quadratic_bezier_points(
-                    bezier_triplets[lower_index], lower_residue, 1
-                ),
+                partial_bezier_points(bezier_triplets[lower_index], lower_residue, 1),
             )
             inner_points = bezier_triplets[lower_index + 1 : upper_index]
             if len(inner_points) > 0:
@@ -1371,9 +1372,7 @@ class OpenGLVMobject(OpenGLMobject):
 
                 self.append_points(np.asarray(new_triplets).reshape(-1, 3))
             self.append_points(
-                partial_quadratic_bezier_points(
-                    bezier_triplets[upper_index], 0, upper_residue
-                ),
+                partial_bezier_points(bezier_triplets[upper_index], 0, upper_residue),
             )
         return self
 
