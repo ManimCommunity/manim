@@ -26,7 +26,6 @@ __all__ = [
     "match_interpolate",
     "get_smooth_handle_points",
     "get_smooth_cubic_bezier_handle_points",
-    "diag_to_matrix",
     "is_closed",
     "proportions_along_bezier_curve_for_point",
     "point_lies_on_bezier",
@@ -1226,39 +1225,6 @@ def get_smooth_cubic_bezier_handle_points_for_open_curve(
     H2[N - 1] = 0.5 * (A[N] + H1[N - 1])
 
     return H1, H2
-
-
-# TODO: because get_smooth_handle_points was rewritten, this function
-# is no longer used. Deprecate?
-def diag_to_matrix(
-    l_and_u: tuple[int, int], diag: npt.NDArray[Any]
-) -> npt.NDArray[Any]:
-    """
-    Converts array whose rows represent diagonal
-    entries of a matrix into the matrix itself.
-    See `scipy.linalg.solve_banded`.
-
-    Parameters
-    ----------
-    l_and_u
-        Tuple containing `l` (n° of subdiagonals) and `u` (n° of superdiagonals).
-    diag
-        2D-array containing the diagonals of the matrix.
-
-    Returns
-    -------
-    npt.NDArray[Any]
-        The resulting matrix.
-    """
-    l, u = l_and_u
-    dim = diag.shape[1]
-    matrix = np.zeros((dim, dim))
-    for i in range(l + u + 1):
-        np.fill_diagonal(
-            matrix[max(0, i - u) :, max(0, u - i) :],
-            diag[i, max(0, u - i) :],
-        )
-    return matrix
 
 
 def get_quadratic_approximation_of_cubic(
