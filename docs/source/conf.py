@@ -11,6 +11,7 @@ import sys
 from pathlib import Path
 
 import manim
+from manim.typing import manim_type_aliases
 
 # -- Path setup --------------------------------------------------------------
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -55,6 +56,7 @@ autosummary_generate = True
 
 # generate documentation from type hints
 autodoc_typehints = "description"
+autodoc_type_aliases = {t: t for t in manim_type_aliases}
 autoclass_content = "both"
 
 # controls whether functions documented by the autofunction directive
