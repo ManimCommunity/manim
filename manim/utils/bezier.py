@@ -19,9 +19,6 @@ __all__ = [
     "split_bezier",
     "subdivide_bezier",
     "bezier_remap",
-    "split_quadratic_bezier",
-    "subdivide_quadratic_bezier",
-    "quadratic_bezier_remap",
     "interpolate",
     "integer_interpolate",
     "mid",
@@ -29,8 +26,6 @@ __all__ = [
     "match_interpolate",
     "get_smooth_handle_points",
     "get_smooth_cubic_bezier_handle_points",
-    "get_smooth_cubic_bezier_handle_points_for_closed_curve",
-    "get_smooth_cubic_bezier_handle_points_for_open_curve",
     "diag_to_matrix",
     "is_closed",
     "proportions_along_bezier_curve_for_point",
@@ -117,78 +112,6 @@ def bezier(
         return B[0]
 
     return nth_grade_bezier
-
-
-# TODO: Deprecate and only use split_bezier for handling everything?
-def split_quadratic_bezier(points: QuadraticBezierPoints, t: float) -> Point3D_Array:
-    """Split a quadratic Bézier curve at argument ``t`` into two quadratic curves.
-
-    Parameters
-    ----------
-    points
-        The control points of the bezier curve
-        has shape ``[a1, h1, b1]``
-
-    t
-        The ``t``-value at which to split the Bézier curve
-
-    Returns
-    -------
-    Point3D_Array
-        An array containing the 6 control points defining the two Bézier curves.
-    """
-    return split_bezier(points, t)
-
-
-# TODO: Deprecate and only use subdivide_bezier for handling everything?
-def subdivide_quadratic_bezier(points: QuadraticBezierPoints, n: int) -> Point3D_Array:
-    """Subdivide a quadratic Bézier curve into ``n`` subcurves which have the same shape.
-
-    The points at which the curve is split are located at the
-    arguments :math:`t = i/n` for :math:`i = 1, ..., n-1`.
-
-    To understand the mathematics behind splitting Béziers, see split_bezier.
-
-    Parameters
-    ----------
-    points
-        The control points of the Bézier curve in form ``[a1, h1, b1]``
-
-    n
-        The number of curves to subdivide the Bézier curve into
-
-    Returns
-    -------
-    Point3D_Array
-        An array containing the :math:`3n` control points defining the new ``n`` subcurves.
-
-    .. image:: /_static/bezier_subdivision_example.png
-
-    """
-    return subdivide_bezier(points, n)
-
-
-# TODO: Deprecate and only use bezier_remap for handling everything?
-def quadratic_bezier_remap(
-    triplets: QuadraticBezierPoints_Array, new_number_of_curves: int
-) -> QuadraticBezierPoints_Array:
-    """Remaps the number of curves to a higher amount by splitting bezier curves
-
-    Parameters
-    ----------
-    triplets
-        The triplets of the quadratic bezier curves to be remapped shape(n, 3, 3)
-
-    new_number_of_curves
-        The number of curves that the output will contain. This needs to be higher than the current number.
-
-    Returns
-    -------
-    QuadraticBezierPoints_Array
-        The new triplets for the quadratic bezier curves.
-    """
-
-    return bezier_remap(triplets, new_number_of_curves)
 
 
 def partial_bezier_points(points: BezierPoints, a: float, b: float) -> BezierPoints:
@@ -527,15 +450,15 @@ QUADRATIC_SUBDIVISION_MATRICES = {
 
 
 def subdivide_bezier(points: BezierPoints, n_divisions: int) -> Point3D_Array:
-    """Subdivide a Bézier curve into ``n`` subcurves which have the same shape.
+    r"""Subdivide a Bézier curve into ``n`` subcurves which have the same shape.
 
     The points at which the curve is split are located at the
-    arguments :math:`t = i/n` for :math:`i = 1, ..., n-1`.
+    arguments :math:`t = i/n` for :math:`i \in \{1, ..., n-1\}`.
 
-    To understand the mathematics behind splitting Béziers, see split_bezier.
+    To understand the mathematics behind splitting Béziers, see :func:`split_bezier`.
 
     The resulting subcurves can be expressed as linear combinations of
-    ``points``, which can be encoded in a single matrix that is precalculated
+    `points`, which can be encoded in a single matrix that is precalculated
     for 2nd and 3rd degree Bézier curves.
 
     Parameters
@@ -549,7 +472,7 @@ def subdivide_bezier(points: BezierPoints, n_divisions: int) -> Point3D_Array:
     Returns
     -------
     Point3D_Array
-        An array containing the points defining the new ``n`` subcurves.
+        An array containing the points defining the new `n` subcurves.
 
     .. image:: /_static/bezier_subdivision_example.png
 
