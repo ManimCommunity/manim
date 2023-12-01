@@ -1,4 +1,5 @@
 from __future__ import annotations
+import sys
 
 from unittest.mock import Mock
 
