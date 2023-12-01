@@ -15,8 +15,8 @@ from manim.renderer.shader_wrapper import ShaderWrapper
 from manim.utils.bezier import (
     bezier,
     bezier_remap,
+    get_handles_for_smooth_cubic_spline,
     get_quadratic_approximation_of_cubic,
-    get_smooth_cubic_bezier_handle_points,
     integer_interpolate,
     interpolate,
     partial_bezier_points,
@@ -614,7 +614,7 @@ class OpenGLVMobject(OpenGLMobject):
                         anchors,
                     )
                 elif mode == "true_smooth":
-                    h1, h2 = get_smooth_cubic_bezier_handle_points(anchors)
+                    h1, h2 = get_handles_for_smooth_cubic_spline(anchors)
                     new_subpath = get_quadratic_approximation_of_cubic(
                         anchors[:-1],
                         h1,
