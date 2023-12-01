@@ -1,7 +1,8 @@
 import logging
 import re
 import warnings
-from typing import Any, Literal
+from pathlib import Path
+from typing import Any, Literal, get_args
 
 from cloup import Context, HelpFormatter, HelpTheme, Style
 from pydantic import (
@@ -39,6 +40,20 @@ WindowPosition: TypeAlias = Literal[
     "UR",
     "DL",
     "DR",
+]
+
+Dirs: TypeAlias = Literal[
+    "media_dir",
+    "assets_dir",
+    "log_dir",
+    "video_dir",
+    "sections_dir",
+    "images_dir",
+    "text_dir",
+    "tex_dir",
+    "partial_movie_dir",
+    "input_file",
+    "output_file",
 ]
 
 Verbosity: TypeAlias = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
@@ -157,10 +172,10 @@ class FFmpegConfig(BaseModel):
     """FFmpeg related config."""
 
     loglevel: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "ERROR"
-    """Verbosity of ffmpeg."""
+    """Verbosity of FFmpeg."""
 
     executable: str = "ffmpeg"  # TODO use pathlib.Path?
-    """Custom path to the ffmpeg executable."""
+    """Custom path to the FFmpeg executable."""
 
     model_config = {"validate_assignment": True}
 
@@ -782,6 +797,34 @@ class ManimConfig(BaseModel):
     """Scenes to play from file."""
 
     # TODO tex_template / tex_template_file
+
+    def get_dir(self, key: Dirs, **kwargs: Any) -> Path:
+        dirs = list(get_args(Dirs))
+        if key not in dirs:
+            raise KeyError(
+                "must pass one of "
+                "{media,video,images,text,tex,log}_dir "
+                "or {input,output}_file",
+            )
+
+        dirs.remove(key)
+
+        all_args = {k: getattr(self, k) for k in dirs}
+        all_args.update(kwargs)
+        all_args["quality"] = f"{self.pixel_height}p{self.frame_rate:g}"
+
+        path = getattr(self, key)
+        while "{" in path:
+            try:
+                path = path.format(**all_args)
+            except KeyError as exc:
+                raise KeyError(
+                    f"{key} {self._d[key]} requires the following "
+                    "keyword arguments: "
+                    " ".join(exc.args),
+                ) from exc
+
+        return Path(path)
 
     @model_validator(mode="after")
     def validate_model(self) -> Self:
