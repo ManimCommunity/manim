@@ -1765,13 +1765,13 @@ def get_handles_for_smooth_open_cubic_spline(
     else:
         cp = CP_OPEN_MEMO[: N - 1]
 
-    # Calculate Dp (d prime).
+    # Calculate Dp (D prime).
     Dp = np.empty((N, dim))
     Dp[0] = 0.5 * A[0] + A[1]
     AUX = 4 * A[1 : N - 1] + 2 * A[2:N]  # Vectorize the sum for efficiency.
     for i in range(1, N - 1):
         Dp[i] = cp[i] * (AUX[i - 1] - Dp[i - 1])
-    Dp[N - 1] = (8 * A[N - 1] + A[N] - 2 * Dp[N - 2]) / (7 - 2 * Dp[N - 2])
+    Dp[N - 1] = (1 / (7 - 2 * cp[N - 2])) * (8 * A[N - 1] + A[N] - 2 * Dp[N - 2])
 
     # Backward Substitution.
     # H1 (array of the first handles) is defined as a view of Dp for efficiency
