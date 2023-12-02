@@ -989,7 +989,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
             layout_config["root_vertex"] = root_vertex
 
         self._layout = _determine_graph_layout(
-            nx_graph,
+            self._graph,
             layout=layout,
             layout_scale=layout_scale,
             layout_config=layout_config,
