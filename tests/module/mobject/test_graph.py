@@ -162,6 +162,13 @@ def test_custom_graph_layout_function_with_kwargs():
     assert all(G.vertices[2].get_center() == [5, 5, 0])
     assert all(G.vertices[3].get_center() == [7, 7, 0])
 
+def test_graph_change_layout():
+    for layout in (
+        layout for layout in _layouts if layout != "tree" and layout != "partite"
+    ):
+        G = Graph([1, 2, 3], [(1, 2), (2, 3)])
+        G.change_layout(layout=layout)
+        assert str(G) == "Undirected graph on 3 vertices and 2 edges"
 
 def test_tree_layout_no_root_error():
     with pytest.raises(ValueError) as excinfo:
