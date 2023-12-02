@@ -408,7 +408,6 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         self.add(*self.edges.values())
 
         self.add_updater(self.update_edges)
-        self.cha
 
     @staticmethod
     def _empty_networkx_graph():
