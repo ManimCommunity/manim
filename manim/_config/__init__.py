@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import logging
-from contextlib import _GeneratorContextManager, contextmanager
+from contextlib import contextmanager
+from typing import Any, Generator
 
 from .cli_colors import parse_cli_ctx
 from .logger_utils import make_logger
@@ -40,7 +41,7 @@ frame = ManimFrame(config)
 
 # This has to go here because it needs access to this module's config
 @contextmanager
-def tempconfig(temp: ManimConfig | dict) -> _GeneratorContextManager:
+def tempconfig(temp: ManimConfig | dict[str, Any]) -> Generator[None, None, None]:
     """Context manager that temporarily modifies the global ``config`` object.
 
     Inside the ``with`` statement, the modified config will be used.  After

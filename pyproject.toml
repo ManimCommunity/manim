@@ -41,7 +41,7 @@ scipy = [
 ]
 tqdm = "^4.62.3"
 pydub = "^0.25.1"
-rich = ">=6.0,!=12.0.0"
+rich = ">=12.0.0"
 pycairo = "^1.21"
 manimpango = ">=0.5.0,<1.0.0"
 networkx = ">=2.5,<3.3"
