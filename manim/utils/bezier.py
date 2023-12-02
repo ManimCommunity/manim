@@ -1388,21 +1388,21 @@ def get_handles_for_smooth_closed_cubic_spline(
                 4A_4 + 2A_5
             \end{pmatrix}
 
-        which will be expressed as :math:`MH_1 = D`.
+        which will be expressed as :math:`RH_1 = D`.
 
-        :math:`M` is almost a tridiagonal matrix, so we could use Thomas' algorithm.
+        :math:`R` is almost a tridiagonal matrix, so we could use Thomas' algorithm.
 
         .. seealso::
             `Tridiagonal matrix algorithm. Wikipedia. <https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm>`_
 
-        However, :math:`M` has ones at the opposite corners. A solution to this is
+        However, :math:`R` has ones at the opposite corners. A solution to this is
         the first decomposition proposed in the link below, with :math:`\alpha = 1`:
 
         .. seealso::
             `Tridiagonal matrix algorithm # Variants. Wikipedia. <https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm#Variants>`_
 
         .. math::
-            M
+            R
             =
             \begin{pmatrix}
                 4 & 1 & 0 & 0 & 1 \\
@@ -1453,24 +1453,24 @@ def get_handles_for_smooth_closed_cubic_spline(
             &
             \\
             &=
-            T + uv^T
+            T + uv^t
 
-        We decompose :math:`M = T + uv^T`, where :math:`T` is a tridiagonal matrix, and
+        We decompose :math:`R = T + uv^t`, where :math:`T` is a tridiagonal matrix, and
         :math:`u, v` are :math:`N`-D vectors such that :math:`u_0 = u_{N-1} = v_0 = v_{N-1} = 1`,
         and :math:`u_i = v_i = 0, \forall i \in \{1, ..., N-2\}`.
 
         Thus:
 
         .. math::
-            MH_1 &= D \\
-            \Rightarrow (T + uv^T)H_1 &= D
+            RH_1 &= D \\
+            \Rightarrow (T + uv^t)H_1 &= D
 
-        If we find a vector :math:`q` such that :math:`Nq = u`:
+        If we find a vector :math:`q` such that :math:`Tq = u`:
 
         .. math::
-            \Rightarrow (T + Nqv^T)H_1 &= D \\
-            \Rightarrow T(I + qv^T)H_1 &= D \\
-            \Rightarrow H_1 &= (I + qv^T)^{-1} T^{-1} D
+            \Rightarrow (T + Tqv^t)H_1 &= D \\
+            \Rightarrow T(I + qv^t)H_1 &= D \\
+            \Rightarrow H_1 &= (I + qv^t)^{-1} T^{-1} D
 
         According to Sherman-Morrison's formula:
 
@@ -1478,27 +1478,27 @@ def get_handles_for_smooth_closed_cubic_spline(
             `Sherman-Morrison's formula. Wikipedia. <https://en.wikipedia.org/wiki/Sherman%E2%80%93Morrison_formula>`_
 
         .. math::
-            (I + qv^T)^{-1} = I - \frac{1}{1 + v^Tq} qv^T
+            (I + qv^t)^{-1} = I - \frac{1}{1 + v^tq} qv^t
 
         If we find :math:`Y = T^{-1} D`, or in other words, if we solve for
-        :math:`Y` in :math:`NY = D`:
+        :math:`Y` in :math:`TY = D`:
 
         .. math::
-            H_1 &= (I + qv^T)^{-1} T^{-1} D \\
-            &= (I + qv^T)^{-1} Y \\
-            &= (I - \frac{1}{1 + v^Tq} qv^T) Y \\
-            &= Y - \frac{1}{1 + v^Tq} qv^TY
+            H_1 &= (I + qv^t)^{-1} T^{-1} D \\
+            &= (I + qv^t)^{-1} Y \\
+            &= (I - \frac{1}{1 + v^tq} qv^t) Y \\
+            &= Y - \frac{1}{1 + v^tq} qv^tY
 
-        Therefore, we must solve for :math:`q` and :math:`Y` in :math:`Nq = u` and :math:`NY = D`.
+        Therefore, we must solve for :math:`q` and :math:`Y` in :math:`Tq = u` and :math:`TY = D`.
         As :math:`T` is now tridiagonal, we shall use Thomas' algorithm.
 
-        Let:
+        Define:
 
-        *   :math:`a = [a_0, \ a_1, \ ..., \ a_{N-2}]` be the lower diagonal of :math:`N-1` elements,
+        *   :math:`a = [a_0, \ a_1, \ ..., \ a_{N-2}]` as :math:`T`'s lower diagonal of :math:`N-1` elements,
             such that :math:`a_0 = a_1 = ... = a_{N-2} = 1`, so this diagonal is filled with ones;
-        *   :math:`b = [b_0, \ b_1, \ ..., \ b_{N-2}, \ b_{N-1}]` the main diagonal of :math:`N` elements,
+        *   :math:`b = [b_0, \ b_1, \ ..., \ b_{N-2}, \ b_{N-1}]` as :math:`T`'s main diagonal of :math:`N` elements,
             such that :math:`b_0 = b_{N-1} = 3`, and :math:`b_1 = b_2 = ... = b_{N-2} = 4`;
-        *   :math:`c = [c_0, \ c_1, \ ..., \ c_{N-2}]` the upper diagonal of :math:`N-1` elements,
+        *   :math:`c = [c_0, \ c_1, \ ..., \ c_{N-2}]` as :math:`T`'s upper diagonal of :math:`N-1` elements,
             such that :math:`c_0 = c_1 = ... = c_{N-2} = 1`: this diagonal is also filled with ones.
 
         If, according to Thomas' algorithm, we define:
@@ -1537,10 +1537,10 @@ def get_handles_for_smooth_closed_cubic_spline(
             Y_{N-1} &= D'_{N-1} & \\
             Y_i     &= D'_i - c'_i Y_{i+1},   & \quad \forall i \in \{0, ..., N-2\}
 
-        With those values, we can finally calculate :math:`H_1 = Y - \frac{1}{1 + v^Tq} qv^TY`.
+        With those values, we can finally calculate :math:`H_1 = Y - \frac{1}{1 + v^tq} qv^tY`.
         Given that :math:`v_0 = v_{N-1} = 1`, and :math:`v_1 = v_2 = ... = v_{N-2} = 0`, its dot products
-        with :math:`q` and :math:`Y` are respectively :math:`v^Tq = q_0 + q_{N-1}` and
-        :math:`v^TY = Y_0 + Y_{N-1}`. Thus:
+        with :math:`q` and :math:`Y` are respectively :math:`v^tq = q_0 + q_{N-1}` and
+        :math:`v^tY = Y_0 + Y_{N-1}`. Thus:
 
         .. math::
             H_1 = Y - \frac{1}{1 + q_0 + q_{N-1}} q(Y_0 + Y_{N-1})
@@ -1551,7 +1551,7 @@ def get_handles_for_smooth_closed_cubic_spline(
             H_{2, i}   &= 2A_{i+1} - H_{1, i+1}, & \quad \forall i \in \{0, ..., N-2\} \\
             H_{2, N-1} &= 2A_0 - H_{1, 0} &
 
-        Because the matrix :math:`M` always follows the same pattern (and thus :math:`N, u, v` as well),
+        Because the matrix :math:`R` always follows the same pattern (and thus :math:`T, u, v` as well),
         we can define a memo list for :math:`c'` and :math:`u'` to avoid recalculation. We cannot
         memoize :math:`D` and :math:`Y`, however, because they are always different matrices. We
         cannot make a memo for :math:`q` either, but we can calculate it faster because :math:`u'`
@@ -1684,21 +1684,21 @@ def get_handles_for_smooth_open_cubic_spline(
                 8A_4 + A_5
             \end{pmatrix}
 
-        which will be expressed as :math:`MH_1 = D`.
-        :math:`M` is a tridiagonal matrix, so the system can be solved in :math`O(N)`
+        which will be expressed as :math:`TH_1 = D`.
+        :math:`T` is a tridiagonal matrix, so the system can be solved in :math`O(N)`
         operations. Here we shall use Thomas' algorithm or the tridiagonal matrix
         algorithm.
 
         .. seealso::
             `Tridiagonal matrix algorithm. Wikipedia. <https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm>`_
 
-        Let:
+        Define:
 
-        *   :math:`a = [a_0, \ a_1, \ ..., \ a_{N-2}]` be the lower diagonal of :math:`N-1` elements,
+        *   :math:`a = [a_0, \ a_1, \ ..., \ a_{N-2}]` as :math:`T`'s lower diagonal of :math:`N-1` elements,
             such that :math:`a_0 = a_1 = ... = a_{N-3} = 1`, and :math:`a_{N-2} = 2`;
-        *   :math:`b = [b_0, \ b_1, \ ..., \ b_{N-2}, \ b_{N-1}]` the main diagonal of :math:`N` elements,
+        *   :math:`b = [b_0, \ b_1, \ ..., \ b_{N-2}, \ b_{N-1}]` as :math:`T`'s main diagonal of :math:`N` elements,
             such that :math:`b_0 = 2`, :math:`b_1 = b_2 = ... = b_{N-2} = 4`, and :math:`b_{N-1} = 7`;
-        *   :math:`c = [c_0, \ c_1, \ ..., \ c_{N-2}]` the upper diagonal of :math:{N-1} elements,
+        *   :math:`c = [c_0, \ c_1, \ ..., \ c_{N-2}]` as :math:`T`'s upper diagonal of :math:`{N-1}` elements,
             such that :math:`c_0 = c_1 = ... = c_{N-2} = 1`: this diagonal is filled with ones.
 
         If, according to Thomas' algorithm, we define:
@@ -1733,7 +1733,7 @@ def get_handles_for_smooth_open_cubic_spline(
             H_{2, i}   &= 2A_{i+1} - H_{1, i+1}, & \quad \forall i \in \{0, ..., N-2\} \\
             H_{2, N-1} &= 0.5A_N   + 0.5H_{1, N-1} &
 
-        As the matrix :math:`M` always follows the same pattern, we can define a memo list
+        As the matrix :math:`T` always follows the same pattern, we can define a memo list
         for :math:`c'` to avoid recalculation. We cannot do the same for :math:`D`, however,
         because it is always a different matrix.
 
