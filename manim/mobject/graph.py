@@ -9,7 +9,7 @@ __all__ = [
 
 import itertools as it
 from copy import copy
-from typing import Any, Callable, Hashable, Iterable, Protocol
+from typing import Any, Hashable, Iterable, Protocol, cast
 
 import networkx as nx
 import numpy as np
@@ -30,7 +30,7 @@ class LayoutFunction(Protocol):
     def __call__(
         self,
         graph: nx.classes.graph.Graph | nx.classes.digraph.DiGraph,
-        scale: float = 2,
+        scale: float | tuple[float, float, float] = 2,
         *args: Any,
         **kwargs: Any,
     ) -> dict[Hashable, np.ndarray]:
@@ -196,7 +196,7 @@ _layouts = {
 def _determine_graph_layout(
     nx_graph: nx.classes.graph.Graph | nx.classes.digraph.DiGraph,
     layout: str | dict[Hashable, np.ndarray] | LayoutFunction = "spring",
-    layout_scale: float = 2,
+    layout_scale: float | tuple[float, float, float] = 2,
     layout_config: dict | None = None,
 ) -> dict[Hashable, np.ndarray]:
     if layout_config is None:
@@ -218,7 +218,9 @@ def _determine_graph_layout(
             return {k: np.append(v, [0]) for k, v in auto_layout.items()}
     else:
         try:
-            return layout(nx_graph, scale=layout_scale, **layout_config)
+            return cast(LayoutFunction, layout)(
+                nx_graph, scale=layout_scale, **layout_config
+            )
         except TypeError as e:
             raise ValueError(
                 f"The layout '{layout}' is neither a recognized layout, a layout function,"
@@ -270,8 +272,8 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         ``"planar"``, ``"random"``, ``"shell"``, ``"spectral"``, ``"spiral"``, ``"tree"``, and ``"partite"``
         for automatic vertex positioning using ``networkx``
         (see `their documentation <https://networkx.org/documentation/stable/reference/drawing.html#module-networkx.drawing.layout>`_
-        for more details), or a dictionary specifying a coordinate (value)
-        for each vertex (key) for manual positioning.
+        for more details), a dictionary specifying a coordinate (value)
+        for each vertex (key) for manual positioning, or a .:class:`~.LayoutFunction` with a user-defined automatic layout.
     layout_config
         Only for automatically generated layouts. A dictionary whose entries
         are passed as keyword arguments to the automatic layout algorithm
@@ -316,7 +318,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         labels: bool | dict = False,
         label_fill_color: str = BLACK,
         layout: str | dict[Hashable, np.ndarray] | LayoutFunction = "spring",
-        layout_scale: float | tuple = 2,
+        layout_scale: float | tuple[float, float, float] = 2,
         layout_config: dict | None = None,
         vertex_type: type[Mobject] = Dot,
         vertex_config: dict | None = None,
@@ -956,7 +958,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
     def change_layout(
         self,
         layout: str | dict[Hashable, np.ndarray] | LayoutFunction = "spring",
-        layout_scale: float = 2,
+        layout_scale: float | tuple[float, float, float] = 2,
         layout_config: dict | None = None,
         partitions: list[list[Hashable]] | None = None,
         root_vertex: Hashable | None = None,
