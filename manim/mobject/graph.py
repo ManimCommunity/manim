@@ -366,8 +366,14 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
 
         self.vertices = {v: vertex_type(**self._vertex_config[v]) for v in vertices}
         self.vertices.update(vertex_mobjects)
-        
-        self.change_layout(layout=layout, layout_scale=layout_scale, layout_config=layout_config, partitions=partitions, root_vertex=root_vertex)
+
+        self.change_layout(
+            layout=layout,
+            layout_scale=layout_scale,
+            layout_config=layout_config,
+            partitions=partitions,
+            root_vertex=root_vertex,
+        )
 
         # build edge_config
         if edge_config is None:
