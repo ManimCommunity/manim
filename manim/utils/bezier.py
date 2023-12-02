@@ -47,7 +47,7 @@ def bezier(
 
 @overload
 def bezier(
-    points: BezierPoints_Array,
+    points: Sequence[Point3D_Array],
 ) -> Callable[[float | ColVector], Point3D_Array]:
     ...
 
@@ -58,15 +58,52 @@ def bezier(points):
     Parameters
     ----------
     points
-        Points defining the desired Bézier curve.
+        :math:`(d+1, 3)`-shaped array of :math:`d+1` control points defining a single Bézier
+        curve of degree :math:`d`. Alternatively, for vectorization purposes, ``points`` can
+        also be a :math:`(d+1, M, 3)`-shaped sequence of :math:`d+1` arrays of :math:`M`
+        control points each, which define `M` Bézier curves instead.
 
     Returns
     -------
-    :class:`Callable[[float | ColVector], Point3D | Point3D_Array]`
-        Function describing the Bézier curve.
-        You can either pass a single `t` value between 0 and 1 to get the corresponding
-        point on the curve, or an `(N, 1)` column vector of `t` values to get an array
-        of points from the curve evaluated at each one of the values.
+    bezier_func : :class:`Callable`[[:class:`float` | :class:`~.ColVector`], :class:`~.Point3D` | :class:`~.Point3D_Array`]
+        Function describing the Bézier curve. The behaviour of this function depends on
+        the shape of ``points``:
+
+            *   If ``points`` was a :math:`(d+1, 3)` array representing a single Bézier curve,
+                then ``bezier_func`` can receive either:
+
+                *   a :class:`float` ``t`` and return a
+                    single :math:`(1, 3)`-shaped :class:`~.Point3D` representing the evaluation
+                    of the Bézier at ``t``, or
+
+                *   an :math:`(n, 1)`-shaped :class:`~.ColVector`
+                    containing :math:`n` values to evaluate the Bézier curve at, returning instead
+                    an :math:`(n, 3)`-shaped :class:`~.Point3D_Array` containing the points
+                    resulting from evaluating the Bézier at each of the :math:`n` values.
+
+                .. warning::
+                    If passing a vector of :math:`t`-values to ``bezier_func``, it **must**
+                    be a column vector/matrix of shape :math:`(n, 1)`. Passing an 1D array of
+                    shape :math:`(n,)` is not supported and **will result in undefined behaviour**.
+
+            *   If ``points`` was a :math:`(d+1, M, 3)` array describing :math:`M` Bézier curves,
+                then ``bezier_func`` can receive either:
+
+                *   a :class:`float` ``t`` and return an
+                    :math:`(M, 3)`-shaped :class:`~.Point3D_Array` representing the evaluation
+                    of the :math:`M` Bézier curves at the same value ``t``, or
+
+                *   an :math:`(M, 1)`-shaped
+                    :class:`~.ColVector` containing :math:`M` values, such that the :math:`i`-th
+                    Bézier curve defined by ``points`` is evaluated at the corresponding :math:`i`-th
+                    value in ``t``, returning again a :math:`(M, 3)`-shaped :class:`~.Point3D_Array`
+                    containing those :math:`M` evaluations.
+
+                .. warning::
+                    Unlike the previous case, if you pass a :class:`~.ColVector` to ``bezier_func``,
+                    it **must** contain exactly :math:`M` values, each value for each of the :math:`M`
+                    Bézier curves defined by ``points``. Any array of shape other than :math:`(M, 1)
+                    **will result in undefined behaviour**.
     """
     P = np.asarray(points)
     n = P.shape[0] - 1
@@ -108,14 +145,24 @@ def bezier(points):
         return cubic_bezier
 
     def nth_grade_bezier(t):
-        B = P.copy()
+        is_scalar = not isinstance(t, np.ndarray)
+        if is_scalar:
+            B = np.empty((1, *P.shape))
+        else:
+            t = t.reshape(-1, *[1 for dim in P.shape])
+            B = np.empty((t.shape[0], *P.shape))
+        B[:] = P
+
         for i in range(n):
-            # After the i-th iteration (i in [0, ..., n-1]) there are (n-i)
-            # Bézier curves of grade (i+1) stored in the first n-i slots of B
-            B[: n - i] += t * (B[1 : n - i + 1] - B[: n - i])
-        # In the end, there shall be a single Bézier curve of grade n
-        # stored in the first slot of B
-        return B[0]
+            # After the i-th iteration (i in [0, ..., n-1]) there are evaluations at t
+            # of (n-i) Bezier curves of grade (i+1), stored in the first n-i slots of B
+            B[:, : n - i] += t * (B[:, 1 : n - i + 1] - B[:, : n - i])
+
+        # In the end, there shall be the evaluation at t of a single Bezier curve of
+        # grade n, stored in the first slot of B
+        if is_scalar:
+            return B[0, 0]
+        return B[:, 0]
 
     return nth_grade_bezier
 
