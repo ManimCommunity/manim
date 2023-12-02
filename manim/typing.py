@@ -34,6 +34,14 @@ manim_type_aliases = [
     "Point3D",
     "InternalPoint3D_Array",
     "Point3D_Array",
+    # Vector Types
+    "Vector2",
+    "Vector3",
+    "Vector",
+    "RowVector",
+    "ColVector",
+    "MatrixMN",
+    "Zeros",
     # Bezier Types
     "QuadraticBezierPoints",
     "QuadraticBezierPoints_Array",
@@ -48,14 +56,6 @@ manim_type_aliases = [
     "BezierPath",
     "Spline",
     "FlatBezierPoints",
-    # Vector Types
-    "Vector2",
-    "Vector3",
-    "Vector",
-    "RowVector",
-    "ColVector",
-    "MatrixMN",
-    "Zeros",
     # Function Types
     "FunctionOverride",
     "PathFuncType",
@@ -136,6 +136,9 @@ Point3D_Array: TypeAlias = Union[
 """
 
 # Vector Types
+
+Vector2: TypeAlias = npt.NDArray[PointDType]
+""" `shape: (2,)` A vector `[float, float]`. """
 
 Vector3: TypeAlias = npt.NDArray[PointDType]
 """ `shape: (3,)` A vector `[float, float, float]`. """
