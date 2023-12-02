@@ -1685,7 +1685,7 @@ def get_handles_for_smooth_open_cubic_spline(
             \end{pmatrix}
 
         which will be expressed as :math:`TH_1 = D`.
-        :math:`T` is a tridiagonal matrix, so the system can be solved in :math`O(N)`
+        :math:`T` is a tridiagonal matrix, so the system can be solved in :math:`O(N)`
         operations. Here we shall use Thomas' algorithm or the tridiagonal matrix
         algorithm.
 
