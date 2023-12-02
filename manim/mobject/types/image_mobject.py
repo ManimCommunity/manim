@@ -86,12 +86,13 @@ class AbstractImageMobject(Mobject):
         return self
 
     def reset_points(self):
-        # Corresponding corners of image are fixed to these 3 points
+        """Sets :attr:`points` to be the four image corners."""
         self.points = np.array(
             [
                 UP + LEFT,
                 UP + RIGHT,
                 DOWN + LEFT,
+                DOWN + RIGHT,
             ],
         )
         self.center()

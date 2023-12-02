@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from manim.typing import Point3D, Vector3
+from manim.utils.color import BLUE, BLUE_D, BLUE_E, LIGHT_GREY, WHITE, interpolate_color
+
 __all__ = [
     "ThreeDVMobject",
     "Surface",
@@ -16,9 +19,10 @@ __all__ = [
     "Torus",
 ]
 
-from typing import Callable, Sequence
+from typing import Any, Callable, Iterable, Sequence
 
 import numpy as np
+from typing_extensions import Self
 
 from manim import config, logger
 from manim.constants import *
@@ -113,7 +117,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         stroke_width: float = 0.5,
         should_make_jagged: bool = False,
         pre_function_handle_to_anchor_scale_factor: float = 0.00001,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         self.u_range = u_range
         self.v_range = v_range
@@ -141,16 +145,9 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
             self.make_jagged()
 
     def func(self, u: float, v: float) -> np.ndarray:
-        """The z values defining the :class:`Surface` being plotted.
-
-        Returns
-        -------
-        :class:`numpy.array`
-            The z values defining the :class:`Surface`.
-        """
         return self._func(u, v)
 
-    def _get_u_values_and_v_values(self):
+    def _get_u_values_and_v_values(self) -> tuple[np.ndarray, np.ndarray]:
         res = tuplify(self.resolution)
         if len(res) == 1:
             u_res = v_res = res[0]
@@ -162,7 +159,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
 
         return u_values, v_values
 
-    def _setup_in_uv_space(self):
+    def _setup_in_uv_space(self) -> None:
         u_values, v_values = self._get_u_values_and_v_values()
         faces = VGroup()
         for i in range(len(u_values) - 1):
@@ -197,8 +194,8 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
             self.set_fill_by_checkerboard(*self.checkerboard_colors)
 
     def set_fill_by_checkerboard(
-        self, *colors: Sequence[ParsableManimColor], opacity: float = None
-    ) -> Mobject:
+        self, *colors: Iterable[ParsableManimColor], opacity: float | None = None
+    ) -> Self:
         """Sets the fill_color of each face of :class:`Surface` in
         an alternating pattern.
 
@@ -227,7 +224,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         colorscale: list[ParsableManimColor] | ParsableManimColor | None = None,
         axis: int = 2,
         **kwargs,
-    ) -> Mobject:
+    ) -> Self:
         """Sets the color of each mobject of a parametric surface to a color
         relative to its axis-value.
 
@@ -381,9 +378,9 @@ class Sphere(Surface):
 
     def __init__(
         self,
-        center: Sequence[float] = ORIGIN,
+        center: Point3D = ORIGIN,
         radius: float = 1,
-        resolution: Sequence[int] = None,
+        resolution: Sequence[int] | None = None,
         u_range: Sequence[float] = (0, TAU),
         v_range: Sequence[float] = (0, PI),
         **kwargs,
@@ -459,7 +456,7 @@ class Dot3D(Sphere):
         point: list | np.ndarray = ORIGIN,
         radius: float = DEFAULT_DOT_RADIUS,
         color: ParsableManimColor = WHITE,
-        resolution=(8, 8),
+        resolution: tuple[int, int] = (8, 8),
         **kwargs,
     ) -> None:
         super().__init__(center=point, radius=radius, resolution=resolution, **kwargs)
@@ -551,7 +548,9 @@ class Prism(Cube):
                 self.add(prismSmall, prismLarge)
     """
 
-    def __init__(self, dimensions: Sequence[int] = [3, 2, 1], **kwargs) -> None:
+    def __init__(
+        self, dimensions: tuple[float, float, float] | np.ndarray = [3, 2, 1], **kwargs
+    ) -> None:
         self.dimensions = dimensions
         super().__init__(**kwargs)
 
@@ -609,8 +608,8 @@ class Cone(Surface):
         v_range: Sequence[float] = [0, TAU],
         u_min: float = 0,
         checkerboard_colors: bool = False,
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> None:
         self.direction = direction
         self.theta = PI - np.arctan(base_radius / height)
 
@@ -662,7 +661,7 @@ class Cone(Surface):
             ],
         )
 
-    def _rotate_to_direction(self):
+    def _rotate_to_direction(self) -> None:
         x, y, z = self.direction
 
         r = np.sqrt(x**2 + y**2 + z**2)
@@ -821,7 +820,7 @@ class Cylinder(Surface):
         self.base_bottom.shift(self.u_range[0] * IN)
         self.add(self.base_top, self.base_bottom)
 
-    def _rotate_to_direction(self):
+    def _rotate_to_direction(self) -> None:
         x, y, z = self.direction
 
         r = np.sqrt(x**2 + y**2 + z**2)
@@ -910,7 +909,7 @@ class Line3D(Cylinder):
         start: np.ndarray = LEFT,
         end: np.ndarray = RIGHT,
         thickness: float = 0.02,
-        color: ParsableManimColor = None,
+        color: ParsableManimColor | None = None,
         **kwargs,
     ):
         self.thickness = thickness
@@ -952,7 +951,9 @@ class Line3D(Cylinder):
         self.shift((self.start + self.end) / 2)
 
     def pointify(
-        self, mob_or_point: Mobject | float, direction: np.ndarray = None
+        self,
+        mob_or_point: Mobject | Point3D,
+        direction: Vector3 = None,
     ) -> np.ndarray:
         """Gets a point representing the center of the :class:`Mobjects <.Mobject>`.
 
@@ -998,7 +999,11 @@ class Line3D(Cylinder):
 
     @classmethod
     def parallel_to(
-        cls, line: Line3D, point: Sequence[float] = ORIGIN, length: float = 5, **kwargs
+        cls,
+        line: Line3D,
+        point: Vector3 = ORIGIN,
+        length: float = 5,
+        **kwargs,
     ) -> Line3D:
         """Returns a line parallel to another line going through
         a given point.
@@ -1042,7 +1047,11 @@ class Line3D(Cylinder):
 
     @classmethod
     def perpendicular_to(
-        cls, line: Line3D, point: Sequence[float] = ORIGIN, length: float = 5, **kwargs
+        cls,
+        line: Line3D,
+        point: Vector3 = ORIGIN,
+        length: float = 5,
+        **kwargs,
     ) -> Line3D:
         """Returns a line perpendicular to another line going through
         a given point.
@@ -1191,7 +1200,7 @@ class Torus(Surface):
         minor_radius: float = 1,
         u_range: Sequence[float] = (0, TAU),
         v_range: Sequence[float] = (0, TAU),
-        resolution: Sequence[int] = None,
+        resolution: tuple[int, int] | None = None,
         **kwargs,
     ) -> None:
         if config.renderer == RendererType.OPENGL:
