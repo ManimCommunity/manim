@@ -333,19 +333,6 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         nx_graph.add_edges_from(edges)
         self._graph = nx_graph
 
-        layout_config = {} if layout_config is None else layout_config
-        if partitions is not None and "partitions" not in layout_config:
-            layout_config["partitions"] = partitions
-        if root_vertex is not None and "root_vertex" not in layout_config:
-            layout_config["root_vertex"] = root_vertex
-
-        self._layout = _determine_graph_layout(
-            nx_graph,
-            layout=layout,
-            layout_scale=layout_scale,
-            layout_config=layout_config,
-        )
-
         if isinstance(labels, dict):
             self._labels = labels
         elif isinstance(labels, bool):
@@ -379,8 +366,8 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
 
         self.vertices = {v: vertex_type(**self._vertex_config[v]) for v in vertices}
         self.vertices.update(vertex_mobjects)
-        for v in self.vertices:
-            self[v].move_to(self._layout[v])
+        
+        self.change_layout(layout=layout, layout_scale=layout_scale, layout_config=layout_config, partitions=partitions, root_vertex=root_vertex)
 
         # build edge_config
         if edge_config is None:
@@ -415,6 +402,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         self.add(*self.edges.values())
 
         self.add_updater(self.update_edges)
+        self.cha
 
     @staticmethod
     def _empty_networkx_graph():
@@ -988,14 +976,19 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
                     self.play(G.animate.change_layout("circular"))
                     self.wait()
         """
+        layout_config = {} if layout_config is None else layout_config
+        if partitions is not None and "partitions" not in layout_config:
+            layout_config["partitions"] = partitions
+        if root_vertex is not None and "root_vertex" not in layout_config:
+            layout_config["root_vertex"] = root_vertex
+
         self._layout = _determine_graph_layout(
-            self._graph,
+            nx_graph,
             layout=layout,
             layout_scale=layout_scale,
             layout_config=layout_config,
-            partitions=partitions,
-            root_vertex=root_vertex,
         )
+
         for v in self.vertices:
             self[v].move_to(self._layout[v])
         return self
