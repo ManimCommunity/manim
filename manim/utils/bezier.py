@@ -955,7 +955,7 @@ def bezier_remap(
     Parameters
     ----------
     bezier_tuples
-        An array of n Bézier curves to be remapped. The shape of this array must be ``(current_num_curves, degree+1, dimension)``.
+        An array of :math:`n` Bézier curves to be remapped. The shape of this array must be ``(current_num_curves, degree+1, dimension)``.
     new_number_of_curves
         The number of curves that the output will contain. This needs to be higher than the current number.
 
