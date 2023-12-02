@@ -4,13 +4,10 @@ from __future__ import annotations
 
 from manim.typing import (
     BezierPoints,
+    BezierPoints_Array,
     ColVector,
-    MatrixMN,
     Point3D,
     Point3D_Array,
-    PointDType,
-    QuadraticBezierPoints,
-    QuadraticBezierPoints_Array,
 )
 
 __all__ = [
@@ -143,7 +140,90 @@ def partial_bezier_points(points: BezierPoints, a: float, b: float) -> BezierPoi
 
         The final portion is a linear combination of points, and thus the process can be
         summarized as a linear transformation by some matrix in terms of :math:`a` and :math:`b`.
-        This matrix is given explicitly in the 2nd and 3rd degree cases, which are often used in Manim.
+        This matrix is given explicitly for Bézier curves up to degree 3, which are often used in Manim.
+        For higher degrees, the algorithm described previously is used.
+
+        For the case of a quadratic Bézier curve:
+
+        * Step 1:
+
+        .. math::
+            H'_1
+            =
+            \begin{pmatrix}
+                (1-a)^2 & 2(1-a)a & a^2 \\
+                0 & (1-a) & a \\
+                0 & 0 & 1
+            \end{pmatrix}
+            \begin{pmatrix}
+                p_0 \\
+                p_1 \\
+                p_2
+            \end{pmatrix}
+
+        * Step 2:
+            H''_0
+            &=
+            \begin{pmatrix}
+                1 & 0 & 0 \\
+                (1-u) & u & 0\\
+                (1-u)^2 & 2(1-u)u & u^2
+            \end{pmatrix}
+            H'_1
+            \\
+            &=
+            \begin{pmatrix}
+                1 & 0 & 0 \\
+                (1-u) & u & 0\\
+                (1-u)^2 & 2(1-u)u & u^2
+            \end{pmatrix}
+            \begin{pmatrix}
+                (1-a)^2 & 2(1-a)a & a^2 \\
+                0 & (1-a) & a \\
+                0 & 0 & 1
+            \end{pmatrix}
+            \begin{pmatrix}
+                p_0 \\
+                p_1 \\
+                p_2
+            \end{pmatrix}
+            \\
+            &=
+            \begin{pmatrix}
+                (1-a)^2 & 2(1-a)a & a^2 \\
+                (1-a)(1-b) & a(1-b) + (1-a)b & ab \\
+                (1-b)^2 & 2(1-b)b & b^2
+            \end{pmatrix}
+            \begin{pmatrix}
+                p_0 \\
+                p_1 \\
+                p_2
+            \end{pmatrix}
+
+        from where one can define a :math:`(3, 3)` matrix `S_2` which, when applied over
+        the array of ``points``, will return the desired partial quadratic Bézier curve:
+
+        .. math::
+            S_2
+            =
+            \begin{pmatrix}
+                (1-a)^2 & 2(1-a)a & a^2 \\
+                (1-a)(1-b) & a(1-b) + (1-a)b & ab \\
+                (1-b)^2 & 2(1-b)b & b^2
+            \end{pmatrix}
+
+        Similarly, for the cubic Bézier curve case, one can define the following
+        :math:`(4, 4)` matrix `S_3`:
+
+        .. math::
+            S_3
+            =
+            \begin{pmatrix}
+                (1-a)^3 & 3(1-a)^2a & 3(1-a)a^2 & a^3 \\
+                (1-a)^2(1-b) & 2(1-a)a(1-b) + (1-a)^2b & a^2(1-b) + 2(1-a)ab & a^2b \\
+                (1-a)(1-b)^2 & a(1-b)^2 + 2(1-a)(1-b)b & 2a(1-b)b + (1-a)b^2 & ab^2 \\
+                (1-b)^3 & 3(1-b)^2b & 3(1-b)b^2 & b^3
+            \end{pmatrix}
 
     Parameters
     ----------
@@ -177,7 +257,7 @@ def partial_bezier_points(points: BezierPoints, a: float, b: float) -> BezierPoi
         a2, b2, ma2, mb2 = a * a, b * b, ma * ma, mb * mb
         a3, b3, ma3, mb3 = a2 * a, b2 * b, ma2 * ma, mb2 * mb
 
-        split_matrix = np.array(
+        portion_matrix = np.array(
             [
                 [ma3, 3 * ma2 * a, 3 * ma * a2, a3],
                 [ma2 * mb, 2 * ma * a * mb + ma2 * b, a2 * mb + 2 * ma * a * b, a2 * b],
@@ -185,19 +265,19 @@ def partial_bezier_points(points: BezierPoints, a: float, b: float) -> BezierPoi
                 [mb3, 3 * mb2 * b, 3 * mb * b2, b3],
             ]
         )
-        return split_matrix @ points
+        return portion_matrix @ points
 
     if degree == 2:
         ma, mb = 1 - a, 1 - b
 
-        split_matrix = np.array(
+        portion_matrix = np.array(
             [
                 [ma * ma, 2 * a * ma, a * a],
                 [ma * mb, a * mb + ma * b, a * b],
                 [mb * mb, 2 * b * mb, b * b],
             ]
         )
-        return split_matrix @ points
+        return portion_matrix @ points
 
     if degree == 1:
         direction = points[1] - points[0]
@@ -251,9 +331,13 @@ def split_bezier(points: BezierPoints, t: float) -> Point3D_Array:
     r"""Split a Bézier curve at argument ``t`` into two curves.
 
     .. note::
-        To understand what's going on, let's break this down with an example: a cubic Bézier.
 
-        Let :math:`p_0, p_1, p_2, p_3` be the points needed for the curve :math:`C_0 = [p_0, p_1, p_2, p_3]`.
+        .. seealso::
+            `A Primer on Bézier Curves #10: Splitting curves. Pomax. <https://pomax.github.io/bezierinfo/#splitting>`_
+
+        As an example for a cubic Bézier curve, let :math:`p_0, p_1, p_2, p_3` be the points
+        needed for the curve :math:`C_0 = [p_0, p_1, p_2, p_3]`.
+
         Define the 3 linear Béziers :math:`L_0, L_1, L_2` as interpolations of :math:`p_0, p_1, p_2, p_3`:
 
         .. math::
@@ -272,15 +356,197 @@ def split_bezier(points: BezierPoints, t: float) -> Point3D_Array:
         .. math::
             C_0(t) = Q_0(t) + t(Q_1(t) - Q_0(t))
 
-        Evaluating :math:`C_0` at a value :math:`t=s` splits :math:`C_0` into two cubic Béziers :math:`H_0`
+        Evaluating :math:`C_0` at a value :math:`t=t'` splits :math:`C_0` into two cubic Béziers :math:`H_0`
         and :math:`H_1`, defined by some of the points we calculated earlier:
 
         .. math::
-            H_0 = [p_0, L_0(s), Q_0(s), C_0(s)] \\
-            H_1 = [p_0(s), Q_1(s), L_2(s), p_3]
+            H_0 = [p_0, L_0(t'), Q_0(t'), C_0(t')] \\
+            H_1 = [p_0(t'), Q_1(t'), L_2(t'), p_3]
 
         As the resulting curves are obtained from linear combinations of ``points``, everything can
-        be encoded into a matrix for efficiency.
+        be encoded into a matrix for efficiency, which is done for Bézier curves of degree up to 3.
+
+        .. seealso::
+            `A Primer on Bézier Curves #11: Splitting curves using matrices. Pomax. <https://pomax.github.io/bezierinfo/#matrixsplit>`_
+
+        For the simpler case of a quadratic Bézier curve:
+
+        .. math:
+            H_0
+            &=
+            \begin{pmatrix}
+                p_0 \\
+                (1-t) p_0 + t p_1 \\
+                (1-t)^2 p_0 + 2(1-t)t p_1 + t^2 p_2 \\
+            \end{pmatrix}
+            &=
+            \begin{pmatrix}
+                1 & 0 & 0 \\
+                (1-t) & t & 0\\
+                (1-t)^2 & 2(1-t)t & t^2
+            \end{pmatrix}
+            \begin{pmatrix}
+                p_0 \\
+                p_1 \\
+                p_2
+            \end{pmatrix}
+            \\
+            \\
+            H_1
+            &=
+            \begin{pmatrix}
+                (1-t)^2 p_0 + 2(1-t)t p_1 + t^2 p_2 \\
+                (1-t) p_1 + t p_2 \\
+                p_2
+            \end{pmatrix}
+            &=
+            \begin{pmatrix}
+                (1-t)^2 & 2(1-t)t & t^2 \\
+                0 & (1-t) & t \\
+                0 & 0 & 1
+            \end{pmatrix}
+            \begin{pmatrix}
+                p_0 \\
+                p_1 \\
+                p_2
+            \end{pmatrix}
+
+        from where one can define a :math:`(6, 3)` split matrix :math:`S_2` which can multiply
+        the array of ``points`` to compute the return value:
+
+        .. math::
+            S_2
+            =
+            \begin{pmatrix}
+                1 & 0 & 0 \\
+                (1-t) & t & 0 \\
+                (1-t)^2 & 2(1-t)t & t^2 \\
+                (1-t)^2 & 2(1-t)t & t^2 \\
+                0 & (1-t) & t \\
+                0 & 0 & 1
+            \end{pmatrix}
+            \quad
+            \Rightarrow
+            \quad
+            S_2 P
+            =
+            \begin{pmatrix}
+                1 & 0 & 0 \\
+                (1-t) & t & 0 \\
+                (1-t)^2 & 2(1-t)t & t^2 \\
+                (1-t)^2 & 2(1-t)t & t^2 \\
+                0 & (1-t) & t \\
+                0 & 0 & 1
+            \end{pmatrix}
+            \begin{pmatrix}
+                p_0 \\
+                p_1 \\
+                p_2
+            \end{pmatrix}
+            =
+            \begin{pmatrix}
+                \Vert \\
+                H_0 \\
+                \Vert \\
+                \Vert \\
+                H_1 \\
+                \Vert
+            \end{pmatrix}
+
+        For the previous example with a cubic Bézier curve:
+
+        .. math:
+            H_0
+            &=
+            \begin{pmatrix}
+                p_0 \\
+                (1-t) p_0 + t p_1 \\
+                (1-t)^2 p_0 + 2(1-t)t p_1 + t^2 p_2 \\
+                (1-t)^3 p_0 + 3(1-t)^2 t p_1 + 3(1-t)t^2 p_2 + t^3 p_3
+            \end{pmatrix}
+            &=
+            \begin{pmatrix}
+                1 & 0 & 0 & 0 \\
+                (1-t) & t & 0 & 0 \\
+                (1-t)^2 & 2(1-t)t & t^2 & 0 \\
+                (1-t)^3 & 3(1-t)^2 t & 3(1-t)t^2 & t^3
+            \end{pmatrix}
+            \begin{pmatrix}
+                p_0 \\
+                p_1 \\
+                p_2 \\
+                p_3
+            \end{pmatrix}
+            \\
+            \\
+            H_1
+            &=
+            \begin{pmatrix}
+                (1-t)^3 p_0 + 3(1-t)^2 t p_1 + 3(1-t)t^2 p_2 + t^3 p_3 \\
+                (1-t)^2 p_1 + 2(1-t)t p_2 + t^2 p_3 \\
+                (1-t) p_2 + t p_3 \\
+                p_3
+            \end{pmatrix}
+            &=
+            \begin{pmatrix}
+                (1-t)^3 & 3(1-t)^2 t & 3(1-t)t^2 & t^3 \\
+                0 & (1-t)^2 & 2(1-t)t & t^2 \\
+                0 & 0 & (1-t) & t \\
+                0 & 0 & 0 & 1
+            \end{pmatrix}
+            \begin{pmatrix}
+                p_0 \\
+                p_1 \\
+                p_2 \\
+                p_3
+            \end{pmatrix}
+
+        from where one can define a :math:`(8, 4)` split matrix :math:`S_3` which can multiply
+        the array of ``points`` to compute the return value:
+
+        .. math::
+            S_3
+            =
+            \begin{pmatrix}
+                1 & 0 & 0 & 0 \\
+                (1-t) & t & 0 & 0 \\
+                (1-t)^2 & 2(1-t)t & t^2 & 0 \\
+                (1-t)^3 & 3(1-t)^2 t & 3(1-t)t^2 & t^3 \\
+                (1-t)^3 & 3(1-t)^2 t & 3(1-t)t^2 & t^3 \\
+                0 & (1-t)^2 & 2(1-t)t & t^2 \\
+                0 & 0 & (1-t) & t \\
+                0 & 0 & 0 & 1
+            \end{pmatrix}
+            \quad
+            \Rightarrow
+            \quad
+            S_3 P
+            =
+            \begin{pmatrix}
+                1 & 0 & 0 & 0 \\
+                (1-t) & t & 0 & 0 \\
+                (1-t)^2 & 2(1-t)t & t^2 & 0 \\
+                (1-t)^3 & 3(1-t)^2 t & 3(1-t)t^2 & t^3 \\
+                (1-t)^3 & 3(1-t)^2 t & 3(1-t)t^2 & t^3 \\
+                0 & (1-t)^2 & 2(1-t)t & t^2 \\
+                0 & 0 & (1-t) & t \\
+                0 & 0 & 0 & 1
+            \end{pmatrix}
+            \begin{pmatrix}
+                p_0 \\
+                p_1 \\
+                p_2 \\
+                p_3
+            \end{pmatrix}
+            =
+            \begin{pmatrix}
+                \Vert \\
+                H_0 \\
+                \Vert \\
+                \Vert \\
+                H_1 \\
+                \Vert
+            \end{pmatrix}
 
     Parameters
     ----------
@@ -310,6 +576,7 @@ def split_bezier(points: BezierPoints, t: float) -> Point3D_Array:
         three_mt2_t = 3 * mt2 * t
         three_mt_t2 = 3 * mt * t2
 
+        # Split matrix S3 explained in the docstring
         split_matrix = np.array(
             [
                 [1, 0, 0, 0],
@@ -331,6 +598,7 @@ def split_bezier(points: BezierPoints, t: float) -> Point3D_Array:
         t2 = t * t
         two_tmt = 2 * t * mt
 
+        # Split matrix S2 explained in the docstring
         split_matrix = np.array(
             [
                 [1, 0, 0],
@@ -372,6 +640,7 @@ def split_bezier(points: BezierPoints, t: float) -> Point3D_Array:
     return arr.reshape(2 * N, dim)
 
 
+# Memos explained in subdivide_bezier docstring
 CUBIC_SUBDIVISION_MATRICES = {
     2: np.array(
         [
@@ -479,12 +748,78 @@ def subdivide_bezier(points: BezierPoints, n_divisions: int) -> Point3D_Array:
     arguments :math:`t = \frac{i}{n}`, for :math:`i \in \{1, ..., n-1\}`.
 
     .. seealso::
-        See :func:`split_bezier` for an explanation on how to split Bézier curves.
+
+        * See :func:`split_bezier` for an explanation on how to split Bézier curves.
+        * See :func:`partial_bezier_points` for an extra understanding of this function.
+
 
     .. note::
         The resulting subcurves can be expressed as linear combinations of
         ``points``, which can be encoded in a single matrix that is precalculated
         for 2nd and 3rd degree Bézier curves.
+
+        As an example for a quadratic Bézier curve: taking inspiration from the
+        explanation in :func:`partial_bezier_points`, where the following matrix
+        :math:`S_2` was defined to extract the portion of a quadratic Bézier
+        curve for :math:`t \in [a, b]`:
+
+        .. math::
+            S_2
+            =
+            \begin{pmatrix}
+                (1-a)^2 & 2(1-a)a & a^2 \\
+                (1-a)(1-b) & a(1-b) + (1-a)b & ab \\
+                (1-b)^2 & 2(1-b)b & b^2
+            \end{pmatrix}
+
+        the plan is to replace :math:`[a, b]` with
+        :math:`[\frac{i-1}{n}, \frac{i}{n}], \ \forall i \in \{1, ..., n\}`.
+
+        As an example for :math:`n = 2` divisions, construct :math:`M_1` for
+        the interval :math:`[0, \frac{1}{2}]`, and :math:`M_2` for the
+        interval :math:`[\frac{1}{2}, 1]`:
+
+        .. math::
+            M_1
+            =
+            \begin{pmatrix}
+                1 & 0 & 0 \\
+                0.5 & 0.5 & 0 \\
+                0.25 & 0.5 & 0.25
+            \end{pmatrix}
+            ,
+            \quad
+            M_2
+            =
+            \begin{pmatrix}
+                0.25 & 0.5 & 0.25 \\
+                0 & 0.5 & 0.5 \\
+                0 & 0 & 1
+            \end{pmatrix}
+
+        Therefore, the following subdivision matrix :math:`D_2` can be constructed, which
+        will subdivide an array of ``points`` into 2 parts:
+
+        .. math::
+            D_2
+            =
+            \begin{pmatrix}
+                M_1 \\
+                M_2
+            \end{pmatrix}
+            =
+            \begin{pmatrix}
+                1 & 0 & 0 \\
+                0.5 & 0.5 & 0 \\
+                0.25 & 0.5 & 0.25 \\
+                0.25 & 0.5 & 0.25 \\
+                0 & 0.5 & 0.5 \\
+                0 & 0 & 1
+            \end{pmatrix}
+
+        For quadratic and cubic Bézier curves, the subdivision matrices are memoized for
+        efficiency. For higher degree curves, an iterative algorithm inspired by the
+        one from :func:`split_bezier` is used instead.
 
     .. image:: /_static/bezier_subdivision_example.png
 
@@ -964,7 +1299,7 @@ def get_handles_for_smooth_closed_cubic_spline(
 
             * `Conditions on control points for continuous curvature. (2016). Jaco Stuifbergen. <http://www.jacos.nl/jacos_html/spline/theory/theory_2.html>`_
 
-        In general, if there are :math:`n+1` anchors there will be :math:`n` Bezier curves
+        In general, if there are :math:`n+1` anchors, there will be :math:`n` Bézier curves
         and thus :math:`n` pairs of handles to find. We must solve the following
         system of equations for the 1st handles (example for :math:`n = 5`):
 
@@ -1056,20 +1391,20 @@ def get_handles_for_smooth_closed_cubic_spline(
             N + uv^T
 
         We decompose :math:`M = N + uv^T`, where :math:`N` is a tridiagonal matrix, and
-        :math:`u, v` are :math:`n`-D vectors such that `u_0 = u_{n-1} = v_0 = v_{n-1} = 1`,
-        and `u_i = v_i = 0, \forall i \in \{1, ..., n-2\}`.
+        :math:`u, v` are :math:`n`-D vectors such that :math:`u_0 = u_{n-1} = v_0 = v_{n-1} = 1`,
+        and :math:`u_i = v_i = 0, \forall i \in \{1, ..., n-2\}`.
 
         Thus:
 
         .. math::
-            MH_1 &= D
-            \Rightarrow (N + uv^T)H_1 = D
+            MH_1 &= D \\
+            \Rightarrow (N + uv^T)H_1 &= D
 
         If we find a vector :math:`q` such that :math:`Nq = u`:
 
         .. math::
-            \Rightarrow (N + Nqv^T)H_1 &= D
-            \Rightarrow N(I + qv^T)H_1 &= D
+            \Rightarrow (N + Nqv^T)H_1 &= D \\
+            \Rightarrow N(I + qv^T)H_1 &= D \\
             \Rightarrow H_1 &= (I + qv^T)^{-1} N^{-1} D
 
         According to Sherman-Morrison's formula:
@@ -1084,53 +1419,59 @@ def get_handles_for_smooth_closed_cubic_spline(
         :math:`Y` in :math:`NY = D`:
 
         .. math::
-            \Rightarrow H_1 = Y - \frac{1}{1 + v^Tq} qv^TY
+            H_1 &= (I + qv^T)^{-1} N^{-1} D \\
+            &= (I + qv^T)^{-1} Y \\
+            &= (I - \frac{1}{1 + v^Tq} qv^T) Y \\
+            &= Y - \frac{1}{1 + v^Tq} qv^TY
 
-        Therefore we must solve for :math:`q` and :math:`Y` in :math:`Nq = u` and :math:`NY = D`.
+        Therefore, we must solve for :math:`q` and :math:`Y` in :math:`Nq = u` and :math:`NY = D`.
         As :math:`N` is now tridiagonal, we shall use Thomas' algorithm.
 
         Let:
 
         *   :math:`a = [a_0, \ a_1, \ ..., \ a_{n-2}]` be the lower diagonal of :math:`n-1` elements,
-            such that :math:`a_0 = a_1 = ... = a_{N-2} = 1`, so this diagonal is filled with ones;
+            such that :math:`a_0 = a_1 = ... = a_{n-2} = 1`, so this diagonal is filled with ones;
         *   :math:`b = [b_0, \ b_1, \ ..., \ b_{n-2}, \ b_{n-1}]` the main diagonal of :math:`n` elements,
-            such that :math:`b_0 = b_{n-1} = 3`, and :math:`b_1 = b_2 = ... = b_{N-2} = 4`;
-        *   :math:`c = [c_0, \ c_1, \ ..., \ c_{n-2}] the upper diagonal of :math:{n-1} elements,
+            such that :math:`b_0 = b_{n-1} = 3`, and :math:`b_1 = b_2 = ... = b_{n-2} = 4`;
+        *   :math:`c = [c_0, \ c_1, \ ..., \ c_{n-2}]` the upper diagonal of :math:`n-1` elements,
             such that :math:`c_0 = c_1 = ... = c_{n-2} = 1`: this diagonal is also filled with ones.
 
         If, according to Thomas' algorithm, we define:
+
         .. math::
             c'_0 &= \frac{c_0}{b_0} & \\
-            c'_i &= \frac{c_i}{b_i - a_{i-1} c'_{i-1}} = \frac{1}{4 - c'_{i-1}}, & \forall i \in \{1, ..., n-2\} \\
+            c'_i &= \frac{c_i}{b_i - a_{i-1} c'_{i-1}} = \frac{1}{4 - c'_{i-1}}, & \quad \forall i \in \{1, ..., n-2\} \\
             & & \\
             u'_0 &= \frac{u_0}{b_0} & \\
-            u'_i &= \frac{u_i - a_{i-1} u'_{i-1}}{b_i - a_{i-1} c'_{i-1}), & \forall i \in \{1, ..., n-1\} \\
+            u'_i &= \frac{u_i - a_{i-1} u'_{i-1}}{b_i - a_{i-1} c'_{i-1}), & \quad \forall i \in \{1, ..., n-1\} \\
             & & \\
             D'_0 &= \frac{1}{b_0} D_0 & \\
-            D'_i &= \frac{1}{b_i - a_{i-1} c'{i-1}} (D_i - a_{i-1} D'_{i-1}), & \forall i \in \{1, ..., n-1\}
+            D'_i &= \frac{1}{b_i - a_{i-1} c'{i-1}} (D_i - a_{i-1} D'_{i-1}), & \quad \forall i \in \{1, ..., n-1\}
 
         Then:
 
         .. math::
             c'_0     &= \frac{1}{3} & \\
-            c'_i     &= \frac{1}{4 - c'_{i-1}}, & \forall i \in \{1, ..., n-2\} \\
+            c'_i     &= \frac{1}{4 - c'_{i-1}}, & \quad \forall i \in \{1, ..., n-2\} \\
             & & \\
-            u'_0     &= \frac{1}{3} &
-            u'_i     &= \frac{-u'_{i-1}}{4 - c'{i-1}} = -c'_i u'_{i-1}, & \forall i \in \{1, ..., n-2\} \\
+            u'_0     &= \frac{1}{3} & \\
+            u'_i     &= \frac{-u'_{i-1}}{4 - c'{i-1}} & \\
+            &= -c'_i u'_{i-1}, & \quad \forall i \in \{1, ..., n-2\} \\
             u'_{n-1} &= \frac{1 - u'_{n-2}}{3 - c'_{n-2}} & \\
             & & \\
             D'_0     &= \frac{1}{3} (4A_0 + 2A_1) & \\
-            D'_i     &= \frac{1}{4 - c'_{i-1}} (4A_i + 2A_{i+1} - D'_{i-1}) = c_i (4A_i + 2A_{i+1} - D'_{i-1}), & \forall i \in \{1, ..., n-2\} \\
+            D'_i     &= \frac{1}{4 - c'_{i-1}} (4A_i + 2A_{i+1} - D'_{i-1}) & \\
+            &= c_i (4A_i + 2A_{i+1} - D'_{i-1}), & \quad \forall i \in \{1, ..., n-2\} \\
             D'_{n-1} &= \frac{1}{3 - c'_{n-2}} (4A_{n-1} + 2A_n - D'_{n-2}) &
 
         Finally, we can do Backward Substitution to find :math:`q` and :math:`Y`:
 
         .. math::
             q_{n-1} &= u'_{n-1} & \\
-            q_i     &= u'_{i} - c'_i q_{i+1}, & \forall i \in \{n-2, ..., 0\} \\
+            q_i     &= u'_{i} - c'_i q_{i+1}, & \quad \forall i \in \{0, ..., n-2\} \\
             & & \\
             Y_{n-1} &= D'_{n-1} & \\
-            Y_i     &= D'_i - c'_i Y_{i+1},   & \forall i \in \{n-2, ..., 0\}
+            Y_i     &= D'_i - c'_i Y_{i+1},   & \quad \forall i \in \{0, ..., n-2\}
 
         With those values, we can finally calculate :math:`H_1 = Y - \frac{1}{1 + v^Tq} qv^TY`.
         Given that :math:`v_0 = v_{n-1} = 1`, and :math:`v_1 = v_2 = ... = v_{n-2} = 0`, its dot products
@@ -1143,10 +1484,10 @@ def get_handles_for_smooth_closed_cubic_spline(
         Once we have :math:`H_1`, we can get :math:`H_2` (the array of second handles) as follows:
 
         .. math::
-            H_{2, i}   &= 2A_{i+1} - H_{1, i+1}, & for i in [0, ..., N-2] \\
+            H_{2, i}   &= 2A_{i+1} - H_{1, i+1}, & \quad \forall i \in \{0, ..., n-2\} \\
             H_{2, n-1} &= 2A_0 - H_{1, 0} &
 
-        Because the matrix :math:`M` (and thus :math:`N, u, v`) always follows the same pattern,
+        Because the matrix :math:`M` always follows the same pattern (and thus :math:`N, u, v` as well),
         we can define a memo list for :math:`c'` and :math:`u'` to avoid recalculation. We cannot
         memoize :math:`D` and :math:`Y`, however, because they are always different matrices. We
         cannot make a memo for :math:`q` either, but we can calculate it faster because :math:`u'`
@@ -1167,63 +1508,63 @@ def get_handles_for_smooth_closed_cubic_spline(
     global UP_CLOSED_MEMO
 
     A = np.asarray(anchors)
-    N = len(anchors) - 1
+    n = A.shape[0] - 1
     dim = A.shape[1]
 
     # Calculate cp (c prime) and up (u prime) with help from
     # CP_CLOSED_MEMO and UP_CLOSED_MEMO.
     len_memo = CP_CLOSED_MEMO.size
-    if len_memo < N - 1:
-        cp = np.empty(N - 1)
-        up = np.empty(N - 1)
+    if len_memo < n - 1:
+        cp = np.empty(n - 1)
+        up = np.empty(n - 1)
         cp[:len_memo] = CP_CLOSED_MEMO
         up[:len_memo] = UP_CLOSED_MEMO
         # Forward Substitution 1
         # Calculate up (at the same time we calculate cp).
-        for i in range(len_memo, N - 1):
+        for i in range(len_memo, n - 1):
             cp[i] = 1 / (4 - cp[i - 1])
             up[i] = -cp[i] * up[i - 1]
         CP_CLOSED_MEMO = cp
         UP_CLOSED_MEMO = up
     else:
-        cp = CP_CLOSED_MEMO[: N - 1]
-        up = UP_CLOSED_MEMO[: N - 1]
+        cp = CP_CLOSED_MEMO[: n - 1]
+        up = UP_CLOSED_MEMO[: n - 1]
 
     # The last element of u' is different
-    cp_last_division = 1 / (3 - cp[N - 2])
-    up_last = cp_last_division * (1 - up[N - 2])
+    cp_last_division = 1 / (3 - cp[n - 2])
+    up_last = cp_last_division * (1 - up[n - 2])
 
     # Backward Substitution 1
     # Calculate q.
-    q = np.empty((N, dim))
-    q[N - 1] = up_last
-    for i in range(N - 2, -1, -1):
+    q = np.empty((n, dim))
+    q[n - 1] = up_last
+    for i in range(n - 2, -1, -1):
         q[i] = up[i] - cp[i] * q[i + 1]
 
     # Forward Substitution 2
-    # Calculate dp (d prime).
-    dp = np.empty((N, dim))
-    aux = 4 * A[:N] + 2 * A[1:]  # Vectorize the sum for efficiency.
-    dp[0] = aux[0] / 3
-    for i in range(1, N - 1):
-        dp[i] = cp[i] * (aux[i] - dp[i - 1])
-    dp[N - 1] = cp_last_division * (aux[N - 1] - dp[N - 2])
+    # Calculate Dp (D prime).
+    Dp = np.empty((n, dim))
+    AUX = 4 * A[:n] + 2 * A[1:]  # Vectorize the sum for efficiency.
+    Dp[0] = AUX[0] / 3
+    for i in range(1, n - 1):
+        Dp[i] = cp[i] * (AUX[i] - Dp[i - 1])
+    Dp[n - 1] = cp_last_division * (AUX[n - 1] - Dp[n - 2])
 
     # Backward Substitution
-    # Calculate y, which is defined as a view of dp for efficiency
+    # Calculate Y, which is defined as a view of Dp for efficiency
     # and semantic convenience at the same time.
-    y = dp
-    # y[N-1] = dp[N-1] (redundant)
-    for i in range(N - 2, -1, -1):
-        y[i] = dp[i] - cp[i] * y[i + 1]
+    Y = Dp
+    # Y[N-1] = Dp[n-1] (redundant)
+    for i in range(n - 2, -1, -1):
+        Y[i] = Dp[i] - cp[i] * Y[i + 1]
 
     # Calculate H1.
-    H1 = y - (y[0] + y[N - 1]) / (1 + q[0] + q[N - 1]) * q
+    H1 = Y - 1 / (1 + q[0] + q[n - 1]) * q * (Y[0] + Y[n - 1])
 
     # Calculate H2.
-    H2 = np.empty((N, dim))
-    H2[0 : N - 1] = 2 * A[1:N] - H1[1:N]
-    H2[N - 1] = 2 * A[N] - H1[0]
+    H2 = np.empty((n, dim))
+    H2[0 : n - 1] = 2 * A[1:n] - H1[1:n]
+    H2[n - 1] = 2 * A[n] - H1[0]
 
     return H1, H2
 
@@ -1235,7 +1576,7 @@ def get_handles_for_smooth_open_cubic_spline(
     anchors: Point3D_Array,
 ) -> tuple[Point3D_Array, Point3D_Array]:
     r"""Special case of :func:`get_handles_for_smooth_cubic_spline`,
-    when the `anchors` do not form a closed loop.
+    when the ``anchors`` do not form a closed loop.
 
     .. note::
         A system of equations must be solved to get the first handles of
@@ -1251,7 +1592,7 @@ def get_handles_for_smooth_open_cubic_spline(
         .. warning::
             The equations in the first webpage have some typos which were corrected in the comments.
 
-        In general, if there are :math:`n+1` anchors there will be :math:`n` Bézier curves
+        In general, if there are :math:`n+1` anchors, there will be :math:`n` Bézier curves
         and thus :math:`n` pairs of handles to find. We must solve the following
         system of equations for the 1st handles (example for :math:`n = 5`):
 
@@ -1290,9 +1631,9 @@ def get_handles_for_smooth_open_cubic_spline(
         Let:
 
         *   :math:`a = [a_0, \ a_1, \ ..., \ a_{n-2}]` be the lower diagonal of :math:`n-1` elements,
-            such that :math:`a_0 = a_1 = ... = a_{N-3} = 1`, and :math:`a_{n-2} = 2`;
+            such that :math:`a_0 = a_1 = ... = a_{n-3} = 1`, and :math:`a_{n-2} = 2`;
         *   :math:`b = [b_0, \ b_1, \ ..., \ b_{n-2}, \ b_{n-1}]` the main diagonal of :math:`n` elements,
-            such that :math:`b_0 = 2`, :math:`b_1 = b_2 = ... = b_{N-2} = 4`, and :math:`b_{n-1} = 7`;
+            such that :math:`b_0 = 2`, :math:`b_1 = b_2 = ... = b_{n-2} = 4`, and :math:`b_{n-1} = 7`;
         *   :math:`c = [c_0, \ c_1, \ ..., \ c_{n-2}] the upper diagonal of :math:{n-1} elements,
             such that :math:`c_0 = c_1 = ... = c_{n-2} = 1`: this diagonal is filled with ones.
 
@@ -1300,31 +1641,32 @@ def get_handles_for_smooth_open_cubic_spline(
 
         .. math::
             c'_0 &= \frac{c_0}{b_0} & \\
-            c'_i &= \frac{c_i}{b_i - a_{i-1} c'_{i-1}} = \frac{1}{4 - c'_{i-1}}, & \forall i \in \{1, ..., n-2\} \\
+            c'_i &= \frac{c_i}{b_i - a_{i-1} c'_{i-1}} = \frac{1}{4 - c'_{i-1}}, & \quad \forall i \in \{1, ..., n-2\} \\
             & & \\
             D'_0 &= \frac{1}{b_0} D_0 & \\
-            D'_i &= \frac{1}{b_i - a_{i-1} c'{i-1}} (D_i - a_{i-1} D'_{i-1}), & \forall i \in \{1, ..., n-1\}
+            D'_i &= \frac{1}{b_i - a_{i-1} c'{i-1}} (D_i - a_{i-1} D'_{i-1}), & \quad \forall i \in \{1, ..., n-1\}
 
         Then:
 
         .. math::
             c'_0     &= 0.5 & \\
-            c'_i     &= \frac{1}{4 - c'_{i-1}}, & \forall i \in \{1, ..., n-2\} \\
+            c'_i     &= \frac{1}{4 - c'_{i-1}}, & \quad \forall i \in \{1, ..., n-2\} \\
             & & \\
             D'_0     &= 0.5A_0 + A_1 & \\
-            D'_i     &= \frac{1}{4 - c'_{i-1}} (4A_i + 2A_{i+1} - D'_{i-1}) = c_i (4A_i + 2A_{i+1} - D'_{i-1}), & \forall i \in \{1, ..., n-2\} \\
+            D'_i     &= \frac{1}{4 - c'_{i-1}} (4A_i + 2A_{i+1} - D'_{i-1}) & \\
+            &= c_i (4A_i + 2A_{i+1} - D'_{i-1}), & \quad \forall i \in \{1, ..., n-2\} \\
             D'_{n-1} &= \frac{1}{7 - 2c'_{n-2}} (8A_{n-1} + A_n - 2D'_{n-2}) &
 
         Finally, we can do Backward Substitution to find :math:`H_1`:
 
         .. math::
             H_{1, n-1} &= D'_{n-1} & \\
-            H_{1, i}   &= D'_i - c'_i H_{1, i+1}, & \forall i \in \{n-2, ..., 0\}
+            H_{1, i}   &= D'_i - c'_i H_{1, i+1}, & \quad \forall i \in \{0, ..., n-2\}
 
         Once we have :math:`H_1`, we can get :math:`H_2` (the array of second handles) as follows:
 
         .. math::
-            H_{2, i}   &= 2A_{i+1} - H_{1, i+1}, & \forall i \in \{0, ..., N-2\} \\
+            H_{2, i}   &= 2A_{i+1} - H_{1, i+1}, & \quad \forall i \in \{0, ..., n-2\} \\
             H_{2, n-1} &= 0.5A_n   + 0.5H_{1, n-1} &
 
         As the matrix :math:`M` always follows the same pattern, we can define a memo list
@@ -1345,7 +1687,7 @@ def get_handles_for_smooth_open_cubic_spline(
     global CP_OPEN_MEMO
 
     A = np.asarray(anchors)
-    N = len(anchors) - 1
+    N = A.shape[0] - 1
     dim = A.shape[1]
 
     # Calculate cp (c prime) with help from CP_OPEN_MEMO.
@@ -1406,13 +1748,85 @@ def get_quadratic_approximation_of_cubic(
 def get_quadratic_approximation_of_cubic(a0, h0, h1, a1):
     r"""If :math:`a_0, h_0, h_1, a_1` are :math:`(3,)`-ndarrays representing control points
     for a cubic Bézier curve, returns a :math:`(6, 3)`-ndarray of 6 control points
-    :math:`[a'_0, \ h', \ a'_1, \quad a''_0, \ h'', \ a''_1]` for 2 quadratic Bézier curves
+    :math:`[a'_0, \ h', \ a'_1, \ a''_0, \ h'', \ a''_1]` for 2 quadratic Bézier curves
     approximating it.
 
     If :math:`a_0, h_0, h_1, a_1` are :math:`(m, 3)`-ndarrays of :math:`m` control points
     for :math:`m` cubic Bézier curves, returns instead a :math:`(6m, 3)`-ndarray of :math:`6m`
     control points, where each one of the :math:`m` groups of 6 control points defines the 2
     quadratic Bézier curves approximating the respective cubic Bézier curve.
+
+    .. note::
+        The algorithm splits the cubic Bézier curve at an inflection point, if it contains
+        at least one. Otherwise, it simply splits it at :math:`t = 0.5`. Then, it computes
+        the two intersections between the tangent line at the split point and the tangents at
+        both ends of the original cubic Bézier: these points will be the handles for the two
+        new quadratic Bézier curves.
+
+        .. seealso:
+            `A Primer on Bézier Curves #21: Curve inflections. Pomax. <https://pomax.github.io/bezierinfo/#inflections>`_
+
+        The inflection points in a cubic Bézier curve are those where the acceleration
+        (2nd derivative) is either zero or perpendicular to the velocity (1st derivative).
+        This can be expressed with a cross product in the following equation:
+
+        .. math::
+            C'(t) \times C''(t) = 0
+
+        The best way to solve this equation is by expressing :math:`C(t)` in its
+        polynomial form. If the control points `a_0, h_0, h_1, a_1` allow us to
+        express it in its Bernstein form:
+
+        .. math::
+            C(t) = (1-t)^3 a_0 + 3(1-t)^2t h_0 + 3(1-t)t^2 h_1 + t^3 a_1
+
+        this can be rearranged into a polynomial form:
+
+        .. math::
+            C(t) = a_0 + 3t(h_0 - a_0) + 3t^2(h_1 - 2h_0 + a_0) + t^3(a_1 - 3h_1 + 3h_0 - a_0)
+
+        where the following auxiliary points can be defined:
+
+        .. math::
+            p &= h_0 - a_0 \\
+            q &= h_1 - 2h_0 + a_0 \\
+            r &= a_1 - 3h_1 + 3h_0 - a_0
+
+        Thus, the velocity and acceleration can be easily derived:
+
+        .. math::
+            C(t) &= a_0 + 3tp + 3t^2q + t^3r \\
+            C'(t) &= 3p + 6tq + 3t^2r \\
+            C''(t) &= 6q + 6tr
+
+        from where the original equation becomes:
+
+        .. math::
+            C'(t) \times C''(t) &= 0 \\
+            \Rightarrow (3p + 6tq + 3t^2r) \times (6q + 6tr) &= 0 \\
+            \Rightarrow 18(p \times q) + 18t(p \times r) + 36t(q \times q) + 36t^2(q \times r) + 18t^2(r \times q) + 18t^3(r \times r) &= 0 \\
+            \Rightarrow 18(t^2(q \times r) + t(p \times r) + (p \times q)) &= 0 \\
+            t^2a + tb + c &= 0
+
+        which has a similar form to a quadratic equation, where one can define
+        :math:`a = q \times r, \ b = p \times r, \ c = p \times q`.
+
+        *   If the cubic Bézier curve is 2D, then :math:`a, b, c` are scalars, and thus
+            the 0, 1 or 2 values for :math:`t` can be derived from the quadratic equation.
+            One has to take care, however, that :math:`t \in [0, 1]`; otherwise, the
+            found solution must be discarded.
+
+        *   If the cubic Bézier curve is 3D, then :math:`a, b, c` are 3D vectors,
+            which implies solving 3 different quadratic equations. This case is more
+            complicated, as the solutions for the 3 equations should be the same
+            in order for the point located at those :math:`t` values to be actually
+            an inflection point.
+
+    .. warning::
+        The algorithm of this function assumes that the given cubic Bézier curve
+        is 2D, because it makes use of :func:`cross2D` and obtains :math:`a, b, c`
+        as scalars. For 3D curves the results might be wrong.
+
 
     Parameters
     ----------
@@ -1444,9 +1858,7 @@ def get_quadratic_approximation_of_cubic(a0, h0, h1, a1):
     T0 = h0 - a0
     T1 = a1 - h1
 
-    # Search for inflection points. This happens when the acceleration (2nd derivative)
-    # is either zero or perpendicular to the velocity (1st derivative), captured
-    # in the cross product equation C'(t) x C''(t) = 0.
+    # Search for inflection points.
     # If no inflection points are found, use the midpoint as the split point instead.
     # Based on https://pomax.github.io/bezierinfo/#inflections
     t_split = np.full(a0.shape[0], 0.5)
@@ -1496,7 +1908,7 @@ def get_quadratic_approximation_of_cubic(a0, h0, h1, a1):
     t_split[is_quadratic][is_real][is_t_minus_valid] = t_minus[is_t_minus_valid]
     t_split[is_quadratic][is_real][is_t_plus_valid] = t_plus[is_t_plus_valid]
 
-    # Compute bezier point and tangent at the chosen value of t (these are vectorized)
+    # Compute Bézier point and tangent at the chosen value of t (these are vectorized)
     t_split = t_split.reshape(-1, 1)
     split_point = bezier([a0, h0, h1, a1])(t_split)  # type: ignore
     tangent_at_split = bezier([h0 - a0, h1 - h0, a1 - h1])(t_split)  # type: ignore
@@ -1566,9 +1978,9 @@ def proportions_along_bezier_curve_for_point(
     Parameters
     ----------
     point
-        The Cartesian Coordinates of the point whose parameter should be obtained.
+        The cartesian coordinates of the point whose parameter should be obtained.
     control_points
-        The Cartesian Coordinates of the ordered control points of the Bézier curve
+        The cartesian coordinates of the ordered control points of the Bézier curve
         on which the point may or may not lie.
     round_to
         A float whose number of decimal places all values such as coordinates of
@@ -1647,9 +2059,9 @@ def point_lies_on_bezier(
     Parameters
     ----------
     point
-        The Cartesian Coordinates of the point to check.
+        The cartesian coordinates of the point to check.
     control_points
-        The Cartesian Coordinates of the ordered control points of the Bézier curve on
+        The cartesian coordinates of the ordered control points of the Bézier curve on
         which the point may or may not lie.
     round_to
         A float whose number of decimal places all values such as coordinates of points
