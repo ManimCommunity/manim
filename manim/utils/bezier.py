@@ -111,9 +111,9 @@ def bezier(points):
         B = P.copy()
         for i in range(n):
             # After the i-th iteration (i in [0, ..., n-1]) there are (n-i)
-            # Bezier curves of grade (i+1) stored in the first n-i slots of B
+            # Bézier curves of grade (i+1) stored in the first n-i slots of B
             B[: n - i] += t * (B[1 : n - i + 1] - B[: n - i])
-        # In the end, there shall be a single Bezier curve of grade n
+        # In the end, there shall be a single Bézier curve of grade n
         # stored in the first slot of B
         return B[0]
 
@@ -162,6 +162,8 @@ def partial_bezier_points(points: BezierPoints, a: float, b: float) -> BezierPoi
             \end{pmatrix}
 
         * Step 2:
+
+        .. math::
             H''_0
             &=
             \begin{pmatrix}
@@ -200,7 +202,7 @@ def partial_bezier_points(points: BezierPoints, a: float, b: float) -> BezierPoi
                 p_2
             \end{pmatrix}
 
-        from where one can define a :math:`(3, 3)` matrix `S_2` which, when applied over
+        from where one can define a :math:`(3, 3)` matrix :math:`S_2` which, when applied over
         the array of ``points``, will return the desired partial quadratic Bézier curve:
 
         .. math::
@@ -213,7 +215,7 @@ def partial_bezier_points(points: BezierPoints, a: float, b: float) -> BezierPoi
             \end{pmatrix}
 
         Similarly, for the cubic Bézier curve case, one can define the following
-        :math:`(4, 4)` matrix `S_3`:
+        :math:`(4, 4)` matrix :math:`S_3`:
 
         .. math::
             S_3
@@ -296,7 +298,7 @@ def partial_bezier_points(points: BezierPoints, a: float, b: float) -> BezierPoi
     arr = np.array(points)
     N = arr.shape[0]
 
-    # Current state for an example Bezier curve C0 = [P0, P1, P2, P3]:
+    # Current state for an example Bézier curve C0 = [P0, P1, P2, P3]:
     # arr = [P0, P1, P2, P3]
     if a != 0:
         for i in range(1, N):
@@ -336,7 +338,7 @@ def split_bezier(points: BezierPoints, t: float) -> Point3D_Array:
             `A Primer on Bézier Curves #10: Splitting curves. Pomax. <https://pomax.github.io/bezierinfo/#splitting>`_
 
         As an example for a cubic Bézier curve, let :math:`p_0, p_1, p_2, p_3` be the points
-        needed for the curve :math:`C_0 = [p_0, p_1, p_2, p_3]`.
+        needed for the curve :math:`C_0 = [p_0, \ p_1, \ p_2, \ p_3]`.
 
         Define the 3 linear Béziers :math:`L_0, L_1, L_2` as interpolations of :math:`p_0, p_1, p_2, p_3`:
 
@@ -360,8 +362,8 @@ def split_bezier(points: BezierPoints, t: float) -> Point3D_Array:
         and :math:`H_1`, defined by some of the points we calculated earlier:
 
         .. math::
-            H_0 = [p_0, L_0(t'), Q_0(t'), C_0(t')] \\
-            H_1 = [p_0(t'), Q_1(t'), L_2(t'), p_3]
+            H_0 &= [p_0, &\ L_0(t'), &\ Q_0(t'), &\ C_0(t') &] \\
+            H_1 &= [p_0(t'), &\ Q_1(t'), &\ L_2(t'), &\ p_3 &]
 
         As the resulting curves are obtained from linear combinations of ``points``, everything can
         be encoded into a matrix for efficiency, which is done for Bézier curves of degree up to 3.
@@ -416,7 +418,7 @@ def split_bezier(points: BezierPoints, t: float) -> Point3D_Array:
 
         .. math::
             S_2
-            =
+            &=
             \begin{pmatrix}
                 1 & 0 & 0 \\
                 (1-t) & t & 0 \\
@@ -425,11 +427,9 @@ def split_bezier(points: BezierPoints, t: float) -> Point3D_Array:
                 0 & (1-t) & t \\
                 0 & 0 & 1
             \end{pmatrix}
-            \quad
-            \Rightarrow
-            \quad
+            \\
             S_2 P
-            =
+            &=
             \begin{pmatrix}
                 1 & 0 & 0 \\
                 (1-t) & t & 0 \\
@@ -445,12 +445,12 @@ def split_bezier(points: BezierPoints, t: float) -> Point3D_Array:
             \end{pmatrix}
             =
             \begin{pmatrix}
-                \Vert \\
+                \vert \\
                 H_0 \\
-                \Vert \\
-                \Vert \\
+                \vert \\
+                \vert \\
                 H_1 \\
-                \Vert
+                \vert
             \end{pmatrix}
 
         For the previous example with a cubic Bézier curve:
@@ -506,7 +506,7 @@ def split_bezier(points: BezierPoints, t: float) -> Point3D_Array:
 
         .. math::
             S_3
-            =
+            &=
             \begin{pmatrix}
                 1 & 0 & 0 & 0 \\
                 (1-t) & t & 0 & 0 \\
@@ -517,11 +517,9 @@ def split_bezier(points: BezierPoints, t: float) -> Point3D_Array:
                 0 & 0 & (1-t) & t \\
                 0 & 0 & 0 & 1
             \end{pmatrix}
-            \quad
-            \Rightarrow
-            \quad
+            \\
             S_3 P
-            =
+            &=
             \begin{pmatrix}
                 1 & 0 & 0 & 0 \\
                 (1-t) & t & 0 & 0 \\
@@ -540,12 +538,12 @@ def split_bezier(points: BezierPoints, t: float) -> Point3D_Array:
             \end{pmatrix}
             =
             \begin{pmatrix}
-                \Vert \\
+                \vert \\
                 H_0 \\
-                \Vert \\
-                \Vert \\
+                \vert \\
+                \vert \\
                 H_1 \\
-                \Vert
+                \vert
             \end{pmatrix}
 
     Parameters
@@ -624,7 +622,7 @@ def split_bezier(points: BezierPoints, t: float) -> Point3D_Array:
     arr[1] = points
     arr[0, 0] = points[0]
 
-    # Example for a cubic Bezier
+    # Example for a cubic Bézier
     # arr[0] = [P0 .. .. ..]
     # arr[1] = [P0 P1 P2 P3]
     for i in range(1, N):
@@ -773,11 +771,11 @@ def subdivide_bezier(points: BezierPoints, n_divisions: int) -> Point3D_Array:
             \end{pmatrix}
 
         the plan is to replace :math:`[a, b]` with
-        :math:`[\frac{i-1}{n}, \frac{i}{n}], \ \forall i \in \{1, ..., n\}`.
+        :math:`\left[ \frac{i-1}{n}, \frac{i}{n} \right], \ \forall i \in \{1, ..., n\}`.
 
         As an example for :math:`n = 2` divisions, construct :math:`M_1` for
-        the interval :math:`[0, \frac{1}{2}]`, and :math:`M_2` for the
-        interval :math:`[\frac{1}{2}, 1]`:
+        the interval :math:`\left[ 0, \frac{1}{2} \right]`, and :math:`M_2` for the
+        interval :math:`\left[ \frac{1}{2}, 1 \right]`:
 
         .. math::
             M_1
@@ -797,8 +795,8 @@ def subdivide_bezier(points: BezierPoints, n_divisions: int) -> Point3D_Array:
                 0 & 0 & 1
             \end{pmatrix}
 
-        Therefore, the following subdivision matrix :math:`D_2` can be constructed, which
-        will subdivide an array of ``points`` into 2 parts:
+        Therefore, the following :math:`(6, 3)` subdivision matrix :math:`D_2` can be
+        constructed, which will subdivide an array of ``points`` into 2 parts:
 
         .. math::
             D_2
@@ -1236,7 +1234,7 @@ def match_interpolate(new_start, new_end, old_start, old_end, old_value):
     )
 
 
-# Figuring out which Bezier curves most smoothly connect a sequence of points
+# Figuring out which Bézier curves most smoothly connect a sequence of points
 def get_handles_for_smooth_cubic_spline(
     anchors: Point3D_Array,
 ) -> tuple[Point3D_Array, Point3D_Array]:
@@ -1258,7 +1256,7 @@ def get_handles_for_smooth_cubic_spline(
     anchors = np.asarray(anchors)
     n_handles = len(anchors) - 1
 
-    # If there's a single anchor, there's no Bezier curve.
+    # If there's a single anchor, there's no Bézier curve.
     # Return empty arrays.
     if n_handles == 0:
         dim = anchors.shape[1]
@@ -1299,9 +1297,9 @@ def get_handles_for_smooth_closed_cubic_spline(
 
             * `Conditions on control points for continuous curvature. (2016). Jaco Stuifbergen. <http://www.jacos.nl/jacos_html/spline/theory/theory_2.html>`_
 
-        In general, if there are :math:`n+1` anchors, there will be :math:`n` Bézier curves
-        and thus :math:`n` pairs of handles to find. We must solve the following
-        system of equations for the 1st handles (example for :math:`n = 5`):
+        In general, if there are :math:`N+1` anchors, there will be :math:`N` Bézier curves
+        and thus :math:`N` pairs of handles to find. We must solve the following
+        system of equations for the 1st handles (example for :math:`N = 5`):
 
         .. math::
             \begin{pmatrix}
@@ -1388,24 +1386,24 @@ def get_handles_for_smooth_closed_cubic_spline(
             \end{pmatrix}
             \\
             &=
-            N + uv^T
+            T + uv^T
 
-        We decompose :math:`M = N + uv^T`, where :math:`N` is a tridiagonal matrix, and
-        :math:`u, v` are :math:`n`-D vectors such that :math:`u_0 = u_{n-1} = v_0 = v_{n-1} = 1`,
-        and :math:`u_i = v_i = 0, \forall i \in \{1, ..., n-2\}`.
+        We decompose :math:`M = T + uv^T`, where :math:`T` is a tridiagonal matrix, and
+        :math:`u, v` are :math:`N`-D vectors such that :math:`u_0 = u_{N-1} = v_0 = v_{N-1} = 1`,
+        and :math:`u_i = v_i = 0, \forall i \in \{1, ..., N-2\}`.
 
         Thus:
 
         .. math::
             MH_1 &= D \\
-            \Rightarrow (N + uv^T)H_1 &= D
+            \Rightarrow (T + uv^T)H_1 &= D
 
         If we find a vector :math:`q` such that :math:`Nq = u`:
 
         .. math::
-            \Rightarrow (N + Nqv^T)H_1 &= D \\
-            \Rightarrow N(I + qv^T)H_1 &= D \\
-            \Rightarrow H_1 &= (I + qv^T)^{-1} N^{-1} D
+            \Rightarrow (T + Nqv^T)H_1 &= D \\
+            \Rightarrow T(I + qv^T)H_1 &= D \\
+            \Rightarrow H_1 &= (I + qv^T)^{-1} T^{-1} D
 
         According to Sherman-Morrison's formula:
 
@@ -1415,77 +1413,76 @@ def get_handles_for_smooth_closed_cubic_spline(
         .. math::
             (I + qv^T)^{-1} = I - \frac{1}{1 + v^Tq} qv^T
 
-        If we find :math:`Y = N^{-1} D`, or in other words, if we solve for
+        If we find :math:`Y = T^{-1} D`, or in other words, if we solve for
         :math:`Y` in :math:`NY = D`:
 
         .. math::
-            H_1 &= (I + qv^T)^{-1} N^{-1} D \\
+            H_1 &= (I + qv^T)^{-1} T^{-1} D \\
             &= (I + qv^T)^{-1} Y \\
             &= (I - \frac{1}{1 + v^Tq} qv^T) Y \\
             &= Y - \frac{1}{1 + v^Tq} qv^TY
 
         Therefore, we must solve for :math:`q` and :math:`Y` in :math:`Nq = u` and :math:`NY = D`.
-        As :math:`N` is now tridiagonal, we shall use Thomas' algorithm.
+        As :math:`T` is now tridiagonal, we shall use Thomas' algorithm.
 
         Let:
 
-        *   :math:`a = [a_0, \ a_1, \ ..., \ a_{n-2}]` be the lower diagonal of :math:`n-1` elements,
-            such that :math:`a_0 = a_1 = ... = a_{n-2} = 1`, so this diagonal is filled with ones;
-        *   :math:`b = [b_0, \ b_1, \ ..., \ b_{n-2}, \ b_{n-1}]` the main diagonal of :math:`n` elements,
-            such that :math:`b_0 = b_{n-1} = 3`, and :math:`b_1 = b_2 = ... = b_{n-2} = 4`;
-        *   :math:`c = [c_0, \ c_1, \ ..., \ c_{n-2}]` the upper diagonal of :math:`n-1` elements,
-            such that :math:`c_0 = c_1 = ... = c_{n-2} = 1`: this diagonal is also filled with ones.
+        *   :math:`a = [a_0, \ a_1, \ ..., \ a_{N-2}]` be the lower diagonal of :math:`N-1` elements,
+            such that :math:`a_0 = a_1 = ... = a_{N-2} = 1`, so this diagonal is filled with ones;
+        *   :math:`b = [b_0, \ b_1, \ ..., \ b_{N-2}, \ b_{N-1}]` the main diagonal of :math:`N` elements,
+            such that :math:`b_0 = b_{N-1} = 3`, and :math:`b_1 = b_2 = ... = b_{N-2} = 4`;
+        *   :math:`c = [c_0, \ c_1, \ ..., \ c_{N-2}]` the upper diagonal of :math:`N-1` elements,
+            such that :math:`c_0 = c_1 = ... = c_{N-2} = 1`: this diagonal is also filled with ones.
 
         If, according to Thomas' algorithm, we define:
 
         .. math::
             c'_0 &= \frac{c_0}{b_0} & \\
-            c'_i &= \frac{c_i}{b_i - a_{i-1} c'_{i-1}} = \frac{1}{4 - c'_{i-1}}, & \quad \forall i \in \{1, ..., n-2\} \\
+            c'_i &= \frac{c_i}{b_i - a_{i-1} c'_{i-1}}, & \quad \forall i \in \{1, ..., N-2\} \\
             & & \\
             u'_0 &= \frac{u_0}{b_0} & \\
-            u'_i &= \frac{u_i - a_{i-1} u'_{i-1}}{b_i - a_{i-1} c'_{i-1}), & \quad \forall i \in \{1, ..., n-1\} \\
+            u'_i &= \frac{u_i - a_{i-1} u'_{i-1}}{b_i - a_{i-1} c'_{i-1}}, & \quad \forall i \in \{1, ..., N-1\} \\
             & & \\
             D'_0 &= \frac{1}{b_0} D_0 & \\
-            D'_i &= \frac{1}{b_i - a_{i-1} c'{i-1}} (D_i - a_{i-1} D'_{i-1}), & \quad \forall i \in \{1, ..., n-1\}
+            D'_i &= \frac{1}{b_i - a_{i-1} c'_{i-1}} (D_i - a_{i-1} D'_{i-1}), & \quad \forall i \in \{1, ..., N-1\}
 
         Then:
 
         .. math::
             c'_0     &= \frac{1}{3} & \\
-            c'_i     &= \frac{1}{4 - c'_{i-1}}, & \quad \forall i \in \{1, ..., n-2\} \\
+            c'_i     &= \frac{1}{4 - c'_{i-1}}, & \quad \forall i \in \{1, ..., N-2\} \\
             & & \\
             u'_0     &= \frac{1}{3} & \\
-            u'_i     &= \frac{-u'_{i-1}}{4 - c'{i-1}} & \\
-            &= -c'_i u'_{i-1}, & \quad \forall i \in \{1, ..., n-2\} \\
-            u'_{n-1} &= \frac{1 - u'_{n-2}}{3 - c'_{n-2}} & \\
+            u'_i     &= \frac{-u'_{i-1}}{4 - c'_{i-1}} = -c'_i u'_{i-1}, & \quad \forall i \in \{1, ..., N-2\} \\
+            u'_{N-1} &= \frac{1 - u'_{N-2}}{3 - c'_{N-2}} & \\
             & & \\
             D'_0     &= \frac{1}{3} (4A_0 + 2A_1) & \\
             D'_i     &= \frac{1}{4 - c'_{i-1}} (4A_i + 2A_{i+1} - D'_{i-1}) & \\
-            &= c_i (4A_i + 2A_{i+1} - D'_{i-1}), & \quad \forall i \in \{1, ..., n-2\} \\
-            D'_{n-1} &= \frac{1}{3 - c'_{n-2}} (4A_{n-1} + 2A_n - D'_{n-2}) &
+            &= c_i (4A_i + 2A_{i+1} - D'_{i-1}), & \quad \forall i \in \{1, ..., N-2\} \\
+            D'_{N-1} &= \frac{1}{3 - c'_{N-2}} (4A_{N-1} + 2A_n - D'_{N-2}) &
 
         Finally, we can do Backward Substitution to find :math:`q` and :math:`Y`:
 
         .. math::
-            q_{n-1} &= u'_{n-1} & \\
-            q_i     &= u'_{i} - c'_i q_{i+1}, & \quad \forall i \in \{0, ..., n-2\} \\
+            q_{N-1} &= u'_{N-1} & \\
+            q_i     &= u'_{i} - c'_i q_{i+1}, & \quad \forall i \in \{0, ..., N-2\} \\
             & & \\
-            Y_{n-1} &= D'_{n-1} & \\
-            Y_i     &= D'_i - c'_i Y_{i+1},   & \quad \forall i \in \{0, ..., n-2\}
+            Y_{N-1} &= D'_{N-1} & \\
+            Y_i     &= D'_i - c'_i Y_{i+1},   & \quad \forall i \in \{0, ..., N-2\}
 
         With those values, we can finally calculate :math:`H_1 = Y - \frac{1}{1 + v^Tq} qv^TY`.
-        Given that :math:`v_0 = v_{n-1} = 1`, and :math:`v_1 = v_2 = ... = v_{n-2} = 0`, its dot products
-        with :math:`q` and :math:`Y` are respectively :math:`v^Tq = q_0 + q_{n-1}` and
-        :math:`v^TY = Y_0 + Y_{n-1}`. Thus:
+        Given that :math:`v_0 = v_{N-1} = 1`, and :math:`v_1 = v_2 = ... = v_{N-2} = 0`, its dot products
+        with :math:`q` and :math:`Y` are respectively :math:`v^Tq = q_0 + q_{N-1}` and
+        :math:`v^TY = Y_0 + Y_{N-1}`. Thus:
 
         .. math::
-            H_1 = Y - \frac{1}{1 + q_0 + q_{n-1}} q(Y_0 + Y_{n-1})
+            H_1 = Y - \frac{1}{1 + q_0 + q_{N-1}} q(Y_0 + Y_{N-1})
 
         Once we have :math:`H_1`, we can get :math:`H_2` (the array of second handles) as follows:
 
         .. math::
-            H_{2, i}   &= 2A_{i+1} - H_{1, i+1}, & \quad \forall i \in \{0, ..., n-2\} \\
-            H_{2, n-1} &= 2A_0 - H_{1, 0} &
+            H_{2, i}   &= 2A_{i+1} - H_{1, i+1}, & \quad \forall i \in \{0, ..., N-2\} \\
+            H_{2, N-1} &= 2A_0 - H_{1, 0} &
 
         Because the matrix :math:`M` always follows the same pattern (and thus :math:`N, u, v` as well),
         we can define a memo list for :math:`c'` and :math:`u'` to avoid recalculation. We cannot
@@ -1508,63 +1505,63 @@ def get_handles_for_smooth_closed_cubic_spline(
     global UP_CLOSED_MEMO
 
     A = np.asarray(anchors)
-    n = A.shape[0] - 1
+    N = A.shape[0] - 1
     dim = A.shape[1]
 
     # Calculate cp (c prime) and up (u prime) with help from
     # CP_CLOSED_MEMO and UP_CLOSED_MEMO.
     len_memo = CP_CLOSED_MEMO.size
-    if len_memo < n - 1:
-        cp = np.empty(n - 1)
-        up = np.empty(n - 1)
+    if len_memo < N - 1:
+        cp = np.empty(N - 1)
+        up = np.empty(N - 1)
         cp[:len_memo] = CP_CLOSED_MEMO
         up[:len_memo] = UP_CLOSED_MEMO
         # Forward Substitution 1
         # Calculate up (at the same time we calculate cp).
-        for i in range(len_memo, n - 1):
+        for i in range(len_memo, N - 1):
             cp[i] = 1 / (4 - cp[i - 1])
             up[i] = -cp[i] * up[i - 1]
         CP_CLOSED_MEMO = cp
         UP_CLOSED_MEMO = up
     else:
-        cp = CP_CLOSED_MEMO[: n - 1]
-        up = UP_CLOSED_MEMO[: n - 1]
+        cp = CP_CLOSED_MEMO[: N - 1]
+        up = UP_CLOSED_MEMO[: N - 1]
 
     # The last element of u' is different
-    cp_last_division = 1 / (3 - cp[n - 2])
-    up_last = cp_last_division * (1 - up[n - 2])
+    cp_last_division = 1 / (3 - cp[N - 2])
+    up_last = cp_last_division * (1 - up[N - 2])
 
     # Backward Substitution 1
     # Calculate q.
-    q = np.empty((n, dim))
-    q[n - 1] = up_last
-    for i in range(n - 2, -1, -1):
+    q = np.empty((N, dim))
+    q[N - 1] = up_last
+    for i in range(N - 2, -1, -1):
         q[i] = up[i] - cp[i] * q[i + 1]
 
     # Forward Substitution 2
     # Calculate Dp (D prime).
-    Dp = np.empty((n, dim))
-    AUX = 4 * A[:n] + 2 * A[1:]  # Vectorize the sum for efficiency.
+    Dp = np.empty((N, dim))
+    AUX = 4 * A[:N] + 2 * A[1:]  # Vectorize the sum for efficiency.
     Dp[0] = AUX[0] / 3
-    for i in range(1, n - 1):
+    for i in range(1, N - 1):
         Dp[i] = cp[i] * (AUX[i] - Dp[i - 1])
-    Dp[n - 1] = cp_last_division * (AUX[n - 1] - Dp[n - 2])
+    Dp[N - 1] = cp_last_division * (AUX[N - 1] - Dp[N - 2])
 
     # Backward Substitution
     # Calculate Y, which is defined as a view of Dp for efficiency
     # and semantic convenience at the same time.
     Y = Dp
-    # Y[N-1] = Dp[n-1] (redundant)
-    for i in range(n - 2, -1, -1):
+    # Y[N-1] = Dp[N-1] (redundant)
+    for i in range(N - 2, -1, -1):
         Y[i] = Dp[i] - cp[i] * Y[i + 1]
 
     # Calculate H1.
-    H1 = Y - 1 / (1 + q[0] + q[n - 1]) * q * (Y[0] + Y[n - 1])
+    H1 = Y - 1 / (1 + q[0] + q[N - 1]) * q * (Y[0] + Y[N - 1])
 
     # Calculate H2.
-    H2 = np.empty((n, dim))
-    H2[0 : n - 1] = 2 * A[1:n] - H1[1:n]
-    H2[n - 1] = 2 * A[n] - H1[0]
+    H2 = np.empty((N, dim))
+    H2[0 : N - 1] = 2 * A[1:N] - H1[1:N]
+    H2[N - 1] = 2 * A[N] - H1[0]
 
     return H1, H2
 
@@ -1592,9 +1589,9 @@ def get_handles_for_smooth_open_cubic_spline(
         .. warning::
             The equations in the first webpage have some typos which were corrected in the comments.
 
-        In general, if there are :math:`n+1` anchors, there will be :math:`n` Bézier curves
-        and thus :math:`n` pairs of handles to find. We must solve the following
-        system of equations for the 1st handles (example for :math:`n = 5`):
+        In general, if there are :math:`N+1` anchors, there will be :math:`N` Bézier curves
+        and thus :math:`N` pairs of handles to find. We must solve the following
+        system of equations for the 1st handles (example for :math:`N = 5`):
 
         .. math::
             \begin{pmatrix}
@@ -1621,7 +1618,7 @@ def get_handles_for_smooth_open_cubic_spline(
             \end{pmatrix}
 
         which will be expressed as :math:`MH_1 = D`.
-        :math:`M` is a tridiagonal matrix, so the system can be solved in :math`O(n)`
+        :math:`M` is a tridiagonal matrix, so the system can be solved in :math`O(N)`
         operations. Here we shall use Thomas' algorithm or the tridiagonal matrix
         algorithm.
 
@@ -1630,44 +1627,44 @@ def get_handles_for_smooth_open_cubic_spline(
 
         Let:
 
-        *   :math:`a = [a_0, \ a_1, \ ..., \ a_{n-2}]` be the lower diagonal of :math:`n-1` elements,
-            such that :math:`a_0 = a_1 = ... = a_{n-3} = 1`, and :math:`a_{n-2} = 2`;
-        *   :math:`b = [b_0, \ b_1, \ ..., \ b_{n-2}, \ b_{n-1}]` the main diagonal of :math:`n` elements,
-            such that :math:`b_0 = 2`, :math:`b_1 = b_2 = ... = b_{n-2} = 4`, and :math:`b_{n-1} = 7`;
-        *   :math:`c = [c_0, \ c_1, \ ..., \ c_{n-2}] the upper diagonal of :math:{n-1} elements,
-            such that :math:`c_0 = c_1 = ... = c_{n-2} = 1`: this diagonal is filled with ones.
+        *   :math:`a = [a_0, \ a_1, \ ..., \ a_{N-2}]` be the lower diagonal of :math:`N-1` elements,
+            such that :math:`a_0 = a_1 = ... = a_{N-3} = 1`, and :math:`a_{N-2} = 2`;
+        *   :math:`b = [b_0, \ b_1, \ ..., \ b_{N-2}, \ b_{N-1}]` the main diagonal of :math:`N` elements,
+            such that :math:`b_0 = 2`, :math:`b_1 = b_2 = ... = b_{N-2} = 4`, and :math:`b_{N-1} = 7`;
+        *   :math:`c = [c_0, \ c_1, \ ..., \ c_{N-2}]` the upper diagonal of :math:{N-1} elements,
+            such that :math:`c_0 = c_1 = ... = c_{N-2} = 1`: this diagonal is filled with ones.
 
         If, according to Thomas' algorithm, we define:
 
         .. math::
             c'_0 &= \frac{c_0}{b_0} & \\
-            c'_i &= \frac{c_i}{b_i - a_{i-1} c'_{i-1}} = \frac{1}{4 - c'_{i-1}}, & \quad \forall i \in \{1, ..., n-2\} \\
+            c'_i &= \frac{c_i}{b_i - a_{i-1} c'_{i-1}}, & \quad \forall i \in \{1, ..., N-2\} \\
             & & \\
             D'_0 &= \frac{1}{b_0} D_0 & \\
-            D'_i &= \frac{1}{b_i - a_{i-1} c'{i-1}} (D_i - a_{i-1} D'_{i-1}), & \quad \forall i \in \{1, ..., n-1\}
+            D'_i &= \frac{1}{b_i - a_{i-1} c'{i-1}} (D_i - a_{i-1} D'_{i-1}), & \quad \forall i \in \{1, ..., N-1\}
 
         Then:
 
         .. math::
             c'_0     &= 0.5 & \\
-            c'_i     &= \frac{1}{4 - c'_{i-1}}, & \quad \forall i \in \{1, ..., n-2\} \\
+            c'_i     &= \frac{1}{4 - c'_{i-1}}, & \quad \forall i \in \{1, ..., N-2\} \\
             & & \\
             D'_0     &= 0.5A_0 + A_1 & \\
             D'_i     &= \frac{1}{4 - c'_{i-1}} (4A_i + 2A_{i+1} - D'_{i-1}) & \\
-            &= c_i (4A_i + 2A_{i+1} - D'_{i-1}), & \quad \forall i \in \{1, ..., n-2\} \\
-            D'_{n-1} &= \frac{1}{7 - 2c'_{n-2}} (8A_{n-1} + A_n - 2D'_{n-2}) &
+            &= c_i (4A_i + 2A_{i+1} - D'_{i-1}), & \quad \forall i \in \{1, ..., N-2\} \\
+            D'_{N-1} &= \frac{1}{7 - 2c'_{N-2}} (8A_{N-1} + A_n - 2D'_{N-2}) &
 
         Finally, we can do Backward Substitution to find :math:`H_1`:
 
         .. math::
-            H_{1, n-1} &= D'_{n-1} & \\
-            H_{1, i}   &= D'_i - c'_i H_{1, i+1}, & \quad \forall i \in \{0, ..., n-2\}
+            H_{1, N-1} &= D'_{N-1} & \\
+            H_{1, i}   &= D'_i - c'_i H_{1, i+1}, & \quad \forall i \in \{0, ..., N-2\}
 
         Once we have :math:`H_1`, we can get :math:`H_2` (the array of second handles) as follows:
 
         .. math::
-            H_{2, i}   &= 2A_{i+1} - H_{1, i+1}, & \quad \forall i \in \{0, ..., n-2\} \\
-            H_{2, n-1} &= 0.5A_n   + 0.5H_{1, n-1} &
+            H_{2, i}   &= 2A_{i+1} - H_{1, i+1}, & \quad \forall i \in \{0, ..., N-2\} \\
+            H_{2, N-1} &= 0.5A_n   + 0.5H_{1, N-1} &
 
         As the matrix :math:`M` always follows the same pattern, we can define a memo list
         for :math:`c'` to avoid recalculation. We cannot do the same for :math:`D`, however,
@@ -1701,21 +1698,21 @@ def get_handles_for_smooth_open_cubic_spline(
     else:
         cp = CP_OPEN_MEMO[: N - 1]
 
-    # Calculate dp (d prime).
-    dp = np.empty((N, dim))
-    dp[0] = 0.5 * A[0] + A[1]
-    aux = 4 * A[1 : N - 1] + 2 * A[2:N]  # Vectorize the sum for efficiency.
+    # Calculate Dp (d prime).
+    Dp = np.empty((N, dim))
+    Dp[0] = 0.5 * A[0] + A[1]
+    AUX = 4 * A[1 : N - 1] + 2 * A[2:N]  # Vectorize the sum for efficiency.
     for i in range(1, N - 1):
-        dp[i] = cp[i] * (aux[i - 1] - dp[i - 1])
-    dp[N - 1] = (8 * A[N - 1] + A[N] - 2 * dp[N - 2]) / (7 - 2 * cp[N - 2])
+        Dp[i] = cp[i] * (AUX[i - 1] - Dp[i - 1])
+    Dp[N - 1] = (8 * A[N - 1] + A[N] - 2 * Dp[N - 2]) / (7 - 2 * Dp[N - 2])
 
     # Backward Substitution.
-    # H1 (array of the first handles) is defined as a view of dp for efficiency
+    # H1 (array of the first handles) is defined as a view of Dp for efficiency
     # and semantic convenience at the same time.
-    H1 = dp
-    # H1[N-1] = dp[N-1] (redundant)
+    H1 = Dp
+    # H1[N-1] = Dp[N-1] (redundant)
     for i in range(N - 2, -1, -1):
-        H1[i] = dp[i] - cp[i] * H1[i + 1]
+        H1[i] = Dp[i] - cp[i] * H1[i + 1]
 
     # Calculate H2.
     H2 = np.empty((N, dim))
@@ -1774,7 +1771,7 @@ def get_quadratic_approximation_of_cubic(a0, h0, h1, a1):
             C'(t) \times C''(t) = 0
 
         The best way to solve this equation is by expressing :math:`C(t)` in its
-        polynomial form. If the control points `a_0, h_0, h_1, a_1` allow us to
+        polynomial form. If the control points :math:`a_0, h_0, h_1, a_1` allow us to
         express it in its Bernstein form:
 
         .. math::
@@ -1803,9 +1800,9 @@ def get_quadratic_approximation_of_cubic(a0, h0, h1, a1):
 
         .. math::
             C'(t) \times C''(t) &= 0 \\
-            \Rightarrow (3p + 6tq + 3t^2r) \times (6q + 6tr) &= 0 \\
-            \Rightarrow 18(p \times q) + 18t(p \times r) + 36t(q \times q) + 36t^2(q \times r) + 18t^2(r \times q) + 18t^3(r \times r) &= 0 \\
-            \Rightarrow 18(t^2(q \times r) + t(p \times r) + (p \times q)) &= 0 \\
+            (3p + 6tq + 3t^2r) \times (6q + 6tr) &= 0 \\
+            18(p \times q) + 18t(p \times r) + 36t(q \times q) + 36t^2(q \times r) + 18t^2(r \times q) + 18t^3(r \times r) &= 0 \\
+            18(t^2(q \times r) + t(p \times r) + (p \times q)) &= 0 \\
             t^2a + tb + c &= 0
 
         which has a similar form to a quadratic equation, where one can define
@@ -2028,7 +2025,7 @@ def proportions_along_bezier_curve_for_point(
                 sign *= -1
             terms.append(outercoeff * sum(np.array(term)))
         if all(term == 0 for term in terms):
-            # Then both Bezier curve and Point lie on the same plane.
+            # Then both Bézier curve and point lie on the same plane.
             # Roots will be none, but in this specific instance, we don't need to consider that.
             continue
         bezier_polynom = np.polynomial.Polynomial(terms[::-1])
