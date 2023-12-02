@@ -945,7 +945,7 @@ class OpenGLVMobject(OpenGLMobject):
         curves_and_lengths = tuple(self.get_curve_functions_with_lengths())
 
         target_length = alpha * np.sum(
-            np.fromiter(length for _, length in curves_and_lengths)
+            np.fromiter(length for _, length in curves_and_lengths), dtype=np.float64
         )
         current_length = 0
 
