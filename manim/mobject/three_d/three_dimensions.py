@@ -1163,6 +1163,28 @@ class Arrow3D(Line3D):
         self.add(self.cone)
         self.set_color(color)
 
+    def scale(self, factor: float, scale_tips: bool = False, **kwargs) -> Self:
+        if self.get_length() == 0:
+            return self
+
+        if scale_tips:
+            super().scale(factor, **kwargs)
+            return self
+
+        has_tip = self.has_tip()
+        has_start_tip = self.has_start_tip()
+        if has_tip or has_start_tip:
+            old_tips = self.pop_tips()
+
+        super().scale(factor, **kwargs)
+        self._set_stroke_width_from_length()
+
+        if has_tip:
+            self.add_tip(tip=old_tips[0])
+        if has_start_tip:
+            self.add_tip(tip=old_tips[1], at_start=True)
+        return self
+
 
 class Torus(Surface):
     """A torus.
