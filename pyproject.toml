@@ -80,7 +80,7 @@ psutil-wheels = {version = "5.8.0", python = ">=3.10"}
 pytest = "^7.4.3"
 pygithub = "^2.1.1"
 pytest-cov = "^4.1.0"
-pytest-xdist = "^3.5.0"
+pytest-xdist = "^2.2"  # Using latest gives flaky tests
 Sphinx = "^4"
 sphinx-copybutton = "^0.5.2"
 sphinxcontrib-programoutput = "^0.17"
