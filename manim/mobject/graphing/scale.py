@@ -14,15 +14,15 @@ if TYPE_CHECKING:
 
 
 class _ScaleBase:
-    """Scale baseclass for graphing/functions."""
+    """Scale baseclass for graphing/functions.
+
+    Parameters
+    ----------
+    custom_labels
+        Whether to create custom labels when plotted on a :class:`~.NumberLine`.
+    """
 
     def __init__(self, custom_labels: bool = False):
-        """
-        Parameters
-        ----------
-        custom_labels
-            Whether to create custom labels when plotted on a :class:`~.NumberLine`.
-        """
         self.custom_labels = custom_labels
 
     def function(self, value: float) -> float:

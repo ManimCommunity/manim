@@ -1,11 +1,16 @@
 version: 2
 build:
-  image: latest
+  os: ubuntu-22.04
+
+  tools:
+    python: "3.11"
+
   apt_packages:
     - libpango1.0-dev
     - ffmpeg
+    - graphviz
+
 python:
-   version: 3.8
    install:
       - requirements: docs/rtd-requirements.txt
       - requirements: docs/requirements.txt

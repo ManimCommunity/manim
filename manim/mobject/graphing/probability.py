@@ -8,7 +8,6 @@ __all__ = ["SampleSpace", "BarChart"]
 from typing import Iterable, MutableSequence, Sequence
 
 import numpy as np
-from colour import Color
 
 from manim import config, logger
 from manim.constants import *
@@ -26,6 +25,7 @@ from manim.utils.color import (
     LIGHT_GREY,
     MAROON_B,
     YELLOW,
+    ParsableManimColor,
     color_gradient,
 )
 from manim.utils.iterables import tuplify
@@ -34,7 +34,8 @@ EPSILON = 0.0001
 
 
 class SampleSpace(Rectangle):
-    """
+    """A mobject representing a twodimensional rectangular
+    sampling space.
 
     Examples
     --------
@@ -400,7 +401,7 @@ class BarChart(Axes):
 
     def get_bar_labels(
         self,
-        color: Color | None = None,
+        color: ParsableManimColor | None = None,
         font_size: float = 24,
         buff: float = MED_SMALL_BUFF,
         label_constructor: type[VMobject] = Tex,

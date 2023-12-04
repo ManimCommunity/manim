@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from manim.typing import Point3D_Array, Vector
+
 __all__ = [
     "quaternion_mult",
     "quaternion_from_angle_axis",
@@ -37,14 +39,12 @@ __all__ = [
 
 
 import itertools as it
-import math
 from typing import Sequence
 
 import numpy as np
 from mapbox_earcut import triangulate_float32 as earcut
 from scipy.spatial.transform import Rotation
 
-from .. import config
 from ..constants import DOWN, OUT, PI, RIGHT, TAU, UP, RendererType
 from ..utils.iterables import adjacent_pairs
 
@@ -69,34 +69,19 @@ def quaternion_mult(
     Union[np.ndarray, List[Union[float, np.ndarray]]]
         Returns a list of product of two quaternions.
     """
-    if config.renderer == RendererType.OPENGL:
-        if len(quats) == 0:
-            return [1, 0, 0, 0]
-        result = quats[0]
-        for next_quat in quats[1:]:
-            w1, x1, y1, z1 = result
-            w2, x2, y2, z2 = next_quat
-            result = [
-                w1 * w2 - x1 * x2 - y1 * y2 - z1 * z2,
-                w1 * x2 + x1 * w2 + y1 * z2 - z1 * y2,
-                w1 * y2 + y1 * w2 + z1 * x2 - x1 * z2,
-                w1 * z2 + z1 * w2 + x1 * y2 - y1 * x2,
-            ]
-        return result
-    elif config.renderer == RendererType.CAIRO:
-        q1 = quats[0]
-        q2 = quats[1]
-
-        w1, x1, y1, z1 = q1
-        w2, x2, y2, z2 = q2
-        return np.array(
-            [
-                w1 * w2 - x1 * x2 - y1 * y2 - z1 * z2,
-                w1 * x2 + x1 * w2 + y1 * z2 - z1 * y2,
-                w1 * y2 + y1 * w2 + z1 * x2 - x1 * z2,
-                w1 * z2 + z1 * w2 + x1 * y2 - y1 * x2,
-            ],
-        )
+    if len(quats) == 0:
+        return [1, 0, 0, 0]
+    result = quats[0]
+    for next_quat in quats[1:]:
+        w1, x1, y1, z1 = result
+        w2, x2, y2, z2 = next_quat
+        result = [
+            w1 * w2 - x1 * x2 - y1 * y2 - z1 * z2,
+            w1 * x2 + x1 * w2 + y1 * z2 - z1 * y2,
+            w1 * y2 + y1 * w2 + z1 * x2 - x1 * z2,
+            w1 * z2 + z1 * w2 + x1 * y2 - y1 * x2,
+        ]
+    return result
 
 
 def quaternion_from_angle_axis(
@@ -122,12 +107,9 @@ def quaternion_from_angle_axis(
     List[float]
         Gives back a quaternion from the angle and axis
     """
-    if config.renderer == RendererType.OPENGL:
-        if not axis_normalized:
-            axis = normalize(axis)
-        return [math.cos(angle / 2), *(math.sin(angle / 2) * axis)]
-    elif config.renderer == RendererType.CAIRO:
-        return np.append(np.cos(angle / 2), np.sin(angle / 2) * normalize(axis))
+    if not axis_normalized:
+        axis = normalize(axis)
+    return [np.cos(angle / 2), *(np.sin(angle / 2) * axis)]
 
 
 def angle_axis_from_quaternion(quaternion: Sequence[float]) -> Sequence[float]:
@@ -275,7 +257,7 @@ def rotation_about_z(angle: float) -> np.ndarray:
     np.ndarray
         Gives back the rotated matrix.
     """
-    c, s = math.cos(angle), math.sin(angle)
+    c, s = np.cos(angle), np.sin(angle)
     return np.array(
         [
             [c, -s, 0],
@@ -559,10 +541,10 @@ def line_intersection(
 
 
 def find_intersection(
-    p0s: Sequence[np.ndarray],
-    v0s: Sequence[np.ndarray],
-    p1s: Sequence[np.ndarray],
-    v1s: Sequence[np.ndarray],
+    p0s: Sequence[np.ndarray] | Point3D_Array,
+    v0s: Sequence[np.ndarray] | Point3D_Array,
+    p1s: Sequence[np.ndarray] | Point3D_Array,
+    v1s: Sequence[np.ndarray] | Point3D_Array,
     threshold: float = 1e-5,
 ) -> Sequence[np.ndarray]:
     """
@@ -640,7 +622,38 @@ def shoelace_direction(x_y: np.ndarray) -> str:
     return "CW" if area > 0 else "CCW"
 
 
-def cross2d(a, b):
+def cross2d(
+    a: Sequence[Vector] | Vector, b: Sequence[Vector] | Vector
+) -> Sequence[float] | float:
+    """Compute the determinant(s) of the passed
+    vector (sequences).
+
+    Parameters
+    ----------
+    a
+        A vector or a sequence of vectors.
+    b
+        A vector or a sequence of vectors.
+
+    Returns
+    -------
+    Sequence[float] | float
+        The determinant or sequence of determinants
+        of the first two components of the specified
+        vectors.
+
+    Examples
+    --------
+    .. code-block:: pycon
+
+        >>> cross2d(np.array([1, 2]), np.array([3, 4]))
+        -2
+        >>> cross2d(
+        ...     np.array([[1, 2, 0], [1, 0, 0]]),
+        ...     np.array([[3, 4, 0], [0, 1, 0]]),
+        ... )
+        array([-2,  1])
+    """
     if len(a.shape) == 2:
         return a[:, 0] * b[:, 1] - a[:, 1] * b[:, 0]
     else:

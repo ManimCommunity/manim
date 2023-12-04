@@ -211,7 +211,7 @@ is imported and Python has read and defined the ``ToyExample`` class (but,
 read carefully: *no instance of this class has been created yet*).
 
 At this point, the interpreter is about to enter the ``tempconfig`` context
-manager. Even if you have not seen Manim's ``tempconfig`` before, it's name
+manager. Even if you have not seen Manim's ``tempconfig`` before, its name
 already suggests what it does: it creates a copy of the current state of the
 configuration, applies the changes to the key-value pairs in the passed
 dictionary, and upon leaving the context the original version of the
@@ -385,7 +385,7 @@ describing the control points in between ("handles").
 .. hint::
   To learn more about Bézier curves, take a look at the excellent
   online textbook `A Primer on Bézier curves <https://pomax.github.io/bezierinfo/>`__
-  by `Pomax <https://twitter.com/TheRealPomax>`__ -- there is an playground representing
+  by `Pomax <https://twitter.com/TheRealPomax>`__ -- there is a playground representing
   cubic Bézier curves `in §1 <https://pomax.github.io/bezierinfo/#introduction>`__,
   the red and yellow points are "anchors", and the green and blue
   points are "handles".

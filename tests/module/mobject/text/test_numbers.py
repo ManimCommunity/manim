@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from colour import Color
-
 from manim import RED, DecimalNumber, Integer
 
 
@@ -44,4 +42,6 @@ def test_color_when_number_of_digits_changes():
     the number of digits changes."""
     mob = Integer(color=RED)
     mob.set_value(42)
-    assert all([submob.stroke_color == Color(RED) for submob in mob.submobjects])
+    assert all(
+        submob.stroke_color.to_hex() == RED.to_hex() for submob in mob.submobjects
+    )

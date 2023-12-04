@@ -20,16 +20,18 @@ import os
 import re
 import sys
 from collections.abc import Mapping, MutableMapping
+from enum import EnumMeta
 from pathlib import Path
-from typing import Any, Iterable, Iterator
+from typing import Any, ClassVar, Iterable, Iterator, NoReturn
 
-import colour
 import numpy as np
+from typing_extensions import Self
 
 from .. import constants
 from ..constants import RendererType
+from ..typing import StrPath, Vector3
+from ..utils.color import ManimColor
 from ..utils.tex import TexTemplate, TexTemplateFromFile
-from ..utils.tex_templates import TexTemplateLibrary
 
 
 def config_file_paths() -> list[Path]:
@@ -76,7 +78,7 @@ def config_file_paths() -> list[Path]:
 
 
 def make_config_parser(
-    custom_file: str | os.PathLike | None = None,
+    custom_file: StrPath | None = None,
 ) -> configparser.ConfigParser:
     """Make a :class:`ConfigParser` object and load any ``.cfg`` files.
 
@@ -309,10 +311,11 @@ class ManimConfig(MutableMapping):
         "write_to_movie",
         "zero_pad",
         "force_window",
+        "no_latex_cleanup",
     }
 
     def __init__(self) -> None:
-        self._d = {k: None for k in self._OPTS}
+        self._d: dict[str, Any | None] = {k: None for k in self._OPTS}
 
     # behave like a dict
     def __iter__(self) -> Iterator[str]:
@@ -321,20 +324,20 @@ class ManimConfig(MutableMapping):
     def __len__(self) -> int:
         return len(self._d)
 
-    def __contains__(self, key) -> bool:
+    def __contains__(self, key: object) -> bool:
         try:
             self.__getitem__(key)
             return True
         except AttributeError:
             return False
 
-    def __getitem__(self, key) -> Any:
+    def __getitem__(self, key: str) -> Any:
         return getattr(self, key)
 
     def __setitem__(self, key: str, val: Any) -> None:
         getattr(ManimConfig, key).fset(self, val)  # fset is the property's setter
 
-    def update(self, obj: ManimConfig | dict) -> None:
+    def update(self, obj: ManimConfig | dict[str, Any]) -> None:  # type: ignore[override]
         """Digest the options found in another :class:`ManimConfig` or in a dict.
 
         Similar to :meth:`dict.update`, replaces the values of this object with
@@ -378,14 +381,14 @@ class ManimConfig(MutableMapping):
                 self[k] = v
 
     # don't allow to delete anything
-    def __delitem__(self, key: str):
+    def __delitem__(self, key: str) -> NoReturn:
         raise AttributeError("'ManimConfig' object does not support item deletion")
 
-    def __delattr__(self, key: str):
+    def __delattr__(self, key: str) -> NoReturn:
         raise AttributeError("'ManimConfig' object does not support item deletion")
 
     # copy functions
-    def copy(self) -> ManimConfig:
+    def copy(self) -> Self:
         """Deepcopy the contents of this ManimConfig.
 
         Returns
@@ -404,13 +407,13 @@ class ManimConfig(MutableMapping):
         """
         return copy.deepcopy(self)
 
-    def __copy__(self) -> ManimConfig:
+    def __copy__(self) -> Self:
         """See ManimConfig.copy()."""
         return copy.deepcopy(self)
 
-    def __deepcopy__(self, memo: dict[str, Any]) -> ManimConfig:
+    def __deepcopy__(self, memo: dict[str, Any]) -> Self:
         """See ManimConfig.copy()."""
-        c = ManimConfig()
+        c = type(self)()
         # Deepcopying the underlying dict is enough because all properties
         # either read directly from it or compute their value on the fly from
         # values read directly from it.
@@ -418,7 +421,7 @@ class ManimConfig(MutableMapping):
         return c
 
     # helper type-checking methods
-    def _set_from_list(self, key: str, val: Any, values: list) -> None:
+    def _set_from_list(self, key: str, val: Any, values: list[Any]) -> None:
         """Set ``key`` to ``val`` if ``val`` is contained in ``values``."""
         if val in values:
             self._d[key] = val
@@ -450,14 +453,14 @@ class ManimConfig(MutableMapping):
         """
         self._d[key] = enum_class(enum_value)
 
-    def _set_boolean(self, key: str | int, val: Any) -> None:
+    def _set_boolean(self, key: str, val: Any) -> None:
         """Set ``key`` to ``val`` if ``val`` is Boolean."""
         if val in [True, False]:
             self._d[key] = val
         else:
             raise ValueError(f"{key} must be boolean")
 
-    def _set_tuple(self, key: str, val: tuple) -> None:
+    def _set_tuple(self, key: str, val: tuple[Any]) -> None:
         if isinstance(val, tuple):
             self._d[key] = val
         else:
@@ -506,7 +509,7 @@ class ManimConfig(MutableMapping):
         return rep
 
     # builders
-    def digest_parser(self, parser: configparser.ConfigParser) -> ManimConfig:
+    def digest_parser(self, parser: configparser.ConfigParser) -> Self:
         """Process the config options present in a :class:`ConfigParser` object.
 
         This method processes arbitrary parsers, not only those read from a
@@ -580,6 +583,7 @@ class ManimConfig(MutableMapping):
             "use_projection_stroke_shaders",
             "enable_wireframe",
             "force_window",
+            "no_latex_cleanup",
         ]:
             setattr(self, key, parser["CLI"].getboolean(key, fallback=False))
 
@@ -683,7 +687,7 @@ class ManimConfig(MutableMapping):
 
         return self
 
-    def digest_args(self, args: argparse.Namespace) -> ManimConfig:
+    def digest_args(self, args: argparse.Namespace) -> Self:
         """Process the config options present in CLI arguments.
 
         Parameters
@@ -756,6 +760,7 @@ class ManimConfig(MutableMapping):
             "enable_wireframe",
             "force_window",
             "dry_run",
+            "no_latex_cleanup",
         ]:
             if hasattr(args, key):
                 attr = getattr(args, key)
@@ -837,7 +842,7 @@ class ManimConfig(MutableMapping):
 
         return self
 
-    def digest_file(self, filename: str | os.PathLike) -> ManimConfig:
+    def digest_file(self, filename: StrPath) -> Self:
         """Process the config options present in a ``.cfg`` file.
 
         This method processes a single ``.cfg`` file, whereas
@@ -878,96 +883,140 @@ class ManimConfig(MutableMapping):
         return self.digest_parser(make_config_parser(filename))
 
     # config options are properties
-    preview = property(
-        lambda self: self._d["preview"] or self._d["enable_gui"],
-        lambda self, val: self._set_boolean("preview", val),
-        doc="Whether to play the rendered movie (-p).",
-    )
-
-    show_in_file_browser = property(
-        lambda self: self._d["show_in_file_browser"],
-        lambda self, val: self._set_boolean("show_in_file_browser", val),
-        doc="Whether to show the output file in the file browser (-f).",
-    )
-
-    progress_bar = property(
-        lambda self: self._d["progress_bar"],
-        lambda self, val: self._set_from_list(
-            "progress_bar",
-            val,
-            ["none", "display", "leave"],
-        ),
-        doc="Whether to show progress bars while rendering animations.",
-    )
-
-    log_to_file = property(
-        lambda self: self._d["log_to_file"],
-        lambda self, val: self._set_boolean("log_to_file", val),
-        doc="Whether to save logs to a file.",
-    )
-
-    notify_outdated_version = property(
-        lambda self: self._d["notify_outdated_version"],
-        lambda self, val: self._set_boolean("notify_outdated_version", val),
-        doc="Whether to notify if there is a version update available.",
-    )
-
-    write_to_movie = property(
-        lambda self: self._d["write_to_movie"],
-        lambda self, val: self._set_boolean("write_to_movie", val),
-        doc="Whether to render the scene to a movie file (-w).",
-    )
-
-    save_last_frame = property(
-        lambda self: self._d["save_last_frame"],
-        lambda self, val: self._set_boolean("save_last_frame", val),
-        doc="Whether to save the last frame of the scene as an image file (-s).",
-    )
-
-    write_all = property(
-        lambda self: self._d["write_all"],
-        lambda self, val: self._set_boolean("write_all", val),
-        doc="Whether to render all scenes in the input file (-a).",
-    )
-
-    save_pngs = property(
-        lambda self: self._d["save_pngs"],
-        lambda self, val: self._set_boolean("save_pngs", val),
-        doc="Whether to save all frames in the scene as images files (-g).",
-    )
-
-    save_as_gif = property(
-        lambda self: self._d["save_as_gif"],
-        lambda self, val: self._set_boolean("save_as_gif", val),
-        doc="Whether to save the rendered scene in .gif format (-i).",
-    )
-
-    save_sections = property(
-        lambda self: self._d["save_sections"],
-        lambda self, val: self._set_boolean("save_sections", val),
-        doc="Whether to save single videos for each section in addition to the movie file.",
-    )
-
-    enable_wireframe = property(
-        lambda self: self._d["enable_wireframe"],
-        lambda self, val: self._set_boolean("enable_wireframe", val),
-        doc="Enable wireframe debugging mode in opengl.",
-    )
-
-    force_window = property(
-        lambda self: self._d["force_window"],
-        lambda self, val: self._set_boolean("force_window", val),
-        doc="Set to force window when using the opengl renderer",
-    )
 
     @property
-    def verbosity(self):
+    def preview(self) -> bool:
+        """Whether to play the rendered movie (-p)."""
+        return self._d["preview"] or self._d["enable_gui"]
+
+    @preview.setter
+    def preview(self, value: bool) -> None:
+        self._set_boolean("preview", value)
+
+    @property
+    def show_in_file_browser(self) -> bool:
+        """Whether to show the output file in the file browser (-f)."""
+        return self._d["show_in_file_browser"]
+
+    @show_in_file_browser.setter
+    def show_in_file_browser(self, value: bool) -> None:
+        self._set_boolean("show_in_file_browser", value)
+
+    @property
+    def progress_bar(self) -> str:
+        """Whether to show progress bars while rendering animations."""
+        return self._d["progress_bar"]
+
+    @progress_bar.setter
+    def progress_bar(self, value: str) -> None:
+        self._set_from_list("progress_bar", value, ["none", "display", "leave"])
+
+    @property
+    def log_to_file(self) -> bool:
+        """Whether to save logs to a file."""
+        return self._d["log_to_file"]
+
+    @log_to_file.setter
+    def log_to_file(self, value: bool) -> None:
+        self._set_boolean("log_to_file", value)
+
+    @property
+    def notify_outdated_version(self) -> bool:
+        """Whether to notify if there is a version update available."""
+        return self._d["notify_outdated_version"]
+
+    @notify_outdated_version.setter
+    def notify_outdated_version(self, value: bool) -> None:
+        self._set_boolean("notify_outdated_version", value)
+
+    @property
+    def write_to_movie(self) -> bool:
+        """Whether to render the scene to a movie file (-w)."""
+        return self._d["write_to_movie"]
+
+    @write_to_movie.setter
+    def write_to_movie(self, value: bool) -> None:
+        self._set_boolean("write_to_movie", value)
+
+    @property
+    def save_last_frame(self) -> bool:
+        """Whether to save the last frame of the scene as an image file (-s)."""
+        return self._d["save_last_frame"]
+
+    @save_last_frame.setter
+    def save_last_frame(self, value: bool) -> None:
+        self._set_boolean("save_last_frame", value)
+
+    @property
+    def write_all(self) -> bool:
+        """Whether to render all scenes in the input file (-a)."""
+        return self._d["write_all"]
+
+    @write_all.setter
+    def write_all(self, value: bool) -> None:
+        self._set_boolean("write_all", value)
+
+    @property
+    def save_pngs(self) -> bool:
+        """Whether to save all frames in the scene as images files (-g)."""
+        return self._d["save_pngs"]
+
+    @save_pngs.setter
+    def save_pngs(self, value: bool) -> None:
+        self._set_boolean("save_pngs", value)
+
+    @property
+    def save_as_gif(self) -> bool:
+        """Whether to save the rendered scene in .gif format (-i)."""
+        return self._d["save_as_gif"]
+
+    @save_as_gif.setter
+    def save_as_gif(self, value: bool) -> None:
+        self._set_boolean("save_as_gif", value)
+
+    @property
+    def save_sections(self) -> bool:
+        """Whether to save single videos for each section in addition to the movie file."""
+        return self._d["save_sections"]
+
+    @save_sections.setter
+    def save_sections(self, value: bool) -> None:
+        self._set_boolean("save_sections", value)
+
+    @property
+    def enable_wireframe(self) -> bool:
+        """Whether to enable wireframe debugging mode in opengl."""
+        return self._d["enable_wireframe"]
+
+    @enable_wireframe.setter
+    def enable_wireframe(self, value: bool) -> None:
+        self._set_boolean("enable_wireframe", value)
+
+    @property
+    def force_window(self) -> bool:
+        """Whether to force window when using the opengl renderer."""
+        return self._d["force_window"]
+
+    @force_window.setter
+    def force_window(self, value: bool) -> None:
+        self._set_boolean("force_window", value)
+
+    @property
+    def no_latex_cleanup(self) -> bool:
+        """Prevents deletion of .aux, .dvi, and .log files produced by Tex and MathTex."""
+        return self._d["no_latex_cleanup"]
+
+    @no_latex_cleanup.setter
+    def no_latex_cleanup(self, value: bool) -> None:
+        self._set_boolean("no_latex_cleanup", value)
+
+    @property
+    def verbosity(self) -> str:
         """Logger verbosity; "DEBUG", "INFO", "WARNING", "ERROR", or "CRITICAL" (-v)."""
         return self._d["verbosity"]
 
     @verbosity.setter
     def verbosity(self, val: str) -> None:
-        """Verbosity level of the logger."""
         self._set_from_list(
             "verbosity",
             val,
@@ -976,13 +1025,12 @@ class ManimConfig(MutableMapping):
         logging.getLogger("manim").setLevel(val)
 
     @property
-    def format(self):
+    def format(self) -> str:
         """File format; "png", "gif", "mp4", "webm" or "mov"."""
         return self._d["format"]
 
     @format.setter
     def format(self, val: str) -> None:
-        """File format the renderer will output."""
         self._set_from_list(
             "format",
             val,
@@ -993,211 +1041,272 @@ class ManimConfig(MutableMapping):
                 "Output format set as webm, this can be slower than other formats",
             )
 
-    ffmpeg_loglevel = property(
-        lambda self: self._d["ffmpeg_loglevel"],
-        lambda self, val: self._set_from_list(
+    @property
+    def ffmpeg_loglevel(self) -> str:
+        """Verbosity level of ffmpeg (no flag)."""
+        return self._d["ffmpeg_loglevel"]
+
+    @ffmpeg_loglevel.setter
+    def ffmpeg_loglevel(self, val: str) -> None:
+        self._set_from_list(
             "ffmpeg_loglevel",
             val,
             ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
-        ),
-        doc="Verbosity level of ffmpeg (no flag).",
-    )
-
-    ffmpeg_executable = property(
-        lambda self: self._d["ffmpeg_executable"],
-        lambda self, val: self._set_str("ffmpeg_executable", val),
-        doc="Manually specify the path to the ffmpeg executable",
-    )
-
-    media_embed = property(
-        lambda self: self._d["media_embed"],
-        lambda self, val: self._d.__setitem__("media_embed", val),
-        doc="Embed videos in Jupyter notebook",
-    )
-
-    media_width = property(
-        lambda self: self._d["media_width"],
-        lambda self, val: self._d.__setitem__("media_width", val),
-        doc="Media width in Jupyter notebook",
-    )
-
-    pixel_width = property(
-        lambda self: self._d["pixel_width"],
-        lambda self, val: self._set_pos_number("pixel_width", val, False),
-        doc="Frame width in pixels (--resolution, -r).",
-    )
-
-    pixel_height = property(
-        lambda self: self._d["pixel_height"],
-        lambda self, val: self._set_pos_number("pixel_height", val, False),
-        doc="Frame height in pixels (--resolution, -r).",
-    )
-
-    aspect_ratio = property(
-        lambda self: self._d["pixel_width"] / self._d["pixel_height"],
-        doc="Aspect ratio (width / height) in pixels (--resolution, -r).",
-    )
-
-    frame_height = property(
-        lambda self: self._d["frame_height"],
-        lambda self, val: self._d.__setitem__("frame_height", val),
-        doc="Frame height in logical units (no flag).",
-    )
-
-    frame_width = property(
-        lambda self: self._d["frame_width"],
-        lambda self, val: self._d.__setitem__("frame_width", val),
-        doc="Frame width in logical units (no flag).",
-    )
-
-    frame_y_radius = property(
-        lambda self: self._d["frame_height"] / 2,
-        lambda self, val: (
-            self._d.__setitem__("frame_y_radius", val)
-            or self._d.__setitem__("frame_height", 2 * val)
-        ),
-        doc="Half the frame height (no flag).",
-    )
-
-    frame_x_radius = property(
-        lambda self: self._d["frame_width"] / 2,
-        lambda self, val: (
-            self._d.__setitem__("frame_x_radius", val)
-            or self._d.__setitem__("frame_width", 2 * val)
-        ),
-        doc="Half the frame width (no flag).",
-    )
-
-    top = property(
-        lambda self: self.frame_y_radius * constants.UP,
-        doc="Coordinate at the center top of the frame.",
-    )
-
-    bottom = property(
-        lambda self: self.frame_y_radius * constants.DOWN,
-        doc="Coordinate at the center bottom of the frame.",
-    )
-
-    left_side = property(
-        lambda self: self.frame_x_radius * constants.LEFT,
-        doc="Coordinate at the middle left of the frame.",
-    )
-
-    right_side = property(
-        lambda self: self.frame_x_radius * constants.RIGHT,
-        doc="Coordinate at the middle right of the frame.",
-    )
-
-    frame_rate = property(
-        lambda self: self._d["frame_rate"],
-        lambda self, val: self._d.__setitem__("frame_rate", val),
-        doc="Frame rate in frames per second.",
-    )
-
-    background_color = property(
-        lambda self: self._d["background_color"],
-        lambda self, val: self._d.__setitem__("background_color", colour.Color(val)),
-        doc="Background color of the scene (-c).",
-    )
-
-    from_animation_number = property(
-        lambda self: self._d["from_animation_number"],
-        lambda self, val: self._d.__setitem__("from_animation_number", val),
-        doc="Start rendering animations at this number (-n).",
-    )
-
-    upto_animation_number = property(
-        lambda self: self._d["upto_animation_number"],
-        lambda self, val: self._set_pos_number("upto_animation_number", val, True),
-        doc="Stop rendering animations at this nmber.  Use -1 to avoid skipping (-n).",
-    )
-
-    max_files_cached = property(
-        lambda self: self._d["max_files_cached"],
-        lambda self, val: self._set_pos_number("max_files_cached", val, True),
-        doc="Maximum number of files cached.  Use -1 for infinity (no flag).",
-    )
-
-    window_monitor = property(
-        lambda self: self._d["window_monitor"],
-        lambda self, val: self._set_pos_number("window_monitor", val, True),
-        doc="The monitor on which the scene will be rendered",
-    )
-    flush_cache = property(
-        lambda self: self._d["flush_cache"],
-        lambda self, val: self._set_boolean("flush_cache", val),
-        doc="Whether to delete all the cached partial movie files.",
-    )
-
-    disable_caching = property(
-        lambda self: self._d["disable_caching"],
-        lambda self, val: self._set_boolean("disable_caching", val),
-        doc="Whether to use scene caching.",
-    )
-
-    disable_caching_warning = property(
-        lambda self: self._d["disable_caching_warning"],
-        lambda self, val: self._set_boolean("disable_caching_warning", val),
-        doc="Whether a warning is raised if there are too much submobjects to hash.",
-    )
-
-    movie_file_extension = property(
-        lambda self: self._d["movie_file_extension"],
-        lambda self, val: self._set_from_list(
-            "movie_file_extension",
-            val,
-            [".mp4", ".mov", ".webm"],
-        ),
-        doc="Either .mp4, .webm or .mov.",
-    )
-
-    background_opacity = property(
-        lambda self: self._d["background_opacity"],
-        lambda self, val: self._set_between("background_opacity", val, 0, 1),
-        doc="A number between 0.0 (fully transparent) and 1.0 (fully opaque).",
-    )
-
-    frame_size = property(
-        lambda self: (self._d["pixel_width"], self._d["pixel_height"]),
-        lambda self, tup: (
-            self._d.__setitem__("pixel_width", tup[0])
-            or self._d.__setitem__("pixel_height", tup[1])
-        ),
-        doc="Tuple with (pixel width, pixel height) (no flag).",
-    )
+        )
 
     @property
-    def quality(self):
+    def ffmpeg_executable(self) -> str:
+        """Custom path to the ffmpeg executable."""
+        return self._d["ffmpeg_executable"]
+
+    @ffmpeg_executable.setter
+    def ffmpeg_executable(self, value: str) -> None:
+        self._set_str("ffmpeg_executable", value)
+
+    @property
+    def media_embed(self) -> bool:
+        """Whether to embed videos in Jupyter notebook."""
+        return self._d["media_embed"]
+
+    @media_embed.setter
+    def media_embed(self, value: bool) -> None:
+        self._set_boolean("media_embed", value)
+
+    @property
+    def media_width(self) -> str:
+        """Media width in Jupyter notebook."""
+        return self._d["media_width"]
+
+    @media_width.setter
+    def media_width(self, value: str) -> None:
+        self._set_str("media_width", value)
+
+    @property
+    def pixel_width(self) -> int:
+        """Frame width in pixels (--resolution, -r)."""
+        return self._d["pixel_width"]
+
+    @pixel_width.setter
+    def pixel_width(self, value: int) -> None:
+        self._set_pos_number("pixel_width", value, False)
+
+    @property
+    def pixel_height(self) -> int:
+        """Frame height in pixels (--resolution, -r)."""
+        return self._d["pixel_height"]
+
+    @pixel_height.setter
+    def pixel_height(self, value: int) -> None:
+        self._set_pos_number("pixel_height", value, False)
+
+    @property
+    def aspect_ratio(self) -> int:
+        """Aspect ratio (width / height) in pixels (--resolution, -r)."""
+        return self._d["pixel_width"] / self._d["pixel_height"]
+
+    @property
+    def frame_height(self) -> float:
+        """Frame height in logical units (no flag)."""
+        return self._d["frame_height"]
+
+    @frame_height.setter
+    def frame_height(self, value: float) -> None:
+        self._d.__setitem__("frame_height", value)
+
+    @property
+    def frame_width(self) -> float:
+        """Frame width in logical units (no flag)."""
+        return self._d["frame_width"]
+
+    @frame_width.setter
+    def frame_width(self, value: float) -> None:
+        self._d.__setitem__("frame_width", value)
+
+    @property
+    def frame_y_radius(self) -> float:
+        """Half the frame height (no flag)."""
+        return self._d["frame_height"] / 2
+
+    @frame_y_radius.setter
+    def frame_y_radius(self, value: float) -> None:
+        self._d.__setitem__("frame_y_radius", value) or self._d.__setitem__(
+            "frame_height", 2 * value
+        )
+
+    @property
+    def frame_x_radius(self) -> float:
+        """Half the frame width (no flag)."""
+        return self._d["frame_width"] / 2
+
+    @frame_x_radius.setter
+    def frame_x_radius(self, value: float) -> None:
+        self._d.__setitem__("frame_x_radius", value) or self._d.__setitem__(
+            "frame_width", 2 * value
+        )
+
+    @property
+    def top(self) -> Vector3:
+        """Coordinate at the center top of the frame."""
+        return self.frame_y_radius * constants.UP
+
+    @property
+    def bottom(self) -> Vector3:
+        """Coordinate at the center bottom of the frame."""
+        return self.frame_y_radius * constants.DOWN
+
+    @property
+    def left_side(self) -> Vector3:
+        """Coordinate at the middle left of the frame."""
+        return self.frame_x_radius * constants.LEFT
+
+    @property
+    def right_side(self) -> Vector3:
+        """Coordinate at the middle right of the frame."""
+        return self.frame_x_radius * constants.RIGHT
+
+    @property
+    def frame_rate(self) -> float:
+        """Frame rate in frames per second."""
+        return self._d["frame_rate"]
+
+    @frame_rate.setter
+    def frame_rate(self, value: float) -> None:
+        self._d.__setitem__("frame_rate", value)
+
+    # TODO: This was parsed before maybe add ManimColor(val), but results in circular import
+    @property
+    def background_color(self) -> ManimColor:
+        """Background color of the scene (-c)."""
+        return self._d["background_color"]
+
+    @background_color.setter
+    def background_color(self, value: Any) -> None:
+        self._d.__setitem__("background_color", ManimColor(value))
+
+    @property
+    def from_animation_number(self) -> int:
+        """Start rendering animations at this number (-n)."""
+        return self._d["from_animation_number"]
+
+    @from_animation_number.setter
+    def from_animation_number(self, value: int) -> None:
+        self._d.__setitem__("from_animation_number", value)
+
+    @property
+    def upto_animation_number(self) -> int:
+        """Stop rendering animations at this nmber. Use -1 to avoid skipping (-n)."""
+        return self._d["upto_animation_number"]
+
+    @upto_animation_number.setter
+    def upto_animation_number(self, value: int) -> None:
+        self._set_pos_number("upto_animation_number", value, True)
+
+    @property
+    def max_files_cached(self) -> int:
+        """Maximum number of files cached.  Use -1 for infinity (no flag)."""
+        return self._d["max_files_cached"]
+
+    @max_files_cached.setter
+    def max_files_cached(self, value: int) -> None:
+        self._set_pos_number("max_files_cached", value, True)
+
+    @property
+    def window_monitor(self) -> int:
+        """The monitor on which the scene will be rendered."""
+        return self._d["window_monitor"]
+
+    @window_monitor.setter
+    def window_monitor(self, value: int) -> None:
+        self._set_pos_number("window_monitor", value, True)
+
+    @property
+    def flush_cache(self) -> bool:
+        """Whether to delete all the cached partial movie files."""
+        return self._d["flush_cache"]
+
+    @flush_cache.setter
+    def flush_cache(self, value: bool) -> None:
+        self._set_boolean("flush_cache", value)
+
+    @property
+    def disable_caching(self) -> bool:
+        """Whether to use scene caching."""
+        return self._d["disable_caching"]
+
+    @disable_caching.setter
+    def disable_caching(self, value: bool) -> None:
+        self._set_boolean("disable_caching", value)
+
+    @property
+    def disable_caching_warning(self) -> bool:
+        """Whether a warning is raised if there are too much submobjects to hash."""
+        return self._d["disable_caching_warning"]
+
+    @disable_caching_warning.setter
+    def disable_caching_warning(self, value: bool) -> None:
+        self._set_boolean("disable_caching_warning", value)
+
+    @property
+    def movie_file_extension(self) -> str:
+        """Either .mp4, .webm or .mov."""
+        return self._d["movie_file_extension"]
+
+    @movie_file_extension.setter
+    def movie_file_extension(self, value: str) -> None:
+        self._set_from_list("movie_file_extension", value, [".mp4", ".mov", ".webm"])
+
+    @property
+    def background_opacity(self) -> float:
+        """A number between 0.0 (fully transparent) and 1.0 (fully opaque)."""
+        return self._d["background_opacity"]
+
+    @background_opacity.setter
+    def background_opacity(self, value: float) -> None:
+        self._set_between("background_opacity", value, 0, 1)
+
+    @property
+    def frame_size(self) -> tuple[int, int]:
+        """Tuple with (pixel width, pixel height) (no flag)."""
+        return (self._d["pixel_width"], self._d["pixel_height"])
+
+    @frame_size.setter
+    def frame_size(self, value: tuple[int, int]) -> None:
+        self._d.__setitem__("pixel_width", value[0]) or self._d.__setitem__(
+            "pixel_height", value[1]
+        )
+
+    @property
+    def quality(self) -> str | None:
         """Video quality (-q)."""
         keys = ["pixel_width", "pixel_height", "frame_rate"]
         q = {k: self[k] for k in keys}
         for qual in constants.QUALITIES:
-            if all([q[k] == constants.QUALITIES[qual][k] for k in keys]):
+            if all(q[k] == constants.QUALITIES[qual][k] for k in keys):
                 return qual
         return None
 
     @quality.setter
-    def quality(self, qual: str) -> None:
-        if qual is None:
+    def quality(self, value: str | None) -> None:
+        if value is None:
             return
-        if qual not in constants.QUALITIES:
+        if value not in constants.QUALITIES:
             raise KeyError(f"quality must be one of {list(constants.QUALITIES.keys())}")
-        q = constants.QUALITIES[qual]
+        q = constants.QUALITIES[value]
         self.frame_size = q["pixel_width"], q["pixel_height"]
         self.frame_rate = q["frame_rate"]
 
     @property
-    def transparent(self):
+    def transparent(self) -> bool:
         """Whether the background opacity is 0.0 (-t)."""
         return self._d["background_opacity"] == 0.0
 
     @transparent.setter
-    def transparent(self, val: bool) -> None:
-        self._d["background_opacity"] = float(not val)
-        self.resolve_movie_file_extension(val)
+    def transparent(self, value: bool) -> None:
+        self._d["background_opacity"] = float(not value)
+        self.resolve_movie_file_extension(value)
 
     @property
-    def dry_run(self):
+    def dry_run(self) -> bool:
         """Whether dry run is enabled."""
         return self._d["dry_run"]
 
@@ -1211,7 +1320,7 @@ class ManimConfig(MutableMapping):
             self.format = None
 
     @property
-    def renderer(self):
+    def renderer(self) -> RendererType:
         """The currently active renderer.
 
         Populated with one of the available renderers in :class:`.RendererType`.
@@ -1237,15 +1346,15 @@ class ManimConfig(MutableMapping):
         return self._d["renderer"]
 
     @renderer.setter
-    def renderer(self, val: str | RendererType) -> None:
+    def renderer(self, value: str | RendererType) -> None:
         """The setter of the renderer property.
 
         Takes care of switching inheritance bases using the
         :class:`.ConvertToOpenGL` metaclass.
         """
-        if isinstance(val, str):
-            val = val.lower()
-        renderer = RendererType(val)
+        if isinstance(value, str):
+            value = value.lower()
+        renderer = RendererType(value)
         try:
             from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
             from manim.mobject.opengl.opengl_mobject import OpenGLMobject
@@ -1279,25 +1388,34 @@ class ManimConfig(MutableMapping):
 
         self._set_from_enum("renderer", renderer, RendererType)
 
-    media_dir = property(
-        lambda self: self._d["media_dir"],
-        lambda self, val: self._set_dir("media_dir", val),
-        doc="Main output directory.  See :meth:`ManimConfig.get_dir`.",
-    )
+    @property
+    def media_dir(self) -> str:
+        """Main output directory.  See :meth:`ManimConfig.get_dir`."""
+        return self._d["media_dir"]
 
-    window_position = property(
-        lambda self: self._d["window_position"],
-        lambda self, val: self._d.__setitem__("window_position", val),
-        doc="Set the position of preview window. You can use directions, e.g. UL/DR/ORIGIN/LEFT...or the position(pixel) of the upper left corner of the window, e.g. '960,540'",
-    )
+    @media_dir.setter
+    def media_dir(self, value: str | Path) -> None:
+        self._set_dir("media_dir", value)
 
-    window_size = property(
-        lambda self: self._d["window_size"],
-        lambda self, val: self._d.__setitem__("window_size", val),
-        doc="The size of the opengl window. 'default' to automatically scale the window based on the display monitor.",
-    )
+    @property
+    def window_position(self) -> str:
+        """Set the position of preview window. You can use directions, e.g. UL/DR/ORIGIN/LEFT...or the position(pixel) of the upper left corner of the window, e.g. '960,540'."""
+        return self._d["window_position"]
 
-    def resolve_movie_file_extension(self, is_transparent):
+    @window_position.setter
+    def window_position(self, value: str) -> None:
+        self._d.__setitem__("window_position", value)
+
+    @property
+    def window_size(self) -> str:
+        """The size of the opengl window. 'default' to automatically scale the window based on the display monitor."""
+        return self._d["window_size"]
+
+    @window_size.setter
+    def window_size(self, value: str) -> None:
+        self._d.__setitem__("window_size", value)
+
+    def resolve_movie_file_extension(self, is_transparent: bool) -> None:
         if is_transparent:
             self.movie_file_extension = ".webm" if self.format == "webm" else ".mov"
         elif self.format == "webm":
@@ -1307,43 +1425,61 @@ class ManimConfig(MutableMapping):
         else:
             self.movie_file_extension = ".mp4"
 
-    enable_gui = property(
-        lambda self: self._d["enable_gui"],
-        lambda self, val: self._set_boolean("enable_gui", val),
-        doc="Enable GUI interaction.",
-    )
+    @property
+    def enable_gui(self) -> bool:
+        """Enable GUI interaction."""
+        return self._d["enable_gui"]
 
-    gui_location = property(
-        lambda self: self._d["gui_location"],
-        lambda self, val: self._set_tuple("gui_location", val),
-        doc="Enable GUI interaction.",
-    )
+    @enable_gui.setter
+    def enable_gui(self, value: bool) -> None:
+        self._set_boolean("enable_gui", value)
 
-    fullscreen = property(
-        lambda self: self._d["fullscreen"],
-        lambda self, val: self._set_boolean("fullscreen", val),
-        doc="Expand the window to its maximum possible size.",
-    )
+    @property
+    def gui_location(self) -> tuple[Any]:
+        """Enable GUI interaction."""
+        return self._d["gui_location"]
 
-    use_projection_fill_shaders = property(
-        lambda self: self._d["use_projection_fill_shaders"],
-        lambda self, val: self._set_boolean("use_projection_fill_shaders", val),
-        doc="Use shaders for OpenGLVMobject fill which are compatible with transformation matrices.",
-    )
+    @gui_location.setter
+    def gui_location(self, value: tuple[Any]) -> None:
+        self._set_tuple("gui_location", value)
 
-    use_projection_stroke_shaders = property(
-        lambda self: self._d["use_projection_stroke_shaders"],
-        lambda self, val: self._set_boolean("use_projection_stroke_shaders", val),
-        doc="Use shaders for OpenGLVMobject stroke which are compatible with transformation matrices.",
-    )
+    @property
+    def fullscreen(self) -> bool:
+        """Expand the window to its maximum possible size."""
+        return self._d["fullscreen"]
 
-    zero_pad = property(
-        lambda self: self._d["zero_pad"],
-        lambda self, val: self._set_int_between("zero_pad", val, 0, 9),
-        doc="PNG zero padding. A number between 0 (no zero padding) and 9 (9 columns minimum).",
-    )
+    @fullscreen.setter
+    def fullscreen(self, value: bool) -> None:
+        self._set_boolean("fullscreen", value)
 
-    def get_dir(self, key: str, **kwargs: str) -> Path:
+    @property
+    def use_projection_fill_shaders(self) -> bool:
+        """Use shaders for OpenGLVMobject fill which are compatible with transformation matrices."""
+        return self._d["use_projection_fill_shaders"]
+
+    @use_projection_fill_shaders.setter
+    def use_projection_fill_shaders(self, value: bool) -> None:
+        self._set_boolean("use_projection_fill_shaders", value)
+
+    @property
+    def use_projection_stroke_shaders(self) -> bool:
+        """Use shaders for OpenGLVMobject stroke which are compatible with transformation matrices."""
+        return self._d["use_projection_stroke_shaders"]
+
+    @use_projection_stroke_shaders.setter
+    def use_projection_stroke_shaders(self, value: bool) -> None:
+        self._set_boolean("use_projection_stroke_shaders", value)
+
+    @property
+    def zero_pad(self) -> int:
+        """PNG zero padding. A number between 0 (no zero padding) and 9 (9 columns minimum)."""
+        return self._d["zero_pad"]
+
+    @zero_pad.setter
+    def zero_pad(self, value: int) -> None:
+        self._set_int_between("zero_pad", value, 0, 9)
+
+    def get_dir(self, key: str, **kwargs: Any) -> Path:
         """Resolve a config option that stores a directory.
 
         Config options that store directories may depend on one another.  This
@@ -1494,86 +1630,122 @@ class ManimConfig(MutableMapping):
                 ) from exc
         return Path(path) if path else None
 
-    def _set_dir(self, key: str, val: str | Path):
+    def _set_dir(self, key: str, val: str | Path) -> None:
         if isinstance(val, Path):
             self._d.__setitem__(key, str(val))
         else:
             self._d.__setitem__(key, val)
 
-    assets_dir = property(
-        lambda self: self._d["assets_dir"],
-        lambda self, val: self._set_dir("assets_dir", val),
-        doc="Directory to locate video assets (no flag).",
-    )
+    @property
+    def assets_dir(self) -> str:
+        """Directory to locate video assets (no flag)."""
+        return self._d["assets_dir"]
 
-    log_dir = property(
-        lambda self: self._d["log_dir"],
-        lambda self, val: self._set_dir("log_dir", val),
-        doc="Directory to place logs.  See :meth:`ManimConfig.get_dir`.",
-    )
-
-    video_dir = property(
-        lambda self: self._d["video_dir"],
-        lambda self, val: self._set_dir("video_dir", val),
-        doc="Directory to place videos (no flag).  See :meth:`ManimConfig.get_dir`.",
-    )
-
-    sections_dir = property(
-        lambda self: self._d["sections_dir"],
-        lambda self, val: self._set_dir("sections_dir", val),
-        doc="Directory to place section videos (no flag).  See :meth:`ManimConfig.get_dir`.",
-    )
-
-    images_dir = property(
-        lambda self: self._d["images_dir"],
-        lambda self, val: self._set_dir("images_dir", val),
-        doc="Directory to place images (no flag).  See :meth:`ManimConfig.get_dir`.",
-    )
-
-    text_dir = property(
-        lambda self: self._d["text_dir"],
-        lambda self, val: self._set_dir("text_dir", val),
-        doc="Directory to place text (no flag).  See :meth:`ManimConfig.get_dir`.",
-    )
-
-    tex_dir = property(
-        lambda self: self._d["tex_dir"],
-        lambda self, val: self._set_dir("tex_dir", val),
-        doc="Directory to place tex (no flag).  See :meth:`ManimConfig.get_dir`.",
-    )
-
-    partial_movie_dir = property(
-        lambda self: self._d["partial_movie_dir"],
-        lambda self, val: self._set_dir("partial_movie_dir", val),
-        doc="Directory to place partial movie files (no flag).  See :meth:`ManimConfig.get_dir`.",
-    )
-
-    custom_folders = property(
-        lambda self: self._d["custom_folders"],
-        lambda self, val: self._set_boolean("custom_folders", val),
-        doc="Whether to use custom folder output.",
-    )
-
-    input_file = property(
-        lambda self: self._d["input_file"],
-        lambda self, val: self._set_dir("input_file", val),
-        doc="Input file name.",
-    )
-
-    output_file = property(
-        lambda self: self._d["output_file"],
-        lambda self, val: self._set_dir("output_file", val),
-        doc="Output file name (-o).",
-    )
-
-    scene_names = property(
-        lambda self: self._d["scene_names"],
-        lambda self, val: self._d.__setitem__("scene_names", val),
-        doc="Scenes to play from file.",
-    )
+    @assets_dir.setter
+    def assets_dir(self, value: str | Path) -> None:
+        self._set_dir("assets_dir", value)
 
     @property
-    def tex_template(self):
+    def log_dir(self) -> str:
+        """Directory to place logs. See :meth:`ManimConfig.get_dir`."""
+        return self._d["log_dir"]
+
+    @log_dir.setter
+    def log_dir(self, value: str | Path) -> None:
+        self._set_dir("log_dir", value)
+
+    @property
+    def video_dir(self) -> str:
+        """Directory to place videos (no flag). See :meth:`ManimConfig.get_dir`."""
+        return self._d["video_dir"]
+
+    @video_dir.setter
+    def video_dir(self, value: str | Path) -> None:
+        self._set_dir("video_dir", value)
+
+    @property
+    def sections_dir(self) -> str:
+        """Directory to place section videos (no flag). See :meth:`ManimConfig.get_dir`."""
+        return self._d["sections_dir"]
+
+    @sections_dir.setter
+    def sections_dir(self, value: str | Path) -> None:
+        self._set_dir("sections_dir", value)
+
+    @property
+    def images_dir(self) -> str:
+        """Directory to place images (no flag).  See :meth:`ManimConfig.get_dir`."""
+        return self._d["images_dir"]
+
+    @images_dir.setter
+    def images_dir(self, value: str | Path) -> None:
+        self._set_dir("images_dir", value)
+
+    @property
+    def text_dir(self) -> str:
+        """Directory to place text (no flag).  See :meth:`ManimConfig.get_dir`."""
+        return self._d["text_dir"]
+
+    @text_dir.setter
+    def text_dir(self, value: str | Path) -> None:
+        self._set_dir("text_dir", value)
+
+    @property
+    def tex_dir(self) -> str:
+        """Directory to place tex (no flag).  See :meth:`ManimConfig.get_dir`."""
+        return self._d["tex_dir"]
+
+    @tex_dir.setter
+    def tex_dir(self, value: str | Path) -> None:
+        self._set_dir("tex_dir", value)
+
+    @property
+    def partial_movie_dir(self) -> str:
+        """Directory to place partial movie files (no flag).  See :meth:`ManimConfig.get_dir`."""
+        return self._d["partial_movie_dir"]
+
+    @partial_movie_dir.setter
+    def partial_movie_dir(self, value: str | Path) -> None:
+        self._set_dir("partial_movie_dir", value)
+
+    @property
+    def custom_folders(self) -> str:
+        """Whether to use custom folder output."""
+        return self._d["custom_folders"]
+
+    @custom_folders.setter
+    def custom_folders(self, value: str | Path) -> None:
+        self._set_dir("custom_folders", value)
+
+    @property
+    def input_file(self) -> str:
+        """Input file name."""
+        return self._d["input_file"]
+
+    @input_file.setter
+    def input_file(self, value: str | Path) -> None:
+        self._set_dir("input_file", value)
+
+    @property
+    def output_file(self) -> str:
+        """Output file name (-o)."""
+        return self._d["output_file"]
+
+    @output_file.setter
+    def output_file(self, value: str | Path) -> None:
+        self._set_dir("output_file", value)
+
+    @property
+    def scene_names(self) -> list[str]:
+        """Scenes to play from file."""
+        return self._d["scene_names"]
+
+    @scene_names.setter
+    def scene_names(self, value: list[str]) -> None:
+        self._d.__setitem__("scene_names", value)
+
+    @property
+    def tex_template(self) -> TexTemplate:
         """Template used when rendering Tex.  See :class:`.TexTemplate`."""
         if not hasattr(self, "_tex_template") or not self._tex_template:
             fn = self._d["tex_template_file"]
@@ -1589,7 +1761,7 @@ class ManimConfig(MutableMapping):
             self._tex_template = val
 
     @property
-    def tex_template_file(self):
+    def tex_template_file(self) -> Path:
         """File to read Tex template from (no flag).  See :class:`.TexTemplateFromFile`."""
         return self._d["tex_template_file"]
 
@@ -1606,17 +1778,17 @@ class ManimConfig(MutableMapping):
             self._d["tex_template_file"] = val  # actually set the falsy value
 
     @property
-    def plugins(self):
+    def plugins(self) -> list[str]:
         """List of plugins to enable."""
         return self._d["plugins"]
 
     @plugins.setter
-    def plugins(self, value):
+    def plugins(self, value: list[str]):
         self._d["plugins"] = value
 
 
 class ManimFrame(Mapping):
-    _OPTS: set[str] = {
+    _OPTS: ClassVar[set[str]] = {
         "pixel_width",
         "pixel_height",
         "aspect_ratio",
@@ -1629,7 +1801,7 @@ class ManimFrame(Mapping):
         "left_side",
         "right_side",
     }
-    _CONSTANTS: dict[str, np.ndarray] = {
+    _CONSTANTS: ClassVar[dict[str, Vector3]] = {
         "UP": np.array((0.0, 1.0, 0.0)),
         "DOWN": np.array((0.0, -1.0, 0.0)),
         "RIGHT": np.array((1.0, 0.0, 0.0)),
@@ -1645,6 +1817,8 @@ class ManimFrame(Mapping):
         "DL": np.array((-1.0, -1.0, 0.0)),
         "DR": np.array((1.0, -1.0, 0.0)),
     }
+
+    _c: ManimConfig
 
     def __init__(self, c: ManimConfig) -> None:
         if not isinstance(c, ManimConfig):
@@ -1662,20 +1836,20 @@ class ManimFrame(Mapping):
         else:
             raise KeyError(key)
 
-    def __iter__(self) -> Iterable:
+    def __iter__(self) -> Iterable[str]:
         return iter(list(self._OPTS) + list(self._CONSTANTS))
 
     def __len__(self) -> int:
         return len(self._OPTS)
 
     # make this truly immutable
-    def __setattr__(self, attr, val) -> None:
+    def __setattr__(self, attr: Any, val: Any) -> NoReturn:
         raise TypeError("'ManimFrame' object does not support item assignment")
 
-    def __setitem__(self, key, val) -> None:
+    def __setitem__(self, key: Any, val: Any) -> NoReturn:
         raise TypeError("'ManimFrame' object does not support item assignment")
 
-    def __delitem__(self, key) -> None:
+    def __delitem__(self, key: Any) -> NoReturn:
         raise TypeError("'ManimFrame' object does not support item deletion")
 
 

@@ -112,13 +112,12 @@ def _tree_layout(
     vertex_spacing: tuple | None = None,
     orientation: str = "down",
 ):
-    children = {root_vertex: list(T.neighbors(root_vertex))}
-
-    if not nx.is_tree(T):
-        raise ValueError("The tree layout must be used with trees")
     if root_vertex is None:
         raise ValueError("The tree layout requires the root_vertex parameter")
+    if not nx.is_tree(T):
+        raise ValueError("The tree layout must be used with trees")
 
+    children = {root_vertex: list(T.neighbors(root_vertex))}
     # The following code is SageMath's tree layout implementation, taken from
     # https://github.com/sagemath/sage/blob/cc60cfebc4576fed8b01f0fc487271bdee3cefed/src/sage/graphs/graph_plot.py#L1447
 

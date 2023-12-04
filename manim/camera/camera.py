@@ -9,7 +9,6 @@ import copy
 import itertools as it
 import operator as op
 import pathlib
-import time
 from functools import reduce
 from typing import Any, Callable, Iterable
 
@@ -24,7 +23,7 @@ from ..mobject.mobject import Mobject
 from ..mobject.types.image_mobject import AbstractImageMobject
 from ..mobject.types.point_cloud_mobject import PMobject
 from ..mobject.types.vectorized_mobject import VMobject
-from ..utils.color import color_to_int_rgba
+from ..utils.color import ManimColor, ParsableManimColor, color_to_int_rgba
 from ..utils.family import extract_mobject_family_members
 from ..utils.images import get_full_raster_image_path
 from ..utils.iterables import list_difference_update
@@ -75,6 +74,8 @@ class Camera:
         frame_height: float | None = None,
         frame_width: float | None = None,
         frame_rate: float | None = None,
+        background_color: ParsableManimColor | None = None,
+        background_opacity: float | None = None,
         **kwargs,
     ):
         self.background_image = background_image
@@ -106,9 +107,14 @@ class Camera:
             frame_rate = config["frame_rate"]
         self.frame_rate = frame_rate
 
-        # TODO: change this to not use kwargs.get
-        for attr in ["background_color", "background_opacity"]:
-            setattr(self, f"_{attr}", kwargs.get(attr, config[attr]))
+        if background_color is None:
+            self._background_color = ManimColor.parse(config["background_color"])
+        else:
+            self._background_color = ManimColor.parse(background_color)
+        if background_opacity is None:
+            self._background_opacity = config["background_opacity"]
+        else:
+            self._background_opacity = background_opacity
 
         # This one is in the same boat as the above, but it doesn't have the
         # same name as the corresponding key so it has to be handled on its own
@@ -886,8 +892,10 @@ class Camera:
         thickness: float,
         pixel_array: np.ndarray,
     ):
-        """Displays a PMobject by modifying the Pixel array suitably..
+        """Displays a PMobject by modifying the pixel array suitably.
+
         TODO: Write a description for the rgbas argument.
+
         Parameters
         ----------
         pmobject
@@ -957,7 +965,7 @@ class Camera:
             The Pixel array to put the imagemobject in.
         """
         corner_coords = self.points_to_pixel_coords(image_mobject, image_mobject.points)
-        ul_coords, ur_coords, dl_coords = corner_coords
+        ul_coords, ur_coords, dl_coords, _ = corner_coords
         right_vect = ur_coords - ul_coords
         down_vect = dl_coords - ul_coords
         center_coords = ul_coords + (right_vect + down_vect) / 2
@@ -1122,17 +1130,19 @@ class Camera:
             ],
         )
 
-    def adjusted_thickness(self, thickness: float):
-        """
+    def adjusted_thickness(self, thickness: float) -> float:
+        """Computes the adjusted stroke width for a zoomed camera.
 
         Parameters
         ----------
         thickness
+            The stroke width of a mobject.
 
         Returns
         -------
         float
-
+            The adjusted stroke width that reflects zooming in with
+            the camera.
         """
         # TODO: This seems...unsystematic
         big_sum = op.add(config["pixel_height"], config["pixel_width"])
@@ -1141,7 +1151,8 @@ class Camera:
         return 1 + (thickness - 1) * factor
 
     def get_thickening_nudges(self, thickness: float):
-        """
+        """Determine a list of vectors used to nudge
+        two-dimensional pixel coordinates.
 
         Parameters
         ----------
@@ -1215,13 +1226,16 @@ class Camera:
 # NOTE: The methods of the following class have not been mentioned outside of their definitions.
 # Their DocStrings are not as detailed as preferred.
 class BackgroundColoredVMobjectDisplayer:
+    """Auxiliary class that handles displaying vectorized mobjects with
+    a set background image.
+
+    Parameters
+    ----------
+    camera
+        Camera object to use.
+    """
+
     def __init__(self, camera: Camera):
-        """
-        Parameters
-        ----------
-        camera
-            Camera object to use.
-        """
         self.camera = camera
         self.file_name_to_pixel_array_map = {}
         self.pixel_array = np.array(camera.pixel_array)

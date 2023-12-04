@@ -329,7 +329,7 @@ class ThreeDScene(Scene):
         camera_mobjects = self.renderer.camera.get_value_trackers() + [
             self.renderer.camera._frame_center,
         ]
-        if any([cm in moving_mobjects for cm in camera_mobjects]):
+        if any(cm in moving_mobjects for cm in camera_mobjects):
             return self.mobjects
         return moving_mobjects
 

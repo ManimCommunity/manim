@@ -1,9 +1,4 @@
-"""
-plugins_flags.py
-------------
-
-Plugin Managing Utility.
-"""
+"""Plugin Managing Utility"""
 
 from __future__ import annotations
 
