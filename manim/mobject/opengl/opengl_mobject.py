@@ -103,6 +103,59 @@ class MobjectStatus:
     points_changed: bool = False
 
 
+_O = TypeVar("_O")
+
+
+def affects_color(func) -> Callable[..., _O]:
+    """Decorator for methods that change the color of a :class:`~.Mobject`."""
+
+    def wrapper(self: OpenGLMobject, *args) -> _O:
+        self.status.color_changed = True
+        return func(self, *args)
+
+    return wrapper
+
+
+def affects_position(func) -> Callable[..., _O]:
+    """Decorator for methods that change the position of a :class:`~.Mobject`."""
+
+    def wrapper(self: OpenGLMobject, *args) -> _O:
+        self.status.position_changed = True
+        return func(self, *args)
+
+    return wrapper
+
+
+def affects_rotation(func) -> Callable[..., _O]:
+    """Decorator for methods that change the rotation of a :class:`~.Mobject`."""
+
+    def wrapper(self: OpenGLMobject, *args) -> _O:
+        self.status.rotation_changed = True
+        return func(self, *args)
+
+    return wrapper
+
+
+def affects_scale(func) -> Callable[..., _O]:
+    """Decorator for methods that change the scale of a :class:`~.Mobject`."""
+
+    def wrapper(self: OpenGLMobject, *args) -> _O:
+        self.status.scale_changed = True
+        return func(self, *args)
+
+    return wrapper
+
+
+def affects_points(func) -> Callable[..., _O]:
+    """Decorator for methods that change the points of a :class:`~.Mobject`."""
+
+    def wrapper(self: OpenGLMobject, *args) -> _O:
+        self.status.points_changed = True
+        return func(self, *args)
+
+    return wrapper
+
+
 class OpenGLMobject:
     """Mathematical Object: base class for objects that can be displayed on screen.
 
@@ -120,11 +173,6 @@ class OpenGLMobject:
     """
 
     dim: int = 3
-    shader_folder: str = ""
-    render_primitive: int = moderngl.TRIANGLE_STRIP
-    shader_dtype: Sequence[tuple[str, type, tuple[int]]] = [
-        ("point", np.float32, (3,)),
-    ]
 
     def __init__(
         self,
@@ -140,12 +188,13 @@ class OpenGLMobject:
         name: str | None = None,
         **kwargs,
     ):
-        self.color = color
-        self.opacity = opacity
+        self._points = np.zeros((0, 3))
+        self._bounding_box = np.zeros((3, 3))
+        self._color: list[ManimColor] = listify(color)
         self.reflectiveness = reflectiveness
         self.shadow = shadow
         self.gloss = gloss
-        self.texture_paths = texture_paths
+        # self.texture_paths = texture_paths
         self.is_fixed_in_frame = is_fixed_in_frame
         self.is_fixed_orientation = is_fixed_orientation
         self.depth_test = depth_test
@@ -167,8 +216,6 @@ class OpenGLMobject:
         self.renderer_data: T | None = None
         self.status = MobjectStatus()
 
-        self.init_data()
-        self.init_uniforms()
         self.init_updaters()
         self.init_event_listeners()
         self.init_points()
@@ -248,50 +295,6 @@ class OpenGLMobject:
         else:
             cls.__init__ = cls._original__init__
 
-    @property
-    def points(self):
-        return self.data["points"]
-
-    @points.setter
-    def points(self, value):
-        self.data["points"] = value
-
-    @property
-    def bounding_box(self):
-        return self.data["bounding_box"]
-
-    @bounding_box.setter
-    def bounding_box(self, value):
-        self.data["bounding_box"] = value
-
-    @property
-    def rgbas(self):
-        return self.data["rgbas"]
-
-    @rgbas.setter
-    def rgbas(self, value):
-        self.data["rgbas"] = value
-
-    def init_data(self):
-        """Initializes the ``points``, ``bounding_box`` and ``rgbas`` attributes and groups them into self.data.
-        Subclasses can inherit and overwrite this method to extend `self.data`."""
-        self.data = {
-            "points": np.zeros((0, 3)),
-            "bounding_box": np.zeros((3, 3)),
-            "rgbas": np.zeros((1, 4)),
-        }
-
-    def init_uniforms(self):
-        """Initializes the uniforms.
-
-        Gets called upon creation"""
-        self.uniforms = {
-            "is_fixed_in_frame": float(self.is_fixed_in_frame),
-            "gloss": float(self.gloss),
-            "shadow": float(self.shadow),
-            "reflectiveness": float(self.reflectiveness),
-        }
-
     def init_colors(self):
         """Initializes the colors.
 
@@ -306,17 +309,69 @@ class OpenGLMobject:
         # Typically implemented in subclass, unless purposefully left blank
         pass
 
-    def set_data(self, data):
-        for key in data:
-            self.data[key] = data[key]
-        return self
+    ###################################################
+    #                                                 #
+    #                  Properties                     #
+    #                                                 #
+    ###################################################
 
-    def set_uniforms(self, uniforms):
-        for key, value in uniforms.items():
-            if isinstance(value, np.ndarray):
-                value = value.copy()
-            self.uniforms[key] = value
-        return self
+    @property
+    def points(self):
+        return self._points
+
+    @points.setter
+    @affects_points
+    def points(self, value):
+        self._points = value
+
+    @property
+    def bounding_box(self):
+        return self._bounding_box
+
+    @bounding_box.setter
+    def bounding_box(self, value):
+        self._bounding_box = value
+
+    @property
+    def color(self) -> ManimColor:
+        return self._color[0]
+
+    @color.setter
+    @affects_color
+    def color(self, value: ManimColor):
+        self._color = listify(value)
+
+    @property
+    def colors(self) -> list[ManimColor]:
+        return self._color
+
+    @colors.setter
+    @affects_color
+    def colors(self, value: list[ManimColor]):
+        self._color = listify(value)
+
+    @property
+    def opacity(self) -> float:
+        return self._color[0].get_opacity()
+
+    @opacity.setter
+    @affects_color
+    def opacity(self, value: float):
+        self._color = [c.set_opacity(value) for c in self._color]
+
+    @property
+    def opacities(self) -> list[float]:
+        return [c.get_opacity() for c in self._color]
+
+    @opacities.setter
+    @affects_color
+    def opacities(self, value: list[float]):
+        if len(self._color) != len(value):
+            # TODO: Maybe add automagic interpolation in the future for that ?
+            raise ValueError(
+                f"Length of opacities ({len(value)}) does not match length of colors ({len(self._color)})"
+            )
+        self._color = [c.set_opacity(value) for c in self._color]
 
     @property
     def animate(self) -> _AnimationBuilder:
@@ -2336,27 +2391,27 @@ class OpenGLMobject:
         self.set_opacity(1.0 - darkness, recurse=recurse)
 
     def get_reflectiveness(self) -> np.ndarray:
-        return self.uniforms["reflectiveness"]
+        return self.reflectiveness
 
     def set_reflectiveness(self, reflectiveness: float, recurse: bool = True):
         for mob in self.get_family(recurse):
-            mob.uniforms["reflectiveness"] = float(reflectiveness)
+            mob.reflectiveness = float(reflectiveness)
         return self
 
     def get_shadow(self) -> np.ndarray:
-        return self.uniforms["shadow"]
+        return self.shadow
 
     def set_shadow(self, shadow: float, recurse: bool = True):
         for mob in self.get_family(recurse):
-            mob.uniforms["shadow"] = float(shadow)
+            mob.shadow = float(shadow)
         return self
 
     def get_gloss(self) -> np.ndarray:
-        return self.uniforms["gloss"]
+        return self.gloss
 
     def set_gloss(self, gloss: float, recurse: bool = True):
         for mob in self.get_family(recurse):
-            mob.uniforms["gloss"] = float(gloss)
+            mob.gloss = float(gloss)
         return self
 
     # Background rectangle

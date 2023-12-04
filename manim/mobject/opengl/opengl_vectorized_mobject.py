@@ -137,36 +137,6 @@ class OpenGLVMobject(OpenGLMobject):
     def get_mobject_type_class():
         return OpenGLVMobject
 
-    @property
-    def rgbas(self):
-        raise NotImplementedError(
-            "rgbas is not implemented for OpenGLVMobject. please use fill_rgba and stroke_rgba."
-        )
-
-    @rgbas.setter
-    def rgbas(self, value):
-        raise NotImplementedError(
-            "rgbas is not implemented for OpenGLVMobject. please use fill_rgba and stroke_rgba."
-        )
-
-    def init_data(self):
-        super().init_data()
-        self.data.pop("rgbas")
-        self.data.update(
-            {
-                "fill_rgba": np.zeros((1, 4)),
-                "stroke_rgba": np.zeros((1, 4)),
-                "stroke_width": np.zeros((1, 1)),
-                "orientation": np.zeros((1, 1)),
-            }
-        )
-
-    def init_uniforms(self):
-        super().init_uniforms()
-        self.uniforms["anti_alias_width"] = float(self.anti_alias_width)
-        self.uniforms["joint_type"] = float(self.joint_type.value)
-        self.uniforms["flat_stroke"] = float(self.flat_stroke)
-
     # These are here just to make type checkers happy
     def get_family(self, recurse: bool = True) -> list[OpenGLVMobject]:  # type: ignore
         return super().get_family(recurse)  # type: ignore

@@ -6,11 +6,16 @@ from PIL import Image
 from pyglet import shapes
 from pyglet.gl import Config
 from pyglet.window import Window
+from manim.mobject.text.tex_mobject import MathTex
+from manim.utils.color.core import ManimColor
 
 import manim.utils.color.manim_colors as col
 from manim._config import config, tempconfig
-from manim.camera.camera import OpenGLCamera, OpenGLCameraFrame
-from manim.constants import OUT, RIGHT, UP
+from manim.animation.creation import Create, DrawBorderThenFill, Write
+from manim.animation.fading import FadeIn
+from manim.animation.transform import Transform
+from manim.camera.camera import OpenGLCameraFrame
+from manim.constants import LEFT, OUT, RIGHT, UP
 from manim.mobject.geometry.arc import Circle
 from manim.mobject.geometry.polygram import Square
 from manim.mobject.logo import ManimBanner
@@ -18,6 +23,18 @@ from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.text.numbers import DecimalNumber
 from manim.mobject.text.text_mobject import Text
 from manim.renderer.opengl_renderer import OpenGLRenderer
+
+
+def progress_through_animations(animations):
+    dt = t - last_t
+    last_t = t
+    for animation in animations:
+        animation.update_mobjects(dt)
+        alpha = t / animation.run_time
+        animation.interpolate(alpha)
+    self.update_frame(dt)
+    self.emit_frame()
+
 
 if __name__ == "__main__":
     with tempconfig({"renderer": "opengl"}):
@@ -27,35 +44,45 @@ if __name__ == "__main__":
             vsync=True,
             config=Config(double_buffer=True, samples=0),
         )
-        renderer = OpenGLRenderer(1920, 1080, background_color=col.GRAY)
+        renderer = OpenGLRenderer(1920, 1080, background_color=col.BLACK)
         # vm = OpenGLVMobject([col.RED, col.GREEN])
         vm = (
             Circle(
                 radius=1,
                 stroke_color=col.YELLOW,
             )
-            .shift(RIGHT)
-            .set_opacity(0.5)
+            .shift(3 * RIGHT + OUT)
+            .set_opacity(0.6)
         )
         vm2 = Square(stroke_color=col.GREEN, fill_opacity=0, stroke_opacity=1).move_to(
             (0, 0, -0.5)
         )
-        vm3 = ManimBanner().set_opacity(1.0)
+        vm3 = ManimBanner().set_opacity(0.6)
         vm4 = (
             Circle(0.5, col.GREEN)
             .set_opacity(0.6)
             .shift(OUT)
             .set_fill(col.BLUE, opacity=0.2)
         )
-
+        vm5 = MathTex(r"\lambda x. \lambda y. x+y.").scale(3).set_opacity(1)
+        circle_list = [
+            Circle(color=ManimColor.from_hsv([z / 100, 1.0, 1.0]))
+            .set_opacity(0.1)
+            .shift(-z * OUT / 3)
+            for z in range(10)
+        ][::-1]
         # vm.set_points_as_corners([[-1920/2, 0, 0], [1920/2, 0, 0], [0, 1080/2, 0]])
         # print(vm.color)
         # print(vm.fill_color)
         # print(vm.stroke_color)
 
+        clock_mobject = DecimalNumber(0.0).shift(4 * LEFT + 2.5 * UP)
+        clock_mobject.fix_in_frame()
+        circle_list.append(clock_mobject)
+
         camera = OpenGLCameraFrame()
         camera.save_state()
-        renderer.init_camera(camera)
+        # renderer.init_camera(camera)
 
         # renderer.render(camera, [vm, vm2])
         # image = renderer.get_pixels()
@@ -96,25 +123,55 @@ if __name__ == "__main__":
             # vm.set_color(col.RED.interpolate(col.GREEN,x/1920))
             # print(x,y)
 
+        fps = 0
+
         @win.event
         def on_draw():
-            dt = clock.update_time()
-            fps: OpenGLVMobject = DecimalNumber(dt)
-            fps.fix_in_frame()
-            renderer.render(camera, [vm, vm2, vm3, vm4, fps])
+            start_time = time.perf_counter()
+            renderer.render(camera, circle_list)
+            # print(1 / (time.perf_counter() - start_time))
             # update_circle(counter)
+            global fps
+            fps = 1 / (time.perf_counter() - start_time)  # clock.update_time()
 
         @win.event
         def on_resize(width, height):
             super(Window, win).on_resize(width, height)
 
-        pyglet.app.run()
-        # while True:
-        #     pyglet.clock.tick()
-        #     pyglet.app.platform_event_loop.step()
-        #     win.switch_to()
-        #     counter += 0.01
-        #     update_circle(counter)
-        #     win.dispatch_event("on_draw")
-        #     win.dispatch_events()
-        #     win.flip()
+        # pyglet.app.run()
+        has_started = True
+        is_finished = True
+
+        run_time = 2
+        new_vm = Square(fill_color=col.GREEN, stroke_color=col.BLUE).shift(
+            2.5 * RIGHT - UP + 2 * OUT
+        )
+        animation = Write(vm3, run_time=run_time)
+
+        real_time = 0
+        virtual_time = 0
+        start_timestamp = time.time()
+        dt = 1 / 30
+
+        while True:
+            # pyglet.app.platform_event_loop.step()
+            win.switch_to()
+            if not has_started:
+                animation.begin()
+                has_started = True
+
+            real_time = time.time() - start_timestamp
+            while virtual_time < real_time:
+                virtual_time += dt
+                if not is_finished:
+                    if virtual_time >= run_time:
+                        animation.finish()
+                        has_finished = True
+                    else:
+                        animation.update_mobjects(dt)
+                        animation.interpolate(virtual_time / run_time)
+            # update_circle(virtual_time)
+            clock_mobject.set_value(fps)
+            win.dispatch_event("on_draw")
+            win.dispatch_events()
+            win.flip()

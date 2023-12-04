@@ -406,6 +406,7 @@ class OpenGLRenderer(Renderer):
                 self.ctx.disable(gl.DEPTH_TEST)  # type: ignore
 
         for sub in mob.family_members_with_points():
+            # TODO: review this renderer data optimization attempt
             if sub.renderer_data is None:
                 # Initialize
                 GLVMobjectManager.init_render_data(sub)

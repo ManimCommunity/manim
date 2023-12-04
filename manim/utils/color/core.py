@@ -527,9 +527,19 @@ class ManimColor:
         ValueError
             Raises an exception if the opacity value is not in range 0 to 1
         """
-        if opacity < 0 or opacity > 1:
+        if opacity is None or opacity < 0 or opacity > 1:
             raise ValueError(f"Alpha value is not in range 0-1 it is {opacity}")
         return ManimColor(self._internal_value[:3], opacity)
+
+    def get_opacity(self) -> float:
+        """Returns the opacity value of the current ManimColor
+
+        Returns
+        -------
+        float
+            The opacity value
+        """
+        return self._internal_value[3]
 
     @classmethod
     def from_rgb(
