@@ -55,16 +55,6 @@ DEFAULT_STROKE_COLOR = GREY_A
 DEFAULT_FILL_COLOR = GREY_C
 
 
-def triggers_refreshed_triangulation(func: Callable):
-    @wraps(func)
-    def wrapper(self, *args, **kwargs):
-        res = func(self, *args, **kwargs)
-        self.refresh_triangulation()
-        return res
-
-    return wrapper
-
-
 class OpenGLVMobject(OpenGLMobject):
     """A vectorized mobject."""
 
@@ -73,7 +63,7 @@ class OpenGLVMobject(OpenGLMobject):
     fill_shader_folder = "quadratic_bezier_fill"
     fill_dtype = [
         ("point", np.float32, (3,)),
-        ("orientation", np.float32, (3,)),
+        ("unit_normal", np.float32, (3,)),
         ("color", np.float32, (4,)),
         ("vert_index", np.float32, (1,)),
     ]
@@ -157,11 +147,6 @@ class OpenGLVMobject(OpenGLMobject):
         if not all(isinstance(m, OpenGLVMobject) for m in vmobjects):
             raise Exception("All submobjects must be of type OpenGLVMobject")
         super().add(*vmobjects)
-
-    def copy(self, deep: bool = False) -> Self:
-        result = super().copy(deep)
-        result.shader_wrapper_list = [sw.copy() for sw in self.shader_wrapper_list]
-        return result
 
     # Colors
     def init_colors(self):
@@ -313,10 +298,10 @@ class OpenGLVMobject(OpenGLMobject):
 
     def get_style(self):
         return {
-            "fill_rgba": self.data["fill_rgba"].copy(),
-            "stroke_rgba": self.data["stroke_rgba"].copy(),
-            "stroke_width": self.data["stroke_width"].copy(),
-            "stroke_background": self.draw_stroke_behind_fill,
+            "fill_color": self.fill_color.copy(),
+            "stroke_color": self.stroke_color.copy(),
+            "stroke_width": self.stroke_width.copy(),
+            # "stroke_background": self.draw_stroke_behind_fill,
             "reflectiveness": self.get_reflectiveness(),
             "gloss": self.get_gloss(),
             "shadow": self.get_shadow(),
@@ -365,13 +350,13 @@ class OpenGLVMobject(OpenGLMobject):
         return self.fill_color
 
     def get_fill_opacities(self) -> np.ndarray:
-        return (c.to_rgba()[3] for c in self.fill_color)
+        return [c.to_rgba()[3] for c in self.fill_color]
 
     def get_stroke_colors(self):
         return self.stroke_color
 
     def get_stroke_opacities(self) -> np.ndarray:
-        return (c.to_rgba()[3] for c in self.stroke_color)
+        return [c.to_rgba()[3] for c in self.stroke_color]
 
     def get_stroke_widths(self) -> np.ndarray:
         return self.stroke_width
@@ -1304,14 +1289,43 @@ class OpenGLVMobject(OpenGLMobject):
                 new_points += partial_quadratic_bezier_points(group, a1, a2)
         return np.vstack(new_points)
 
-    def interpolate(self, mobject1, mobject2, alpha, *args, **kwargs):
-        super().interpolate(mobject1, mobject2, alpha, *args, **kwargs)
-        if self.has_fill():
-            tri1 = mobject1.get_triangulation()
-            tri2 = mobject2.get_triangulation()
-            if len(tri1) != len(tri2) or not np.all(tri1 == tri2):
-                self.refresh_triangulation()
-        return self
+    def interpolate_color(self, mobject1, mobject2, alpha):
+        attrs = [
+            "fill_color",
+            "stroke_color",
+            "opacity",
+            "reflectiveness",
+            "shadow",
+            "gloss",
+            "stroke_width",
+            # TODO: eventually add these attributes to OpenGLVMobject
+            # "background_stroke_width",
+            # "sheen_direction",
+            # "sheen_factor",
+        ]
+
+        def interp(obj1, obj2, alpha):
+            result = None
+            if isinstance(obj1, ManimColor) or isinstance(obj2, ManimColor):
+                result = obj1.interpolate(obj2, alpha)
+            else:
+                result = interpolate(obj1, obj2, alpha)
+            return result
+
+        for attr in attrs:
+            if alpha == 1.0:
+                setattr(self, attr, getattr(mobject2, attr))
+                continue
+
+            attr1 = getattr(mobject1, attr)
+            attr2 = getattr(mobject2, attr)
+            if isinstance(attr1, list) or isinstance(attr2, list):
+                result = [
+                    interp(elem1, elem2, alpha) for elem1, elem2 in zip(attr1, attr2)
+                ]
+            else:
+                result = interp(attr1, attr2, alpha)
+            setattr(self, attr, result)
 
     # TODO: compare to 3b1b/manim again check if something changed so we don't need the cairo interpolation anymore
     def pointwise_become_partial(
@@ -1405,214 +1419,34 @@ class OpenGLVMobject(OpenGLMobject):
 
     # Related to triangulation
 
-    def refresh_triangulation(self):
-        for mob in self.get_family():
-            mob.needs_new_triangulation = True
-            mob.data["orientation"] = resize_array(
-                mob.data["orientation"], mob.get_num_points()
-            )
-        return self
-
-    def get_triangulation(self):
-        # Figure out how to triangulate the interior to know
-        # how to send the points as to the vertex shader.
-        # First triangles come directly from the points
-        if not self.needs_new_triangulation:
-            return self.triangulation
-
-        points = self.points
-
-        if len(points) <= 1:
-            self.triangulation = np.zeros(0, dtype="i4")
-            self.needs_new_triangulation = False
-            return self.triangulation
-
-        normal_vector = self.get_unit_normal()
-        indices = np.arange(len(points), dtype=int)
-
-        # Rotate points such that unit normal vector is OUT
-        if not np.isclose(normal_vector, OUT).all():
-            points = np.dot(points, z_to_vector(normal_vector))
-
-        atol = self.tolerance_for_point_equality
-        end_of_loop = np.zeros(len(points) // 3, dtype=bool)
-        end_of_loop[:-1] = (np.abs(points[2:-3:3] - points[3::3]) > atol).any(1)
-        end_of_loop[-1] = True
-
-        v01s = points[1::3] - points[0::3]
-        v12s = points[2::3] - points[1::3]
-        curve_orientations = np.sign(cross2d(v01s, v12s))
-        self.data["orientation"] = np.transpose([curve_orientations.repeat(3)])
-
-        concave_parts = curve_orientations < 0
-
-        # These are the vertices to which we'll apply a polygon triangulation
-        inner_vert_indices = np.hstack(
-            [
-                indices[0::3],
-                indices[1::3][concave_parts],
-                indices[2::3][end_of_loop],
-            ]
-        )
-        inner_vert_indices.sort()
-        rings = np.arange(1, len(inner_vert_indices) + 1)[inner_vert_indices % 3 == 2]
-
-        # Triangulate
-        inner_verts = points[inner_vert_indices]
-        inner_tri_indices = inner_vert_indices[
-            earclip_triangulation(inner_verts, rings)
-        ]
-
-        tri_indices = np.hstack([indices, inner_tri_indices])
-        self.triangulation = tri_indices
-        self.needs_new_triangulation = False
-        return tri_indices
-
-    @triggers_refreshed_triangulation
     def set_points(self, points):
         super().set_points(points)
         return self
 
-    @triggers_refreshed_triangulation
     def append_points(self, points):
         return super().append_points(points)
 
-    @triggers_refreshed_triangulation
     def reverse_points(self):
         return super().reverse_points()
 
-    @triggers_refreshed_triangulation
     def set_data(self, data):
         super().set_data(data)
         return self
 
     # TODO, how to be smart about tangents here?
-    @triggers_refreshed_triangulation
     def apply_function(self, function, make_smooth=False, **kwargs):
         super().apply_function(function, **kwargs)
         if self.make_smooth_after_applying_functions or make_smooth:
             self.make_approximately_smooth()
         return self
 
-    @triggers_refreshed_triangulation
     def apply_points_function(self, *args, **kwargs):
         super().apply_points_function(*args, **kwargs)
         return self
 
-    @triggers_refreshed_triangulation
     def flip(self, *args, **kwargs):
         super().flip(*args, **kwargs)
         return self
-
-    # For shaders
-    def init_shader_data(self):
-        self.fill_data = np.zeros(0, dtype=self.fill_dtype)
-        self.stroke_data = np.zeros(0, dtype=self.stroke_dtype)
-        self.fill_shader_wrapper = ShaderWrapper(
-            vert_data=self.fill_data,
-            vert_indices=np.zeros(0, dtype="i4"),
-            uniforms=self.uniforms,
-            shader_folder=self.fill_shader_folder,
-            render_primitive=self.render_primitive,
-        )
-        self.stroke_shader_wrapper = ShaderWrapper(
-            vert_data=self.stroke_data,
-            uniforms=self.uniforms,
-            shader_folder=self.stroke_shader_folder,
-            render_primitive=self.render_primitive,
-        )
-
-        self.shader_wrapper_list = [
-            self.stroke_shader_wrapper.copy(),  # Use for back stroke
-            self.fill_shader_wrapper.copy(),
-            self.stroke_shader_wrapper.copy(),
-        ]
-        for sw in self.shader_wrapper_list:
-            sw.uniforms = self.uniforms
-
-    def refresh_shader_wrapper_id(self):
-        for wrapper in [self.fill_shader_wrapper, self.stroke_shader_wrapper]:
-            wrapper.refresh_id()
-        return self
-
-    def get_fill_shader_wrapper(self) -> ShaderWrapper:
-        self.fill_shader_wrapper.vert_indices = self.get_fill_shader_vert_indices()
-        self.fill_shader_wrapper.vert_data = self.get_fill_shader_data()
-        self.fill_shader_wrapper.uniforms = self.get_shader_uniforms()
-        self.fill_shader_wrapper.depth_test = self.depth_test
-        return self.fill_shader_wrapper
-
-    def get_stroke_shader_wrapper(self) -> ShaderWrapper:
-        self.stroke_shader_wrapper.vert_data = self.get_stroke_shader_data()
-        self.stroke_shader_wrapper.uniforms = self.get_shader_uniforms()
-        self.stroke_shader_wrapper.depth_test = self.depth_test
-        return self.stroke_shader_wrapper
-
-    def get_shader_wrapper_list(self):
-        # Build up data lists
-        fill_shader_wrappers = []
-        stroke_shader_wrappers = []
-        back_stroke_shader_wrappers = []
-        for submob in self.family_members_with_points():
-            if submob.has_fill():
-                fill_shader_wrappers.append(submob.get_fill_shader_wrapper())
-            if submob.has_stroke():
-                ssw = submob.get_stroke_shader_wrapper()
-                if submob.draw_stroke_behind_fill:
-                    back_stroke_shader_wrappers.append(ssw)
-                else:
-                    stroke_shader_wrappers.append(ssw)
-
-        # Combine data lists
-        sw_lists = [
-            back_stroke_shader_wrappers,
-            fill_shader_wrappers,
-            stroke_shader_wrappers,
-        ]
-        for sw, sw_list in zip(self.shader_wrapper_list, sw_lists):
-            if not sw_list:
-                continue
-            sw.read_in(*sw_list)
-            sw.depth_test = any(sw.depth_test for sw in sw_list)
-            sw.uniforms.update(sw_list[0].uniforms)
-        return list(filter(lambda sw: len(sw.vert_data) > 0, self.shader_wrapper_list))
-
-    def get_stroke_shader_data(self) -> np.ndarray:
-        points = self.points
-        if len(self.stroke_data) != len(points):
-            self.stroke_data = resize_array(self.stroke_data, len(points))
-
-        if "points" not in self.locked_data_keys:
-            nppc = self.n_points_per_curve
-            self.stroke_data["point"] = points
-            self.stroke_data["prev_point"][:nppc] = points[-nppc:]
-            self.stroke_data["prev_point"][nppc:] = points[:-nppc]
-            self.stroke_data["next_point"][:-nppc] = points[nppc:]
-            self.stroke_data["next_point"][-nppc:] = points[:nppc]
-
-        self.read_data_to_shader(self.stroke_data, "color", "stroke_rgba")
-        self.read_data_to_shader(self.stroke_data, "stroke_width", "stroke_width")
-
-        return self.stroke_data
-
-    def get_fill_shader_data(self) -> np.ndarray:
-        points = self.points
-        if len(self.fill_data) != len(points):
-            self.fill_data = resize_array(self.fill_data, len(points))
-            self.fill_data["vert_index"][:, 0] = range(len(points))
-
-        self.read_data_to_shader(self.fill_data, "point", "points")
-        self.read_data_to_shader(self.fill_data, "color", "fill_rgba")
-        self.read_data_to_shader(self.fill_data, "orientation", "orientation")
-
-        return self.fill_data
-
-    def refresh_shader_data(self):
-        self.get_fill_shader_data()
-        self.get_stroke_shader_data()
-
-    def get_fill_shader_vert_indices(self) -> np.ndarray:
-        return self.get_triangulation()
 
 
 class OpenGLVGroup(OpenGLVMobject):

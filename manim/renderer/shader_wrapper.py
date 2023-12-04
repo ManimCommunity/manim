@@ -202,7 +202,7 @@ def get_shader_code_from_file(filename: Path) -> str | None:
             directories=[get_shader_dir(), Path("/")],
         )
     except OSError:
-        logger.warning(f"Could not find shader file {filename}")
+        logger.warning(f"Could not find shader file {filename.absolute()}")
         return None
 
     result = filepath.read_text()

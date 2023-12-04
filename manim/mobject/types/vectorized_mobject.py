@@ -372,10 +372,9 @@ class VMobject(Mobject):
 
         return ret
 
-    def match_style(self, vmobject, family=True):
-        self.set_style(**vmobject.get_style(), family=False)
-
-        if family:
+    def match_style(self, vmobject: VMobject, recurse: bool = True):
+        self.set_style(**vmobject.get_style(), recurse=False)
+        if recurse:
             # Does its best to match up submobject lists, and
             # match styles accordingly
             submobs1, submobs2 = self.submobjects, vmobject.submobjects

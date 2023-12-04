@@ -221,10 +221,6 @@ class OpenGLMobject:
         self.init_points()
         self.color = ManimColor.parse(color)
         self.init_colors()
-        self.init_shader_data()
-
-        if self.depth_test:
-            self.apply_depth_test()
 
     @classmethod
     def __init_subclass__(cls, **kwargs):
@@ -2694,8 +2690,6 @@ class OpenGLMobject:
         self.align_data(mobject)
 
     def align_data(self, mobject) -> None:
-        # In case any data arrays get resized when aligned to shader data
-        self.refresh_shader_data()
         for mob1, mob2 in zip(self.get_family(), mobject.get_family()):
             # Separate out how points are treated so that subclasses
             # can handle that case differently if they choose
@@ -2786,24 +2780,9 @@ class OpenGLMobject:
 
                     self.add(dotL, dotR, dotMiddle)
         """
-        for key in self.data:
-            if key in self.locked_data_keys:
-                continue
-            if len(self.data[key]) == 0:  # type: ignore
-                continue
-            if key not in mobject1.data or key not in mobject2.data:
-                continue
-
-            if key in ("points", "bounding_box"):
-                func = path_func
-            else:
-                func = interpolate
-
-            self.data[key][:] = func(mobject1.data[key], mobject2.data[key], alpha)  # type: ignore
-        for key in self.uniforms:
-            self.uniforms[key] = interpolate(  # type: ignore
-                mobject1.uniforms[key], mobject2.uniforms[key], alpha
-            )
+        # TODO: replace with list of attribute names with a locking system
+        self.points = path_func(mobject1.points, mobject2.points, alpha)
+        self.interpolate_color(mobject1, mobject2, alpha)
         return self
 
     def pointwise_become_partial(self, mobject, a, b):
@@ -2961,44 +2940,36 @@ class OpenGLMobject:
         return bool(np.isclose(points1, points2).all())
 
     # Operations touching shader uniforms
-
-    @affects_shader_info_id
     def fix_in_frame(self) -> Self:
         self.uniforms["is_fixed_in_frame"] = float(1.0)
         self.is_fixed_in_frame = True
         return self
 
-    @affects_shader_info_id
     def fix_orientation(self) -> Self:
         self.uniforms["is_fixed_orientation"] = float(1.0)
         self.is_fixed_orientation = True
         self.fixed_orientation_center = tuple(self.get_center())
         return self
 
-    @affects_shader_info_id
     def unfix_from_frame(self) -> Self:
         self.uniforms["is_fixed_in_frame"] = float(0.0)
         self.is_fixed_in_frame = False
         return self
 
-    @affects_shader_info_id
     def unfix_orientation(self):
         self.is_fixed_orientation = 0.0
         self.fixed_orientation_center = (0, 0, 0)
         return self
 
-    @affects_shader_info_id
     def apply_depth_test(self):
         self.depth_test = True
         return self
 
-    @affects_shader_info_id
     def deactivate_depth_test(self):
         self.depth_test = False
         return self
 
     # Shader code manipulation
-
     def replace_shader_code(self, old, new):
         # TODO, will this work with VMobject structure, given
         # that it does not simpler return shader_wrappers of
@@ -3043,47 +3014,6 @@ class OpenGLMobject:
         )
         return self
 
-    # For shader data
-    def init_shader_data(self):
-        # TODO, only call this when needed?
-        self.shader_data = np.zeros(len(self.points), dtype=self.shader_dtype)
-        self.shader_indices = None
-        self.shader_wrapper = ShaderWrapper(
-            vert_data=self.shader_data,
-            shader_folder=self.shader_folder,
-            texture_paths=self.texture_paths,
-            depth_test=self.depth_test,
-            render_primitive=self.render_primitive,
-        )
-
-    def refresh_shader_wrapper_id(self):
-        self.shader_wrapper.refresh_id()
-        return self
-
-    def get_shader_wrapper(self):
-        self.shader_wrapper.vert_data = self.get_shader_data()
-        self.shader_wrapper.vert_indices = self.get_shader_vert_indices()
-        self.shader_wrapper.uniforms = self.get_shader_uniforms()
-        self.shader_wrapper.depth_test = self.depth_test
-        return self.shader_wrapper
-
-    def get_shader_wrapper_list(self):
-        shader_wrappers = it.chain(
-            [self.get_shader_wrapper()],
-            *(sm.get_shader_wrapper_list() for sm in self.submobjects),
-        )
-        batches = batch_by_property(shader_wrappers, lambda sw: sw.get_id())
-
-        result = []
-        for wrapper_group, _ in batches:
-            shader_wrapper = wrapper_group[0]
-            if not shader_wrapper.is_valid():
-                continue
-            shader_wrapper.combine_with(*wrapper_group[1:])
-            if len(shader_wrapper.vert_data) > 0:
-                result.append(shader_wrapper)
-        return result
-
     def check_data_alignment(self, array, data_key):
         # Makes sure that self.data[key] can be broadcast into
         # the given array, meaning its length has to be either 1
@@ -3095,33 +3025,6 @@ class OpenGLMobject:
                 len(array),
             )
         return self
-
-    def get_resized_shader_data_array(self, length: int) -> np.ndarray:
-        # If possible, try to populate an existing array, rather
-        # than recreating it each frame
-        if len(self.shader_data) != length:
-            self.shader_data = resize_array(self.shader_data, length)
-        return self.shader_data
-
-    def read_data_to_shader(self, shader_data, shader_data_key, data_key):
-        if data_key in self.locked_data_keys:
-            return
-        self.check_data_alignment(shader_data, data_key)
-        shader_data[shader_data_key] = self.data[data_key]
-
-    def get_shader_data(self):
-        shader_data = self.get_resized_shader_data_array(self.get_num_points())
-        self.read_data_to_shader(shader_data, "point", "points")
-        return shader_data
-
-    def refresh_shader_data(self):
-        self.get_shader_data()
-
-    def get_shader_uniforms(self):
-        return self.uniforms
-
-    def get_shader_vert_indices(self):
-        return self.shader_indices
 
     # Event Handlers
     """

@@ -3,6 +3,7 @@
 #include ../include/camera_uniform_declarations.glsl
 uniform vec2 pixel_shape;
 uniform float index;
+uniform float disable_stencil;
 
 in vec2 uv_coords;
 in vec2 uv_b2;
@@ -88,8 +89,12 @@ float modify_distance_for_endpoints(vec2 p, float dist, float t){
 
 void main() {
     // Use the default value as standard output
-    stencil_value.rgb = vec3(index);
-    stencil_value.a = 1.0;
+    if(disable_stencil==1.0){
+        stencil_value = vec4(0.0);
+    }else{
+        stencil_value.rgb = vec3(index);
+        stencil_value.a = 1.0;
+    }
     gl_FragDepth = gl_FragCoord.z;
     // Get the previous index that was written to this fragment
     float previous_index =
@@ -113,7 +118,10 @@ void main() {
         if (color.a == 1.0)
             discard;
         else
-            gl_FragDepth = gl_FragCoord.z - 3*index / 1000.0;
+            gl_FragDepth = gl_FragCoord.z + index / 1000.0;
+    }
+    if(disable_stencil==1.0){
+        gl_FragDepth = gl_FragCoord.z + 4.5 * index / 1000.0;
     }
     if (uv_stroke_width == 0)
         discard;

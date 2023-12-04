@@ -9,10 +9,10 @@ from typing_extensions import override
 
 import manim.constants as const
 import manim.utils.color.manim_colors as color
-from manim.renderer.buffers.buffer import STD140BufferFormat
 from manim._config import config, logger
 from manim.camera.camera import OpenGLCameraFrame
 from manim.mobject.types.vectorized_mobject import VMobject
+from manim.renderer.buffers.buffer import STD140BufferFormat
 from manim.renderer.opengl_shader_program import load_shader_program_by_folder
 from manim.renderer.renderer import ImageType, Renderer, RendererData
 from manim.renderer.shader_wrapper import ShaderWrapper
@@ -423,6 +423,27 @@ class OpenGLRenderer(Renderer):
             #         mob.renderer_data.mesh = ... # Triangulation todo
 
         num_mobs = len(mob.family_members_with_points())
+
+        # Another stroke pass is needed in the beginning to deal with transparency properly
+        for counter, sub in enumerate(mob.family_members_with_points()):
+            if not isinstance(sub.renderer_data, GLRenderData):
+                return
+            enable_depth(sub)
+            uniforms = GLVMobjectManager.read_uniforms(sub)
+            uniforms["index"] = (counter + 1) / num_mobs / 2
+            uniforms["disable_stencil"] = float(True)
+            # uniforms['z_shift'] = counter/9 + 1/20
+            self.ctx.copy_framebuffer(self.stencil_texture_fbo, self.stencil_buffer_fbo)
+            self.stencil_texture.use(0)
+            self.vmobject_stroke_program["stencil_texture"] = 0
+            if sub.has_stroke():
+                ProgramManager.write_uniforms(self.vmobject_stroke_program, uniforms)
+                self.render_program(
+                    self.vmobject_stroke_program,
+                    self.get_stroke_shader_data(sub),
+                    np.array(range(len(sub.points))),
+                )
+
         for counter, sub in enumerate(mob.family_members_with_points()):
             if not isinstance(sub.renderer_data, GLRenderData):
                 return
@@ -430,6 +451,7 @@ class OpenGLRenderer(Renderer):
             uniforms = GLVMobjectManager.read_uniforms(sub)
             # uniforms['z_shift'] = counter/9
             uniforms["index"] = (counter + 1) / num_mobs
+            uniforms["disable_stencil"] = float(False)
             self.ctx.copy_framebuffer(self.stencil_texture_fbo, self.stencil_buffer_fbo)
             self.stencil_texture.use(0)
             self.vmobject_fill_program["stencil_texture"] = 0
@@ -447,6 +469,7 @@ class OpenGLRenderer(Renderer):
             enable_depth(sub)
             uniforms = GLVMobjectManager.read_uniforms(sub)
             uniforms["index"] = (counter + 1) / num_mobs
+            uniforms["disable_stencil"] = float(False)
             # uniforms['z_shift'] = counter/9 + 1/20
             self.ctx.copy_framebuffer(self.stencil_texture_fbo, self.stencil_buffer_fbo)
             self.stencil_texture.use(0)
