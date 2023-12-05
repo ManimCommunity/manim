@@ -61,6 +61,8 @@ class AnimationGroup(Animation):
         lag_ratio: float = 0,
         **kwargs,
     ) -> None:
+        if len(animations) == 0:
+            raise ValueError("AnimationGroup must have at least one animation")
         self.animations = [prepare_animation(anim) for anim in animations]
         self.rate_func = rate_func
         self.group = group
