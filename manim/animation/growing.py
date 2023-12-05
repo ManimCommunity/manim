@@ -189,7 +189,7 @@ class GrowArrow(GrowFromPoint):
 
     def create_starting_mobject(self) -> Mobject:
         start_arrow = self.mobject.copy()
-        start_arrow.scale(0, scale_tips=True, about_point=self.point)
+        start_arrow.scale(0, scale_tips=False, about_point=self.point)
         if self.point_color:
             start_arrow.set_color(self.point_color)
         return start_arrow

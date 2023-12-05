@@ -1143,6 +1143,7 @@ class Arrow3D(Line3D):
         height: float = 0.3,
         base_radius: float = 0.08,
         color: ParsableManimColor = WHITE,
+        max_thickness_to_length_ratio: float = 5,
         **kwargs,
     ) -> None:
         super().__init__(
@@ -1162,27 +1163,52 @@ class Arrow3D(Line3D):
         self.cone.shift(end)
         self.add(self.cone)
         self.set_color(color)
+        self.initial_thickness = self.thickness
+        self.max_thickness_to_length_ratio = max_thickness_to_length_ratio
+
+    def position_tip(self, tip: Cone):
+        tip.shift(self.end)
+
+    def add_tip(self, tip: Cone) -> Self:
+        self.position_tip(tip)
+        self.add(tip)
+        return self
+
+    def pop_tip(self) -> VGroup:
+        result = result = self.get_group_class()()
+        result.add(self.cone)
+        self.remove(self.cone)
+        return result
+
+    def _set_thickness_from_length(self) -> Self:
+        max_ratio = self.max_thickness_to_length_ratio
+        if config.renderer == RendererType.OPENGL:
+            self.set_stroke(
+                width=min(self.initial_thickness, max_ratio * self.get_length()),
+                recurse=False,
+            )
+        else:
+            self.set_stroke(
+                width=min(self.initial_thickness, max_ratio * self.get_length()),
+                family=False,
+            )
+        return self
 
     def scale(self, factor: float, scale_tips: bool = False, **kwargs) -> Self:
+        # Add desc
         if self.get_length() == 0:
             return self
 
         if scale_tips:
             super().scale(factor, **kwargs)
+            self._set_thickness_from_length()
             return self
 
-        has_tip = self.has_tip()
-        has_start_tip = self.has_start_tip()
-        if has_tip or has_start_tip:
-            old_tips = self.pop_tips()
-
+        old_tip = self.pop_tip()
         super().scale(factor, **kwargs)
-        self._set_stroke_width_from_length()
+        self._set_thickness_from_length()
+        self.add_tip(tip=old_tip)
 
-        if has_tip:
-            self.add_tip(tip=old_tips[0])
-        if has_start_tip:
-            self.add_tip(tip=old_tips[1], at_start=True)
         return self
 
 
