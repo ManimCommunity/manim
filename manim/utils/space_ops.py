@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from manim.typing import Point3D_Array, Vector
+from manim.typing import Point3D_Array, Vector, Vector3
 
 __all__ = [
     "quaternion_mult",
@@ -53,7 +53,7 @@ def norm_squared(v: float) -> float:
     return np.dot(v, v)
 
 
-def cross(v1: Vector3D, v2: Vector3D) -> Vector3D:
+def cross(v1: Vector3, v2: Vector3) -> Vector3:
     return np.array(
         [
             v1[1] * v2[2] - v1[2] * v2[1],
@@ -369,7 +369,7 @@ def normalize_along_axis(array: np.ndarray, axis: np.ndarray) -> np.ndarray:
     return array
 
 
-def get_unit_normal(v1: np.ndarray, v2: np.ndarray, tol: float = 1e-6) -> np.ndarray:
+def get_unit_normal(v1: Vector3, v2: Vector3, tol: float = 1e-6) -> Vector3:
     """Gets the unit normal of the vectors.
 
     Parameters
@@ -389,26 +389,34 @@ def get_unit_normal(v1: np.ndarray, v2: np.ndarray, tol: float = 1e-6) -> np.nda
     # Instead of normalizing v1 and v2, just divide by the greatest
     # of all their absolute components, which is just enough
     div1, div2 = max(np.abs(v1)), max(np.abs(v2))
-    if div1 == 0.0 or div2 == 0.0:
-        return DOWN
-
-    u1, u2 = v1 / div1, v2 / div2
-    cp = cross(u1, u2)
-    cp_norm_sq = norm_squared(cp)
-    tol_sq = tol * tol
-    if cp_norm_sq < tol_sq:
-        # In this case: vectors are aligned
-        # If they are also too aligned to the Z axis, just return DOWN
-        if abs(u1[0]) < tol and abs(u1[1]) < tol:
+    if div1 == 0.0:
+        if div2 == 0.0:
             return DOWN
-        # Otherwise rotate them in the plane they share with the Z axis,
-        # 90° TOWARDS the Z axis. This is done via (u x [0, 0, 1]) x u,
-        # which gives [-xz, -yz, x²+y²]
-        cp = np.array([-u1[0] * u1[2], -u1[1] * u1[2], u1[0] * u1[0] + u1[1] * u1[1]])
-        # Cecause the norm(u) == 0 case was filtered in the beginning,
-        # there is no need to check again for the norm of cp
-        cp_norm_sq = norm_squared(cp)
-    return cp / np.sqrt(cp_norm_sq)
+        u = v2 / div2
+    elif div2 == 0.0:
+        u = v1 / div1
+    else:
+        # Normal scenario: v1 and v2 are both non-null
+        u1, u2 = v1 / div1, v2 / div2
+        cp = cross(u1, u2)
+        cp_norm = np.sqrt(norm_squared(cp))
+        if cp_norm > tol:
+            return cp / cp_norm
+        # Otherwise, v1 and v2 were aligned
+        u = u1
+
+    # If you are here, you have an "unique", non-zero, unit-ish vector u
+    # If it's also too aligned to the Z axis, just return DOWN
+    if abs(u[0]) < tol and abs(u[1]) < tol:
+        return DOWN
+    # Otherwise rotate u in the plane it shares with the Z axis,
+    # 90° TOWARDS the Z axis. This is done via (u x [0, 0, 1]) x u,
+    # which gives [-xz, -yz, x²+y²] (slightly scaled as well)
+    cp = np.array([-u[0] * u[2], -u[1] * u[2], u[0] * u[0] + u[1] * u[1]])
+    cp_norm = np.sqrt(norm_squared(cp))
+    # Because the norm(u) == 0 case was filtered in the beginning,
+    # there is no need to check if the norm of cp is 0
+    return cp / cp_norm
 
 
 ###
