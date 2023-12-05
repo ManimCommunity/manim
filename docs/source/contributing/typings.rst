@@ -2,27 +2,62 @@
 Adding Typings
 ==============
 
+.. warning::
+   This section is still a work in progress.
+
 Adding type hints to functions and parameters
 ---------------------------------------------
 
-.. warning::
-   This section is still a work in progress.
+Manim is currently in the process of adding type hints into the library. In this
+section, you will find information about the standards used and some general
+guidelines.
 
 If you've never used type hints before, this is a good place to get started:
 https://realpython.com/python-type-checking/#hello-types.
 
-When adding type hints to manim, there are some guidelines that should be followed:
+Typing standards
+~~~~~~~~~~~~~~~~
 
-* Coordinates have the typehint ``Sequence[float]``, e.g.
+Manim uses `mypy`_ to type check its codebase. You will find a list of
+configuration values in the ``mypy.ini`` configuration file.
+
+To be able to use the newest typing features not available in the lowest
+supported Python version, make use of `typing_extensions`_.
+
+To be able to use the new Union syntax (``|``) and builtins subscripting, use
+the ``from __future__ import annotations`` import.
+
+.. _mypy: https://mypy-lang.org/
+.. _typing_extensions: https://pypi.org/project/typing-extensions/
+
+Typing guidelines
+~~~~~~~~~~~~~~~~~
+
+* Manim has a dedicated :mod:`~.typing` module where type aliases are provided.
+  Most of them may seem redundant, in particular the ones related to ``numpy``.
+  This is in anticipation of the support for shape type hinting
+  (`related issue <https://github.com/numpy/numpy/issues/16544>`_). Besides the
+  pending shape support, using the correct type aliases will help users understand
+  which shape should be used.
+
+* Always use a type hint of ``None`` for functions that does not return
+  a value (this also applies to ``__init__``), e.g.:
 
 .. code:: py
 
-    def set_points_as_corners(self, points: Sequence[float]) -> "VMobject":
-        """Given an array of points, set them as corner of the Vmobject."""
+    def height(self, value) -> None:
+        self.scale_to_fit_height(value)
 
-* ``**kwargs`` has no typehint
+* For variables representing paths, use the ``StrPath`` or ``StrOrBytesPath``
+  type alias defined in the :mod:`~.typing` module.
 
-* Mobjects have the typehint "Mobject", e.g.
+* ``*args`` and ``**kwargs`` shouldn't be left untyped (in most cases you can
+  use ``Any``).
+
+* Following `PEP 484 <https://peps.python.org/pep-0484/#the-numeric-tower>`_,
+  use ``float`` instead of ``int | float``.
+
+* Mobjects have the typehint ``Mobject``, e.g.:
 
 .. code:: py
 
@@ -30,74 +65,17 @@ When adding type hints to manim, there are some guidelines that should be follow
         """Match the color with the color of another :class:`~.Mobject`."""
         return self.set_color(mobject.get_color())
 
-* Colors have the typehint ``Color``, e.g.
-
-.. code:: py
-
-    def set_color(self, color: Color = YELLOW_C, family: bool = True):
-        """Condition is function which takes in one arguments, (x, y, z)."""
-
-* As ``float`` and ``Union[int, float]`` are the same, use only ``float``
-
-* For numpy arrays use the typehint ``np.ndarray``
-
-* Functions that does not return a value should get the type hint ``None``. (This annotations help catch the kinds of subtle bugs where you are trying to use a meaningless return value. )
-
-.. code:: py
-
-    def height(self, value) -> None:
-        self.scale_to_fit_height(value)
-
-* Parameters that are None by default should get the type hint ``Optional``
-
-.. code:: py
-
-    def rotate(
-        self,
-        angle,
-        axis=OUT,
-        about_point: Optional[Sequence[float]] = None,
-        **kwargs,
-    ):
-        pass
-
-
-* The ``__init__()`` method always should have None as its return type.
-
-* Functions and lambda functions should get the typehint ``Callable``
+* Always parametrize generics (``list[int]`` instead of ``list``,
+  ``type[Any]`` instead of ``type``, etc.). This also applies to callables:
 
 .. code:: py
 
     rate_func: Callable[[float], float] = lambda t: smooth(1 - t)
 
-
-* Assuming that typical path objects are either Paths or strs, one can use the typehint ``typing.Union[str, pathlib.Path]``
-
-.. note::
-   As a helper for tool for typesets, you can use `typestring-parser
-   <https://github.com/Dominik1123/typestring-parser>`_
-   which can be accessed by first installing it via ``pip`` - ``pip install typestring-parser`` and
-   then using ``from typestring_parser import parse``.
-
-.. doctest::
-    :options: +SKIP
-
-    >>> from typestring_parser import parse
-    >>> parse("int")
-    <class 'int'>
-    >>> parse("int or str")
-    typing.Union[int, str]
-    >>> parse("list of str or str")
-    typing.Union[typing.List[str], str]
-    >>> parse("list of (int, str)")
-    typing.List[typing.Tuple[int, str]]
-
 Missing Sections for typehints are:
 -----------------------------------
-* Tools for typehinting
-* Link to MyPy
+
 * Mypy and numpy import errors: https://realpython.com/python-type-checking/#running-mypy
-* Where to find the alias
-* When to use Object and when to use "Object".
-* The use of a TypeVar on the type hints for copy().
-* The definition and use of Protocols (like Sized, or Sequence, or Iterable...)
+* When to use ``object`` vs ``Any``
+* The use of a TypeVar on the type hints for ``copy()``.
+* The definition and use of Protocols (like ``Sized``, ``Sequence``, ``Iterable``...)

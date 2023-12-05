@@ -22,11 +22,11 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-22.04, macos-latest, windows-latest]
-        python: ["3.8", "3.9", "3.10", "3.11"]
+        python: ["3.9", "3.10", "3.11", "3.12"]
 
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Poetry
         run: |
@@ -65,7 +65,7 @@ jobs:
 
       - name: Install Texlive (Linux)
         if: runner.os == 'Linux'
-        uses: teatimeguest/setup-texlive-action@v2
+        uses: teatimeguest/setup-texlive-action@v3
         with:
           cache: true
           packages: scheme-basic fontspec inputenc fontenc tipa mathrsfs calligra xcolor standalone preview doublestroke ms everysel setspace rsfs relsize ragged2e fundus-calligra microtype wasysym physics dvisvgm jknapltx wasy cm-super babel-english gnu-freefont mathastext cbfonts-fd xetex
@@ -75,6 +75,22 @@ jobs:
         run: |
           # start xvfb in background
           sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
+
+      - name: Setup Cairo Cache
+        uses: actions/cache@v3
+        id: cache-cairo
+        if: runner.os == 'Linux' || runner.os == 'macOS'
+        with:
+          path: ${{ github.workspace }}/third_party
+          key: ${{ runner.os }}-dependencies-cairo-${{ hashFiles('.github/scripts/ci_build_cairo.py') }}
+
+      - name: Build and install Cairo (Linux and macOS)
+        if: (runner.os == 'Linux' || runner.os == 'macOS') && steps.cache-cairo.outputs.cache-hit != 'true'
+        run: python .github/scripts/ci_build_cairo.py
+
+      - name: Set env vars for Cairo (Linux and macOS)
+        if: runner.os == 'Linux' || runner.os == 'macOS'
+        run: python .github/scripts/ci_build_cairo.py --set-env-vars
 
       - name: Setup macOS cache
         uses: actions/cache@v3
@@ -102,10 +118,6 @@ jobs:
           done
           export PATH="$oriPath"
           echo "Completed TinyTeX"
-
-      - name: Install cairo (MacOS)
-        if: runner.os == 'macOS'
-        run: brew install cairo
 
       - name: Add macOS dependencies to PATH
         if: runner.os == 'macOS'
