@@ -2,8 +2,8 @@
 
 __all__ = ["VideoMobject"]
 
-from .image_mobject import ImageMobject
 from ...animation.video import Video
+from .image_mobject import ImageMobject
 
 
 class VideoMobject(ImageMobject):
@@ -25,7 +25,7 @@ class VideoMobject(ImageMobject):
                 size = (1000, 1000, 3)
                 images = [(255 * np.random.rand(*size)).astype("uint8") for _ in range(100)]
                 video = VideoMobject(images)
-        
+
                 self.play(GrowFromCenter(video))
                 self.play(video.play(run_time=6.0))
                 self.play(FadeOut(video))
@@ -50,6 +50,3 @@ class VideoMobject(ImageMobject):
     def play(self, **kwargs):
         """Create an animation that will play video frames."""
         return Video(self, **kwargs)
-
-
-
