@@ -100,6 +100,7 @@ Index
    examples
    installation
    tutorials_guides
+   adventure
    reference
    plugins
    changelog
