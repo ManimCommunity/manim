@@ -52,7 +52,6 @@ from collections import defaultdict
 from pathlib import Path
 from textwrap import dedent, indent
 
-import click
 import cloup
 from git import Repo
 from github import Github
@@ -192,16 +191,16 @@ def get_summary(body):
     context_settings=CONTEXT_SETTINGS,
     epilog=EPILOG,
 )
-@click.argument("token")
-@click.argument("prior")
-@click.argument("tag")
-@click.argument(
+@cloup.argument("token")
+@cloup.argument("prior")
+@cloup.argument("tag")
+@cloup.argument(
     "additional",
     nargs=-1,
     required=False,
     type=int,
 )
-@click.option(
+@cloup.option(
     "-o",
     "--outfile",
     type=str,
