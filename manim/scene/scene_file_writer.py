@@ -191,7 +191,7 @@ class SceneFileWriter:
             and not skip_animations
         ):
             # relative to index file
-            section_video = f"{self.output_name}_{len(self.sections):04}{config.movie_file_extension}"
+            section_video = f"{self.output_name}_{name}{config.movie_file_extension}"
 
         self.sections.append(
             Section(
