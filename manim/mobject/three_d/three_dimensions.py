@@ -1167,7 +1167,7 @@ class Arrow3D(Line3D):
         self.max_thickness_to_length_ratio = max_thickness_to_length_ratio
 
     def position_tip(self, tip: Cone):
-        tip.shift(self.end)
+        tip.shift(-1 * self.end)
 
     def add_tip(self, tip: Cone) -> Self:
         self.position_tip(tip)
@@ -1175,7 +1175,7 @@ class Arrow3D(Line3D):
         return self
 
     def pop_tip(self) -> VGroup:
-        result = result = self.get_group_class()()
+        result = self.get_group_class()()
         result.add(self.cone)
         self.remove(self.cone)
         return result

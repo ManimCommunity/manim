@@ -37,6 +37,7 @@ import numpy as np
 
 from ..animation.transform import Transform
 from ..constants import PI
+from ..mobject.three_d.three_dimensions import Arrow3D
 from ..utils.paths import spiral_path
 
 if typing.TYPE_CHECKING:
@@ -189,7 +190,10 @@ class GrowArrow(GrowFromPoint):
 
     def create_starting_mobject(self) -> Mobject:
         start_arrow = self.mobject.copy()
-        start_arrow.scale(0, scale_tips=False, about_point=self.point)
+        if isinstance(start_arrow, Arrow3D):
+            start_arrow.scale(0, scale_tips=False, about_point=self.point)
+        else:
+            start_arrow.scale(0, scale_tips=True, about_point=self.point)
         if self.point_color:
             start_arrow.set_color(self.point_color)
         return start_arrow
