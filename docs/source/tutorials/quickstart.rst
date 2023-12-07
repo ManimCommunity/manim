@@ -304,6 +304,27 @@ with the changes already applied.
 
 Try other methods, like ``flip`` or ``shift``, and see what happens.
 
+.. note::
+    The difference between ``Transform`` and ``ReplacementTransform`` is that ``Transform(mob1, mob2)`` transforms the points
+    (as well as other attributes like color) of ``mob1`` into the points/attributes of ``mob2``.
+
+    ``ReplacementTransform(mob1, mob2)`` on the other hand literally replaces ``mob1`` on the scene with ``mob2``. This is best
+    illustrated with the example below:
+
+    .. code-block:: python
+        
+        class TwoTransforms(Scene):
+            def construct(self):
+                c = Circle()
+                self.add(c)
+                self.play(Transform(c, Square()))
+                self.play(FadeOut(c)) # fadout c
+                s = Square()
+                c = Circle()
+                self.add(c)
+                self.play(ReplacementTransform(c, s))
+                self.play(FadeOut(s)) # fadeout s
+
 3. Open ``scene.py``, and add the following code snippet below the ``AnimatedSquareToCircle`` class:
 
 .. code-block:: python
