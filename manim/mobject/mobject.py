@@ -2895,7 +2895,6 @@ class Group(Mobject, metaclass=ConvertToOpenGL):
 class _AnimationBuilder:
     def __init__(self, mobject) -> None:
         self.mobject = mobject
-        self.mobject.generate_target()
 
         self.overridden_animation = None
         self.is_chaining = False
@@ -2917,7 +2916,7 @@ class _AnimationBuilder:
         return self
 
     def __getattr__(self, method_name) -> types.MethodType:
-        method = getattr(self.mobject.target, method_name)
+        method = getattr(self.mobject, method_name)
         has_overridden_animation = hasattr(method, "_override_animate")
 
         if (self.is_chaining and has_overridden_animation) or self.overridden_animation:
@@ -2927,16 +2926,7 @@ class _AnimationBuilder:
             )
 
         def update_target(*method_args, **method_kwargs):
-            if has_overridden_animation:
-                self.overridden_animation = method._override_animate(
-                    self.mobject,
-                    *method_args,
-                    anim_args=self.anim_args,
-                    **method_kwargs,
-                )
-            else:
-                self.methods.append([method, method_args, method_kwargs])
-                method(*method_args, **method_kwargs)
+            self.methods.append([method_name, method_args, method_kwargs, has_overridden_animation])
             return self
 
         self.is_chaining = True
@@ -2948,6 +2938,22 @@ class _AnimationBuilder:
         from ..animation.transform import (  # is this to prevent circular import?
             _MethodAnimation,
         )
+        self.mobject.generate_target()
+        new_methods = []
+        for method_name, method_args, method_kwargs, has_overridden_animation in self.methods:
+            method = getattr(self.mobject.target, method_name)
+            if has_overridden_animation:
+                self.overridden_animation = method._override_animate(
+                    self.mobject,
+                    *method_args,
+                    anim_args=self.anim_args,
+                    **method_kwargs,
+                )
+            else:
+                new_methods.append([method, method_args, method_kwargs])
+                method(*method_args, **method_kwargs)
+
+        self.methods = new_methods
 
         if self.overridden_animation:
             anim = self.overridden_animation
