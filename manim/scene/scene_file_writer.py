@@ -463,10 +463,10 @@ class SceneFileWriter:
             self.write_subcaption_file()
 
     def open_partial_movie_stream(self, file_path=None):
-        """
-        Used internally by Manim to initialise
-        FFMPEG and begin writing to FFMPEG's input
-        buffer.
+        """Open a container holding a video stream.
+
+        This is used internally by Manim initialize the container holding
+        the video stream of a partial movie file.
         """
         if file_path is None:
             file_path = self.partial_movie_files[self.renderer.num_plays]
@@ -503,8 +503,11 @@ class SceneFileWriter:
         self.video_stream = stream
 
     def close_partial_movie_stream(self):
-        """
-        Used internally by Manim to gracefully stop writing to FFMPEG's input buffer
+        """Close the currently opened video container.
+
+        Used internally by Manim to first flush the remaining packages
+        in the video stream holding a partial file, and then close
+        the corresponding container.
         """
         for packet in self.video_stream.encode():
             self.video_container.mux(packet)
