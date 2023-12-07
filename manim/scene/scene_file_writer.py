@@ -26,7 +26,6 @@ from ..constants import RendererType
 from ..utils.file_ops import (
     add_extension_if_not_present,
     add_version_before_extension,
-    ensure_executable,
     guarantee_existence,
     is_gif_format,
     is_png_format,
@@ -85,14 +84,6 @@ class SceneFileWriter:
         self.next_section(
             name="autocreated", type=DefaultSectionType.NORMAL, skip_animations=False
         )
-        # fail fast if ffmpeg is not found
-        if not ensure_executable(Path(config.ffmpeg_executable)):
-            raise RuntimeError(
-                "Manim could not find ffmpeg, which is required for generating video output.\n"
-                "For installing ffmpeg please consult https://docs.manim.community/en/stable/installation.html\n"
-                "Make sure to either add ffmpeg to the PATH environment variable\n"
-                "or set path to the ffmpeg executable under the ffmpeg header in Manim's configuration."
-            )
 
     def init_output_directories(self, scene_name):
         """Initialise output directories.
