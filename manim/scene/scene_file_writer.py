@@ -480,13 +480,13 @@ class SceneFileWriter:
 
         partial_movie_file_codec = "libx264"
         partial_movie_file_pix_fmt = "yuv420p"
-        stream_options = {
+        av_options = {
             "an": "1",   # ffmpeg: -an, no audio
         }
         if is_webm_format():
             partial_movie_file_codec = "libvpx-vp9"
             partial_movie_file_pix_fmt = "rgba"
-            stream_options["-auto-alt-ref"] = "1"
+            av_options["-auto-alt-ref"] = "1"
         elif config.transparent:
             partial_movie_file_codec = "qtrle"
             partial_movie_file_pix_fmt = "rgba"
@@ -494,15 +494,11 @@ class SceneFileWriter:
         stream = video_container.add_stream(
             partial_movie_file_codec,
             rate=config.frame_rate,
-            options=options,
+            options=av_options,
         )
         stream.pix_fmt = partial_movie_file_pix_fmt
         stream.width = config.pixel_width
         stream.height = config.pixel_height
-
-        # no equivalent of -y?
-        # no equivalent of -an?
-        logging.getLogger("libav").setLevel(config.ffmpeg_loglevel)
 
         self.video_container = video_container
         self.video_stream = stream

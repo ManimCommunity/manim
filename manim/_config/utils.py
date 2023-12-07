@@ -12,6 +12,7 @@ See :doc:`/guides/configuration` for an introduction to Manim's configuration sy
 from __future__ import annotations
 
 import argparse
+import av
 import configparser
 import copy
 import errno
@@ -1053,6 +1054,7 @@ class ManimConfig(MutableMapping):
             val,
             ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
         )
+        logging.getLogger("libav").setLevel(self.ffmpeg_loglevel)
 
     @property
     def ffmpeg_executable(self) -> str:
