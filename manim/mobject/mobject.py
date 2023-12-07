@@ -2926,7 +2926,9 @@ class _AnimationBuilder:
             )
 
         def update_target(*method_args, **method_kwargs):
-            self.methods.append([method_name, method_args, method_kwargs, has_overridden_animation])
+            self.methods.append(
+                [method_name, method_args, method_kwargs, has_overridden_animation]
+            )
             return self
 
         self.is_chaining = True
@@ -2938,9 +2940,15 @@ class _AnimationBuilder:
         from ..animation.transform import (  # is this to prevent circular import?
             _MethodAnimation,
         )
+
         self.mobject.generate_target()
         new_methods = []
-        for method_name, method_args, method_kwargs, has_overridden_animation in self.methods:
+        for (
+            method_name,
+            method_args,
+            method_kwargs,
+            has_overridden_animation,
+        ) in self.methods:
             method = getattr(self.mobject.target, method_name)
             if has_overridden_animation:
                 self.overridden_animation = method._override_animate(
