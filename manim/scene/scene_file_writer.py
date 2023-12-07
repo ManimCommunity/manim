@@ -393,15 +393,14 @@ class SceneFileWriter:
                 av_frame = av.VideoFrame.from_ndarray(frame, format="rgba")
                 for packet in self.video_stream.encode(av_frame):
                     self.video_container.mux(packet)
-                # self.writing_process.stdin.write(frame.tobytes())
             if is_png_format() and not config["dry_run"]:
                 self.output_image_from_array(frame)
 
     def write_opengl_frame(self, renderer: OpenGLRenderer):
         if write_to_movie():
-            self.writing_process.stdin.write(
-                renderer.get_raw_frame_buffer_object_data(),
-            )
+            av_frame = av.VideoFrame.from_ndarray(renderer.get_frame(), format="rgba")
+            for packet in self.video_stream.encode(av_frame):
+                self.video_container.mux(packet)
         elif is_png_format() and not config["dry_run"]:
             target_dir = self.image_file_path.parent / self.image_file_path.stem
             extension = self.image_file_path.suffix
