@@ -351,7 +351,7 @@ class SceneFileWriter:
             Whether or not to write to a video file.
         """
         if write_to_movie() and allow_write:
-            self.open_movie_pipe(file_path=file_path)
+            self.open_partial_movie_stream(file_path=file_path)
 
     def end_animation(self, allow_write: bool = False):
         """
@@ -364,7 +364,7 @@ class SceneFileWriter:
             Whether or not to write to a video file.
         """
         if write_to_movie() and allow_write:
-            self.close_movie_pipe()
+            self.close_partial_movie_stream()
 
     def write_frame(self, frame_or_renderer: np.ndarray | OpenGLRenderer):
         """
@@ -462,7 +462,7 @@ class SceneFileWriter:
         if self.subcaptions:
             self.write_subcaption_file()
 
-    def open_movie_pipe(self, file_path=None):
+    def open_partial_movie_stream(self, file_path=None):
         """
         Used internally by Manim to initialise
         FFMPEG and begin writing to FFMPEG's input
@@ -499,22 +499,10 @@ class SceneFileWriter:
         # no equivalent of -an?
         logging.getLogger("libav").setLevel(config.ffmpeg_loglevel)
 
-        # filter_graph = av.filter.Graph()
-        # in_src = filter_graph.add_buffer(template=stream)
-
-        # if config.renderer == RendererType.OPENGL:
-        #     flip = filter_graph.add("vflip")
-        #     in_src.link_to(flip)
-
-        # sink = filter_graph.add('buffersink')
-        # in_src.link_to(sink)
-        # filter_graph.configure()
-
-        # self.filter_graph = filter_graph
         self.video_container = video_container
         self.video_stream = stream
 
-    def close_movie_pipe(self):
+    def close_partial_movie_stream(self):
         """
         Used internally by Manim to gracefully stop writing to FFMPEG's input buffer
         """
