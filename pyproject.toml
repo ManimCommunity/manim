@@ -28,6 +28,7 @@ packages = [
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.13"
+av = "^11.0.0"
 click = ">=8.0"
 cloup = ">=2.0.0"
 dearpygui = { version = ">=1.0.0", optional = true }
