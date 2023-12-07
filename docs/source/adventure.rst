@@ -1,6 +1,6 @@
-*****************************************************
-An Adventure through Manims Features and Capabilities
-*****************************************************
+******************************************************
+An Adventure through Manim's Features and Capabilities
+******************************************************
 
 .. image:: _static/AdventureManim.png
     :align: center
@@ -233,3 +233,82 @@ In this section we will look at the different ways to animate Mobjects and how t
             self.play(group.animate.arrange(DOWN))
             self.play(group.animate.arrange_in_grid(buff=1,rows=2))
             self.play(Unwrite(group))
+
+
+
+================================
+Introduction to Basic Animations
+================================
+
+There are multiple ways to animate the addition and removal of mobjects from the scene. The most common ways to introduce mobjects is with ``FadeIn`` or ``Create``,
+and the most common ways to remove objects from the scene are their counterparts: ``FadeOut`` and ``Uncreate``.
+
+.. manim:: BasicAnimations
+
+   class BasicAnimations(Scene):
+      def construct(self):
+          c1 = Circle().shift(2*LEFT)
+          c2 = Circle().shift(2*RIGHT)
+          self.play(FadeIn(c1), Create(c2))
+          self.play(FadeOut(c1), Uncreate(c2))
+
+
+You can adjust the duration of each animation individually, or you can set a duration for all in animations in a ``Scene.play`` call.
+
+.. manim:: AnimationRuntimes
+
+   class AnimationRuntimes(Scene):
+      def construct(self):
+          c = Circle().shift(2*LEFT)
+          s = Square().shift(2*RIGHT)
+          # set animation runtimes individually
+          self.play(Create(c, run_time=2), Create(s, run_time=1))
+          # in this call, the individual runtimes of each animation
+          # are overridden by the runtime in the self.play call
+          self.play(FadeOut(c, run_time=2), FadeOut(s, run_time=1), run_time=1.5)
+
+----------------------
+The ``Wait`` Animation
+----------------------
+
+Now all these animations seem a bit rushed. Luckily, Manim allows us to create periods of time where nothing is happening.
+As an example, try rendering:
+
+.. manim:: BasicAnimationWithWait
+
+   class BasicAnimationWithWait(Scene):
+      def construct(self):
+          c = Circle()
+          self.play(Create(c))
+          self.wait() # wait for one second by default
+          self.play(FadeOut(c))
+          self.wait(0.5) # wait half a second
+
+A little bit later on, we will learn how to leverage the ``stop_condition`` parameter to stop after a certain event happens.
+
+=====================
+Transforming Mobjects
+=====================
+
+Manim allows us to smoothly transform one ``Mobject`` into another using ``Trasnform`` (and in just a second, we'll talk about ``ReplacementTransform``).
+
+.. manim:: TransformAnimation
+
+   class TransformAnimation(Scene):
+      def construct(self):
+          c = Circle()
+          self.add(c)
+          self.play(Transform(c, Square()))
+          self.wait(0.2)
+
+-----------------------------------------
+``Transform`` vs ``ReplacementTransform``
+-----------------------------------------
+
+Stuff
+
+
+-------------------
+``.animate`` Syntax
+-------------------
+
