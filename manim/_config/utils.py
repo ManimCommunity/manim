@@ -12,7 +12,6 @@ See :doc:`/guides/configuration` for an introduction to Manim's configuration sy
 from __future__ import annotations
 
 import argparse
-import av
 import configparser
 import copy
 import errno
@@ -25,6 +24,7 @@ from enum import EnumMeta
 from pathlib import Path
 from typing import Any, ClassVar, Iterable, Iterator, NoReturn
 
+import av
 import numpy as np
 from typing_extensions import Self
 
