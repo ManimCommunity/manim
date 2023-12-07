@@ -481,7 +481,7 @@ class SceneFileWriter:
         partial_movie_file_codec = "libx264"
         partial_movie_file_pix_fmt = "yuv420p"
         av_options = {
-            "an": "1",   # ffmpeg: -an, no audio
+            "an": "1",  # ffmpeg: -an, no audio
         }
         if is_webm_format():
             partial_movie_file_codec = "libvpx-vp9"
@@ -559,7 +559,6 @@ class SceneFileWriter:
                 pf_path = Path(pf_path).as_posix()
                 fp.write(f"file 'file:{pf_path}'\n")
 
-
         av_options = {
             "safe": "0",
             "metadata": f"comment=Rendered with Manim Community v{__version__}",
@@ -576,7 +575,9 @@ class SceneFileWriter:
         if not includes_sound:
             av_options["an"] = "1"
 
-        partial_movies_input = av.open(str(file_list), options=av_options, format="concat")
+        partial_movies_input = av.open(
+            str(file_list), options=av_options, format="concat"
+        )
         partial_movies_stream = partial_movies_input.streams.video[0]
         output_container = av.open(str(output_file), mode="w")
         output_stream = output_container.add_stream(template=partial_movies_stream)
@@ -589,7 +590,7 @@ class SceneFileWriter:
             # We need to assign the packet to the new stream.
             packet.stream = output_stream
             output_container.mux(packet)
-        
+
         partial_movies_input.close()
         output_container.close()
 
