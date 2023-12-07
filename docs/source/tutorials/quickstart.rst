@@ -363,7 +363,7 @@ the corners of the square appear to contract slightly as they move into the posi
 for the first square to transform into the second one.
 
 In ``DifferentRotations``, the difference between ``.animate``'s interpretation of rotation and the
-``Rotate`` method is far more apparent. The starting and ending states of a ``Mobject`` rotated 360 degrees
+``Rotate`` method is far more apparent. The starting and ending states of a ``Mobject`` rotated 180 degrees
 are the same, so ``.animate`` tries to interpolate two identical objects and the result is the left square.
 If you find that your own usage of ``.animate`` is causing similar unwanted behavior, consider
 using conventional animation methods like the right square, which uses ``Rotate``.
