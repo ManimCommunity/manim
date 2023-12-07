@@ -4,7 +4,9 @@ from __future__ import annotations
 
 __all__ = ["SceneFileWriter"]
 
+import av
 import json
+import logging
 import os
 import shutil
 import subprocess
@@ -388,7 +390,10 @@ class SceneFileWriter:
         elif config.renderer == RendererType.CAIRO:
             frame = frame_or_renderer
             if write_to_movie():
-                self.writing_process.stdin.write(frame.tobytes())
+                av_frame = av.VideoFrame.from_ndarray(frame, format="rgba")
+                for packet in self.video_stream.encode(av_frame):
+                    self.video_container.mux(packet)
+                # self.writing_process.stdin.write(frame.tobytes())
             if is_png_format() and not config["dry_run"]:
                 self.output_image_from_array(frame)
 
@@ -480,49 +485,51 @@ class SceneFileWriter:
         fps = config["frame_rate"]
         if fps == int(fps):  # fps is integer
             fps = int(fps)
-        if config.renderer == RendererType.OPENGL:
-            width, height = self.renderer.get_pixel_shape()
-        else:
-            height = config["pixel_height"]
-            width = config["pixel_width"]
 
-        command = [
-            config.ffmpeg_executable,
-            "-y",  # overwrite output file if it exists
-            "-f",
-            "rawvideo",
-            "-s",
-            "%dx%d" % (width, height),  # size of one frame
-            "-pix_fmt",
-            "rgba",
-            "-r",
-            str(fps),  # frames per second
-            "-i",
-            "-",  # The input comes from a pipe
-            "-an",  # Tells FFMPEG not to expect any audio
-            "-loglevel",
-            config["ffmpeg_loglevel"].lower(),
-            "-metadata",
-            f"comment=Rendered with Manim Community v{__version__}",
-        ]
-        if config.renderer == RendererType.OPENGL:
-            command += ["-vf", "vflip"]
+        video_container = av.open(file_path, mode="w")
+
+        partial_movie_file_codec = "libx264"
+        partial_movie_file_pix_fmt = "yuv420p"
         if is_webm_format():
-            command += ["-vcodec", "libvpx-vp9", "-auto-alt-ref", "0"]
-        # .mov format
-        elif config["transparent"]:
-            command += ["-vcodec", "qtrle"]
-        else:
-            command += ["-vcodec", "libx264", "-pix_fmt", "yuv420p"]
-        command += [file_path]
-        self.writing_process = subprocess.Popen(command, stdin=subprocess.PIPE)
+            partial_movie_file_codec = "libvpx-vp9"
+            partial_movie_file_pix_fmt = "rgba"
+            #  "-auto-alt-ref", "0" ?
+        elif config.transparent:
+            partial_movie_file_codec = "qtrle"
+            partial_movie_file_pix_fmt = "rgba"
+
+        stream = video_container.add_stream(partial_movie_file_codec, rate=config.frame_rate)
+        stream.pix_fmt = partial_movie_file_pix_fmt
+        stream.width = config.pixel_width
+        stream.height = config.pixel_height
+
+        # no equivalent of -y?
+        # no equivalent of -an?
+        logging.getLogger("libav").setLevel(config.ffmpeg_loglevel)
+
+        # filter_graph = av.filter.Graph()
+        # in_src = filter_graph.add_buffer(template=stream)
+
+        # if config.renderer == RendererType.OPENGL:
+        #     flip = filter_graph.add("vflip")
+        #     in_src.link_to(flip)
+
+        # sink = filter_graph.add('buffersink')
+        # in_src.link_to(sink)
+        # filter_graph.configure()
+
+        # self.filter_graph = filter_graph
+        self.video_container = video_container
+        self.video_stream = stream
 
     def close_movie_pipe(self):
         """
         Used internally by Manim to gracefully stop writing to FFMPEG's input buffer
         """
-        self.writing_process.stdin.close()
-        self.writing_process.wait()
+        for packet in self.video_stream.encode():
+            self.video_container.mux(packet)
+
+        self.video_container.close()
 
         logger.info(
             f"Animation {self.renderer.num_plays} : Partial movie file written in %(path)s",
