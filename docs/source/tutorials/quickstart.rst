@@ -269,10 +269,10 @@ and animating those method calls with ``.animate``.
            self.play(Create(square))  # show the square on screen
            self.play(square.animate.rotate(PI / 4))  # rotate the square
            self.play(
-               ReplacementTransform(square, circle)
+               Transform(square, circle)
            )  # transform the square into a circle
            self.play(
-               circle.animate.set_fill(PINK, opacity=0.5)
+               square.animate.set_fill(PINK, opacity=0.5)
            )  # color the circle on screen
 
 2. Render ``AnimatedSquareToCircle`` by running the following command in the command line:
@@ -293,8 +293,8 @@ The following animation will render:
 
            self.play(Create(square))  # show the square on screen
            self.play(square.animate.rotate(PI / 4))  # rotate the square
-           self.play(ReplacementTransform(square, circle))  # transform the square into a circle
-           self.play(circle.animate.set_fill(PINK, opacity=0.5))  # color the circle on screen
+           self.play(Transform(square, circle))  # transform the square into a circle
+           self.play(square.animate.set_fill(PINK, opacity=0.5))  # color the circle on screen
 
 The first ``self.play`` creates the square. The second animates rotating it 45 degrees.
 The third transforms the square into a circle, and the last colors the circle pink.
@@ -303,27 +303,6 @@ Although the end result is the same as that of ``SquareToCircle``, ``.animate`` 
 with the changes already applied.
 
 Try other methods, like ``flip`` or ``shift``, and see what happens.
-
-.. note::
-    The difference between ``Transform`` and ``ReplacementTransform`` is that ``Transform(mob1, mob2)`` transforms the points
-    (as well as other attributes like color) of ``mob1`` into the points/attributes of ``mob2``.
-
-    ``ReplacementTransform(mob1, mob2)`` on the other hand literally replaces ``mob1`` on the scene with ``mob2``. This is best
-    illustrated with the example below:
-
-    .. code-block:: python
-
-        class TwoTransforms(Scene):
-            def construct(self):
-                c = Circle()
-                self.add(c)
-                self.play(Transform(c, Square()))
-                self.play(FadeOut(c))  # fadout c
-                s = Square()
-                c = Circle()
-                self.add(c)
-                self.play(ReplacementTransform(c, s))
-                self.play(FadeOut(s))  # fadeout s
 
 3. Open ``scene.py``, and add the following code snippet below the ``AnimatedSquareToCircle`` class:
 
@@ -368,6 +347,39 @@ are the same, so ``.animate`` tries to interpolate two identical objects and the
 If you find that your own usage of ``.animate`` is causing similar unwanted behavior, consider
 using conventional animation methods like the right square, which uses ``Rotate``.
 
+
+``Transform`` vs ``ReplacementTransform``
+*****************************************
+The difference between ``Transform`` and ``ReplacementTransform`` is that ``Transform(mob1, mob2)`` transforms the points
+(as well as other attributes like color) of ``mob1`` into the points/attributes of ``mob2``.
+
+``ReplacementTransform(mob1, mob2)`` on the other hand literally replaces ``mob1`` on the scene with ``mob2``.
+
+The use of ``ReplacementTransform`` or ``Transform`` is mostly up to personal preference. They can be used to accomplish the same effect, as shown below.
+
+.. code-block:: python
+
+    class TwoTransforms(Scene):
+        def transform(self):
+            a = Circle()
+            b = Square()
+            c = Triangle()
+            self.play(Trasnform(a, b))
+            self.play(Trasnform(a, c))
+            self.play(FadeOut(a))
+
+        def replacement_transform(self)
+            a = Circle()
+            b = Square()
+            c = Triangle()
+            self.play(ReplacementTransform(a, b))
+            self.play(ReplacementTransform(b, c))
+            self.play(FadeOut(c))
+
+        def construct(self):
+            self.transform()
+            self.wait(0.5) # wait for 0.5 seconds
+            self.replacement_transform()
 
 ************
 You're done!
