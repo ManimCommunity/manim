@@ -290,7 +290,8 @@ A little bit later on, we will learn how to leverage the ``stop_condition`` para
 Transforming Mobjects
 =====================
 
-Manim allows us to smoothly transform one ``Mobject`` into another using ``Trasnform`` (and in just a second, we'll talk about ``ReplacementTransform``).
+Manim allows us to smoothly transform one ``Mobject`` into another using ``Transform`` (and in just a second, we'll talk about ``ReplacementTransform``).
+``Transform(mob1, mob2)`` turns the attributes of ``mob1`` into the attributes of ``mob2``.
 
 .. manim:: TransformAnimation
 
@@ -299,14 +300,26 @@ Manim allows us to smoothly transform one ``Mobject`` into another using ``Trasn
           c = Circle()
           self.add(c)
           self.play(Transform(c, Square()))
-          self.wait(0.2)
+          self.play(FadeOut(c))
 
 -----------------------------------------
 ``Transform`` vs ``ReplacementTransform``
 -----------------------------------------
 
-Stuff
+While ``Transform(mob1, mob2)`` changes the attributes of ``mob1`` to ``mob2``, ``ReplacementTransform(mob1, mob2)`` literally replaces ``mob1`` on the
+scene with ``mob2``.
 
+Here is the same scene in the last section, but using ``ReplacementTransform``:
+
+.. manim:: ReplacementTransformAnimation
+
+   class ReplacementTransformAnimation(Scene):
+      def construct(self):
+          c = Circle()
+          s = Square()
+          self.add(c)
+          self.play(ReplacementTransform(c, s))
+          self.play(FadeOut(s))
 
 -------------------
 ``.animate`` Syntax
