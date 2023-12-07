@@ -4,7 +4,6 @@ from __future__ import annotations
 
 __all__ = ["SceneFileWriter"]
 
-import av
 import json
 import logging
 import os
@@ -13,6 +12,7 @@ import subprocess
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+import av
 import numpy as np
 import srt
 from PIL import Image
@@ -497,7 +497,9 @@ class SceneFileWriter:
             partial_movie_file_codec = "qtrle"
             partial_movie_file_pix_fmt = "rgba"
 
-        stream = video_container.add_stream(partial_movie_file_codec, rate=config.frame_rate)
+        stream = video_container.add_stream(
+            partial_movie_file_codec, rate=config.frame_rate
+        )
         stream.pix_fmt = partial_movie_file_pix_fmt
         stream.width = config.pixel_width
         stream.height = config.pixel_height
