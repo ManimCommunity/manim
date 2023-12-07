@@ -558,37 +558,40 @@ class SceneFileWriter:
             for pf_path in input_files:
                 pf_path = Path(pf_path).as_posix()
                 fp.write(f"file 'file:{pf_path}'\n")
-        commands = [
-            config.ffmpeg_executable,
-            "-y",  # overwrite output file if it exists
-            "-f",
-            "concat",
-            "-safe",
-            "0",
-            "-i",
-            str(file_list),
-            "-loglevel",
-            config.ffmpeg_loglevel.lower(),
-            "-metadata",
-            f"comment=Rendered with Manim Community v{__version__}",
-            "-nostdin",
-        ]
 
+
+        av_options = {
+            "safe": "0",
+            "metadata": f"comment=Rendered with Manim Community v{__version__}",
+        }
         if create_gif:
-            commands += [
-                "-vf",
-                f"fps={np.clip(config['frame_rate'], 1, 50)},split[s0][s1];[s0]palettegen=stats_mode=diff[p];[s1][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle",
-            ]
-        else:
-            commands += ["-c", "copy"]
+            av_options["vf"] = (  # add video filter (is there a better way to do this?)
+                f"fps={np.clip(config['frame_rate'], 1, 50)},"
+                "split[s0][s1];[s0]palettegen=stats_mode=diff[p];"
+                "[s1][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle"
+            )
+        else:  # copy codec of combined files
+            av_options["c"] = "copy"
 
         if not includes_sound:
-            commands += ["-an"]
+            av_options["an"] = "1"
 
-        commands += [str(output_file)]
+        partial_movies_input = av.open(str(file_list), options=av_options, format="concat")
+        partial_movies_stream = partial_movies_input.streams.video[0]
+        output_container = av.open(str(output_file), mode="w")
+        output_stream = output_container.add_stream(template=partial_movies_stream)
 
-        combine_process = subprocess.Popen(commands)
-        combine_process.wait()
+        for packet in partial_movies_input.demux(partial_movies_stream):
+            # We need to skip the "flushing" packets that `demux` generates.
+            if packet.dts is None:
+                continue
+
+            # We need to assign the packet to the new stream.
+            packet.stream = output_stream
+            output_container.mux(packet)
+        
+        partial_movies_input.close()
+        output_container.close()
 
     def combine_to_movie(self):
         """Used internally by Manim to combine the separate
