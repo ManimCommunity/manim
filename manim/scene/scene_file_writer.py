@@ -488,7 +488,7 @@ class SceneFileWriter:
             av_options["-auto-alt-ref"] = "1"
         elif config.transparent:
             partial_movie_file_codec = "qtrle"
-            partial_movie_file_pix_fmt = "rgba"
+            partial_movie_file_pix_fmt = "rgb24"
 
         stream = video_container.add_stream(
             partial_movie_file_codec,
