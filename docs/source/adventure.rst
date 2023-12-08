@@ -94,9 +94,9 @@ For a list of all Mobjects you can look at the :doc:`/reference_index/mobjects` 
 
             group = [c, s, t, graph, axis, par, mat, chart, vecfield, t3]
             names = ["Circle", "Square", "Triangle", "FunctionGraph", "Axes", "ParametricFunction", "Matrix", "BarChart" ,"ArrowVectorField", "MobjectTable"]
-            ziped = zip(group, names)
+            zipped = zip(group, names)
             combined = []
-            for mob, name in ziped:
+            for mob, name in zipped:
                 square = Square()
                 name = Text(name).scale(0.5)
                 mob.scale_to_fit_width(square.get_width())
@@ -107,11 +107,11 @@ For a list of all Mobjects you can look at the :doc:`/reference_index/mobjects` 
 
             all = VGroup(*combined).arrange_in_grid(buff=1,rows=2).scale(0.8).to_edge(UP)
             dots = MathTex("\\dots").next_to(all, DOWN, buff=1)
-            self.add(all,dots)
+            self.add(all, dots)
 
 .. note::
     The type of Mobject that is used most of the time is the `VMobject`. This is a Mobject that is made up of `VectorizedPoints`. These are points that are defined by their coordinates and can be connected by lines or curves.
-    Everytime we talk about Mobjects in this guide we mean VMobjects, unless we state otherwise.
+    Every time we talk about Mobjects in this guide we mean VMobjects, unless we state otherwise.
 
 =============================
 Mobjects and their Attributes
@@ -252,6 +252,9 @@ and the most common ways to remove objects from the scene are their counterparts
           self.play(FadeIn(c1), Create(c2))
           self.play(FadeOut(c1), Uncreate(c2))
 
+---------------------------
+Runtimes and Rate Functions
+---------------------------
 
 You can adjust the duration of each animation individually, or you can set a duration for all in animations in a ``Scene.play`` call.
 
@@ -267,12 +270,45 @@ You can adjust the duration of each animation individually, or you can set a dur
           # are overridden by the runtime in the self.play call
           self.play(FadeOut(c, run_time=2), FadeOut(s, run_time=1), run_time=1.5)
 
+You can also adjust the speed at an animation proceeds at using rate functions.
+
+.. manim:: RateFunctionsExample
+
+   class RateFunctionsExample(Scene):
+      def construct(self):
+          c1 = Circle().shift(2*LEFT)
+          c2 = Circle().shift(2*RIGHT)
+          self.play(
+              Create(c1, rate_func=rate_functions.linear),
+              Create(c2, rate_func=rate_functions.ease_in_sine),
+              run_time=5
+          )
+
+Alternatively, you can create your own. A rate function takes in a value between 0 and 1 representing the "progress" of the animation. You can think of this as the
+ratio of the time passed since the animation started, to the runtime of the animation. It should return how much of the animation should have been completed by that time.
+
+As an example, check out the rate function below.
+
+.. manim:: CustomRateFunctions
+
+   class CustomRateFunctions(Scene):
+      def construct(self):
+          def there_and_back_three(alpha: float):
+              if alpha <= 1/3:
+                  return 3*alpha
+              elif alpha <= 2/3:
+                  return 1-3*(alpha-1/3)
+              else:
+                  return 3*(alpha-2/3)
+
+          self.play(Create(Circle(), rate_func=there_and_back_three), run_time=4)
+
 ----------------------
 The ``Wait`` Animation
 ----------------------
 
 Now all these animations seem a bit rushed. Luckily, Manim allows us to create periods of time where nothing is happening.
-As an example, try rendering:
+Let's look at an example:
 
 .. manim:: BasicAnimationWithWait
 
@@ -300,7 +336,7 @@ Manim allows us to smoothly transform one ``Mobject`` into another using ``Trans
           c = Circle()
           self.add(c)
           self.play(Transform(c, Square()))
-          self.play(FadeOut(c))
+          self.play(FadeOut(c)) # fadeout c
 
 -----------------------------------------
 ``Transform`` vs ``ReplacementTransform``
@@ -319,9 +355,40 @@ Here is the same scene in the last section, but using ``ReplacementTransform``:
           s = Square()
           self.add(c)
           self.play(ReplacementTransform(c, s))
-          self.play(FadeOut(s))
+          self.play(FadeOut(s)) # fadeout s
+
+Ultimately, the choice of which to use is up to the programmer. However, some examples like the one below make the code simpler when using one over the other.
+
+.. manim:: CyclingShapesAnimation
+
+   class CyclingShapesAnimation(Scene):
+      def construct(self):
+          mob = Circle()
+          shapes = (Square(), Triangle(), Circle().set_fill(color=RED, opacity=0.5))
+          self.add(mob)
+          for shape in shapes:
+              self.play(Transform(mob, shape))
+              self.wait(0.3)
+
 
 -------------------
 ``.animate`` Syntax
 -------------------
 
+One of the most powerful features of Manim is it's ``.animate`` syntax. It allows you to animate the changing of an attribute of a mobject. You can see an example below:
+
+.. manim:: AnimateSyntaxExample
+
+   class AnimateSyntaxExample(Scene):
+      def construct(self):
+          c = Circle()
+          self.add(c)
+          self.play(c.animate.shift(RIGHT))
+          self.play(c.animate.to_corner(DL).set_fill(color=RED, opacity=0.4))
+
+
+
+.. note::
+
+   ``.animate`` works by interpolating between the initial and the final mobject. As such, beware when using ``.animate.rotate`` with angles greater than pi radians
+   as it may not produce the intended animation.
