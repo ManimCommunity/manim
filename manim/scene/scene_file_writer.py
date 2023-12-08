@@ -386,13 +386,14 @@ class SceneFileWriter:
                 if config.renderer == RendererType.OPENGL
                 else frame_or_renderer
             )
-            av_frame = av.VideoFrame.from_ndarray(frame, format="rgba")
-            packets = self.video_stream.encode(av_frame)
             for _ in range(num_frames):
                 # Notes: precomputing reusing packets does not work!
                 # I.e., you cannot do `packets = encode(...)`
                 # and reuse it, as it seems that `mux(...)`
                 # consumes the packet.
+                # The same issue applies for `av_frame`,
+                # reusing it renders weird-looking frames.
+                av_frame = av.VideoFrame.from_ndarray(frame, format="rgba")
                 for packet in self.video_stream.encode(av_frame):
                     self.video_container.mux(packet)
 
