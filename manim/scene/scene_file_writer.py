@@ -486,7 +486,7 @@ class SceneFileWriter:
         if is_webm_format():
             partial_movie_file_codec = "libvpx-vp9"
             av_options["-auto-alt-ref"] = "1"
-        elif config.transparent:
+        elif config.transparent:  # TODO: FIXME as quality seems very bad + test transparency
             partial_movie_file_codec = "qtrle"
             partial_movie_file_pix_fmt = "rgb24"
 
@@ -579,7 +579,12 @@ class SceneFileWriter:
         )
         partial_movies_stream = partial_movies_input.streams.video[0]
         output_container = av.open(str(output_file), mode="w")
-        output_stream = output_container.add_stream(template=partial_movies_stream)
+        output_stream = output_container.add_stream(
+            codec_name="ppm" if create_gif else None,
+            template=partial_movies_stream if not create_gif else None,
+        )
+        if create_gif:
+            output_stream.pix_fmt = "rgb24"
 
         for packet in partial_movies_input.demux(partial_movies_stream):
             # We need to skip the "flushing" packets that `demux` generates.
@@ -588,7 +593,7 @@ class SceneFileWriter:
 
             # We need to assign the packet to the new stream.
             packet.stream = output_stream
-            output_container.mux(packet)
+            output_container.mux(packet)  # TODO: FIXME for GIF
 
         partial_movies_input.close()
         output_container.close()
