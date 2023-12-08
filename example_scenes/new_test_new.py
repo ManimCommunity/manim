@@ -6,8 +6,6 @@ from PIL import Image
 from pyglet import shapes
 from pyglet.gl import Config
 from pyglet.window import Window
-from manim.mobject.text.tex_mobject import MathTex
-from manim.utils.color.core import ManimColor
 
 import manim.utils.color.manim_colors as col
 from manim._config import config, tempconfig
@@ -21,8 +19,10 @@ from manim.mobject.geometry.polygram import Square
 from manim.mobject.logo import ManimBanner
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.text.numbers import DecimalNumber
+from manim.mobject.text.tex_mobject import MathTex
 from manim.mobject.text.text_mobject import Text
 from manim.renderer.opengl_renderer import OpenGLRenderer
+from manim.utils.color.core import ManimColor
 
 
 def progress_through_animations(animations):

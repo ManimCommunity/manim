@@ -1,7 +1,7 @@
 import re
+import time
 from functools import lru_cache
 from pathlib import Path
-import time
 from typing import TYPE_CHECKING
 
 import moderngl as gl

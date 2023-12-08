@@ -1,8 +1,8 @@
 from __future__ import annotations
-from dataclasses import dataclass
 
 import itertools as it
 import operator as op
+from dataclasses import dataclass
 from functools import reduce, wraps
 from typing import TYPE_CHECKING
 
@@ -71,6 +71,7 @@ DEFAULT_FILL_COLOR = GREY_C
 #         return func(self, *args, **kwargs)
 
 #     return wrapper
+
 
 class OpenGLVMobject(OpenGLMobject):
     """A vectorized mobject."""
