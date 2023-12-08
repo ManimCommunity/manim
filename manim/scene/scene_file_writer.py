@@ -485,7 +485,6 @@ class SceneFileWriter:
         }
         if is_webm_format():
             partial_movie_file_codec = "libvpx-vp9"
-            partial_movie_file_pix_fmt = "rgba"
             av_options["-auto-alt-ref"] = "1"
         elif config.transparent:
             partial_movie_file_codec = "qtrle"
