@@ -486,7 +486,9 @@ class SceneFileWriter:
         if is_webm_format():
             partial_movie_file_codec = "libvpx-vp9"
             av_options["-auto-alt-ref"] = "1"
-        elif config.transparent:  # TODO: FIXME as quality seems very bad + test transparency
+        elif (
+            config.transparent
+        ):  # TODO: FIXME as quality seems very bad + test transparency
             partial_movie_file_codec = "qtrle"
             partial_movie_file_pix_fmt = "rgb24"
 
