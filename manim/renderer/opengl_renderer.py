@@ -1,6 +1,7 @@
 import re
 from functools import lru_cache
 from pathlib import Path
+import time
 from typing import TYPE_CHECKING
 
 import moderngl as gl
@@ -81,65 +82,8 @@ bounding_box:
         """
 
 
-# TODO: Move into GLVMobjectManager
-def get_triangulation(self: OpenGLVMobject, normal_vector=None):
-    # Figure out how to triangulate the interior to know
-    # how to send the points as to the vertex shader.
-    # First triangles come directly from the points
-    if normal_vector is None:
-        normal_vector = self.get_unit_normal()
-
-    points = self.points
-
-    if len(points) <= 1:
-        self.triangulation = np.zeros(0, dtype="i4")
-        self.needs_new_triangulation = False
-        return self.triangulation
-
-    if not np.isclose(normal_vector, const.OUT).all():
-        # Rotate points such that unit normal vector is OUT
-        points = np.dot(points, z_to_vector(normal_vector))
-    indices = np.arange(len(points), dtype=int)
-
-    b0s = points[0::3]
-    b1s = points[1::3]
-    b2s = points[2::3]
-    v01s = b1s - b0s
-    v12s = b2s - b1s
-
-    crosses = cross2d(v01s, v12s)
-    convexities = np.sign(crosses)
-
-    atol = self.tolerance_for_point_equality
-    end_of_loop = np.zeros(len(b0s), dtype=bool)
-    end_of_loop[:-1] = (np.abs(b2s[:-1] - b0s[1:]) > atol).any(1)
-    end_of_loop[-1] = True
-
-    concave_parts = convexities < 0
-
-    # These are the vertices to which we'll apply a polygon triangulation
-    inner_vert_indices = np.hstack(
-        [
-            indices[0::3],
-            indices[1::3][concave_parts],
-            indices[2::3][end_of_loop],
-        ],
-    )
-    inner_vert_indices.sort()
-    rings = np.arange(1, len(inner_vert_indices) + 1)[inner_vert_indices % 3 == 2]
-
-    # Triangulate
-    inner_verts = points[inner_vert_indices]
-    inner_tri_indices = inner_vert_indices[earclip_triangulation(inner_verts, rings)]
-
-    tri_indices = np.hstack([indices, inner_tri_indices])
-    self.triangulation = tri_indices
-    self.needs_new_triangulation = False
-    return tri_indices
-
-
 def prepare_array(values: np.ndarray, desired_length: int):
-    """Interpolates a given list of colors to match the desired length
+    """Interpolates a given list of values to match the desired length
 
     Parameters
     ----------
@@ -157,37 +101,19 @@ def prepare_array(values: np.ndarray, desired_length: int):
     if fill_length == 1:
         return np.repeat(values, desired_length, axis=0)
     xm = np.linspace(0, fill_length - 1, desired_length)
-    rgbas = []
+    values = []
     for x in xm:
         minimum = int(np.floor(x))
         maximum = int(np.ceil(x))
         alpha = x - minimum
         if alpha == 0:
-            rgbas.append(values[minimum])
+            values.append(values[minimum])
             continue
 
         val_a = values[minimum]
         val_b = values[maximum]
-        rgbas.append(val_a * (1 - alpha) + val_b * alpha)
-    return np.array(rgbas)
-
-
-# TODO: Move into GLVMobjectManager
-def compute_bounding_box(mob):
-    all_points = np.vstack(
-        [
-            mob.points,
-            *(m.get_bounding_box() for m in mob.get_family()[1:] if m.has_points()),
-        ],
-    )
-    if len(all_points) == 0:
-        return np.zeros((3, mob.dim))
-    else:
-        # Lower left and upper right corners
-        mins = all_points.min(0)
-        maxs = all_points.max(0)
-        mids = (mins + maxs) / 2
-        return np.array([mins, mids, maxs])
+        values.append(val_a * (1 - alpha) + val_b * alpha)
+    return np.array(values)
 
 
 class ProgramManager:
@@ -406,7 +332,6 @@ class OpenGLRenderer(Renderer):
                 self.ctx.disable(gl.DEPTH_TEST)  # type: ignore
 
         for sub in mob.family_members_with_points():
-            # TODO: review this renderer data optimization attempt
             if sub.renderer_data is None:
                 # Initialize
                 GLVMobjectManager.init_render_data(sub)
@@ -414,13 +339,9 @@ class OpenGLRenderer(Renderer):
             if not isinstance(sub.renderer_data, GLRenderData):
                 return
 
-            # if mob.colors_changed:
-
-            #     mob.renderer_data.fill_rgbas = np.resize(mob.fill_color, (len(mob.renderer_data.mesh),4))
-
-            # if mob.points_changed:3357
-            #     if(mob.has_fill()):
-            #         mob.renderer_data.mesh = ... # Triangulation todo
+            if mob.status.points_changed:
+                GLVMobjectManager.init_render_data(sub)
+                mob.status.points_changed = False
 
         num_mobs = len(mob.family_members_with_points())
 
@@ -490,12 +411,38 @@ class OpenGLRenderer(Renderer):
 
 class GLVMobjectManager:
     @staticmethod
+    def prepare_fill_color(mob: OpenGLVMobject):
+        fill_color = np.array([c._internal_value for c in mob.fill_color])
+        mob.renderer_data.fill_rgbas = prepare_array(fill_color, len(mob.points))
+
+    @staticmethod
+    def prepare_stroke_color(mob: OpenGLVMobject):
+        stroke_color = np.array([c._internal_value for c in mob.stroke_color])
+        mob.renderer_data.stroke_rgbas = prepare_array(stroke_color, len(mob.points))
+
+    @staticmethod
+    def prepare_stroke_width(mob: OpenGLVMobject):
+        mob.renderer_data.stroke_widths = prepare_array(
+            np.asarray(listify(mob.stroke_width)), len(mob.points)
+        )
+
+    @staticmethod
+    def prepare_normals(mob: OpenGLVMobject):
+        mob.renderer_data.normals = np.repeat(
+            [mob.get_unit_normal()], len(mob.points), axis=0
+        )
+
+    @staticmethod
+    def prepare_points(mob: OpenGLVMobject):
+        mob.renderer_data.vert_indices = GLVMobjectManager.get_triangulation(mob)
+
+    @staticmethod
     def init_render_data(mob: OpenGLVMobject):
         logger.debug("Initializing GLRenderData")
         mob.renderer_data = GLRenderData()
 
         # Generate Mesh
-        mob.renderer_data.vert_indices = get_triangulation(mob)
+        mob.renderer_data.vert_indices = GLVMobjectManager.get_triangulation(mob)
         points_length = len(mob.points)
 
         # Generate Fill Color
@@ -509,7 +456,7 @@ class GLVMobjectManager:
         mob.renderer_data.normals = np.repeat(
             [mob.get_unit_normal()], points_length, axis=0
         )
-        mob.renderer_data.bounding_box = compute_bounding_box(mob)
+        mob.renderer_data.bounding_box = GLVMobjectManager.compute_bounding_box(mob)
         # print(mob.renderer_data)
 
     @staticmethod
@@ -524,6 +471,79 @@ class GLVMobjectManager:
         uniforms["joint_type"] = float(mob.joint_type.value)
         uniforms["flat_stroke"] = float(mob.flat_stroke)
         return uniforms
+
+    def get_triangulation(self: OpenGLVMobject, normal_vector=None):
+        # Figure out how to triangulate the interior to know
+        # how to send the points as to the vertex shader.
+        # First triangles come directly from the points
+        if normal_vector is None:
+            normal_vector = self.get_unit_normal()
+
+        points = self.points
+
+        if len(points) <= 1:
+            self.triangulation = np.zeros(0, dtype="i4")
+            self.needs_new_triangulation = False
+            return self.triangulation
+
+        if not np.isclose(normal_vector, const.OUT).all():
+            # Rotate points such that unit normal vector is OUT
+            points = np.dot(points, z_to_vector(normal_vector))
+        indices = np.arange(len(points), dtype=int)
+
+        b0s = points[0::3]
+        b1s = points[1::3]
+        b2s = points[2::3]
+        v01s = b1s - b0s
+        v12s = b2s - b1s
+
+        crosses = cross2d(v01s, v12s)
+        convexities = np.sign(crosses)
+
+        atol = self.tolerance_for_point_equality
+        end_of_loop = np.zeros(len(b0s), dtype=bool)
+        end_of_loop[:-1] = (np.abs(b2s[:-1] - b0s[1:]) > atol).any(1)
+        end_of_loop[-1] = True
+
+        concave_parts = convexities < 0
+
+        # These are the vertices to which we'll apply a polygon triangulation
+        inner_vert_indices = np.hstack(
+            [
+                indices[0::3],
+                indices[1::3][concave_parts],
+                indices[2::3][end_of_loop],
+            ],
+        )
+        inner_vert_indices.sort()
+        rings = np.arange(1, len(inner_vert_indices) + 1)[inner_vert_indices % 3 == 2]
+
+        # Triangulate
+        inner_verts = points[inner_vert_indices]
+        inner_tri_indices = inner_vert_indices[
+            earclip_triangulation(inner_verts, rings)
+        ]
+
+        tri_indices = np.hstack([indices, inner_tri_indices])
+        self.triangulation = tri_indices
+        self.needs_new_triangulation = False
+        return tri_indices
+
+    def compute_bounding_box(mob):
+        all_points = np.vstack(
+            [
+                mob.points,
+                *(m.get_bounding_box() for m in mob.get_family()[1:] if m.has_points()),
+            ],
+        )
+        if len(all_points) == 0:
+            return np.zeros((3, mob.dim))
+        else:
+            # Lower left and upper right corners
+            mins = all_points.min(0)
+            maxs = all_points.max(0)
+            mids = (mins + maxs) / 2
+            return np.array([mins, mids, maxs])
 
 
 #     def init_frame(self, **config) -> None:

@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 
 import itertools as it
 import operator as op
@@ -12,6 +13,7 @@ from manim import config
 from manim.constants import *
 from manim.mobject.opengl.opengl_mobject import (
     UNIFORM_DTYPE,
+    MobjectStatus,
     OpenGLMobject,
     OpenGLPoint,
 )
@@ -54,6 +56,21 @@ if TYPE_CHECKING:
 DEFAULT_STROKE_COLOR = GREY_A
 DEFAULT_FILL_COLOR = GREY_C
 
+
+# TODO: Actually do this for VMobjectData
+# @dataclass
+# class VMobjectStatus(MobjectStatus):
+#     fill_color_changed: bool = False
+#     stroke_color_changed: bool = False
+#     stroke_width_changed: bool = False
+
+# def affects_fill_color(func):
+#     @wraps(func)
+#     def wrapper(self, *args, **kwargs):
+#         self.status.fill_color_changed = True
+#         return func(self, *args, **kwargs)
+
+#     return wrapper
 
 class OpenGLVMobject(OpenGLMobject):
     """A vectorized mobject."""
