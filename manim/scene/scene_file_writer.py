@@ -389,7 +389,11 @@ class SceneFileWriter:
             av_frame = av.VideoFrame.from_ndarray(frame, format="rgba")
             packets = self.video_stream.encode(av_frame)
             for _ in range(num_frames):
-                for packet in packets:
+                # Notes: precomputing reusing packets does not work!
+                # I.e., you cannot do `packets = encode(...)`
+                # and reuse it, as it seems that `mux(...)`
+                # consumes the packet.
+                for packet in self.video_stream.encode(av_frame):
                     self.video_container.mux(packet)
 
         if is_png_format() and not config["dry_run"]:
@@ -624,33 +628,40 @@ class SceneFileWriter:
             temp_file_path = movie_file_path.with_name(
                 f"{movie_file_path.stem}_temp{movie_file_path.suffix}"
             )
-            commands = [
-                config.ffmpeg_executable,
-                "-i",
-                str(movie_file_path),
-                "-i",
-                str(sound_file_path),
-                "-y",  # overwrite output file if it exists
-                "-c:v",
-                "copy",
-                "-c:a",
-                "aac",
-                "-b:a",
-                "320k",
-                # select video stream from first file
-                "-map",
-                "0:v:0",
-                # select audio stream from second file
-                "-map",
-                "1:a:0",
-                "-loglevel",
-                config.ffmpeg_loglevel.lower(),
-                "-metadata",
-                f"comment=Rendered with Manim Community v{__version__}",
-                # "-shortest",
-                str(temp_file_path),
-            ]
-            subprocess.call(commands)
+            av_options = {
+                "shortest": "1",
+                "metadata": f"comment=Rendered with Manim Community v{__version__}",
+            }
+
+            video_input = av.open(str(movie_file_path))
+            audio_input = av.open(str(sound_file_path))
+            video_stream = video_input.streams.video[0]
+            audio_stream = audio_input.streams.audio[0]
+            output_container = av.open(
+                str(temp_file_path), mode="w", options=av_options
+            )
+            output_video_stream = output_container.add_stream(template=video_stream)
+            output_audio_stream = output_container.add_stream(template=audio_stream)
+
+            for packet in video_input.demux(video_stream):
+                # We need to skip the "flushing" packets that `demux` generates.
+                if packet.dts is None:
+                    continue
+
+                # We need to assign the packet to the new stream.
+                packet.stream = output_video_stream
+                output_container.mux(packet)
+
+            for packet in audio_input.demux(audio_stream):
+                # We need to skip the "flushing" packets that `demux` generates.
+                if packet.dts is None:
+                    continue
+
+                # We need to assign the packet to the new stream.
+                packet.stream = output_audio_stream
+                output_container.mux(packet)
+
+            output_container.close()
             shutil.move(str(temp_file_path), str(movie_file_path))
             sound_file_path.unlink()
 
