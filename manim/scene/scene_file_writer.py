@@ -366,7 +366,9 @@ class SceneFileWriter:
         if write_to_movie() and allow_write:
             self.close_partial_movie_stream()
 
-    def write_frame(self, frame_or_renderer: np.ndarray | OpenGLRenderer):
+    def write_frame(
+        self, frame_or_renderer: np.ndarray | OpenGLRenderer, num_frames: int = 1
+    ):
         """
         Used internally by Manim to write a frame to
         the FFMPEG input buffer.
@@ -375,42 +377,35 @@ class SceneFileWriter:
         ----------
         frame_or_renderer
             Pixel array of the frame.
+        num_frames
+            The number of times to write frame.
         """
-        if config.renderer == RendererType.OPENGL:
-            self.write_opengl_frame(frame_or_renderer)
-        elif config.renderer == RendererType.CAIRO:
-            frame = frame_or_renderer
-            if write_to_movie():
-                av_frame = av.VideoFrame.from_ndarray(frame, format="rgba")
-                for packet in self.video_stream.encode(av_frame):
-                    self.video_container.mux(packet)
-            if is_png_format() and not config["dry_run"]:
-                self.output_image_from_array(frame)
-
-    def write_opengl_frame(self, renderer: OpenGLRenderer):
         if write_to_movie():
-            av_frame = av.VideoFrame.from_ndarray(renderer.get_frame(), format="rgba")
-            for packet in self.video_stream.encode(av_frame):
-                self.video_container.mux(packet)
-        elif is_png_format() and not config["dry_run"]:
+            frame: np.ndarray = (
+                frame_or_renderer.get_frame()
+                if config.renderer == RendererType.OPENGL
+                else frame_or_renderer
+            )
+            av_frame = av.VideoFrame.from_ndarray(frame, format="rgba")
+            packets = self.video_stream.encode(av_frame)
+            for _ in range(num_frames):
+                for packet in packets:
+                    self.video_container.mux(packet)
+
+        if is_png_format() and not config["dry_run"]:
+            image: Image = (
+                frame_or_renderer.get_image()
+                if config.renderer == RendererType.OPENGL
+                else Image.fromarray(frame_or_renderer)
+            )
             target_dir = self.image_file_path.parent / self.image_file_path.stem
             extension = self.image_file_path.suffix
             self.output_image(
-                renderer.get_image(),
+                image,
                 target_dir,
                 extension,
                 config["zero_pad"],
             )
-
-    def output_image_from_array(self, frame_data):
-        target_dir = self.image_file_path.parent / self.image_file_path.stem
-        extension = self.image_file_path.suffix
-        self.output_image(
-            Image.fromarray(frame_data),
-            target_dir,
-            extension,
-            config["zero_pad"],
-        )
 
     def output_image(self, image: Image.Image, target_dir, ext, zero_pad: bool):
         if zero_pad:

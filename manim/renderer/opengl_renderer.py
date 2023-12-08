@@ -426,8 +426,9 @@ class OpenGLRenderer:
             self.update_frame(scene)
 
             if not self.skip_animations:
-                for _ in range(int(config.frame_rate * scene.duration)):
-                    self.file_writer.write_frame(self)
+                self.file_writer.write_frame(
+                    self, num_frames=int(config.frame_rate * scene.duration)
+                )
 
             if self.window is not None:
                 self.window.swap_buffers()
