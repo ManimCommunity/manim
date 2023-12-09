@@ -388,7 +388,9 @@ class NumberLine(Line):
 
         return self.scaling.function(tick_range)
 
-    def number_to_point(self, number: float | np.ndarray) -> np.ndarray:
+    def number_to_point(
+        self, number: float | np.ndarray, decimals: int = 15
+    ) -> np.ndarray:
         """Accepts a value along the number line and returns a point with
         respect to the scene.
 
@@ -423,7 +425,7 @@ class NumberLine(Line):
         alphas = (number - range_min) / (range_max - range_min)
         alphas = float(alphas) if scalar else alphas.reshape(-1, 1)
         val = interpolate(self.points[0], self.points[-1], alphas)
-        return val
+        return np.around(val, decimals)
 
     def point_to_number(self, point: Sequence[float]) -> float:
         """Accepts a point with respect to the scene and returns
