@@ -383,6 +383,7 @@ The use of ``ReplacementTransform`` or ``Transform`` is mostly up to personal pr
 
 
 However, in some cases it is more beneficial to use ``Transform``, like when you are transforming several mobjects one after the other.
+The code below avoids having to keep a reference to the last mobject that was transformed.
 
 .. manim:: TransformCycle
 
