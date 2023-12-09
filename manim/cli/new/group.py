@@ -40,7 +40,7 @@ def select_resolution():
     resolution_options.pop()
     choice = click.prompt(
         "\nSelect resolution:\n",
-        type=click.Choice([f"{i[0]}p" for i in resolution_options]),
+        type=cloup.Choice([f"{i[0]}p" for i in resolution_options]),
         show_default=False,
         default="480p",
     )
