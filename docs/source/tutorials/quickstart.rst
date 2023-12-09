@@ -364,8 +364,8 @@ The use of ``ReplacementTransform`` or ``Transform`` is mostly up to personal pr
             a = Circle()
             b = Square()
             c = Triangle()
-            self.play(Trasnform(a, b))
-            self.play(Trasnform(a, c))
+            self.play(Transform(a, b))
+            self.play(Transform(a, c))
             self.play(FadeOut(a))
 
         def replacement_transform(self)
