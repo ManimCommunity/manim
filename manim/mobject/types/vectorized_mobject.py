@@ -1690,7 +1690,7 @@ class VMobject(Mobject):
                 interpolate(getattr(mobject1, attr), getattr(mobject2, attr), alpha),
             )
             if alpha == 1.0:
-                val = getattr(mobject2,attr)
+                val = getattr(mobject2, attr)
                 if isinstance(val, np.ndarray):
                     val = val.copy()
                 setattr(self, attr, val)
