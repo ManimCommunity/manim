@@ -268,9 +268,7 @@ and animating those method calls with ``.animate``.
 
            self.play(Create(square))  # show the square on screen
            self.play(square.animate.rotate(PI / 4))  # rotate the square
-           self.play(
-               Transform(square, circle)
-           )  # transform the square into a circle
+           self.play(Transform(square, circle))  # transform the square into a circle
            self.play(
                square.animate.set_fill(PINK, opacity=0.5)
            )  # color the circle on screen
@@ -378,7 +376,7 @@ The use of ``ReplacementTransform`` or ``Transform`` is mostly up to personal pr
 
         def construct(self):
             self.transform()
-            self.wait(0.5) # wait for 0.5 seconds
+            self.wait(0.5)  # wait for 0.5 seconds
             self.replacement_transform()
 
 
