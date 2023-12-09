@@ -381,6 +381,21 @@ The use of ``ReplacementTransform`` or ``Transform`` is mostly up to personal pr
             self.wait(0.5) # wait for 0.5 seconds
             self.replacement_transform()
 
+
+However, in some cases it is more beneficial to use ``Transform``, like when you are transforming several mobjects one after the other.
+
+.. manim:: TransformCycle
+
+    class TransformCycle(Scene):
+        def construct(self):
+            a = Circle()
+            t1 = Square()
+            t2 = Triangle()
+            self.add(a)
+            self.wait()
+            for t in [t1,t2]:
+                self.play(Transform(a,t))
+
 ************
 You're done!
 ************
