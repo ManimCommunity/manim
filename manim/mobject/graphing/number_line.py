@@ -12,8 +12,6 @@ from typing import TYPE_CHECKING, Callable, Iterable, Sequence
 if TYPE_CHECKING:
     from manim.mobject.geometry.tips import ArrowTip
 
-from math import sqrt
-
 import numpy as np
 
 from manim import config
@@ -25,6 +23,7 @@ from manim.mobject.text.tex_mobject import MathTex, Tex
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.bezier import interpolate
 from manim.utils.config_ops import merge_dicts_recursively
+from manim.utils.space_ops import normalize
 
 
 class NumberLine(Line):
