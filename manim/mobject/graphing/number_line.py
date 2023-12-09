@@ -17,7 +17,7 @@ import numpy as np
 from manim import config
 from manim.constants import *
 from manim.mobject.geometry.line import Line
-from manim.mobject.graphing.scale import UnitLinearBase, _ScaleBase
+from manim.mobject.graphing.scale import LinearBase, _ScaleBase
 from manim.mobject.text.numbers import DecimalNumber
 from manim.mobject.text.tex_mobject import MathTex, Tex
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
@@ -156,7 +156,7 @@ class NumberLine(Line):
         font_size: float = 36,
         label_direction: Sequence[float] = DOWN,
         label_constructor: VMobject = MathTex,
-        scaling: _ScaleBase = UnitLinearBase(),
+        scaling: _ScaleBase = LinearBase(),
         line_to_number_buff: float = MED_SMALL_BUFF,
         decimal_number_config: dict | None = None,
         numbers_to_exclude: Iterable[float] | None = None,
@@ -525,8 +525,11 @@ class NumberLine(Line):
         if label_constructor is None:
             label_constructor = self.label_constructor
 
-        numbers = VGroup(
-            *[
+        numbers = VGroup()
+        for x in x_values:
+            if x in excluding:
+                continue
+            numbers.add(
                 self.get_number_mobject(
                     x,
                     font_size=font_size,
@@ -535,8 +538,7 @@ class NumberLine(Line):
                 )
                 for x in x_values
                 if x not in excluding
-            ]
-        )
+            )
         self.add(numbers)
         self.numbers = numbers
         return self
