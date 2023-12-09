@@ -367,6 +367,9 @@ Ultimately, the choice of which to use is up to the programmer. However, some ex
           shapes = (Square(), Triangle(), Circle().set_fill(color=RED, opacity=0.5))
           self.add(mob)
           for shape in shapes:
+              # if we use transform, we avoid having to
+              # keep track of the previously transformed
+              # shape
               self.play(Transform(mob, shape))
               self.wait(0.3)
 
@@ -392,3 +395,33 @@ One of the most powerful features of Manim is it's ``.animate`` syntax. It allow
 
    ``.animate`` works by interpolating between the initial and the final mobject. As such, beware when using ``.animate.rotate`` with angles greater than pi radians
    as it may not produce the intended animation.
+
+
+-------------------
+Test Your Knowledge
+-------------------
+
+Try to create the following animation!
+
+.. manim:: TestBasicAnimationKnowledge
+    :hide_source:
+
+    class TestBasicAnimationKnowledge(Scene):
+        def construct(self):
+            c = Circle().set_fill(color=RED, opacity=0.5)
+            s = Star().set_stroke(color=YELLOW).set_fill(color=YELLOW, opacity=0.3)
+            t = Triangle().set_fill(color=BLUE, opacity=0.1)
+            VGroup(c, s, t).arrange(RIGHT).move_to(ORIGIN) # users will arrange manually
+            self.play(
+                DrawBorderThenFill(c),
+                GrowFromPoint(s, ORIGIN),
+                SpinInFromNothing(t)
+            )
+            self.wait()
+            for mob in (s, t):
+                self.play(Transform(c, mob))
+                self.remove(mob)
+                self.wait(0.2)
+            self.play(c.animate.move_to(ORIGIN))
+
+Hint: you might need to look at different :doc:`/reference_index/animations`!
