@@ -28,6 +28,7 @@ def test_become(scene):
 
     scene.add(s, d, s1, s2, s3)
 
+
 @frames_comparison
 def test_become_no_color_linking(scene):
     a = Circle()
@@ -35,7 +36,7 @@ def test_become_no_color_linking(scene):
     scene.add(a)
     scene.add(b)
     b.become(a)
-    b.shift(1*RIGHT)
+    b.shift(1 * RIGHT)
     b.set_stroke(YELLOW, opacity=1)
     scene.wait(1)
 
