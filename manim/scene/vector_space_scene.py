@@ -572,7 +572,7 @@ class LinearTransformationScene(VectorScene):
                     self,
                     show_coordinates=True,
                     leave_ghost_vectors=True,
-                    *kwargs
+                    **kwargs
                 )
 
             def construct(self):
@@ -615,6 +615,8 @@ class LinearTransformationScene(VectorScene):
                 "stroke_width": 1,
             },
         }
+
+        self.ghost_vectors = VGroup()
 
         self.foreground_plane_kwargs = {
             "x_range": np.array([-config["frame_width"], config["frame_width"], 1.0]),
@@ -740,6 +742,13 @@ class LinearTransformationScene(VectorScene):
         """
         mobject.target = target_mobject
         self.add_special_mobjects(self.moving_mobjects, mobject)
+
+    def get_ghost_vectors(self) -> VGroup:
+        """
+        Returns all ghost vectors ever added to ``self``. Each element is a ``VGroup`` of
+        two ghost vectors.
+        """
+        return self.ghost_vectors
 
     def get_unit_square(
         self, color: str = YELLOW, opacity: float = 0.3, stroke_width: float = 3
@@ -996,8 +1005,11 @@ class LinearTransformationScene(VectorScene):
         """
         start = VGroup(*pieces)
         target = VGroup(*(mob.target for mob in pieces))
-        if self.leave_ghost_vectors:
-            self.add(start.copy().fade(0.7))
+        # don't add empty VGroups
+        if self.leave_ghost_vectors and start.submobjects:
+            # start.copy() gives a VGroup of Vectors
+            self.ghost_vectors.add(start.copy().fade(0.7))
+            self.add(self.ghost_vectors[-1])
         return Transform(start, target, lag_ratio=0)
 
     def get_moving_mobject_movement(self, func: Callable[[np.ndarray], np.ndarray]):
