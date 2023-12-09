@@ -2769,7 +2769,7 @@ class Mobject:
                     circ.become(square)
                     self.wait(0.5)
         """
-
+        mobject = mobject.copy()
         if stretch:
             mobject.stretch_to_fit_height(self.height)
             mobject.stretch_to_fit_width(self.width)

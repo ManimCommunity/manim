@@ -337,7 +337,7 @@ class VMobject(Mobject):
             if isinstance(color, (list, tuple)):
                 self.background_stroke_color = ManimColor.parse(color)
             else:
-                self.background_stroke_color = ManimColor.parse(color)
+                self.background_stroke_color = ManimColor(color)
         return self
 
     def set_background_stroke(self, **kwargs) -> Self:
