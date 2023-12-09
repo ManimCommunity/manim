@@ -188,9 +188,6 @@ class NumberLine(Line):
         # turn into a NumPy array to scale by just applying the function
         self.x_range = np.array(x_range, dtype=float)
         self.x_min, self.x_max, self.x_step = scaling.function(self.x_range)
-        self.x_range_no_tips = self.x_range.copy()
-        self.x_min_no_tips = self.x_min
-        self.x_max_no_tips = self.x_max
         self.length = length
         self.unit_size = unit_size
         # ticks
@@ -268,50 +265,6 @@ class NumberLine(Line):
                     font_size=self.font_size,
                 )
 
-    def add_tip(
-        self, tip=None, tip_shape=None, tip_length=None, tip_width=None, at_start=False
-    ):
-        """Wrapper for TipableVMobject.add_tip.
-
-        Adds a tip to the NumberLine, and recalculates the range of the portion of
-        the new line component excluding its tips, storing the new range in
-        self.x_range_no_tips. This also calculates a new min and max, and stores
-        their values in self.x_min_no_tips and self.x_max_no_tips.
-        """
-        old_start = self.points[0].copy()
-        old_end = self.points[-1].copy()
-        super().add_tip(tip, tip_shape, tip_length, tip_width, at_start)
-        new_start = self.points[0]
-        new_end = self.points[-1]
-
-        direction = old_end - old_start
-        length2 = np.dot(direction, direction)
-        new_start_proportion = np.dot(new_start - old_start, direction) / length2
-        new_end_proportion = np.dot(new_end - old_start, direction) / length2
-
-        range_min, range_max, _ = self.x_range_no_tips
-        diff = range_max - range_min
-        self.x_range_no_tips[0] = range_min + new_start_proportion * diff
-        self.x_range_no_tips[1] = range_min + new_end_proportion * diff
-        self.x_min_no_tips, self.x_max_no_tips, _ = self.scaling.function(
-            self.x_range_no_tips
-        )
-
-        return self
-
-    def pop_tips(self):
-        """Wrapper for TipableVMobject.pop_tips.
-
-        After removing the tips from NumberLine, x_range_no_tips, x_min_no_tips and
-        x_max_no_tips are reset to their original values: x_range, x_min and x_max.
-        Then, pop_tips returns the removed tips.
-        """
-        result = super().pop_tips()
-        self.x_range_no_tips[:] = self.x_range
-        self.x_min_no_tips = self.x_min
-        self.x_max_no_tips = self.x_max
-        return result
-
     def rotate_about_zero(self, angle: float, axis: Sequence[float] = OUT, **kwargs):
         return self.rotate_about_number(0, angle, axis, **kwargs)
 
@@ -388,9 +341,7 @@ class NumberLine(Line):
 
         return self.scaling.function(tick_range)
 
-    def number_to_point(
-        self, number: float | np.ndarray, decimals: int = 15
-    ) -> np.ndarray:
+    def number_to_point(self, number: float | np.ndarray) -> np.ndarray:
         """Accepts a value along the number line and returns a point with
         respect to the scene.
 
@@ -421,11 +372,10 @@ class NumberLine(Line):
         number = np.asarray(number)
         scalar = number.ndim == 0
         number = self.scaling.inverse_function(number)
-        range_min, range_max, _ = self.x_range_no_tips
-        alphas = (number - range_min) / (range_max - range_min)
+        alphas = (number - self.x_range[0]) / (self.x_range[1] - self.x_range[0])
         alphas = float(alphas) if scalar else alphas.reshape(-1, 1)
-        val = interpolate(self.points[0], self.points[-1], alphas)
-        return np.around(val, decimals)
+        val = interpolate(self.get_start(), self.get_end(), alphas)
+        return val
 
     def point_to_number(self, point: Sequence[float]) -> float:
         """Accepts a point with respect to the scene and returns
@@ -455,11 +405,10 @@ class NumberLine(Line):
 
         """
         point = np.asarray(point)
-        start = self.points[0]
-        end = self.points[-1]
-        direction = end - start
-        proportion = np.dot(point - start, direction) / np.dot(direction, direction)
-        return interpolate(self.x_min_no_tips, self.x_max_no_tips, proportion)
+        start, end = self.get_start_and_end()
+        unit_vect = normalize(end - start)
+        proportion = np.dot(point - start, unit_vect) / np.dot(end - start, unit_vect)
+        return interpolate(self.x_min, self.x_max, proportion)
 
     def n2p(self, number: float | np.ndarray) -> np.ndarray:
         """Abbreviation for :meth:`~.NumberLine.number_to_point`."""
@@ -470,12 +419,10 @@ class NumberLine(Line):
         return self.point_to_number(point)
 
     def get_unit_size(self) -> float:
-        v = self.get_unit_vector()
-        return sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2])
+        return self.get_length() / (self.x_range[1] - self.x_range[0])
 
     def get_unit_vector(self) -> np.ndarray:
-        range_min, range_max, _ = self.x_range_no_tips
-        return (self.points[-1] - self.points[0]) / (range_max - range_min)
+        return super().get_unit_vector() * self.unit_size
 
     def get_number_mobject(
         self,
