@@ -1445,7 +1445,7 @@ class Mobject:
         --------
 
         .. manim:: ToEdgeExample
-
+            :save_last_frame:
             class ToEdgeExample(Scene):
                 def construct(self):
                     tex_top = Tex("I am at the top!")
