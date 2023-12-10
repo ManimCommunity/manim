@@ -42,7 +42,7 @@ jobs:
     - name: Store artifacts
       uses: actions/upload-artifact@v3
       with:
-          path: ${{ github.workspace }}/manim/docs/build/html-docs.tar.gz
+          path: ${{ github.workspace }}/docs/build/html-docs.tar.gz
           name: html-docs.tar.gz
 
     - name: Install Dependency
@@ -79,6 +79,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ github.workspace }}/manim/docs/build/html-docs.tar.gz
+          asset_path: ${{ github.workspace }}/docs/build/html-docs.tar.gz
           asset_name: manim-htmldocs-${{ steps.create_release.outputs.tag_name }}.tar.gz
           asset_content_type: application/gzip

@@ -212,3 +212,17 @@ def test_tempconfig_resetting_tex_template():
         assert config.tex_template.preamble == "Custom preamble!"
 
     assert config.tex_template.preamble != "Custom preamble!"
+
+
+def test_tex_garbage_collection(tmpdir, monkeypatch):
+    monkeypatch.chdir(tmpdir)
+    Path(tmpdir, "media").mkdir()
+
+    with tempconfig({"media_dir": "media"}):
+        tex_without_log = Tex("Hello World!")  # f7bc61042256dea9.tex
+        assert Path("media", "Tex", "f7bc61042256dea9.tex").exists()
+        assert not Path("media", "Tex", "f7bc61042256dea9.log").exists()
+
+    with tempconfig({"media_dir": "media", "no_latex_cleanup": True}):
+        tex_with_log = Tex("Hello World, again!")  # 3ef79eaaa2d0b15b.tex
+        assert Path("media", "Tex", "3ef79eaaa2d0b15b.log").exists()

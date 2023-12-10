@@ -28,7 +28,7 @@ import operator as op
 import re
 from functools import reduce
 from textwrap import dedent
-from typing import Dict, Iterable, Optional
+from typing import Iterable
 
 from manim import config, logger
 from manim.constants import *

@@ -22,7 +22,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-22.04, macos-latest, windows-latest]
-        python: ["3.8", "3.9", "3.10", "3.11"]
+        python: ["3.9", "3.10", "3.11", "3.12"]
 
     steps:
       - name: Checkout the repository
@@ -30,7 +30,7 @@ jobs:
 
       - name: Install Poetry
         run: |
-          pipx install "poetry==1.5.*"
+          pipx install "poetry==1.7.*"
           poetry config virtualenvs.prefer-active-python true
 
       - name: Setup Python ${{ matrix.python }}
