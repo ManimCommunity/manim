@@ -28,7 +28,9 @@ def test_manim_cfg_subcommand():
     command = ["cfg"]
     runner = CliRunner()
     result = runner.invoke(main, command, prog_name="manim")
-    expected_output = """\
+    expected_output = f"""\
+Manim Community v{__version__}
+
 Usage: manim cfg [OPTIONS] COMMAND [ARGS]...
 
   Manages Manim configuration files.
@@ -50,7 +52,9 @@ def test_manim_plugins_subcommand():
     command = ["plugins"]
     runner = CliRunner()
     result = runner.invoke(main, command, prog_name="manim")
-    expected_output = """\
+    expected_output = f"""\
+Manim Community v{__version__}
+
 Usage: manim plugins [OPTIONS]
 
   Manages Manim plugins.
@@ -90,7 +94,9 @@ def test_manim_init_subcommand():
     command = ["init"]
     runner = CliRunner()
     result = runner.invoke(main, command, prog_name="manim")
-    expected_output = """\
+    expected_output = f"""\
+Manim Community v{__version__}
+
 Usage: manim init [OPTIONS] COMMAND [ARGS]...
 
   Create a new project or insert a new scene.
