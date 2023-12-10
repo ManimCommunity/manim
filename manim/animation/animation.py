@@ -191,7 +191,7 @@ class Animation:
         method.
 
         """
-        if self.run_time == 0:
+        if self.run_time <= 0:
             raise ValueError(
                 f"{self} has a runtime of 0 seconds. Which cannot be rendered correctly! please set a runtime > 0"
             )
