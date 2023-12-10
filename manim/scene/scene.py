@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from manim.utils.parameter_parsing import flatten_iterable_parameters
+
 __all__ = ["Scene"]
 
 import copy
@@ -25,6 +27,7 @@ try:
 except ImportError:
     dearpygui_imported = False
 import typing
+from typing import Iterable
 
 import numpy as np
 from tqdm import tqdm
@@ -50,7 +53,7 @@ from ..utils.file_ops import open_media_file
 from ..utils.iterables import list_difference_update, list_update
 
 if typing.TYPE_CHECKING:
-    from typing import Callable, Iterable
+    from typing import Callable
 
 
 class RerunSceneHandler(FileSystemEventHandler):
@@ -891,13 +894,8 @@ class Scene:
             Animations to be played.
         """
         animations = []
-        arg_anims = []
+        arg_anims = flatten_iterable_parameters(args)
         # Allow passing a generator to self.play instead of comma separated arguments
-        for arg in args:
-            if isinstance(arg, (types.GeneratorType, Iterable)):
-                arg_anims.extend(arg)
-            else:
-                arg_anims.append(arg)
         for arg in arg_anims:
             try:
                 animations.append(prepare_animation(arg))

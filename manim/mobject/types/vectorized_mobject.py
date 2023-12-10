@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from manim.utils.parameter_parsing import flatten_iterable_parameters
+
 __all__ = [
     "VMobject",
     "VGroup",
@@ -65,6 +67,7 @@ if TYPE_CHECKING:
         Vector3,
         Zeros,
     )
+from types import GeneratorType
 
 # TODO
 # - Change cubic curve groups to have 4 points instead of 3
@@ -1903,8 +1906,9 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
     """
 
     def __init__(self, *vmobjects, **kwargs):
+        vm_arg = flatten_iterable_parameters(vmobjects)
         super().__init__(**kwargs)
-        self.add(*vmobjects)
+        self.add(*vm_arg)
 
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}({", ".join(str(mob) for mob in self.submobjects)})'

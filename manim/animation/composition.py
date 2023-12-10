@@ -3,11 +3,13 @@
 
 from __future__ import annotations
 
+import types
 from typing import TYPE_CHECKING, Callable, Iterable, Sequence
 
 import numpy as np
 
 from manim.mobject.opengl.opengl_mobject import OpenGLGroup
+from manim.utils.parameter_parsing import flatten_iterable_parameters
 
 from .._config import config
 from ..animation.animation import Animation, prepare_animation
@@ -18,8 +20,6 @@ from ..utils.iterables import remove_list_redundancies
 from ..utils.rate_functions import linear
 
 if TYPE_CHECKING:
-    import types
-
     from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup
 
     from ..mobject.types.vectorized_mobject import VGroup
@@ -63,12 +63,7 @@ class AnimationGroup(Animation):
         lag_ratio: float = 0,
         **kwargs,
     ) -> None:
-        arg_anim = []
-        for anim in animations:
-            if isinstance(anim, (types.GeneratorType, Iterable)):
-                arg_anim.extend(anim)
-            else:
-                arg_anim.append(anim)
+        arg_anim = flatten_iterable_parameters(animations)
         self.animations = [prepare_animation(anim) for anim in arg_anim]
         self.rate_func = rate_func
         self.group = group
