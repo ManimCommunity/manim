@@ -865,7 +865,9 @@ class Scene:
         )
         return all_moving_mobject_families, static_mobjects
 
-    def compile_animations(self, *args: Animation, **kwargs):
+    def compile_animations(
+        self, *args: Animation | types.GeneratorType[Animation], **kwargs
+    ):
         """
         Creates _MethodAnimations from any _AnimationBuilders and updates animation
         kwargs with kwargs passed to play().
@@ -883,10 +885,14 @@ class Scene:
             Animations to be played.
         """
         animations = []
+        arg_anims = []
         # Allow passing a generator to self.play instead of comma separated arguments
-        if isinstance(args[0], (types.GeneratorType, list, tuple)):
-            args = args[0]
         for arg in args:
+            if isinstance(arg, (types.GeneratorType, list, tuple)):
+                arg_anims.extend(arg)
+            else:
+                arg_anims.append(arg)
+        for arg in arg_anims:
             try:
                 animations.append(prepare_animation(arg))
             except TypeError:
@@ -1030,7 +1036,7 @@ class Scene:
 
     def play(
         self,
-        *args,
+        *args: Animation | types.GeneratorType[Animation],
         subcaption=None,
         subcaption_duration=None,
         subcaption_offset=0,
@@ -1160,7 +1166,9 @@ class Scene:
         """
         self.wait(max_time, stop_condition=stop_condition)
 
-    def compile_animation_data(self, *animations: Animation, **play_kwargs):
+    def compile_animation_data(
+        self, *animations: Animation | types.GeneratorType[Animation], **play_kwargs
+    ):
         """Given a list of animations, compile the corresponding
         static and moving mobjects, and gather the animation durations.
 
