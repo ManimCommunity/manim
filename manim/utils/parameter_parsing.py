@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from types import GeneratorType
 from typing import Iterable, TypeVar
 

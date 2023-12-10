@@ -26,8 +26,7 @@ try:
     dearpygui_imported = True
 except ImportError:
     dearpygui_imported = False
-import typing
-from typing import Iterable
+from typing import TYPE_CHECKING
 
 import numpy as np
 from tqdm import tqdm
@@ -52,8 +51,8 @@ from ..utils.family_ops import restructure_list_to_exclude_certain_family_member
 from ..utils.file_ops import open_media_file
 from ..utils.iterables import list_difference_update, list_update
 
-if typing.TYPE_CHECKING:
-    from typing import Callable
+if TYPE_CHECKING:
+    from typing import Callable, Iterable
 
 
 class RerunSceneHandler(FileSystemEventHandler):
