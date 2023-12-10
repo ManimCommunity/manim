@@ -144,7 +144,7 @@ def test_manim_new_command():
     expected_output = """\
 Usage: manim new [OPTIONS] COMMAND [ARGS]...
 
-  (DEPRECATED) Create a new project or insert a new scene.
+  (Deprecated) Create a new project or insert a new scene.
 
 Options:
   --help  Show this message and exit.

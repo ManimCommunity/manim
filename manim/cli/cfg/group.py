@@ -7,11 +7,9 @@ group.
 """
 from __future__ import annotations
 
-import os
 from ast import literal_eval
 from pathlib import Path
 
-import click
 import cloup
 from rich.errors import StyleSyntaxError
 from rich.style import Style
@@ -123,21 +121,21 @@ def replace_keys(default: dict) -> dict:
     epilog=EPILOG,
     help="Manages Manim configuration files.",
 )
-@click.pass_context
+@cloup.pass_context
 def cfg(ctx):
     """Responsible for the cfg subcommand."""
     pass
 
 
 @cfg.command(context_settings=cli_ctx_settings, no_args_is_help=True)
-@click.option(
+@cloup.option(
     "-l",
     "--level",
-    type=click.Choice(["user", "cwd"], case_sensitive=False),
+    type=cloup.Choice(["user", "cwd"], case_sensitive=False),
     default="cwd",
     help="Specify if this config is for user or the working directory.",
 )
-@click.option("-o", "--open", "openfile", is_flag=True)
+@cloup.option("-o", "--open", "openfile", is_flag=True)
 def write(level: str = None, openfile: bool = False) -> None:
     config_paths = config_file_paths()
     console.print(
@@ -258,8 +256,8 @@ def show():
 
 
 @cfg.command(context_settings=cli_ctx_settings)
-@click.option("-d", "--directory", default=Path.cwd())
-@click.pass_context
+@cloup.option("-d", "--directory", default=Path.cwd())
+@cloup.pass_context
 def export(ctx, directory):
     directory_path = Path(directory)
     if directory_path.absolute == Path.cwd().absolute:

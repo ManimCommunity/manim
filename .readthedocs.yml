@@ -1,8 +1,4 @@
 version: 2
-
-formats:
-  - htmlzip
-
 build:
   os: ubuntu-22.04
 

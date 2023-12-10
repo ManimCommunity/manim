@@ -3,43 +3,55 @@ color conversion.
 
 This module contains the implementation of :class:`.ManimColor`,
 the data structure internally used to represent colors.
-"""
 
+The preferred way of using these colors is by importing their constants from manim:
+
+.. code-block:: pycon
+
+    >>> from manim import RED, GREEN, BLUE
+    >>> print(RED)
+    #FC6255
+
+Note this way uses the name of the colors in UPPERCASE.
+
+.. note::
+
+    The colors of type "C" have an alias equal to the colorname without a letter,
+    e.g. GREEN = GREEN_C
+"""
 
 from __future__ import annotations
 
-# logger = _config.logger
 import colorsys
+
+# logger = _config.logger
 import random
-from typing import Any, Sequence, Union
+import re
+from typing import Any, Sequence, TypeVar, Union, overload
 
 import numpy as np
-from typing_extensions import Literal, TypeAlias
+import numpy.typing as npt
+from typing_extensions import Self, TypeAlias
+
+from manim.typing import (
+    HSV_Array_Float,
+    HSV_Tuple_Float,
+    ManimColorDType,
+    ManimColorInternal,
+    RGB_Array_Float,
+    RGB_Array_Int,
+    RGB_Tuple_Float,
+    RGB_Tuple_Int,
+    RGBA_Array_Float,
+    RGBA_Array_Int,
+    RGBA_Tuple_Float,
+    RGBA_Tuple_Int,
+)
 
 from ...utils.space_ops import normalize
 
-ManimColorDType: TypeAlias = np.float64
-ManimFloat: TypeAlias = np.float64
-ManimInt: TypeAlias = np.int64
+# import manim._config as _config
 
-RGB_Array_Float: TypeAlias = "np.ndarray[Literal[3], np.dtype[ManimFloat]]"
-RGB_Tuple_Float: TypeAlias = "tuple[float, float, float]"
-
-RGB_Array_Int: TypeAlias = "np.ndarray[Literal[3], np.dtype[ManimInt]]"
-RGB_Tuple_Int: TypeAlias = "tuple[int, int, int]"
-
-RGBA_Array_Float: TypeAlias = "np.ndarray[Literal[4], np.dtype[ManimFloat]]"
-RGBA_Tuple_Float: TypeAlias = "tuple[float, float, float, float]"
-
-RGBA_Array_Int: TypeAlias = "np.ndarray[Literal[4], np.dtype[ManimInt]]"
-RGBA_Tuple_Int: TypeAlias = "tuple[int, int, int, int]"
-
-HSV_Array_Float: TypeAlias = RGB_Array_Float
-HSV_Tuple_Float: TypeAlias = RGB_Tuple_Float
-
-ManimColorInternal: TypeAlias = "np.ndarray[Literal[4], np.dtype[ManimColorDType]]"
-
-import re
 
 re_hex = re.compile("((?<=#)|(?<=0x))[A-F0-9]{6,8}", re.IGNORECASE)
 
@@ -83,7 +95,7 @@ class ManimColor:
 
     def __init__(
         self,
-        value: ParsableManimColor,
+        value: ParsableManimColor | None,
         alpha: float = 1.0,
     ) -> None:
         if value is None:
@@ -514,7 +526,7 @@ class ManimColor:
         cls,
         rgb: RGB_Array_Float | RGB_Tuple_Float | RGB_Array_Int | RGB_Tuple_Int,
         alpha: float = 1.0,
-    ) -> ManimColor:
+    ) -> Self:
         """Creates a ManimColor from an RGB Array. Automagically decides which type it is int/float
 
         .. warning::
@@ -539,7 +551,7 @@ class ManimColor:
     @classmethod
     def from_rgba(
         cls, rgba: RGBA_Array_Float | RGBA_Tuple_Float | RGBA_Array_Int | RGBA_Tuple_Int
-    ) -> ManimColor:
+    ) -> Self:
         """Creates a ManimColor from an RGBA Array. Automagically decides which type it is int/float
 
         .. warning::
@@ -559,7 +571,7 @@ class ManimColor:
         return cls(rgba)
 
     @classmethod
-    def from_hex(cls, hex: str, alpha: float = 1.0) -> ManimColor:
+    def from_hex(cls, hex: str, alpha: float = 1.0) -> Self:
         """Creates a Manim Color from a hex string, prefixes allowed # and 0x
 
         Parameters
@@ -579,7 +591,7 @@ class ManimColor:
     @classmethod
     def from_hsv(
         cls, hsv: HSV_Array_Float | HSV_Tuple_Float, alpha: float = 1.0
-    ) -> ManimColor:
+    ) -> Self:
         """Creates a ManimColor from an HSV Array
 
         Parameters
@@ -597,12 +609,30 @@ class ManimColor:
         rgb = colorsys.hsv_to_rgb(*hsv)
         return cls(rgb, alpha)
 
+    @overload
+    @classmethod
+    def parse(
+        cls,
+        color: ParsableManimColor | None,
+        alpha: float = ...,
+    ) -> Self:
+        ...
+
+    @overload
+    @classmethod
+    def parse(
+        cls,
+        color: Sequence[ParsableManimColor],
+        alpha: float = ...,
+    ) -> list[Self]:
+        ...
+
     @classmethod
     def parse(
         cls,
         color: ParsableManimColor | list[ParsableManimColor] | None,
         alpha: float = 1.0,
-    ) -> ManimColor | list[ManimColor]:
+    ) -> Self | list[Self]:
         """
         Handles the parsing of a list of colors or a single color.
 
@@ -688,6 +718,9 @@ ParsableManimColor: TypeAlias = Union[
 """ParsableManimColor is the representation for all types that are parsable to a color in manim"""
 
 
+ManimColorT = TypeVar("ManimColorT", bound=ManimColor)
+
+
 def color_to_rgb(color: ParsableManimColor) -> RGB_Array_Float:
     """Helper function for use in functional style programming refer to :meth:`to_rgb` in :class:`ManimColor`
 
@@ -722,12 +755,12 @@ def color_to_rgba(color: ParsableManimColor, alpha: float = 1) -> RGBA_Array_Flo
     return ManimColor(color).to_rgba_with_alpha(alpha)
 
 
-def color_to_int_rgb(color: ManimColor) -> RGB_Array_Int:
+def color_to_int_rgb(color: ParsableManimColor) -> RGB_Array_Int:
     """Helper function for use in functional style programming refer to :meth:`to_int_rgb` in :class:`ManimColor`
 
     Parameters
     ----------
-    color : ManimColor
+    color : ParsableManimColor
         A color
 
     Returns
@@ -738,12 +771,12 @@ def color_to_int_rgb(color: ManimColor) -> RGB_Array_Int:
     return ManimColor(color).to_int_rgb()
 
 
-def color_to_int_rgba(color: ManimColor, alpha: float = 1.0) -> RGBA_Array_Int:
+def color_to_int_rgba(color: ParsableManimColor, alpha: float = 1.0) -> RGBA_Array_Int:
     """Helper function for use in functional style programming refer to :meth:`to_int_rgba_with_alpha` in :class:`ManimColor`
 
     Parameters
     ----------
-    color : ManimColor
+    color : ParsableManimColor
         A color
     alpha : float, optional
         alpha value to be used in the color, by default 1.0
@@ -756,7 +789,9 @@ def color_to_int_rgba(color: ManimColor, alpha: float = 1.0) -> RGBA_Array_Int:
     return ManimColor(color).to_int_rgba_with_alpha(alpha)
 
 
-def rgb_to_color(rgb: RGB_Array_Float | RGB_Tuple_Float) -> ManimColor:
+def rgb_to_color(
+    rgb: RGB_Array_Float | RGB_Tuple_Float | RGB_Array_Int | RGB_Tuple_Int,
+) -> ManimColor:
     """Helper function for use in functional style programming refer to :meth:`from_rgb` in :class:`ManimColor`
 
     Parameters
@@ -772,7 +807,9 @@ def rgb_to_color(rgb: RGB_Array_Float | RGB_Tuple_Float) -> ManimColor:
     return ManimColor.from_rgb(rgb)
 
 
-def rgba_to_color(rgba: RGBA_Array_Float | RGBA_Tuple_Float) -> ManimColor:
+def rgba_to_color(
+    rgba: RGBA_Array_Float | RGBA_Tuple_Float | RGBA_Array_Int | RGBA_Tuple_Int,
+) -> ManimColor:
     """Helper function for use in functional style programming refer to :meth:`from_rgba` in :class:`ManimColor`
 
     Parameters
@@ -788,7 +825,9 @@ def rgba_to_color(rgba: RGBA_Array_Float | RGBA_Tuple_Float) -> ManimColor:
     return ManimColor.from_rgba(rgba)
 
 
-def rgb_to_hex(rgb: RGB_Array_Float | RGB_Tuple_Float) -> str:
+def rgb_to_hex(
+    rgb: RGB_Array_Float | RGB_Tuple_Float | RGB_Array_Int | RGB_Tuple_Int,
+) -> str:
     """Helper function for use in functional style programming refer to :meth:`from_rgb` in :class:`ManimColor`
 
     Parameters
@@ -820,7 +859,7 @@ def hex_to_rgb(hex_code: str) -> RGB_Array_Float:
     return ManimColor(hex_code).to_rgb()
 
 
-def invert_color(color: ManimColor) -> ManimColor:
+def invert_color(color: ManimColorT) -> ManimColorT:
     """Helper function for use in functional style programming refer to :meth:`invert` in :class:`ManimColor`
 
     Parameters
@@ -837,15 +876,15 @@ def invert_color(color: ManimColor) -> ManimColor:
 
 
 def interpolate_arrays(
-    arr1: np.ndarray[Any, Any], arr2: np.ndarray[Any, Any], alpha: float
+    arr1: npt.NDArray[Any], arr2: npt.NDArray[Any], alpha: float
 ) -> np.ndarray:
     """Helper function used in Manim to fade between two objects smoothly
 
     Parameters
     ----------
-    arr1 : np.ndarray[Any, Any]
+    arr1 : npt.NDArray[Any]
         The first array of colors
-    arr2 : np.ndarray[Any, Any]
+    arr2 : npt.NDArray[Any]
         The second array of colors
     alpha : float
         The alpha value corresponding to the interpolation point between the two inputs
@@ -880,7 +919,7 @@ def color_gradient(
         return ManimColor(reference_colors[0])
     if len(reference_colors) == 1:
         return [ManimColor(reference_colors[0])] * length_of_output
-    rgbs = list(map(color_to_rgb, reference_colors))
+    rgbs = [color_to_rgb(color) for color in reference_colors]
     alphas = np.linspace(0, (len(rgbs) - 1), length_of_output)
     floors = alphas.astype("int")
     alphas_mod1 = alphas % 1
@@ -894,8 +933,8 @@ def color_gradient(
 
 
 def interpolate_color(
-    color1: ManimColor, color2: ManimColor, alpha: float
-) -> ManimColor:
+    color1: ManimColorT, color2: ManimColor, alpha: float
+) -> ManimColorT:
     """Standalone function to interpolate two ManimColors and get the result refer to :meth:`interpolate` in :class:`ManimColor`
 
     Parameters
@@ -915,7 +954,7 @@ def interpolate_color(
     return color1.interpolate(color2, alpha)
 
 
-def average_color(*colors: ManimColor) -> ManimColor:
+def average_color(*colors: ParsableManimColor) -> ManimColor:
     """Determines the Average color of the given parameters
 
     Returns
@@ -923,7 +962,7 @@ def average_color(*colors: ManimColor) -> ManimColor:
     ManimColor
         The average color of the input
     """
-    rgbs = np.array(list(map(color_to_rgb, colors)))
+    rgbs = np.array([color_to_rgb(color) for color in colors])
     mean_rgb = np.apply_along_axis(np.mean, 0, rgbs)
     return rgb_to_color(mean_rgb)
 
@@ -939,8 +978,7 @@ def random_bright_color() -> ManimColor:
     ManimColor
         A bright ManimColor
     """
-    color = random_color()
-    curr_rgb = color_to_rgb(color)
+    curr_rgb = color_to_rgb(random_color())
     new_rgb = interpolate_arrays(curr_rgb, np.ones(len(curr_rgb)), 0.5)
     return ManimColor(new_rgb)
 
@@ -962,10 +1000,10 @@ def random_color() -> ManimColor:
 
 
 def get_shaded_rgb(
-    rgb: np.ndarray,
-    point: np.ndarray,
-    unit_normal_vect: np.ndarray,
-    light_source: np.ndarray,
+    rgb: npt.NDArray[Any],
+    point: npt.NDArray[Any],
+    unit_normal_vect: npt.NDArray[Any],
+    light_source: npt.NDArray[Any],
 ) -> RGBA_Array_Float:
     to_sun = normalize(light_source - point)
     factor = 0.5 * np.dot(unit_normal_vect, to_sun) ** 3

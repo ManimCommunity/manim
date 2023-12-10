@@ -2,8 +2,7 @@ from __future__ import annotations
 
 import re
 
-import click
-from cloup import option, option_group
+from cloup import Choice, option, option_group
 
 from manim.constants import QUALITIES, RendererType
 
@@ -55,7 +54,7 @@ render_options = option_group(
     ),
     option(
         "--format",
-        type=click.Choice(["png", "gif", "mp4", "webm", "mov"], case_sensitive=False),
+        type=Choice(["png", "gif", "mp4", "webm", "mov"], case_sensitive=False),
         default=None,
     ),
     option("-s", "--save_last_frame", is_flag=True, default=None),
@@ -63,7 +62,7 @@ render_options = option_group(
         "-q",
         "--quality",
         default=None,
-        type=click.Choice(
+        type=Choice(
             list(reversed([q["flag"] for q in QUALITIES.values() if q["flag"]])),  # type: ignore
             case_sensitive=False,
         ),
@@ -95,7 +94,7 @@ render_options = option_group(
     ),
     option(
         "--renderer",
-        type=click.Choice(
+        type=Choice(
             [renderer_type.value for renderer_type in RendererType],
             case_sensitive=False,
         ),
