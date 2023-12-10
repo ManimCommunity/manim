@@ -968,11 +968,11 @@ class Mobject:
 
             class DtUpdater(Scene):
                 def construct(self):
-                    line = Square()
+                    square = Square()
 
-                    #Let the line rotate 90° per second
-                    line.add_updater(lambda mobject, dt: mobject.rotate(dt*90*DEGREES))
-                    self.add(line)
+                    #Let the square rotate 90° per second
+                    square.add_updater(lambda mobject, dt: mobject.rotate(dt*90*DEGREES))
+                    self.add(square)
                     self.wait(2)
 
         See also
