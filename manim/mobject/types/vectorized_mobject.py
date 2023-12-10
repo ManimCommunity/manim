@@ -2598,23 +2598,25 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
                 length_vals = np.cumsum(norms)
                 ref_points = np.linspace(0, 1, length_vals.size)
                 curve_length = length_vals[-1]
-                self.add(
-                    *(
-                        vmobject.get_subcurve(
-                            np.interp(
-                                dash_starts[i] * curve_length,
-                                length_vals,
-                                ref_points,
-                            ),
-                            np.interp(
-                                dash_ends[i] * curve_length,
-                                length_vals,
-                                ref_points,
-                            ),
-                        )
-                        for i in range(len(dash_starts))
+                x = []
+                for i in range(len(dash_ends) - 1, -1, -1):
+                    if i == len(dash_ends) - 2:
+                        # Pop all arrow tips except 1 to remove arrow tip duplicates
+                        vmobject.pop_tips(keep_len_same=True)
+                    a = vmobject.get_subcurve(
+                        np.interp(
+                            dash_starts[i] * curve_length,
+                            length_vals,
+                            ref_points,
+                        ),
+                        np.interp(
+                            dash_ends[i] * curve_length,
+                            length_vals,
+                            ref_points,
+                        ),
                     )
-                )
+                    x.append(a)
+                self.add(*(x))
             else:
                 self.add(
                     *(
