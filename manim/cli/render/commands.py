@@ -24,6 +24,8 @@ from .global_options import global_options
 from .output_options import output_options
 from .render_options import render_options
 
+__all__ = ["render"]
+
 
 @cloup.command(
     context_settings=None,

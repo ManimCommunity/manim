@@ -8,6 +8,8 @@ from sphinx.application import Sphinx
 
 from manim import ManimColor
 
+__all__ = ["ManimColorModuleDocumenter"]
+
 
 def setup(app: Sphinx) -> None:
     app.add_directive("automanimcolormodule", ManimColorModuleDocumenter)

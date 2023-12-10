@@ -20,6 +20,7 @@ from ._config import *
 from .utils.commands import *
 
 # isort: on
+import numpy as np
 
 from .animation.animation import *
 from .animation.changing import *

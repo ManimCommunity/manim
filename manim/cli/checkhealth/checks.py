@@ -10,6 +10,8 @@ from typing import Callable
 
 from ..._config import config
 
+__all__ = ["HEALTH_CHECKS"]
+
 HEALTH_CHECKS = []
 
 

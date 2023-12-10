@@ -3,6 +3,8 @@ from __future__ import annotations
 import click
 from cloup import option, option_group
 
+__all__ = ["output_options"]
+
 output_options = option_group(
     "Output options",
     option(

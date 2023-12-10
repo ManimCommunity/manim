@@ -39,6 +39,8 @@ from .vectorized_mobject_rendering import (
     render_opengl_vectorized_mobject_stroke,
 )
 
+__all__ = ["OpenGLCamera", "OpenGLRenderer"]
+
 
 class OpenGLCamera(OpenGLMobject):
     euler_angles = _Data()

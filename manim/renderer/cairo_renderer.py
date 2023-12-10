@@ -17,6 +17,8 @@ from ..utils.iterables import list_update
 if typing.TYPE_CHECKING:
     from manim.scene.scene import Scene
 
+__all__ = ["CairoRenderer"]
+
 
 class CairoRenderer:
     """A renderer using Cairo.
