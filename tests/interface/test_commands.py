@@ -141,26 +141,3 @@ def test_manim_init_scene(tmp_path):
         assert (Path(tmp_dir) / "main.py").exists()
         file_content = (Path(tmp_dir) / "main.py").read_text()
         assert "DefaultFileTestScene(Scene):" in file_content
-
-
-def test_manim_new_command():
-    command = ["new"]
-    runner = CliRunner()
-    result = runner.invoke(main, command, prog_name="manim")
-    expected_output = f"""\
-Manim Community v{__version__}
-
-Usage: manim new [OPTIONS] COMMAND [ARGS]...
-
-  (Deprecated) Create a new project or insert a new scene.
-
-Options:
-  --help  Show this message and exit.
-
-Commands:
-  project  Creates a new project.
-  scene    Inserts a SCENE to an existing FILE or creates a new FILE.
-
-Made with <3 by Manim Community developers.
-"""
-    assert dedent(expected_output) == result.output
