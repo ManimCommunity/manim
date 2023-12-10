@@ -85,6 +85,7 @@ import os
 import re
 import shutil
 import sys
+import textwrap
 from pathlib import Path
 from timeit import timeit
 
@@ -94,6 +95,7 @@ from docutils.parsers.rst import Directive, directives  # type: ignore
 from docutils.statemachine import StringList
 
 from manim import QUALITIES
+from manim import __version__ as manim_version
 
 classnamedict = {}
 
@@ -168,16 +170,25 @@ class ManimDirective(Directive):
             or self.state.document.settings.env.app.builder.name == "gettext"
         )
         if should_skip:
+            clsname = self.arguments[0]
             node = SkipManimNode()
             self.state.nested_parse(
                 StringList(
                     [
-                        f"Placeholder block for ``{self.arguments[0]}``.",
+                        f"Placeholder block for ``{clsname}``.",
                         "",
                         ".. code-block:: python",
                         "",
                     ]
                     + ["    " + line for line in self.content]
+                    + [
+                        "",
+                        ".. raw:: html",
+                        "",
+                        f'    <pre data-manim-binder data-manim-classname="{clsname}">',
+                    ]
+                    + ["    " + line for line in self.content]
+                    + ["    </pre>"],
                 ),
                 self.content_offset,
                 node,
@@ -235,6 +246,13 @@ class ManimDirective(Directive):
             "",
             "    from manim import *\n",
             *("    " + line for line in self.content),
+            "",
+            ".. raw:: html",
+            "",
+            f'    <pre data-manim-binder data-manim-classname="{clsname}">',
+            *("    " + line for line in self.content),
+            "",
+            "    </pre>",
         ]
         source_block = "\n".join(source_block)
 
@@ -343,6 +361,9 @@ def _log_rendering_times(*args):
 
         print("\nRendering Summary\n-----------------\n")
 
+        # filter out empty lists caused by csv reader
+        data = [row for row in data if row]
+
         max_file_length = max(len(row[0]) for row in data)
         for key, group in it.groupby(data, key=lambda row: row[0]):
             key = key.ljust(max_file_length + 1, ".")
@@ -376,6 +397,16 @@ def setup(app):
 
     app.connect("builder-inited", _delete_rendering_times)
     app.connect("build-finished", _log_rendering_times)
+
+    app.add_js_file("manim-binder.min.js")
+    app.add_js_file(
+        None,
+        body=textwrap.dedent(
+            f"""\
+                window.initManimBinder({{branch: "v{manim_version}"}})
+            """
+        ).strip(),
+    )
 
     metadata = {"parallel_read_safe": False, "parallel_write_safe": True}
     return metadata
