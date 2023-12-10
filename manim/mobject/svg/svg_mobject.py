@@ -280,7 +280,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
                 mob = self.polyline_to_mobject(shape)
             elif isinstance(shape, se.Text):
                 mob = self.text_to_mobject(shape)
-            elif isinstance(shape, se.Use) or type(shape) == se.SVGElement:
+            elif isinstance(shape, se.Use) or type(shape) is se.SVGElement:
                 continue
             else:
                 logger.warning(f"Unsupported element type: {type(shape)}")

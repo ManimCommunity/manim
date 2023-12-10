@@ -380,7 +380,7 @@ class OpenGLTexturedSurface(OpenGLSurface):
 
         if not isinstance(uv_surface, OpenGLSurface):
             raise Exception("uv_surface must be of type OpenGLSurface")
-        if type(image_file) == np.ndarray:
+        if isinstance(image_file, np.ndarray):
             image_file = change_to_rgba_array(image_file)
 
         # Set texture information

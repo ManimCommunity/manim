@@ -12,6 +12,8 @@ r"""Mobjects representing text rendered using LaTeX.
 
 from __future__ import annotations
 
+from manim.utils.color import ManimColor
+
 __all__ = [
     "SingleStringMathTex",
     "MathTex",
@@ -26,9 +28,7 @@ import operator as op
 import re
 from functools import reduce
 from textwrap import dedent
-from typing import Dict, Iterable, Optional
-
-from colour import Color
+from typing import Iterable
 
 from manim import config, logger
 from manim.constants import *
@@ -253,7 +253,7 @@ class MathTex(SingleStringMathTex):
         *tex_strings,
         arg_separator: str = " ",
         substrings_to_isolate: Iterable[str] | None = None,
-        tex_to_color_map: dict[str, Color] = None,
+        tex_to_color_map: dict[str, ManimColor] = None,
         tex_environment: str = "align*",
         **kwargs,
     ):
@@ -344,10 +344,6 @@ class MathTex(SingleStringMathTex):
                 curr_index + num_submobs + len("".join(self.arg_separator.split()))
             )
             if num_submobs == 0:
-                # For cases like empty tex_strings, we want the corresponding
-                # part of the whole MathTex to be a VectorizedPoint
-                # positioned in the right part of the MathTex
-                sub_tex_mob.submobjects = [VectorizedPoint()]
                 last_submob_index = min(curr_index, len(self.submobjects) - 1)
                 sub_tex_mob.move_to(self.submobjects[last_submob_index], RIGHT)
             else:

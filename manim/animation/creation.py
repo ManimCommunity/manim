@@ -77,13 +77,13 @@ import itertools as it
 from typing import TYPE_CHECKING, Callable, Iterable, Sequence
 
 import numpy as np
-from colour import Color
 
 if TYPE_CHECKING:
     from manim.mobject.text.text_mobject import Text
 
 from manim.mobject.opengl.opengl_surface import OpenGLSurface
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+from manim.utils.color import ManimColor
 
 from .. import config
 from ..animation.animation import Animation
@@ -92,7 +92,7 @@ from ..constants import TAU
 from ..mobject.mobject import Group, Mobject
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.bezier import integer_interpolate
-from ..utils.rate_functions import double_smooth, linear, smooth
+from ..utils.rate_functions import double_smooth, linear
 
 
 class ShowPartial(Animation):
@@ -259,7 +259,7 @@ class DrawBorderThenFill(Animation):
             sm.set_stroke(color=self.get_stroke_color(sm), width=self.stroke_width)
         return outline
 
-    def get_stroke_color(self, vmobject: VMobject | OpenGLVMobject) -> Color:
+    def get_stroke_color(self, vmobject: VMobject | OpenGLVMobject) -> ManimColor:
         if self.stroke_color:
             return self.stroke_color
         elif vmobject.get_stroke_width() > 0:
@@ -563,6 +563,11 @@ class AddTextLetterByLetter(ShowIncreasingSubsets):
         **kwargs,
     ) -> None:
         self.time_per_char = time_per_char
+        # Check for empty text using family_members_with_points()
+        if not text.family_members_with_points():
+            raise ValueError(
+                f"The text mobject {text} does not seem to contain any characters."
+            )
         if run_time is None:
             # minimum time per character is 1/frame_rate, otherwise
             # the animation does not finish.
