@@ -343,6 +343,30 @@ class VMobject(Mobject):
         return self
 
     def set_cap_style(self, cap_style: CapStyleType) -> Self:
+        """
+        Sets the cap style of the :class:`VMobject`.
+
+        Parameters
+        ----------
+        cap_style
+            The cap style to be set. See :class:`.CapStyleType` for options.
+
+        Returns
+        -------
+        :class:`VMobject`
+            ``self``
+
+        Examples
+        --------
+        .. manim:: CapStyleExample
+            :save_last_frame:
+
+            class CapStyleExample(Scene):
+                def construct(self):
+                    line = Line(LEFT, RIGHT, color=YELLOW, stroke_width=20)
+                    line.set_cap_style(CapStyleType.ROUND)
+                    self.add(line)
+        """
         self.cap_style = cap_style
         return self
 
