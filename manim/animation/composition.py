@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Callable, Sequence
+from typing import TYPE_CHECKING, Callable, Iterable, Sequence
 
 import numpy as np
 
@@ -18,6 +18,8 @@ from ..utils.iterables import remove_list_redundancies
 from ..utils.rate_functions import linear
 
 if TYPE_CHECKING:
+    import types
+
     from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup
 
     from ..mobject.types.vectorized_mobject import VGroup
@@ -54,14 +56,20 @@ class AnimationGroup(Animation):
 
     def __init__(
         self,
-        *animations: Animation,
+        *animations: Animation | Iterable[Animation] | types.GeneratorType[Animation],
         group: Group | VGroup | OpenGLGroup | OpenGLVGroup = None,
         run_time: float | None = None,
         rate_func: Callable[[float], float] = linear,
         lag_ratio: float = 0,
         **kwargs,
     ) -> None:
-        self.animations = [prepare_animation(anim) for anim in animations]
+        arg_anim = []
+        for anim in animations:
+            if isinstance(anim, (types.GeneratorType, Iterable)):
+                arg_anim.extend(anim)
+            else:
+                arg_anim.append(anim)
+        self.animations = [prepare_animation(anim) for anim in arg_anim]
         self.rate_func = rate_func
         self.group = group
         if self.group is None:

@@ -13,7 +13,6 @@ import threading
 import time
 import types
 from queue import Queue
-from typing import Callable
 
 import srt
 
@@ -25,6 +24,8 @@ try:
     dearpygui_imported = True
 except ImportError:
     dearpygui_imported = False
+import typing
+
 import numpy as np
 from tqdm import tqdm
 from watchdog.events import FileSystemEventHandler
@@ -47,6 +48,9 @@ from ..utils.family import extract_mobject_family_members
 from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
 from ..utils.file_ops import open_media_file
 from ..utils.iterables import list_difference_update, list_update
+
+if typing.TYPE_CHECKING:
+    from typing import Callable, Iterable
 
 
 class RerunSceneHandler(FileSystemEventHandler):
@@ -866,7 +870,9 @@ class Scene:
         return all_moving_mobject_families, static_mobjects
 
     def compile_animations(
-        self, *args: Animation | types.GeneratorType[Animation], **kwargs
+        self,
+        *args: Animation | Iterable[Animation] | types.GeneratorType[Animation],
+        **kwargs,
     ):
         """
         Creates _MethodAnimations from any _AnimationBuilders and updates animation
@@ -888,7 +894,7 @@ class Scene:
         arg_anims = []
         # Allow passing a generator to self.play instead of comma separated arguments
         for arg in args:
-            if isinstance(arg, (types.GeneratorType, list, tuple)):
+            if isinstance(arg, (types.GeneratorType, Iterable)):
                 arg_anims.extend(arg)
             else:
                 arg_anims.append(arg)
@@ -1036,7 +1042,7 @@ class Scene:
 
     def play(
         self,
-        *args: Animation | types.GeneratorType[Animation],
+        *args: Animation | Iterable[Animation] | types.GeneratorType[Animation],
         subcaption=None,
         subcaption_duration=None,
         subcaption_offset=0,
@@ -1167,7 +1173,9 @@ class Scene:
         self.wait(max_time, stop_condition=stop_condition)
 
     def compile_animation_data(
-        self, *animations: Animation | types.GeneratorType[Animation], **play_kwargs
+        self,
+        *animations: Animation | Iterable[Animation] | types.GeneratorType[Animation],
+        **play_kwargs,
     ):
         """Given a list of animations, compile the corresponding
         static and moving mobjects, and gather the animation durations.
