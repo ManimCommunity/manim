@@ -9,7 +9,6 @@ from .cli.cfg.group import cfg
 from .cli.checkhealth.commands import checkhealth
 from .cli.default_group import DefaultGroup
 from .cli.init.commands import init
-from .cli.new.group import new
 from .cli.plugins.commands import plugins
 from .cli.render.commands import render
 from .constants import EPILOG
@@ -52,7 +51,6 @@ main.add_command(checkhealth)
 main.add_command(cfg)
 main.add_command(plugins)
 main.add_command(init)
-main.add_command(new)
 main.add_command(render)
 
 if __name__ == "__main__":
