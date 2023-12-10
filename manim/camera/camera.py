@@ -29,7 +29,6 @@ from ..utils.images import get_full_raster_image_path
 from ..utils.iterables import list_difference_update
 from ..utils.space_ops import angle_of_vector
 
-
 LINE_JOIN_MAP = {
     LineJointType.AUTO: None,  # TODO: this could be improved
     LineJointType.ROUND: cairo.LineJoin.ROUND,
@@ -42,7 +41,7 @@ CAP_STYLE_MAP = {
     CapStyleType.AUTO: None,  # TODO: this could be improved
     CapStyleType.ROUND: cairo.LineCap.ROUND,
     CapStyleType.BUTT: cairo.LineCap.BUTT,
-    CapStyleType.SQUARE: cairo.LineCap.SQUARE
+    CapStyleType.SQUARE: cairo.LineCap.SQUARE,
 }
 
 
@@ -335,8 +334,8 @@ class Camera:
         """
         converted_array = self.convert_pixel_array(pixel_array, convert_from_floats)
         if not (
-            hasattr(self, "pixel_array") and
-            self.pixel_array.shape == converted_array.shape
+            hasattr(self, "pixel_array")
+            and self.pixel_array.shape == converted_array.shape
         ):
             self.pixel_array = converted_array
         else:
@@ -785,8 +784,9 @@ class Camera:
             vmobject,
         )
         ctx.set_line_width(
-            width *
-            self.cairo_line_width_multiple *
+            width
+            * self.cairo_line_width_multiple
+            *
             # This ensures lines have constant width as you zoom in on them.
             (self.frame_width / self.frame_width),
         )
