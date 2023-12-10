@@ -6,8 +6,6 @@ from cloup import Choice, option, option_group
 
 from ... import logger
 
-if TYPE_CHECKING:
-    from cloup._option_groups import OptionGroupDecorator
 
 __all__ = ["global_options"]
 
