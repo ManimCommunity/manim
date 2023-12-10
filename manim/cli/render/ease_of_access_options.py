@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-import click
-from cloup import option, option_group
+from cloup import Choice, option, option_group
 
 __all__ = ["ease_of_access_options"]
 
@@ -11,7 +10,7 @@ ease_of_access_options = option_group(
         "--progress_bar",
         default=None,
         show_default=False,
-        type=click.Choice(
+        type=Choice(
             ["display", "leave", "none"],
             case_sensitive=False,
         ),
