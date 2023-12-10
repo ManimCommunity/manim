@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-import click
 import sys
+
+import click
 import cloup
 
 from . import __version__, cli_ctx_settings, console
