@@ -1452,12 +1452,9 @@ class Mobject:
                     tex_side = Tex("I am moving to the side!")
                     c = Circle().shift(2*DOWN)
                     self.add(tex_top, tex_side)
-                    self.wait()
-                    self.play(
-                        tex_side.animate.to_edge(LEFT),
-                        c.animate.to_edge(RIGHT, buff=0)
-                    )
-                    self.wait()
+                    tex_side.to_edge(LEFT)
+                    c.to_edge(RIGHT, buff=0)
+                    
         """
         return self.align_on_border(edge, buff)
 
