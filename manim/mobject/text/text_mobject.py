@@ -49,6 +49,8 @@ Examples
 
 from __future__ import annotations
 
+import functools
+
 __all__ = ["Text", "Paragraph", "MarkupText", "register_font"]
 
 
@@ -406,7 +408,11 @@ class Text(SVGMobject):
         Text('The horse does not eat cucumber salad.')
 
     """
-    font_list = []
+
+    @staticmethod
+    @functools.lru_cache(maxsize=None)
+    def font_list() -> list[str]:
+        return manimpango.list_fonts()
 
     def __init__(
         self,
@@ -436,12 +442,8 @@ class Text(SVGMobject):
         **kwargs,
     ) -> None:
         self.line_spacing = line_spacing
-        if font and warn_missing_font:
-            Text.font_list = (
-                Text.font_list if len(Text.font_list) > 0 else manimpango.list_fonts()
-            )
-            if font not in Text.font_list:
-                logger.warning(f"Font {font} not in {Text.font_list}.")
+        if font and warn_missing_font and font not in Text.font_list():
+            logger.warning(f"Font {font} not in {Text.font_list()}.")
         self.font = font
         self._font_size = float(font_size)
         # needs to be a float or else size is inflated when font_size = 24
@@ -1137,6 +1139,11 @@ class MarkupText(SVGMobject):
 
     """
 
+    @staticmethod
+    @functools.lru_cache(maxsize=None)
+    def font_list() -> list[str]:
+        return manimpango.list_fonts()
+
     def __init__(
         self,
         text: str,
@@ -1160,12 +1167,8 @@ class MarkupText(SVGMobject):
     ) -> None:
         self.text = text
         self.line_spacing = line_spacing
-        if font and warn_missing_font:
-            Text.font_list = (
-                Text.font_list if len(Text.font_list) > 0 else manimpango.list_fonts()
-            )
-            if font not in Text.font_list:
-                logger.warning(f"Font {font} not in {Text.font_list}.")
+        if font and warn_missing_font and font not in Text.font_list():
+            logger.warning(f"Font {font} not in {Text.font_list()}.")
         self.font = font
         self._font_size = float(font_size)
         self.slant = slant
