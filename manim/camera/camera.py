@@ -786,9 +786,8 @@ class Camera:
         ctx.set_line_width(
             width
             * self.cairo_line_width_multiple
-            *
+            * (self.frame_width / self.frame_width),
             # This ensures lines have constant width as you zoom in on them.
-            (self.frame_width / self.frame_width),
         )
         if vmobject.joint_type != LineJointType.AUTO:
             ctx.set_line_join(LINE_JOIN_MAP[vmobject.joint_type])
