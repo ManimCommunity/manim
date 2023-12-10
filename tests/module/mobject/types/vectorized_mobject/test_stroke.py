@@ -33,7 +33,7 @@ def test_streamline_attributes_for_single_color():
         x_range=[-1, 1, 0.1],
         y_range=[-1, 1, 0.1],
         padding=0.1,
-        stroke_width=1.0,  # Default is 4.0, hence I would expect them thinner.
+        stroke_width=1.0,
         opacity=0.2,
         color=C.BLUE_D,
     )
