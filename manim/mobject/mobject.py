@@ -1418,6 +1418,7 @@ class Mobject:
         --------
 
         .. manim:: ToCornerExample
+            :save_last_frame:
 
             class ToCornerExample(Scene):
                 def construct(self):
