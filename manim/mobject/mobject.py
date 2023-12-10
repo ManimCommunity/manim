@@ -1426,12 +1426,8 @@ class Mobject:
                     t = Tex("To the corner!")
                     t2 = MathTex("x^3").shift(DOWN)
                     self.add(c,t,t2)
-                    self.wait()
-                    self.play(
-                        t.animate.to_corner(DL, buff=0),
-                        t2.animate.to_corner(UL, buff=1.5)
-                    )
-                    self.wait()
+                    t.to_corner(DL, buff=0)
+                    t2.to_corner(UL, buff=1.5)
         """
         return self.align_on_border(corner, buff)
 
