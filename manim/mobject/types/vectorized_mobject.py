@@ -123,6 +123,7 @@ class VMobject(Mobject):
         # TODO, do we care about accounting for varying zoom levels?
         tolerance_for_point_equality: float = 1e-6,
         n_points_per_cubic_curve: int = 4,
+        cap_style: CapStyleType = CapStyleType.AUTO,
         **kwargs,
     ):
         self.fill_opacity = fill_opacity
@@ -150,6 +151,7 @@ class VMobject(Mobject):
         self.shade_in_3d: bool = shade_in_3d
         self.tolerance_for_point_equality: float = tolerance_for_point_equality
         self.n_points_per_cubic_curve: int = n_points_per_cubic_curve
+        self.cap_style: CapStyleType = cap_style
         super().__init__(**kwargs)
         self.submobjects: list[VMobject]
 
@@ -338,6 +340,10 @@ class VMobject(Mobject):
                 self.background_stroke_color = color
             else:
                 self.background_stroke_color = ManimColor(color)
+        return self
+
+    def set_cap_style(self, cap_style: CapStyleType) -> Self:
+        self.cap_style = cap_style
         return self
 
     def set_background_stroke(self, **kwargs) -> Self:
@@ -1096,7 +1102,7 @@ class VMobject(Mobject):
         remainder = len(points) % nppcc
         points = points[: len(points) - remainder]
         # Basically take every nppcc element.
-        return tuple(points[i : i + nppcc] for i in range(0, len(points), nppcc))
+        return tuple(points[i: i + nppcc] for i in range(0, len(points), nppcc))
 
     def get_cubic_bezier_tuples(self) -> npt.NDArray[Point3D_Array]:
         return self.get_cubic_bezier_tuples_from_points(self.points)
@@ -1178,7 +1184,7 @@ class VMobject(Mobject):
         """
         assert n < self.get_num_curves()
         nppcc = self.n_points_per_cubic_curve
-        return self.points[nppcc * n : nppcc * (n + 1)]
+        return self.points[nppcc * n: nppcc * (n + 1)]
 
     def get_nth_curve_function(self, n: int) -> Callable[[float], Point3D]:
         """Returns the expression of the nth curve.
@@ -1456,7 +1462,7 @@ class VMobject(Mobject):
             Starting anchors
         """
         nppcc = self.n_points_per_cubic_curve
-        return self.points[nppcc - 1 :: nppcc]
+        return self.points[nppcc - 1:: nppcc]
 
     def get_anchors(self) -> Point3D_Array:
         """Returns the anchors of the curves forming the VMobject.
@@ -1747,7 +1753,7 @@ class VMobject(Mobject):
             self.append_points(
                 partial_bezier_points(bezier_quads[lower_index], lower_residue, 1),
             )
-            for quad in bezier_quads[lower_index + 1 : upper_index]:
+            for quad in bezier_quads[lower_index + 1: upper_index]:
                 self.append_points(quad)
             self.append_points(
                 partial_bezier_points(bezier_quads[upper_index], 0, upper_residue),
@@ -2458,7 +2464,8 @@ class CurvesAsSubmobjects(VGroup):
         if len(self.submobjects) == 0:
             caller_name = sys._getframe(1).f_code.co_name
             raise Exception(
-                f"Cannot call CurvesAsSubmobjects.{caller_name} for a CurvesAsSubmobject with no submobjects"
+                f"Cannot call CurvesAsSubmobjects.{
+                    caller_name} for a CurvesAsSubmobject with no submobjects"
             )
 
     def _get_submobjects_with_points(self):
@@ -2468,7 +2475,8 @@ class CurvesAsSubmobjects(VGroup):
         if len(submobjs_with_pts) == 0:
             caller_name = sys._getframe(1).f_code.co_name
             raise Exception(
-                f"Cannot call CurvesAsSubmobjects.{caller_name} for a CurvesAsSubmobject whose submobjects have no points"
+                f"Cannot call CurvesAsSubmobjects.{
+                    caller_name} for a CurvesAsSubmobject whose submobjects have no points"
             )
         return submobjs_with_pts
 
