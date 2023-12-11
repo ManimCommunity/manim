@@ -652,6 +652,10 @@ class SceneFileWriter:
         movie_file_path = self.movie_file_path
         if is_gif_format():
             movie_file_path = self.gif_file_path
+        if len(partial_movie_files) == 0:  # Prevent calling concat on empty list
+            logger.info("No animations are contained in this scene")
+            return
+
         logger.info("Combining to Movie file.")
         self.combine_files(
             partial_movie_files,
