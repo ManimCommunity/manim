@@ -8,7 +8,7 @@ from manim import ImageMobject
 def test_invert_image(dtype):
     array = (255 * np.random.rand(10, 10, 4)).astype(dtype)
     image = ImageMobject(array, pixel_array_dtype=dtype, invert=True)
-    assert image.dtype == dtype
+    assert image.pixel_array.dtype == dtype
 
     array[:, :, :3] = np.iinfo(dtype).max - array[:, :, :3]
     assert np.allclose(array, image.pixel_array)
