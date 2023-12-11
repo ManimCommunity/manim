@@ -182,8 +182,8 @@ class VMobject(Mobject):
             else self.get_center()
         )
         self.radial_gradient_inner_radius: float = radial_gradient_inner_radius or 0.0
-        self.radial_gradient_outer_radius: float = (
-            radial_gradient_outer_radius or self.width / 2
+        self.radial_gradient_outer_radius: float = radial_gradient_outer_radius or max(
+            self.width / 2, self.height / 2
         )
 
     # OpenGL compatibility
