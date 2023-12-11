@@ -253,10 +253,14 @@ class VMobject(Mobject):
         self.stroke_gradient_mode = stroke_mode or self.stroke_gradient_mode
         self.fill_gradient_mode = fill_mode or self.fill_gradient_mode
         self.radial_gradient_center_outer = (
-            radial_gradient_center_outer or self.radial_gradient_center_outer
+            radial_gradient_center_outer
+            if radial_gradient_center_outer is not None
+            else self.radial_gradient_center_outer
         )
         self.radial_gradient_center_inner = (
-            radial_gradient_center_inner or self.radial_gradient_center_inner
+            radial_gradient_center_inner
+            if radial_gradient_center_inner is not None
+            else self.radial_gradient_center_inner
         )
         self.radial_gradient_inner_radius = (
             radial_gradient_inner_radius or self.radial_gradient_inner_radius
