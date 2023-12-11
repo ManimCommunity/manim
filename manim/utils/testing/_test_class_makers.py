@@ -65,7 +65,7 @@ class DummySceneFileWriter(SceneFileWriter):
         pass
 
     def write_frame(self, frame_or_renderer, num_frames=1):
-        self.i += 1
+        self.i += num_frames
 
 
 def _make_scene_file_writer_class(tester: _FramesTester) -> type[SceneFileWriter]:
