@@ -124,6 +124,12 @@ class VMobject(Mobject):
         tolerance_for_point_equality: float = 1e-6,
         n_points_per_cubic_curve: int = 4,
         cap_style: CapStyleType = CapStyleType.AUTO,
+        stroke_gradient_mode: Literal["linear", "radial"] = "linear",
+        fill_gradient_mode: Literal["linear", "radial"] = "linear",
+        radial_gradient_center_outer: Point3D | None = None,
+        radial_gradient_center_inner: Point3D | None = None,
+        radial_gradient_inner_radius: float | None = None,
+        radial_gradient_outer_radius: float | None = None,
         **kwargs,
     ):
         self.fill_opacity = fill_opacity
@@ -152,6 +158,8 @@ class VMobject(Mobject):
         self.tolerance_for_point_equality: float = tolerance_for_point_equality
         self.n_points_per_cubic_curve: int = n_points_per_cubic_curve
         self.cap_style: CapStyleType = cap_style
+        self.stroke_gradient_mode: str = stroke_gradient_mode
+        self.fill_gradient_mode: str = fill_gradient_mode
         super().__init__(**kwargs)
         self.submobjects: list[VMobject]
 
@@ -163,6 +171,20 @@ class VMobject(Mobject):
             self.fill_color = ManimColor.parse(fill_color)
         if stroke_color is not None:
             self.stroke_color = ManimColor.parse(stroke_color)
+        self.radial_gradient_center_outer: Point3D = (
+            radial_gradient_center_outer
+            if radial_gradient_center_outer is not None
+            else self.get_center()
+        )
+        self.radial_gradient_center_inner: Point3D = (
+            radial_gradient_center_inner
+            if radial_gradient_center_inner is not None
+            else self.get_center()
+        )
+        self.radial_gradient_inner_radius: float = radial_gradient_inner_radius or 0.0
+        self.radial_gradient_outer_radius: float = (
+            radial_gradient_outer_radius or self.width / 2
+        )
 
     # OpenGL compatibility
     @property
@@ -175,6 +197,68 @@ class VMobject(Mobject):
     @staticmethod
     def get_mobject_type_class() -> type[VMobject]:
         return VMobject
+
+    def set_gradient_mode(
+        self,
+        stroke_mode: Literal["linear", "radial"] | None = None,
+        fill_mode: Literal["linear", "radial"] | None = None,
+        radial_gradient_center_outer: Point3D | None = None,
+        radial_gradient_center_inner: Point3D | None = None,
+        radial_gradient_inner_radius: float | None = None,
+        radial_gradient_outer_radius: float | None = None,
+    ) -> Self:
+        """
+        Sets the gradient mode of the :class:`VMobject` for the stroke and fill.
+
+        Parameters
+        ----------
+        stroke_mode
+            The stroke gradient mode to be set. It must be either ``"linear"`` or
+            ``"radial"``.
+        fill_mode
+            The fill gradient mode to be set. It must be either ``"linear"`` or
+            ``"radial"``.
+        radial_gradient_center_outer
+            The center of the outer circle for radial gradient.
+        radial_gradient_center_inner
+            The center of the inner circle for radial gradient.
+        radial_gradient_inner_radius
+            The radius of the inner circle for radial gradient.
+        radial_gradient_outer_radius
+            The radius of the outer circle for radial gradient.
+
+        Returns
+        -------
+        :class:`VMobject`
+            ``self``
+
+        Examples
+        --------
+        .. manim:: RadialGradientExample
+            :save_last_frame:
+
+            class RadialGradientExample(Scene):
+                def construct(self):
+                    circle = Circle(radius=2).set_fill(opacity=1)
+                    circle.set_gradient_mode("radial", "radial")
+                    circle.set_color([RED, YELLOW])
+                    self.add(circle)
+        """
+        self.stroke_gradient_mode = stroke_mode or self.stroke_gradient_mode
+        self.fill_gradient_mode = fill_mode or self.fill_gradient_mode
+        self.radial_gradient_center_outer = (
+            radial_gradient_center_outer or self.radial_gradient_center_outer
+        )
+        self.radial_gradient_center_inner = (
+            radial_gradient_center_inner or self.radial_gradient_center_inner
+        )
+        self.radial_gradient_inner_radius = (
+            radial_gradient_inner_radius or self.radial_gradient_inner_radius
+        )
+        self.radial_gradient_outer_radius = (
+            radial_gradient_outer_radius or self.radial_gradient_outer_radius
+        )
+        return self
 
     # Colors
     def init_colors(self, propagate_colors: bool = True) -> Self:
@@ -375,19 +459,44 @@ class VMobject(Mobject):
         self.set_stroke(**kwargs)
         return self
 
+    def set_line_joint_type(self, joint_type: LineJointType) -> Self:
+        """
+        Sets the line joint type of the :class:`VMobject`.
+
+        Parameters
+        ----------
+        joint_type
+            The line joint type to be set. See :class:`.LineJointType` for options.
+
+        Returns
+        -------
+        :class:`VMobject`
+            ``self``
+        """
+        self.joint_type = joint_type
+        return self
+
     def set_style(
         self,
         fill_color: ParsableManimColor | None = None,
         fill_opacity: float | None = None,
+        fill_gradient_mode: Literal["linear", "radial"] | None = None,
         stroke_color: ParsableManimColor | None = None,
         stroke_width: float | None = None,
         stroke_opacity: float | None = None,
+        stroke_gradient_mode: Literal["linear", "radial"] | None = None,
         background_stroke_color: ParsableManimColor | None = None,
         background_stroke_width: float | None = None,
         background_stroke_opacity: float | None = None,
         sheen_factor: float | None = None,
         sheen_direction: Vector3 | None = None,
         background_image: Image | str | None = None,
+        line_joint_type: LineJointType | None = None,
+        cap_style: CapStyleType | None = None,
+        radial_gradient_center_inner: Point3D | None = None,
+        radial_gradient_center_outer: Point3D | None = None,
+        radial_gradient_inner_radius: float | None = None,
+        radial_gradient_outer_radius: float | None = None,
         family: bool = True,
     ) -> Self:
         self.set_fill(color=fill_color, opacity=fill_opacity, family=family)
@@ -411,6 +520,26 @@ class VMobject(Mobject):
             )
         if background_image:
             self.color_using_background_image(background_image)
+        if line_joint_type:
+            self.set_line_joint_type(line_joint_type)
+        if cap_style:
+            self.set_cap_style(cap_style)
+        if (
+            fill_gradient_mode
+            or stroke_gradient_mode
+            or radial_gradient_center_inner
+            or radial_gradient_center_outer
+            or radial_gradient_inner_radius
+            or radial_gradient_outer_radius
+        ):
+            self.set_gradient_mode(
+                fill_gradient_mode,
+                stroke_gradient_mode,
+                radial_gradient_center_inner,
+                radial_gradient_center_outer,
+                radial_gradient_inner_radius,
+                radial_gradient_outer_radius,
+            )
         return self
 
     def get_style(self, simple: bool = False) -> dict:
@@ -434,7 +563,14 @@ class VMobject(Mobject):
             ret["sheen_factor"] = self.get_sheen_factor()
             ret["sheen_direction"] = self.get_sheen_direction()
             ret["background_image"] = self.get_background_image()
-
+            ret["line_joint_type"] = self.joint_type
+            ret["cap_style"] = self.cap_style
+            ret["stroke_gradient_mode"] = self.stroke_gradient_mode
+            ret["fill_gradient_mode"] = self.fill_gradient_mode
+            ret["radial_gradient_center_outer"] = self.radial_gradient_center_outer
+            ret["radial_gradient_center_inner"] = self.radial_gradient_center_inner
+            ret["radial_gradient_inner_radius"] = self.radial_gradient_inner_radius
+            ret["radial_gradient_outer_radius"] = self.radial_gradient_outer_radius
         return ret
 
     def match_style(self, vmobject: VMobject, family: bool = True) -> Self:

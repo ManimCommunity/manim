@@ -72,3 +72,19 @@ def test_vmobject_cap_styles(scene):
     )
     arcs.arrange(RIGHT, buff=1)
     scene.add(arcs)
+
+
+@frames_comparison
+def test_vmobject_radial_gradient(scene):
+    circle = Circle(
+        radius=2,
+        stroke_width=0,
+        fill_color=[YELLOW, RED],
+        fill_opacity=1,
+        fill_gradient_mode="radial",
+        radial_gradient_center_inner=ORIGIN,
+        radial_gradient_center_outer=RIGHT,
+        radial_gradient_inner_radius=0.5,
+        radial_gradient_outer_radius=2,
+    )
+    scene.add(circle)

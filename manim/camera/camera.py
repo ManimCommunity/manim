@@ -10,7 +10,7 @@ import itertools as it
 import operator as op
 import pathlib
 from functools import reduce
-from typing import Any, Callable, Iterable
+from typing import Any, Callable, Iterable, Literal
 
 import cairo
 import numpy as np
@@ -703,7 +703,11 @@ class Camera:
         return self
 
     def set_cairo_context_color(
-        self, ctx: cairo.Context, rgbas: np.ndarray, vmobject: VMobject
+        self,
+        ctx: cairo.Context,
+        rgbas: np.ndarray,
+        vmobject: VMobject,
+        gradient_mode: Literal["linear", "radial"] | None = None,
     ):
         """Sets the color of the cairo context
 
@@ -725,7 +729,7 @@ class Camera:
             # Use reversed rgb because cairo surface is
             # encodes it in reverse order
             ctx.set_source_rgba(*rgbas[0][2::-1], rgbas[0][3])
-        else:
+        elif gradient_mode == "linear" or gradient_mode is None:
             points = vmobject.get_gradient_start_and_end_points()
             points = self.transform_points_pre_display(vmobject, points)
             pat = cairo.LinearGradient(*it.chain(*(point[:2] for point in points)))
@@ -734,6 +738,32 @@ class Camera:
             for rgba, offset in zip(rgbas, offsets):
                 pat.add_color_stop_rgba(offset, *rgba[2::-1], rgba[3])
             ctx.set_source(pat)
+        elif gradient_mode == "radial":
+            points = vmobject.get_gradient_start_and_end_points()
+            points = self.transform_points_pre_display(vmobject, points)
+            pat = cairo.RadialGradient(
+                *vmobject.radial_gradient_center_inner[:2],
+                vmobject.radial_gradient_inner_radius,
+                *vmobject.radial_gradient_center_outer[:2],
+                vmobject.radial_gradient_outer_radius,
+            )
+            if len(rgbas) != 2:
+                logger.warning(
+                    "Radial gradient with more than 2 colors is not supported. "
+                    "We will use the first 2 colors only."
+                )
+            rgbas = rgbas[:2]
+            step = 1.0 / (len(rgbas) - 1)
+            offsets = np.arange(0, 1 + step, step)
+            for rgba, offset in zip(rgbas, offsets):
+                pat.add_color_stop_rgba(offset, *rgba[2::-1], rgba[3])
+            ctx.set_source(pat)
+        else:
+            logger.warning(
+                f"Gradient mode {gradient_mode} is not supported. "
+                "We will use linear gradient instead."
+            )
+            self.set_cairo_context_color(ctx, rgbas, vmobject, gradient_mode="linear")
         return self
 
     def apply_fill(self, ctx: cairo.Context, vmobject: VMobject):
@@ -751,7 +781,12 @@ class Camera:
         Camera
             The camera object.
         """
-        self.set_cairo_context_color(ctx, self.get_fill_rgbas(vmobject), vmobject)
+        self.set_cairo_context_color(
+            ctx,
+            self.get_fill_rgbas(vmobject),
+            vmobject,
+            gradient_mode=vmobject.fill_gradient_mode,
+        )
         ctx.fill_preserve()
         return self
 
@@ -782,6 +817,7 @@ class Camera:
             ctx,
             self.get_stroke_rgbas(vmobject, background=background),
             vmobject,
+            gradient_mode=vmobject.stroke_gradient_mode,
         )
         ctx.set_line_width(
             width
