@@ -739,8 +739,6 @@ class Camera:
                 pat.add_color_stop_rgba(offset, *rgba[2::-1], rgba[3])
             ctx.set_source(pat)
         elif gradient_mode == "radial":
-            points = vmobject.get_gradient_start_and_end_points()
-            points = self.transform_points_pre_display(vmobject, points)
             pat = cairo.RadialGradient(
                 *vmobject.radial_gradient_center_inner[:2],
                 vmobject.radial_gradient_inner_radius,
