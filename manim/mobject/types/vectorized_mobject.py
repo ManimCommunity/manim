@@ -240,9 +240,15 @@ class VMobject(Mobject):
             class RadialGradientExample(Scene):
                 def construct(self):
                     circle = Circle(radius=2).set_fill(opacity=1)
+                    circle.set_fill(opacity=1)
                     circle.set_gradient_mode("radial", "radial")
                     circle.set_color([RED, YELLOW])
                     self.add(circle)
+
+        See Also
+        --------
+        :meth:`~.VMobject.set_fill`
+        :meth:`~.VMobject.set_stroke`
         """
         self.stroke_gradient_mode = stroke_mode or self.stroke_gradient_mode
         self.fill_gradient_mode = fill_mode or self.fill_gradient_mode
