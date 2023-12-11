@@ -561,17 +561,10 @@ class SceneFileWriter:
                 fp.write(f"file 'file:{pf_path}'\n")
 
         av_options = {
-            "safe": "0",
+            "safe": "0",  # needed to read files
+            "c": "copy",  # copy codec of combined files
             "metadata": f"comment=Rendered with Manim Community v{__version__}",
         }
-        if create_gif:
-            av_options["vf"] = (  # add video filter (is there a better way to do this?)
-                f"fps={np.clip(config['frame_rate'], 1, 50)},"
-                "split[s0][s1];[s0]palettegen=stats_mode=diff[p];"
-                "[s1][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle"
-            )
-        else:  # copy codec of combined files
-            av_options["c"] = "copy"
 
         if not includes_sound:
             av_options["an"] = "1"
@@ -582,20 +575,64 @@ class SceneFileWriter:
         partial_movies_stream = partial_movies_input.streams.video[0]
         output_container = av.open(str(output_file), mode="w")
         output_stream = output_container.add_stream(
-            codec_name="ppm" if create_gif else None,
+            codec_name="gif" if create_gif else None,
             template=partial_movies_stream if not create_gif else None,
         )
         if create_gif:
-            output_stream.pix_fmt = "rgb24"
+            """
+            The following solution was largely inspired from this comment
+            https://github.com/imageio/imageio/issues/995#issuecomment-1580533018,
+            and the following code
+            https://github.com/imageio/imageio/blob/65d79140018bb7c64c0692ea72cb4093e8d632a0/imageio/plugins/pyav.py#L927-L996.
+            """
+            output_stream.pix_fmt = "rgb8"
+            graph = av.filter.Graph()
+            input_buffer = graph.add_buffer(template=partial_movies_stream)
+            fps = graph.add("fps", f"fps={np.clip(config['frame_rate'], 1, 50)}")
+            split = graph.add("split")
+            palettegen = graph.add("palettegen", "stats_mode=diff")
+            paletteuse = graph.add(
+                "paletteuse", "dither=bayer:bayer_scale=5:diff_mode=rectangle"
+            )
+            output_sink = graph.add("buffersink")
 
-        for packet in partial_movies_input.demux(partial_movies_stream):
-            # We need to skip the "flushing" packets that `demux` generates.
-            if packet.dts is None:
-                continue
+            input_buffer.link_to(fps)
+            fps.link_to(split)
+            split.link_to(palettegen, 0, 0)  # 1st input of split -> input of palettegen
+            split.link_to(paletteuse, 1, 0)  # 2nd output of split -> 1st input
+            palettegen.link_to(paletteuse, 0, 1)  # output of palettegen -> 2nd input
+            paletteuse.link_to(output_sink)
 
-            # We need to assign the packet to the new stream.
-            packet.stream = output_stream
-            output_container.mux(packet)  # TODO: FIXME for GIF
+            graph.configure()
+
+            for frame in partial_movies_input.decode(video=0):
+                graph.push(frame)
+
+            graph.push(None)  # EOF: https://github.com/PyAV-Org/PyAV/issues/886.
+
+            frames_written = 0
+            while True:
+                try:
+                    frame = graph.pull()
+                    frame.time_base = output_stream.codec_context.time_base
+                    frame.pts = frames_written
+                    frames_written += 1
+                    output_container.mux(output_stream.encode(frame))
+                except av.error.EOFError:
+                    break
+
+            for packet in output_stream.encode():
+                output_container.mux(packet)
+
+        else:
+            for packet in partial_movies_input.demux(partial_movies_stream):
+                # We need to skip the "flushing" packets that `demux` generates.
+                if packet.dts is None:
+                    continue
+
+                # We need to assign the packet to the new stream.
+                packet.stream = output_stream
+                output_container.mux(packet)
 
         partial_movies_input.close()
         output_container.close()
