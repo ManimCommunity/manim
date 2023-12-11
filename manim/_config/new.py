@@ -813,7 +813,7 @@ class ManimConfig(BaseModel):
         all_args.update(kwargs)
         all_args["quality"] = f"{self.pixel_height}p{self.frame_rate:g}"
 
-        path = getattr(self, key)
+        path: str = getattr(self, key)
         while "{" in path:
             try:
                 path = path.format(**all_args)

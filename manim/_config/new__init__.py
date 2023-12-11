@@ -9,6 +9,8 @@ from typing import Any, Iterator
 from .config_provider import CfgProvider
 from .new import ManimConfig
 
+# In the future, we will also read from TOMLProvider, and use the best provider depending on the existing
+# configuration files.
 cfg_provider = CfgProvider()
 
 if cfg_provider.available:
