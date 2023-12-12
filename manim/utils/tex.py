@@ -8,6 +8,7 @@ __all__ = [
 
 import copy
 import re
+import warnings
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -16,11 +17,9 @@ from typing_extensions import Self
 
 from manim.typing import StrPath
 
-_DEFAULT_PREAMBLE = r"""
-\usepackage[english]{babel}
+_DEFAULT_PREAMBLE = r"""\usepackage[english]{babel}
 \usepackage{amsmath}
-\usepackage{amssymb}
-"""
+\usepackage{amssymb}"""
 
 _BEGIN_DOCUMENT = r"\begin{document}"
 _END_DOCUMENT = r"\end{document}"
@@ -30,7 +29,7 @@ _END_DOCUMENT = r"\end{document}"
 class TexTemplate:
     """TeX templates are used to create ``Tex`` and ``MathTex`` objects."""
 
-    _body: str = field(init=False)
+    _body: str = field(default="", init=False)
     """A custom body, can be set from a file."""
 
     tex_compiler: str = "latex"
@@ -40,29 +39,32 @@ class TexTemplate:
     """The output format resulting from compilation, e.g. ``.dvi`` or ``.pdf``."""
 
     documentclass: str = r"\documentclass[preview]{standalone}"
-    r"""The command defining the documentclass, e.g. ``\\documentclass[preview]{standalone}``."""
+    r"""The command defining the documentclass, e.g. ``\documentclass[preview]{standalone}``."""
 
     preamble: str = _DEFAULT_PREAMBLE
-    r"""The document's preamble, i.e. the part between ``\\documentclass`` and ``\\begin{document}``."""
+    r"""The document's preamble, i.e. the part between ``\documentclass`` and ``\begin{document}``."""
 
     placeholder_text: str = "YourTextHere"
     """Text in the document that will be replaced by the expression to be rendered."""
 
     post_doc_commands: str = ""
-    r"""Text (definitions, commands) to be inserted at right after ``\\begin{document}``, e.g. ``\\boldmath``."""
+    r"""Text (definitions, commands) to be inserted at right after ``\begin{document}``, e.g. ``\boldmath``."""
 
     @property
     def body(self) -> str:
         """The entire TeX template."""
         return self._body or "\n".join(
-            [
-                self.documentclass,
-                self.preamble,
-                _BEGIN_DOCUMENT,
-                self.post_doc_commands,
-                self.placeholder_text,
-                _END_DOCUMENT,
-            ]
+            filter(
+                None,
+                [
+                    self.documentclass,
+                    self.preamble,
+                    _BEGIN_DOCUMENT,
+                    self.post_doc_commands,
+                    self.placeholder_text,
+                    _END_DOCUMENT,
+                ],
+            )
         )
 
     @body.setter
@@ -80,48 +82,23 @@ class TexTemplate:
         instance.body = Path(file).read_text(encoding="utf-8")
         return instance
 
-    def _texcode_for_environment(self, environment: str) -> tuple[str, str]:
-        r"""Processes the tex_environment string to return the correct ``\\begin{environment}[extra]{extra}`` and
-        ``\\end{environment}`` strings.
-
-        Parameters
-        ----------
-        environment
-            The tex_environment as a string. Acceptable formats include:
-            ``{align*}``, ``align*``, ``{tabular}[t]{cccl}``, ``tabular}{cccl``, ``\\begin{tabular}[t]{cccl}``.
-
-        Returns
-        -------
-        Tuple[:class:`str`, :class:`str`]
-            A pair of strings representing the opening and closing of the tex environment, e.g.
-            ``\\begin{tabular}{cccl}`` and ``\\end{tabular}``
-        """
-
-        environment.removeprefix(r"\begin").removeprefix("{")
-
-        # The \begin command takes everything and closes with a brace
-        begin = r"\begin{" + environment
-        # If it doesn't end on } or ], assume missing }
-        if not begin.endswith(("}", "]")):
-            begin += "}"
-
-        # While the \end command terminates at the first closing brace
-        split_at_brace = re.split("}", environment, 1)
-        end = r"\end{" + split_at_brace[0] + "}"
-
-        return begin, end
-
     def add_to_preamble(self, txt: str, prepend: bool = False) -> Self:
         r"""Adds text to the TeX template's preamble (e.g. definitions, packages). Text can be inserted at the beginning or at the end of the preamble.
 
         Parameters
         ----------
         txt
-            String containing the text to be added, e.g. ``\\usepackage{hyperref}``.
+            String containing the text to be added, e.g. ``\usepackage{hyperref}``.
         prepend
-            Whether the text should be added at the beginning of the preamble, i.e. right after ``\\documentclass``.
-            Default is to add it at the end of the preamble, i.e. right before ``\\begin{document}``.
+            Whether the text should be added at the beginning of the preamble, i.e. right after ``\documentclass``.
+            Default is to add it at the end of the preamble, i.e. right before ``\begin{document}``.
         """
+        if self._body:
+            warnings.warn(
+                "This TeX template was created with a fixed body, trying to add text the preamble will have no effect.",
+                UserWarning,
+                stacklevel=2,
+            )
         if prepend:
             self.preamble = txt + "\n" + self.preamble
         else:
@@ -129,14 +106,20 @@ class TexTemplate:
         return self
 
     def add_to_document(self, txt: str) -> Self:
-        r"""Adds text to the TeX template just after \\begin{document}, e.g. ``\\boldmath``.
+        r"""Adds text to the TeX template just after \begin{document}, e.g. ``\boldmath``.
 
         Parameters
         ----------
         txt
             String containing the text to be added.
         """
-        self.post_doc_commands += "\n" + txt + "\n"
+        if self._body:
+            warnings.warn(
+                "This TeX template was created with a fixed body, trying to add text the document will have no effect.",
+                UserWarning,
+                stacklevel=2,
+            )
+        self.post_doc_commands += txt
         return self
 
     def get_texcode_for_expression(self, expression: str) -> str:
@@ -145,7 +128,7 @@ class TexTemplate:
         Parameters
         ----------
         expression
-            The string containing the expression to be typeset, e.g. ``$\\sqrt{2}$``
+            The string containing the expression to be typeset, e.g. ``$\sqrt{2}$``
 
         Returns
         -------
@@ -162,7 +145,7 @@ class TexTemplate:
         Parameters
         ----------
         expression
-            The string containing the expression to be typeset, e.g. ``$\\sqrt{2}$``.
+            The string containing the expression to be typeset, e.g. ``$\sqrt{2}$``.
         environment
             The string containing the environment in which the expression should be typeset, e.g. ``align*``.
 
@@ -171,7 +154,7 @@ class TexTemplate:
         :class:`str`
             LaTeX code based on template, containing the given expression inside its environment, ready for typesetting
         """
-        begin, end = self._texcode_for_environment(environment)
+        begin, end = _texcode_for_environment(environment)
         return self.body.replace(
             self.placeholder_text, "\n".join([begin, expression, end])
         )
@@ -179,3 +162,35 @@ class TexTemplate:
     def copy(self) -> Self:
         """Create a deep copy of the TeX template instance."""
         return copy.deepcopy(self)
+
+
+def _texcode_for_environment(environment: str) -> tuple[str, str]:
+    r"""Processes the tex_environment string to return the correct ``\begin{environment}[extra]{extra}`` and
+    ``\end{environment}`` strings.
+
+    Parameters
+    ----------
+    environment
+        The tex_environment as a string. Acceptable formats include:
+        ``{align*}``, ``align*``, ``{tabular}[t]{cccl}``, ``tabular}{cccl``, ``\begin{tabular}[t]{cccl}``.
+
+    Returns
+    -------
+    Tuple[:class:`str`, :class:`str`]
+        A pair of strings representing the opening and closing of the tex environment, e.g.
+        ``\begin{tabular}{cccl}`` and ``\end{tabular}``
+    """
+
+    environment.removeprefix(r"\begin").removeprefix("{")
+
+    # The \begin command takes everything and closes with a brace
+    begin = r"\begin{" + environment
+    # If it doesn't end on } or ], assume missing }
+    if not begin.endswith(("}", "]")):
+        begin += "}"
+
+    # While the \end command terminates at the first closing brace
+    split_at_brace = re.split("}", environment, 1)
+    end = r"\end{" + split_at_brace[0] + "}"
+
+    return begin, end
