@@ -24,7 +24,6 @@ from enum import EnumMeta
 from pathlib import Path
 from typing import Any, ClassVar, Iterable, Iterator, NoReturn
 
-import av
 import numpy as np
 from typing_extensions import Self
 
