@@ -76,6 +76,7 @@ __all__ = [
     "CTRL_VALUE",
     "RendererType",
     "LineJointType",
+    "CapStyleType",
 ]
 # Messages
 
@@ -305,3 +306,41 @@ class LineJointType(Enum):
     ROUND = 1
     BEVEL = 2
     MITER = 3
+
+
+class CapStyleType(Enum):
+    """Collection of available cap styles.
+
+    See the example below for a visual illustration of the different
+    cap styles.
+
+    Examples
+    --------
+
+    .. manim:: CapStyleVariants
+        :save_last_frame:
+
+        class CapStyleVariants(Scene):
+            def construct(self):
+                arcs = VGroup(*[
+                    Arc(
+                        radius=1,
+                        start_angle=0,
+                        angle=TAU / 4,
+                        stroke_width=20,
+                        color=GREEN,
+                        cap_style=cap_style,
+                    )
+                    for cap_style in CapStyleType
+                ])
+                arcs.arrange(RIGHT, buff=1)
+                self.add(arcs)
+                for arc in arcs:
+                    label = Text(arc.cap_style.name, font_size=24).next_to(arc, DOWN)
+                    self.add(label)
+    """
+
+    AUTO = 0
+    ROUND = 1
+    BUTT = 2
+    SQUARE = 3
