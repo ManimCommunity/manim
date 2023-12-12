@@ -630,6 +630,9 @@ class SceneFileWriter:
                 if packet.dts is None:
                     continue
 
+                packet.dts = None  # This seems to be needed, as dts from consecutive
+                # files may not be monotically increasing, so we let libav compute it.
+
                 # We need to assign the packet to the new stream.
                 packet.stream = output_stream
                 output_container.mux(packet)
