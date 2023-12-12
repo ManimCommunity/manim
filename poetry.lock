@@ -15,7 +15,7 @@ files = [
 name = "anyio"
 version = "4.1.0"
 description = "High level compatibility layer for multiple asynchronous event loop implementations"
-optional = false
+optional = true
 python-versions = ">=3.8"
 files = [
     {file = "anyio-4.1.0-py3-none-any.whl", hash = "sha256:56a415fbc462291813a94528a779597226619c8e78af7de0507333f700011e5f"},
@@ -47,7 +47,7 @@ files = [
 name = "argon2-cffi"
 version = "23.1.0"
 description = "Argon2 for Python"
-optional = false
+optional = true
 python-versions = ">=3.7"
 files = [
     {file = "argon2_cffi-23.1.0-py3-none-any.whl", hash = "sha256:c670642b78ba29641818ab2e68bd4e6a78ba53b7eff7b4c3815ae16abf91c7ea"},
@@ -67,7 +67,7 @@ typing = ["mypy"]
 name = "argon2-cffi-bindings"
 version = "21.2.0"
 description = "Low-level CFFI bindings for Argon2"
-optional = false
+optional = true
 python-versions = ">=3.6"
 files = [
     {file = "argon2-cffi-bindings-21.2.0.tar.gz", hash = "sha256:bb89ceffa6c791807d1305ceb77dbfacc5aa499891d2c55661c6459651fc39e3"},
@@ -104,7 +104,7 @@ tests = ["pytest"]
 name = "arrow"
 version = "1.3.0"
 description = "Better dates & times for Python"
-optional = false
+optional = true
 python-versions = ">=3.8"
 files = [
     {file = "arrow-1.3.0-py3-none-any.whl", hash = "sha256:c728b120ebc00eb84e01882a6f5e7927a53960aa990ce7dd2b10f39005a67f80"},
@@ -261,7 +261,7 @@ uvloop = ["uvloop (>=0.15.2)"]
 name = "bleach"
 version = "6.1.0"
 description = "An easy safelist-based HTML-sanitizing tool."
-optional = false
+optional = true
 python-versions = ">=3.8"
 files = [
     {file = "bleach-6.1.0-py3-none-any.whl", hash = "sha256:3225f354cfc436b9789c66c4ee030194bee0568fbf9cbdad3bc8b5c26c5f12b6"},
@@ -842,7 +842,7 @@ files = [
 name = "defusedxml"
 version = "0.7.1"
 description = "XML bomb protection for Python stdlib modules"
-optional = false
+optional = true
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 files = [
     {file = "defusedxml-0.7.1-py2.py3-none-any.whl", hash = "sha256:a352e7e428770286cc899e2542b6cdaedb2b4953ff269a210103ec58f6198a61"},
@@ -934,7 +934,7 @@ tests = ["asttokens (>=2.1.0)", "coverage", "coverage-enable-subprocess", "ipyth
 name = "fastjsonschema"
 version = "2.19.0"
 description = "Fastest Python implementation of JSON schema"
-optional = false
+optional = true
 python-versions = "*"
 files = [
     {file = "fastjsonschema-2.19.0-py3-none-any.whl", hash = "sha256:b9fd1a2dd6971dbc7fee280a95bd199ae0dd9ce22beb91cc75e9c1c528a5170e"},
@@ -1168,7 +1168,7 @@ woff = ["brotli (>=1.0.1)", "brotlicffi (>=0.8.0)", "zopfli (>=0.1.4)"]
 name = "fqdn"
 version = "1.5.1"
 description = "Validates fully-qualified domain names against RFC 1123, so that they are acceptable to modern bowsers"
-optional = false
+optional = true
 python-versions = ">=2.7, !=3.0, !=3.1, !=3.2, !=3.3, !=3.4, <4"
 files = [
     {file = "fqdn-1.5.1-py3-none-any.whl", hash = "sha256:3a179af3761e4df6eb2e026ff9e1a3033d3587bf980a0b1b2e1e5d08d7358014"},
@@ -1336,13 +1336,13 @@ files = [
 
 [[package]]
 name = "importlib-metadata"
-version = "6.9.0"
+version = "7.0.0"
 description = "Read metadata from Python packages"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "importlib_metadata-6.9.0-py3-none-any.whl", hash = "sha256:1c8dc6839ddc9771412596926f24cb5a553bbd40624ee2c7e55e531542bed3b8"},
-    {file = "importlib_metadata-6.9.0.tar.gz", hash = "sha256:e8acb523c335a91822674e149b46c0399ec4d328c4d1f6e49c273da5ff0201b9"},
+    {file = "importlib_metadata-7.0.0-py3-none-any.whl", hash = "sha256:d97503976bb81f40a193d41ee6570868479c69d5068651eb039c40d850c59d67"},
+    {file = "importlib_metadata-7.0.0.tar.gz", hash = "sha256:7fc841f8b8332803464e5dc1c63a2e59121f46ca186c0e2e182e80bf8c1319f7"},
 ]
 
 [package.dependencies]
@@ -1456,7 +1456,7 @@ test-extra = ["curio", "matplotlib (!=3.2.0)", "nbformat", "numpy (>=1.22)", "pa
 name = "isoduration"
 version = "20.11.0"
 description = "Operations with ISO 8601 durations"
-optional = false
+optional = true
 python-versions = ">=3.7"
 files = [
     {file = "isoduration-20.11.0-py3-none-any.whl", hash = "sha256:b2904c2a4228c3d44f409c8ae8e2370eb21a26f7ac2ec5446df141dde3452042"},
@@ -1551,7 +1551,7 @@ dev = ["hypothesis"]
 name = "jsonpointer"
 version = "2.4"
 description = "Identify specific nodes in a JSON document (RFC 6901)"
-optional = false
+optional = true
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*, !=3.6.*"
 files = [
     {file = "jsonpointer-2.4-py2.py3-none-any.whl", hash = "sha256:15d51bba20eea3165644553647711d150376234112651b4f1811022aecad7d7a"},
@@ -1562,7 +1562,7 @@ files = [
 name = "jsonschema"
 version = "4.20.0"
 description = "An implementation of JSON Schema validation for Python"
-optional = false
+optional = true
 python-versions = ">=3.8"
 files = [
     {file = "jsonschema-4.20.0-py3-none-any.whl", hash = "sha256:ed6231f0429ecf966f5bc8dfef245998220549cbbcf140f913b7464c52c3b6b3"},
@@ -1591,7 +1591,7 @@ format-nongpl = ["fqdn", "idna", "isoduration", "jsonpointer (>1.13)", "rfc3339-
 name = "jsonschema-specifications"
 version = "2023.11.2"
 description = "The JSON Schema meta-schemas and vocabularies, exposed as a Registry"
-optional = false
+optional = true
 python-versions = ">=3.8"
 files = [
     {file = "jsonschema_specifications-2023.11.2-py3-none-any.whl", hash = "sha256:e74ba7c0a65e8cb49dc26837d6cfe576557084a8b423ed16a420984228104f93"},
@@ -1605,7 +1605,7 @@ referencing = ">=0.31.0"
 name = "jupyter-client"
 version = "8.6.0"
 description = "Jupyter protocol implementation and client libraries"
-optional = false
+optional = true
 python-versions = ">=3.8"
 files = [
     {file = "jupyter_client-8.6.0-py3-none-any.whl", hash = "sha256:909c474dbe62582ae62b758bca86d6518c85234bdee2d908c778db6d72f39d99"},
@@ -1628,7 +1628,7 @@ test = ["coverage", "ipykernel (>=6.14)", "mypy", "paramiko", "pre-commit", "pyt
 name = "jupyter-core"
 version = "5.5.0"
 description = "Jupyter core package. A base package on which Jupyter projects rely."
-optional = false
+optional = true
 python-versions = ">=3.8"
 files = [
     {file = "jupyter_core-5.5.0-py3-none-any.whl", hash = "sha256:e11e02cd8ae0a9de5c6c44abf5727df9f2581055afe00b22183f621ba3585805"},
@@ -1648,7 +1648,7 @@ test = ["ipykernel", "pre-commit", "pytest", "pytest-cov", "pytest-timeout"]
 name = "jupyter-events"
 version = "0.9.0"
 description = "Jupyter Event System library"
-optional = false
+optional = true
 python-versions = ">=3.8"
 files = [
     {file = "jupyter_events-0.9.0-py3-none-any.whl", hash = "sha256:d853b3c10273ff9bc8bb8b30076d65e2c9685579db736873de6c2232dde148bf"},
@@ -1688,7 +1688,7 @@ jupyter-server = ">=1.1.2"
 name = "jupyter-server"
 version = "2.11.2"
 description = "The backend—i.e. core services, APIs, and REST endpoints—to Jupyter web applications."
-optional = false
+optional = true
 python-versions = ">=3.8"
 files = [
     {file = "jupyter_server-2.11.2-py3-none-any.whl", hash = "sha256:0c548151b54bcb516ca466ec628f7f021545be137d01b5467877e87f6fff4374"},
@@ -1724,7 +1724,7 @@ test = ["flaky", "ipykernel", "pre-commit", "pytest (>=7.0)", "pytest-console-sc
 name = "jupyter-server-terminals"
 version = "0.4.4"
 description = "A Jupyter Server Extension Providing Terminals."
-optional = false
+optional = true
 python-versions = ">=3.8"
 files = [
     {file = "jupyter_server_terminals-0.4.4-py3-none-any.whl", hash = "sha256:75779164661cec02a8758a5311e18bb8eb70c4e86c6b699403100f1585a12a36"},
@@ -1775,7 +1775,7 @@ test = ["coverage", "pytest (>=7.0)", "pytest-check-links (>=0.7)", "pytest-cons
 name = "jupyterlab-pygments"
 version = "0.3.0"
 description = "Pygments theme using JupyterLab CSS variables"
-optional = false
+optional = true
 python-versions = ">=3.8"
 files = [
     {file = "jupyterlab_pygments-0.3.0-py3-none-any.whl", hash = "sha256:841a89020971da1d8693f1a99997aefc5dc424bb1b251fd6322462a1b8842780"},
@@ -1969,14 +1969,6 @@ files = [
     {file = "mapbox_earcut-1.0.1-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:9af9369266bf0ca32f4d401152217c46c699392513f22639c6b1be32bde9c1cc"},
     {file = "mapbox_earcut-1.0.1-cp311-cp311-win32.whl", hash = "sha256:ff9a13be4364625697b0e0e04ba6a0f77300148b871bba0a85bfa67e972e85c4"},
     {file = "mapbox_earcut-1.0.1-cp311-cp311-win_amd64.whl", hash = "sha256:5e736557539c74fa969e866889c2b0149fc12668f35e3ae33667d837ff2880d3"},
-    {file = "mapbox_earcut-1.0.1-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:4fe92174410e4120022393013705d77cb856ead5bdf6c81bec614a70df4feb5d"},
-    {file = "mapbox_earcut-1.0.1-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:082f70a865c6164a60af039aa1c377073901cf1f94fd37b1c5610dfbae2a7369"},
-    {file = "mapbox_earcut-1.0.1-cp312-cp312-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:43d268ece49d0c9e22cb4f92cd54c2cc64f71bf1c5e10800c189880d923e1292"},
-    {file = "mapbox_earcut-1.0.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:7748f1730fd36dd1fcf0809d8f872d7e1ddaa945f66a6a466ad37ef3c552ae93"},
-    {file = "mapbox_earcut-1.0.1-cp312-cp312-musllinux_1_1_i686.whl", hash = "sha256:5a82d10c8dec2a0bd9a6a6c90aca7044017c8dad79f7e209fd0667826f842325"},
-    {file = "mapbox_earcut-1.0.1-cp312-cp312-musllinux_1_1_x86_64.whl", hash = "sha256:01b292588cd3f6bad7d76ee31c004ed1b557a92bbd9602a72d2be15513b755be"},
-    {file = "mapbox_earcut-1.0.1-cp312-cp312-win32.whl", hash = "sha256:fce236ddc3a56ea7260acc94601a832c260e6ac5619374bb2cec2e73e7414ff0"},
-    {file = "mapbox_earcut-1.0.1-cp312-cp312-win_amd64.whl", hash = "sha256:1ce86407353b4f09f5778c436518bbbc6f258f46c5736446f25074fe3d3a3bd8"},
     {file = "mapbox_earcut-1.0.1-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:aa6111a18efacb79c081f3d3cdd7d25d0585bb0e9f28896b207ebe1d56efa40e"},
     {file = "mapbox_earcut-1.0.1-cp36-cp36m-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:f2911829d1e6e5e1282fbe2840fadf578f606580f02ed436346c2d51c92f810b"},
     {file = "mapbox_earcut-1.0.1-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:01ff909a7b8405a923abedd701b53633c997cc2b5dc9d5b78462f51c25ec2c33"},
@@ -2229,7 +2221,7 @@ files = [
 name = "mistune"
 version = "3.0.2"
 description = "A sane and fast Markdown parser with useful plugins and renderers"
-optional = false
+optional = true
 python-versions = ">=3.7"
 files = [
     {file = "mistune-3.0.2-py3-none-any.whl", hash = "sha256:71481854c30fdbc938963d3605b72501f5c10a9320ecd412c121c163a1c7d205"},
@@ -2391,7 +2383,7 @@ testing = ["beautifulsoup4", "coverage", "docutils (>=0.17.0,<0.18.0)", "pytest 
 name = "nbclient"
 version = "0.9.0"
 description = "A client library for executing notebooks. Formerly nbconvert's ExecutePreprocessor."
-optional = false
+optional = true
 python-versions = ">=3.8.0"
 files = [
     {file = "nbclient-0.9.0-py3-none-any.whl", hash = "sha256:a3a1ddfb34d4a9d17fc744d655962714a866639acd30130e9be84191cd97cd15"},
@@ -2413,7 +2405,7 @@ test = ["flaky", "ipykernel (>=6.19.3)", "ipython", "ipywidgets", "nbconvert (>=
 name = "nbconvert"
 version = "7.11.0"
 description = "Converting Jupyter Notebooks"
-optional = false
+optional = true
 python-versions = ">=3.8"
 files = [
     {file = "nbconvert-7.11.0-py3-none-any.whl", hash = "sha256:d1d417b7f34a4e38887f8da5bdfd12372adf3b80f995d57556cb0972c68909fe"},
@@ -2451,7 +2443,7 @@ webpdf = ["playwright"]
 name = "nbformat"
 version = "5.9.2"
 description = "The Jupyter Notebook format"
-optional = false
+optional = true
 python-versions = ">=3.8"
 files = [
     {file = "nbformat-5.9.2-py3-none-any.whl", hash = "sha256:1c5172d786a41b82bcfd0c23f9e6b6f072e8fb49c39250219e4acfff1efe89e9"},
@@ -2600,7 +2592,7 @@ files = [
 name = "overrides"
 version = "7.4.0"
 description = "A decorator to automatically detect mismatch when overriding a method."
-optional = false
+optional = true
 python-versions = ">=3.6"
 files = [
     {file = "overrides-7.4.0-py3-none-any.whl", hash = "sha256:3ad24583f86d6d7a49049695efe9933e67ba62f0c7625d53c59fa832ce4b8b7d"},
@@ -2622,7 +2614,7 @@ files = [
 name = "pandocfilters"
 version = "1.5.0"
 description = "Utilities for writing pandoc filters in python"
-optional = false
+optional = true
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 files = [
     {file = "pandocfilters-1.5.0-py2.py3-none-any.whl", hash = "sha256:33aae3f25fd1a026079f5d27bdd52496f0e0803b3469282162bafdcbdf6ef14f"},
@@ -2788,7 +2780,7 @@ virtualenv = ">=20.10.0"
 name = "prometheus-client"
 version = "0.19.0"
 description = "Python client for the Prometheus monitoring system."
-optional = false
+optional = true
 python-versions = ">=3.8"
 files = [
     {file = "prometheus_client-0.19.0-py3-none-any.whl", hash = "sha256:c88b1e6ecf6b41cd8fb5731c7ae919bf66df6ec6fafa555cd6c0e16ca169ae92"},
@@ -2869,7 +2861,7 @@ test = ["enum34", "ipaddress", "mock", "pywin32", "unittest2", "wmi"]
 name = "ptyprocess"
 version = "0.7.0"
 description = "Run a subprocess in a pseudo terminal"
-optional = false
+optional = true
 python-versions = "*"
 files = [
     {file = "ptyprocess-0.7.0-py2.py3-none-any.whl", hash = "sha256:4b41f3967fce3af57cc7e94b888626c18bf37a083e3651ca8feeb66d492fef35"},
@@ -3236,7 +3228,7 @@ six = ">=1.5"
 name = "python-json-logger"
 version = "2.0.7"
 description = "A python library adding a json log formatter"
-optional = false
+optional = true
 python-versions = ">=3.6"
 files = [
     {file = "python-json-logger-2.0.7.tar.gz", hash = "sha256:23e7ec02d34237c5aa1e29a070193a4ea87583bb4e7f8fd06d3de8264c4b2e1c"},
@@ -3247,7 +3239,7 @@ files = [
 name = "pywin32"
 version = "306"
 description = "Python for Window Extensions"
-optional = false
+optional = true
 python-versions = "*"
 files = [
     {file = "pywin32-306-cp310-cp310-win32.whl", hash = "sha256:06d3420a5155ba65f0b72f2699b5bacf3109f36acbe8923765c22938a69dfc8d"},
@@ -3270,7 +3262,7 @@ files = [
 name = "pywinpty"
 version = "2.0.12"
 description = "Pseudo terminal support for Windows from Python."
-optional = false
+optional = true
 python-versions = ">=3.8"
 files = [
     {file = "pywinpty-2.0.12-cp310-none-win_amd64.whl", hash = "sha256:21319cd1d7c8844fb2c970fb3a55a3db5543f112ff9cfcd623746b9c47501575"},
@@ -3344,7 +3336,7 @@ files = [
 name = "pyzmq"
 version = "25.1.1"
 description = "Python bindings for 0MQ"
-optional = false
+optional = true
 python-versions = ">=3.6"
 files = [
     {file = "pyzmq-25.1.1-cp310-cp310-macosx_10_15_universal2.whl", hash = "sha256:381469297409c5adf9a0e884c5eb5186ed33137badcbbb0560b86e910a2f1e76"},
@@ -3449,7 +3441,7 @@ cffi = {version = "*", markers = "implementation_name == \"pypy\""}
 name = "referencing"
 version = "0.31.1"
 description = "JSON Referencing + Python"
-optional = false
+optional = true
 python-versions = ">=3.8"
 files = [
     {file = "referencing-0.31.1-py3-none-any.whl", hash = "sha256:c19c4d006f1757e3dd75c4f784d38f8698d87b649c54f9ace14e5e8c9667c01d"},
@@ -3498,7 +3490,7 @@ docutils = ">=0.11,<1.0"
 name = "rfc3339-validator"
 version = "0.1.4"
 description = "A pure python RFC3339 validator"
-optional = false
+optional = true
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 files = [
     {file = "rfc3339_validator-0.1.4-py2.py3-none-any.whl", hash = "sha256:24f6ec1eda14ef823da9e36ec7113124b39c04d50a4d3d3a3c2859577e7791fa"},
@@ -3512,7 +3504,7 @@ six = "*"
 name = "rfc3986-validator"
 version = "0.1.1"
 description = "Pure python rfc3986 validator"
-optional = false
+optional = true
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 files = [
     {file = "rfc3986_validator-0.1.1-py2.py3-none-any.whl", hash = "sha256:2f235c432ef459970b4306369336b9d5dbdda31b510ca1e327636e01f528bfa9"},
@@ -3541,7 +3533,7 @@ jupyter = ["ipywidgets (>=7.5.1,<9)"]
 name = "rpds-py"
 version = "0.13.2"
 description = "Python bindings to Rust's persistent data structures (rpds)"
-optional = false
+optional = true
 python-versions = ">=3.8"
 files = [
     {file = "rpds_py-0.13.2-cp310-cp310-macosx_10_7_x86_64.whl", hash = "sha256:1ceebd0ae4f3e9b2b6b553b51971921853ae4eebf3f54086be0565d59291e53d"},
@@ -3706,7 +3698,7 @@ pyobjc-framework-Cocoa = {version = "*", markers = "sys_platform == \"darwin\""}
 name = "send2trash"
 version = "1.8.2"
 description = "Send file to trash natively under Mac OS X, Windows and Linux"
-optional = false
+optional = true
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 files = [
     {file = "Send2Trash-1.8.2-py3-none-any.whl", hash = "sha256:a384719d99c07ce1eefd6905d2decb6f8b7ed054025bb0e618919f945de4f679"},
@@ -3811,7 +3803,7 @@ files = [
 name = "sniffio"
 version = "1.3.0"
 description = "Sniff out which async library your code is running under"
-optional = false
+optional = true
 python-versions = ">=3.7"
 files = [
     {file = "sniffio-1.3.0-py3-none-any.whl", hash = "sha256:eecefdce1e5bbfb7ad2eeaabf7c1eeb404d7757c379bd1f7e5cce9d8bf425384"},
@@ -4071,7 +4063,7 @@ files = [
 name = "terminado"
 version = "0.18.0"
 description = "Tornado websocket backend for the Xterm.js Javascript terminal emulator library."
-optional = false
+optional = true
 python-versions = ">=3.8"
 files = [
     {file = "terminado-0.18.0-py3-none-any.whl", hash = "sha256:87b0d96642d0fe5f5abd7783857b9cab167f221a39ff98e3b9619a788a3c0f2e"},
@@ -4092,7 +4084,7 @@ typing = ["mypy (>=1.6,<2.0)", "traitlets (>=5.11.1)"]
 name = "tinycss2"
 version = "1.2.1"
 description = "A tiny CSS parser"
-optional = false
+optional = true
 python-versions = ">=3.7"
 files = [
     {file = "tinycss2-1.2.1-py3-none-any.whl", hash = "sha256:2b80a96d41e7c3914b8cda8bc7f705a4d9c49275616e886103dd839dfc847847"},
@@ -4121,7 +4113,7 @@ files = [
 name = "tornado"
 version = "6.4"
 description = "Tornado is a Python web framework and asynchronous networking library, originally developed at FriendFeed."
-optional = false
+optional = true
 python-versions = ">= 3.8"
 files = [
     {file = "tornado-6.4-cp38-abi3-macosx_10_9_universal2.whl", hash = "sha256:02ccefc7d8211e5a7f9e8bc3f9e5b0ad6262ba2fbb683a6443ecc804e5224ce0"},
@@ -4161,7 +4153,7 @@ telegram = ["requests"]
 name = "traitlets"
 version = "5.14.0"
 description = "Traitlets Python configuration system"
-optional = false
+optional = true
 python-versions = ">=3.8"
 files = [
     {file = "traitlets-5.14.0-py3-none-any.whl", hash = "sha256:f14949d23829023013c47df20b4a76ccd1a85effb786dc060f34de7948361b33"},
@@ -4224,7 +4216,7 @@ types-setuptools = "*"
 name = "types-python-dateutil"
 version = "2.8.19.14"
 description = "Typing stubs for python-dateutil"
-optional = false
+optional = true
 python-versions = "*"
 files = [
     {file = "types-python-dateutil-2.8.19.14.tar.gz", hash = "sha256:1f4f10ac98bb8b16ade9dbee3518d9ace017821d94b057a425b069f834737f4b"},
@@ -4257,7 +4249,7 @@ files = [
 name = "uri-template"
 version = "1.3.0"
 description = "RFC 6570 URI Template Processor"
-optional = false
+optional = true
 python-versions = ">=3.7"
 files = [
     {file = "uri-template-1.3.0.tar.gz", hash = "sha256:0e00f8eb65e18c7de20d595a14336e9f337ead580c70934141624b6d1ffdacc7"},
@@ -4357,7 +4349,7 @@ files = [
 name = "webcolors"
 version = "1.13"
 description = "A library for working with the color formats defined by HTML and CSS."
-optional = false
+optional = true
 python-versions = ">=3.7"
 files = [
     {file = "webcolors-1.13-py3-none-any.whl", hash = "sha256:29bc7e8752c0a1bd4a1f03c14d6e6a72e93d82193738fa860cbff59d0fcc11bf"},
@@ -4372,7 +4364,7 @@ tests = ["pytest", "pytest-cov"]
 name = "webencodings"
 version = "0.5.1"
 description = "Character encoding aliases for legacy web content"
-optional = false
+optional = true
 python-versions = "*"
 files = [
     {file = "webencodings-0.5.1-py2.py3-none-any.whl", hash = "sha256:a0af1213f3c2226497a97e2b3aa01a7e4bee4f403f95be16fc9acd2947514a78"},
@@ -4383,7 +4375,7 @@ files = [
 name = "websocket-client"
 version = "1.6.4"
 description = "WebSocket client for Python with low level API options"
-optional = false
+optional = true
 python-versions = ">=3.8"
 files = [
     {file = "websocket-client-1.6.4.tar.gz", hash = "sha256:b3324019b3c28572086c4a319f91d1dcd44e6e11cd340232978c684a7650d0df"},
@@ -4496,4 +4488,4 @@ jupyterlab = ["jupyterlab", "notebook"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.13"
-content-hash = "2bf6de26bc264eac94f604bcce74a2cbe0b6de7ffc48238e8e25bb1136e58dde"
+content-hash = "28ca4739d37738e7825d3a28d464d43c36e89855c4b6ae52a8840431e2d30f60"
