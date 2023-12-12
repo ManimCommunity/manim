@@ -619,12 +619,16 @@ class Rectangle(Polygon):
         super().__init__(UR, UL, DL, DR, color=color, **kwargs)
         self.stretch_to_fit_width(width)
         self.stretch_to_fit_height(height)
+
         v = self.get_vertices()
         self.grid_lines = VGroup()
 
-        if grid_xstep is not None:
+        if grid_xstep or grid_ystep:
             from manim.mobject.geometry.line import Line
 
+            v = self.get_vertices()
+
+        if grid_xstep:
             grid_xstep = abs(grid_xstep)
             count = int(width / grid_xstep)
             grid = VGroup(
@@ -638,7 +642,8 @@ class Rectangle(Polygon):
                 )
             )
             self.grid_lines.add(grid)
-        if grid_ystep is not None:
+
+        if grid_ystep:
             grid_ystep = abs(grid_ystep)
             count = int(height / grid_ystep)
             grid = VGroup(
