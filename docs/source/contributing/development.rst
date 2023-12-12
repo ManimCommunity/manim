@@ -52,7 +52,7 @@ For first-time contributors
 
    - Follow the steps in our :doc:`installation instructions
      <../installation>` to install **Manim's dependencies**,
-     primarily ``ffmpeg`` and ``LaTeX``.
+    and ``LaTeX``.
 
    - We recommend using `Poetry <https://python-poetry.org>`__ to manage your
      developer installation of Manim. Poetry is a tool for dependency
