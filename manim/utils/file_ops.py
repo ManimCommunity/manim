@@ -187,6 +187,7 @@ def modify_atime(file_path: str) -> None:
 
 
 def open_file(file_path, in_browser=False):
+    # TODO: FIXME since we cannot rely on ffplay anymore (right?)
     current_os = platform.system()
     if current_os == "Windows":
         os.startfile(file_path if not in_browser else file_path.parent)
