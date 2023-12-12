@@ -55,7 +55,7 @@ PASTE HERE
 
 <details><summary>FFMPEG</summary>
 
-Output of `ffmpeg -version`:
+Output of `ffmpeg -version` (leave empty skip if `manim>=0.19`):
 
 ```
 PASTE HERE

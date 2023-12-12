@@ -3,11 +3,8 @@ Windows
 
 The easiest way of installing Manim and its dependencies is by using a
 package manager like `Chocolatey <https://chocolatey.org/>`__
-or `Scoop <https://scoop.sh>`__. If you are not afraid of editing
-your System's ``PATH``, a manual installation is also possible.
-In fact, if you already have an existing Python
-installation (3.8 or above), it might be the easiest way to get
-everything up and running.
+or `Scoop <https://scoop.sh>`__, especially if you need optional dependecies
+like LaTeX support.
 
 If you choose to use one of the package managers, please follow
 their installation instructions
@@ -19,7 +16,7 @@ to make one of them available on your system.
 Required Dependencies
 ---------------------
 
-Manim requires a recent version of Python (3.8 or above) and ``ffmpeg``
+Manim requires a recent version of Python (3.9 or above)
 in order to work.
 
 Chocolatey
@@ -34,53 +31,11 @@ Manim can be installed via Chocolatey simply by running:
 That's it, no further steps required. You can continue with installing
 the :ref:`optional dependencies <win-optional-dependencies>` below.
 
-Scoop
-*****
-
-While there is no recipe for installing Manim with Scoop directly,
-you can install all requirements by running:
-
-.. code-block:: powershell
-
-   scoop install python ffmpeg
-
-and then Manim can be installed by running:
-
-.. code-block:: powershell
-
-   python -m pip install manim
-
-Manim should now be installed on your system. Continue reading
-the :ref:`optional dependencies <win-optional-dependencies>` section
-below.
-
-Winget
-******
-
-While there is no recipe for installing Manim with Winget directly,
-you can install all requirements by running:
-
-.. code-block:: powershell
-
-   winget install python
-   winget install ffmpeg
-
-and then Manim can be installed by running:
-
-.. code-block:: powershell
-
-   python -m pip install manim
-
-Manim should now be installed on your system. Continue reading
-the :ref:`optional dependencies <win-optional-dependencies>` section
-below.
-
-
-Manual Installation
-*******************
+Pip
+***
 
 As mentioned above, Manim needs a reasonably recent version of
-Python 3 (3.8 or above) and FFmpeg.
+Python 3 (3.9 or above).
 
 **Python:** Head over to https://www.python.org, download an installer
 for a recent version of Python, and follow its instructions to get Python
@@ -94,34 +49,15 @@ installed on your system.
    install Python directly from the
    `official website <https://www.python.org>`__.
 
-**FFmpeg:** In order to install FFmpeg, you can get a
-pre-compiled and ready-to-use version from one of the resources
-linked at https://ffmpeg.org/download.html#build-windows, such as
-`the version available here
-<https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.7z>`__
-(recommended), or if you know exactly what you are doing
-you can alternatively get the source code
-from https://ffmpeg.org/download.html and compile it yourself.
-
-
-After downloading the pre-compiled archive,
-`unzip it <https://www.7-zip.org>`__ and, if you like, move the
-extracted directory to some more permanent place (e.g.,
-``C:\Program Files\``). Next, edit the ``PATH`` environment variable:
-first, visit ``Control Panel`` > ``System`` > ``System settings`` >
-``Environment Variables``, then add the full path to the ``bin``
-directory inside of the (moved) ffmpeg directory to the
-``PATH`` variable. Finally, save your changes and exit.
-
-If you now open a new command line prompt (or PowerShell) and
-run ``ffmpeg``, the command should be recognized.
-
-At this point, you have all the required dependencies and can now
-install Manim via
+Then, Manim can be installed via Pip simply by running:
 
 .. code-block:: powershell
 
    python -m pip install manim
+
+Manim should now be installed on your system. Continue reading
+the :ref:`optional dependencies <win-optional-dependencies>` section
+below.
 
 
 .. _win-optional-dependencies:
