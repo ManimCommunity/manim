@@ -38,7 +38,6 @@ def test_become_no_color_linking(scene):
     b.become(a)
     b.shift(1 * RIGHT)
     b.set_stroke(YELLOW, opacity=1)
-    scene.wait(1)
 
 
 @frames_comparison
