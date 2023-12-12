@@ -161,7 +161,6 @@ class ManimDirective(Directive):
     final_argument_whitespace = True
 
     def run(self):
-        print(os.getenv("READTHEDOCS_VERSION_NAME"))
         # Rendering is skipped if the tag skip-manim is present,
         # or if we are making the pot-files
         should_skip = (
