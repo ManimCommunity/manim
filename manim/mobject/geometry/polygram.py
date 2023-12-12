@@ -625,6 +625,7 @@ class Rectangle(Polygon):
 
         if grid_xstep or grid_ystep:
             from manim.mobject.geometry.line import Line
+
             v = self.get_vertices()
 
         if grid_xstep:
@@ -641,7 +642,7 @@ class Rectangle(Polygon):
                 )
             )
             self.grid_lines.add(grid)
-            
+
         if grid_ystep:
             grid_ystep = abs(grid_ystep)
             count = int(height / grid_ystep)
