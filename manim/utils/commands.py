@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-import json
 import os
 from pathlib import Path
 from subprocess import run
 from typing import Generator
+
+import av
 
 __all__ = [
     "capture",
@@ -20,21 +21,19 @@ def capture(command, cwd=None, command_input=None):
 
 
 def get_video_metadata(path_to_video: str | os.PathLike) -> dict[str]:
-    command = [
-        "ffprobe",
-        "-v",
-        "error",
-        "-select_streams",
-        "v:0",
-        "-show_entries",
-        "stream=width,height,nb_frames,duration,avg_frame_rate,codec_name",
-        "-print_format",
-        "json",
-        str(path_to_video),
-    ]
-    config, err, exitcode = capture(command)
-    assert exitcode == 0, f"FFprobe error: {err}"
-    return json.loads(config)["streams"][0]
+    with av.open(str(path_to_video)) as container:
+        stream = container.streams.video[0]
+        ctxt = stream.codec_context
+        rate = stream.average_rate
+
+        return {
+            "width": ctxt.width,
+            "height": ctxt.height,
+            "nb_frames": str(stream.frames),
+            "duration": f"{float(stream.duration) * stream.time_base:.6f}",
+            "avg_frame_rate": f"{rate.numerator}/{rate.denominator}",  # Can be a Fraction
+            "codec_name": stream.codec_context.name,
+        }
 
 
 def get_dir_layout(dirpath: Path) -> Generator[str, None, None]:
