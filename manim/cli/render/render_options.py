@@ -57,7 +57,13 @@ render_options = option_group(
         type=Choice(["png", "gif", "mp4", "webm", "mov"], case_sensitive=False),
         default=None,
     ),
-    option("-s", "--save_last_frame", is_flag=True, default=None),
+    option(
+        "-s",
+        "--save_last_frame",
+        default=None,
+        is_flag=True,
+        help="Save last frame as png (Deprecated).",
+    ),
     option(
         "-q",
         "--quality",
@@ -120,13 +126,6 @@ render_options = option_group(
         default=None,
         is_flag=True,
         help="Save section videos in addition to movie file.",
-    ),
-    option(
-        "-s",
-        "--save_last_frame",
-        default=None,
-        is_flag=True,
-        help="Save last frame as png (Deprecated).",
     ),
     option(
         "-t",
