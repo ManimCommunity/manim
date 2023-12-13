@@ -15,19 +15,25 @@ __all__ = [
     "Cutout",
 ]
 
+
 from math import ceil
-from typing import Iterable, Sequence
+from typing import TYPE_CHECKING
 
 import numpy as np
-from colour import Color
 
 from manim.constants import *
 from manim.mobject.geometry.arc import ArcBetweenPoints
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
-from manim.utils.color import *
+from manim.utils.color import BLUE, WHITE, ParsableManimColor
 from manim.utils.iterables import adjacent_n_tuples, adjacent_pairs
 from manim.utils.space_ops import angle_between_vectors, normalize, regular_vertices
+
+if TYPE_CHECKING:
+    from typing_extensions import Self
+
+    from manim.typing import Point3D, Point3D_Array
+    from manim.utils.color import ParsableManimColor
 
 
 class Polygram(VMobject, metaclass=ConvertToOpenGL):
@@ -65,7 +71,9 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
                 self.wait()
     """
 
-    def __init__(self, *vertex_groups: Iterable[Sequence[float]], color=BLUE, **kwargs):
+    def __init__(
+        self, *vertex_groups: Point3D, color: ParsableManimColor = BLUE, **kwargs
+    ):
         super().__init__(color=color, **kwargs)
 
         for vertices in vertex_groups:
@@ -77,7 +85,7 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
                 [*(np.array(vertex) for vertex in vertices), first_vertex],
             )
 
-    def get_vertices(self) -> np.ndarray:
+    def get_vertices(self) -> Point3D_Array:
         """Gets the vertices of the :class:`Polygram`.
 
         Returns
@@ -99,7 +107,7 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
 
         return self.get_start_anchors()
 
-    def get_vertex_groups(self) -> np.ndarray:
+    def get_vertex_groups(self) -> np.ndarray[Point3D_Array]:
         """Gets the vertex groups of the :class:`Polygram`.
 
         Returns
@@ -139,7 +147,7 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
         radius: float | list[float] = 0.5,
         evenly_distribute_anchors: bool = False,
         components_per_rounded_corner: int = 2,
-    ):
+    ) -> Self:
         """Rounds off the corners of the :class:`Polygram`.
 
         Parameters
@@ -304,7 +312,7 @@ class Polygon(Polygram):
                 self.add(isosceles, square_and_triangles)
     """
 
-    def __init__(self, *vertices: Sequence[float], **kwargs):
+    def __init__(self, *vertices: Point3D, **kwargs) -> None:
         super().__init__(vertices, **kwargs)
 
 
@@ -348,7 +356,7 @@ class RegularPolygram(Polygram):
         radius: float = 1,
         start_angle: float | None = None,
         **kwargs,
-    ):
+    ) -> None:
         # Regular polygrams can be expressed by the number of their vertices
         # and their density. This relation can be expressed as its Schläfli
         # symbol: {num_vertices/density}.
@@ -424,7 +432,7 @@ class RegularPolygon(RegularPolygram):
                 self.add(poly_group)
     """
 
-    def __init__(self, n: int = 6, **kwargs):
+    def __init__(self, n: int = 6, **kwargs) -> None:
         super().__init__(n, density=1, **kwargs)
 
 
@@ -496,7 +504,7 @@ class Star(Polygon):
         density: int = 2,
         start_angle: float | None = TAU / 4,
         **kwargs,
-    ):
+    ) -> None:
         inner_angle = TAU / (2 * n)
 
         if inner_radius is None:
@@ -555,7 +563,7 @@ class Triangle(RegularPolygon):
                 self.add(tri_group)
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         super().__init__(n=3, **kwargs)
 
 
@@ -590,14 +598,16 @@ class Rectangle(Polygon):
             def construct(self):
                 rect1 = Rectangle(width=4.0, height=2.0, grid_xstep=1.0, grid_ystep=0.5)
                 rect2 = Rectangle(width=1.0, height=4.0)
+                rect3 = Rectangle(width=2.0, height=2.0, grid_xstep=1.0, grid_ystep=1.0)
+                rect3.grid_lines.set_stroke(width=1)
 
-                rects = Group(rect1,rect2).arrange(buff=1)
+                rects = Group(rect1, rect2, rect3).arrange(buff=1)
                 self.add(rects)
     """
 
     def __init__(
         self,
-        color: Color = WHITE,
+        color: ParsableManimColor = WHITE,
         height: float = 2.0,
         width: float = 4.0,
         grid_xstep: float | None = None,
@@ -609,10 +619,16 @@ class Rectangle(Polygon):
         super().__init__(UR, UL, DL, DR, color=color, **kwargs)
         self.stretch_to_fit_width(width)
         self.stretch_to_fit_height(height)
+
         v = self.get_vertices()
-        if grid_xstep is not None:
+        self.grid_lines = VGroup()
+
+        if grid_xstep or grid_ystep:
             from manim.mobject.geometry.line import Line
 
+            v = self.get_vertices()
+
+        if grid_xstep:
             grid_xstep = abs(grid_xstep)
             count = int(width / grid_xstep)
             grid = VGroup(
@@ -625,8 +641,9 @@ class Rectangle(Polygon):
                     for i in range(1, count)
                 )
             )
-            self.add(grid)
-        if grid_ystep is not None:
+            self.grid_lines.add(grid)
+
+        if grid_ystep:
             grid_ystep = abs(grid_ystep)
             count = int(height / grid_ystep)
             grid = VGroup(
@@ -639,7 +656,10 @@ class Rectangle(Polygon):
                     for i in range(1, count)
                 )
             )
-            self.add(grid)
+            self.grid_lines.add(grid)
+
+        if self.grid_lines:
+            self.add(self.grid_lines)
 
 
 class Square(Rectangle):
@@ -665,7 +685,7 @@ class Square(Rectangle):
                 self.add(square_1, square_2, square_3)
     """
 
-    def __init__(self, side_length: float = 2.0, **kwargs):
+    def __init__(self, side_length: float = 2.0, **kwargs) -> None:
         self.side_length = side_length
         super().__init__(height=side_length, width=side_length, **kwargs)
 
@@ -735,7 +755,7 @@ class Cutout(VMobject, metaclass=ConvertToOpenGL):
                 self.wait()
     """
 
-    def __init__(self, main_shape: VMobject, *mobjects: VMobject, **kwargs):
+    def __init__(self, main_shape: VMobject, *mobjects: VMobject, **kwargs) -> None:
         super().__init__(**kwargs)
         self.append_points(main_shape.points)
         if main_shape.get_direction() == "CW":

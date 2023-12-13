@@ -7,7 +7,6 @@ __all__ = ["VectorScene", "LinearTransformationScene"]
 from typing import Callable
 
 import numpy as np
-from colour import Color
 
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.geometry.line import Arrow, Line, Vector
@@ -28,7 +27,17 @@ from ..mobject.matrix import Matrix
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..scene.scene import Scene
-from ..utils.color import BLUE_D, GREEN_C, GREY, RED_C, WHITE, YELLOW
+from ..utils.color import (
+    BLACK,
+    BLUE_D,
+    GREEN_C,
+    GREY,
+    RED_C,
+    WHITE,
+    YELLOW,
+    ManimColor,
+    ParsableManimColor,
+)
 from ..utils.rate_functions import rush_from, rush_into
 from ..utils.space_ops import angle_of_vector
 
@@ -563,7 +572,7 @@ class LinearTransformationScene(VectorScene):
                     self,
                     show_coordinates=True,
                     leave_ghost_vectors=True,
-                    *kwargs
+                    **kwargs
                 )
 
             def construct(self):
@@ -581,8 +590,8 @@ class LinearTransformationScene(VectorScene):
         show_coordinates: bool = False,
         show_basis_vectors: bool = True,
         basis_vector_stroke_width: float = 6,
-        i_hat_color: Color = X_COLOR,
-        j_hat_color: Color = Y_COLOR,
+        i_hat_color: ParsableManimColor = X_COLOR,
+        j_hat_color: ParsableManimColor = Y_COLOR,
         leave_ghost_vectors: bool = False,
         **kwargs,
     ):
@@ -593,8 +602,8 @@ class LinearTransformationScene(VectorScene):
         self.show_coordinates = show_coordinates
         self.show_basis_vectors = show_basis_vectors
         self.basis_vector_stroke_width = basis_vector_stroke_width
-        self.i_hat_color = i_hat_color
-        self.j_hat_color = j_hat_color
+        self.i_hat_color = ManimColor(i_hat_color)
+        self.j_hat_color = ManimColor(j_hat_color)
         self.leave_ghost_vectors = leave_ghost_vectors
         self.background_plane_kwargs = {
             "color": GREY,
@@ -606,6 +615,8 @@ class LinearTransformationScene(VectorScene):
                 "stroke_width": 1,
             },
         }
+
+        self.ghost_vectors = VGroup()
 
         self.foreground_plane_kwargs = {
             "x_range": np.array([-config["frame_width"], config["frame_width"], 1.0]),
@@ -731,6 +742,13 @@ class LinearTransformationScene(VectorScene):
         """
         mobject.target = target_mobject
         self.add_special_mobjects(self.moving_mobjects, mobject)
+
+    def get_ghost_vectors(self) -> VGroup:
+        """
+        Returns all ghost vectors ever added to ``self``. Each element is a ``VGroup`` of
+        two ghost vectors.
+        """
+        return self.ghost_vectors
 
     def get_unit_square(
         self, color: str = YELLOW, opacity: float = 0.3, stroke_width: float = 3
@@ -987,8 +1005,11 @@ class LinearTransformationScene(VectorScene):
         """
         start = VGroup(*pieces)
         target = VGroup(*(mob.target for mob in pieces))
-        if self.leave_ghost_vectors:
-            self.add(start.copy().fade(0.7))
+        # don't add empty VGroups
+        if self.leave_ghost_vectors and start.submobjects:
+            # start.copy() gives a VGroup of Vectors
+            self.ghost_vectors.add(start.copy().fade(0.7))
+            self.add(self.ghost_vectors[-1])
         return Transform(start, target, lag_ratio=0)
 
     def get_moving_mobject_movement(self, func: Callable[[np.ndarray], np.ndarray]):

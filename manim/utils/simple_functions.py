@@ -6,7 +6,6 @@ __all__ = [
     "binary_search",
     "choose",
     "clip",
-    "get_parameters",
     "sigmoid",
 ]
 
@@ -115,23 +114,6 @@ def clip(a, min_a, max_a):
     elif a > max_a:
         return max_a
     return a
-
-
-def get_parameters(function: Callable) -> MappingProxyType[str, inspect.Parameter]:
-    """Return the parameters of ``function`` as an ordered mapping of parameters'
-    names to their corresponding ``Parameter`` objects.
-
-    Examples
-    --------
-    ::
-
-        >>> get_parameters(get_parameters)
-        mappingproxy(OrderedDict([('function', <Parameter "function: 'Callable'">)]))
-
-        >>> tuple(get_parameters(choose))
-        ('n', 'k')
-    """
-    return inspect.signature(function).parameters
 
 
 def sigmoid(x: float) -> float:

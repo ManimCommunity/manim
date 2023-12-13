@@ -191,6 +191,10 @@ class Animation:
         method.
 
         """
+        if self.run_time <= 0:
+            raise ValueError(
+                f"{self} has a runtime of <= 0 seconds, which cannot be rendered correctly! please set a runtime > 0"
+            )
         self.starting_mobject = self.create_starting_mobject()
         if self.suspend_mobject_updating:
             # All calls to self.mobject's internal updaters

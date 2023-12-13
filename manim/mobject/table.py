@@ -67,8 +67,6 @@ __all__ = [
 import itertools as it
 from typing import Callable, Iterable, Sequence
 
-from colour import Color
-
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import Polygon
 from manim.mobject.geometry.shape_matchers import BackgroundRectangle
@@ -82,7 +80,7 @@ from ..animation.composition import AnimationGroup
 from ..animation.creation import Create, Write
 from ..animation.fading import FadeIn
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
-from ..utils.color import BLACK, YELLOW
+from ..utils.color import BLACK, YELLOW, ManimColor, ParsableManimColor
 from .utils import get_vectorized_mobject_class
 
 
@@ -197,9 +195,9 @@ class Table(VGroup):
         h_buff: float = 1.3,
         include_outer_lines: bool = False,
         add_background_rectangles_to_entries: bool = False,
-        entries_background_color: Color = BLACK,
+        entries_background_color: ParsableManimColor = BLACK,
         include_background_rectangle: bool = False,
-        background_rectangle_color: Color = BLACK,
+        background_rectangle_color: ParsableManimColor = BLACK,
         element_to_mobject: Callable[
             [float | str | VMobject],
             VMobject,
@@ -218,9 +216,9 @@ class Table(VGroup):
         self.h_buff = h_buff
         self.include_outer_lines = include_outer_lines
         self.add_background_rectangles_to_entries = add_background_rectangles_to_entries
-        self.entries_background_color = entries_background_color
+        self.entries_background_color = ManimColor(entries_background_color)
         self.include_background_rectangle = include_background_rectangle
-        self.background_rectangle_color = background_rectangle_color
+        self.background_rectangle_color = ManimColor(background_rectangle_color)
         self.element_to_mobject = element_to_mobject
         self.element_to_mobject_config = element_to_mobject_config
         self.arrange_in_grid_config = arrange_in_grid_config
@@ -504,7 +502,7 @@ class Table(VGroup):
         """
         return VGroup(*(VGroup(*row) for row in self.mob_table))
 
-    def set_column_colors(self, *colors: Iterable[Color]) -> Table:
+    def set_column_colors(self, *colors: Iterable[ParsableManimColor]) -> Table:
         """Set individual colors for each column of the table.
 
         Parameters
@@ -533,7 +531,7 @@ class Table(VGroup):
             column.set_color(color)
         return self
 
-    def set_row_colors(self, *colors: Iterable[Color]) -> Table:
+    def set_row_colors(self, *colors: Iterable[ParsableManimColor]) -> Table:
         """Set individual colors for each row of the table.
 
         Parameters
@@ -752,10 +750,10 @@ class Table(VGroup):
                 label_group.add(*label)
         return label_group
 
-    def add_background_to_entries(self, color: Color = BLACK) -> Table:
+    def add_background_to_entries(self, color: ParsableManimColor = BLACK) -> Table:
         """Adds a black :class:`~.BackgroundRectangle` to each entry of the table."""
         for mob in self.get_entries():
-            mob.add_background_rectangle(color=color)
+            mob.add_background_rectangle(color=ManimColor(color))
         return self
 
     def get_cell(self, pos: Sequence[int] = (1, 1), **kwargs) -> Polygon:
@@ -816,7 +814,7 @@ class Table(VGroup):
         return rec
 
     def get_highlighted_cell(
-        self, pos: Sequence[int] = (1, 1), color: Color = YELLOW, **kwargs
+        self, pos: Sequence[int] = (1, 1), color: ParsableManimColor = YELLOW, **kwargs
     ) -> BackgroundRectangle:
         """Returns a :class:`~.BackgroundRectangle` of the cell at the given position.
 
@@ -848,11 +846,11 @@ class Table(VGroup):
                     self.add(table)
         """
         cell = self.get_cell(pos)
-        bg_cell = BackgroundRectangle(cell, color=color, **kwargs)
+        bg_cell = BackgroundRectangle(cell, color=ManimColor(color), **kwargs)
         return bg_cell
 
     def add_highlighted_cell(
-        self, pos: Sequence[int] = (1, 1), color: Color = YELLOW, **kwargs
+        self, pos: Sequence[int] = (1, 1), color: ParsableManimColor = YELLOW, **kwargs
     ) -> Table:
         """Highlights one cell at a specific position on the table by adding a :class:`~.BackgroundRectangle`.
 
@@ -882,7 +880,7 @@ class Table(VGroup):
                     table.add_highlighted_cell((2,2), color=GREEN)
                     self.add(table)
         """
-        bg_cell = self.get_highlighted_cell(pos, color=color, **kwargs)
+        bg_cell = self.get_highlighted_cell(pos, color=ManimColor(color), **kwargs)
         self.add_to_back(bg_cell)
         entry = self.get_entries(pos)
         entry.background_rectangle = bg_cell

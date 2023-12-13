@@ -3,11 +3,10 @@ from __future__ import annotations
 import itertools as it
 import operator as op
 from functools import reduce, wraps
-from typing import Callable, Iterable, Optional, Sequence
+from typing import Callable, Iterable, Sequence
 
 import moderngl
 import numpy as np
-from colour import Color
 
 from manim import config
 from manim.constants import *
@@ -23,7 +22,7 @@ from manim.utils.bezier import (
     proportions_along_bezier_curve_for_point,
     quadratic_bezier_remap,
 )
-from manim.utils.color import *
+from manim.utils.color import BLACK, WHITE, ManimColor, ParsableManimColor
 from manim.utils.config_ops import _Data
 from manim.utils.iterables import listify, make_even, resize_with_interpolation
 from manim.utils.space_ops import (
@@ -81,9 +80,9 @@ class OpenGLVMobject(OpenGLMobject):
 
     def __init__(
         self,
-        fill_color: Color | None = None,
+        fill_color: ParsableManimColor | None = None,
         fill_opacity: float = 0.0,
-        stroke_color: Color | None = None,
+        stroke_color: ParsableManimColor | None = None,
         stroke_opacity: float = 1.0,
         stroke_width: float = DEFAULT_STROKE_WIDTH,
         draw_stroke_behind_fill: bool = False,
@@ -137,6 +136,7 @@ class OpenGLVMobject(OpenGLMobject):
         self.needs_new_triangulation = True
         self.triangulation = np.zeros(0, dtype="i4")
         self.orientation = 1
+
         self.fill_data = None
         self.stroke_data = None
         self.fill_shader_wrapper = None
@@ -146,10 +146,10 @@ class OpenGLVMobject(OpenGLMobject):
         super().__init__(**kwargs)
         self.refresh_unit_normal()
 
-        if fill_color:
-            self.fill_color = Color(fill_color)
-        if stroke_color:
-            self.stroke_color = Color(stroke_color)
+        if fill_color is not None:
+            self.fill_color = ManimColor.parse(fill_color)
+        if stroke_color is not None:
+            self.stroke_color = ManimColor.parse(stroke_color)
 
     def get_group_class(self):
         return OpenGLVGroup
@@ -184,7 +184,7 @@ class OpenGLVMobject(OpenGLMobject):
 
     def set_fill(
         self,
-        color: Color | None = None,
+        color: ParsableManimColor | None = None,
         opacity: float | None = None,
         recurse: bool = True,
     ) -> OpenGLVMobject:
@@ -350,14 +350,15 @@ class OpenGLVMobject(OpenGLMobject):
         super().fade(darkness, recurse)
         return self
 
+    # Todo im not quite sure why we are doing this
     def get_fill_colors(self):
-        return [Color(rgb_to_hex(rgba[:3])) for rgba in self.fill_rgba]
+        return [ManimColor.from_rgb(rgba[:3]) for rgba in self.fill_rgba]
 
     def get_fill_opacities(self):
         return self.fill_rgba[:, 3]
 
     def get_stroke_colors(self):
-        return [Color(rgb_to_hex(rgba[:3])) for rgba in self.stroke_rgba]
+        return [ManimColor.from_rgb(rgba[:3]) for rgba in self.stroke_rgba]
 
     def get_stroke_opacities(self):
         return self.stroke_rgba[:, 3]
@@ -943,7 +944,9 @@ class OpenGLVMobject(OpenGLMobject):
 
         curves_and_lengths = tuple(self.get_curve_functions_with_lengths())
 
-        target_length = alpha * np.sum(length for _, length in curves_and_lengths)
+        target_length = alpha * np.sum(
+            np.fromiter((length for _, length in curves_and_lengths), dtype=np.float64)
+        )
         current_length = 0
 
         for curve, length in curves_and_lengths:
@@ -1283,14 +1286,17 @@ class OpenGLVMobject(OpenGLMobject):
         for _ in range(-diff):
             ipc[np.argmax(ipc)] -= 1
 
-        new_points = []
+        new_length = sum(x + 1 for x in ipc)
+        new_points = np.empty((new_length, nppc, 3))
+        i = 0
         for group, n_inserts in zip(bezier_groups, ipc):
             # What was once a single quadratic curve defined
             # by "group" will now be broken into n_inserts + 1
             # smaller quadratic curves
             alphas = np.linspace(0, 1, n_inserts + 2)
             for a1, a2 in zip(alphas, alphas[1:]):
-                new_points += partial_quadratic_bezier_points(group, a1, a2)
+                new_points[i] = partial_quadratic_bezier_points(group, a1, a2)
+                i = i + 1
         return np.vstack(new_points)
 
     def interpolate(self, mobject1, mobject2, alpha, *args, **kwargs):
@@ -1301,7 +1307,7 @@ class OpenGLVMobject(OpenGLMobject):
             if self.has_fill():
                 tri1 = mobject1.get_triangulation()
                 tri2 = mobject2.get_triangulation()
-                if len(tri1) != len(tri1) or not np.all(tri1 == tri2):
+                if len(tri1) != len(tri2) or not np.all(tri1 == tri2):
                     self.refresh_triangulation()
         return self
 
@@ -1881,7 +1887,7 @@ class OpenGLDashedVMobject(OpenGLVMobject):
         vmobject: OpenGLVMobject,
         num_dashes: int = 15,
         dashed_ratio: float = 0.5,
-        color: Color = WHITE,
+        color: ParsableManimColor = WHITE,
         **kwargs,
     ):
         self.dashed_ratio = dashed_ratio

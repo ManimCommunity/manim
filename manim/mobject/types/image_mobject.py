@@ -6,7 +6,6 @@ __all__ = ["AbstractImageMobject", "ImageMobject", "ImageMobjectFromCamera"]
 
 import pathlib
 
-import colour
 import numpy as np
 from PIL import Image
 from PIL.Image import Resampling
@@ -17,7 +16,7 @@ from ... import config
 from ...constants import *
 from ...mobject.mobject import Mobject
 from ...utils.bezier import interpolate
-from ...utils.color import WHITE, color_to_int_rgb
+from ...utils.color import WHITE, ManimColor, color_to_int_rgb
 from ...utils.images import change_to_rgba_array, get_full_raster_image_path
 
 
@@ -87,12 +86,13 @@ class AbstractImageMobject(Mobject):
         return self
 
     def reset_points(self):
-        # Corresponding corners of image are fixed to these 3 points
+        """Sets :attr:`points` to be the four image corners."""
         self.points = np.array(
             [
                 UP + LEFT,
                 UP + RIGHT,
                 DOWN + LEFT,
+                DOWN + RIGHT,
             ],
         )
         self.center()
@@ -191,7 +191,9 @@ class ImageMobject(AbstractImageMobject):
             self.pixel_array, self.pixel_array_dtype
         )
         if self.invert:
-            self.pixel_array[:, :, :3] = 255 - self.pixel_array[:, :, :3]
+            self.pixel_array[:, :, :3] = (
+                np.iinfo(self.pixel_array_dtype).max - self.pixel_array[:, :, :3]
+            )
         super().__init__(scale_to_resolution, **kwargs)
 
     def get_pixel_array(self):
@@ -277,7 +279,7 @@ class ImageMobject(AbstractImageMobject):
 
     def get_style(self):
         return {
-            "fill_color": colour.rgb2hex(self.color.get_rgb()),
+            "fill_color": ManimColor(self.color.get_rgb()).to_hex(),
             "fill_opacity": self.fill_opacity,
         }
 
