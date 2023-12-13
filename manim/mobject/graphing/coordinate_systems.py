@@ -625,7 +625,6 @@ class CoordinateSystem:
         colorscale_axis: int = 1,
         **kwargs: Any,
     ) -> ParametricFunction:
-
         """Generates a curve based on a function.
 
         Parameters
