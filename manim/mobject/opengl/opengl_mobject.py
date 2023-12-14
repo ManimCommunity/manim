@@ -109,6 +109,7 @@ _O = TypeVar("_O")
 def affects_color(func) -> Callable[..., _O]:
     """Decorator for methods that change the color of a :class:`~.Mobject`."""
 
+    @wraps(func)
     def wrapper(self: OpenGLMobject, *args) -> _O:
         self.status.color_changed = True
         return func(self, *args)
@@ -119,6 +120,7 @@ def affects_color(func) -> Callable[..., _O]:
 def affects_position(func) -> Callable[..., _O]:
     """Decorator for methods that change the position of a :class:`~.Mobject`."""
 
+    @wraps(func)
     def wrapper(self: OpenGLMobject, *args) -> _O:
         self.status.position_changed = True
         return func(self, *args)
@@ -129,6 +131,7 @@ def affects_position(func) -> Callable[..., _O]:
 def affects_rotation(func) -> Callable[..., _O]:
     """Decorator for methods that change the rotation of a :class:`~.Mobject`."""
 
+    @wraps(func)
     def wrapper(self: OpenGLMobject, *args) -> _O:
         self.status.rotation_changed = True
         return func(self, *args)
@@ -139,6 +142,7 @@ def affects_rotation(func) -> Callable[..., _O]:
 def affects_scale(func) -> Callable[..., _O]:
     """Decorator for methods that change the scale of a :class:`~.Mobject`."""
 
+    @wraps(func)
     def wrapper(self: OpenGLMobject, *args) -> _O:
         self.status.scale_changed = True
         return func(self, *args)
@@ -149,6 +153,7 @@ def affects_scale(func) -> Callable[..., _O]:
 def affects_points(func) -> Callable[..., _O]:
     """Decorator for methods that change the points of a :class:`~.Mobject`."""
 
+    @wraps(func)
     def wrapper(self: OpenGLMobject, *args) -> _O:
         self.status.points_changed = True
         return func(self, *args)
