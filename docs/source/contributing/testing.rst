@@ -7,7 +7,7 @@ feature has been broken and/or been unintentionally modified.
 
 .. warning::
 
-   The full test suite requires Cairo 1.18 in order to run all tests.
+   The full tests suite requires Cairo 1.18 in order to run all tests.
    However, Cairo 1.18 may not be available from your package manager,
    like ``apt``, and it is very likely that you have an older version installed,
    e.g., 1.16. If you run tests with a version prior to 1.18,
