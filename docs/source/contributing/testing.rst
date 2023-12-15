@@ -5,6 +5,24 @@ If you are adding new features to manim, you should add appropriate tests for th
 manim from breaking at each change by checking that no other
 feature has been broken and/or been unintentionally modified.
 
+.. warning::
+
+   The full test suite requires Cairo 1.18 in order to run all tests.
+   However, Cairo 1.18 may not be available from your package manager,
+   like ``apt``, and it is very likely that you have an older version installed,
+   e.g., 1.16. If you run tests with a version prior to 1.18,
+   many tests will be skipped. Those tests are not skipped in the online CI.
+
+   If you want to run all tests locally, you need to install Cairo 1.18 or above.
+   You can do so by compiling Cairo from source:
+
+   1. download ``cairo-1.18.0.tar.xz`` from
+      `here <https://www.cairographics.org/releases/>`_.
+      and uncompress it;
+   2. open the INSTALL file and follow the instruction (you might need to install
+      meson and ninja);
+   3. run the tests suite and verify that the Cairo version is correct.
+
 How Manim tests
 ---------------
 
