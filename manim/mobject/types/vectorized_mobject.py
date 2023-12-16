@@ -342,7 +342,7 @@ class VMobject(Mobject):
                 self.background_stroke_color = ManimColor(color)
         return self
 
-    def set_cap_style(self, cap_style: CapStyleType) -> Self:
+    def set_cap_style(self, cap_style: CapStyleType, family: bool = True) -> Self:
         """
         Sets the cap style of the :class:`VMobject`.
 
@@ -368,6 +368,29 @@ class VMobject(Mobject):
                     self.add(line)
         """
         self.cap_style = cap_style
+        if family:
+            for submob in self.submobjects:
+                submob.set_cap_style(cap_style, family)
+        return self
+
+    def set_line_joint(self, joint_type: LineJointType, family: bool = True) -> Self:
+        """
+        Sets the line joint type of the :class:`VMobject`.
+
+        Parameters
+        ----------
+        joint_type
+            The line joint type to be set. See :class:`.LineJointType` for options.
+
+        Returns
+        -------
+        :class:`VMobject`
+            ``self``
+        """
+        self.joint_type = joint_type
+        if family:
+            for submob in self.submobjects:
+                submob.set_line_joint(joint_type, family)
         return self
 
     def set_background_stroke(self, **kwargs) -> Self:
@@ -388,6 +411,8 @@ class VMobject(Mobject):
         sheen_factor: float | None = None,
         sheen_direction: Vector3 | None = None,
         background_image: Image | str | None = None,
+        line_joint: LineJointType | None = None,
+        cap_style: CapStyleType | None = None,
         family: bool = True,
     ) -> Self:
         self.set_fill(color=fill_color, opacity=fill_opacity, family=family)
@@ -411,6 +436,10 @@ class VMobject(Mobject):
             )
         if background_image:
             self.color_using_background_image(background_image)
+        if line_joint:
+            self.set_line_joint(line_joint, family=family)
+        if cap_style:
+            self.set_cap_style(cap_style, family=family)
         return self
 
     def get_style(self, simple: bool = False) -> dict:

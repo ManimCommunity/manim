@@ -794,6 +794,10 @@ class Camera:
         if vmobject.cap_style != CapStyleType.AUTO:
             ctx.set_line_cap(CAP_STYLE_MAP[vmobject.cap_style])
         ctx.stroke_preserve()
+        if vmobject.joint_type != LineJointType.AUTO:
+            ctx.set_line_join(cairo.LineJoin.MITER)  # Revert back to default
+        if vmobject.cap_style != CapStyleType.AUTO:
+            ctx.set_line_cap(cairo.LineCap.BUTT)  # Revert back to default
         return self
 
     def get_stroke_rgbas(self, vmobject: VMobject, background: bool = False):
