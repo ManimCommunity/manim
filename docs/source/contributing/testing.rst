@@ -19,7 +19,7 @@ feature has been broken and/or been unintentionally modified.
    1. download ``cairo-1.18.0.tar.xz`` from
       `here <https://www.cairographics.org/releases/>`_.
       and uncompress it;
-   2. open the INSTALL file and follow the instruction (you might need to install
+   2. open the INSTALL file and follow the instructions (you might need to install
       meson and ninja);
    3. run the tests suite and verify that the Cairo version is correct.
 
