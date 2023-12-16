@@ -64,3 +64,22 @@ def test_vmobject_joint_types(scene):
 
     lines.arrange(RIGHT, buff=1)
     scene.add(lines)
+
+
+@frames_comparison
+def test_vmobject_cap_styles(scene):
+    arcs = VGroup(
+        *[
+            Arc(
+                radius=1,
+                start_angle=0,
+                angle=TAU / 4,
+                stroke_width=20,
+                color=GREEN,
+                cap_style=cap_style,
+            )
+            for cap_style in CapStyleType
+        ]
+    )
+    arcs.arrange(RIGHT, buff=1)
+    scene.add(arcs)
