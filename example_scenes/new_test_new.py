@@ -19,8 +19,10 @@ from manim.mobject.geometry.polygram import Square
 from manim.mobject.logo import ManimBanner
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.text.numbers import DecimalNumber
+from manim.mobject.text.tex_mobject import MathTex
 from manim.mobject.text.text_mobject import Text
 from manim.renderer.opengl_renderer import OpenGLRenderer
+from manim.utils.color.core import ManimColor
 
 
 def progress_through_animations(animations):
@@ -42,7 +44,7 @@ if __name__ == "__main__":
             vsync=True,
             config=Config(double_buffer=True, samples=0),
         )
-        renderer = OpenGLRenderer(1920, 1080, background_color=col.GRAY)
+        renderer = OpenGLRenderer(1920, 1080, background_color=col.BLACK)
         # vm = OpenGLVMobject([col.RED, col.GREEN])
         vm = (
             Circle(
@@ -62,6 +64,13 @@ if __name__ == "__main__":
             .shift(OUT)
             .set_fill(col.BLUE, opacity=0.2)
         )
+        vm5 = MathTex(r"\lambda x. \lambda y. x+y.").scale(3).set_opacity(1)
+        circle_list = [
+            Circle(color=ManimColor.from_hsv([z / 100, 1.0, 1.0]))
+            .set_opacity(0.1)
+            .shift(-z * OUT / 3)
+            for z in range(10)
+        ][::-1]
         # vm.set_points_as_corners([[-1920/2, 0, 0], [1920/2, 0, 0], [0, 1080/2, 0]])
         # print(vm.color)
         # print(vm.fill_color)
@@ -69,6 +78,7 @@ if __name__ == "__main__":
 
         clock_mobject = DecimalNumber(0.0).shift(4 * LEFT + 2.5 * UP)
         clock_mobject.fix_in_frame()
+        circle_list.append(clock_mobject)
 
         camera = OpenGLCameraFrame()
         camera.save_state()
@@ -113,25 +123,30 @@ if __name__ == "__main__":
             # vm.set_color(col.RED.interpolate(col.GREEN,x/1920))
             # print(x,y)
 
+        fps = 0
+
         @win.event
         def on_draw():
-            dt = clock.update_time()
-            renderer.render(camera, [vm2, vm3, vm4, clock_mobject, vm])
+            start_time = time.perf_counter()
+            renderer.render(camera, circle_list)
+            # print(1 / (time.perf_counter() - start_time))
             # update_circle(counter)
+            global fps
+            fps = 1 / (time.perf_counter() - start_time)  # clock.update_time()
 
         @win.event
         def on_resize(width, height):
             super(Window, win).on_resize(width, height)
 
         # pyglet.app.run()
-        has_started = False
-        is_finished = False
+        has_started = True
+        is_finished = True
 
-        run_time = 5
+        run_time = 2
         new_vm = Square(fill_color=col.GREEN, stroke_color=col.BLUE).shift(
             2.5 * RIGHT - UP + 2 * OUT
         )
-        animation = DrawBorderThenFill(vm3, run_time=run_time)
+        animation = Write(vm3, run_time=run_time)
 
         real_time = 0
         virtual_time = 0
@@ -156,7 +171,7 @@ if __name__ == "__main__":
                         animation.update_mobjects(dt)
                         animation.interpolate(virtual_time / run_time)
             # update_circle(virtual_time)
-            clock_mobject.set_value(virtual_time)
+            clock_mobject.set_value(fps)
             win.dispatch_event("on_draw")
             win.dispatch_events()
             win.flip()

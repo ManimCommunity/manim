@@ -125,7 +125,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         self.should_center = should_center
         self.svg_height = height
         self.svg_width = width
-        self.opacity = opacity
+        # self.opacity = opacity #TODO: Sets none to the value which is not ideal
 
         if svg_default is None:
             svg_default = {

@@ -47,6 +47,7 @@ if __name__ == "__main__":
             .shift(OUT)
             .set_fill(col.BLUE, opacity=0.2)
         )
+
         # vm.set_points_as_corners([[-1920/2, 0, 0], [1920/2, 0, 0], [0, 1080/2, 0]])
         # print(vm.color)
         # print(vm.fill_color)
