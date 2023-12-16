@@ -463,6 +463,8 @@ class VMobject(Mobject):
             ret["sheen_factor"] = self.get_sheen_factor()
             ret["sheen_direction"] = self.get_sheen_direction()
             ret["background_image"] = self.get_background_image()
+            ret["line_joint"] = self.joint_type
+            ret["cap_style"] = self.cap_style
 
         return ret
 
