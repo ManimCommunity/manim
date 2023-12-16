@@ -350,6 +350,8 @@ class VMobject(Mobject):
         ----------
         cap_style
             The cap style to be set. See :class:`.CapStyleType` for options.
+        family
+            If ``True``, the cap style of all submobjects is also set.
 
         Returns
         -------
