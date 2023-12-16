@@ -20,7 +20,7 @@ feature has been broken and/or been unintentionally modified.
       `here <https://www.cairographics.org/releases/>`_.
       and uncompress it;
    2. open the INSTALL file and follow the instructions (you might need to install
-      meson and ninja);
+      ``meson`` and ``ninja``);
    3. run the tests suite and verify that the Cairo version is correct.
 
 How Manim tests
