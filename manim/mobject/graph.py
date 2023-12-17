@@ -1559,15 +1559,15 @@ class DiGraph(GenericGraph):
             edge.become(new_edge)
             edge.add_tip(tip)
 
-        def get_edge(self, edge: tuple[Hashable, Hashable]) -> Mobject:
-            """Retrieves an edge by its vertices.
+    def get_edge(self, edge: tuple[Hashable, Hashable]) -> Mobject:
+        """Retrieves an edge by its vertices.
 
-            The order of the vertices is relevant here.
-            """
-            try:
-                return self._edges[edge]
-            except KeyError:
-                raise ValueError(f"The {self} does not contain an edge '{edge}'")
+        The order of the vertices is relevant here.
+        """
+        try:
+            return self._edges[edge]
+        except KeyError:
+            raise ValueError(f"The {self} does not contain an edge '{edge}'")
 
     def __repr__(self: DiGraph) -> str:
         return f"Directed graph on {len(self.vertices)} vertices and {len(self.edges)} edges"
