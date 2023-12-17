@@ -322,6 +322,27 @@ class ShowPassingFlash(ShowPartial):
 
 
 class TraceColor(ShowPartial):
+    """Changing the color of a VMobject along its stroke.
+
+    Parameters
+    ----------
+    mobject
+        The mobject whose stroke is animated.
+    color
+        The color to which the stroke is changed.
+
+    Examples
+    --------
+    .. manim:: TraceColorExample
+
+        class TraceColorExample(Scene):
+            def construct(self) -> None:
+                c = Circle().set_color(RED).set_opacity(0.5)
+                s = Square().set_color(BLUE).scale(2)
+                self.add(c)
+                self.play(TraceColor(c, color=BLUE, run_time=1), TraceColor(s, color=RED, run_time=2))
+    """
+
     def __init__(
         self, mobject: "VMobject", color: ParsableManimColor, **kwargs
     ) -> None:

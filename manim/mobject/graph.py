@@ -872,7 +872,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
     def set_edge_color(
         self, vertices: tuple[Hashable, Hashable], color: ParsableManimColor
     ):
-        """Set the color of an edge.
+        """Set the color of an edge. Can also be used to animate the color change in the direction of the edge.
 
         Parameters
         ----------
@@ -885,6 +885,16 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         Group
             A group containing all newly added vertices and edges.
 
+        Examples
+        --------
+
+        .. manim:: SetEdgeColor
+
+            class SetEdgeColor(Scene):
+                def construct(self):
+                    g = Graph(vertices=[1,2,3], edges=[(1,2), (2,3), (3,1)])
+                    self.add(g)
+                    self.play(AnimationGroup((g.animate.set_edge_color((u,v), RED) for u,v in g.edges), lag_ratio=0.5))
         """
         self.get_edge(vertices).set_color(color)
 
