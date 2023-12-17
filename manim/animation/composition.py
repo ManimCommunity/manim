@@ -86,12 +86,13 @@ class AnimationGroup(Animation):
     def begin(self) -> None:
         if self.run_time <= 0:
             tmp = (
-                "please set a runtime > 0"
+                "Please set the run_time to be positive"
                 if len(self.animations) != 0
-                else "Please add at least one Animation"
+                else "Please add at least one Animation with positive run_time"
             )
             raise ValueError(
-                f"{self} has a runtime of 0 seconds. Which cannot be rendered correctly! {tmp}."
+                f"{self} has a run_time of 0 seconds, this cannot be "
+                f"rendered correctly. {tmp}."
             )
         if self.suspend_mobject_updating:
             self.group.suspend_updating()
