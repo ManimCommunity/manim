@@ -15,7 +15,6 @@ from typing import Any, Callable, Iterable
 import cairo
 import numpy as np
 from PIL import Image
-from scipy.spatial.distance import pdist
 
 from .. import config, logger
 from ..constants import *
@@ -973,8 +972,8 @@ class Camera:
         sub_image = Image.fromarray(image_mobject.get_pixel_array(), mode="RGBA")
 
         # Reshape
-        pixel_width = max(int(pdist([ul_coords, ur_coords]).item()), 1)
-        pixel_height = max(int(pdist([ul_coords, dl_coords]).item()), 1)
+        pixel_width = max(1, int(np.linalg.norm(right_vect)))
+        pixel_height = max(1, int(np.linalg.norm(down_vect)))
         sub_image = sub_image.resize(
             (pixel_width, pixel_height),
             resample=image_mobject.resampling_algorithm,

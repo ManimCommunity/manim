@@ -4,8 +4,8 @@ from __future__ import annotations
 
 __all__ = [
     "binary_search",
-    "choose",
     "clip",
+    "get_pascal_triangle",
     "sigmoid",
 ]
 
@@ -13,10 +13,12 @@ __all__ = [
 import inspect
 from functools import lru_cache
 from types import MappingProxyType
-from typing import Callable
+from typing import TYPE_CHECKING, Callable
 
 import numpy as np
-from scipy import special
+
+if TYPE_CHECKING:
+    from manim.typing import MatrixMN
 
 
 def binary_search(
@@ -78,21 +80,6 @@ def binary_search(
     return mh
 
 
-@lru_cache(maxsize=10)
-def choose(n: int, k: int) -> int:
-    r"""The binomial coefficient n choose k.
-
-    :math:`\binom{n}{k}` describes the number of possible choices of
-    :math:`k` elements from a set of :math:`n` elements.
-
-    References
-    ----------
-    - https://en.wikipedia.org/wiki/Combination
-    - https://docs.scipy.org/doc/scipy/reference/generated/scipy.special.comb.html
-    """
-    return special.comb(n, k, exact=True)
-
-
 def clip(a, min_a, max_a):
     """Clips ``a`` to the interval [``min_a``, ``max_a``].
 
@@ -114,6 +101,55 @@ def clip(a, min_a, max_a):
     elif a > max_a:
         return max_a
     return a
+
+
+# Pascal triangle for combinatorial coefficients
+PASCAL_MEMO = np.array(
+    [
+        [1, 0, 0, 0],
+        [1, 1, 0, 0],
+        [1, 2, 1, 0],
+        [1, 3, 3, 1],
+    ]
+)
+
+
+def get_pascal_triangle(n: int) -> MatrixMN:
+    r"""Returns an :math:`(n+1, n+1)`-shaped ndarray containing all the Pascal
+    triangle / combinatorial coefficients ``choose(m, k)``, where
+    :math:`0 \le k \le m \le n`.
+
+    This function uses a fixed-size memo for the Pascal triangle, which is
+    expanded if the requested size is bigger than the current one.
+
+    Parameters
+    ----------
+    n
+        Upper bound for the requested Pascal triangle, such that it contains
+        all the combinatorial coefficients ``choose(m, k)``, where
+        :math:`0 \le k \le m \le n`.
+
+    Returns
+    -------
+    MatrixMN
+        An :math:`(n+1, n+1)`-shaped ndarray containing all the requested
+        combinatorial coefficients.
+    """
+    global PASCAL_MEMO
+
+    curr_size = PASCAL_MEMO.shape[0]  # curr_size = curr_n + 1
+    if n >= curr_size:  # if n > curr_n:
+        choose = np.zeros((n + 1, n + 1), dtype=int)
+        choose[:curr_size, :curr_size] = PASCAL_MEMO
+
+        choose[curr_size:, 0] = 1
+        for m in range(curr_size, n + 1):
+            for k in range(m):
+                choose[m, k + 1] = (choose[m, k] * (m - k)) // (k + 1)
+
+        PASCAL_MEMO = choose
+
+    return PASCAL_MEMO
 
 
 def sigmoid(x: float) -> float:

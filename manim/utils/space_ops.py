@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from manim.typing import Point3D_Array, Vector, Vector3
-
 __all__ = [
     "quaternion_mult",
     "quaternion_from_angle_axis",
@@ -39,14 +37,16 @@ __all__ = [
 
 
 import itertools as it
-from typing import Sequence
+from typing import TYPE_CHECKING, Sequence
 
 import numpy as np
 from mapbox_earcut import triangulate_float32 as earcut
-from scipy.spatial.transform import Rotation
 
-from ..constants import DOWN, OUT, PI, RIGHT, TAU, UP, RendererType
-from ..utils.iterables import adjacent_pairs
+from manim.constants import DOWN, OUT, PI, RIGHT, TAU, UP, RendererType
+from manim.utils.iterables import adjacent_pairs
+
+if TYPE_CHECKING:
+    from manim.typing import MatrixMN, Point3D_Array, Vector, Vector3
 
 
 def norm_squared(v: float) -> float:
@@ -237,15 +237,137 @@ def rotation_matrix_transpose(angle: float, axis: np.ndarray) -> np.ndarray:
 
 def rotation_matrix(
     angle: float,
-    axis: np.ndarray,
+    axis: Vector3,
     homogeneous: bool = False,
-) -> np.ndarray:
+) -> MatrixMN:
+    r"""Rotation in :math:`\mathbb{R}^3` about a specified axis of rotation.
+
+    .. note::
+        Recalling that the 3 columns of a :math:`3 \times 3` matrix :math:`R`
+        represent where the vectors :math:`\hat\imath = (1, 0, 0), \
+        \hat\jmath = (0, 1, 0), \ \hat k = (0, 0, 1)` end after the matrix
+        transformation:
+
+        .. math::
+            R = \begin{pmatrix}
+                | & | & | \\
+                R\hat\imath & R\hat\jmath & R\hat k \\
+                | & | & |
+            \end{pmatrix}
+
+        to describe the rotation matrix :math:`R`, one has to think about where
+        the vectors :math:`\hat\imath, \hat\jmath, \hat k` would end after
+        being rotated about the axis represented by the unit vector
+        :math:`\hat a = (a_x, \ a_y, \ a_z)`.
+
+        For example, to calculate :math:`R\hat\imath`, one must realize that
+        :math:`\hat\imath` can be decomposed into two components: one parallel
+        to :math:`\hat a` (which is unaffected by the rotation), and the other
+        perpendicular to :math:`\hat a` (which rotates in a plane perpendicular
+        to :math:`\hat a`).
+
+        The parallel component is the projection of :math:`\hat\imath` over
+        :math:`\hat a`:
+
+        .. math::
+            \hat\imath_\parallel
+            &= \text{proj}_{\hat a} (\hat\imath)
+            = \frac{\hat\imath \cdot \hat a}{\lVert \hat a \rVert ^2} \hat a
+            = a_x \hat a
+            \\
+            &= (a_x^2, \ a_x a_y, \ a_x a_z)
+
+        and the perpendicular component is simply
+
+        .. math::
+            \hat\imath_\perp
+            &= \hat\imath - \hat\imath_\parallel
+            \\
+            &= (1 - a_x^2, \ -a_x a_y, \ -a_x a_z)
+
+        The perpendicular component is then rotated in an angle :math:`\alpha`
+        about :math:`\hat a`. Defining :math:`c = \cos(\alpha),
+        s = \sin(\alpha)`, the result of that rotation is:
+
+        .. math::
+            R\hat\imath_\perp
+            &= c \hat\imath_\perp
+            + s (\hat a \times \hat\imath_\perp)
+            \\
+            &= c (1 - a_x^2, \ -a_x a_y, \ -a_x a_z)
+            + s (0, \ a_z, \ -a_y)
+
+        Adding that to :math:`\hat\imath_\parallel` gives :math:`R\hat\imath`,
+        the final result of the rotation:
+
+        .. math::
+            R\hat\imath = (
+                c + (1-c)a_x^2, \quad
+                (1-c)a_x a_y + sa_z, \quad
+                (1-c)a_x a_z - sa_y
+            )
+
+        Calculating the other results:
+
+        .. math::
+            R\hat\jmath &= (
+                (1-c)a_x a_y - sa_z, \quad
+                c + (1-c)a_y^2, \quad
+                (1-c)a_y a_z + sa_x
+            )
+            \\
+            R\hat k &= (
+                (1-c)a_x a_z + sa_y, \quad
+                (1-c)a_y a_z - sa_x, \quad
+                c + (1-c)a_z^2
+            )
+
+        the final rotation matrix is:
+
+        .. math::
+            R = \begin{pmatrix}
+                c + (1-c)a_x^2 & (1-c)a_x a_y - sa_z & (1-c)a_x a_z + sa_y \\
+                (1-c)a_x a_y + sa_z & c + (1-c)a_y^2 & (1-c)a_y a_z - sa_x \\
+                (1-c)a_x a_z - sa_y & (1-c)a_y a_z + sa_x & c + (1-c)a_z^2
+            \end{pmatrix}
+
+    Parameters
+    ----------
+    angle
+        Angle of rotation about the axis.
+    axis
+        Vector representing the axis of rotation. If it's the null vector,
+        this function will just return the identity matrix.
+    homogeneous
+        If ``True``, return a :math:`4 \times 4` homogeneous transformation matrix
+        including both the rotation and a null translation. Otherwise, simply
+        return a :math:`3 \times 3` transformation matrix representing only the
+        rotation. Default is ``False``.
+
+    Returns
+    -------
+    MatrixMN
+        The rotation matrix. If ``homogeneous`` is ``False``, it will be a
+        :math:`3 \times 3` rotation matrix. Otherwise it will be a
+        :math:`4 \times 4` homogeneous transformation matrix, representing
+        both the rotation and a null translation.
     """
-    Rotation in R^3 about a specified axis of rotation.
-    """
-    inhomogeneous_rotation_matrix = Rotation.from_rotvec(
-        angle * normalize(np.array(axis))
-    ).as_matrix()
+    norm_a = np.linalg.norm(axis)
+    if norm_a == 0:
+        return np.eye(4 if homogeneous else 3)
+
+    ax, ay, az = axis / norm_a
+    c, s = np.cos(angle), np.sin(angle)
+    mc = 1 - c
+
+    # See the docstrings for an explanation of this calculation
+    inhomogeneous_rotation_matrix = np.array(
+        [
+            [c + mc * ax * ax, mc * ax * ay - s * az, mc * ax * az + s * ay],
+            [mc * ax * ay + s * az, c + mc * ay * ay, mc * ay * az - s * ax],
+            [mc * ax * az - s * ay, mc * ay * az + s * ax, c + mc * az * az],
+        ]
+    )
     if not homogeneous:
         return inhomogeneous_rotation_matrix
     else:
