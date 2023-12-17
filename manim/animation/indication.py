@@ -35,6 +35,7 @@ __all__ = [
     "ApplyWave",
     "Circumscribe",
     "Wiggle",
+    "TraceColor",
 ]
 
 from typing import Callable, Iterable, Optional, Tuple, Type, Union
@@ -318,6 +319,39 @@ class ShowPassingFlash(ShowPartial):
         super().clean_up_from_scene(scene)
         for submob, start in self.get_all_families_zipped():
             submob.pointwise_become_partial(start, 0, 1)
+
+
+class TraceColor(ShowPartial):
+    def __init__(
+        self, mobject: "VMobject", color: ParsableManimColor, **kwargs
+    ) -> None:
+        super().__init__(mobject, **kwargs)
+        self.color = color
+
+    def begin(self) -> None:
+        self.starting_mobject = (
+            self.mobject.copy()
+        )  # Used to transition in the new line
+        self.mobject_copy = (
+            self.mobject.copy()
+        )  # just kept as reference to what the mobject once was
+        self.inner_mobject = (
+            self.mobject.copy()
+        )  # Used to transition out the original line
+        self.mobject.set_opacity(0)
+        self.mobject.add(self.inner_mobject)
+        self.mobject.add(self.starting_mobject)
+
+    def interpolate_mobject(self, alpha: float) -> None:
+        self.inner_mobject.pointwise_become_partial(self.mobject_copy, alpha, 1)
+        self.starting_mobject.pointwise_become_partial(
+            self.mobject_copy, 0, alpha
+        ).set_color(self.color)
+
+    def finish(self) -> None:
+        self.mobject.remove(self.starting_mobject)
+        self.mobject.remove(self.inner_mobject)
+        self.mobject.become(self.mobject_copy.set_color(self.color))
 
 
 class ShowPassingFlashWithThinningStrokeWidth(AnimationGroup):

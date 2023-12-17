@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from manim.animation.indication import TraceColor
+from manim.utils.color.core import ParsableManimColor
+
 __all__ = [
     "Graph",
     "DiGraph",
@@ -313,7 +316,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         edge_config: dict | None = None,
     ) -> None:
         super().__init__()
-
+        self.edges = {}
         nx_graph = self._empty_networkx_graph()
         nx_graph.add_nodes_from(vertices)
         nx_graph.add_edges_from(edges)
@@ -841,6 +844,20 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         )
         return self.get_group_class()(*added_mobjects)
 
+    def get_edge(self, edge: tuple[Hashable, Hashable]) -> Mobject:
+        """A dictionary of all edges in the graph.
+
+        The keys are tuples of vertex identifiers, and the values are
+        the corresponding edge mobjects.
+        """
+        try:
+            return self.edges[edge]
+        except KeyError:
+            try:
+                return self.edges[(edge[1], edge[0])]
+            except KeyError:
+                raise ValueError(f"The {self} does not contain an edge '{edge}'")
+
     @override_animate(add_edges)
     def _add_edges_animation(self, *args, anim_args=None, **kwargs):
         if anim_args is None:
@@ -851,6 +868,40 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         return AnimationGroup(
             *(animation(mobj, **anim_args) for mobj in mobjects), group=self
         )
+
+    def set_edge_color(
+        self, vertices: tuple[Hashable, Hashable], color: ParsableManimColor
+    ):
+        """Set the color of an edge.
+
+        Parameters
+        ----------
+
+        vertices
+            The edge (as a tuple of vertex identifiers) whose color should be changed.
+
+        Returns
+        -------
+        Group
+            A group containing all newly added vertices and edges.
+
+        """
+        self.get_edge(vertices).set_color(color)
+
+    @override_animate(set_edge_color)
+    def _set_edge_color_animation(self, vertices, color, anim_args=None, **kwargs):
+        if anim_args is None:
+            anim_args = {}
+        animation = anim_args.pop("animation", TraceColor)
+
+        mobj = self.get_edge(vertices)  # Will error on DiGraph if edge is wrong way
+        if vertices in self.edges:
+            return animation(mobj, color=color, **anim_args)
+        else:
+            # Make sure we animate the edge in the right direction (i.e., from u to v) but also flip the name in edges if it is called inverted, this will not work on DiGraph
+            self.edges.pop((vertices[1], vertices[0]))
+            self.edges[vertices] = mobj
+            return animation(mobj.reverse_points(), color=color, **anim_args)
 
     def _remove_edge(self, edge: tuple[Hashable]):
         """Remove an edge from the graph.
@@ -1497,6 +1548,16 @@ class DiGraph(GenericGraph):
             new_edge = edge_type(self[u], self[v], **self._edge_config[(u, v)])
             edge.become(new_edge)
             edge.add_tip(tip)
+
+        def get_edge(self, edge: tuple[Hashable, Hashable]) -> Mobject:
+            """Retrieves an edge by its vertices.
+
+            The order of the vertices is relevant here.
+            """
+            try:
+                return self._edges[edge]
+            except KeyError:
+                raise ValueError(f"The {self} does not contain an edge '{edge}'")
 
     def __repr__(self: DiGraph) -> str:
         return f"Directed graph on {len(self.vertices)} vertices and {len(self.edges)} edges"
