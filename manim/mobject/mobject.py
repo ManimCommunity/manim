@@ -2845,7 +2845,7 @@ class Mobject:
             >>> ellipse_eq = np.sum(result.get_anchors()**2 * [1/4, 1, 0], axis=1)
             >>> np.allclose(ellipse_eq, 1)
             True
-        
+
         With ``match_height=True`` and ``match_width=True`` the circle is
         scaled such that the height or the width of the rectangle will
         be preserved, respectively.
@@ -2864,7 +2864,7 @@ class Mobject:
             >>> circle_eq = np.sum(result.get_anchors()**2, axis=1)
             >>> np.allclose(circle_eq, 2**2)
             True
-        
+
         With ``match_center=True``, the resulting mobject is moved such that
         its center is the same as the center of the original mobject::
 
