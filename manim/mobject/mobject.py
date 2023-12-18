@@ -1423,11 +1423,59 @@ class Mobject:
     def to_corner(
         self, corner: Vector3 = DL, buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER
     ) -> Self:
+        """Moves this :class:`~.Mobject` to the given corner of the screen.
+
+        Returns
+        -------
+        :class:`.Mobject`
+            The newly positioned mobject.
+
+        Examples
+        --------
+
+        .. manim:: ToCornerExample
+            :save_last_frame:
+
+            class ToCornerExample(Scene):
+                def construct(self):
+                    c = Circle()
+                    c.to_corner(UR)
+                    t = Tex("To the corner!")
+                    t2 = MathTex("x^3").shift(DOWN)
+                    self.add(c,t,t2)
+                    t.to_corner(DL, buff=0)
+                    t2.to_corner(UL, buff=1.5)
+        """
         return self.align_on_border(corner, buff)
 
     def to_edge(
         self, edge: Vector3 = LEFT, buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER
     ) -> Self:
+        """Moves this :class:`~.Mobject` to the given edge of the screen,
+        without affecting its position in the other dimension.
+
+        Returns
+        -------
+        :class:`.Mobject`
+            The newly positioned mobject.
+
+        Examples
+        --------
+
+        .. manim:: ToEdgeExample
+            :save_last_frame:
+
+            class ToEdgeExample(Scene):
+                def construct(self):
+                    tex_top = Tex("I am at the top!")
+                    tex_top.to_edge(UP)
+                    tex_side = Tex("I am moving to the side!")
+                    c = Circle().shift(2*DOWN)
+                    self.add(tex_top, tex_side)
+                    tex_side.to_edge(LEFT)
+                    c.to_edge(RIGHT, buff=0)
+
+        """
         return self.align_on_border(edge, buff)
 
     def next_to(
