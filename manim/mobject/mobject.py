@@ -2776,7 +2776,6 @@ class Mobject:
     def become(
         self,
         mobject: Mobject,
-        copy_submobjects: bool = True,
         match_height: bool = False,
         match_width: bool = False,
         match_depth: bool = False,
