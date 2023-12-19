@@ -62,7 +62,7 @@ render_options = option_group(
         "--save_last_frame",
         default=None,
         is_flag=True,
-        help="Save last frame as png (Deprecated).",
+        help="Render and save only the last frame of a scene as a PNG image.",
     ),
     option(
         "-q",
