@@ -45,6 +45,7 @@ extensions = [
     "sphinxext.opengraph",
     "manim.utils.docbuild.manim_directive",
     "manim.utils.docbuild.autocolor_directive",
+    "manim.utils.docbuild.autotyping_directive",
     "sphinx.ext.graphviz",
     "sphinx.ext.inheritance_diagram",
     "sphinxcontrib.programoutput",
@@ -56,7 +57,11 @@ autosummary_generate = True
 
 # generate documentation from type hints
 autodoc_typehints = "description"
-autodoc_type_aliases = {t: t for t in manim_type_aliases}
+autodoc_type_aliases = {
+    alias: f"~manim.typing.{alias}"
+    for category in manim_type_aliases.values()
+    for alias in category
+}
 autoclass_content = "both"
 
 # controls whether functions documented by the autofunction directive
