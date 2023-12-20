@@ -6,7 +6,7 @@ An Adventure through Manim's Features and Capabilities
     :align: center
 
 
-**Author:** `Tristan Schulz <https://github.com/MrDiver>`__
+**Authors:** `Tristan Schulz <https://github.com/MrDiver>`__ and `JasonGrace2282 <https://github.com/JasonGrace2282>`__
 
 .. note:: This is a work in progress guide and might not be complete at this point
 
@@ -415,7 +415,8 @@ Try to create the following animation!
             self.play(
                 DrawBorderThenFill(c),
                 GrowFromPoint(s, ORIGIN),
-                SpinInFromNothing(t)
+                SpinInFromNothing(t),
+                run_time=2
             )
             self.wait()
             for mob in (s, t):
@@ -425,3 +426,48 @@ Try to create the following animation!
             self.play(c.animate.move_to(ORIGIN))
 
 Hint: you might need to look at different :doc:`/reference_index/animations`!
+
+=================
+Grouping Mobjects
+=================
+
+Oftentimes it is convinient to animate the movement of several mobjects at once. To help accomplish this goal, manim provides two classes: ``Group`` and ``VGroup``.
+99% of the time, ``VGroup``'s are used, but if you're dealing with some form of an ``ImageMobject`` you will have to use ``Group``. Here's an example of how groups can be useful:
+
+.. manim:: GroupingExample
+
+    class GroupingExample(Scene):
+        def construct(self):
+            tri = Triangle()
+            sq = Square()
+            circ = Circle()
+            grp1 = VGroup(tri,sq,circ).arrange(RIGHT)
+            grp2 = VGroup(tri,circ)
+            self.add(tri,sq,circ)
+            self.play(grp1.animate.shift(UP))
+            self.play(grp2.animate.shift(2*DOWN))
+            self.play(tri.animate.next_to(circ,RIGHT))
+            self.play(grp1.animate.shift(UP))
+            self.wait()
+
+.. note::
+   From now onwards, if we refer to a group we are referring to a ``VGroup``, unless specifically stated otherwise.
+
+Groups also have a bunch of methods to make your life easier. Take a look at some in the example below:
+
+.. manim:: GroupingMethodsExample
+
+   class GroupingMethodsExample(Scene):
+        def construct(self):
+            group = VGroup(
+                Square(),
+                Star(color=YELLOW).set_fill(color=YELLOW, opacity=0.5),
+                Triangle(),
+                Circle().set_fill(color=RED, opacity=0.5)
+            )
+            self.play(group.animate.arrange(DOWN), run_time=2)
+            self.play(group.animate.arrange_in_grid(cols=2), run_time=2)
+            for mob in group:
+                self.play(Uncreate(mob))
+            self.wait(0.2)
+
