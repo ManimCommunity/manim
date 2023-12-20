@@ -193,7 +193,9 @@ class ImageMobject(AbstractImageMobject):
             self.pixel_array, self.pixel_array_dtype
         )
         if self.invert:
-            self.pixel_array[:, :, :3] = 255 - self.pixel_array[:, :, :3]
+            self.pixel_array[:, :, :3] = (
+                np.iinfo(self.pixel_array_dtype).max - self.pixel_array[:, :, :3]
+            )
         super().__init__(scale_to_resolution, **kwargs)
 
     def get_pixel_array(self):

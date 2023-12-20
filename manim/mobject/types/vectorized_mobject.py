@@ -133,6 +133,7 @@ class VMobject(Mobject):
         # TODO, do we care about accounting for varying zoom levels?
         tolerance_for_point_equality: float = 1e-6,
         n_points_per_cubic_curve: int = 4,
+        cap_style: CapStyleType = CapStyleType.AUTO,
         **kwargs,
     ):
         self.fill_opacity = fill_opacity
@@ -160,6 +161,7 @@ class VMobject(Mobject):
         self.shade_in_3d: bool = shade_in_3d
         self.tolerance_for_point_equality: float = tolerance_for_point_equality
         self.n_points_per_cubic_curve: int = n_points_per_cubic_curve
+        self.cap_style: CapStyleType = cap_style
         super().__init__(**kwargs)
         self.submobjects: list[VMobject]
 
@@ -348,6 +350,34 @@ class VMobject(Mobject):
                 self.background_stroke_color = color
             else:
                 self.background_stroke_color = ManimColor(color)
+        return self
+
+    def set_cap_style(self, cap_style: CapStyleType) -> Self:
+        """
+        Sets the cap style of the :class:`VMobject`.
+
+        Parameters
+        ----------
+        cap_style
+            The cap style to be set. See :class:`.CapStyleType` for options.
+
+        Returns
+        -------
+        :class:`VMobject`
+            ``self``
+
+        Examples
+        --------
+        .. manim:: CapStyleExample
+            :save_last_frame:
+
+            class CapStyleExample(Scene):
+                def construct(self):
+                    line = Line(LEFT, RIGHT, color=YELLOW, stroke_width=20)
+                    line.set_cap_style(CapStyleType.ROUND)
+                    self.add(line)
+        """
+        self.cap_style = cap_style
         return self
 
     def set_background_stroke(self, **kwargs) -> Self:
@@ -2468,7 +2498,7 @@ class CurvesAsSubmobjects(VGroup):
         if len(self.submobjects) == 0:
             caller_name = sys._getframe(1).f_code.co_name
             raise Exception(
-                f"Cannot call CurvesAsSubmobjects.{caller_name} for a CurvesAsSubmobject with no submobjects"
+                f"Cannot call CurvesAsSubmobjects. {caller_name} for a CurvesAsSubmobject with no submobjects"
             )
 
     def _get_submobjects_with_points(self):
@@ -2478,7 +2508,7 @@ class CurvesAsSubmobjects(VGroup):
         if len(submobjs_with_pts) == 0:
             caller_name = sys._getframe(1).f_code.co_name
             raise Exception(
-                f"Cannot call CurvesAsSubmobjects.{caller_name} for a CurvesAsSubmobject whose submobjects have no points"
+                f"Cannot call CurvesAsSubmobjects. {caller_name} for a CurvesAsSubmobject whose submobjects have no points"
             )
         return submobjs_with_pts
 
