@@ -134,22 +134,33 @@ class AnimationGroup(Animation):
             The duration of the animation in seconds.
         """
         self.build_animations_with_timings()
-        if self.anims_with_timings:
-            self.max_end_time = np.max([awt[2] for awt in self.anims_with_timings])
-        else:
-            self.max_end_time = 0
+        # Note: not necessarily the final animation's end time is the max end time!
+        self.max_end_time = max(self.anim_end_times, default=0)
         return self.max_end_time if run_time is None else run_time
 
+    # TODO: self.anims_with_timings is only kept for backwards compatibility,
+    # but may no longer be necessary?
     def build_animations_with_timings(self) -> None:
         """Creates a list of triplets of the form (anim, start_time, end_time)."""
-        self.anims_with_timings = []
-        curr_time: float = 0
-        for anim in self.animations:
-            start_time: float = curr_time
-            end_time: float = start_time + anim.get_run_time()
-            self.anims_with_timings.append((anim, start_time, end_time))
-            # Start time of next animation is based on the lag_ratio
-            curr_time = (1 - self.lag_ratio) * start_time + self.lag_ratio * end_time
+        self.anim_run_times = np.array([anim.run_time for anim in self.animations])
+        if self.anim_run_times.shape[0] == 0:
+            self.anim_start_times = np.empty(0)
+            self.anim_end_times = np.empty(0)
+            self.anims_with_timings = []
+            return
+
+        lags = self.anim_run_times[:-1] * self.lag_ratio
+        self.anim_start_times = np.zeros(self.anim_run_times.shape)
+        self.anim_start_times[1:] = np.add.accumulate(lags)
+        self.anim_end_times = self.anim_start_times + self.anim_run_times
+
+        #
+        self.anims_with_timings = [
+            (anim, start, end)
+            for anim, start, end in zip(
+                self.animations, self.anim_start_times, self.anim_end_times
+            )
+        ]
 
     def interpolate(self, alpha: float) -> None:
         # Note, if the run_time of AnimationGroup has been
@@ -158,12 +169,15 @@ class AnimationGroup(Animation):
         # e.g. of the surrounding scene.  Instead they'd
         # be a rescaled version.  But that's okay!
         time = self.rate_func(alpha) * self.max_end_time
-        for anim, start_time, end_time in self.anims_with_timings:
-            anim_time = end_time - start_time
-            if anim_time == 0:
-                sub_alpha = 0
-            else:
-                sub_alpha = np.clip((time - start_time) / anim_time, 0, 1)
+        sub_alphas = np.zeros(self.anim_run_times.shape)
+        sub_alphas[time >= self.anim_end_times] = 1
+        f = (
+            (self.anim_run_times > 0)
+            & (time > self.anim_start_times)
+            & (time < self.anim_end_times)
+        )
+        sub_alphas[f] = (time - self.anim_start_times[f]) / self.anim_run_times[f]
+        for anim, sub_alpha in zip(self.animations, sub_alphas):
             anim.interpolate(sub_alpha)
 
 
@@ -239,8 +253,8 @@ class Succession(AnimationGroup):
             self.active_animation = self.animations[index]
             self.active_animation._setup_scene(self.scene)
             self.active_animation.begin()
-            self.active_start_time = self.anims_with_timings[index][1]
-            self.active_end_time = self.anims_with_timings[index][2]
+            self.active_start_time = self.anim_start_times[index]
+            self.active_end_time = self.anim_end_times[index]
 
     def next_animation(self) -> None:
         """Proceeds to the next animation.
@@ -257,7 +271,7 @@ class Succession(AnimationGroup):
             self.next_animation()
         if self.active_animation is not None and self.active_start_time is not None:
             elapsed = current_time - self.active_start_time
-            active_run_time = self.active_animation.get_run_time()
+            active_run_time = self.active_animation.run_time
             subalpha = elapsed / active_run_time if active_run_time != 0.0 else 1.0
             self.active_animation.interpolate(subalpha)
 

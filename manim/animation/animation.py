@@ -403,6 +403,7 @@ class Animation:
         self.run_time = run_time
         return self
 
+    # TODO: is this getter even necessary?
     def get_run_time(self) -> float:
         """Get the run time of the animation.
 
