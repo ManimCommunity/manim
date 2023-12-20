@@ -134,7 +134,8 @@ class AnimationGroup(Animation):
             The duration of the animation in seconds.
         """
         self.build_animations_with_timings()
-        # Note: not necessarily the final animation's end time is the max end time!
+        # Note: if lag_ratio < 1, then not necessarily the final animation's
+        # end time will be the max end time!
         self.max_end_time = max(self.anim_end_times, default=0)
         return self.max_end_time if run_time is None else run_time
 
