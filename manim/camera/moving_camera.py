@@ -10,7 +10,7 @@ from __future__ import annotations
 
 __all__ = ["MovingCamera"]
 
-from typing import Iterable
+from typing import TYPE_CHECKING, Iterable
 
 import numpy as np
 
@@ -19,8 +19,10 @@ from manim.camera.camera import Camera
 from manim.constants import DOWN, LEFT, RIGHT, UP
 from manim.mobject.frame import ScreenRectangle
 from manim.mobject.mobject import Mobject
-from manim.typing import Point3D
 from manim.utils.color import WHITE
+
+if TYPE_CHECKING:
+    from manim.typing import Point3D
 
 
 class MovingCamera(Camera):
