@@ -169,3 +169,13 @@ def test_animationgroup_is_passing_remover_to_nested_animationgroups():
     assert sqr_animation.remover
     assert circ_animation.remover
     assert polygon_animation.remover
+
+
+def test_empty_animation_group_fails():
+    with pytest.raises(ValueError, match="Please add at least one Animation"):
+        AnimationGroup().begin()
+
+
+def test_empty_animation_fails():
+    with pytest.raises(ValueError, match="Please set the run_time to be positive"):
+        FadeIn(None, run_time=0).begin()
