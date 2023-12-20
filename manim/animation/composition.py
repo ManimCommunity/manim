@@ -162,27 +162,24 @@ class AnimationGroup(Animation):
         # e.g. of the surrounding scene.  Instead they'd
         # be a rescaled version.  But that's okay!
         anim_time = self.rate_func(alpha) * self.max_end_time
-        time_goes_back = anim_time <= self.anim_time
 
         # Only update ongoing animations
         A = self.anims_with_timings
-        new_ongoing_anim_bools = (anim_time >= A["start"]) & (anim_time <= A["end"])
-        A = A[self.ongoing_anim_bools | new_ongoing_anim_bools]
+        new_ongoing = (anim_time >= A["start"]) & (anim_time <= A["end"])
+        A = A[self.ongoing_anim_bools | new_ongoing]
 
         run_times = A["end"] - A["start"]
         null = run_times == 0.0
         sub_alphas = anim_time - A["start"]
         sub_alphas[~null] /= run_times[~null]
-        if time_goes_back:
-            sub_alphas[null | (sub_alphas < 0)] = 0
-        else:
-            sub_alphas[null | (sub_alphas > 1)] = 1
+        sub_alphas[null | (sub_alphas < 0)] = 0
+        sub_alphas[sub_alphas > 1] = 1
 
         for ongoing_anim, sub_alpha in zip(A["anim"], sub_alphas):
             ongoing_anim.interpolate(sub_alpha)
 
         self.anim_time = anim_time
-        self.ongoing_anim_bools = new_ongoing_anim_bools
+        self.ongoing_anim_bools = new_ongoing
 
 
 class Succession(AnimationGroup):
