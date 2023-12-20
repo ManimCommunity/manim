@@ -470,4 +470,3 @@ Groups also have a bunch of methods to make your life easier. Take a look at som
             for mob in group:
                 self.play(Uncreate(mob))
             self.wait(0.2)
-
