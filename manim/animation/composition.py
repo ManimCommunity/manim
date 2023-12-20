@@ -181,9 +181,6 @@ class AnimationGroup(Animation):
         for ongoing_anim, sub_alpha in zip(A["anim"], sub_alphas):
             ongoing_anim.interpolate(sub_alpha)
 
-        print(sub_alphas)
-        if alpha == 1.0:
-            print("A\n" * 10)
         self.anim_time = anim_time
         self.ongoing_anim_bools = new_ongoing_anim_bools
 
