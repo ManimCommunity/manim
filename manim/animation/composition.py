@@ -8,21 +8,19 @@ from typing import TYPE_CHECKING, Callable, Iterable, Sequence
 
 import numpy as np
 
+from manim._config import config
+from manim.animation.animation import Animation, prepare_animation
+from manim.constants import RendererType
+from manim.mobject.mobject import Group, Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLGroup
+from manim.scene.scene import Scene
+from manim.utils.iterables import remove_list_redundancies
 from manim.utils.parameter_parsing import flatten_iterable_parameters
-
-from .._config import config
-from ..animation.animation import Animation, prepare_animation
-from ..constants import RendererType
-from ..mobject.mobject import Group, Mobject
-from ..scene.scene import Scene
-from ..utils.iterables import remove_list_redundancies
-from ..utils.rate_functions import linear
+from manim.utils.rate_functions import linear
 
 if TYPE_CHECKING:
     from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup
-
-    from ..mobject.types.vectorized_mobject import VGroup
+    from manim.mobject.types.vectorized_mobject import VGroup
 
 __all__ = ["AnimationGroup", "Succession", "LaggedStart", "LaggedStartMap"]
 
@@ -155,7 +153,6 @@ class AnimationGroup(Animation):
         self.anim_start_times[1:] = np.add.accumulate(lags)
         self.anim_end_times = self.anim_start_times + self.anim_run_times
 
-        #
         self.anims_with_timings = [
             (anim, start, end)
             for anim, start, end in zip(
