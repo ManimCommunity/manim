@@ -1337,6 +1337,20 @@ class Mobject:
 
         return self.apply_function(R3_func)
 
+    def wag(
+        self, direction: Vector3 = RIGHT, axis: Vector3 = DOWN, wag_factor: float = 1.0
+    ) -> Self:
+        for mob in self.family_members_with_points():
+            alphas = np.dot(mob.points, np.transpose(axis))
+            alphas -= min(alphas)
+            alphas /= max(alphas)
+            alphas = alphas**wag_factor
+            mob.points += np.dot(
+                alphas.reshape((len(alphas), 1)),
+                np.array(direction).reshape((1, mob.dim)),
+            )
+        return self
+
     def reverse_points(self) -> Self:
         for mob in self.family_members_with_points():
             mob.apply_over_attr_arrays(lambda arr: np.array(list(reversed(arr))))
