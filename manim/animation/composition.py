@@ -105,6 +105,8 @@ class AnimationGroup(Animation):
     def finish(self) -> None:
         for anim in self.animations:
             anim.finish()
+        self.interpolate(1)
+        self.ongoing_anim_bools[:] = False
         if self.suspend_mobject_updating:
             self.group.resume_updating()
 
@@ -143,7 +145,7 @@ class AnimationGroup(Animation):
         run_times = np.array([anim.run_time for anim in self.animations])
         num_animations = run_times.shape[0]
         dtype = [("anim", "O"), ("start", "f8"), ("end", "f8")]
-        self.anims_with_timings = np.empty(num_animations, dtype=dtype)
+        self.anims_with_timings = np.zeros(num_animations, dtype=dtype)
         self.ongoing_anim_bools = np.zeros(num_animations, dtype=bool)
         if num_animations == 0:
             return
@@ -164,7 +166,7 @@ class AnimationGroup(Animation):
 
         # Only update ongoing animations
         A = self.anims_with_timings
-        new_ongoing_anim_bools = (anim_time > A["start"]) & (anim_time < A["end"])
+        new_ongoing_anim_bools = (anim_time >= A["start"]) & (anim_time <= A["end"])
         A = A[self.ongoing_anim_bools | new_ongoing_anim_bools]
 
         run_times = A["end"] - A["start"]
