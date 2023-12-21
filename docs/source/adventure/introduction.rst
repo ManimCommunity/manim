@@ -118,7 +118,7 @@ Mobjects and their Attributes
 =============================
 
 In order to display Mobjects in your animations you need to add them to the scene. You can do this by calling ``self.add(mobject)`` in the ``construct`` method of your scene.
-Which will tell Manim that you want to display the Mobject in your scene.
+This tells Manim that you want to display the Mobject in your scene.
 
 .. manim:: CreatingMobjects
     :save_last_frame:
@@ -131,22 +131,29 @@ Which will tell Manim that you want to display the Mobject in your scene.
 This will be the basic structure of all your animations. You will create Mobjects and add them to the scene. Then you can animate them and change their properties.
 Try the "Make Interactive" Button and see if you can create a `Square` instead of a `Circle`.
 
+The first line is the name of your scene, in this case it is ``CreatingMobjects``. It inherits from ``Scene``: as we explore later, you'll find examples where we inherit from
+class other than ``Scene`` to gain access to more specialized methods. Your animation must take place in the ``construct`` method of your scene, otherwise it will not render.
+
+You can run this scene on your local machine by saving it in a file called ``my_first_scene.py`` and running ``manim -pqm my_first_scene.py`` in the terminal.
+
 ------------------
 Mobject Attributes
 ------------------
 
 Mobjects also posses many attributes that you can change. For example you can change the color of a Mobject by calling ``mobject.set_color(color)`` or scale it by calling ``mobject.scale(factor)``.
 
-The Basic attributes are the ``points``, ``fill_color``, ``fill_opacity``, ``stroke_color``, ``stroke_opacity``, ``stroke_width``.
-The ``points`` define the outline of the Mobject. Whereas the color attributes define how this outline is displayed.
+The basic attributes are the ``points``, ``fill_color``, ``fill_opacity``, ``stroke_color``, ``stroke_opacity``, ``stroke_width``.
+The ``points`` define the outline of the Mobject, whereas the color attributes define how this outline is displayed.
 
-A full list of the attributes of :class:`VMobject` can be found in the :doc:`../reference/manim.mobject.types.vectorized_mobject.VMobject` Documentation Page. Please note that depending on the Type of Mobject you are using, there might be additional attributes, which are listed on the corresponding Documentation Page.
+A full list of the attributes of :class:`VMobject` can be found in the :doc:`../reference/manim.mobject.types.vectorized_mobject.VMobject` Documentation Page. Please note that depending 
+on the type of Mobject you are using, there might be additional attributes, which are listed on the corresponding documentation page.
 
 -------------------
 Changing the Points
 -------------------
 
-Most of the function that you will use in Manim will be functions that change the points of a Mobject. For example ``mobject.shift(direction)`` will move the Mobject in the given direction. Or ``mobject.rotate(angle)`` will rotate the Mobject by the given angle.
+Most of the function that you will use in Manim will be functions that change the points of a Mobject. For example ``mobject.shift(direction)`` will move the Mobject in the given direction.
+On the other hand, ``mobject.rotate(angle)`` will rotate the Mobject by the given angle.
 
 .. manim:: MobjectPoints
     :save_last_frame:
@@ -167,9 +174,10 @@ Most of the function that you will use in Manim will be functions that change th
 Changing the Color
 ------------------
 
-Changing the color works in the same way but instead of modifying it you can set it to a new value. For example ``mobject.set_fill(color)`` will set the fill color of the Mobject to the given color.
+Changing the color works in the same way but instead of modifying it you can set it to a new value. For example ``mobject.set_fill(color=color)`` will set the fill color of the Mobject to the given color.
 
-You can also pass in attributes through the constructor of the Mobject. For example ``Circle(fill_color=RED)`` will create a circle with a red fill color. For a list of parameters that you can pass you can always visit the corresponding Documentation Page in the Reference Manual.
+You can also pass in attributes through the constructor of the Mobject. For example ``Circle(fill_color=RED)`` will create a circle with a red fill color.
+For a list of parameters that you can pass you can always visit the corresponding Documentation Page in the Reference Manual.
 
 .. manim:: MobjectColor
     :save_last_frame:
