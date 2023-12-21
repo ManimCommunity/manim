@@ -238,7 +238,7 @@ class Mobject:
             cls.__init__ = cls._original__init__
 
     @property
-    def animate(self) -> _AnimationBuilder | T:
+    def animate(self: T) -> T | _AnimationBuilder:
         """Used to animate the application of any method of :code:`self`.
 
         Any method called on :code:`animate` is converted to an animation of applying
@@ -333,7 +333,40 @@ class Mobject:
              :class:`~.ValueTracker` with updaters instead.
 
         """
-        return _AnimationBuilder(self)
+        return _ImmediateAnimationBuilder(self)
+
+    @property
+    def deferred(self: T) -> T | _AnimationBuilder:
+        """Used to animate the application of any method of :code:`self`.
+        Without immediately applying the animation and deferring state creation until
+        the animation is played.
+
+
+        .. manim:: DeferredExample
+
+            class DeferredExample(Scene):
+                def construct(self):
+                    objects = []
+                    animations = []
+                    animations2 = []
+
+                    for i in range(4):
+                        m = Square().set_color(BLUE).set_fill(opacity=0.3).scale(0.5)
+                        objects.append(m)
+                        animations.append(ReplacementTransform(m.copy(),m))
+                        if i % 2 == 0:
+                            animations2.append(m.deferred.set_color(GREEN))
+                        else:
+                            animations2.append(m.animate.set_color(RED))
+
+                    group = VGroup(*objects).arrange_in_grid()
+                    self.play(*animations, run_time=2)
+                    self.wait()
+                    self.play(*animations2, run_time=2)
+                    self.wait()
+
+        """
+        return _DeferredAnimationBuilder(self)
 
     def __deepcopy__(self, clone_from_id) -> Self:
         cls = self.__class__
@@ -2943,7 +2976,6 @@ class Group(Mobject, metaclass=ConvertToOpenGL):
 class _AnimationBuilder:
     def __init__(self, mobject) -> None:
         self.mobject = mobject
-        self.mobject.generate_target()
 
         self.overridden_animation = None
         self.is_chaining = False
@@ -2965,7 +2997,7 @@ class _AnimationBuilder:
         return self
 
     def __getattr__(self, method_name) -> types.MethodType:
-        method = getattr(self.mobject.target, method_name)
+        method = getattr(self.get_target(), method_name)
         has_overridden_animation = hasattr(method, "_override_animate")
 
         if (self.is_chaining and has_overridden_animation) or self.overridden_animation:
@@ -2974,6 +3006,88 @@ class _AnimationBuilder:
                 "overridden animations",
             )
 
+        update_target = self.create_update_function(
+            method_name, method, has_overridden_animation
+        )
+
+        self.is_chaining = True
+        self.cannot_pass_args = True
+
+        return update_target
+
+    def build(self) -> Animation:
+        raise NotImplementedError("This method must be implemented in a child class")
+
+    def get_target(self) -> Mobject:
+        raise NotImplementedError("This method must be implemented in a child class")
+
+    def create_update_function(self, method_name, method, has_overridden_animation):
+        raise NotImplementedError("This method must be implemented in a child class")
+
+
+class _DeferredAnimationBuilder(_AnimationBuilder):
+    def __init__(self, mobject) -> None:
+        super().__init__(mobject)
+
+    def get_target(self) -> Mobject:
+        return self.mobject
+
+    def create_update_function(self, method_name, _method, has_overridden_animation):
+        def update_target(*method_args, **method_kwargs):
+            self.methods.append(
+                [method_name, method_args, method_kwargs, has_overridden_animation]
+            )
+            return self
+
+        return update_target
+
+    def build(self) -> Animation:
+        from ..animation.transform import (  # is this to prevent circular import?
+            _MethodAnimation,
+        )
+
+        self.mobject.generate_target()
+        new_methods = []
+        for (
+            method_name,
+            method_args,
+            method_kwargs,
+            has_overridden_animation,
+        ) in self.methods:
+            method = getattr(self.mobject.target, method_name)
+            if has_overridden_animation:
+                self.overridden_animation = method._override_animate(
+                    self.mobject,
+                    *method_args,
+                    anim_args=self.anim_args,
+                    **method_kwargs,
+                )
+            else:
+                new_methods.append([method, method_args, method_kwargs])
+                method(*method_args, **method_kwargs)
+
+        self.methods = new_methods
+
+        if self.overridden_animation:
+            anim = self.overridden_animation
+        else:
+            anim = _MethodAnimation(self.mobject, self.methods)
+
+        for attr, value in self.anim_args.items():
+            setattr(anim, attr, value)
+
+        return anim
+
+
+class _ImmediateAnimationBuilder(_AnimationBuilder):
+    def __init__(self, mobject) -> None:
+        super().__init__(mobject)
+        self.mobject.generate_target()
+
+    def get_target(self) -> Mobject:
+        return self.mobject.target
+
+    def create_update_function(self, _method_name, method, has_overridden_animation):
         def update_target(*method_args, **method_kwargs):
             if has_overridden_animation:
                 self.overridden_animation = method._override_animate(
@@ -2986,9 +3100,6 @@ class _AnimationBuilder:
                 self.methods.append([method, method_args, method_kwargs])
                 method(*method_args, **method_kwargs)
             return self
-
-        self.is_chaining = True
-        self.cannot_pass_args = True
 
         return update_target
 
