@@ -92,7 +92,7 @@ class AnimationGroup(Animation):
                 f"{self} has a run_time of 0 seconds, this cannot be "
                 f"rendered correctly. {tmp}."
             )
-        self.anim_time = 0.0
+        self.anim_group_time = 0.0
         if self.suspend_mobject_updating:
             self.group.suspend_updating()
         for anim in self.animations:
@@ -103,10 +103,9 @@ class AnimationGroup(Animation):
             anim._setup_scene(scene)
 
     def finish(self) -> None:
-        for anim in self.animations:
-            anim.finish()
         self.interpolate(1)
-        self.ongoing_anim_bools[:] = False
+        self.anims_begun[:] = False
+        self.anims_finished[:] = False
         if self.suspend_mobject_updating:
             self.group.resume_updating()
 
@@ -118,7 +117,9 @@ class AnimationGroup(Animation):
             anim.clean_up_from_scene(scene)
 
     def update_mobjects(self, dt: float) -> None:
-        for anim in self.animations:
+        for anim in self.anims_with_timings["anim"][
+            self.anims_begun & ~self.anims_finished
+        ]:
             anim.update_mobjects(dt)
 
     def init_run_time(self, run_time) -> float:
@@ -146,7 +147,8 @@ class AnimationGroup(Animation):
         num_animations = run_times.shape[0]
         dtype = [("anim", "O"), ("start", "f8"), ("end", "f8")]
         self.anims_with_timings = np.zeros(num_animations, dtype=dtype)
-        self.ongoing_anim_bools = np.zeros(num_animations, dtype=bool)
+        self.anims_begun = np.zeros(num_animations, dtype=bool)
+        self.anims_finished = np.zeros(num_animations, dtype=bool)
         if num_animations == 0:
             return
 
@@ -161,25 +163,32 @@ class AnimationGroup(Animation):
         # times might not correspond to actual times,
         # e.g. of the surrounding scene.  Instead they'd
         # be a rescaled version.  But that's okay!
-        anim_time = self.rate_func(alpha) * self.max_end_time
+        anim_group_time = self.rate_func(alpha) * self.max_end_time
+        time_goes_back = anim_group_time < self.anim_group_time
 
         # Only update ongoing animations
-        A = self.anims_with_timings
-        new_ongoing = (anim_time >= A["start"]) & (anim_time <= A["end"])
-        A = A[self.ongoing_anim_bools | new_ongoing]
+        awt = self.anims_with_timings
+        new_begun = anim_group_time >= awt["start"]
+        new_finished = anim_group_time > awt["end"]
+        to_update = awt[
+            (self.anims_begun | new_begun) & (~self.anims_finished | ~new_finished)
+        ]
 
-        run_times = A["end"] - A["start"]
+        run_times = to_update["end"] - to_update["start"]
         null = run_times == 0.0
-        sub_alphas = anim_time - A["start"]
+        sub_alphas = anim_group_time - to_update["start"]
         sub_alphas[~null] /= run_times[~null]
-        sub_alphas[null | (sub_alphas < 0)] = 0
-        sub_alphas[sub_alphas > 1] = 1
+        if time_goes_back:
+            sub_alphas[null | (sub_alphas < 0)] = 0
+        else:
+            sub_alphas[null | (sub_alphas > 1)] = 1
 
-        for ongoing_anim, sub_alpha in zip(A["anim"], sub_alphas):
-            ongoing_anim.interpolate(sub_alpha)
+        for anim_to_update, sub_alpha in zip(to_update["anim"], sub_alphas):
+            anim_to_update.interpolate(sub_alpha)
 
-        self.anim_time = anim_time
-        self.ongoing_anim_bools = new_ongoing
+        self.anim_group_time = anim_group_time
+        self.anims_begun = new_begun
+        self.anims_finished = new_finished
 
 
 class Succession(AnimationGroup):
