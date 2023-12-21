@@ -145,7 +145,7 @@ Mobjects also posses many attributes that you can change. For example you can ch
 The basic attributes are the ``points``, ``fill_color``, ``fill_opacity``, ``stroke_color``, ``stroke_opacity``, ``stroke_width``.
 The ``points`` define the outline of the Mobject, whereas the color attributes define how this outline is displayed.
 
-A full list of the attributes of :class:`VMobject` can be found in the :doc:`../reference/manim.mobject.types.vectorized_mobject.VMobject` Documentation Page. Please note that depending 
+A full list of the attributes of :class:`VMobject` can be found in the :doc:`../reference/manim.mobject.types.vectorized_mobject.VMobject` Documentation Page. Please note that depending
 on the type of Mobject you are using, there might be additional attributes, which are listed on the corresponding documentation page.
 
 -------------------
