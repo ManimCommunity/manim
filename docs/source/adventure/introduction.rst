@@ -2,7 +2,7 @@
 An Adventure through Manim's Features and Capabilities
 ******************************************************
 
-.. image:: _static/AdventureManim.png
+.. image:: ../_static/AdventureManim.png
     :align: center
 
 
@@ -140,7 +140,7 @@ Mobjects also posses many attributes that you can change. For example you can ch
 The Basic attributes are the ``points``, ``fill_color``, ``fill_opacity``, ``stroke_color``, ``stroke_opacity``, ``stroke_width``.
 The ``points`` define the outline of the Mobject. Whereas the color attributes define how this outline is displayed.
 
-A full list of the attributes of :class:`VMobject` can be found in the :doc:`reference/manim.mobject.types.vectorized_mobject.VMobject` Documentation Page. Please note that depending on the Type of Mobject you are using, there might be additional attributes, which are listed on the corresponding Documentation Page.
+A full list of the attributes of :class:`VMobject` can be found in the :doc:`../reference/manim.mobject.types.vectorized_mobject.VMobject` Documentation Page. Please note that depending on the Type of Mobject you are using, there might be additional attributes, which are listed on the corresponding Documentation Page.
 
 -------------------
 Changing the Points
@@ -431,7 +431,7 @@ Hint: you might need to look at different :doc:`/reference_index/animations`!
 Grouping Mobjects
 =================
 
-Oftentimes it is convinient to animate the movement of several mobjects at once. To help accomplish this goal, manim provides two classes: ``Group`` and ``VGroup``.
+Oftentimes it is convenient to animate the movement of several mobjects at once. To help accomplish this goal, manim provides two classes: ``Group`` and ``VGroup``.
 99% of the time, ``VGroup``'s are used, but if you're dealing with some form of an ``ImageMobject`` you will have to use ``Group``. Here's an example of how groups can be useful:
 
 .. manim:: GroupingExample
