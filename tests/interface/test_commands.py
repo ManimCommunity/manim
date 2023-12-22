@@ -28,7 +28,9 @@ def test_manim_cfg_subcommand():
     command = ["cfg"]
     runner = CliRunner()
     result = runner.invoke(main, command, prog_name="manim")
-    expected_output = """\
+    expected_output = f"""\
+Manim Community v{__version__}
+
 Usage: manim cfg [OPTIONS] COMMAND [ARGS]...
 
   Manages Manim configuration files.
@@ -50,7 +52,9 @@ def test_manim_plugins_subcommand():
     command = ["plugins"]
     runner = CliRunner()
     result = runner.invoke(main, command, prog_name="manim")
-    expected_output = """\
+    expected_output = f"""\
+Manim Community v{__version__}
+
 Usage: manim plugins [OPTIONS]
 
   Manages Manim plugins.
@@ -90,7 +94,9 @@ def test_manim_init_subcommand():
     command = ["init"]
     runner = CliRunner()
     result = runner.invoke(main, command, prog_name="manim")
-    expected_output = """\
+    expected_output = f"""\
+Manim Community v{__version__}
+
 Usage: manim init [OPTIONS] COMMAND [ARGS]...
 
   Create a new project or insert a new scene.
@@ -135,24 +141,3 @@ def test_manim_init_scene(tmp_path):
         assert (Path(tmp_dir) / "main.py").exists()
         file_content = (Path(tmp_dir) / "main.py").read_text()
         assert "DefaultFileTestScene(Scene):" in file_content
-
-
-def test_manim_new_command():
-    command = ["new"]
-    runner = CliRunner()
-    result = runner.invoke(main, command, prog_name="manim")
-    expected_output = """\
-Usage: manim new [OPTIONS] COMMAND [ARGS]...
-
-  (DEPRECATED) Create a new project or insert a new scene.
-
-Options:
-  --help  Show this message and exit.
-
-Commands:
-  project  Creates a new project.
-  scene    Inserts a SCENE to an existing FILE or creates a new FILE.
-
-Made with <3 by Manim Community developers.
-"""
-    assert dedent(expected_output) == result.output

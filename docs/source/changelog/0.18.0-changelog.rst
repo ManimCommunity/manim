@@ -1,0 +1,294 @@
+*******
+v0.18.0
+*******
+
+:Date: November 11, 2023
+
+Contributors
+============
+
+A total of 41 people contributed to this
+release. People with a '+' by their names authored a patch for the first
+time.
+
+* Abulafia +
+* Adhyyan Sekhsaria +
+* Adrien Ludwig +
+* Alex Kempen +
+* Andres Berejnoi +
+* Anousheh Moonen +
+* Benjamin Hackl
+* Francisco Manríquez Novoa
+* Harald Schilly +
+* Immanuel-Alvaro-Bhirawa +
+* Jason Grace +
+* Jason Villanueva
+* Jinchu Li
+* John Lynch +
+* Jérome Eertmans
+* Matt Turner +
+* Narahari Rao +
+* Naveen M K
+* Nikhil Iyer +
+* Ron Li +
+* Sujal Singh +
+* Tristan Schulz
+* Uwe Zimmermann +
+* Václav Blažej +
+* Zachary Winkeler +
+
+
+The patches included in this release have been reviewed by
+the following contributors.
+
+* Alex Lembcke
+* Andres Berejnoi
+* Axel
+* Benjamin Hackl
+* Francisco Manríquez Novoa
+* Immanuel-Alvaro-Bhirawa
+* Jan-Hendrik Müller
+* Jason Grace
+* Jason Villanueva
+* Jinchu Li
+* John Lynch
+* Jérome Eertmans
+* Kevin Lubick
+* Narahari Rao
+* Naveen M K
+* NotWearingPants
+* SsNiPeR1
+* TheMathematicFanatic
+* Tristan Schulz
+* Uwe Zimmermann
+* Viicos
+* icedcoffeeee
+
+Pull requests merged
+====================
+
+A total of 59 pull requests were merged for this release.
+
+Breaking changes
+----------------
+
+* :pr:`3020`: Rewrote Manim's color system
+   This change removed the ``colour`` library as a dependency
+   of Manim and replaced the internal handling of colors with
+   the newly added :class:`.ManimColor`. This also adds hundreds
+   of new predefined colors, see :mod:`.utils.color` for more
+   details.
+   This should only be a breaking change if you have interacted
+   directly with the ``colour`` module before. The general interface
+   has been kept stable.
+
+
+Highlights
+----------
+
+* :pr:`3299`: Added new ``manim checkhealth`` CLI subcommand
+   This adds a new command line interface subcommand which can be used to check
+   whether a local installation of Manim has been configured correctly, and all
+   required (and optional) dependencies are available. To try it, run it via
+   ``manim checkhealth`` or ``python -m manim checkhealth``.
+
+* :pr:`3427`: New feature: rendered examples in documentation can now be run directly via binder
+   This adds a "Make interactive" button below the examples in our documentation
+   that establishes a connection to binder such that examples can be modified and
+   rerendered directly from your browser.
+
+* :pr:`3086`: Introduced a new module :mod:`.typing` for type hints
+   This also adds various type hints to integral parts of the code base.
+
+* :pr:`3322`: Implemented auto-removal of auxiliary LaTeX files, enabled by default
+   This automatically removes auxiliary files creating during the compilation of
+   LaTeX documents like ``.aux`` or ``.dvi`` files. This behavior can be controlled
+   via the newly introduced ``no_latex_cleanup`` config key (``False`` by default).
+   On the command line, the autoremoval can be disabled via the ``--no_latex_cleanup``
+   CLI flag.
+
+* :pr:`3395`: Added support for Python 3.12
+
+New features
+------------
+
+* :pr:`3361`: Added three new rate functions
+    This adds the rate functions :func:`.smoothstep`, :func:`.smootherstep`,
+    :func:`.smoothererstep` based on the SmoothStep sigmoid functions.
+
+* :pr:`3264`: Added new mobjects :class:`.LabeledLine` and :class:`.LabeledArrow`
+
+
+Enhancements
+------------
+
+* :pr:`3190`: Made :class:`.CurvesAsSubmobjects` mobjects compatible with :meth:`.input_to_graph_point`
+
+
+* :pr:`3226`: Avoid using a mobject as a default argument of :class:`.ArcBrace`
+
+
+* :pr:`3366`: Added spacing between values and unit in :class:`.DecimalNumber`
+   This adds the new keyword argument ``unit_buff_per_font_unit`` (default: 0, for
+   backwards compatibility). Setting it to some positive number creates additional
+   space between the numeric value and the displayed unit.
+
+Fixed bugs
+----------
+
+* :pr:`3205`: Fixed type hint of ``angle`` in :class:`.Arc`
+
+
+* :pr:`3210`: Fixed :class:`.DecimalNumber` with ``show_ellipsis=True`` with the OpenGL renderer
+
+
+* :pr:`3211`: Fixed display issues with custom labels for :class:`.Axes` with the OpenGL renderer
+
+
+* :pr:`3298`: Fixed expand animation for :class:`.ManimBanner`
+
+
+* :pr:`3306`: Fixed IPython terminal history and embedded shell instantiation for scenes using :meth:`.Scene.interactive_embed`
+
+
+* :pr:`3315`: Fixed issue with parameter types in :meth:`.Scene.add_subcaption`
+
+
+* :pr:`3423`: Fixed incorrect submobject count of multi-part :class:`.Tex` mobjects
+   This resolves various issues where formulas were not displayed completely,
+   like it was the case with ``MathTex("1", "^{", "0")``.
+
+* :pr:`3284`: Fixed ``LinearTransformationSceneExample`` in Jupyter notebooks
+
+
+* :pr:`3302`: Fixed typo in comparison in :meth:`.OpenGLVMobject.interpolate`
+
+
+* :pr:`3340`: Fixed incorrect computation of bounding box for rotated :class:`.ImageMobject`
+
+
+* :pr:`3343`: Fixed return value of :meth:`.TexTemplate.add_to_preamble` and :meth:`.TexTemplate.add_to_document`
+
+
+* :pr:`3282`: Ensure that :meth:`.ArrowVectorField.get_vector` does not modify the passed inputs
+
+
+* :pr:`3392`: Fixed behavior of elongated tick lines for :class:`.NumberLine`
+
+
+* :pr:`3430`: Fixed CSV reader adding empty lists in rendering summary during documentation build
+
+
+* :pr:`3404`: Properly raise an exception on empty inputs to :class:`.AddTextLetterByLetter`
+
+
+Documentation-related changes
+-----------------------------
+
+* :pr:`3219`: Enabled social cards for links to documentation
+
+
+* :pr:`3274`: Replaced incorrect mentions of Python 3.7 as the minimally required version
+
+
+* :pr:`3297`: Improved arrow tip sowcase example for :class:`.ArrowTip`
+
+
+* :pr:`3312`: Added documentation for :func:`.always_redraw`
+
+
+* :pr:`3218`: Improved grammar in the :doc:`deep dive guide </guides/deep_dive>`
+
+
+* :pr:`3251`: Add LaTeX installation instructions for Fedora
+
+
+* :pr:`3290`: Updated required dependencies for MacOS installations
+
+
+* :pr:`3325`: Added documentation for functions in :mod:`.mobject_update_utils`
+   This adds docstrings and typehints to :func:`.always_rotate`,
+   :func:`.always_shift`, :func:`.turn_animation_into_updater`
+
+* :pr:`3353`: Added documentation for :meth:`.Mobject.center`
+
+
+* :pr:`3355`: Temporarily enabled ``htmlzip`` build on ReadTheDocs
+
+
+* :pr:`3377`: Fixed a typo in the :doc:`deep dive guide </guides/deep_dive>`
+
+
+* :pr:`3389`: Removed superfluous curly braces in a LaTeX expression
+
+
+* :pr:`3417`: Replaced ``htmlzip`` ReadTheDocs build with workflow attaching downloadable documentation to GitHub releases
+
+
+Changes concerning the testing system
+-------------------------------------
+
+* :pr:`3416`: Fixed tests to run on Cairo 1.18.0
+
+
+* :pr:`3257`: Fix a configuration error concerning poetry
+
+
+* :pr:`3419`: Fixed caching of Cairo builds on CI runners
+
+
+Code quality improvements and similar refactors
+-----------------------------------------------
+
+* :pr:`3229`: Made docbuild errors easier to debug and fixed error from changed exception class
+
+
+* :pr:`3231`: Fixed errors reported by ``flake8``
+
+
+* :pr:`3232`: Upgrade ReadTheDocs build environment to use newer image
+
+
+* :pr:`3286`: Optimized :meth:`.Axes.coords_to_point`
+
+
+* :pr:`3224`: Replace final few occurrences of ``os.path`` by ``pathlib.Path``
+
+
+* :pr:`3236`: Return self in :meth:`.AbstractImageMobject.set_resampling_algorithm`
+
+
+* :pr:`3253`: Bump tornado from 6.3.1 to 6.3.2
+
+
+* :pr:`3272`: Bump docker/build-push-action from 3 to 4
+
+
+* :pr:`3287`: Bump cryptography from 41.0.1 to 41.0.2
+
+
+* :pr:`3350`: Added missing dependency ``typing-extensions``
+
+
+* :pr:`3431`: Bump teatimeguest/setup-texlive-action from 2 to 3
+
+
+* :pr:`3433`: Bump dependencies
+
+
+* :pr:`3399`: Updated several dependencies
+
+
+* :pr:`3397`: Several GitHub actions updates
+
+
+* :pr:`3405`: Updated manimpango version to fix error regarding type strictness
+
+
+* :pr:`3421`: Improved order of input checks when creating a tree graph
+
+
+New releases
+------------
+
+* :pr:`3439`: Prepared new release: v0.18.0
