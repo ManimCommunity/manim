@@ -6,7 +6,7 @@ An Adventure through Manim's Features and Capabilities
     :align: center
 
 
-**Authors:** `Tristan Schulz <https://github.com/MrDiver>`__ and `JasonGrace2282 <https://github.com/JasonGrace2282>`__
+**Authors:** `Tristan Schulz <https://github.com/MrDiver>`__ and `Aarush Deshpande <https://github.com/JasonGrace2282>`__
 
 .. note:: This is a work in progress guide and might not be complete at this point
 
