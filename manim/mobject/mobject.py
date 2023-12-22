@@ -238,7 +238,7 @@ class Mobject:
             cls.__init__ = cls._original__init__
 
     @property
-    def animate(self) -> _AnimationBuilder | T:
+    def animate(self: T) -> _AnimationBuilder | T:
         """Used to animate the application of any method of :code:`self`.
 
         Any method called on :code:`animate` is converted to an animation of applying
