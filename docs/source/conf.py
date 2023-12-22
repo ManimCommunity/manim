@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 
 import manim
-from manim.typing import manim_type_aliases
+from manim.utils.docbuild.module_parsing import get_typing_docs
 
 # -- Path setup --------------------------------------------------------------
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -58,9 +58,10 @@ autosummary_generate = True
 # generate documentation from type hints
 autodoc_typehints = "description"
 autodoc_type_aliases = {
-    alias: f"~manim.typing.{alias}"
-    for category in manim_type_aliases.values()
-    for alias in category
+    alias_name: f"~manim.typing.{alias_name}"
+    for category_dict in get_typing_docs().values()
+    for alias_dict in category_dict.values()
+    for alias_name in alias_dict.keys()
 }
 autoclass_content = "both"
 

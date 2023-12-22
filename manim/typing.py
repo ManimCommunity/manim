@@ -1,4 +1,21 @@
-"""Typing Module
+"""Custom type definitions used in Manim.
+
+.. admonition:: Note for developers
+    :class: important
+
+    Around the source code there are multiple strings which look like this:
+
+    .. code-block::
+
+        '''
+        [CATEGORY]
+        <category_name>
+        '''
+
+    All type aliases defined under those strings will be automatically
+    classified under that category.
+
+    If you need to define a new category, respect the format described above.
 
 .. autotypingmodule:: manim.typing
 
@@ -6,14 +23,13 @@
 from __future__ import annotations
 
 from os import PathLike
-from typing import Callable, Literal, Tuple, Union
+from typing import Annotated, Callable, Literal, Tuple, Union
 
 import numpy as np
 import numpy.typing as npt
 from typing_extensions import TypeAlias
 
 __all__ = [
-    "manim_type_aliases",
     "ManimFloat",
     "ManimInt",
     "ManimColorDType",
@@ -65,77 +81,21 @@ __all__ = [
     "StrOrBytesPath",
 ]
 
-manim_type_aliases = {
-    "Primitive data types": (
-        "ManimFloat",
-        "ManimInt",
-    ),
-    "Color types": (
-        "ManimColorDType",
-        "RGB_Array_Float",
-        "RGB_Tuple_Float",
-        "RGB_Array_Int",
-        "RGB_Tuple_Int",
-        "RGBA_Array_Float",
-        "RGBA_Tuple_Float",
-        "RGBA_Array_Int",
-        "RGBA_Tuple_Int",
-        "HSV_Array_Float",
-        "HSV_Tuple_Float",
-        "ManimColorInternal",
-    ),
-    "Point types": (
-        "PointDType",
-        "InternalPoint2D",
-        "Point2D",
-        "InternalPoint2D_Array",
-        "Point2D_Array",
-        "InternalPoint3D",
-        "Point3D",
-        "InternalPoint3D_Array",
-        "Point3D_Array",
-    ),
-    "Vector types": (
-        "Vector2",
-        "Vector3",
-        "Vector",
-        "RowVector",
-        "ColVector",
-        "MatrixMN",
-        "Zeros",
-    ),
-    "Bezier types": (
-        "QuadraticBezierPoints",
-        "QuadraticBezierPoints_Array",
-        "QuadraticBezierPath",
-        "QuadraticSpline",
-        "CubicBezierPoints",
-        "CubicBezierPoints_Array",
-        "CubicBezierPath",
-        "CubicSpline",
-        "BezierPoints",
-        "BezierPoints_Array",
-        "BezierPath",
-        "Spline",
-        "FlatBezierPoints",
-    ),
-    "Function types": (
-        "FunctionOverride",
-        "PathFuncType",
-        "MappingFunction",
-    ),
-    "Other types": (
-        "Image",
-        "StrPath",
-        "StrOrBytesPath",
-    ),
-}
 
-# Primitive Data Types
+"""
+[CATEGORY]
+Primitive data types
+"""
+
 ManimFloat: TypeAlias = np.float64
 ManimInt: TypeAlias = np.int64
 
-# Color Types
+
+"""
+[CATEGORY]
+Color types
+"""
+
 ManimColorDType: TypeAlias = ManimFloat
 
 RGB_Array_Float: TypeAlias = npt.NDArray[ManimFloat]
@@ -155,14 +115,16 @@ HSV_Tuple_Float: TypeAlias = RGB_Tuple_Float
 
 ManimColorInternal: TypeAlias = npt.NDArray[ManimColorDType]
 
-# Point Types
+
+"""
+[CATEGORY]
+Point types
+"""
 
 PointDType: TypeAlias = ManimFloat
-"""DType for all points."""
 
 InternalPoint2D: TypeAlias = npt.NDArray[PointDType]
-"""`shape (2,)`
-A 2D point: `[float, float]`
+""" `shape: (2,)` A 2D point: `[float, float]`.
 This type alias is mostly made available for internal use and only includes the NumPy type.
 """
 
@@ -206,7 +168,11 @@ An array of Point3D objects: `[[float, float, float], ...]`
 (Please refer to the documentation of the function you are using for further type information.)
 """
 
-# Vector Types
+
+"""
+[CATEGORY]
+Vector types
+"""
 
 Vector2: TypeAlias = Union[npt.NDArray[PointDType], Tuple[float, float]]
 """`shape (2,)`
@@ -241,7 +207,11 @@ A matrix: `[[float, ...], [float, ...], ...]`
 Zeros: TypeAlias = Union[npt.NDArray[ManimFloat], Tuple[Tuple[Literal[0], ...], ...]]
 """A matrix of zeros, typically created with ``numpy.zeros((M, N))``"""
 
-# Bezier Types
+
+"""
+[CATEGORY]
+Bézier types
+"""
 
 QuadraticBezierPoints: TypeAlias = Union[
     npt.NDArray[PointDType], Tuple[Point3D, Point3D, Point3D]
@@ -332,7 +302,11 @@ FlatBezierPoints: TypeAlias = Union[npt.NDArray[PointDType], Tuple[float, ...]]
 A flattened array of Bézier control points: `[float, ...]`
 """
 
-# Function Types
+
+"""
+[CATEGORY]
+Function types
+"""
 
 # Due to current limitations (see https://github.com/python/mypy/issues/14656 / 8263), we don't specify the first argument type (Mobject).
 FunctionOverride: TypeAlias = Callable[..., None]
@@ -344,12 +318,20 @@ PathFuncType: TypeAlias = Callable[[Point3D, Point3D, float], Point3D]
 MappingFunction: TypeAlias = Callable[[Point3D], Point3D]
 """A function mapping a `Point3D` to another `Point3D`."""
 
-# Image Types
+
+"""
+[CATEGORY]
+Image types
+"""
 
 Image: TypeAlias = np.ndarray
 """An image."""
 
-# Path Types
 
-StrPath: TypeAlias = "str | PathLike[str]"
-StrOrBytesPath: TypeAlias = "str | bytes | PathLike[str] | PathLike[bytes]"
+"""
+[CATEGORY]
+Path types
+"""
+
+StrPath: TypeAlias = Union[str, PathLike[str]]
+StrOrBytesPath: TypeAlias = Union[str, bytes, PathLike[str], PathLike[bytes]]
