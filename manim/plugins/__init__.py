@@ -9,6 +9,8 @@ __all__ = [
 ]
 
 requested_plugins: set[str] = set(config["plugins"])
+missing_plugins = requested_plugins - set(get_plugins().keys())
 
-if not requested_plugins.issubset(get_plugins().keys()):
-    logger.warning("Missing Plugins: %s", requested_plugins)
+
+if not missing_plugins:
+    logger.warning("Missing Plugins: %s", missing_plugins)
