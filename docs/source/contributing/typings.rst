@@ -83,7 +83,7 @@ Typing guidelines
 
 .. code:: py
 
-    T = TypeVar()
+    T = TypeVar("T")
 
 
     def copy(self: T) -> T:
