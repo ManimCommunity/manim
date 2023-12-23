@@ -12,12 +12,12 @@ from manim.utils.color import RED
 
 def test_MathTex():
     MathTex("a^2 + b^2 = c^2")
-    assert Path(config.media_dir, "Tex", "eb38bdba08f46c80.svg").exists()
+    assert Path(config.media_dir, "Tex", "e4be163a00cf424f.svg").exists()
 
 
 def test_SingleStringMathTex():
     SingleStringMathTex("test")
-    assert Path(config.media_dir, "Tex", "5b2faa68ebf42d1e.svg").exists()
+    assert Path(config.media_dir, "Tex", "8ce17c7f5013209f.svg").exists()
 
 
 @pytest.mark.parametrize(  # : PT006
@@ -31,7 +31,7 @@ def test_double_braces_testing(text_input, length_sub):
 
 def test_tex():
     Tex("The horse does not eat cucumber salad.")
-    assert Path(config.media_dir, "Tex", "f2e45e6e82d750e6.svg").exists()
+    assert Path(config.media_dir, "Tex", "c3945e23e546c95a.svg").exists()
 
 
 def test_tex_temp_directory(tmpdir, monkeypatch):
@@ -44,12 +44,12 @@ def test_tex_temp_directory(tmpdir, monkeypatch):
     with tempconfig({"media_dir": "media"}):
         Tex("The horse does not eat cucumber salad.")
         assert Path("media", "Tex").exists()
-        assert Path("media", "Tex", "f2e45e6e82d750e6.svg").exists()
+        assert Path("media", "Tex", "c3945e23e546c95a.svg").exists()
 
 
 def test_percent_char_rendering():
     Tex(r"\%")
-    assert Path(config.media_dir, "Tex", "3f48edf8ebaf82c8.tex").exists()
+    assert Path(config.media_dir, "Tex", "4a583af4d19a3adf.tex").exists()
 
 
 def test_tex_whitespace_arg():
