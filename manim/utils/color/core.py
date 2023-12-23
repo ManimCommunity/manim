@@ -52,7 +52,6 @@ from ...utils.space_ops import normalize
 
 # import manim._config as _config
 
-
 re_hex = re.compile("((?<=#)|(?<=0x))[A-F0-9]{6,8}", re.IGNORECASE)
 
 

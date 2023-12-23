@@ -9,6 +9,7 @@ Module Index
 .. autosummary::
    :toctree: ../reference
 
+   typing
    constants
    ~utils.bezier
    ~utils.color

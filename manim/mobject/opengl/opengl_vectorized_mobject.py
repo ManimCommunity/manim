@@ -34,6 +34,15 @@ from manim.utils.space_ops import (
     z_to_vector,
 )
 
+__all__ = [
+    "triggers_refreshed_triangulation",
+    "OpenGLVMobject",
+    "OpenGLVGroup",
+    "OpenGLVectorizedPoint",
+    "OpenGLCurvesAsSubmobjects",
+    "OpenGLDashedVMobject",
+]
+
 
 def triggers_refreshed_triangulation(func):
     @wraps(func)

@@ -30,6 +30,8 @@ CFG_DEFAULTS = {
     "resolution": (854, 480),
 }
 
+__all__ = ["select_resolution", "update_cfg", "project", "scene"]
+
 
 def select_resolution():
     """Prompts input of type click.Choice from user. Presents options from QUALITIES constant.

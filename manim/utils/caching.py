@@ -5,6 +5,8 @@ from typing import Callable
 from .. import config, logger
 from ..utils.hashing import get_hash_from_play_call
 
+__all__ = ["handle_caching_play"]
+
 
 def handle_caching_play(func: Callable[..., None]):
     """Decorator that returns a wrapped version of func that will compute

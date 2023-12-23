@@ -11,6 +11,7 @@ import sys
 from pathlib import Path
 
 import manim
+from manim.utils.docbuild.module_parsing import get_typing_docs
 
 # -- Path setup --------------------------------------------------------------
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -44,6 +45,7 @@ extensions = [
     "sphinxext.opengraph",
     "manim.utils.docbuild.manim_directive",
     "manim.utils.docbuild.autocolor_directive",
+    "manim.utils.docbuild.autotyping_directive",
     "sphinx.ext.graphviz",
     "sphinx.ext.inheritance_diagram",
     "sphinxcontrib.programoutput",
@@ -55,6 +57,12 @@ autosummary_generate = True
 
 # generate documentation from type hints
 autodoc_typehints = "description"
+autodoc_type_aliases = {
+    alias_name: f"~manim.typing.{alias_name}"
+    for category_dict in get_typing_docs().values()
+    for alias_dict in category_dict.values()
+    for alias_name in alias_dict.keys()
+}
 autoclass_content = "both"
 
 # controls whether functions documented by the autofunction directive
