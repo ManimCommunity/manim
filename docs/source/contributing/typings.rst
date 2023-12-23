@@ -81,6 +81,8 @@ Typing guidelines
 .. code:: py
 
     T = TypeVar()
+
+
     def copy(self: T) -> T:
         ...
 
