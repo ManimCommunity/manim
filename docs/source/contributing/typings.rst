@@ -107,8 +107,8 @@ Typing guidelines
   it's more freeing than the ``object`` typehint, and makes mypy stop typechecking the variable. Note that whenever possible,
   try to keep typehints as specific as possible.
 
-* If importing a module or a library purely for typehints, keep it under an ``if typing.TYPE_CHECKING`` guard, to prevent them from
-  being imported at runtime (helps library performance).
+* If objects are imported purely for type hint purposes, keep it under an ``if typing.TYPE_CHECKING`` guard, to prevent them from
+  being imported at runtime (helps library performance). Do not forget to use the ``from __future__ import annotations`` import to avoid having runtime ``NameError`` exceptions.
 
 .. code:: py
 
