@@ -57,6 +57,8 @@ Typing guidelines
 * Following `PEP 484 <https://peps.python.org/pep-0484/#the-numeric-tower>`_,
   use ``float`` instead of ``int | float``.
 
+* Use ``x | y`` instead of ``Union[x, y]``
+
 * Mobjects have the typehint ``Mobject``, e.g.:
 
 .. code:: py
@@ -66,16 +68,25 @@ Typing guidelines
         return self.set_color(mobject.get_color())
 
 * Always parametrize generics (``list[int]`` instead of ``list``,
-  ``type[Any]`` instead of ``type``, etc.). This also applies to callables:
+  ``type[Any]`` instead of ``type``, etc.). This also applies to callables.
 
 .. code:: py
 
     rate_func: Callable[[float], float] = lambda t: smooth(1 - t)
+
+* Use ``TypeVar`` when dealing with the same class but different instances.
+  Consider ``Mobject.copy``, which returns a new instance of the same class.
+  It would be type-hinted as:
+
+.. code:: py
+
+    T = TypeVar()
+    def copy(self: T) -> T:
+        ...
 
 Missing Sections for typehints are:
 -----------------------------------
 
 * Mypy and numpy import errors: https://realpython.com/python-type-checking/#running-mypy
 * When to use ``object`` vs ``Any``
-* The use of a TypeVar on the type hints for ``copy()``.
 * The definition and use of Protocols (like ``Sized``, ``Sequence``, ``Iterable``...)
