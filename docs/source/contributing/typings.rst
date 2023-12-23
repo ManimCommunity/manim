@@ -40,6 +40,9 @@ Typing guidelines
   pending shape support, using the correct type aliases will help users understand
   which shape should be used.
 
+* For typings for generic functions, check out `this <https://docs.python.org/3/library/collections.abc.html#collections-abstract-base-classes>`_
+  link.
+
 * Always use a type hint of ``None`` for functions that does not return
   a value (this also applies to ``__init__``), e.g.:
 
@@ -86,9 +89,21 @@ Typing guidelines
     def copy(self: T) -> T:
         ...
 
+* Use ``typing.Iterable`` whenever the function works with *any* iterable, not a specific type.
+
+* If the function returns a container of a specific length each time, use ``tuple``.
+
+.. code:: py
+
+   def foo() -> tuple[float, float, float]:
+      return (0, 0, 0)
+
+* If a function works with a parameter as long as said parameter has a ``__getitem__``, ``__iter___`` and ``__len__`` method,
+  the typehint of the parameter should be ``typing.Mapping``. If it also supports ``__setitem__`` and/or ``__delitem__``, it
+  should be marked as ``typing.MutableMapping``.
+
 Missing Sections for typehints are:
 -----------------------------------
 
 * Mypy and numpy import errors: https://realpython.com/python-type-checking/#running-mypy
 * When to use ``object`` vs ``Any``
-* The definition and use of Protocols (like ``Sized``, ``Sequence``, ``Iterable``...)
