@@ -40,7 +40,7 @@ Typing guidelines
   pending shape support, using the correct type aliases will help users understand
   which shape should be used.
 
-* For typings for generic functions, check out `this <https://docs.python.org/3/library/collections.abc.html#collections-abstract-base-classes>`_
+* For typings of generic collections, check out `this <https://docs.python.org/3/library/collections.abc.html#collections-abstract-base-classes>`_
   link.
 
 * Always use a type hint of ``None`` for functions that does not return
