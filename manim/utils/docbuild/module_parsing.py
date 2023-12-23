@@ -42,7 +42,7 @@ def get_typing_docs() -> dict[str, dict[str, dict[str, str]]]:
         ):
             string = node.value.value.strip()
             # It can be the start of a category
-            if string[:10] == "[CATEGORY]":
+            if string.startswith("[CATEGORY]"):
                 category_name = string[10:].strip()
                 typing_docs_dict[category_name] = {}
                 category_dict = typing_docs_dict[category_name]
