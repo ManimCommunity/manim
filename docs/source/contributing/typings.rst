@@ -103,7 +103,7 @@ Typing guidelines
   should be marked as ``collections.abc.MutableMapping``.
 
 * Typehinting something as ``object`` means that variable should only access methods that are accessible to every python object,
-  like ``__str__`` and so on. On the other hand, literally any method can be called on a variable with the ``Any`` typehint -
+  like ``__str__`` and so on. On the other hand, literally any attribute can be accessed on a variable with the ``Any`` typehint -
   it's more freeing than the ``object`` typehint, and makes mypy stop typechecking the variable. Note that whenever possible,
   try to keep typehints as specific as possible.
 
