@@ -91,7 +91,7 @@ Typing guidelines
 
 * Use ``typing.Iterable`` whenever the function works with *any* iterable, not a specific type.
 
-* If the function returns a container of a specific length each time, use ``tuple``.
+* If the function returns a container of a specific length each time, consider using ``tuple`` instead of ``list``.
 
 .. code:: py
 
