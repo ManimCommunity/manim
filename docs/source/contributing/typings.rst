@@ -102,7 +102,7 @@ Typing guidelines
   the typehint of the parameter should be ``typing.Mapping``. If it also supports ``__setitem__`` and/or ``__delitem__``, it
   should be marked as ``typing.MutableMapping``.
 
-* Typehinting something as ``object`` means that variable should only access methods that are accessable to every python object,
+* Typehinting something as ``object`` means that variable should only access methods that are accessible to every python object,
   like ``__str__`` and so on. On the other hand, literally any method can be called on a variable with the ``Any`` typehint -
   it's more freeing than the ``object`` typehint, and makes mypy stop typechecking the variable. Note that whenever possible,
   try to keep typehints as specific as possible.
@@ -111,4 +111,4 @@ Missing Sections for typehints are:
 -----------------------------------
 
 * Mypy and numpy import errors: https://realpython.com/python-type-checking/#running-mypy
-* Explain ``mypy.ini``
+* Explain ``mypy.ini`` (see above link)
