@@ -96,7 +96,7 @@ Typing guidelines
 .. code:: py
 
    def foo() -> tuple[float, float, float]:
-      return (0, 0, 0)
+       return (0, 0, 0)
 
 * If a function works with a parameter as long as said parameter has a ``__getitem__``, ``__iter___`` and ``__len__`` method,
   the typehint of the parameter should be ``typing.Mapping``. If it also supports ``__setitem__`` and/or ``__delitem__``, it
