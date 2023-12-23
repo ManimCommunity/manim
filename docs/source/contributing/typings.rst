@@ -77,7 +77,7 @@ Typing guidelines
 
     rate_func: Callable[[float], float] = lambda t: smooth(1 - t)
 
-* Use ``TypeVar`` when dealing with the same class but different instances.
+* Use ``TypeVar`` when you want to "link" type hints as being the same type.
   Consider ``Mobject.copy``, which returns a new instance of the same class.
   It would be type-hinted as:
 
