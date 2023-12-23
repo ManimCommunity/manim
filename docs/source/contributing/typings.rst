@@ -99,7 +99,7 @@ Typing guidelines
        return (0, 0, 0)
 
 * If a function works with a parameter as long as said parameter has a ``__getitem__``, ``__iter___`` and ``__len__`` method,
-  the typehint of the parameter should be ``typing.Mapping``. If it also supports ``__setitem__`` and/or ``__delitem__``, it
+  the typehint of the parameter should be ``collections.abc.Mapping``. If it also supports ``__setitem__`` and/or ``__delitem__``, it
   should be marked as ``typing.MutableMapping``.
 
 * Typehinting something as ``object`` means that variable should only access methods that are accessible to every python object,
