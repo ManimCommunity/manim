@@ -38,15 +38,16 @@ class TypingModuleDocumenter(Directive):
                 category_alias_container += alias_section
                 alias_section += nodes.title(text=alias_name)
 
-
-                doc = nodes.paragraph() # one paragraph for both
+                doc = nodes.paragraph()  # one paragraph for both
                 if definition_in_code_block:
                     alias_section += nodes.literal_block(text=alias_dict["definition"])
                 else:
                     # add | to keep on different lines
                     # TODO: Figure out where to log sphinx errors (/tmp/sphinx-errs not availiable for non-linux)
                     # Last argument is line number... not quite sure which line number though!
-                    result.append(f'| ``{alias_dict["definition"]}``', "/tmp/sphinx-errs.log", 10)
+                    result.append(
+                        f'| ``{alias_dict["definition"]}``', "/tmp/sphinx-errs.log", 10
+                    )
                 if "doc" in alias_dict:
                     result.append(
                         "| %s" % alias_dict["doc"], "/tmp/sphinx-errs.log", 10
