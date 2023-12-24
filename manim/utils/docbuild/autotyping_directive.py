@@ -21,6 +21,7 @@ class TypingModuleDocumenter(Directive):
 
     def run(self) -> list[nodes.Element]:
         content = nodes.container()
+        definition_in_code_block = True
 
         typing_docs_dict = get_typing_docs()
         for category_name, category_dict in typing_docs_dict.items():
@@ -37,12 +38,15 @@ class TypingModuleDocumenter(Directive):
                 category_alias_container += alias_section
                 alias_section += nodes.title(text=alias_name)
 
-                alias_section += nodes.literal_block(text=alias_dict["definition"])
 
-                doc = nodes.paragraph()  # one paragraph for both
-                # add | to keep on different lines
-                # TODO: Figure out where to log sphinx errors (/tmp/sphinx-errs not availiable for non-linux)
-                # result.append(f'| ``{alias_dict["definition"]}``', "/tmp/sphinx-errs.log", 10)
+                doc = nodes.paragraph() # one paragraph for both
+                if definition_in_code_block:
+                    alias_section += nodes.literal_block(text=alias_dict["definition"])
+                else:
+                    # add | to keep on different lines
+                    # TODO: Figure out where to log sphinx errors (/tmp/sphinx-errs not availiable for non-linux)
+                    # Last argument is line number... not quite sure which line number though!
+                    result.append(f'| ``{alias_dict["definition"]}``', "/tmp/sphinx-errs.log", 10)
                 if "doc" in alias_dict:
                     result.append(
                         "| %s" % alias_dict["doc"], "/tmp/sphinx-errs.log", 10
