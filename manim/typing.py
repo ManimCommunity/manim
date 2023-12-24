@@ -23,7 +23,7 @@
 from __future__ import annotations
 
 from os import PathLike
-from typing import Annotated, Callable, Literal, Tuple, Union
+from typing import Annotated, Callable, Literal, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -99,16 +99,16 @@ Color types
 ManimColorDType: TypeAlias = ManimFloat
 
 RGB_Array_Float: TypeAlias = npt.NDArray[ManimFloat]
-RGB_Tuple_Float: TypeAlias = Tuple[float, float, float]
+RGB_Tuple_Float: TypeAlias = tuple[float, float, float]
 
 RGB_Array_Int: TypeAlias = npt.NDArray[ManimInt]
-RGB_Tuple_Int: TypeAlias = Tuple[int, int, int]
+RGB_Tuple_Int: TypeAlias = tuple[int, int, int]
 
 RGBA_Array_Float: TypeAlias = npt.NDArray[ManimFloat]
-RGBA_Tuple_Float: TypeAlias = Tuple[float, float, float, float]
+RGBA_Tuple_Float: TypeAlias = tuple[float, float, float, float]
 
 RGBA_Array_Int: TypeAlias = npt.NDArray[ManimInt]
-RGBA_Tuple_Int: TypeAlias = Tuple[int, int, int, int]
+RGBA_Tuple_Int: TypeAlias = tuple[int, int, int, int]
 
 HSV_Array_Float: TypeAlias = RGB_Array_Float
 HSV_Tuple_Float: TypeAlias = RGB_Tuple_Float
@@ -128,7 +128,7 @@ InternalPoint2D: TypeAlias = npt.NDArray[PointDType]
 This type alias is mostly made available for internal use and only includes the NumPy type.
 """
 
-Point2D: TypeAlias = Union[InternalPoint2D, Tuple[float, float]]
+Point2D: TypeAlias = Union[InternalPoint2D, tuple[float, float]]
 """`shape (2,)`
 A 2D point: `[float, float]`
 """
@@ -139,7 +139,7 @@ An array of Point2D: `[[float, float], ...]`
 This type alias is mostly made available for internal use and only includes the NumPy type.
 """
 
-Point2D_Array: TypeAlias = Union[InternalPoint2D_Array, Tuple[Point2D, ...]]
+Point2D_Array: TypeAlias = Union[InternalPoint2D_Array, tuple[Point2D, ...]]
 """`shape (N, 2)`
 An array of Point2D objects: `[[float, float], ...]`
 (Please refer to the documentation of the function you are using for further type information.)
@@ -151,7 +151,7 @@ A 3D point: `[float, float, float]`
 This type alias is mostly made available for internal use and only includes the NumPy type.
 """
 
-Point3D: TypeAlias = Union[InternalPoint3D, Tuple[float, float, float]]
+Point3D: TypeAlias = Union[InternalPoint3D, tuple[float, float, float]]
 """`shape (3,)`
 A 3D point: `[float, float, float]`
 """
@@ -162,7 +162,7 @@ An array of Point3D objects: `[[float, float, float], ...]`
 This type alias is mostly made available for internal use and only includes the NumPy type.
 """
 
-Point3D_Array: TypeAlias = Union[InternalPoint3D_Array, Tuple[Point3D, ...]]
+Point3D_Array: TypeAlias = Union[InternalPoint3D_Array, tuple[Point3D, ...]]
 """`shape (N, 3)`
 An array of Point3D objects: `[[float, float, float], ...]`
 (Please refer to the documentation of the function you are using for further type information.)
@@ -174,37 +174,37 @@ An array of Point3D objects: `[[float, float, float], ...]`
 Vector types
 """
 
-Vector2: TypeAlias = Union[npt.NDArray[PointDType], Tuple[float, float]]
+Vector2: TypeAlias = Union[npt.NDArray[PointDType], tuple[float, float]]
 """`shape (2,)`
 A 2D vector: `[float, float]`
 """
 
-Vector3: TypeAlias = Union[npt.NDArray[PointDType], Tuple[float, float, float]]
+Vector3: TypeAlias = Union[npt.NDArray[PointDType], tuple[float, float, float]]
 """`shape (3,)`
 A 3D vector: `[float, float, float]`
 """
 
-Vector: TypeAlias = Union[npt.NDArray[PointDType], Tuple[float, ...]]
+Vector: TypeAlias = Union[npt.NDArray[PointDType], tuple[float, ...]]
 """`shape (N,)`
 An `N`-D vector: `[float, ...]`
 """
 
-RowVector: TypeAlias = Union[npt.NDArray[PointDType], Tuple[Tuple[float, ...]]]
+RowVector: TypeAlias = Union[npt.NDArray[PointDType], tuple[tuple[float, ...]]]
 """`shape (1, N)`
 A row vector: `[[float, ...]]`
 """
 
-ColVector: TypeAlias = Union[npt.NDArray[PointDType], Tuple[Tuple[float], ...]]
+ColVector: TypeAlias = Union[npt.NDArray[PointDType], tuple[tuple[float], ...]]
 """`shape (N, 1)`
 A column vector: `[[float], [float], ...]`
 """
 
-MatrixMN: TypeAlias = Union[npt.NDArray[PointDType], Tuple[Tuple[float, ...], ...]]
+MatrixMN: TypeAlias = Union[npt.NDArray[PointDType], tuple[tuple[float, ...], ...]]
 """`shape (M, N)`
 A matrix: `[[float, ...], [float, ...], ...]`
 """
 
-Zeros: TypeAlias = Union[npt.NDArray[ManimFloat], Tuple[Tuple[Literal[0], ...], ...]]
+Zeros: TypeAlias = Union[npt.NDArray[ManimFloat], tuple[tuple[Literal[0], ...], ...]]
 """A matrix of zeros, typically created with ``numpy.zeros((M, N))``"""
 
 
@@ -214,14 +214,14 @@ Bézier types
 """
 
 QuadraticBezierPoints: TypeAlias = Union[
-    npt.NDArray[PointDType], Tuple[Point3D, Point3D, Point3D]
+    npt.NDArray[PointDType], tuple[Point3D, Point3D, Point3D]
 ]
 """`shape (3, 3)`
 A `Point3D_Array` of control points for a single quadratic Bézier curve: `[[float, float, float], [float, float, float], [float, float, float]]`
 """
 
 QuadraticBezierPoints_Array: TypeAlias = Union[
-    npt.NDArray[PointDType], Tuple[QuadraticBezierPoints, ...]
+    npt.NDArray[PointDType], tuple[QuadraticBezierPoints, ...]
 ]
 """`shape (N, 3, 3)`
 An array of `N QuadraticBezierPoints` objects: `[[[float, float, float], [float, float, float], [float, float, float]], ...]`
@@ -242,14 +242,14 @@ curves are connected, forming a quadratic spline: `[[float, float, float], ...],
 """
 
 CubicBezierPoints: TypeAlias = Union[
-    npt.NDArray[PointDType], Tuple[Point3D, Point3D, Point3D, Point3D]
+    npt.NDArray[PointDType], tuple[Point3D, Point3D, Point3D, Point3D]
 ]
 """`shape (4, 3)`
 A `Point3D_Array` of control points for a single cubic Bézier curve: `[[float, float, float], [float, float, float], [float, float, float], [float, float, float]]`
 """
 
 CubicBezierPoints_Array: TypeAlias = Union[
-    npt.NDArray[PointDType], Tuple[CubicBezierPoints, ...]
+    npt.NDArray[PointDType], tuple[CubicBezierPoints, ...]
 ]
 """`shape (N, 4, 3)`
 An array of `N CubicBezierPoints` objects: `[[[float, float, float], [float, float, float], [float, float, float], [float, float, float]], ...]`
@@ -276,7 +276,7 @@ degree Bézier curve: `[[float, float, float], ...]`
 (Please refer to the documentation of the function you are using for further type information.)
 """
 
-BezierPoints_Array: TypeAlias = Union[npt.NDArray[PointDType], Tuple[BezierPoints, ...]]
+BezierPoints_Array: TypeAlias = Union[npt.NDArray[PointDType], tuple[BezierPoints, ...]]
 """`shape (N, PPC, 3)`
 An array of `N BezierPoints` objects containing `PPC Point3D` objects each: `[[[float, float, float], ...], ...]`
 (Please refer to the documentation of the function you are using for further type information.)
@@ -297,7 +297,7 @@ A special case of BezierPath where all the `N` Bézier curves consisting of `PPC
 (Please refer to the documentation of the function you are using for further type information.)
 """
 
-FlatBezierPoints: TypeAlias = Union[npt.NDArray[PointDType], Tuple[float, ...]]
+FlatBezierPoints: TypeAlias = Union[npt.NDArray[PointDType], tuple[float, ...]]
 """`shape (N)`
 A flattened array of Bézier control points: `[float, ...]`
 """
