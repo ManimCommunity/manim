@@ -44,7 +44,7 @@ def get_typing_docs() -> dict[str, dict[str, dict[str, str]]]:
             # It can be the start of a category
             section_str = "[CATEGORY]"
             if string.startswith(section_str):
-                category_name = string[len(section_str):].strip()
+                category_name = string[len(section_str) :].strip()
                 typing_docs_dict[category_name] = {}
                 category_dict = typing_docs_dict[category_name]
                 alias_dict = None

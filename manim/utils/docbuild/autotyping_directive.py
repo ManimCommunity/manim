@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from docutils import nodes
-from docutils.statemachine import ViewList
 from docutils.parsers.rst import Directive
+from docutils.statemachine import ViewList
 from sphinx.application import Sphinx
 
 from manim.utils.docbuild.module_parsing import get_typing_docs
@@ -21,7 +21,6 @@ class TypingModuleDocumenter(Directive):
 
     def run(self) -> list[nodes.Element]:
         content = nodes.container()
-        
 
         typing_docs_dict = get_typing_docs()
         for category_name, category_dict in typing_docs_dict.items():
@@ -40,12 +39,14 @@ class TypingModuleDocumenter(Directive):
 
                 alias_section += nodes.literal_block(text=alias_dict["definition"])
 
-                doc = nodes.paragraph() # one paragraph for both
+                doc = nodes.paragraph()  # one paragraph for both
                 # add | to keep on different lines
                 # TODO: Figure out where to log sphinx errors (/tmp/sphinx-errs not availiable for non-linux)
                 # result.append(f'| ``{alias_dict["definition"]}``', "/tmp/sphinx-errs.log", 10)
                 if "doc" in alias_dict:
-                    result.append("| %s" % alias_dict["doc"], "/tmp/sphinx-errs.log", 10)
+                    result.append(
+                        "| %s" % alias_dict["doc"], "/tmp/sphinx-errs.log", 10
+                    )
 
                 # https://www.sphinx-doc.org/en/master/extdev/markupapi.html#parsing-directive-content-as-rest
                 self.state.nested_parse(result, 0, doc)
