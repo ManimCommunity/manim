@@ -12,5 +12,5 @@ requested_plugins: set[str] = set(config["plugins"])
 missing_plugins = requested_plugins - set(get_plugins().keys())
 
 
-if not missing_plugins:
+if missing_plugins:
     logger.warning("Missing Plugins: %s", missing_plugins)
