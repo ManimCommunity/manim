@@ -5,18 +5,21 @@ from pathlib import Path
 
 from manim import typing
 
-__all__ = ["get_typing_docs"]
+__all__ = ["get_manim_typing_docs"]
 
 
-def get_typing_docs() -> dict[str, dict[str, dict[str, str]]]:
-    """Read the manim/typing.py file, generate an Abstract Syntax Tree
+MANIM_TYPING_DOCS: dict[str, dict[str, dict[str, str]]] = {}
+
+
+def get_manim_typing_docs() -> dict[str, dict[str, dict[str, str]]]:
+    """Read the ``manim/typing.py`` file, generate an Abstract Syntax Tree
     from it, and extract useful information about the type aliases
     defined in the file: the category they belong to, their definition
     and their description.
 
     Returns
     -------
-    typing_docs_dict : dict[str, dict[str, dict[str, str]]
+    MANIM_TYPING_DOCS : dict[str, dict[str, dict[str, str]]
         A dictionary containing the information from all the type
         aliases. Each key is the name of a category of types, and
         its corresponding value is another subdictionary containing
@@ -26,11 +29,14 @@ def get_typing_docs() -> dict[str, dict[str, dict[str, str]]]:
             aliases, and the values are subsubdictionaries containing
             field-value pairs with information about the type alias.
     """
+    global MANIM_TYPING_DOCS
+
+    if MANIM_TYPING_DOCS:
+        return MANIM_TYPING_DOCS
 
     with open(typing.__file__) as typing_file:
         typing_file_content = typing_file.read()
 
-    typing_docs_dict: dict[str, dict[str, dict[str, str]]] = {}
     category_dict: dict[str, dict[str, str]] | None = None
     alias_dict: dict[str, str] | None = None
 
@@ -45,8 +51,8 @@ def get_typing_docs() -> dict[str, dict[str, dict[str, str]]]:
             section_str = "[CATEGORY]"
             if string.startswith(section_str):
                 category_name = string[len(section_str) :].strip()
-                typing_docs_dict[category_name] = {}
-                category_dict = typing_docs_dict[category_name]
+                MANIM_TYPING_DOCS[category_name] = {}
+                category_dict = MANIM_TYPING_DOCS[category_name]
                 alias_dict = None
             # or a docstring of the alias defined before
             elif alias_dict:
@@ -84,4 +90,4 @@ def get_typing_docs() -> dict[str, dict[str, dict[str, str]]]:
         else:
             alias_dict = None
 
-    return typing_docs_dict
+    return MANIM_TYPING_DOCS

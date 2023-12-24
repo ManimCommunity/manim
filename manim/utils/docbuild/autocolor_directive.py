@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 import inspect
+from typing import TYPE_CHECKING
 
 from docutils import nodes
 from docutils.parsers.rst import Directive
-from sphinx.application import Sphinx
 
 from manim import ManimColor
+
+if TYPE_CHECKING:
+    from sphinx.application import Sphinx
 
 __all__ = ["ManimColorModuleDocumenter"]
 
@@ -23,9 +26,7 @@ class ManimColorModuleDocumenter(Directive):
     def add_directive_header(self, sig: str) -> None:
         super().add_directive_header(sig)
 
-    def run(
-        self,
-    ) -> None:
+    def run(self) -> list[nodes.Element]:
         module_name = self.arguments[0]
         try:
             import importlib
