@@ -26,13 +26,15 @@ from manim.mobject.types.vectorized_mobject import VMobject
 from manim.utils.color import BLACK
 
 NxGraph = nx.classes.graph.Graph | nx.classes.digraph.DiGraph
+
+
 class LayoutFunction(Protocol):
     def __call__(
         self,
         graph: NxGraph,
         scale: float | tuple[float, float, float] = 2,
         *args: tuple[Any, ...],
-        **kwargs: dict[str, Any]
+        **kwargs: dict[str, Any],
     ) -> dict[Hashable, np.ndarray[np.float64]]:
         ...
 
@@ -41,7 +43,7 @@ def _partite_layout(
     nx_graph: NxGraph,
     scale: float = 2,
     partitions: list[list[Hashable]] | None = None,
-    **kwargs: dict[str, Any]
+    **kwargs: dict[str, Any],
 ) -> dict[Hashable, np.ndarray[np.float64]]:
     if partitions is None or len(partitions) == 0:
         raise ValueError(
@@ -179,7 +181,18 @@ def _tree_layout(
     return {v: (np.array([x, y, 0]) - center) * sf for v, (x, y) in pos.items()}
 
 
-LayoutName = Literal["circular", "kamada_kawai", "partite", "planar", "random", "shell", "spectral", "spiral", "spring", "tree"]
+LayoutName = Literal[
+    "circular",
+    "kamada_kawai",
+    "partite",
+    "planar",
+    "random",
+    "shell",
+    "spectral",
+    "spiral",
+    "spring",
+    "tree",
+]
 
 _layouts: dict[LayoutName, LayoutFunction] = {
     "circular": cast(LayoutFunction, nx.layout.circular_layout),
@@ -194,9 +207,12 @@ _layouts: dict[LayoutName, LayoutFunction] = {
     "tree": cast(LayoutFunction, _tree_layout),
 }
 
+
 def _determine_graph_layout(
     nx_graph: nx.classes.graph.Graph | nx.classes.digraph.DiGraph,
-    layout: LayoutName | dict[Hashable, np.ndarray[np.float64]] | LayoutFunction = "spring",
+    layout: LayoutName
+    | dict[Hashable, np.ndarray[np.float64]]
+    | LayoutFunction = "spring",
     layout_scale: float | tuple[float, float, float] = 2,
     layout_config: dict[str, Any] | None = None,
 ) -> dict[Hashable, np.ndarray[np.float64]]:
@@ -318,7 +334,9 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         edges: list[tuple[Hashable, Hashable]],
         labels: bool | dict = False,
         label_fill_color: str = BLACK,
-        layout: LayoutName | dict[Hashable, np.ndarray[np.float64]] | LayoutFunction = "spring",
+        layout: LayoutName
+        | dict[Hashable, np.ndarray[np.float64]]
+        | LayoutFunction = "spring",
         layout_scale: float | tuple[float, float, float] = 2,
         layout_config: dict | None = None,
         vertex_type: type[Mobject] = Dot,
@@ -958,7 +976,9 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
 
     def change_layout(
         self,
-        layout: LayoutName | dict[Hashable, np.ndarray[np.float64]] | LayoutFunction = "spring",
+        layout: LayoutName
+        | dict[Hashable, np.ndarray[np.float64]]
+        | LayoutFunction = "spring",
         layout_scale: float | tuple[float, float, float] = 2,
         layout_config: dict[str, Any] | None = None,
         partitions: list[list[Hashable]] | None = None,
