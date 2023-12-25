@@ -305,7 +305,7 @@ class CoordinateSystem:
         label
             The label. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs.
         edge
-            The edge of the x-axis to which the label will be added, by default ``UR``.
+            The edge of the y-axis to which the label will be added, by default ``UR``.
         direction
             Allows for further positioning of the label from an edge, by default ``UR``
         buff
