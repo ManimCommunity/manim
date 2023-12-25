@@ -9,7 +9,7 @@ __all__ = [
 
 import itertools as it
 from copy import copy
-from typing import Any, Hashable, Iterable, Protocol, cast
+from typing import Any, Hashable, Iterable, Literal, Protocol, cast
 
 import networkx as nx
 import numpy as np
@@ -25,24 +25,24 @@ from manim.mobject.text.tex_mobject import MathTex
 from manim.mobject.types.vectorized_mobject import VMobject
 from manim.utils.color import BLACK
 
-
+NxGraph = nx.classes.graph.Graph | nx.classes.digraph.DiGraph
 class LayoutFunction(Protocol):
     def __call__(
         self,
-        graph: nx.classes.graph.Graph | nx.classes.digraph.DiGraph,
+        graph: NxGraph,
         scale: float | tuple[float, float, float] = 2,
-        *args: Any,
-        **kwargs: Any,
-    ) -> dict[Hashable, np.ndarray]:
+        *args: tuple[Any, ...],
+        **kwargs: dict[str, Any]
+    ) -> dict[Hashable, np.ndarray[np.float64]]:
         ...
 
 
 def _partite_layout(
-    nx_graph: nx.classes.graph.Graph,
+    nx_graph: NxGraph,
     scale: float = 2,
     partitions: list[list[Hashable]] | None = None,
-    **kwargs,
-) -> dict[Hashable, np.ndarray]:
+    **kwargs: dict[str, Any]
+) -> dict[Hashable, np.ndarray[np.float64]]:
     if partitions is None or len(partitions) == 0:
         raise ValueError(
             "The partite layout requires partitions parameter to contain the partition of the vertices",
@@ -63,7 +63,7 @@ def _partite_layout(
     return nx.layout.multipartite_layout(nx_graph, scale=scale, **kwargs)
 
 
-def _random_layout(nx_graph, scale: float = 2, **kwargs):
+def _random_layout(nx_graph: NxGraph, scale: float = 2, **kwargs: dict[str, Any]):
     # the random layout places coordinates in [0, 1)
     # we need to rescale manually afterwards...
     auto_layout = nx.layout.random_layout(nx_graph, **kwargs)
@@ -73,7 +73,7 @@ def _random_layout(nx_graph, scale: float = 2, **kwargs):
 
 
 def _tree_layout(
-    T: nx.classes.graph.Graph | nx.classes.digraph.DiGraph,
+    T: NxGraph,
     root_vertex: Hashable | None = None,
     scale: float | tuple | None = 2,
     vertex_spacing: tuple | None = None,
@@ -179,26 +179,27 @@ def _tree_layout(
     return {v: (np.array([x, y, 0]) - center) * sf for v, (x, y) in pos.items()}
 
 
-_layouts = {
-    "circular": nx.layout.circular_layout,
-    "kamada_kawai": nx.layout.kamada_kawai_layout,
-    "partite": _partite_layout,
-    "planar": nx.layout.planar_layout,
-    "random": _random_layout,
-    "shell": nx.layout.shell_layout,
-    "spectral": nx.layout.spectral_layout,
-    "spiral": nx.layout.spiral_layout,
-    "spring": nx.layout.spring_layout,
-    "tree": _tree_layout,
-}
+LayoutName = Literal["circular", "kamada_kawai", "partite", "planar", "random", "shell", "spectral", "spiral", "spring", "tree"]
 
+_layouts: dict[LayoutName, LayoutFunction] = {
+    "circular": cast(LayoutFunction, nx.layout.circular_layout),
+    "kamada_kawai": cast(LayoutFunction, nx.layout.kamada_kawai_layout),
+    "partite": cast(LayoutFunction, _partite_layout),
+    "planar": cast(LayoutFunction, nx.layout.planar_layout),
+    "random": cast(LayoutFunction, _random_layout),
+    "shell": cast(LayoutFunction, nx.layout.shell_layout),
+    "spectral": cast(LayoutFunction, nx.layout.spectral_layout),
+    "spiral": cast(LayoutFunction, nx.layout.spiral_layout),
+    "spring": cast(LayoutFunction, nx.layout.spring_layout),
+    "tree": cast(LayoutFunction, _tree_layout),
+}
 
 def _determine_graph_layout(
     nx_graph: nx.classes.graph.Graph | nx.classes.digraph.DiGraph,
-    layout: str | dict[Hashable, np.ndarray] | LayoutFunction = "spring",
+    layout: LayoutName | dict[Hashable, np.ndarray[np.float64]] | LayoutFunction = "spring",
     layout_scale: float | tuple[float, float, float] = 2,
-    layout_config: dict | None = None,
-) -> dict[Hashable, np.ndarray]:
+    layout_config: dict[str, Any] | None = None,
+) -> dict[Hashable, np.ndarray[np.float64]]:
     if layout_config is None:
         layout_config = {}
 
@@ -317,7 +318,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         edges: list[tuple[Hashable, Hashable]],
         labels: bool | dict = False,
         label_fill_color: str = BLACK,
-        layout: str | dict[Hashable, np.ndarray] | LayoutFunction = "spring",
+        layout: LayoutName | dict[Hashable, np.ndarray[np.float64]] | LayoutFunction = "spring",
         layout_scale: float | tuple[float, float, float] = 2,
         layout_config: dict | None = None,
         vertex_type: type[Mobject] = Dot,
@@ -412,7 +413,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         self.add_updater(self.update_edges)
 
     @staticmethod
-    def _empty_networkx_graph():
+    def _empty_networkx_graph() -> nx.classes.graph.Graph:
         """Return an empty networkx graph for the given graph type."""
         raise NotImplementedError("To be implemented in concrete subclasses")
 
@@ -957,9 +958,9 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
 
     def change_layout(
         self,
-        layout: str | dict[Hashable, np.ndarray] | LayoutFunction = "spring",
+        layout: LayoutName | dict[Hashable, np.ndarray[np.float64]] | LayoutFunction = "spring",
         layout_scale: float | tuple[float, float, float] = 2,
-        layout_config: dict | None = None,
+        layout_config: dict[str, Any] | None = None,
         partitions: list[list[Hashable]] | None = None,
         root_vertex: Hashable | None = None,
     ) -> Graph:
