@@ -49,6 +49,8 @@ Examples
 
 from __future__ import annotations
 
+import functools
+
 __all__ = ["Text", "Paragraph", "MarkupText", "register_font"]
 
 
@@ -63,7 +65,6 @@ from typing import Iterable, Sequence
 
 import manimpango
 import numpy as np
-from colour import Color
 from manimpango import MarkupUtils, PangoUtils, TextSetting
 
 from manim import config, logger
@@ -71,7 +72,7 @@ from manim.constants import *
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.svg.svg_mobject import SVGMobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
-from manim.utils.color import Colors, color_gradient
+from manim.utils.color import ManimColor, ParsableManimColor, color_gradient
 from manim.utils.deprecation import deprecated
 
 TEXT_MOB_SCALE_FACTOR = 0.05
@@ -148,7 +149,7 @@ class Paragraph(VGroup):
         self,
         *text: Sequence[str],
         line_spacing: float = -1,
-        alignment: Optional[str] = None,
+        alignment: str | None = None,
         **kwargs,
     ) -> None:
         self.line_spacing = line_spacing
@@ -408,12 +409,17 @@ class Text(SVGMobject):
 
     """
 
+    @staticmethod
+    @functools.lru_cache(maxsize=None)
+    def font_list() -> list[str]:
+        return manimpango.list_fonts()
+
     def __init__(
         self,
         text: str,
         fill_opacity: float = 1.0,
         stroke_width: float = 0,
-        color: Color | str | None = None,
+        color: ParsableManimColor | None = None,
         font_size: float = DEFAULT_FONT_SIZE,
         line_spacing: float = -1,
         font: str = "",
@@ -432,13 +438,12 @@ class Text(SVGMobject):
         width: float = None,
         should_center: bool = True,
         disable_ligatures: bool = False,
+        use_svg_cache: bool = False,
         **kwargs,
     ) -> None:
         self.line_spacing = line_spacing
-        if font and warn_missing_font:
-            fonts_list = manimpango.list_fonts()
-            if font not in fonts_list:
-                logger.warning(f"Font {font} not in {fonts_list}.")
+        if font and warn_missing_font and font not in Text.font_list():
+            logger.warning(f"Font {font} not in {Text.font_list()}.")
         self.font = font
         self._font_size = float(font_size)
         # needs to be a float or else size is inflated when font_size = 24
@@ -463,7 +468,7 @@ class Text(SVGMobject):
         t2g = kwargs.pop("text2gradient", t2g)
         t2s = kwargs.pop("text2slant", t2s)
         t2w = kwargs.pop("text2weight", t2w)
-        self.t2c = t2c
+        self.t2c = {k: ManimColor(v).to_hex() for k, v in t2c.items()}
         self.t2f = t2f
         self.t2g = t2g
         self.t2s = t2s
@@ -482,8 +487,8 @@ class Text(SVGMobject):
         else:
             self.line_spacing = self._font_size + self._font_size * self.line_spacing
 
-        color = Color(color) if color else VMobject().color
-        file_name = self._text2svg(color)
+        color: ManimColor = ManimColor(color) if color else VMobject().color
+        file_name = self._text2svg(color.to_hex())
         PangoUtils.remove_last_M(file_name)
         super().__init__(
             file_name,
@@ -492,7 +497,7 @@ class Text(SVGMobject):
             height=height,
             width=width,
             should_center=should_center,
-            use_svg_cache=False,
+            use_svg_cache=use_svg_cache,
             **kwargs,
         )
         self.text = text
@@ -643,10 +648,10 @@ class Text(SVGMobject):
             for start, end in self._find_indexes(word, self.text):
                 self.chars[start:end].set_color_by_gradient(*gradient)
 
-    def _text2hash(self, color: Color):
+    def _text2hash(self, color: ManimColor):
         """Generates ``sha256`` hash for file name."""
         settings = (
-            "PANGO" + self.font + self.slant + self.weight + color.hex_l
+            "PANGO" + self.font + self.slant + self.weight + str(color)
         )  # to differentiate Text and CairoText
         settings += str(self.t2f) + str(self.t2s) + str(self.t2w) + str(self.t2c)
         settings += str(self.line_spacing) + str(self._font_size)
@@ -691,7 +696,9 @@ class Text(SVGMobject):
         t2xwords = set(chain(*([*t2x.keys()] for t2x, _ in t2xs)))
         for word in t2xwords:
             setting_args = {
-                arg: t2x[word] if word in t2x else default_args[arg]
+                arg: str(t2x[word]) if word in t2x else default_args[arg]
+                # NOTE: when t2x[word] is a ManimColor, str will yield the
+                # hex representation
                 for t2x, arg in t2xs
             }
 
@@ -707,13 +714,13 @@ class Text(SVGMobject):
         if self.gradient:
             colors = color_gradient(self.gradient, len(self.text))
             for i in range(len(self.text)):
-                args["color"] = colors[i].hex
+                args["color"] = colors[i].to_hex()
                 settings.append(TextSetting(i, i + 1, **args))
 
         for word, gradient in self.t2g.items():
             if isinstance(gradient, str) or len(gradient) == 1:
                 color = gradient if isinstance(gradient, str) else gradient[0]
-                gradient = [Color(color)]
+                gradient = [ManimColor(color)]
             colors = (
                 color_gradient(gradient, len(word))
                 if len(gradient) != 1
@@ -721,11 +728,11 @@ class Text(SVGMobject):
             )
             for start, end in self._find_indexes(word, self.text):
                 for i in range(start, end):
-                    args["color"] = colors[i - start].hex
+                    args["color"] = colors[i - start].to_hex()
                     settings.append(TextSetting(i, i + 1, **args))
         return settings
 
-    def _text2settings(self, color: Color):
+    def _text2settings(self, color: str):
         """Converts the texts and styles to a setting for parsing."""
         t2xs = [
             (self.t2f, "font"),
@@ -734,8 +741,9 @@ class Text(SVGMobject):
             (self.t2c, "color"),
         ]
         # setting_args requires values to be strings
+
         default_args = {
-            arg: getattr(self, arg) if arg != "color" else str(color) for _, arg in t2xs
+            arg: getattr(self, arg) if arg != "color" else color for _, arg in t2xs
         }
 
         settings = self._get_settings_from_t2xs(t2xs, default_args)
@@ -791,7 +799,7 @@ class Text(SVGMobject):
 
         return settings
 
-    def _text2svg(self, color: Color):
+    def _text2svg(self, color: ManimColor):
         """Convert the text to SVG using Pango."""
         size = self._font_size
         line_spacing = self.line_spacing
@@ -1131,12 +1139,17 @@ class MarkupText(SVGMobject):
 
     """
 
+    @staticmethod
+    @functools.lru_cache(maxsize=None)
+    def font_list() -> list[str]:
+        return manimpango.list_fonts()
+
     def __init__(
         self,
         text: str,
         fill_opacity: float = 1,
         stroke_width: float = 0,
-        color: Color | None = None,
+        color: ParsableManimColor | None = None,
         font_size: float = DEFAULT_FONT_SIZE,
         line_spacing: int = -1,
         font: str = "",
@@ -1154,10 +1167,8 @@ class MarkupText(SVGMobject):
     ) -> None:
         self.text = text
         self.line_spacing = line_spacing
-        if font and warn_missing_font:
-            fonts_list = manimpango.list_fonts()
-            if font not in fonts_list:
-                logger.warning(f"Font {font} not in {fonts_list}.")
+        if font and warn_missing_font and font not in Text.font_list():
+            logger.warning(f"Font {font} not in {Text.font_list()}.")
         self.font = font
         self._font_size = float(font_size)
         self.slant = slant
@@ -1189,7 +1200,7 @@ class MarkupText(SVGMobject):
         else:
             self.line_spacing = self._font_size + self._font_size * self.line_spacing
 
-        color = Color(color) if color else VMobject().color
+        color: ManimColor = ManimColor(color) if color else VMobject().color
         file_name = self._text2svg(color)
 
         PangoUtils.remove_last_M(file_name)
@@ -1305,10 +1316,14 @@ class MarkupText(SVGMobject):
         else:
             self.scale(font_val / self.font_size)
 
-    def _text2hash(self, color: Color):
+    def _text2hash(self, color: ParsableManimColor):
         """Generates ``sha256`` hash for file name."""
         settings = (
-            "MARKUPPANGO" + self.font + self.slant + self.weight + color.hex_l
+            "MARKUPPANGO"
+            + self.font
+            + self.slant
+            + self.weight
+            + ManimColor(color).to_hex().lower()
         )  # to differentiate from classical Pango Text
         settings += str(self.line_spacing) + str(self._font_size)
         settings += str(self.disable_ligatures)
@@ -1318,23 +1333,25 @@ class MarkupText(SVGMobject):
         hasher.update(id_str.encode())
         return hasher.hexdigest()[:16]
 
-    def _text2svg(self, color: Color | None):
+    def _text2svg(self, color: ParsableManimColor | None):
         """Convert the text to SVG using Pango."""
+        color = ManimColor(color)
         size = self._font_size
         line_spacing = self.line_spacing
         size /= TEXT2SVG_ADJUSTMENT_FACTOR
         line_spacing /= TEXT2SVG_ADJUSTMENT_FACTOR
 
         dir_name = config.get_dir("text_dir")
-        if not dir_name.exists():
+        if not dir_name.is_dir():
             dir_name.mkdir(parents=True)
         hash_name = self._text2hash(color)
         file_name = dir_name / (hash_name + ".svg")
+
         if file_name.exists():
             svg_file = str(file_name.resolve())
         else:
             final_text = (
-                f'<span foreground="{color}">{self.text}</span>'
+                f'<span foreground="{color.to_hex()}">{self.text}</span>'
                 if color is not None
                 else self.text
             )
@@ -1412,7 +1429,7 @@ class MarkupText(SVGMobject):
         if re.match("#[0-9a-f]{6}", col):
             return col
         else:
-            return Colors[col.lower()].value
+            return ManimColor(col).to_hex()
 
     def _extract_color_tags(self):
         """Used to determine which parts (if any) of the string should be formatted

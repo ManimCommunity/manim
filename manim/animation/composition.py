@@ -3,11 +3,13 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Callable, Sequence
+import types
+from typing import TYPE_CHECKING, Callable, Iterable, Sequence
 
 import numpy as np
 
 from manim.mobject.opengl.opengl_mobject import OpenGLGroup
+from manim.utils.parameter_parsing import flatten_iterable_parameters
 
 from .._config import config
 from ..animation.animation import Animation, prepare_animation
@@ -54,14 +56,15 @@ class AnimationGroup(Animation):
 
     def __init__(
         self,
-        *animations: Animation,
+        *animations: Animation | Iterable[Animation] | types.GeneratorType[Animation],
         group: Group | VGroup | OpenGLGroup | OpenGLVGroup = None,
         run_time: float | None = None,
         rate_func: Callable[[float], float] = linear,
         lag_ratio: float = 0,
         **kwargs,
     ) -> None:
-        self.animations = [prepare_animation(anim) for anim in animations]
+        arg_anim = flatten_iterable_parameters(animations)
+        self.animations = [prepare_animation(anim) for anim in arg_anim]
         self.rate_func = rate_func
         self.group = group
         if self.group is None:
@@ -81,6 +84,16 @@ class AnimationGroup(Animation):
         return list(self.group)
 
     def begin(self) -> None:
+        if self.run_time <= 0:
+            tmp = (
+                "Please set the run_time to be positive"
+                if len(self.animations) != 0
+                else "Please add at least one Animation with positive run_time"
+            )
+            raise ValueError(
+                f"{self} has a run_time of 0 seconds, this cannot be "
+                f"rendered correctly. {tmp}."
+            )
         if self.suspend_mobject_updating:
             self.group.suspend_updating()
         for anim in self.animations:

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from manim.utils.parameter_parsing import flatten_iterable_parameters
+
 __all__ = ["Scene"]
 
 import copy
@@ -13,7 +15,6 @@ import threading
 import time
 import types
 from queue import Queue
-from typing import Callable
 
 import srt
 
@@ -25,6 +26,8 @@ try:
     dearpygui_imported = True
 except ImportError:
     dearpygui_imported = False
+from typing import TYPE_CHECKING
+
 import numpy as np
 from tqdm import tqdm
 from watchdog.events import FileSystemEventHandler
@@ -47,6 +50,9 @@ from ..utils.family import extract_mobject_family_members
 from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
 from ..utils.file_ops import open_media_file
 from ..utils.iterables import list_difference_update, list_update
+
+if TYPE_CHECKING:
+    from typing import Callable, Iterable
 
 
 class RerunSceneHandler(FileSystemEventHandler):
@@ -865,7 +871,11 @@ class Scene:
         )
         return all_moving_mobject_families, static_mobjects
 
-    def compile_animations(self, *args: Animation, **kwargs):
+    def compile_animations(
+        self,
+        *args: Animation | Iterable[Animation] | types.GeneratorType[Animation],
+        **kwargs,
+    ):
         """
         Creates _MethodAnimations from any _AnimationBuilders and updates animation
         kwargs with kwargs passed to play().
@@ -883,7 +893,9 @@ class Scene:
             Animations to be played.
         """
         animations = []
-        for arg in args:
+        arg_anims = flatten_iterable_parameters(args)
+        # Allow passing a generator to self.play instead of comma separated arguments
+        for arg in arg_anims:
             try:
                 animations.append(prepare_animation(arg))
             except TypeError:
@@ -1027,7 +1039,7 @@ class Scene:
 
     def play(
         self,
-        *args,
+        *args: Animation | Iterable[Animation] | types.GeneratorType[Animation],
         subcaption=None,
         subcaption_duration=None,
         subcaption_offset=0,
@@ -1157,7 +1169,11 @@ class Scene:
         """
         self.wait(max_time, stop_condition=stop_condition)
 
-    def compile_animation_data(self, *animations: Animation, **play_kwargs):
+    def compile_animation_data(
+        self,
+        *animations: Animation | Iterable[Animation] | types.GeneratorType[Animation],
+        **play_kwargs,
+    ):
         """Given a list of animations, compile the corresponding
         static and moving mobjects, and gather the animation durations.
 
@@ -1317,12 +1333,20 @@ class Scene:
             # Allow for calling scene methods without prepending 'self.'.
             local_namespace[method] = embedded_method
 
+        from sqlite3 import connect
+
+        from IPython.core.getipython import get_ipython
         from IPython.terminal.embed import InteractiveShellEmbed
         from traitlets.config import Config
 
         cfg = Config()
         cfg.TerminalInteractiveShell.confirm_exit = False
-        shell = InteractiveShellEmbed(config=cfg)
+        if get_ipython() is None:
+            shell = InteractiveShellEmbed.instance(config=cfg)
+        else:
+            shell = InteractiveShellEmbed(config=cfg)
+        hist = get_ipython().history_manager
+        hist.db = connect(hist.hist_file, check_same_thread=False)
 
         keyboard_thread = threading.Thread(
             target=ipython,
@@ -1522,8 +1546,10 @@ class Scene:
         subtitle = srt.Subtitle(
             index=len(self.renderer.file_writer.subcaptions),
             content=content,
-            start=datetime.timedelta(seconds=self.renderer.time + offset),
-            end=datetime.timedelta(seconds=self.renderer.time + offset + duration),
+            start=datetime.timedelta(seconds=float(self.renderer.time + offset)),
+            end=datetime.timedelta(
+                seconds=float(self.renderer.time + offset + duration)
+            ),
         )
         self.renderer.file_writer.subcaptions.append(subtitle)
 

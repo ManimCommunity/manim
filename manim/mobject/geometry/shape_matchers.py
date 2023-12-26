@@ -4,13 +4,17 @@ from __future__ import annotations
 
 __all__ = ["SurroundingRectangle", "BackgroundRectangle", "Cross", "Underline"]
 
+from typing import Any
+
+from typing_extensions import Self
+
 from manim import config, logger
 from manim.constants import *
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import RoundedRectangle
 from manim.mobject.mobject import Mobject
 from manim.mobject.types.vectorized_mobject import VGroup
-from manim.utils.color import BLACK, RED, YELLOW, Color, Colors
+from manim.utils.color import BLACK, RED, YELLOW, ManimColor, ParsableManimColor
 
 
 class SurroundingRectangle(RoundedRectangle):
@@ -38,8 +42,13 @@ class SurroundingRectangle(RoundedRectangle):
     """
 
     def __init__(
-        self, mobject, color=YELLOW, buff=SMALL_BUFF, corner_radius=0.0, **kwargs
-    ):
+        self,
+        mobject: Mobject,
+        color: ParsableManimColor = YELLOW,
+        buff: float = SMALL_BUFF,
+        corner_radius: float = 0.0,
+        **kwargs,
+    ) -> None:
         super().__init__(
             color=color,
             width=mobject.width + 2 * buff,
@@ -78,8 +87,8 @@ class BackgroundRectangle(SurroundingRectangle):
 
     def __init__(
         self,
-        mobject,
-        color: Colors | None = None,
+        mobject: Mobject,
+        color: ParsableManimColor | None = None,
         stroke_width: float = 0,
         stroke_opacity: float = 0,
         fill_opacity: float = 0.75,
@@ -98,13 +107,13 @@ class BackgroundRectangle(SurroundingRectangle):
             buff=buff,
             **kwargs,
         )
-        self.original_fill_opacity = self.fill_opacity
+        self.original_fill_opacity: float = self.fill_opacity
 
-    def pointwise_become_partial(self, mobject, a, b):
+    def pointwise_become_partial(self, mobject: Mobject, a: Any, b: float) -> Self:
         self.set_fill(opacity=b * self.original_fill_opacity)
         return self
 
-    def set_style(self, fill_opacity, **kwargs):
+    def set_style(self, fill_opacity: float, **kwargs) -> Self:
         # Unchangeable style, except for fill_opacity
         # All other style arguments are ignored
         super().set_style(
@@ -120,8 +129,8 @@ class BackgroundRectangle(SurroundingRectangle):
             )
         return self
 
-    def get_fill_color(self):
-        return Color(self.color)
+    def get_fill_color(self) -> ManimColor:
+        return self.color
 
 
 class Cross(VGroup):
@@ -152,11 +161,11 @@ class Cross(VGroup):
     def __init__(
         self,
         mobject: Mobject | None = None,
-        stroke_color: Color = RED,
-        stroke_width: float = 6,
-        scale_factor: float = 1,
+        stroke_color: ParsableManimColor = RED,
+        stroke_width: float = 6.0,
+        scale_factor: float = 1.0,
         **kwargs,
-    ):
+    ) -> None:
         super().__init__(
             Line(UP + LEFT, DOWN + RIGHT), Line(UP + RIGHT, DOWN + LEFT), **kwargs
         )
@@ -181,7 +190,7 @@ class Underline(Line):
                 self.add(man, ul)
     """
 
-    def __init__(self, mobject, buff=SMALL_BUFF, **kwargs):
+    def __init__(self, mobject: Mobject, buff: float = SMALL_BUFF, **kwargs) -> None:
         super().__init__(LEFT, RIGHT, buff=buff, **kwargs)
         self.match_width(mobject)
         self.next_to(mobject, DOWN, buff=self.buff)

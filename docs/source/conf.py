@@ -43,6 +43,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinxext.opengraph",
     "manim.utils.docbuild.manim_directive",
+    "manim.utils.docbuild.autocolor_directive",
     "sphinx.ext.graphviz",
     "sphinx.ext.inheritance_diagram",
     "sphinxcontrib.programoutput",
@@ -171,8 +172,6 @@ inheritance_edge_attrs = {
     "penwidth": 1,
 }
 
-html_js_files = [
-    "responsiveSvg.js",
-]
+html_js_files = ["responsiveSvg.js"]
 
 graphviz_output_format = "svg"
