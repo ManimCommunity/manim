@@ -94,8 +94,8 @@ the IEEE 754 standard.
 
 ManimInt: TypeAlias = np.int64
 r"""A long integer (64 bits, or 8 bytes). It can take values between
-:math:`-2^63` and :math:`+2^63 - 1`, which expressed in base 10 is a range
-between around :math:`-9.223 \cdot 10^18` and :math:`+9.223 \cdot 10^18`.
+:math:`-2^{63}` and :math:`+2^{63} - 1`, which expressed in base 10 is a range
+between around :math:`-9.223 \cdot 10^{18}` and :math:`+9.223 \cdot 10^{18}`.
 """
 
 
