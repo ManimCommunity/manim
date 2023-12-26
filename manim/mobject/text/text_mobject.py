@@ -352,7 +352,7 @@ class Text(SVGMobject):
                )
                 text6.scale(1.3).shift(DOWN)
                 self.add(text1, text2, text3, text4, text5 , text6)
-                Group(*self.mobjects).arrange(DOWN, buff=.8).set_height(config.frame_height-LARGE_BUFF)
+                Group(*self.mobjects).arrange(DOWN, buff=.8).set(height=config.frame_height-LARGE_BUFF)
 
     .. manim:: TextMoreCustomization
             :save_last_frame:
