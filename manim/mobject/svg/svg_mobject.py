@@ -441,9 +441,9 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         if self.should_center:
             self.center()
         if self.svg_height is not None:
-            self.set_height(self.svg_height)
+            self.set(height=self.svg_height)
         if self.svg_width is not None:
-            self.set_width(self.svg_width)
+            self.set(width=self.svg_width)
 
 
 class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
