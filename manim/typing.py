@@ -77,6 +77,9 @@ __all__ = [
     "PathFuncType",
     "MappingFunction",
     "Image",
+    "GrayscaleImage",
+    "RGBImage",
+    "RGBAImage",
     "StrPath",
     "StrOrBytesPath",
 ]
@@ -105,8 +108,8 @@ Color types
 """
 
 ManimColorDType: TypeAlias = ManimFloat
-"""Default type for color array elements: a double-precision float between
-0 and 1.
+"""Data type used in :class:`~.ManimColorInternal`: a double-precision float
+between 0 and 1.
 """
 
 RGB_Array_Float: TypeAlias = npt.NDArray[ManimColorDType]
@@ -171,7 +174,7 @@ Its components represent, in order: Hue, Saturation and Value (or Brightness).
 
 ManimColorInternal: TypeAlias = RGBA_Array_Float
 """``shape: (4,)``
-Internal color representation used by `ManimColor`, following the RGBA format.
+Internal color representation used by :class:`~.ManimColor`, following the RGBA format.
 It consists of 4 floats between 0 and 1, representing in order:
 Red light, Green light, Blue light, and Alpha (opacity).
 """
@@ -221,13 +224,13 @@ A 3D point: ``[float, float, float]``.
 
 InternalPoint3D_Array: TypeAlias = npt.NDArray[PointDType]
 """``shape: (N, 3)``
-An array of :class:`~Point3D`: objects: ``[[float, float, float], ...]``.
+An array of `Point3D` objects: ``[[float, float, float], ...]``.
 This type alias is mostly made available for internal use, and only includes the NumPy type.
 """
 
 Point3D_Array: TypeAlias = Union[InternalPoint3D_Array, tuple[Point3D, ...]]
 """``shape: (N, 3)``
-An array of :data:`~Point3D`: objects: ``[[float, float, float], ...]``.
+An array of `Point3D` objects: ``[[float, float, float], ...]``.
 (Please refer to the documentation of the function you are using for further type information.)
 """
 
@@ -239,17 +242,17 @@ Vector types
 
 Vector2: TypeAlias = Union[npt.NDArray[PointDType], tuple[float, float]]
 """``shape: (2,)``
-A 2D vector: `[float, float]`.
+A 2D vector: ``[float, float]``.
 """
 
 Vector3: TypeAlias = Union[npt.NDArray[PointDType], tuple[float, float, float]]
 """``shape: (3,)``
-A 3D vector: `[float, float, float]`.
+A 3D vector: ``[float, float, float]``.
 """
 
 Vector: TypeAlias = Union[npt.NDArray[PointDType], tuple[float, ...]]
 """``shape (N,)``
-An `N`-D vector: ``}[float, ...]``.
+An `N`-D vector: ``[float, ...]``.
 """
 
 RowVector: TypeAlias = Union[npt.NDArray[PointDType], tuple[tuple[float, ...]]]
@@ -273,7 +276,7 @@ MatrixMN: TypeAlias = Union[npt.NDArray[PointDType], tuple[tuple[float, ...], ..
 A matrix: ``[[float, ...], [float, ...], ...]``.
 """
 
-Zeros: TypeAlias = Union[npt.NDArray[ManimFloat], tuple[tuple[Literal[0], ...], ...]]
+Zeros: TypeAlias = Union[npt.NDArray[PointDType], tuple[tuple[Literal[0], ...], ...]]
 """``shape: (M, N)``
 A `MatrixMN` filled with zeros, typically created with ``numpy.zeros((M, N))``."""
 
@@ -341,14 +344,14 @@ curves are connected, forming a quadratic spline: ``[[float, float, float], ...]
 
 BezierPoints: TypeAlias = Point3D_Array
 """``shape: (PPC, 3)``
-A ``Point3D_Array`` of `PPC = n + 1` ("Points Per Curve") control points for a single `n`-th
+A `Point3D_Array` of `PPC = n + 1` ("Points Per Curve") control points for a single `n`-th
 degree Bézier curve: ``[[float, float, float], ...]``.
 (Please refer to the documentation of the function you are using for further type information.)
 """
 
 BezierPoints_Array: TypeAlias = Union[npt.NDArray[PointDType], tuple[BezierPoints, ...]]
 """``shape: (N, PPC, 3)``
-An array of `N BezierPoints` objects containing `PPC Point3D` objects each: ``[[[float, float, float], ...], ...]``.
+An array of `N` `BezierPoints` objects containing `PPC Point3D` objects each: ``[[[float, float, float], ...], ...]``.
 (Please refer to the documentation of the function you are using for further type information.)
 """
 
@@ -395,7 +398,7 @@ Image types
 """
 
 Image: TypeAlias = npt.NDArray[ManimInt]
-"""``shape: (height, width) | (height, width, 3) | (height, width, 4)``.
+"""``shape: (height, width) | (height, width, 3) | (height, width, 4)``
 A rasterized image with a height of ``height`` pixels and a width of ``width``
 pixels. Every value in the array is an integer from 0 to 255. Every pixel is
 represented either by a single integer indicating its lightness (for greyscale
@@ -404,8 +407,8 @@ images), an `RGB_Array_Int` or an `RGBA_Array_Int`.
 
 GrayscaleImage: TypeAlias = Image
 """``shape: (height, width)``
-A 100% opaque grayscale `Image`, where every pixel value is a single integer
-from 0 to 255 indicating its lightness (black -> gray -> white).
+A 100% opaque grayscale `Image`, where every pixel value is a `ManimInt`
+indicating its lightness (black -> gray -> white).
 """
 
 RGBImage: TypeAlias = Image

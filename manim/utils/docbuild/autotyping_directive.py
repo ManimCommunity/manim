@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from typing import TYPE_CHECKING
 
 from docutils import nodes
@@ -10,49 +11,20 @@ from manim.utils.docbuild.module_parsing import get_manim_typing_docs
 
 if TYPE_CHECKING:
     from sphinx.application import Sphinx
-    from sphinx.environment import BuildEnvironment
 
-__all__ = ["TypingModuleDocumenter", "resolve_type_aliases"]
+__all__ = ["TypingModuleDocumenter"]
 
 
 MANIM_TYPING_DOCS = get_manim_typing_docs()
-MANIM_TYPE_ALIASES = [
+ALIAS_LIST = [
     alias_name
     for category_dict in MANIM_TYPING_DOCS.values()
     for alias_name in category_dict.keys()
 ]
-# This is to prevent issues when replacing text
-MANIM_TYPE_ALIASES.sort(key=lambda alias: len(alias), reverse=True)
 
 
 def setup(app: Sphinx) -> None:
-    app.connect("missing-reference", resolve_type_aliases)
     app.add_directive("autotypingmodule", TypingModuleDocumenter)
-
-
-def resolve_type_aliases(
-    app: Sphinx,
-    env: BuildEnvironment,
-    node: nodes.Element,
-    contnode: nodes.Element,
-) -> nodes.Element | None:
-    """Resolve :class: references to type aliases as :attr: instead.
-    From https://github.com/sphinx-doc/sphinx/issues/10785
-    """
-    if (
-        node["refdomain"] == "py"
-        and node["reftype"] == "class"
-        and node["reftarget"] in MANIM_TYPE_ALIASES
-    ):
-        return app.env.get_domain("py").resolve_xref(
-            env,
-            node["refdoc"],
-            app.builder,
-            "attr",
-            node["reftarget"],
-            node,
-            contnode,
-        )
 
 
 class TypingModuleDocumenter(Directive):
@@ -71,27 +43,34 @@ class TypingModuleDocumenter(Directive):
             category_section += category_alias_container
 
             for alias_name, alias_dict in category_dict.items():
-                alias_section = nodes.section(ids=[alias_name])
-                category_alias_container += alias_section
+                unparsed = ViewList(
+                    [
+                        f".. class:: {alias_name}",
+                        "",
+                        "    .. code-block::",
+                        "",
+                        f"        {alias_dict['definition']}",
+                        "",
+                    ]
+                )
 
-                alias_section += nodes.title(text=alias_name)
-                alias_paragraph = nodes.paragraph()
-                alias_section += alias_paragraph
-
-                alias_def = alias_dict["definition"]
-                # for A in MANIM_TYPE_ALIASES:
-                #     alias_def = alias_def.replace(A, f":ref:`{A}`")
-                alias_paragraph += nodes.literal_block(text=alias_def)
-                result = ViewList()
                 if "doc" in alias_dict:
                     alias_doc = alias_dict["doc"]
-                    # for A in MANIM_TYPE_ALIASES:
-                    #     alias_doc = alias_doc.replace(A, f":ref:`{A}`")
-                    # add | to keep on different lines
-                    result.append("| %s" % alias_doc, "/tmp/sphinx-errs.log", 10)
+                    for A in ALIAS_LIST:
+                        alias_doc = alias_doc.replace(f"`{A}`", f":class:`~.{A}`")
+                    doc_lines = alias_doc.split("\n")
+                    if (
+                        len(doc_lines) >= 2
+                        and doc_lines[0].startswith("``shape:")
+                        and doc_lines[1].strip() != ""
+                    ):
+                        doc_lines.insert(1, "")
+                    unparsed.extend(ViewList([f"    {line}" for line in doc_lines]))
 
                 # https://www.sphinx-doc.org/en/master/extdev/markupapi.html#parsing-directive-content-as-rest
-                self.state.nested_parse(result, 0, alias_paragraph)
+                alias_section = nodes.container()
+                self.state.nested_parse(unparsed, 0, alias_section)
+                category_alias_container += alias_section
 
             content += category_section
 

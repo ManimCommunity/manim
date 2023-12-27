@@ -5,7 +5,7 @@
 .. automodule:: {{ fullname }}
 
    {% block attributes %}
-   {% if attributes %}
+   {% if attributes and fullname != 'manim.typing' %}
    .. rubric:: Module Attributes
 
    .. autosummary::
