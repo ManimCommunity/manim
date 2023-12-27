@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import ast
 from pathlib import Path
-from typing import TypeAlias
+
+from typing_extensions import TypeAlias
 
 __all__ = ["parse_module_attributes"]
 
@@ -70,7 +71,7 @@ def parse_module_attributes() -> tuple[AliasDocsDict, DataDict]:
         module_name[-1] = module_name[-1][:-3]  # remove .py
         module_name = ".".join(module_name)
 
-        module_content = module_path.read_text()
+        module_content = module_path.read_text(encoding="utf-8")
 
         # For storing TypeAliases
         module_dict: ModuleLevelAliasDict = {}
@@ -125,8 +126,7 @@ def parse_module_attributes() -> tuple[AliasDocsDict, DataDict]:
                     )
                 else:
                     definition = ast.unparse(def_node)
-                # for subnode in ast.walk(node.value):
-                #     print(ast.dump(subnode, indent=4), end="\n\n")
+
                 definition = definition.replace("npt.", "")
                 if category_dict is None:
                     module_dict[""] = {}

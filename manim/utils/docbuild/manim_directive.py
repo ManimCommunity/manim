@@ -101,7 +101,10 @@ from manim import __version__ as manim_version
 if TYPE_CHECKING:
     from sphinx.application import Sphinx
 
-classnamedict = {}
+__all__ = ["ManimDirective"]
+
+
+classnamedict: dict[str, int] = {}
 
 
 class SkipManimNode(nodes.Admonition, nodes.Element):
