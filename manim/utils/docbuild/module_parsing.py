@@ -23,7 +23,7 @@ ModuleLevelAliasDict: TypeAlias = dict[str, AliasCategoryDict]
 classified by category in different `AliasCategoryDict` objects.
 """
 
-AliasDocsDict: TypeAlias = dict[str, AliasDocsDict]
+AliasDocsDict: TypeAlias = dict[str, ModuleLevelAliasDict]
 """Dictionary which, for every module in Manim, contains documentation
 about their module-level attributes which are explicitly defined as
 :class:`TypeAlias`, separating them from the rest of attributes.
