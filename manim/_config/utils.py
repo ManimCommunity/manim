@@ -20,18 +20,22 @@ import os
 import re
 import sys
 from collections.abc import Mapping, MutableMapping
-from enum import EnumMeta
 from pathlib import Path
-from typing import Any, ClassVar, Iterable, Iterator, NoReturn
+from typing import TYPE_CHECKING, Any, ClassVar, Iterable, Iterator, NoReturn
 
 import numpy as np
-from typing_extensions import Self
 
-from .. import constants
-from ..constants import RendererType
-from ..typing import StrPath, Vector3D
-from ..utils.color import ManimColor
-from ..utils.tex import TexTemplate, TexTemplateFromFile
+from manim import constants
+from manim.constants import RendererType
+from manim.utils.color import ManimColor
+from manim.utils.tex import TexTemplate, TexTemplateFromFile
+
+if TYPE_CHECKING:
+    from enum import EnumMeta
+
+    from typing_extensions import Self
+
+    from manim.typing import StrPath, Vector3D
 
 __all__ = ["config_file_paths", "make_config_parser", "ManimConfig", "ManimFrame"]
 

@@ -2,7 +2,26 @@
 
 from __future__ import annotations
 
-from manim.typing import Point3D_Array, Vector3D, VectorND
+import itertools as it
+from typing import TYPE_CHECKING, Sequence
+
+import numpy as np
+from mapbox_earcut import triangulate_float32 as earcut
+from scipy.spatial.transform import Rotation
+
+from manim.constants import DOWN, OUT, PI, RIGHT, TAU, UP, RendererType
+from manim.utils.iterables import adjacent_pairs
+
+if TYPE_CHECKING:
+    import numpy.typing as npt
+
+    from manim.typing import (
+        ManimFloat,
+        Point3D_Array,
+        Vector2D,
+        Vector2D_Array,
+        Vector3D,
+    )
 
 __all__ = [
     "quaternion_mult",
@@ -36,17 +55,6 @@ __all__ = [
     "spherical_to_cartesian",
     "perpendicular_bisector",
 ]
-
-
-import itertools as it
-from typing import Sequence
-
-import numpy as np
-from mapbox_earcut import triangulate_float32 as earcut
-from scipy.spatial.transform import Rotation
-
-from ..constants import DOWN, OUT, PI, RIGHT, TAU, UP, RendererType
-from ..utils.iterables import adjacent_pairs
 
 
 def norm_squared(v: float) -> float:
@@ -114,7 +122,7 @@ def quaternion_from_angle_axis(
 
     Returns
     -------
-    List[float]
+    list[float]
         Gives back a quaternion from the angle and axis
     """
     if not axis_normalized:
@@ -654,9 +662,9 @@ def shoelace_direction(x_y: np.ndarray) -> str:
 
 
 def cross2d(
-    a: VectorND | Sequence[VectorND],
-    b: VectorND | Sequence[VectorND],
-) -> Sequence[float] | float:
+    a: Vector2D | Vector2D_Array,
+    b: Vector2D | Vector2D_Array,
+) -> ManimFloat | npt.NDArray[ManimFloat]:
     """Compute the determinant(s) of the passed
     vector (sequences).
 

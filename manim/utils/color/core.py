@@ -714,8 +714,8 @@ ParsableManimColor: TypeAlias = Union[
     RGBA_Array_Int,
     RGBA_Array_Float,
 ]
-""":class:`ParsableManimColor` represents all the types which can be
-parsed to a color in Manim.
+"""`ParsableManimColor` represents all the types which can be parsed
+to a color in Manim.
 """
 
 

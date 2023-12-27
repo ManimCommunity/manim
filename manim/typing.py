@@ -52,8 +52,11 @@ __all__ = [
     "InternalPoint3D_Array",
     "Point3D_Array",
     "Vector2D",
+    "Vector2D_Array",
     "Vector3D",
+    "Vector3D_Array",
     "VectorND",
+    "VectorND_Array",
     "RowVector",
     "ColVector",
     "MatrixMN",
@@ -195,6 +198,8 @@ This type alias is mostly made available for internal use, and only includes the
 Point2D: TypeAlias = Union[InternalPoint2D, tuple[float, float]]
 """``shape: (2,)``
 A 2D point: ``[float, float]``.
+Normally a function or method which expects a `Point2D` as a parameter can handle being
+passed a `Point3D` instead.
 """
 
 InternalPoint2D_Array: TypeAlias = npt.NDArray[PointDType]
@@ -206,6 +211,8 @@ This type alias is mostly made available for internal use, and only includes the
 Point2D_Array: TypeAlias = Union[InternalPoint2D_Array, tuple[Point2D, ...]]
 """``shape: (N, 2)``
 An array of `Point2D` objects: ``[[float, float], ...]``.
+Normally a function or method which expects a `Point2D_Array` as a parameter can handle being
+passed a `Point3D_Array` instead.
 (Please refer to the documentation of the function you are using for further type information.)
 """
 
@@ -238,19 +245,38 @@ An array of `Point3D` objects: ``[[float, float, float], ...]``.
 Vector types
 """
 
-Vector2D: TypeAlias = Union[npt.NDArray[PointDType], tuple[float, float]]
+Vector2D: TypeAlias = Point2D
 """``shape: (2,)``
 A 2D vector: ``[float, float]``.
+Normally a function or method which expects a `Vector2D` as a parameter can handle being
+passed a `Vector3D` instead.
 """
 
-Vector3D: TypeAlias = Union[npt.NDArray[PointDType], tuple[float, float, float]]
+Vector2D_Array: TypeAlias = Point2D_Array
+"""``shape: (M, 2)``
+An array of 2D vectors: ``[[float, float], ...]``.
+Normally a function or method which expects a `Vector2D_Array` as a parameter can handle being
+passed a `Vector3D_Array` instead.
+"""
+
+Vector3D: TypeAlias = Point3D
 """``shape: (3,)``
 A 3D vector: ``[float, float, float]``.
+"""
+
+Vector3D_Array: TypeAlias = Point3D_Array
+"""``shape: (M, 3)``
+An array of 3D vectors: ``[[float, float, float], ...]``.
 """
 
 VectorND: TypeAlias = Union[npt.NDArray[PointDType], tuple[float, ...]]
 """``shape (N,)``
 An `N`-D vector: ``[float, ...]``.
+"""
+
+VectorND_Array: TypeAlias = tuple[VectorND, ...]
+"""``shape (M, N)``
+An array of `N`-D vectors: ``[[float, ...], ...]``.
 """
 
 RowVector: TypeAlias = Union[npt.NDArray[PointDType], tuple[tuple[float, ...]]]

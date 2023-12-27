@@ -7,32 +7,56 @@ from typing import TypeAlias
 __all__ = ["parse_module_attributes"]
 
 
-MANIM_ROOT = Path(__file__).resolve().parent.parent.parent
+AliasInfo: TypeAlias = dict[str, str]
+"""Dictionary with a `definition` key containing the definition of
+a :class:`TypeAlias` as a string, and optionally a `doc` key containing
+the documentation for that alias, if it exists.
+"""
 
-AliasDocsDict: TypeAlias = dict[str, dict[str, dict[str, str]]]
+AliasCategoryDict: TypeAlias = dict[str, AliasInfo]
+"""Dictionary which holds an `AliasInfo` for every alias name in a same
+category.
+"""
+
+ModuleLevelAliasDict: TypeAlias = dict[str, AliasCategoryDict]
+"""Dictionary containing every :class:`TypeAlias` defined in a module,
+classified by category in different `AliasCategoryDict` objects.
+"""
+
+AliasDocsDict: TypeAlias = dict[str, AliasDocsDict]
+"""Dictionary which, for every module in Manim, contains documentation
+about their module-level attributes which are explicitly defined as
+:class:`TypeAlias`, separating them from the rest of attributes.
+"""
+
 DataDict: TypeAlias = dict[str, list[str]]
+"""Type for a dictionary which, for every module, contains a list with
+the names of all their DOCUMENTED module-level attributes (identified
+by Sphinx via the ``data`` role, hence the name) which are NOT
+explicitly defined as :class:`TypeAlias`.
+"""
 
 ALIAS_DOCS_DICT: AliasDocsDict = {}
 DATA_DICT: DataDict = {}
 
+MANIM_ROOT = Path(__file__).resolve().parent.parent.parent
+
 
 def parse_module_attributes() -> tuple[AliasDocsDict, DataDict]:
-    """Read all files, generate an Abstract Syntax Tree
-    from it, and extract useful information about the type aliases
-    defined in the file: the category they belong to, their definition
-    and their description.
+    """Read all files, generate Abstract Syntax Trees from them, and
+    extract useful information about the type aliases defined in the
+    files: the category they belong to, their definition and their
+    description, separating them from the "regular" module attributes.
 
     Returns
     -------
-    MANIM_TYPING_DOCS : dict[str, dict[str, dict[str, str]]
+    ALIAS_DOCS_DICT : `AliasDocsDict`
         A dictionary containing the information from all the type
-        aliases. Each key is the name of a category of types, and
-        its corresponding value is another subdictionary containing
-        information about the type aliases under that category:
+        aliases in Manim. See `AliasDocsDict` for more information.
 
-        -   The keys of this subdictionary are the names of the type
-            aliases, and the values are subsubdictionaries containing
-            field-value pairs with information about the type alias.
+    DATA_DICT : `DataDict`
+        A dictionary containing the names of all DOCUMENTED
+        module-level attributes which are not a :class:`TypeAlias`.
     """
     global ALIAS_DOCS_DICT
     global DATA_DICT
@@ -49,9 +73,9 @@ def parse_module_attributes() -> tuple[AliasDocsDict, DataDict]:
         module_content = module_path.read_text()
 
         # For storing TypeAliases
-        module_dict: dict[str, dict[str, dict[str, str]]] = {}
-        category_dict: dict[str, dict[str, str]] | None = None
-        alias_dict: dict[str, str] | None = None
+        module_dict: ModuleLevelAliasDict = {}
+        category_dict: AliasCategoryDict | None = None
+        alias_info: AliasInfo | None = None
 
         # For storing regular module attributes
         data_list: list[str] = []
@@ -71,10 +95,10 @@ def parse_module_attributes() -> tuple[AliasDocsDict, DataDict]:
                     category_name = string[len(section_str) :].strip()
                     module_dict[category_name] = {}
                     category_dict = module_dict[category_name]
-                    alias_dict = None
+                    alias_info = None
                 # or a docstring of the alias defined before
-                elif alias_dict:
-                    alias_dict["doc"] = string
+                elif alias_info:
+                    alias_info["doc"] = string
                 # or a docstring of the module attribute defined before
                 elif data_name:
                     data_list.append(data_name)
@@ -108,13 +132,15 @@ def parse_module_attributes() -> tuple[AliasDocsDict, DataDict]:
                     module_dict[""] = {}
                     category_dict = module_dict[""]
                 category_dict[alias_name] = {"definition": definition}
-                alias_dict = category_dict[alias_name]
+                alias_info = category_dict[alias_name]
                 continue
 
-            # The node is not a TypeAlias definition
-            alias_dict = None
+            # If here, the node is not a TypeAlias definition
+            alias_info = None
 
-            # It could still be a module attribute definition
+            # It could still be a module attribute definition.
+            # Does the assignment have a target of type Name? Then
+            # it could be considered a definition of a module attribute.
             if type(node) is ast.AnnAssign:
                 target = node.target
             elif type(node) is ast.Assign and len(node.targets) == 1:
