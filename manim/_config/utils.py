@@ -29,7 +29,7 @@ from typing_extensions import Self
 
 from .. import constants
 from ..constants import RendererType
-from ..typing import StrPath, Vector3
+from ..typing import StrPath, Vector3D
 from ..utils.color import ManimColor
 from ..utils.tex import TexTemplate, TexTemplateFromFile
 
@@ -1147,22 +1147,22 @@ class ManimConfig(MutableMapping):
         )
 
     @property
-    def top(self) -> Vector3:
+    def top(self) -> Vector3D:
         """Coordinate at the center top of the frame."""
         return self.frame_y_radius * constants.UP
 
     @property
-    def bottom(self) -> Vector3:
+    def bottom(self) -> Vector3D:
         """Coordinate at the center bottom of the frame."""
         return self.frame_y_radius * constants.DOWN
 
     @property
-    def left_side(self) -> Vector3:
+    def left_side(self) -> Vector3D:
         """Coordinate at the middle left of the frame."""
         return self.frame_x_radius * constants.LEFT
 
     @property
-    def right_side(self) -> Vector3:
+    def right_side(self) -> Vector3D:
         """Coordinate at the middle right of the frame."""
         return self.frame_x_radius * constants.RIGHT
 
@@ -1803,7 +1803,7 @@ class ManimFrame(Mapping):
         "left_side",
         "right_side",
     }
-    _CONSTANTS: ClassVar[dict[str, Vector3]] = {
+    _CONSTANTS: ClassVar[dict[str, Vector3D]] = {
         "UP": np.array((0.0, 1.0, 0.0)),
         "DOWN": np.array((0.0, -1.0, 0.0)),
         "RIGHT": np.array((1.0, 0.0, 0.0)),

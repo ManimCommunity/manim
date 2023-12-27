@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from manim.typing import Point3D_Array, Vector, Vector3
+from manim.typing import Point3D_Array, Vector3D, VectorND
 
 __all__ = [
     "quaternion_mult",
@@ -53,7 +53,7 @@ def norm_squared(v: float) -> float:
     return np.dot(v, v)
 
 
-def cross(v1: Vector3, v2: Vector3) -> Vector3:
+def cross(v1: Vector3D, v2: Vector3D) -> Vector3D:
     return np.array(
         [
             v1[1] * v2[2] - v1[2] * v2[1],
@@ -369,7 +369,7 @@ def normalize_along_axis(array: np.ndarray, axis: np.ndarray) -> np.ndarray:
     return array
 
 
-def get_unit_normal(v1: Vector3, v2: Vector3, tol: float = 1e-6) -> Vector3:
+def get_unit_normal(v1: Vector3D, v2: Vector3D, tol: float = 1e-6) -> Vector3D:
     """Gets the unit normal of the vectors.
 
     Parameters
@@ -654,7 +654,8 @@ def shoelace_direction(x_y: np.ndarray) -> str:
 
 
 def cross2d(
-    a: Sequence[Vector] | Vector, b: Sequence[Vector] | Vector
+    a: VectorND | Sequence[VectorND],
+    b: VectorND | Sequence[VectorND],
 ) -> Sequence[float] | float:
     """Compute the determinant(s) of the passed
     vector (sequences).

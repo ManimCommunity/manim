@@ -16,14 +16,12 @@
     classified under that category.
 
     If you need to define a new category, respect the format described above.
-
-.. autotypingmodule:: manim.typing
-
 """
+
 from __future__ import annotations
 
 from os import PathLike
-from typing import Annotated, Callable, Literal, Union
+from typing import Callable, Literal, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -53,9 +51,9 @@ __all__ = [
     "Point3D",
     "InternalPoint3D_Array",
     "Point3D_Array",
-    "Vector2",
-    "Vector3",
-    "Vector",
+    "Vector2D",
+    "Vector3D",
+    "VectorND",
     "RowVector",
     "ColVector",
     "MatrixMN",
@@ -240,17 +238,17 @@ An array of `Point3D` objects: ``[[float, float, float], ...]``.
 Vector types
 """
 
-Vector2: TypeAlias = Union[npt.NDArray[PointDType], tuple[float, float]]
+Vector2D: TypeAlias = Union[npt.NDArray[PointDType], tuple[float, float]]
 """``shape: (2,)``
 A 2D vector: ``[float, float]``.
 """
 
-Vector3: TypeAlias = Union[npt.NDArray[PointDType], tuple[float, float, float]]
+Vector3D: TypeAlias = Union[npt.NDArray[PointDType], tuple[float, float, float]]
 """``shape: (3,)``
 A 3D vector: ``[float, float, float]``.
 """
 
-Vector: TypeAlias = Union[npt.NDArray[PointDType], tuple[float, ...]]
+VectorND: TypeAlias = Union[npt.NDArray[PointDType], tuple[float, ...]]
 """``shape (N,)``
 An `N`-D vector: ``[float, ...]``.
 """

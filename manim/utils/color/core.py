@@ -714,14 +714,17 @@ ParsableManimColor: TypeAlias = Union[
     RGBA_Array_Int,
     RGBA_Array_Float,
 ]
-"""ParsableManimColor is the representation for all types that are parsable to a color in manim"""
+""":class:`ParsableManimColor` represents all the types which can be
+parsed to a color in Manim.
+"""
 
 
 ManimColorT = TypeVar("ManimColorT", bound=ManimColor)
 
 
 def color_to_rgb(color: ParsableManimColor) -> RGB_Array_Float:
-    """Helper function for use in functional style programming refer to :meth:`to_rgb` in :class:`ManimColor`
+    """Helper function for use in functional style programming.
+    Refer to :meth:`to_rgb` in :class:`ManimColor`.
 
     Parameters
     ----------

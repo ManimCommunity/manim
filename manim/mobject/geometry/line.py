@@ -31,7 +31,7 @@ from manim.utils.color import WHITE
 from manim.utils.space_ops import angle_of_vector, line_intersection, normalize
 
 if TYPE_CHECKING:
-    from manim.typing import Point2D, Point3D, Vector
+    from manim.typing import Point2D, Point3D, Vector3D
     from manim.utils.color import ParsableManimColor
 
     from ..matrix import Matrix  # Avoid circular import
@@ -107,7 +107,7 @@ class Line(TipableVMobject):
     def _pointify(
         self,
         mob_or_point: Mobject | Point3D,
-        direction: Vector | None = None,
+        direction: Vector3D | None = None,
     ) -> Point3D:
         """Transforms a mobject into its corresponding point. Does nothing if a point is passed.
 
@@ -163,16 +163,16 @@ class Line(TipableVMobject):
             self.generate_points()
         return super().put_start_and_end_on(start, end)
 
-    def get_vector(self) -> Vector:
+    def get_vector(self) -> Vector3D:
         return self.get_end() - self.get_start()
 
-    def get_unit_vector(self) -> Vector:
+    def get_unit_vector(self) -> Vector3D:
         return normalize(self.get_vector())
 
     def get_angle(self) -> float:
         return angle_of_vector(self.get_vector())
 
-    def get_projection(self, point: Point3D) -> Vector:
+    def get_projection(self, point: Point3D) -> Vector3D:
         """Returns the projection of a point onto a line.
 
         Parameters
@@ -579,7 +579,7 @@ class Arrow(Line):
             self.add_tip(tip=old_tips[1], at_start=True)
         return self
 
-    def get_normal_vector(self) -> Vector:
+    def get_normal_vector(self) -> Vector3D:
         """Returns the normal of a vector.
 
         Examples
@@ -654,7 +654,7 @@ class Vector(Arrow):
                 self.add(plane, vector_1, vector_2)
     """
 
-    def __init__(self, direction: Vector = RIGHT, buff: float = 0, **kwargs) -> None:
+    def __init__(self, direction: Vector3D = RIGHT, buff: float = 0, **kwargs) -> None:
         self.buff = buff
         if len(direction) == 2:
             direction = np.hstack([direction, 0])

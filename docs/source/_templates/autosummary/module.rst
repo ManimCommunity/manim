@@ -4,16 +4,7 @@
 
 .. automodule:: {{ fullname }}
 
-   {% block attributes %}
-   {% if attributes and fullname != 'manim.typing' %}
-   .. rubric:: Module Attributes
-
-   .. autosummary::
-   {% for item in attributes %}
-      {{ item }}
-   {%- endfor %}
-   {% endif %}
-   {% endblock %}
+   .. autoaliasattr:: {{ fullname }}
 
    {% block classes %}
    {% if classes %}
