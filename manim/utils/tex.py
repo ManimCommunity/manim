@@ -11,11 +11,12 @@ import re
 import warnings
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from typing_extensions import Self
+if TYPE_CHECKING:
+    from typing_extensions import Self
 
-from manim.typing import StrPath
+    from manim.typing import StrPath
 
 _DEFAULT_PREAMBLE = r"""\usepackage[english]{babel}
 \usepackage{amsmath}
