@@ -9,12 +9,16 @@ When you clone the Manim repository from GitHub, you can access the
 ``docs/`` folder which contains the necessary files to build the
 documentation.
 
-To build the docs locally, enter the ``docs/`` folder in a CLI and
-run ``make html``. The first time you build them, the process will
-take several minutes because it needs to generate all the ``.rst``
-(reST) files from scratch by reading and parsing all the Manim
-content. The process becomes much shorter the next time, as it
-rebuilds only the parts which have changed.
+To build the docs locally, open a CLI, enter the ``docs/`` folder with the
+``cd`` command and execute the following depending on your OS:
+
+-   Windows: ``./make.bat html``
+-   macOS and Linux: ``make html``
+
+The first time you build the docs, the process will take several minutes
+because it needs to generate all the ``.rst`` (reST) files from scratch
+by reading and parsing all the Manim content. The process becomes much
+shorter the next time, as it rebuilds only the parts which have changed.
 
 
 Sphinx library and extensions
