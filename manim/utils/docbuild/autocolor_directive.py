@@ -1,3 +1,5 @@
+"""A directive for documenting colors in Manim."""
+
 from __future__ import annotations
 
 import inspect

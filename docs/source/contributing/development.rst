@@ -159,6 +159,8 @@ Develop your contribution
 As far as development on your local machine goes, these are the main steps you
 should follow.
 
+.. _polishing-changes-and-submitting-a-pull-request:
+
 Polishing Changes and Submitting a Pull Request
 -----------------------------------------------
 

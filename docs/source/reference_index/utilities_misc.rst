@@ -9,15 +9,16 @@ Module Index
 .. autosummary::
    :toctree: ../reference
 
-   typing
    constants
-   ~utils.bezier
+   typing
    ~utils.color
+   ~utils.docbuild
+   ~utils.testing
+   ~utils.bezier
    ~utils.commands
    ~utils.config_ops
    ~utils.deprecation
    ~utils.debug
-   ~utils.docbuild
    ~utils.hashing
    ~utils.ipython_magic
    ~utils.images

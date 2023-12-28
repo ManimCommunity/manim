@@ -1,3 +1,5 @@
+"""A directive for documenting type aliases and other module-level attributes."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

@@ -1,3 +1,5 @@
+"""Read and parse all the Manim modules and extract documentation from them."""
+
 from __future__ import annotations
 
 import ast
