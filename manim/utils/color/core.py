@@ -75,19 +75,33 @@ class ManimColor:
     Be careful when passing strings to ManimColor it can create a big overhead for the color processing.
 
     If you want to parse a list of colors use the function :meth:`parse` in :class:`ManimColor` which assumes that
-    you are going to pass a list of color so arrays will not bei interpreted as a single color.
+    you are going to pass a list of color so arrays will not be interpreted as a single color.
 
     .. warning::
         If you pass an array of numbers to :meth:`parse` it will interpret the r,g,b,a numbers in that array as colors
         so instead of the expect singular color you get and array with 4 colors.
 
-    For conversion behaviors see the _internal functions for further documentation
+    For conversion behaviors see the ``_internal`` functions for further documentation
+
+    You can create a ``ManimColor`` instance via its classmethods. See the respective methods for more info.
+
+    .. code-block:: python
+
+        mycolor = ManimColor.from_rgb((0, 1, 0.4, 0.5))
+        myothercolor = ManimColor.from_rgb((153, 255, 255))
+
+    You can also convert between different color spaces:
+
+    .. code-block:: python
+
+        mycolor_hex = mycolor.to_hex()
+        myoriginalcolor = ManimColor.from_hex(mycolor_hex).to_hsv()
 
     Parameters
     ----------
     value
         Some representation of a color (e.g., a string or
-        a suitable tuple).
+        a suitable tuple). The default ``None`` is ``BLACK``.
     alpha
         The opacity of the color. By default, colors are
         fully opaque (value 1.0).
