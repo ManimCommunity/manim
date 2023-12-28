@@ -260,9 +260,9 @@ and the most common ways to remove objects from the scene are their counterparts
           self.play(FadeIn(c1), Create(c2))
           self.play(FadeOut(c1), Uncreate(c2))
 
----------------------------
-Runtimes and Rate Functions
----------------------------
+--------
+Runtimes
+--------
 
 You can adjust the duration of each animation individually, or you can set a duration for all in animations in a ``Scene.play`` call.
 
@@ -278,7 +278,10 @@ You can adjust the duration of each animation individually, or you can set a dur
           # are overridden by the runtime in the self.play call
           self.play(FadeOut(c, run_time=2), FadeOut(s, run_time=1), run_time=1.5)
 
-You can also adjust the speed at an animation proceeds at using rate functions.
+--------------
+Rate Functions
+--------------
+A rate function allows you to adjust the speed at an animation proceeds.
 
 .. manim:: RateFunctionsExample
 
@@ -291,6 +294,74 @@ You can also adjust the speed at an animation proceeds at using rate functions.
               Create(c2, rate_func=rate_functions.ease_in_sine),
               run_time=5
           )
+
+You can see all of the current ones below:
+
+.. manim:: AllRateFunctions
+    :hide_source:
+
+    class AllRateFunctions(Scene):
+        def construct(self):
+            time_progress = ValueTracker(0)
+            func_grid = VGroup()
+            exclude = ["wraps", "bezier", "sigmoid", "unit_interval", "zero", "not_quite_there", "squish_rate_func"]
+            rate_funcs = list(filter(
+                lambda t: str(t[1])[:10] == "<function " and all(t[0] != s for s in exclude),
+                rate_functions.__dict__.items(),
+            ))
+            for name, rate_func in rate_funcs:
+                plot_bg = Rectangle(height=1.5, width=2.0)
+                y_zero = DashedLine(stroke_width=1.5, stroke_color=YELLOW)
+                y_one = DashedLine(stroke_width=0.5, stroke_color=BLUE).shift(0.5*UP)
+                y_minus_one = y_one.copy().shift(DOWN)
+                plot_title = (
+                    Text(name, weight=SEMIBOLD, font="Open Sans")
+                    .scale(0.4)
+                    .next_to(plot_bg, UP, buff=0.1)
+                )
+                func_grid.add(VGroup(plot_bg, y_zero, y_one, y_minus_one, plot_title))
+
+            func_grid.arrange_in_grid(cols=8)
+            func_grid.stretch_to_fit_height(0.9 * config.frame_height)
+            func_grid.stretch_to_fit_width(0.9 * config.frame_width)
+            func_grid.move_to(ORIGIN)
+
+            y_zero, y_one = func_grid.submobjects[0].submobjects[1:3]
+            origin = y_zero.get_start()
+            height = (y_one.get_start() - origin)[1]
+            width = (y_zero.get_end() - origin)[0]
+
+            funcs = []
+            dots = VGroup()
+            for plot_group, (_, rate_func) in zip(func_grid.submobjects, rate_funcs):
+                origin = plot_group.submobjects[1].get_start()
+                func = lambda t, o=origin, rf=rate_func: o + np.array([width*t, height*rf(t), 0])
+                funcs.append(func)
+                plot = (
+                    ParametricFunction(
+                        func,
+                        t_range=[0, 1, 0.01],
+                        use_smoothing=False,
+                        color=YELLOW,
+                    )
+                )
+                plot_group.add(plot)
+
+                dot = Dot().scale(0.5).move_to(func(0))
+                dots.add(dot)
+
+            def dot_updater(dots):
+                t = time_progress.get_value()
+                for dot, func in zip(dots.submobjects, funcs):
+                    dot.move_to(func(t))
+
+            self.add(func_grid, dots)
+            dots.add_updater(dot_updater)
+            # there is some wacky rate function giving out-of-bounds results...
+            self.play(
+                time_progress.animate.set_value(1),
+                run_time=3,
+            )
 
 Alternatively, you can create your own. A rate function takes in a value between 0 and 1 representing the "progress" of the animation. You can think of this as the
 ratio of the time passed since the animation started, to the runtime of the animation. It should return how much of the animation should have been completed by that time.
@@ -478,3 +549,7 @@ Groups also have a bunch of methods to make your life easier. Take a look at som
             for mob in group:
                 self.play(Uncreate(mob))
             self.wait(0.2)
+
+########
+Updaters
+########

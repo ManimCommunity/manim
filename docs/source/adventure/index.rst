@@ -33,5 +33,5 @@ Table of Contents
 .. toctree::
    :maxdepth: 2
 
-   introduction
+   basics
    project
