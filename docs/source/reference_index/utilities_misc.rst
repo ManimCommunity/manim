@@ -9,25 +9,25 @@ Module Index
 .. autosummary::
    :toctree: ../reference
 
-   constants
-   typing
-   ~utils.color
-   ~utils.docbuild
-   ~utils.testing
    ~utils.bezier
+   ~utils.color
    ~utils.commands
    ~utils.config_ops
-   ~utils.deprecation
+   constants
    ~utils.debug
+   ~utils.deprecation
+   ~utils.docbuild
    ~utils.hashing
-   ~utils.ipython_magic
    ~utils.images
+   ~utils.ipython_magic
    ~utils.iterables
    ~utils.paths
    ~utils.rate_functions
    ~utils.simple_functions
    ~utils.sounds
    ~utils.space_ops
+   ~utils.testing
    ~utils.tex
-   ~utils.tex_templates
    ~utils.tex_file_writing
+   ~utils.tex_templates
+   typing
