@@ -29,3 +29,4 @@ Module Index
    ~utils.tex
    ~utils.tex_templates
    ~utils.tex_file_writing
+   ~utils.unit
