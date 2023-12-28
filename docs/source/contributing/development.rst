@@ -159,6 +159,8 @@ Develop your contribution
 As far as development on your local machine goes, these are the main steps you
 should follow.
 
+.. _polishing-changes-and-submitting-a-pull-request:
+
 Polishing Changes and Submitting a Pull Request
 -----------------------------------------------
 
@@ -243,7 +245,8 @@ sticks to our coding conventions.
   a look at the built HTML files to see whether the formatting of the documentation
   you added looks as you intended. You can build the documentation locally
   by running ``make html`` from the ``docs`` directory. Make sure you have `Graphviz <https://graphviz.org/>`_
-  installed locally in order to build the inheritance diagrams.
+  installed locally in order to build the inheritance diagrams. See :doc:`docs` for
+  more information.
 
 Finally, if the pipeline passes and you are satisfied with your changes: wait for
 feedback and iterate over any requested changes. You will likely be asked to
