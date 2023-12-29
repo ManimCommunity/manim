@@ -2002,8 +2002,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
         """
         vmobject_classes = (VMobject, OpenGLVMobject)
         vmobjects = flatten_iterable_parameters_excluding_cls(
-            vmobjects,
-            vmobject_classes
+            vmobjects, vmobject_classes
         )
         if not all(isinstance(x, vmobject_classes) for x in vmobjects):
             raise TypeError("All submobjects must be of type VMobject")

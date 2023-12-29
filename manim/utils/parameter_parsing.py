@@ -30,6 +30,7 @@ def flatten_iterable_parameters(
             flattened_parameters.append(arg)
     return flattened_parameters
 
+
 def flatten_iterable_parameters_excluding_cls(
     args: Iterable[T | Iterable[T] | GeneratorType],
     classes: Iterable[type],
@@ -57,4 +58,3 @@ def flatten_iterable_parameters_excluding_cls(
         else:
             flattened.append(arg)
     return flattened
-
