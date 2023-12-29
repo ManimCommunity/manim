@@ -49,10 +49,12 @@ from ...utils.bezier import (
 )
 from ...utils.color import BLACK, WHITE, ManimColor, ParsableManimColor
 from ...utils.iterables import make_even, resize_array, stretch_array_to_length, tuplify
-from ...utils.space_ops import rotate_vector, shoelace_direction
 from ...utils.parameter_parsing import flatten_iterable_parameters
+from ...utils.space_ops import rotate_vector, shoelace_direction
 
 if TYPE_CHECKING:
+    from types import GeneratorType
+
     from manim.typing import (
         BezierPoints,
         CubicBezierPoints,
@@ -66,7 +68,6 @@ if TYPE_CHECKING:
         Vector3,
         Zeros,
     )
-    from types import GeneratorType
 
 # TODO
 # - Change cubic curve groups to have 4 points instead of 3
@@ -1937,7 +1938,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
     def __init__(
         self,
         *vmobjects: VMobject | Iterable[VMobject] | GeneratorType[VMobject],
-        **kwargs
+        **kwargs,
     ) -> None:
         super().__init__(**kwargs)
         self.add(*vmobjects)
