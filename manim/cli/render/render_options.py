@@ -8,6 +8,8 @@ from manim.constants import QUALITIES, RendererType
 
 from ... import logger
 
+__all__ = ["render_options"]
+
 
 def validate_scene_range(ctx, param, value):
     try:

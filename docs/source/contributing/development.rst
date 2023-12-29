@@ -147,7 +147,7 @@ Develop your contribution
 
    Update the docstrings (the text in triple quotation marks) of any functions
    or classes you change and include them with any new functions you add.
-   See the :doc:`documentation guide <docstrings>` for more information about how we
+   See the :doc:`documentation guide <docs/docstrings>` for more information about how we
    prefer our code to be documented. The content of the docstrings will be
    rendered in the :doc:`reference manual <../reference>`.
 

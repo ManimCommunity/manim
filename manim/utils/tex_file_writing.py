@@ -19,6 +19,8 @@ from manim.utils.tex import TexTemplate
 
 from .. import config, logger
 
+__all__ = ["tex_to_svg_file"]
+
 
 def tex_hash(expression):
     id_str = str(expression)

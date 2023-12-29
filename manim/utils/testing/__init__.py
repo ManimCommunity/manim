@@ -7,8 +7,8 @@ For more information about Manim testing, see:
 -   :doc:`/contributing/testing`
 
 .. autosummary::
-
    :toctree: ../reference
+
    frames_comparison
    _frames_testers
    _show_diff
