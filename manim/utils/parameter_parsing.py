@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from types import GeneratorType
-from typing import Iterable, TypeVar, Any
+from typing import Any, Iterable, TypeVar
 
 T = TypeVar("T")
 
@@ -35,7 +35,7 @@ def flatten_iterable_parameters_excluding_cls(
     args: Iterable[T | Iterable[T] | GeneratorType],
     classes: tuple[type],
     bad_classes: tuple[type[Any]] = (),
-    error_message: str = "Invalid class %(arg)s"
+    error_message: str = "Invalid class %(arg)s",
 ) -> list[T]:
     """Flattens an iterable of parameters into a list of parameters, giving priority to
     adding certain classes to the flattened list first.

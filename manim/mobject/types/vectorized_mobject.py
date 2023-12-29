@@ -31,8 +31,8 @@ from PIL.Image import Image
 from typing_extensions import Self
 
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.three_d.three_d_utils import (
     get_3d_vmob_gradient_start_and_end_points,
 )
@@ -2006,7 +2006,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
             vmobjects,
             vmobject_classes,
             bad_classes=(Mobject, OpenGLMobject),
-            error_message="All submobjects must be of type VMobject, got %(arg)s instead."
+            error_message="All submobjects must be of type VMobject, got %(arg)s instead.",
         )
         return super().add(*vmobjects)
 
