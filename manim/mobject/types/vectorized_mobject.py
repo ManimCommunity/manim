@@ -65,6 +65,7 @@ if TYPE_CHECKING:
         Vector3,
         Zeros,
     )
+    from types import GeneratorType
 
 # TODO
 # - Change cubic curve groups to have 4 points instead of 3
@@ -1932,7 +1933,11 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
 
     """
 
-    def __init__(self, *vmobjects, **kwargs):
+    def __init__(
+        self,
+        *vmobjects: VMobject | Iterable[VMobject] | GeneratorType[VMobject],
+        **kwargs
+    ) -> None:
         super().__init__(**kwargs)
         self.add(*vmobjects)
 

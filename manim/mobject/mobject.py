@@ -38,6 +38,8 @@ from ..utils.exceptions import MultiAnimationOverrideException
 from ..utils.iterables import list_update, remove_list_redundancies
 from ..utils.paths import straight_path
 from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
+from ..utils.parameter_parsing import flatten_iterable_parameters
+
 
 # TODO: Explain array_attrs
 
@@ -59,7 +61,7 @@ if TYPE_CHECKING:
         Vector,
         Vector3,
     )
-
+    from types import GeneratorType
     from ..animation.animation import Animation
 
 
@@ -365,7 +367,7 @@ class Mobject:
         subclasses.
         """
 
-    def add(self, *mobjects: Mobject) -> Self:
+    def add(self, *mobjects: Mobject | Iterable[Mobject] | GeneratorType[Mobject]) -> Self:
         """Add mobjects as submobjects.
 
         The mobjects are added to :attr:`submobjects`.
@@ -435,6 +437,7 @@ class Mobject:
             [child]
 
         """
+        mobjects = flatten_iterable_parameters(mobjects)
         for m in mobjects:
             if not isinstance(m, Mobject):
                 raise TypeError("All submobjects must be of type Mobject")
