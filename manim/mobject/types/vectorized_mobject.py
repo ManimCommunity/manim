@@ -49,7 +49,7 @@ from ...utils.bezier import (
 )
 from ...utils.color import BLACK, WHITE, ManimColor, ParsableManimColor
 from ...utils.iterables import make_even, resize_array, stretch_array_to_length, tuplify
-from ...utils.parameter_parsing import flatten_iterable_parameters
+from ...utils.parameter_parsing import flatten_iterable_parameters_excluding_cls
 from ...utils.space_ops import rotate_vector, shoelace_direction
 
 if TYPE_CHECKING:
@@ -2000,8 +2000,12 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
                         (gr-circle_red).animate.shift(RIGHT)
                     )
         """
-        vmobjects = flatten_iterable_parameters(vmobjects)
-        if not all(isinstance(m, (VMobject, OpenGLVMobject)) for m in vmobjects):
+        vmobject_classes = (VMobject, OpenGLVMobject)
+        vmobjects = flatten_iterable_parameters_excluding_cls(
+            vmobjects,
+            vmobject_classes
+        )
+        if not all(isinstance(x, vmobject_classes) for x in vmobjects):
             raise TypeError("All submobjects must be of type VMobject")
         return super().add(*vmobjects)
 

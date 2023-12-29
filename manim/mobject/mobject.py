@@ -36,7 +36,6 @@ from ..utils.color import (
 )
 from ..utils.exceptions import MultiAnimationOverrideException
 from ..utils.iterables import list_update, remove_list_redundancies
-from ..utils.parameter_parsing import flatten_iterable_parameters
 from ..utils.paths import straight_path
 from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
 
@@ -48,8 +47,6 @@ Updater: TypeAlias = Union[NonTimeBasedUpdater, TimeBasedUpdater]
 T = TypeVar("T", bound="Mobject")
 
 if TYPE_CHECKING:
-    from types import GeneratorType
-
     from manim.typing import (
         FunctionOverride,
         Image,
@@ -59,7 +56,6 @@ if TYPE_CHECKING:
         PathFuncType,
         Point3D,
         Point3D_Array,
-        Vector,
         Vector3,
     )
 
@@ -440,7 +436,6 @@ class Mobject:
             [child]
 
         """
-        mobjects = flatten_iterable_parameters(mobjects)
         for m in mobjects:
             if not isinstance(m, Mobject):
                 raise TypeError("All submobjects must be of type Mobject")

@@ -29,3 +29,32 @@ def flatten_iterable_parameters(
         else:
             flattened_parameters.append(arg)
     return flattened_parameters
+
+def flatten_iterable_parameters_excluding_cls(
+    args: Iterable[T | Iterable[T] | GeneratorType],
+    classes: Iterable[type],
+) -> list[T]:
+    """Flattens an iterable of parameters into a list of parameters, giving priority to
+    adding certain classes to the flattened list first.
+
+    Parameters
+    ----------
+    args
+        The Iterable of parameters to flatten.
+        [(generator), [], (), ...]
+    classes
+        If ``type(arg) in classes`` the arg will be
+        added to the flattened list without any further
+        processing
+    """
+    flattened = []
+    classes = tuple(classes)
+    for arg in args:
+        if isinstance(arg, classes):
+            flattened.append(arg)
+        elif isinstance(arg, (Iterable, GeneratorType)):
+            flattened.extend(arg)
+        else:
+            flattened.append(arg)
+    return flattened
+
