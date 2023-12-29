@@ -911,9 +911,6 @@ def subdivide_bezier(points: BezierPoints, n_divisions: int) -> Point3D_Array:
 
     if N <= 4:
         subdivision_matrix = _get_subdivision_matrix(N, n_divisions)
-        print(subdivision_matrix)
-        print(points)
-        print(subdivision_matrix @ points)
         return subdivision_matrix @ points
 
     # Fallback case for an nth degree Bézier: successive splitting
