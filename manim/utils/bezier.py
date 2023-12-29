@@ -21,7 +21,7 @@ __all__ = [
     "mid",
     "inverse_interpolate",
     "match_interpolate",
-    "get_handles_for_smooth_cubic_spline",
+    "get_smooth_cubic_bezier_handle_points",
     "is_closed",
     "proportions_along_bezier_curve_for_point",
     "point_lies_on_bezier",
@@ -1298,7 +1298,7 @@ def match_interpolate(new_start, new_end, old_start, old_end, old_value):
 
 
 # Figuring out which Bézier curves most smoothly connect a sequence of points
-def get_handles_for_smooth_cubic_spline(
+def get_smooth_cubic_bezier_handle_points(
     anchors: Point3D_Array,
 ) -> tuple[Point3D_Array, Point3D_Array]:
     """Given an array of anchors for a cubic spline (array of connected cubic
@@ -1347,7 +1347,7 @@ UP_CLOSED_MEMO = np.array([1 / 3])
 def get_handles_for_smooth_closed_cubic_spline(
     anchors: Point3D_Array,
 ) -> tuple[Point3D_Array, Point3D_Array]:
-    r"""Special case of :func:`get_handles_for_smooth_cubic_spline`,
+    r"""Special case of :func:`get_smooth_cubic_bezier_handle_points`,
     when the ``anchors`` form a closed loop.
 
     .. note::
@@ -1639,7 +1639,7 @@ CP_OPEN_MEMO = np.array([0.5])
 def get_handles_for_smooth_open_cubic_spline(
     anchors: Point3D_Array,
 ) -> tuple[Point3D_Array, Point3D_Array]:
-    r"""Special case of :func:`get_handles_for_smooth_cubic_spline`,
+    r"""Special case of :func:`get_smooth_cubic_bezier_handle_points`,
     when the ``anchors`` do not form a closed loop.
 
     .. note::
