@@ -64,7 +64,7 @@ are defined in :mod:`~.docbuild`:
 
 .. autosummary::
 
-    :toctree: ../../reference
+    :toctree: ../reference
     autoaliasattr_directive
     autocolor_directive
     manim_directive
