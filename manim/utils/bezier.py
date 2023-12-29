@@ -24,7 +24,6 @@ __all__ = [
     "match_interpolate",
     "get_smooth_handle_points",
     "get_smooth_cubic_bezier_handle_points",
-    "diag_to_matrix",
     "is_closed",
     "proportions_along_bezier_curve_for_point",
     "point_lies_on_bezier",
@@ -36,10 +35,9 @@ from typing import Any, Callable, Sequence, overload
 
 import numpy as np
 import numpy.typing as npt
-from scipy import linalg
 
-from ..utils.simple_functions import choose
-from ..utils.space_ops import cross2d, find_intersection
+from manim.utils.simple_functions import get_pascal_triangle
+from manim.utils.space_ops import cross2d, find_intersection
 
 
 def bezier(
@@ -74,10 +72,13 @@ def bezier(
             dtype=PointDType,
         )
 
+    # Combinatorial coefficients
+    choose_n = get_pascal_triangle(n)[n]
+
     return lambda t: np.asarray(
         np.asarray(
             [
-                (((1 - t) ** (n - k)) * (t**k) * choose(n, k) * point)
+                (((1 - t) ** (n - k)) * (t**k) * choose_n[k] * point)
                 for k, point in enumerate(points)
             ],
             dtype=PointDType,
@@ -464,156 +465,502 @@ def match_interpolate(
     )
 
 
-def get_smooth_cubic_bezier_handle_points(
-    points: Point3D_Array,
-) -> tuple[BezierPoints, BezierPoints]:
-    points = np.asarray(points)
-    num_handles = len(points) - 1
-    dim = points.shape[1]
-    if num_handles < 1:
-        return np.zeros((0, dim)), np.zeros((0, dim))
-    # Must solve 2*num_handles equations to get the handles.
-    # l and u are the number of lower an upper diagonal rows
-    # in the matrix to solve.
-    l, u = 2, 1
-    # diag is a representation of the matrix in diagonal form
-    # See https://www.particleincell.com/2012/bezier-splines/
-    # for how to arrive at these equations
-    diag: MatrixMN = np.zeros((l + u + 1, 2 * num_handles))
-    diag[0, 1::2] = -1
-    diag[0, 2::2] = 1
-    diag[1, 0::2] = 2
-    diag[1, 1::2] = 1
-    diag[2, 1:-2:2] = -2
-    diag[3, 0:-3:2] = 1
-    # last
-    diag[2, -2] = -1
-    diag[1, -1] = 2
-    # This is the b as in Ax = b, where we are solving for x,
-    # and A is represented using diag.  However, think of entries
-    # to x and b as being points in space, not numbers
-    b: Point3D_Array = np.zeros((2 * num_handles, dim))
-    b[1::2] = 2 * points[1:]
-    b[0] = points[0]
-    b[-1] = points[-1]
-
-    def solve_func(b: ColVector) -> ColVector | MatrixMN:
-        return linalg.solve_banded((l, u), diag, b)  # type: ignore
-
-    use_closed_solve_function = is_closed(points)
-    if use_closed_solve_function:
-        # Get equations to relate first and last points
-        matrix = diag_to_matrix((l, u), diag)
-        # last row handles second derivative
-        matrix[-1, [0, 1, -2, -1]] = [2, -1, 1, -2]
-        # first row handles first derivative
-        matrix[0, :] = np.zeros(matrix.shape[1])
-        matrix[0, [0, -1]] = [1, 1]
-        b[0] = 2 * points[0]
-        b[-1] = np.zeros(dim)
-
-        def closed_curve_solve_func(b: ColVector) -> ColVector | MatrixMN:
-            return linalg.solve(matrix, b)  # type: ignore
-
-    handle_pairs = np.zeros((2 * num_handles, dim))
-    for i in range(dim):
-        if use_closed_solve_function:
-            handle_pairs[:, i] = closed_curve_solve_func(b[:, i])
-        else:
-            handle_pairs[:, i] = solve_func(b[:, i])
-    return handle_pairs[0::2], handle_pairs[1::2]
-
-
+# Figuring out which Bézier curves most smoothly connect a sequence of points
 def get_smooth_handle_points(
-    points: BezierPoints,
-) -> tuple[BezierPoints, BezierPoints]:
-    """Given some anchors (points), compute handles so the resulting bezier curve is smooth.
+    anchors: Point3D_Array,
+) -> tuple[Point3D_Array, Point3D_Array]:
+    return get_smooth_cubic_bezier_handle_points(anchors)
+
+
+def get_smooth_cubic_bezier_handle_points(
+    anchors: Point3D_Array,
+) -> tuple[Point3D_Array, Point3D_Array]:
+    """Given an array of anchors for a cubic spline (array of connected cubic
+    Bézier curves), compute the 1st and 2nd handle for every curve, so that
+    the resulting spline is smooth.
 
     Parameters
     ----------
-    points
-        Anchors.
+    anchors
+        Anchors of a cubic spline.
 
     Returns
     -------
-    typing.Tuple[np.ndarray, np.ndarray]
-        Computed handles.
+    :class:`tuple` [:class:`~.Point3D_Array`, :class:`~.Point3D_Array`]
+        A tuple of two arrays: one containing the 1st handle for every curve in
+        the cubic spline, and the other containing the 2nd handles.
     """
-    # NOTE points here are anchors.
-    points = np.asarray(points)
-    num_handles = len(points) - 1
-    dim = points.shape[1]
-    if num_handles < 1:
+    anchors = np.asarray(anchors)
+    n_handles = len(anchors) - 1
+
+    # If there's a single anchor, there's no Bézier curve.
+    # Return empty arrays.
+    if n_handles == 0:
+        dim = anchors.shape[1]
         return np.zeros((0, dim)), np.zeros((0, dim))
-    # Must solve 2*num_handles equations to get the handles.
-    # l and u are the number of lower an upper diagonal rows
-    # in the matrix to solve.
-    l, u = 2, 1
-    # diag is a representation of the matrix in diagonal form
-    # See https://www.particleincell.com/2012/bezier-splines/
-    # for how to arrive at these equations
-    diag: MatrixMN = np.zeros((l + u + 1, 2 * num_handles))
-    diag[0, 1::2] = -1
-    diag[0, 2::2] = 1
-    diag[1, 0::2] = 2
-    diag[1, 1::2] = 1
-    diag[2, 1:-2:2] = -2
-    diag[3, 0:-3:2] = 1
-    # last
-    diag[2, -2] = -1
-    diag[1, -1] = 2
-    # This is the b as in Ax = b, where we are solving for x,
-    # and A is represented using diag.  However, think of entries
-    # to x and b as being points in space, not numbers
-    b = np.zeros((2 * num_handles, dim))
-    b[1::2] = 2 * points[1:]
-    b[0] = points[0]
-    b[-1] = points[-1]
 
-    def solve_func(b: ColVector) -> ColVector | MatrixMN:
-        return linalg.solve_banded((l, u), diag, b)  # type: ignore
+    # If there are only two anchors (thus only one pair of handles),
+    # they can only be an interpolation of these two anchors with alphas
+    # 1/3 and 2/3, which will draw a straight line between the anchors.
+    if n_handles == 1:
+        return interpolate(anchors[0], anchors[1], np.array([[1 / 3], [2 / 3]]))
 
-    use_closed_solve_function = is_closed(points)
-    if use_closed_solve_function:
-        # Get equations to relate first and last points
-        matrix = diag_to_matrix((l, u), diag)
-        # last row handles second derivative
-        matrix[-1, [0, 1, -2, -1]] = [2, -1, 1, -2]
-        # first row handles first derivative
-        matrix[0, :] = np.zeros(matrix.shape[1])
-        matrix[0, [0, -1]] = [1, 1]
-        b[0] = 2 * points[0]
-        b[-1] = np.zeros(dim)
-
-        def closed_curve_solve_func(b: ColVector) -> ColVector | MatrixMN:
-            return linalg.solve(matrix, b)  # type: ignore
-
-    handle_pairs = np.zeros((2 * num_handles, dim))
-    for i in range(dim):
-        if use_closed_solve_function:
-            handle_pairs[:, i] = closed_curve_solve_func(b[:, i])
-        else:
-            handle_pairs[:, i] = solve_func(b[:, i])
-    return handle_pairs[0::2], handle_pairs[1::2]
+    # Handle different cases depending on whether the points form a closed
+    # curve or not
+    curve_is_closed = is_closed(anchors)
+    if curve_is_closed:
+        return get_handles_for_smooth_closed_cubic_spline(anchors)
+    else:
+        return get_handles_for_smooth_open_cubic_spline(anchors)
 
 
-def diag_to_matrix(
-    l_and_u: tuple[int, int], diag: npt.NDArray[Any]
-) -> npt.NDArray[Any]:
+CP_CLOSED_MEMO = np.array([1 / 3])
+UP_CLOSED_MEMO = np.array([1 / 3])
+
+
+def get_handles_for_smooth_closed_cubic_spline(
+    anchors: Point3D_Array,
+) -> tuple[Point3D_Array, Point3D_Array]:
+    r"""Special case of :func:`get_handles_for_smooth_cubic_spline`,
+    when the ``anchors`` form a closed loop.
+
+    .. note::
+        A system of equations must be solved to get the first handles of
+        every Bézier curve (referred to as :math:`H_1`).
+        Then :math:`H_2` (the second handles) can be obtained separately.
+
+        .. seealso::
+            The equations were obtained from:
+
+            * `Conditions on control points for continuous curvature. (2016). Jaco Stuifbergen. <http://www.jacos.nl/jacos_html/spline/theory/theory_2.html>`_
+
+        In general, if there are :math:`N+1` anchors, there will be :math:`N` Bézier curves
+        and thus :math:`N` pairs of handles to find. We must solve the following
+        system of equations for the 1st handles (example for :math:`N = 5`):
+
+        .. math::
+            \begin{pmatrix}
+                4 & 1 & 0 & 0 & 1 \\
+                1 & 4 & 1 & 0 & 0 \\
+                0 & 1 & 4 & 1 & 0 \\
+                0 & 0 & 1 & 4 & 1 \\
+                1 & 0 & 0 & 1 & 4
+            \end{pmatrix}
+            \begin{pmatrix}
+                H_{1,0} \\
+                H_{1,1} \\
+                H_{1,2} \\
+                H_{1,3} \\
+                H_{1,4}
+            \end{pmatrix}
+            =
+            \begin{pmatrix}
+                4A_0 + 2A_1 \\
+                4A_1 + 2A_2 \\
+                4A_2 + 2A_3 \\
+                4A_3 + 2A_4 \\
+                4A_4 + 2A_5
+            \end{pmatrix}
+
+        which will be expressed as :math:`RH_1 = D`.
+
+        :math:`R` is almost a tridiagonal matrix, so we could use Thomas' algorithm.
+
+        .. seealso::
+            `Tridiagonal matrix algorithm. Wikipedia. <https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm>`_
+
+        However, :math:`R` has ones at the opposite corners. A solution to this is
+        the first decomposition proposed in the link below, with :math:`\alpha = 1`:
+
+        .. seealso::
+            `Tridiagonal matrix algorithm # Variants. Wikipedia. <https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm#Variants>`_
+
+        .. math::
+            R
+            =
+            \begin{pmatrix}
+                4 & 1 & 0 & 0 & 1 \\
+                1 & 4 & 1 & 0 & 0 \\
+                0 & 1 & 4 & 1 & 0 \\
+                0 & 0 & 1 & 4 & 1 \\
+                1 & 0 & 0 & 1 & 4
+            \end{pmatrix}
+            &=
+            \begin{pmatrix}
+                3 & 1 & 0 & 0 & 0 \\
+                1 & 4 & 1 & 0 & 0 \\
+                0 & 1 & 4 & 1 & 0 \\
+                0 & 0 & 1 & 4 & 1 \\
+                0 & 0 & 0 & 1 & 3
+            \end{pmatrix}
+            +
+            \begin{pmatrix}
+                1 & 0 & 0 & 0 & 1 \\
+                0 & 0 & 0 & 0 & 0 \\
+                0 & 0 & 0 & 0 & 0 \\
+                0 & 0 & 0 & 0 & 0 \\
+                1 & 0 & 0 & 0 & 1
+            \end{pmatrix}
+            \\
+            &
+            \\
+            &=
+            \begin{pmatrix}
+                3 & 1 & 0 & 0 & 0 \\
+                1 & 4 & 1 & 0 & 0 \\
+                0 & 1 & 4 & 1 & 0 \\
+                0 & 0 & 1 & 4 & 1 \\
+                0 & 0 & 0 & 1 & 3
+            \end{pmatrix}
+            +
+            \begin{pmatrix}
+                1 \\
+                0 \\
+                0 \\
+                0 \\
+                0
+            \end{pmatrix}
+            \begin{pmatrix}
+                1 & 0 & 0 & 0 & 1
+            \end{pmatrix}
+            \\
+            &
+            \\
+            &=
+            T + uv^t
+
+        We decompose :math:`R = T + uv^t`, where :math:`T` is a tridiagonal matrix, and
+        :math:`u, v` are :math:`N`-D vectors such that :math:`u_0 = u_{N-1} = v_0 = v_{N-1} = 1`,
+        and :math:`u_i = v_i = 0, \forall i \in \{1, ..., N-2\}`.
+
+        Thus:
+
+        .. math::
+            RH_1 &= D \\
+            \Rightarrow (T + uv^t)H_1 &= D
+
+        If we find a vector :math:`q` such that :math:`Tq = u`:
+
+        .. math::
+            \Rightarrow (T + Tqv^t)H_1 &= D \\
+            \Rightarrow T(I + qv^t)H_1 &= D \\
+            \Rightarrow H_1 &= (I + qv^t)^{-1} T^{-1} D
+
+        According to Sherman-Morrison's formula:
+
+        .. seealso::
+            `Sherman-Morrison's formula. Wikipedia. <https://en.wikipedia.org/wiki/Sherman%E2%80%93Morrison_formula>`_
+
+        .. math::
+            (I + qv^t)^{-1} = I - \frac{1}{1 + v^tq} qv^t
+
+        If we find :math:`Y = T^{-1} D`, or in other words, if we solve for
+        :math:`Y` in :math:`TY = D`:
+
+        .. math::
+            H_1 &= (I + qv^t)^{-1} T^{-1} D \\
+            &= (I + qv^t)^{-1} Y \\
+            &= (I - \frac{1}{1 + v^tq} qv^t) Y \\
+            &= Y - \frac{1}{1 + v^tq} qv^tY
+
+        Therefore, we must solve for :math:`q` and :math:`Y` in :math:`Tq = u` and :math:`TY = D`.
+        As :math:`T` is now tridiagonal, we shall use Thomas' algorithm.
+
+        Define:
+
+        *   :math:`a = [a_0, \ a_1, \ ..., \ a_{N-2}]` as :math:`T`'s lower diagonal of :math:`N-1` elements,
+            such that :math:`a_0 = a_1 = ... = a_{N-2} = 1`, so this diagonal is filled with ones;
+        *   :math:`b = [b_0, \ b_1, \ ..., \ b_{N-2}, \ b_{N-1}]` as :math:`T`'s main diagonal of :math:`N` elements,
+            such that :math:`b_0 = b_{N-1} = 3`, and :math:`b_1 = b_2 = ... = b_{N-2} = 4`;
+        *   :math:`c = [c_0, \ c_1, \ ..., \ c_{N-2}]` as :math:`T`'s upper diagonal of :math:`N-1` elements,
+            such that :math:`c_0 = c_1 = ... = c_{N-2} = 1`: this diagonal is also filled with ones.
+
+        If, according to Thomas' algorithm, we define:
+
+        .. math::
+            c'_0 &= \frac{c_0}{b_0} & \\
+            c'_i &= \frac{c_i}{b_i - a_{i-1} c'_{i-1}}, & \quad \forall i \in \{1, ..., N-2\} \\
+            & & \\
+            u'_0 &= \frac{u_0}{b_0} & \\
+            u'_i &= \frac{u_i - a_{i-1} u'_{i-1}}{b_i - a_{i-1} c'_{i-1}}, & \quad \forall i \in \{1, ..., N-1\} \\
+            & & \\
+            D'_0 &= \frac{1}{b_0} D_0 & \\
+            D'_i &= \frac{1}{b_i - a_{i-1} c'_{i-1}} (D_i - a_{i-1} D'_{i-1}), & \quad \forall i \in \{1, ..., N-1\}
+
+        Then:
+
+        .. math::
+            c'_0     &= \frac{1}{3} & \\
+            c'_i     &= \frac{1}{4 - c'_{i-1}}, & \quad \forall i \in \{1, ..., N-2\} \\
+            & & \\
+            u'_0     &= \frac{1}{3} & \\
+            u'_i     &= \frac{-u'_{i-1}}{4 - c'_{i-1}} = -c'_i u'_{i-1}, & \quad \forall i \in \{1, ..., N-2\} \\
+            u'_{N-1} &= \frac{1 - u'_{N-2}}{3 - c'_{N-2}} & \\
+            & & \\
+            D'_0     &= \frac{1}{3} (4A_0 + 2A_1) & \\
+            D'_i     &= \frac{1}{4 - c'_{i-1}} (4A_i + 2A_{i+1} - D'_{i-1}) & \\
+            &= c_i (4A_i + 2A_{i+1} - D'_{i-1}), & \quad \forall i \in \{1, ..., N-2\} \\
+            D'_{N-1} &= \frac{1}{3 - c'_{N-2}} (4A_{N-1} + 2A_N - D'_{N-2}) &
+
+        Finally, we can do Backward Substitution to find :math:`q` and :math:`Y`:
+
+        .. math::
+            q_{N-1} &= u'_{N-1} & \\
+            q_i     &= u'_{i} - c'_i q_{i+1}, & \quad \forall i \in \{0, ..., N-2\} \\
+            & & \\
+            Y_{N-1} &= D'_{N-1} & \\
+            Y_i     &= D'_i - c'_i Y_{i+1},   & \quad \forall i \in \{0, ..., N-2\}
+
+        With those values, we can finally calculate :math:`H_1 = Y - \frac{1}{1 + v^tq} qv^tY`.
+        Given that :math:`v_0 = v_{N-1} = 1`, and :math:`v_1 = v_2 = ... = v_{N-2} = 0`, its dot products
+        with :math:`q` and :math:`Y` are respectively :math:`v^tq = q_0 + q_{N-1}` and
+        :math:`v^tY = Y_0 + Y_{N-1}`. Thus:
+
+        .. math::
+            H_1 = Y - \frac{1}{1 + q_0 + q_{N-1}} q(Y_0 + Y_{N-1})
+
+        Once we have :math:`H_1`, we can get :math:`H_2` (the array of second handles) as follows:
+
+        .. math::
+            H_{2, i}   &= 2A_{i+1} - H_{1, i+1}, & \quad \forall i \in \{0, ..., N-2\} \\
+            H_{2, N-1} &= 2A_0 - H_{1, 0} &
+
+        Because the matrix :math:`R` always follows the same pattern (and thus :math:`T, u, v` as well),
+        we can define a memo list for :math:`c'` and :math:`u'` to avoid recalculation. We cannot
+        memoize :math:`D` and :math:`Y`, however, because they are always different matrices. We
+        cannot make a memo for :math:`q` either, but we can calculate it faster because :math:`u'`
+        can be memoized.
+
+    Parameters
+    ----------
+    anchors
+        Anchors of a closed cubic spline.
+
+    Returns
+    -------
+    :class:`tuple` [:class:`~.Point3D_Array`, :class:`~.Point3D_Array`]
+        A tuple of two arrays: one containing the 1st handle for every curve in
+        the closed cubic spline, and the other containing the 2nd handles.
     """
-    Converts array whose rows represent diagonal
-    entries of a matrix into the matrix itself.
-    See scipy.linalg.solve_banded
+    global CP_CLOSED_MEMO
+    global UP_CLOSED_MEMO
+
+    A = np.asarray(anchors)
+    N = A.shape[0] - 1
+    dim = A.shape[1]
+
+    # Calculate cp (c prime) and up (u prime) with help from
+    # CP_CLOSED_MEMO and UP_CLOSED_MEMO.
+    len_memo = CP_CLOSED_MEMO.size
+    if len_memo < N - 1:
+        cp = np.empty(N - 1)
+        up = np.empty(N - 1)
+        cp[:len_memo] = CP_CLOSED_MEMO
+        up[:len_memo] = UP_CLOSED_MEMO
+        # Forward Substitution 1
+        # Calculate up (at the same time we calculate cp).
+        for i in range(len_memo, N - 1):
+            cp[i] = 1 / (4 - cp[i - 1])
+            up[i] = -cp[i] * up[i - 1]
+        CP_CLOSED_MEMO = cp
+        UP_CLOSED_MEMO = up
+    else:
+        cp = CP_CLOSED_MEMO[: N - 1]
+        up = UP_CLOSED_MEMO[: N - 1]
+
+    # The last element of u' is different
+    cp_last_division = 1 / (3 - cp[N - 2])
+    up_last = cp_last_division * (1 - up[N - 2])
+
+    # Backward Substitution 1
+    # Calculate q.
+    q = np.empty((N, dim))
+    q[N - 1] = up_last
+    for i in range(N - 2, -1, -1):
+        q[i] = up[i] - cp[i] * q[i + 1]
+
+    # Forward Substitution 2
+    # Calculate Dp (D prime).
+    Dp = np.empty((N, dim))
+    AUX = 4 * A[:N] + 2 * A[1:]  # Vectorize the sum for efficiency.
+    Dp[0] = AUX[0] / 3
+    for i in range(1, N - 1):
+        Dp[i] = cp[i] * (AUX[i] - Dp[i - 1])
+    Dp[N - 1] = cp_last_division * (AUX[N - 1] - Dp[N - 2])
+
+    # Backward Substitution
+    # Calculate Y, which is defined as a view of Dp for efficiency
+    # and semantic convenience at the same time.
+    Y = Dp
+    # Y[N-1] = Dp[N-1] (redundant)
+    for i in range(N - 2, -1, -1):
+        Y[i] = Dp[i] - cp[i] * Y[i + 1]
+
+    # Calculate H1.
+    H1 = Y - 1 / (1 + q[0] + q[N - 1]) * q * (Y[0] + Y[N - 1])
+
+    # Calculate H2.
+    H2 = np.empty((N, dim))
+    H2[0 : N - 1] = 2 * A[1:N] - H1[1:N]
+    H2[N - 1] = 2 * A[N] - H1[0]
+
+    return H1, H2
+
+
+CP_OPEN_MEMO = np.array([0.5])
+
+
+def get_handles_for_smooth_open_cubic_spline(
+    anchors: Point3D_Array,
+) -> tuple[Point3D_Array, Point3D_Array]:
+    r"""Special case of :func:`get_handles_for_smooth_cubic_spline`,
+    when the ``anchors`` do not form a closed loop.
+
+    .. note::
+        A system of equations must be solved to get the first handles of
+        every Bèzier curve (referred to as :math:`H_1`).
+        Then :math:`H_2` (the second handles) can be obtained separately.
+
+        .. seealso::
+            The equations were obtained from:
+
+            * `Smooth Bézier Spline Through Prescribed Points. (2012). Particle in Cell Consulting LLC. <https://www.particleincell.com/2012/bezier-splines/>`_
+            * `Conditions on control points for continuous curvature. (2016). Jaco Stuifbergen. <http://www.jacos.nl/jacos_html/spline/theory/theory_2.html>`_
+
+        .. warning::
+            The equations in the first webpage have some typos which were corrected in the comments.
+
+        In general, if there are :math:`N+1` anchors, there will be :math:`N` Bézier curves
+        and thus :math:`N` pairs of handles to find. We must solve the following
+        system of equations for the 1st handles (example for :math:`N = 5`):
+
+        .. math::
+            \begin{pmatrix}
+                2 & 1 & 0 & 0 & 0 \\
+                1 & 4 & 1 & 0 & 0 \\
+                0 & 1 & 4 & 1 & 0 \\
+                0 & 0 & 1 & 4 & 1 \\
+                0 & 0 & 0 & 2 & 7
+            \end{pmatrix}
+            \begin{pmatrix}
+                H_{1,0} \\
+                H_{1,1} \\
+                H_{1,2} \\
+                H_{1,3} \\
+                H_{1,4}
+            \end{pmatrix}
+            =
+            \begin{pmatrix}
+                A_0 + 2A_1 \\
+                4A_1 + 2A_2 \\
+                4A_2 + 2A_3 \\
+                4A_3 + 2A_4 \\
+                8A_4 + A_5
+            \end{pmatrix}
+
+        which will be expressed as :math:`TH_1 = D`.
+        :math:`T` is a tridiagonal matrix, so the system can be solved in :math:`O(N)`
+        operations. Here we shall use Thomas' algorithm or the tridiagonal matrix
+        algorithm.
+
+        .. seealso::
+            `Tridiagonal matrix algorithm. Wikipedia. <https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm>`_
+
+        Define:
+
+        *   :math:`a = [a_0, \ a_1, \ ..., \ a_{N-2}]` as :math:`T`'s lower diagonal of :math:`N-1` elements,
+            such that :math:`a_0 = a_1 = ... = a_{N-3} = 1`, and :math:`a_{N-2} = 2`;
+        *   :math:`b = [b_0, \ b_1, \ ..., \ b_{N-2}, \ b_{N-1}]` as :math:`T`'s main diagonal of :math:`N` elements,
+            such that :math:`b_0 = 2`, :math:`b_1 = b_2 = ... = b_{N-2} = 4`, and :math:`b_{N-1} = 7`;
+        *   :math:`c = [c_0, \ c_1, \ ..., \ c_{N-2}]` as :math:`T`'s upper diagonal of :math:`{N-1}` elements,
+            such that :math:`c_0 = c_1 = ... = c_{N-2} = 1`: this diagonal is filled with ones.
+
+        If, according to Thomas' algorithm, we define:
+
+        .. math::
+            c'_0 &= \frac{c_0}{b_0} & \\
+            c'_i &= \frac{c_i}{b_i - a_{i-1} c'_{i-1}}, & \quad \forall i \in \{1, ..., N-2\} \\
+            & & \\
+            D'_0 &= \frac{1}{b_0} D_0 & \\
+            D'_i &= \frac{1}{b_i - a_{i-1} c'{i-1}} (D_i - a_{i-1} D'_{i-1}), & \quad \forall i \in \{1, ..., N-1\}
+
+        Then:
+
+        .. math::
+            c'_0     &= 0.5 & \\
+            c'_i     &= \frac{1}{4 - c'_{i-1}}, & \quad \forall i \in \{1, ..., N-2\} \\
+            & & \\
+            D'_0     &= 0.5A_0 + A_1 & \\
+            D'_i     &= \frac{1}{4 - c'_{i-1}} (4A_i + 2A_{i+1} - D'_{i-1}) & \\
+            &= c_i (4A_i + 2A_{i+1} - D'_{i-1}), & \quad \forall i \in \{1, ..., N-2\} \\
+            D'_{N-1} &= \frac{1}{7 - 2c'_{N-2}} (8A_{N-1} + A_N - 2D'_{N-2}) &
+
+        Finally, we can do Backward Substitution to find :math:`H_1`:
+
+        .. math::
+            H_{1, N-1} &= D'_{N-1} & \\
+            H_{1, i}   &= D'_i - c'_i H_{1, i+1}, & \quad \forall i \in \{0, ..., N-2\}
+
+        Once we have :math:`H_1`, we can get :math:`H_2` (the array of second handles) as follows:
+
+        .. math::
+            H_{2, i}   &= 2A_{i+1} - H_{1, i+1}, & \quad \forall i \in \{0, ..., N-2\} \\
+            H_{2, N-1} &= 0.5A_N   + 0.5H_{1, N-1} &
+
+        As the matrix :math:`T` always follows the same pattern, we can define a memo list
+        for :math:`c'` to avoid recalculation. We cannot do the same for :math:`D`, however,
+        because it is always a different matrix.
+
+    Parameters
+    ----------
+    anchors
+        Anchors of an open cubic spline.
+
+    Returns
+    -------
+    :class:`tuple` [:class:`~.Point3D_Array`, :class:`~.Point3D_Array`]
+        A tuple of two arrays: one containing the 1st handle for every curve in
+        the open cubic spline, and the other containing the 2nd handles.
     """
-    l, u = l_and_u
-    dim = diag.shape[1]
-    matrix = np.zeros((dim, dim))
-    for i in range(l + u + 1):
-        np.fill_diagonal(
-            matrix[max(0, i - u) :, max(0, u - i) :],
-            diag[i, max(0, u - i) :],
-        )
-    return matrix
+    global CP_OPEN_MEMO
+
+    A = np.asarray(anchors)
+    N = A.shape[0] - 1
+    dim = A.shape[1]
+
+    # Calculate cp (c prime) with help from CP_OPEN_MEMO.
+    len_memo = CP_OPEN_MEMO.size
+    if len_memo < N - 1:
+        cp = np.empty(N - 1)
+        cp[:len_memo] = CP_OPEN_MEMO
+        for i in range(len_memo, N - 1):
+            cp[i] = 1 / (4 - cp[i - 1])
+        CP_OPEN_MEMO = cp
+    else:
+        cp = CP_OPEN_MEMO[: N - 1]
+
+    # Calculate Dp (D prime).
+    Dp = np.empty((N, dim))
+    Dp[0] = 0.5 * A[0] + A[1]
+    AUX = 4 * A[1 : N - 1] + 2 * A[2:N]  # Vectorize the sum for efficiency.
+    for i in range(1, N - 1):
+        Dp[i] = cp[i] * (AUX[i - 1] - Dp[i - 1])
+    Dp[N - 1] = (1 / (7 - 2 * cp[N - 2])) * (8 * A[N - 1] + A[N] - 2 * Dp[N - 2])
+
+    # Backward Substitution.
+    # H1 (array of the first handles) is defined as a view of Dp for efficiency
+    # and semantic convenience at the same time.
+    H1 = Dp
+    # H1[N-1] = Dp[N-1] (redundant)
+    for i in range(N - 2, -1, -1):
+        H1[i] = Dp[i] - cp[i] * H1[i + 1]
+
+    # Calculate H2.
+    H2 = np.empty((N, dim))
+    H2[0 : N - 1] = 2 * A[1:N] - H1[1:N]
+    H2[N - 1] = 0.5 * (A[N] + H1[N - 1])
+
+    return H1, H2
 
 
 # Given 4 control points for a cubic bezier curve (or arrays of such)
@@ -744,16 +1091,21 @@ def proportions_along_bezier_curve_for_point(
     control_points = np.array(control_points)
     n = len(control_points) - 1
 
+    # Combinatorial coefficients
+    choose = get_pascal_triangle(n)
+    choose_n = choose[n]
+
     roots = []
     for dim, coord in enumerate(point):
         control_coords = control_points[:, dim]
         terms = []
         for term_power in range(n, -1, -1):
-            outercoeff = choose(n, term_power)
+            outercoeff = choose_n[term_power]
             term = []
             sign = 1
+            choose_pow = choose[term_power]
             for subterm_num in range(term_power, -1, -1):
-                innercoeff = choose(term_power, subterm_num) * sign
+                innercoeff = choose_pow[subterm_num] * sign
                 subterm = innercoeff * control_coords[subterm_num]
                 if term_power == 0:
                     subterm -= coord
