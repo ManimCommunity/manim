@@ -147,7 +147,7 @@ Develop your contribution
 
    Update the docstrings (the text in triple quotation marks) of any functions
    or classes you change and include them with any new functions you add.
-   See the :doc:`documentation guide <docstrings>` for more information about how we
+   See the :doc:`documentation guide <docs/docstrings>` for more information about how we
    prefer our code to be documented. The content of the docstrings will be
    rendered in the :doc:`reference manual <../reference>`.
 
@@ -245,7 +245,8 @@ sticks to our coding conventions.
   a look at the built HTML files to see whether the formatting of the documentation
   you added looks as you intended. You can build the documentation locally
   by running ``make html`` from the ``docs`` directory. Make sure you have `Graphviz <https://graphviz.org/>`_
-  installed locally in order to build the inheritance diagrams.
+  installed locally in order to build the inheritance diagrams. See :doc:`docs` for
+  more information.
 
 Finally, if the pipeline passes and you are satisfied with your changes: wait for
 feedback and iterate over any requested changes. You will likely be asked to
