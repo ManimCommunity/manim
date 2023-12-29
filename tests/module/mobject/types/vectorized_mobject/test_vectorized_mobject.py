@@ -79,6 +79,11 @@ def test_vgroup_init():
     VGroup()
     VGroup(VMobject())
     VGroup(VMobject(), VMobject())
+    VGroup(
+        VMobject(),
+        [VMobject()]*2,
+        (x for x in [VMobject()])
+    )
     with pytest.raises(TypeError):
         VGroup(Mobject())
     with pytest.raises(TypeError):
