@@ -28,6 +28,32 @@ DEFAULT_DASH_LENGTH = 0.05
 DEFAULT_ARROW_TIP_LENGTH = 0.35
 DEFAULT_ARROW_TIP_WIDTH = 0.35
 
+__all__ = [
+    "OpenGLTipableVMobject",
+    "OpenGLArc",
+    "OpenGLArcBetweenPoints",
+    "OpenGLCurvedArrow",
+    "OpenGLCurvedDoubleArrow",
+    "OpenGLCircle",
+    "OpenGLDot",
+    "OpenGLEllipse",
+    "OpenGLAnnularSector",
+    "OpenGLSector",
+    "OpenGLAnnulus",
+    "OpenGLLine",
+    "OpenGLDashedLine",
+    "OpenGLTangentLine",
+    "OpenGLElbow",
+    "OpenGLArrow",
+    "OpenGLVector",
+    "OpenGLDoubleArrow",
+    "OpenGLCubicBezier",
+    "OpenGLPolygon",
+    "OpenGLRegularPolygon",
+    "OpenGLTriangle",
+    "OpenGLArrowTip",
+]
+
 
 class OpenGLTipableVMobject(OpenGLVMobject):
     """

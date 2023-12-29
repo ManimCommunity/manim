@@ -67,7 +67,7 @@ if TYPE_CHECKING:
     from manim.mobject.mobject import Mobject
     from manim.mobject.text.tex_mobject import SingleStringMathTex, Tex
     from manim.mobject.text.text_mobject import Text
-    from manim.typing import CubicBezierPoints, Point3D, QuadraticBezierPoints, Vector
+    from manim.typing import CubicBezierPoints, Point3D, QuadraticBezierPoints, Vector3D
 
 
 class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
@@ -91,12 +91,12 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
     def __init__(
         self,
         tip_length: float = DEFAULT_ARROW_TIP_LENGTH,
-        normal_vector: Vector = OUT,
+        normal_vector: Vector3D = OUT,
         tip_style: dict = {},
         **kwargs,
     ) -> None:
         self.tip_length: float = tip_length
-        self.normal_vector: Vector = normal_vector
+        self.normal_vector: Vector3D = normal_vector
         self.tip_style: dict = tip_style
         super().__init__(**kwargs)
 
