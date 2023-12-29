@@ -26,6 +26,49 @@ ALIAS_LIST = [
 ]
 
 
+def smart_replace(base: str, alias: str, substitution: str) -> str:
+    """Auxiliary function for substituting type aliases into a base
+    string, when there are overlaps between the aliases themselves.
+
+    Parameters
+    ----------
+    base
+        The string in which the type aliases will be located and
+        replaced.
+    alias
+        The substring to be substituted.
+    substitution
+        The string which will replace every occurrence of ``alias``.
+
+    Returns
+    -------
+    str
+        The new string after the alias substitution.
+    """
+
+    occurrences = []
+    len_alias = len(alias)
+    len_base = len(base)
+    condition = lambda char: (not char.isalnum()) and char != "_"
+
+    start = 0
+    i = 0
+    while True:
+        i = base.find(alias, start)
+        if i == -1:
+            break
+        if (i == 0 or condition(base[i - 1])) and (
+            i + len_alias == len_base or condition(base[i + len_alias])
+        ):
+            occurrences.append(i)
+        start = i + len_alias
+
+    for o in occurrences[::-1]:
+        base = base[:o] + substitution + base[o + len_alias :]
+
+    return base
+
+
 def setup(app: Sphinx) -> None:
     app.add_directive("autoaliasattr", AliasAttrDocumenter)
 
@@ -90,6 +133,12 @@ class AliasAttrDocumenter(Directive):
                 #   Contains "definition": str
                 #   Can possibly contain "doc": str
                 for alias_name, alias_info in category_dict.items():
+                    # Replace all occurrences of type aliases in the
+                    # definition for automatic cross-referencing!
+                    alias_def = alias_info["definition"]
+                    for A in ALIAS_LIST:
+                        alias_def = smart_replace(alias_def, A, f":class:`~.{A}`")
+
                     # Using the `.. class::` directive is CRUCIAL, since
                     # function/method parameters are always annotated via
                     # classes - therefore Sphinx expects a class
@@ -97,30 +146,23 @@ class AliasAttrDocumenter(Directive):
                         [
                             f".. class:: {alias_name}",
                             "",
-                            "    .. code-block::",
+                            "    .. parsed-literal::",
                             "",
-                            f"        {alias_info['definition']}",
+                            f"        {alias_def}",
                             "",
                         ]
                     )
 
                     if "doc" in alias_info:
+                        # Replace all occurrences of type aliases in
+                        # the docs for automatic cross-referencing!
                         alias_doc = alias_info["doc"]
-                        # Replace all occurrences of type aliases in the docs for
-                        # automatic cross-referencing!
                         for A in ALIAS_LIST:
                             alias_doc = alias_doc.replace(f"`{A}`", f":class:`~.{A}`")
-                        doc_lines = alias_doc.split("\n")
-                        # Some type aliases in Manim start with a ``shape: ...` line.
-                        # This allows that line to have more space and a better format.
-                        if (
-                            len(doc_lines) >= 2
-                            and doc_lines[0].startswith("``shape:")
-                            and doc_lines[1].strip() != ""
-                        ):
-                            doc_lines.insert(1, "")
+
                         # Add all the lines with 4 spaces behind, to consider all the
                         # documentation as a paragraph INSIDE the `.. class::` block
+                        doc_lines = alias_doc.split("\n")
                         unparsed.extend(ViewList([f"    {line}" for line in doc_lines]))
 
                     # Parse the reST text into a fresh container

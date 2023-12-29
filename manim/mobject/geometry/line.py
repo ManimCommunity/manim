@@ -632,6 +632,11 @@ class Arrow(Line):
 class Vector(Arrow):
     """A vector specialized for use in graphs.
 
+    .. caution::
+        Do not confuse with the :class:`~.Vector2D`,
+        :class:`~.Vector3D` or :class:`~.VectorND` type aliases,
+        which are not Mobjects!
+
     Parameters
     ----------
     direction
