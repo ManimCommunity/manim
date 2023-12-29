@@ -30,6 +30,8 @@ CFG_DEFAULTS = {
     "resolution": (854, 480),
 }
 
+__all__ = ["select_resolution", "update_cfg", "project", "scene"]
+
 
 def select_resolution():
     """Prompts input of type click.Choice from user. Presents options from QUALITIES constant.
@@ -47,7 +49,7 @@ def select_resolution():
     resolution_options.pop()
     choice = click.prompt(
         "\nSelect resolution:\n",
-        type=click.Choice([f"{i[0]}p" for i in resolution_options]),
+        type=cloup.Choice([f"{i[0]}p" for i in resolution_options]),
         show_default=False,
         default="480p",
     )

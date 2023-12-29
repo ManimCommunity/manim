@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from manim.typing import Point3D, Vector3
+from manim.typing import Point3D, Vector3D
 from manim.utils.color import BLUE, BLUE_D, BLUE_E, LIGHT_GREY, WHITE, interpolate_color
 
 __all__ = [
@@ -953,7 +953,7 @@ class Line3D(Cylinder):
     def pointify(
         self,
         mob_or_point: Mobject | Point3D,
-        direction: Vector3 = None,
+        direction: Vector3D = None,
     ) -> np.ndarray:
         """Gets a point representing the center of the :class:`Mobjects <.Mobject>`.
 
@@ -1001,7 +1001,7 @@ class Line3D(Cylinder):
     def parallel_to(
         cls,
         line: Line3D,
-        point: Vector3 = ORIGIN,
+        point: Vector3D = ORIGIN,
         length: float = 5,
         **kwargs,
     ) -> Line3D:
@@ -1049,7 +1049,7 @@ class Line3D(Cylinder):
     def perpendicular_to(
         cls,
         line: Line3D,
-        point: Vector3 = ORIGIN,
+        point: Vector3D = ORIGIN,
         length: float = 5,
         **kwargs,
     ) -> Line3D:

@@ -18,6 +18,8 @@ from manim.mobject.value_tracker import ValueTracker
 
 string_to_mob_map = {}
 
+__all__ = ["DecimalNumber", "Integer", "Variable"]
+
 
 class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
     """An mobject representing a decimal number.

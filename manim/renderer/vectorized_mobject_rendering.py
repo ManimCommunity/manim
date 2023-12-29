@@ -8,6 +8,11 @@ from ..utils import opengl
 from ..utils.space_ops import cross2d, earclip_triangulation
 from .shader import Shader
 
+__all__ = [
+    "render_opengl_vectorized_mobject_fill",
+    "render_opengl_vectorized_mobject_stroke",
+]
+
 
 def build_matrix_lists(mob):
     root_hierarchical_matrix = mob.hierarchical_model_matrix()

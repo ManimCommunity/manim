@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import typing
-from typing import Any
 
 import numpy as np
 
@@ -15,7 +14,13 @@ from ..utils.exceptions import EndSceneEarlyException
 from ..utils.iterables import list_update
 
 if typing.TYPE_CHECKING:
+    import types
+    from typing import Any, Iterable
+
+    from manim.animation.animation import Animation
     from manim.scene.scene import Scene
+
+__all__ = ["CairoRenderer"]
 
 
 class CairoRenderer:
@@ -51,7 +56,12 @@ class CairoRenderer:
             scene.__class__.__name__,
         )
 
-    def play(self, scene, *args, **kwargs):
+    def play(
+        self,
+        scene: Scene,
+        *args: Animation | Iterable[Animation] | types.GeneratorType[Animation],
+        **kwargs,
+    ):
         # Reset skip_animations to the original state.
         # Needed when rendering only some animations, and skipping others.
         self.skip_animations = self._original_skipping_status
