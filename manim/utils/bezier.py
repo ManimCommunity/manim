@@ -901,7 +901,7 @@ def subdivide_bezier(points: BezierPoints, n_divisions: int) -> Point3D_Array:
     Returns
     -------
     :class:`~.Point3D_Array`
-        An array containing the points defining the new `n` subcurves.
+        An array containing the points defining the new :math:`n` subcurves.
     """
     if n_divisions == 1:
         return points
@@ -924,7 +924,7 @@ def subdivide_bezier(points: BezierPoints, n_divisions: int) -> Point3D_Array:
         # prev = [P0 .. .. ..]
         # curr = [P0 P1 P2 P3]
         for i in range(1, N):
-            a = (n_divisions - curve_num - 1) / (n_divisions - curve_num)
+            a = (n_divisions - curve_num) / (n_divisions - curve_num + 1)
             # 1st iter: curr = [L0 L1 L2 P3]
             # 2nd iter: curr = [Q0 Q1 L2 P3]
             # 3rd iter: curr = [C0 Q1 L2 P3]
@@ -959,8 +959,8 @@ def bezier_remap(
     Returns
     -------
     :class:`~.BezierPoints_Array`
-        The new array of shape ``(new_number_of_curves, nppc, dim)``, containing the new Bézier curves
-        after the remap.
+        The new array of shape ``(new_number_of_curves, nppc, dim)``,
+        containing the new Bézier curves after the remap.
     """
     bezier_tuples = np.asarray(bezier_tuples)
     current_number_of_curves, nppc, dim = bezier_tuples.shape

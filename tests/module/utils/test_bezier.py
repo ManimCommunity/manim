@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 import numpy.testing as nt
 
-from manim.utils.bezier import _get_subdivision_matrix
+from manim.utils.bezier import _get_subdivision_matrix, subdivide_bezier
 
 
 def test_bezier_subdivision_matrices() -> None:
@@ -159,3 +159,38 @@ def test_bezier_subdivision_matrices() -> None:
                 _get_subdivision_matrix(degree + 1, n_divisions),
                 SUBDIVISION_MATRICES[degree][n_divisions],
             )
+
+    quartic_matrix = (
+        np.array(
+            [
+                [16, 0, 0, 0, 0],
+                [8, 8, 0, 0, 0],
+                [4, 8, 4, 0, 0],
+                [2, 6, 6, 2, 0],
+                [1, 4, 6, 4, 1],
+                [1, 4, 6, 4, 1],
+                [0, 2, 6, 6, 2],
+                [0, 0, 4, 8, 4],
+                [0, 0, 0, 8, 8],
+                [0, 0, 0, 0, 16],
+            ]
+        )
+        / 16
+    )
+
+    quartic_bezier = np.array(
+        [
+            [-1, -1, 0],
+            [-1, 0, 0],
+            [0, 1, 0],
+            [1, 0, 0],
+            [1, -1, 0],
+        ]
+    )
+
+    print(subdivide_bezier(quartic_bezier, 2))
+    print(quartic_matrix @ quartic_bezier)
+    nt.assert_allclose(
+        subdivide_bezier(quartic_bezier, 2),
+        quartic_matrix @ quartic_bezier,
+    )
