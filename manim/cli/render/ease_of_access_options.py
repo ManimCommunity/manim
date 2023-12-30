@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from cloup import Choice, option, option_group
 
+__all__ = ["ease_of_access_options"]
+
 ease_of_access_options = option_group(
     "Ease of access options",
     option(

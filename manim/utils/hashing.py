@@ -23,6 +23,8 @@ from .. import config, logger
 if typing.TYPE_CHECKING:
     from manim.scene.scene import Scene
 
+__all__ = ["KEYS_TO_FILTER_OUT", "get_hash_from_play_call", "get_json"]
+
 # Sometimes there are elements that are not suitable for hashing (too long or
 # run-dependent).  This is used to filter them out.
 KEYS_TO_FILTER_OUT = {

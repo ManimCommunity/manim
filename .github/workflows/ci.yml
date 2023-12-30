@@ -60,7 +60,7 @@ jobs:
         if: runner.os == 'Linux'
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          packages: python3-opengl libpango1.0-dev xvfb
+          packages: python3-opengl libpango1.0-dev xvfb freeglut3-dev
           version: 1.0
 
       - name: Install Texlive (Linux)

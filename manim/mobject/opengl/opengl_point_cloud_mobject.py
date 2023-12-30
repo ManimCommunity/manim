@@ -12,6 +12,8 @@ from manim.utils.color import BLACK, WHITE, YELLOW, color_gradient, color_to_rgb
 from manim.utils.config_ops import _Uniforms
 from manim.utils.iterables import resize_with_interpolation
 
+__all__ = ["OpenGLPMobject", "OpenGLPGroup", "OpenGLPMPoint"]
+
 
 class OpenGLPMobject(OpenGLMobject):
     shader_folder = "true_dot"
