@@ -2,195 +2,96 @@ from __future__ import annotations
 
 import numpy as np
 import numpy.testing as nt
+from _split_matrices import SPLIT_MATRICES
+from _subdivision_matrices import SUBDIVISION_MATRICES
 
-from manim.utils.bezier import _get_subdivision_matrix, subdivide_bezier
+from manim.utils.bezier import (
+    _get_subdivision_matrix,
+    partial_bezier_points,
+    split_bezier,
+    subdivide_bezier,
+)
+
+QUARTIC_BEZIER = np.array(
+    [
+        [-1, -1, 0],
+        [-1, 0, 0],
+        [0, 1, 0],
+        [1, 0, 0],
+        [1, -1, 0],
+    ],
+    dtype=float,
+)
 
 
-def test_bezier_subdivision_matrices() -> None:
-    """Test that :meth:`_get_subdivision_matrix` is working properly."""
+def test_partial_bezier_points() -> None:
+    """Test that :func:`partial_bezierpoints`, both in the
+    portion-matrix-building algorithm (degrees up to 3) and the
+    fallback algorithm (degree 4), works correctly.
+    """
+    for degree, degree_dict in SUBDIVISION_MATRICES.items():
+        n_points = degree + 1
+        points = QUARTIC_BEZIER[:n_points]
+        for n_divisions, subdivision_matrix in degree_dict.items():
+            for i in range(n_divisions):
+                a = i / n_divisions
+                b = (i + 1) / n_divisions
+                portion_matrix = subdivision_matrix[n_points * i : n_points * (i + 1)]
+                nt.assert_allclose(
+                    partial_bezier_points(points, a, b),
+                    portion_matrix @ points,
+                    atol=1e-15,  # Needed because of floating-point errors
+                )
 
-    SUBDIVISION_MATRICES = {
-        # For 0-degree Béziers
-        0: {
-            2: np.array([[1], [1]]),
-            3: np.array([[1], [1], [1]]),
-            4: np.array([[1], [1], [1], [1]]),
-        },
-        # For linear Béziers
-        1: {
-            2: np.array(
-                [
-                    [2, 0],
-                    [1, 1],
-                    [1, 1],
-                    [0, 2],
-                ]
-            )
-            / 2,
-            3: np.array(
-                [
-                    [3, 0],
-                    [2, 1],
-                    [2, 1],
-                    [1, 2],
-                    [1, 2],
-                    [0, 3],
-                ]
-            )
-            / 3,
-            4: np.array(
-                [
-                    [4, 0],
-                    [3, 1],
-                    [3, 1],
-                    [2, 2],
-                    [2, 2],
-                    [1, 3],
-                    [1, 3],
-                    [0, 4],
-                ]
-            )
-            / 4,
-        },
-        # For quadratic Béziers
-        2: {
-            2: np.array(
-                [
-                    [4, 0, 0],
-                    [2, 2, 0],
-                    [1, 2, 1],
-                    [1, 2, 1],
-                    [0, 2, 2],
-                    [0, 0, 4],
-                ]
-            )
-            / 4,
-            3: np.array(
-                [
-                    [9, 0, 0],
-                    [6, 3, 0],
-                    [4, 4, 1],
-                    [4, 4, 1],
-                    [2, 5, 2],
-                    [1, 4, 4],
-                    [1, 4, 4],
-                    [0, 3, 6],
-                    [0, 0, 9],
-                ]
-            )
-            / 9,
-            4: np.array(
-                [
-                    [16, 0, 0],
-                    [12, 4, 0],
-                    [9, 6, 1],
-                    [9, 6, 1],
-                    [6, 8, 2],
-                    [4, 8, 4],
-                    [4, 8, 4],
-                    [2, 8, 6],
-                    [1, 6, 9],
-                    [1, 6, 9],
-                    [0, 4, 12],
-                    [0, 0, 16],
-                ]
-            )
-            / 16,
-        },
-        # For cubic Béziers
-        3: {
-            2: np.array(
-                [
-                    [8, 0, 0, 0],
-                    [4, 4, 0, 0],
-                    [2, 4, 2, 0],
-                    [1, 3, 3, 1],
-                    [1, 3, 3, 1],
-                    [0, 2, 4, 2],
-                    [0, 0, 4, 4],
-                    [0, 0, 0, 8],
-                ]
-            )
-            / 8,
-            3: np.array(
-                [
-                    [27, 0, 0, 0],
-                    [18, 9, 0, 0],
-                    [12, 12, 3, 0],
-                    [8, 12, 6, 1],
-                    [8, 12, 6, 1],
-                    [4, 12, 9, 2],
-                    [2, 9, 12, 4],
-                    [1, 6, 12, 8],
-                    [1, 6, 12, 8],
-                    [0, 3, 12, 12],
-                    [0, 0, 9, 18],
-                    [0, 0, 0, 27],
-                ]
-            )
-            / 27,
-            4: np.array(
-                [
-                    [64, 0, 0, 0],
-                    [48, 16, 0, 0],
-                    [36, 24, 4, 0],
-                    [27, 27, 9, 1],
-                    [27, 27, 9, 1],
-                    [18, 30, 14, 2],
-                    [12, 28, 20, 4],
-                    [8, 24, 24, 8],
-                    [8, 24, 24, 8],
-                    [4, 20, 28, 12],
-                    [2, 14, 30, 18],
-                    [1, 9, 27, 27],
-                    [1, 9, 27, 27],
-                    [0, 4, 24, 36],
-                    [0, 0, 16, 48],
-                    [0, 0, 0, 64],
-                ]
-            )
-            / 64,
-        },
-    }
 
+def test_split_bezier() -> None:
+    """Test that :func:`split_bezier`, both in the
+    split-matrix-building algorithm (degrees up to 3) and the
+    fallback algorithm (degree 4), works correctly.
+    """
+    for degree, degree_dict in SPLIT_MATRICES.items():
+        n_points = degree + 1
+        points = QUARTIC_BEZIER[:n_points]
+        for t, split_matrix in degree_dict.items():
+            nt.assert_allclose(
+                split_bezier(points, t), split_matrix @ points, atol=1e-15
+            )
+
+    for degree, degree_dict in SUBDIVISION_MATRICES.items():
+        n_points = degree + 1
+        points = QUARTIC_BEZIER[:n_points]
+        # Split in half
+        split_matrix = degree_dict[2]
+        nt.assert_allclose(
+            split_bezier(points, 0.5),
+            split_matrix @ points,
+        )
+
+
+def test_get_subdivision_matrix() -> None:
+    """Test that the memos in .:meth:`_get_subdivision_matrix`
+    are being correctly generated.
+    """
+    # Only for degrees up to 3!
     for degree in range(4):
-        for n_divisions in range(2, 5):
+        degree_dict = SUBDIVISION_MATRICES[degree]
+        for n_divisions, subdivision_matrix in degree_dict.items():
             nt.assert_allclose(
                 _get_subdivision_matrix(degree + 1, n_divisions),
-                SUBDIVISION_MATRICES[degree][n_divisions],
+                subdivision_matrix,
             )
 
-    quartic_matrix = (
-        np.array(
-            [
-                [16, 0, 0, 0, 0],
-                [8, 8, 0, 0, 0],
-                [4, 8, 4, 0, 0],
-                [2, 6, 6, 2, 0],
-                [1, 4, 6, 4, 1],
-                [1, 4, 6, 4, 1],
-                [0, 2, 6, 6, 2],
-                [0, 0, 4, 8, 4],
-                [0, 0, 0, 8, 8],
-                [0, 0, 0, 0, 16],
-            ]
-        )
-        / 16
-    )
 
-    quartic_bezier = np.array(
-        [
-            [-1, -1, 0],
-            [-1, 0, 0],
-            [0, 1, 0],
-            [1, 0, 0],
-            [1, -1, 0],
-        ]
-    )
-
-    print(subdivide_bezier(quartic_bezier, 2))
-    print(quartic_matrix @ quartic_bezier)
-    nt.assert_allclose(
-        subdivide_bezier(quartic_bezier, 2),
-        quartic_matrix @ quartic_bezier,
-    )
+def test_subdivide_bezier() -> None:
+    """Test that :func:`subdivide_bezier`, both in the memoized cases
+    (degrees up to 3) and the fallback algorithm (degree 4), works
+    correctly.
+    """
+    for degree, degree_dict in SUBDIVISION_MATRICES.items():
+        n_points = degree + 1
+        points = QUARTIC_BEZIER[:n_points]
+        for n_divisions, subdivision_matrix in degree_dict.items():
+            nt.assert_allclose(
+                subdivide_bezier(points, n_divisions),
+                subdivision_matrix @ points,
+            )

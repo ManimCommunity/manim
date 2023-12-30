@@ -253,11 +253,11 @@ def partial_bezier_points(points: BezierPoints, a: float, b: float) -> BezierPoi
                 p_2
             \end{pmatrix}
 
-        from where one can define a :math:`(3, 3)` matrix :math:`S_2` which, when applied over
+        from where one can define a :math:`(3, 3)` matrix :math:`P_2` which, when applied over
         the array of ``points``, will return the desired partial quadratic Bézier curve:
 
         .. math::
-            S_2
+            P_2
             =
             \begin{pmatrix}
                 (1-a)^2 & 2(1-a)a & a^2 \\
@@ -266,10 +266,10 @@ def partial_bezier_points(points: BezierPoints, a: float, b: float) -> BezierPoi
             \end{pmatrix}
 
         Similarly, for the cubic Bézier curve case, one can define the following
-        :math:`(4, 4)` matrix :math:`S_3`:
+        :math:`(4, 4)` matrix :math:`P_3`:
 
         .. math::
-            S_3
+            P_3
             =
             \begin{pmatrix}
                 (1-a)^3 & 3(1-a)^2a & 3(1-a)a^2 & a^3 \\
@@ -346,7 +346,7 @@ def partial_bezier_points(points: BezierPoints, a: float, b: float) -> BezierPoi
 
     # Fallback case for nth degree Béziers
     # It is convenient that np.array copies points
-    arr = np.array(points)
+    arr = np.array(points, dtype=float)
     N = arr.shape[0]
 
     # Current state for an example Bézier curve C0 = [P0, P1, P2, P3]:
@@ -696,7 +696,7 @@ def split_bezier(points: BezierPoints, t: float) -> Point3D_Array:
 
 
 # Memos explained in subdivide_bezier docstring
-SUBDIVISION_MATRICES = {i: {} for i in range(4)}
+SUBDIVISION_MATRICES = [{} for i in range(4)]
 
 
 def _get_subdivision_matrix(n_points: int, n_divisions: int) -> MatrixMN:
@@ -720,6 +720,12 @@ def _get_subdivision_matrix(n_points: int, n_divisions: int) -> MatrixMN:
         The matrix which, upon multiplying the control points of the
         Bézier curve, subdivides it into ``n_divisions`` parts.
     """
+    if n_points not in (1, 2, 3, 4):
+        raise NotImplementedError(
+            "This function does not support subdividing Bézier "
+            "curves with 0 or more than 4 control points."
+        )
+
     subdivision_matrix = SUBDIVISION_MATRICES[n_points - 1].get(n_divisions, None)
     if subdivision_matrix is not None:
         return subdivision_matrix
@@ -798,12 +804,6 @@ def _get_subdivision_matrix(n_points: int, n_divisions: int) -> MatrixMN:
     elif n_points == 1:
         subdivision_matrix[:] = 1
 
-    else:
-        raise NotImplementedError(
-            "This function does not support subdividing Bézier "
-            "curves with more than 4 control points."
-        )
-
     SUBDIVISION_MATRICES[n_points - 1][n_divisions] = subdivision_matrix
     return subdivision_matrix
 
@@ -827,11 +827,11 @@ def subdivide_bezier(points: BezierPoints, n_divisions: int) -> Point3D_Array:
 
         As an example for a quadratic Bézier curve: taking inspiration from the
         explanation in :func:`partial_bezier_points`, where the following matrix
-        :math:`S_2` was defined to extract the portion of a quadratic Bézier
+        :math:`P_2` was defined to extract the portion of a quadratic Bézier
         curve for :math:`t \in [a, b]`:
 
         .. math::
-            S_2
+            P_2
             =
             \begin{pmatrix}
                 (1-a)^2 & 2(1-a)a & a^2 \\
@@ -842,12 +842,12 @@ def subdivide_bezier(points: BezierPoints, n_divisions: int) -> Point3D_Array:
         the plan is to replace :math:`[a, b]` with
         :math:`\left[ \frac{i-1}{n}, \frac{i}{n} \right], \ \forall i \in \{1, ..., n\}`.
 
-        As an example for :math:`n = 2` divisions, construct :math:`M_1` for
-        the interval :math:`\left[ 0, \frac{1}{2} \right]`, and :math:`M_2` for the
+        As an example for :math:`n = 2` divisions, construct :math:`P_1` for
+        the interval :math:`\left[ 0, \frac{1}{2} \right]`, and :math:`P_2` for the
         interval :math:`\left[ \frac{1}{2}, 1 \right]`:
 
         .. math::
-            M_1
+            P_1
             =
             \begin{pmatrix}
                 1 & 0 & 0 \\
@@ -856,7 +856,7 @@ def subdivide_bezier(points: BezierPoints, n_divisions: int) -> Point3D_Array:
             \end{pmatrix}
             ,
             \quad
-            M_2
+            P_2
             =
             \begin{pmatrix}
                 0.25 & 0.5 & 0.25 \\
@@ -920,11 +920,11 @@ def subdivide_bezier(points: BezierPoints, n_divisions: int) -> Point3D_Array:
         curr = beziers[curve_num]
         prev = beziers[curve_num - 1]
         prev[0] = curr[0]
+        a = (n_divisions - curve_num) / (n_divisions - curve_num + 1)
         # Current state for an example cubic Bézier curve:
         # prev = [P0 .. .. ..]
         # curr = [P0 P1 P2 P3]
         for i in range(1, N):
-            a = (n_divisions - curve_num) / (n_divisions - curve_num + 1)
             # 1st iter: curr = [L0 L1 L2 P3]
             # 2nd iter: curr = [Q0 Q1 L2 P3]
             # 3rd iter: curr = [C0 Q1 L2 P3]
@@ -966,7 +966,7 @@ def bezier_remap(
     current_number_of_curves, nppc, dim = bezier_tuples.shape
     # This is an array with values ranging from 0
     # up to curr_num_curves,  with repeats such that
-    # it's total length is target_num_curves.  For example,
+    # its total length is target_num_curves.  For example,
     # with curr_num_curves = 10, target_num_curves = 15, this
     # would be [0, 0, 1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 8, 8, 9].
     repeat_indices = (
@@ -1252,34 +1252,34 @@ def get_smooth_cubic_bezier_handle_points(
         the cubic spline, and the other containing the 2nd handles.
     """
     anchors = np.asarray(anchors)
-    n_handles = len(anchors) - 1
+    n_anchors = anchors.shape[0]
 
     # If there's a single anchor, there's no Bézier curve.
     # Return empty arrays.
-    if n_handles == 0:
+    if n_anchors == 1:
         dim = anchors.shape[1]
         return np.zeros((0, dim)), np.zeros((0, dim))
 
     # If there are only two anchors (thus only one pair of handles),
     # they can only be an interpolation of these two anchors with alphas
     # 1/3 and 2/3, which will draw a straight line between the anchors.
-    if n_handles == 1:
+    if n_anchors == 2:
         return interpolate(anchors[0], anchors[1], np.array([[1 / 3], [2 / 3]]))
 
     # Handle different cases depending on whether the points form a closed
     # curve or not
     curve_is_closed = is_closed(anchors)
     if curve_is_closed:
-        return get_handles_for_smooth_closed_cubic_spline(anchors)
+        return get_smooth_closed_cubic_bezier_handle_points(anchors)
     else:
-        return get_handles_for_smooth_open_cubic_spline(anchors)
+        return get_smooth_open_cubic_bezier_handle_points(anchors)
 
 
 CP_CLOSED_MEMO = np.array([1 / 3])
 UP_CLOSED_MEMO = np.array([1 / 3])
 
 
-def get_handles_for_smooth_closed_cubic_spline(
+def get_smooth_closed_cubic_bezier_handle_points(
     anchors: Point3D_Array,
 ) -> tuple[Point3D_Array, Point3D_Array]:
     r"""Special case of :func:`get_smooth_cubic_bezier_handle_points`,
@@ -1571,7 +1571,7 @@ def get_handles_for_smooth_closed_cubic_spline(
 CP_OPEN_MEMO = np.array([0.5])
 
 
-def get_handles_for_smooth_open_cubic_spline(
+def get_smooth_open_cubic_bezier_handle_points(
     anchors: Point3D_Array,
 ) -> tuple[Point3D_Array, Point3D_Array]:
     r"""Special case of :func:`get_smooth_cubic_bezier_handle_points`,
