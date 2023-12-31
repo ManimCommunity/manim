@@ -2003,8 +2003,14 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
                         (gr-circle_red).animate.shift(RIGHT)
                     )
         """
-        if not all(isinstance(m, (VMobject, OpenGLVMobject)) for m in vmobjects):
-            raise TypeError("All submobjects must be of type VMobject")
+        for m in vmobjects:
+            if not isinstance(m, (VMobject, OpenGLVMobject)):
+                raise TypeError(
+                    f"All submobjects of {self.__class__.__name__} must be of type VMobject. "
+                    f"Got {repr(m)} ({type(m)}) instead. "
+                    "You can try using `Group` instead."
+                )
+
         return super().add(*vmobjects)
 
     def __add__(self, vmobject: VMobject) -> Self:
