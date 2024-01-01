@@ -561,6 +561,8 @@ Function types
 # Due to current limitations
 # (see https://github.com/python/mypy/issues/14656 / 8263),
 # we don't specify the first argument type (Mobject).
+# Nor are we able to specify the return type (Animation) since we cannot import
+# that here.
 FunctionOverride: TypeAlias = Callable
 """Function type returning an :class:`~.Animation` for the specified
 :class:`~.Mobject`.
