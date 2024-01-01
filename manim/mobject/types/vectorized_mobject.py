@@ -1293,15 +1293,13 @@ class VMobject(Mobject):
         n_dims: int = 3,
         strip_null_end_curves: bool = False,
     ) -> npt.NDArray[ManimInt]:
+        points = np.asarray(points)
+
         nppcc = self.n_points_per_cubic_curve
         starts = points[::nppcc]
         ends = points[nppcc - 1 :: nppcc]
         # This ensures that there are no more starts than ends.
-        # TODO: ends.shape[0] would be more efficient, but some test cases
-        # regarding Flash and ShowPassingFlash expect a Python list instead of
-        # an ndarray, so ends.shape[0] breaks those test cases.
-        # Fix these inconsistencies.
-        n_curves = len(ends)
+        n_curves = ends.shape[0]
         starts = starts[:n_curves]
 
         # Zero curves case: if nothing was done to handle this, the statement
@@ -1910,16 +1908,34 @@ class VMobject(Mobject):
                 self_new_path[max_start:max_end] = self_subpath
                 vmob_new_path[max_start:max_end] = vmob_subpath
 
+        # Because strip_null_end_curves=True, maybe the old points have to
+        # be cut earlier. Extract the end points from the split indices
+        self_end, vmob_end = self_split_i[-1, 1], vmob_split_i[-1, 1]
+
         # If any of the original paths had more subpaths than the other,
         # add them to the corresponding new path and complete the other
         # one by appending its last anchor as many times as necessary.
         if self_n_subpaths < vmob_n_subpaths:
             vmob_start = vmob_split_i[least_n_subpaths, 0]
             self_new_path[max_n_points:] = self_new_path[max_n_points - 1]
-            vmob_new_path[max_n_points:] = vmobject.points[vmob_start:]
+            vmob_new_path[max_n_points:] = vmobject.points[vmob_start:vmob_end]
         elif self_n_subpaths > vmob_n_subpaths:
             self_start = self_split_i[least_n_subpaths, 0]
-            self_new_path[max_n_points:] = self.points[self_start:]
+            try:
+                self_new_path[max_n_points:] = self.points[self_start:self_end]
+            except Exception as e:
+                print("SELF SHAPE:", self.points.shape)
+                print("VMOB SHAPE:", vmobject.points.shape)
+                print("SELF SUBSPLIT:", self_split_i)
+                print("VMOB SUBSPLIT:", vmob_split_i)
+                print("MAX SUBSPLIT:", max_split_i)
+                print("Least subpaths:", least_n_subpaths)
+                print("Max points:", max_n_points)
+                print("Remainder points:", remainder_n_points)
+                print("Self start:", self_start)
+                print("SELF NEW SHAPE:", self_new_path.shape)
+                print("VMOB NEW SHAPE:", vmob_new_path.shape)
+                raise e
             vmob_new_path[max_n_points:] = vmob_new_path[max_n_points - 1]
 
         self.set_points(self_new_path)
