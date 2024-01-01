@@ -1921,21 +1921,7 @@ class VMobject(Mobject):
             vmob_new_path[max_n_points:] = vmobject.points[vmob_start:vmob_end]
         elif self_n_subpaths > vmob_n_subpaths:
             self_start = self_split_i[least_n_subpaths, 0]
-            try:
-                self_new_path[max_n_points:] = self.points[self_start:self_end]
-            except Exception as e:
-                print("SELF SHAPE:", self.points.shape)
-                print("VMOB SHAPE:", vmobject.points.shape)
-                print("SELF SUBSPLIT:", self_split_i)
-                print("VMOB SUBSPLIT:", vmob_split_i)
-                print("MAX SUBSPLIT:", max_split_i)
-                print("Least subpaths:", least_n_subpaths)
-                print("Max points:", max_n_points)
-                print("Remainder points:", remainder_n_points)
-                print("Self start:", self_start)
-                print("SELF NEW SHAPE:", self_new_path.shape)
-                print("VMOB NEW SHAPE:", vmob_new_path.shape)
-                raise e
+            self_new_path[max_n_points:] = self.points[self_start:self_end]
             vmob_new_path[max_n_points:] = vmob_new_path[max_n_points - 1]
 
         self.set_points(self_new_path)
