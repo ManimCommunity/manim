@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-import typing
+from typing import TYPE_CHECKING
 
 import numpy as np
 from pathops import Path as SkiaPath
@@ -11,6 +11,9 @@ from pathops import PathVerb, difference, intersection, union, xor
 from manim import config
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VMobject
+
+if TYPE_CHECKING:
+    from manim.typing import Point2D_Array, Point3D_Array
 
 from ...constants import RendererType
 
@@ -23,28 +26,25 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
     objects (:class:`~.VMobject`).
     """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     def _convert_2d_to_3d_array(
         self,
-        points: typing.Iterable,
+        points: Point2D_Array,
         z_dim: float = 0.0,
-    ) -> list[np.ndarray]:
-        """Converts an iterable with coordinates in 2d to 3d by adding
-        :attr:`z_dim` as the z coordinate.
+    ) -> Point3D_Array:
+        """Converts an iterable with coordinates in 2D to 3D by adding
+        :attr:`z_dim` as the Z coordinate.
 
         Parameters
         ----------
         points:
-            An iterable which has the coordinates.
+            An iterable of points.
         z_dim:
-            The default value of z coordinate.
+            Default value for the Z coordinate.
 
         Returns
         -------
-        typing.List[np.ndarray]
-            A list of array converted to 3d.
+        Point3D_Array
+            A list of the points converted to 3D.
 
         Example
         -------
@@ -70,7 +70,7 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
 
         Returns
         -------
-        SkiaPath:
+        SkiaPath
             The converted path.
         """
         path = SkiaPath()
@@ -216,7 +216,7 @@ class Difference(_BooleanOps):
 
     """
 
-    def __init__(self, subject, clip, **kwargs) -> None:
+    def __init__(self, subject: VMobject, clip: VMobject, **kwargs) -> None:
         super().__init__(**kwargs)
         outpen = SkiaPath()
         difference(
@@ -258,7 +258,7 @@ class Intersection(_BooleanOps):
 
     """
 
-    def __init__(self, *vmobjects, **kwargs) -> None:
+    def __init__(self, *vmobjects: VMobject, **kwargs) -> None:
         if len(vmobjects) < 2:
             raise ValueError("At least 2 mobjects needed for Intersection.")
 
@@ -311,7 +311,7 @@ class Exclusion(_BooleanOps):
 
     """
 
-    def __init__(self, subject, clip, **kwargs) -> None:
+    def __init__(self, subject: VMobject, clip: VMobject, **kwargs) -> None:
         super().__init__(**kwargs)
         outpen = SkiaPath()
         xor(

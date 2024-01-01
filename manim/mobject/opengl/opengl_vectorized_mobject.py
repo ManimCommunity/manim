@@ -3,7 +3,7 @@ from __future__ import annotations
 import itertools as it
 import operator as op
 from functools import reduce, wraps
-from typing import Callable, Iterable, Optional, Sequence
+from typing import Callable, Iterable, Sequence
 
 import moderngl
 import numpy as np
@@ -22,7 +22,7 @@ from manim.utils.bezier import (
     proportions_along_bezier_curve_for_point,
     quadratic_bezier_remap,
 )
-from manim.utils.color import *
+from manim.utils.color import BLACK, WHITE, ManimColor, ParsableManimColor
 from manim.utils.config_ops import _Data
 from manim.utils.iterables import listify, make_even, resize_with_interpolation
 from manim.utils.space_ops import (
@@ -33,6 +33,15 @@ from manim.utils.space_ops import (
     shoelace_direction,
     z_to_vector,
 )
+
+__all__ = [
+    "triggers_refreshed_triangulation",
+    "OpenGLVMobject",
+    "OpenGLVGroup",
+    "OpenGLVectorizedPoint",
+    "OpenGLCurvesAsSubmobjects",
+    "OpenGLDashedVMobject",
+]
 
 
 def triggers_refreshed_triangulation(func):
@@ -136,6 +145,7 @@ class OpenGLVMobject(OpenGLMobject):
         self.needs_new_triangulation = True
         self.triangulation = np.zeros(0, dtype="i4")
         self.orientation = 1
+
         self.fill_data = None
         self.stroke_data = None
         self.fill_shader_wrapper = None
@@ -943,7 +953,9 @@ class OpenGLVMobject(OpenGLMobject):
 
         curves_and_lengths = tuple(self.get_curve_functions_with_lengths())
 
-        target_length = alpha * np.sum(length for _, length in curves_and_lengths)
+        target_length = alpha * np.sum(
+            np.fromiter((length for _, length in curves_and_lengths), dtype=np.float64)
+        )
         current_length = 0
 
         for curve, length in curves_and_lengths:
@@ -1283,14 +1295,17 @@ class OpenGLVMobject(OpenGLMobject):
         for _ in range(-diff):
             ipc[np.argmax(ipc)] -= 1
 
-        new_points = []
+        new_length = sum(x + 1 for x in ipc)
+        new_points = np.empty((new_length, nppc, 3))
+        i = 0
         for group, n_inserts in zip(bezier_groups, ipc):
             # What was once a single quadratic curve defined
             # by "group" will now be broken into n_inserts + 1
             # smaller quadratic curves
             alphas = np.linspace(0, 1, n_inserts + 2)
             for a1, a2 in zip(alphas, alphas[1:]):
-                new_points += partial_quadratic_bezier_points(group, a1, a2)
+                new_points[i] = partial_quadratic_bezier_points(group, a1, a2)
+                i = i + 1
         return np.vstack(new_points)
 
     def interpolate(self, mobject1, mobject2, alpha, *args, **kwargs):

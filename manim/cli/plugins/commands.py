@@ -12,6 +12,8 @@ import cloup
 from ...constants import CONTEXT_SETTINGS, EPILOG
 from ...plugins.plugins_flags import list_plugins
 
+__all__ = ["plugins"]
+
 
 @cloup.command(
     context_settings=CONTEXT_SETTINGS,

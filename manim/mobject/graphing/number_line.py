@@ -277,9 +277,10 @@ class NumberLine(Line):
         via ``self.ticks``."""
         ticks = VGroup()
         elongated_tick_size = self.tick_size * self.longer_tick_multiple
+        elongated_tick_offsets = self.numbers_with_elongated_ticks - self.x_min
         for x in self.get_tick_range():
             size = self.tick_size
-            if x in self.numbers_with_elongated_ticks:
+            if np.any(np.isclose(x - self.x_min, elongated_tick_offsets)):
                 size = elongated_tick_size
             ticks.add(self.get_tick(x, size))
         self.add(ticks)
@@ -474,7 +475,7 @@ class NumberLine(Line):
         num_mob.next_to(self.number_to_point(x), direction=direction, buff=buff)
         if x < 0 and self.label_direction[0] == 0:
             # Align without the minus sign
-            num_mob.shift(num_mob[0].get_width() * LEFT / 2)
+            num_mob.shift(num_mob[0].width * LEFT / 2)
         return num_mob
 
     def get_number_mobjects(self, *numbers, **kwargs) -> VGroup:

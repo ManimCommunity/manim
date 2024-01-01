@@ -84,7 +84,7 @@ class Broadcast(LaggedStart):
 
             mob.move_to(self.focal_point)
             mob.save_state()
-            mob.set_width(self.initial_width)
+            mob.set(width=self.initial_width)
 
             if fill_o:
                 mob.set_opacity(self.initial_opacity)

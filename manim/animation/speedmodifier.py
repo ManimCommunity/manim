@@ -2,17 +2,18 @@
 
 from __future__ import annotations
 
+import inspect
 import types
 from typing import Callable
 
 from numpy import piecewise
 
-from manim.utils.simple_functions import get_parameters
-
 from ..animation.animation import Animation, Wait, prepare_animation
 from ..animation.composition import AnimationGroup
 from ..mobject.mobject import Mobject, Updater, _AnimationBuilder
 from ..scene.scene import Scene
+
+__all__ = ["ChangeSpeed"]
 
 
 class ChangeSpeed(Animation):
@@ -260,8 +261,7 @@ class ChangeSpeed(Animation):
         :class:`.ChangeSpeed`
         :meth:`.Mobject.add_updater`
         """
-        parameters = get_parameters(update_function)
-        if "dt" in parameters:
+        if "dt" in inspect.signature(update_function).parameters:
             mobject.add_updater(
                 lambda mob, dt: update_function(
                     mob, ChangeSpeed.dt if ChangeSpeed.is_changing_dt else dt
