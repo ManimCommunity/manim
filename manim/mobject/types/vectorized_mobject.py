@@ -2007,7 +2007,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
             if not isinstance(m, (VMobject, OpenGLVMobject)):
                 raise TypeError(
                     f"All submobjects of {self.__class__.__name__} must be of type VMobject. "
-                    f"Got {repr(m)} ({type(m)}) instead. "
+                    f"Got {repr(m)} ({type(m).__name__}) instead. "
                     "You can try using `Group` instead."
                 )
 
