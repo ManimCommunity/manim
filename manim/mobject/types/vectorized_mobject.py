@@ -1845,26 +1845,24 @@ class VMobject(Mobject):
         if self_n_subpaths == vmob_n_subpaths and (self_split_i == vmob_split_i).all():
             return
 
-        self_n_points = self_split_i[-1, 1]
-        vmob_n_points = vmob_split_i[-1, 1]
+        self_n_points_per_subpath = self_split_i[:, 1] - self_split_i[:, 0]
+        vmob_n_points_per_subpath = vmob_split_i[:, 1] - vmob_split_i[:, 0]
 
         if self_n_subpaths < vmob_n_subpaths:
             least_n_subpaths = self_n_subpaths
-            remainder_n_points = vmob_n_points - vmob_split_i[self_n_subpaths - 1, 1]
+            remainder_n_points = np.sum(vmob_n_points_per_subpath[least_n_subpaths:])
         else:
             least_n_subpaths = vmob_n_subpaths
-            remainder_n_points = self_n_points - self_split_i[vmob_n_subpaths - 1, 1]
+            remainder_n_points = np.sum(self_n_points_per_subpath[least_n_subpaths:])
 
         # For each possible pair of subpaths from self and vmob,
         # get the number of points of the longest one to adjust
         # the subpaths accordingly
-        self_n_points_per_path = self_split_i[:, 1] - self_split_i[:, 0]
-        vmob_n_points_per_path = vmob_split_i[:, 1] - vmob_split_i[:, 0]
-        max_n_points_per_path = np.maximum(
-            self_n_points_per_path[:least_n_subpaths],
-            vmob_n_points_per_path[:least_n_subpaths],
+        max_n_points_per_subpath = np.maximum(
+            self_n_points_per_subpath[:least_n_subpaths],
+            vmob_n_points_per_subpath[:least_n_subpaths],
         )
-        max_acc_n_points = np.add.accumulate(max_n_points_per_path)
+        max_acc_n_points = np.add.accumulate(max_n_points_per_subpath)
         max_split_i = np.empty((least_n_subpaths, 2), dtype=int)
         max_split_i[0, 0] = 0
         max_split_i[1:, 0] = max_acc_n_points[:-1]
@@ -1884,48 +1882,54 @@ class VMobject(Mobject):
             vmob_start, vmob_end = vmob_split_i[i]
             max_start, max_end = max_split_i[i]
 
-            self_n = self_n_points_per_path[i]
-            vmob_n = vmob_n_points_per_path[i]
+            self_n_points = self_n_points_per_subpath[i]
+            vmob_n_points = vmob_n_points_per_subpath[i]
 
             # Add corresponding subpaths to the new paths. If necessary,
             # subdivide one of them into more Bèzier curves until its
             # number of points matches the other Mobject's subpath.
             self_subpath = self.points[self_start:self_end]
             vmob_subpath = vmobject.points[vmob_start:vmob_end]
-            if self_n < vmob_n:
+            if self_n_points < vmob_n_points:
                 vmob_new_path[max_start:max_end] = vmob_subpath
                 self_new_path[max_start:max_end] = self.insert_n_curves_to_point_list(
-                    (vmob_n - self_n) // nppcc,
+                    (vmob_n_points - self_n_points) // nppcc,
                     self_subpath,
                 )
-            elif self_n > vmob_n:
+            elif self_n_points > vmob_n_points:
                 self_new_path[max_start:max_end] = self_subpath
                 vmob_new_path[max_start:max_end] = self.insert_n_curves_to_point_list(
-                    (self_n - vmob_n) // nppcc,
+                    (self_n_points - vmob_n_points) // nppcc,
                     vmob_subpath,
                 )
             else:
                 self_new_path[max_start:max_end] = self_subpath
                 vmob_new_path[max_start:max_end] = vmob_subpath
 
-        # Because strip_null_end_curves=True, maybe the old points have to
-        # be cut earlier. Extract the end points from the split indices
-        self_end, vmob_end = self_split_i[-1, 1], vmob_split_i[-1, 1]
-
         # If any of the original paths had more subpaths than the other,
         # add them to the corresponding new path and complete the other
         # one by appending its last anchor as many times as necessary.
         if self_n_subpaths < vmob_n_subpaths:
-            vmob_start = vmob_split_i[least_n_subpaths, 0]
             self_new_path[max_n_points:] = self_new_path[max_n_points - 1]
-            vmob_new_path[max_n_points:] = vmobject.points[vmob_start:vmob_end]
+            for i in range(self_n_subpaths, vmob_n_subpaths):
+                start, end = vmob_split_i[i]
+                n_points = vmob_n_points_per_subpath[i]
+                vmob_new_path[max_n_points : max_n_points + n_points] = vmobject.points[
+                    start:end
+                ]
+                max_n_points += n_points
         elif self_n_subpaths > vmob_n_subpaths:
-            self_start = self_split_i[least_n_subpaths, 0]
-            self_new_path[max_n_points:] = self.points[self_start:self_end]
             vmob_new_path[max_n_points:] = vmob_new_path[max_n_points - 1]
+            for i in range(vmob_n_subpaths, self_n_subpaths):
+                start, end = self_split_i[i]
+                n_points = self_n_points_per_subpath[i]
+                self_new_path[max_n_points : max_n_points + n_points] = self.points[
+                    start:end
+                ]
+                max_n_points += n_points
 
-        self.set_points(self_new_path)
-        vmobject.set_points(vmob_new_path)
+        self.points = self_new_path
+        vmobject.points = vmob_new_path
         return self
 
     def insert_n_curves(self, n: int) -> Self:
