@@ -30,22 +30,22 @@ NxGraph = Union[nx.classes.graph.Graph, nx.classes.digraph.DiGraph]
 
 class LayoutFunction(Protocol):
     """A protocol for automatic layout functions that compute a layout for a graph to be used in :meth:`~.Graph.change_layout`.
-    
+
     .. note:: The layout function must be a pure function, i.e., it must not modify the graph passed to it.
 
     Examples
     --------
-    
+
     Here is an example that arranges nodes in an n x m grid in sorted order.
-    
+
     .. manim:: CustomLayoutExample
         :save_last_frame:
-    
+
         class CustomLayoutExample(Scene):
             def construct(self):
                 import numpy as np
                 import networkx as nx
-                
+
                 # create custom layout
                 def custom_layout(
                     graph: nx.Graph,
@@ -63,7 +63,7 @@ class LayoutFunction(Protocol):
                             0
                         ])) for i, node in enumerate(graph)
                     }
-                
+
                 # draw graph
                 n = 4
                 graph = Graph(
@@ -77,11 +77,11 @@ class LayoutFunction(Protocol):
 
     Several automatic layouts are provided by manim, and can be used by passing their name as the ``layout`` parameter to :meth:`~.Graph.change_layout`.
     Alternatively, a custom layout function can be passed to :meth:`~.Graph.change_layout` as the ``layout`` parameter. Such a function must adhere to the :class:`~.LayoutFunction` protocol.
-    
+
     The :class:`~.LayoutFunction` s provided by manim are illustrated below:
-    
+
     - Circular Layout: places the vertices on a circle
-    
+
     .. manim:: CircularLayout
         :save_last_frame:
 
@@ -96,7 +96,7 @@ class LayoutFunction(Protocol):
                 self.add(graph)
 
     - Kamada Kawai Layout: tries to place the vertices such that the given distances between them are respected
-    
+
     .. manim:: KamadaKawaiLayout
         :save_last_frame:
 
@@ -104,7 +104,7 @@ class LayoutFunction(Protocol):
             def construct(self):
                 from collections import defaultdict
                 distances: dict[int, dict[int, float]] = defaultdict(dict)
-                
+
                 # set desired distances
                 distances[1][2] = 1  # distance between vertices 1 and 2 is 1
                 distances[2][3] = 1  # distance between vertices 2 and 3 is 1
@@ -112,7 +112,7 @@ class LayoutFunction(Protocol):
                 distances[4][5] = 3
                 distances[5][6] = 5
                 distances[6][1] = 8
-                
+
                 graph = Graph(
                     [1, 2, 3, 4, 5, 6],
                     [(1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 1)],
@@ -123,8 +123,8 @@ class LayoutFunction(Protocol):
                 )
                 self.add(graph)
 
-    - Partite Layout: places vertices into distinct partitions 
-    
+    - Partite Layout: places vertices into distinct partitions
+
     .. manim:: PartiteLayout
         :save_last_frame:
 
@@ -140,7 +140,7 @@ class LayoutFunction(Protocol):
                 self.add(graph)
 
     - Planar Layout: places vertices such that edges do not cross
-    
+
     .. manim:: PlanarLayout
         :save_last_frame:
 
@@ -154,9 +154,9 @@ class LayoutFunction(Protocol):
                     labels=True
                 )
                 self.add(graph)
-    
+
     - Random Layout: randomly places vertices
-    
+
     .. manim:: RandomLayout
         :save_last_frame:
 
@@ -169,9 +169,9 @@ class LayoutFunction(Protocol):
                     labels=True
                 )
                 self.add(graph)
-            
+
     - Shell Layout: places vertices in concentric circles
-    
+
     .. manim:: ShellLayout
         :save_last_frame:
 
@@ -188,7 +188,7 @@ class LayoutFunction(Protocol):
                 self.add(graph)
 
     - Spectral Layout: places vertices using the eigenvectors of the graph Laplacian (clusters nodes which are an approximation of the ratio cut)
-    
+
     .. manim:: SpectralLayout
         :save_last_frame:
 
@@ -203,7 +203,7 @@ class LayoutFunction(Protocol):
                 self.add(graph)
 
     - Sprial Layout: places vertices in a spiraling pattern
-    
+
     .. manim:: SpiralLayout
         :save_last_frame:
 
@@ -217,8 +217,8 @@ class LayoutFunction(Protocol):
                 )
                 self.add(graph)
 
-    - Spring Layout: places nodes according to the Fruchterman-Reingold force-directed algorithm (attempts to minimize edge length while maximizing node separation) 
-    
+    - Spring Layout: places nodes according to the Fruchterman-Reingold force-directed algorithm (attempts to minimize edge length while maximizing node separation)
+
     .. manim:: SpringLayout
         :save_last_frame:
 
@@ -233,7 +233,7 @@ class LayoutFunction(Protocol):
                 self.add(graph)
 
     - Tree Layout: places vertices into a tree with a root node and branches (can only be used with legal trees)
-    
+
     .. manim:: TreeLayout
         :save_last_frame:
 
@@ -249,7 +249,7 @@ class LayoutFunction(Protocol):
                 self.add(graph)
 
     """
-    
+
     def __call__(
         self,
         graph: NxGraph,
