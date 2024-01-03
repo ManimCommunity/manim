@@ -8,6 +8,8 @@ from typing import Any
 
 from manim import get_video_metadata
 
+__all__ = ["Section", "DefaultSectionType"]
+
 
 class DefaultSectionType(str, Enum):
     """The type of a section can be used for third party applications.

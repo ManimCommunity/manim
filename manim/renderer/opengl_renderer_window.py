@@ -7,6 +7,8 @@ from screeninfo import get_monitors
 
 from .. import __version__, config
 
+__all__ = ["Window"]
+
 
 class Window(PygletWindow):
     fullscreen = False

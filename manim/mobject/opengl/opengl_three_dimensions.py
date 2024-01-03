@@ -5,6 +5,8 @@ import numpy as np
 from manim.mobject.opengl.opengl_surface import OpenGLSurface
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup, OpenGLVMobject
 
+__all__ = ["OpenGLSurfaceMesh"]
+
 
 class OpenGLSurfaceMesh(OpenGLVGroup):
     def __init__(

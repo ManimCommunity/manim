@@ -25,7 +25,7 @@ from manim.mobject.types.vectorized_mobject import VMobject
 from manim.utils.space_ops import angle_of_vector
 
 if TYPE_CHECKING:
-    from manim.typing import Point3D, Vector
+    from manim.typing import Point3D, Vector3D
 
 
 class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
@@ -149,7 +149,7 @@ class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
         return self.points[0]
 
     @property
-    def vector(self) -> Vector:
+    def vector(self) -> Vector3D:
         r"""The vector pointing from the base point to the tip point.
 
         Examples
