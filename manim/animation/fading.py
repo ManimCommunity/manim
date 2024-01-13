@@ -22,7 +22,7 @@ __all__ = [
 from typing import Any
 
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-from manim.typing import Vector3
+from manim.typing import Vector3D
 
 from ..animation.transform import Transform
 from ..constants import ORIGIN
@@ -51,8 +51,8 @@ class _Fade(Transform):
     def __init__(
         self,
         *mobjects: Mobject,
-        shift: Vector3 | None = None,
-        target_position: Vector3 | Mobject | None = None,
+        shift: Vector3D | None = None,
+        target_position: Vector3D | Mobject | None = None,
         scale: float = 1,
         **kwargs: Any,
     ) -> None:

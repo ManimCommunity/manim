@@ -15,26 +15,27 @@ __all__ = [
 
 
 import inspect
-from typing import TYPE_CHECKING, Callable
+import types
+from typing import TYPE_CHECKING, Any, Callable, TypeVar
 
 import numpy as np
 
 from manim.constants import DEGREES, RIGHT
 from manim.mobject.mobject import Mobject
 from manim.opengl import OpenGLMobject
-from manim.utils.space_ops import normalize
+from manim.typing import Vector3D
 
 if TYPE_CHECKING:
     from manim.animation.animation import Animation
 
 
-def assert_is_mobject_method(method: Callable) -> None:
+def assert_is_mobject_method(method: types.MethodType) -> None:
     assert inspect.ismethod(method)
     mobject = method.__self__
     assert isinstance(mobject, (Mobject, OpenGLMobject))
 
 
-def always(method: Callable, *args, **kwargs) -> Mobject:
+def always(method: types.MethodType, *args: Any, **kwargs: Any) -> Mobject:
     assert_is_mobject_method(method)
     mobject = method.__self__
     func = method.__func__
@@ -60,7 +61,10 @@ def f_always(method: Callable[[Mobject], None], *arg_generators, **kwargs) -> Mo
     return mobject
 
 
-def always_redraw(func: Callable[[], Mobject]) -> Mobject:
+MobjectT = TypeVar("MobjectT", bound=Mobject)
+
+
+def always_redraw(func: Callable[[], MobjectT]) -> MobjectT:
     """Redraw the mobject constructed by a function every frame.
 
     This function returns a mobject with an attached updater that
@@ -106,8 +110,8 @@ def always_redraw(func: Callable[[], Mobject]) -> Mobject:
 
 
 def always_shift(
-    mobject: Mobject, direction: np.ndarray[np.float64] = RIGHT, rate: float = 0.1
-) -> Mobject:
+    mobject: MobjectT, direction: Vector3D = RIGHT, rate: float = 0.1
+) -> MobjectT:
     """A mobject which is continuously shifted along some direction
     at a certain rate.
 
@@ -144,7 +148,9 @@ def always_shift(
     return mobject
 
 
-def always_rotate(mobject: Mobject, rate: float = 20 * DEGREES, **kwargs) -> Mobject:
+def always_rotate(
+    mobject: MobjectT, rate: float = 20 * DEGREES, **kwargs: Any
+) -> MobjectT:
     """A mobject which is continuously rotated at a certain rate.
 
     Parameters
@@ -178,7 +184,7 @@ def always_rotate(mobject: Mobject, rate: float = 20 * DEGREES, **kwargs) -> Mob
 
 
 def turn_animation_into_updater(
-    animation: Animation, cycle: bool = False, **kwargs
+    animation: Animation, cycle: bool = False, **kwargs: Any
 ) -> Mobject:
     """
     Add an updater to the animation's mobject which applies
@@ -227,5 +233,5 @@ def turn_animation_into_updater(
     return mobject
 
 
-def cycle_animation(animation: Animation, **kwargs) -> Mobject:
+def cycle_animation(animation: Animation, **kwargs: Any) -> Mobject:
     return turn_animation_into_updater(animation, cycle=True, **kwargs)

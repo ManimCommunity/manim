@@ -141,12 +141,12 @@ class Animation:
         run_time: float = DEFAULT_ANIMATION_RUN_TIME,
         rate_func: RateFunc = smooth,
         reverse_rate_function: bool = False,
-        name: str = None,
+        name: str | None = None,
         remover: bool = False,  # remove a mobject from the screen?
         suspend_mobject_updating: bool = True,
         introducer: bool = False,
         *,
-        _on_finish: Callable[[], None] = lambda _: None,
+        _on_finish: Callable[[Any], None] = lambda _: None,
         **kwargs: Any,
     ) -> None:
         self._typecheck_input(mobject)

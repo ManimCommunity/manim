@@ -24,6 +24,7 @@ Examples
                 ))
 
 """
+from __future__ import annotations
 
 __all__ = [
     "FocusOn",
@@ -37,7 +38,7 @@ __all__ = [
     "Wiggle",
 ]
 
-from typing import Callable, Iterable, Optional, Tuple, Type, Union
+from typing import Any
 
 import numpy as np
 
@@ -46,6 +47,7 @@ from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import Rectangle
 from manim.mobject.geometry.shape_matchers import SurroundingRectangle
 from manim.scene.scene import Scene
+from manim.typing import Point3D, RateFunc, Vector3D
 
 from .. import config
 from ..animation.animation import Animation
@@ -94,11 +96,11 @@ class FocusOn(Transform):
 
     def __init__(
         self,
-        focus_point: Union[np.ndarray, Mobject],
+        focus_point: Point3D | Mobject,
         opacity: float = 0.2,
-        color: str = GREY,
+        color: ParsableManimColor = GREY,
         run_time: float = 2,
-        **kwargs
+        **kwargs: Any,
     ) -> None:
         self.focus_point = focus_point
         self.color = color
@@ -148,17 +150,17 @@ class Indicate(Transform):
 
     def __init__(
         self,
-        mobject: "Mobject",
+        mobject: Mobject | None,
         scale_factor: float = 1.2,
         color: str = YELLOW,
-        rate_func: Callable[[float, Optional[float]], np.ndarray] = there_and_back,
-        **kwargs
+        rate_func: RateFunc = there_and_back,
+        **kwargs: Any,
     ) -> None:
         self.color = color
         self.scale_factor = scale_factor
         super().__init__(mobject, rate_func=rate_func, **kwargs)
 
-    def create_target(self) -> "Mobject":
+    def create_target(self) -> Mobject:
         target = self.mobject.copy()
         target.scale(self.scale_factor)
         target.set_color(self.color)
@@ -218,15 +220,15 @@ class Flash(AnimationGroup):
 
     def __init__(
         self,
-        point: Union[np.ndarray, Mobject],
+        point: Point3D | Mobject,
         line_length: float = 0.2,
         num_lines: int = 12,
         flash_radius: float = 0.1,
         line_stroke_width: int = 3,
-        color: str = YELLOW,
+        color: ParsableManimColor = YELLOW,
         time_width: float = 1,
         run_time: float = 1.0,
-        **kwargs
+        **kwargs: Any,
     ) -> None:
         if isinstance(point, Mobject):
             self.point = point.get_center()
@@ -256,7 +258,7 @@ class Flash(AnimationGroup):
         lines.set_stroke(width=self.line_stroke_width)
         return lines
 
-    def create_line_anims(self) -> Iterable["ShowPassingFlash"]:
+    def create_line_anims(self) -> list[ShowPassingFlash]:
         return [
             ShowPassingFlash(
                 line,
@@ -302,11 +304,13 @@ class ShowPassingFlash(ShowPartial):
 
     """
 
-    def __init__(self, mobject: "VMobject", time_width: float = 0.1, **kwargs) -> None:
+    def __init__(
+        self, mobject: VMobject, time_width: float = 0.1, **kwargs: Any
+    ) -> None:
         self.time_width = time_width
         super().__init__(mobject, remover=True, introducer=True, **kwargs)
 
-    def _get_bounds(self, alpha: float) -> Tuple[float]:
+    def _get_bounds(self, alpha: float) -> tuple[float, float]:
         tw = self.time_width
         upper = interpolate(0, 1 + tw, alpha)
         lower = upper - tw
@@ -321,7 +325,14 @@ class ShowPassingFlash(ShowPartial):
 
 
 class ShowPassingFlashWithThinningStrokeWidth(AnimationGroup):
-    def __init__(self, vmobject, n_segments=10, time_width=0.1, remover=True, **kwargs):
+    def __init__(
+        self,
+        vmobject: VMobject,
+        n_segments: int = 10,
+        time_width: float = 0.1,
+        remover: bool = True,
+        **kwargs: Any,
+    ) -> None:
         self.n_segments = n_segments
         self.time_width = time_width
         self.remover = remover
@@ -348,7 +359,7 @@ class ShowPassingFlashWithThinningStrokeWidth(AnimationGroup):
     message="Use Create then FadeOut to achieve this effect.",
 )
 class ShowCreationThenFadeOut(Succession):
-    def __init__(self, mobject: "Mobject", remover: bool = True, **kwargs) -> None:
+    def __init__(self, mobject: Mobject, remover: bool = True, **kwargs: Any) -> None:
         super().__init__(Create(mobject), FadeOut(mobject), remover=remover, **kwargs)
 
 
@@ -397,20 +408,20 @@ class ApplyWave(Homotopy):
 
     def __init__(
         self,
-        mobject: "Mobject",
-        direction: np.ndarray = UP,
+        mobject: Mobject,
+        direction: Vector3D = UP,
         amplitude: float = 0.2,
-        wave_func: Callable[[float], float] = smooth,
+        wave_func: RateFunc = smooth,
         time_width: float = 1,
         ripples: int = 1,
         run_time: float = 2,
-        **kwargs
+        **kwargs: Any,
     ) -> None:
         x_min = mobject.get_left()[0]
         x_max = mobject.get_right()[0]
         vect = amplitude * normalize(direction)
 
-        def wave(t):
+        def wave(t: float) -> float:
             # Creates a wave with n ripples from a simple rate_func
             # This wave is build up as follows:
             # The time is split into 2*ripples phases. In every phase the amplitude
@@ -470,7 +481,7 @@ class ApplyWave(Homotopy):
             y: float,
             z: float,
             t: float,
-        ) -> Tuple[float, float, float]:
+        ) -> tuple[float, float, float]:
             upper = interpolate(0, 1 + time_width, t)
             lower = upper - time_width
             relative_x = inverse_interpolate(x_min, x_max, x)
@@ -516,14 +527,14 @@ class Wiggle(Animation):
 
     def __init__(
         self,
-        mobject: "Mobject",
+        mobject: Mobject,
         scale_value: float = 1.1,
         rotation_angle: float = 0.01 * TAU,
         n_wiggles: int = 6,
-        scale_about_point: Optional[np.ndarray] = None,
-        rotate_about_point: Optional[np.ndarray] = None,
+        scale_about_point: Point3D | None = None,
+        rotate_about_point: Point3D | None = None,
         run_time: float = 2,
-        **kwargs
+        **kwargs: Any,
     ) -> None:
         self.scale_value = scale_value
         self.rotation_angle = rotation_angle
@@ -532,20 +543,20 @@ class Wiggle(Animation):
         self.rotate_about_point = rotate_about_point
         super().__init__(mobject, run_time=run_time, **kwargs)
 
-    def get_scale_about_point(self) -> np.ndarray:
+    def get_scale_about_point(self) -> Point3D:
         if self.scale_about_point is None:
             return self.mobject.get_center()
         return self.scale_about_point
 
-    def get_rotate_about_point(self) -> np.ndarray:
+    def get_rotate_about_point(self) -> Point3D:
         if self.rotate_about_point is None:
             return self.mobject.get_center()
         return self.rotate_about_point
 
     def interpolate_submobject(
         self,
-        submobject: "Mobject",
-        starting_submobject: "Mobject",
+        submobject: Mobject,
+        starting_submobject: Mobject,
         alpha: float,
     ) -> None:
         submobject.points[:, :] = starting_submobject.points
@@ -604,16 +615,16 @@ class Circumscribe(Succession):
     def __init__(
         self,
         mobject: Mobject,
-        shape: Type = Rectangle,
-        fade_in=False,
-        fade_out=False,
-        time_width=0.3,
+        shape: type[Rectangle | Circle] = Rectangle,
+        fade_in: bool = False,
+        fade_out: bool = False,
+        time_width: float = 0.3,
         buff: float = SMALL_BUFF,
         color: ParsableManimColor = YELLOW,
-        run_time=1,
-        stroke_width=DEFAULT_STROKE_WIDTH,
-        **kwargs
-    ):
+        run_time: int = 1,
+        stroke_width: int = DEFAULT_STROKE_WIDTH,
+        **kwargs: Any,
+    ) -> None:
         if shape is Rectangle:
             frame = SurroundingRectangle(
                 mobject,

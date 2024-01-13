@@ -28,7 +28,7 @@ if TYPE_CHECKING:
 __all__ = ["AnimationGroup", "Succession", "LaggedStart", "LaggedStartMap"]
 
 
-DEFAULT_LAGGED_START_LAG_RATIO: float = 0.05
+DEFAULT_LAGGED_START_LAG_RATIO = 0.05
 
 
 class AnimationGroup(Animation):

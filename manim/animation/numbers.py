@@ -5,7 +5,7 @@ from __future__ import annotations
 __all__ = ["ChangingDecimal", "ChangeDecimalToValue"]
 
 
-import typing
+from typing import Any, Callable
 
 from manim.mobject.text.numbers import DecimalNumber
 
@@ -17,9 +17,9 @@ class ChangingDecimal(Animation):
     def __init__(
         self,
         decimal_mob: DecimalNumber,
-        number_update_func: typing.Callable[[float], float],
-        suspend_mobject_updating: bool | None = False,
-        **kwargs,
+        number_update_func: Callable[[float], float],
+        suspend_mobject_updating: bool = False,
+        **kwargs: Any,
     ) -> None:
         self.check_validity_of_input(decimal_mob)
         self.number_update_func = number_update_func
@@ -37,7 +37,7 @@ class ChangingDecimal(Animation):
 
 class ChangeDecimalToValue(ChangingDecimal):
     def __init__(
-        self, decimal_mob: DecimalNumber, target_number: int, **kwargs
+        self, decimal_mob: DecimalNumber, target_number: int, **kwargs: Any
     ) -> None:
         start_number = decimal_mob.number
         super().__init__(

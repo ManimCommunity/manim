@@ -2,12 +2,16 @@ from __future__ import annotations
 
 __all__ = ["Broadcast"]
 
-from typing import Any, Sequence
+from typing import TYPE_CHECKING, Any
 
 from manim.animation.transform import Restore
+from manim.typing import Point3D
 
 from ..constants import *
 from .composition import LaggedStart
+
+if TYPE_CHECKING:
+    from ..mobject.mobject import Mobject
 
 
 class Broadcast(LaggedStart):
@@ -49,8 +53,8 @@ class Broadcast(LaggedStart):
 
     def __init__(
         self,
-        mobject,
-        focal_point: Sequence[float] = ORIGIN,
+        mobject: Mobject,
+        focal_point: Point3D = ORIGIN,
         n_mobs: int = 5,
         initial_opacity: float = 1,
         final_opacity: float = 0,
@@ -59,7 +63,7 @@ class Broadcast(LaggedStart):
         lag_ratio: float = 0.2,
         run_time: float = 3,
         **kwargs: Any,
-    ):
+    ) -> None:
         self.focal_point = focal_point
         self.n_mobs = n_mobs
         self.initial_opacity = initial_opacity

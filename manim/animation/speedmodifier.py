@@ -4,9 +4,11 @@ from __future__ import annotations
 
 import inspect
 import types
-from typing import Callable
+from typing import Any, Callable
 
 from numpy import piecewise
+
+from manim.typing import RateFunc
 
 from ..animation.animation import Animation, Wait, prepare_animation
 from ..animation.composition import AnimationGroup
@@ -94,11 +96,11 @@ class ChangeSpeed(Animation):
         self,
         anim: Animation | _AnimationBuilder,
         speedinfo: dict[float, float],
-        rate_func: Callable[[float], float] | None = None,
+        rate_func: RateFunc | None = None,
         affects_speed_updaters: bool = True,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
-        if issubclass(type(anim), AnimationGroup):
+        if isinstance(anim, AnimationGroup):
             self.anim = type(anim)(
                 *map(self.setup, anim.animations),
                 group=anim.group,
@@ -121,7 +123,9 @@ class ChangeSpeed(Animation):
 
         # A function where, f(0) = 0, f'(0) = initial speed, f'( f-1(1) ) = final speed
         # Following function obtained when conditions applied to vertical parabola
-        self.speed_modifier = lambda x, init_speed, final_speed: (
+        self.speed_modifier: Callable[
+            [float, float, float], float
+        ] = lambda x, init_speed, final_speed: (
             (final_speed**2 - init_speed**2) * x**2 / 4 + init_speed * x
         )
 
@@ -149,12 +153,12 @@ class ChangeSpeed(Animation):
             dur = node - prevnode
 
             def condition(
-                t,
-                curr_time=curr_time,
-                init_speed=init_speed,
-                final_speed=final_speed,
-                dur=dur,
-            ):
+                t: float,
+                curr_time: float = curr_time,
+                init_speed: float = init_speed,
+                final_speed: float = final_speed,
+                dur: float = dur,
+            ) -> bool:
                 lower_bound = curr_time / scaled_total_time
                 upper_bound = (
                     curr_time + self.f_inv_1(init_speed, final_speed) * dur
@@ -164,13 +168,13 @@ class ChangeSpeed(Animation):
             self.conditions.append(condition)
 
             def function(
-                t,
-                curr_time=curr_time,
-                init_speed=init_speed,
-                final_speed=final_speed,
-                dur=dur,
-                prevnode=prevnode,
-            ):
+                t: float,
+                curr_time: float = curr_time,
+                init_speed: float = init_speed,
+                final_speed: float = final_speed,
+                dur: float = dur,
+                prevnode: float = prevnode,
+            ) -> float:
                 return (
                     self.speed_modifier(
                         (scaled_total_time * t - curr_time) / dur,
@@ -187,7 +191,7 @@ class ChangeSpeed(Animation):
             prevnode = node
             init_speed = final_speed
 
-        def func(t):
+        def func(t: float) -> float:
             if t == 1:
                 ChangeSpeed.is_changing_dt = False
             new_t = piecewise(
@@ -209,7 +213,7 @@ class ChangeSpeed(Animation):
             **kwargs,
         )
 
-    def setup(self, anim):
+    def setup(self, anim: Animation) -> Animation:
         if type(anim) is Wait:
             anim.interpolate = types.MethodType(
                 lambda self, alpha: self.rate_func(alpha), anim
@@ -235,7 +239,7 @@ class ChangeSpeed(Animation):
         update_function: Updater,
         index: int | None = None,
         call_updater: bool = False,
-    ):
+    ) -> None:
         """This static method can be used to apply speed change to updaters.
 
         This updater will follow speed and rate function of any :class:`.ChangeSpeed`

@@ -33,7 +33,7 @@ __all__ = [
 
 from typing import TYPE_CHECKING, Any
 
-from manim.typing import Point3D, Vector3
+from manim.typing import Point3D, Vector3D
 from manim.utils.color import ParsableManimColor
 
 from ..animation.transform import Transform
@@ -165,7 +165,7 @@ class GrowFromEdge(GrowFromPoint):
     def __init__(
         self,
         mobject: Mobject,
-        edge: Vector3,
+        edge: Vector3D,
         point_color: ParsableManimColor | None = None,
         **kwargs: Any,
     ) -> None:

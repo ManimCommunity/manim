@@ -4,7 +4,7 @@ from __future__ import annotations
 
 __all__ = ["TransformMatchingShapes", "TransformMatchingTex"]
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
@@ -74,8 +74,8 @@ class TransformMatchingAbstractBase(AnimationGroup):
         transform_mismatches: bool = False,
         fade_transform_mismatches: bool = False,
         key_map: dict | None = None,
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> None:
         if isinstance(mobject, OpenGLVMobject):
             group_type = OpenGLVGroup
         elif isinstance(mobject, OpenGLMobject):
@@ -206,8 +206,8 @@ class TransformMatchingShapes(TransformMatchingAbstractBase):
         transform_mismatches: bool = False,
         fade_transform_mismatches: bool = False,
         key_map: dict | None = None,
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> None:
         super().__init__(
             mobject,
             target_mobject,
@@ -269,8 +269,8 @@ class TransformMatchingTex(TransformMatchingAbstractBase):
         transform_mismatches: bool = False,
         fade_transform_mismatches: bool = False,
         key_map: dict | None = None,
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> None:
         super().__init__(
             mobject,
             target_mobject,

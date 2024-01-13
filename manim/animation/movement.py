@@ -12,13 +12,14 @@ __all__ = [
 
 from typing import TYPE_CHECKING, Any, Callable
 
-import numpy as np
+from manim.typing import Point3D, RateFunc
 
 from ..animation.animation import Animation
 from ..utils.rate_functions import linear
 
 if TYPE_CHECKING:
-    from ..mobject.mobject import Mobject, VMobject
+    from ..mobject.mobject import Mobject
+    from ..mobject.types.vectorized_mobject import VMobject
 
 
 class Homotopy(Animation):
@@ -52,12 +53,10 @@ class Homotopy(Animation):
         mobject: Mobject,
         run_time: float = 3,
         apply_function_kwargs: dict[str, Any] | None = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         self.homotopy = homotopy
-        self.apply_function_kwargs = (
-            apply_function_kwargs if apply_function_kwargs is not None else {}
-        )
+        self.apply_function_kwargs = apply_function_kwargs or {}
         super().__init__(mobject, run_time=run_time, **kwargs)
 
     def function_at_time_t(self, t: float) -> tuple[float, float, float]:
@@ -88,7 +87,10 @@ class SmoothedVectorizedHomotopy(Homotopy):
 
 class ComplexHomotopy(Homotopy):
     def __init__(
-        self, complex_homotopy: Callable[[complex], float], mobject: Mobject, **kwargs
+        self,
+        complex_homotopy: Callable[[complex, float], float],
+        mobject: Mobject,
+        **kwargs,
     ) -> None:
         """
         Complex Homotopy a function Cx[0, 1] to C
@@ -109,12 +111,12 @@ class ComplexHomotopy(Homotopy):
 class PhaseFlow(Animation):
     def __init__(
         self,
-        function: Callable[[np.ndarray], np.ndarray],
+        function: Callable[[Point3D], Point3D],
         mobject: Mobject,
         virtual_time: float = 1,
         suspend_mobject_updating: bool = False,
-        rate_func: Callable[[float], float] = linear,
-        **kwargs,
+        rate_func: RateFunc = linear,
+        **kwargs: Any,
     ) -> None:
         self.virtual_time = virtual_time
         self.function = function
@@ -153,8 +155,8 @@ class MoveAlongPath(Animation):
         self,
         mobject: Mobject,
         path: VMobject,
-        suspend_mobject_updating: bool | None = False,
-        **kwargs,
+        suspend_mobject_updating: bool = False,
+        **kwargs: Any,
     ) -> None:
         self.path = path
         super().__init__(
