@@ -15,7 +15,6 @@ import configparser
 import copy
 import json
 import logging
-import sys
 from typing import TYPE_CHECKING
 
 from rich import color, errors
@@ -26,6 +25,8 @@ from rich.theme import Theme
 
 if TYPE_CHECKING:
     from pathlib import Path
+
+__all__ = ["make_logger", "parse_theme", "set_file_logger", "JSONFormatter"]
 
 HIGHLIGHTED_KEYWORDS = [  # these keywords are highlighted specially
     "Played",
@@ -50,7 +51,7 @@ Loading the default color configuration.[/logging.level.error]
 
 
 def make_logger(
-    parser: configparser.ConfigParser,
+    parser: configparser.SectionProxy,
     verbosity: str,
 ) -> tuple[logging.Logger, Console, Console]:
     """Make the manim logger and console.
@@ -101,7 +102,7 @@ def make_logger(
     return logger, console, error_console
 
 
-def parse_theme(parser: configparser.ConfigParser) -> Theme:
+def parse_theme(parser: configparser.SectionProxy) -> Theme:
     """Configure the rich style of logger and console output.
 
     Parameters

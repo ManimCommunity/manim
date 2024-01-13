@@ -20,18 +20,24 @@ import os
 import re
 import sys
 from collections.abc import Mapping, MutableMapping
-from enum import EnumMeta
 from pathlib import Path
-from typing import Any, ClassVar, Iterable, Iterator, NoReturn
+from typing import TYPE_CHECKING, Any, ClassVar, Iterable, Iterator, NoReturn
 
 import numpy as np
-from typing_extensions import Self
 
-from .. import constants
-from ..constants import RendererType
-from ..typing import StrPath, Vector3
-from ..utils.color import ManimColor
-from ..utils.tex import TexTemplate, TexTemplateFromFile
+from manim import constants
+from manim.constants import RendererType
+from manim.utils.color import ManimColor
+from manim.utils.tex import TexTemplate, TexTemplateFromFile
+
+if TYPE_CHECKING:
+    from enum import EnumMeta
+
+    from typing_extensions import Self
+
+    from manim.typing import StrPath, Vector3D
+
+__all__ = ["config_file_paths", "make_config_parser", "ManimConfig", "ManimFrame"]
 
 
 def config_file_paths() -> list[Path]:
@@ -324,7 +330,7 @@ class ManimConfig(MutableMapping):
     def __len__(self) -> int:
         return len(self._d)
 
-    def __contains__(self, key: str) -> bool:
+    def __contains__(self, key: object) -> bool:
         try:
             self.__getitem__(key)
             return True
@@ -337,7 +343,7 @@ class ManimConfig(MutableMapping):
     def __setitem__(self, key: str, val: Any) -> None:
         getattr(ManimConfig, key).fset(self, val)  # fset is the property's setter
 
-    def update(self, obj: ManimConfig | dict[str, Any]) -> None:
+    def update(self, obj: ManimConfig | dict[str, Any]) -> None:  # type: ignore[override]
         """Digest the options found in another :class:`ManimConfig` or in a dict.
 
         Similar to :meth:`dict.update`, replaces the values of this object with
@@ -1049,7 +1055,7 @@ class ManimConfig(MutableMapping):
     @ffmpeg_loglevel.setter
     def ffmpeg_loglevel(self, val: str) -> None:
         self._set_from_list(
-            "verbosity",
+            "ffmpeg_loglevel",
             val,
             ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
         )
@@ -1145,22 +1151,22 @@ class ManimConfig(MutableMapping):
         )
 
     @property
-    def top(self) -> Vector3:
+    def top(self) -> Vector3D:
         """Coordinate at the center top of the frame."""
         return self.frame_y_radius * constants.UP
 
     @property
-    def bottom(self) -> Vector3:
+    def bottom(self) -> Vector3D:
         """Coordinate at the center bottom of the frame."""
         return self.frame_y_radius * constants.DOWN
 
     @property
-    def left_side(self) -> Vector3:
+    def left_side(self) -> Vector3D:
         """Coordinate at the middle left of the frame."""
         return self.frame_x_radius * constants.LEFT
 
     @property
-    def right_side(self) -> Vector3:
+    def right_side(self) -> Vector3D:
         """Coordinate at the middle right of the frame."""
         return self.frame_x_radius * constants.RIGHT
 
@@ -1257,7 +1263,7 @@ class ManimConfig(MutableMapping):
 
     @property
     def background_opacity(self) -> float:
-        """ "A number between 0.0 (fully transparent) and 1.0 (fully opaque)."""
+        """A number between 0.0 (fully transparent) and 1.0 (fully opaque)."""
         return self._d["background_opacity"]
 
     @background_opacity.setter
@@ -1266,7 +1272,7 @@ class ManimConfig(MutableMapping):
 
     @property
     def frame_size(self) -> tuple[int, int]:
-        """ "Tuple with (pixel width, pixel height) (no flag)."""
+        """Tuple with (pixel width, pixel height) (no flag)."""
         return (self._d["pixel_width"], self._d["pixel_height"])
 
     @frame_size.setter
@@ -1801,7 +1807,7 @@ class ManimFrame(Mapping):
         "left_side",
         "right_side",
     }
-    _CONSTANTS: ClassVar[dict[str, Vector3]] = {
+    _CONSTANTS: ClassVar[dict[str, Vector3D]] = {
         "UP": np.array((0.0, 1.0, 0.0)),
         "DOWN": np.array((0.0, -1.0, 0.0)),
         "RIGHT": np.array((1.0, 0.0, 0.0)),

@@ -1,15 +1,12 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING
 
-import click
-from cloup import option, option_group
+from cloup import Choice, option, option_group
 
 from ... import logger
 
-if TYPE_CHECKING:
-    from cloup._option_groups import OptionGroupDecorator
+__all__ = ["global_options"]
 
 
 def validate_gui_location(ctx, param, value):
@@ -22,7 +19,7 @@ def validate_gui_location(ctx, param, value):
             exit()
 
 
-global_options: OptionGroupDecorator = option_group(
+global_options = option_group(
     "Global options",
     option(
         "-c",
@@ -53,7 +50,7 @@ global_options: OptionGroupDecorator = option_group(
     option(
         "-v",
         "--verbosity",
-        type=click.Choice(
+        type=Choice(
             ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
             case_sensitive=False,
         ),

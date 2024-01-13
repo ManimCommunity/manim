@@ -10,14 +10,14 @@
     },
     "section_dir_layout": [
         "SquareToCircle.json",
-        "SquareToCircle_0000.mp4",
+        "SquareToCircle_0000_autocreated.mp4",
         "."
     ],
     "section_index": [
         {
             "name": "autocreated",
             "type": "default.normal",
-            "video": "SquareToCircle_0000.mp4",
+            "video": "SquareToCircle_0000_autocreated.mp4",
             "codec_name": "h264",
             "width": 854,
             "height": 480,

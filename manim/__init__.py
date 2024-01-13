@@ -1,14 +1,10 @@
 #!/usr/bin/env python
-
-
 from __future__ import annotations
 
-import pkg_resources
+from importlib.metadata import version
 
-__version__: str = pkg_resources.get_distribution(__name__).version
+__version__ = version(__name__)
 
-
-import sys
 
 # isort: off
 
@@ -20,6 +16,7 @@ from ._config import *
 from .utils.commands import *
 
 # isort: on
+import numpy as np
 
 from .animation.animation import *
 from .animation.changing import *
