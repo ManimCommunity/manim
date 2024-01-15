@@ -28,7 +28,7 @@ import numpy as np
 from manim import constants
 from manim.constants import RendererType
 from manim.utils.color import ManimColor
-from manim.utils.tex import TexTemplate, TexTemplateFromFile
+from manim.utils.tex import TexTemplate
 
 if TYPE_CHECKING:
     from enum import EnumMeta
@@ -833,7 +833,7 @@ class ManimConfig(MutableMapping):
 
         # Handle --tex_template
         if args.tex_template:
-            self.tex_template = TexTemplateFromFile(tex_filename=args.tex_template)
+            self.tex_template = TexTemplate.from_file(args.tex_template)
 
         if (
             self.renderer == RendererType.OPENGL
@@ -1756,19 +1756,19 @@ class ManimConfig(MutableMapping):
         if not hasattr(self, "_tex_template") or not self._tex_template:
             fn = self._d["tex_template_file"]
             if fn:
-                self._tex_template = TexTemplateFromFile(tex_filename=fn)
+                self._tex_template = TexTemplate.from_file(fn)
             else:
                 self._tex_template = TexTemplate()
         return self._tex_template
 
     @tex_template.setter
-    def tex_template(self, val: TexTemplateFromFile | TexTemplate) -> None:
-        if isinstance(val, (TexTemplateFromFile, TexTemplate)):
+    def tex_template(self, val: TexTemplate) -> None:
+        if isinstance(val, TexTemplate):
             self._tex_template = val
 
     @property
     def tex_template_file(self) -> Path:
-        """File to read Tex template from (no flag).  See :class:`.TexTemplateFromFile`."""
+        """File to read Tex template from (no flag).  See :class:`.TexTemplate`."""
         return self._d["tex_template_file"]
 
     @tex_template_file.setter
