@@ -13,6 +13,8 @@ from PIL.Image import Resampling
 from manim.mobject.opengl.opengl_surface import OpenGLSurface, OpenGLTexturedSurface
 from manim.utils.images import get_full_raster_image_path
 
+__all__ = ["OpenGLImageMobject"]
+
 
 class OpenGLImageMobject(OpenGLTexturedSurface):
     def __init__(

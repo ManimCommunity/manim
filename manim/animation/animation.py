@@ -18,6 +18,8 @@ __all__ = ["Animation", "Wait", "override_animation"]
 from copy import deepcopy
 from typing import TYPE_CHECKING, Callable, Iterable, Sequence
 
+from typing_extensions import Self
+
 if TYPE_CHECKING:
     from manim.scene.scene import Scene
 
@@ -112,7 +114,7 @@ class Animation:
         *args,
         use_override=True,
         **kwargs,
-    ):
+    ) -> Self:
         if isinstance(mobject, Mobject) and use_override:
             func = mobject.animation_override_for(cls)
             if func is not None:
