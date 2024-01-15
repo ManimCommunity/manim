@@ -79,6 +79,8 @@ TEXT_MOB_SCALE_FACTOR = 0.05
 DEFAULT_LINE_SPACING_SCALE = 0.3
 TEXT2SVG_ADJUSTMENT_FACTOR = 4.8
 
+__all__ = ["Text", "Paragraph", "MarkupText", "register_font"]
+
 
 def remove_invisible_chars(mobject: SVGMobject) -> SVGMobject:
     """Function to remove unwanted invisible characters from some mobjects.

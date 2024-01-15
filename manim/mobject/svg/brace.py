@@ -24,6 +24,8 @@ from ...mobject.types.vectorized_mobject import VMobject
 from ...utils.color import BLACK
 from ..svg.svg_mobject import VMobjectFromSVGPath
 
+__all__ = ["Brace", "BraceBetweenPoints", "BraceLabel", "ArcBrace"]
+
 
 class Brace(VMobjectFromSVGPath):
     """Takes a mobject and draws a brace adjacent to it.
