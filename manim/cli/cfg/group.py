@@ -26,6 +26,17 @@ If left empty, the default colour will be used.[/red]
 """
 RICH_NON_STYLE_ENTRIES: str = ["log.width", "log.height", "log.timestamps"]
 
+__all__ = [
+    "value_from_string",
+    "value_from_string",
+    "is_valid_style",
+    "replace_keys",
+    "cfg",
+    "write",
+    "show",
+    "export",
+]
+
 
 def value_from_string(value: str) -> str | int | bool:
     """Extracts the literal of proper datatype from a string.

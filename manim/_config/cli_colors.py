@@ -4,6 +4,8 @@ import configparser
 
 from cloup import Context, HelpFormatter, HelpTheme, Style
 
+__all__ = ["parse_cli_ctx"]
+
 
 def parse_cli_ctx(parser: configparser.SectionProxy) -> Context:
     formatter_settings: dict[str, str | int] = {
