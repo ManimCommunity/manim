@@ -1793,6 +1793,8 @@ class ManimConfig(MutableMapping):
         self._d["plugins"] = value
 
 
+# TODO: to be used in the future - see PR #620
+# https://github.com/ManimCommunity/manim/pull/620
 class ManimFrame(Mapping):
     _OPTS: ClassVar[set[str]] = {
         "pixel_width",
