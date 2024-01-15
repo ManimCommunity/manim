@@ -550,6 +550,142 @@ Groups also have a bunch of methods to make your life easier. Take a look at som
                 self.play(Uncreate(mob))
             self.wait(0.2)
 
-########
+##################
+Syncing Animations
+##################
+
+In many animations it makes sense to have things moving together at the same rate.
+However, Manim gives you better ways to accomplish this task then by copying the same parameters
+everywhere.
+
+=========
 Updaters
-########
+=========
+Manim allows you to "update" the attributes of a mobject every frame of an animation
+via something called updaters. There are two types: normal updaters, and time-based updaters.
+
+.. note::
+    The way manim works with time based updaters is going to be reworked at some point. Stay
+    up to date with the changelogs to make sure your code will work.
+
+---------------
+Normal Updaters
+---------------
+You can attach an updater to a mobject via the `.add_updater` method. It takes a function whose
+first parameter is the mobject itself, and you can modify the mobject however you want.
+
+For example, here we used ``lambda m: m.next_to(d, RIGHT)``. In this case, ``m`` is the Mobject ``Text("Hi!")``.
+
+.. manim:: UpdaterExample
+    :ref_classes: MoveAlongPath
+
+    class UpdaterExample(Scene):
+        def construct(self):
+            t = Text("Hi!")
+            d = Dot(color=ORANGE)
+            trace = TracedPath(d.get_center, dissipating_time=1, stroke_color=RED)
+            t.add_updater(lambda m: m.next_to(d, RIGHT))
+            self.add(t, trace)
+            self.play(MoveAlongPath(d, Square(), rate_func=linear, run_time=3))
+            self.wait()
+
+-------------------
+Time Based Updaters
+-------------------
+Time based updaters are just like normal updaters, but take an extra parameter ``dt``.
+This represents how much time has passed between the last call of your updater.
+
+.. manim:: TimeBasedUpdater
+
+    class TimeBasedUpdater(Scene):
+        def construct(self):
+            time = 0
+            d = DecimalNumber(0)
+            def updater(m: VMobject, dt: float):
+                # access the time defined outside this function
+                nonlocal time
+                time+=dt
+                d.set_value(time)
+            d.add_updater(updater)
+            self.add(d)
+            self.wait(1.1)
+
+
+
+=============
+ValueTrackers
+=============
+
+``ValueTracker``s are the real things that allow you to synchronize multiple animations at once.
+They are basically just stored values, but you can animate their ``.set_value`` to produce animations.
+
+.. manim:: ValueTrackerShowcase
+
+    class ValueTrackerShowcase(Scene):
+        def construct(self):
+            line = Rectangle(height=1, width=4).set_stroke(color=WHITE, opacity=1).move_to(ORIGIN)
+            vt = ValueTracker(1e-2) # setting to zero creates bugs with stretch_to_fit_width
+            progress = Rectangle(height=1, width=vt.get_value()).set_stroke(color=RED,opacity=1)
+            progress.add_updater(lambda p: p.stretch_to_fit_width(vt.get_value()).align_to(line, LEFT))
+            d = DecimalNumber(0).to_edge(UP)
+            d.add_updater(lambda d: d.set_value(vt.get_value()))
+            self.add(d,line,progress)
+            self.play(vt.animate.set_value(4), rate_func=linear, run_time=1.5)
+            self.wait(0.1)
+
+-------------
+always_redraw
+-------------
+``always_redraw`` is a simple function that allows you to recreate a mobject at
+every frame of the animation. As an example, check out this animation:
+
+.. manim:: AlwaysRedrawTangentAnimation
+
+    class AlwaysRedrawTangentAnimation(Scene):
+        def construct(self):
+            ax = Axes()
+            sine = ax.plot(np.sin, color=RED)
+            alpha = ValueTracker(0)
+            point = always_redraw(
+                lambda: Dot(
+                    sine.point_from_proportion(alpha.get_value()),
+                    color=BLUE
+                )
+            )
+            tangent = always_redraw(
+                lambda: TangentLine(
+                    sine,
+                    alpha=alpha.get_value(),
+                    color=YELLOW,
+                    length=4
+                )
+            )
+            self.add(ax, sine, point, tangent)
+            self.play(alpha.animate.set_value(1), rate_func=linear, run_time=2)
+
+-------------------
+Test Your Knowledge
+-------------------
+Try to recreate the following animation!
+
+.. manim:: KnowledgeCheckUpdaters
+    :hide_source:
+
+    class KnowledgeCheckUpdaters(Scene):
+        def construct(self):
+            l1 = Line(6*LEFT,6*RIGHT)
+            l2 = Line(4*DL,3*UR)
+            vt = ValueTracker(0)
+            d1, d2 = Dot(color=RED), Dot(color=ORANGE)
+            txt = MathTex(r"\Delta", color=RED).add_updater(lambda t: t.next_to(d2, LEFT)).scale(2)
+            bt = TracedPath(d1.get_center, stroke_color=RED)
+            tt = TracedPath(d2.get_center, stroke_color=ORANGE)
+            d1.add_updater(lambda d: d.move_to(l1.point_from_proportion(vt.get_value())))
+            d2.add_updater(lambda d: d.move_to(l2.point_from_proportion(vt.get_value())))
+            self.add(d1, d2, bt, tt, txt)
+            self.play(vt.animate.set_value(1), run_time=1.5)
+            self.play(vt.animate.set_value(0.8))
+            self.play(Create(Line(d1.get_center(), d2.get_center(), color=YELLOW)))
+            vmob = VMobject(color=ORANGE).set_points_as_corners([ORIGIN, d1.get_center(), d2.get_center(), ORIGIN]).set_fill(color=[RED,ORANGE,YELLOW], opacity=1).set_z_index(-50)
+            txt.clear_updaters()
+            self.play(Create(vmob), txt.animate.move_to(vmob.get_center()).set_z_index(50).set_color(BLUE))
