@@ -34,10 +34,11 @@ if TYPE_CHECKING:
     from enum import EnumMeta
 
     from typing_extensions import Self
-    
+
     from manim.typing import StrPath, Vector3D
 
 __all__ = ["config_file_paths", "make_config_parser", "ManimConfig", "ManimFrame"]
+
 
 def config_file_paths() -> list[Path]:
     """The paths where ``.cfg`` files will be searched for.
