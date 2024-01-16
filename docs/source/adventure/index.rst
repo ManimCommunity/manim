@@ -13,7 +13,7 @@ and learning to carve your own path. The goal of this guide is to give an exampl
 Part One: The Basics
 --------------------
 
-Here we talk about the basics: what are ``Mobject``s, Animations, ``Group``s, Updaters, and many more tips and tricks. It gives many examples and intends to
+Here we talk about the basics: what are Mobjects, Animations, Groups, Updaters, and many more tips and tricks. It gives many examples and intends to
 teach by example. It encourages you to test your understanding by recreating certain sequences of animations.
 Feel free to return to this section anytime you need a refresher on something during part two.
 
