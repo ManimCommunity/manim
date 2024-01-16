@@ -577,7 +577,7 @@ first parameter is the mobject itself, and you can modify the mobject however yo
 For example, here we used ``lambda m: m.next_to(d, RIGHT)``. In this case, ``m`` is the Mobject ``Text("Hi!")``.
 
 .. manim:: UpdaterExample
-    :ref_classes: MoveAlongPath
+    :ref_classes: MoveAlongPath TracedPath
 
     class UpdaterExample(Scene):
         def construct(self):
@@ -616,7 +616,7 @@ This represents how much time has passed between the last call of your updater.
 ValueTrackers
 =============
 
-``ValueTracker``s are the real things that allow you to synchronize multiple animations at once.
+ValueTrackers are the real things that allow you to synchronize multiple animations at once.
 They are basically just stored values, but you can animate their ``.set_value`` to produce animations.
 
 .. manim:: ValueTrackerShowcase
