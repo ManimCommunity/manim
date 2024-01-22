@@ -476,7 +476,7 @@ class SpiralIn(Animation):
         for shape in self.shapes:
             shape.restore()
             shape.save_state()
-            opacity = shape.get_fill_opacity()
+            opacity = shape.get_fill_opacity() or 1
             new_opacity = min(opacity, alpha * opacity / self.fade_in_fraction)
             shape.shift((shape.final_position - shape.initial_position) * alpha)
             shape.rotate(TAU * alpha, about_point=self.shape_center)
