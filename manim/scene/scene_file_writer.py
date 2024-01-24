@@ -725,7 +725,7 @@ class SceneFileWriter:
 
     def write_subcaption_file(self):
         """Writes the subcaption file."""
-        if not config["output_file"]:
+        if config.output_file is None:
             return
         subcaption_file = Path(config.output_file).with_suffix(".srt")
         subcaption_file.write_text(srt.compose(self.subcaptions), encoding="utf-8")
