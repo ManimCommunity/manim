@@ -12,6 +12,8 @@ import cloup
 
 from .checks import HEALTH_CHECKS
 
+__all__ = ["checkhealth"]
+
 
 @cloup.command(
     context_settings=None,

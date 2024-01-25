@@ -13,6 +13,8 @@ from ..animation.composition import AnimationGroup
 from ..mobject.mobject import Mobject, Updater, _AnimationBuilder
 from ..scene.scene import Scene
 
+__all__ = ["ChangeSpeed"]
+
 
 class ChangeSpeed(Animation):
     """Modifies the speed of passed animation.

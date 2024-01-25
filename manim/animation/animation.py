@@ -18,6 +18,8 @@ __all__ = ["Animation", "Wait", "override_animation"]
 from copy import deepcopy
 from typing import TYPE_CHECKING, Callable, Iterable, Sequence
 
+from typing_extensions import Self
+
 if TYPE_CHECKING:
     from manim.scene.scene import Scene
 
@@ -112,7 +114,7 @@ class Animation:
         *args,
         use_override=True,
         **kwargs,
-    ):
+    ) -> Self:
         if isinstance(mobject, Mobject) and use_override:
             func = mobject.animation_override_for(cls)
             if func is not None:
@@ -191,6 +193,11 @@ class Animation:
         method.
 
         """
+        if self.run_time <= 0:
+            raise ValueError(
+                f"{self} has a run_time of <= 0 seconds, this cannot be rendered correctly. "
+                "Please set the run_time to be positive"
+            )
         self.starting_mobject = self.create_starting_mobject()
         if self.suspend_mobject_updating:
             # All calls to self.mobject's internal updaters

@@ -8,6 +8,8 @@ from manim.constants import QUALITIES, RendererType
 
 from ... import logger
 
+__all__ = ["render_options"]
+
 
 def validate_scene_range(ctx, param, value):
     try:
@@ -57,7 +59,13 @@ render_options = option_group(
         type=Choice(["png", "gif", "mp4", "webm", "mov"], case_sensitive=False),
         default=None,
     ),
-    option("-s", "--save_last_frame", is_flag=True, default=None),
+    option(
+        "-s",
+        "--save_last_frame",
+        default=None,
+        is_flag=True,
+        help="Render and save only the last frame of a scene as a PNG image.",
+    ),
     option(
         "-q",
         "--quality",
@@ -120,13 +128,6 @@ render_options = option_group(
         default=None,
         is_flag=True,
         help="Save section videos in addition to movie file.",
-    ),
-    option(
-        "-s",
-        "--save_last_frame",
-        default=None,
-        is_flag=True,
-        help="Save last frame as png (Deprecated).",
     ),
     option(
         "-t",

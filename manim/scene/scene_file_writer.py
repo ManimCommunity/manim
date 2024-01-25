@@ -191,7 +191,7 @@ class SceneFileWriter:
             and not skip_animations
         ):
             # relative to index file
-            section_video = f"{self.output_name}_{len(self.sections):04}{config.movie_file_extension}"
+            section_video = f"{self.output_name}_{len(self.sections):04}_{name}{config.movie_file_extension}"
 
         self.sections.append(
             Section(
@@ -725,6 +725,8 @@ class SceneFileWriter:
 
     def write_subcaption_file(self):
         """Writes the subcaption file."""
+        if config.output_file is None:
+            return
         subcaption_file = Path(config.output_file).with_suffix(".srt")
         subcaption_file.write_text(srt.compose(self.subcaptions), encoding="utf-8")
         logger.info(f"Subcaption file has been written as {subcaption_file}")

@@ -9,12 +9,12 @@ from manim import MathTex, SingleStringMathTex, Tex, config
 
 def test_MathTex(using_opengl_renderer):
     MathTex("a^2 + b^2 = c^2")
-    assert Path(config.media_dir, "Tex", "eb38bdba08f46c80.svg").exists()
+    assert Path(config.media_dir, "Tex", "e4be163a00cf424f.svg").exists()
 
 
 def test_SingleStringMathTex(using_opengl_renderer):
     SingleStringMathTex("test")
-    assert Path(config.media_dir, "Tex", "5b2faa68ebf42d1e.svg").exists()
+    assert Path(config.media_dir, "Tex", "8ce17c7f5013209f.svg").exists()
 
 
 @pytest.mark.parametrize(  # : PT006
@@ -28,7 +28,7 @@ def test_double_braces_testing(using_opengl_renderer, text_input, length_sub):
 
 def test_tex(using_opengl_renderer):
     Tex("The horse does not eat cucumber salad.")
-    assert Path(config.media_dir, "Tex", "f2e45e6e82d750e6.svg").exists()
+    assert Path(config.media_dir, "Tex", "c3945e23e546c95a.svg").exists()
 
 
 def test_tex_whitespace_arg(using_opengl_renderer):

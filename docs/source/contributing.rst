@@ -38,14 +38,10 @@ To get an overview of what our community is currently working on, check out
 Contributing can be confusing, so here are a few guides:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
    contributing/development
-   contributing/docstrings
-   contributing/references
-   contributing/examples
-   contributing/typings
-   contributing/admonitions
+   contributing/docs
    contributing/testing
    contributing/performance
    contributing/internationalization
