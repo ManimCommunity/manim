@@ -3,7 +3,7 @@ Windows
 
 The easiest way of installing Manim and its dependencies is by using a
 package manager like `Chocolatey <https://chocolatey.org/>`__
-or `Scoop <https://scoop.sh>`__, especially if you need optional dependecies
+or `Scoop <https://scoop.sh>`__, especially if you need optional dependencies
 like LaTeX support.
 
 If you choose to use one of the package managers, please follow
