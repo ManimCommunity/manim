@@ -45,7 +45,7 @@ class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
                 self.wait(1)
                 tracker -= 4
                 self.wait(0.5)
-                self.play(tracker.animate.set_value(5)),
+                self.play(tracker.animate.set_value(5))
                 self.wait(0.5)
                 self.play(tracker.animate.set_value(3))
                 self.play(tracker.animate.increment_value(-2))
@@ -71,7 +71,7 @@ class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
 
     def __init__(self, value=0, **kwargs):
         super().__init__(**kwargs)
-        self.set_points(np.zeros((1, 3)))
+        self.set(points=np.zeros((1, 3)))
         self.set_value(value)
 
     def get_value(self) -> float:
@@ -132,7 +132,7 @@ class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
         Turns self into an interpolation between mobject1
         and mobject2.
         """
-        self.set_points(path_func(mobject1.points, mobject2.points, alpha))
+        self.set(points=path_func(mobject1.points, mobject2.points, alpha))
         return self
 
 

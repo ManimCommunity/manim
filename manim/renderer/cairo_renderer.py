@@ -20,6 +20,8 @@ if typing.TYPE_CHECKING:
     from manim.animation.animation import Animation
     from manim.scene.scene import Scene
 
+__all__ = ["CairoRenderer"]
+
 
 class CairoRenderer:
     """A renderer using Cairo.

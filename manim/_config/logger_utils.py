@@ -26,6 +26,8 @@ from rich.theme import Theme
 if TYPE_CHECKING:
     from pathlib import Path
 
+__all__ = ["make_logger", "parse_theme", "set_file_logger", "JSONFormatter"]
+
 HIGHLIGHTED_KEYWORDS = [  # these keywords are highlighted specially
     "Played",
     "animations",
