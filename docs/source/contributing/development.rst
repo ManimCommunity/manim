@@ -51,8 +51,8 @@ For first-time contributors
 #. Install Manim:
 
    - Follow the steps in our :doc:`installation instructions
-     <../installation>` to install **Manim's dependencies**,
-    and ``LaTeX``.
+     <../installation>` to install **Manim's system dependencies**.
+     We also recommend installing a LaTeX distribution.
 
    - We recommend using `Poetry <https://python-poetry.org>`__ to manage your
      developer installation of Manim. Poetry is a tool for dependency

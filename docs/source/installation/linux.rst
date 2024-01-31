@@ -32,7 +32,7 @@ Required Dependencies
 apt – Ubuntu / Mint / Debian
 ****************************
 
-To first update your sources, and then install Cairo, and Pango
+To first update your sources, and then install Cairo and Pango
 simply run:
 
 .. code-block:: bash
@@ -91,7 +91,7 @@ pacman – Arch / Manjaro
 
 If you don't want to use the packaged version from AUR, here is what
 you need to do manually: Update your package sources, then install
-Cairo, and Pango:
+Cairo and Pango:
 
 .. code-block:: bash
 

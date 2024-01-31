@@ -53,14 +53,5 @@ PASTE HERE
 <!-- output of `tlmgr list --only-installed` for TeX Live or a screenshot of the Packages page for MikTeX -->
 </details>
 
-<details><summary>FFMPEG</summary>
-
-Output of `ffmpeg -version` (leave empty skip if `manim>=0.19`):
-
-```
-PASTE HERE
-```
-</details>
-
 ## Additional comments
 <!-- Add further context that you think might be relevant for this issue here. -->
