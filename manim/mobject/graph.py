@@ -23,6 +23,7 @@ from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.text.tex_mobject import MathTex
 from manim.mobject.types.vectorized_mobject import VMobject
+from manim.typing import Point3D
 from manim.utils.color import BLACK
 
 NxGraph = Union[nx.classes.graph.Graph, nx.classes.digraph.DiGraph]
@@ -256,7 +257,7 @@ class LayoutFunction(Protocol):
         scale: float | tuple[float, float, float] = 2,
         *args: tuple[Any, ...],
         **kwargs: dict[str, Any],
-    ) -> dict[Hashable, np.ndarray[np.float64]]:
+    ) -> dict[Hashable, Point3D]:
         """Given a graph and a scale, return a dictionary of coordinates.
 
         Parameters
@@ -268,7 +269,7 @@ class LayoutFunction(Protocol):
 
         Returns
         -------
-        dict[Hashable, np.ndarray[np.float64]]
+        dict[Hashable, Point3D]
             A dictionary mapping vertices to their positions.
         """
         ...
@@ -279,7 +280,7 @@ def _partite_layout(
     scale: float = 2,
     partitions: list[list[Hashable]] | None = None,
     **kwargs: dict[str, Any],
-) -> dict[Hashable, np.ndarray[np.float64]]:
+) -> dict[Hashable, Point3D]:
     if partitions is None or len(partitions) == 0:
         raise ValueError(
             "The partite layout requires partitions parameter to contain the partition of the vertices",
@@ -445,12 +446,10 @@ _layouts: dict[LayoutName, LayoutFunction] = {
 
 def _determine_graph_layout(
     nx_graph: nx.classes.graph.Graph | nx.classes.digraph.DiGraph,
-    layout: LayoutName
-    | dict[Hashable, np.ndarray[np.float64]]
-    | LayoutFunction = "spring",
+    layout: LayoutName | dict[Hashable, Point3D] | LayoutFunction = "spring",
     layout_scale: float | tuple[float, float, float] = 2,
     layout_config: dict[str, Any] | None = None,
-) -> dict[Hashable, np.ndarray[np.float64]]:
+) -> dict[Hashable, Point3D]:
     if layout_config is None:
         layout_config = {}
 
@@ -569,9 +568,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         edges: list[tuple[Hashable, Hashable]],
         labels: bool | dict = False,
         label_fill_color: str = BLACK,
-        layout: LayoutName
-        | dict[Hashable, np.ndarray[np.float64]]
-        | LayoutFunction = "spring",
+        layout: LayoutName | dict[Hashable, Point3D] | LayoutFunction = "spring",
         layout_scale: float | tuple[float, float, float] = 2,
         layout_config: dict | None = None,
         vertex_type: type[Mobject] = Dot,
@@ -682,13 +679,13 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
     def _create_vertex(
         self,
         vertex: Hashable,
-        position: np.ndarray | None = None,
+        position: Point3D | None = None,
         label: bool = False,
         label_fill_color: str = BLACK,
         vertex_type: type[Mobject] = Dot,
         vertex_config: dict | None = None,
         vertex_mobject: dict | None = None,
-    ) -> tuple[Hashable, np.ndarray, dict, Mobject]:
+    ) -> tuple[Hashable, Point3D, dict, Mobject]:
         if position is None:
             position = self.get_center()
 
@@ -726,7 +723,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
     def _add_created_vertex(
         self,
         vertex: Hashable,
-        position: np.ndarray,
+        position: Point3D,
         vertex_config: dict,
         vertex_mobject: Mobject,
     ) -> Mobject:
@@ -752,7 +749,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
     def _add_vertex(
         self,
         vertex: Hashable,
-        position: np.ndarray | None = None,
+        position: Point3D | None = None,
         label: bool = False,
         label_fill_color: str = BLACK,
         vertex_type: type[Mobject] = Dot,
@@ -807,7 +804,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         vertex_type: type[Mobject] = Dot,
         vertex_config: dict | None = None,
         vertex_mobjects: dict | None = None,
-    ) -> Iterable[tuple[Hashable, np.ndarray, dict, Mobject]]:
+    ) -> Iterable[tuple[Hashable, Point3D, dict, Mobject]]:
         if positions is None:
             positions = {}
         if vertex_mobjects is None:
@@ -1211,9 +1208,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
 
     def change_layout(
         self,
-        layout: LayoutName
-        | dict[Hashable, np.ndarray[np.float64]]
-        | LayoutFunction = "spring",
+        layout: LayoutName | dict[Hashable, Point3D] | LayoutFunction = "spring",
         layout_scale: float | tuple[float, float, float] = 2,
         layout_config: dict[str, Any] | None = None,
         partitions: list[list[Hashable]] | None = None,
