@@ -257,9 +257,9 @@ parameter can handle being passed a `Point3D` instead.
 """
 
 InternalPoint2D_Array: TypeAlias = npt.NDArray[PointDType]
-"""``shape: (N, 3)``
+"""``shape: (N, 2)``
 
-An array of `Point2D` objects: ``[[float, float], ...]``.
+An array of `InternalPoint2D` objects: ``[[float, float], ...]``.
 
 .. note::
     This type alias is mostly made available for internal use, and
@@ -561,7 +561,9 @@ Function types
 # Due to current limitations
 # (see https://github.com/python/mypy/issues/14656 / 8263),
 # we don't specify the first argument type (Mobject).
-FunctionOverride: TypeAlias = Callable[..., None]
+# Nor are we able to specify the return type (Animation) since we cannot import
+# that here.
+FunctionOverride: TypeAlias = Callable
 """Function type returning an :class:`~.Animation` for the specified
 :class:`~.Mobject`.
 """
