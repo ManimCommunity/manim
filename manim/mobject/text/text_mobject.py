@@ -453,6 +453,10 @@ class Text(SVGMobject):
                 # check if the capitalized version is in the supported fonts
                 if font.capitalize() in fonts_list:
                     font = font.capitalize()
+                elif font.lower() in fonts_list:
+                    font = font.lower()
+                elif font.title() in fonts_list:
+                    font = font.title()
                 else:
                     logger.warning(f"Font {font} not in {fonts_list}.")
         self.font = font
@@ -1187,6 +1191,10 @@ class MarkupText(SVGMobject):
                 # check if the capitalized version is in the supported fonts
                 if font.capitalize() in fonts_list:
                     font = font.capitalize()
+                elif font.lower() in fonts_list:
+                    font = font.lower()
+                elif font.title() in fonts_list:
+                    font = font.title()
                 else:
                     logger.warning(f"Font {font} not in {fonts_list}.")
         self.font = font
