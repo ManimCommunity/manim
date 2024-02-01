@@ -2912,6 +2912,7 @@ class Mobject:
     def __class_getitem__(cls, item: type) -> str:
         return f"{cls.__name__}[{item.__name__}]"
 
+
 class Group(Mobject, metaclass=ConvertToOpenGL):
     """Groups together multiple :class:`Mobjects <.Mobject>`.
 
