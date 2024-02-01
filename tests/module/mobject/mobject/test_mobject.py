@@ -157,3 +157,10 @@ def test_mobject_dimensions_has_points_and_children():
     assert inner_rect.width == 2
     assert inner_rect.height == 1
     assert inner_rect.depth == 0
+
+def test_mobject_type_subscripting():
+    # check mobject subscripting
+    assert Mobject[VGroup] == "Mobject[VGroup]"
+    assert Mobject[Mobject[Mobject]] == "Mobject[Mobject[Mobject]]"
+    # check subscripting of subclasses
+    assert VGroup[Rectangle] == "VGroup[Rectangle]"
