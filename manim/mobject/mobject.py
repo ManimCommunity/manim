@@ -2909,8 +2909,9 @@ class Mobject:
         self.set_z_index(z_coord)
         return self
 
-    def __class_getitem__(cls, item: type) -> str:
-        return f"{cls.__name__}[{item.__name__}]"
+    def __class_getitem__(cls, item: type) -> types.GenericAlias:
+        print(cls, item)
+        return types.GenericAlias(cls, item)
 
 
 class Group(Mobject, metaclass=ConvertToOpenGL):
