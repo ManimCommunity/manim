@@ -1185,7 +1185,7 @@ class MarkupText(SVGMobject):
         if font and warn_missing_font:
             fonts_list = Text.font_list()
             # handle special case of sans/sans-serif
-            if font == "sans-serif":
+            if font.lower() == "sans-serif":
                 font = "sans"
             if font not in fonts_list:
                 # check if the capitalized version is in the supported fonts
