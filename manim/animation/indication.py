@@ -675,25 +675,6 @@ class Blink(Succession):
     kwargs
         Additional arguments to be passed to the :class:`~.Succession` constructor.
 
-    Examples
-    --------
-
-    .. manim:: BlinkingCursor
-
-        class BlinkingCursor(Scene):
-            def construct(self):
-                text = Text("Typing", color=PURPLE).scale(1.5)
-                cursor = Rectangle(
-                    color = GREY_A,
-                    fill_color = GREY_A,
-                    fill_opacity = 1.0,
-                    height = 1.1,
-                    width = 0.5,
-                ).next_to(text, buff=0.1)
-
-                self.add(text)
-                self.play(Blink(cursor, how_many_times=3))
-
     """
 
     def __init__(

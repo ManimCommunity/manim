@@ -695,28 +695,6 @@ class AddTextLetterByLetterWithCursor(AddTextLetterByLetter):
     .. tip::
         This is currently only possible for class:`~.Text` and not for class:`~.MathTex`.
 
-    Examples
-    --------
-
-    .. manim:: TypingAnimation
-
-        class TypingAnimation(Scene):
-            def construct(self):
-                text = Text("Typing", color=PURPLE).scale(1.5).to_edge(LEFT)
-                cursor = Rectangle(
-                    color = GREY_A,
-                    fill_color = GREY_A,
-                    fill_opacity = 1.0,
-                    height = 1.1,
-                    width = 0.5,
-                ).move_to(text[0]) # Position the cursor
-
-                self.play(Blink(cursor, how_many_times=2))
-                self.play(AddTextLetterByLetterWithCursor(text, cursor, leave_cursor_on=False)) # Turning off the cursor is important
-                self.play(Blink(cursor, how_many_times=3))
-                self.play(RemoveTextLetterByLetterWithCursor(text, cursor))
-                self.play(Blink(cursor, how_many_times=2, ends_with_off=True))
-
     """
 
     def __init__(
@@ -815,28 +793,6 @@ class RemoveTextLetterByLetterWithCursor(AddTextLetterByLetterWithCursor):
 
     .. tip::
         This is currently only possible for class:`~.Text` and not for class:`~.MathTex`.
-
-    Examples
-    --------
-
-    .. manim:: TypingAnimation
-
-        class TypingAnimation(Scene):
-            def construct(self):
-                text = Text("Typing", color=PURPLE).scale(1.5).to_edge(LEFT)
-                cursor = Rectangle(
-                    color = GREY_A,
-                    fill_color = GREY_A,
-                    fill_opacity = 1.0,
-                    height = 1.1,
-                    width = 0.5,
-                ).move_to(text[0]) # Position the cursor
-
-                self.play(Blink(cursor, how_many_times=2))
-                self.play(AddTextLetterByLetterWithCursor(text, cursor, leave_cursor_on=False)) # Turning off the cursor is important
-                self.play(Blink(cursor, how_many_times=3))
-                self.play(RemoveTextLetterByLetterWithCursor(text, cursor))
-                self.play(Blink(cursor, how_many_times=2, ends_with_off=True))
 
     """
 
