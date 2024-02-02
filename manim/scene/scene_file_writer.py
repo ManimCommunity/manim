@@ -490,7 +490,7 @@ class SceneFileWriter:
             config.transparent
         ):  # TODO: FIXME as quality seems very bad + test transparency
             partial_movie_file_codec = "qtrle"
-            partial_movie_file_pix_fmt = "rgb24"
+            partial_movie_file_pix_fmt = "argb"
 
         stream = video_container.add_stream(
             partial_movie_file_codec,
