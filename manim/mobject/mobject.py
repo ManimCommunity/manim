@@ -2910,7 +2910,6 @@ class Mobject:
         return self
 
     def __class_getitem__(cls, item: type) -> types.GenericAlias:
-        print(cls, item)
         return types.GenericAlias(cls, item)
 
 
