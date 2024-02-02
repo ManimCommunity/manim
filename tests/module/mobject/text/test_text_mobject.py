@@ -25,7 +25,7 @@ def test_font_warnings():
         return "Font" in txt and "not in" in txt
 
     # check for normal fonts (no warning)
-    assert not warning_printed("Arial", warn_missing_font=True)
+    assert not warning_printed("System-ui", warn_missing_font=True)
     # should be converted to sans before checking
     assert not warning_printed("Sans-serif", warn_missing_font=True)
 
