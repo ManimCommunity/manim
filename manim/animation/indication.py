@@ -48,12 +48,12 @@ from manim.mobject.geometry.shape_matchers import SurroundingRectangle
 from manim.scene.scene import Scene
 
 from .. import config
-from ..animation.animation import Animation
+from ..animation.animation import Animation, Wait
 from ..animation.composition import AnimationGroup, Succession
 from ..animation.creation import Create, ShowPartial, Uncreate
 from ..animation.fading import FadeIn, FadeOut
 from ..animation.movement import Homotopy
-from ..animation.transform import Transform
+from ..animation.transform import ApplyMethod, Transform
 from ..constants import *
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
@@ -654,3 +654,64 @@ class Circumscribe(Succession):
             super().__init__(
                 ShowPassingFlash(frame, time_width, run_time=run_time), **kwargs
             )
+
+
+class Blink(Succession):
+    """Blink the mobject.
+
+    Parameters
+    ----------
+    mobject
+        The mobject to be blinked.
+    time_on
+        The duration that the mobject is shown for one blink.
+    time_off
+        The duration that the mobject is hidden for one blink.
+    how_many_times
+        The number of blinks
+    ends_with_off
+        Whether to show or hide the mobject at the end of the animation.
+    kwargs
+        Additional arguments to be passed to the :class:`~.Succession` constructor.
+
+    Examples
+    --------
+
+    .. manim:: BlinkingCursor
+
+        class BlinkingCursor(Scene):
+            def construct(self):
+                text = Text("Typing", color=PURPLE).scale(1.5)
+                cursor = Rectangle(
+                    color = GREY_A,
+                    fill_color = GREY_A,
+                    fill_opacity = 1.0,
+                    height = 1.1,
+                    width = 0.5,
+                ).next_to(text, buff=0.1)
+
+                self.add(text)
+                self.play(Blink(cursor, how_many_times=3))
+
+    """
+
+    def __init__(
+        self,
+        mobject: Mobject,
+        time_on: float = 0.5,
+        time_off: float = 0.5,
+        how_many_times: int = 1,
+        ends_with_off: bool = False,
+        **kwargs
+    ):
+        animations = [
+            ApplyMethod(mobject.set_opacity, 1.0, run_time=0.0),
+            Wait(run_time=time_on),
+            ApplyMethod(mobject.set_opacity, 0.0, run_time=0.0),
+            Wait(run_time=time_off),
+        ] * how_many_times
+
+        if not ends_with_off:
+            animations.append(ApplyMethod(mobject.set_opacity, 1.0, run_time=0.0))
+
+        super().__init__(*animations, **kwargs)
