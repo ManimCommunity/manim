@@ -590,7 +590,7 @@ class SceneFileWriter:
             output_stream.height = config.pixel_height
             graph = av.filter.Graph()
             input_buffer = graph.add_buffer(template=partial_movies_stream)
-            fps = graph.add("fps", f"fps={np.clip(config['frame_rate'], 1, 50)}")
+            fps = graph.add("fps", f"fps={np.clip(config.frame_rate, 1, 50)}")
             split = graph.add("split")
             palettegen = graph.add("palettegen", "stats_mode=diff")
             paletteuse = graph.add(
