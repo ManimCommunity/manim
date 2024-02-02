@@ -161,7 +161,16 @@ def test_mobject_dimensions_has_points_and_children():
 
 def test_mobject_type_subscripting():
     # check mobject subscripting
-    assert Mobject[VGroup] == "Mobject[VGroup]"
-    assert Mobject[Mobject[Mobject]] == "Mobject[Mobject[Mobject]]"
+    assert (
+        Mobject[VGroup]
+        == "manim.mobject.mobject.Mobject[manim.mobject.types.vectorized_mobject.VGroup]"
+    )
+    assert (
+        Mobject[Mobject[Mobject]]
+        == "manim.mobject.mobject.Mobject[manim.mobject.mobject.Mobject[manim.mobject.mobject.Mobject]]"
+    )
     # check subscripting of subclasses
-    assert VGroup[Rectangle] == "VGroup[Rectangle]"
+    assert (
+        VGroup[Rectangle]
+        == "manim.mobject.types.vectorized_mobject.VGroup[manim.mobject.geometry.polygram.Rectangle]"
+    )
