@@ -605,7 +605,7 @@ This represents how much time has passed between the last call of your updater.
                 # access the time defined outside this function
                 nonlocal time
                 time+=dt
-                d.set_value(time)
+                m.set_value(time)
             d.add_updater(updater)
             self.add(d)
             self.wait(1.1)
