@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from manim.mobject.text.text_mobject import MarkupText, Text
+from contextlib import redirect_stdout
+from io import StringIO
 
 
 def test_font_size():
@@ -11,3 +13,19 @@ def test_font_size():
 
     assert round(text_string.font_size, 5) == 14.4
     assert round(markuptext_string.font_size, 5) == 14.4
+
+def test_font_warnings():
+    def warning_printed(font: str, **kwargs) -> bool:
+        io = StringIO()
+        with redirect_stdout(io):
+            Text("hi!", font=font, **kwargs)
+        txt = io.getvalue()
+        return "Font" in txt and "not in" in txt
+    
+    # check for normal fonts (no warning)
+    assert not warning_printed("Arial", warn_missing_font=True)
+    # should be converted to sans before checking
+    assert not warning_printed("Sans-serif", warn_missing_font=True)
+    
+    # check random string (should be warning)
+    assert warning_printed("Manim!"*3, warn_missing_font=True)
