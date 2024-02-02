@@ -70,6 +70,8 @@ __all__ = [
     "RemoveTextLetterByLetter",
     "ShowSubmobjectsOneByOne",
     "AddTextWordByWord",
+    "AddTextLetterByLetterWithCursor",
+    "RemoveTextLetterByLetterWithCursor",
 ]
 
 

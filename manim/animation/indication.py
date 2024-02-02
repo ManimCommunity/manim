@@ -35,6 +35,7 @@ __all__ = [
     "ApplyWave",
     "Circumscribe",
     "Wiggle",
+    "Blink",
 ]
 
 from typing import Callable, Iterable, Optional, Tuple, Type, Union
