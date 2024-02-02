@@ -94,7 +94,7 @@ Basic Concepts
             self.add(image, image.background_rectangle)
 
 .. manim:: BooleanOperations
-    :ref_classes: Union Intersection Exclusion
+    :ref_classes: Union Intersection Exclusion Difference
 
     class BooleanOperations(Scene):
         def construct(self):
