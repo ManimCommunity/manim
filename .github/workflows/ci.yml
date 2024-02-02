@@ -34,7 +34,7 @@ jobs:
           poetry config virtualenvs.prefer-active-python true
 
       - name: Setup Python ${{ matrix.python }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
           cache: "poetry"
@@ -60,7 +60,7 @@ jobs:
         if: runner.os == 'Linux'
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          packages: python3-opengl libpango1.0-dev xvfb
+          packages: python3-opengl libpango1.0-dev xvfb freeglut3-dev
           version: 1.0
 
       - name: Install Texlive (Linux)
@@ -143,7 +143,7 @@ jobs:
           $tinyTexPackages = $(python -c "import json;print(' '.join(json.load(open('.github/manimdependency.json'))['windows']['tinytex']))") -Split ' '
           $OriPath = $env:PATH
           echo "Install Tinytex"
-          Invoke-WebRequest "https://github.com/yihui/tinytex-releases/releases/download/daily/TinyTeX-1.zip" -O "$($env:TMP)\TinyTex.zip"
+          Invoke-WebRequest "https://github.com/yihui/tinytex-releases/releases/download/daily/TinyTeX-1.zip" -OutFile "$($env:TMP)\TinyTex.zip"
           Expand-Archive -LiteralPath "$($env:TMP)\TinyTex.zip" -DestinationPath "$($PWD)\ManimCache\LatexWindows"
           $env:Path = "$($PWD)\ManimCache\LatexWindows\TinyTeX\bin\windows;$($env:PATH)"
           tlmgr update --self

@@ -4,16 +4,9 @@
 
 .. automodule:: {{ fullname }}
 
-   {% block attributes %}
-   {% if attributes %}
-   .. rubric:: Module Attributes
-
-   .. autosummary::
-   {% for item in attributes %}
-      {{ item }}
-   {%- endfor %}
-   {% endif %}
-   {% endblock %}
+   {# SEE manim.utils.docbuild.autoaliasattr_directive #}
+   {# FOR INFORMATION ABOUT THE CUSTOM autoaliasattr DIRECTIVE! #}
+   .. autoaliasattr:: {{ fullname }}
 
    {% block classes %}
    {% if classes %}
