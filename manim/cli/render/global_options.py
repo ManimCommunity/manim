@@ -107,7 +107,7 @@ global_options = option_group(
     ),
     option(
         "--preview_command",
-        help="The command to preview the video file (ex: xdg-open on linux)",
+        help="The command to preview the video file (ex: xdg-open on linux). Note that this does not have an effect on Windows",
         default="",
     ),
 )
