@@ -562,8 +562,6 @@ class SceneFileWriter:
 
         av_options = {
             "safe": "0",  # needed to read files
-            "c": "copy",  # copy codec of combined files
-            "metadata": f"comment=Rendered with Manim Community v{__version__}",
         }
 
         if not includes_sound:
@@ -574,6 +572,7 @@ class SceneFileWriter:
         )
         partial_movies_stream = partial_movies_input.streams.video[0]
         output_container = av.open(str(output_file), mode="w")
+        output_container.metadata["comment"] = f"Rendered with Manim Community v{__version__}"
         output_stream = output_container.add_stream(
             codec_name="gif" if create_gif else None,
             template=partial_movies_stream if not create_gif else None,
