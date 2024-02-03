@@ -318,6 +318,7 @@ class ManimConfig(MutableMapping):
         "zero_pad",
         "force_window",
         "no_latex_cleanup",
+        "preview_command",
     }
 
     def __init__(self) -> None:
@@ -767,6 +768,7 @@ class ManimConfig(MutableMapping):
             "force_window",
             "dry_run",
             "no_latex_cleanup",
+            "preview_command",
         ]:
             if hasattr(args, key):
                 attr = getattr(args, key)
@@ -1015,6 +1017,14 @@ class ManimConfig(MutableMapping):
     @no_latex_cleanup.setter
     def no_latex_cleanup(self, value: bool) -> None:
         self._set_boolean("no_latex_cleanup", value)
+
+    @property
+    def preview_command(self) -> str:
+        return self._d["preview_command"]
+
+    @preview_command.setter
+    def preview_command(self, value: str) -> None:
+        self._set_str("preview_command", value)
 
     @property
     def verbosity(self) -> str:
