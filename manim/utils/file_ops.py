@@ -209,7 +209,7 @@ def open_file(file_path, in_browser=False):
         if config.preview_command:
             commands = [config.preview_command]
         commands.append(file_path)
-        sp.Popen(commands)  # Running in foreground prevents messing with output
+        sp.Popen(commands)
 
 
 def open_media_file(file_writer: SceneFileWriter) -> None:
