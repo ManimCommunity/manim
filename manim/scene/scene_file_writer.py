@@ -587,9 +587,9 @@ class SceneFileWriter:
             output_stream.pix_fmt = "rgb8"
             output_stream.width = config.pixel_width
             output_stream.height = config.pixel_height
+            output_stream.rate = config.frame_rate
             graph = av.filter.Graph()
             input_buffer = graph.add_buffer(template=partial_movies_stream)
-            fps = graph.add("fps", f"fps={np.clip(config.frame_rate, 1, 50)}")
             split = graph.add("split")
             palettegen = graph.add("palettegen", "stats_mode=diff")
             paletteuse = graph.add(
@@ -597,8 +597,7 @@ class SceneFileWriter:
             )
             output_sink = graph.add("buffersink")
 
-            input_buffer.link_to(fps)
-            fps.link_to(split)
+            input_buffer.link_to(split)
             split.link_to(palettegen, 0, 0)  # 1st input of split -> input of palettegen
             split.link_to(paletteuse, 1, 0)  # 2nd output of split -> 1st input
             palettegen.link_to(paletteuse, 0, 1)  # output of palettegen -> 2nd input
