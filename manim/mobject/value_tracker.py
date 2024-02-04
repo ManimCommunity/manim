@@ -45,7 +45,7 @@ class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
                 self.wait(1)
                 tracker -= 4
                 self.wait(0.5)
-                self.play(tracker.animate.set_value(5)),
+                self.play(tracker.animate.set_value(5))
                 self.wait(0.5)
                 self.play(tracker.animate.set_value(3))
                 self.play(tracker.animate.increment_value(-2))
