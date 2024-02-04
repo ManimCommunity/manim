@@ -695,6 +695,27 @@ class AddTextLetterByLetterWithCursor(AddTextLetterByLetter):
     .. tip::
         This is currently only possible for class:`~.Text` and not for class:`~.MathTex`.
 
+
+    Examples
+    --------
+
+    .. manim:: InsertingTextExample
+        :ref_classes: Blink
+
+        class InsertingTextExample(Scene):
+            def construct(self):
+                text = Text("Inserting", color=PURPLE).scale(1.5).to_edge(LEFT)
+                cursor = Rectangle(
+                    color = GREY_A,
+                    fill_color = GREY_A,
+                    fill_opacity = 1.0,
+                    height = 1.1,
+                    width = 0.5,
+                ).move_to(text[0]) # Position the cursor
+
+                self.play(AddTextLetterByLetterWithCursor(text, cursor))
+                self.play(Blink(cursor, how_many_times=2))
+
     """
 
     def __init__(
@@ -793,6 +814,27 @@ class RemoveTextLetterByLetterWithCursor(AddTextLetterByLetterWithCursor):
 
     .. tip::
         This is currently only possible for class:`~.Text` and not for class:`~.MathTex`.
+
+
+    Examples
+    --------
+
+    .. manim:: DeletingTextExample
+        :ref_classes: Blink
+
+        class DeletingTextExample(Scene):
+            def construct(self):
+                text = Text("Deleting", color=PURPLE).scale(1.5).to_edge(LEFT)
+                cursor = Rectangle(
+                    color = GREY_A,
+                    fill_color = GREY_A,
+                    fill_opacity = 1.0,
+                    height = 1.1,
+                    width = 0.5,
+                ).move_to(text[0]) # Position the cursor
+
+                self.play(RemoveTextLetterByLetterWithCursor(text, cursor))
+                self.play(Blink(cursor, how_many_times=2))
 
     """
 

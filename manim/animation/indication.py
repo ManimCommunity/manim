@@ -49,12 +49,13 @@ from manim.mobject.geometry.shape_matchers import SurroundingRectangle
 from manim.scene.scene import Scene
 
 from .. import config
-from ..animation.animation import Animation, Wait
+from ..animation.animation import Animation
 from ..animation.composition import AnimationGroup, Succession
 from ..animation.creation import Create, ShowPartial, Uncreate
 from ..animation.fading import FadeIn, FadeOut
 from ..animation.movement import Homotopy
-from ..animation.transform import ApplyMethod, Transform
+from ..animation.transform import Transform
+from ..animation.updaters.update import UpdateFromFunc
 from ..constants import *
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
@@ -675,6 +676,17 @@ class Blink(Succession):
     kwargs
         Additional arguments to be passed to the :class:`~.Succession` constructor.
 
+    Examples
+    --------
+
+    .. manim:: BlinkingExample
+
+        class BlinkingExample(Scene):
+            def construct(self):
+                text = Text("Blinking").scale(1.5)
+                self.add(text)
+                self.play(Blink(text, how_many_times=3))
+
     """
 
     def __init__(
@@ -687,13 +699,25 @@ class Blink(Succession):
         **kwargs
     ):
         animations = [
-            ApplyMethod(mobject.set_opacity, 1.0, run_time=0.0),
-            Wait(run_time=time_on),
-            ApplyMethod(mobject.set_opacity, 0.0, run_time=0.0),
-            Wait(run_time=time_off),
+            UpdateFromFunc(
+                mobject,
+                update_function=lambda mob: mob.set_opacity(1.0),
+                run_time=time_on,
+            ),
+            UpdateFromFunc(
+                mobject,
+                update_function=lambda mob: mob.set_opacity(0.0),
+                run_time=time_off,
+            ),
         ] * how_many_times
 
         if not ends_with_off:
-            animations.append(ApplyMethod(mobject.set_opacity, 1.0, run_time=0.0))
+            animations.append(
+                UpdateFromFunc(
+                    mobject,
+                    update_function=lambda mob: mob.set_opacity(1.0),
+                    run_time=time_on,
+                ),
+            )
 
         super().__init__(*animations, **kwargs)
