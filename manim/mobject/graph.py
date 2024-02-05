@@ -10,6 +10,7 @@ __all__ = [
 import itertools as it
 from copy import copy
 from typing import Any, Hashable, Iterable, Literal, Protocol, Union, cast
+from typing_extensions import TypeAlias
 
 import networkx as nx
 import numpy as np
@@ -26,7 +27,7 @@ from manim.mobject.types.vectorized_mobject import VMobject
 from manim.typing import Point3D
 from manim.utils.color import BLACK
 
-NxGraph = Union[nx.classes.graph.Graph, nx.classes.digraph.DiGraph]
+NxGraph: TypeAlias = Union[nx.classes.graph.Graph, nx.classes.digraph.DiGraph]
 
 
 class LayoutFunction(Protocol):
