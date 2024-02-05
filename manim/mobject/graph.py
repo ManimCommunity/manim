@@ -10,10 +10,10 @@ __all__ = [
 import itertools as it
 from copy import copy
 from typing import Any, Hashable, Iterable, Literal, Protocol, Union, cast
-from typing_extensions import TypeAlias
 
 import networkx as nx
 import numpy as np
+from typing_extensions import TypeAlias
 
 from manim.animation.composition import AnimationGroup
 from manim.animation.creation import Create, Uncreate
