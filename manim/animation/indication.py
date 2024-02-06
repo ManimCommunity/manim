@@ -150,7 +150,7 @@ class Indicate(Transform):
 
     def __init__(
         self,
-        mobject: "Mobject",
+        mobject: Mobject,
         scale_factor: float = 1.2,
         color: str = YELLOW,
         rate_func: Callable[[float, Optional[float]], np.ndarray] = there_and_back,
@@ -160,7 +160,7 @@ class Indicate(Transform):
         self.scale_factor = scale_factor
         super().__init__(mobject, rate_func=rate_func, **kwargs)
 
-    def create_target(self) -> "Mobject":
+    def create_target(self) -> Mobject:
         target = self.mobject.copy()
         target.scale(self.scale_factor)
         target.set_color(self.color)
@@ -350,7 +350,7 @@ class ShowPassingFlashWithThinningStrokeWidth(AnimationGroup):
     message="Use Create then FadeOut to achieve this effect.",
 )
 class ShowCreationThenFadeOut(Succession):
-    def __init__(self, mobject: "Mobject", remover: bool = True, **kwargs) -> None:
+    def __init__(self, mobject: Mobject, remover: bool = True, **kwargs) -> None:
         super().__init__(Create(mobject), FadeOut(mobject), remover=remover, **kwargs)
 
 
@@ -399,7 +399,7 @@ class ApplyWave(Homotopy):
 
     def __init__(
         self,
-        mobject: "Mobject",
+        mobject: Mobject,
         direction: np.ndarray = UP,
         amplitude: float = 0.2,
         wave_func: Callable[[float], float] = smooth,
@@ -518,7 +518,7 @@ class Wiggle(Animation):
 
     def __init__(
         self,
-        mobject: "Mobject",
+        mobject: Mobject,
         scale_value: float = 1.1,
         rotation_angle: float = 0.01 * TAU,
         n_wiggles: int = 6,
@@ -546,8 +546,8 @@ class Wiggle(Animation):
 
     def interpolate_submobject(
         self,
-        submobject: "Mobject",
-        starting_submobject: "Mobject",
+        submobject: Mobject,
+        starting_submobject: Mobject,
         alpha: float,
     ) -> None:
         submobject.points[:, :] = starting_submobject.points
