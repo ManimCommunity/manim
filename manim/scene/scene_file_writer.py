@@ -483,12 +483,14 @@ class SceneFileWriter:
         av_options = {
             "an": "1",  # ffmpeg: -an, no audio
         }
-        if is_webm_format():
+
+        if config.format == "webm":
             partial_movie_file_codec = "libvpx-vp9"
             av_options["-auto-alt-ref"] = "1"
-        elif (
-            config.transparent
-        ):  # TODO: FIXME as quality seems very bad + test transparency
+            if config.transparent:
+                partial_movie_file_pix_fmt = "yuva420p"
+
+        elif config.transparent:
             partial_movie_file_codec = "qtrle"
             partial_movie_file_pix_fmt = "argb"
 

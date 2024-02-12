@@ -1,13 +1,13 @@
 {
-    "name": "InputFileViaCfg",
+    "name": "qtrleCodec",
     "movie_metadata": {
-        "codec_name": "h264",
         "width": 854,
         "height": 480,
-        "avg_frame_rate": "15/1",
-        "duration": "1.000000",
         "nb_frames": "15",
-        "pix_fmt": "yuv420p"
+        "duration": "1.000000",
+        "avg_frame_rate": "15/1",
+        "codec_name": "qtrle",
+        "pix_fmt": "argb"
     },
     "section_dir_layout": [],
     "section_index": []
