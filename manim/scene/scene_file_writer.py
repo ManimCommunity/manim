@@ -482,6 +482,7 @@ class SceneFileWriter:
         partial_movie_file_pix_fmt = "yuv420p"
         av_options = {
             "an": "1",  # ffmpeg: -an, no audio
+            "crf": "23",  # ffmpeg: -crf, constant rate factor (improved bitrate)
         }
 
         if config.format == "webm":
