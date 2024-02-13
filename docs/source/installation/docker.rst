@@ -45,7 +45,7 @@ modify to your liking. First, run
 
 .. code-block:: sh
 
-   docker run -it --name my-manim-container -v "/full/path/to/your/directory:/manim" manimcommunity/manim /bin/bash
+   docker run -it --name my-manim-container -v "/full/path/to/your/directory:/manim" manimcommunity/manim bash
 
 
 to obtain an interactive shell inside your container allowing you

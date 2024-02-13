@@ -6,6 +6,8 @@ from typing import Iterable
 from ..mobject.mobject import Mobject
 from ..utils.iterables import remove_list_redundancies
 
+__all__ = ["extract_mobject_family_members"]
+
 
 def extract_mobject_family_members(
     mobjects: Iterable[Mobject],

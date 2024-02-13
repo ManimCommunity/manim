@@ -6,6 +6,8 @@ from cloup import Choice, option, option_group
 
 from ... import logger
 
+__all__ = ["global_options"]
+
 
 def validate_gui_location(ctx, param, value):
     if value:
