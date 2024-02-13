@@ -349,3 +349,14 @@ def test_proportion_from_point():
     abc.scale(0.8)
     props = [abc.proportion_from_point(p) for p in abc.get_vertices()]
     np.testing.assert_allclose(props, [0, 1 / 3, 2 / 3])
+
+
+def test_vgroup_subscript_error():
+    assert (
+        str(VGroup[VMobject])
+        == "manim.mobject.types.vectorized_mobject.VGroup[manim.mobject.types.vectorized_mobject.VMobject]"
+    )
+
+    # should fail with ValueError
+    with pytest.raises(ValueError):
+        VGroup[Mobject]

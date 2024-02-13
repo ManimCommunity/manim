@@ -52,6 +52,8 @@ from ...utils.iterables import make_even, resize_array, stretch_array_to_length,
 from ...utils.space_ops import rotate_vector, shoelace_direction
 
 if TYPE_CHECKING:
+    from types import GenericAlias
+
     from manim.typing import (
         BezierPoints,
         CubicBezierPoints,
@@ -2051,6 +2053,13 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
         if not all(isinstance(m, (VMobject, OpenGLVMobject)) for m in value):
             raise TypeError("All submobjects must be of type VMobject")
         self.submobjects[key] = value
+
+    def __class_getitem__(cls, item: type) -> GenericAlias:
+        if not issubclass(item, VMobject):
+            raise ValueError(
+                f"Subscripting value must be subclass of VMobject, got {item.__name__} instead."
+            )
+        return super().__class_getitem__(item)
 
 
 class VDict(VMobject, metaclass=ConvertToOpenGL):
