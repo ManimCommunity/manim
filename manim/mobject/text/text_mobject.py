@@ -79,6 +79,8 @@ TEXT_MOB_SCALE_FACTOR = 0.05
 DEFAULT_LINE_SPACING_SCALE = 0.3
 TEXT2SVG_ADJUSTMENT_FACTOR = 4.8
 
+__all__ = ["Text", "Paragraph", "MarkupText", "register_font"]
+
 
 def remove_invisible_chars(mobject: SVGMobject) -> SVGMobject:
     """Function to remove unwanted invisible characters from some mobjects.
@@ -352,7 +354,7 @@ class Text(SVGMobject):
                )
                 text6.scale(1.3).shift(DOWN)
                 self.add(text1, text2, text3, text4, text5 , text6)
-                Group(*self.mobjects).arrange(DOWN, buff=.8).set_height(config.frame_height-LARGE_BUFF)
+                Group(*self.mobjects).arrange(DOWN, buff=.8).set(height=config.frame_height-LARGE_BUFF)
 
     .. manim:: TextMoreCustomization
             :save_last_frame:

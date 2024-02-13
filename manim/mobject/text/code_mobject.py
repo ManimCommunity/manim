@@ -26,6 +26,8 @@ from manim.mobject.text.text_mobject import Paragraph
 from manim.mobject.types.vectorized_mobject import VGroup
 from manim.utils.color import WHITE
 
+__all__ = ["Code"]
+
 
 class Code(VGroup):
     """A highlighted source code listing.
