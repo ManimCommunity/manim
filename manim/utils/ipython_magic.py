@@ -159,7 +159,7 @@ else:
                 local_path = Path(config["output_file"])
                 if not Path(config["output_file"]).is_absolute():
                     local_path = Path(config["output_file"]).relative_to(Path.cwd())
-                
+
                 tmpfile = (
                     Path(config["media_dir"])
                     / "jupyter"
