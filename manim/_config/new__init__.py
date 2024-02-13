@@ -14,9 +14,12 @@ from .new import ManimConfig
 cfg_provider = CfgProvider()
 
 if cfg_provider.available:
-    config = cfg_provider.get_config()
+    _config = cfg_provider.get_config()
 else:
-    config = ManimConfig()
+    _config = ManimConfig()
+
+config = _config
+"""The Manim configuration object."""
 
 cli_ctx_settings = config.cli_formatting.context_settings
 
