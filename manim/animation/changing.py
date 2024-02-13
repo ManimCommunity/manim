@@ -4,11 +4,10 @@ from __future__ import annotations
 
 __all__ = ["AnimatedBoundary", "TracedPath"]
 
-from typing import Any, Callable, Sequence
+from typing import TYPE_CHECKING, Any, Callable, Sequence
 
 from typing_extensions import Self
 
-from manim import Mobject
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.typing import Point3D, RateFunc
@@ -21,6 +20,9 @@ from manim.utils.color import (
     ParsableManimColor,
 )
 from manim.utils.rate_functions import smooth
+
+if TYPE_CHECKING:
+    from manim import Mobject
 
 
 class AnimatedBoundary(VGroup):
