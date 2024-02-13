@@ -12,7 +12,7 @@ from .new import ManimConfig
 
 
 class ConfigProvider(ABC):
-    """A class responsible for loading config Manim config files.
+    """A class responsible for loading Manim config files.
 
     When Manim is first imported, it processes any supported config file it finds.
     Each subclass of this class is responsible for handling a specific configuration file format,
@@ -102,7 +102,7 @@ class CfgProvider(ConfigProvider):
         if "log_timestamps" in logger_section:
             logging_config["log_timestamps"] = logger_section["log_timestamps"]
         if verbosity is not None:
-            # TODO raise deprecation, verbosity should be in logger
+            # TODO raise deprecation, 'verbosity' should be in 'logger'
             logger_section.setdefault("verbosity", verbosity)
 
         data["logging"] = logging_config
@@ -110,7 +110,7 @@ class CfgProvider(ConfigProvider):
         data["ffmpeg"] = parser["ffmpeg"]
         ffmeg_executable = data["ffmpeg"].pop("ffmeg_executable", None)
         if ffmeg_executable is not None:
-            # TODO raise deprecation, ffmeg_executable should be executable
+            # TODO raise deprecation, 'ffmeg_executable' should be 'executable'
             data["ffmpeg"].setdefault("executable", ffmeg_executable)
 
         data["jupyter"] = parser["jupyter"]

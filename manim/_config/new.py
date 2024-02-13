@@ -1,6 +1,7 @@
 import logging
 import re
 import warnings
+from functools import cached_property
 from pathlib import Path
 from typing import Any, Literal, get_args
 
@@ -25,8 +26,9 @@ from rich.theme import Theme
 from typing_extensions import Annotated, Self, TypeAlias
 
 from manim import constants
-from manim.typing import QualityLiteral, Vector3
+from manim.typing import QualityLiteral, Vector3D
 from manim.utils.color import BLACK, ManimColor
+from manim.utils.tex import TexTemplate
 
 WindowPosition: TypeAlias = Literal[
     "ORIGIN",
@@ -96,7 +98,7 @@ def _tuple_from_string(v: Any) -> Any:
     return v
 
 
-def _from_comma_string(v: Any) -> Any:
+def _from_comma_string(v: Any) -> list[str] | Any:
     if isinstance(v, str):
         return v.split(",")
     return v
@@ -106,7 +108,7 @@ class _ManimColorPydanticAnnotation:
     """A class meant to be used as metadata to an annotated Pydantic field.
 
     It provides the Pydantic core schema (to handle validation and serialization) alongside
-    with JSON schema (variable depending on the current mode).
+    JSON schema (variable depending on the current mode).
     """
 
     @classmethod
@@ -356,6 +358,12 @@ class LoggingConfig(BaseModel):
 class ManimConfig(BaseModel):
     """Manim config."""
 
+    input_file: str = ""  # TODO default value?
+    """Input file name."""
+
+    output_file: str = ""  # TODO default value?
+    """Output file name."""
+
     # Boolean switches:
 
     preview: bool = False
@@ -484,7 +492,7 @@ class ManimConfig(BaseModel):
             "use 'ManimConfig.ffmpeg.ffmpeg_loglevel'",
             stacklevel=2,
         )
-        return self.ffmpeg.ffmpeg_loglevel
+        return self.ffmpeg.loglevel
 
     @property
     def ffmpeg_executable(self) -> bool:
@@ -496,7 +504,7 @@ class ManimConfig(BaseModel):
             "use 'ManimConfig.ffmpeg.ffmpeg_executable'",
             stacklevel=2,
         )
-        return self.ffmpeg.ffmpeg_executable
+        return self.ffmpeg.executable
 
     jupyter: JupyterConfig = JupyterConfig()
     """Jupyter notebook related config."""
@@ -574,22 +582,22 @@ class ManimConfig(BaseModel):
         self.frame_width = 2 * value
 
     @property
-    def top(self) -> Vector3:
+    def top(self) -> Vector3D:
         """Coordinate at the center top of the frame."""
         return self.frame_y_radius * constants.UP
 
     @property
-    def bottom(self) -> Vector3:
+    def bottom(self) -> Vector3D:
         """Coordinate at the center bottom of the frame."""
         return self.frame_y_radius * constants.DOWN
 
     @property
-    def left_side(self) -> Vector3:
+    def left_side(self) -> Vector3D:
         """Coordinate at the middle left of the frame."""
         return self.frame_x_radius * constants.LEFT
 
     @property
-    def right_side(self) -> Vector3:
+    def right_side(self) -> Vector3D:
         """Coordinate at the middle right of the frame."""
         return self.frame_x_radius * constants.RIGHT
 
@@ -787,16 +795,21 @@ class ManimConfig(BaseModel):
     CLI switch: ``--custom_folders``.
     """
 
-    input_file: str  # TODO default value?
-    """Input file name."""
-
-    output_file: str  # TODO default value?
-    """Output file name."""
-
     scene_names: list[str] = []
     """Scenes to play from file."""
 
-    # TODO tex_template / tex_template_file
+    tex_template_file: Path | None = None
+    """File to read Tex template from. See :class:`.TexTemplate`.
+
+    CLI switch: ``--tex_template``.
+    """
+
+    @cached_property
+    def tex_template(self) -> TexTemplate:
+        """Template used when rendering Tex. See :class:`.TexTemplate`."""
+        if self.tex_template_file is not None:
+            return TexTemplate.from_file(self.tex_template_file)
+        return TexTemplate()
 
     def get_dir(self, key: Dirs, **kwargs: Any) -> Path:
         dirs = list(get_args(Dirs))
@@ -816,10 +829,10 @@ class ManimConfig(BaseModel):
         path: str = getattr(self, key)
         while "{" in path:
             try:
-                path = path.format(**all_args)
+                path = path.format_map(all_args)
             except KeyError as exc:
                 raise KeyError(
-                    f"{key} {self._d[key]} requires the following "
+                    f"{key} requires the following "
                     "keyword arguments: "
                     " ".join(exc.args),
                 ) from exc
