@@ -21,7 +21,7 @@
 from __future__ import annotations
 
 from os import PathLike
-from typing import Callable, Literal, Union
+from typing import Callable, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -257,9 +257,9 @@ parameter can handle being passed a `Point3D` instead.
 """
 
 InternalPoint2D_Array: TypeAlias = npt.NDArray[PointDType]
-"""``shape: (N, 3)``
+"""``shape: (N, 2)``
 
-An array of `Point2D` objects: ``[[float, float], ...]``.
+An array of `InternalPoint2D` objects: ``[[float, float], ...]``.
 
 .. note::
     This type alias is mostly made available for internal use, and
@@ -319,7 +319,7 @@ further type information.
 Vector types
 """
 
-Vector2D: TypeAlias = Point2D
+Vector2D: TypeAlias = npt.NDArray[PointDType]
 """``shape: (2,)``
 
 A 2-dimensional vector: ``[float, float]``.
@@ -332,7 +332,7 @@ parameter can handle being passed a `Vector3D` instead.
     VMobjects!
 """
 
-Vector2D_Array: TypeAlias = Point2D_Array
+Vector2D_Array: TypeAlias = npt.NDArray[PointDType]
 """``shape: (M, 2)``
 
 An array of `Vector2D` objects: ``[[float, float], ...]``.
@@ -341,7 +341,7 @@ Normally, a function or method which expects a `Vector2D_Array` as a
 parameter can handle being passed a `Vector3D_Array` instead.
 """
 
-Vector3D: TypeAlias = Point3D
+Vector3D: TypeAlias = npt.NDArray[PointDType]
 """``shape: (3,)``
 
 A 3-dimensional vector: ``[float, float, float]``.
@@ -351,13 +351,13 @@ A 3-dimensional vector: ``[float, float, float]``.
     VMobjects!
 """
 
-Vector3D_Array: TypeAlias = Point3D_Array
+Vector3D_Array: TypeAlias = npt.NDArray[PointDType]
 """``shape: (M, 3)``
 
 An array of `Vector3D` objects: ``[[float, float, float], ...]``.
 """
 
-VectorND: TypeAlias = Union[npt.NDArray[PointDType], tuple[float, ...]]
+VectorND: TypeAlias = npt.NDArray[PointDType]
 """``shape (N,)``
 
 An :math:`N`-dimensional vector: ``[float, ...]``.
@@ -368,19 +368,19 @@ An :math:`N`-dimensional vector: ``[float, ...]``.
     collisions.
 """
 
-VectorND_Array: TypeAlias = Union[npt.NDArray[PointDType], tuple[VectorND, ...]]
+VectorND_Array: TypeAlias = npt.NDArray[PointDType]
 """``shape (M, N)``
 
 An array of `VectorND` objects: ``[[float, ...], ...]``.
 """
 
-RowVector: TypeAlias = Union[npt.NDArray[PointDType], tuple[tuple[float, ...]]]
+RowVector: TypeAlias = npt.NDArray[PointDType]
 """``shape: (1, N)``
 
 A row vector: ``[[float, ...]]``.
 """
 
-ColVector: TypeAlias = Union[npt.NDArray[PointDType], tuple[tuple[float], ...]]
+ColVector: TypeAlias = npt.NDArray[PointDType]
 """``shape: (N, 1)``
 
 A column vector: ``[[float], [float], ...]``.
@@ -392,13 +392,13 @@ A column vector: ``[[float], [float], ...]``.
 Matrix types
 """
 
-MatrixMN: TypeAlias = Union[npt.NDArray[PointDType], tuple[tuple[float, ...], ...]]
+MatrixMN: TypeAlias = npt.NDArray[PointDType]
 """``shape: (M, N)``
 
 A matrix: ``[[float, ...], [float, ...], ...]``.
 """
 
-Zeros: TypeAlias = Union[npt.NDArray[PointDType], tuple[tuple[Literal[0], ...], ...]]
+Zeros: TypeAlias = MatrixMN
 """``shape: (M, N)``
 
 A `MatrixMN` filled with zeros, typically created with

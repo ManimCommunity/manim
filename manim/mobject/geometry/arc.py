@@ -389,7 +389,7 @@ class Arc(TipableVMobject):
             # For a1 and a2 to lie at the same point arc radius
             # must be zero. Thus arc_center will also lie at
             # that point.
-            return a1
+            return np.copy(a1)
         # Tangent vectors
         t1 = h1 - a1
         t2 = h2 - a2
