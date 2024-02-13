@@ -154,7 +154,12 @@ else:
                     logger.info("No output file produced")
                     return
 
-                local_path = Path(config["output_file"]).relative_to(Path.cwd())
+                # `media_embed` (as subpath, i.e. Path.cwd()) is unable to discover files if `media_dir` is absolute
+
+                local_path = Path(config["output_file"])
+                if not Path(config["output_file"]).is_absolute():
+                    local_path = Path(config["output_file"]).relative_to(Path.cwd())
+                
                 tmpfile = (
                     Path(config["media_dir"])
                     / "jupyter"
