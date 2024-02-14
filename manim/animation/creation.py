@@ -82,17 +82,16 @@ import numpy as np
 
 if TYPE_CHECKING:
     from manim.mobject.text.text_mobject import Text
+    from manim.scene.scene import Scene
 
-from manim.constants import RIGHT
+from manim.constants import RIGHT, TAU
 from manim.mobject.opengl.opengl_surface import OpenGLSurface
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
-from manim.scene.scene import Scene
 from manim.utils.color import ManimColor
 
 from .. import config
 from ..animation.animation import Animation
 from ..animation.composition import Succession
-from ..constants import TAU
 from ..mobject.mobject import Group, Mobject
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.bezier import integer_interpolate
@@ -689,8 +688,6 @@ class AddTextLetterByLetterWithCursor(AddTextLetterByLetter):
         If ``True``, the cursor's y-coordinate is set to the center of the ``Text`` and remains the same throughout the animation. Otherwise, it is set to the center of the last added letter.
     leave_cursor_on
         Whether to show the cursor after the animation.
-    kwargs
-        Additional arguments to be passed to the :class:`~.AddTextLetterByLetter` constructor.
 
     .. tip::
         This is currently only possible for class:`~.Text` and not for class:`~.MathTex`.
@@ -714,7 +711,7 @@ class AddTextLetterByLetterWithCursor(AddTextLetterByLetter):
                 ).move_to(text[0]) # Position the cursor
 
                 self.play(AddTextLetterByLetterWithCursor(text, cursor))
-                self.play(Blink(cursor, how_many_times=2))
+                self.play(Blink(cursor, blinks=2))
 
     """
 
@@ -725,11 +722,7 @@ class AddTextLetterByLetterWithCursor(AddTextLetterByLetter):
         buff: float = 0.1,
         keep_cursor_y: bool = True,
         leave_cursor_on: bool = True,
-        suspend_mobject_updating: bool = False,
-        int_func: Callable[[np.ndarray], np.ndarray] = np.ceil,
-        rate_func: Callable[[float], float] = linear,
         time_per_char: float = 0.1,
-        run_time: float | None = None,
         reverse_rate_function=False,
         introducer=True,
         **kwargs,
@@ -740,11 +733,7 @@ class AddTextLetterByLetterWithCursor(AddTextLetterByLetter):
         self.leave_cursor_on = leave_cursor_on
         super().__init__(
             text,
-            suspend_mobject_updating=suspend_mobject_updating,
-            int_func=int_func,
-            rate_func=rate_func,
             time_per_char=time_per_char,
-            run_time=run_time,
             reverse_rate_function=reverse_rate_function,
             introducer=introducer,
             **kwargs,
@@ -809,8 +798,6 @@ class RemoveTextLetterByLetterWithCursor(AddTextLetterByLetterWithCursor):
         If ``True``, the cursor's y-coordinate is set to the center of the ``Text`` and remains the same throughout the animation. Otherwise, it is set to the center of the last added letter.
     leave_cursor_on
         Whether to show the cursor after the animation.
-    kwargs
-        Additional arguments to be passed to the :class:`~.AddTextLetterByLetter` constructor.
 
     .. tip::
         This is currently only possible for class:`~.Text` and not for class:`~.MathTex`.
@@ -834,7 +821,7 @@ class RemoveTextLetterByLetterWithCursor(AddTextLetterByLetterWithCursor):
                 ).move_to(text[0]) # Position the cursor
 
                 self.play(RemoveTextLetterByLetterWithCursor(text, cursor))
-                self.play(Blink(cursor, how_many_times=2))
+                self.play(Blink(cursor, blinks=2))
 
     """
 
@@ -842,14 +829,7 @@ class RemoveTextLetterByLetterWithCursor(AddTextLetterByLetterWithCursor):
         self,
         text: Text,
         cursor: VMobject | None = None,
-        buff: float = 0.1,
-        keep_cursor_y: bool = True,
-        leave_cursor_on: bool = True,
-        suspend_mobject_updating: bool = False,
-        int_func: Callable[[np.ndarray], np.ndarray] = np.ceil,
-        rate_func: Callable[[float], float] = linear,
         time_per_char: float = 0.1,
-        run_time: float | None = None,
         reverse_rate_function=True,
         introducer=False,
         remover=True,
@@ -858,14 +838,7 @@ class RemoveTextLetterByLetterWithCursor(AddTextLetterByLetterWithCursor):
         super().__init__(
             text,
             cursor=cursor,
-            buff=buff,
-            keep_cursor_y=keep_cursor_y,
-            leave_cursor_on=leave_cursor_on,
-            suspend_mobject_updating=suspend_mobject_updating,
-            int_func=int_func,
-            rate_func=rate_func,
             time_per_char=time_per_char,
-            run_time=run_time,
             reverse_rate_function=reverse_rate_function,
             introducer=introducer,
             remover=remover,

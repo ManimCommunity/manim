@@ -79,8 +79,6 @@ class FocusOn(Transform):
         The color of the spotlight.
     run_time
         The duration of the animation.
-    kwargs
-        Additional arguments to be passed to the :class:`~.Succession` constructor
 
     Examples
     --------
@@ -669,10 +667,10 @@ class Blink(Succession):
         The duration that the mobject is shown for one blink.
     time_off
         The duration that the mobject is hidden for one blink.
-    how_many_times
+    blinks
         The number of blinks
-    ends_with_off
-        Whether to show or hide the mobject at the end of the animation.
+    hide_at_end
+        Whether to hide the mobject at the end of the animation.
     kwargs
         Additional arguments to be passed to the :class:`~.Succession` constructor.
 
@@ -685,7 +683,7 @@ class Blink(Succession):
             def construct(self):
                 text = Text("Blinking").scale(1.5)
                 self.add(text)
-                self.play(Blink(text, how_many_times=3))
+                self.play(Blink(text, blinks=3))
 
     """
 
@@ -694,8 +692,8 @@ class Blink(Succession):
         mobject: Mobject,
         time_on: float = 0.5,
         time_off: float = 0.5,
-        how_many_times: int = 1,
-        ends_with_off: bool = False,
+        blinks: int = 1,
+        hide_at_end: bool = False,
         **kwargs
     ):
         animations = [
@@ -709,9 +707,9 @@ class Blink(Succession):
                 update_function=lambda mob: mob.set_opacity(0.0),
                 run_time=time_off,
             ),
-        ] * how_many_times
+        ] * blinks
 
-        if not ends_with_off:
+        if not hide_at_end:
             animations.append(
                 UpdateFromFunc(
                     mobject,
