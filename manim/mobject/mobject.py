@@ -350,7 +350,7 @@ class Mobject:
         """Sets :attr:`points` to be an empty array."""
         self.points = np.zeros((0, self.dim))
 
-    def init_colors(self) -> Self:
+    def init_colors(self) -> None:
         """Initializes the colors.
 
         Gets called upon creation. This is an empty method that can be implemented by
