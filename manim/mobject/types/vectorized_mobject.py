@@ -28,15 +28,14 @@ from typing import (
 import numpy as np
 from PIL.Image import Image
 
+from manim import config
+from manim.constants import *
+from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.three_d.three_d_utils import (
     get_3d_vmob_gradient_start_and_end_points,
 )
-
-from manim import config
-from manim.constants import *
-from manim.mobject.mobject import Mobject
 from manim.utils.bezier import (
     bezier,
     get_smooth_handle_points,
@@ -46,10 +45,18 @@ from manim.utils.bezier import (
     proportions_along_bezier_curve_for_point,
 )
 from manim.utils.color import BLACK, WHITE, ManimColor, ParsableManimColor
-from manim.utils.iterables import make_even, resize_array, stretch_array_to_length, tuplify
+from manim.utils.iterables import (
+    make_even,
+    resize_array,
+    stretch_array_to_length,
+    tuplify,
+)
 from manim.utils.space_ops import rotate_vector, shoelace_direction
 
 if TYPE_CHECKING:
+    import numpy.typing as npt
+    from typing_extensions import Self
+
     from manim.typing import (
         BezierPoints,
         CubicBezierPoints,
@@ -63,8 +70,6 @@ if TYPE_CHECKING:
         Vector3D,
         Zeros,
     )
-    import numpy.typing as npt
-    from typing_extensions import Self
 
 # TODO
 # - Change cubic curve groups to have 4 points instead of 3
@@ -2385,7 +2390,7 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
         mob = value
         if self.show_keys:
             # This import is here and not at the top to avoid circular import
-            from manim.mobject.text.tex_mobject import Tex 
+            from manim.mobject.text.tex_mobject import Tex
 
             key_text = Tex(str(key)).next_to(value, LEFT)
             mob.add(key_text)
