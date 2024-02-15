@@ -6,11 +6,11 @@ __all__ = ["UpdateFromFunc", "UpdateFromAlphaFunc", "MaintainPositionRelativeTo"
 
 
 import operator as op
-import typing
+from typing import TYPE_CHECKING, Any, Callable
 
 from manim.animation.animation import Animation
 
-if typing.TYPE_CHECKING:
+if TYPE_CHECKING:
     from manim.mobject.mobject import Mobject
 
 
@@ -24,9 +24,9 @@ class UpdateFromFunc(Animation):
     def __init__(
         self,
         mobject: Mobject,
-        update_function: typing.Callable[[Mobject], typing.Any],
+        update_function: Callable[[Mobject], Any],
         suspend_mobject_updating: bool = False,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         self.update_function = update_function
         super().__init__(
@@ -43,7 +43,9 @@ class UpdateFromAlphaFunc(UpdateFromFunc):
 
 
 class MaintainPositionRelativeTo(Animation):
-    def __init__(self, mobject: Mobject, tracked_mobject: Mobject, **kwargs) -> None:
+    def __init__(
+        self, mobject: Mobject, tracked_mobject: Mobject, **kwargs: Any
+    ) -> None:
         self.tracked_mobject = tracked_mobject
         self.diff = op.sub(
             mobject.get_center(),

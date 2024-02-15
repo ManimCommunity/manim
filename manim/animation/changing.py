@@ -4,10 +4,13 @@ from __future__ import annotations
 
 __all__ = ["AnimatedBoundary", "TracedPath"]
 
-from typing import Callable
+from typing import TYPE_CHECKING, Any, Callable, Sequence
+
+from typing_extensions import Self
 
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
+from manim.typing import Point3D, RateFunc
 from manim.utils.color import (
     BLUE_B,
     BLUE_D,
@@ -17,6 +20,9 @@ from manim.utils.color import (
     ParsableManimColor,
 )
 from manim.utils.rate_functions import smooth
+
+if TYPE_CHECKING:
+    from manim import Mobject
 
 
 class AnimatedBoundary(VGroup):
@@ -38,15 +44,15 @@ class AnimatedBoundary(VGroup):
 
     def __init__(
         self,
-        vmobject,
-        colors=[BLUE_D, BLUE_B, BLUE_E, GREY_BROWN],
-        max_stroke_width=3,
-        cycle_rate=0.5,
-        back_and_forth=True,
-        draw_rate_func=smooth,
-        fade_rate_func=smooth,
-        **kwargs,
-    ):
+        vmobject: VMobject,
+        colors: Sequence[ParsableManimColor] = [BLUE_D, BLUE_B, BLUE_E, GREY_BROWN],
+        max_stroke_width: float = 3,
+        cycle_rate: float = 0.5,
+        back_and_forth: bool = True,
+        draw_rate_func: RateFunc = smooth,
+        fade_rate_func: RateFunc = smooth,
+        **kwargs: Any,
+    ) -> None:
         super().__init__(**kwargs)
         self.colors = colors
         self.max_stroke_width = max_stroke_width
@@ -56,13 +62,13 @@ class AnimatedBoundary(VGroup):
         self.fade_rate_func = fade_rate_func
         self.vmobject = vmobject
         self.boundary_copies = [
-            vmobject.copy().set_style(stroke_width=0, fill_opacity=0) for x in range(2)
+            vmobject.copy().set_style(stroke_width=0, fill_opacity=0) for _ in range(2)
         ]
         self.add(*self.boundary_copies)
         self.total_time = 0
         self.add_updater(lambda m, dt: self.update_boundary_copies(dt))
 
-    def update_boundary_copies(self, dt):
+    def update_boundary_copies(self, dt: float) -> None:
         # Not actual time, but something which passes at
         # an altered rate to make the implementation below
         # cleaner
@@ -90,7 +96,9 @@ class AnimatedBoundary(VGroup):
 
         self.total_time += dt
 
-    def full_family_become_partial(self, mob1, mob2, a, b):
+    def full_family_become_partial(
+        self, mob1: VMobject, mob2: VMobject, a: float, b: float
+    ) -> Self:
         family1 = mob1.family_members_with_points()
         family2 = mob2.family_members_with_points()
         for sm1, sm2 in zip(family1, family2):
@@ -142,19 +150,19 @@ class TracedPath(VMobject, metaclass=ConvertToOpenGL):
 
     def __init__(
         self,
-        traced_point_func: Callable,
+        traced_point_func: Callable[[], Point3D],
         stroke_width: float = 2,
         stroke_color: ParsableManimColor | None = WHITE,
         dissipating_time: float | None = None,
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> None:
         super().__init__(stroke_color=stroke_color, stroke_width=stroke_width, **kwargs)
         self.traced_point_func = traced_point_func
         self.dissipating_time = dissipating_time
         self.time = 1 if self.dissipating_time else None
         self.add_updater(self.update_path)
 
-    def update_path(self, mob, dt):
+    def update_path(self, mob: Mobject, dt: float) -> None:
         new_point = self.traced_point_func()
         if not self.has_points():
             self.start_new_path(new_point)

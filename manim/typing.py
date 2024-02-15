@@ -576,6 +576,8 @@ PathFuncType: TypeAlias = Callable[[Point3D, Point3D, float], Point3D]
 MappingFunction: TypeAlias = Callable[[Point3D], Point3D]
 """A function mapping a `Point3D` to another `Point3D`."""
 
+RateFunc: TypeAlias = Callable[[float], float]
+"""An animation rate function."""
 
 """
 [CATEGORY]

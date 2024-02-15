@@ -74,6 +74,7 @@ furo = "^2023.09.10"
 gitpython = "^3"
 isort = "^5.12.0"
 matplotlib = "^3.8.2"
+mypy = "^1.8.0"
 myst-parser = "^2.0.0"
 pre-commit = "^3.5.0"
 psutil = {version = "^5.8.0", python = "<3.10"}

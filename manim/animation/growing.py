@@ -31,15 +31,16 @@ __all__ = [
     "SpinInFromNothing",
 ]
 
-import typing
+from typing import TYPE_CHECKING, Any
 
-import numpy as np
+from manim.typing import Point3D, Vector3D
+from manim.utils.color import ParsableManimColor
 
 from ..animation.transform import Transform
 from ..constants import PI
 from ..utils.paths import spiral_path
 
-if typing.TYPE_CHECKING:
+if TYPE_CHECKING:
     from manim.mobject.geometry.line import Arrow
 
     from ..mobject.mobject import Mobject
@@ -76,7 +77,11 @@ class GrowFromPoint(Transform):
     """
 
     def __init__(
-        self, mobject: Mobject, point: np.ndarray, point_color: str = None, **kwargs
+        self,
+        mobject: Mobject,
+        point: Point3D,
+        point_color: ParsableManimColor | None = None,
+        **kwargs: Any,
     ) -> None:
         self.point = point
         self.point_color = point_color
@@ -118,7 +123,12 @@ class GrowFromCenter(GrowFromPoint):
 
     """
 
-    def __init__(self, mobject: Mobject, point_color: str = None, **kwargs) -> None:
+    def __init__(
+        self,
+        mobject: Mobject,
+        point_color: ParsableManimColor | None = None,
+        **kwargs: Any,
+    ) -> None:
         point = mobject.get_center()
         super().__init__(mobject, point, point_color=point_color, **kwargs)
 
@@ -153,7 +163,11 @@ class GrowFromEdge(GrowFromPoint):
     """
 
     def __init__(
-        self, mobject: Mobject, edge: np.ndarray, point_color: str = None, **kwargs
+        self,
+        mobject: Mobject,
+        edge: Vector3D,
+        point_color: ParsableManimColor | None = None,
+        **kwargs: Any,
     ) -> None:
         point = mobject.get_critical_point(edge)
         super().__init__(mobject, point, point_color=point_color, **kwargs)
@@ -183,7 +197,9 @@ class GrowArrow(GrowFromPoint):
 
     """
 
-    def __init__(self, arrow: Arrow, point_color: str = None, **kwargs) -> None:
+    def __init__(
+        self, arrow: Arrow, point_color: ParsableManimColor | None = None, **kwargs: Any
+    ) -> None:
         point = arrow.get_start()
         super().__init__(arrow, point, point_color=point_color, **kwargs)
 
@@ -224,7 +240,11 @@ class SpinInFromNothing(GrowFromCenter):
     """
 
     def __init__(
-        self, mobject: Mobject, angle: float = PI / 2, point_color: str = None, **kwargs
+        self,
+        mobject: Mobject,
+        angle: float = PI / 2,
+        point_color: ParsableManimColor | None = None,
+        **kwargs: Any,
     ) -> None:
         self.angle = angle
         super().__init__(

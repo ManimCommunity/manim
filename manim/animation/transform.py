@@ -28,11 +28,14 @@ __all__ = [
 
 import inspect
 import types
-from typing import TYPE_CHECKING, Any, Callable, Iterable, Sequence
+from typing import TYPE_CHECKING, Any, Iterable
 
 import numpy as np
+from typing_extensions import Self
 
+from manim.constants import PI
 from manim.mobject.opengl.opengl_mobject import OpenGLGroup, OpenGLMobject
+from manim.typing import MatrixMN, PathFuncType, Point3D, RateFunc, Vector3D
 
 from .. import config
 from ..animation.animation import Animation
@@ -44,6 +47,7 @@ from ..constants import (
     RendererType,
 )
 from ..mobject.mobject import Group, Mobject
+from ..utils.color import ParsableManimColor
 from ..utils.paths import path_along_arc, path_along_circles
 from ..utils.rate_functions import smooth, squish_rate_func
 
@@ -128,20 +132,20 @@ class Transform(Animation):
         self,
         mobject: Mobject | None,
         target_mobject: Mobject | None = None,
-        path_func: Callable | None = None,
+        path_func: PathFuncType | None = None,
         path_arc: float = 0,
-        path_arc_axis: np.ndarray = OUT,
-        path_arc_centers: np.ndarray = None,
+        path_arc_axis: Vector3D = OUT,
+        path_arc_centers: Point3D | None = None,
         replace_mobject_with_target_in_scene: bool = False,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
-        self.path_arc_axis: np.ndarray = path_arc_axis
-        self.path_arc_centers: np.ndarray = path_arc_centers
-        self.path_arc: float = path_arc
+        self.path_arc_axis = path_arc_axis
+        self.path_arc_centers = path_arc_centers
+        self.path_arc = path_arc
 
         # path_func is a property a few lines below so it doesn't need to be set in any case
         if path_func is not None:
-            self.path_func: Callable = path_func
+            self.path_func = path_func
         elif self.path_arc_centers is not None:
             self.path_func = path_along_circles(
                 path_arc,
@@ -149,10 +153,8 @@ class Transform(Animation):
                 self.path_arc_axis,
             )
 
-        self.replace_mobject_with_target_in_scene: bool = (
-            replace_mobject_with_target_in_scene
-        )
-        self.target_mobject: Mobject = (
+        self.replace_mobject_with_target_in_scene = replace_mobject_with_target_in_scene
+        self.target_mobject = (
             target_mobject if target_mobject is not None else Mobject()
         )
         super().__init__(mobject, **kwargs)
@@ -170,22 +172,11 @@ class Transform(Animation):
         )
 
     @property
-    def path_func(
-        self,
-    ) -> Callable[
-        [Iterable[np.ndarray], Iterable[np.ndarray], float],
-        Iterable[np.ndarray],
-    ]:
+    def path_func(self) -> PathFuncType:
         return self._path_func
 
     @path_func.setter
-    def path_func(
-        self,
-        path_func: Callable[
-            [Iterable[np.ndarray], Iterable[np.ndarray], float],
-            Iterable[np.ndarray],
-        ],
-    ) -> None:
+    def path_func(self, path_func: PathFuncType) -> None:
         if path_func is not None:
             self._path_func = path_func
 
@@ -213,7 +204,7 @@ class Transform(Animation):
         if self.replace_mobject_with_target_in_scene:
             scene.replace(self.mobject, self.target_mobject)
 
-    def get_all_mobjects(self) -> Sequence[Mobject]:
+    def get_all_mobjects(self) -> list[Mobject]:
         return [
             self.mobject,
             self.starting_mobject,
@@ -222,7 +213,7 @@ class Transform(Animation):
         ]
 
     def get_all_families_zipped(self) -> Iterable[tuple]:  # more precise typing?
-        mobs = [
+        mobs: list[Mobject] = [
             self.mobject,
             self.starting_mobject,
             self.target_copy,
@@ -237,7 +228,7 @@ class Transform(Animation):
         starting_submobject: Mobject,
         target_copy: Mobject,
         alpha: float,
-    ) -> Transform:
+    ) -> Self:
         submobject.interpolate(starting_submobject, target_copy, alpha, self.path_func)
         return self
 
@@ -290,7 +281,9 @@ class ReplacementTransform(Transform):
 
     """
 
-    def __init__(self, mobject: Mobject, target_mobject: Mobject, **kwargs) -> None:
+    def __init__(
+        self, mobject: Mobject, target_mobject: Mobject, **kwargs: Any
+    ) -> None:
         super().__init__(
             mobject, target_mobject, replace_mobject_with_target_in_scene=True, **kwargs
         )
@@ -301,7 +294,9 @@ class TransformFromCopy(Transform):
     Performs a reversed Transform
     """
 
-    def __init__(self, mobject: Mobject, target_mobject: Mobject, **kwargs) -> None:
+    def __init__(
+        self, mobject: Mobject, target_mobject: Mobject, **kwargs: Any
+    ) -> None:
         super().__init__(target_mobject, mobject, **kwargs)
 
     def interpolate(self, alpha: float) -> None:
@@ -342,8 +337,8 @@ class ClockwiseTransform(Transform):
         self,
         mobject: Mobject,
         target_mobject: Mobject,
-        path_arc: float = -np.pi,
-        **kwargs,
+        path_arc: float = -PI,
+        **kwargs: Any,
     ) -> None:
         super().__init__(mobject, target_mobject, path_arc=path_arc, **kwargs)
 
@@ -391,8 +386,8 @@ class CounterclockwiseTransform(Transform):
         self,
         mobject: Mobject,
         target_mobject: Mobject,
-        path_arc: float = np.pi,
-        **kwargs,
+        path_arc: float = PI,
+        **kwargs: Any,
     ) -> None:
         super().__init__(mobject, target_mobject, path_arc=path_arc, **kwargs)
 
@@ -423,7 +418,7 @@ class MoveToTarget(Transform):
 
     """
 
-    def __init__(self, mobject: Mobject, **kwargs) -> None:
+    def __init__(self, mobject: Mobject, **kwargs: Any) -> None:
         self.check_validity_of_input(mobject)
         super().__init__(mobject, mobject.target, **kwargs)
 
@@ -464,15 +459,13 @@ class ApplyMethod(Transform):
 
     """
 
-    def __init__(
-        self, method: Callable, *args, **kwargs
-    ) -> None:  # method typing (we want to specify Mobject method)? for args?
+    def __init__(self, method: types.MethodType, *args: Any, **kwargs: Any) -> None:
         self.check_validity_of_input(method)
         self.method = method
         self.method_args = args
         super().__init__(method.__self__, **kwargs)
 
-    def check_validity_of_input(self, method: Callable) -> None:
+    def check_validity_of_input(self, method: types.MethodType) -> None:
         if not inspect.ismethod(method):
             raise ValueError(
                 "Whoops, looks like you accidentally invoked "
@@ -520,13 +513,15 @@ class ApplyPointwiseFunction(ApplyMethod):
         function: types.MethodType,
         mobject: Mobject,
         run_time: float = DEFAULT_POINTWISE_FUNCTION_RUN_TIME,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         super().__init__(mobject.apply_function, function, run_time=run_time, **kwargs)
 
 
 class ApplyPointwiseFunctionToCenter(ApplyPointwiseFunction):
-    def __init__(self, function: types.MethodType, mobject: Mobject, **kwargs) -> None:
+    def __init__(
+        self, function: types.MethodType, mobject: Mobject, **kwargs: Any
+    ) -> None:
         self.function = function
         super().__init__(mobject.move_to, **kwargs)
 
@@ -549,7 +544,9 @@ class FadeToColor(ApplyMethod):
 
     """
 
-    def __init__(self, mobject: Mobject, color: str, **kwargs) -> None:
+    def __init__(
+        self, mobject: Mobject, color: ParsableManimColor, **kwargs: Any
+    ) -> None:
         super().__init__(mobject.set_color, color, **kwargs)
 
 
@@ -567,7 +564,7 @@ class ScaleInPlace(ApplyMethod):
 
     """
 
-    def __init__(self, mobject: Mobject, scale_factor: float, **kwargs) -> None:
+    def __init__(self, mobject: Mobject, scale_factor: float, **kwargs: Any) -> None:
         super().__init__(mobject.scale, scale_factor, **kwargs)
 
 
@@ -585,7 +582,7 @@ class ShrinkToCenter(ScaleInPlace):
 
     """
 
-    def __init__(self, mobject: Mobject, **kwargs) -> None:
+    def __init__(self, mobject: Mobject, **kwargs: Any) -> None:
         super().__init__(mobject, 0, **kwargs)
 
 
@@ -611,12 +608,14 @@ class Restore(ApplyMethod):
 
     """
 
-    def __init__(self, mobject: Mobject, **kwargs) -> None:
+    def __init__(self, mobject: Mobject, **kwargs: Any) -> None:
         super().__init__(mobject.restore, **kwargs)
 
 
 class ApplyFunction(Transform):
-    def __init__(self, function: types.MethodType, mobject: Mobject, **kwargs) -> None:
+    def __init__(
+        self, function: types.MethodType, mobject: Mobject, **kwargs: Any
+    ) -> None:
         self.function = function
         super().__init__(mobject, **kwargs)
 
@@ -657,10 +656,10 @@ class ApplyMatrix(ApplyPointwiseFunction):
 
     def __init__(
         self,
-        matrix: np.ndarray,
+        matrix: MatrixMN,
         mobject: Mobject,
-        about_point: np.ndarray = ORIGIN,
-        **kwargs,
+        about_point: Point3D = ORIGIN,
+        **kwargs: Any,
     ) -> None:
         matrix = self.initialize_matrix(matrix)
 
@@ -669,7 +668,7 @@ class ApplyMatrix(ApplyPointwiseFunction):
 
         super().__init__(func, mobject, **kwargs)
 
-    def initialize_matrix(self, matrix: np.ndarray) -> np.ndarray:
+    def initialize_matrix(self, matrix: MatrixMN) -> MatrixMN:
         matrix = np.array(matrix)
         if matrix.shape == (2, 2):
             new_matrix = np.identity(3)
@@ -681,7 +680,9 @@ class ApplyMatrix(ApplyPointwiseFunction):
 
 
 class ApplyComplexFunction(ApplyMethod):
-    def __init__(self, function: types.MethodType, mobject: Mobject, **kwargs) -> None:
+    def __init__(
+        self, function: types.MethodType, mobject: Mobject, **kwargs: Any
+    ) -> None:
         self.function = function
         method = mobject.apply_complex_function
         super().__init__(method, function, **kwargs)
@@ -690,9 +691,6 @@ class ApplyComplexFunction(ApplyMethod):
         func1 = self.function(complex(1))
         self.path_arc = np.log(func1).imag
         super()._init_path_func()
-
-
-###
 
 
 class CyclicReplace(Transform):
@@ -728,7 +726,7 @@ class CyclicReplace(Transform):
     """
 
     def __init__(
-        self, *mobjects: Mobject, path_arc: float = 90 * DEGREES, **kwargs
+        self, *mobjects: Mobject, path_arc: float = 90 * DEGREES, **kwargs: Any
     ) -> None:
         self.group = Group(*mobjects)
         super().__init__(self.group, path_arc=path_arc, **kwargs)
@@ -751,8 +749,8 @@ class TransformAnimations(Transform):
         self,
         start_anim: Animation,
         end_anim: Animation,
-        rate_func: Callable = squish_rate_func(smooth),
-        **kwargs,
+        rate_func: RateFunc = squish_rate_func(smooth),
+        **kwargs: Any,
     ) -> None:
         self.start_anim = start_anim
         self.end_anim = end_anim
@@ -830,7 +828,14 @@ class FadeTransform(Transform):
 
     """
 
-    def __init__(self, mobject, target_mobject, stretch=True, dim_to_match=1, **kwargs):
+    def __init__(
+        self,
+        mobject: Mobject,
+        target_mobject: Mobject,
+        stretch: bool = True,
+        dim_to_match: int = 1,
+        **kwargs: Any,
+    ) -> None:
         self.to_add_on_completion = target_mobject
         self.stretch = stretch
         self.dim_to_match = dim_to_match
@@ -841,7 +846,7 @@ class FadeTransform(Transform):
             group = Group(mobject, target_mobject.copy())
         super().__init__(group, **kwargs)
 
-    def begin(self):
+    def begin(self) -> None:
         """Initial setup for the animation.
 
         The mobject to which this animation is bound is a group consisting of
@@ -858,7 +863,7 @@ class FadeTransform(Transform):
         for m0, m1 in ((start[1], start[0]), (end[0], end[1])):
             self.ghost_to(m0, m1)
 
-    def ghost_to(self, source, target):
+    def ghost_to(self, source: Mobject, target: Mobject) -> None:
         """Replaces the source by the target and sets the opacity to 0.
 
         If the provided target has no points, and thus a location of [0, 0, 0]
@@ -869,7 +874,7 @@ class FadeTransform(Transform):
             source.replace(target, stretch=self.stretch, dim_to_match=self.dim_to_match)
         source.set_opacity(0)
 
-    def get_all_mobjects(self) -> Sequence[Mobject]:
+    def get_all_mobjects(self) -> list[Mobject]:
         return [
             self.mobject,
             self.starting_mobject,
@@ -879,7 +884,7 @@ class FadeTransform(Transform):
     def get_all_families_zipped(self):
         return Animation.get_all_families_zipped(self)
 
-    def clean_up_from_scene(self, scene):
+    def clean_up_from_scene(self, scene: Scene) -> None:
         Animation.clean_up_from_scene(self, scene)
         scene.remove(self.mobject)
         self.mobject[0].restore()
@@ -916,11 +921,11 @@ class FadeTransformPieces(FadeTransform):
 
     """
 
-    def begin(self):
+    def begin(self) -> None:
         self.mobject[0].align_submobjects(self.mobject[1])
         super().begin()
 
-    def ghost_to(self, source, target):
+    def ghost_to(self, source: Mobject, target: Mobject) -> None:
         """Replaces the source submobjects by the target submobjects and sets
         the opacity to 0.
         """

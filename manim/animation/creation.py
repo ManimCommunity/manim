@@ -74,15 +74,17 @@ __all__ = [
 
 
 import itertools as it
-from typing import TYPE_CHECKING, Callable, Iterable, Sequence
+from typing import TYPE_CHECKING, Any, Callable, Iterable
 
 import numpy as np
+import numpy.typing as npt
 
 if TYPE_CHECKING:
     from manim.mobject.text.text_mobject import Text
 
 from manim.mobject.opengl.opengl_surface import OpenGLSurface
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+from manim.typing import ManimFloat, RateFunc
 from manim.utils.color import ManimColor
 
 from .. import config
@@ -112,8 +114,8 @@ class ShowPartial(Animation):
     def __init__(
         self,
         mobject: VMobject | OpenGLVMobject | OpenGLSurface | None,
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> None:
         pointwise = getattr(mobject, "pointwise_become_partial", None)
         if not callable(pointwise):
             raise NotImplementedError("This animation is not defined for this Mobject.")
@@ -165,7 +167,7 @@ class Create(ShowPartial):
         mobject: VMobject | OpenGLVMobject | OpenGLSurface,
         lag_ratio: float = 1.0,
         introducer: bool = True,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         super().__init__(mobject, lag_ratio=lag_ratio, introducer=introducer, **kwargs)
 
@@ -266,14 +268,14 @@ class DrawBorderThenFill(Animation):
             return vmobject.get_stroke_color()
         return vmobject.get_color()
 
-    def get_all_mobjects(self) -> Sequence[Mobject]:
+    def get_all_mobjects(self) -> list[Mobject]:
         return [*super().get_all_mobjects(), self.outline]
 
     def interpolate_submobject(
         self,
         submobject: Mobject,
         starting_submobject: Mobject,
-        outline,
+        outline: Mobject,
         alpha: float,
     ) -> None:  # Fixme: not matching the parent class? What is outline doing here?
         index: int
@@ -316,9 +318,9 @@ class Write(DrawBorderThenFill):
     def __init__(
         self,
         vmobject: VMobject | OpenGLVMobject,
-        rate_func: Callable[[float], float] = linear,
+        rate_func: RateFunc = linear,
         reverse: bool = False,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         run_time: float | None = kwargs.pop("run_time", None)
         lag_ratio: float | None = kwargs.pop("lag_ratio", None)
@@ -400,9 +402,9 @@ class Unwrite(Write):
     def __init__(
         self,
         vmobject: VMobject,
-        rate_func: Callable[[float], float] = linear,
+        rate_func: RateFunc = linear,
         reverse: bool = True,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         run_time: float | None = kwargs.pop("run_time", None)
         lag_ratio: float | None = kwargs.pop("lag_ratio", None)
@@ -453,8 +455,8 @@ class SpiralIn(Animation):
         self,
         shapes: Mobject,
         scale_factor: float = 8,
-        fade_in_fraction=0.3,
-        **kwargs,
+        fade_in_fraction: float = 0.3,
+        **kwargs: Any,
     ) -> None:
         self.shapes = shapes
         self.scale_factor = scale_factor
@@ -504,9 +506,9 @@ class ShowIncreasingSubsets(Animation):
         self,
         group: Mobject,
         suspend_mobject_updating: bool = False,
-        int_func: Callable[[np.ndarray], np.ndarray] = np.floor,
-        reverse_rate_function=False,
-        **kwargs,
+        int_func: Callable[[npt.NDArray[ManimFloat]], ManimFloat] = np.floor,
+        reverse_rate_function: bool = False,
+        **kwargs: Any,
     ) -> None:
         self.all_submobs = list(group.submobjects)
         self.int_func = int_func
@@ -554,13 +556,15 @@ class AddTextLetterByLetter(ShowIncreasingSubsets):
         self,
         text: Text,
         suspend_mobject_updating: bool = False,
-        int_func: Callable[[np.ndarray], np.ndarray] = np.ceil,
-        rate_func: Callable[[float], float] = linear,
+        int_func: Callable[
+            [npt.NDArray[ManimFloat]], npt.NDArray[ManimFloat]
+        ] = np.ceil,
+        rate_func: RateFunc = linear,
         time_per_char: float = 0.1,
         run_time: float | None = None,
-        reverse_rate_function=False,
-        introducer=True,
-        **kwargs,
+        reverse_rate_function: bool = False,
+        introducer: bool = True,
+        **kwargs: Any,
     ) -> None:
         self.time_per_char = time_per_char
         # Check for empty text using family_members_with_points()
@@ -602,14 +606,16 @@ class RemoveTextLetterByLetter(AddTextLetterByLetter):
         self,
         text: Text,
         suspend_mobject_updating: bool = False,
-        int_func: Callable[[np.ndarray], np.ndarray] = np.ceil,
-        rate_func: Callable[[float], float] = linear,
+        int_func: Callable[
+            [npt.NDArray[ManimFloat]], npt.NDArray[ManimFloat]
+        ] = np.ceil,
+        rate_func: RateFunc = linear,
         time_per_char: float = 0.1,
         run_time: float | None = None,
-        reverse_rate_function=True,
-        introducer=False,
-        remover=True,
-        **kwargs,
+        reverse_rate_function: bool = True,
+        introducer: bool = False,
+        remover: bool = True,
+        **kwargs: Any,
     ) -> None:
         super().__init__(
             text,
@@ -631,8 +637,10 @@ class ShowSubmobjectsOneByOne(ShowIncreasingSubsets):
     def __init__(
         self,
         group: Iterable[Mobject],
-        int_func: Callable[[np.ndarray], np.ndarray] = np.ceil,
-        **kwargs,
+        int_func: Callable[
+            [npt.NDArray[ManimFloat]], npt.NDArray[ManimFloat]
+        ] = np.ceil,
+        **kwargs: Any,
     ) -> None:
         new_group = Group(*group)
         super().__init__(new_group, int_func=int_func, **kwargs)
@@ -652,9 +660,9 @@ class AddTextWordByWord(Succession):
     def __init__(
         self,
         text_mobject: Text,
-        run_time: float = None,
+        run_time: float | None = None,
         time_per_char: float = 0.06,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         self.time_per_char = time_per_char
         tpc = self.time_per_char

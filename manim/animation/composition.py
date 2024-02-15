@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 import types
-from typing import TYPE_CHECKING, Callable, Iterable, Sequence
+from typing import TYPE_CHECKING, Any, Callable, Iterable
 
 import numpy as np
 
@@ -16,6 +16,7 @@ from ..animation.animation import Animation, prepare_animation
 from ..constants import RendererType
 from ..mobject.mobject import Group, Mobject
 from ..scene.scene import Scene
+from ..typing import RateFunc
 from ..utils.iterables import remove_list_redundancies
 from ..utils.rate_functions import linear
 
@@ -27,7 +28,7 @@ if TYPE_CHECKING:
 __all__ = ["AnimationGroup", "Succession", "LaggedStart", "LaggedStartMap"]
 
 
-DEFAULT_LAGGED_START_LAG_RATIO: float = 0.05
+DEFAULT_LAGGED_START_LAG_RATIO = 0.05
 
 
 class AnimationGroup(Animation):
@@ -59,9 +60,9 @@ class AnimationGroup(Animation):
         *animations: Animation | Iterable[Animation] | types.GeneratorType[Animation],
         group: Group | VGroup | OpenGLGroup | OpenGLVGroup = None,
         run_time: float | None = None,
-        rate_func: Callable[[float], float] = linear,
+        rate_func: RateFunc = linear,
         lag_ratio: float = 0,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         arg_anim = flatten_iterable_parameters(animations)
         self.animations = [prepare_animation(anim) for anim in arg_anim]
@@ -80,7 +81,7 @@ class AnimationGroup(Animation):
         )
         self.run_time: float = self.init_run_time(run_time)
 
-    def get_all_mobjects(self) -> Sequence[Mobject]:
+    def get_all_mobjects(self) -> list[Mobject]:
         return list(self.group)
 
     def begin(self) -> None:
@@ -99,7 +100,7 @@ class AnimationGroup(Animation):
         for anim in self.animations:
             anim.begin()
 
-    def _setup_scene(self, scene) -> None:
+    def _setup_scene(self, scene: Scene | None) -> None:
         for anim in self.animations:
             anim._setup_scene(scene)
 
@@ -120,7 +121,7 @@ class AnimationGroup(Animation):
         for anim in self.animations:
             anim.update_mobjects(dt)
 
-    def init_run_time(self, run_time) -> float:
+    def init_run_time(self, run_time: float | None) -> float:
         """Calculates the run time of the animation, if different from ``run_time``.
 
         Parameters
@@ -204,7 +205,9 @@ class Succession(AnimationGroup):
                 ))
     """
 
-    def __init__(self, *animations: Animation, lag_ratio: float = 1, **kwargs) -> None:
+    def __init__(
+        self, *animations: Animation, lag_ratio: float = 1, **kwargs: Any
+    ) -> None:
         super().__init__(*animations, lag_ratio=lag_ratio, **kwargs)
 
     def begin(self) -> None:
@@ -219,7 +222,7 @@ class Succession(AnimationGroup):
         if self.active_animation:
             self.active_animation.update_mobjects(dt)
 
-    def _setup_scene(self, scene) -> None:
+    def _setup_scene(self, scene: Scene | None) -> None:
         if scene is None:
             return
         if self.is_introducer():
@@ -311,8 +314,8 @@ class LaggedStart(AnimationGroup):
         self,
         *animations: Animation,
         lag_ratio: float = DEFAULT_LAGGED_START_LAG_RATIO,
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> None:
         super().__init__(*animations, lag_ratio=lag_ratio, **kwargs)
 
 
@@ -358,9 +361,9 @@ class LaggedStartMap(LaggedStart):
         self,
         AnimationClass: Callable[..., Animation],
         mobject: Mobject,
-        arg_creator: Callable[[Mobject], str] = None,
+        arg_creator: Callable[[Mobject], str] | None = None,
         run_time: float = 2,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         args_list = []
         for submob in mobject:

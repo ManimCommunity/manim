@@ -19,10 +19,10 @@ __all__ = [
     "FadeOut",
     "FadeIn",
 ]
-
-import numpy as np
+from typing import Any
 
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.typing import Vector3D
 
 from ..animation.transform import Transform
 from ..constants import ORIGIN
@@ -51,10 +51,10 @@ class _Fade(Transform):
     def __init__(
         self,
         *mobjects: Mobject,
-        shift: np.ndarray | None = None,
-        target_position: np.ndarray | Mobject | None = None,
+        shift: Vector3D | None = None,
+        target_position: Vector3D | Mobject | None = None,
         scale: float = 1,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         if not mobjects:
             raise ValueError("At least one mobject must be passed.")
@@ -76,7 +76,7 @@ class _Fade(Transform):
         self.scale_factor = scale
         super().__init__(mobject, **kwargs)
 
-    def _create_faded_mobject(self, fadeIn: bool) -> Mobject:
+    def _create_faded_mobject(self, fade_in: bool) -> Mobject:
         """Create a faded, shifted and scaled copy of the mobject.
 
         Parameters
@@ -91,7 +91,7 @@ class _Fade(Transform):
         """
         faded_mobject = self.mobject.copy()
         faded_mobject.fade(1)
-        direction_modifier = -1 if fadeIn and not self.point_target else 1
+        direction_modifier = -1 if fade_in and not self.point_target else 1
         faded_mobject.shift(self.shift_vector * direction_modifier)
         faded_mobject.scale(self.scale_factor)
         return faded_mobject
@@ -135,14 +135,14 @@ class FadeIn(_Fade):
 
     """
 
-    def __init__(self, *mobjects: Mobject, **kwargs) -> None:
+    def __init__(self, *mobjects: Mobject, **kwargs: Any) -> None:
         super().__init__(*mobjects, introducer=True, **kwargs)
 
-    def create_target(self):
+    def create_target(self) -> Mobject:
         return self.mobject
 
     def create_starting_mobject(self):
-        return self._create_faded_mobject(fadeIn=True)
+        return self._create_faded_mobject(fade_in=True)
 
 
 class FadeOut(_Fade):
@@ -183,12 +183,12 @@ class FadeOut(_Fade):
 
     """
 
-    def __init__(self, *mobjects: Mobject, **kwargs) -> None:
+    def __init__(self, *mobjects: Mobject, **kwargs: Any) -> None:
         super().__init__(*mobjects, remover=True, **kwargs)
 
-    def create_target(self):
-        return self._create_faded_mobject(fadeIn=False)
+    def create_target(self) -> Mobject:
+        return self._create_faded_mobject(fade_in=False)
 
-    def clean_up_from_scene(self, scene: Scene = None) -> None:
+    def clean_up_from_scene(self, scene: Scene | None = None) -> None:
         super().clean_up_from_scene(scene)
         self.interpolate(0)

@@ -4,9 +4,9 @@ from __future__ import annotations
 
 __all__ = ["Rotating", "Rotate"]
 
-from typing import TYPE_CHECKING, Callable, Sequence
+from typing import TYPE_CHECKING, Any
 
-import numpy as np
+from manim.typing import Point3D, RateFunc, Vector3D
 
 from ..animation.animation import Animation
 from ..animation.transform import Transform
@@ -21,13 +21,13 @@ class Rotating(Animation):
     def __init__(
         self,
         mobject: Mobject,
-        axis: np.ndarray = OUT,
-        radians: np.ndarray = TAU,
-        about_point: np.ndarray | None = None,
-        about_edge: np.ndarray | None = None,
+        axis: Vector3D = OUT,
+        radians: float = TAU,
+        about_point: Point3D | None = None,
+        about_edge: Point3D | None = None,
         run_time: float = 5,
-        rate_func: Callable[[float], float] = linear,
-        **kwargs,
+        rate_func: RateFunc = linear,
+        **kwargs: Any,
     ) -> None:
         self.axis = axis
         self.radians = radians
@@ -85,10 +85,10 @@ class Rotate(Transform):
         self,
         mobject: Mobject,
         angle: float = PI,
-        axis: np.ndarray = OUT,
-        about_point: Sequence[float] | None = None,
-        about_edge: Sequence[float] | None = None,
-        **kwargs,
+        axis: Vector3D = OUT,
+        about_point: Point3D | None = None,
+        about_edge: Point3D | None = None,
+        **kwargs: Any,
     ) -> None:
         if "path_arc" not in kwargs:
             kwargs["path_arc"] = angle

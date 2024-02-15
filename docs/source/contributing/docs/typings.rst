@@ -115,8 +115,8 @@ Typing guidelines
    from typing import TYPE_CHECKING
 
    if TYPE_CHECKING:
-       from manim.typing import Vector3
-   # type stuff with Vector3
+       from manim.typing import Vector3D
+   # type stuff with Vector3D
 
 Missing Sections for typehints are:
 -----------------------------------
