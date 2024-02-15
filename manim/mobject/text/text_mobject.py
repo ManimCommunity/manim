@@ -444,8 +444,21 @@ class Text(SVGMobject):
         **kwargs,
     ) -> None:
         self.line_spacing = line_spacing
-        if font and warn_missing_font and font not in Text.font_list():
-            logger.warning(f"Font {font} not in {Text.font_list()}.")
+        if font and warn_missing_font:
+            fonts_list = Text.font_list()
+            # handle special case of sans/sans-serif
+            if font.lower() == "sans-serif":
+                font = "sans"
+            if font not in fonts_list:
+                # check if the capitalized version is in the supported fonts
+                if font.capitalize() in fonts_list:
+                    font = font.capitalize()
+                elif font.lower() in fonts_list:
+                    font = font.lower()
+                elif font.title() in fonts_list:
+                    font = font.title()
+                else:
+                    logger.warning(f"Font {font} not in {fonts_list}.")
         self.font = font
         self._font_size = float(font_size)
         # needs to be a float or else size is inflated when font_size = 24
@@ -1169,8 +1182,21 @@ class MarkupText(SVGMobject):
     ) -> None:
         self.text = text
         self.line_spacing = line_spacing
-        if font and warn_missing_font and font not in Text.font_list():
-            logger.warning(f"Font {font} not in {Text.font_list()}.")
+        if font and warn_missing_font:
+            fonts_list = Text.font_list()
+            # handle special case of sans/sans-serif
+            if font.lower() == "sans-serif":
+                font = "sans"
+            if font not in fonts_list:
+                # check if the capitalized version is in the supported fonts
+                if font.capitalize() in fonts_list:
+                    font = font.capitalize()
+                elif font.lower() in fonts_list:
+                    font = font.lower()
+                elif font.title() in fonts_list:
+                    font = font.title()
+                else:
+                    logger.warning(f"Font {font} not in {fonts_list}.")
         self.font = font
         self._font_size = float(font_size)
         self.slant = slant
