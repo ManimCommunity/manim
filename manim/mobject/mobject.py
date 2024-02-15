@@ -2909,10 +2909,6 @@ class Mobject:
         self.set_z_index(z_coord)
         return self
 
-    def __class_getitem__(cls, item: type) -> types.GenericAlias:
-        return types.GenericAlias(cls, item)
-
-
 class Group(Mobject, metaclass=ConvertToOpenGL):
     """Groups together multiple :class:`Mobjects <.Mobject>`.
 

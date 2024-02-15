@@ -19,7 +19,7 @@ from manim.utils.color import (
 from manim.utils.rate_functions import smooth
 
 
-class AnimatedBoundary(VGroup):
+class AnimatedBoundary(VGroup[VMobject]):
     """Boundary of a :class:`.VMobject` with animated color change.
 
     Examples
@@ -38,11 +38,11 @@ class AnimatedBoundary(VGroup):
 
     def __init__(
         self,
-        vmobject,
-        colors=[BLUE_D, BLUE_B, BLUE_E, GREY_BROWN],
-        max_stroke_width=3,
-        cycle_rate=0.5,
-        back_and_forth=True,
+        vmobject: VMobject,
+        colors: list[ParsableManimColor] = [BLUE_D, BLUE_B, BLUE_E, GREY_BROWN],
+        max_stroke_width: float = 3,
+        cycle_rate: float = 0.5,
+        back_and_forth: bool = True,
         draw_rate_func=smooth,
         fade_rate_func=smooth,
         **kwargs,

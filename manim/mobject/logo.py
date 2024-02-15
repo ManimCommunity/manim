@@ -100,7 +100,7 @@ MANIM_SVG_PATHS: list[se.Path] = [
 ]
 
 
-class ManimBanner(VGroup):
+class ManimBanner(VGroup[VMobject]):
     r"""Convenience class representing Manim's banner.
 
     Can be animated using custom methods.
