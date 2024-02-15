@@ -4,6 +4,7 @@ import shutil
 import sys
 from pathlib import Path
 from textwrap import dedent
+from unittest.mock import patch
 
 from click.testing import CliRunner
 
@@ -83,11 +84,20 @@ def test_manim_checkhealth_subcommand():
 def test_manim_checkhealth_failing_subcommand():
     command = ["checkhealth"]
     runner = CliRunner()
-    with tempconfig({"ffmpeg_executable": "/path/to/nowhere"}):
+    true_f = shutil.which
+
+    def mock_f(s):
+        if s == "latex":
+            return None
+
+        return true_f(s)
+
+    with patch.object(shutil, "which", new=mock_f):
         result = runner.invoke(main, command)
+
     output_lines = result.output.split("\n")
-    assert "- Checking whether ffmpeg is available ... FAILED" in output_lines
-    assert "- Checking whether ffmpeg is working ... SKIPPED" in output_lines
+    assert "- Checking whether latex is available ... FAILED" in output_lines
+    assert "- Checking whether dvisvgm is available ... SKIPPED" in output_lines
 
 
 def test_manim_init_subcommand():

@@ -6,7 +6,8 @@
         "height": 480,
         "avg_frame_rate": "15/1",
         "duration": "7.000000",
-        "nb_frames": "105"
+        "nb_frames": "105",
+        "pix_fmt": "yuv420p"
     },
     "section_dir_layout": [
         "SceneWithSections.json",
@@ -27,7 +28,8 @@
             "height": 480,
             "avg_frame_rate": "15/1",
             "duration": "1.000000",
-            "nb_frames": "15"
+            "nb_frames": "15",
+            "pix_fmt": "yuv420p"
         },
         {
             "name": "unnamed",
@@ -38,7 +40,8 @@
             "height": 480,
             "avg_frame_rate": "15/1",
             "duration": "2.000000",
-            "nb_frames": "30"
+            "nb_frames": "30",
+            "pix_fmt": "yuv420p"
         },
         {
             "name": "test",
@@ -49,7 +52,8 @@
             "height": 480,
             "avg_frame_rate": "15/1",
             "duration": "1.000000",
-            "nb_frames": "15"
+            "nb_frames": "15",
+            "pix_fmt": "yuv420p"
         },
         {
             "name": "Prepare For Unforeseen Consequences.",
@@ -60,7 +64,8 @@
             "height": 480,
             "avg_frame_rate": "15/1",
             "duration": "2.000000",
-            "nb_frames": "30"
+            "nb_frames": "30",
+            "pix_fmt": "yuv420p"
         },
         {
             "name": "unnamed",
@@ -71,7 +76,8 @@
             "height": 480,
             "avg_frame_rate": "15/1",
             "duration": "1.000000",
-            "nb_frames": "15"
+            "nb_frames": "15",
+            "pix_fmt": "yuv420p"
         }
     ]
 }

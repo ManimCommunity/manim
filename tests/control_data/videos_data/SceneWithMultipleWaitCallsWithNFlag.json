@@ -6,7 +6,8 @@
         "height": 480,
         "avg_frame_rate": "15/1",
         "duration": "5.000000",
-        "nb_frames": "75"
+        "nb_frames": "75",
+        "pix_fmt": "yuv420p"
     },
     "section_dir_layout": [],
     "section_index": []

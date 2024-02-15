@@ -472,7 +472,6 @@ class Star(Polygon):
     Examples
     --------
     .. manim:: StarExample
-        :save_as_gif:
 
         class StarExample(Scene):
             def construct(self):

@@ -20,12 +20,12 @@ follow `Homebrew's installation instructions <https://docs.brew.sh/Installation>
 Required Dependencies
 ---------------------
 
-To install all required dependencies for installing Manim (namely: ffmpeg, Python,
+To install all required dependencies for installing Manim (namely: Python,
 and some required Python packages), run:
 
 .. code-block:: bash
 
-   brew install py3cairo ffmpeg
+   brew install py3cairo
 
 On *Apple Silicon* based machines (i.e., devices with the M1 chip or similar; if
 you are unsure which processor you have check by opening the Apple menu, select
