@@ -102,12 +102,7 @@ global_options = option_group(
     option(
         "--no_latex_cleanup",
         is_flag=True,
-        help="Prevents deletion of .aux, .dvi, and .log files produced by Tex and MathTex.",
-        default=False,
-    ),
-    option(
-        "--preview_command",
-        help="The command to preview the video file (ex: xdg-open on linux). Note that this does not have an effect on Windows",
+        help="Prevents deletion of .aux, .dvi, and .log files produced by Tex and MathTex",
         default="",
     ),
 )
