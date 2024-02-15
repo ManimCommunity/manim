@@ -1406,6 +1406,7 @@ class VMobject(Mobject):
                 return curve(residue)
 
             current_length += length
+        raise Exception("Not sure how you reached here, please file a bug report at https://github.com/ManimCommunity/manim/issues/new/choose")
 
     def proportion_from_point(
         self,
