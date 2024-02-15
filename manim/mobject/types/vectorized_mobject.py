@@ -18,12 +18,12 @@ from typing import (
     TYPE_CHECKING,
     Callable,
     Generator,
+    Generic,
     Hashable,
     Iterable,
     Literal,
     Mapping,
     Sequence,
-    Generic
 )
 
 import numpy as np
@@ -53,6 +53,7 @@ from ...utils.space_ops import rotate_vector, shoelace_direction
 
 if TYPE_CHECKING:
     from types import GenericAlias
+
     import numpy.typing as npt
 
     from manim.typing import (
@@ -1887,7 +1888,9 @@ class VMobject(Mobject):
             self.reverse_direction()
         return self
 
+
 VMobjectT = TypeVar("VMobjectT", bound=VMobject, default=VMobject)
+
 
 class VGroup(VMobject, Generic[VMobjectT], metaclass=ConvertToOpenGL):
     """A group of vectorized mobjects.
