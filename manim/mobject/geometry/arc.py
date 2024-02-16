@@ -123,6 +123,21 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         self.add(tip)
         return self
 
+    # Define new function `add_tip_opposite_end` for allowing user to specify `include_tip` attribute in NumberPlane __init__() method
+    def add_tip_opposite_end(
+        self, tip=None, tip_shape=None, tip_length=None, tip_width=None, at_start=True
+    ):
+        """Adds a tip to the start of the TipableVMobject instance.
+        """
+        if tip is None:
+            tip = self.create_tip(tip_shape, tip_length, tip_width, at_start)
+        else:
+            self.position_tip(tip, at_start)
+        self.reset_endpoints_based_on_tip(tip, at_start)
+        self.asign_tip_attr(tip, at_start)
+        self.add(tip)
+        return self
+
     def create_tip(
         self,
         tip_shape: type[tips.ArrowTip] | None = None,
