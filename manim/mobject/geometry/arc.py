@@ -127,8 +127,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
     def add_tip_opposite_end(
         self, tip=None, tip_shape=None, tip_length=None, tip_width=None, at_start=True
     ):
-        """Adds a tip to the start of the TipableVMobject instance.
-        """
+        """Adds a tip to the start of the TipableVMobject instance."""
         if tip is None:
             tip = self.create_tip(tip_shape, tip_length, tip_width, at_start)
         else:
