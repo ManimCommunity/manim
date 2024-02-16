@@ -13,8 +13,8 @@ __all__ = [
 
 
 import itertools as it
-import sys
 import math
+import sys
 from typing import (
     TYPE_CHECKING,
     Callable,
