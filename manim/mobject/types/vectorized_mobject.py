@@ -14,6 +14,7 @@ __all__ = [
 
 import itertools as it
 import sys
+import math
 from typing import (
     TYPE_CHECKING,
     Callable,
@@ -320,6 +321,96 @@ class VMobject(Mobject):
         if opacity is not None:
             self.fill_opacity = opacity
         return self
+
+    def calculate_cubic_bezier_bounding_box(
+        self,
+        anchor_start: Point3D,
+        handle1: Point3D,
+        handle2: Point3D,
+        anchor_end: Point3D,
+    ) -> Iterable[float]:
+        """Calculates the bounding box of a single cubic bezier curve.
+
+        Parameters
+        ----------
+        anchor_start
+            The first control point, or beginning of the cubic bezier curve.
+        handle1
+            The second control point for the cubic bezier curve.
+        handle2
+            The third control point for the cubic bezier curve.
+        anchor_end
+            The last control point, or ending of the cubic bezier curve.
+
+        Returns
+        -------
+        `list[float]`
+            Iterable of the minimum and maximum x and y values and handles.
+        """
+        P0, P1, P2, P3 = anchor_start, handle1, handle2, anchor_end
+        bounds = [[P0[0], P3[0]], [P0[1], P3[1]]]
+
+        for i in [0, 1]:
+            f = lambda t: (
+                (1 - t) ** 3 * P0[i]
+                + 3 * (1 - t) ** 2 * t * P1[i]
+                + 3 * (1 - t) * t**2 * P2[i]
+                + t**3 * P3[i]
+            )
+
+            b = 6 * P0[i] - 12 * P1[i] + 6 * P2[i]
+            a = -3 * P0[i] + 9 * P1[i] - 9 * P2[i] + 3 * P3[i]
+            c = 3 * P1[i] - 3 * P0[i]
+
+            if a == 0:
+                if b == 0:
+                    continue
+                t = -c / b
+                if 0 < t < 1:
+                    bounds[i].append(f(t))
+                continue
+
+            b2ac = b**2 - 4 * c * a
+            if b2ac < 0:
+                continue
+            t1 = (-b + math.sqrt(b2ac)) / (2 * a)
+            if 0 < t1 < 1:
+                bounds[i].append(f(t1))
+            t2 = (-b - math.sqrt(b2ac)) / (2 * a)
+            if 0 < t2 < 1:
+                bounds[i].append(f(t2))
+
+        x = min(bounds[0])
+        w = max(bounds[0])
+        y = min(bounds[1])
+        h = max(bounds[1])
+        return (x, y, w, h)
+
+    @property
+    def width(self) -> float:
+        min_x = float("inf")
+        max_x = -float("inf")
+        for a1, h1, h2, a2 in self.points.reshape(len(self.points) // 4, 4, 3):
+            sub_min_x, _, sub_max_x, _ = self.calculate_cubic_bezier_bounding_box(
+                a1, h1, h2, a2
+            )
+            min_x = min(min_x, sub_min_x)
+            max_x = max(max_x, sub_max_x)
+
+        return max_x - min_x
+
+    @property
+    def height(self) -> float:
+        min_y = float("inf")
+        max_y = -float("inf")
+        for a1, h1, h2, a2 in self.points.reshape(len(self.points) // 4, 4, 3):
+            _, sub_min_y, _, sub_max_y = self.calculate_cubic_bezier_bounding_box(
+                a1, h1, h2, a2
+            )
+            min_y = min(min_y, sub_min_y)
+            max_y = max(max_y, sub_max_y)
+
+        return max_y - min_y
 
     def set_stroke(
         self,
@@ -782,20 +873,6 @@ class VMobject(Mobject):
                 self.append_points([last_anchor])
         self.append_points([point])
         return self
-
-    def add_cubic_bezier_curve(
-        self,
-        anchor1: CubicBezierPoints,
-        handle1: CubicBezierPoints,
-        handle2: CubicBezierPoints,
-        anchor2: CubicBezierPoints,
-    ) -> None:
-        # TODO, check the len(self.points) % 4 == 0?
-        self.append_points([anchor1, handle1, handle2, anchor2])
-
-    # what type is curves?
-    def add_cubic_bezier_curves(self, curves) -> None:
-        self.append_points(curves.flatten())
 
     def add_cubic_bezier_curve_to(
         self,
