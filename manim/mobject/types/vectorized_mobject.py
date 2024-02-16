@@ -347,6 +347,7 @@ class VMobject(Mobject):
         `list[float]`
             Iterable of the minimum and maximum x and y values and handles.
         """
+        # Adapted from https://nishiohirokazu.blogspot.com/2009/06/how-to-calculate-bezier-curves-bounding.html
         P0, P1, P2, P3 = anchor_start, handle1, handle2, anchor_end
         bounds = [[P0[0], P3[0]], [P0[1], P3[1]]]
 
@@ -410,7 +411,7 @@ class VMobject(Mobject):
             min_y = min(min_y, sub_min_y)
             max_y = max(max_y, sub_max_y)
 
-        return max_y - min_y
+        return max_y - 
 
     def set_stroke(
         self,
