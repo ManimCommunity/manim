@@ -13,8 +13,8 @@ __all__ = [
 
 
 import itertools as it
-import sys
 import math
+import sys
 from typing import (
     TYPE_CHECKING,
     Callable,
@@ -411,7 +411,7 @@ class VMobject(Mobject):
             min_y = min(min_y, sub_min_y)
             max_y = max(max_y, sub_max_y)
 
-        return max_y - 
+        return max_y -
 
     def set_stroke(
         self,
