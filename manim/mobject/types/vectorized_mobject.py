@@ -411,7 +411,7 @@ class VMobject(Mobject):
             min_y = min(min_y, sub_min_y)
             max_y = max(max_y, sub_max_y)
 
-        return max_y - 
+        return max_y - min_y
 
     def set_stroke(
         self,
