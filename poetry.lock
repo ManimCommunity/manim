@@ -4533,4 +4533,4 @@ jupyterlab = ["jupyterlab", "notebook"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.13"
-content-hash = "f15fa632919381a9b5b2cebc3e89aa307fa8735db2e5cde7a408765b46a3b00f"
+content-hash = "ee587c7e3241bf8bbd6334cd1de08bc53d3521978ccd68f9ac54a2cc7f61466f"
