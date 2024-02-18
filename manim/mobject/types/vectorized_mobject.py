@@ -18,6 +18,7 @@ from typing import (
     TYPE_CHECKING,
     Callable,
     Generator,
+    Generic,
     Hashable,
     Iterable,
     Literal,
@@ -26,9 +27,8 @@ from typing import (
 )
 
 import numpy as np
-import numpy.typing as npt
 from PIL.Image import Image
-from typing_extensions import Self
+from typing_extensions import Self, TypeVar
 
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
@@ -53,6 +53,8 @@ from ...utils.space_ops import rotate_vector, shoelace_direction
 
 if TYPE_CHECKING:
     from types import GenericAlias
+
+    import numpy.typing as npt
 
     from manim.typing import (
         BezierPoints,
@@ -1887,7 +1889,10 @@ class VMobject(Mobject):
         return self
 
 
-class VGroup(VMobject, metaclass=ConvertToOpenGL):
+VMobjectT = TypeVar("VMobjectT", bound=VMobject, default=VMobject)
+
+
+class VGroup(VMobject, Generic[VMobjectT], metaclass=ConvertToOpenGL):
     """A group of vectorized mobjects.
 
     This can be used to group multiple :class:`~.VMobject` instances together
@@ -1944,7 +1949,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
 
     """
 
-    def __init__(self, *vmobjects, **kwargs):
+    def __init__(self, *vmobjects: VMobjectT, **kwargs):
         super().__init__(**kwargs)
         self.add(*vmobjects)
 
