@@ -13,7 +13,7 @@ from manim.constants import *
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import RoundedRectangle
 from manim.mobject.mobject import Mobject
-from manim.mobject.types.vectorized_mobject import VGroup
+from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import BLACK, RED, YELLOW, ManimColor, ParsableManimColor
 
 
@@ -133,7 +133,7 @@ class BackgroundRectangle(SurroundingRectangle):
         return self.color
 
 
-class Cross(VGroup):
+class Cross(VGroup[VMobject]):
     """Creates a cross.
 
     Parameters

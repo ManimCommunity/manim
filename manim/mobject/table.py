@@ -84,7 +84,7 @@ from ..utils.color import BLACK, YELLOW, ManimColor, ParsableManimColor
 from .utils import get_vectorized_mobject_class
 
 
-class Table(VGroup):
+class Table(VGroup[VMobject]):
     """A mobject that displays a table on the screen.
 
     Parameters

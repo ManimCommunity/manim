@@ -2054,13 +2054,6 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
             raise TypeError("All submobjects must be of type VMobject")
         self.submobjects[key] = value
 
-    def __class_getitem__(cls, item: type) -> GenericAlias:
-        if not issubclass(item, VMobject):
-            raise ValueError(
-                f"Subscripting value must be subclass of VMobject, got {item.__name__} instead."
-            )
-        return super().__class_getitem__(item)
-
 
 class VDict(VMobject, metaclass=ConvertToOpenGL):
     """A VGroup-like class, also offering submobject access by
@@ -2438,7 +2431,7 @@ class VectorizedPoint(VMobject, metaclass=ConvertToOpenGL):
         self.set_points(np.array([new_loc]))
 
 
-class CurvesAsSubmobjects(VGroup):
+class CurvesAsSubmobjects(VGroup[VMobject]):
     """Convert a curve's elements to submobjects.
 
     Examples

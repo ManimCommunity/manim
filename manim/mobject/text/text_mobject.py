@@ -116,7 +116,7 @@ def remove_invisible_chars(mobject: SVGMobject) -> SVGMobject:
     return mobject_without_dots
 
 
-class Paragraph(VGroup):
+class Paragraph(VGroup[VMobject]):
     r"""Display a paragraph of text.
 
     For a given :class:`.Paragraph` ``par``, the attribute ``par.chars`` is a

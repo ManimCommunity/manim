@@ -157,20 +157,3 @@ def test_mobject_dimensions_has_points_and_children():
     assert inner_rect.width == 2
     assert inner_rect.height == 1
     assert inner_rect.depth == 0
-
-
-def test_mobject_type_subscripting():
-    # check mobject subscripting
-    assert (
-        str(Mobject[VGroup])
-        == "manim.mobject.mobject.Mobject[manim.mobject.types.vectorized_mobject.VGroup]"
-    )
-    assert (
-        str(Mobject[Mobject[Mobject]])
-        == "manim.mobject.mobject.Mobject[manim.mobject.mobject.Mobject[manim.mobject.mobject.Mobject]]"
-    )
-    # check subscripting of subclasses
-    assert (
-        str(VGroup[Rectangle])
-        == "manim.mobject.types.vectorized_mobject.VGroup[manim.mobject.geometry.polygram.Rectangle]"
-    )

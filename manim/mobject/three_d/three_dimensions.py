@@ -463,7 +463,7 @@ class Dot3D(Sphere):
         self.set_color(color)
 
 
-class Cube(VGroup):
+class Cube(VGroup[VMobject]):
     """A three-dimensional cube.
 
     Parameters

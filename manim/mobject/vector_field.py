@@ -26,7 +26,7 @@ from ..animation.creation import Create
 from ..animation.indication import ShowPassingFlash
 from ..constants import OUT, RIGHT, UP, RendererType
 from ..mobject.mobject import Mobject
-from ..mobject.types.vectorized_mobject import VGroup
+from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..mobject.utils import get_vectorized_mobject_class
 from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import (
@@ -45,7 +45,7 @@ from ..utils.simple_functions import sigmoid
 DEFAULT_SCALAR_FIELD_COLORS: list = [BLUE_E, GREEN, YELLOW, RED]
 
 
-class VectorField(VGroup):
+class VectorField(VGroup[VMobject]):
     """A vector field.
 
     Vector fields are based on a function defining a vector at every position.

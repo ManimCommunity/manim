@@ -8,7 +8,7 @@ from manim.mobject.geometry.arc import Dot
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import Square
 from manim.mobject.mobject import override_animate
-from manim.mobject.types.vectorized_mobject import VGroup
+from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 
 
 def test_simple_animate(using_opengl_renderer):
@@ -30,7 +30,7 @@ def test_chained_animate(using_opengl_renderer):
 
 
 def test_overridden_animate(using_opengl_renderer):
-    class DotsWithLine(VGroup):
+    class DotsWithLine(VGroup[VMobject]):
         def __init__(self):
             super().__init__()
             self.left_dot = Dot().shift((-1, 0, 0))
@@ -55,7 +55,7 @@ def test_overridden_animate(using_opengl_renderer):
 
 
 def test_chaining_overridden_animate(using_opengl_renderer):
-    class DotsWithLine(VGroup):
+    class DotsWithLine(VGroup[VMobject]):
         def __init__(self):
             super().__init__()
             self.left_dot = Dot().shift((-1, 0, 0))
