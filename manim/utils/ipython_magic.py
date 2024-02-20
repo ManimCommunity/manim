@@ -20,9 +20,8 @@ __all__ = ["ManimMagic"]
 try:
     from IPython import get_ipython
     from IPython.core.interactiveshell import InteractiveShell
-    from IPython.core.magic import (
+    from IPython.core.magic import (  # line_magic,
         Magics,
-        # line_magic,
         line_cell_magic,
         magics_class,
         needs_local_scope,
@@ -130,22 +129,26 @@ else:
                 if "--quick-setup" in args:
                     if not (cell is None):
                         # show main menu for correct %manim usage
-                        get_ipython().run_line_magic('manim', '--help')
+                        get_ipython().run_line_magic("manim", "--help")
                         return
                     else:
                         if "--accept-default" in args:
                             # resort to using %%manin cell magic
                             print("Using default config settings")
-                        else:   
+                        else:
                             print("Run project_setup.py")
                             from manim.utils import quick_setup
+
                             quick_setup.project_setup()
 
                         this_dir = os.path.dirname(__file__)
 
-                        path_to_example_code = os.path.join(Path(this_dir).parent.absolute(), "templates/ShowScreenResolution.mtp")
-                        
-                        with open(path_to_example_code, "r") as example_code_file:
+                        path_to_example_code = os.path.join(
+                            Path(this_dir).parent.absolute(),
+                            "templates/ShowScreenResolution.mtp",
+                        )
+
+                        with open(path_to_example_code) as example_code_file:
                             example_code = example_code_file.read()
 
                         self.write_content_to_cell(example_code + f"# %manim {line}")
@@ -155,8 +158,12 @@ else:
                         # Not possible in Jupyter Lab without extension
 
                         # return get_ipython().run_cell()
-                        return get_ipython().run_cell_magic('manim', '--disable_caching ShowScreenResolution', example_code)
-            
+                        return get_ipython().run_cell_magic(
+                            "manim",
+                            "--disable_caching ShowScreenResolution",
+                            example_code,
+                        )
+
             if cell:
                 exec(cell, local_ns)
 
@@ -208,7 +215,7 @@ else:
                 # in particular False as default value, in place of None
                 # some code below was broken, but easily corrected,
                 # using conditional branch if embed is True: ...
-                
+
                 embed = config["media_embed"]
                 if embed is True:
                     self.rendered_files[local_path] = tmpfile
@@ -249,14 +256,16 @@ else:
                 contents: new contents to replace the current cell content.
             """
             payload = dict(
-                source='set_next_input',
+                source="set_next_input",
                 text=contents,
                 replace=True,
             )
             get_ipython().payload_manager.write_payload(payload, single=False)
 
+
 def _generate_file_name() -> str:
     return config["scene_names"][0] + "@" + datetime.now().strftime("%Y-%m-%d@%H-%M-%S")
+
 
 # def load_ipython_extension(ipython):
 #     """
