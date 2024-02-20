@@ -60,7 +60,7 @@ def project_setup():
     print("==================")
 
     verbosity_level_options = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
-    verbosity_level = input(f"config.verbosity = ")
+    verbosity_level = input("config.verbosity = ")
 
     if verbosity_level.strip() == "":
         # config.verbosity = "INFO" # redundant but explicit
