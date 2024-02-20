@@ -37,10 +37,6 @@ else:
             super().__init__(shell)
             self.rendered_files = {}
 
-        # @line_magic
-        # def manim( self, line):
-        #     print(f"Hello World {line}")
-
         @needs_local_scope
         @line_cell_magic
         def manim(
