@@ -331,14 +331,7 @@ def is_number(number):
 
 
 def is_float(number):
-    if "." in number:
-        return True
-    else:
-        return False
-
+    return "." in number:
 
 def is_percent(number):
-    if "%" in number:
-        return True
-    else:
-        return False
+    return "%" in number
