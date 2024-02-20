@@ -251,7 +251,7 @@ else:
             Args:
                 contents: new contents to replace the current cell content.
             """
-            get_ipython().payload_manager.write_payload({source="set_next_input", text=contents, replace=True}, single=False)
+            get_ipython().payload_manager.write_payload({"source": "set_next_input", "text": contents, "replace": True}, single=False)
 
 
 def _generate_file_name() -> str:
