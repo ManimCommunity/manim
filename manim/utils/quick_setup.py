@@ -137,7 +137,7 @@ def project_setup():
     # Prompt user for pixel height (int) # default config.pixel_height = 1080
     config_data["config.pixel_heights"] = prompt_number_config_attribute(
         "pixel_height", 0, float("inf")
-    )  # use -1 for inifinity
+    )  # use -1 for infinity
 
     # Prompt user for frame rate (float) (0.0 fps - 60.0fps)
     config_data["config.frame_rate"] = prompt_number_config_attribute(
