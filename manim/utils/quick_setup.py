@@ -278,7 +278,7 @@ def prompt_background_color_config_attribute():
         # config.background_color = "BLACK" # set default background color
         return "BLACK"
     else:
-        if not backgroundColor.upper() in vars(manim_colors):
+        if backgroundColor.upper() not in vars(manim_colors):
             # Iterate over global variables and print keys which contain "ManimColor" as substring
             # ManimColor takes a hex value starting with #
             # thus all color names can be obtained as keys
