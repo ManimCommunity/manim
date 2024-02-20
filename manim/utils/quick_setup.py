@@ -333,5 +333,6 @@ def is_number(number):
 def is_float(number):
     return "." in number
 
+
 def is_percent(number):
     return "%" in number
