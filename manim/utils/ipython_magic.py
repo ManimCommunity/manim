@@ -22,6 +22,7 @@ try:
     from IPython.core.interactiveshell import InteractiveShell
     from IPython.core.magic import (
         Magics,
+        # line_magic,
         line_cell_magic,
         magics_class,
         needs_local_scope,
@@ -36,6 +37,10 @@ else:
         def __init__(self, shell: InteractiveShell) -> None:
             super().__init__(shell)
             self.rendered_files = {}
+
+        # @line_magic
+        # def manim( self, line):
+        #     print(f"Hello World {line}")
 
         @needs_local_scope
         @line_cell_magic
@@ -118,6 +123,40 @@ else:
                 CLI flag.
 
             """
+
+            if line:
+                args = line.split()
+                # Add functionality for quick project setup
+                if "--quick-setup" in args:
+                    if not (cell is None):
+                        # show main menu for correct %manim usage
+                        get_ipython().run_line_magic('manim', '--help')
+                        return
+                    else:
+                        if "--accept-default" in args:
+                            # resort to using %%manin cell magic
+                            print("Using default config settings")
+                        else:   
+                            print("Run project_setup.py")
+                            from manim.utils import quick_setup
+                            quick_setup.project_setup()
+
+                        this_dir = os.path.dirname(__file__)
+
+                        path_to_example_code = os.path.join(Path(this_dir).parent.absolute(), "templates/ShowScreenResolution.mtp")
+                        
+                        with open(path_to_example_code, "r") as example_code_file:
+                            example_code = example_code_file.read()
+
+                        self.write_content_to_cell(example_code + f"# %manim {line}")
+
+                        # run next cell
+                        # Possible in Jupyter Notebooks, with some hacky Javascript Fron-End
+                        # Not possible in Jupyter Lab without extension
+
+                        # return get_ipython().run_cell()
+                        return get_ipython().run_cell_magic('manim', '--disable_caching ShowScreenResolution', example_code)
+            
             if cell:
                 exec(cell, local_ns)
 
@@ -163,12 +202,21 @@ else:
 
                 if local_path in self.rendered_files:
                     self.rendered_files[local_path].unlink()
-                self.rendered_files[local_path] = tmpfile
-                tmpfile.parent.mkdir(parents=True, exist_ok=True)
-                shutil.copy(local_path, tmpfile)
+
+                # Since updates for config.media_embed,
+                # specifically, config.media_embed taking boolean
+                # in particular False as default value, in place of None
+                # some code below was broken, but easily corrected,
+                # using conditional branch if embed is True: ...
+                
+                embed = config["media_embed"]
+                if embed is True:
+                    self.rendered_files[local_path] = tmpfile
+                    tmpfile.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copy(local_path, tmpfile)
 
                 file_type = mimetypes.guess_type(config["output_file"])[0]
-                embed = config["media_embed"]
+                # embed = config["media_embed"]
                 if embed is None:
                     # videos need to be embedded when running in google colab.
                     # do this automatically in case config.media_embed has not been
@@ -184,7 +232,8 @@ else:
                         embed=embed,
                     )
 
-                display(result)
+                if embed is True:
+                    display(result)
 
         def add_additional_args(self, args: list[str]) -> list[str]:
             additional_args = ["--jupyter"]
@@ -193,6 +242,29 @@ else:
                 additional_args += ["--format", "webm"]
             return additional_args + args[:-1] + [""] + [args[-1]]
 
+        def write_content_to_cell(self, contents):
+            """
+            Replaces the content of cell in jupyter lab/notebook file.
+            Args:
+                contents: new contents to replace the current cell content.
+            """
+            payload = dict(
+                source='set_next_input',
+                text=contents,
+                replace=True,
+            )
+            get_ipython().payload_manager.write_payload(payload, single=False)
 
 def _generate_file_name() -> str:
     return config["scene_names"][0] + "@" + datetime.now().strftime("%Y-%m-%d@%H-%M-%S")
+
+# def load_ipython_extension(ipython):
+#     """
+#     Any module file that define a function named `load_ipython_extension`
+#     can be loaded via `%load_ext module.path` or be configured to be
+#     autoloaded by IPython at startup time.
+#     """
+#     # You can register the class itself without instantiating it.
+#     # IPython will call the default constructor on it.
+#     ipython.register_magics(ManimMagic)
+#     print("Manim Magics class imported")
