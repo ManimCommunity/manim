@@ -521,7 +521,7 @@ class VMobject(Mobject):
     def get_fill_opacities(self) -> npt.NDArray[ManimFloat]:
         return self.get_fill_rgbas()[:, 3]
 
-    def get_stroke_rgbas(self, background: bool = False) -> RGBA_Array_float | Zeros:
+    def get_stroke_rgbas(self, background: bool = False) -> RGBA_Array_Float | Zeros:
         try:
             if background:
                 self.background_stroke_rgbas: RGBA_Array_Float
