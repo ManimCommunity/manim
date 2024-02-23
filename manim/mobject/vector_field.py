@@ -11,7 +11,7 @@ __all__ = [
 import itertools as it
 import random
 from math import ceil, floor
-from typing import TYPE_CHECKING, Callable, Iterable, Self, Sequence
+from typing import TYPE_CHECKING, Callable, Iterable, Sequence, TypeVar
 
 import numpy as np
 from PIL import Image
@@ -44,13 +44,16 @@ from ..utils.simple_functions import sigmoid
 
 if TYPE_CHECKING:
     import numpy.typing as npt
+    from typing_extensions import Self
 
     from manim.typing import ManimFloat, Point3D, Vector3D
 
 DEFAULT_SCALAR_FIELD_COLORS: list = [BLUE_E, GREEN, YELLOW, RED]
 
+T = TypeVar("T", bound=VMobject)
 
-class VectorField(VGroup[VMobject]):
+
+class VectorField(VGroup[T]):
     """A vector field.
 
     Vector fields are based on a function defining a vector at every position.
