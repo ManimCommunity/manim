@@ -52,8 +52,6 @@ from ...utils.iterables import make_even, resize_array, stretch_array_to_length,
 from ...utils.space_ops import rotate_vector, shoelace_direction
 
 if TYPE_CHECKING:
-    from types import GenericAlias
-
     import numpy.typing as npt
 
     from manim.typing import (
