@@ -4,7 +4,7 @@ from __future__ import annotations
 
 __all__ = ["SurroundingRectangle", "BackgroundRectangle", "Cross", "Underline"]
 
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from manim import config, logger
 from manim.constants import *
@@ -167,9 +167,7 @@ class Cross(VGroup[Line]):
         scale_factor: float = 1.0,
         **kwargs,
     ) -> None:
-        super().__init__(
-            Line(UL, DR), Line(UR, DL), **kwargs
-        )
+        super().__init__(Line(UL, DR), Line(UR, DL), **kwargs)
         if mobject is not None:
             self.replace(mobject, stretch=True)
         self.scale(scale_factor)
