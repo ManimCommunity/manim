@@ -26,7 +26,7 @@ from ..animation.creation import Create
 from ..animation.indication import ShowPassingFlash
 from ..constants import OUT, RIGHT, UP, RendererType
 from ..mobject.mobject import Mobject
-from ..mobject.types.vectorized_mobject import VGroup, VMobject
+from ..mobject.types.vectorized_mobject import VGroup, VMobjectT
 from ..mobject.utils import get_vectorized_mobject_class
 from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import (
@@ -50,10 +50,8 @@ if TYPE_CHECKING:
 
 DEFAULT_SCALAR_FIELD_COLORS: list = [BLUE_E, GREEN, YELLOW, RED]
 
-T = TypeVar("T", bound=VMobject)
 
-
-class VectorField(VGroup[T]):
+class VectorField(VGroup[VMobjectT]):
     """A vector field.
 
     Vector fields are based on a function defining a vector at every position.
@@ -642,7 +640,7 @@ class ArrowVectorField(VectorField[Vector]):
         return vect
 
 
-class StreamLines(VectorField[VMobject]):
+class StreamLines(VectorField[VMobjectT]):
     """StreamLines represent the flow of a :class:`VectorField` using the trace of moving agents.
 
     Vector fields are always based on a function defining the vector at every position.

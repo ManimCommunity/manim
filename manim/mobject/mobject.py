@@ -3015,7 +3015,7 @@ def override_animate(method) -> types.FunctionType:
 
     .. manim:: AnimationOverrideExample
 
-        class CircleWithContent(VGroup[VMobject]):
+        class CircleWithContent(VGroup):
             def __init__(self, content):
                 super().__init__()
                 self.circle = Circle()

@@ -7,7 +7,7 @@ __all__ = ["AnimatedBoundary", "TracedPath"]
 from typing import Callable
 
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.types.vectorized_mobject import VGroup, VMobject
+from manim.mobject.types.vectorized_mobject import VGroup, VMobject, VMobjectT
 from manim.utils.color import (
     BLUE_B,
     BLUE_D,
@@ -19,7 +19,7 @@ from manim.utils.color import (
 from manim.utils.rate_functions import smooth
 
 
-class AnimatedBoundary(VGroup[VMobject]):
+class AnimatedBoundary(VGroup[VMobjectT]):
     """Boundary of a :class:`.VMobject` with animated color change.
 
     Examples
