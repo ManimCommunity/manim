@@ -38,7 +38,7 @@ class AnimatedBoundary(VGroup[VMobjectT]):
 
     def __init__(
         self,
-        vmobject: VMobject,
+        vmobject: VMobjectT,
         colors: list[ParsableManimColor] = [BLUE_D, BLUE_B, BLUE_E, GREY_BROWN],
         max_stroke_width: float = 3,
         cycle_rate: float = 0.5,
@@ -60,7 +60,7 @@ class AnimatedBoundary(VGroup[VMobjectT]):
         ]
         self.add(*self.boundary_copies)
         self.total_time = 0
-        self.add_updater(lambda m, dt: self.update_boundary_copies(dt))
+        self.add_updater(lambda _, dt: self.update_boundary_copies(dt))
 
     def update_boundary_copies(self, dt):
         # Not actual time, but something which passes at
