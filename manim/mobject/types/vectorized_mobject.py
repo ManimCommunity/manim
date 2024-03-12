@@ -958,7 +958,11 @@ class VMobject(Mobject):
         :class:`VMobject`
             ``self``
 
+
+        Examples
+        --------
         .. manim:: PointsAsCornersExample
+            :save_last_frame:
 
             class PointsAsCornersExample(Scene):
                 def construct(self):
@@ -1403,6 +1407,7 @@ class VMobject(Mobject):
         Example
         -------
         .. manim:: PointFromProportion
+            :save_last_frame:
 
             class PointFromProportion(Scene):
                 def construct(self):
