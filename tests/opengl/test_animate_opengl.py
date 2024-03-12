@@ -55,7 +55,7 @@ def test_overridden_animate(using_opengl_renderer):
 
 
 def test_chaining_overridden_animate(using_opengl_renderer):
-    class DotsWithLine(VGroup[VMobjectT]):
+    class DotsWithLine(VGroup):
         def __init__(self):
             super().__init__()
             self.left_dot = Dot().shift((-1, 0, 0))
