@@ -1400,9 +1400,11 @@ class VMobject(Mobject):
         :exc:`Exception`
             If the :class:`VMobject` has no points.
 
-        .. manim:: ProportionsOfLine
+        Example
+        -------
+        .. manim:: PointFromProportion
 
-            class ProportionsOfLine(Scene):
+            class PointFromProportion(Scene):
                 def construct(self):
                     line = Line(2*DL, 2*UR)
                     self.add(line)
