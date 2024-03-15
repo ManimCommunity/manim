@@ -62,9 +62,10 @@ class SingleStringMathTex(SVGMobject):
         tex_environment: str = "align*",
         tex_template: TexTemplate | None = None,
         font_size: float = DEFAULT_FONT_SIZE,
+        preserve_colors: bool = False,
         **kwargs,
     ):
-        if kwargs.get("color") is None:
+        if kwargs.get("color") is None and not preserve_colors:
             # makes it so that color isn't explicitly passed for these mobs,
             # and can instead inherit from the parent
             kwargs["color"] = VMobject().color
