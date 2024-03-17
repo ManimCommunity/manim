@@ -882,7 +882,7 @@ class Mobject:
 
         Returns
         -------
-        class:`bool`
+        :class:`bool`
             ``True`` if at least one updater uses the ``dt`` parameter, ``False``
             otherwise.
 
@@ -1905,7 +1905,17 @@ class Mobject:
         return self
 
     def get_color(self) -> ManimColor:
-        """Returns the color of the :class:`~.Mobject`"""
+        """Returns the color of the :class:`~.Mobject`
+
+        Examples
+        --------
+        ::
+
+            >>> from manim import Square, RED
+            >>> Square(color=RED).get_color() == RED
+            True
+
+        """
         return self.color
 
     ##
