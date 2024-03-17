@@ -1911,8 +1911,7 @@ class Mobject:
         --------
         ::
 
-            >>> from manim import Square, RED
-            >>> Square().set_color(RED).get_color() == RED
+            >>> Square(color=RED).get_color() == RED
             True
 
         """
