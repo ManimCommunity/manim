@@ -32,7 +32,7 @@ from manim.utils.space_ops import angle_of_vector, line_intersection, normalize
 if TYPE_CHECKING:
     from typing_extensions import Self
 
-    from manim.typing import Point2D, Point3D, Vector2D, Vector3D
+    from manim.typing import Point2D, Point3D, Vector3D
     from manim.utils.color import ParsableManimColor
 
     from ..matrix import Matrix  # Avoid circular import
@@ -661,7 +661,7 @@ class Vector(Arrow):
     """
 
     def __init__(
-        self, direction: Vector2D | Vector3D = RIGHT, buff: float = 0, **kwargs
+        self, direction: Point2D | Point3D = RIGHT, buff: float = 0, **kwargs
     ) -> None:
         self.buff = buff
         if len(direction) == 2:
