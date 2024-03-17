@@ -105,4 +105,9 @@ global_options = option_group(
         help="Prevents deletion of .aux, .dvi, and .log files produced by Tex and MathTex.",
         default=False,
     ),
+    option(
+        "--preview_command",
+        help="The command to preview the video file (ex: xdg-open on linux)",
+        default="",
+    ),
 )
