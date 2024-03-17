@@ -384,6 +384,52 @@ we have to add it manually.
             )
             self.add(tex)
 
+You can use the ``xcolor`` package to apply colors within TeX, but to do this
+you have to explicitly state that you want to preserve these colors (as the
+default is to override them with whatever the default :class:`~.VMobject`
+color is):
+
+.. manim:: XColor
+    :save_last_frame:
+
+    class XColor(Scene):
+        def construct(self):
+            myTemplate = TexTemplate()
+            myTemplate.add_to_preamble(r"\usepackage{xcolor}")
+            tex = Tex(
+                r"\textcolor{white}{Hello} \textcolor{yellow}{\LaTeX}",
+                tex_template=myTemplate,
+                font_size=144,
+                preserve_colors=True,
+            )
+            self.add(tex)
+
+You can use :func:`manim.mobject.mobject.Mobject.set_default` to make this the
+default:
+
+.. manim:: DefaultTexTemplate
+    :save_last_frame:
+
+    class DefaultTexTemplate(Scene):
+        def construct(self):
+            myTemplate = TexTemplate()
+            myTemplate.add_to_preamble(r"\usepackage{xcolor}")
+            myTemplate.add_to_document(r"\color{white}")
+
+            Tex.set_default(
+                tex_template=myTemplate,
+                preserve_colors=True
+            )
+
+            tex = Tex(
+                r"Hello \textcolor{yellow}{\LaTeX}",
+                font_size=144,
+            )
+            self.add(tex)
+
+            # Restore original defaults, to avoid breaking documentation
+            Tex.set_default()
+
 Substrings and parts
 ====================
 

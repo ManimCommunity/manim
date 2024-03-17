@@ -44,6 +44,36 @@ tex_string_to_mob_map = {}
 class SingleStringMathTex(SVGMobject):
     """Elementary building block for rendering text with LaTeX.
 
+    Parameters
+    ----------
+    tex_string
+        The TeX source string to render.
+    stroke_width
+        The stroke width of the mobject. If ``None`` (the default),
+        the stroke width values set in the generated SVG file are used.
+    should_center
+        Whether or not the mobject should be centered after
+        being imported.
+    height
+    organize_left_to_right
+    tex_environment
+        The TeX environment to wrap the string in.
+    tex_template
+        The TeX template to use when rendering the string.
+    font_size
+    preserve_colors
+        If ``False`` (the default), the mobject is recolored based on
+        the default :class:`~.VMobject` color.
+        If ``True``, the colors in the TeX document are used.
+
+        .. warning::
+            By default, TeX strings are coloured black, meaning they
+            will be invisible against a black background.
+            If you want to use this option, it is recommended to set
+            a default color in TeX.
+    kwargs
+        Further arguments passed to the parent class.
+
     Tests
     -----
     Check that creating a :class:`~.SingleStringMathTex` object works::
@@ -62,9 +92,10 @@ class SingleStringMathTex(SVGMobject):
         tex_environment: str = "align*",
         tex_template: TexTemplate | None = None,
         font_size: float = DEFAULT_FONT_SIZE,
+        preserve_colors: bool = False,
         **kwargs,
     ):
-        if kwargs.get("color") is None:
+        if kwargs.get("color") is None and not preserve_colors:
             # makes it so that color isn't explicitly passed for these mobs,
             # and can instead inherit from the parent
             kwargs["color"] = VMobject().color
