@@ -219,9 +219,6 @@ class OpenGLCamera(OpenGLMobject):
         self.refresh_rotation_matrix()
 
 
-points_per_curve = 3
-
-
 class OpenGLRenderer:
     def __init__(self, file_writer_class=SceneFileWriter, skip_animations=False):
         # Measured in pixel widths, used for vector graphics
