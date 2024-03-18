@@ -662,6 +662,34 @@ class Rectangle(Polygon):
             self.add(self.grid_lines)
 
 
+class LabeledRectangle(Rectangle):
+    """A :class:`Rectangle` containing a label in its center.
+
+    Parameters
+    ----------
+    label
+        The label of the :class:`Rectangle`. This is rendered as :class:`~.MathTex`
+        by default (i.e., when passing a :class:`str`), but other classes
+        representing rendered strings like :class:`~.Text` or :class:`~.Tex`
+        can be passed as well.
+
+    """
+
+    def __init__(
+        self,
+        label: str | SingleStringMathTex | Text | Tex,
+        **kwargs,
+    ) -> None:
+        if isinstance(label, str):
+            rendered_label = MathTex(label, color=BLACK)
+        else:
+            rendered_label = label
+
+        super().__init__(**kwargs)
+        rendered_label.move_to(self.get_center())
+        self.add(rendered_label)
+
+
 class Square(Rectangle):
     """A rectangle with equal side lengths.
 
