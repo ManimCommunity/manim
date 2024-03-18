@@ -663,7 +663,8 @@ class Scene:
     def get_restructured_mobject_list(self, mobjects: list, to_remove: list):
         """
         Given a list of mobjects and a list of mobjects to be removed, this
-        filters out the removable mobjects from the list of mobjects.
+        filters out the removable mobjects from the list of mobjects
+        and from the submobjects of those mobjects.
 
         Parameters
         ----------
@@ -680,19 +681,24 @@ class Scene:
             The list of mobjects with the mobjects to remove removed.
         """
 
-        new_mobjects = []
-
         def add_safe_mobjects_from_list(list_to_examine, set_to_remove):
+            new_mobjects = []
             for mob in list_to_examine:
                 if mob in set_to_remove:
                     continue
                 intersect = set_to_remove.intersection(mob.get_family())
                 if intersect:
-                    add_safe_mobjects_from_list(mob.submobjects, intersect)
+                    newmob = mob.copy()
+                    newmob.submobjects = add_safe_mobjects_from_list(
+                        mob.submobjects, intersect
+                    )
+                    new_mobjects += [newmob]
                 else:
-                    new_mobjects.append(mob)
+                    new_mobjects += [mob]
 
-        add_safe_mobjects_from_list(mobjects, set(to_remove))
+            return new_mobjects
+
+        new_mobjects = add_safe_mobjects_from_list(mobjects, set(to_remove))
         return new_mobjects
 
     # TODO, remove this, and calls to this
