@@ -993,7 +993,7 @@ class CubicBezier(VMobject, metaclass=ConvertToOpenGL):
         **kwargs,
     ) -> None:
         super().__init__(**kwargs)
-        self.add_cubic_bezier_curve(start_anchor, start_handle, end_handle, end_anchor)
+        self.append_points([start_anchor, start_handle, end_handle, end_anchor])
 
 
 class ArcPolygon(VMobject, metaclass=ConvertToOpenGL):
