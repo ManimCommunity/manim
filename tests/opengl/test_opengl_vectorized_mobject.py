@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from manim import Circle, Line, Square, VDict, VGroup
+from manim import Circle, Line, Square, Text, VDict, VGroup
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 
@@ -30,6 +30,14 @@ def test_opengl_vmobject_point_from_propotion(using_opengl_renderer):
     obj.clear_points()
     with pytest.raises(Exception, match="with no points"):
         obj.point_from_proportion(0)
+
+
+def test_opengl_align_family_and_data(using_opengl_renderer):
+    text_c = Text("c")
+    text_o = Text("o")
+    assert text_c.get_all_points().shape != text_o.get_all_points().shape
+    text_c.align_data_and_family(text_o)
+    assert text_c.get_all_points().shape == text_o.get_all_points().shape
 
 
 def test_vgroup_init(using_opengl_renderer):
