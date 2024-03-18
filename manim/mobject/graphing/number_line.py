@@ -51,6 +51,8 @@ class NumberLine(Line):
         The thickness of the line.
     include_tip
         Whether to add a tip to the end of the line.
+    include_tips
+        Whether to add tips to the start & end of the line.
     tip_width
         The width of the tip.
     tip_height
@@ -148,6 +150,7 @@ class NumberLine(Line):
         stroke_width: float = 2.0,
         # tip
         include_tip: bool = False,
+        include_tips: bool = False,
         tip_width: float = DEFAULT_ARROW_TIP_LENGTH,
         tip_height: float = DEFAULT_ARROW_TIP_LENGTH,
         tip_shape: type[ArrowTip] | None = None,
@@ -199,6 +202,7 @@ class NumberLine(Line):
         self.rotation = rotation
         # tip
         self.include_tip = include_tip
+        self.include_tips = include_tips
         self.tip_width = tip_width
         self.tip_height = tip_height
         # numbers
@@ -229,6 +233,21 @@ class NumberLine(Line):
 
         if self.include_tip:
             self.add_tip(
+                tip_length=self.tip_height,
+                tip_width=self.tip_width,
+                tip_shape=tip_shape,
+            )
+            self.tip.set_stroke(self.stroke_color, self.stroke_width)
+
+        if self.include_tips:
+            self.add_tip(
+                tip_length=self.tip_height,
+                tip_width=self.tip_width,
+                tip_shape=tip_shape,
+            )
+
+            # This function `add_tip_opposite_end` to be defined in arc.py
+            self.add_tip_opposite_end(
                 tip_length=self.tip_height,
                 tip_width=self.tip_width,
                 tip_shape=tip_shape,
@@ -321,9 +340,16 @@ class NumberLine(Line):
         np.ndarray
             A numpy array of floats represnting values along the number line.
         """
+        # set x_min and x_max based on self.include_tip or self.include_tips
         x_min, x_max, x_step = self.x_range
-        if not self.include_tip:
+        if not self.include_tip and not self.include_tips:
             x_max += 1e-6
+        elif not self.include_tip and self.include_tips:
+            x_max -= 1e-6
+            x_min += 1e-6
+        elif self.include_tip and self.include_tips:
+            x_max -= 1e-6
+            x_min += 1e-6
 
         # Handle cases where min and max are both positive or both negative
         if x_min < x_max < 0 or x_max > x_min > 0:
