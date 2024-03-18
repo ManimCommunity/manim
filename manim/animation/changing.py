@@ -7,7 +7,7 @@ __all__ = ["AnimatedBoundary", "TracedPath"]
 from typing import Callable
 
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.types.vectorized_mobject import VGroup, VMobject
+from manim.mobject.types.vectorized_mobject import VGroup, VMobject, VMobjectT
 from manim.utils.color import (
     BLUE_B,
     BLUE_D,
@@ -19,7 +19,7 @@ from manim.utils.color import (
 from manim.utils.rate_functions import smooth
 
 
-class AnimatedBoundary(VGroup):
+class AnimatedBoundary(VGroup[VMobjectT]):
     """Boundary of a :class:`.VMobject` with animated color change.
 
     Examples
@@ -38,11 +38,11 @@ class AnimatedBoundary(VGroup):
 
     def __init__(
         self,
-        vmobject,
-        colors=[BLUE_D, BLUE_B, BLUE_E, GREY_BROWN],
-        max_stroke_width=3,
-        cycle_rate=0.5,
-        back_and_forth=True,
+        vmobject: VMobjectT,
+        colors: list[ParsableManimColor] = [BLUE_D, BLUE_B, BLUE_E, GREY_BROWN],
+        max_stroke_width: float = 3,
+        cycle_rate: float = 0.5,
+        back_and_forth: bool = True,
         draw_rate_func=smooth,
         fade_rate_func=smooth,
         **kwargs,
@@ -60,7 +60,7 @@ class AnimatedBoundary(VGroup):
         ]
         self.add(*self.boundary_copies)
         self.total_time = 0
-        self.add_updater(lambda m, dt: self.update_boundary_copies(dt))
+        self.add_updater(lambda _, dt: self.update_boundary_copies(dt))
 
     def update_boundary_copies(self, dt):
         # Not actual time, but something which passes at

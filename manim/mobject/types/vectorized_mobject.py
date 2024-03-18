@@ -18,6 +18,7 @@ from typing import (
     TYPE_CHECKING,
     Callable,
     Generator,
+    Generic,
     Hashable,
     Iterable,
     Literal,
@@ -26,9 +27,8 @@ from typing import (
 )
 
 import numpy as np
-import numpy.typing as npt
 from PIL.Image import Image
-from typing_extensions import Self
+from typing_extensions import Self, TypeVar
 
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
@@ -52,6 +52,8 @@ from ...utils.iterables import make_even, resize_array, stretch_array_to_length,
 from ...utils.space_ops import rotate_vector, shoelace_direction
 
 if TYPE_CHECKING:
+    import numpy.typing as npt
+
     from manim.typing import (
         BezierPoints,
         CubicBezierPoints,
@@ -517,7 +519,7 @@ class VMobject(Mobject):
     def get_fill_opacities(self) -> npt.NDArray[ManimFloat]:
         return self.get_fill_rgbas()[:, 3]
 
-    def get_stroke_rgbas(self, background: bool = False) -> RGBA_Array_float | Zeros:
+    def get_stroke_rgbas(self, background: bool = False) -> RGBA_Array_Float | Zeros:
         try:
             if background:
                 self.background_stroke_rgbas: RGBA_Array_Float
@@ -1885,7 +1887,10 @@ class VMobject(Mobject):
         return self
 
 
-class VGroup(VMobject, metaclass=ConvertToOpenGL):
+VMobjectT = TypeVar("VMobjectT", bound=VMobject, default=VMobject)
+
+
+class VGroup(VMobject, Generic[VMobjectT], metaclass=ConvertToOpenGL):
     """A group of vectorized mobjects.
 
     This can be used to group multiple :class:`~.VMobject` instances together
@@ -1942,7 +1947,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
 
     """
 
-    def __init__(self, *vmobjects, **kwargs):
+    def __init__(self, *vmobjects: VMobjectT, **kwargs):
         super().__init__(**kwargs)
         self.add(*vmobjects)
 
@@ -2429,7 +2434,7 @@ class VectorizedPoint(VMobject, metaclass=ConvertToOpenGL):
         self.set_points(np.array([new_loc]))
 
 
-class CurvesAsSubmobjects(VGroup):
+class CurvesAsSubmobjects(VGroup[VMobject]):
     """Convert a curve's elements to submobjects.
 
     Examples
