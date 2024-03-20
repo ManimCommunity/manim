@@ -61,7 +61,7 @@ jupyterlab = ["jupyterlab", "notebook"]
 gui = ["dearpygui"]
 
 [tool.poetry.group.dev.dependencies]
-black = "^23.11.0"
+black = ">=23.11,<25.0"
 flake8 = "^6.1.0"
 flake8-bugbear = "^23.11.28"
 flake8-builtins = "^2.2.0"
