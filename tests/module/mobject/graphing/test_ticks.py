@@ -27,9 +27,11 @@ def test_elongated_ticks_float_equality():
     default_tick_height, elongated_tick_height = min(tick_heights), max(tick_heights)
 
     assert all(
-        tick.height == elongated_tick_height
-        if ind in [2, 7]
-        else tick.height == default_tick_height
+        (
+            tick.height == elongated_tick_height
+            if ind in [2, 7]
+            else tick.height == default_tick_height
+        )
         for ind, tick in enumerate(nline.ticks)
     )
 

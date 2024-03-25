@@ -9,6 +9,7 @@ movie vs writing a single frame).
 See :doc:`/guides/configuration` for an introduction to Manim's configuration system.
 
 """
+
 from __future__ import annotations
 
 import argparse

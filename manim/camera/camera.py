@@ -1,6 +1,5 @@
 """A camera converts the mobjects contained in a Scene into an array of pixels."""
 
-
 from __future__ import annotations
 
 __all__ = ["Camera", "BackgroundColoredVMobjectDisplayer"]

@@ -214,11 +214,13 @@ def _make_test_comparing_frames(
                 # If you pass a custom renderer to the Scene, the Camera class given as an argument in the Scene
                 # is not passed to the renderer. See __init__ of Scene.
                 # This potentially prevents OpenGL testing.
-                test_renderer=testRenderer(file_writer_class=file_writer_class)
-                if base_scene is not ThreeDScene
-                else testRenderer(
-                    file_writer_class=file_writer_class,
-                    camera_class=ThreeDCamera,
+                test_renderer=(
+                    testRenderer(file_writer_class=file_writer_class)
+                    if base_scene is not ThreeDScene
+                    else testRenderer(
+                        file_writer_class=file_writer_class,
+                        camera_class=ThreeDCamera,
+                    )
                 ),  # testRenderer(file_writer_class=file_writer_class),
             )
             scene_tested = sceneTested(skip_animations=True)
