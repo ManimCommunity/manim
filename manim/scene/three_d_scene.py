@@ -288,9 +288,11 @@ class ThreeDScene(Scene):
                 [phi, "phi"],
                 [gamma, "gamma"],
                 [
-                    config.frame_height / (zoom * cam.height)
-                    if zoom is not None
-                    else None,
+                    (
+                        config.frame_height / (zoom * cam.height)
+                        if zoom is not None
+                        else None
+                    ),
                     "zoom",
                 ],
                 [frame_center, "frame_center"],

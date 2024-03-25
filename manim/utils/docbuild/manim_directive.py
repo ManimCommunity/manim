@@ -77,6 +77,7 @@ directive:
         that is rendered in a reference block after the source code.
 
 """
+
 from __future__ import annotations
 
 import csv
@@ -150,6 +151,7 @@ class ManimDirective(Directive):
 
     See the module docstring for documentation.
     """
+
     has_content = True
     required_arguments = 1
     optional_arguments = 0
