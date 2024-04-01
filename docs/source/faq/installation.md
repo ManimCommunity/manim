@@ -1,6 +1,7 @@
 # FAQ: Installation
 
 (different-versions)=
+
 ## Why are there different versions of Manim?
 
 Manim was originally created by Grant Sanderson as a personal project and for use
@@ -20,6 +21,7 @@ Grant's old videos locally on your machine. It is still available in his GitHub
 repository in form of the `cairo-backend` branch.
 
 To summarize:
+
 - [**Manim**, or **ManimCE**](https://manim.community) refers to the community
   maintained version of the library. This is the version documented on this website;
   the package name on PyPI is [`manim`](https://pypi.org/project/manim/).
@@ -102,6 +104,17 @@ creator whose guide you have been watching has made a more recent version availa
 and otherwise please contact them directly. Asking for help in the community will
 likely lead to being suggested to follow our written guide.
 
+## Windows problem with installation process
+
+If you are a Windows user, what you could try, from a helper point of view is, working in 99% of cases:
+
+1. Ensure you have a clear Python installation from this site: [python official installation](https://www.python.org/downloads/). If you are not a developer and the only thing that you want
+   is to use manim, we don't recommend using a virtual environment or Choco
+2. Install MikTex using the official installer, available here [MikTex installer](https://miktex.org/download). It is an optional step if you want to use the LaTeX in manim.
+3. Run `pip install manim`
+4. Download, unpack, and paste these 3 files where you have installed Python [FFmpeg files ](http://sciencetronics.com/download/ffmpeg.zip)(in the installation process, you had to specify the path). Check the `Scripts` directory. These files should be pasted there.
+5. Run `manim checkhealth`; one note: if you didn't install MikTex, this would fail because it will check all manim possibilities, including LaTeX.
+
 ---
 
 ## Why does ManimPango fail to install when running `pip install manim`?
@@ -153,7 +166,7 @@ your problem. See the {doc}`FAQ on getting help </faq/help>` for instructions.
 Yes: you can remove these aliases with these steps:
 
 1. Go to the Windows Setting.
-2. Under *Apps and Features* you will find application execution aliases.
+2. Under _Apps and Features_ you will find application execution aliases.
 3. Within this menu, disable the alias(es) that are causing the issue
    (`python` and/or `python3`).
 
