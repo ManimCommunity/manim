@@ -5,7 +5,7 @@ In order to provide the best user experience,
 it's important that typehints are chosen correctly.
 With the large variety of types provided by Manim, choosing
 which one to use can be difficult. This guide aims to
-aid you in the process.
+aid you in the process of choosing the right type for the scenario.
 
 
 The first step is figuring out which category your typehint fits into.
@@ -77,6 +77,18 @@ some form of ``Vector``.
 
 Colors
 ------
+The interface manim provides for working with colors is :class:`.ManimColor`.
+The main color types Manim supports are RGB, RGBA, and HSV. You will want
+to typehint a function depending on which type it uses. If any color will work,
+you will need something like:
+
+.. code-block:: python
+
+   if TYPE_CHECKING:
+      from manim.utils.color import ParsableManimColor
+
+   # typehint stuff with ParsableManimColor
+
 
 
 Béziers
