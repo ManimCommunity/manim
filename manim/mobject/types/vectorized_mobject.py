@@ -962,6 +962,27 @@ class VMobject(Mobject):
         -------
         :class:`VMobject`
             ``self``
+
+
+        Examples
+        --------
+        .. manim:: PointsAsCornersExample
+            :save_last_frame:
+
+            class PointsAsCornersExample(Scene):
+                def construct(self):
+                    corners = (
+                        # create square
+                        UR, UL,
+                        DL, DR,
+                        UR,
+                        # create crosses
+                        DL, UL,
+                        DR
+                    )
+                    vmob = VMobject(stroke_color=RED)
+                    vmob.set_points_as_corners(corners).scale(2)
+                    self.add(vmob)
         """
         nppcc = self.n_points_per_cubic_curve
         points = np.array(points)
@@ -1387,6 +1408,22 @@ class VMobject(Mobject):
             If ``alpha`` is not between 0 and 1.
         :exc:`Exception`
             If the :class:`VMobject` has no points.
+
+        Example
+        -------
+        .. manim:: PointFromProportion
+            :save_last_frame:
+
+            class PointFromProportion(Scene):
+                def construct(self):
+                    line = Line(2*DL, 2*UR)
+                    self.add(line)
+                    colors = (RED, BLUE, YELLOW)
+                    proportions = (1/4, 1/2, 3/4)
+                    for color, proportion in zip(colors, proportions):
+                        self.add(Dot(color=color).move_to(
+                                line.point_from_proportion(proportion)
+                        ))
         """
 
         if alpha < 0 or alpha > 1:
