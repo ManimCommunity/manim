@@ -39,6 +39,8 @@ from ..utils.paths import straight_path
 from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
 
 if TYPE_CHECKING:
+    from typing_extensions import Self, TypeAlias
+
     from manim.typing import (
         FunctionOverride,
         Image,
@@ -52,7 +54,6 @@ if TYPE_CHECKING:
     )
 
     from ..animation.animation import Animation
-    from typing_extensions import Self, TypeAlias
 
 TimeBasedUpdater: TypeAlias = Callable[["Mobject", float], object]
 NonTimeBasedUpdater: TypeAlias = Callable[["Mobject"], object]
