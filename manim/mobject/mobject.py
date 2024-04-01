@@ -55,9 +55,9 @@ if TYPE_CHECKING:
 
     from ..animation.animation import Animation
 
-TimeBasedUpdater: TypeAlias = Callable[["Mobject", float], object]
-NonTimeBasedUpdater: TypeAlias = Callable[["Mobject"], object]
-Updater: TypeAlias = NonTimeBasedUpdater | TimeBasedUpdater
+    TimeBasedUpdater: TypeAlias = Callable[["Mobject", float], object]
+    NonTimeBasedUpdater: TypeAlias = Callable[["Mobject"], object]
+    Updater: TypeAlias = NonTimeBasedUpdater | TimeBasedUpdater
 
 
 class Mobject:
