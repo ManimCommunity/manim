@@ -39,6 +39,8 @@ from .vectorized_mobject_rendering import (
     render_opengl_vectorized_mobject_stroke,
 )
 
+__all__ = ["OpenGLCamera", "OpenGLRenderer"]
+
 
 class OpenGLCamera(OpenGLMobject):
     euler_angles = _Data()
@@ -215,9 +217,6 @@ class OpenGLCamera(OpenGLMobject):
     def interpolate(self, *args, **kwargs):
         super().interpolate(*args, **kwargs)
         self.refresh_rotation_matrix()
-
-
-points_per_curve = 3
 
 
 class OpenGLRenderer:

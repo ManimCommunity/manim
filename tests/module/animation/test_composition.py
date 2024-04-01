@@ -172,10 +172,10 @@ def test_animationgroup_is_passing_remover_to_nested_animationgroups():
 
 
 def test_empty_animation_group_fails():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Please add at least one Animation"):
         AnimationGroup().begin()
 
 
 def test_empty_animation_fails():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Please set the run_time to be positive"):
         FadeIn(None, run_time=0).begin()

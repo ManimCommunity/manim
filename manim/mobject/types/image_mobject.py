@@ -19,6 +19,8 @@ from ...utils.bezier import interpolate
 from ...utils.color import WHITE, ManimColor, color_to_int_rgb
 from ...utils.images import change_to_rgba_array, get_full_raster_image_path
 
+__all__ = ["ImageMobject", "ImageMobjectFromCamera"]
+
 
 class AbstractImageMobject(Mobject):
     """

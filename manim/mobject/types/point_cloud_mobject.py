@@ -23,6 +23,8 @@ from ...utils.color import (
 )
 from ...utils.iterables import stretch_array_to_length
 
+__all__ = ["PMobject", "Mobject1D", "Mobject2D", "PGroup", "PointCloudDot", "Point"]
+
 
 class PMobject(Mobject, metaclass=ConvertToOpenGL):
     """A disc made of a cloud of Dots

@@ -10,6 +10,8 @@ from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 
 from ...constants import RendererType
 
+__all__ = ["ConvertToOpenGL"]
+
 
 class ConvertToOpenGL(ABCMeta):
     """Metaclass for swapping (V)Mobject with its OpenGL counterpart at runtime

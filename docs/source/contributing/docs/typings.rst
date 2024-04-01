@@ -40,6 +40,9 @@ Typing guidelines
   pending shape support, using the correct type aliases will help users understand
   which shape should be used.
 
+* For typings of generic collections, check out `this <https://docs.python.org/3/library/collections.abc.html#collections-abstract-base-classes>`_
+  link.
+
 * Always use a type hint of ``None`` for functions that does not return
   a value (this also applies to ``__init__``), e.g.:
 
@@ -57,6 +60,8 @@ Typing guidelines
 * Following `PEP 484 <https://peps.python.org/pep-0484/#the-numeric-tower>`_,
   use ``float`` instead of ``int | float``.
 
+* Use ``x | y`` instead of ``Union[x, y]``
+
 * Mobjects have the typehint ``Mobject``, e.g.:
 
 .. code:: py
@@ -66,16 +71,55 @@ Typing guidelines
         return self.set_color(mobject.get_color())
 
 * Always parametrize generics (``list[int]`` instead of ``list``,
-  ``type[Any]`` instead of ``type``, etc.). This also applies to callables:
+  ``type[Any]`` instead of ``type``, etc.). This also applies to callables.
 
 .. code:: py
 
     rate_func: Callable[[float], float] = lambda t: smooth(1 - t)
 
+* Use ``TypeVar`` when you want to "link" type hints as being the same type.
+  Consider ``Mobject.copy``, which returns a new instance of the same class.
+  It would be type-hinted as:
+
+.. code:: py
+
+    T = TypeVar("T")
+
+
+    def copy(self: T) -> T:
+        ...
+
+* Use ``typing.Iterable`` whenever the function works with *any* iterable, not a specific type.
+
+* If the function returns a container of a specific length each time, consider using ``tuple`` instead of ``list``.
+
+.. code:: py
+
+   def foo() -> tuple[float, float, float]:
+       return (0, 0, 0)
+
+* If a function works with a parameter as long as said parameter has a ``__getitem__``, ``__iter___`` and ``__len__`` method,
+  the typehint of the parameter should be ``collections.abc.Mapping``. If it also supports ``__setitem__`` and/or ``__delitem__``, it
+  should be marked as ``collections.abc.MutableMapping``.
+
+* Typehinting something as ``object`` means that only attributes available on every Python object should be accessed,
+  like ``__str__`` and so on. On the other hand, literally any attribute can be accessed on a variable with the ``Any`` typehint -
+  it's more freeing than the ``object`` typehint, and makes mypy stop typechecking the variable. Note that whenever possible,
+  try to keep typehints as specific as possible.
+
+* If objects are imported purely for type hint purposes, keep it under an ``if typing.TYPE_CHECKING`` guard, to prevent them from
+  being imported at runtime (helps library performance). Do not forget to use the ``from __future__ import annotations`` import to avoid having runtime ``NameError`` exceptions.
+
+.. code:: py
+
+   from typing import TYPE_CHECKING
+
+   if TYPE_CHECKING:
+       from manim.typing import Vector3D
+   # type stuff with Vector3D
+
 Missing Sections for typehints are:
 -----------------------------------
 
 * Mypy and numpy import errors: https://realpython.com/python-type-checking/#running-mypy
-* When to use ``object`` vs ``Any``
-* The use of a TypeVar on the type hints for ``copy()``.
-* The definition and use of Protocols (like ``Sized``, ``Sequence``, ``Iterable``...)
+* Explain ``mypy.ini`` (see above link)

@@ -12,7 +12,7 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Set up Python 3.11
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: 3.11
 
@@ -40,7 +40,7 @@ jobs:
         tar -czvf ../html-docs.tar.gz *
 
     - name: Store artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
           path: ${{ github.workspace }}/docs/build/html-docs.tar.gz
           name: html-docs.tar.gz
