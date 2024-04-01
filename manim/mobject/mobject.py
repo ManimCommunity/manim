@@ -16,10 +16,9 @@ import types
 import warnings
 from functools import partialmethod, reduce
 from pathlib import Path
-from typing import TYPE_CHECKING, Callable, Iterable, Literal, TypeVar, Union
+from typing import TYPE_CHECKING, Callable, Iterable, Literal
 
 import numpy as np
-from typing_extensions import Self, TypeAlias
 
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 
@@ -39,13 +38,6 @@ from ..utils.iterables import list_update, remove_list_redundancies
 from ..utils.paths import straight_path
 from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
 
-# TODO: Explain array_attrs
-
-TimeBasedUpdater: TypeAlias = Callable[["Mobject", float], None]
-NonTimeBasedUpdater: TypeAlias = Callable[["Mobject"], None]
-Updater: TypeAlias = Union[NonTimeBasedUpdater, TimeBasedUpdater]
-T = TypeVar("T", bound="Mobject")
-
 if TYPE_CHECKING:
     from manim.typing import (
         FunctionOverride,
@@ -60,6 +52,11 @@ if TYPE_CHECKING:
     )
 
     from ..animation.animation import Animation
+    from typing_extensions import Self, TypeAlias
+
+TimeBasedUpdater: TypeAlias = Callable[["Mobject", float], object]
+NonTimeBasedUpdater: TypeAlias = Callable[["Mobject"], object]
+Updater: TypeAlias = NonTimeBasedUpdater | TimeBasedUpdater
 
 
 class Mobject:
@@ -237,7 +234,7 @@ class Mobject:
             cls.__init__ = cls._original__init__
 
     @property
-    def animate(self: T) -> _AnimationBuilder | T:
+    def animate(self) -> _AnimationBuilder | Self:
         """Used to animate the application of any method of :code:`self`.
 
         Any method called on :code:`animate` is converted to an animation of applying
@@ -2926,7 +2923,7 @@ class Mobject:
         self,
         z_index_value: float,
         family: bool = True,
-    ) -> T:
+    ) -> Self:
         """Sets the :class:`~.Mobject`'s :attr:`z_index` to the value specified in `z_index_value`.
 
         Parameters
