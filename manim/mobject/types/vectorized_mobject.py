@@ -26,20 +26,17 @@ from typing import (
 )
 
 import numpy as np
-import numpy.typing as npt
 from PIL.Image import Image
-from typing_extensions import Self
 
+from manim import config
+from manim.constants import *
+from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.three_d.three_d_utils import (
     get_3d_vmob_gradient_start_and_end_points,
 )
-
-from ... import config
-from ...constants import *
-from ...mobject.mobject import Mobject
-from ...utils.bezier import (
+from manim.utils.bezier import (
     bezier,
     get_smooth_handle_points,
     integer_interpolate,
@@ -47,11 +44,19 @@ from ...utils.bezier import (
     partial_bezier_points,
     proportions_along_bezier_curve_for_point,
 )
-from ...utils.color import BLACK, WHITE, ManimColor, ParsableManimColor
-from ...utils.iterables import make_even, resize_array, stretch_array_to_length, tuplify
-from ...utils.space_ops import rotate_vector, shoelace_direction
+from manim.utils.color import BLACK, WHITE, ManimColor, ParsableManimColor
+from manim.utils.iterables import (
+    make_even,
+    resize_array,
+    stretch_array_to_length,
+    tuplify,
+)
+from manim.utils.space_ops import rotate_vector, shoelace_direction
 
 if TYPE_CHECKING:
+    import numpy.typing as npt
+    from typing_extensions import Self
+
     from manim.typing import (
         BezierPoints,
         CubicBezierPoints,
@@ -1406,6 +1411,9 @@ class VMobject(Mobject):
                 return curve(residue)
 
             current_length += length
+        raise Exception(
+            "Not sure how you reached here, please file a bug report at https://github.com/ManimCommunity/manim/issues/new/choose"
+        )
 
     def proportion_from_point(
         self,

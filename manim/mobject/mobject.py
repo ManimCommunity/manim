@@ -2700,13 +2700,13 @@ class Mobject:
 
     def add_n_more_submobjects(self, n: int) -> Self | None:
         if n == 0:
-            return
+            return None
 
         curr = len(self.submobjects)
         if curr == 0:
             # If empty, simply add n point mobjects
             self.submobjects = [self.get_point_mobject() for k in range(n)]
-            return
+            return None
 
         target = curr + n
         # TODO, factor this out to utils so as to reuse
