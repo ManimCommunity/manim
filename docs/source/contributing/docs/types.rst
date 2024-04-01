@@ -66,8 +66,8 @@ like ``direction=(0, 1, 0)``. You could type it as ``InternalPoint3D`` and
 the typechecker and linter would be happy; however, this makes the code harder
 to understand.
 
-As a general rule, if a parameter is called ``direction`` it should be typehinted as
-some form of ``Vector``.
+As a general rule, if a parameter is called ``direction`` or ``axis``,
+it should be typehinted as some form of ``Vector``.
 
 .. warning::
 
