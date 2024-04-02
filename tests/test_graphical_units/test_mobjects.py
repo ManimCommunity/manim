@@ -15,18 +15,29 @@ def test_PointCloudDot(scene):
 @frames_comparison
 def test_become(scene):
     s = Rectangle(width=2, height=1, color=RED).shift(UP)
-    d1, d2, d3 = (Dot() for _ in range(3))
+    d = Dot()
 
-    s1 = s.copy().become(d1, match_width=True).set_opacity(0.25).set_color(BLUE)
+    s1 = s.copy().become(d, match_width=True).set_opacity(0.25).set_color(BLUE)
     s2 = (
         s.copy()
-        .become(d2, match_height=True, match_center=True)
+        .become(d, match_height=True, match_center=True)
         .set_opacity(0.25)
         .set_color(GREEN)
     )
-    s3 = s.copy().become(d3, stretch=True).set_opacity(0.25).set_color(YELLOW)
+    s3 = s.copy().become(d, stretch=True).set_opacity(0.25).set_color(YELLOW)
 
-    scene.add(s, d1, d2, d3, s1, s2, s3)
+    scene.add(s, d, s1, s2, s3)
+
+
+@frames_comparison
+def test_become_no_color_linking(scene):
+    a = Circle()
+    b = Square()
+    scene.add(a)
+    scene.add(b)
+    b.become(a)
+    b.shift(1 * RIGHT)
+    b.set_stroke(YELLOW, opacity=1)
 
 
 @frames_comparison
