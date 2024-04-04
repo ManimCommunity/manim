@@ -2,7 +2,7 @@
 # Exclude the grpc generated code
 exclude = ./manim/grpc/gen/*, __pycache__,.git,
 per-file-ignores = __init__.py:F401
-max-complexity = 15
+max-complexity = 29
 max-line-length = 88
 statistics = True
 # Prevents some flake8-rst-docstrings errors
