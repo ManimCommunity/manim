@@ -1,5 +1,6 @@
-from manim import *
 import os
+
+from manim import *
 
 
 class Test(LinearTransformationScene):
