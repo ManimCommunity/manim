@@ -17,7 +17,6 @@ __all__ = [
 from typing import TYPE_CHECKING
 
 import numpy as np
-from typing_extensions import Self
 
 from manim import config
 from manim.constants import *
@@ -31,6 +30,8 @@ from manim.utils.color import WHITE
 from manim.utils.space_ops import angle_of_vector, line_intersection, normalize
 
 if TYPE_CHECKING:
+    from typing_extensions import Self
+
     from manim.typing import Point2D, Point3D, Vector3D
     from manim.utils.color import ParsableManimColor
 
@@ -659,7 +660,9 @@ class Vector(Arrow):
                 self.add(plane, vector_1, vector_2)
     """
 
-    def __init__(self, direction: Vector3D = RIGHT, buff: float = 0, **kwargs) -> None:
+    def __init__(
+        self, direction: Point2D | Point3D = RIGHT, buff: float = 0, **kwargs
+    ) -> None:
         self.buff = buff
         if len(direction) == 2:
             direction = np.hstack([direction, 0])
