@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-
-from manim.scene.vector_space_scene import VectorScene
-from manim.scene.vector_space_scene import LinearTransformationScene
+from manim.scene.vector_space_scene import LinearTransformationScene, VectorScene
 from manim.utils.testing.frames_comparison import frames_comparison
 
 __module_test__ = "vector_scene"
