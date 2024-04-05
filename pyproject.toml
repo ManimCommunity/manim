@@ -32,6 +32,7 @@ click = ">=8.0"
 cloup = ">=2.0.0"
 dearpygui = { version = ">=1.0.0", optional = true }
 decorator = ">=4.3.2"
+importlib-metadata = {version = ">=3.6", python = "<=3.9"}  # Required to discover plugins
 isosurfaces = ">=0.1.0"
 jupyterlab = { version = ">=3.0.0", optional = true }
 manimpango = ">=0.5.0,<1.0.0"  # Complete API change in 1.0.0
@@ -60,7 +61,7 @@ jupyterlab = ["jupyterlab", "notebook"]
 gui = ["dearpygui"]
 
 [tool.poetry.group.dev.dependencies]
-black = "^23.11.0"
+black = ">=23.11,<25.0"
 flake8 = "^6.1.0"
 flake8-bugbear = "^23.11.28"
 flake8-builtins = "^2.2.0"
