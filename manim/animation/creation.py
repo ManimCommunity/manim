@@ -70,8 +70,8 @@ __all__ = [
     "RemoveTextLetterByLetter",
     "ShowSubmobjectsOneByOne",
     "AddTextWordByWord",
-    "AddTextLetterByLetterWithCursor",
-    "RemoveTextLetterByLetterWithCursor",
+    "TypeWithCursor",
+    "UntypeWithCursor",
 ]
 
 
@@ -673,7 +673,7 @@ class AddTextWordByWord(Succession):
         super().__init__(*anims, **kwargs)
 
 
-class AddTextLetterByLetterWithCursor(AddTextLetterByLetter):
+class TypeWithCursor(AddTextLetterByLetter):
     """Similar to :class:`~.AddTextLetterByLetter` , but with an additional cursor mobject at the end.
 
     Parameters
@@ -710,7 +710,7 @@ class AddTextLetterByLetterWithCursor(AddTextLetterByLetter):
                     width = 0.5,
                 ).move_to(text[0]) # Position the cursor
 
-                self.play(AddTextLetterByLetterWithCursor(text, cursor))
+                self.play(TypeWithCursor(text, cursor))
                 self.play(Blink(cursor, blinks=2))
 
     """
@@ -783,7 +783,7 @@ class AddTextLetterByLetterWithCursor(AddTextLetterByLetter):
         self.cursor.set_opacity(1)
 
 
-class RemoveTextLetterByLetterWithCursor(AddTextLetterByLetterWithCursor):
+class UntypeWithCursor(TypeWithCursor):
     """Similar to :class:`~.RemoveTextLetterByLetter` , but with an additional cursor mobject at the end.
 
     Parameters
@@ -820,7 +820,7 @@ class RemoveTextLetterByLetterWithCursor(AddTextLetterByLetterWithCursor):
                     width = 0.5,
                 ).move_to(text[0]) # Position the cursor
 
-                self.play(RemoveTextLetterByLetterWithCursor(text, cursor))
+                self.play(UntypeWithCursor(text, cursor))
                 self.play(Blink(cursor, blinks=2))
 
     """
