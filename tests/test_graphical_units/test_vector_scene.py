@@ -17,9 +17,10 @@ def test_vector_to_coords(scene):
 
 
 def test_apply_matrix():
-    scene = LinearTransformationScene()
+    scene = LinearTransformationScene(include_background_plane=False)
     scene.setup()
     matrix = [[-1, 1], [1, 1]]
-    scene.apply_matrix(matrix)
+    # use short runtimes to speed up animation rendering
+    scene.apply_matrix(matrix, run_time=0.01)
     scene.wait()
-    scene.apply_inverse_matrix(matrix)
+    scene.apply_inverse(matrix, run_time=0.01)
