@@ -1012,7 +1012,11 @@ class LinearTransformationScene(VectorScene):
         start = Group(*pieces)
         target = Group(*(mob.target for mob in pieces))
         """
-        # N
+        # NOTE JasonGrace said that there is another possible solution
+        """
+        - self.mobject = mobject if mobject is not None else Mobject()
+        + self.mobject = mobject if mobject is not None else VMobject()
+        """
         # don't add empty VGroups
         if self.leave_ghost_vectors and start.submobjects:
             # start.copy() gives a VGroup of Vectors
