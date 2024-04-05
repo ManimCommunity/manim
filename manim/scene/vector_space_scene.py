@@ -1000,21 +1000,25 @@ class LinearTransformationScene(VectorScene):
 
         Returns
         -------
-        Animation`
+        Animation
             The animation of the movement.
         """
 
         v_pieces = [piece for piece in pieces if isinstance(piece, VMobject)]
         start = VGroup(*v_pieces)
         target = VGroup(*(mob.target for mob in v_pieces))
+        # NOTE other possible solution:
+        """
+        start = Group(*pieces)
+        target = Group(*(mob.target for mob in pieces))
+        """
+        # N
         # don't add empty VGroups
-        if v_pieces:
-            if self.leave_ghost_vectors and start.submobjects:
-                # start.copy() gives a VGroup of Vectors
-                self.ghost_vectors.add(start.copy().fade(0.7))
-                self.add(self.ghost_vectors[-1])
-            return Transform(start, target, lag_ratio=0)
-        return []
+        if self.leave_ghost_vectors and start.submobjects:
+            # start.copy() gives a VGroup of Vectors
+            self.ghost_vectors.add(start.copy().fade(0.7))
+            self.add(self.ghost_vectors[-1])
+        return Transform(start, target, lag_ratio=0)
 
     def get_moving_mobject_movement(self, func: Callable[[np.ndarray], np.ndarray]):
         """
