@@ -22,4 +22,4 @@ def test_apply_matrix():
     matrix = [[-1, 1], [1, 1]]
     scene.apply_matrix(matrix)
     scene.wait()
-    scene.apply_inverse_matrix(matrix)
+    scene.apply_inverse(matrix)
