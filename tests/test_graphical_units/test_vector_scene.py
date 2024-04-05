@@ -18,6 +18,7 @@ def test_vector_to_coords(scene):
 
 def test_apply_matrix():
     scene = LinearTransformationScene()
+    scene.setup()
     matrix = [[-1, 1], [1, 1]]
     scene.apply_matrix(matrix)
     scene.wait()
