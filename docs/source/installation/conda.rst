@@ -4,18 +4,21 @@ Conda
 Required Dependencies
 ---------------------
 
-To create a conda environment, you must first install
-`conda <https://docs.conda.io/projects/conda/en/latest/user-guide/install/download.html>`__
-or `mamba <https://mamba.readthedocs.io/en/latest/installation.html>`__,
-the two most popular conda clients.
+There are several package managers that work with conda packages,
+namely `conda <https://docs.conda.io/projects/conda/en/latest/user-guide/install/download.html>`__,
+`mamba <https://mamba.readthedocs.io>`__ and `pixi <https://pixi.sh>`__.
 
-After installing conda, you can create a new environment and install ``manim`` inside by running
+After installing your package manager, you can create a new environment and install ``manim`` inside by running
 
 .. code-block:: bash
 
+   # using conda
    conda create -n my-manim-environment
    conda activate my-manim-environment
    conda install -c conda-forge manim
+   # using pixi
+   pixi init
+   pixi add manim
 
 Since all dependencies (except LaTeX) are handled by conda, you don't need to worry
 about needing to install additional dependencies.
