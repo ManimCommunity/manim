@@ -1269,6 +1269,8 @@ class ManimConfig(MutableMapping):
     @background_opacity.setter
     def background_opacity(self, value: float) -> None:
         self._set_between("background_opacity", value, 0, 1)
+        self.resolve_movie_file_extension(self.transparent)
+        print("The transparency property was set and the output extension is .mov")
 
     @property
     def frame_size(self) -> tuple[int, int]:
