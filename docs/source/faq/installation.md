@@ -116,27 +116,27 @@ If you are a Windows user, what you could try, from a helper point of view is, w
 5. Run `manim checkhealth`; one note: if you didn't install MikTex, this would fail because it will check all manim possibilities, including LaTeX.
 6. If this is not working, please join into our server in discord and create a post on help-forum with a proper title and description. One of our helpers will help you.
 
-## I have installed manim using tutorial but VSCode is not recognizing manim
+## I have installed manim using the tutorial, but VSCode is not recognizing manim
 
-The first thing is that we need to check you installation. To do this run `manim checkhealth`.
-If everything is correctly installed change the interpreter, it would be a button in the down right-hand corner. Select this one where manim was installed. To check where manim was installed run:
+The first thing we need to do is check your installation. To do this, run `manim checkhealth`.
+If everything is correctly installed, change the interpreter; it would be a button in the down right-hand corner. Select this one where manim was installed. To check where manim was installed, run:
 
-1. `where manim` <- for linux user
-2. `where.exe manim` <- for windows user
-   You might have more than one python installation, VSCode will automatically detect it (We assume that you have installed python extension), just pick one of these python versions try to run manim script. If this is not working, please join into our server in discord and create a post on help-forum with a proper title and description. One of our helpers will help you.
+1. `where manim` <- for Linux user
+2. `where.exe manim` <- for Windows user
+   You might have more than one Python installation, and VSCode will automatically detect it (We assume you have installed a Python extension); pick one of these Python versions and try running the manim script. If this is not working, please join our Discord server and create a post on the help forum with a proper title and description. One of our helpers will help you.
 
 ## Should I use a virtual environment?
 
-It quite depends of for what are you using python:
+It quite depends on what you are using in Python:
 
-1. If you only want to use manim and you don't have any experience with python, there will be no difference between using or not virtual environment
-2. If you want to begin your journey with programming we also don't recommend it.
-3. We recommend this if you know what you are doing, or you have a lots of different packages installed and you don't want to resolve the version conflicts, then you should use virtual environment.
+1. If you only want to use manim and you don't have any experience with Python, there will be no difference between using or not using a virtual environment
+2. If you want to begin your journey with programming, we also don't recommend it.
+3. We recommend this. If you know what you are doing, or you have a lot of different packages installed, and you want to avoid resolving the version conflicts, then you should use a virtual environment.
 
-If you decided to use the virtual environment the steps of installation will be almost the same as normal. The only difference will be that you have to paste the ffmpeg files downloaded from [this link](http://sciencetronics.com/download/ffmpeg.zip) into folder where you have manim.exe file. If you don't know where the manim was installed run this command
+If you use the virtual environment, the installation steps will be almost the same as usual. The only difference will be that you have to paste the ffmpeg files downloaded from [this link](http://sciencetronics.com/download/ffmpeg.zip) into the folder where you have the manim.exe file. If you don't know where the manim was installed, run this command
 
-1. `where manim` <- for linux user
-2. `where.exe manim` <- for windows user
+1. `where manim` <- for Linux user
+2. `where.exe manim` <- for Windows user
    and paste these ffmpeg files into that directory.
 
 ---
