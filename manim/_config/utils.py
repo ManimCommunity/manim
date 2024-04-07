@@ -1042,6 +1042,7 @@ class ManimConfig(MutableMapping):
             val,
             [None, "png", "gif", "mp4", "mov", "webm"],
         )
+        self.resolve_movie_file_extension(self.transparent)
         if self.format == "webm":
             logging.getLogger("manim").warning(
                 "Output format set as webm, this can be slower than other formats",
@@ -1269,6 +1270,8 @@ class ManimConfig(MutableMapping):
     @background_opacity.setter
     def background_opacity(self, value: float) -> None:
         self._set_between("background_opacity", value, 0, 1)
+        if self.background_opacity == 0:
+            self.transparent = True
 
     @property
     def frame_size(self) -> tuple[int, int]:
@@ -1422,6 +1425,7 @@ class ManimConfig(MutableMapping):
         self._d.__setitem__("window_size", value)
 
     def resolve_movie_file_extension(self, is_transparent: bool) -> None:
+        prev_file_extension = self.movie_file_extension
         if is_transparent:
             self.movie_file_extension = ".webm" if self.format == "webm" else ".mov"
         elif self.format == "webm":
@@ -1430,6 +1434,11 @@ class ManimConfig(MutableMapping):
             self.movie_file_extension = ".mov"
         else:
             self.movie_file_extension = ".mp4"
+        if self.movie_file_extension != prev_file_extension:
+            logging.getLogger("manim").warning(
+                f"Output format changed to '{self.movie_file_extension}' "
+                "to support transparency",
+            )
 
     @property
     def enable_gui(self) -> bool:

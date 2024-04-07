@@ -59,6 +59,16 @@ def test_transparent():
         frame = scene.renderer.get_frame()
         np.testing.assert_allclose(frame[0, 0], [0, 0, 0, 0])
 
+    # Test that setting background_opacity to 0.0 has the same
+    # effect as setting transparent to True
+    with tempconfig({"background_opacity": 0.0, "dry_run": False}):
+        scene = MyScene()
+        scene.render()
+        frame = scene.renderer.get_frame()
+        np.testing.assert_allclose(frame[0, 0], [0, 0, 0, 0])
+        assert config["movie_file_extension"] == ".mov"
+        assert config["transparent"] is True
+
     config["verbosity"] = orig_verbosity
 
 
