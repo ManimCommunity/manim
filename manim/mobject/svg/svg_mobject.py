@@ -566,7 +566,7 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
         for segment in self.path_obj:
             segment_class = segment.__class__
             if segment_class == se.Move:
-                move_pen(_convert_point_to_3d(*segment.end), True)
+                move_pen(_convert_point_to_3d(*segment.end), true_move=True)
             elif segment_class == se.Line:
                 add_line(last_move, _convert_point_to_3d(*segment.end))
             elif segment_class == se.QuadraticBezier:
