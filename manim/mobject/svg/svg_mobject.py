@@ -512,7 +512,7 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
         curve_start = None
         last_true_move = None
 
-        def move_pen(pt, true_move=False):
+        def move_pen(pt, *, true_move: bool = False):
             nonlocal last_move, curve_start, last_true_move
             last_move = pt
             if curve_start is None:
