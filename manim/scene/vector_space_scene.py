@@ -4,7 +4,7 @@ from __future__ import annotations
 
 __all__ = ["VectorScene", "LinearTransformationScene"]
 
-from typing import Callable
+from typing import Callable, Any
 
 import numpy as np
 
@@ -14,7 +14,7 @@ from manim.mobject.geometry.polygram import Rectangle
 from manim.mobject.graphing.coordinate_systems import Axes, NumberPlane
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.text.tex_mobject import MathTex, Tex
-from manim.utils.config_ops import update_dict_recursively
+from manim.utils.config_ops import merge_dicts_recursively
 
 from .. import config
 from ..animation.animation import Animation
@@ -79,7 +79,15 @@ class VectorScene(Scene):
         self.add(plane)
         return plane
 
-    def add_axes(self, animate: bool = False, color: bool = WHITE, **kwargs):
+    def add_axes(
+        self,
+        animate: bool = False,
+        animation: Animation = Create,
+        animation_kwargs: dict[str, Any] | None = {},
+        play_kwargs: dict[str, Any] | None = {},
+        axis_config: dict[str, Any] | None = {},
+        **axis_kwargs: dict[str, Any] | None,
+    ):
         """
         Adds a pair of Axes to the Scene.
 
@@ -87,12 +95,74 @@ class VectorScene(Scene):
         ----------
         animate
             Whether or not to animate the addition of the axes through Create.
-        color
-            The color of the axes. Defaults to WHITE.
+
+        animation
+            The animation used to add the axes.
+
+        animation_kwargs
+            Any valid keyword arguments of animation.
+
+        play_kwargs
+            Any valid keyword arguments of play.
+
+        axis_config
+            Any valid keyword arguments of Axes.
+
+        axis_kwargs
+            Any valid keyword arguments of Axes.
+
+        Returns
+        -------
+        Axes
+            The Axes object.
+
+        Examples
+        --------
+        .. manim:: AddingAxes
+            class AddingAxes(VectorScene):
+                def construct(self):
+                    axis_config = {"include_tip": True, "unit_size": 2, "include_numbers": True}
+                    animation = FadeIn
+                    animation_kwargs = {"shift": LEFT}
+                    play_kwargs = {"run_time": 1, "rate_func": linear}
+
+                    axes = self.add_axes(
+                        animate=True,
+                        animation=animation,
+                        animation_kwargs=animation_kwargs,
+                        play_kwargs=play_kwargs,
+                        axis_config=axis_config,
+                        x_range=[0, 10, 1],
+                        y_range=[-2, 6, 1],
+                        x_length=5,
+                        y_length=5,
+                    )
+                    self.play(axes.animate.shift(LEFT))
+                    self.wait()
+
+        .. manim:: AddingAxes2
+            class AddingAxes2(VectorScene):
+                def construct(self):
+                    axis_config = {"include_tip": True, "unit_size": 2, "include_numbers": True}
+                    axes = self.add_axes(animate=True, axis_config=axis_config)
+                    self.play(axes.animate.shift(LEFT))
+                    self.wait()
+
         """
-        axes = Axes(color=color, axis_config={"unit_size": 1})
+        axis_kwargs = merge_dicts_recursively(
+            {
+                "x_range": [-5, 5, 1],
+                "y_range": [-5, 5, 1],
+                "x_length": 5,
+                "y_length": 5,
+            },
+            axis_kwargs,
+        )
+        axis_config = merge_dicts_recursively({"unit_size": 1}, axis_config)
+
+        axes = Axes(**axis_kwargs, axis_config=axis_config)
         if animate:
-            self.play(Create(axes))
+            self.play(animation(axes, **animation_kwargs), **play_kwargs)
         self.add(axes)
         return axes
 
@@ -1003,8 +1073,11 @@ class LinearTransformationScene(VectorScene):
         Animation
             The animation of the movement.
         """
-        start = VGroup(*pieces)
-        target = VGroup(*(mob.target for mob in pieces))
+
+        v_pieces = [piece for piece in pieces if isinstance(piece, VMobject)]
+        start = VGroup(*v_pieces)
+        target = VGroup(*(mob.target for mob in v_pieces))
+
         # don't add empty VGroups
         if self.leave_ghost_vectors and start.submobjects:
             # start.copy() gives a VGroup of Vectors
@@ -1091,6 +1164,7 @@ class LinearTransformationScene(VectorScene):
         **kwargs
             Any valid keyword argument of self.apply_transposed_matrix()
         """
+
         self.apply_transposed_matrix(np.array(matrix).T, **kwargs)
 
     def apply_inverse(self, matrix: np.ndarray | list | tuple, **kwargs):
