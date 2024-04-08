@@ -1074,9 +1074,8 @@ class LinearTransformationScene(VectorScene):
             The animation of the movement.
         """
 
-        v_pieces = [piece for piece in pieces if isinstance(piece, VMobject)]
-        start = VGroup(*v_pieces)
-        target = VGroup(*(mob.target for mob in v_pieces))
+        start = VGroup(pieces)
+        target = VGroup(*(mob.target for mob in pieces))
 
         # don't add empty VGroups
         if self.leave_ghost_vectors and start.submobjects:
