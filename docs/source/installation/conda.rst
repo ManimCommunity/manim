@@ -12,7 +12,7 @@ After installing your package manager, you can create a new environment and inst
 
 .. code-block:: bash
 
-   # using conda
+   # using conda or mamba
    conda create -n my-manim-environment
    conda activate my-manim-environment
    conda install -c conda-forge manim
