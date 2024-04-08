@@ -4,7 +4,7 @@ from __future__ import annotations
 
 __all__ = ["VectorScene", "LinearTransformationScene"]
 
-from typing import Callable, Any
+from typing import Any, Callable
 
 import numpy as np
 
