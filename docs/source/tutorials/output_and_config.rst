@@ -276,12 +276,29 @@ When executing the command
 
    manim -pql scene.py SquareToCircle
 
-it specifies the scene to render.  This is not necessary now.  When a single file contains only one ``Scene`` class, it will render that class.  When a single file contains more than one ``Scene`` class, manim will let you choose a ``Scene`` class.  If your file contains multiple ``Scene`` classes, and you want to render them all, you can use the ``-a`` flag.
+it specifies the scene to render.  This is not necessary now.  When a single
+file contains only one ``Scene`` class, it just render the only one. When a
+single file contains more than one ``Scene`` class, you can leave a blank,
+and the manim will let you choose a ``Scene`` class.  If your file contains
+multiple ``Scene`` classes, and you want to render them all, you can use
+the ``-a`` flag.
 
-As discussed previously, the ``-ql`` specifies low render quality (854x480 15FPS).  This does not look very good, but is very useful for rapid prototyping and testing.  The other options that specify render quality are ``-qm``, ``-qh``, ``-qp`` and ``-qk`` for medium (1280x720 30FPS), high (1920x1080 60FPS), 2k (2560x1440 60FPS) and 4k quality (3840x2160 60FPS), respectively.
+As discussed previously, the ``-ql`` specifies low render quality (854x480
+15FPS).  This does not look very good, but is very useful for rapid
+prototyping and testing. The other options that specify render quality are
+``-qm``, ``-qh``, ``-qp`` and ``-qk`` for medium (1280x720 30FPS), high
+(1920x1080 60FPS), 2k (2560x1440 60FPS) and 4k quality (3840x2160 60FPS),
+respectively.
 
-The ``-p`` flag plays the animation once it is rendered.  If you want to open the file browser at the location of the animation instead of playing it, you can use the ``-f`` flag.  You can also omit these two flags.
+The ``-p`` flag plays the animation once it is rendered.  If you want to open
+the file browser at the location of the animation instead of playing it, you
+can use the ``-f`` flag.  You can also omit these two flags.
 
-Finally, by default manim will output .mp4 files.  If you want your animations in .gif format instead, use the ``--format gif`` flag.  The output files will be in the same folder as the .mp4 files, and with the same name, but a different file extension.
+Finally, by default manim will output .mp4 files.  If you want your animations
+in .gif format instead, use the ``--format gif`` flag.  The output files will
+be in the same folder as the .mp4 files, and with the same name, but a
+different file extension.
 
-This was a quick review of some of the most frequent command-line flags.  For a thorough review of all flags available, see the :doc:`thematic guide on Manim's configuration system </guides/configuration>`.
+This was a quick review of some of the most frequent command-line flags.
+For a thorough review of all flags available, see the :doc:`thematic guide on
+Manim's configuration system </guides/configuration>`.
