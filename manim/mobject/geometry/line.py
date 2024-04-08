@@ -509,6 +509,28 @@ class Arrow(Line):
                 DR_group.move_to(4 * RIGHT + 2 * DOWN)
 
                 self.add(left_group, middle_group, UR_group, DR_group)
+    .. manim:: BuffParameter
+        :save_last_frame:
+            class BuffParameter(Scene):
+                def construct(self):
+                    ax = (
+                        NumberPlane(x_range=[-5, 5, 1], x_length=5, y_range=[-5, 5, 1], y_length=5)
+                        .add_coordinates()
+                        .to_edge(LEFT, buff=1)
+                    )
+
+                    ax2 = ax.copy().to_edge(RIGHT, buff=1)
+                    self.add(ax, ax2)
+                    self.add(
+                        Tex("Without added buff parameter").scale(0.75).next_to(ax, DOWN, buff=0.5),
+                        Tex("With added buff parameter buff = 0")
+                        .scale(0.75)
+                        .next_to(ax2, DOWN, buff=0.5),
+                    )
+                    arrow1 = Arrow(start=ax.c2p(1, 0, 0), end=ax.c2p(2, 2, 0))
+                    arrow2 = Arrow(start=ax2.c2p(1, 0, 0), end=ax2.c2p(2, 2, 0), buff=0)
+                    self.add(arrow1, arrow2)
+                    self.wait()
     """
 
     def __init__(
