@@ -21,25 +21,24 @@ from manim.constants import DEFAULT_WAIT_TIME
 from manim.event_handler import EVENT_DISPATCHER
 from manim.event_handler.event_type import EventType
 from manim.mobject.frame import FullScreenRectangle
-from manim.mobject.mobject import Group, Mobject, Point, _AnimationBuilder
+from manim.mobject.mobject import Group, Point, _AnimationBuilder
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.scene.scene_file_writer import SceneFileWriter
 from manim.utils.color import RED
-from manim.utils.family_ops import (
-    extract_mobject_family_members,
-    recursive_mobject_remove,
-)
+from manim.utils.family_ops import extract_mobject_family_members
 from manim.utils.iterables import list_difference_update
 from manim.utils.module_ops import get_module
 
 if TYPE_CHECKING:
-    from typing import Callable, Iterable
+    from typing import Any, Callable, Iterable
 
     from PIL.Image import Image
 
-    from manim.animation.animation import Animation
+    from manim.animation.protocol import AnimationProtocol as Animation
+    from manim.animation.scene_buffer import SceneBuffer
 
-## TODO: these keybindings should be made configureable
+# TODO: these keybindings should be made configureable
 
 PAN_3D_KEY = "d"
 FRAME_SHIFT_KEY = "f"
@@ -130,6 +129,10 @@ class Scene:
 
     def __str__(self) -> str:
         return self.__class__.__name__
+
+    def process_buffer(self, buffer: SceneBuffer) -> None:
+        self.remove(*buffer.to_remove)
+        self.add(*buffer.to_add)
 
     def run(self) -> None:
         self.virtual_animation_start_time: float = 0
@@ -347,7 +350,7 @@ class Scene:
         return any(
             [
                 sm.has_time_based_updater()
-                for mob in self.mobjects()
+                for mob in self.mobjects
                 for sm in mob.get_family()
             ]
         )
@@ -629,7 +632,7 @@ class Scene:
             return times
 
     def get_run_time(self, animations: Iterable[Animation]) -> float:
-        return np.max([animation.get_run_time() for animation in animations])
+        return max([animation.get_run_time() for animation in animations])
 
     def get_animation_time_progression(
         self, animations: Iterable[Animation]
@@ -645,7 +648,7 @@ class Scene:
     def get_wait_time_progression(
         self, duration: float, stop_condition: Callable[[], bool] | None = None
     ) -> list[float] | np.ndarray | ProgressDisplay:
-        kw = {"desc": f"{self.num_plays} Waiting"}
+        kw: dict[str, Any] = {"desc": f"{self.num_plays} Waiting"}
         if stop_condition is not None:
             kw["n_iterations"] = -1  # So it doesn't show % progress
             kw["override_skip_animations"] = True
@@ -680,15 +683,19 @@ class Scene:
         self.camera.refresh_static_mobjects()
 
     def begin_animations(self, animations: Iterable[Animation]) -> None:
-        for animation in animations:
-            animation.begin()
-            # Anything animated that's not already in the
-            # scene gets added to the scene.  Note, for
-            # animated mobjects that are in the family of
-            # those on screen, this can result in a restructuring
-            # of the scene.mobjects list, which is usually desired.
-            if animation.mobject not in self.mobjects:
-                self.add(animation.mobject)
+        for animation_obj in animations:
+            for animation in animation_obj.get_all_animations():
+                animation.begin()
+                self.process_buffer(animation.buffer)
+                animation.buffer.clear()
+
+                # Anything animated that's not already in the
+                # scene gets added to the scene.  Note, for
+                # animated mobjects that are in the family of
+                # those on screen, this can result in a restructuring
+                # of the scene.mobjects list, which is usually desired.
+                if animation.is_introducer and animation.mobject not in self.mobjects:
+                    self.add(animation.mobject)
 
     def progress_through_animations(self, animations: Iterable[Animation]) -> None:
         last_t = 0
@@ -697,7 +704,7 @@ class Scene:
             last_t = t
             for animation in animations:
                 animation.update_mobjects(dt)
-                alpha = t / animation.run_time
+                alpha = t / animation.get_run_time()
                 animation.interpolate(alpha)
             self.update_frame(dt)
             self.emit_frame()
@@ -705,7 +712,8 @@ class Scene:
     def finish_animations(self, animations: Iterable[Animation]) -> None:
         for animation in animations:
             animation.finish()
-            animation.clean_up_from_scene(self)
+            self.process_buffer(animation.buffer)
+
         if self.skip_animations:
             self.update_mobjects(self.get_run_time(animations))
         else:
@@ -721,7 +729,7 @@ class Scene:
         if len(proto_animations) == 0:
             log.warning("Called Scene.play with no animations")
             return
-        animations = list(map(prepare_animation, proto_animations))
+        animations = tuple(map(prepare_animation, proto_animations))
         for anim in animations:
             anim.update_rate_info(run_time, rate_func, lag_ratio)
         self.pre_play()
@@ -986,8 +994,8 @@ class SceneState:
             else:
                 self.mobjects_to_copies[mob] = mob.copy()
 
-    def __eq__(self, state: SceneState):
-        return all(
+    def __eq__(self, state: object) -> bool:
+        return isinstance(state, SceneState) and all(
             (
                 self.time == state.time,
                 self.num_plays == state.num_plays,
