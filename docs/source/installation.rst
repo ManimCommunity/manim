@@ -28,10 +28,10 @@ your system's Python, or via Docker).
 
 .. _conda-installation:
 
-Installing Manim in conda or pixi
-*********************************
+Installing Manim via Conda and related environment managers
+***********************************************************
 
-Conda and pixi are package managers for Python that allows creating environments
+Conda is a package manager for Python that allows creating environments
 where all your dependencies are stored. Like this, you don't clutter up your PC with
 unwanted libraries and you can just delete the environment when you don't need it anymore.
 It is a good way to install manim since all dependencies like
