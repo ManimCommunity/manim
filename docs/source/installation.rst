@@ -39,6 +39,15 @@ It is a good way to install manim since all dependencies like
 Also, the installation steps are the same, no matter if you are
 on Windows, Linux, Intel Macs or on Apple Silicon.
 
+.. NOTE::
+
+   There are various popular alternatives to Conda like
+   `mamba <https://mamba.readthedocs.io/en/latest/>`__ /
+   `micromamba <https://mamba.readthedocs.io/en/latest/user_guide/micromamba.html>`__,
+   or `pixi <https://pixi.sh>`__.
+   They all can be used to setup a suitable, isolated environment
+   for your Manim projects.
+
 The following pages show how to install Manim in a conda environment:
 
 .. toctree::
