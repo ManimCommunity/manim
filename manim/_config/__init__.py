@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import os
 from contextlib import contextmanager
 from typing import Any, Generator
 
@@ -19,6 +20,8 @@ __all__ = [
     "tempconfig",
     "cli_ctx_settings",
 ]
+
+os.environ["PYTHONIOENCODING"] = "utf-8"
 
 parser = make_config_parser()
 
