@@ -15,7 +15,6 @@ import configparser
 import copy
 import json
 import logging
-import os
 from typing import TYPE_CHECKING
 
 from rich import color, errors
@@ -87,9 +86,6 @@ def make_logger(
     console = Console(theme=theme, legacy_windows=False)
 
     error_console = Console(theme=theme, stderr=True)
-
-    # fix encoding (some windows use cp1252)
-    os.environ["PYTHONIOENCODING"] = "utf-8"
 
     # set the rich handler
     rich_handler = RichHandler(
