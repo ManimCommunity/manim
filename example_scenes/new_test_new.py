@@ -39,6 +39,7 @@ if __name__ == "__main__":
         win = Window(
             width=1920,
             height=1080,
+            fullscreen=True,
             vsync=True,
             config=Config(double_buffer=True, samples=0),
         )
@@ -151,6 +152,8 @@ if __name__ == "__main__":
                 if not is_finished:
                     if virtual_time >= run_time:
                         animation.finish()
+                        buffer = str(animation.buffer)
+                        print(f"{buffer = }")
                         has_finished = True
                     else:
                         animation.update_mobjects(dt)

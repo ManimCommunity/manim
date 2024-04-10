@@ -31,7 +31,6 @@ __all__ = [
     "Flash",
     "ShowPassingFlash",
     "ShowPassingFlashWithThinningStrokeWidth",
-    "ShowCreationThenFadeOut",
     "ApplyWave",
     "Circumscribe",
     "Wiggle",
