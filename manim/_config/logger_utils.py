@@ -83,7 +83,7 @@ def make_logger(
     """
     # Throughout the codebase, use console.print() instead of print()
     theme = parse_theme(parser)
-    console = Console(theme=theme, legacy_windows=False)
+    console = Console(theme=theme)
 
     error_console = Console(theme=theme, stderr=True)
 
