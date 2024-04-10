@@ -4,9 +4,11 @@ from __future__ import annotations
 
 __all__ = ["AnimatedBoundary", "TracedPath"]
 
-from typing import Callable
+from typing import TYPE_CHECKING, Callable
 
-from manim._config import config
+if TYPE_CHECKING:
+    import numpy.typing as npt
+
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import (
@@ -61,7 +63,7 @@ class AnimatedBoundary(VGroup):
         ]
         self.add(*self.boundary_copies)
         self.total_time = 0
-        self.add_updater(lambda m, dt: self.update_boundary_copies(dt))
+        self.add_updater(lambda _, dt: self.update_boundary_copies(dt))
 
     def update_boundary_copies(self, dt):
         # Not actual time, but something which passes at
@@ -143,7 +145,9 @@ class TracedPath(VMobject, metaclass=ConvertToOpenGL):
 
     def __init__(
         self,
-        traced_point_func: Callable,
+        traced_point_func: Callable[
+            [], npt.NDArray[npt.float]
+        ],  # TODO: Replace with Callable[[], Point3D]
         stroke_width: float = 2,
         stroke_color: ParsableManimColor | None = WHITE,
         dissipating_time: float | None = None,
@@ -155,7 +159,7 @@ class TracedPath(VMobject, metaclass=ConvertToOpenGL):
         self.time = 1 if self.dissipating_time else None
         self.add_updater(self.update_path)
 
-    def update_path(self, mob, dt):
+    def update_path(self, _mob, dt):
         new_point = self.traced_point_func()
         if not self.has_points():
             self.start_new_path(new_point)

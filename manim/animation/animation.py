@@ -335,7 +335,7 @@ class Animation:
         alpha: float,
     ) -> Animation:
         # Typically implemented by subclass
-        pass
+        raise NotImplementedError()
 
     def get_sub_alpha(self, alpha: float, index: int, num_submobjects: int) -> float:
         """Get the animation progress of any submobjects subanimation.
@@ -552,9 +552,6 @@ class Wait(Animation):
         pass
 
     def finish(self) -> None:
-        pass
-
-    def clean_up_from_scene(self, scene: SceneBuffer) -> None:
         pass
 
     def update_mobjects(self, dt: float) -> None:

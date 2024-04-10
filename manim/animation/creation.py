@@ -79,6 +79,8 @@ from typing import TYPE_CHECKING, Callable, Iterable, Sequence
 import numpy as np
 
 if TYPE_CHECKING:
+    from typing_extensions import Self
+
     from manim.mobject.text.text_mobject import Text
 
 from manim.mobject.opengl.opengl_surface import OpenGLSurface
@@ -92,7 +94,7 @@ from ..constants import TAU
 from ..mobject.mobject import Group, Mobject
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.bezier import integer_interpolate
-from ..utils.rate_functions import double_smooth, linear, smooth
+from ..utils.rate_functions import double_smooth, linear
 
 
 class ShowPartial(Animation):
@@ -124,12 +126,13 @@ class ShowPartial(Animation):
         submobject: Mobject,
         starting_submobject: Mobject,
         alpha: float,
-    ) -> None:
+    ) -> Self:
         submobject.pointwise_become_partial(
             starting_submobject, *self._get_bounds(alpha)
         )
+        return self
 
-    def _get_bounds(self, alpha: float) -> None:
+    def _get_bounds(self, alpha: float) -> tuple[float, float]:
         raise NotImplementedError("Please use Create or ShowPassingFlash")
 
 
@@ -318,10 +321,10 @@ class Write(DrawBorderThenFill):
         vmobject: VMobject | OpenGLVMobject,
         rate_func: Callable[[float], float] = linear,
         reverse: bool = False,
+        run_time: float | None = None,
+        lag_ratio: float | None = None,
         **kwargs,
     ) -> None:
-        run_time: float | None = kwargs.pop("run_time", None)
-        lag_ratio: float | None = kwargs.pop("lag_ratio", None)
         run_time, lag_ratio = self._set_default_config_from_length(
             vmobject,
             run_time,
