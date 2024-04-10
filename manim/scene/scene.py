@@ -688,7 +688,6 @@ class Scene:
             for animation in animation_obj.get_all_animations():
                 animation.begin()
                 self.process_buffer(animation.buffer)
-                animation.buffer.clear()
 
                 # Anything animated that's not already in the
                 # scene gets added to the scene.  Note, for
