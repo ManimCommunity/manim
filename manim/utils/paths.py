@@ -10,28 +10,22 @@ __all__ = [
 ]
 
 
-from typing import Callable
+from typing import TYPE_CHECKING
 
 import numpy as np
 
 from ..constants import OUT
 from ..utils.bezier import interpolate
-from ..utils.deprecation import deprecated_params
 from ..utils.space_ops import rotation_matrix
+
+if TYPE_CHECKING:
+    from manim.typing import PathFuncType, Vector3D
+
 
 STRAIGHT_PATH_THRESHOLD = 0.01
 
-PATH_FUNC_TYPE = Callable[[np.ndarray, np.ndarray, float], np.ndarray]
 
-
-# Remove `*args` and the `if` inside the functions when removing deprecation
-@deprecated_params(
-    params="start_points, end_points, alpha",
-    since="v0.14",
-    until="v0.15",
-    message="Straight path is now returning interpolating function to make it consistent with other path functions. Use straight_path()(a,b,c) instead of straight_path(a,b,c).",
-)
-def straight_path(*args) -> PATH_FUNC_TYPE:
+def straight_path():
     """Simplest path function. Each point in a set goes in a straight path toward its destination.
 
     Examples
@@ -74,14 +68,12 @@ def straight_path(*args) -> PATH_FUNC_TYPE:
                 self.wait()
 
     """
-    if len(args) > 0:
-        return interpolate(*args)
     return interpolate
 
 
 def path_along_circles(
-    arc_angle: float, circles_centers: np.ndarray, axis: np.ndarray = OUT
-) -> PATH_FUNC_TYPE:
+    arc_angle: float, circles_centers: Point3D, axis: Vector3D = OUT
+) -> PathFuncType:
     """This function transforms each point by moving it roughly along a circle, each with its own specified center.
 
     The path may be seen as each point smoothly changing its orbit from its starting position to its destination.
@@ -158,7 +150,7 @@ def path_along_circles(
     return path
 
 
-def path_along_arc(arc_angle: float, axis: np.ndarray = OUT) -> PATH_FUNC_TYPE:
+def path_along_arc(arc_angle: float, axis: Vector3D = OUT) -> PathFuncType:
     """This function transforms each point by moving it along a circular arc.
 
     Parameters
@@ -225,7 +217,7 @@ def path_along_arc(arc_angle: float, axis: np.ndarray = OUT) -> PATH_FUNC_TYPE:
     return path
 
 
-def clockwise_path() -> PATH_FUNC_TYPE:
+def clockwise_path() -> PathFuncType:
     """This function transforms each point by moving clockwise around a half circle.
 
     Examples
@@ -271,7 +263,7 @@ def clockwise_path() -> PATH_FUNC_TYPE:
     return path_along_arc(-np.pi)
 
 
-def counterclockwise_path() -> PATH_FUNC_TYPE:
+def counterclockwise_path() -> PathFuncType:
     """This function transforms each point by moving counterclockwise around a half circle.
 
     Examples
@@ -317,7 +309,7 @@ def counterclockwise_path() -> PATH_FUNC_TYPE:
     return path_along_arc(np.pi)
 
 
-def spiral_path(angle: float, axis: np.ndarray = OUT) -> PATH_FUNC_TYPE:
+def spiral_path(angle: float, axis: Vector3D = OUT) -> PathFuncType:
     """This function transforms each point by moving along a spiral to its destination.
 
     Parameters
