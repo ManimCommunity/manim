@@ -37,7 +37,7 @@ __all__ = [
     "Wiggle",
 ]
 
-from typing import Callable, Iterable, Optional, Tuple, Type, Union
+from typing import Callable, Iterable, Optional, Type, Union
 
 import numpy as np
 
@@ -305,7 +305,7 @@ class ShowPassingFlash(ShowPartial):
         self.time_width = time_width
         super().__init__(mobject, remover=True, introducer=True, **kwargs)
 
-    def _get_bounds(self, alpha: float) -> Tuple[float]:
+    def _get_bounds(self, alpha: float) -> tuple[float, float]:
         tw = self.time_width
         upper = interpolate(0, 1 + tw, alpha)
         lower = upper - tw
@@ -313,8 +313,8 @@ class ShowPassingFlash(ShowPartial):
         lower = max(lower, 0)
         return (lower, upper)
 
-    def clean_up_from_scene(self, scene: "Scene") -> None:
-        super().clean_up_from_scene(scene)
+    def finish(self) -> None:
+        super().finish()
         for submob, start in self.get_all_families_zipped():
             submob.pointwise_become_partial(start, 0, 1)
 
@@ -339,16 +339,6 @@ class ShowPassingFlashWithThinningStrokeWidth(AnimationGroup):
                 )
             ),
         )
-
-
-@deprecated(
-    since="v0.15.0",
-    until="v0.16.0",
-    message="Use Create then FadeOut to achieve this effect.",
-)
-class ShowCreationThenFadeOut(Succession):
-    def __init__(self, mobject: "Mobject", remover: bool = True, **kwargs) -> None:
-        super().__init__(Create(mobject), FadeOut(mobject), remover=remover, **kwargs)
 
 
 class ApplyWave(Homotopy):
@@ -469,7 +459,7 @@ class ApplyWave(Homotopy):
             y: float,
             z: float,
             t: float,
-        ) -> Tuple[float, float, float]:
+        ) -> tuple[float, float, float]:
             upper = interpolate(0, 1 + time_width, t)
             lower = upper - time_width
             relative_x = inverse_interpolate(x_min, x_max, x)
@@ -558,6 +548,7 @@ class Wiggle(Animation):
         )
 
 
+# TODO: get rid of this if condition madness
 class Circumscribe(Succession):
     """Draw a temporary line surrounding the mobject.
 

@@ -80,12 +80,12 @@ class _Fade(Transform):
         self.scale_factor = scale
         super().__init__(mobject, **kwargs)
 
-    def _create_faded_mobject(self, fadeIn: bool) -> Mobject:
+    def _create_faded_mobject(self, fade_in: bool) -> Mobject:
         """Create a faded, shifted and scaled copy of the mobject.
 
         Parameters
         ----------
-        fadeIn
+        fade_in
             Whether the faded mobject is used to fade in.
 
         Returns
@@ -95,7 +95,7 @@ class _Fade(Transform):
         """
         faded_mobject = self.mobject.copy()
         faded_mobject.fade(1)
-        direction_modifier = -1 if fadeIn and not self.point_target else 1
+        direction_modifier = -1 if fade_in and not self.point_target else 1
         faded_mobject.shift(self.shift_vector * direction_modifier)
         faded_mobject.scale(self.scale_factor)
         return faded_mobject
@@ -191,8 +191,8 @@ class FadeOut(_Fade):
         super().__init__(*mobjects, remover=True, **kwargs)
 
     def create_target(self):
-        return self._create_faded_mobject(fadeIn=False)
+        return self._create_faded_mobject(fade_in=False)
 
-    def clean_up_from_scene(self, scene: Scene = None) -> None:
-        super().clean_up_from_scene(scene)
+    def begin(self) -> None:
+        super().begin()
         self.interpolate(0)

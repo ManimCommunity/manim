@@ -12,7 +12,6 @@ from manim.utils.simple_functions import get_parameters
 from ..animation.animation import Animation, Wait, prepare_animation
 from ..animation.composition import AnimationGroup
 from ..mobject.mobject import Mobject, Updater, _AnimationBuilder
-from ..scene.scene import Scene
 
 
 class ChangeSpeed(Animation):
@@ -284,9 +283,10 @@ class ChangeSpeed(Animation):
 
     def begin(self) -> None:
         self.anim.begin()
+        self.buffer.add(*self.anim.buffer.to_add)
+        self.buffer.remove(*self.anim.buffer.to_remove)
 
-    def clean_up_from_scene(self, scene: Scene) -> None:
-        self.anim.clean_up_from_scene(scene)
-
-    def _setup_scene(self, scene) -> None:
-        self.anim._setup_scene(scene)
+    def finish(self) -> None:
+        self.anim.finish()
+        self.buffer.add(*self.anim.buffer.to_add)
+        self.buffer.remove(*self.anim.buffer.to_remove)

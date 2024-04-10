@@ -18,7 +18,8 @@ from ..animation.animation import Animation
 from ..utils.rate_functions import linear
 
 if TYPE_CHECKING:
-    from ..mobject.mobject import Mobject, VMobject
+    from ..mobject.mobject import Mobject
+    from ..mobject.types.vectorized_mobject import VMobject
 
 
 class Homotopy(Animation):

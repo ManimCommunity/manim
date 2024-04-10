@@ -13,7 +13,6 @@ from .._config import config
 from ..animation.animation import Animation, prepare_animation
 from ..constants import RendererType
 from ..mobject.mobject import Group, Mobject
-from ..scene.scene import Scene
 from ..utils.iterables import remove_list_redundancies
 from ..utils.rate_functions import linear
 
@@ -21,6 +20,7 @@ if TYPE_CHECKING:
     from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup
 
     from ..mobject.types.vectorized_mobject import VGroup
+    from .scene_buffer import SceneBuffer
 
 __all__ = ["AnimationGroup", "Succession", "LaggedStart", "LaggedStartMap"]
 
@@ -80,28 +80,28 @@ class AnimationGroup(Animation):
     def get_all_mobjects(self) -> Sequence[Mobject]:
         return list(self.group)
 
+    def get_all_animations(self) -> tuple[Animation, ...]:
+        return tuple(self.animations)
+
     def begin(self) -> None:
+        super().begin()
         if self.suspend_mobject_updating:
             self.group.suspend_updating()
-        for anim in self.animations:
-            anim.begin()
-
-    def _setup_scene(self, scene) -> None:
-        for anim in self.animations:
-            anim._setup_scene(scene)
 
     def finish(self) -> None:
         for anim in self.animations:
-            anim.finish()
-        if self.suspend_mobject_updating:
-            self.group.resume_updating()
-
-    def clean_up_from_scene(self, scene: Scene) -> None:
-        self._on_finish(scene)
-        for anim in self.animations:
             if self.remover:
                 anim.remover = self.remover
-            anim.clean_up_from_scene(scene)
+            anim.finish()
+            self.process_subanimation_buffer(anim.buffer)
+
+        if self.suspend_mobject_updating:
+            self.group.resume_updating()
+        self._on_finish(self.buffer)
+
+    def process_subanimation_buffer(self, buffer: SceneBuffer) -> None:
+        self.buffer.add(*buffer.to_add)
+        self.buffer.remove(*buffer.to_remove)
 
     def update_mobjects(self, dt: float) -> None:
         for anim in self.animations:
@@ -198,6 +198,10 @@ class Succession(AnimationGroup):
         assert len(self.animations) > 0
         self.update_active_animation(0)
 
+        for anim in self.animations:
+            if not anim.is_introducer() and anim.mobject is not None:
+                self.buffer.add(anim.mobject)
+
     def finish(self) -> None:
         while self.active_animation is not None:
             self.next_animation()
@@ -205,16 +209,6 @@ class Succession(AnimationGroup):
     def update_mobjects(self, dt: float) -> None:
         if self.active_animation:
             self.active_animation.update_mobjects(dt)
-
-    def _setup_scene(self, scene) -> None:
-        if scene is None:
-            return
-        if self.is_introducer():
-            for anim in self.animations:
-                if not anim.is_introducer() and anim.mobject is not None:
-                    scene.add(anim.mobject)
-
-        self.scene = scene
 
     def update_active_animation(self, index: int) -> None:
         self.active_index = index
@@ -224,7 +218,6 @@ class Succession(AnimationGroup):
             self.active_end_time: float | None = None
         else:
             self.active_animation = self.animations[index]
-            self.active_animation._setup_scene(self.scene)
             self.active_animation.begin()
             self.active_start_time = self.anims_with_timings[index][1]
             self.active_end_time = self.anims_with_timings[index][2]
@@ -236,6 +229,7 @@ class Succession(AnimationGroup):
         """
         if self.active_animation is not None:
             self.active_animation.finish()
+            self.process_subanimation_buffer(self.active_animation.buffer)
         self.update_active_animation(self.active_index + 1)
 
     def interpolate(self, alpha: float) -> None:
