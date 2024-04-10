@@ -1,7 +1,6 @@
-from typing import TYPE_CHECKING, final
+from typing import final
 
-if TYPE_CHECKING:
-    from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
 
 
 __all__ = ["SceneBuffer"]
