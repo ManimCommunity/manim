@@ -14,6 +14,7 @@ __all__ = [
 
 import itertools as it
 import sys
+from types import GeneratorType
 from typing import (
     TYPE_CHECKING,
     Callable,
@@ -31,6 +32,7 @@ from PIL.Image import Image
 from typing_extensions import Self
 
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.three_d.three_d_utils import (
     get_3d_vmob_gradient_start_and_end_points,
@@ -1942,7 +1944,11 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
 
     """
 
-    def __init__(self, *vmobjects, **kwargs):
+    def __init__(
+        self,
+        *vmobjects: VMobject | Iterable[VMobject] | types.GeneratorType[VMobject],
+        **kwargs,
+    ):
         super().__init__(**kwargs)
         self.add(*vmobjects)
 
@@ -1955,7 +1961,9 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
             f"submobject{'s' if len(self.submobjects) > 0 else ''}"
         )
 
-    def add(self, *vmobjects: VMobject) -> Self:
+    def add(
+        self, *vmobjects: VMobject | Iterable[VMobject] | GeneratorType[VMobject]
+    ) -> Self:
         """Checks if all passed elements are an instance of VMobject and then add them to submobjects
 
         Parameters
@@ -2003,15 +2011,44 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
                         (gr-circle_red).animate.shift(RIGHT)
                     )
         """
+
+        flattened_args = []
+
         for m in vmobjects:
-            if not isinstance(m, (VMobject, OpenGLVMobject)):
+            # Mobject and its subclasses are iterable
+            if isinstance(m, (Iterable, GeneratorType)):
+                # If it's not a subclass of Mobject or OpenGLMobject, it must be an iterable or generator
+                if not isinstance(m, (Mobject, OpenGLMobject)):
+                    temp = []
+                    temp.extend(m)
+
+                    # Verify that every element in the iterable is VMobject or OpenGLVMobject
+                    for t in temp:
+                        if not isinstance(t, (VMobject, OpenGLVMobject)):
+                            raise TypeError(
+                                f"All submobjects of {self.__class__.__name__} must be of type VMobject. "
+                                f"Got {repr(m)} ({type(m).__name__}) instead. "
+                                "You can try using `Group` instead."
+                            )
+
+                    flattened_args.extend(temp)
+                elif isinstance(m, (VMobject, OpenGLVMobject)):
+                    flattened_args.append(m)
+                else:
+                    raise TypeError(
+                        f"All submobjects of {self.__class__.__name__} must be of type VMobject. "
+                        f"Got {repr(m)} ({type(m).__name__}) instead. "
+                        "You can try using `Group` instead."
+                    )
+
+            else:
                 raise TypeError(
                     f"All submobjects of {self.__class__.__name__} must be of type VMobject. "
                     f"Got {repr(m)} ({type(m).__name__}) instead. "
                     "You can try using `Group` instead."
                 )
 
-        return super().add(*vmobjects)
+        return super().add(*flattened_args)
 
     def __add__(self, vmobject: VMobject) -> Self:
         return VGroup(*self.submobjects, vmobject)
