@@ -18,6 +18,7 @@ jobs:
     env:
       DISPLAY: :0
       PYTEST_ADDOPTS: "--color=yes" # colors in pytest
+      PYTHONIOENCODING: "utf-8"
     strategy:
       fail-fast: false
       matrix:
