@@ -85,6 +85,21 @@ def test_vgroup_init():
         VGroup(Mobject(), Mobject())
 
 
+def test_vgroup_iter_init():
+    """Test the VGroup instantiation with an iterable type."""
+
+    def basic_generator(n, type):
+        i = 0
+        while i < n:
+            i += 1
+            yield type()
+
+    obj = VGroup(basic_generator(5, VMobject))
+    assert len(obj.submobjects) == 5
+    with pytest.raises(TypeError):
+        VGroup(basic_generator(Mobject))
+
+
 def test_vgroup_add():
     """Test the VGroup add method."""
     obj = VGroup()
