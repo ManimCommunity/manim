@@ -72,7 +72,7 @@ def straight_path():
 
 
 def path_along_circles(
-    arc_angle: float, circles_centers: Point3D, axis: Vector3D = OUT
+    arc_angle: float, circles_centers: np.ndarray, axis: Vector3D = OUT
 ) -> PathFuncType:
     """This function transforms each point by moving it roughly along a circle, each with its own specified center.
 
