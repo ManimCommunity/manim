@@ -99,10 +99,6 @@ class AnimationGroup(Animation):
             self.group.resume_updating()
         self._on_finish(self.buffer)
 
-    def process_subanimation_buffer(self, buffer: SceneBuffer) -> None:
-        self.buffer.add(*buffer.to_add)
-        self.buffer.remove(*buffer.to_remove)
-
     def update_mobjects(self, dt: float) -> None:
         for anim in self.animations:
             anim.update_mobjects(dt)

@@ -277,16 +277,11 @@ class ChangeSpeed(Animation):
     def update_mobjects(self, dt: float) -> None:
         self.anim.update_mobjects(dt)
 
+    def begin(self) -> None:
+        self.anim.begin()
+        self.process_subanimation_buffer(self.anim.buffer)
+
     def finish(self) -> None:
         ChangeSpeed.is_changing_dt = False
         self.anim.finish()
-
-    def begin(self) -> None:
-        self.anim.begin()
-        self.buffer.add(*self.anim.buffer.to_add)
-        self.buffer.remove(*self.anim.buffer.to_remove)
-
-    def finish(self) -> None:
-        self.anim.finish()
-        self.buffer.add(*self.anim.buffer.to_add)
-        self.buffer.remove(*self.anim.buffer.to_remove)
+        self.process_subanimation_buffer(self.anim.buffer)

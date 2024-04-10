@@ -16,7 +16,6 @@ from .scene_buffer import SceneBuffer
 
 __all__ = ["Animation", "Wait", "override_animation"]
 
-
 from copy import deepcopy
 from typing import TYPE_CHECKING, Callable, Iterable, Sequence, TypeVar
 
@@ -272,6 +271,15 @@ class Animation:
         """
         for mob in self.get_all_mobjects_to_update():
             mob.update(dt)
+
+    def process_subanimation_buffer(self, buffer: SceneBuffer):
+        """
+        This is used in animations that are proxies around
+        other animations
+        """
+        self.buffer.add(*buffer.to_add)
+        self.buffer.remove(*buffer.to_remove)
+        self.buffer.clear()
 
     def get_all_mobjects_to_update(self) -> list[Mobject]:
         """Get all mobjects to be updated during the animation.

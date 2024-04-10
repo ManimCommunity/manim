@@ -139,6 +139,7 @@ class Scene:
     def process_buffer(self, buffer: SceneBuffer) -> None:
         self.remove(*buffer.to_remove)
         self.add(*buffer.to_add)
+        buffer.clear()
 
     def run(self) -> None:
         config.scene_name = str(self)
