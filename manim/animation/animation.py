@@ -127,7 +127,7 @@ class Animation:
 
     def __init__(
         self,
-        mobject: Mobject | None,
+        mobject: OpenGLMobject | None,
         lag_ratio: float = DEFAULT_ANIMATION_LAG_RATIO,
         run_time: float = DEFAULT_ANIMATION_RUN_TIME,
         rate_func: Callable[[float], float] = smooth,
@@ -153,11 +153,11 @@ class Animation:
         if config["renderer"] == RendererType.OPENGL:
             self.starting_mobject: OpenGLMobject = OpenGLMobject()
             self.mobject: OpenGLMobject = (
-                mobject if mobject is not None else OpenGLMobject()
+                mobject.copy() if mobject is not None else OpenGLMobject()
             )
-        else:
-            self.starting_mobject: Mobject = Mobject()
-            self.mobject: Mobject = mobject if mobject is not None else Mobject()
+        # else:
+        #     self.starting_mobject: Mobject = Mobject()
+        #     self.mobject: Mobject = mobject if mobject is not None else Mobject()
         if kwargs:
             logger.debug("Animation received extra kwargs: %s", kwargs)
 
@@ -169,7 +169,7 @@ class Animation:
                 ),
             )
 
-    def _typecheck_input(self, mobject: Mobject | None) -> None:
+    def _typecheck_input(self, mobject: Mobject | OpenGLMobject | None) -> None:
         if mobject is None:
             logger.debug("Animation with empty mobject")
         elif not isinstance(mobject, (Mobject, OpenGLMobject)):

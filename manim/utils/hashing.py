@@ -15,7 +15,7 @@ from typing import Any
 import numpy as np
 
 from manim.animation.animation import Animation
-from manim.camera.cairo_camera import CairoCamera as Camera
+from manim.camera.camera import Camera
 from manim.mobject.mobject import Mobject
 
 from .. import config, logger

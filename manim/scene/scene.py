@@ -14,16 +14,17 @@ from IPython.terminal.embed import InteractiveShellEmbed
 from pyglet.window import key
 from tqdm import tqdm as ProgressDisplay
 
-from manim._config import logger as log
+from manim import config, logger
 from manim.animation.animation import prepare_animation
-from manim.camera.camera import OpenGLCamera as Camera
+from manim.camera.camera import Camera
 from manim.constants import DEFAULT_WAIT_TIME
 from manim.event_handler import EVENT_DISPATCHER
 from manim.event_handler.event_type import EventType
 from manim.mobject.frame import FullScreenRectangle
-from manim.mobject.mobject import Group, Mobject, Point, _AnimationBuilder
+from manim.mobject.mobject import Group, Point, _AnimationBuilder
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
-from manim.scene.scene_file_writer import SceneFileWriter
+from manim.renderer.render_manager import RenderManager
 from manim.utils.color import RED
 from manim.utils.family_ops import (
     extract_mobject_family_members,
@@ -35,11 +36,10 @@ from manim.utils.module_ops import get_module
 if TYPE_CHECKING:
     from typing import Callable, Iterable
 
-    from PIL.Image import Image
-
     from manim.animation.animation import Animation
 
-## TODO: these keybindings should be made configureable
+
+# TODO: these keybindings should be made configureable
 
 PAN_3D_KEY = "d"
 FRAME_SHIFT_KEY = "f"
@@ -60,7 +60,6 @@ class Scene:
         self,
         window_config: dict = {},
         camera_config: dict = {},
-        file_writer_config: dict = {},
         skip_animations: bool = False,
         always_update_mobjects: bool = False,
         start_at_animation_number: int | None = None,
@@ -85,10 +84,6 @@ class Scene:
 
         self.camera_config = {**self.default_camera_config, **camera_config}
         self.window_config = {**self.default_window_config, **window_config}
-        self.file_writer_config = {
-            **self.default_file_writer_config,
-            **file_writer_config,
-        }
 
         # Initialize window, if applicable
         if self.preview:
@@ -102,8 +97,7 @@ class Scene:
 
         # Core state of the scene
         self.camera: Camera = Camera(**self.camera_config)
-        self.file_writer = SceneFileWriter(self, **self.file_writer_config)
-        self.mobjects: list[Mobject] = [self.camera.frame]
+        self.mobjects: list[Mobject] = []
         self.id_to_mobject_map: dict[int, Mobject] = {}
         self.num_plays: int = 0
         self.time: float = 0
@@ -111,10 +105,13 @@ class Scene:
         self.original_skipping_status: bool = self.skip_animations
         self.undo_stack = []
         self.redo_stack = []
+        self.manager = RenderManager(
+            self.get_default_scene_name()
+        )
 
         if self.start_at_animation_number is not None:
             self.skip_animations = True
-        if self.file_writer.has_progress_display():
+        if self.manager.file_writer.has_progress_display():
             self.show_animation_progress = False
 
         # Items associated with interaction
@@ -131,21 +128,33 @@ class Scene:
     def __str__(self) -> str:
         return self.__class__.__name__
 
+    def get_default_scene_name(self) -> str:
+        name = str(self)
+        saan = self.start_at_animation_number
+        eaan = self.end_at_animation_number
+        if saan is not None:
+            name += f"_{saan}"
+        if eaan is not None:
+            name += f"_{eaan}"
+        return name
+
     def run(self) -> None:
+        config.scene_name = str(self)
         self.virtual_animation_start_time: float = 0
         self.real_animation_start_time: float = time.time()
-        self.file_writer.begin()
 
         self.setup()
         try:
             self.construct()
+            # wait until all animations rendered in parallel
+            self.manager.finish()
             self.interact()
         except EndScene:
             pass
         except KeyboardInterrupt:
             # Get rid keyboard interrupt symbols
             print("", end="\r")
-            self.file_writer.ended_with_interrupt = True
+            self.manager.file_writer.ended_with_interrupt = True
         self.tear_down()
 
     render = run
@@ -165,7 +174,11 @@ class Scene:
 
     def tear_down(self) -> None:
         self.stop_skipping()
-        self.file_writer.finish()
+
+        if config.save_last_frame:
+            self.update_frame(ignore_skipping=True)
+        self.manager.file_writer.finish()
+
         if self.window:
             self.window.destroy()
             self.window = None
@@ -178,15 +191,17 @@ class Scene:
         """
         if self.window is None:
             return
-        log.info(
+        logger.info(
             "\nTips: Using the keys `d`, `f`, or `z` "
             + "you can interact with the scene. "
             + "Press `command + q` or `esc` to quit"
         )
         self.skip_animations = False
         self.refresh_static_mobjects()
+        self.manager.start_dt_calculations()
         while not self.is_window_closing():
-            self.update_frame(1 / self.camera.fps)
+            dt = self.manager.refresh_dt()
+            self.update_frame(dt)
 
     def embed(
         self,
@@ -286,14 +301,6 @@ class Scene:
             raise EndScene()
 
     # Only these methods should touch the camera
-
-    def get_image(self) -> Image:
-        return self.camera.get_image()
-
-    def show(self) -> None:
-        self.update_frame(ignore_skipping=True)
-        self.get_image().show()
-
     def update_frame(self, dt: float = 0, ignore_skipping: bool = False) -> None:
         self.increment_time(dt)
         self.update_mobjects(dt)
@@ -305,8 +312,9 @@ class Scene:
 
         if self.window:
             self.window.clear()
-        self.camera.clear()
-        self.camera.capture(*self.mobjects)
+        # self.camera.clear()
+        state = SceneState(self)
+        print(self.manager.render_state(state))
 
         if self.window:
             self.window.swap_buffers()
@@ -314,10 +322,6 @@ class Scene:
             rt = time.time() - self.real_animation_start_time
             if rt < vt:
                 self.update_frame(0)
-
-    def emit_frame(self) -> None:
-        if not self.skip_animations:
-            self.file_writer.write_frame(self.camera)
 
     # Related to updating
 
@@ -615,7 +619,7 @@ class Scene:
 
         times = np.arange(0, run_time, 1 / self.camera.fps)
 
-        self.file_writer.set_progress_display_description(sub_desc=desc)
+        # self.file_writer.set_progress_display_description(sub_desc=desc)
 
         if self.show_animation_progress:
             return ProgressDisplay(
@@ -634,12 +638,13 @@ class Scene:
     def get_animation_time_progression(
         self, animations: Iterable[Animation]
     ) -> list[float] | np.ndarray | ProgressDisplay:
+        self.manager.start_dt_calculations()
         animations = list(animations)
         run_time = self.get_run_time(animations)
         description = f"{self.num_plays} {animations[0]}"
         if len(animations) > 1:
             description += ", etc."
-        time_progression = self.get_time_progression(run_time, desc=description)
+        time_progression = self.manager.get_time_progression(run_time)
         return time_progression
 
     def get_wait_time_progression(
@@ -657,27 +662,30 @@ class Scene:
 
         self.update_skipping_status()
 
-        if not self.skip_animations:
-            self.file_writer.begin_animation()
+        # if not self.skip_animations:
+        #     self.file_writer.begin_animation()
 
         if self.window:
             self.real_animation_start_time = time.time()
             self.virtual_animation_start_time = self.time
 
         self.refresh_static_mobjects()
+        self.manager.begin()
 
     def post_play(self):
-        if not self.skip_animations:
-            self.file_writer.end_animation()
+        # if not self.skip_animations:
+        #     self.manager.file_writer.end_animation()
 
         if self.skip_animations and self.window is not None:
             # Show some quick frames along the way
             self.update_frame(dt=0, ignore_skipping=True)
 
         self.num_plays += 1
+        self.manager.finish()
 
     def refresh_static_mobjects(self) -> None:
-        self.camera.refresh_static_mobjects()
+        # self.camera.refresh_static_mobjects()
+        ...
 
     def begin_animations(self, animations: Iterable[Animation]) -> None:
         for animation in animations:
@@ -719,7 +727,7 @@ class Scene:
         lag_ratio: float | None = None,
     ) -> None:
         if len(proto_animations) == 0:
-            log.warning("Called Scene.play with no animations")
+            logger.warning("Called Scene.play with no animations")
             return
         animations = list(map(prepare_animation, proto_animations))
         for anim in animations:
@@ -745,7 +753,7 @@ class Scene:
             and not ignore_presenter_mode
         ):
             if note:
-                log.info(note)
+                logger.info(note)
             self.hold_loop()
         else:
             time_progression = self.get_wait_time_progression(duration, stop_condition)
@@ -777,6 +785,9 @@ class Scene:
         if hasattr(self, "original_skipping_status"):
             self.skip_animations = self.original_skipping_status
         return self
+
+    def emit_frame(self) -> None:
+        pass
 
     def add_sound(
         self,
@@ -826,6 +837,7 @@ class Scene:
     def save_mobject_to_file(
         self, mobject: Mobject, file_path: str | None = None
     ) -> None:
+        return
         if file_path is None:
             file_path = self.file_writer.get_saved_mobject_path(mobject)
             if file_path is None:
@@ -855,6 +867,8 @@ class Scene:
         if propagate_event is not None and propagate_event is False:
             return
 
+        # TODO
+        return
         frame = self.camera.frame
         # Handle perspective changes
         if self.window.is_key_pressed(ord(PAN_3D_KEY)):
@@ -932,7 +946,7 @@ class Scene:
         try:
             char = chr(symbol)
         except OverflowError:
-            log.warning("The value of the pressed key is too large.")
+            logger.warning("The value of the pressed key is too large.")
             return
 
         event_data = {"symbol": symbol, "modifiers": modifiers}
@@ -956,7 +970,8 @@ class Scene:
             self.hold_on_wait = False
 
     def on_resize(self, width: int, height: int) -> None:
-        self.camera.reset_pixel_shape(width, height)
+        # self.camera.reset_pixel_shape(width, height)
+        pass
 
     def on_show(self) -> None:
         pass
@@ -969,9 +984,14 @@ class Scene:
 
 
 class SceneState:
-    def __init__(self, scene: Scene, ignore: list[Mobject] | None = None):
+    def __init__(
+        self,
+        scene: Scene,
+        ignore: list[Mobject] | None = None
+    ) -> None:
         self.time = scene.time
         self.num_plays = scene.num_plays
+        self.camera = scene.camera.copy()
         self.mobjects_to_copies = OrderedDict.fromkeys(scene.mobjects)
         if ignore:
             for mob in ignore:

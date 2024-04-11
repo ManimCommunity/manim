@@ -6,6 +6,7 @@ import shutil
 import subprocess as sp
 import sys
 from pathlib import Path
+import pathlib as path
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -26,13 +27,12 @@ if TYPE_CHECKING:
     from PIL.Image import Image
 
     from manim.camera.camera import OpenGLCamera as Camera
-    from manim.scene import Scene
 
 
-class SceneFileWriter:
+class FileWriter:
     def __init__(
         self,
-        scene: Scene,
+        file_name: str,
         write_to_movie: bool = False,
         break_into_partial_movies: bool = False,
         save_pngs: bool = False,  # TODO, this currently does nothing
@@ -43,14 +43,13 @@ class SceneFileWriter:
         input_file_path: str = "",
         # Where should this be written
         output_directory: str | None = None,
-        file_name: str | None = None,
         open_file_upon_completion: bool = False,
         show_file_location_upon_completion: bool = False,
         quiet: bool = False,
         total_frames: int = 0,
         progress_description_len: int = 40,
     ):
-        self.scene: Scene = scene
+        self.frames: list[Image] = []
         self.write_to_movie = write_to_movie
         self.break_into_partial_movies = break_into_partial_movies
         self.save_pngs = save_pngs
@@ -76,7 +75,7 @@ class SceneFileWriter:
     # Output directories and files
     def init_output_directories(self) -> None:
         out_dir = self.output_directory or ""
-        scene_name = Path(self.file_name or self.get_default_scene_name())
+        scene_name = Path(self.file_name)
         if self.save_last_frame:
             image_dir = guarantee_existence(Path(out_dir) / "images")
             image_file = add_extension_if_not_present(scene_name, ".png")
@@ -92,76 +91,19 @@ class SceneFileWriter:
                     Path(movie_dir) / "partial_movie_files" / scene_name,
                 )
         # A place to save mobjects
-        self.saved_mobject_directory = Path(out_dir) / "mobjects" / str(self.scene)
+        self.saved_mobject_directory = Path(out_dir) / "mobjects" / scene_name
+
+    def add_frames(self, *frames: Image) -> None:
+        self.frames.extend(frames)
 
     def get_default_module_directory(self) -> str:
         path, _ = os.path.splitext(self.input_file_path)
-        if path.startswith("_"):
-            path = path[1:]
+        path = path.removeprefix("_")
         return path
-
-    def get_default_scene_name(self) -> str:
-        name = str(self.scene)
-        saan = self.scene.start_at_animation_number
-        eaan = self.scene.end_at_animation_number
-        if saan is not None:
-            name += f"_{saan}"
-        if eaan is not None:
-            name += f"_{eaan}"
-        return name
-
-    def get_resolution_directory(self) -> str:
-        pixel_height = self.scene.camera.pixel_height
-        fps = self.scene.camera.fps
-        return f"{pixel_height}p{fps}"
 
     # Directory getters
     def get_image_file_path(self) -> str:
         return self.image_file_path
-
-    def get_next_partial_movie_path(self) -> str:
-        result = Path(self.partial_movie_directory) / "{:05}{}".format(
-            self.scene.num_plays,
-            self.movie_file_extension,
-        )
-        return result
-
-    def get_movie_file_path(self) -> str:
-        return self.movie_file_path
-
-    def get_saved_mobject_directory(self) -> str:
-        return guarantee_existence(self.saved_mobject_directory)
-
-    def get_saved_mobject_path(self, mobject: Mobject) -> str | None:
-        directory = self.get_saved_mobject_directory()
-        files = os.listdir(directory)
-        default_name = str(mobject) + "_0.mob"
-        index = 0
-        while default_name in files:
-            default_name = default_name.replace(str(index), str(index + 1))
-            index += 1
-        if platform.system() == "Darwin":
-            cmds = [
-                "osascript",
-                "-e",
-                f"""
-                set chosenfile to (choose file name default name "{default_name}" default location "{directory}")
-                POSIX path of chosenfile
-                """,
-            ]
-            process = sp.Popen(cmds, stdout=sp.PIPE)
-            file_path = process.stdout.read().decode("utf-8").split("\n")[0]
-            if not file_path:
-                return
-        else:
-            user_name = input(f"Enter mobject file name (default is {default_name}): ")
-            file_path = Path(directory) / (user_name or default_name)
-            if os.path.exists(file_path) or os.path.exists(file_path + ".mob"):
-                if input(f"{file_path} already exists. Overwrite (y/n)? ") != "y":
-                    return
-        if not file_path.endswith(".mob"):
-            file_path = file_path + ".mob"
-        return file_path
 
     # Sound
     def init_audio(self) -> None:
@@ -219,11 +161,13 @@ class SceneFileWriter:
 
     def begin_animation(self) -> None:
         if self.break_into_partial_movies and self.write_to_movie:
-            self.open_movie_pipe(self.get_next_partial_movie_path())
+            # self.open_movie_pipe(self.get_next_partial_movie_path())
+            ...
 
     def end_animation(self) -> None:
         if self.break_into_partial_movies and self.write_to_movie:
-            self.close_movie_pipe()
+            # self.close_movie_pipe()
+            ...
 
     def finish(self) -> None:
         if self.write_to_movie:
@@ -235,7 +179,6 @@ class SceneFileWriter:
                 self.add_sound_to_video()
             self.print_file_ready_message(self.get_movie_file_path())
         if self.save_last_frame:
-            self.scene.update_frame(ignore_skipping=True)
             self.save_final_image(self.scene.get_image())
         if self.should_open_file():
             self.open_file()
@@ -313,10 +256,9 @@ class SceneFileWriter:
             full_desc += " " * (desc_len - len(full_desc))
         self.progress_display.set_description(full_desc)
 
-    def write_frame(self, camera: Camera) -> None:
+    def write_frame(self, frame: Image) -> None:
         if self.write_to_movie:
-            raw_bytes = camera.get_raw_fbo_data()
-            self.writing_process.stdin.write(raw_bytes)
+            self.writing_process.stdin.write(frame.tobytes('utf-8'))
             if self.progress_display is not None:
                 self.progress_display.update()
 
@@ -431,10 +373,10 @@ class SceneFileWriter:
 
     def should_open_file(self) -> bool:
         return any(
-            [
+            (
                 self.show_file_location_upon_completion,
                 self.open_file_upon_completion,
-            ]
+            )
         )
 
     def combine_to_section_videos(self) -> None:

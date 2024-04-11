@@ -30,8 +30,7 @@ from ..utils.simple_functions import fdiv
 from ..utils.space_ops import normalize
 
 
-# TODO: This becomes the new camera in the future
-class OpenGLCameraFrame(OpenGLMobject):
+class Camera(OpenGLMobject):
     def __init__(
         self,
         frame_shape: tuple[float, float] = (config.frame_width, config.frame_height),

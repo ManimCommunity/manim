@@ -47,7 +47,7 @@ class Window(PygletWindow):
 
         super().__init__(size=size)
         self.scene = scene
-        self.pressed_keys = set()
+        self.pressed_keys = {}
         self.title = self.title = f"Manim Community {__version__} - {str(scene)}"
         self.size = size
 
@@ -90,8 +90,9 @@ class Window(PygletWindow):
         self, px: int, py: int, relative: bool = False
     ) -> np.ndarray:
         pw, ph = self.size
-        fw, fh = self.scene.camera.get_frame_shape()
-        fc = self.scene.camera.get_frame_center()
+        # TODO
+        fw, fh = (config.frame_width, config.frame_height) or self.scene.camera.get_frame_shape()
+        fc = (config.frame_width, config.frame_height) or self.scene.camera.get_frame_center()
         if relative:
             return np.array([px / pw, py / ph, 0])
         else:

@@ -2,6 +2,7 @@ import re
 from functools import lru_cache
 from pathlib import Path
 from typing import TYPE_CHECKING
+from PIL import Image
 
 import moderngl as gl
 import numpy as np
@@ -10,7 +11,7 @@ from typing_extensions import override
 import manim.constants as const
 import manim.utils.color.manim_colors as color
 from manim._config import config, logger
-from manim.camera.camera import OpenGLCameraFrame
+from manim.camera.camera import Camera
 from manim.mobject.types.vectorized_mobject import VMobject
 from manim.renderer.buffers.buffer import STD140BufferFormat
 from manim.renderer.opengl_shader_program import load_shader_program_by_folder
@@ -298,7 +299,7 @@ class OpenGLRenderer(Renderer):
         self.output_fbo.release()
         self.output_fbo = self.ctx.detect_framebuffer()
 
-    def init_camera(self, camera: OpenGLCameraFrame):
+    def init_camera(self, camera: Camera):
         camera_data = {
             "frame_shape": (14.2222222221, 8.0),
             "camera_center": camera.get_center(),
@@ -361,6 +362,10 @@ class OpenGLRenderer(Renderer):
 
     def post_render(self):
         self.ctx.copy_framebuffer(self.output_fbo, self.color_buffer_fbo)
+
+    def render(self, *args) -> Image:
+        self.ctx.clear(0, 0, 1)
+        return Image.new("RGB", config.frame_size, (0, 0, 255))
 
     def render_program(self, prog, data, indices=None):
         vbo = self.ctx.buffer(data.tobytes())
@@ -527,7 +532,7 @@ class GLVMobjectManager:
 
 
 #     def init_frame(self, **config) -> None:
-#         self.frame = OpenGLCameraFrame(**config)
+#         self.frame = Camera(**config)
 
 #     def init_context(self, ctx: moderngl.Context | None = None) -> None:
 #         if ctx is None:
