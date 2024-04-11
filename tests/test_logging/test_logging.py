@@ -48,6 +48,7 @@ def test_error_logging(tmp_path, python_version):
         err = out
     assert exitcode != 0 and "Traceback (most recent call last)" in err
 
+
 @logs_comparison(
     "bad_tex_scene_BadTex.txt",
     "logs/bad_tex_scene_BadTex.log",
