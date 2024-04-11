@@ -30,7 +30,7 @@ in the right place!
   You can also find information on Manim's docker images and (online)
   notebook environments there.
 - Want to try the library before installing it? Take a look at our
-  interactive online playground at https://try.manim.community in form
+  interactive online playground at https://try.manim.community in the form
   of a Jupyter notebook.
 - In our :doc:`Tutorials <tutorials/index>` section you will find a
   collection of resources that will teach you how to use Manim. In particular,
@@ -71,7 +71,7 @@ Here are some short summaries for all of the sections in this documentation:
   can be found in the :doc:`FAQ </faq/index>` section.
 - The :doc:`Reference Manual </reference>` contains a comprehensive list of all of Manim's
   (documented) modules, classes, and functions. If you are somewhat familiar with Manim's
-  module structure feel free to browse the manual directly. If you are searching for
+  module structure, feel free to browse the manual directly. If you are searching for
   something specific, feel free to use the documentation's search feature in the sidebar.
   Many classes and methods come with their own illustrated examples too!
 - The :doc:`Plugins </plugins>` page documents how to install, write, and distribute
@@ -87,8 +87,8 @@ Sharing Your Work
 
 We'd love to hear from you and see your manimations
 `on Twitter <https://twitter.com/manim_community>`_, `Reddit <https://www.reddit.com/r/manim/>`_,
-or `Discord <https://www.manim.community/discord/>`_. If you're using Manim in a scientific
-context, instructions on how to cite a particular release can be found
+or `Discord <https://www.manim.community/discord/>`_. If you're using Manim scientific purposes, 
+instructions on how to cite a particular release can be found
 `in our README <https://github.com/ManimCommunity/manim/blob/main/README.md>`_.
 
 Index
