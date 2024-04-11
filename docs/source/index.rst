@@ -87,7 +87,7 @@ Sharing Your Work
 
 We'd love to hear from you and see your manimations
 `on Twitter <https://twitter.com/manim_community>`_, `Reddit <https://www.reddit.com/r/manim/>`_,
-or `Discord <https://www.manim.community/discord/>`_. If you're using Manim scientific purposes, 
+or `Discord <https://www.manim.community/discord/>`_. If you're using Manim for scientific purposes, 
 instructions on how to cite a particular release can be found
 `in our README <https://github.com/ManimCommunity/manim/blob/main/README.md>`_.
 
