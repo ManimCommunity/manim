@@ -14,8 +14,8 @@ __all__ = [
 
 
 def capture(command, cwd=None, command_input=None):
-    p = run(command, cwd=cwd, input=command_input, capture_output=True, text=True)
-    out, err = p.stdout, p.stderr
+    p = run(command, cwd=cwd, input=command_input, capture_output=True)
+    out, err = p.stdout.decode('utf-8'), p.stderr.decode('utf-8')
     return out, err, p.returncode
 
 
