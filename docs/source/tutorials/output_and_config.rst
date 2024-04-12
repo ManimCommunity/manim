@@ -279,7 +279,7 @@ When executing the command
 it specifies the scene to render.  This is not necessary now.  When a single
 file contains only one ``Scene`` class, it will just render the ``Scene``
 class.  When a single file contains more than one ``Scene`` class, manim will
-let you choose a ``Scene`` class.  If your file contains multiple ``Scene``
+let you choose a ``Scene`` class. If your file contains multiple ``Scene``
 classes, and you want to render them all, you can use the ``-a`` flag.
 
 As discussed previously, the ``-ql`` specifies low render quality (854x480
