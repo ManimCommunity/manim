@@ -11,6 +11,8 @@ Modules
     ~tex_mobject
     ~text_mobject
 """
+
+
 def register_font(font_file: str | Path):
     """Temporarily add a font file to Pango's search path.
 
