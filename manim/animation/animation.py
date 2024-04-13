@@ -27,7 +27,7 @@ DEFAULT_ANIMATION_RUN_TIME: float = 1.0
 DEFAULT_ANIMATION_LAG_RATIO: float = 0.0
 
 
-class Animation:
+class Animation(AnimationProtocol):
     """An animation.
 
     Animations have a fixed time span.
