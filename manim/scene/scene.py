@@ -132,6 +132,8 @@ class Scene:
 
     def process_buffer(self, buffer: SceneBuffer) -> None:
         self.remove(*buffer.to_remove)
+        for to_replace_pairs in buffer.to_replace:
+            self.replace(*to_replace_pairs)
         self.add(*buffer.to_add)
         buffer.clear()
 
