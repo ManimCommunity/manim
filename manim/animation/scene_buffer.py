@@ -22,6 +22,7 @@ class SceneBuffer:
     def __init__(self) -> None:
         self.to_remove: list[Mobject] = []
         self.to_add: list[Mobject] = []
+        self.to_replace: list[tuple[Mobject, ...]] = []
         self.deferred = False
 
     def add(self, *mobs: Mobject) -> None:
@@ -31,6 +32,10 @@ class SceneBuffer:
     def remove(self, *mobs: Mobject) -> None:
         self._check_deferred()
         self.to_remove.extend(mobs)
+
+    def replace(self, mob: Mobject, *replacements: Mobject) -> None:
+        self._check_deferred()
+        self.to_replace.append((mob, *replacements))
 
     def clear(self) -> None:
         self.to_remove.clear()

@@ -275,10 +275,12 @@ class Animation:
     def process_subanimation_buffer(self, buffer: SceneBuffer):
         """
         This is used in animations that are proxies around
-        other animations
+        other animations, like :class:`.AnimationGroup`
         """
-        self.buffer.add(*buffer.to_add)
         self.buffer.remove(*buffer.to_remove)
+        for to_replace_pairs in buffer.to_replace:
+            self.buffer.replace(*to_replace_pairs)
+        self.buffer.add(*buffer.to_add)
         self.buffer.clear()
 
     def get_all_mobjects_to_update(self) -> list[Mobject]:
