@@ -28,8 +28,8 @@ your system's Python, or via Docker).
 
 .. _conda-installation:
 
-Installing Manim in conda
-*************************
+Installing Manim via Conda and related environment managers
+***********************************************************
 
 Conda is a package manager for Python that allows creating environments
 where all your dependencies are stored. Like this, you don't clutter up your PC with
@@ -38,6 +38,15 @@ It is a good way to install manim since all dependencies like
 ``ffmpeg``, ``pycairo``, etc. come with it.
 Also, the installation steps are the same, no matter if you are
 on Windows, Linux, Intel Macs or on Apple Silicon.
+
+.. NOTE::
+
+   There are various popular alternatives to Conda like
+   `mamba <https://mamba.readthedocs.io/en/latest/>`__ /
+   `micromamba <https://mamba.readthedocs.io/en/latest/user_guide/micromamba.html>`__,
+   or `pixi <https://pixi.sh>`__.
+   They all can be used to setup a suitable, isolated environment
+   for your Manim projects.
 
 The following pages show how to install Manim in a conda environment:
 
@@ -54,7 +63,8 @@ Installing Manim locally
 ************************
 
 Manim is a Python library, and it can be
-`installed via pip <https://pypi.org/project/manim/>`__. However,
+installed via `pip <https://pypi.org/project/manim/>`__
+or `conda <https://anaconda.org/conda-forge/manim/>`__. However,
 in order for Manim to work properly, some additional system
 dependencies need to be installed first. The following pages have
 operating system specific instructions for you to follow.

@@ -28,7 +28,7 @@ Contributing
 
 That being said, improving the documentation and making it more accessible is still highly encouraged.
 And even if your work gets outdated and requires change, you or someone else can simply adjust the translation.
-Your efforts are not in vail!
+Your efforts are not in vain!
 
 
 Voting
