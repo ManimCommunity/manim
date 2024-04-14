@@ -136,7 +136,7 @@ jobs:
           path: ${{ github.workspace }}\ManimCache
           key: ${{ runner.os }}-dependencies-tinytex-${{ hashFiles('.github/manimdependency.json') }}-${{ steps.cache-vars.outputs.date }}-1
 
-      - uses: ssciwr/setup-mesa-dist-win@v1
+      - uses: ssciwr/setup-mesa-dist-win@v2
 
       - name: Install system dependencies (Windows)
         if: runner.os == 'Windows' && steps.cache-windows.outputs.cache-hit != 'true'
