@@ -52,7 +52,7 @@ jobs:
           echo "date=$(/bin/date -u "+%m%w%Y")" >> $GITHUB_OUTPUT
 
       - name: Install and cache ffmpeg (all OS)
-        uses: FedericoCarboni/setup-ffmpeg@v2
+        uses: FedericoCarboni/setup-ffmpeg@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
         id: setup-ffmpeg
