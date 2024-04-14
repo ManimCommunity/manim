@@ -142,14 +142,14 @@ def render(
             )
         except Exception:
             logger.debug("Something went wrong: %s", warn_prompt)
-
-        stable = json_data["info"]["version"]
-        if stable != __version__:
-            console.print(
-                f"You are using manim version [red]v{__version__}[/red], but version [green]v{stable}[/green] is available.",
-            )
-            console.print(
-                "You should consider upgrading via [yellow]pip install -U manim[/yellow]",
-            )
+        else:
+            stable = json_data["info"]["version"]
+            if stable != __version__:
+                console.print(
+                    f"You are using manim version [red]v{__version__}[/red], but version [green]v{stable}[/green] is available.",
+                )
+                console.print(
+                    "You should consider upgrading via [yellow]pip install -U manim[/yellow]",
+                )
 
     return args
