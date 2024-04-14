@@ -126,6 +126,8 @@ class Brace(VMobjectFromSVGPath):
             mob.rotate(angle, about_point=ORIGIN)
 
     def put_at_tip(self, mob, use_next_to=True, **kwargs):
+        """Puts the given mobject at the brace tip.
+        """
         if use_next_to:
             mob.next_to(self.get_tip(), np.round(self.get_direction()), **kwargs)
         else:
@@ -136,16 +138,23 @@ class Brace(VMobjectFromSVGPath):
         return self
 
     def get_text(self, *text, **kwargs):
+        """Returns and places the text at the brace tip.
+        """
         text_mob = Tex(*text)
         self.put_at_tip(text_mob, **kwargs)
         return text_mob
 
     def get_tex(self, *tex, **kwargs):
+        """Returns and places the tex at the brace tip.
+        """
         tex_mob = MathTex(*tex)
         self.put_at_tip(tex_mob, **kwargs)
         return tex_mob
 
     def get_tip(self):
+        """Returns the Point3D at the brace tip.
+
+        """
         # Returns the position of the seventh point in the path, which is the tip.
         if config["renderer"] == "opengl":
             return self.points[34]
@@ -153,6 +162,8 @@ class Brace(VMobjectFromSVGPath):
         return self.points[28]  # = 7*4
 
     def get_direction(self):
+        """Returns the direction from the center to the brace tip.
+        """
         vect = self.get_tip() - self.get_center()
         return vect / np.linalg.norm(vect)
 
