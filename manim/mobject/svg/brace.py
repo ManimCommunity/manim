@@ -127,6 +127,17 @@ class Brace(VMobjectFromSVGPath):
 
     def put_at_tip(self, mob, use_next_to=True, **kwargs):
         """Puts the given mobject at the brace tip.
+
+        Parameters
+        ----------
+        mob : :class:`~.Mobject`
+            The mobject to be placed at the tip.
+        use_next_to
+            If true, then :meth:`next_to` is used to place the mobject at the
+            tip.
+        kwargs
+            Any additional keyword arguments are passed to :meth:`next_to` which
+            is used to put the mobject next to the brace tip.
         """
         if use_next_to:
             mob.next_to(self.get_tip(), np.round(self.get_direction()), **kwargs)
@@ -138,22 +149,45 @@ class Brace(VMobjectFromSVGPath):
         return self
 
     def get_text(self, *text, **kwargs):
-        """Returns and places the text at the brace tip.
+        """Places the text at the brace tip.
+        
+        Parameters
+        ----------
+        text
+            The text to be placed at the brace tip.
+        kwargs
+            Any additional keyword arguments are passed to :meth:`.put_at_tip` which
+            is used to position the text at the brace tip.
+        
+        Returns
+        -------
+        :class:`~.Tex`
         """
         text_mob = Tex(*text)
         self.put_at_tip(text_mob, **kwargs)
         return text_mob
 
     def get_tex(self, *tex, **kwargs):
-        """Returns and places the tex at the brace tip.
+        """Places the tex at the brace tip.
+
+        Parameters
+        ----------
+        tex
+            The tex to be placed at the brace tip.
+        kwargs
+            Any further keyword arguments are passed to :meth:`.put_at_tip` which
+            is used to position the tex at the brace tip.
+
+        Returns
+        -------
+        :class:`~.MathTex`
         """
         tex_mob = MathTex(*tex)
         self.put_at_tip(tex_mob, **kwargs)
         return tex_mob
 
     def get_tip(self):
-        """Returns the Point3D at the brace tip.
-
+        """Returns the point at the brace tip.
         """
         # Returns the position of the seventh point in the path, which is the tip.
         if config["renderer"] == "opengl":
