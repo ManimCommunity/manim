@@ -97,8 +97,8 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
 
     def __init__(
         self,
-        function: Callable[[float], Sequence[float] | np.ndarray],
-        t_range: Sequence[float] | np.ndarray | None = None,
+        function: Callable[[float], Point3D],
+        t_range: Sequence[float] | npt.NDArray | None = None,
         scaling: _ScaleBase = LinearBase(),
         dt: float = 1e-8,
         discontinuities: Iterable[float] | None = None,
