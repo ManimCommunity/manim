@@ -89,18 +89,19 @@ Typing guidelines
 
 * Use ``typing.Iterable`` whenever the function works with *any* iterable, not a specific type.
 
-* Prefer `numpy.typing.NDArray` over `numpy.ndarray`
+* Prefer ``numpy.typing.NDArray`` over ``numpy.ndarray``
 
 .. code:: py
 
+   import numpy as np
    if TYPE_CHECKING:
        import numpy.typing as npt
 
 
    def foo() -> npt.NDArray[float]:
-       return RIGHT
+       return np.array([1, 0, 1])
 
-* If a method returns `self`, use `typing_extensions.Self`.
+* If a method returns ``self``, use ``typing_extensions.Self``.
 
 .. code:: py
 
