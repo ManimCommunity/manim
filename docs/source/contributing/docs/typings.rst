@@ -94,22 +94,24 @@ Typing guidelines
 .. code:: py
 
    if TYPE_CHECKING:
-      import numpy.typing as npt
+       import numpy.typing as npt
+
 
    def foo() -> npt.NDArray[float]:
-      return RIGHT
+       return RIGHT
 
 * If a method returns `self`, use `typing_extensions.Self`.
 
 .. code:: py
 
    if TYPE_CHECKING:
-      from typing_extensions import Self
+       from typing_extensions import Self
+
 
    class CustomMobject:
-      def set_color(self, color: ManimColor) -> Self:
-          ...
-          return self
+       def set_color(self, color: ManimColor) -> Self:
+           ...
+           return self
 
 * If the function returns a container of a specific length each time, consider using ``tuple`` instead of ``list``.
 
