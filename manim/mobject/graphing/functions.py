@@ -8,7 +8,6 @@ __all__ = ["ParametricFunction", "FunctionGraph", "ImplicitFunction"]
 from typing import Callable, Iterable, Sequence
 
 import numpy as np
-import numpy.typing as npt
 from isosurfaces import plot_isoline
 
 from manim import config
@@ -27,7 +26,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
     function
         The function to be plotted in the form of ``(lambda t: (x(t), y(t), z(t)))``
     t_range
-        Determines the length that the function spans. By default ``[0, 1]``
+        Determines the length that the function spans in the form of [t_min, t_max, step=0.01]. By default ``[0, 1]``
     scaling
         Scaling class applied to the points of the function. Default of :class:`~.LinearBase`.
     use_smoothing
