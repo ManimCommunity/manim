@@ -149,3 +149,13 @@ def test_Y_Direction(scene):
         axes=axes, colorscale=[(RED, -0.4), (YELLOW, 0), (GREEN, 0.4)], axis=1
     )
     scene.add(axes, surface_plane)
+
+
+def test_get_start_and_end_Arrow3d():
+    scene = ThreeDScene()
+    start = np.array([1, 1, 1])
+    end = np.array([2, 2, 2])
+    arrow = Arrow3D(start, end)
+    scene.add(arrow)
+    assert arrow.get_start() == start
+    assert arrow.get_end() == end

@@ -623,16 +623,20 @@ class Cone(Surface):
         # used for rotations
         self._current_theta = 0
         self._current_phi = 0
+        self.tip = Dot3D(self.func(0, 0)).set_opacity(0)
+        self.add(self.tip)
 
-        if show_base:
-            self.base_circle = Circle(
-                radius=base_radius,
-                color=self.fill_color,
-                fill_opacity=self.fill_opacity,
-                stroke_width=0,
-            )
-            self.base_circle.shift(height * IN)
-            self.add(self.base_circle)
+        self.base_circle = Circle(
+            radius=base_radius,
+            color=self.fill_color,
+            fill_opacity=self.fill_opacity,
+            stroke_width=0,
+        )
+        self.base_circle.shift(height * IN)
+
+        if not show_base:
+            self.base_circle.set_fill(opacity=0)
+        self.add(self.base_circle)
 
         self._rotate_to_direction()
 
@@ -660,6 +664,12 @@ class Cone(Surface):
                 r * np.cos(self.theta),
             ],
         )
+
+    def get_start(self) -> np.ndarray:
+        return self.base_circle.get_center()
+
+    def get_end(self) -> np.ndarray:
+        return self.tip.get_center()
 
     def _rotate_to_direction(self) -> None:
         x, y, z = self.direction
@@ -1162,6 +1172,12 @@ class Arrow3D(Line3D):
         self.cone.shift(end)
         self.add(self.cone)
         self.set_color(color)
+
+    def get_end(self) -> np.ndarray:
+        return self.cone.get_end()
+
+    def get_start(self) -> np.ndarray:
+        return self.get_start()
 
 
 class Torus(Surface):
