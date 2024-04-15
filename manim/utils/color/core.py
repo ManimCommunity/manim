@@ -628,8 +628,7 @@ class ManimColor:
         cls,
         color: ParsableManimColor | None,
         alpha: float = ...,
-    ) -> Self:
-        ...
+    ) -> Self: ...
 
     @overload
     @classmethod
@@ -637,8 +636,7 @@ class ManimColor:
         cls,
         color: Sequence[ParsableManimColor],
         alpha: float = ...,
-    ) -> list[Self]:
-        ...
+    ) -> list[Self]: ...
 
     @classmethod
     def parse(

@@ -83,7 +83,6 @@ There are primarily 3 kinds of standard easing functions:
             self.wait()
 """
 
-
 from __future__ import annotations
 
 __all__ = [
@@ -180,11 +179,7 @@ def smoothererstep(t: float) -> float:
     https://en.wikipedia.org/wiki/Smoothstep
     """
     return (
-        0
-        if t <= 0
-        else 35 * t**4 - 84 * t**5 + 70 * t**6 - 20 * t**7
-        if t < 1
-        else 1
+        0 if t <= 0 else 35 * t**4 - 84 * t**5 + 70 * t**6 - 20 * t**7 if t < 1 else 1
     )
 
 
