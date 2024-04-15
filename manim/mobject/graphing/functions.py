@@ -8,12 +8,14 @@ __all__ = ["ParametricFunction", "FunctionGraph", "ImplicitFunction"]
 from typing import Callable, Iterable, Sequence
 
 import numpy as np
+import numpy.typing as npt
 from isosurfaces import plot_isoline
 
 from manim import config
 from manim.mobject.graphing.scale import LinearBase, _ScaleBase
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VMobject
+from manim.typing import Point2D, Point3D
 from manim.utils.color import YELLOW
 
 
@@ -98,7 +100,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
     def __init__(
         self,
         function: Callable[[float], Point3D],
-        t_range: Sequence[float] | npt.NDArray | None = None,
+        t_range: Point2D | None = None,
         scaling: _ScaleBase = LinearBase(),
         dt: float = 1e-8,
         discontinuities: Iterable[float] | None = None,
