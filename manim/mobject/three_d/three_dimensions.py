@@ -1165,10 +1165,10 @@ class Arrow3D(Line3D):
             self.end - height * self.direction,
             **kwargs,
         )
-
         self.cone = Cone(
             direction=self.direction, base_radius=base_radius, height=height, **kwargs
         )
+
         self.cone.shift(end)
         self.add(self.cone)
         self.set_color(color)
@@ -1176,8 +1176,8 @@ class Arrow3D(Line3D):
     def get_end(self) -> np.ndarray:
         return self.cone.get_end()
 
-    def get_start(self) -> np.ndarray:
-        return self.get_start()
+    # def get_start(self) -> np.ndarray:
+    #     return self.cone.get_start()
 
 
 class Torus(Surface):

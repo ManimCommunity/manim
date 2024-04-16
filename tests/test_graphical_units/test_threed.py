@@ -152,10 +152,7 @@ def test_Y_Direction(scene):
 
 
 def test_get_start_and_end_Arrow3d():
-    scene = ThreeDScene()
-    start = np.array([1, 1, 1])
-    end = np.array([2, 2, 2])
+    start, end = np.array([1, 1, 1]), np.array([2, 2, 2])
     arrow = Arrow3D(start, end)
-    scene.add(arrow)
-    assert arrow.get_start() == start
-    assert arrow.get_end() == end
+    np.testing.assert_array_equal(arrow.get_start(), start)
+    np.testing.assert_array_equal(arrow.get_end(), end)
