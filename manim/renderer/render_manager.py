@@ -5,7 +5,7 @@ import queue  # NOTE: Cannot use mp.Queue because of auth keys
 import numpy as np
 from typing import TYPE_CHECKING, Any, Iterable
 
-from manim import config
+from manim import config, logger
 from .opengl_renderer import OpenGLRenderer
 from .opengl_file_writer import FileWriter
 
@@ -43,16 +43,9 @@ class RenderManager:
         """Launch a process (optionally in parallel)
         to render a frame
         """
-        if parallel and config.in_parallel:
-            process = mp.Process(
-                target=self.render_frame,
-                args=(state,),
-                name=str(state.time)
-            )
-            self.processes.put(process)
-            process.start()
-        else:
-            self.render_frame(state)
+        if parallel and config.parallel:
+            logger.warning("Not supported yet")
+        self.render_frame(state)
 
     # type state: SceneState
     def render_frame(self, state: SceneState) -> Any | None:

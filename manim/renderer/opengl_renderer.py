@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import re
 from functools import lru_cache
 from pathlib import Path
@@ -13,6 +15,7 @@ import manim.utils.color.manim_colors as color
 from manim._config import config, logger
 from manim.camera.camera import Camera
 from manim.mobject.types.vectorized_mobject import VMobject
+from manim.mobject.geometry.arc import Circle
 from manim.renderer.buffers.buffer import STD140BufferFormat
 from manim.renderer.opengl_shader_program import load_shader_program_by_folder
 from manim.renderer.renderer import ImageType, Renderer, RendererData
@@ -311,7 +314,7 @@ class OpenGLRenderer(Renderer):
         }
         ubo_camera.write(camera_data)
 
-        uniforms = dict()
+        uniforms = {}
         uniforms["anti_alias_width"] = 0.01977
         uniforms["light_source_position"] = (-10, 10, 10)
         uniforms["pixel_shape"] = (self.pixel_width, self.pixel_height)
@@ -363,9 +366,32 @@ class OpenGLRenderer(Renderer):
     def post_render(self):
         self.ctx.copy_framebuffer(self.output_fbo, self.color_buffer_fbo)
 
-    def render(self, *args) -> Image:
-        self.ctx.clear(0, 0, 1)
-        return Image.new("RGB", config.frame_size, (0, 0, 255))
+    def render(self, state) -> Image:
+        prog = self.ctx.program(
+            vertex_shader='''
+                #version 330
+                in vec2 in_vert;
+                in vec3 in_color;
+                out vec3 v_color;
+                void main() {
+                    v_color = in_color;
+                    gl_Position = vec4(in_vert, 0.0, 1.0);
+                }
+            ''',
+            fragment_shader='''
+                #version 330
+                in vec3 v_color;
+                out vec3 f_color;
+                void main() {
+                    f_color = v_color;
+                }
+            ''',
+        )
+        verticies = np.array([[1, 1, 0, 0, 1], [0, 0, 0, 0, 1], [-1, 1, 0, 0, 1]])
+        vbo = self.ctx.buffer(verticies.astype("f4").tobytes())
+        vao = self.ctx.vertex_array(prog, vbo, 'in_vert', 'in_color')
+        self.ctx.clear()
+        vao.render(gl.TRIANGLES)
 
     def render_program(self, prog, data, indices=None):
         vbo = self.ctx.buffer(data.tobytes())
@@ -384,10 +410,12 @@ class OpenGLRenderer(Renderer):
         )
 
         vao.render(gl.TRIANGLES)
+        data, data_size = ibo.read(), ibo.size
         vbo.release()
         if ibo is not None:
             ibo.release()
         vao.release()
+        return data, data_size
 
     def render_vmobject(self, mob: OpenGLVMobject) -> None:  # type: ignore
         self.stencil_buffer_fbo.use()
@@ -427,10 +455,11 @@ class OpenGLRenderer(Renderer):
             #     if(mob.has_fill()):
             #         mob.renderer_data.mesh = ... # Triangulation todo
 
-        num_mobs = len(mob.family_members_with_points())
+        family = mob.family_members_with_points()
+        num_mobs = len(family)
 
         # Another stroke pass is needed in the beginning to deal with transparency properly
-        for counter, sub in enumerate(mob.family_members_with_points()):
+        for counter, sub in enumerate(family):
             if not isinstance(sub.renderer_data, GLRenderData):
                 return
             enable_depth(sub)
@@ -449,7 +478,7 @@ class OpenGLRenderer(Renderer):
                     np.array(range(len(sub.points))),
                 )
 
-        for counter, sub in enumerate(mob.family_members_with_points()):
+        for counter, sub in enumerate(family):
             if not isinstance(sub.renderer_data, GLRenderData):
                 return
             enable_depth(sub)
@@ -468,7 +497,7 @@ class OpenGLRenderer(Renderer):
                     sub.renderer_data.vert_indices,
                 )
 
-        for counter, sub in enumerate(mob.family_members_with_points()):
+        for counter, sub in enumerate(family):
             if not isinstance(sub.renderer_data, GLRenderData):
                 return
             enable_depth(sub)

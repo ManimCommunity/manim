@@ -727,7 +727,7 @@ class Scene:
         if len(proto_animations) == 0:
             logger.warning("Called Scene.play with no animations")
             return
-        animations = list(map(prepare_animation, proto_animations))
+        animations = [prepare_animation(x) for x in proto_animations]
         for anim in animations:
             anim.update_rate_info(run_time, rate_func, lag_ratio)
         self.pre_play()
