@@ -26,15 +26,17 @@ class RenderManager:
         self.renderer = OpenGLRenderer(**kwargs)
         self.ctx = mp.get_context('spawn')
 
+        # setup
+        self.processes: queue.Queue[mp.Process] = queue.Queue()
+        self.manager = mp.Manager()
+        self.manager_dict = self.manager.dict()
+
         # file writer
         self.camera = camera
         self.file_writer = FileWriter(scene_name)  # TODO
 
     def begin(self) -> None:
         """Set up processes and manager"""
-        self.processes: queue.Queue[mp.Process] = queue.Queue()
-        self.manager = mp.Manager()
-        self.manager_dict = self.manager.dict()
 
     def get_time_progression(self, run_time: float) -> Iterable[float]:
         return np.arange(0, run_time, 1 / self.camera.fps)
