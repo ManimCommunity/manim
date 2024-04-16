@@ -1176,9 +1176,6 @@ class Arrow3D(Line3D):
     def get_end(self) -> np.ndarray:
         return self.cone.get_end()
 
-    # def get_start(self) -> np.ndarray:
-    #     return self.cone.get_start()
-
 
 class Torus(Surface):
     """A torus.
