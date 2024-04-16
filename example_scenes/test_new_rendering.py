@@ -3,8 +3,9 @@ from manim import *
 
 class Test(Scene):
     def construct(self) -> None:
-        c = Circle()
-        self.play(Create(c))
+        b = ManimBanner()
+        # self.play(b.expand())
+        self.play(DrawBorderThenFill(b))
 
 
 with tempconfig({"renderer": "opengl", "preview": True, "parallel": False}):
