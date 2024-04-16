@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import multiprocessing as mp
 import queue  # NOTE: Cannot use mp.Queue because of auth keys
-import time
+import numpy as np
 from typing import TYPE_CHECKING, Any, Iterable
 
 from manim import config
@@ -11,6 +11,7 @@ from .opengl_file_writer import FileWriter
 
 if TYPE_CHECKING:
     from ..scene.scene import SceneState
+    from ..camera.camera import Camera
 
 __all__ = ("RenderManager",)
 
@@ -20,12 +21,13 @@ class RenderManager:
     Manage rendering in parallel
     """
 
-    def __init__(self, scene_name: str, **kwargs) -> None:
+    def __init__(self, scene_name: str, camera: Camera, **kwargs) -> None:
         # renderer
         self.renderer = OpenGLRenderer(**kwargs)
         self.ctx = mp.get_context('spawn')
 
         # file writer
+        self.camera = camera
         self.file_writer = FileWriter(scene_name)  # TODO
 
     def begin(self) -> None:
@@ -34,18 +36,9 @@ class RenderManager:
         self.manager = mp.Manager()
         self.manager_dict = self.manager.dict()
 
-    def start_dt_calculations(self) -> None:
-        self.last_t = time.perf_counter()
-
-    def refresh_dt(self) -> float:
-        dt = time.perf_counter() - self.last_t
-        self.last_t = time.perf_counter()
-        return dt
-
     def get_time_progression(self, run_time: float) -> Iterable[float]:
-        while (dt := self.refresh_dt()) < run_time:
-            yield dt
-
+        return np.arange(0, run_time, 1 / self.camera.fps)
+        
     def render_state(self, state: SceneState, parallel: bool = True) -> None:
         """Launch a process (optionally in parallel)
         to render a frame
@@ -85,6 +78,6 @@ class RenderManager:
         return self.manager_dict
 
     def finish(self) -> None:
-        for process in iter(self.processes.get, None):
+        for process in self.processes.queue:
             process.join()
         self.manager_dict = dict(sorted(self.manager_dict.items()))

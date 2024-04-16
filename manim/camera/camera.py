@@ -31,6 +31,8 @@ from ..utils.space_ops import normalize
 
 
 class Camera(OpenGLMobject):
+    fps: int = 30
+
     def __init__(
         self,
         frame_shape: tuple[float, float] = (config.frame_width, config.frame_height),

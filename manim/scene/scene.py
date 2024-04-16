@@ -106,7 +106,8 @@ class Scene:
         self.undo_stack = []
         self.redo_stack = []
         self.manager = RenderManager(
-            self.get_default_scene_name()
+            self.get_default_scene_name(),
+            camera=self.camera
         )
 
         if self.start_at_animation_number is not None:
@@ -198,10 +199,8 @@ class Scene:
         )
         self.skip_animations = False
         self.refresh_static_mobjects()
-        self.manager.start_dt_calculations()
         while not self.is_window_closing():
-            dt = self.manager.refresh_dt()
-            self.update_frame(dt)
+            self.update_frame(1 / self.camera.fps)
 
     def embed(
         self,
@@ -313,8 +312,8 @@ class Scene:
         if self.window:
             self.window.clear()
         # self.camera.clear()
-        state = SceneState(self)
-        print(self.manager.render_state(state))
+        state = self.get_state()
+        self.manager.render_state(state)
 
         if self.window:
             self.window.swap_buffers()
@@ -638,7 +637,6 @@ class Scene:
     def get_animation_time_progression(
         self, animations: Iterable[Animation]
     ) -> list[float] | np.ndarray | ProgressDisplay:
-        self.manager.start_dt_calculations()
         animations = list(animations)
         run_time = self.get_run_time(animations)
         description = f"{self.num_plays} {animations[0]}"
@@ -962,8 +960,8 @@ class Scene:
             self.undo()
         elif char == "z" and modifiers == key.MOD_COMMAND | key.MOD_SHIFT:
             self.redo()
-        # command + q
-        elif char == QUIT_KEY and modifiers == key.MOD_COMMAND:
+        # command + q or esc
+        elif (char == QUIT_KEY and modifiers == key.MOD_COMMAND) or char == key.ESCAPE:
             self.quit_interaction = True
         # Space or right arrow
         elif char == " " or symbol == key.RIGHT:

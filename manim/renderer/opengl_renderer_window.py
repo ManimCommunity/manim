@@ -47,8 +47,8 @@ class Window(PygletWindow):
 
         super().__init__(size=size)
         self.scene = scene
-        self.pressed_keys = {}
-        self.title = self.title = f"Manim Community {__version__} - {str(scene)}"
+        self.pressed_keys = set()
+        self.title = f"Manim Community {__version__} - {scene}"
         self.size = size
 
         mglw.activate_context(window=self)
