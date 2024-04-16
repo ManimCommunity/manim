@@ -135,7 +135,7 @@ class Scene:
         if eaan is not None:
             name += f"_{eaan}"
         return name
-    
+
     def process_buffer(self, buffer: SceneBuffer) -> None:
         self.remove(*buffer.to_remove)
         for to_replace_pairs in buffer.to_replace:
