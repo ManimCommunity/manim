@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 import os
+import pathlib as path
 import platform
 import shutil
 import subprocess as sp
 import sys
 from pathlib import Path
-import pathlib as path
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -258,7 +258,7 @@ class FileWriter:
 
     def write_frame(self, frame: Image) -> None:
         if self.write_to_movie:
-            self.writing_process.stdin.write(frame.tobytes('utf-8'))
+            self.writing_process.stdin.write(frame.tobytes("utf-8"))
             if self.progress_display is not None:
                 self.progress_display.update()
 

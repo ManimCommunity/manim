@@ -106,10 +106,7 @@ class Scene:
         self.original_skipping_status: bool = self.skip_animations
         self.undo_stack = []
         self.redo_stack = []
-        self.manager = RenderManager(
-            self.get_default_scene_name(),
-            camera=self.camera
-        )
+        self.manager = RenderManager(self.get_default_scene_name(), camera=self.camera)
 
         if self.start_at_animation_number is not None:
             self.skip_animations = True
@@ -983,11 +980,7 @@ class Scene:
 
 
 class SceneState:
-    def __init__(
-        self,
-        scene: Scene,
-        ignore: list[Mobject] | None = None
-    ) -> None:
+    def __init__(self, scene: Scene, ignore: list[Mobject] | None = None) -> None:
         self.time = scene.time
         self.num_plays = scene.num_plays
         self.camera = scene.camera.copy()

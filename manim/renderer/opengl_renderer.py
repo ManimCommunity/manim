@@ -4,18 +4,18 @@ import re
 from functools import lru_cache
 from pathlib import Path
 from typing import TYPE_CHECKING
-from PIL import Image
 
 import moderngl as gl
 import numpy as np
+from PIL import Image
 from typing_extensions import override
 
 import manim.constants as const
 import manim.utils.color.manim_colors as color
 from manim._config import config, logger
 from manim.camera.camera import Camera
-from manim.mobject.types.vectorized_mobject import VMobject
 from manim.mobject.geometry.arc import Circle
+from manim.mobject.types.vectorized_mobject import VMobject
 from manim.renderer.buffers.buffer import STD140BufferFormat
 from manim.renderer.opengl_shader_program import load_shader_program_by_folder
 from manim.renderer.renderer import ImageType, Renderer, RendererData

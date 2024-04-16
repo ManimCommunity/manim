@@ -311,7 +311,7 @@ class ManimConfig(MutableMapping):
         "write_to_movie",
         "zero_pad",
         "force_window",
-        "parallel"
+        "parallel",
     }
 
     def __init__(self) -> None:
@@ -583,7 +583,7 @@ class ManimConfig(MutableMapping):
             "use_projection_stroke_shaders",
             "enable_wireframe",
             "force_window",
-            "parallel"
+            "parallel",
         ]:
             setattr(self, key, parser["CLI"].getboolean(key, fallback=False))
 

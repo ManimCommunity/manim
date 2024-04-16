@@ -2,16 +2,18 @@ from __future__ import annotations
 
 import multiprocessing as mp
 import queue  # NOTE: Cannot use mp.Queue because of auth keys
-import numpy as np
 from typing import TYPE_CHECKING, Any, Iterable
 
+import numpy as np
+
 from manim import config, logger
-from .opengl_renderer import OpenGLRenderer
+
 from .opengl_file_writer import FileWriter
+from .opengl_renderer import OpenGLRenderer
 
 if TYPE_CHECKING:
-    from ..scene.scene import SceneState
     from ..camera.camera import Camera
+    from ..scene.scene import SceneState
 
 __all__ = ("RenderManager",)
 
@@ -24,7 +26,7 @@ class RenderManager:
     def __init__(self, scene_name: str, camera: Camera, **kwargs) -> None:
         # renderer
         self.renderer = OpenGLRenderer(**kwargs)
-        self.ctx = mp.get_context('spawn')
+        self.ctx = mp.get_context("spawn")
 
         # setup
         self.processes: queue.Queue[mp.Process] = queue.Queue()
@@ -41,7 +43,7 @@ class RenderManager:
 
     def get_time_progression(self, run_time: float) -> Iterable[float]:
         return np.arange(0, run_time, 1 / self.camera.fps)
-        
+
     def render_state(self, state: SceneState, parallel: bool = True) -> None:
         """Launch a process (optionally in parallel)
         to render a frame
@@ -67,7 +69,7 @@ class RenderManager:
         manager.
 
         .. warning::
-            
+
             This list is _not guarenteed_ to be sorted until
             after calling :meth:`.RenderManager.finish`
         """

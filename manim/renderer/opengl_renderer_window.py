@@ -91,8 +91,14 @@ class Window(PygletWindow):
     ) -> np.ndarray:
         pw, ph = self.size
         # TODO
-        fw, fh = (config.frame_width, config.frame_height) or self.scene.camera.get_frame_shape()
-        fc = (config.frame_width, config.frame_height) or self.scene.camera.get_frame_center()
+        fw, fh = (
+            config.frame_width,
+            config.frame_height,
+        ) or self.scene.camera.get_frame_shape()
+        fc = (
+            config.frame_width,
+            config.frame_height,
+        ) or self.scene.camera.get_frame_center()
         if relative:
             return np.array([px / pw, py / ph, 0])
         else:
