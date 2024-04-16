@@ -1004,6 +1004,10 @@ class SceneState:
             else:
                 self.mobjects_to_copies[mob] = mob.copy()
 
+    @property
+    def mobjects(self) -> list[Mobject]:
+        return self.mobjects_to_copies
+
     def __eq__(self, state: SceneState):
         return all(
             (

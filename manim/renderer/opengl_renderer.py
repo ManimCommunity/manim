@@ -387,10 +387,11 @@ class OpenGLRenderer(Renderer):
                 }
             ''',
         )
-        verticies = np.array([[1, 1, 0, 0, 1], [0, 0, 0, 0, 1], [-1, 1, 0, 0, 1]])
-        vbo = self.ctx.buffer(verticies.astype("f4").tobytes())
-        vao = self.ctx.vertex_array(prog, vbo, 'in_vert', 'in_color')
         self.ctx.clear()
+        for mob in state.mobjects:
+            verticies = mob.points
+            vbo = self.ctx.buffer(verticies.astype("f4").tobytes())
+            vao = self.ctx.vertex_array(prog, vbo, 'in_vert', 'in_color')
         vao.render(gl.TRIANGLES)
 
     def render_program(self, prog, data, indices=None):
