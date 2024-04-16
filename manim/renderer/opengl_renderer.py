@@ -362,37 +362,10 @@ class OpenGLRenderer(Renderer):
         self.init_camera(camera=camera)
         self.render_target_fbo.use()
         self.render_target_fbo.clear(*self.background_color)
+        self.ctx.clear()
 
     def post_render(self):
         self.ctx.copy_framebuffer(self.output_fbo, self.color_buffer_fbo)
-
-    def render(self, state) -> Image:
-        prog = self.ctx.program(
-            vertex_shader='''
-                #version 330
-                in vec2 in_vert;
-                in vec3 in_color;
-                out vec3 v_color;
-                void main() {
-                    v_color = in_color;
-                    gl_Position = vec4(in_vert, 0.0, 1.0);
-                }
-            ''',
-            fragment_shader='''
-                #version 330
-                in vec3 v_color;
-                out vec3 f_color;
-                void main() {
-                    f_color = v_color;
-                }
-            ''',
-        )
-        self.ctx.clear()
-        for mob in state.mobjects:
-            verticies = mob.points
-            vbo = self.ctx.buffer(verticies.astype("f4").tobytes())
-            vao = self.ctx.vertex_array(prog, vbo, 'in_vert', 'in_color')
-        vao.render(gl.TRIANGLES)
 
     def render_program(self, prog, data, indices=None):
         vbo = self.ctx.buffer(data.tobytes())

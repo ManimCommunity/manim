@@ -12,7 +12,7 @@ from manim._config import config, tempconfig
 from manim.animation.creation import Create, DrawBorderThenFill, Write
 from manim.animation.fading import FadeIn
 from manim.animation.transform import Transform
-from manim.camera.camera import OpenGLCameraFrame
+from manim.camera.camera import Camera
 from manim.constants import LEFT, OUT, RIGHT, UP
 from manim.mobject.geometry.arc import Circle
 from manim.mobject.geometry.polygram import Square
@@ -70,7 +70,7 @@ if __name__ == "__main__":
         clock_mobject = DecimalNumber(0.0).shift(4 * LEFT + 2.5 * UP)
         clock_mobject.fix_in_frame()
 
-        camera = OpenGLCameraFrame()
+        camera = Camera()
         camera.save_state()
         # renderer.init_camera(camera)
 

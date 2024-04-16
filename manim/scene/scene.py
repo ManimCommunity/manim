@@ -97,6 +97,7 @@ class Scene:
 
         # Core state of the scene
         self.camera: Camera = Camera(**self.camera_config)
+        self.camera.save_state()
         self.mobjects: list[Mobject] = []
         self.id_to_mobject_map: dict[int, Mobject] = {}
         self.num_plays: int = 0

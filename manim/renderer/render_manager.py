@@ -37,6 +37,7 @@ class RenderManager:
 
     def begin(self) -> None:
         """Set up processes and manager"""
+        self.renderer.use_window()
 
     def get_time_progression(self, run_time: float) -> Iterable[float]:
         return np.arange(0, run_time, 1 / self.camera.fps)
@@ -58,7 +59,7 @@ class RenderManager:
 
     def send_scene_to_renderer(self, state: SceneState):
         """Renders the State"""
-        result = self.renderer.render(state)
+        result = self.renderer.render(self.camera, state.mobjects)
         return result
 
     def get_frames(self) -> list:
