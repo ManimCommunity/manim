@@ -215,6 +215,8 @@ class Animation(AnimationProtocol):
             self.mobject.suspend_updating()
         self.interpolate(0)
 
+        # TODO: Figure out a way to check
+        # if self.mobject in scene.get_mobject_family
         if self.is_introducer():
             self.buffer.add(self.mobject)
 
@@ -235,12 +237,6 @@ class Animation(AnimationProtocol):
     def create_starting_mobject(self) -> Mobject:
         # Keep track of where the mobject starts
         return self.mobject.copy()
-
-    def get_all_animations(self) -> tuple[Animation, ...]:
-        """This method is to implement an animation protocol, and
-        is more useful in places like :class:`.AnimationGroup`
-        """
-        return (self,)
 
     def get_all_mobjects(self) -> Sequence[Mobject]:
         """Get all mobjects involved in the animation.
@@ -281,7 +277,7 @@ class Animation(AnimationProtocol):
         for to_replace_pairs in buffer.to_replace:
             self.buffer.replace(*to_replace_pairs)
         self.buffer.add(*buffer.to_add)
-        self.buffer.clear()
+        buffer.clear()
 
     def get_all_mobjects_to_update(self) -> list[Mobject]:
         """Get all mobjects to be updated during the animation.

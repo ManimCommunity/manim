@@ -146,7 +146,7 @@ class FadeIn(_Fade):
         return self.mobject
 
     def create_starting_mobject(self):
-        return self._create_faded_mobject(fadeIn=True)
+        return self._create_faded_mobject(fade_in=True)
 
 
 class FadeOut(_Fade):

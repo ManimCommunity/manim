@@ -261,7 +261,7 @@ class ManimBanner(VGroup):
                     )
 
         """
-        if direction not in ["left", "right", "center"]:
+        if direction.lower() not in {"left", "right", "center"}:
             raise ValueError("direction must be 'left', 'right' or 'center'.")
 
         m_shape_offset = 6.25 * self.scale_factor

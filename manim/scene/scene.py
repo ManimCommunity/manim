@@ -690,18 +690,10 @@ class Scene:
         ...
 
     def begin_animations(self, animations: Iterable[Animation]) -> None:
-        for animation_obj in animations:
-            for animation in animation_obj.get_all_animations():
-                animation.begin()
-                self.process_buffer(animation.buffer)
-
-                # Anything animated that's not already in the
-                # scene gets added to the scene.  Note, for
-                # animated mobjects that are in the family of
-                # those on screen, this can result in a restructuring
-                # of the scene.mobjects list, which is usually desired.
-                if animation.is_introducer and animation.mobject not in self.mobjects:
-                    self.add(animation.mobject)
+        for animation in animations:
+            animation.begin()
+            print(animation.buffer)
+            self.process_buffer(animation.buffer)
 
     def progress_through_animations(self, animations: Iterable[Animation]) -> None:
         last_t = 0

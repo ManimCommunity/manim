@@ -19,9 +19,6 @@ class AnimationProtocol(Protocol):
     def finish(self) -> None:
         ...
 
-    def get_all_animations(self) -> Sequence[Animation]:
-        ...
-
     def update_mobjects(self, dt: float) -> None:
         ...
 

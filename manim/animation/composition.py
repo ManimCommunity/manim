@@ -55,7 +55,7 @@ class AnimationGroup(Animation):
     def __init__(
         self,
         *animations: Animation,
-        group: Group | VGroup | OpenGLGroup | OpenGLVGroup = None,
+        group: Group | VGroup | OpenGLGroup | OpenGLVGroup | None = None,
         run_time: float | None = None,
         rate_func: Callable[[float], float] = linear,
         lag_ratio: float = 0,
@@ -80,11 +80,11 @@ class AnimationGroup(Animation):
     def get_all_mobjects(self) -> Sequence[Mobject]:
         return list(self.group)
 
-    def get_all_animations(self) -> tuple[Animation, ...]:
-        return tuple(self.animations)
-
     def begin(self) -> None:
-        super().begin()
+        for anim in self.animations:
+            anim.begin()
+            print(anim.buffer)
+            self.process_subanimation_buffer(anim.buffer)
         if self.suspend_mobject_updating:
             self.group.suspend_updating()
 
