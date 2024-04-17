@@ -45,6 +45,7 @@ from manim.utils.space_ops import (
     shoelace_direction,
     z_to_vector,
 )
+from manim.utils.deprecation import deprecated
 
 if TYPE_CHECKING:
     from typing import Callable, Iterable, Optional, Sequence
@@ -1561,6 +1562,19 @@ class OpenGLVGroup(OpenGLVMobject):
             f"{self.__class__.__name__} of {len(self.submobjects)} "
             f"submobject{'s' if len(self.submobjects) > 0 else ''}"
         )
+
+    def set_z(self, z: float) -> Self:
+        self.points[..., -1] = z
+        return self
+
+    @deprecated(
+        since="0.18.2",
+        until="0.19.0",
+        message="OpenGL has no concept of z_index. Use set_z instead"
+    )
+    def set_z_index(self, z: float) -> Self:
+        return self.set_z(z)
+
 
     def add(self, *vmobjects: OpenGLVMobject):  # type: ignore
         """Checks if all passed elements are an instance of OpenGLVMobject and then add them to submobjects

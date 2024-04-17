@@ -12,6 +12,7 @@ __all__ = ("AnimationProtocol",)
 
 class AnimationProtocol(Protocol):
     buffer: SceneBuffer
+    apply_buffer: bool
 
     def begin(self) -> None:
         ...

@@ -301,7 +301,7 @@ class ManimBanner(VGroup):
             if alpha == 1:
                 self.remove(*[self.anim])
                 self.add_to_back(self.anim)
-                mob.shapes.set_z_index(0)
+                mob.shapes.set_z(0)
                 mob.shapes.save_state()
                 mob.M.save_state()
 

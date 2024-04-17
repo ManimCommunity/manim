@@ -151,7 +151,10 @@ class Animation(AnimationProtocol):
         self.suspend_mobject_updating: bool = suspend_mobject_updating
         self.lag_ratio: float = lag_ratio
         self._on_finish = _on_finish
+
         self.buffer = SceneBuffer()
+        self.apply_buffer = False # ask scene to apply buffer
+
         if config["renderer"] == RendererType.OPENGL:
             self.starting_mobject: OpenGLMobject = OpenGLMobject()
             self.mobject: OpenGLMobject = (
@@ -328,7 +331,7 @@ class Animation(AnimationProtocol):
             is completed. For example, alpha-values of 0, 0.5, and 1 correspond
             to the animation being completed 0%, 50%, and 100%, respectively.
         """
-        families = list(self.get_all_families_zipped())
+        families = tuple(self.get_all_families_zipped())
         for i, mobs in enumerate(families):
             sub_alpha = self.get_sub_alpha(alpha, i, len(families))
             self.interpolate_submobject(*mobs, sub_alpha)

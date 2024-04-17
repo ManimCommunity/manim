@@ -3,9 +3,16 @@ from manim import *
 
 class Test(Scene):
     def construct(self) -> None:
-        b = ManimBanner()
-        # self.play(b.expand())
-        self.play(DrawBorderThenFill(b))
+        s = Square()
+        c = Circle()
+        st = Star(color=YELLOW, fill_color=YELLOW)
+        self.play(Succession(
+            *[
+                Create(x)
+                for x in VGroup(s, c, st).arrange()
+            ]
+        ))
+
 
 
 with tempconfig({"renderer": "opengl", "preview": True, "parallel": False}):

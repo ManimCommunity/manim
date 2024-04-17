@@ -9,7 +9,7 @@ import numpy as np
 
 from manim.mobject.opengl.opengl_mobject import OpenGLGroup
 
-from .._config import config
+from manim import config, logger
 from ..animation.animation import Animation, prepare_animation
 from ..constants import RendererType
 from ..mobject.mobject import Group, Mobject
@@ -83,7 +83,6 @@ class AnimationGroup(Animation):
     def begin(self) -> None:
         for anim in self.animations:
             anim.begin()
-            print(anim.buffer)
             self.process_subanimation_buffer(anim.buffer)
         if self.suspend_mobject_updating:
             self.group.suspend_updating()
@@ -125,7 +124,10 @@ class AnimationGroup(Animation):
 
     def build_animations_with_timings(self) -> None:
         """Creates a list of triplets of the form (anim, start_time, end_time)."""
+
         self.anims_with_timings = []
+        """List of tuple[Animation, start_time, end_time]"""
+
         curr_time: float = 0
         for anim in self.animations:
             start_time: float = curr_time
@@ -215,6 +217,8 @@ class Succession(AnimationGroup):
         else:
             self.active_animation = self.animations[index]
             self.active_animation.begin()
+            self.process_subanimation_buffer(self.active_animation.buffer)
+            self.apply_buffer = True
             self.active_start_time = self.anims_with_timings[index][1]
             self.active_end_time = self.anims_with_timings[index][2]
 

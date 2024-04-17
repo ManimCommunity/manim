@@ -704,6 +704,9 @@ class Scene:
                 animation.update_mobjects(dt)
                 alpha = t / animation.get_run_time()
                 animation.interpolate(alpha)
+                if animation.apply_buffer:
+                    self.process_buffer(animation.buffer)
+                    animation.apply_buffer = False
             self.update_frame(dt)
             self.emit_frame()
 
