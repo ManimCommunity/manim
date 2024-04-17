@@ -29,6 +29,7 @@ from manim.utils.bezier import (
     quadratic_bezier_remap,
 )
 from manim.utils.color import *
+from manim.utils.deprecation import deprecated
 from manim.utils.iterables import (
     listify,
     make_even,
@@ -45,7 +46,6 @@ from manim.utils.space_ops import (
     shoelace_direction,
     z_to_vector,
 )
-from manim.utils.deprecation import deprecated
 
 if TYPE_CHECKING:
     from typing import Callable, Iterable, Optional, Sequence
@@ -1570,11 +1570,10 @@ class OpenGLVGroup(OpenGLVMobject):
     @deprecated(
         since="0.18.2",
         until="0.19.0",
-        message="OpenGL has no concept of z_index. Use set_z instead"
+        message="OpenGL has no concept of z_index. Use set_z instead",
     )
     def set_z_index(self, z: float) -> Self:
         return self.set_z(z)
-
 
     def add(self, *vmobjects: OpenGLVMobject):  # type: ignore
         """Checks if all passed elements are an instance of OpenGLVMobject and then add them to submobjects

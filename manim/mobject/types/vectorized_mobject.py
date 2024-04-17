@@ -633,7 +633,7 @@ class VMobject(Mobject):
     @deprecated(
         since="0.18.2",
         until="0.19.0",
-        message="OpenGL has no concept of z_index. Use set_z instead"
+        message="OpenGL has no concept of z_index. Use set_z instead",
     )
     def set_z_index(self, z: float) -> Self:
         return self.set_z(z)

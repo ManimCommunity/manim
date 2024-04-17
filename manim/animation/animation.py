@@ -153,7 +153,7 @@ class Animation(AnimationProtocol):
         self._on_finish = _on_finish
 
         self.buffer = SceneBuffer()
-        self.apply_buffer = False # ask scene to apply buffer
+        self.apply_buffer = False  # ask scene to apply buffer
 
         if config["renderer"] == RendererType.OPENGL:
             self.starting_mobject: OpenGLMobject = OpenGLMobject()

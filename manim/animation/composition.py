@@ -7,9 +7,9 @@ from typing import TYPE_CHECKING, Callable, Sequence
 
 import numpy as np
 
+from manim import config, logger
 from manim.mobject.opengl.opengl_mobject import OpenGLGroup
 
-from manim import config, logger
 from ..animation.animation import Animation, prepare_animation
 from ..constants import RendererType
 from ..mobject.mobject import Group, Mobject
