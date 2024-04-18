@@ -14,8 +14,10 @@ from manim import config
 from manim.mobject.graphing.scale import LinearBase, _ScaleBase
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VMobject
+
 if TYPE_CHECKING:
     from manim.typing import Point2D, Point3D
+
 from manim.utils.color import YELLOW
 
 
@@ -27,7 +29,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
     function
         The function to be plotted in the form of ``(lambda t: (x(t), y(t), z(t)))``
     t_range
-        Determines the length that the function spans in the form of [t_min, t_max, step=0.01]. By default ``[0, 1]``
+        Determines the length that the function spans in the form of (t_min, t_max, step=0.01). By default ``[0, 1]``
     scaling
         Scaling class applied to the points of the function. Default of :class:`~.LinearBase`.
     use_smoothing
@@ -100,7 +102,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
     def __init__(
         self,
         function: Callable[[float], Point3D],
-        t_range: Point2D | None = None,
+        t_range: Point2D | Point3D = (0, 1),
         scaling: _ScaleBase = LinearBase(),
         dt: float = 1e-8,
         discontinuities: Iterable[float] | None = None,
@@ -109,7 +111,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
         **kwargs,
     ):
         self.function = function
-        t_range = [0, 1, 0.01] if t_range is None else t_range
+        t_range = (0, 1, 0.01) if t_range is None else t_range
         if len(t_range) == 2:
             t_range = np.array([*t_range, 0.01])
 
