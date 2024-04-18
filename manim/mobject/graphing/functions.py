@@ -53,10 +53,10 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
 
         class PlotParametricFunction(Scene):
             def func(self, t):
-                return np.array((np.sin(2 * t), np.sin(3 * t), 0))
+                return (np.sin(2 * t), np.sin(3 * t), 0)
 
             def construct(self):
-                func = ParametricFunction(self.func, t_range = np.array([0, TAU]), fill_opacity=0).set_color(RED)
+                func = ParametricFunction(self.func, t_range = (0, TAU), fill_opacity=0).set_color(RED)
                 self.add(func.scale(3))
 
     .. manim:: ThreeDParametricSpring
@@ -65,11 +65,11 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
         class ThreeDParametricSpring(ThreeDScene):
             def construct(self):
                 curve1 = ParametricFunction(
-                    lambda u: np.array([
+                    lambda u: (
                         1.2 * np.cos(u),
                         1.2 * np.sin(u),
                         u * 0.05
-                    ]), color=RED, t_range = np.array([-3*TAU, 5*TAU, 0.01])
+                    ), color=RED, t_range = (-3*TAU, 5*TAU, 0.01)
                 ).set_shade_in_3d(True)
                 axes = ThreeDAxes()
                 self.add(axes, curve1)
