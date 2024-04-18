@@ -14,7 +14,8 @@ from manim import config
 from manim.mobject.graphing.scale import LinearBase, _ScaleBase
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VMobject
-from manim.typing import Point2D, Point3D
+if TYPE_CHECKING:
+    from manim.typing import Point2D, Point3D
 from manim.utils.color import YELLOW
 
 
