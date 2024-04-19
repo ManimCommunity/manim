@@ -15,7 +15,14 @@ __all__ = [
 
 
 def capture(command, cwd=None, command_input=None):
-    p = run(command, cwd=cwd, input=command_input, capture_output=True, text=True)
+    p = run(
+        command,
+        cwd=cwd,
+        input=command_input,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+    )
     out, err = p.stdout, p.stderr
     return out, err, p.returncode
 

@@ -18,9 +18,7 @@ https://realpython.com/python-type-checking/#hello-types.
 Typing standards
 ~~~~~~~~~~~~~~~~
 
-Manim uses `mypy`_ to type check its codebase. You will find a list of
-configuration values in the ``mypy.ini`` configuration file.
-
+Manim uses `mypy`_ to type check its codebase. You will find a list of configuration values in the ``mypy.ini`` configuration file.
 To be able to use the newest typing features not available in the lowest
 supported Python version, make use of `typing_extensions`_.
 
@@ -91,6 +89,32 @@ Typing guidelines
 
 * Use ``typing.Iterable`` whenever the function works with *any* iterable, not a specific type.
 
+* Prefer ``numpy.typing.NDArray`` over ``numpy.ndarray``
+
+.. code:: py
+
+   import numpy as np
+
+   if TYPE_CHECKING:
+       import numpy.typing as npt
+
+
+   def foo() -> npt.NDArray[float]:
+       return np.array([1, 0, 1])
+
+* If a method returns ``self``, use ``typing_extensions.Self``.
+
+.. code:: py
+
+   if TYPE_CHECKING:
+       from typing_extensions import Self
+
+
+   class CustomMobject:
+       def set_color(self, color: ManimColor) -> Self:
+           ...
+           return self
+
 * If the function returns a container of a specific length each time, consider using ``tuple`` instead of ``list``.
 
 .. code:: py
@@ -115,8 +139,8 @@ Typing guidelines
    from typing import TYPE_CHECKING
 
    if TYPE_CHECKING:
-       from manim.typing import Vector3
-   # type stuff with Vector3
+       from manim.typing import Vector3D
+   # type stuff with Vector3D
 
 Missing Sections for typehints are:
 -----------------------------------
