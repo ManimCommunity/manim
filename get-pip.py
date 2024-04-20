@@ -28,20 +28,32 @@ if this_python < min_version:
     message_parts = [
         "This script does not work on Python {}.{}".format(*this_python),
         "The minimum supported Python version is {}.{}.".format(*min_version),
+<<<<<<< HEAD
         "Please use https://bootstrap.pypa.io/pip/{}.{}/get-pip.py instead.".format(
             *this_python
         ),
+=======
+        "Please use https://bootstrap.pypa.io/pip/{}.{}/get-pip.py instead.".format(*this_python),
+>>>>>>> 792b6b11 (Update documentation and typings for `ParametricFunction`)
     ]
     print("ERROR: " + " ".join(message_parts))
     sys.exit(1)
 
 
+<<<<<<< HEAD
 import argparse
 import importlib
+=======
+>>>>>>> 792b6b11 (Update documentation and typings for `ParametricFunction`)
 import os.path
 import pkgutil
 import shutil
 import tempfile
+<<<<<<< HEAD
+=======
+import argparse
+import importlib
+>>>>>>> 792b6b11 (Update documentation and typings for `ParametricFunction`)
 from base64 import b85decode
 
 
@@ -115,7 +127,10 @@ def bootstrap(tmpdir):
     # Execute the included pip and use it to install the latest pip and
     # setuptools from PyPI
     from pip._internal.cli.main import main as pip_entry_point
+<<<<<<< HEAD
 
+=======
+>>>>>>> 792b6b11 (Update documentation and typings for `ParametricFunction`)
     args = determine_pip_install_arguments()
     sys.exit(pip_entry_point(args))
 
