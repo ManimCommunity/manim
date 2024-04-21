@@ -479,7 +479,24 @@ class NumberLine(Line):
         return num_mob
 
     def get_number_mobjects(self, *numbers, **kwargs) -> VGroup:
-        if len(numbers) == 0:
+        """
+        Get a VGroup containing number mobjects for the given numbers.
+
+        Args:
+            *numbers (Union[float, str]): Numbers to create mobjects for.
+            **kwargs: Additional keyword arguments for configuring the mobjects.
+
+        Returns:
+            VGroup: A VGroup containing the number mobjects.
+        """
+        if len(numbers) == 0:  # Ensure that the color for the labels is set to black
+            self.decimal_number_config["color"] = BLACK
+
+            # Now when the configurations are merged, the color will be set to black
+            number_config = merge_dicts_recursively(
+                self.decimal_number_config,
+                number_config,
+            )
             numbers = self.default_numbers_to_display()
         return VGroup([self.get_number_mobject(number, **kwargs) for number in numbers])
 
