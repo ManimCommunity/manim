@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 import numpy as np
 
-from manim import config
+from manim import BLACK, config
 from manim.constants import *
 from manim.mobject.geometry.line import Line
 from manim.mobject.graphing.scale import LinearBase, _ScaleBase
