@@ -150,7 +150,7 @@ class Brace(VMobjectFromSVGPath):
 
     def get_text(self, *text, **kwargs):
         """Places the text at the brace tip.
-        
+
         Parameters
         ----------
         text
@@ -158,7 +158,7 @@ class Brace(VMobjectFromSVGPath):
         kwargs
             Any additional keyword arguments are passed to :meth:`.put_at_tip` which
             is used to position the text at the brace tip.
-        
+
         Returns
         -------
         :class:`~.Tex`
@@ -187,8 +187,7 @@ class Brace(VMobjectFromSVGPath):
         return tex_mob
 
     def get_tip(self):
-        """Returns the point at the brace tip.
-        """
+        """Returns the point at the brace tip."""
         # Returns the position of the seventh point in the path, which is the tip.
         if config["renderer"] == "opengl":
             return self.points[34]
@@ -196,8 +195,7 @@ class Brace(VMobjectFromSVGPath):
         return self.points[28]  # = 7*4
 
     def get_direction(self):
-        """Returns the direction from the center to the brace tip.
-        """
+        """Returns the direction from the center to the brace tip."""
         vect = self.get_tip() - self.get_center()
         return vect / np.linalg.norm(vect)
 
