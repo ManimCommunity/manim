@@ -287,3 +287,9 @@ def test_RectanglePoints(scene):
 def test_Square(scene):
     square = Square()
     scene.add(square)
+
+
+@frames_comparison
+def test_Polygon(scene):
+    polygon = Polygon(*[np.array([x, y, 0]) for x, y in [(0, 0), (1, 1), (2, 0)]])
+    scene.add(polygon)
