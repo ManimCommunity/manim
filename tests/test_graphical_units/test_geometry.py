@@ -293,3 +293,16 @@ def test_Square(scene):
 def test_Polygon(scene):
     polygon = Polygon(*[np.array([x, y, 0]) for x, y in [(0, 0), (1, 1), (2, 0)]])
     scene.add(polygon)
+
+
+@frames_comparison
+def test_Polygons(scene):
+    polygon1 = Polygon(*[np.array([x, y, 0]) for x, y in [(0, 0), (1, 1), (2, 0)]])
+    polygon2 = Polygon(*[np.array([x, y, 0]) for x, y in [(3, 0), (4, 1), (5, 0)]])
+    scene.add(polygon1, polygon2)
+
+
+@frames_comparison
+def test_RegularPolygon(scene):
+    regular_polygon = RegularPolygon(n=6)
+    scene.add(regular_polygon)
