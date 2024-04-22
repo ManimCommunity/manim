@@ -134,7 +134,3 @@ dist/
 
 # Ignore the built dependencies
 third_party/*
-
-
-# example.py
-example.py
