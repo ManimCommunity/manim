@@ -306,3 +306,15 @@ def test_Polygons(scene):
 def test_RegularPolygon(scene):
     regular_polygon = RegularPolygon(n=6)
     scene.add(regular_polygon)
+
+
+@frames_comparison
+def test_RegularPolygonWithRotation(scene):
+    regular_polygon = RegularPolygon(n=5).rotate(PI / 4)
+    scene.add(regular_polygon)
+
+
+@frames_comparison
+def test_RegularPolygonWithFillOpacity(scene):
+    regular_polygon = RegularPolygon(n=7, fill_opacity=0.5)
+    scene.add(regular_polygon)
