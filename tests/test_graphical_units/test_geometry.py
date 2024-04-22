@@ -269,3 +269,21 @@ def test_LabeledArrow(scene):
         "0.5", start=LEFT * 3, end=RIGHT * 3 + UP * 2, label_position=0.5, font_size=15
     )
     scene.add(l_arrow)
+
+
+@frames_comparison
+def test_Triangle(scene):
+    triangle = Triangle()
+    scene.add(triangle)
+
+
+@frames_comparison
+def test_RectanglePoints(scene):
+    rectangle = Rectangle().set_points_as_corners([LEFT, RIGHT, UP])
+    scene.add(rectangle)
+
+
+@frames_comparison
+def test_Square(scene):
+    square = Square()
+    scene.add(square)
