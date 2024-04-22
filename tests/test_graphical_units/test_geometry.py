@@ -324,3 +324,35 @@ def test_RegularPolygonWithFillOpacity(scene):
 def test_RegularPolygonWithStrokeWidth(scene):
     regular_polygon = RegularPolygon(n=8, stroke_width=5)
     scene.add(regular_polygon)
+
+
+@frames_comparison
+def test_RegularPolygonWithColor(scene):
+    regular_polygon = RegularPolygon(n=9, color=BLUE)
+    scene.add(regular_polygon)
+
+
+@frames_comparison
+def test_RegularPolygonWithPosition(scene):
+    regular_polygon = RegularPolygon(n=10).shift(UP)
+    scene.add(regular_polygon)
+
+
+@frames_comparison
+def test_RegularPolygonWithScale(scene):
+    regular_polygon = RegularPolygon(n=11).scale(2)
+    scene.add(regular_polygon)
+
+
+@frames_comparison
+def test_RegularPolygonWithFilled(scene):
+    regular_polygon = RegularPolygon(n=12, fill_color=RED, fill_opacity=0.7)
+    scene.add(regular_polygon)
+
+
+@frames_comparison
+def test_RegularPolygonWithFilledAndStroked(scene):
+    regular_polygon = RegularPolygon(
+        n=13, fill_color=YELLOW, fill_opacity=0.5, stroke_color=GREEN, stroke_width=3
+    )
+    scene.add(regular_polygon)
