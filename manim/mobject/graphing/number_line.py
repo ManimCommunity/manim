@@ -479,7 +479,8 @@ class NumberLine(Line):
         return num_mob
 
     def get_number_mobjects(self, *numbers, **kwargs) -> VGroup:
-        numbers = self.default_numbers_to_display()
+        if len(numbers) == 0:
+            numbers = self.default_numbers_to_display()
         return VGroup([self.get_number_mobject(number, **kwargs) for number in numbers])
 
     def get_labels(self) -> VGroup:
