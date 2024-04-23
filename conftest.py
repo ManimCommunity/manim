@@ -1,19 +1,3 @@
-# This file is automatically picked by pytest
-# while running tests. So, that each test is
-# run on difference temporary directories and avoiding
-# errors.
-
-from __future__ import annotations
-
-try:
-    # https://github.com/moderngl/moderngl/issues/517
-    import readline  # required to prevent a segfault on Python 3.10
-except ModuleNotFoundError:  # windows
-    pass
-
-import cairo
-import moderngl
-
 # If it is running Doctest the current directory
 # is changed because it also tests the config module
 # itself. If it's a normal test then it uses the
