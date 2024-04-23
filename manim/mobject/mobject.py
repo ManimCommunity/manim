@@ -1734,7 +1734,8 @@ class Mobject:
         curr_start, curr_end = self.get_start_and_end()
         curr_vect = curr_end - curr_start
         if np.all(curr_vect == 0):
-            raise Exception("Cannot position endpoints of closed loop")
+            self.points = start
+            return self
         target_vect = np.array(end) - np.array(start)
         axis = (
             normalize(np.cross(curr_vect, target_vect))
