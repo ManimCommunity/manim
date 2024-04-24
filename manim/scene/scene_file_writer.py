@@ -476,8 +476,6 @@ class SceneFileWriter:
         if fps == int(fps):  # fps is integer
             fps = int(fps)
 
-        video_container = av.open(file_path, mode="w")
-
         partial_movie_file_codec = "libx264"
         partial_movie_file_pix_fmt = "yuv420p"
         av_options = {
@@ -495,17 +493,18 @@ class SceneFileWriter:
             partial_movie_file_codec = "qtrle"
             partial_movie_file_pix_fmt = "argb"
 
-        stream = video_container.add_stream(
-            partial_movie_file_codec,
-            rate=config.frame_rate,
-            options=av_options,
-        )
-        stream.pix_fmt = partial_movie_file_pix_fmt
-        stream.width = config.pixel_width
-        stream.height = config.pixel_height
+        with av.open(file_path, mode="w") as video_container:
+            stream = video_container.add_stream(
+                partial_movie_file_codec,
+                rate=config.frame_rate,
+                options=av_options,
+            )
+            stream.pix_fmt = partial_movie_file_pix_fmt
+            stream.width = config.pixel_width
+            stream.height = config.pixel_height
 
-        self.video_container = video_container
-        self.video_stream = stream
+            self.video_container = video_container
+            self.video_stream = stream
 
     def close_partial_movie_stream(self):
         """Close the currently opened video container.
@@ -689,35 +688,37 @@ class SceneFileWriter:
                 "metadata": f"comment=Rendered with Manim Community v{__version__}",
             }
 
-            video_input = av.open(str(movie_file_path))
-            audio_input = av.open(str(sound_file_path))
-            video_stream = video_input.streams.video[0]
-            audio_stream = audio_input.streams.audio[0]
-            output_container = av.open(
-                str(temp_file_path), mode="w", options=av_options
-            )
-            output_video_stream = output_container.add_stream(template=video_stream)
-            output_audio_stream = output_container.add_stream(template=audio_stream)
+            with (av.open(movie_file_path) as video_input,
+                  av.open(sound_file_path) as audio_input):
+                
+                video_stream = video_input.streams.video[0]
+                audio_stream = audio_input.streams.audio[0]
+                output_container = av.open(
+                    str(temp_file_path), mode="w", options=av_options
+                )
+                output_video_stream = output_container.add_stream(template=video_stream)
+                output_audio_stream = output_container.add_stream(template=audio_stream)
 
-            for packet in video_input.demux(video_stream):
-                # We need to skip the "flushing" packets that `demux` generates.
-                if packet.dts is None:
-                    continue
+                for packet in video_input.demux(video_stream):
+                    # We need to skip the "flushing" packets that `demux` generates.
+                    if packet.dts is None:
+                        continue
 
-                # We need to assign the packet to the new stream.
-                packet.stream = output_video_stream
-                output_container.mux(packet)
+                    # We need to assign the packet to the new stream.
+                    packet.stream = output_video_stream
+                    output_container.mux(packet)
 
-            for packet in audio_input.demux(audio_stream):
-                # We need to skip the "flushing" packets that `demux` generates.
-                if packet.dts is None:
-                    continue
+                for packet in audio_input.demux(audio_stream):
+                    # We need to skip the "flushing" packets that `demux` generates.
+                    if packet.dts is None:
+                        continue
 
-                # We need to assign the packet to the new stream.
-                packet.stream = output_audio_stream
-                output_container.mux(packet)
+                    # We need to assign the packet to the new stream.
+                    packet.stream = output_audio_stream
+                    output_container.mux(packet)
 
-            output_container.close()
+                output_container.close()
+
             shutil.move(str(temp_file_path), str(movie_file_path))
             sound_file_path.unlink()
 

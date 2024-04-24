@@ -51,10 +51,10 @@ def test_codecs(tmp_path, format, transparent, codec, pixel_format):
         "pix_fmt": pixel_format,
     }
 
-    container = av.open(video_path)
-    first_frame = next(container.decode(video=0)).to_ndarray(format="rgba")
-    target_rgba = np.array([0, 0, 0, 255]) if not transparent else np.array([0, 0, 0, 0])
-    np.testing.assert_array_equal(first_frame[0, 0], target_rgba)
+    with av.open(video_path) as container:
+        first_frame = next(container.decode(video=0)).to_ndarray(format="rgba")
+        target_rgba = np.array([0, 0, 0, 255]) if not transparent else np.array([0, 0, 0, 0])
+        np.testing.assert_array_equal(first_frame[0, 0], target_rgba)
 
 
 @pytest.mark.slow
