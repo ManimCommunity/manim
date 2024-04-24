@@ -84,8 +84,7 @@ Typing guidelines
     T = TypeVar("T")
 
 
-    def copy(self: T) -> T:
-        ...
+    def copy(self: T) -> T: ...
 
 * Use ``typing.Iterable`` whenever the function works with *any* iterable, not a specific type.
 

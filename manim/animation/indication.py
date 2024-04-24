@@ -556,7 +556,7 @@ class Circumscribe(Succession):
     mobject
         The mobject to be circumscribed.
     shape
-        The shape with which to surrond the given mobject. Should be either
+        The shape with which to surround the given mobject. Should be either
         :class:`~.Rectangle` or :class:`~.Circle`
     fade_in
         Whether to make the surrounding shape to fade in. It will be drawn otherwise.
