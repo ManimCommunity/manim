@@ -456,7 +456,7 @@ class SpiralIn(Animation):
         fade_in_fraction=0.3,
         **kwargs,
     ) -> None:
-        self.shapes = shapes
+        self.shapes = shapes.copy()
         self.scale_factor = scale_factor
         self.shape_center = shapes.get_center()
         self.fade_in_fraction = fade_in_fraction
@@ -473,15 +473,21 @@ class SpiralIn(Animation):
 
     def interpolate_mobject(self, alpha: float) -> None:
         alpha = self.rate_func(alpha)
-        for shape in self.shapes:
+        for original_shape, shape in zip(self.shapes, self.mobject):
             shape.restore()
-            shape.save_state()
-            opacity = shape.get_fill_opacity()
-            new_opacity = min(opacity, alpha * opacity / self.fade_in_fraction)
+            fill_opacity = original_shape.get_fill_opacity()
+            stroke_opacity = original_shape.get_stroke_opacity()
+            new_fill_opacity = min(
+                fill_opacity, alpha * fill_opacity / self.fade_in_fraction
+            )
+            new_stroke_opacity = min(
+                stroke_opacity, alpha * stroke_opacity / self.fade_in_fraction
+            )
             shape.shift((shape.final_position - shape.initial_position) * alpha)
             shape.rotate(TAU * alpha, about_point=self.shape_center)
             shape.rotate(-TAU * alpha, about_point=shape.get_center_of_mass())
-            shape.set_opacity(new_opacity)
+            shape.set_fill(opacity=new_fill_opacity)
+            shape.set_stroke(opacity=new_stroke_opacity)
 
 
 class ShowIncreasingSubsets(Animation):
