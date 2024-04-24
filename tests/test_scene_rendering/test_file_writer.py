@@ -1,7 +1,7 @@
-import av
-import numpy as np
 import sys
 
+import av
+import numpy as np
 import pytest
 
 from manim import Create, Scene, Star, tempconfig
@@ -28,15 +28,17 @@ class StarScene(Scene):
 )
 def test_codecs(tmp_path, format, transparent, codec, pixel_format):
     output_filename = f"codec_{format}_{'transparent' if transparent else 'opaque'}"
-    with tempconfig({
-        "media_dir": tmp_path,
-        "quality": "low_quality",
-        "format": format,
-        "transparent": transparent,
-        "output_file": output_filename,
-    }):
+    with tempconfig(
+        {
+            "media_dir": tmp_path,
+            "quality": "low_quality",
+            "format": format,
+            "transparent": transparent,
+            "output_file": output_filename,
+        }
+    ):
         StarScene().render()
-    
+
     video_path = tmp_path / "videos" / "480p15" / f"{output_filename}.{format}"
     assert video_path.exists()
 
@@ -53,7 +55,9 @@ def test_codecs(tmp_path, format, transparent, codec, pixel_format):
 
     container = av.open(video_path)
     first_frame = next(container.decode(video=0)).to_ndarray(format="rgba")
-    target_rgba = np.array([0, 0, 0, 255]) if not transparent else np.array([0, 0, 0, 0])
+    target_rgba = (
+        np.array([0, 0, 0, 255]) if not transparent else np.array([0, 0, 0, 0])
+    )
     np.testing.assert_array_equal(first_frame[0, 0], target_rgba)
 
 
