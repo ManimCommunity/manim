@@ -473,9 +473,13 @@ class ManimColor:
         str
             A hex string starting with a # with either 6 or 8 nibbles depending on your input, by default 6 i.e #XXXXXX
         """
-        tmp = f"#{int(self._internal_value[0]*255):02X}{int(self._internal_value[1]*255):02X}{int(self._internal_value[2]*255):02X}"
+        tmp = (
+            f"#{int(self._internal_value[0] * 255):02X}"
+            f"{int(self._internal_value[1] * 255):02X}"
+            f"{int(self._internal_value[2] * 255):02X}"
+        )
         if with_alpha:
-            tmp += f"{int(self._internal_value[3]*255):02X}"
+            tmp += f"{int(self._internal_value[3] * 255):02X}"
         return tmp
 
     def to_hsv(self) -> HSV_Array_Float:

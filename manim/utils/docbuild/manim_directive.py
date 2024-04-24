@@ -386,7 +386,7 @@ def _log_rendering_times(*args: tuple[Any]) -> None:
                 f"{key}{f'{time_sum:.3f}'.rjust(7, '.')}s  => {len(group)} EXAMPLES",
             )
             for row in group:
-                print(f"{' '*(max_file_length)} {row[2].rjust(7)}s {row[1]}")
+                print(f"{' ' * max_file_length} {row[2].rjust(7)}s {row[1]}")
         print("")
 
 
