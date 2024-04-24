@@ -1201,7 +1201,7 @@ class ManimConfig(MutableMapping):
 
     @property
     def upto_animation_number(self) -> int:
-        """Stop rendering animations at this nmber. Use -1 to avoid skipping (-n)."""
+        """Stop rendering animations at this number. Use -1 to avoid skipping (-n)."""
         return self._d["upto_animation_number"]
 
     @upto_animation_number.setter

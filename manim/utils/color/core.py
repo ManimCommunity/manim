@@ -62,7 +62,7 @@ class ManimColor:
     It's internal representation is a 4 element array of floats corresponding
     to a [r,g,b,a] value where r,g,b,a can be between 0 to 1.
 
-    This is done in order to reduce the amount of color inconsitencies by constantly
+    This is done in order to reduce the amount of color inconsistencies by constantly
     casting between integers and floats which introduces errors.
 
     The class can accept any value of type :class:`ParsableManimColor` i.e.
