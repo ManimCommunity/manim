@@ -9,13 +9,14 @@ __all__ = [
 
 import itertools as it
 from copy import copy
-from typing import Any, Hashable, Iterable, Literal, Protocol, cast, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Hashable, Iterable, Literal, Protocol, cast
 
 import networkx as nx
 import numpy as np
 
 if TYPE_CHECKING:
     from typing_extensions import TypeAlias
+
     from manim.typing import Point3D
 
     NxGraph: TypeAlias = nx.classes.graph.Graph | nx.classes.digraph.DiGraph

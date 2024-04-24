@@ -116,9 +116,7 @@ def test_custom_graph_layout_dict():
 
 
 def test_graph_layouts():
-    for layout in (
-        layout for layout in _layouts if layout not in ["tree", "partite"]
-    ):
+    for layout in (layout for layout in _layouts if layout not in ["tree", "partite"]):
         G = Graph([1, 2, 3], [(1, 2), (2, 3)], layout=layout)
         assert str(G) == "Undirected graph on 3 vertices and 2 edges"
 
@@ -164,9 +162,7 @@ def test_custom_graph_layout_function_with_kwargs():
 
 
 def test_graph_change_layout():
-    for layout in (
-        layout for layout in _layouts if layout not in ["tree", "partite"]
-    ):
+    for layout in (layout for layout in _layouts if layout not in ["tree", "partite"]):
         G = Graph([1, 2, 3], [(1, 2), (2, 3)])
         G.change_layout(layout=layout)
         assert str(G) == "Undirected graph on 3 vertices and 2 edges"
