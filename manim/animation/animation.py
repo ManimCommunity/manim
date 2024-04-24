@@ -1,6 +1,5 @@
 """Animate mobjects."""
 
-
 from __future__ import annotations
 
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject

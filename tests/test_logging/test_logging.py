@@ -43,8 +43,10 @@ def test_error_logging(tmp_path, python_version):
         str(path_error_scene),
     ]
 
-    _, err, exitcode = capture(command)
-    assert exitcode != 0 and len(err) > 0
+    out, err, exitcode = capture(command)
+    if err is None:
+        err = out
+    assert exitcode != 0 and "Traceback (most recent call last)" in err
 
 
 @logs_comparison(
