@@ -246,8 +246,7 @@ class ManimConfig(MutableMapping):
         config.background_color = RED
 
 
-        class MyScene(Scene):
-            ...
+        class MyScene(Scene): ...
 
     the background color will be set to RED, regardless of the contents of
     ``manim.cfg`` or the CLI arguments used when invoking manim.
