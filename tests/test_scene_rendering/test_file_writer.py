@@ -1,9 +1,11 @@
+import av
+import numpy as np
 import sys
 
 import pytest
 
 from manim import Create, Scene, Star, tempconfig
-from manim.utils.commands import capture
+from manim.utils.commands import capture, get_video_metadata
 from tests.utils.video_tester import video_comparison
 
 
@@ -13,46 +15,46 @@ class StarScene(Scene):
         self.play(Create(star))
 
 
-@video_comparison("H264Codec.json", "videos/480p15/H264Codec.mp4")
 @pytest.mark.slow
-def test_h264_codec(tmp_path):
-    with tempconfig(
-        {
-            "media_dir": tmp_path,
-            "quality": "low_quality",
-            "output_file": "H264Codec",
-        }
-    ):
+@pytest.mark.parametrize(
+    "format, transparent, codec, pixel_format",
+    [
+        ("mp4", False, "h264", "yuv420p"),
+        ("mov", False, "h264", "yuv420p"),
+        ("mov", True, "qtrle", "argb"),
+        ("webm", False, "vp9", "yuv420p"),
+        ("webm", True, "vp9", "yuv420p"),
+    ],
+)
+def test_codecs(tmp_path, format, transparent, codec, pixel_format):
+    output_filename = f"codec_{format}_{'transparent' if transparent else 'opaque'}"
+    with tempconfig({
+        "media_dir": tmp_path,
+        "quality": "low_quality",
+        "format": format,
+        "transparent": transparent,
+        "output_file": output_filename,
+    }):
         StarScene().render()
+    
+    video_path = tmp_path / "videos" / "480p15" / f"{output_filename}.{format}"
+    assert video_path.exists()
 
+    metadata = get_video_metadata(video_path)
+    assert metadata == {
+        "width": 854,
+        "height": 480,
+        "nb_frames": "15",
+        "duration": "1.000000",
+        "avg_frame_rate": "15/1",
+        "codec_name": codec,
+        "pix_fmt": pixel_format,
+    }
 
-@video_comparison("qtrleCodec.json", "videos/480p15/qtrleCodec.mov")
-@pytest.mark.slow
-def test_qtrle_codec(tmp_path):
-    with tempconfig(
-        {
-            "media_dir": tmp_path,
-            "quality": "low_quality",
-            "transparent": True,
-            "output_file": "qtrleCodec",
-        }
-    ):
-        StarScene().render()
-
-
-@video_comparison("vp9Codec.json", "videos/480p15/vp9Codec.webm")
-@pytest.mark.slow
-def test_vp9_codec(tmp_path):
-    with tempconfig(
-        {
-            "media_dir": tmp_path,
-            "quality": "low_quality",
-            "format": "webm",
-            "transparent": True,
-            "output_file": "vp9Codec",
-        }
-    ):
-        StarScene().render()
+    container = av.open(video_path)
+    first_frame = next(container.decode(video=0)).to_ndarray(format="rgba")
+    target_rgba = np.array([0, 0, 0, 255]) if not transparent else np.array([0, 0, 0, 0])
+    np.testing.assert_array_equal(first_frame[0, 0], target_rgba)
 
 
 @pytest.mark.slow
