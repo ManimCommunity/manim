@@ -11,6 +11,7 @@ from PIL import Image
 from PIL.Image import Resampling
 
 from manim.mobject.geometry.shape_matchers import SurroundingRectangle
+from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 
 from ... import config
 from ...constants import *
@@ -22,7 +23,7 @@ from ...utils.images import change_to_rgba_array, get_full_raster_image_path
 __all__ = ["ImageMobject", "ImageMobjectFromCamera"]
 
 
-class AbstractImageMobject(Mobject):
+class AbstractImageMobject(Mobject, metaclass=ConvertToOpenGL):
     """
     Automatically filters out black pixels
 
@@ -212,7 +213,7 @@ class ImageMobject(AbstractImageMobject):
         self.color = color
         return self
 
-    def set_opacity(self, alpha: float):
+    def set_opacity(self, alpha: float, recurse: bool = True):
         """Sets the image's opacity.
 
         Parameters
