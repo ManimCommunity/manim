@@ -1060,7 +1060,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         s = self.get_start_anchors()
         e = self.get_end_anchors()
-        return list(it.chain.from_iterable(zip(s, t)))
+        return list(it.chain.from_iterable(zip(s, e)))
 
     def get_points_without_null_curves(self, atol=1e-9):
         nppc = self.n_points_per_curve
