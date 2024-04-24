@@ -9,11 +9,16 @@ __all__ = [
 
 import itertools as it
 from copy import copy
-from typing import Any, Hashable, Iterable, Literal, Protocol, Union, cast
+from typing import Any, Hashable, Iterable, Literal, Protocol, cast, TYPE_CHECKING
 
 import networkx as nx
 import numpy as np
-from typing_extensions import TypeAlias
+
+if TYPE_CHECKING:
+    from typing_extensions import TypeAlias
+    from manim.typing import Point3D
+
+    NxGraph: TypeAlias = nx.classes.graph.Graph | nx.classes.digraph.DiGraph
 
 from manim.animation.composition import AnimationGroup
 from manim.animation.creation import Create, Uncreate
@@ -24,10 +29,7 @@ from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.text.tex_mobject import MathTex
 from manim.mobject.types.vectorized_mobject import VMobject
-from manim.typing import Point3D
 from manim.utils.color import BLACK
-
-NxGraph: TypeAlias = Union[nx.classes.graph.Graph, nx.classes.digraph.DiGraph]
 
 
 class LayoutFunction(Protocol):
@@ -53,8 +55,8 @@ class LayoutFunction(Protocol):
                     graph: nx.Graph,
                     scale: float | tuple[float, float, float] = 2,
                     n: int | None = None,
-                    *args: tuple[Any, ...],
-                    **kwargs: dict[str, Any],
+                    *args: Any,
+                    **kwargs: Any,
                 ):
                     nodes = sorted(list(graph))
                     height = len(nodes) // n
@@ -256,8 +258,8 @@ class LayoutFunction(Protocol):
         self,
         graph: NxGraph,
         scale: float | tuple[float, float, float] = 2,
-        *args: tuple[Any, ...],
-        **kwargs: dict[str, Any],
+        *args: Any,
+        **kwargs: Any,
     ) -> dict[Hashable, Point3D]:
         """Given a graph and a scale, return a dictionary of coordinates.
 
@@ -280,7 +282,7 @@ def _partite_layout(
     nx_graph: NxGraph,
     scale: float = 2,
     partitions: list[list[Hashable]] | None = None,
-    **kwargs: dict[str, Any],
+    **kwargs: Any,
 ) -> dict[Hashable, Point3D]:
     if partitions is None or len(partitions) == 0:
         raise ValueError(
@@ -302,7 +304,7 @@ def _partite_layout(
     return nx.layout.multipartite_layout(nx_graph, scale=scale, **kwargs)
 
 
-def _random_layout(nx_graph: NxGraph, scale: float = 2, **kwargs: dict[str, Any]):
+def _random_layout(nx_graph: NxGraph, scale: float = 2, **kwargs: Any):
     # the random layout places coordinates in [0, 1)
     # we need to rescale manually afterwards...
     auto_layout = nx.layout.random_layout(nx_graph, **kwargs)
