@@ -1,6 +1,5 @@
 """Mobjects that represent coordinate systems."""
 
-
 from __future__ import annotations
 
 __all__ = [
@@ -55,7 +54,7 @@ from manim.utils.space_ops import angle_of_vector
 
 if TYPE_CHECKING:
     from manim.mobject.mobject import Mobject
-    from manim.typing import ManimFloat, Point2D, Point3D, Vector3
+    from manim.typing import ManimFloat, Point2D, Point3D, Vector3D
 
     LineType = TypeVar("LineType", bound=Line)
 
@@ -305,7 +304,7 @@ class CoordinateSystem:
         label
             The label. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs.
         edge
-            The edge of the x-axis to which the label will be added, by default ``UR``.
+            The edge of the y-axis to which the label will be added, by default ``UR``.
         direction
             Allows for further positioning of the label from an edge, by default ``UR``
         buff
@@ -441,8 +440,7 @@ class CoordinateSystem:
         line_config: dict | None = ...,
         color: ParsableManimColor | None = ...,
         stroke_width: float = ...,
-    ) -> DashedLine:
-        ...
+    ) -> DashedLine: ...
 
     @overload
     def get_line_from_axis_to_point(
@@ -453,8 +451,7 @@ class CoordinateSystem:
         line_config: dict | None = ...,
         color: ParsableManimColor | None = ...,
         stroke_width: float = ...,
-    ) -> LineType:
-        ...
+    ) -> LineType: ...
 
     def get_line_from_axis_to_point(  # type: ignore[no-untyped-def]
         self,
@@ -855,9 +852,11 @@ class CoordinateSystem:
         function: Callable[[float], float],
         u_range: Sequence[float] | None = None,
         v_range: Sequence[float] | None = None,
-        colorscale: Sequence[ParsableManimColor]
-        | Sequence[tuple[ParsableManimColor, float]]
-        | None = None,
+        colorscale: (
+            Sequence[ParsableManimColor]
+            | Sequence[tuple[ParsableManimColor, float]]
+            | None
+        ) = None,
         colorscale_axis: int = 2,
         **kwargs: Any,
     ) -> Surface | OpenGLSurface:
@@ -2342,7 +2341,7 @@ class ThreeDAxes(Axes):
         y_length: float | None = config.frame_height + 2.5,
         z_length: float | None = config.frame_height - 1.5,
         z_axis_config: dict[str, Any] | None = None,
-        z_normal: Vector3 = DOWN,
+        z_normal: Vector3D = DOWN,
         num_axis_pieces: int = 20,
         light_source: Sequence[float] = 9 * DOWN + 7 * LEFT + 10 * OUT,
         # opengl stuff (?)
@@ -2433,7 +2432,7 @@ class ThreeDAxes(Axes):
         direction: Sequence[float] = UR,
         buff: float = SMALL_BUFF,
         rotation: float = PI / 2,
-        rotation_axis: Vector3 = OUT,
+        rotation_axis: Vector3D = OUT,
         **kwargs,
     ) -> Mobject:
         """Generate a y-axis label.
@@ -2480,11 +2479,11 @@ class ThreeDAxes(Axes):
     def get_z_axis_label(
         self,
         label: float | str | Mobject,
-        edge: Vector3 = OUT,
-        direction: Vector3 = RIGHT,
+        edge: Vector3D = OUT,
+        direction: Vector3D = RIGHT,
         buff: float = SMALL_BUFF,
         rotation: float = PI / 2,
-        rotation_axis: Vector3 = RIGHT,
+        rotation_axis: Vector3D = RIGHT,
         **kwargs: Any,
     ) -> Mobject:
         """Generate a z-axis label.
@@ -2653,14 +2652,12 @@ class NumberPlane(Axes):
 
     def __init__(
         self,
-        x_range: Sequence[float]
-        | None = (
+        x_range: Sequence[float] | None = (
             -config["frame_x_radius"],
             config["frame_x_radius"],
             1,
         ),
-        y_range: Sequence[float]
-        | None = (
+        y_range: Sequence[float] | None = (
             -config["frame_y_radius"],
             config["frame_y_radius"],
             1,

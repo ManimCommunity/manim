@@ -26,20 +26,17 @@ from typing import (
 )
 
 import numpy as np
-import numpy.typing as npt
 from PIL.Image import Image
-from typing_extensions import Self
 
+from manim import config
+from manim.constants import *
+from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.three_d.three_d_utils import (
     get_3d_vmob_gradient_start_and_end_points,
 )
-
-from ... import config
-from ...constants import *
-from ...mobject.mobject import Mobject
-from ...utils.bezier import (
+from manim.utils.bezier import (
     bezier,
     get_smooth_handle_points,
     integer_interpolate,
@@ -47,11 +44,19 @@ from ...utils.bezier import (
     partial_bezier_points,
     proportions_along_bezier_curve_for_point,
 )
-from ...utils.color import BLACK, WHITE, ManimColor, ParsableManimColor
-from ...utils.iterables import make_even, resize_array, stretch_array_to_length, tuplify
-from ...utils.space_ops import rotate_vector, shoelace_direction
+from manim.utils.color import BLACK, WHITE, ManimColor, ParsableManimColor
+from manim.utils.iterables import (
+    make_even,
+    resize_array,
+    stretch_array_to_length,
+    tuplify,
+)
+from manim.utils.space_ops import rotate_vector, shoelace_direction
 
 if TYPE_CHECKING:
+    import numpy.typing as npt
+    from typing_extensions import Self
+
     from manim.typing import (
         BezierPoints,
         CubicBezierPoints,
@@ -62,7 +67,7 @@ if TYPE_CHECKING:
         Point3D_Array,
         QuadraticBezierPoints,
         RGBA_Array_Float,
-        Vector3,
+        Vector3D,
         Zeros,
     )
 
@@ -73,6 +78,16 @@ if TYPE_CHECKING:
 #   if last point in close to first point
 # - Think about length of self.points.  Always 0 or 1 mod 4?
 #   That's kind of weird.
+
+__all__ = [
+    "VMobject",
+    "VGroup",
+    "VDict",
+    "VectorizedPoint",
+    "CurvesAsSubmobjects",
+    "VectorizedPoint",
+    "DashedVMobject",
+]
 
 
 class VMobject(Mobject):
@@ -114,7 +129,7 @@ class VMobject(Mobject):
         background_stroke_width: float = 0,
         sheen_factor: float = 0.0,
         joint_type: LineJointType | None = None,
-        sheen_direction: Vector3 = UL,
+        sheen_direction: Vector3D = UL,
         close_new_points: bool = False,
         pre_function_handle_to_anchor_scale_factor: float = 0.01,
         make_smooth_after_applying_functions: bool = False,
@@ -123,6 +138,7 @@ class VMobject(Mobject):
         # TODO, do we care about accounting for varying zoom levels?
         tolerance_for_point_equality: float = 1e-6,
         n_points_per_cubic_curve: int = 4,
+        cap_style: CapStyleType = CapStyleType.AUTO,
         **kwargs,
     ):
         self.fill_opacity = fill_opacity
@@ -138,7 +154,7 @@ class VMobject(Mobject):
         self.joint_type: LineJointType = (
             LineJointType.AUTO if joint_type is None else joint_type
         )
-        self.sheen_direction: Vector3 = sheen_direction
+        self.sheen_direction: Vector3D = sheen_direction
         self.close_new_points: bool = close_new_points
         self.pre_function_handle_to_anchor_scale_factor: float = (
             pre_function_handle_to_anchor_scale_factor
@@ -150,6 +166,7 @@ class VMobject(Mobject):
         self.shade_in_3d: bool = shade_in_3d
         self.tolerance_for_point_equality: float = tolerance_for_point_equality
         self.n_points_per_cubic_curve: int = n_points_per_cubic_curve
+        self.cap_style: CapStyleType = cap_style
         super().__init__(**kwargs)
         self.submobjects: list[VMobject]
 
@@ -335,9 +352,37 @@ class VMobject(Mobject):
             setattr(self, opacity_name, opacity)
         if color is not None and background:
             if isinstance(color, (list, tuple)):
-                self.background_stroke_color = color
+                self.background_stroke_color = ManimColor.parse(color)
             else:
                 self.background_stroke_color = ManimColor(color)
+        return self
+
+    def set_cap_style(self, cap_style: CapStyleType) -> Self:
+        """
+        Sets the cap style of the :class:`VMobject`.
+
+        Parameters
+        ----------
+        cap_style
+            The cap style to be set. See :class:`.CapStyleType` for options.
+
+        Returns
+        -------
+        :class:`VMobject`
+            ``self``
+
+        Examples
+        --------
+        .. manim:: CapStyleExample
+            :save_last_frame:
+
+            class CapStyleExample(Scene):
+                def construct(self):
+                    line = Line(LEFT, RIGHT, color=YELLOW, stroke_width=20)
+                    line.set_cap_style(CapStyleType.ROUND)
+                    self.add(line)
+        """
+        self.cap_style = cap_style
         return self
 
     def set_background_stroke(self, **kwargs) -> Self:
@@ -356,7 +401,7 @@ class VMobject(Mobject):
         background_stroke_width: float | None = None,
         background_stroke_opacity: float | None = None,
         sheen_factor: float | None = None,
-        sheen_direction: Vector3 | None = None,
+        sheen_direction: Vector3D | None = None,
         background_image: Image | str | None = None,
         family: bool = True,
     ) -> Self:
@@ -523,7 +568,7 @@ class VMobject(Mobject):
 
     color = property(get_color, set_color)
 
-    def set_sheen_direction(self, direction: Vector3, family: bool = True) -> Self:
+    def set_sheen_direction(self, direction: Vector3D, family: bool = True) -> Self:
         """Sets the direction of the applied sheen.
 
         Parameters
@@ -548,11 +593,11 @@ class VMobject(Mobject):
             for submob in self.get_family():
                 submob.sheen_direction = direction
         else:
-            self.sheen_direction: Vector3 = direction
+            self.sheen_direction: Vector3D = direction
         return self
 
     def rotate_sheen_direction(
-        self, angle: float, axis: Vector3 = OUT, family: bool = True
+        self, angle: float, axis: Vector3D = OUT, family: bool = True
     ) -> Self:
         """Rotates the direction of the applied sheen.
 
@@ -585,7 +630,7 @@ class VMobject(Mobject):
         return self
 
     def set_sheen(
-        self, factor: float, direction: Vector3 | None = None, family: bool = True
+        self, factor: float, direction: Vector3D | None = None, family: bool = True
     ) -> Self:
         """Applies a color gradient from a direction.
 
@@ -623,7 +668,7 @@ class VMobject(Mobject):
             self.set_fill(self.get_fill_color(), family=family)
         return self
 
-    def get_sheen_direction(self) -> Vector3:
+    def get_sheen_direction(self) -> Vector3D:
         return np.array(self.sheen_direction)
 
     def get_sheen_factor(self) -> float:
@@ -917,6 +962,27 @@ class VMobject(Mobject):
         -------
         :class:`VMobject`
             ``self``
+
+
+        Examples
+        --------
+        .. manim:: PointsAsCornersExample
+            :save_last_frame:
+
+            class PointsAsCornersExample(Scene):
+                def construct(self):
+                    corners = (
+                        # create square
+                        UR, UL,
+                        DL, DR,
+                        UR,
+                        # create crosses
+                        DL, UL,
+                        DR
+                    )
+                    vmob = VMobject(stroke_color=RED)
+                    vmob.set_points_as_corners(corners).scale(2)
+                    self.add(vmob)
         """
         nppcc = self.n_points_per_cubic_curve
         points = np.array(points)
@@ -998,7 +1064,7 @@ class VMobject(Mobject):
     def rotate(
         self,
         angle: float,
-        axis: Vector3 = OUT,
+        axis: Vector3D = OUT,
         about_point: Point3D | None = None,
         **kwargs,
     ) -> Self:
@@ -1342,6 +1408,22 @@ class VMobject(Mobject):
             If ``alpha`` is not between 0 and 1.
         :exc:`Exception`
             If the :class:`VMobject` has no points.
+
+        Example
+        -------
+        .. manim:: PointFromProportion
+            :save_last_frame:
+
+            class PointFromProportion(Scene):
+                def construct(self):
+                    line = Line(2*DL, 2*UR)
+                    self.add(line)
+                    colors = (RED, BLUE, YELLOW)
+                    proportions = (1/4, 1/2, 3/4)
+                    for color, proportion in zip(colors, proportions):
+                        self.add(Dot(color=color).move_to(
+                                line.point_from_proportion(proportion)
+                        ))
         """
 
         if alpha < 0 or alpha > 1:
@@ -1366,6 +1448,9 @@ class VMobject(Mobject):
                 return curve(residue)
 
             current_length += length
+        raise Exception(
+            "Not sure how you reached here, please file a bug report at https://github.com/ManimCommunity/manim/issues/new/choose"
+        )
 
     def proportion_from_point(
         self,
@@ -1691,7 +1776,10 @@ class VMobject(Mobject):
                 interpolate(getattr(mobject1, attr), getattr(mobject2, attr), alpha),
             )
             if alpha == 1.0:
-                setattr(self, attr, getattr(mobject2, attr))
+                val = getattr(mobject2, attr)
+                if isinstance(val, np.ndarray):
+                    val = val.copy()
+                setattr(self, attr, val)
 
     def pointwise_become_partial(
         self,
@@ -1964,8 +2052,14 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
                         (gr-circle_red).animate.shift(RIGHT)
                     )
         """
-        if not all(isinstance(m, (VMobject, OpenGLVMobject)) for m in vmobjects):
-            raise TypeError("All submobjects must be of type VMobject")
+        for m in vmobjects:
+            if not isinstance(m, (VMobject, OpenGLVMobject)):
+                raise TypeError(
+                    f"All submobjects of {self.__class__.__name__} must be of type VMobject. "
+                    f"Got {repr(m)} ({type(m).__name__}) instead. "
+                    "You can try using `Group` instead."
+                )
+
         return super().add(*vmobjects)
 
     def __add__(self, vmobject: VMobject) -> Self:
@@ -2459,7 +2553,7 @@ class CurvesAsSubmobjects(VGroup):
         if len(self.submobjects) == 0:
             caller_name = sys._getframe(1).f_code.co_name
             raise Exception(
-                f"Cannot call CurvesAsSubmobjects.{caller_name} for a CurvesAsSubmobject with no submobjects"
+                f"Cannot call CurvesAsSubmobjects. {caller_name} for a CurvesAsSubmobject with no submobjects"
             )
 
     def _get_submobjects_with_points(self):
@@ -2469,7 +2563,7 @@ class CurvesAsSubmobjects(VGroup):
         if len(submobjs_with_pts) == 0:
             caller_name = sys._getframe(1).f_code.co_name
             raise Exception(
-                f"Cannot call CurvesAsSubmobjects.{caller_name} for a CurvesAsSubmobject whose submobjects have no points"
+                f"Cannot call CurvesAsSubmobjects. {caller_name} for a CurvesAsSubmobject whose submobjects have no points"
             )
         return submobjs_with_pts
 

@@ -19,6 +19,8 @@ from ...utils.bezier import interpolate
 from ...utils.color import WHITE, ManimColor, color_to_int_rgb
 from ...utils.images import change_to_rgba_array, get_full_raster_image_path
 
+__all__ = ["ImageMobject", "ImageMobjectFromCamera"]
+
 
 class AbstractImageMobject(Mobject):
     """
@@ -191,7 +193,9 @@ class ImageMobject(AbstractImageMobject):
             self.pixel_array, self.pixel_array_dtype
         )
         if self.invert:
-            self.pixel_array[:, :, :3] = 255 - self.pixel_array[:, :, :3]
+            self.pixel_array[:, :, :3] = (
+                np.iinfo(self.pixel_array_dtype).max - self.pixel_array[:, :, :3]
+            )
         super().__init__(scale_to_resolution, **kwargs)
 
     def get_pixel_array(self):

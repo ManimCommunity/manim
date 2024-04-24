@@ -1,10 +1,18 @@
-"""DefaultGroup allows a subcommand to act as the main command
+"""``DefaultGroup`` allows a subcommand to act as the main command.
 
 In particular, this class is what allows ``manim`` to act as ``manim render``.
-"""
-import cloup
 
-from .. import logger
+.. note::
+    This is a vendored version of https://github.com/click-contrib/click-default-group/
+    under the BSD 3-Clause "New" or "Revised" License.
+
+    This library isn't used as a dependency as we need to inherit from ``cloup.Group`` instead
+    of ``click.Group``.
+"""
+
+import warnings
+
+import cloup
 
 __all__ = ["DefaultGroup"]
 
@@ -54,8 +62,8 @@ class DefaultGroup(cloup.Group):
         decorator = super().command(*args, **kwargs)
         if not default:
             return decorator
-        logger.log(
-            "Use default param of DefaultGroup or " "set_default_command() instead",
+        warnings.warn(
+            "Use default param of DefaultGroup or set_default_command() instead",
             DeprecationWarning,
         )
 

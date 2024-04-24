@@ -5,15 +5,18 @@ Manim's render subcommand is accessed in the command-line interface via
 can specify options, and arguments for the render command.
 
 """
+
 from __future__ import annotations
 
+import http.client
 import json
 import sys
+import urllib.error
+import urllib.request
 from pathlib import Path
+from typing import cast
 
-import click
 import cloup
-import requests
 
 from ... import __version__, config, console, error_console, logger
 from ..._config import tempconfig
@@ -24,14 +27,16 @@ from .global_options import global_options
 from .output_options import output_options
 from .render_options import render_options
 
+__all__ = ["render"]
+
 
 @cloup.command(
     context_settings=None,
     no_args_is_help=True,
     epilog=EPILOG,
 )
-@click.argument("file", type=Path, required=True)
-@click.argument("scene_names", required=False, nargs=-1)
+@cloup.argument("file", type=Path, required=True)
+@cloup.argument("scene_names", required=False, nargs=-1)
 @global_options
 @output_options
 @render_options  # type: ignore
@@ -120,13 +125,26 @@ def render(
     if config.notify_outdated_version:
         manim_info_url = "https://pypi.org/pypi/manim/json"
         warn_prompt = "Cannot check if latest release of manim is installed"
-        req_info = {}
 
         try:
-            req_info = requests.get(manim_info_url, timeout=10)
-            req_info.raise_for_status()
-
-            stable = req_info.json()["info"]["version"]
+            with urllib.request.urlopen(
+                urllib.request.Request(manim_info_url),
+                timeout=10,
+            ) as response:
+                response = cast(http.client.HTTPResponse, response)
+                json_data = json.loads(response.read())
+        except urllib.error.HTTPError:
+            logger.debug("HTTP Error: %s", warn_prompt)
+        except urllib.error.URLError:
+            logger.debug("URL Error: %s", warn_prompt)
+        except json.JSONDecodeError:
+            logger.debug(
+                "Error while decoding JSON from %r: %s", manim_info_url, warn_prompt
+            )
+        except Exception:
+            logger.debug("Something went wrong: %s", warn_prompt)
+        else:
+            stable = json_data["info"]["version"]
             if stable != __version__:
                 console.print(
                     f"You are using manim version [red]v{__version__}[/red], but version [green]v{stable}[/green] is available.",
@@ -134,16 +152,5 @@ def render(
                 console.print(
                     "You should consider upgrading via [yellow]pip install -U manim[/yellow]",
                 )
-        except requests.exceptions.HTTPError:
-            logger.debug(f"HTTP Error: {warn_prompt}")
-        except requests.exceptions.ConnectionError:
-            logger.debug(f"Connection Error: {warn_prompt}")
-        except requests.exceptions.Timeout:
-            logger.debug(f"Timed Out: {warn_prompt}")
-        except json.JSONDecodeError:
-            logger.debug(warn_prompt)
-            logger.debug(f"Error decoding JSON from {manim_info_url}")
-        except Exception:
-            logger.debug(f"Something went wrong: {warn_prompt}")
 
     return args

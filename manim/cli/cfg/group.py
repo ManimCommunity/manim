@@ -5,13 +5,12 @@ cfg``. Here you can specify options, subcommands, and subgroups for the cfg
 group.
 
 """
+
 from __future__ import annotations
 
-import os
 from ast import literal_eval
 from pathlib import Path
 
-import click
 import cloup
 from rich.errors import StyleSyntaxError
 from rich.style import Style
@@ -27,6 +26,17 @@ If left empty, the default colour will be used.[/red]
 [magenta] For a full list of styles, visit[/magenta] [green]https://rich.readthedocs.io/en/latest/style.html[/green]
 """
 RICH_NON_STYLE_ENTRIES: str = ["log.width", "log.height", "log.timestamps"]
+
+__all__ = [
+    "value_from_string",
+    "value_from_string",
+    "is_valid_style",
+    "replace_keys",
+    "cfg",
+    "write",
+    "show",
+    "export",
+]
 
 
 def value_from_string(value: str) -> str | int | bool:
@@ -123,21 +133,21 @@ def replace_keys(default: dict) -> dict:
     epilog=EPILOG,
     help="Manages Manim configuration files.",
 )
-@click.pass_context
+@cloup.pass_context
 def cfg(ctx):
     """Responsible for the cfg subcommand."""
     pass
 
 
 @cfg.command(context_settings=cli_ctx_settings, no_args_is_help=True)
-@click.option(
+@cloup.option(
     "-l",
     "--level",
-    type=click.Choice(["user", "cwd"], case_sensitive=False),
+    type=cloup.Choice(["user", "cwd"], case_sensitive=False),
     default="cwd",
     help="Specify if this config is for user or the working directory.",
 )
-@click.option("-o", "--open", "openfile", is_flag=True)
+@cloup.option("-o", "--open", "openfile", is_flag=True)
 def write(level: str = None, openfile: bool = False) -> None:
     config_paths = config_file_paths()
     console.print(
@@ -258,8 +268,8 @@ def show():
 
 
 @cfg.command(context_settings=cli_ctx_settings)
-@click.option("-d", "--directory", default=Path.cwd())
-@click.pass_context
+@cloup.option("-d", "--directory", default=Path.cwd())
+@cloup.pass_context
 def export(ctx, directory):
     directory_path = Path(directory)
     if directory_path.absolute == Path.cwd().absolute:

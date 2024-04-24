@@ -598,8 +598,10 @@ class Rectangle(Polygon):
             def construct(self):
                 rect1 = Rectangle(width=4.0, height=2.0, grid_xstep=1.0, grid_ystep=0.5)
                 rect2 = Rectangle(width=1.0, height=4.0)
+                rect3 = Rectangle(width=2.0, height=2.0, grid_xstep=1.0, grid_ystep=1.0)
+                rect3.grid_lines.set_stroke(width=1)
 
-                rects = Group(rect1,rect2).arrange(buff=1)
+                rects = Group(rect1, rect2, rect3).arrange(buff=1)
                 self.add(rects)
     """
 
@@ -617,10 +619,16 @@ class Rectangle(Polygon):
         super().__init__(UR, UL, DL, DR, color=color, **kwargs)
         self.stretch_to_fit_width(width)
         self.stretch_to_fit_height(height)
+
         v = self.get_vertices()
-        if grid_xstep is not None:
+        self.grid_lines = VGroup()
+
+        if grid_xstep or grid_ystep:
             from manim.mobject.geometry.line import Line
 
+            v = self.get_vertices()
+
+        if grid_xstep:
             grid_xstep = abs(grid_xstep)
             count = int(width / grid_xstep)
             grid = VGroup(
@@ -633,8 +641,9 @@ class Rectangle(Polygon):
                     for i in range(1, count)
                 )
             )
-            self.add(grid)
-        if grid_ystep is not None:
+            self.grid_lines.add(grid)
+
+        if grid_ystep:
             grid_ystep = abs(grid_ystep)
             count = int(height / grid_ystep)
             grid = VGroup(
@@ -647,7 +656,10 @@ class Rectangle(Polygon):
                     for i in range(1, count)
                 )
             )
-            self.add(grid)
+            self.grid_lines.add(grid)
+
+        if self.grid_lines:
+            self.add(self.grid_lines)
 
 
 class Square(Rectangle):
