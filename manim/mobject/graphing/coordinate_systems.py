@@ -18,7 +18,7 @@ from typing import TYPE_CHECKING, Any, Callable, Iterable, Sequence, TypeVar, ov
 import numpy as np
 from typing_extensions import Self
 
-from manim import config
+from manim import color, config
 from manim.constants import *
 from manim.mobject.geometry.arc import Circle, Dot
 from manim.mobject.geometry.line import Arrow, DashedLine, Line
@@ -410,7 +410,6 @@ class CoordinateSystem:
         """
 
         self.coordinate_labels = VGroup()
-        # if nothing is passed to axes_numbers, produce axes with default labelling
         if not axes_numbers:
             axes_numbers = [None for _ in range(self.dimension)]
 
@@ -1870,6 +1869,17 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             self.axis_config,
             self.y_axis_config,
         )
+
+        if "color" in axis_config:
+            self.axis_config["color"] = axis_config["color"]
+        if "color" in x_axis_config:
+            self.x_axis_config["color"] = x_axis_config["color"]
+        if "color" in y_axis_config:
+            self.y_axis_config["color"] = y_axis_config["color"]
+        if "color" not in self.x_axis_config:
+            self.x_axis_config["color"] = color.BLACK
+        if "color" not in self.y_axis_config:
+            self.y_axis_config["color"] = color.BLACK
 
         # excluding the origin tick removes a tick at the 0-point of the axis
         # This is desired for LinearBase because the 0 point is always the x-axis

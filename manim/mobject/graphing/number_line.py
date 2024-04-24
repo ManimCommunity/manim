@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 import numpy as np
 
-from manim import config
+from manim import color, config
 from manim.constants import *
 from manim.mobject.geometry.line import Line
 from manim.mobject.graphing.scale import LinearBase, _ScaleBase
@@ -480,6 +480,14 @@ class NumberLine(Line):
 
     def get_number_mobjects(self, *numbers, **kwargs) -> VGroup:
         if len(numbers) == 0:
+            # Ensure that the color for the labels is set to black
+            self.decimal_number_config["color"] = color.BLACK
+
+            # Now when the configurations are merged, the color will be set to black
+            number_config = merge_dicts_recursively(
+                self.decimal_number_config,
+                number_config,
+            )
             numbers = self.default_numbers_to_display()
         return VGroup([self.get_number_mobject(number, **kwargs) for number in numbers])
 
