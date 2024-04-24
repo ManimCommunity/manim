@@ -1003,8 +1003,11 @@ class LinearTransformationScene(VectorScene):
         Animation
             The animation of the movement.
         """
-        start = VGroup(*pieces)
-        target = VGroup(*(mob.target for mob in pieces))
+
+        v_pieces = [piece for piece in pieces if isinstance(piece, VMobject)]
+        start = VGroup(*v_pieces)
+        target = VGroup(*(mob.target for mob in v_pieces))
+
         # don't add empty VGroups
         if self.leave_ghost_vectors and start.submobjects:
             # start.copy() gives a VGroup of Vectors
@@ -1091,6 +1094,7 @@ class LinearTransformationScene(VectorScene):
         **kwargs
             Any valid keyword argument of self.apply_transposed_matrix()
         """
+
         self.apply_transposed_matrix(np.array(matrix).T, **kwargs)
 
     def apply_inverse(self, matrix: np.ndarray | list | tuple, **kwargs):
