@@ -18,6 +18,9 @@ extend-ignore = E203, W503, D202, D212, D213, D404
                 # Misc
                 F401, F403, F405, F841, E501, E731, E402, F811, F821,
 
+                # multiple statements on one line (overload)
+                E704,
+
                 # Plug-in: flake8-builtins
                 A001, A002, A003,
 
