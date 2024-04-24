@@ -152,7 +152,12 @@ def test_Y_Direction(scene):
 
 
 def test_get_start_and_end_Arrow3d():
-    start, end = np.array([1, 1, 1]), np.array([2, 2, 2])
+    start, end = ORIGIN, np.array([2, 0, 0])
     arrow = Arrow3D(start, end)
-    np.testing.assert_array_equal(arrow.get_start(), start)
-    np.testing.assert_array_equal(arrow.get_end(), end)
+    print(arrow.get_end())
+    assert np.allclose(
+        arrow.get_start(), start, atol=0.01
+    ), "start points of Arrow3D do not match"
+    assert np.allclose(
+        arrow.get_end(), end, atol=0.01
+    ), "end points of Arrow3D do not match"

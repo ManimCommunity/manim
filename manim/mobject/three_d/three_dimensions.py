@@ -608,6 +608,7 @@ class Cone(Surface):
         v_range: Sequence[float] = [0, TAU],
         u_min: float = 0,
         checkerboard_colors: bool = False,
+        include_tip: bool = False,
         **kwargs: Any,
     ) -> None:
         self.direction = direction
@@ -621,10 +622,12 @@ class Cone(Surface):
             **kwargs,
         )
         # used for rotations
+        self.height = height
         self._current_theta = 0
         self._current_phi = 0
         self.tip = Dot3D(self.func(0, 0)).set_opacity(0)
-        self.add(self.tip)
+        if include_tip:
+            self.add(self.tip)
 
         self.base_circle = Circle(
             radius=base_radius,
@@ -635,8 +638,7 @@ class Cone(Surface):
         self.base_circle.shift(height * IN)
 
         if not show_base:
-            self.base_circle.set_fill(opacity=0)
-        self.add(self.base_circle)
+            self.add(self.base_circle)
 
         self._rotate_to_direction()
 
@@ -669,7 +671,9 @@ class Cone(Surface):
         return self.base_circle.get_center()
 
     def get_end(self) -> np.ndarray:
-        return self.tip.get_center()
+        direction = self.direction / np.linalg.norm(self.direction)
+        cone_base = self.base_circle.get_center()
+        return cone_base + direction * self.height
 
     def _rotate_to_direction(self) -> None:
         x, y, z = self.direction
@@ -1153,6 +1157,7 @@ class Arrow3D(Line3D):
         height: float = 0.3,
         base_radius: float = 0.08,
         color: ParsableManimColor = WHITE,
+        include_tip: bool = False,
         **kwargs,
     ) -> None:
         super().__init__(
@@ -1166,7 +1171,11 @@ class Arrow3D(Line3D):
             **kwargs,
         )
         self.cone = Cone(
-            direction=self.direction, base_radius=base_radius, height=height, **kwargs
+            direction=self.direction,
+            base_radius=base_radius,
+            height=height,
+            include_tip=include_tip,
+            **kwargs,
         )
 
         self.cone.shift(end)
