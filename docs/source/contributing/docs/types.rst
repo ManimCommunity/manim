@@ -97,3 +97,21 @@ Béziers
 
 Functions
 ---------
+Throughout the codebase, many different types of functions are used. The most obvious example
+is a rate function, which takes in a float and outputs a float (``Callable[[float], float]``).
+Another example is for overriding animations. One will often need to map a :class:`.Mobject`
+to an overridden :class:`Animation`, and for that we have the ``FunctionOverride`` typehint.
+
+``PathFuncType`` and ``MappingFunction`` are more niche, but are related to moving objects
+along a path, or applying functions. If you need to use it, you'll know.
+
+
+Images
+------
+There are several representations of images in manim. The most common is
+the representation as a numpy array of floats representing the pixels of an image.
+This is especially common when it comes to the OpenGL renderer.
+
+This is the usecase of the ``Image`` typehint. Sometimes, manim may use ``PIL.Image``,
+in which case one should use that typehint instead.
+Of course if a more specific type of image is needed, it can be annotated as such.
