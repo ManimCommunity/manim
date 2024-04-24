@@ -33,7 +33,7 @@ def get_video_metadata(path_to_video: str | os.PathLike) -> dict[str]:
         ctxt = stream.codec_context
         rate = stream.average_rate
         if stream.duration is not None:
-            duration = float(stream.duration) * stream.time_base
+            duration = float(stream.duration * stream.time_base)
             num_frames = stream.frames
         else:
             num_frames = sum(1 for _ in container.decode(video=0))
