@@ -42,7 +42,8 @@ repos:
     rev: 1.16.0
     hooks:
       - id: blacken-docs
-        additional_dependencies: [black==22.3.0]
+        additional_dependencies: [black==24.4.0]
+        exclude: ^\.github/
   - repo: https://github.com/PyCQA/flake8
     rev: 7.0.0
     hooks:
