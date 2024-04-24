@@ -486,8 +486,8 @@ class SpiralIn(Animation):
             )
             shape.rotate(TAU * alpha, about_point=self.shape_center)
             shape.rotate(-TAU * alpha, about_point=shape.get_center_of_mass())
-            shape.set_fill_opacity(new_fill_opacity)
-            shape.set_stroke_opacity(new_stroke_opacity)
+            shape.set_fill(opacity=new_fill_opacity)
+            shape.set_stroke(opacity=new_stroke_opacity)
 
 
 class ShowIncreasingSubsets(Animation):
