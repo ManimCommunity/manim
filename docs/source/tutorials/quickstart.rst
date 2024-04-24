@@ -112,7 +112,7 @@ Now let's look at the next two lines:
 .. code-block:: python
 
    class CreateCircle(Scene):
-       def construct(self): ...
+       def construct(self):
 
 Most of the time, the code for scripting an animation is entirely contained within
 the :meth:`~.Scene.construct` method of a :class:`.Scene` class.
