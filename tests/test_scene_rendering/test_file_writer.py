@@ -4,13 +4,16 @@ import av
 import numpy as np
 import pytest
 
-from manim import Create, Scene, Star, tempconfig
+from manim import DR, Create, Scene, Star, Circle, tempconfig
 from manim.utils.commands import capture, get_video_metadata
 from tests.utils.video_tester import video_comparison
 
 
 class StarScene(Scene):
     def construct(self):
+        circle = Circle(fill_opacity=1, color="#ff0000")
+        circle.to_corner(DR).shift(DR)
+        self.add(circle)
         star = Star()
         self.play(Create(star))
 
@@ -54,11 +57,18 @@ def test_codecs(tmp_path, format, transparent, codec, pixel_format):
     }
 
     with av.open(video_path) as container:
-        first_frame = next(container.decode(video=0)).to_ndarray(format="rgba")
-        target_rgba = (
-            np.array([0, 0, 0, 255]) if not transparent else np.array([0, 0, 0, 0])
+        first_frame = next(container.decode(video=0)).to_ndarray()
+        target_rgba_corner = (
+            np.array([0, 0, 0, 0]) if transparent
+            else np.array(16, dtype=np.uint8)
         )
-        np.testing.assert_array_equal(first_frame[0, 0], target_rgba)
+        np.testing.assert_array_equal(first_frame[0, 0], target_rgba_corner)
+
+        target_rgba_center = (
+            np.array([255, 255, 0, 0]) if transparent  # components (A, R, G, B)
+            else np.array(240, dtype=np.uint8)
+        )
+        np.testing.assert_array_equal(first_frame[-1, -1], target_rgba_center)
 
 
 @pytest.mark.slow
