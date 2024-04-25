@@ -4,7 +4,7 @@ import av
 import numpy as np
 import pytest
 
-from manim import DR, Create, Scene, Star, Circle, tempconfig
+from manim import DR, Circle, Create, Scene, Star, tempconfig
 from manim.utils.commands import capture, get_video_metadata
 from tests.utils.video_tester import video_comparison
 
@@ -59,13 +59,13 @@ def test_codecs(tmp_path, format, transparent, codec, pixel_format):
     with av.open(video_path) as container:
         first_frame = next(container.decode(video=0)).to_ndarray()
         target_rgba_corner = (
-            np.array([0, 0, 0, 0]) if transparent
-            else np.array(16, dtype=np.uint8)
+            np.array([0, 0, 0, 0]) if transparent else np.array(16, dtype=np.uint8)
         )
         np.testing.assert_array_equal(first_frame[0, 0], target_rgba_corner)
 
         target_rgba_center = (
-            np.array([255, 255, 0, 0]) if transparent  # components (A, R, G, B)
+            np.array([255, 255, 0, 0])
+            if transparent  # components (A, R, G, B)
             else np.array(240, dtype=np.uint8)
         )
         np.testing.assert_array_equal(first_frame[-1, -1], target_rgba_center)
