@@ -5,6 +5,7 @@ Manim's render subcommand is accessed in the command-line interface via
 can specify options, and arguments for the render command.
 
 """
+
 from __future__ import annotations
 
 import http.client
