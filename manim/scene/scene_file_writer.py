@@ -581,6 +581,8 @@ class SceneFileWriter:
             codec_name="gif" if create_gif else None,
             template=partial_movies_stream if not create_gif else None,
         )
+        if config.transparent and config.format == "webm":
+            output_stream.pix_fmt = "yuva420p"
         if create_gif:
             """
             The following solution was largely inspired from this comment
