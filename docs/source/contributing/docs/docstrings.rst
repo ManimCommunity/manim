@@ -77,8 +77,7 @@ Example:
             The mobject linked to this instance.
         """
 
-        def __init__(name: str, id: int, singleton: MyClass, mobj: Mobject = None):
-            ...
+        def __init__(name: str, id: int, singleton: MyClass, mobj: Mobject = None): ...
 
 2. The usage of ``Parameters`` on functions to specify how
    every parameter works and what it does. This should be excluded if

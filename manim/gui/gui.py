@@ -13,6 +13,8 @@ except ImportError:
 from .. import __version__, config
 from ..utils.module_ops import scene_classes_from_file
 
+__all__ = ["configure_pygui"]
+
 if dearpygui_imported:
     dpg.create_context()
     window = dpg.generate_uuid()

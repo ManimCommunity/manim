@@ -1,6 +1,5 @@
 """Tools for displaying multiple animations at once."""
 
-
 from __future__ import annotations
 
 import types

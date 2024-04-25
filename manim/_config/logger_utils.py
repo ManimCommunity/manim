@@ -9,6 +9,7 @@ Both ``logger`` and ``console`` use the ``rich`` library to produce rich text
 format.
 
 """
+
 from __future__ import annotations
 
 import configparser
@@ -25,6 +26,8 @@ from rich.theme import Theme
 
 if TYPE_CHECKING:
     from pathlib import Path
+
+__all__ = ["make_logger", "parse_theme", "set_file_logger", "JSONFormatter"]
 
 HIGHLIGHTED_KEYWORDS = [  # these keywords are highlighted specially
     "Played",
