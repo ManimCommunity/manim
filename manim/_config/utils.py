@@ -9,6 +9,7 @@ movie vs writing a single frame).
 See :doc:`/guides/configuration` for an introduction to Manim's configuration system.
 
 """
+
 from __future__ import annotations
 
 import argparse
@@ -245,8 +246,7 @@ class ManimConfig(MutableMapping):
         config.background_color = RED
 
 
-        class MyScene(Scene):
-            ...
+        class MyScene(Scene): ...
 
     the background color will be set to RED, regardless of the contents of
     ``manim.cfg`` or the CLI arguments used when invoking manim.
@@ -1187,7 +1187,7 @@ class ManimConfig(MutableMapping):
 
     @property
     def upto_animation_number(self) -> int:
-        """Stop rendering animations at this nmber. Use -1 to avoid skipping (-n)."""
+        """Stop rendering animations at this number. Use -1 to avoid skipping (-n)."""
         return self._d["upto_animation_number"]
 
     @upto_animation_number.setter

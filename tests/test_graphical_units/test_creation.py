@@ -94,3 +94,11 @@ def test_z_index_introducer(scene):
     b.set_z_index(-1)
     scene.play(Create(b))
     scene.wait()
+
+
+@frames_comparison(last_frame=False)
+def test_SpiralIn(scene):
+    circle = Circle().shift(LEFT)
+    square = Square().shift(UP)
+    shapes = VGroup(circle, square)
+    scene.play(SpiralIn(shapes))
