@@ -103,8 +103,8 @@ class AnimationGroup(Animation):
 
     def finish(self) -> None:
         self.interpolate(1)
-        self.anims_begun[:] = False
-        self.anims_finished[:] = False
+        self.anims_begun[:] = True
+        self.anims_finished[:] = True
         if self.suspend_mobject_updating:
             self.group.resume_updating()
 
@@ -136,7 +136,11 @@ class AnimationGroup(Animation):
         """
         self.build_animations_with_timings()
         # Note: if lag_ratio < 1, then not necessarily the final animation's
-        # end time will be the max end time!
+        # end time will be the max end time! Therefore we must calculate the
+        # maximum over all the end times, and not just take the last one.
+        # Example: if you want to play 2 animations of 10s and 1s with a
+        # lag_ratio of 0.1, the 1st one will end at t=10 and the 2nd one will
+        # end at t=2, so the AnimationGroup will end at t=10.
         self.max_end_time = max(self.anims_with_timings["end"], default=0)
         return self.max_end_time if run_time is None else run_time
 
@@ -174,13 +178,11 @@ class AnimationGroup(Animation):
         ]
 
         run_times = to_update["end"] - to_update["start"]
-        null = run_times == 0.0
-        sub_alphas = anim_group_time - to_update["start"]
-        sub_alphas[~null] /= run_times[~null]
+        sub_alphas = (anim_group_time - to_update["start"]) / run_times
         if time_goes_back:
-            sub_alphas[null | (sub_alphas < 0)] = 0
+            sub_alphas[sub_alphas < 0] = 0
         else:
-            sub_alphas[null | (sub_alphas > 1)] = 1
+            sub_alphas[sub_alphas > 1] = 1
 
         for anim_to_update, sub_alpha in zip(to_update["anim"], sub_alphas):
             anim_to_update.interpolate(sub_alpha)
