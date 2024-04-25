@@ -14,7 +14,6 @@ __all__ = [
 
 import itertools as it
 import sys
-from types import GeneratorType
 from typing import (
     TYPE_CHECKING,
     Callable,
@@ -2064,31 +2063,29 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
 
         for m in vmobjects:
             # Mobject and its subclasses are iterable
-            if isinstance(m, (Iterable, GeneratorType)):
-                # If it's not a subclass of Mobject or OpenGLMobject, it must be an iterable or generator
-                if not isinstance(m, (Mobject, OpenGLMobject)):
-                    temp = []
-                    temp.extend(m)
+            if not isinstance(m, (Iterable, Generator)):
+                raise TypeError(
+                    f"All submobjects of {self.__class__.__name__} must be of type VMobject. "
+                    f"Got {repr(m)} ({type(m).__name__}) instead. "
+                    "You can try using `Group` instead."
+                )
 
-                    # Verify that every element in the iterable is VMobject or OpenGLVMobject
-                    for t in temp:
-                        if not isinstance(t, (VMobject, OpenGLVMobject)):
-                            raise TypeError(
-                                f"All submobjects of {self.__class__.__name__} must be of type VMobject. "
-                                f"Got {repr(m)} ({type(m).__name__}) instead. "
-                                "You can try using `Group` instead."
-                            )
+            # If it's not a subclass of Mobject or OpenGLMobject, it must be an iterable or generator
+            if not isinstance(m, (Mobject, OpenGLMobject)):
+                temp = tuple(m)
 
-                    flattened_args.extend(temp)
-                elif isinstance(m, (VMobject, OpenGLVMobject)):
-                    flattened_args.append(m)
-                else:
-                    raise TypeError(
-                        f"All submobjects of {self.__class__.__name__} must be of type VMobject. "
-                        f"Got {repr(m)} ({type(m).__name__}) instead. "
-                        "You can try using `Group` instead."
-                    )
+                # Verify that every element in the iterable is VMobject or OpenGLVMobject
+                for t in temp:
+                    if not isinstance(t, (VMobject, OpenGLVMobject)):
+                        raise TypeError(
+                            f"All submobjects of {self.__class__.__name__} must be of type VMobject. "
+                            f"Got {repr(t)} ({type(t).__name__}) instead. "
+                            "You can try using `Group` instead."
+                        )
 
+                flattened_args.extend(temp)
+            elif isinstance(m, (VMobject, OpenGLVMobject)):
+                flattened_args.append(m)
             else:
                 raise TypeError(
                     f"All submobjects of {self.__class__.__name__} must be of type VMobject. "

@@ -88,16 +88,14 @@ def test_vgroup_init():
 def test_vgroup_iter_init():
     """Test the VGroup instantiation with an iterable type."""
 
-    def basic_generator(n, type):
-        i = 0
-        while i < n:
-            i += 1
-            yield type()
+    def basic_generator(n, to_generate):
+        for _ in range(n):
+            yield to_generate()
 
     obj = VGroup(basic_generator(5, VMobject))
     assert len(obj.submobjects) == 5
     with pytest.raises(TypeError):
-        VGroup(basic_generator(Mobject))
+        VGroup(basic_generator(1, Mobject))
 
 
 def test_vgroup_add():
