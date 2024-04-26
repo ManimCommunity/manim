@@ -2570,7 +2570,7 @@ class ThreeDAxes(Axes):
                     self.set_camera_orientation(phi=2*PI/5, theta=PI/5)
                     axes = ThreeDAxes()
                     labels = axes.get_axis_labels(
-                        Tex("x-axis").scale(0.7), Text("y-axis").scale(0.45), Text("z-axis").scale(0.45)
+                        Text("x-axis").scale(0.7), Text("y-axis").scale(0.45), Text("z-axis").scale(0.45)
                     )
                     self.add(axes, labels)
         """
