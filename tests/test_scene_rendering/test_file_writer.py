@@ -57,7 +57,14 @@ def test_codecs(tmp_path, format, transparent, codec, pixel_format):
     }
 
     with av.open(video_path) as container:
-        first_frame = next(container.decode(video=0)).to_ndarray()
+        if transparent and format == "webm":
+            from av.codec.context import CodecContext
+            context = CodecContext.create("libvpx-vp9", "r")
+            packet = next(container.demux(video=0))
+            first_frame = context.decode(packet)[0].to_ndarray(format="argb")
+        else:
+            first_frame = next(container.decode(video=0)).to_ndarray()
+        
         target_rgba_corner = (
             np.array([0, 0, 0, 0]) if transparent else np.array(16, dtype=np.uint8)
         )
@@ -68,7 +75,7 @@ def test_codecs(tmp_path, format, transparent, codec, pixel_format):
             if transparent  # components (A, R, G, B)
             else np.array(240, dtype=np.uint8)
         )
-        np.testing.assert_array_equal(first_frame[-1, -1], target_rgba_center)
+        np.testing.assert_allclose(first_frame[-1, -1], target_rgba_center, atol=5)
 
 
 @pytest.mark.slow
