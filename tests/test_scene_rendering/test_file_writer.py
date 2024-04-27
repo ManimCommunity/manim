@@ -81,7 +81,9 @@ def test_codecs(tmp_path, format, transparent, codec, pixel_format):
         )
         if format == "gif":
             target_rgba_corner = (
-                np.array([0, 255, 255, 255], dtype=np.uint8) if transparent else np.array([0, 0, 0], dtype=np.uint8)
+                np.array([0, 255, 255, 255], dtype=np.uint8)
+                if transparent
+                else np.array([0, 0, 0], dtype=np.uint8)
             )
         np.testing.assert_array_equal(first_frame[0, 0], target_rgba_corner)
 
