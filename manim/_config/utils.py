@@ -652,7 +652,12 @@ class ManimConfig(MutableMapping):
         setattr(self, "window_size", window_size)
 
         # plugins
-        self.plugins = parser["CLI"].get("plugins", fallback="", raw=True).split(",")
+        plugins = parser["CLI"].get("plugins", fallback="", raw=True)
+        if plugins == "":
+            plugins = []
+        else:
+            plugins = plugins.split(",")
+        self.plugins = plugins
         # the next two must be set AFTER digesting pixel_width and pixel_height
         self["frame_height"] = parser["CLI"].getfloat("frame_height", 8.0)
         width = parser["CLI"].getfloat("frame_width", None)
