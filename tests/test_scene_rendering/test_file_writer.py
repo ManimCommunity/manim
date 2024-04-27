@@ -59,12 +59,13 @@ def test_codecs(tmp_path, format, transparent, codec, pixel_format):
     with av.open(video_path) as container:
         if transparent and format == "webm":
             from av.codec.context import CodecContext
+
             context = CodecContext.create("libvpx-vp9", "r")
             packet = next(container.demux(video=0))
             first_frame = context.decode(packet)[0].to_ndarray(format="argb")
         else:
             first_frame = next(container.decode(video=0)).to_ndarray()
-        
+
         target_rgba_corner = (
             np.array([0, 0, 0, 0]) if transparent else np.array(16, dtype=np.uint8)
         )
