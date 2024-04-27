@@ -128,7 +128,7 @@ def test_animationgroup_with_wait():
     animation_group.begin()
     timings = animation_group.anims_with_timings
 
-    assert timings == [(wait, 0.0, 1.0), (sqr_anim, 1.0, 2.0)]
+    assert timings.tolist() == [(wait, 0.0, 1.0), (sqr_anim, 1.0, 2.0)]
 
 
 @pytest.mark.parametrize(
