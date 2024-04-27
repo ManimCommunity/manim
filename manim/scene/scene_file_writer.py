@@ -591,6 +591,8 @@ class SceneFileWriter:
             https://github.com/imageio/imageio/blob/65d79140018bb7c64c0692ea72cb4093e8d632a0/imageio/plugins/pyav.py#L927-L996.
             """
             output_stream.pix_fmt = "rgb8"
+            if config.transparent:
+                output_stream.pix_fmt = "pal8"
             output_stream.width = config.pixel_width
             output_stream.height = config.pixel_height
             output_stream.rate = config.frame_rate

@@ -6,7 +6,6 @@ import pytest
 
 from manim import DR, Circle, Create, Scene, Star, tempconfig
 from manim.utils.commands import capture, get_video_metadata
-from tests.utils.video_tester import video_comparison
 
 
 class StarScene(Scene):
@@ -27,6 +26,8 @@ class StarScene(Scene):
         ("mov", True, "qtrle", "argb"),
         ("webm", False, "vp9", "yuv420p"),
         ("webm", True, "vp9", "yuv420p"),
+        ("gif", False, "gif", "bgra"),
+        ("gif", True, "gif", "bgra"),
     ],
 )
 def test_codecs(tmp_path, format, transparent, codec, pixel_format):
@@ -44,9 +45,8 @@ def test_codecs(tmp_path, format, transparent, codec, pixel_format):
 
     video_path = tmp_path / "videos" / "480p15" / f"{output_filename}.{format}"
     assert video_path.exists()
-
     metadata = get_video_metadata(video_path)
-    assert metadata == {
+    target_metadata = {
         "width": 854,
         "height": 480,
         "nb_frames": "15",
@@ -55,6 +55,10 @@ def test_codecs(tmp_path, format, transparent, codec, pixel_format):
         "codec_name": codec,
         "pix_fmt": pixel_format,
     }
+    if format == "gif":  # reported duration + avg_frame_rate is slightly off for gifs
+        del metadata["duration"], metadata["avg_frame_rate"]
+        del target_metadata["duration"], target_metadata["avg_frame_rate"]
+    assert metadata == target_metadata
 
     with av.open(video_path) as container:
         if transparent and format == "webm":
@@ -64,11 +68,21 @@ def test_codecs(tmp_path, format, transparent, codec, pixel_format):
             packet = next(container.demux(video=0))
             first_frame = context.decode(packet)[0].to_ndarray(format="argb")
         else:
-            first_frame = next(container.decode(video=0)).to_ndarray()
+            first_frame = next(container.decode(video=0))
+            if format == "gif" and transparent:
+                first_frame = first_frame.to_ndarray(format="argb")
+            elif format == "gif" and not transparent:
+                first_frame = first_frame.to_ndarray(format="rgb24")
+            else:
+                first_frame = first_frame.to_ndarray()
 
         target_rgba_corner = (
             np.array([0, 0, 0, 0]) if transparent else np.array(16, dtype=np.uint8)
         )
+        if format == "gif":
+            target_rgba_corner = (
+                np.array([0, 255, 255, 255], dtype=np.uint8) if transparent else np.array([0, 0, 0], dtype=np.uint8)
+            )
         np.testing.assert_array_equal(first_frame[0, 0], target_rgba_corner)
 
         target_rgba_center = (
@@ -76,6 +90,8 @@ def test_codecs(tmp_path, format, transparent, codec, pixel_format):
             if transparent  # components (A, R, G, B)
             else np.array(240, dtype=np.uint8)
         )
+        if format == "gif" and not transparent:
+            target_rgba_center = np.array([255, 0, 0], dtype=np.uint8)
         np.testing.assert_allclose(first_frame[-1, -1], target_rgba_center, atol=5)
 
 
