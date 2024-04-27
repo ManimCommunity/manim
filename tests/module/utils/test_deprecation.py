@@ -232,9 +232,11 @@ class Top:
 
     @deprecated_params(
         redirections=[
-            lambda point2D=1: {"x": point2D[0], "y": point2D[1]}
-            if isinstance(point2D, tuple)
-            else {"x": point2D, "y": point2D},
+            lambda point2D=1: (
+                {"x": point2D[0], "y": point2D[1]}
+                if isinstance(point2D, tuple)
+                else {"x": point2D, "y": point2D}
+            ),
         ],
     )
     def quuz(self, **kwargs):

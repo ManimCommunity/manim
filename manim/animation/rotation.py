@@ -59,7 +59,7 @@ class Rotate(Transform):
     about_point
         The rotation center.
     about_edge
-        If ``about_point``is ``None``, this argument specifies
+        If ``about_point`` is ``None``, this argument specifies
         the direction of the bounding box point to be taken as
         the rotation center.
 
