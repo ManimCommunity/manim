@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from manim.scene.vector_space_scene import VectorScene
+from manim.scene.vector_space_scene import LinearTransformationScene, VectorScene
 from manim.utils.testing.frames_comparison import frames_comparison
 
 __module_test__ = "vector_scene"
@@ -14,3 +14,13 @@ def test_vector_to_coords(scene):
     scene.add(basis)
     scene.vector_to_coords(vector=vector)
     scene.wait()
+
+
+def test_apply_matrix():
+    scene = LinearTransformationScene(include_background_plane=False)
+    scene.setup()
+    matrix = [[-1, 1], [1, 1]]
+    # use short runtimes to speed up animation rendering
+    scene.apply_matrix(matrix, run_time=0.01)
+    scene.wait()
+    scene.apply_inverse(matrix, run_time=0.01)

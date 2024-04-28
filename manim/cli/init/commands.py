@@ -5,6 +5,7 @@ init``. Here you can specify options, subcommands, and subgroups for the init
 group.
 
 """
+
 from __future__ import annotations
 
 import configparser
@@ -29,6 +30,8 @@ CFG_DEFAULTS = {
     "scene_names": "Default",
     "resolution": (854, 480),
 }
+
+__all__ = ["select_resolution", "update_cfg", "project", "scene"]
 
 
 def select_resolution():

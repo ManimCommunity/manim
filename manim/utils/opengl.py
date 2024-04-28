@@ -7,6 +7,20 @@ from .. import config
 
 depth = 20
 
+__all__ = [
+    "matrix_to_shader_input",
+    "orthographic_projection_matrix",
+    "perspective_projection_matrix",
+    "translation_matrix",
+    "x_rotation_matrix",
+    "y_rotation_matrix",
+    "z_rotation_matrix",
+    "rotate_in_place_matrix",
+    "rotation_matrix",
+    "scale_matrix",
+    "view_matrix",
+]
+
 
 def matrix_to_shader_input(matrix):
     return tuple(matrix.T.ravel())
