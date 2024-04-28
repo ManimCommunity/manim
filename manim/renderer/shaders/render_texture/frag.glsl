@@ -8,5 +8,4 @@ out vec4 frag_color;
 void main() {
     frag_color = texture(tex, f_uv);
     frag_color.a = 1.0;
-    frag_color.r = 1.0;
 }

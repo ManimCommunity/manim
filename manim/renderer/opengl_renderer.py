@@ -55,10 +55,7 @@ stroke_dtype = [
     ("stroke_width", np.float32, (1,)),
     ("color", np.float32, (4,)),
 ]
-frame_dtype = [
-    ("pos", np.float32, (2,)),
-    ("uv", np.float32, (2,))
-]
+frame_dtype = [("pos", np.float32, (2,)), ("uv", np.float32, (2,))]
 
 
 class GLRenderData(RendererData):
@@ -134,13 +131,11 @@ def get_triangulation(self: OpenGLVMobject, normal_vector=None):
         ],
     )
     inner_vert_indices.sort()
-    rings = np.arange(1, len(inner_vert_indices) +
-                      1)[inner_vert_indices % 3 == 2]
+    rings = np.arange(1, len(inner_vert_indices) + 1)[inner_vert_indices % 3 == 2]
 
     # Triangulate
     inner_verts = points[inner_vert_indices]
-    inner_tri_indices = inner_vert_indices[earclip_triangulation(
-        inner_verts, rings)]
+    inner_tri_indices = inner_vert_indices[earclip_triangulation(inner_verts, rings)]
 
     tri_indices = np.hstack([indices, inner_tri_indices])
     self.triangulation = tri_indices
@@ -187,8 +182,7 @@ def compute_bounding_box(mob):
     all_points = np.vstack(
         [
             mob.points,
-            *(m.get_bounding_box()
-              for m in mob.get_family()[1:] if m.has_points()),
+            *(m.get_bounding_box() for m in mob.get_family()[1:] if m.has_points()),
         ],
     )
     if len(all_points) == 0:
@@ -359,8 +353,7 @@ class OpenGLRenderer(Renderer):
         stroke_data["next_point"][:-nppc] = points[nppc:]
         stroke_data["next_point"][-nppc:] = points[:nppc]
         stroke_data["color"] = mob.renderer_data.stroke_rgbas
-        stroke_data["stroke_width"] = mob.renderer_data.stroke_widths.reshape(
-            (-1, 1))
+        stroke_data["stroke_width"] = mob.renderer_data.stroke_widths.reshape((-1, 1))
 
         return stroke_data
 
@@ -385,13 +378,15 @@ class OpenGLRenderer(Renderer):
 
     def post_render(self):
         frame_data = np.zeros(6, dtype=frame_dtype)
-        frame_data["pos"] = np.array([[-1,-1],[-1,1],[1,-1],[1,-1],[-1,1],[1,1]])
-        frame_data["uv"] = np.array([[0,0],[0,1],[1,0],[1,0],[0,1],[1,1]])
+        frame_data["pos"] = np.array(
+            [[-1, -1], [-1, 1], [1, -1], [1, -1], [-1, 1], [1, 1]]
+        )
+        frame_data["uv"] = np.array([[0, 0], [0, 1], [1, 0], [1, 0], [0, 1], [1, 1]])
         vbo = self.ctx.buffer(frame_data.tobytes())
         format = gl.detect_format(self.render_texture_program, frame_data.dtype.names)
         vao = self.ctx.vertex_array(
             program=self.render_texture_program,
-            content=[(vbo, format, *frame_data.dtype.names)]
+            content=[(vbo, format, *frame_data.dtype.names)],
         )
         self.ctx.copy_framebuffer(self.render_target_texture_fbo, self.color_buffer_fbo)
         self.render_target_texture.use(0)
@@ -475,13 +470,11 @@ class OpenGLRenderer(Renderer):
             uniforms["index"] = (counter + 1) / num_mobs / 2
             uniforms["disable_stencil"] = float(True)
             # uniforms['z_shift'] = counter/9 + 1/20
-            self.ctx.copy_framebuffer(
-                self.stencil_texture_fbo, self.stencil_buffer_fbo)
+            self.ctx.copy_framebuffer(self.stencil_texture_fbo, self.stencil_buffer_fbo)
             self.stencil_texture.use(0)
             self.vmobject_stroke_program["stencil_texture"] = 0
             if sub.has_stroke():
-                ProgramManager.write_uniforms(
-                    self.vmobject_stroke_program, uniforms)
+                ProgramManager.write_uniforms(self.vmobject_stroke_program, uniforms)
                 self.render_program(
                     self.vmobject_stroke_program,
                     self.get_stroke_shader_data(sub),
@@ -496,13 +489,11 @@ class OpenGLRenderer(Renderer):
             # uniforms['z_shift'] = counter/9
             uniforms["index"] = (counter + 1) / num_mobs
             uniforms["disable_stencil"] = float(False)
-            self.ctx.copy_framebuffer(
-                self.stencil_texture_fbo, self.stencil_buffer_fbo)
+            self.ctx.copy_framebuffer(self.stencil_texture_fbo, self.stencil_buffer_fbo)
             self.stencil_texture.use(0)
             self.vmobject_fill_program["stencil_texture"] = 0
             if sub.has_fill():
-                ProgramManager.write_uniforms(
-                    self.vmobject_fill_program, uniforms)
+                ProgramManager.write_uniforms(self.vmobject_fill_program, uniforms)
                 self.render_program(
                     self.vmobject_fill_program,
                     self.get_fill_shader_data(sub),
@@ -517,13 +508,11 @@ class OpenGLRenderer(Renderer):
             uniforms["index"] = (counter + 1) / num_mobs
             uniforms["disable_stencil"] = float(False)
             # uniforms['z_shift'] = counter/9 + 1/20
-            self.ctx.copy_framebuffer(
-                self.stencil_texture_fbo, self.stencil_buffer_fbo)
+            self.ctx.copy_framebuffer(self.stencil_texture_fbo, self.stencil_buffer_fbo)
             self.stencil_texture.use(0)
             self.vmobject_stroke_program["stencil_texture"] = 0
             if sub.has_stroke():
-                ProgramManager.write_uniforms(
-                    self.vmobject_stroke_program, uniforms)
+                ProgramManager.write_uniforms(self.vmobject_stroke_program, uniforms)
                 self.render_program(
                     self.vmobject_stroke_program,
                     self.get_stroke_shader_data(sub),
@@ -531,8 +520,7 @@ class OpenGLRenderer(Renderer):
                 )
 
     def get_pixels(self) -> ImageType:
-        raw = self.output_fbo.read(
-            components=4, dtype="f1", clamp=True)  # RGBA, floats
+        raw = self.output_fbo.read(components=4, dtype="f1", clamp=True)  # RGBA, floats
         buf = np.frombuffer(raw, dtype=np.uint8).reshape((1080, 1920, -1))
         return buf
 
@@ -551,8 +539,7 @@ class GLVMobjectManager:
         fill_color = np.array([c._internal_value for c in mob.fill_color])
         stroke_color = np.array([c._internal_value for c in mob.stroke_color])
         mob.renderer_data.fill_rgbas = prepare_array(fill_color, points_length)
-        mob.renderer_data.stroke_rgbas = prepare_array(
-            stroke_color, points_length)
+        mob.renderer_data.stroke_rgbas = prepare_array(stroke_color, points_length)
         mob.renderer_data.stroke_widths = prepare_array(
             np.asarray(listify(mob.stroke_width)), points_length
         )
