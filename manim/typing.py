@@ -21,7 +21,7 @@
 from __future__ import annotations
 
 from os import PathLike
-from typing import Callable, Union
+from typing import Callable, Tuple, Union
 
 import numpy as np
 import numpy.typing as npt
