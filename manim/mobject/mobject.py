@@ -16,10 +16,9 @@ import types
 import warnings
 from functools import partialmethod, reduce
 from pathlib import Path
-from typing import TYPE_CHECKING, Callable, Iterable, Literal, TypeVar, Union
+from typing import TYPE_CHECKING, Callable, Iterable, Literal
 
 import numpy as np
-from typing_extensions import Self, TypeAlias
 
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 
@@ -39,14 +38,9 @@ from ..utils.iterables import list_update, remove_list_redundancies
 from ..utils.paths import straight_path
 from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
 
-# TODO: Explain array_attrs
-
-TimeBasedUpdater: TypeAlias = Callable[["Mobject", float], None]
-NonTimeBasedUpdater: TypeAlias = Callable[["Mobject"], None]
-Updater: TypeAlias = Union[NonTimeBasedUpdater, TimeBasedUpdater]
-T = TypeVar("T", bound="Mobject")
-
 if TYPE_CHECKING:
+    from typing_extensions import Self, TypeAlias
+
     from manim.typing import (
         FunctionOverride,
         Image,
@@ -60,6 +54,10 @@ if TYPE_CHECKING:
     )
 
     from ..animation.animation import Animation
+
+    TimeBasedUpdater: TypeAlias = Callable[["Mobject", float], object]
+    NonTimeBasedUpdater: TypeAlias = Callable[["Mobject"], object]
+    Updater: TypeAlias = NonTimeBasedUpdater | TimeBasedUpdater
 
 
 class Mobject:
@@ -237,7 +235,7 @@ class Mobject:
             cls.__init__ = cls._original__init__
 
     @property
-    def animate(self: T) -> _AnimationBuilder | T:
+    def animate(self) -> _AnimationBuilder | Self:
         """Used to animate the application of any method of :code:`self`.
 
         Any method called on :code:`animate` is converted to an animation of applying
@@ -1736,7 +1734,8 @@ class Mobject:
         curr_start, curr_end = self.get_start_and_end()
         curr_vect = curr_end - curr_start
         if np.all(curr_vect == 0):
-            raise Exception("Cannot position endpoints of closed loop")
+            self.points = start
+            return self
         target_vect = np.array(end) - np.array(start)
         axis = (
             normalize(np.cross(curr_vect, target_vect))
@@ -2837,7 +2836,8 @@ class Mobject:
             >>> result = rect.copy().become(circ, stretch=True)
             >>> result.height, result.width
             (2.0, 4.0)
-            >>> ellipse_eq = np.sum(result.get_anchors()**2 * [1/4, 1, 0], axis=1)
+            >>> ellipse_points = np.array(result.get_anchors())
+            >>> ellipse_eq = np.sum(ellipse_points**2 * [1/4, 1, 0], axis=1)
             >>> np.allclose(ellipse_eq, 1)
             True
 
@@ -2850,13 +2850,15 @@ class Mobject:
             >>> result = rect.copy().become(circ, match_height=True)
             >>> result.height, result.width
             (2.0, 2.0)
-            >>> circle_eq = np.sum(result.get_anchors()**2, axis=1)
+            >>> circle_points = np.array(result.get_anchors())
+            >>> circle_eq = np.sum(circle_points**2, axis=1)
             >>> np.allclose(circle_eq, 1)
             True
             >>> result = rect.copy().become(circ, match_width=True)
             >>> result.height, result.width
             (4.0, 4.0)
-            >>> circle_eq = np.sum(result.get_anchors()**2, axis=1)
+            >>> circle_points = np.array(result.get_anchors())
+            >>> circle_eq = np.sum(circle_points**2, axis=1)
             >>> np.allclose(circle_eq, 2**2)
             True
 
@@ -2926,7 +2928,7 @@ class Mobject:
         self,
         z_index_value: float,
         family: bool = True,
-    ) -> T:
+    ) -> Self:
         """Sets the :class:`~.Mobject`'s :attr:`z_index` to the value specified in `z_index_value`.
 
         Parameters

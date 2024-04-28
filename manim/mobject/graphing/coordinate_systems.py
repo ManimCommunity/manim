@@ -1,6 +1,5 @@
 """Mobjects that represent coordinate systems."""
 
-
 from __future__ import annotations
 
 __all__ = [
@@ -441,8 +440,7 @@ class CoordinateSystem:
         line_config: dict | None = ...,
         color: ParsableManimColor | None = ...,
         stroke_width: float = ...,
-    ) -> DashedLine:
-        ...
+    ) -> DashedLine: ...
 
     @overload
     def get_line_from_axis_to_point(
@@ -453,8 +451,7 @@ class CoordinateSystem:
         line_config: dict | None = ...,
         color: ParsableManimColor | None = ...,
         stroke_width: float = ...,
-    ) -> LineType:
-        ...
+    ) -> LineType: ...
 
     def get_line_from_axis_to_point(  # type: ignore[no-untyped-def]
         self,
@@ -855,9 +852,11 @@ class CoordinateSystem:
         function: Callable[[float], float],
         u_range: Sequence[float] | None = None,
         v_range: Sequence[float] | None = None,
-        colorscale: Sequence[ParsableManimColor]
-        | Sequence[tuple[ParsableManimColor, float]]
-        | None = None,
+        colorscale: (
+            Sequence[ParsableManimColor]
+            | Sequence[tuple[ParsableManimColor, float]]
+            | None
+        ) = None,
         colorscale_axis: int = 2,
         **kwargs: Any,
     ) -> Surface | OpenGLSurface:
@@ -2571,7 +2570,7 @@ class ThreeDAxes(Axes):
                     self.set_camera_orientation(phi=2*PI/5, theta=PI/5)
                     axes = ThreeDAxes()
                     labels = axes.get_axis_labels(
-                        Tex("x-axis").scale(0.7), Text("y-axis").scale(0.45), Text("z-axis").scale(0.45)
+                        Text("x-axis").scale(0.7), Text("y-axis").scale(0.45), Text("z-axis").scale(0.45)
                     )
                     self.add(axes, labels)
         """
@@ -2653,14 +2652,12 @@ class NumberPlane(Axes):
 
     def __init__(
         self,
-        x_range: Sequence[float]
-        | None = (
+        x_range: Sequence[float] | None = (
             -config["frame_x_radius"],
             config["frame_x_radius"],
             1,
         ),
-        y_range: Sequence[float]
-        | None = (
+        y_range: Sequence[float] | None = (
             -config["frame_y_radius"],
             config["frame_y_radius"],
             1,

@@ -1,6 +1,5 @@
 """Animate mobjects."""
 
-
 from __future__ import annotations
 
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
@@ -405,6 +404,7 @@ class Animation:
         self.run_time = run_time
         return self
 
+    # TODO: is this getter even necessary?
     def get_run_time(self) -> float:
         """Get the run time of the animation.
 
