@@ -52,8 +52,7 @@ class Window(FunWindow):
 
         mglw.activate_context(window=self)
         self.timer = Timer()
-        self.config = mglw.WindowConfig(
-            ctx=self.ctx, wnd=self, timer=self.timer)
+        self.config = mglw.WindowConfig(ctx=self.ctx, wnd=self, timer=self.timer)
         self.timer.start()
 
         # No idea why, but when self.position is set once
