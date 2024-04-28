@@ -48,7 +48,7 @@ class RenderManager:
         """Launch a process (optionally in parallel)
         to render a frame
         """
-        if parallel and config.parallel:
+        if parallel and config.in_parallel:
             logger.warning("Not supported yet")
         self.render_frame(state)
 
