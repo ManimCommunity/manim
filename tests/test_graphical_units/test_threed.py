@@ -152,7 +152,7 @@ def test_Y_Direction(scene):
 
 
 def test_get_start_and_end_Arrow3d():
-    start, end = ORIGIN, np.array([2, 0, 0])
+    start, end = ORIGIN, np.array([2, 1, 0])
     arrow = Arrow3D(start, end)
     print(arrow.get_end())
     assert np.allclose(
