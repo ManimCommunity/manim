@@ -81,21 +81,16 @@ class Scene:
         self.embed_exception_mode = embed_exception_mode
         self.embed_error_sound = embed_error_sound
 
-        self.camera_config = {**self.default_camera_config, **camera_config}
-        self.window_config = {**self.default_window_config, **window_config}
-
         # Initialize window, if applicable
         if self.preview:
             from manim.renderer.opengl_renderer_window import Window
 
-            self.window = Window(scene=self, **self.window_config)
-            self.camera_config["ctx"] = self.window.ctx
-            self.camera_config["fps"] = 30  # Where's that 30 from?
+            self.window = Window()
         else:
             self.window = None
 
         # Core state of the scene
-        self.camera: Camera = Camera(**self.camera_config)
+        self.camera: Camera = Camera()
         self.camera.save_state()
         self.mobjects: list[Mobject] = []
         self.id_to_mobject_map: dict[int, Mobject] = {}
@@ -105,7 +100,8 @@ class Scene:
         self.original_skipping_status: bool = self.skip_animations
         self.undo_stack = []
         self.redo_stack = []
-        self.manager = RenderManager(self.get_default_scene_name(), camera=self.camera)
+        self.manager = RenderManager(
+            self.get_default_scene_name(), camera=self.camera)
 
         if self.start_at_animation_number is not None:
             self.skip_animations = True
@@ -185,7 +181,7 @@ class Scene:
         self.manager.file_writer.finish()
 
         if self.window:
-            self.window.destroy()
+            self.window.close()
             self.window = None
 
     def interact(self) -> None:
@@ -203,7 +199,7 @@ class Scene:
         )
         self.skip_animations = False
         self.refresh_static_mobjects()
-        while not self.is_window_closing():
+        while not self.window.is_closing:
             self.update_frame(1 / self.camera.fps)
 
     def embed(
@@ -310,7 +306,7 @@ class Scene:
         if self.skip_animations and not ignore_skipping:
             return
 
-        if self.is_window_closing():
+        if self.window.is_closing:
             raise EndScene()
 
         if self.window:
@@ -419,7 +415,8 @@ class Scene:
             # with their children, likewise for all ancestors in the extended family.
             for ancestor in mob.get_ancestors(extended=True):
                 self.replace(ancestor, *ancestor.submobjects)
-            self.mobjects = list_difference_update(self.mobjects, mob.get_family())
+            self.mobjects = list_difference_update(
+                self.mobjects, mob.get_family())
         return self
 
     def replace(self, mobject: Mobject, *replacements: Mobject):
@@ -442,7 +439,7 @@ class Scene:
             self.mobjects = [
                 *self.mobjects[:index],
                 *replacements,
-                *self.mobjects[index + 1 :],
+                *self.mobjects[index + 1:],
             ]
         return self
 
@@ -757,7 +754,8 @@ class Scene:
                 logger.info(note)
             self.hold_loop()
         else:
-            time_progression = self.get_wait_time_progression(duration, stop_condition)
+            time_progression = self.get_wait_time_progression(
+                duration, stop_condition)
             last_t = 0
             for t in time_progression:
                 dt = t - last_t
@@ -852,9 +850,6 @@ class Scene:
             directory = self.file_writer.get_saved_mobject_directory()
             path = os.path.join(directory, file_name)
         return Mobject.load(path)
-
-    def is_window_closing(self):
-        return self.window and (self.window.is_closing or self.quit_interaction)
 
     # Event handling
 
