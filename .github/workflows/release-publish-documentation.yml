@@ -25,6 +25,7 @@ jobs:
 
     - name: Install LaTeX and Python dependencies
       run: |
+        tlmgr update --self
         tlmgr install \
           babel-english ctex doublestroke dvisvgm frcursive fundus-calligra jknapltx \
           mathastext microtype physics preview ragged2e relsize rsfs setspace standalone \
