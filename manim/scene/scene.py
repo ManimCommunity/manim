@@ -687,7 +687,6 @@ class Scene:
     def begin_animations(self, animations: Iterable[Animation]) -> None:
         for animation in animations:
             animation.begin()
-            print(animation.buffer)
             self.process_buffer(animation.buffer)
 
     def progress_through_animations(self, animations: Iterable[Animation]) -> None:
