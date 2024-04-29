@@ -100,8 +100,7 @@ class Scene:
         self.original_skipping_status: bool = self.skip_animations
         self.undo_stack = []
         self.redo_stack = []
-        self.manager = RenderManager(
-            self.get_default_scene_name(), camera=self.camera)
+        self.manager = RenderManager(self.get_default_scene_name(), camera=self.camera)
 
         if self.start_at_animation_number is not None:
             self.skip_animations = True
@@ -415,8 +414,7 @@ class Scene:
             # with their children, likewise for all ancestors in the extended family.
             for ancestor in mob.get_ancestors(extended=True):
                 self.replace(ancestor, *ancestor.submobjects)
-            self.mobjects = list_difference_update(
-                self.mobjects, mob.get_family())
+            self.mobjects = list_difference_update(self.mobjects, mob.get_family())
         return self
 
     def replace(self, mobject: Mobject, *replacements: Mobject):
@@ -439,7 +437,7 @@ class Scene:
             self.mobjects = [
                 *self.mobjects[:index],
                 *replacements,
-                *self.mobjects[index + 1:],
+                *self.mobjects[index + 1 :],
             ]
         return self
 
@@ -754,8 +752,7 @@ class Scene:
                 logger.info(note)
             self.hold_loop()
         else:
-            time_progression = self.get_wait_time_progression(
-                duration, stop_condition)
+            time_progression = self.get_wait_time_progression(duration, stop_condition)
             last_t = 0
             for t in time_progression:
                 dt = t - last_t
