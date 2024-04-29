@@ -36,10 +36,11 @@ class RenderManager:
         # file writer
         self.camera = camera
         self.file_writer = FileWriter(scene_name)  # TODO
+        self.renderer.use_window()
 
     def begin(self) -> None:
         """Set up processes and manager"""
-        self.renderer.use_window()
+        ...
 
     def get_time_progression(self, run_time: float) -> Iterable[float]:
         return np.arange(0, run_time, 1 / self.camera.fps)

@@ -155,14 +155,10 @@ class Animation(AnimationProtocol):
         self.buffer = SceneBuffer()
         self.apply_buffer = False  # ask scene to apply buffer
 
-        if config["renderer"] == RendererType.OPENGL:
-            self.starting_mobject: OpenGLMobject = OpenGLMobject()
-            self.mobject: OpenGLMobject = (
-                mobject.copy() if mobject is not None else OpenGLMobject()
-            )
-        # else:
-        #     self.starting_mobject: Mobject = Mobject()
-        #     self.mobject: Mobject = mobject if mobject is not None else Mobject()
+        self.starting_mobject: OpenGLMobject = OpenGLMobject()
+        self.mobject: OpenGLMobject = (
+            mobject if mobject is not None else OpenGLMobject()
+        )
         if kwargs:
             logger.debug("Animation received extra kwargs: %s", kwargs)
 
