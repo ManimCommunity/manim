@@ -1324,7 +1324,7 @@ class OpenGLVMobject(OpenGLMobject):
         attrs = [
             "fill_color",
             "stroke_color",
-            "opacity",
+            # "opacity", # TODO: This probably doesn't exist anymore because opacity is now moved into the colors
             "reflectiveness",
             "shadow",
             "gloss",
