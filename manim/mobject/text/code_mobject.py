@@ -23,13 +23,13 @@ from manim.mobject.geometry.arc import Dot
 from manim.mobject.geometry.polygram import RoundedRectangle
 from manim.mobject.geometry.shape_matchers import SurroundingRectangle
 from manim.mobject.text.text_mobject import Paragraph
-from manim.mobject.types.vectorized_mobject import VGroup
+from manim.mobject.types.vectorized_mobject import VGroup, VMobjectT
 from manim.utils.color import WHITE
 
 __all__ = ["Code"]
 
 
-class Code(VGroup):
+class Code(VGroup[VMobjectT]):
     """A highlighted source code listing.
 
     An object ``listing`` of :class:`.Code` is a :class:`.VGroup` consisting

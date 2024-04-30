@@ -743,7 +743,7 @@ class LinearTransformationScene(VectorScene):
         mobject.target = target_mobject
         self.add_special_mobjects(self.moving_mobjects, mobject)
 
-    def get_ghost_vectors(self) -> VGroup:
+    def get_ghost_vectors(self) -> VGroup[VGroup[Vector]]:
         """
         Returns all ghost vectors ever added to ``self``. Each element is a ``VGroup`` of
         two ghost vectors.

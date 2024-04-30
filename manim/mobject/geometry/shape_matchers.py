@@ -4,9 +4,7 @@ from __future__ import annotations
 
 __all__ = ["SurroundingRectangle", "BackgroundRectangle", "Cross", "Underline"]
 
-from typing import Any
-
-from typing_extensions import Self
+from typing import TYPE_CHECKING, Any
 
 from manim import config, logger
 from manim.constants import *
@@ -15,6 +13,9 @@ from manim.mobject.geometry.polygram import RoundedRectangle
 from manim.mobject.mobject import Mobject
 from manim.mobject.types.vectorized_mobject import VGroup
 from manim.utils.color import BLACK, RED, YELLOW, ManimColor, ParsableManimColor
+
+if TYPE_CHECKING:
+    from typing_extensions import Self
 
 
 class SurroundingRectangle(RoundedRectangle):
@@ -133,7 +134,7 @@ class BackgroundRectangle(SurroundingRectangle):
         return self.color
 
 
-class Cross(VGroup):
+class Cross(VGroup[Line]):
     """Creates a cross.
 
     Parameters
@@ -166,9 +167,7 @@ class Cross(VGroup):
         scale_factor: float = 1.0,
         **kwargs,
     ) -> None:
-        super().__init__(
-            Line(UP + LEFT, DOWN + RIGHT), Line(UP + RIGHT, DOWN + LEFT), **kwargs
-        )
+        super().__init__(Line(UL, DR), Line(UR, DL), **kwargs)
         if mobject is not None:
             self.replace(mobject, stretch=True)
         self.scale(scale_factor)

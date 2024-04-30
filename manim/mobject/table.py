@@ -78,12 +78,12 @@ from ..animation.animation import Animation
 from ..animation.composition import AnimationGroup
 from ..animation.creation import Create, Write
 from ..animation.fading import FadeIn
-from ..mobject.types.vectorized_mobject import VGroup, VMobject
+from ..mobject.types.vectorized_mobject import VGroup, VMobject, VMobjectT
 from ..utils.color import BLACK, YELLOW, ManimColor, ParsableManimColor
 from .utils import get_vectorized_mobject_class
 
 
-class Table(VGroup):
+class Table(VGroup[VMobjectT]):
     """A mobject that displays a table on the screen.
 
     Parameters
