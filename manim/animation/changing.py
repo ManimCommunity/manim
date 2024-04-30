@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     import numpy.typing as npt
 
 import numpy as np
+
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import (
@@ -148,14 +149,19 @@ class TracedPath(VMobject, metaclass=ConvertToOpenGL):
         self,
         traced_point_func: Callable[
             [], npt.NDArray[npt.float]
-        ], # TODO: Replace with Callable[[], Point3D]  
+        ],  # TODO: Replace with Callable[[], Point3D]
         stroke_width: float = 2,
         stroke_color: ParsableManimColor | None = WHITE,
         dissipating_time: float | None = None,
-        fill_opacity:float = 0,
+        fill_opacity: float = 0,
         **kwargs,
     ):
-        super().__init__(stroke_color=stroke_color, stroke_width=stroke_width, fill_opacity=fill_opacity, **kwargs)
+        super().__init__(
+            stroke_color=stroke_color,
+            stroke_width=stroke_width,
+            fill_opacity=fill_opacity,
+            **kwargs,
+        )
         self.traced_point_func = traced_point_func
         self.dissipating_time = dissipating_time
         self.time = 1 if self.dissipating_time else None
