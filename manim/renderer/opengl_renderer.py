@@ -3,18 +3,17 @@ from __future__ import annotations
 import moderngl as gl
 import numpy as np
 
-from manim import config, logger
 import manim.constants as const
+import manim.utils.color.core as c
 import manim.utils.color.manim_colors as color
+from manim import config, logger
 from manim.camera.camera import Camera
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.renderer.buffers.buffer import STD140BufferFormat
 from manim.renderer.opengl_shader_program import load_shader_program_by_folder
 from manim.renderer.renderer import ImageType, Renderer, RendererData
 from manim.utils.iterables import listify
 from manim.utils.space_ops import cross2d, earclip_triangulation, z_to_vector
-
-import manim.utils.color.core as c
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 
 ubo_camera = STD140BufferFormat(
     "ubo_camera",

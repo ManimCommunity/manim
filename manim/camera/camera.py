@@ -5,10 +5,6 @@ import math
 import sys
 from typing import Any, Iterable
 
-from manim.renderer.shader_wrapper import ShaderWrapper
-
-from ..constants import RADIANS
-
 import moderngl
 import numpy as np
 from PIL import Image
@@ -16,9 +12,11 @@ from scipy.spatial.transform import Rotation
 
 from manim import config, logger
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject, OpenGLPoint
+from manim.renderer.shader_wrapper import ShaderWrapper
 from manim.utils.color import BLACK, color_to_rgba
 
 from ..constants import *
+from ..constants import RADIANS
 from ..utils.simple_functions import fdiv
 from ..utils.space_ops import normalize
 

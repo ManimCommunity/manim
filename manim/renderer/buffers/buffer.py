@@ -54,9 +54,7 @@ class STD140BufferFormat:
             shape = dict(enumerate(shape))
             col_len, row_len = shape.get(0, 1), shape.get(1, 1)
             # Calculate padding for NON (float/vec2) items
-            col_padding = (
-                0 if row_len == 1 and (col_len in [1, 2]) else 4 - col_len
-            )
+            col_padding = 0 if row_len == 1 and (col_len in [1, 2]) else 4 - col_len
             # Store padding in LUT
             self._paddings[var_name] = col_padding
             shape = (col_len + col_padding,)
