@@ -1,30 +1,17 @@
 from __future__ import annotations
 
-import re
-from functools import lru_cache
-from pathlib import Path
-from typing import TYPE_CHECKING
-
 import moderngl as gl
 import numpy as np
-from PIL import Image
-from typing_extensions import override
 
+from manim import config, logger
 import manim.constants as const
 import manim.utils.color.manim_colors as color
-from manim._config import config, logger
 from manim.camera.camera import Camera
-from manim.mobject.geometry.arc import Circle
-from manim.mobject.types.vectorized_mobject import VMobject
 from manim.renderer.buffers.buffer import STD140BufferFormat
 from manim.renderer.opengl_shader_program import load_shader_program_by_folder
 from manim.renderer.renderer import ImageType, Renderer, RendererData
-from manim.renderer.shader_wrapper import ShaderWrapper
-from manim.utils.iterables import listify, resize_array, resize_with_interpolation
+from manim.utils.iterables import listify
 from manim.utils.space_ops import cross2d, earclip_triangulation, z_to_vector
-
-if TYPE_CHECKING:
-    from manim.mobject.types.vectorized_mobject import VMobject
 
 import manim.utils.color.core as c
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
@@ -316,7 +303,7 @@ class OpenGLRenderer(Renderer):
 
     def init_camera(self, camera: Camera):
         camera_data = {
-            "frame_shape": (16.0, 9.0),
+            "frame_shape": (config.frame_width, config.frame_height),
             "camera_center": camera.get_center(),
             "camera_rotation": camera.get_inverse_camera_rotation_matrix().T,
             "focal_distance": camera.get_focal_distance(),
