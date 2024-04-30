@@ -3,17 +3,7 @@ from __future__ import annotations
 import itertools as it
 import math
 import sys
-import time
 from typing import Any, Iterable
-
-from manim.renderer.shader_wrapper import ShaderWrapper
-
-from ..constants import RADIANS
-
-if sys.version_info < (3, 8):
-    from backports.cached_property import cached_property
-else:
-    from functools import cached_property
 
 import moderngl
 import numpy as np
@@ -22,10 +12,11 @@ from scipy.spatial.transform import Rotation
 
 from manim import config, logger
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject, OpenGLPoint
+from manim.renderer.shader_wrapper import ShaderWrapper
 from manim.utils.color import BLACK, color_to_rgba
 
 from ..constants import *
-from ..utils.config_ops import _Data
+from ..constants import RADIANS
 from ..utils.simple_functions import fdiv
 from ..utils.space_ops import normalize
 
@@ -45,9 +36,6 @@ class Camera(OpenGLMobject):
         self.focal_dist_to_height = focal_dist_to_height
         self.orientation = Rotation.identity().as_quat()
         super().__init__(**kwargs)
-
-    def init_uniforms(self):
-        super().init_uniforms()
 
     def init_points(self) -> None:
         self.set_points([ORIGIN, LEFT, RIGHT, DOWN, UP])
