@@ -5,10 +5,9 @@ import operator as op
 from functools import reduce, wraps
 from typing import TYPE_CHECKING
 
-from numpy.typing import NDArray
-
 import moderngl
 import numpy as np
+from numpy.typing import NDArray
 
 from manim import config
 from manim.constants import *
