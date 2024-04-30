@@ -412,6 +412,7 @@ class Scene:
         for mob in mobjects_to_remove:
             # First restructure self.mobjects so that parents/grandparents/etc. are replaced
             # with their children, likewise for all ancestors in the extended family.
+            print(mob)
             for ancestor in mob.get_ancestors(extended=True):
                 self.replace(ancestor, *ancestor.submobjects)
             self.mobjects = list_difference_update(self.mobjects, mob.get_family())

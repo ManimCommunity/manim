@@ -5,6 +5,8 @@ import operator as op
 from functools import reduce, wraps
 from typing import TYPE_CHECKING
 
+from numpy.typing import NDArray
+
 import moderngl
 import numpy as np
 
@@ -498,7 +500,7 @@ class OpenGLVMobject(OpenGLMobject):
         else:
             self.append_points([self.get_last_point(), handle, anchor])
 
-    def add_line_to(self, point: Sequence[float]) -> Self:
+    def add_line_to(self, point: Sequence[float] | NDArray[float]) -> Self:
         """Add a straight line from the last point of OpenGLVMobject to the given point.
 
         Parameters
@@ -507,6 +509,10 @@ class OpenGLVMobject(OpenGLMobject):
         point
             end of the straight line.
         """
+        point = np.asarray(point)
+        if not self.has_points():
+            self.points = np.array([point])
+            return self
         end = self.points[-1]
         alphas = np.linspace(0, 1, self.n_points_per_curve)
         if self.long_lines:
@@ -578,7 +584,7 @@ class OpenGLVMobject(OpenGLMobject):
     def add_points_as_corners(self, points):
         for point in points:
             self.add_line_to(point)
-        return points
+        return self
 
     def set_points_as_corners(self, points: Iterable[float]) -> Self:
         """Given an array of points, set them as corner of the vmobject.
