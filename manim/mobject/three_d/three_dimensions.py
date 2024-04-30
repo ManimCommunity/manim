@@ -624,15 +624,15 @@ class Cone(Surface):
         self.new_height = height
         self._current_theta = 0
         self._current_phi = 0
+        self.base_circle = Circle(
+            radius=base_radius,
+            color=self.fill_color,
+            fill_opacity=self.fill_opacity,
+            stroke_width=0,
+        )
+        self.base_circle.shift(height * IN)
+        self._set_start_and_end_attributes(direction)
         if show_base:
-            self.base_circle = Circle(
-                radius=base_radius,
-                color=self.fill_color,
-                fill_opacity=self.fill_opacity,
-                stroke_width=0,
-            )
-            self.base_circle.shift(height * IN)
-
             self.add(self.base_circle)
 
         self._rotate_to_direction()
@@ -663,12 +663,10 @@ class Cone(Surface):
         )
 
     def get_start(self) -> np.ndarray:
-        return self.base_circle.get_center()
+        return self.start_point.get_center()
 
     def get_end(self) -> np.ndarray:
-        direction = self.get_direction() / np.linalg.norm(self.get_direction())
-        cone_base = self.base_circle.get_center()
-        return cone_base + direction * self.new_height
+        return self.end_point.get_center()
 
     def _rotate_to_direction(self) -> None:
         x, y, z = self.direction
@@ -723,6 +721,15 @@ class Cone(Surface):
             The direction of the apex.
         """
         return self.direction
+
+    def _set_start_and_end_attributes(self, direction):
+        normalized_direction = direction * np.linalg.norm(direction)
+
+        start = self.base_circle.get_center()
+        end = start + normalized_direction * self.new_height
+        self.start_point = VMobject().set_points_as_corners([start] * 3)
+        self.end_point = VMobject().set_points_as_corners([end] * 3)
+        self.add(self.start_point, self.end_point)
 
 
 class Cylinder(Surface):
@@ -1170,18 +1177,13 @@ class Arrow3D(Line3D):
             height=height,
             **kwargs,
         )
-
         self.cone.shift(end)
-        self.add(self.cone)
+        self.end_point = VMobject().set_points_as_corners([end] * 3)
+        self.add(self.end_point, self.cone)
         self.set_color(color)
 
     def get_end(self) -> np.ndarray:
-        return (
-            self.end
-            + self.cone.new_height
-            * np.linalg.norm(self.get_direction())
-            * self.get_direction()
-        )
+        return self.end_point.get_end()
 
 
 class Torus(Surface):
