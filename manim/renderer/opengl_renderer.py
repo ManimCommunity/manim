@@ -314,6 +314,7 @@ class OpenGLRenderer(Renderer):
         self.output_fbo.release()
         self.output_fbo = self.ctx.detect_framebuffer()
 
+    # TODO this should also be done with the update decorators because if the camera doesn't change this is pretty rough
     def init_camera(self, camera: Camera):
         camera_data = {
             "frame_shape": (16.0, 9.0),
@@ -413,12 +414,12 @@ class OpenGLRenderer(Renderer):
         )
 
         vao.render(gl.TRIANGLES)
-        data, data_size = ibo.read(), ibo.size
+        # data, data_size = ibo.read(), ibo.size
         vbo.release()
         if ibo is not None:
             ibo.release()
         vao.release()
-        return data, data_size
+        # return data, data_size
 
     def render_vmobject(self, mob: OpenGLVMobject) -> None:  # type: ignore
         self.stencil_buffer_fbo.use()
