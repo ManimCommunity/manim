@@ -1,6 +1,5 @@
 """Debugging utilities."""
 
-
 from __future__ import annotations
 
 __all__ = ["print_family", "index_labels"]

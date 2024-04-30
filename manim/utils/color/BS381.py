@@ -24,6 +24,7 @@ in the standard:
 .. automanimcolormodule:: manim.utils.color.BS381
 
 """
+
 from .core import ManimColor
 
 BS381_101 = ManimColor("#94BFAC")

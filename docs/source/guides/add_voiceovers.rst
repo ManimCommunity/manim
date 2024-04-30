@@ -38,6 +38,7 @@ and then record it during rendering:
     from manim_voiceover import VoiceoverScene
     from manim_voiceover.services.recorder import RecorderService
 
+
     # Simply inherit from VoiceoverScene instead of Scene to get all the
     # voiceover functionality.
     class RecorderExample(VoiceoverScene):

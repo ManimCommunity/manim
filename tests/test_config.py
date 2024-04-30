@@ -221,7 +221,7 @@ def test_tex_template_file(tmp_path):
     tmp_cfg.write(
         f"""
         [CLI]
-        tex_template_file = { tex_file }
+        tex_template_file = {tex_file}
         """,
     )
     tmp_cfg.close()
