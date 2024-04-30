@@ -24,6 +24,7 @@ from typing import (
     Literal,
     Mapping,
     Sequence,
+    TypeVar
 )
 
 import numpy as np
