@@ -694,19 +694,19 @@ class SceneFileWriter:
             if config.format == "webm":
                 with (
                     av.open(sound_file_path) as wav_audio,
-                    av.open(sound_file_path.with_suffix(".ogg"), "w") as opus_audio
+                    av.open(sound_file_path.with_suffix(".ogg"), "w") as opus_audio,
                 ):
                     wav_audio_stream = wav_audio.streams.audio[0]
                     opus_audio_stream = opus_audio.add_stream("libvorbis")
                     for frame in wav_audio.decode(wav_audio_stream):
                         for packet in opus_audio_stream.encode(frame):
                             opus_audio.mux(packet)
-                    
+
                     for packet in opus_audio_stream.encode():
                         opus_audio.mux(packet)
 
                 sound_file_path = sound_file_path.with_suffix(".ogg")
-            
+
             temp_file_path = movie_file_path.with_name(
                 f"{movie_file_path.stem}_temp{movie_file_path.suffix}"
             )
