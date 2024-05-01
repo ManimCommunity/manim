@@ -87,8 +87,6 @@ def test_gif_writing(tmp_path, transparent):
         ("mov", True, "qtrle", "argb"),
         ("webm", False, "vp9", "yuv420p"),
         ("webm", True, "vp9", "yuv420p"),
-        #("gif", False, "gif", "bgra"),
-        #("gif", True, "gif", "bgra"),
     ],
 )
 def test_codecs(tmp_path, format, transparent, codec, pixel_format):
@@ -134,12 +132,17 @@ def test_codecs(tmp_path, format, transparent, codec, pixel_format):
         ]
         assert any(has_samples), "All audio samples are zero, this is not intended"
 
-        target_rgba_center = (
-            np.array([255, 255, 0, 0])  # components (A, R, G, B)
-            if transparent
-            else np.array(240, dtype=np.uint8)
-        )
-        np.testing.assert_allclose(first_frame[-1, -1], target_rgba_center, atol=5)
+    target_rgba_corner = (
+        np.array([0, 0, 0, 0]) if transparent else np.array(16, dtype=np.uint8)
+    )
+    np.testing.assert_array_equal(first_frame[0, 0], target_rgba_corner)
+
+    target_rgba_center = (
+        np.array([255, 255, 0, 0])  # components (A, R, G, B)
+        if transparent
+        else np.array(240, dtype=np.uint8)
+    )
+    np.testing.assert_allclose(first_frame[-1, -1], target_rgba_center, atol=5)
 
 
 @pytest.mark.slow
