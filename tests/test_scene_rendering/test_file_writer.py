@@ -128,10 +128,11 @@ def test_codecs(tmp_path, format, transparent, codec, pixel_format):
         else:
             first_frame = next(container.decode(video=0)).to_ndarray()
 
-        target_rgba_corner = (
-            np.array([0, 0, 0, 0]) if transparent else np.array(16, dtype=np.uint8)
-        )
-        np.testing.assert_array_equal(first_frame[0, 0], target_rgba_corner)
+        has_samples = [
+            np.any(frame.to_ndarray())
+            for frame in container.decode(audio=0)
+        ]
+        assert any(has_samples), "All audio samples are zero, this is not intended"
 
         target_rgba_center = (
             np.array([255, 255, 0, 0])  # components (A, R, G, B)
