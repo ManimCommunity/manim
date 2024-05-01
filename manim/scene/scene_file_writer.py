@@ -677,17 +677,36 @@ class SceneFileWriter:
 
         # handle sound
         if self.includes_sound and config.format != "gif":
-            sound_file_format = "wav"
-            if config.format == "webm":
-                sound_file_format = "opus"
-            sound_file_path = movie_file_path.with_suffix(f".{sound_file_format}")
+            sound_file_path = movie_file_path.with_suffix(f".wav")
             # Makes sure sound file length will match video file
             self.add_audio_segment(AudioSegment.silent(0))
             self.audio_segment.export(
                 sound_file_path,
-                format=sound_file_format,
+                format="wav",
                 bitrate="312k",
             )
+            # Audio added to a VP9 encoded (webm) video file needs
+            # to be encoded as vorbis or opus. Directly exporting
+            # self.audio_segment with such a codec works in principle,
+            # but tries to call ffmpeg via its CLI -- which we want
+            # to avoid. This is why we need to do the conversion
+            # manually.
+            if config.format == "webm":
+                with (
+                    av.open(sound_file_path) as wav_audio,
+                    av.open(sound_file_path.with_suffix(".ogg"), "w") as opus_audio
+                ):
+                    wav_audio_stream = wav_audio.streams.audio[0]
+                    opus_audio_stream = opus_audio.add_stream("libvorbis")
+                    for frame in wav_audio.decode(wav_audio_stream):
+                        for packet in opus_audio_stream.encode(frame):
+                            opus_audio.mux(packet)
+                    
+                    for packet in opus_audio_stream.encode():
+                        opus_audio.mux(packet)
+
+                sound_file_path = sound_file_path.with_suffix(".ogg")
+            
             temp_file_path = movie_file_path.with_name(
                 f"{movie_file_path.stem}_temp{movie_file_path.suffix}"
             )
