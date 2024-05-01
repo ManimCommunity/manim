@@ -44,7 +44,7 @@ def test_gif_writing(tmp_path, transparent):
         }
     ):
         StarScene().render()
-    
+
     video_path = tmp_path / "videos" / "480p15" / f"{output_filename}.gif"
     assert video_path.exists()
     metadata = get_video_metadata(video_path)
@@ -61,7 +61,7 @@ def test_gif_writing(tmp_path, transparent):
 
     with av.open(video_path) as container:
         first_frame = next(container.decode(video=0))
-        frame_format = ("argb" if transparent else "rgb24")
+        frame_format = "argb" if transparent else "rgb24"
         first_frame = first_frame.to_ndarray(format=frame_format)
 
     target_rgba_corner = (
@@ -72,11 +72,12 @@ def test_gif_writing(tmp_path, transparent):
     np.testing.assert_array_equal(first_frame[0, 0], target_rgba_corner)
 
     target_rgba_center = (
-        np.array([255, 255, 0, 0]) # components (A, R, G, B)
-        if transparent  
+        np.array([255, 255, 0, 0])  # components (A, R, G, B)
+        if transparent
         else np.array([255, 0, 0], dtype=np.uint8)
     )
     np.testing.assert_allclose(first_frame[-1, -1], target_rgba_center, atol=5)
+
 
 @pytest.mark.slow
 @pytest.mark.parametrize(
@@ -127,8 +128,7 @@ def test_codecs(tmp_path, format, transparent, codec, pixel_format):
             first_frame = next(container.decode(video=0)).to_ndarray()
 
         has_samples = [
-            np.any(frame.to_ndarray())
-            for frame in container.decode(audio=0)
+            np.any(frame.to_ndarray()) for frame in container.decode(audio=0)
         ]
         assert any(has_samples), "All audio samples are zero, this is not intended"
 
