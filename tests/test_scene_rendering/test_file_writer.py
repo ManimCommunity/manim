@@ -4,6 +4,8 @@ import av
 import numpy as np
 import pytest
 
+from pathlib import Path
+
 from manim import DR, Circle, Create, Scene, Star, tempconfig
 from manim.utils.commands import capture, get_video_metadata
 
@@ -15,6 +17,9 @@ class StarScene(Scene):
         self.add(circle)
         star = Star()
         self.play(Create(star))
+        click_path = Path(__file__).parent.parent.parent / "docs" / "source" / "_static" / "click.wav"
+        self.add_sound(click_path)
+        self.wait()
 
 
 @pytest.mark.slow
@@ -49,8 +54,8 @@ def test_codecs(tmp_path, format, transparent, codec, pixel_format):
     target_metadata = {
         "width": 854,
         "height": 480,
-        "nb_frames": "15",
-        "duration": "1.000000",
+        "nb_frames": "30",
+        "duration": "2.000000",
         "avg_frame_rate": "15/1",
         "codec_name": codec,
         "pix_fmt": pixel_format,

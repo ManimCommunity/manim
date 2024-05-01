@@ -676,12 +676,16 @@ class SceneFileWriter:
         )
 
         # handle sound
-        if self.includes_sound:
-            sound_file_path = movie_file_path.with_suffix(".wav")
+        if self.includes_sound and config.format != "gif":
+            sound_file_format = "wav"
+            if config.format == "webm":
+                sound_file_format = "opus"
+            sound_file_path = movie_file_path.with_suffix(f".{sound_file_format}")
             # Makes sure sound file length will match video file
             self.add_audio_segment(AudioSegment.silent(0))
             self.audio_segment.export(
                 sound_file_path,
+                format=sound_file_format,
                 bitrate="312k",
             )
             temp_file_path = movie_file_path.with_name(
