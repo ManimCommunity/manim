@@ -1,10 +1,9 @@
 import sys
+from pathlib import Path
 
 import av
 import numpy as np
 import pytest
-
-from pathlib import Path
 
 from manim import DR, Circle, Create, Scene, Star, tempconfig
 from manim.utils.commands import capture, get_video_metadata
@@ -17,7 +16,13 @@ class StarScene(Scene):
         self.add(circle)
         star = Star()
         self.play(Create(star))
-        click_path = Path(__file__).parent.parent.parent / "docs" / "source" / "_static" / "click.wav"
+        click_path = (
+            Path(__file__).parent.parent.parent
+            / "docs"
+            / "source"
+            / "_static"
+            / "click.wav"
+        )
         self.add_sound(click_path)
         self.wait()
 
