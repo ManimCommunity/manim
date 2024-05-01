@@ -29,6 +29,57 @@ class StarScene(Scene):
 
 @pytest.mark.slow
 @pytest.mark.parametrize(
+    "transparent",
+    [False, True],
+)
+def test_gif_writing(tmp_path, transparent):
+    output_filename = f"gif_{'transparent' if transparent else 'opaque'}"
+    with tempconfig(
+        {
+            "media_dir": tmp_path,
+            "quality": "low_quality",
+            "format": "gif",
+            "transparent": transparent,
+            "output_file": output_filename,
+        }
+    ):
+        StarScene().render()
+    
+    video_path = tmp_path / "videos" / "480p15" / f"{output_filename}.gif"
+    assert video_path.exists()
+    metadata = get_video_metadata(video_path)
+    # reported duration + avg_frame_rate is slightly off for gifs
+    del metadata["duration"], metadata["avg_frame_rate"]
+    target_metadata = {
+        "width": 854,
+        "height": 480,
+        "nb_frames": "30",
+        "codec_name": "gif",
+        "pix_fmt": "bgra",
+    }
+    assert metadata == target_metadata
+
+    with av.open(video_path) as container:
+        first_frame = next(container.decode(video=0))
+        frame_format = ("argb" if transparent else "rgb24")
+        first_frame = first_frame.to_ndarray(format=frame_format)
+
+    target_rgba_corner = (
+        np.array([0, 255, 255, 255], dtype=np.uint8)
+        if transparent
+        else np.array([0, 0, 0], dtype=np.uint8)
+    )
+    np.testing.assert_array_equal(first_frame[0, 0], target_rgba_corner)
+
+    target_rgba_center = (
+        np.array([255, 255, 0, 0]) # components (A, R, G, B)
+        if transparent  
+        else np.array([255, 0, 0], dtype=np.uint8)
+    )
+    np.testing.assert_allclose(first_frame[-1, -1], target_rgba_center, atol=5)
+
+@pytest.mark.slow
+@pytest.mark.parametrize(
     "format, transparent, codec, pixel_format",
     [
         ("mp4", False, "h264", "yuv420p"),
@@ -36,8 +87,8 @@ class StarScene(Scene):
         ("mov", True, "qtrle", "argb"),
         ("webm", False, "vp9", "yuv420p"),
         ("webm", True, "vp9", "yuv420p"),
-        ("gif", False, "gif", "bgra"),
-        ("gif", True, "gif", "bgra"),
+        #("gif", False, "gif", "bgra"),
+        #("gif", True, "gif", "bgra"),
     ],
 )
 def test_codecs(tmp_path, format, transparent, codec, pixel_format):
@@ -65,9 +116,6 @@ def test_codecs(tmp_path, format, transparent, codec, pixel_format):
         "codec_name": codec,
         "pix_fmt": pixel_format,
     }
-    if format == "gif":  # reported duration + avg_frame_rate is slightly off for gifs
-        del metadata["duration"], metadata["avg_frame_rate"]
-        del target_metadata["duration"], target_metadata["avg_frame_rate"]
     assert metadata == target_metadata
 
     with av.open(video_path) as container:
@@ -78,32 +126,18 @@ def test_codecs(tmp_path, format, transparent, codec, pixel_format):
             packet = next(container.demux(video=0))
             first_frame = context.decode(packet)[0].to_ndarray(format="argb")
         else:
-            first_frame = next(container.decode(video=0))
-            if format == "gif" and transparent:
-                first_frame = first_frame.to_ndarray(format="argb")
-            elif format == "gif" and not transparent:
-                first_frame = first_frame.to_ndarray(format="rgb24")
-            else:
-                first_frame = first_frame.to_ndarray()
+            first_frame = next(container.decode(video=0)).to_ndarray()
 
         target_rgba_corner = (
             np.array([0, 0, 0, 0]) if transparent else np.array(16, dtype=np.uint8)
         )
-        if format == "gif":
-            target_rgba_corner = (
-                np.array([0, 255, 255, 255], dtype=np.uint8)
-                if transparent
-                else np.array([0, 0, 0], dtype=np.uint8)
-            )
         np.testing.assert_array_equal(first_frame[0, 0], target_rgba_corner)
 
         target_rgba_center = (
-            np.array([255, 255, 0, 0])
-            if transparent  # components (A, R, G, B)
+            np.array([255, 255, 0, 0])  # components (A, R, G, B)
+            if transparent
             else np.array(240, dtype=np.uint8)
         )
-        if format == "gif" and not transparent:
-            target_rgba_center = np.array([255, 0, 0], dtype=np.uint8)
         np.testing.assert_allclose(first_frame[-1, -1], target_rgba_center, atol=5)
 
 
