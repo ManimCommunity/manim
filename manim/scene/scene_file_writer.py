@@ -677,7 +677,7 @@ class SceneFileWriter:
 
         # handle sound
         if self.includes_sound and config.format != "gif":
-            sound_file_path = movie_file_path.with_suffix(f".wav")
+            sound_file_path = movie_file_path.with_suffix(".wav")
             # Makes sure sound file length will match video file
             self.add_audio_segment(AudioSegment.silent(0))
             self.audio_segment.export(
