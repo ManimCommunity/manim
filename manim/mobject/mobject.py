@@ -357,10 +357,13 @@ class Mobject:
         result = cls.__new__(cls)
         clone_from_id[id(self)] = result
         for k, v in self.__dict__.items():
+            # This must be set manually because result has no attributes,
+            # and specifically INSIDE the loop to preserve attribute order,
+            # or test_hash_consistency() will fail!
             if k == "parents":
+                result.parents = []
                 continue
             setattr(result, k, copy.deepcopy(v, clone_from_id))
-        result.parents = [] # Must be set manually because result has no attributes
         result.original_id = str(id(self))
         return result
 
