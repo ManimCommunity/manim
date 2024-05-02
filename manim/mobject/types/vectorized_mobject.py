@@ -1936,7 +1936,7 @@ class VMobject(Mobject):
         return self
 
 
-VMobjectT = TypeVar("VMobjectT", bound=VMobject, default=VMobject)
+VMobjectT = TypeVar("VMobjectT", bound=VMobject)
 
 
 class VGroup(VMobject, Generic[VMobjectT], metaclass=ConvertToOpenGL):
