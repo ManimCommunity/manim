@@ -70,7 +70,16 @@ class Mobject:
     Attributes
     ----------
     submobjects : List[:class:`Mobject`]
-        The contained objects.
+        The contained objects, or "children" of this Mobject.
+    parents : List[:class:`Mobject`]
+        The Mobjects which contain this as part of their submobjects. It is
+        important to have a backreference to the parents in case this Mobject's
+        family changes in order to notify them of that change, because this
+        Mobject is also a part of their families.
+    family : List[:class:`Mobject`] | None
+        An optional, memoized list containing this Mobject, its submobjects,
+        those submobjects' submobjects, and so on. If the family must be
+        recalculated for any reason, this attribute is set to None.
     points : :class:`numpy.ndarray`
         The points of the objects.
 
@@ -107,6 +116,8 @@ class Mobject:
         self.z_index = z_index
         self.point_hash = None
         self.submobjects = []
+        self.parents: list[Mobject] = []
+        self.family: list[Mobject] | None = [self]
         self.updaters: list[Updater] = []
         self.updating_suspended = False
         self.color = ManimColor.parse(color)
@@ -337,7 +348,10 @@ class Mobject:
         result = cls.__new__(cls)
         clone_from_id[id(self)] = result
         for k, v in self.__dict__.items():
+            if k == "parents":
+                continue
             setattr(result, k, copy.deepcopy(v, clone_from_id))
+        result.parents = [] # Must be set manually because result has no attributes
         result.original_id = str(id(self))
         return result
 
@@ -446,6 +460,10 @@ class Mobject:
             )
 
         self.submobjects = list_update(self.submobjects, unique_mobjects)
+        for mobject in unique_mobjects:
+            if self not in mobject.parents:
+                mobject.parents.append(self)
+        self.note_changed_family()
         return self
 
     def insert(self, index: int, mobject: Mobject) -> None:
@@ -467,7 +485,12 @@ class Mobject:
             raise TypeError("All submobjects must be of type Mobject")
         if mobject is self:
             raise ValueError("Mobject cannot contain self")
+        # TODO: should verify that subsequent submobjects are not repeated
         self.submobjects.insert(index, mobject)
+        if self not in mobject.parents:
+            mobject.parents.append(self)
+        self.note_changed_family()
+        # TODO: should return Self instead of None?
 
     def __add__(self, mobject: Mobject):
         raise NotImplementedError
@@ -529,6 +552,10 @@ class Mobject:
         self.remove(*mobjects)
         # dict.fromkeys() removes duplicates while maintaining order
         self.submobjects = list(dict.fromkeys(mobjects)) + self.submobjects
+        for mobject in mobjects:
+            if self not in mobject.parents:
+                mobject.parents.append(self)
+        self.note_changed_family()
         return self
 
     def remove(self, *mobjects: Mobject) -> Self:
@@ -556,6 +583,9 @@ class Mobject:
         for mobject in mobjects:
             if mobject in self.submobjects:
                 self.submobjects.remove(mobject)
+            if self in mobject.parents:
+                mobject.parents.remove(self)
+        self.note_changed_family()
         return self
 
     def __sub__(self, other):
@@ -2260,14 +2290,58 @@ class Mobject:
     def split(self) -> list[Self]:
         result = [self] if len(self.points) > 0 else []
         return result + self.submobjects
+    
+    def note_changed_family(self, only_changed_order=False) -> Self:
+        """Indicates that this Mobject's family should be recalculated, by
+        setting it to None to void the previous computation. If this Mobject
+        has parents, it is also part of their respective families, so they must
+        be notified as well.
+        
+        This method must be called after any change which involves modifying
+        some Mobject's submobjects, such as a call to Mobject.add.
+        """
+        self.family = None
+        # TODO: Implement when bounding boxes and updater statuses are implemented
+        # if not only_changed_order:
+        #     self.refresh_has_updater_status()
+        #     self.refresh_bounding_box()
+        for parent in self.parents:
+            parent.note_changed_family()
+        return self
 
     def get_family(self, recurse: bool = True) -> list[Self]:
-        sub_families = [x.get_family() for x in self.submobjects]
-        all_mobjects = [self] + list(it.chain(*sub_families))
-        return remove_list_redundancies(all_mobjects)
+        if not recurse:
+            return [self]
+        if self.family is None:
+            # Reconstruct and save
+            sub_families = (sm.get_family() for sm in self.submobjects)
+            family = [self, *it.chain(*sub_families)]
+            self.family = remove_list_redundancies(family)
+        return self.family
 
     def family_members_with_points(self) -> list[Self]:
         return [m for m in self.get_family() if m.get_num_points() > 0]
+
+    def get_ancestors(self, extended: bool = False) -> list[Mobject]:
+        """
+        Returns parents, grandparents, etc.
+        Order of result should be from higher members of the hierarchy down.
+
+        If extended is set to true, it includes the ancestors of all family members,
+        e.g. any other parents of a submobject
+        """
+        ancestors = []
+        to_process = list(self.get_family(recurse=extended))
+        excluded = set(to_process)
+        while to_process:
+            for p in to_process.pop().parents:
+                if p not in excluded:
+                    ancestors.append(p)
+                    to_process.append(p)
+        # Ensure mobjects highest in the hierarchy show up first
+        ancestors.reverse()
+        # Remove list redundancies while preserving order
+        return list(dict.fromkeys(ancestors))
 
     def arrange(
         self,
@@ -2552,6 +2626,7 @@ class Mobject:
                 return point_to_num_func(m.get_center())
 
         self.submobjects.sort(key=submob_func)
+        self.note_changed_family(only_changed_order=True)
         return self
 
     def shuffle(self, recursive: bool = False) -> None:
@@ -2560,6 +2635,8 @@ class Mobject:
             for submob in self.submobjects:
                 submob.shuffle(recursive=True)
         random.shuffle(self.submobjects)
+        self.note_changed_family(only_changed_order=True)
+        # TODO: should return Self instead of None?
 
     def invert(self, recursive: bool = False) -> None:
         """Inverts the list of :attr:`submobjects`.
@@ -2586,6 +2663,8 @@ class Mobject:
             for submob in self.submobjects:
                 submob.invert(recursive=True)
         self.submobjects.reverse()
+        self.note_changed_family(only_changed_order=True)
+        # TODO: should return Self instead of None?
 
     # Just here to keep from breaking old scenes.
     def arrange_submobjects(self, *args, **kwargs) -> Self:
@@ -2715,6 +2794,8 @@ class Mobject:
         if curr == 0:
             # If empty, simply add n point mobjects
             self.submobjects = [self.get_point_mobject() for k in range(n)]
+            self.note_changed_family()
+            # TODO: shouldn't this return Self instead?
             return None
 
         target = curr + n
@@ -2728,6 +2809,7 @@ class Mobject:
             for _ in range(1, sf):
                 new_submobs.append(submob.copy().fade(1))
         self.submobjects = new_submobs
+        self.note_changed_family()
         return self
 
     def repeat_submobject(self, submob: Mobject) -> Self:
