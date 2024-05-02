@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 import moderngl
 import numpy as np
+from numpy.typing import NDArray
 
 from manim import config
 from manim.constants import *
@@ -29,6 +30,7 @@ from manim.utils.bezier import (
     quadratic_bezier_remap,
 )
 from manim.utils.color import *
+from manim.utils.deprecation import deprecated
 from manim.utils.iterables import (
     listify,
     make_even,
@@ -497,7 +499,7 @@ class OpenGLVMobject(OpenGLMobject):
         else:
             self.append_points([self.get_last_point(), handle, anchor])
 
-    def add_line_to(self, point: Sequence[float]) -> Self:
+    def add_line_to(self, point: Sequence[float] | NDArray[float]) -> Self:
         """Add a straight line from the last point of OpenGLVMobject to the given point.
 
         Parameters
@@ -506,6 +508,10 @@ class OpenGLVMobject(OpenGLMobject):
         point
             end of the straight line.
         """
+        point = np.asarray(point)
+        if not self.has_points():
+            self.points = np.array([point])
+            return self
         end = self.points[-1]
         alphas = np.linspace(0, 1, self.n_points_per_curve)
         if self.long_lines:
@@ -577,7 +583,7 @@ class OpenGLVMobject(OpenGLMobject):
     def add_points_as_corners(self, points):
         for point in points:
             self.add_line_to(point)
-        return points
+        return self
 
     def set_points_as_corners(self, points: Iterable[float]) -> Self:
         """Given an array of points, set them as corner of the vmobject.
@@ -1323,7 +1329,7 @@ class OpenGLVMobject(OpenGLMobject):
         attrs = [
             "fill_color",
             "stroke_color",
-            "opacity",
+            # "opacity", # TODO: This probably doesn't exist anymore because opacity is now moved into the colors
             "reflectiveness",
             "shadow",
             "gloss",
@@ -1561,6 +1567,18 @@ class OpenGLVGroup(OpenGLVMobject):
             f"{self.__class__.__name__} of {len(self.submobjects)} "
             f"submobject{'s' if len(self.submobjects) > 0 else ''}"
         )
+
+    def set_z(self, z: float) -> Self:
+        self.points[..., -1] = z
+        return self
+
+    @deprecated(
+        since="0.18.2",
+        until="0.19.0",
+        message="OpenGL has no concept of z_index. Use set_z instead",
+    )
+    def set_z_index(self, z: float) -> Self:
+        return self.set_z(z)
 
     def add(self, *vmobjects: OpenGLVMobject):  # type: ignore
         """Checks if all passed elements are an instance of OpenGLVMobject and then add them to submobjects

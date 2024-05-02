@@ -48,12 +48,12 @@ from manim.utils.space_ops import (
 )
 
 if TYPE_CHECKING:
-    from typing import Callable, Iterable, Sequence, Tuple, Union
+    from typing import Any, Callable, Iterable, Sequence, Union
 
     from typing_extensions import Self, TypeAlias
 
     TimeBasedUpdater: TypeAlias = Callable[
-        ["OpenGLMobject", float], "OpenGLMobject" | None
+        ["OpenGLMobject", float], "OpenGLMobject | None"
     ]
     NonTimeUpdater: TypeAlias = Callable[["OpenGLMobject"], "OpenGLMobject" | None]
     Updater: TypeAlias = Union[TimeBasedUpdater, NonTimeUpdater]
@@ -61,11 +61,12 @@ if TYPE_CHECKING:
     from manim.renderer.renderer import RendererData
 
     T = TypeVar("T", bound=RendererData)
+    _F = TypeVar("_F", bound=Callable[..., Any])
 
 UNIFORM_DTYPE = np.float64
 
 
-def stash_mobject_pointers(func: Callable):
+def stash_mobject_pointers(func: _F) -> _F:
     @wraps(func)
     def wrapper(self, *args, **kwargs):
         uncopied_attrs = ["parents", "target", "saved_state"]

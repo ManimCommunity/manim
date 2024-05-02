@@ -311,6 +311,7 @@ class ManimConfig(MutableMapping):
         "write_to_movie",
         "zero_pad",
         "force_window",
+        "parallel",
     }
 
     def __init__(self) -> None:
@@ -582,6 +583,7 @@ class ManimConfig(MutableMapping):
             "use_projection_stroke_shaders",
             "enable_wireframe",
             "force_window",
+            "parallel",
         ]:
             setattr(self, key, parser["CLI"].getboolean(key, fallback=False))
 
@@ -994,6 +996,14 @@ class ManimConfig(MutableMapping):
             logging.getLogger("manim").warning(
                 "Output format set as webm, this can be slower than other formats",
             )
+
+    @property
+    def in_parallel(self) -> None:
+        return self._d["parallel"]
+
+    @in_parallel.setter
+    def in_parallel(self, val: bool) -> None:
+        self._set_boolean("parallel", val)
 
     ffmpeg_loglevel = property(
         lambda self: self._d["ffmpeg_loglevel"],

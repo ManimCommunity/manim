@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 import moderngl_window as mglw
 import numpy as np
-from moderngl_window.context.pyglet.window import Window as PygletWindow
+from moderngl_window.context.pyglet.window import Window as FunWindow
 from moderngl_window.timers.clock import Timer
 from screeninfo import get_monitors
 
@@ -14,14 +14,14 @@ if TYPE_CHECKING:
     import manim.scene as m_scene
 
 
-class Window(PygletWindow):
+class Window(FunWindow):
     fullscreen: bool = False
-    resizable: bool = True
+    resizable: bool = False
     gl_version: tuple[int, int] = (3, 3)
     vsync: bool = True
     cursor: bool = True
 
-    def __init__(self, scene: m_scene.Scene, size=config.window_size):
+    def __init__(self, size=config.window_size):
         # TODO: remove size argument from window init,
         # move size computation below to config
 
@@ -46,9 +46,8 @@ class Window(PygletWindow):
             size = tuple(size)
 
         super().__init__(size=size)
-        self.scene = scene
         self.pressed_keys = set()
-        self.title = self.title = f"Manim Community {__version__} - {str(scene)}"
+        self.title = f"Manim Community {__version__}"
         self.size = size
 
         mglw.activate_context(window=self)
@@ -90,70 +89,18 @@ class Window(PygletWindow):
         self, px: int, py: int, relative: bool = False
     ) -> np.ndarray:
         pw, ph = self.size
-        fw, fh = self.scene.camera.get_frame_shape()
-        fc = self.scene.camera.get_frame_center()
+        # TODO
+        fw, fh = (
+            config.frame_width,
+            config.frame_height,
+        ) or self.scene.camera.get_frame_shape()
+        fc = (
+            config.frame_width,
+            config.frame_height,
+        ) or self.scene.camera.get_frame_center()
         if relative:
             return np.array([px / pw, py / ph, 0])
         else:
             return np.array(
                 [fc[0] + px * fw / pw - fw / 2, fc[1] + py * fh / ph - fh / 2, 0]
             )
-
-    def on_mouse_motion(self, x: int, y: int, dx: int, dy: int) -> None:
-        super().on_mouse_motion(x, y, dx, dy)
-        point = self.pixel_coords_to_space_coords(x, y)
-        d_point = self.pixel_coords_to_space_coords(dx, dy, relative=True)
-        self.scene.on_mouse_motion(point, d_point)
-
-    def on_mouse_drag(
-        self, x: int, y: int, dx: int, dy: int, buttons: int, modifiers: int
-    ) -> None:
-        super().on_mouse_drag(x, y, dx, dy, buttons, modifiers)
-        point = self.pixel_coords_to_space_coords(x, y)
-        d_point = self.pixel_coords_to_space_coords(dx, dy, relative=True)
-        self.scene.on_mouse_drag(point, d_point, buttons, modifiers)
-
-    def on_mouse_press(self, x: int, y: int, button: int, mods: int) -> None:
-        super().on_mouse_press(x, y, button, mods)
-        point = self.pixel_coords_to_space_coords(x, y)
-        self.scene.on_mouse_press(point, button, mods)
-
-    def on_mouse_release(self, x: int, y: int, button: int, mods: int) -> None:
-        super().on_mouse_release(x, y, button, mods)
-        point = self.pixel_coords_to_space_coords(x, y)
-        self.scene.on_mouse_release(point, button, mods)
-
-    def on_mouse_scroll(self, x: int, y: int, x_offset: float, y_offset: float) -> None:
-        super().on_mouse_scroll(x, y, x_offset, y_offset)
-        point = self.pixel_coords_to_space_coords(x, y)
-        offset = self.pixel_coords_to_space_coords(x_offset, y_offset, relative=True)
-        self.scene.on_mouse_scroll(point, offset)
-
-    def on_key_press(self, symbol: int, modifiers: int) -> None:
-        self.pressed_keys.add(symbol)  # Modifiers?
-        super().on_key_press(symbol, modifiers)
-        self.scene.on_key_press(symbol, modifiers)
-
-    def on_key_release(self, symbol: int, modifiers: int) -> None:
-        self.pressed_keys.difference_update({symbol})  # Modifiers?
-        super().on_key_release(symbol, modifiers)
-        self.scene.on_key_release(symbol, modifiers)
-
-    def on_resize(self, width: int, height: int) -> None:
-        super().on_resize(width, height)
-        self.scene.on_resize(width, height)
-
-    def on_show(self) -> None:
-        super().on_show()
-        self.scene.on_show()
-
-    def on_hide(self) -> None:
-        super().on_hide()
-        self.scene.on_hide()
-
-    def on_close(self) -> None:
-        super().on_close()
-        self.scene.on_close()
-
-    def is_key_pressed(self, symbol: int) -> bool:
-        return symbol in self.pressed_keys

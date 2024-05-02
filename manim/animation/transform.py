@@ -205,10 +205,13 @@ class Transform(Animation):
         # in subclasses
         return self.target_mobject
 
-    def clean_up_from_scene(self, scene: Scene) -> None:
-        super().clean_up_from_scene(scene)
+    def finish(self) -> None:
+        super().finish()
         if self.replace_mobject_with_target_in_scene:
-            scene.replace(self.mobject, self.target_mobject)
+            # Ideally this should stay at the same z-level as
+            # the original mobject, but this is difficult to implement
+            self.buffer.remove(self.mobject)
+            self.buffer.add(self.target_mobject)
 
     def get_all_mobjects(self) -> Sequence[Mobject]:
         return [
@@ -871,11 +874,11 @@ class FadeTransform(Transform):
     def get_all_families_zipped(self):
         return Animation.get_all_families_zipped(self)
 
-    def clean_up_from_scene(self, scene):
-        Animation.clean_up_from_scene(self, scene)
-        scene.remove(self.mobject)
+    def finish(self):
+        Animation.finish(self)  # TODO: is this really needed over super()?
+        self.buffer.remove(self.mobject)
         self.mobject[0].restore()
-        scene.add(self.to_add_on_completion)
+        self.buffer.add(self.to_add_on_completion)
 
 
 class FadeTransformPieces(FadeTransform):

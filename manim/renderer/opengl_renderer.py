@@ -1,29 +1,19 @@
-import re
-from functools import lru_cache
-from pathlib import Path
-from typing import TYPE_CHECKING
+from __future__ import annotations
 
 import moderngl as gl
 import numpy as np
-from typing_extensions import override
 
 import manim.constants as const
+import manim.utils.color.core as c
 import manim.utils.color.manim_colors as color
-from manim._config import config, logger
-from manim.camera.camera import OpenGLCameraFrame
-from manim.mobject.types.vectorized_mobject import VMobject
+from manim import config, logger
+from manim.camera.camera import Camera
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.renderer.buffers.buffer import STD140BufferFormat
 from manim.renderer.opengl_shader_program import load_shader_program_by_folder
 from manim.renderer.renderer import ImageType, Renderer, RendererData
-from manim.renderer.shader_wrapper import ShaderWrapper
-from manim.utils.iterables import listify, resize_array, resize_with_interpolation
+from manim.utils.iterables import listify
 from manim.utils.space_ops import cross2d, earclip_triangulation, z_to_vector
-
-if TYPE_CHECKING:
-    from manim.mobject.types.vectorized_mobject import VMobject
-
-import manim.utils.color.core as c
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 
 ubo_camera = STD140BufferFormat(
     "ubo_camera",
@@ -51,6 +41,7 @@ stroke_dtype = [
     ("stroke_width", np.float32, (1,)),
     ("color", np.float32, (4,)),
 ]
+frame_dtype = [("pos", np.float32, (2,)), ("uv", np.float32, (2,))]
 
 
 class GLRenderData(RendererData):
@@ -241,6 +232,9 @@ class OpenGLRenderer(Renderer):
         self.stencil_texture = self.ctx.texture(
             (self.pixel_width, self.pixel_height), components=1, samples=0, dtype="f1"
         )
+        self.render_target_texture = self.ctx.texture(
+            (self.pixel_width, self.pixel_height), components=4, samples=0, dtype="f1"
+        )
         self.stencil_buffer = self.ctx.renderbuffer(
             (self.pixel_width, self.pixel_height),
             components=1,
@@ -277,6 +271,11 @@ class OpenGLRenderer(Renderer):
             color_attachments=[self.color_buffer]
         )
 
+        # this is used as destination for copying the rendered target
+        # and using it as texture on the output_fbo
+        self.render_target_texture_fbo = self.ctx.framebuffer(
+            color_attachments=[self.render_target_texture]
+        )
         self.output_fbo = self.ctx.framebuffer(
             color_attachments=[
                 self.ctx.renderbuffer(
@@ -293,14 +292,18 @@ class OpenGLRenderer(Renderer):
         self.vmobject_stroke_program = load_shader_program_by_folder(
             self.ctx, "quadratic_bezier_stroke"
         )
+        self.render_texture_program = load_shader_program_by_folder(
+            self.ctx, "render_texture"
+        )
 
     def use_window(self):
         self.output_fbo.release()
         self.output_fbo = self.ctx.detect_framebuffer()
 
-    def init_camera(self, camera: OpenGLCameraFrame):
+    # TODO this should also be done with the update decorators because if the camera doesn't change this is pretty rough
+    def init_camera(self, camera: Camera):
         camera_data = {
-            "frame_shape": (14.2222222221, 8.0),
+            "frame_shape": (config.frame_width, config.frame_height),
             "camera_center": camera.get_center(),
             "camera_rotation": camera.get_inverse_camera_rotation_matrix().T,
             "focal_distance": camera.get_focal_distance(),
@@ -310,7 +313,7 @@ class OpenGLRenderer(Renderer):
         }
         ubo_camera.write(camera_data)
 
-        uniforms = dict()
+        uniforms = {}
         uniforms["anti_alias_width"] = 0.01977
         uniforms["light_source_position"] = (-10, 10, 10)
         uniforms["pixel_shape"] = (self.pixel_width, self.pixel_height)
@@ -356,11 +359,29 @@ class OpenGLRenderer(Renderer):
 
     def pre_render(self, camera):
         self.init_camera(camera=camera)
+        self.ctx.clear()
         self.render_target_fbo.use()
         self.render_target_fbo.clear(*self.background_color)
 
     def post_render(self):
-        self.ctx.copy_framebuffer(self.output_fbo, self.color_buffer_fbo)
+        frame_data = np.zeros(6, dtype=frame_dtype)
+        frame_data["pos"] = np.array(
+            [[-1, -1], [-1, 1], [1, -1], [1, -1], [-1, 1], [1, 1]]
+        )
+        frame_data["uv"] = np.array([[0, 0], [0, 1], [1, 0], [1, 0], [0, 1], [1, 1]])
+        vbo = self.ctx.buffer(frame_data.tobytes())
+        format = gl.detect_format(self.render_texture_program, frame_data.dtype.names)
+        vao = self.ctx.vertex_array(
+            program=self.render_texture_program,
+            content=[(vbo, format, *frame_data.dtype.names)],
+        )
+        self.ctx.copy_framebuffer(self.render_target_texture_fbo, self.color_buffer_fbo)
+        self.render_target_texture.use(0)
+        self.output_fbo.use()
+        vao.render(gl.TRIANGLES)
+        vbo.release()
+        vao.release()
+        # self.ctx.copy_framebuffer(self.output_fbo, self.color_buffer_fbo)
 
     def render_program(self, prog, data, indices=None):
         vbo = self.ctx.buffer(data.tobytes())
@@ -379,10 +400,12 @@ class OpenGLRenderer(Renderer):
         )
 
         vao.render(gl.TRIANGLES)
+        # data, data_size = ibo.read(), ibo.size
         vbo.release()
         if ibo is not None:
             ibo.release()
         vao.release()
+        # return data, data_size
 
     def render_vmobject(self, mob: OpenGLVMobject) -> None:  # type: ignore
         self.stencil_buffer_fbo.use()
@@ -422,10 +445,11 @@ class OpenGLRenderer(Renderer):
             #     if(mob.has_fill()):
             #         mob.renderer_data.mesh = ... # Triangulation todo
 
-        num_mobs = len(mob.family_members_with_points())
+        family = mob.family_members_with_points()
+        num_mobs = len(family)
 
         # Another stroke pass is needed in the beginning to deal with transparency properly
-        for counter, sub in enumerate(mob.family_members_with_points()):
+        for counter, sub in enumerate(family):
             if not isinstance(sub.renderer_data, GLRenderData):
                 return
             enable_depth(sub)
@@ -444,7 +468,7 @@ class OpenGLRenderer(Renderer):
                     np.array(range(len(sub.points))),
                 )
 
-        for counter, sub in enumerate(mob.family_members_with_points()):
+        for counter, sub in enumerate(family):
             if not isinstance(sub.renderer_data, GLRenderData):
                 return
             enable_depth(sub)
@@ -463,7 +487,7 @@ class OpenGLRenderer(Renderer):
                     sub.renderer_data.vert_indices,
                 )
 
-        for counter, sub in enumerate(mob.family_members_with_points()):
+        for counter, sub in enumerate(family):
             if not isinstance(sub.renderer_data, GLRenderData):
                 return
             enable_depth(sub)
@@ -527,7 +551,7 @@ class GLVMobjectManager:
 
 
 #     def init_frame(self, **config) -> None:
-#         self.frame = OpenGLCameraFrame(**config)
+#         self.frame = Camera(**config)
 
 #     def init_context(self, ctx: moderngl.Context | None = None) -> None:
 #         if ctx is None:

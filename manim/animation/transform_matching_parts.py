@@ -19,9 +19,6 @@ from .composition import AnimationGroup
 from .fading import FadeIn, FadeOut
 from .transform import FadeTransformPieces, Transform
 
-if TYPE_CHECKING:
-    from ..scene.scene import Scene
-
 
 class TransformMatchingAbstractBase(AnimationGroup):
     """Abstract base class for transformations that keep track of matching parts.
@@ -153,13 +150,14 @@ class TransformMatchingAbstractBase(AnimationGroup):
             shape_map[key].add(sm)
         return shape_map
 
-    def clean_up_from_scene(self, scene: Scene) -> None:
+    def finish(self) -> None:
+        super().finish()
         # Interpolate all animations back to 0 to ensure source mobjects remain unchanged.
         for anim in self.animations:
             anim.interpolate(0)
-        scene.remove(self.mobject)
-        scene.remove(*self.to_remove)
-        scene.add(self.to_add)
+        self.buffer.remove(self.mobject)
+        self.buffer.remove(*self.to_remove)
+        self.buffer.add(self.to_add)
 
     @staticmethod
     def get_mobject_parts(mobject: Mobject):

@@ -12,7 +12,7 @@ from manim._config import config, tempconfig
 from manim.animation.creation import Create, DrawBorderThenFill, Write
 from manim.animation.fading import FadeIn
 from manim.animation.transform import Transform
-from manim.camera.camera import OpenGLCameraFrame
+from manim.camera.camera import Camera
 from manim.constants import LEFT, OUT, RIGHT, UP
 from manim.mobject.geometry.arc import Circle
 from manim.mobject.geometry.polygram import Square
@@ -39,6 +39,7 @@ if __name__ == "__main__":
         win = Window(
             width=1920,
             height=1080,
+            fullscreen=True,
             vsync=True,
             config=Config(double_buffer=True, samples=0),
         )
@@ -70,7 +71,7 @@ if __name__ == "__main__":
         clock_mobject = DecimalNumber(0.0).shift(4 * LEFT + 2.5 * UP)
         clock_mobject.fix_in_frame()
 
-        camera = OpenGLCameraFrame()
+        camera = Camera()
         camera.save_state()
         # renderer.init_camera(camera)
 
@@ -151,6 +152,8 @@ if __name__ == "__main__":
                 if not is_finished:
                     if virtual_time >= run_time:
                         animation.finish()
+                        buffer = str(animation.buffer)
+                        print(f"{buffer = }")
                         has_finished = True
                     else:
                         animation.update_mobjects(dt)

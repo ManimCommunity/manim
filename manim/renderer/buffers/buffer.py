@@ -4,7 +4,7 @@ import numpy as np
 
 
 class STD140BufferFormat:
-    _GL_DTYPES: dict[str, tuple[str, int, tuple[int, ...]]] = {
+    _GL_DTYPES: dict[str, tuple[str, type[np.float_], tuple[int, ...]]] = {
         "int": ("i", np.float32, (1,)),
         "ivec2": ("i", np.float32, (2,)),
         "ivec3": ("i", np.float32, (3,)),
@@ -44,19 +44,17 @@ class STD140BufferFormat:
     def __init__(
         self,
         name: str,
-        struct: tuple[(str, str), ...],
+        struct: tuple[tuple[str, str], ...],
     ) -> None:
         self.dtype = []
-        self._paddings = dict()  # LUT for future writes
+        self._paddings = {}  # LUT for future writes
         byte_offset = 0  # Track the offset so we can calculate padding for alignment -- NOTE: use RenderDoc to debug
         for data_type, var_name in struct:
-            base_char, base_bytesize, shape = self._GL_DTYPES[data_type]
+            _base_char, base_bytesize, shape = self._GL_DTYPES[data_type]
             shape = dict(enumerate(shape))
             col_len, row_len = shape.get(0, 1), shape.get(1, 1)
             # Calculate padding for NON (float/vec2) items
-            col_padding = (
-                0 if row_len == 1 and (col_len == 1 or col_len == 2) else 4 - col_len
-            )
+            col_padding = 0 if row_len == 1 and (col_len in [1, 2]) else 4 - col_len
             # Store padding in LUT
             self._paddings[var_name] = col_padding
             shape = (col_len + col_padding,)
@@ -95,7 +93,7 @@ class STD140BufferFormat:
         try:
             # This fails for 1D data (python or np.array)
             return np.pad(data, ((0, 0), (0, self._paddings[var])), mode="constant")
-        except:
+        except Exception:
             return np.pad(data, ((0, self._paddings[var])), mode="constant")
 
     def write(self, data: dict) -> None:

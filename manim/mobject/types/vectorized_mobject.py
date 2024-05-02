@@ -15,7 +15,7 @@ __all__ = [
 import itertools as it
 import sys
 import typing
-from typing import Callable, Sequence
+from typing import TYPE_CHECKING, Callable, Sequence
 
 import numpy as np
 from PIL.Image import Image
@@ -38,8 +38,12 @@ from ...utils.bezier import (
     proportions_along_bezier_curve_for_point,
 )
 from ...utils.color import BLACK, WHITE, ManimColor, ParsableManimColor
+from ...utils.deprecation import deprecated
 from ...utils.iterables import make_even, resize_array, stretch_array_to_length, tuplify
 from ...utils.space_ops import rotate_vector, shoelace_direction
+
+if TYPE_CHECKING:
+    from typing_extensions import Self
 
 # TODO
 # - Change cubic curve groups to have 4 points instead of 3
@@ -621,6 +625,18 @@ class VMobject(Mobject):
     def set_points(self, points):
         self.points = np.array(points)
         return self
+
+    def set_z(self, z: float) -> Self:
+        self.points[..., -1] = z
+        return self
+
+    @deprecated(
+        since="0.18.2",
+        until="0.19.0",
+        message="OpenGL has no concept of z_index. Use set_z instead",
+    )
+    def set_z_index(self, z: float) -> Self:
+        return self.set_z(z)
 
     def resize_points(
         self,
