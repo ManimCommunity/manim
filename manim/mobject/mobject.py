@@ -115,7 +115,7 @@ class Mobject:
         self.target = target
         self.z_index = z_index
         self.point_hash = None
-        self.submobjects = []
+        self._submobjects = []
         self.parents: list[Mobject] = []
         self.family: list[Mobject] | None = [self]
         self.updaters: list[Updater] = []
@@ -125,6 +125,15 @@ class Mobject:
         self.reset_points()
         self.generate_points()
         self.init_colors()
+
+    @property
+    def submobjects(self) -> list[Mobject]:
+        return self._submobjects
+
+    @submobjects.setter
+    def submobjects(self, new_submobjects) -> None:
+        self._submobjects = new_submobjects
+        self.note_changed_family()
 
     @classmethod
     def animation_override_for(
