@@ -2302,13 +2302,13 @@ class Mobject:
     def split(self) -> list[Self]:
         result = [self] if len(self.points) > 0 else []
         return result + self.submobjects
-    
+
     def note_changed_family(self, only_changed_order=False) -> Self:
         """Indicates that this Mobject's family should be recalculated, by
         setting it to None to void the previous computation. If this Mobject
         has parents, it is also part of their respective families, so they must
         be notified as well.
-        
+
         This method must be called after any change which involves modifying
         some Mobject's submobjects, such as a call to Mobject.add.
         """
