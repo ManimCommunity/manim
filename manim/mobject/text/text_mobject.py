@@ -907,7 +907,7 @@ class MarkupText(SVGMobject):
     Here is a list of supported tags:
 
     - ``<b>bold</b>``, ``<i>italic</i>`` and ``<b><i>bold+italic</i></b>``
-    - ``<ul>underline</ul>`` and ``<s>strike through</s>``
+    - ``<u>underline</u>`` and ``<s>strike through</s>``
     - ``<tt>typewriter font</tt>``
     - ``<big>bigger font</big>`` and ``<small>smaller font</small>``
     - ``<sup>superscript</sup>`` and ``<sub>subscript</sub>``
