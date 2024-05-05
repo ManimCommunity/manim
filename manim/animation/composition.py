@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Callable, Iterable, Sequence
 
 import numpy as np
 
-from manim._config import config
+from manim._config import config, logger
 from manim.animation.animation import Animation, prepare_animation
 from manim.constants import RendererType
 from manim.mobject.mobject import Group, Mobject
@@ -91,6 +91,15 @@ class AnimationGroup(Animation):
                 f"{self} has a run_time of 0 seconds, this cannot be "
                 f"rendered correctly. {tmp}."
             )
+        frame_rate = 1 / config.frame_rate  # the naming here is unfortunate, config holds fps
+        if self.run_time < frame_rate:
+            logger.warning(
+                f"Original run time of {self} is shorter than current frame "
+                f"rate ({frame_rate} sec) which cannot be rendered. Rendering "
+                "with the shortest possible duration instead."
+            )
+            self.run_time = frame_rate
+
         self.anim_group_time = 0.0
         if self.suspend_mobject_updating:
             self.group.suspend_updating()

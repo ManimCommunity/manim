@@ -197,6 +197,15 @@ class Animation:
                 f"{self} has a run_time of <= 0 seconds, this cannot be rendered correctly. "
                 "Please set the run_time to be positive"
             )
+        frame_rate = 1 / config.frame_rate  # the naming here is unfortunate, config holds fps
+        if self.run_time < frame_rate:
+            logger.warning(
+                f"Original run time of {self} is shorter than current frame "
+                f"rate ({frame_rate} sec) which cannot be rendered. Rendering "
+                "with the shortest possible duration instead."
+            )
+            self.run_time = frame_rate
+
         self.starting_mobject = self.create_starting_mobject()
         if self.suspend_mobject_updating:
             # All calls to self.mobject's internal updaters
