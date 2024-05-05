@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from manim import FadeIn
+from manim import FadeIn, config
 
 
 def test_empty_animation_fails():
@@ -16,7 +16,7 @@ def test_negative_run_time_fails():
 
 
 def test_run_time_shorter_than_frame_rate(caplog):
-    FadeIn(None, run_time=1e-9).begin()
+    FadeIn(None, run_time=1 / (config.frame_rate + 1)).begin()
     assert (
         "Original run time of FadeIn(Mobject) is shorter than current frame rate"
         in caplog.text
