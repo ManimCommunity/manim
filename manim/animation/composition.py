@@ -91,7 +91,9 @@ class AnimationGroup(Animation):
                 f"{self} has a run_time of 0 seconds, this cannot be "
                 f"rendered correctly. {tmp}."
             )
-        frame_rate = 1 / config.frame_rate  # the naming here is unfortunate, config holds fps
+        frame_rate = (
+            1 / config.frame_rate
+        )  # the naming here is unfortunate, config holds fps
         if self.run_time < frame_rate:
             logger.warning(
                 f"Original run time of {self} is shorter than current frame "
