@@ -21,7 +21,6 @@ __all__ = [
 import itertools as it
 from typing import (
     TYPE_CHECKING,
-    Any,
     Callable,
     Collection,
     Generator,
@@ -44,7 +43,7 @@ if TYPE_CHECKING:
     H = TypeVar("H", bound=Hashable)
 
 
-def adjacent_n_tuples(objects: Sequence[Any], n: int) -> zip:
+def adjacent_n_tuples(objects: Sequence[object], n: int) -> zip:
     """Returns the Sequence objects cyclically split into n length tuples.
 
     See Also
@@ -63,7 +62,7 @@ def adjacent_n_tuples(objects: Sequence[Any], n: int) -> zip:
     return zip(*([*objects[k:], *objects[:k]] for k in range(n)))
 
 
-def adjacent_pairs(objects: Sequence[Any]) -> zip:
+def adjacent_pairs(objects: Sequence[object]) -> zip:
     """Alias for ``adjacent_n_tuples(objects, 2)``.
 
     See Also
@@ -80,7 +79,7 @@ def adjacent_pairs(objects: Sequence[Any]) -> zip:
     return adjacent_n_tuples(objects, 2)
 
 
-def all_elements_are_instances(iterable: Iterable[Any], Class: type[Any]) -> bool:
+def all_elements_are_instances(iterable: Iterable[object], Class: type[object]) -> bool:
     """Returns ``True`` if all elements of iterable are instances of Class.
     False otherwise.
     """
