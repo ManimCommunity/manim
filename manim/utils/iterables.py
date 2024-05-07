@@ -39,7 +39,6 @@ if TYPE_CHECKING:
 
     T = TypeVar("T")
     U = TypeVar("U")
-    F = TypeVar("F", bound=np.float_ | np.int_)
     H = TypeVar("H", bound=Hashable)
 
 
@@ -163,7 +162,11 @@ def list_update(l1: Iterable[T], l2: Iterable[T]) -> list[T]:
 
 
 @overload
-def listify(obj: Sequence[T]) -> list[T]: ...
+def listify(obj: str) -> list[str]:
+    ...
+
+@overload
+def listify(obj: Iterable[T]) -> list[T]: ...
 
 
 @overload
@@ -308,7 +311,7 @@ def resize_array(nparray: npt.NDArray[F], length: int) -> npt.NDArray[F]:
     return np.resize(nparray, (length, *nparray.shape[1:]))
 
 
-def resize_preserving_order(nparray: npt.NDArray[F], length: int) -> npt.NDArray[F]:
+def resize_preserving_order(nparray: npt.NDArray[np.float_], length: int) -> npt.NDArray[np.float_]:
     """Extends/truncates nparray so that ``len(result) == length``.
         The elements of nparray are duplicated to achieve the desired length
         (favours earlier elements).
@@ -413,7 +416,19 @@ def stretch_array_to_length(nparray: npt.NDArray[F], length: int) -> npt.NDArray
     return nparray[indices.astype(int)]
 
 
-def tuplify(obj) -> tuple:
+@overload
+def tuplify(obj: str) -> tuple[str]:
+    ...
+
+@overload
+def tuplify(obj: Iterable[T]) -> tuple[T]:
+    ...
+
+@overload
+def tuplify(obj: T) -> tuple[T]:
+    ...
+
+def tuplify(obj):
     """Converts obj to a tuple intelligently.
 
     Examples
