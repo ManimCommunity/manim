@@ -39,6 +39,7 @@ if TYPE_CHECKING:
 
     T = TypeVar("T")
     U = TypeVar("U")
+    F = TypeVar("F", np.float_, np.int_)
     H = TypeVar("H", bound=Hashable)
 
 
@@ -363,15 +364,6 @@ def resize_with_interpolation(nparray: npt.NDArray[F], length: int) -> npt.NDArr
 
     Examples
     --------
-    .. code-block:: py
-        resize_with_interpolation(nparray, 3)
-        # returns array([[[1., 2.],
-        #                 [3., 4.]],
-        #                [[1., 2.],
-        #                 [3., 4.]],
-        #                [[1., 2.],
-        #                 [3., 4.]]])
-
     .. code-block:: pycon
 
         >>> nparray = np.array([[1, 2], [3, 4]])
