@@ -24,19 +24,20 @@ from typing import (
     Any,
     Callable,
     Collection,
-    TypeVar,
-    Hashable,
     Generator,
+    Hashable,
     Iterable,
     Reversible,
     Sequence,
-    overload
+    TypeVar,
+    overload,
 )
 
 import numpy as np
 
 if TYPE_CHECKING:
     import numpy.typing as npt
+
     T = TypeVar("T")
     U = TypeVar("U")
     F = TypeVar("F", bound=np.float_ | np.int_)
@@ -161,13 +162,14 @@ def list_update(l1: Iterable[T], l2: Iterable[T]) -> list[T]:
     """
     return [e for e in l1 if e not in l2] + list(l2)
 
-@overload
-def listify(obj: Sequence[T]) -> list[T]:
-    ...
 
 @overload
-def listify(obj: T) -> list[T]:
-    ...
+def listify(obj: Sequence[T]) -> list[T]: ...
+
+
+@overload
+def listify(obj: T) -> list[T]: ...
+
 
 def listify(obj):
     """Converts obj to a list intelligently.
@@ -176,7 +178,7 @@ def listify(obj):
     --------
     .. code-block:: pycon
 
-        >>> listify('str')
+        >>> listify("str")
         ['str']
         >>> listify((1, 2))
         [1, 2]
@@ -191,7 +193,9 @@ def listify(obj):
         return [obj]
 
 
-def make_even(iterable_1: Iterable[T], iterable_2: Iterable[U]) -> tuple[list[T | U], list[T | U]]:
+def make_even(
+    iterable_1: Iterable[T], iterable_2: Iterable[U]
+) -> tuple[list[T | U], list[T | U]]:
     """Extends the shorter of the two iterables with duplicate values until its
         length is equal to the longer iterable (favours earlier elements).
 
@@ -269,7 +273,7 @@ def remove_nones(sequence: Iterable) -> list:
     --------
     .. code-block:: pycon
 
-        >>> remove_nones(['m', '', 'l', 0, 42, False, True])
+        >>> remove_nones(["m", "", "l", 0, 42, False, True])
         ['m', 'l', 42, True]
     """
     # Note this is redundant with it.chain
@@ -374,7 +378,7 @@ def resize_with_interpolation(nparray: npt.NDArray[F], length: int) -> npt.NDArr
                [1.66666667, 2.66666667],
                [2.33333333, 3.33333333],
                [3.        , 4.        ]])
-        >>> nparray = np.array([[[1, 2],[3, 4]]])
+        >>> nparray = np.array([[[1, 2], [3, 4]]])
         >>> nparray = np.array([[1, 2], [3, 4], [5, 6]])
         >>> resize_with_interpolation(nparray, 4)
         array([[1.        , 2.        ],
@@ -417,7 +421,7 @@ def tuplify(obj) -> tuple:
     --------
     .. code-block:: pycon
 
-        >>> tuplify('str')
+        >>> tuplify("str")
         ('str',)
         >>> tuplify([1, 2])
         (1, 2)
