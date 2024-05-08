@@ -34,13 +34,14 @@ from typing import (
 
 import numpy as np
 
+T = TypeVar("T")
+U = TypeVar("U")
+F = TypeVar("F", np.float_, np.int_)
+H = TypeVar("H", bound=Hashable)
+
+
 if TYPE_CHECKING:
     import numpy.typing as npt
-
-    T = TypeVar("T")
-    U = TypeVar("U")
-    F = TypeVar("F", np.float_, np.int_)
-    H = TypeVar("H", bound=Hashable)
 
 
 def adjacent_n_tuples(objects: Sequence[object], n: int) -> zip:
