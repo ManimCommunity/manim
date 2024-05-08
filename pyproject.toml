@@ -44,7 +44,7 @@ notebook = { version = ">=6.0.0", optional = true }
 numpy = ">=1.26"
 Pillow = ">=9.1"
 pycairo = ">=1.13,<2.0.0"
-pydantic = ">=2.5.0"
+pydantic = ">=2.7.0"
 pydub = ">=0.20.0"
 Pygments = ">=2.0.0"
 rich = ">=12.0.0"
@@ -54,7 +54,7 @@ skia-pathops = ">=0.7.0"
 srt = ">=3.0.0"
 svgelements = ">=1.8.0"
 tqdm = ">=4.0.0"
-typing-extensions = ">=4.0.0"
+typing-extensions = ">=4.9.0"
 watchdog = ">=2.0.0"
 
 [tool.poetry.extras]
