@@ -708,9 +708,10 @@ class ManimConfig(BaseModel):
     """
 
     # TODO set correct JSON schema for "validation" mode, waiting for pydantic#8208
-    window_size: Literal["default"] | Annotated[
-        tuple[int, int], BeforeValidator(_tuple_from_string)
-    ] = "default"
+    window_size: (
+        Literal["default"]
+        | Annotated[tuple[int, int], BeforeValidator(_tuple_from_string)]
+    ) = "default"
     """The size of the OpenGL window. If set to ``default``, window will be scaled
     based on the display monitor.
     """
