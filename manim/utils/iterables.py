@@ -87,7 +87,7 @@ def all_elements_are_instances(iterable: Iterable[object], Class: type[object]) 
 
 
 def batch_by_property(
-    items: Sequence[T], property_func: Callable[[T], U]
+    items: Iterable[T], property_func: Callable[[T], U]
 ) -> list[tuple[list[T], U]]:
     """Takes in a Sequence, and returns a list of tuples, (batch, prop)
     such that all items in a batch have the same output when
@@ -174,7 +174,7 @@ def listify(obj: Iterable[T]) -> list[T]: ...
 def listify(obj: T) -> list[T]: ...
 
 
-def listify(obj):
+def listify(obj: str | Iterable[T] | T) -> list[str] | list[T]:
     """Converts obj to a list intelligently.
 
     Examples
@@ -190,15 +190,15 @@ def listify(obj):
     """
     if isinstance(obj, str):
         return [obj]
-    try:
+    if isinstance(obj, Iterable):
         return list(obj)
-    except TypeError:
+    else:
         return [obj]
 
 
 def make_even(
     iterable_1: Iterable[T], iterable_2: Iterable[U]
-) -> tuple[list[T | U], list[T | U]]:
+) -> tuple[list[T], list[U]]:
     """Extends the shorter of the two iterables with duplicate values until its
         length is equal to the longer iterable (favours earlier elements).
 
@@ -228,7 +228,7 @@ def make_even(
 
 def make_even_by_cycling(
     iterable_1: Collection[T], iterable_2: Collection[U]
-) -> tuple[list[T | U], list[T | U]]:
+) -> tuple[list[T], list[U]]:
     """Extends the shorter of the two iterables with duplicate values until its
         length is equal to the longer iterable (cycles over shorter iterable).
 
@@ -269,7 +269,7 @@ def remove_list_redundancies(lst: Reversible[H]) -> list[H]:
     return reversed_result
 
 
-def remove_nones(sequence: Iterable) -> list:
+def remove_nones(sequence: Iterable[T | None]) -> list[T]:
     """Removes elements where bool(x) evaluates to False.
 
     Examples
@@ -422,7 +422,7 @@ def tuplify(obj: Iterable[T]) -> tuple[T]: ...
 def tuplify(obj: T) -> tuple[T]: ...
 
 
-def tuplify(obj):
+def tuplify(obj: str | Iterable[T] | T) -> tuple[str] | tuple[T]:
     """Converts obj to a tuple intelligently.
 
     Examples
@@ -438,9 +438,9 @@ def tuplify(obj):
     """
     if isinstance(obj, str):
         return (obj,)
-    try:
+    if isinstance(obj, Iterable):
         return tuple(obj)
-    except TypeError:
+    else:
         return (obj,)
 
 
