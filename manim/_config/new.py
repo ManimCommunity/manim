@@ -23,7 +23,7 @@ from pydantic_core import core_schema
 from rich.console import Console
 from rich.logging import RichHandler
 from rich.theme import Theme
-from typing_extensions import Annotated, Self, TypeAlias
+from typing_extensions import Annotated, Self, TypeAlias, deprecated
 
 from manim import constants
 from manim.typing import QualityLiteral, Vector3D
@@ -59,8 +59,7 @@ Dirs: TypeAlias = Literal[
 ]
 
 Verbosity: TypeAlias = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
-
-# Logging related constants:
+FFmpegLoglevel: TypeAlias = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 
 HIGHLIGHTED_KEYWORDS = [  # these keywords are highlighted specially
     "Played",
@@ -94,7 +93,7 @@ def _from_frame_height(
 
 def _tuple_from_string(v: Any) -> Any:
     if isinstance(v, str):
-        return tuple(map(int, re.split(r"[;,\-]")))
+        return tuple(map(int, re.split(r"[;,\-]", v)))
     return v
 
 
@@ -167,19 +166,19 @@ class JupyterConfig(BaseModel):
     media_width: str = "60%"
     """Media width in Jupyter notebook."""
 
-    model_config = {"validate_assignment": True}
+    model_config = {"validate_assignment": True, "use_attribute_docstrings": True}
 
 
 class FFmpegConfig(BaseModel):
     """FFmpeg related config."""
 
-    loglevel: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "ERROR"
+    loglevel: FFmpegLoglevel = "ERROR"
     """Verbosity of FFmpeg."""
 
     executable: str = "ffmpeg"  # TODO use pathlib.Path?
     """Custom path to the FFmpeg executable."""
 
-    model_config = {"validate_assignment": True}
+    model_config = {"validate_assignment": True, "use_attribute_docstrings": True}
 
 
 class CliFormatting(BaseModel):
@@ -255,9 +254,9 @@ class CliFormatting(BaseModel):
             "row_sep",
         }
         formatter_settings = {
-            k: getattr(self, v, None)
+            k: getattr(self, k, None)
             for k in formatter_keys
-            if getattr(self, v, None) is not None
+            if getattr(self, k, None) is not None
         }
 
         theme_settings: dict[str, Style] = {}
@@ -294,7 +293,7 @@ class CliFormatting(BaseModel):
             formatter_settings=formatter,
         )
 
-    model_config = {"validate_assignment": True}
+    model_config = {"validate_assignment": True, "use_attribute_docstrings": True}
 
 
 class LoggingConfig(BaseModel):
@@ -352,7 +351,7 @@ class LoggingConfig(BaseModel):
         logging.getLogger("manim").setLevel(self.verbosity)
         return self
 
-    model_config = {"validate_assignment": True}
+    model_config = {"validate_assignment": True, "use_attribute_docstrings": True}
 
 
 class ManimConfig(BaseModel):
@@ -410,14 +409,15 @@ class ManimConfig(BaseModel):
     CLI switch: ``-a, --write_all``.
     """
 
-    # TODO emit deprecation warning if set to True, via validator? Via future impl. of deprecation in Pydantic?
-    save_pngs: bool = False
+    save_pngs: Annotated[bool, Field(deprecated="'save_pngs' is deprecated.")] = False
     """Whether to save all frames in the scene as images files. Deprecated.
 
     CLI switch: ``-g, --save_pngs``.
     """
 
-    save_as_gif: bool = False
+    save_as_gif: Annotated[
+        bool, Field(deprecated="'save_as_gif' is deprecated.")
+    ] = False
     """Whether to save the rendered scene in .gif format. Deprecated.
 
     CLI switch: ``-i, --save_as_gif``.
@@ -460,18 +460,16 @@ class ManimConfig(BaseModel):
     """The logging configuration."""
 
     @property
+    @deprecated(
+        "Accessing 'ManimConfig.verbosity' is deprecated, use 'ManimConfig.logging.verbosity' instead",
+        stacklevel=2,
+    )
     def verbosity(self) -> Verbosity:
         """The logger verbosity.
 
         CLI switch: ``-v, --verbosity``.
         """
 
-        warnings.warn(
-            DeprecationWarning,
-            "Accessing 'ManimConfig.verbosity' is deprecated, instead "
-            "use 'ManimConfig.logging.verbosity'",
-            stacklevel=2,
-        )
         return self.logging.verbosity
 
     format: Literal["png", "gif", "mp4", "webm", "mov"] = "mp4"
@@ -481,75 +479,68 @@ class ManimConfig(BaseModel):
     """
 
     ffmpeg: FFmpegConfig = FFmpegConfig()
+    """FFmpeg related config."""
 
     @property
-    def ffmpeg_loglevel(self) -> bool:
+    @deprecated(
+        "Accessing 'ManimConfig.ffmpeg_loglevel' is deprecated, use 'ManimConfig.ffmpeg.loglevel' instead",
+        stacklevel=2,
+    )
+    def ffmpeg_loglevel(self) -> FFmpegLoglevel:
         """Whether to embed videos in Jupyter notebook."""
 
-        warnings.warn(
-            DeprecationWarning,
-            "Accessing 'ManimConfig.ffmpeg_loglevel' is deprecated, instead "
-            "use 'ManimConfig.ffmpeg.ffmpeg_loglevel'",
-            stacklevel=2,
-        )
         return self.ffmpeg.loglevel
 
     @property
-    def ffmpeg_executable(self) -> bool:
+    @deprecated(
+        "Accessing 'ManimConfig.ffmpeg_executable' is deprecated, use 'ManimConfig.ffmpeg.executable' instead",
+        stacklevel=2,
+    )
+    def ffmpeg_executable(self) -> str:
         """Media width in Jupyter notebook."""
 
-        warnings.warn(
-            DeprecationWarning,
-            "Accessing 'ManimConfig.ffmpeg_executable' is deprecated, instead "
-            "use 'ManimConfig.ffmpeg.ffmpeg_executable'",
-            stacklevel=2,
-        )
         return self.ffmpeg.executable
 
     jupyter: JupyterConfig = JupyterConfig()
     """Jupyter notebook related config."""
 
     @property
+    @deprecated(
+        "Accessing 'ManimConfig.media_embed' is deprecated, use 'ManimConfig.jupyter.media_embed' instead",
+        stacklevel=2,
+    )
     def media_embed(self) -> bool:
         """Whether to embed videos in Jupyter notebook."""
 
-        warnings.warn(
-            DeprecationWarning,
-            "Accessing 'ManimConfig.media_embed' is deprecated, instead "
-            "use 'ManimConfig.jupyter.media_embed'",
-            stacklevel=2,
-        )
         return self.jupyter.media_embed
 
     @property
-    def media_width(self) -> bool:
+    @deprecated(
+        "Accessing 'ManimConfig.media_width' is deprecated, use 'ManimConfig.jupyter.media_width' instead",
+        stacklevel=2,
+    )
+    def media_width(self) -> str:
         """Media width in Jupyter notebook."""
 
-        warnings.warn(
-            DeprecationWarning,
-            "Accessing 'ManimConfig.media_width' is deprecated, instead "
-            "use 'ManimConfig.jupyter.media_width'",
-            stacklevel=2,
-        )
         return self.jupyter.media_width
 
     cli_formatting: CliFormatting = CliFormatting()
     """CLI related formatting config."""
 
-    pixel_width: Annotated[int, Field(gte=0)] = 1920
+    pixel_width: Annotated[int, Field(ge=0)] = 1920
     """Frame width in pixels.
 
     CLI switch: ``-r, --resolution``.
     """
 
-    pixel_height: Annotated[int, Field(gte=0)] = 1080
+    pixel_height: Annotated[int, Field(ge=0)] = 1080
     """Frame height in pixels.
 
     CLI switch: ``-r, --resolution``.
     """
 
     @property
-    def aspect_ratio(self) -> int:
+    def aspect_ratio(self) -> float:
         """Aspect ratio (``pixel_width / pixel_height``)."""
         return self.pixel_width / self.pixel_height
 
@@ -669,8 +660,9 @@ class ManimConfig(BaseModel):
     @property
     def quality(self) -> Literal[QualityLiteral, "custom"]:
         """Video quality."""
+
         keys = ["pixel_width", "pixel_height", "frame_rate"]
-        q = {k: self[k] for k in keys}
+        q = {k: getattr(self, k) for k in keys}
         for qual in constants.QUALITIES:
             if all(q[k] == constants.QUALITIES[qual][k] for k in keys):
                 return qual
@@ -847,8 +839,8 @@ class ManimConfig(BaseModel):
 
         if self.format == "webm":
             warnings.warn(
-                UserWarning,
                 "Output format is set as 'webm', which can be slower in some cases.",
+                UserWarning,
                 stacklevel=2,
             )
 
@@ -892,4 +884,4 @@ class ManimConfig(BaseModel):
             self.__dict__[name] = value
             self.__pydantic_fields_set__.add(name)
 
-    model_config = {"validate_assignment": True}
+    model_config = {"validate_assignment": True, "use_attribute_docstrings": True}
