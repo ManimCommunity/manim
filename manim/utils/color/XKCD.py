@@ -23,6 +23,7 @@ taken from https://www.w3schools.com/colors/colors_xkcd.asp.
 .. automanimcolormodule:: manim.utils.color.XKCD
 
 """
+
 from .core import ManimColor
 
 ACIDGREEN = ManimColor("#8FFE09")

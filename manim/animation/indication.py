@@ -31,10 +31,10 @@ __all__ = [
     "Flash",
     "ShowPassingFlash",
     "ShowPassingFlashWithThinningStrokeWidth",
-    "ShowCreationThenFadeOut",
     "ApplyWave",
     "Circumscribe",
     "Wiggle",
+    "Blink",
 ]
 
 from typing import Callable, Iterable, Optional, Tuple, Type, Union
@@ -54,6 +54,7 @@ from ..animation.creation import Create, ShowPartial, Uncreate
 from ..animation.fading import FadeIn, FadeOut
 from ..animation.movement import Homotopy
 from ..animation.transform import Transform
+from ..animation.updaters.update import UpdateFromFunc
 from ..constants import *
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
@@ -77,8 +78,6 @@ class FocusOn(Transform):
         The color of the spotlight.
     run_time
         The duration of the animation.
-    kwargs
-        Additional arguments to be passed to the :class:`~.Succession` constructor
 
     Examples
     --------
@@ -342,16 +341,6 @@ class ShowPassingFlashWithThinningStrokeWidth(AnimationGroup):
         )
 
 
-@deprecated(
-    since="v0.15.0",
-    until="v0.16.0",
-    message="Use Create then FadeOut to achieve this effect.",
-)
-class ShowCreationThenFadeOut(Succession):
-    def __init__(self, mobject: Mobject, remover: bool = True, **kwargs) -> None:
-        super().__init__(Create(mobject), FadeOut(mobject), remover=remover, **kwargs)
-
-
 class ApplyWave(Homotopy):
     """Send a wave through the Mobject distorting it temporarily.
 
@@ -567,7 +556,7 @@ class Circumscribe(Succession):
     mobject
         The mobject to be circumscribed.
     shape
-        The shape with which to surrond the given mobject. Should be either
+        The shape with which to surround the given mobject. Should be either
         :class:`~.Rectangle` or :class:`~.Circle`
     fade_in
         Whether to make the surrounding shape to fade in. It will be drawn otherwise.
@@ -654,3 +643,68 @@ class Circumscribe(Succession):
             super().__init__(
                 ShowPassingFlash(frame, time_width, run_time=run_time), **kwargs
             )
+
+
+class Blink(Succession):
+    """Blink the mobject.
+
+    Parameters
+    ----------
+    mobject
+        The mobject to be blinked.
+    time_on
+        The duration that the mobject is shown for one blink.
+    time_off
+        The duration that the mobject is hidden for one blink.
+    blinks
+        The number of blinks
+    hide_at_end
+        Whether to hide the mobject at the end of the animation.
+    kwargs
+        Additional arguments to be passed to the :class:`~.Succession` constructor.
+
+    Examples
+    --------
+
+    .. manim:: BlinkingExample
+
+        class BlinkingExample(Scene):
+            def construct(self):
+                text = Text("Blinking").scale(1.5)
+                self.add(text)
+                self.play(Blink(text, blinks=3))
+
+    """
+
+    def __init__(
+        self,
+        mobject: Mobject,
+        time_on: float = 0.5,
+        time_off: float = 0.5,
+        blinks: int = 1,
+        hide_at_end: bool = False,
+        **kwargs
+    ):
+        animations = [
+            UpdateFromFunc(
+                mobject,
+                update_function=lambda mob: mob.set_opacity(1.0),
+                run_time=time_on,
+            ),
+            UpdateFromFunc(
+                mobject,
+                update_function=lambda mob: mob.set_opacity(0.0),
+                run_time=time_off,
+            ),
+        ] * blinks
+
+        if not hide_at_end:
+            animations.append(
+                UpdateFromFunc(
+                    mobject,
+                    update_function=lambda mob: mob.set_opacity(1.0),
+                    run_time=time_on,
+                ),
+            )
+
+        super().__init__(*animations, **kwargs)

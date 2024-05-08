@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from manim import NumberLine
+from manim import DashedLine, NumberLine
 from manim.mobject.text.numbers import Integer
 
 
@@ -121,3 +121,10 @@ def test_point_to_number():
     np.testing.assert_array_equal(np.round(num_1, 4), np.round(expected, 4))
     np.testing.assert_array_equal(np.round(num_2, 4), np.round(expected, 4))
     np.testing.assert_array_equal(np.round(num_3, 4), np.round(expected, 4))
+
+
+def test_start_and_end_at_same_point():
+    line = DashedLine(np.zeros(3), np.zeros(3))
+    line.put_start_and_end_on(np.zeros(3), np.array([0, 0, 0]))
+
+    np.testing.assert_array_equal(np.round(np.zeros(3), 4), np.round(line.points, 4))
