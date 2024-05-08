@@ -415,9 +415,9 @@ class ManimConfig(BaseModel):
     CLI switch: ``-g, --save_pngs``.
     """
 
-    save_as_gif: Annotated[
-        bool, Field(deprecated="'save_as_gif' is deprecated.")
-    ] = False
+    save_as_gif: Annotated[bool, Field(deprecated="'save_as_gif' is deprecated.")] = (
+        False
+    )
     """Whether to save the rendered scene in .gif format. Deprecated.
 
     CLI switch: ``-i, --save_as_gif``.
