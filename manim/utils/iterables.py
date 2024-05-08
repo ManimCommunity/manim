@@ -44,7 +44,7 @@ if TYPE_CHECKING:
     import numpy.typing as npt
 
 
-def adjacent_n_tuples(objects: Sequence[object], n: int) -> zip:
+def adjacent_n_tuples(objects: Sequence[T], n: int) -> zip[T]:
     """Returns the Sequence objects cyclically split into n length tuples.
 
     See Also
@@ -63,7 +63,7 @@ def adjacent_n_tuples(objects: Sequence[object], n: int) -> zip:
     return zip(*([*objects[k:], *objects[:k]] for k in range(n)))
 
 
-def adjacent_pairs(objects: Sequence[object]) -> zip:
+def adjacent_pairs(objects: Sequence[T]) -> zip[T]:
     """Alias for ``adjacent_n_tuples(objects, 2)``.
 
     See Also
