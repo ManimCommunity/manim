@@ -20,6 +20,7 @@ from typing_extensions import Self
 
 from manim import config
 from manim.constants import *
+from manim.mobject.mobject import Mobject
 from manim.mobject.geometry.arc import Circle, Dot
 from manim.mobject.geometry.line import Arrow, DashedLine, Line
 from manim.mobject.geometry.polygram import Polygon, Rectangle, RegularPolygon
@@ -144,7 +145,7 @@ class CoordinateSystem:
         self.y_length = y_length
         self.num_sampled_graph_points_per_tick = 10
 
-    def coords_to_point(self, *coords: Sequence[ManimFloat]):
+    def coords_to_point(self, *coords: Point3D):
         raise NotImplementedError()
 
     def point_to_coords(self, point: Point3D):
@@ -1779,6 +1780,14 @@ class CoordinateSystem:
 
         return T_label_group
 
+    def __matmul__(self, coord: Point3D | Mobject):
+        if isinstance(coord, Mobject):
+            coord = coord.get_center()
+        return self.coords_to_point(*coord)
+
+    def __rmatmul__(self, point: Point3D):
+        return self.point_to_coords(point)
+
 
 class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
     """Creates a set of axes.
@@ -1979,6 +1988,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         self, *coords: float | Sequence[float] | Sequence[Sequence[float]] | np.ndarray
     ) -> np.ndarray:
         """Accepts coordinates from the axes and returns a point with respect to the scene.
+        Equivalent to `ax@(coord1)`
 
         Parameters
         ----------
@@ -2006,6 +2016,8 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             >>> import numpy as np
             >>> ax = Axes()
             >>> np.around(ax.coords_to_point(1, 0, 0), 2)
+            array([0.86, 0.  , 0.  ])
+            >>> np.around(ax @ (1, 0, 0), 2)
             array([0.86, 0.  , 0.  ])
             >>> np.around(ax.coords_to_point([[0, 1], [1, 1], [1, 0]]), 2)
             array([[0.  , 0.75, 0.  ],
