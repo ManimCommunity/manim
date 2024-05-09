@@ -5,10 +5,7 @@ from __future__ import annotations
 __all__ = ["SceneFileWriter"]
 
 import json
-import logging
-import os
 import shutil
-import subprocess
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -29,7 +26,6 @@ from ..utils.file_ops import (
     guarantee_existence,
     is_gif_format,
     is_png_format,
-    is_webm_format,
     modify_atime,
     write_to_movie,
 )
