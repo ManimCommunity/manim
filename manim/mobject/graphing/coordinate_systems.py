@@ -1988,7 +1988,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         self, *coords: float | Sequence[float] | Sequence[Sequence[float]] | np.ndarray
     ) -> np.ndarray:
         """Accepts coordinates from the axes and returns a point with respect to the scene.
-        Equivalent to `ax@(coord1)`
+        Equivalent to `ax @ (coord1)`
 
         Parameters
         ----------
