@@ -454,7 +454,7 @@ def uniq_chain(*args: Iterable[T]) -> Generator[T, None, None]:
     .. code-block:: pycon
 
         >>> gen = uniq_chain([1, 2], [2, 3], [1, 4, 4])
-        >>> from typing import Generator
+        >>> from collections.abc import Generator
         >>> isinstance(gen, Generator)
         True
         >>> tuple(gen)
