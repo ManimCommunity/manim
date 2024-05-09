@@ -203,8 +203,8 @@ class Animation:
         if self.run_time < frame_rate:
             logger.warning(
                 f"Original run time of {self} is shorter than current frame "
-                f"rate ({frame_rate} sec) which cannot be rendered. Rendering "
-                "with the shortest possible duration instead."
+                f"rate (1 frame every {frame_rate:.2f} sec.) which cannot be rendered. "
+                "Rendering with the shortest possible duration instead."
             )
             self.run_time = frame_rate
 
