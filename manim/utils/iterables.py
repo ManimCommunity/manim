@@ -89,7 +89,7 @@ def all_elements_are_instances(iterable: Iterable[object], Class: type[object]) 
 
 def batch_by_property(
     items: Iterable[T], property_func: Callable[[T], U]
-) -> list[tuple[list[T], U]]:
+) -> list[tuple[list[T], U | None]]:
     """Takes in a Sequence, and returns a list of tuples, (batch, prop)
     such that all items in a batch have the same output when
     put into the Callable property_func, and such that chaining all these
@@ -103,8 +103,8 @@ def batch_by_property(
         >>> batch_by_property([(1, 2), (3, 4), (5, 6, 7), (8, 9)], len)
         [([(1, 2), (3, 4)], 2), ([(5, 6, 7)], 3), ([(8, 9)], 2)]
     """
-    batch_prop_pairs = []
-    curr_batch = []
+    batch_prop_pairs: list[tuple[list[T], U | None]] = []
+    curr_batch: list[T] = []
     curr_prop = None
     for item in items:
         prop = property_func(item)
