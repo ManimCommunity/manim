@@ -129,13 +129,15 @@ class Mobject:
     def _assert_valid_submobjects(self, submobjects: list[Mobject]):
         self._assert_valid_submobjects_internal(submobjects, Mobject)
 
-    def _assert_valid_submobjects_internal(self, submobjects: list[Mobject], mob_class: type):
+    def _assert_valid_submobjects_internal(
+        self, submobjects: list[Mobject], mob_class: type
+    ):
         for submob in submobjects:
             if not isinstance(submob, mob_class):
                 raise TypeError(f"All submobjects must be of type {mob_class.__name__}")
             if submob is self:
                 raise ValueError("Mobject cannot contain self")
-    
+
     @property
     def submobjects(self) -> list[Mobject]:
         return self._submobjects
