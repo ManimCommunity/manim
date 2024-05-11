@@ -20,10 +20,9 @@ from typing import TYPE_CHECKING, Callable, Iterable, Literal
 
 import numpy as np
 
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-
 from manim import config, logger
 from manim.constants import *
+from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.utils.color import (
     BLACK,
     WHITE,
@@ -41,6 +40,7 @@ from manim.utils.space_ops import angle_between_vectors, normalize, rotation_mat
 if TYPE_CHECKING:
     from typing_extensions import Self, TypeAlias
 
+    from manim.animation.animation import Animation
     from manim.typing import (
         FunctionOverride,
         Image,
@@ -52,8 +52,6 @@ if TYPE_CHECKING:
         Point3D_Array,
         Vector3D,
     )
-
-    from manim.animation.animation import Animation
 
     TimeBasedUpdater: TypeAlias = Callable[["Mobject", float], object]
     NonTimeBasedUpdater: TypeAlias = Callable[["Mobject"], object]
@@ -2360,14 +2358,14 @@ class Mobject:
         family was calculated previously and memoized into the :attr:`family`
         attribute as a list, return that list. Otherwise, if the attribute is
         None, calculate and memoize it now.
-        
+
         Parameters
         ----------
         recurse
             If True, explore this Mobject's submobjects and so on, to
             compute the full family. Otherwise, stop at this Mobject and
             return a list containing only this one. Default is True.
-        
+
         Returns
         -------
         list[:class:`Mobject`]
