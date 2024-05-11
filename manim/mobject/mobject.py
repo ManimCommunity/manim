@@ -22,9 +22,9 @@ import numpy as np
 
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 
-from .. import config, logger
-from ..constants import *
-from ..utils.color import (
+from manim import config, logger
+from manim.constants import *
+from manim.utils.color import (
     BLACK,
     WHITE,
     YELLOW_C,
@@ -33,10 +33,10 @@ from ..utils.color import (
     color_gradient,
     interpolate_color,
 )
-from ..utils.exceptions import MultiAnimationOverrideException
-from ..utils.iterables import list_update, remove_list_redundancies
-from ..utils.paths import straight_path
-from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
+from manim.utils.exceptions import MultiAnimationOverrideException
+from manim.utils.iterables import list_update, remove_list_redundancies, tuplify
+from manim.utils.paths import straight_path
+from manim.utils.space_ops import angle_between_vectors, normalize, rotation_matrix
 
 if TYPE_CHECKING:
     from typing_extensions import Self, TypeAlias
@@ -53,7 +53,7 @@ if TYPE_CHECKING:
         Vector3D,
     )
 
-    from ..animation.animation import Animation
+    from manim.animation.animation import Animation
 
     TimeBasedUpdater: TypeAlias = Callable[["Mobject", float], object]
     NonTimeBasedUpdater: TypeAlias = Callable[["Mobject"], object]
@@ -126,7 +126,27 @@ class Mobject:
         self.generate_points()
         self.init_colors()
 
-    def _assert_valid_submobjects(self, submobjects: list[Mobject]):
+    def _assert_valid_submobjects(self, submobjects: list[Mobject]) -> None:
+        """Check that all submobjects are actually values of type Mobject, and
+        that none of them is ``self`` (a :class:`Mobject` cannot contain
+        itself).
+
+        This is an auxiliary function called when adding Mobjects to the
+        :attr:`submobjects` list.
+
+        Parameters
+        ----------
+        submobjects
+            The list containing values which should be Mobjects.
+
+        Raises
+        ------
+        TypeError
+            If any of the values in `submobjects` is not a :class:`Mobject`.
+        ValueError
+            If there was an attempt to add a :class:`Mobject` as its own
+            submobject.
+        """
         self._assert_valid_submobjects_internal(submobjects, Mobject)
 
     def _assert_valid_submobjects_internal(
@@ -2310,6 +2330,20 @@ class Mobject:
 
         This method must be called after any change which involves modifying
         some Mobject's submobjects, such as a call to Mobject.add.
+
+        Parameters
+        ----------
+        only_changed_order
+            If True, indicate that the family still contains the same Mobjects,
+            only in a different order. This prevents recalculating bounding
+            boxes and updater statuses, because they remain the same. If False,
+            indicate that some Mobjects were added or removed to the family,
+            and trigger the aforementioned recalculations. Default is False.
+
+        Returns
+        -------
+        :class:`Mobject`
+            The Mobject itself.
         """
         self.family = None
         # TODO: Implement when bounding boxes and updater statuses are implemented
@@ -2317,10 +2351,28 @@ class Mobject:
         #     self.refresh_has_updater_status()
         #     self.refresh_bounding_box()
         for parent in self.parents:
-            parent.note_changed_family()
+            parent.note_changed_family(only_changed_order)
         return self
 
     def get_family(self, recurse: bool = True) -> list[Self]:
+        """Obtain the family of this Mobject, consisting of itself, its
+        submobjects, the submobjects' submobjects, and so on. If the
+        family was calculated previously and memoized into the :attr:`family`
+        attribute as a list, return that list. Otherwise, if the attribute is
+        None, calculate and memoize it now.
+        
+        Parameters
+        ----------
+        recurse
+            If True, explore this Mobject's submobjects and so on, to
+            compute the full family. Otherwise, stop at this Mobject and
+            return a list containing only this one. Default is True.
+        
+        Returns
+        -------
+        list[:class:`Mobject`]
+            The family of this Mobject.
+        """
         if not recurse:
             return [self]
         if self.family is None:
@@ -2339,7 +2391,7 @@ class Mobject:
         Order of result should be from higher members of the hierarchy down.
 
         If extended is set to true, it includes the ancestors of all family members,
-        e.g. any other parents of a submobject
+        e.g. any other parents of a submobject.
         """
         ancestors = []
         to_process = self.get_family(recurse=extended).copy()
