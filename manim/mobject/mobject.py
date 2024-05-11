@@ -115,7 +115,7 @@ class Mobject:
         self.target = target
         self.z_index = z_index
         self.point_hash = None
-        self._submobjects = []
+        self._submobjects: list[Mobject] = []
         self.parents: list[Mobject] = []
         self.family: list[Mobject] | None = [self]
         self.updaters: list[Updater] = []
@@ -126,12 +126,23 @@ class Mobject:
         self.generate_points()
         self.init_colors()
 
+    def _assert_valid_submobjects(self, submobjects: list[Mobject]):
+        self._assert_valid_submobjects_internal(submobjects, Mobject)
+
+    def _assert_valid_submobjects_internal(self, submobjects: list[Mobject], mob_class: type):
+        for submob in submobjects:
+            if not isinstance(submob, mob_class):
+                raise TypeError(f"All submobjects must be of type {mob_class.__name__}")
+            if submob is self:
+                raise ValueError("Mobject cannot contain self")
+    
     @property
     def submobjects(self) -> list[Mobject]:
         return self._submobjects
 
     @submobjects.setter
-    def submobjects(self, new_submobjects) -> None:
+    def submobjects(self, new_submobjects: list[Mobject]) -> None:
+        self._assert_valid_submobjects(new_submobjects)
         self._submobjects = new_submobjects
         self.note_changed_family()
 
@@ -458,12 +469,7 @@ class Mobject:
             [child]
 
         """
-        for m in mobjects:
-            if not isinstance(m, Mobject):
-                raise TypeError("All submobjects must be of type Mobject")
-            if m is self:
-                raise ValueError("Mobject cannot contain self")
-
+        self._assert_valid_submobjects(mobjects)
         unique_mobjects = remove_list_redundancies(mobjects)
         if len(mobjects) != len(unique_mobjects):
             logger.warning(
@@ -493,10 +499,7 @@ class Mobject:
         mobject
             The mobject to be inserted.
         """
-        if not isinstance(mobject, Mobject):
-            raise TypeError("All submobjects must be of type Mobject")
-        if mobject is self:
-            raise ValueError("Mobject cannot contain self")
+        self._assert_valid_submobjects([mobject])
         # TODO: should verify that subsequent submobjects are not repeated
         self.submobjects.insert(index, mobject)
         if self not in mobject.parents:
@@ -554,13 +557,7 @@ class Mobject:
         :meth:`add`
 
         """
-        if self in mobjects:
-            raise ValueError("A mobject shouldn't contain itself")
-
-        for mobject in mobjects:
-            if not isinstance(mobject, Mobject):
-                raise TypeError("All submobjects must be of type Mobject")
-
+        self._assert_valid_submobjects(mobjects)
         self.remove(*mobjects)
         # dict.fromkeys() removes duplicates while maintaining order
         self.submobjects = list(dict.fromkeys(mobjects)) + self.submobjects
@@ -2343,7 +2340,7 @@ class Mobject:
         e.g. any other parents of a submobject
         """
         ancestors = []
-        to_process = list(self.get_family(recurse=extended))
+        to_process = self.get_family(recurse=extended).copy()
         excluded = set(to_process)
         while to_process:
             for p in to_process.pop().parents:

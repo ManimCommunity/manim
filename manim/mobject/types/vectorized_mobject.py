@@ -168,7 +168,8 @@ class VMobject(Mobject):
         self.n_points_per_cubic_curve: int = n_points_per_cubic_curve
         self.cap_style: CapStyleType = cap_style
         super().__init__(**kwargs)
-        self.submobjects: list[VMobject]
+        self._submobjects: list[VMobject]
+        self.family: list[VMobject] | None
 
         # TODO: Find where color overwrites are happening and remove the color doubling
         # if "color" in kwargs:
@@ -178,6 +179,9 @@ class VMobject(Mobject):
             self.fill_color = ManimColor.parse(fill_color)
         if stroke_color is not None:
             self.stroke_color = ManimColor.parse(stroke_color)
+
+    def _assert_valid_submobjects(self, submobjects: list[VMobject]):
+        self._assert_valid_submobjects_internal(submobjects, VMobject)
 
     # OpenGL compatibility
     @property
