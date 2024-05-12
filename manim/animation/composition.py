@@ -81,26 +81,11 @@ class AnimationGroup(Animation):
         return list(self.group)
 
     def begin(self) -> None:
-        if self.run_time <= 0:
-            tmp = (
-                "Please set the run_time to be positive"
-                if len(self.animations) != 0
-                else "Please add at least one Animation with positive run_time"
-            )
+        if not self.animations:
             raise ValueError(
-                f"{self} has a run_time of 0 seconds, this cannot be "
-                f"rendered correctly. {tmp}."
+                f"Trying to play {self} without animations, this is not supported. "
+                "Please add at least one subanimation."
             )
-        frame_rate = (
-            1 / config.frame_rate
-        )  # the naming here is unfortunate, config holds fps
-        if self.run_time < frame_rate:
-            logger.warning(
-                f"Original run time of {self} is shorter than current frame "
-                f"rate (1 frame every {frame_rate:.2f} sec.) which cannot be rendered. "
-                "Rendering with the shortest possible duration instead."
-            )
-            self.run_time = frame_rate
 
         self.anim_group_time = 0.0
         if self.suspend_mobject_updating:
@@ -244,7 +229,11 @@ class Succession(AnimationGroup):
         super().__init__(*animations, lag_ratio=lag_ratio, **kwargs)
 
     def begin(self) -> None:
-        assert len(self.animations) > 0
+        if not self.animations:
+            raise ValueError(
+                f"Trying to play {self} without animations, this is not supported. "
+                "Please add at least one subanimation."
+            )
         self.update_active_animation(0)
 
     def finish(self) -> None:
