@@ -10,8 +10,8 @@ from manim import FadeIn, Scene, config
     [0, -1],
 )
 def test_animation_forbidden_run_time(run_time):
+    test_scene = Scene()
     with pytest.raises(ValueError, match="Please set the run_time to be positive"):
-        test_scene = Scene()
         test_scene.play(FadeIn(None, run_time=run_time))
 
 
