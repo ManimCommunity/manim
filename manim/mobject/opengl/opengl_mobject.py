@@ -165,16 +165,14 @@ class OpenGLMobject:
 
         self.should_render = should_render
 
-    def _assert_valid_submobjects(
-        self, submobjects: Iterable[OpenGLMobject]
-     ) -> Self:
+    def _assert_valid_submobjects(self, submobjects: Iterable[OpenGLMobject]) -> Self:
         """Check that all submobjects are actually instances of
         :class:`OpenGLMobject`, and that none of them is
         ``self`` (an :class:`OpenGLMobject` cannot contain itself).
 
         This is an auxiliary function called when adding OpenGLMobjects to the
         :attr:`submobjects` list.
-        
+
         This function is intended to be overriden by subclasses such as
         :class:`OpenGLVMobject`, which should assert that only other
         OpenGLVMobjects may be added into it.
@@ -198,9 +196,7 @@ class OpenGLMobject:
             If there was an attempt to add an :class:`OpenGLMobject` as its own
             submobject.
         """
-        return self._assert_valid_submobjects_internal(
-            submobjects, OpenGLMobject
-        )
+        return self._assert_valid_submobjects_internal(submobjects, OpenGLMobject)
 
     def _assert_valid_submobjects_internal(
         self, submobjects: list[OpenGLMobject], mob_class: type[OpenGLMobject]
@@ -217,8 +213,7 @@ class OpenGLMobject:
                 # cannot have regular OpenGLMobjects as submobjects
                 if isinstance(submob, OpenGLMobject):
                     error_message += (
-                        " You can try adding this value into a Group "
-                        "instead."
+                        " You can try adding this value into a Group " "instead."
                     )
                 raise TypeError(error_message)
             if submob is self:
