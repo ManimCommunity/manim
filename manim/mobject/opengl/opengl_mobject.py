@@ -797,12 +797,19 @@ class OpenGLMobject:
             >>> len(outer.submobjects)
             1
 
+        Only OpenGLMobjects can be added::
+
+            >>> outer.add(3)
+            Traceback (most recent call last):
+            ...
+            TypeError: Only values of type OpenGLMobject can be added as submobjects of OpenGLMobject, but the value 3 (at index 0) is of type int.
+
         Adding an object to itself raises an error::
 
             >>> outer.add(outer)
             Traceback (most recent call last):
             ...
-            ValueError: OpenGLMobject cannot contain self
+            ValueError: Cannot add OpenGLMobject as a submobject of itself (at index 0).
 
         """
         if update_parent:
