@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from manim import FadeIn, config, Scene
+from manim import FadeIn, Scene, config
 
 
 @pytest.mark.parametrize(
