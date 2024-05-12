@@ -44,6 +44,7 @@ def test_mobject_add():
         "but the value foo (at index 2) is of type str."
     )
 
+
 def test_mobject_remove():
     """Test Mobject.remove()."""
     obj = Mobject()

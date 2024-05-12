@@ -179,9 +179,7 @@ class VMobject(Mobject):
         if stroke_color is not None:
             self.stroke_color = ManimColor.parse(stroke_color)
 
-    def _assert_valid_submobjects(
-        self, submobjects: Iterable[VMobject]
-    ) -> Self:
+    def _assert_valid_submobjects(self, submobjects: Iterable[VMobject]) -> Self:
         return self._assert_valid_submobjects_internal(submobjects, VMobject)
 
     # OpenGL compatibility

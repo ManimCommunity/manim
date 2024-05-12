@@ -115,16 +115,14 @@ class Mobject:
         self.generate_points()
         self.init_colors()
 
-    def _assert_valid_submobjects(
-        self, submobjects: Iterable[Mobject]
-    ) -> Self:
+    def _assert_valid_submobjects(self, submobjects: Iterable[Mobject]) -> Self:
         """Check that all submobjects are actually instances of
         :class:`Mobject`, and that none of them is ``self`` (a
         :class:`Mobject` cannot contain itself).
 
         This is an auxiliary function called when adding Mobjects to the
         :attr:`submobjects` list.
-        
+
         This function is intended to be overriden by subclasses such as
         :class:`VMobject`, which should assert that only other VMobjects
         may be added into it.
