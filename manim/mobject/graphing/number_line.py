@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 
 __all__ = ["NumberLine", "UnitInterval"]
@@ -11,6 +12,7 @@ from typing import TYPE_CHECKING, Callable, Iterable, Sequence
 
 if TYPE_CHECKING:
     from manim.mobject.geometry.tips import ArrowTip
+    from manim.typing import Point3D
 
 import numpy as np
 
@@ -640,6 +642,14 @@ class NumberLine(Line):
         if "." not in step:
             return 0
         return len(step.split(".")[-1])
+
+    def __matmul__(self, other: float):
+        return self.n2p(other)
+
+    def __rmatmul__(self, other: Point3D | Mobject):
+        if isinstance(other, Mobject):
+            other = other.get_center()
+        return self.p2n(other)
 
 
 class UnitInterval(NumberLine):

@@ -96,10 +96,10 @@ class CoordinateSystem:
                     )
 
                 # Extra lines and labels for point (1,1)
-                graphs += grid.get_horizontal_line(grid.c2p(1, 1, 0), color=BLUE)
-                graphs += grid.get_vertical_line(grid.c2p(1, 1, 0), color=BLUE)
-                graphs += Dot(point=grid.c2p(1, 1, 0), color=YELLOW)
-                graphs += Tex("(1,1)").scale(0.75).next_to(grid.c2p(1, 1, 0))
+                graphs += grid.get_horizontal_line(grid @ (1, 1, 0), color=BLUE)
+                graphs += grid.get_vertical_line(grid @ (1, 1, 0), color=BLUE)
+                graphs += Dot(point=grid @ (1, 1, 0), color=YELLOW)
+                graphs += Tex("(1,1)").scale(0.75).next_to(grid @ (1, 1, 0))
                 title = Title(
                     # spaces between braces to prevent SyntaxError
                     r"Graphs of $y=x^{ {1}\over{n} }$ and $y=x^n (n=1,2,3,...,20)$",
