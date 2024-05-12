@@ -123,7 +123,7 @@ class Mobject:
         This is an auxiliary function called when adding Mobjects to the
         :attr:`submobjects` list.
 
-        This function is intended to be overriden by subclasses such as
+        This function is intended to be overridden by subclasses such as
         :class:`VMobject`, which should assert that only other VMobjects
         may be added into it.
 

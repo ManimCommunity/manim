@@ -173,7 +173,7 @@ class OpenGLMobject:
         This is an auxiliary function called when adding OpenGLMobjects to the
         :attr:`submobjects` list.
 
-        This function is intended to be overriden by subclasses such as
+        This function is intended to be overridden by subclasses such as
         :class:`OpenGLVMobject`, which should assert that only other
         OpenGLVMobjects may be added into it.
 
