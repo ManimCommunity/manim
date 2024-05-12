@@ -29,13 +29,20 @@ def test_mobject_add():
     obj = Mobject()
 
     # a Mobject cannot contain itself
-    with pytest.raises(ValueError):
-        obj.add(obj)
+    with pytest.raises(ValueError) as add_self_info:
+        obj.add(Mobject(), obj, Mobject())
+    print(str(add_self_info.value))
+    assert str(add_self_info.value) == (
+        "Cannot add Mobject as a submobject of itself (at index 1)."
+    )
 
     # can only add Mobjects
-    with pytest.raises(TypeError):
-        obj.add("foo")
-
+    with pytest.raises(TypeError) as add_str_info:
+        obj.add(Mobject(), Mobject(), "foo")
+    assert str(add_str_info.value) == (
+        "Only values of type Mobject can be added as submobjects of Mobject, "
+        "but the value foo (at index 2) is of type str."
+    )
 
 def test_mobject_remove():
     """Test Mobject.remove()."""

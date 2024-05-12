@@ -160,6 +160,11 @@ class OpenGLVMobject(OpenGLMobject):
         if stroke_color is not None:
             self.stroke_color = ManimColor.parse(stroke_color)
 
+    def _assert_valid_submobjects(
+        self, submobjects: Iterable[OpenGLVMobject]
+    ) -> Self:
+        return self._assert_valid_submobjects_internal(submobjects, OpenGLVMobject)
+
     def get_group_class(self):
         return OpenGLVGroup
 
@@ -1752,8 +1757,6 @@ class OpenGLVGroup(OpenGLVMobject):
                         (gr-circle_red).animate.shift(RIGHT)
                     )
         """
-        if not all(isinstance(m, OpenGLVMobject) for m in vmobjects):
-            raise TypeError("All submobjects must be of type OpenGLVMobject")
         return super().add(*vmobjects)
 
     def __add__(self, vmobject):

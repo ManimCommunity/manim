@@ -179,6 +179,11 @@ class VMobject(Mobject):
         if stroke_color is not None:
             self.stroke_color = ManimColor.parse(stroke_color)
 
+    def _assert_valid_submobjects(
+        self, submobjects: Iterable[VMobject]
+    ) -> Self:
+        return self._assert_valid_submobjects_internal(submobjects, VMobject)
+
     # OpenGL compatibility
     @property
     def n_points_per_curve(self) -> int:
@@ -2052,14 +2057,6 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
                         (gr-circle_red).animate.shift(RIGHT)
                     )
         """
-        for m in vmobjects:
-            if not isinstance(m, (VMobject, OpenGLVMobject)):
-                raise TypeError(
-                    f"All submobjects of {self.__class__.__name__} must be of type VMobject. "
-                    f"Got {repr(m)} ({type(m).__name__}) instead. "
-                    "You can try using `Group` instead."
-                )
-
         return super().add(*vmobjects)
 
     def __add__(self, vmobject: VMobject) -> Self:
