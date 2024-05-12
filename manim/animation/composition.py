@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Callable, Iterable, Sequence
 
 import numpy as np
 
-from manim._config import config, logger
+from manim._config import config
 from manim.animation.animation import Animation, prepare_animation
 from manim.constants import RendererType
 from manim.mobject.mobject import Group, Mobject
