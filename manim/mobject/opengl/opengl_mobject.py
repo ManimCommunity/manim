@@ -213,7 +213,7 @@ class OpenGLMobject:
                 # cannot have regular OpenGLMobjects as submobjects
                 if isinstance(submob, OpenGLMobject):
                     error_message += (
-                        " You can try adding this value into a Group " "instead."
+                        " You can try adding this value into a Group instead."
                     )
                 raise TypeError(error_message)
             if submob is self:
