@@ -21,7 +21,7 @@
 from __future__ import annotations
 
 from os import PathLike
-from typing import Callable, Union
+from typing import Callable, Literal, TypedDict, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -83,6 +83,8 @@ __all__ = [
     "RGBAImage",
     "StrPath",
     "StrOrBytesPath",
+    "QualityLiteral",
+    "QualityDict",
 ]
 
 
@@ -631,3 +633,25 @@ StrOrBytesPath: TypeAlias = Union[str, bytes, PathLike[str], PathLike[bytes]]
 """A string, bytes or :class:`os.PathLike` object representing a path
 to a directory or file.
 """
+
+
+"""
+[CATEGORY]
+Settings
+"""
+
+QualityLiteral: TypeAlias = Literal[
+    "example_quality",
+    "low_quality",
+    "medium_quality",
+    "high_quality",
+    "production_quality",
+    "fourk_quality",
+]
+
+
+class QualityDict(TypedDict):
+    flag: str
+    pixel_height: int
+    pixel_width: int
+    frame_rate: int
