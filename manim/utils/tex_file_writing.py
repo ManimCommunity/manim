@@ -13,7 +13,7 @@ import os
 import re
 import unicodedata
 from pathlib import Path
-from typing import Iterable
+from collections.abc import Iterable
 
 from manim.utils.tex import TexTemplate
 

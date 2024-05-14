@@ -22,7 +22,8 @@ import re
 import sys
 from collections.abc import Mapping, MutableMapping
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, ClassVar, Iterable, Iterator, NoReturn
+from typing import TYPE_CHECKING, Any, ClassVar, NoReturn
+from collections.abc import Iterable, Iterator
 
 import numpy as np
 

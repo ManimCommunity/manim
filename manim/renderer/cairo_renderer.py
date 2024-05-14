@@ -15,7 +15,8 @@ from ..utils.iterables import list_update
 
 if typing.TYPE_CHECKING:
     import types
-    from typing import Any, Iterable
+    from typing import Any
+    from collections.abc import Iterable
 
     from manim.animation.animation import Animation
     from manim.scene.scene import Scene

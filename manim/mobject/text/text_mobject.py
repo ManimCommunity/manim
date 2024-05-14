@@ -61,7 +61,7 @@ import re
 from contextlib import contextmanager
 from itertools import chain
 from pathlib import Path
-from typing import Iterable, Sequence
+from collections.abc import Iterable, Sequence
 
 import manimpango
 import numpy as np
@@ -412,7 +412,7 @@ class Text(SVGMobject):
     """
 
     @staticmethod
-    @functools.lru_cache(maxsize=None)
+    @functools.cache
     def font_list() -> list[str]:
         return manimpango.list_fonts()
 
@@ -1155,7 +1155,7 @@ class MarkupText(SVGMobject):
     """
 
     @staticmethod
-    @functools.lru_cache(maxsize=None)
+    @functools.cache
     def font_list() -> list[str]:
         return manimpango.list_fonts()
 

@@ -17,13 +17,9 @@ import sys
 from typing import (
     TYPE_CHECKING,
     Callable,
-    Generator,
-    Hashable,
-    Iterable,
     Literal,
-    Mapping,
-    Sequence,
 )
+from collections.abc import Generator, Hashable, Iterable, Mapping, Sequence
 
 import numpy as np
 from PIL.Image import Image

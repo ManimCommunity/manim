@@ -65,7 +65,8 @@ __all__ = [
 
 
 import itertools as it
-from typing import Callable, Iterable, Sequence
+from typing import Callable
+from collections.abc import Iterable, Sequence
 
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import Polygon

@@ -37,7 +37,8 @@ __all__ = [
     "Blink",
 ]
 
-from typing import Callable, Iterable, Optional, Tuple, Type, Union
+from typing import Callable, Optional, Tuple, Type, Union
+from collections.abc import Iterable
 
 import numpy as np
 
@@ -305,7 +306,7 @@ class ShowPassingFlash(ShowPartial):
         self.time_width = time_width
         super().__init__(mobject, remover=True, introducer=True, **kwargs)
 
-    def _get_bounds(self, alpha: float) -> Tuple[float]:
+    def _get_bounds(self, alpha: float) -> tuple[float]:
         tw = self.time_width
         upper = interpolate(0, 1 + tw, alpha)
         lower = upper - tw
@@ -459,7 +460,7 @@ class ApplyWave(Homotopy):
             y: float,
             z: float,
             t: float,
-        ) -> Tuple[float, float, float]:
+        ) -> tuple[float, float, float]:
             upper = interpolate(0, 1 + time_width, t)
             lower = upper - time_width
             relative_x = inverse_interpolate(x_min, x_max, x)
@@ -593,7 +594,7 @@ class Circumscribe(Succession):
     def __init__(
         self,
         mobject: Mobject,
-        shape: Type = Rectangle,
+        shape: type = Rectangle,
         fade_in=False,
         fade_out=False,
         time_width=0.3,

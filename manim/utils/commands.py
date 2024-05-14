@@ -4,7 +4,7 @@ import json
 import os
 from pathlib import Path
 from subprocess import run
-from typing import Generator
+from collections.abc import Generator
 
 __all__ = [
     "capture",

@@ -7,7 +7,7 @@ import random
 import sys
 from functools import partialmethod, wraps
 from math import ceil
-from typing import Iterable, Sequence
+from collections.abc import Iterable, Sequence
 
 import moderngl
 import numpy as np

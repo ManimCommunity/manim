@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import itertools as it
-from typing import TYPE_CHECKING, Sequence
+from typing import TYPE_CHECKING
+from collections.abc import Sequence
 
 import numpy as np
 from mapbox_earcut import triangulate_float32 as earcut

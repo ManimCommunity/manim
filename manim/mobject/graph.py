@@ -9,7 +9,8 @@ __all__ = [
 
 import itertools as it
 from copy import copy
-from typing import TYPE_CHECKING, Any, Hashable, Iterable, Literal, Protocol, cast
+from typing import TYPE_CHECKING, Any, Literal, Protocol, cast
+from collections.abc import Hashable, Iterable
 
 import networkx as nx
 import numpy as np

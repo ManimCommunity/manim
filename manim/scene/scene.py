@@ -52,7 +52,8 @@ from ..utils.file_ops import open_media_file
 from ..utils.iterables import list_difference_update, list_update
 
 if TYPE_CHECKING:
-    from typing import Callable, Iterable
+    from typing import Callable
+    from collections.abc import Iterable
 
 
 class RerunSceneHandler(FileSystemEventHandler):

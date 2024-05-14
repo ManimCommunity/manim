@@ -4,7 +4,8 @@ from __future__ import annotations
 
 __all__ = ["Rotating", "Rotate"]
 
-from typing import TYPE_CHECKING, Callable, Sequence
+from typing import TYPE_CHECKING, Callable
+from collections.abc import Sequence
 
 import numpy as np
 

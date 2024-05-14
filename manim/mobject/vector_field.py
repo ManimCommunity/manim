@@ -11,7 +11,8 @@ __all__ = [
 import itertools as it
 import random
 from math import ceil, floor
-from typing import Callable, Iterable, Sequence
+from typing import Callable
+from collections.abc import Iterable, Sequence
 
 import numpy as np
 from PIL import Image

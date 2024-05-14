@@ -13,7 +13,8 @@ __all__ = [
 
 import fractions as fr
 import numbers
-from typing import TYPE_CHECKING, Any, Callable, Iterable, Sequence, TypeVar, overload
+from typing import TYPE_CHECKING, Any, Callable, TypeVar, overload
+from collections.abc import Iterable, Sequence
 
 import numpy as np
 from typing_extensions import Self
