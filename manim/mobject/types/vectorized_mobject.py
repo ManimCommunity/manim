@@ -27,20 +27,17 @@ from typing import (
 )
 
 import numpy as np
-import numpy.typing as npt
 from PIL.Image import Image
-from typing_extensions import Self
 
+from manim import config
+from manim.constants import *
+from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.three_d.three_d_utils import (
     get_3d_vmob_gradient_start_and_end_points,
 )
-
-from ... import config
-from ...constants import *
-from ...mobject.mobject import Mobject
-from ...utils.bezier import (
+from manim.utils.bezier import (
     bezier,
     get_smooth_handle_points,
     integer_interpolate,
@@ -48,11 +45,19 @@ from ...utils.bezier import (
     partial_bezier_points,
     proportions_along_bezier_curve_for_point,
 )
-from ...utils.color import BLACK, WHITE, ManimColor, ParsableManimColor
-from ...utils.iterables import make_even, resize_array, stretch_array_to_length, tuplify
-from ...utils.space_ops import rotate_vector, shoelace_direction
+from manim.utils.color import BLACK, WHITE, ManimColor, ParsableManimColor
+from manim.utils.iterables import (
+    make_even,
+    resize_array,
+    stretch_array_to_length,
+    tuplify,
+)
+from manim.utils.space_ops import rotate_vector, shoelace_direction
 
 if TYPE_CHECKING:
+    import numpy.typing as npt
+    from typing_extensions import Self
+
     from manim.typing import (
         CubicBezierPath,
         CubicBezierPoints,
@@ -347,7 +352,7 @@ class VMobject(Mobject):
             setattr(self, opacity_name, opacity)
         if color is not None and background:
             if isinstance(color, (list, tuple)):
-                self.background_stroke_color = color
+                self.background_stroke_color = ManimColor.parse(color)
             else:
                 self.background_stroke_color = ManimColor(color)
         return self
@@ -979,6 +984,27 @@ class VMobject(Mobject):
         -------
         :class:`VMobject`
             ``self``
+
+
+        Examples
+        --------
+        .. manim:: PointsAsCornersExample
+            :save_last_frame:
+
+            class PointsAsCornersExample(Scene):
+                def construct(self):
+                    corners = (
+                        # create square
+                        UR, UL,
+                        DL, DR,
+                        UR,
+                        # create crosses
+                        DL, UL,
+                        DR
+                    )
+                    vmob = VMobject(stroke_color=RED)
+                    vmob.set_points_as_corners(corners).scale(2)
+                    self.add(vmob)
         """
         points = np.asarray(points)
         start_anchors = points[:-1]
@@ -1618,6 +1644,22 @@ class VMobject(Mobject):
             If ``alpha`` is not between 0 and 1.
         :exc:`Exception`
             If the :class:`VMobject` has no points.
+
+        Example
+        -------
+        .. manim:: PointFromProportion
+            :save_last_frame:
+
+            class PointFromProportion(Scene):
+                def construct(self):
+                    line = Line(2*DL, 2*UR)
+                    self.add(line)
+                    colors = (RED, BLUE, YELLOW)
+                    proportions = (1/4, 1/2, 3/4)
+                    for color, proportion in zip(colors, proportions):
+                        self.add(Dot(color=color).move_to(
+                                line.point_from_proportion(proportion)
+                        ))
         """
 
         if alpha < 0 or alpha > 1:
@@ -1746,15 +1788,9 @@ class VMobject(Mobject):
         """
         if self.points.shape[0] == 1:
             return self.points
-        num_curves = self.get_num_curves()
-        anchors = np.empty((2 * num_curves, self.dim))
-        # Every end anchor ends a Bézier curve, but not every start anchor
-        # begins a full Bézier curve (it can be incomplete). So the start
-        # anchors must be sliced in case there are lonely points at the end,
-        # but the end anchors don't really need to be sliced.
-        anchors[0::2] = self.get_start_anchors()[:num_curves]
-        anchors[1::2] = self.get_end_anchors()
-        return anchors
+        return np.array(
+            tuple(it.chain(*zip(self.get_start_anchors(), self.get_end_anchors()))),
+        )
 
     def get_points_defining_boundary(self) -> Point3D_Array:
         # TODO: this function is probably not returning the expected array
@@ -2049,7 +2085,10 @@ class VMobject(Mobject):
                 interpolate(getattr(mobject1, attr), getattr(mobject2, attr), alpha),
             )
             if alpha == 1.0:
-                setattr(self, attr, getattr(mobject2, attr))
+                val = getattr(mobject2, attr)
+                if isinstance(val, np.ndarray):
+                    val = val.copy()
+                setattr(self, attr, val)
 
     def pointwise_become_partial(
         self,
@@ -2342,8 +2381,14 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
                         (gr-circle_red).animate.shift(RIGHT)
                     )
         """
-        if not all(isinstance(m, (VMobject, OpenGLVMobject)) for m in vmobjects):
-            raise TypeError("All submobjects must be of type VMobject")
+        for m in vmobjects:
+            if not isinstance(m, (VMobject, OpenGLVMobject)):
+                raise TypeError(
+                    f"All submobjects of {self.__class__.__name__} must be of type VMobject. "
+                    f"Got {repr(m)} ({type(m).__name__}) instead. "
+                    "You can try using `Group` instead."
+                )
+
         return super().add(*vmobjects)
 
     def __add__(self, vmobject: VMobject) -> Self:

@@ -283,16 +283,15 @@ class ThreeDScene(Scene):
                     frame_center = frame_center.get_center()
                 frame_center = list(frame_center)
 
+            zoom_value = None
+            if zoom is not None:
+                zoom_value = config.frame_height / (zoom * cam.height)
+
             for value, method in [
                 [theta, "theta"],
                 [phi, "phi"],
                 [gamma, "gamma"],
-                [
-                    config.frame_height / (zoom * cam.height)
-                    if zoom is not None
-                    else None,
-                    "zoom",
-                ],
+                [zoom_value, "zoom"],
                 [frame_center, "frame_center"],
             ]:
                 if value is not None:

@@ -9,6 +9,7 @@ Both ``logger`` and ``console`` use the ``rich`` library to produce rich text
 format.
 
 """
+
 from __future__ import annotations
 
 import configparser

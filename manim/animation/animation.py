@@ -1,6 +1,5 @@
 """Animate mobjects."""
 
-
 from __future__ import annotations
 
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
@@ -17,6 +16,8 @@ __all__ = ["Animation", "Wait", "override_animation"]
 
 from copy import deepcopy
 from typing import TYPE_CHECKING, Callable, Iterable, Sequence
+
+from typing_extensions import Self
 
 if TYPE_CHECKING:
     from manim.scene.scene import Scene
@@ -112,7 +113,7 @@ class Animation:
         *args,
         use_override=True,
         **kwargs,
-    ):
+    ) -> Self:
         if isinstance(mobject, Mobject) and use_override:
             func = mobject.animation_override_for(cls)
             if func is not None:
@@ -403,6 +404,7 @@ class Animation:
         self.run_time = run_time
         return self
 
+    # TODO: is this getter even necessary?
     def get_run_time(self) -> float:
         """Get the run time of the animation.
 

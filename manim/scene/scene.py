@@ -287,7 +287,7 @@ class Scene:
         Examples
         --------
         A typical manim script includes a class derived from :class:`Scene` with an
-        overridden :meth:`Scene.contruct` method:
+        overridden :meth:`Scene.construct` method:
 
         .. code-block:: python
 

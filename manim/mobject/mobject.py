@@ -16,10 +16,9 @@ import types
 import warnings
 from functools import partialmethod, reduce
 from pathlib import Path
-from typing import TYPE_CHECKING, Callable, Iterable, Literal, TypeVar, Union
+from typing import TYPE_CHECKING, Callable, Iterable, Literal
 
 import numpy as np
-from typing_extensions import Self, TypeAlias
 
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 
@@ -39,14 +38,9 @@ from ..utils.iterables import list_update, remove_list_redundancies
 from ..utils.paths import straight_path
 from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
 
-# TODO: Explain array_attrs
-
-TimeBasedUpdater: TypeAlias = Callable[["Mobject", float], None]
-NonTimeBasedUpdater: TypeAlias = Callable[["Mobject"], None]
-Updater: TypeAlias = Union[NonTimeBasedUpdater, TimeBasedUpdater]
-T = TypeVar("T", bound="Mobject")
-
 if TYPE_CHECKING:
+    from typing_extensions import Self, TypeAlias
+
     from manim.typing import (
         FunctionOverride,
         Image,
@@ -60,6 +54,10 @@ if TYPE_CHECKING:
     )
 
     from ..animation.animation import Animation
+
+    TimeBasedUpdater: TypeAlias = Callable[["Mobject", float], object]
+    NonTimeBasedUpdater: TypeAlias = Callable[["Mobject"], object]
+    Updater: TypeAlias = NonTimeBasedUpdater | TimeBasedUpdater
 
 
 class Mobject:
@@ -238,7 +236,7 @@ class Mobject:
             cls.__init__ = cls._original__init__
 
     @property
-    def animate(self: T) -> _AnimationBuilder | T:
+    def animate(self) -> _AnimationBuilder | Self:
         """Used to animate the application of any method of :code:`self`.
 
         Any method called on :code:`animate` is converted to an animation of applying
@@ -883,7 +881,7 @@ class Mobject:
 
         Returns
         -------
-        class:`bool`
+        :class:`bool`
             ``True`` if at least one updater uses the ``dt`` parameter, ``False``
             otherwise.
 
@@ -1737,7 +1735,8 @@ class Mobject:
         curr_start, curr_end = self.get_start_and_end()
         curr_vect = curr_end - curr_start
         if np.all(curr_vect == 0):
-            raise Exception("Cannot position endpoints of closed loop")
+            self.points = start
+            return self
         target_vect = np.array(end) - np.array(start)
         axis = (
             normalize(np.cross(curr_vect, target_vect))
@@ -1906,7 +1905,17 @@ class Mobject:
         return self
 
     def get_color(self) -> ManimColor:
-        """Returns the color of the :class:`~.Mobject`"""
+        """Returns the color of the :class:`~.Mobject`
+
+        Examples
+        --------
+        ::
+
+            >>> from manim import Square, RED
+            >>> Square(color=RED).get_color() == RED
+            True
+
+        """
         return self.color
 
     ##
@@ -2701,13 +2710,13 @@ class Mobject:
 
     def add_n_more_submobjects(self, n: int) -> Self | None:
         if n == 0:
-            return
+            return None
 
         curr = len(self.submobjects)
         if curr == 0:
             # If empty, simply add n point mobjects
             self.submobjects = [self.get_point_mobject() for k in range(n)]
-            return
+            return None
 
         target = curr + n
         # TODO, factor this out to utils so as to reuse
@@ -2762,7 +2771,6 @@ class Mobject:
     def become(
         self,
         mobject: Mobject,
-        copy_submobjects: bool = True,
         match_height: bool = False,
         match_width: bool = False,
         match_depth: bool = False,
@@ -2775,20 +2783,25 @@ class Mobject:
         .. note::
 
             If both match_height and match_width are ``True`` then the transformed :class:`~.Mobject`
-            will match the height first and then the width
+            will match the height first and then the width.
 
         Parameters
         ----------
         match_height
-            If ``True``, then the transformed :class:`~.Mobject` will match the height of the original
+            Whether or not to preserve the height of the original
+            :class:`~.Mobject`.
         match_width
-            If ``True``, then the transformed :class:`~.Mobject` will match the width of the original
+            Whether or not to preserve the width of the original
+            :class:`~.Mobject`.
         match_depth
-            If ``True``, then the transformed :class:`~.Mobject` will match the depth of the original
+            Whether or not to preserve the depth of the original
+            :class:`~.Mobject`.
         match_center
-            If ``True``, then the transformed :class:`~.Mobject` will match the center of the original
+            Whether or not to preserve the center of the original
+            :class:`~.Mobject`.
         stretch
-            If ``True``, then the transformed :class:`~.Mobject` will stretch to fit the proportions of the original
+            Whether or not to stretch the target mobject to match the
+            the proportions of the original :class:`~.Mobject`.
 
         Examples
         --------
@@ -2802,8 +2815,65 @@ class Mobject:
                     self.wait(0.5)
                     circ.become(square)
                     self.wait(0.5)
-        """
 
+
+        The following examples illustrate how mobject measurements
+        change when using the ``match_...`` and ``stretch`` arguments.
+        We start with a rectangle that is 2 units high and 4 units wide,
+        which we want to turn into a circle of radius 3::
+
+            >>> from manim import Rectangle, Circle
+            >>> import numpy as np
+            >>> rect = Rectangle(height=2, width=4)
+            >>> circ = Circle(radius=3)
+
+        With ``stretch=True``, the target circle is deformed to match
+        the proportions of the rectangle, which results in the target
+        mobject being an ellipse with height 2 and width 4. We can
+        check that the resulting points satisfy the ellipse equation
+        :math:`x^2/a^2 + y^2/b^2 = 1` with :math:`a = 4/2` and :math:`b = 2/2`
+        being the semi-axes::
+
+            >>> result = rect.copy().become(circ, stretch=True)
+            >>> result.height, result.width
+            (2.0, 4.0)
+            >>> ellipse_points = np.array(result.get_anchors())
+            >>> ellipse_eq = np.sum(ellipse_points**2 * [1/4, 1, 0], axis=1)
+            >>> np.allclose(ellipse_eq, 1)
+            True
+
+        With ``match_height=True`` and ``match_width=True`` the circle is
+        scaled such that the height or the width of the rectangle will
+        be preserved, respectively.
+        The points of the resulting mobject satisfy the circle equation
+        :math:`x^2 + y^2 = r^2` for the corresponding radius :math:`r`::
+
+            >>> result = rect.copy().become(circ, match_height=True)
+            >>> result.height, result.width
+            (2.0, 2.0)
+            >>> circle_points = np.array(result.get_anchors())
+            >>> circle_eq = np.sum(circle_points**2, axis=1)
+            >>> np.allclose(circle_eq, 1)
+            True
+            >>> result = rect.copy().become(circ, match_width=True)
+            >>> result.height, result.width
+            (4.0, 4.0)
+            >>> circle_points = np.array(result.get_anchors())
+            >>> circle_eq = np.sum(circle_points**2, axis=1)
+            >>> np.allclose(circle_eq, 2**2)
+            True
+
+        With ``match_center=True``, the resulting mobject is moved such that
+        its center is the same as the center of the original mobject::
+
+            >>> rect = rect.shift(np.array([0, 1, 0]))
+            >>> np.allclose(rect.get_center(), circ.get_center())
+            False
+            >>> result = rect.copy().become(circ, match_center=True)
+            >>> np.allclose(rect.get_center(), result.get_center())
+            True
+        """
+        mobject = mobject.copy()
         if stretch:
             mobject.stretch_to_fit_height(self.height)
             mobject.stretch_to_fit_width(self.width)
@@ -2859,7 +2929,7 @@ class Mobject:
         self,
         z_index_value: float,
         family: bool = True,
-    ) -> T:
+    ) -> Self:
         """Sets the :class:`~.Mobject`'s :attr:`z_index` to the value specified in `z_index_value`.
 
         Parameters
