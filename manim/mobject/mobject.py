@@ -110,6 +110,7 @@ class Mobject:
         self.updaters: list[Updater] = []
         self.updating_suspended = False
         self.color = ManimColor.parse(color)
+        self.memory = {}
 
         self.reset_points()
         self.generate_points()

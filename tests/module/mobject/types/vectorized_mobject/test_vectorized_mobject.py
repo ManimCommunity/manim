@@ -269,7 +269,7 @@ def test_trim_dummy():
     o2.add_line_to(np.array([1, 2, 0]))
 
     def path_length(p):
-        return len(p) // o.n_points_per_cubic_curve
+        return len(p) // o.n_points_per_curve
 
     assert tuple(map(path_length, o.get_subpaths())) == (3, 1)
     assert tuple(map(path_length, o2.get_subpaths())) == (1, 2)
