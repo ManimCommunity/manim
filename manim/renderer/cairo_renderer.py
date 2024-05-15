@@ -186,8 +186,7 @@ class CairoRenderer:
         if self.skip_animations:
             return
         self.time += num_frames * dt
-        for _ in range(num_frames):
-            self.file_writer.write_frame(frame)
+        self.file_writer.write_frame(frame, num_frames=num_frames)
 
     def freeze_current_frame(self, duration: float):
         """Adds a static frame to the movie for a given duration. The static frame is the current frame.
