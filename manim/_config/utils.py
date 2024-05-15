@@ -263,7 +263,6 @@ class ManimConfig(MutableMapping):
         "dry_run",
         "enable_wireframe",
         "ffmpeg_loglevel",
-        "ffmpeg_executable",
         "format",
         "flush_cache",
         "frame_height",
@@ -679,10 +678,6 @@ class ManimConfig(MutableMapping):
         if val:
             self.ffmpeg_loglevel = val
 
-        # TODO: Fix the mess above and below
-        val = parser["ffmpeg"].get("ffmpeg_executable")
-        setattr(self, "ffmpeg_executable", val)
-
         try:
             val = parser["jupyter"].getboolean("media_embed")
         except ValueError:
@@ -1074,15 +1069,7 @@ class ManimConfig(MutableMapping):
             val,
             ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
         )
-
-    @property
-    def ffmpeg_executable(self) -> str:
-        """Custom path to the ffmpeg executable."""
-        return self._d["ffmpeg_executable"]
-
-    @ffmpeg_executable.setter
-    def ffmpeg_executable(self, value: str) -> None:
-        self._set_str("ffmpeg_executable", value)
+        logging.getLogger("libav").setLevel(self.ffmpeg_loglevel)
 
     @property
     def media_embed(self) -> bool:
