@@ -100,7 +100,7 @@ class FocusOn(Transform):
         opacity: float = 0.2,
         color: str = GREY,
         run_time: float = 2,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.focus_point = focus_point
         self.color = color
@@ -154,7 +154,7 @@ class Indicate(Transform):
         scale_factor: float = 1.2,
         color: str = YELLOW,
         rate_func: Callable[[float, float | None], np.ndarray] = there_and_back,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.color = color
         self.scale_factor = scale_factor
@@ -228,7 +228,7 @@ class Flash(AnimationGroup):
         color: str = YELLOW,
         time_width: float = 1,
         run_time: float = 1.0,
-        **kwargs
+        **kwargs,
     ) -> None:
         if isinstance(point, Mobject):
             self.point = point.get_center()
@@ -258,7 +258,7 @@ class Flash(AnimationGroup):
         lines.set_stroke(width=self.line_stroke_width)
         return lines
 
-    def create_line_anims(self) -> Iterable["ShowPassingFlash"]:
+    def create_line_anims(self) -> Iterable[ShowPassingFlash]:
         return [
             ShowPassingFlash(
                 line,
@@ -304,7 +304,7 @@ class ShowPassingFlash(ShowPartial):
 
     """
 
-    def __init__(self, mobject: "VMobject", time_width: float = 0.1, **kwargs) -> None:
+    def __init__(self, mobject: VMobject, time_width: float = 0.1, **kwargs) -> None:
         self.time_width = time_width
         super().__init__(mobject, remover=True, introducer=True, **kwargs)
 
@@ -396,7 +396,7 @@ class ApplyWave(Homotopy):
         time_width: float = 1,
         ripples: int = 1,
         run_time: float = 2,
-        **kwargs
+        **kwargs,
     ) -> None:
         x_min = mobject.get_left()[0]
         x_max = mobject.get_right()[0]
@@ -515,7 +515,7 @@ class Wiggle(Animation):
         scale_about_point: np.ndarray | None = None,
         rotate_about_point: np.ndarray | None = None,
         run_time: float = 2,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.scale_value = scale_value
         self.rotation_angle = rotation_angle
@@ -604,7 +604,7 @@ class Circumscribe(Succession):
         color: ParsableManimColor = YELLOW,
         run_time=1,
         stroke_width=DEFAULT_STROKE_WIDTH,
-        **kwargs
+        **kwargs,
     ):
         if shape is Rectangle:
             frame = SurroundingRectangle(
@@ -686,7 +686,7 @@ class Blink(Succession):
         time_off: float = 0.5,
         blinks: int = 1,
         hide_at_end: bool = False,
-        **kwargs
+        **kwargs,
     ):
         animations = [
             UpdateFromFunc(

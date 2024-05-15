@@ -14,12 +14,8 @@ __all__ = [
 
 import itertools as it
 import sys
-from typing import (
-    TYPE_CHECKING,
-    Callable,
-    Literal,
-)
 from collections.abc import Generator, Hashable, Iterable, Mapping, Sequence
+from typing import TYPE_CHECKING, Callable, Literal
 
 import numpy as np
 from PIL.Image import Image

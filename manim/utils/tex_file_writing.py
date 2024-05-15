@@ -12,8 +12,8 @@ import hashlib
 import os
 import re
 import unicodedata
-from pathlib import Path
 from collections.abc import Iterable
+from pathlib import Path
 
 from manim.utils.tex import TexTemplate
 

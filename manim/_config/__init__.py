@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Generator
 from contextlib import contextmanager
 from typing import Any
-from collections.abc import Generator
 
 from .cli_colors import parse_cli_ctx
 from .logger_utils import make_logger

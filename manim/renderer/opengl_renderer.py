@@ -3,9 +3,8 @@ from __future__ import annotations
 import itertools as it
 import sys
 import time
-from typing import Any
-
 from functools import cached_property
+from typing import Any
 
 import moderngl
 import numpy as np

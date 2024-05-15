@@ -2,8 +2,8 @@ from __future__ import annotations
 
 __all__ = ["Broadcast"]
 
-from typing import Any
 from collections.abc import Sequence
+from typing import Any
 
 from manim.animation.transform import Restore
 

@@ -58,10 +58,10 @@ import copy
 import hashlib
 import os
 import re
+from collections.abc import Iterable, Sequence
 from contextlib import contextmanager
 from itertools import chain
 from pathlib import Path
-from collections.abc import Iterable, Sequence
 
 import manimpango
 import numpy as np

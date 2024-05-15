@@ -7,8 +7,8 @@ from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 __all__ = ["NumberLine", "UnitInterval"]
 
 
-from typing import TYPE_CHECKING, Callable
 from collections.abc import Iterable, Sequence
+from typing import TYPE_CHECKING, Callable
 
 if TYPE_CHECKING:
     from manim.mobject.geometry.tips import ArrowTip

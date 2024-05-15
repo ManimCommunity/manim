@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import json
 import os
+from collections.abc import Generator
 from pathlib import Path
 from subprocess import run
-from collections.abc import Generator
 
 __all__ = [
     "capture",

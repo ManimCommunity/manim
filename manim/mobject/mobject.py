@@ -14,10 +14,10 @@ import random
 import sys
 import types
 import warnings
+from collections.abc import Iterable
 from functools import partialmethod, reduce
 from pathlib import Path
 from typing import TYPE_CHECKING, Callable, Literal
-from collections.abc import Iterable
 
 import numpy as np
 

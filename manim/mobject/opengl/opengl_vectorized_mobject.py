@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import itertools as it
 import operator as op
+from collections.abc import Iterable, Sequence
 from functools import reduce, wraps
 from typing import Callable
-from collections.abc import Iterable, Sequence
 
 import moderngl
 import numpy as np
