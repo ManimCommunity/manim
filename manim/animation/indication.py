@@ -25,6 +25,8 @@ Examples
 
 """
 
+from __future__ import annotations
+
 __all__ = [
     "FocusOn",
     "Indicate",
@@ -37,8 +39,8 @@ __all__ = [
     "Blink",
 ]
 
-from typing import Callable, Optional, Tuple, Type, Union
 from collections.abc import Iterable
+from typing import Callable
 
 import numpy as np
 
@@ -94,7 +96,7 @@ class FocusOn(Transform):
 
     def __init__(
         self,
-        focus_point: Union[np.ndarray, Mobject],
+        focus_point: np.ndarray | Mobject,
         opacity: float = 0.2,
         color: str = GREY,
         run_time: float = 2,
@@ -151,7 +153,7 @@ class Indicate(Transform):
         mobject: Mobject,
         scale_factor: float = 1.2,
         color: str = YELLOW,
-        rate_func: Callable[[float, Optional[float]], np.ndarray] = there_and_back,
+        rate_func: Callable[[float, float | None], np.ndarray] = there_and_back,
         **kwargs
     ) -> None:
         self.color = color
@@ -218,7 +220,7 @@ class Flash(AnimationGroup):
 
     def __init__(
         self,
-        point: Union[np.ndarray, Mobject],
+        point: np.ndarray | Mobject,
         line_length: float = 0.2,
         num_lines: int = 12,
         flash_radius: float = 0.1,
@@ -510,8 +512,8 @@ class Wiggle(Animation):
         scale_value: float = 1.1,
         rotation_angle: float = 0.01 * TAU,
         n_wiggles: int = 6,
-        scale_about_point: Optional[np.ndarray] = None,
-        rotate_about_point: Optional[np.ndarray] = None,
+        scale_about_point: np.ndarray | None = None,
+        rotate_about_point: np.ndarray | None = None,
         run_time: float = 2,
         **kwargs
     ) -> None:
