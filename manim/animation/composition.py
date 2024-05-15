@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import types
-from typing import TYPE_CHECKING, Callable, Iterable, Sequence
+from collections.abc import Iterable, Sequence
+from typing import TYPE_CHECKING, Callable
 
 import numpy as np
 

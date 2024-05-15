@@ -20,9 +20,9 @@ import logging
 import os
 import re
 import sys
-from collections.abc import Mapping, MutableMapping
+from collections.abc import Iterable, Iterator, Mapping, MutableMapping
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, ClassVar, Iterable, Iterator, NoReturn
+from typing import TYPE_CHECKING, Any, ClassVar, NoReturn
 
 import numpy as np
 

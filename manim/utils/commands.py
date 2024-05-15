@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import os
+from collections.abc import Generator
 from pathlib import Path
 from subprocess import run
-from typing import Generator
 
 import av
 
