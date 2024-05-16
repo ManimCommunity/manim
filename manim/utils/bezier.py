@@ -705,11 +705,12 @@ def is_closed(points: Point3D_Array) -> bool:
     start, end = points[0], points[-1]
     rtol = 1e-5
     atol = 1e-8
-    if abs(end[0] - start[0]) > atol + rtol * start[0]:
+    tolerance = atol + rtol * start
+    if abs(end[0] - start[0]) > tolerance[0]:
         return False
-    if abs(end[1] - start[1]) > atol + rtol * start[1]:
+    if abs(end[1] - start[1]) > tolerance[1]:
         return False
-    if abs(end[2] - start[2]) > atol + rtol * start[2]:
+    if abs(end[2] - start[2]) > tolerance[2]:
         return False
     return True
 
