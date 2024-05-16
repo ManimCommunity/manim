@@ -681,7 +681,38 @@ def get_quadratic_approximation_of_cubic(
 
 
 def is_closed(points: Point3D_Array) -> bool:
-    return np.allclose(points[0], points[-1])  # type: ignore
+    """Returns ``True`` if the spline given by ``points`` is closed, by
+    checking if its first and last points are close to each other, or``False``
+    otherwise.
+
+    .. note::
+
+        This function reimplements :meth:`np.allclose`, because repeated
+        calling of :meth:`np.allclose` for only 2 points is inefficient.
+
+    Parameters
+    ----------
+    points
+        An array of points defining a spline.
+
+    Returns
+    -------
+    :class:`bool`
+        Whether the first and last points of the array are close enough or not
+        to be considered the same, thus considering the defined spline as
+        closed.
+    """
+    start, end = points[0], points[-1]
+    rtol = 1e-5
+    atol = 1e-8
+    np.allclose()
+    if abs(end[0] - start[0]) > atol + rtol * start[0]:
+        return False
+    if abs(end[1] - start[1]) > atol + rtol * start[1]:
+        return False
+    if abs(end[2] - start[2]) > atol + rtol * start[2]:
+        return False
+    return True
 
 
 def proportions_along_bezier_curve_for_point(
