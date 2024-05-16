@@ -16,7 +16,6 @@ from manim.typing import (
 __all__ = [
     "bezier",
     "partial_bezier_points",
-    "partial_quadratic_bezier_points",
     "interpolate",
     "integer_interpolate",
     "mid",
@@ -85,12 +84,116 @@ def bezier(
     )
 
 
-# !TODO: This function has still a weird implementation with the overlapping points
 def partial_bezier_points(points: BezierPoints, a: float, b: float) -> BezierPoints:
-    """Given an array of points which define bezier curve, and two numbers 0<=a<b<=1, return an array of the same size,
-    which describes the portion of the original bezier curve on the interval [a, b].
+    r"""Given an array of ``points`` which define a Bézier curve, and two numbers :math:`a, b`
+    such that :math:`0 \le a < b \le 1`, return an array of the same size, which describes the
+    portion of the original Bézier curve on the interval :math:`[a, b]`.
 
-    This algorithm is pretty nifty, and pretty dense.
+    .. seealso::
+        See :func:`split_bezier` for an explanation on how to split Bézier curves.
+
+    .. note::
+        To find the portion of a Bézier curve with :math:`t` between :math:`a` and :math:`b`:
+
+        1.  Split the curve at :math:`t = a` and extract its 2nd subcurve.
+        2.  We cannot evaluate the new subcurve at :math:`t = b` because its range of values for :math:`t` is different.
+            To find the correct value, we need to transform the interval :math:`[a, 1]` into :math:`[0, 1]`
+            by first subtracting :math:`a` to get :math:`[0, 1-a]` and then dividing by :math:`1-a`. Thus, our new
+            value must be :math:`t = \frac{b - a}{1 - a}`. Define :math:`u = \frac{b - a}{1 - a}`.
+        3.  Split the subcurve at :math:`t = u` and extract its 1st subcurve.
+
+        The final portion is a linear combination of points, and thus the process can be
+        summarized as a linear transformation by some matrix in terms of :math:`a` and :math:`b`.
+        This matrix is given explicitly for Bézier curves up to degree 3, which are often used in Manim.
+        For higher degrees, the algorithm described previously is used.
+
+        For the case of a quadratic Bézier curve:
+
+        * Step 1:
+
+        .. math::
+            H'_1
+            =
+            \begin{pmatrix}
+                (1-a)^2 & 2(1-a)a & a^2 \\
+                0 & (1-a) & a \\
+                0 & 0 & 1
+            \end{pmatrix}
+            \begin{pmatrix}
+                p_0 \\
+                p_1 \\
+                p_2
+            \end{pmatrix}
+
+        * Step 2:
+
+        .. math::
+            H''_0
+            &=
+            \begin{pmatrix}
+                1 & 0 & 0 \\
+                (1-u) & u & 0\\
+                (1-u)^2 & 2(1-u)u & u^2
+            \end{pmatrix}
+            H'_1
+            \\
+            &
+            \\
+            &=
+            \begin{pmatrix}
+                1 & 0 & 0 \\
+                (1-u) & u & 0\\
+                (1-u)^2 & 2(1-u)u & u^2
+            \end{pmatrix}
+            \begin{pmatrix}
+                (1-a)^2 & 2(1-a)a & a^2 \\
+                0 & (1-a) & a \\
+                0 & 0 & 1
+            \end{pmatrix}
+            \begin{pmatrix}
+                p_0 \\
+                p_1 \\
+                p_2
+            \end{pmatrix}
+            \\
+            &
+            \\
+            &=
+            \begin{pmatrix}
+                (1-a)^2 & 2(1-a)a & a^2 \\
+                (1-a)(1-b) & a(1-b) + (1-a)b & ab \\
+                (1-b)^2 & 2(1-b)b & b^2
+            \end{pmatrix}
+            \begin{pmatrix}
+                p_0 \\
+                p_1 \\
+                p_2
+            \end{pmatrix}
+
+        from where one can define a :math:`(3, 3)` matrix :math:`P_2` which, when applied over
+        the array of ``points``, will return the desired partial quadratic Bézier curve:
+
+        .. math::
+            P_2
+            =
+            \begin{pmatrix}
+                (1-a)^2 & 2(1-a)a & a^2 \\
+                (1-a)(1-b) & a(1-b) + (1-a)b & ab \\
+                (1-b)^2 & 2(1-b)b & b^2
+            \end{pmatrix}
+
+        Similarly, for the cubic Bézier curve case, one can define the following
+        :math:`(4, 4)` matrix :math:`P_3`:
+
+        .. math::
+            P_3
+            =
+            \begin{pmatrix}
+                (1-a)^3 & 3(1-a)^2a & 3(1-a)a^2 & a^3 \\
+                (1-a)^2(1-b) & 2(1-a)a(1-b) + (1-a)^2b & a^2(1-b) + 2(1-a)ab & a^2b \\
+                (1-a)(1-b)^2 & a(1-b)^2 + 2(1-a)(1-b)b & 2a(1-b)b + (1-a)b^2 & ab^2 \\
+                (1-b)^3 & 3(1-b)^2b & 3(1-b)b^2 & b^3
+            \end{pmatrix}
 
     Parameters
     ----------
@@ -103,46 +206,95 @@ def partial_bezier_points(points: BezierPoints, a: float, b: float) -> BezierPoi
 
     Returns
     -------
-    np.ndarray
-        Set of points defining the partial bezier curve.
+    :class:`~.BezierPoints`
+        An array containing the control points defining the partial Bézier curve.
     """
-    _len = len(points)
+    # Border cases
     if a == 1:
-        return np.asarray([points[-1]] * _len, dtype=PointDType)
+        arr = np.array(points)
+        arr[:] = arr[-1]
+        return arr
+    if b == 0:
+        arr = np.array(points)
+        arr[:] = arr[0]
+        return arr
 
-    a_to_1 = np.asarray(
-        [bezier(points[i:])(a) for i in range(_len)],
-        dtype=PointDType,
-    )
-    end_prop = (b - a) / (1.0 - a)
-    return np.asarray(
-        [bezier(a_to_1[: i + 1])(end_prop) for i in range(_len)],
-        dtype=PointDType,
-    )
+    points = np.asarray(points)
+    degree = points.shape[0] - 1
 
+    if degree == 3:
+        ma, mb = 1 - a, 1 - b
+        a2, b2, ma2, mb2 = a * a, b * b, ma * ma, mb * mb
+        a3, b3, ma3, mb3 = a2 * a, b2 * b, ma2 * ma, mb2 * mb
 
-# Shortened version of partial_bezier_points just for quadratics,
-# since this is called a fair amount
-def partial_quadratic_bezier_points(
-    points: QuadraticBezierPoints, a: float, b: float
-) -> QuadraticBezierPoints:
-    if a == 1:
-        return np.asarray(3 * [points[-1]])
+        portion_matrix = np.array(
+            [
+                [ma3, 3 * ma2 * a, 3 * ma * a2, a3],
+                [ma2 * mb, 2 * ma * a * mb + ma2 * b, a2 * mb + 2 * ma * a * b, a2 * b],
+                [ma * mb2, a * mb2 + 2 * ma * mb * b, 2 * a * mb * b + ma * b2, a * b2],
+                [mb3, 3 * mb2 * b, 3 * mb * b2, b3],
+            ]
+        )
+        return portion_matrix @ points
 
-    def curve(t: float) -> Point3D:
-        return np.asarray(
-            points[0] * (1 - t) * (1 - t)
-            + 2 * points[1] * t * (1 - t)
-            + points[2] * t * t
+    if degree == 2:
+        ma, mb = 1 - a, 1 - b
+
+        portion_matrix = np.array(
+            [
+                [ma * ma, 2 * a * ma, a * a],
+                [ma * mb, a * mb + ma * b, a * b],
+                [mb * mb, 2 * b * mb, b * b],
+            ]
+        )
+        return portion_matrix @ points
+
+    if degree == 1:
+        direction = points[1] - points[0]
+        return np.array(
+            [
+                points[0] + a * direction,
+                points[0] + b * direction,
+            ]
         )
 
-    # bezier(points)
-    h0 = curve(a) if a > 0 else points[0]
-    h2 = curve(b) if b < 1 else points[2]
-    h1_prime = (1 - a) * points[1] + a * points[2]
-    end_prop = (b - a) / (1.0 - a)
-    h1 = (1 - end_prop) * h0 + end_prop * h1_prime
-    return np.asarray((h0, h1, h2))
+    if degree == 0:
+        return points
+
+    # Fallback case for nth degree Béziers
+    # It is convenient that np.array copies points
+    arr = np.array(points, dtype=float)
+    N = arr.shape[0]
+
+    # Current state for an example Bézier curve C0 = [P0, P1, P2, P3]:
+    # arr = [P0, P1, P2, P3]
+    if a != 0:
+        for i in range(1, N):
+            # 1st iter: arr = [L0(a), L1(a), L2(a), P3]
+            # 2nd iter: arr = [Q0(a), Q1(a), L2(a), P3]
+            # 3rd iter: arr = [C0(a), Q1(a), L2(a), P3]
+            arr[: N - i] += a * (arr[1 : N - i + 1] - arr[: N - i])
+
+    # For faster calculations we shall define mu = 1 - u = (1 - b) / (1 - a).
+    # This is because:
+    # L0'(u) = P0' + u(P1' - P0')
+    #        = (1-u)P0' + uP1'
+    #        = muP0' + (1-mu)P1'
+    #        = P1' + mu(P0' - P1)
+    # In this way, one can do something similar to the first loop.
+    #
+    # Current state:
+    # arr = [C0(a), Q1(a), L2(a), P3]
+    #     = [P0', P1', P2', P3']
+    if b != 1:
+        mu = (1 - b) / (1 - a)
+        for i in range(1, N):
+            # 1st iter: arr = [P0', L0'(u), L1'(u), L2'(u)]
+            # 2nd iter: arr = [P0', L0'(u), Q0'(u), Q1'(u)]
+            # 3rd iter: arr = [P0', L0'(u), Q0'(u), C0'(u)]
+            arr[i:] += mu * (arr[i - 1 : -1] - arr[i:])
+
+    return arr
 
 
 def split_quadratic_bezier(points: QuadraticBezierPoints, t: float) -> BezierPoints:
