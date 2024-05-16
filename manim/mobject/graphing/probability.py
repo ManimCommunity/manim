@@ -5,10 +5,9 @@ from __future__ import annotations
 __all__ = ["SampleSpace", "BarChart"]
 
 
-from typing import Iterable, MutableSequence, Sequence
+from collections.abc import Iterable, MutableSequence, Sequence
 
 import numpy as np
-from colour import Color
 
 from manim import config, logger
 from manim.constants import *
@@ -26,6 +25,7 @@ from manim.utils.color import (
     LIGHT_GREY,
     MAROON_B,
     YELLOW,
+    ParsableManimColor,
     color_gradient,
 )
 from manim.utils.iterables import tuplify
@@ -34,7 +34,8 @@ EPSILON = 0.0001
 
 
 class SampleSpace(Rectangle):
-    """
+    """A mobject representing a twodimensional rectangular
+    sampling space.
 
     Examples
     --------
@@ -254,7 +255,6 @@ class BarChart(Axes):
         bar_stroke_width: float = 3,
         **kwargs,
     ):
-
         if isinstance(bar_colors, str):
             logger.warning(
                 "Passing a string to `bar_colors` has been deprecated since v0.15.2 and will be removed after v0.17.0, the parameter must be a list.  "
@@ -401,7 +401,7 @@ class BarChart(Axes):
 
     def get_bar_labels(
         self,
-        color: Color | None = None,
+        color: ParsableManimColor | None = None,
         font_size: float = 24,
         buff: float = MED_SMALL_BUFF,
         label_constructor: type[VMobject] = Tex,
@@ -498,7 +498,6 @@ class BarChart(Axes):
             if chart_val != 0:
                 quotient = value / chart_val
                 if quotient < 0:
-
                     aligned_edge = UP if chart_val > 0 else DOWN
 
                     # if the bar is already positive, then we now want to move it

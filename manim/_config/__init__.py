@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import logging
-from contextlib import _GeneratorContextManager, contextmanager
+from collections.abc import Generator
+from contextlib import contextmanager
+from typing import Any
 
 from .cli_colors import parse_cli_ctx
 from .logger_utils import make_logger
@@ -20,7 +22,6 @@ __all__ = [
 ]
 
 parser = make_config_parser()
-logger: logging.Logger
 
 # The logger can be accessed from anywhere as manim.logger, or as
 # logging.getLogger("manim").  The console must be accessed as manim.console.
@@ -36,12 +37,14 @@ logging.getLogger("PIL").setLevel(logging.INFO)
 logging.getLogger("matplotlib").setLevel(logging.INFO)
 
 config = ManimConfig().digest_parser(parser)
+# TODO: to be used in the future - see PR #620
+# https://github.com/ManimCommunity/manim/pull/620
 frame = ManimFrame(config)
 
 
 # This has to go here because it needs access to this module's config
 @contextmanager
-def tempconfig(temp: ManimConfig | dict) -> _GeneratorContextManager:
+def tempconfig(temp: ManimConfig | dict[str, Any]) -> Generator[None, None, None]:
     """Context manager that temporarily modifies the global ``config`` object.
 
     Inside the ``with`` statement, the modified config will be used.  After
@@ -49,7 +52,7 @@ def tempconfig(temp: ManimConfig | dict) -> _GeneratorContextManager:
 
     Parameters
     ----------
-    temp : Union[:class:`ManimConfig`, :class:`dict`]
+    temp
         Object whose keys will be used to temporarily update the global
         ``config``.
 

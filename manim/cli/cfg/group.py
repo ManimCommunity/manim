@@ -5,13 +5,12 @@ cfg``. Here you can specify options, subcommands, and subgroups for the cfg
 group.
 
 """
+
 from __future__ import annotations
 
-import os
 from ast import literal_eval
 from pathlib import Path
 
-import click
 import cloup
 from rich.errors import StyleSyntaxError
 from rich.style import Style
@@ -28,12 +27,23 @@ If left empty, the default colour will be used.[/red]
 """
 RICH_NON_STYLE_ENTRIES: str = ["log.width", "log.height", "log.timestamps"]
 
+__all__ = [
+    "value_from_string",
+    "value_from_string",
+    "is_valid_style",
+    "replace_keys",
+    "cfg",
+    "write",
+    "show",
+    "export",
+]
+
 
 def value_from_string(value: str) -> str | int | bool:
     """Extracts the literal of proper datatype from a string.
     Parameters
     ----------
-    value : :class:`str`
+    value
         The value to check get the literal from.
 
     Returns
@@ -54,12 +64,12 @@ def _is_expected_datatype(value: str, expected: str, style: bool = False) -> boo
 
     Parameters
     ----------
-    value : :class:`str`
+    value
         The string of the value to check (obtained from reading the user input).
-    expected : :class:`str`
+    expected
         The string of the literal datatype must be matched by `value`. Obtained from
         reading the cfg file.
-    style : :class:`bool`, optional
+    style
         Whether or not to confirm if `value` is a style, by default False
 
     Returns
@@ -77,7 +87,7 @@ def is_valid_style(style: str) -> bool:
     """Checks whether the entered color is a valid color according to rich
     Parameters
     ----------
-    style : :class:`str`
+    style
         The style to check whether it is valid.
     Returns
     -------
@@ -95,7 +105,7 @@ def replace_keys(default: dict) -> dict:
     """Replaces _ to . and vice versa in a dictionary for rich
     Parameters
     ----------
-    default : :class:`dict`
+    default
         The dictionary to check and replace
     Returns
     -------
@@ -123,21 +133,21 @@ def replace_keys(default: dict) -> dict:
     epilog=EPILOG,
     help="Manages Manim configuration files.",
 )
-@click.pass_context
+@cloup.pass_context
 def cfg(ctx):
     """Responsible for the cfg subcommand."""
     pass
 
 
 @cfg.command(context_settings=cli_ctx_settings, no_args_is_help=True)
-@click.option(
+@cloup.option(
     "-l",
     "--level",
-    type=click.Choice(["user", "cwd"], case_sensitive=False),
+    type=cloup.Choice(["user", "cwd"], case_sensitive=False),
     default="cwd",
     help="Specify if this config is for user or the working directory.",
 )
-@click.option("-o", "--open", "openfile", is_flag=True)
+@cloup.option("-o", "--open", "openfile", is_flag=True)
 def write(level: str = None, openfile: bool = False) -> None:
     config_paths = config_file_paths()
     console.print(
@@ -233,7 +243,7 @@ modify write_cfg_subcmd_input to account for it.""",
         cfg_file_path = config_paths[2]
         guarantee_existence(config_paths[2].parents[0])
         console.print(CWD_CONFIG_MSG)
-    with open(cfg_file_path, "w") as fp:
+    with cfg_file_path.open("w") as fp:
         parser.write(fp)
     if openfile:
         open_file(cfg_file_path)
@@ -258,8 +268,8 @@ def show():
 
 
 @cfg.command(context_settings=cli_ctx_settings)
-@click.option("-d", "--directory", default=Path.cwd())
-@click.pass_context
+@cloup.option("-d", "--directory", default=Path.cwd())
+@cloup.pass_context
 def export(ctx, directory):
     directory_path = Path(directory)
     if directory_path.absolute == Path.cwd().absolute:

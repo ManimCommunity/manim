@@ -13,6 +13,8 @@ from PIL.Image import Resampling
 from manim.mobject.opengl.opengl_surface import OpenGLSurface, OpenGLTexturedSurface
 from manim.utils.images import get_full_raster_image_path
 
+__all__ = ["OpenGLImageMobject"]
+
 
 class OpenGLImageMobject(OpenGLTexturedSurface):
     def __init__(
@@ -29,7 +31,7 @@ class OpenGLImageMobject(OpenGLTexturedSurface):
     ):
         self.image = filename_or_array
         self.resampling_algorithm = resampling_algorithm
-        if type(filename_or_array) == np.ndarray:
+        if isinstance(filename_or_array, np.ndarray):
             self.size = self.image.shape[1::-1]
         elif isinstance(filename_or_array, (str, Path)):
             path = get_full_raster_image_path(filename_or_array)

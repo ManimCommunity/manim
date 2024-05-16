@@ -6,12 +6,16 @@ __all__ = ["AnimatedBoundary", "TracedPath"]
 
 from typing import Callable
 
-from colour import Color
-
-from manim._config import config
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
-from manim.utils.color import BLUE_B, BLUE_D, BLUE_E, GREY_BROWN, WHITE
+from manim.utils.color import (
+    BLUE_B,
+    BLUE_D,
+    BLUE_E,
+    GREY_BROWN,
+    WHITE,
+    ParsableManimColor,
+)
 from manim.utils.rate_functions import smooth
 
 
@@ -140,7 +144,7 @@ class TracedPath(VMobject, metaclass=ConvertToOpenGL):
         self,
         traced_point_func: Callable,
         stroke_width: float = 2,
-        stroke_color: Color = WHITE,
+        stroke_color: ParsableManimColor | None = WHITE,
         dissipating_time: float | None = None,
         **kwargs,
     ):
@@ -158,8 +162,5 @@ class TracedPath(VMobject, metaclass=ConvertToOpenGL):
         if self.dissipating_time:
             self.time += dt
             if self.time - 1 > self.dissipating_time:
-                if config["renderer"] == "opengl":
-                    nppcc = self.n_points_per_curve
-                else:
-                    nppcc = self.n_points_per_cubic_curve
+                nppcc = self.n_points_per_curve
                 self.set_points(self.points[nppcc:])

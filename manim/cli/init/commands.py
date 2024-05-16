@@ -5,6 +5,7 @@ init``. Here you can specify options, subcommands, and subgroups for the init
 group.
 
 """
+
 from __future__ import annotations
 
 import configparser
@@ -30,6 +31,8 @@ CFG_DEFAULTS = {
     "resolution": (854, 480),
 }
 
+__all__ = ["select_resolution", "update_cfg", "project", "scene"]
+
 
 def select_resolution():
     """Prompts input of type click.Choice from user. Presents options from QUALITIES constant.
@@ -47,21 +50,21 @@ def select_resolution():
     resolution_options.pop()
     choice = click.prompt(
         "\nSelect resolution:\n",
-        type=click.Choice([f"{i[0]}p" for i in resolution_options]),
+        type=cloup.Choice([f"{i[0]}p" for i in resolution_options]),
         show_default=False,
         default="480p",
     )
     return [res for res in resolution_options if f"{res[0]}p" == choice][0]
 
 
-def update_cfg(cfg_dict, project_cfg_path):
+def update_cfg(cfg_dict: dict, project_cfg_path: Path):
     """Updates the manim.cfg file after reading it from the project_cfg_path.
 
     Parameters
     ----------
-    cfg : :class:`dict`
+    cfg_dict
         values used to update manim.cfg found project_cfg_path.
-    project_cfg_path : :class:`Path`
+    project_cfg_path
         Path of manim.cfg file.
     """
     config = configparser.ConfigParser()
@@ -74,7 +77,7 @@ def update_cfg(cfg_dict, project_cfg_path):
         else:
             cli_config[key] = str(value)
 
-    with open(project_cfg_path, "w") as conf:
+    with project_cfg_path.open("w") as conf:
         config.write(conf)
 
 
@@ -154,32 +157,28 @@ def scene(**args):
         type=click.Choice(get_template_names(), False),
         default="Default",
     )
-    scene = ""
-    with open(Path.resolve(get_template_path() / f"{template_name}.mtp")) as f:
-        scene = f.read()
-        scene = scene.replace(template_name + "Template", args["scene_name"], 1)
+    scene = (get_template_path() / f"{template_name}.mtp").resolve().read_text()
+    scene = scene.replace(template_name + "Template", args["scene_name"], 1)
 
     if args["file_name"]:
-        if args["file_name"][-3:] == ".py":
-            file_name = args["file_name"]
-        else:
-            file_name = args["file_name"] + ".py"
+        file_name = Path(args["file_name"])
 
-        file_name = Path(file_name)
+        if file_name.suffix != ".py":
+            file_name = file_name.with_suffix(file_name.suffix + ".py")
+
         if file_name.is_file():
             # file exists so we are going to append new scene to that file
-            with open(file_name, "a") as f:
+            with file_name.open("a") as f:
                 f.write("\n\n\n" + scene)
         else:
             # file does not exist so we create a new file, append the scene and prepend the import statement
-            with open(file_name, "w") as f:
-                f.write("\n\n\n" + scene)
+            file_name.write_text("\n\n\n" + scene)
 
             add_import_statement(file_name)
     else:
         # file name is not provided so we assume it is main.py
         # if main.py does not exist we do not continue
-        with open(Path("main.py"), "a") as f:
+        with Path("main.py").open("a") as f:
             f.write("\n\n\n" + scene)
 
 

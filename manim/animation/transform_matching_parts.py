@@ -12,6 +12,7 @@ from manim.mobject.opengl.opengl_mobject import OpenGLGroup, OpenGLMobject
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup, OpenGLVMobject
 
 from .._config import config
+from ..constants import RendererType
 from ..mobject.mobject import Group, Mobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from .composition import AnimationGroup
@@ -75,7 +76,6 @@ class TransformMatchingAbstractBase(AnimationGroup):
         key_map: dict | None = None,
         **kwargs,
     ):
-
         if isinstance(mobject, OpenGLVMobject):
             group_type = OpenGLVGroup
         elif isinstance(mobject, OpenGLMobject):
@@ -146,7 +146,7 @@ class TransformMatchingAbstractBase(AnimationGroup):
         for sm in self.get_mobject_parts(mobject):
             key = self.get_mobject_key(sm)
             if key not in shape_map:
-                if config["renderer"] == "opengl":
+                if config["renderer"] == RendererType.OPENGL:
                     shape_map[key] = OpenGLVGroup()
                 else:
                     shape_map[key] = VGroup()
@@ -225,7 +225,7 @@ class TransformMatchingShapes(TransformMatchingAbstractBase):
     def get_mobject_key(mobject: Mobject) -> int:
         mobject.save_state()
         mobject.center()
-        mobject.set_height(1)
+        mobject.set(height=1)
         result = hash(np.round(mobject.points, 3).tobytes())
         mobject.restore()
         return result

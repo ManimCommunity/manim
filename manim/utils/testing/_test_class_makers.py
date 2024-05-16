@@ -64,14 +64,14 @@ class DummySceneFileWriter(SceneFileWriter):
     def clean_cache(self):
         pass
 
-    def write_frame(self, frame_or_renderer):
+    def write_frame(self, frame_or_renderer, num_frames=1):
         self.i += 1
 
 
 def _make_scene_file_writer_class(tester: _FramesTester) -> type[SceneFileWriter]:
     class TestSceneFileWriter(DummySceneFileWriter):
-        def write_frame(self, frame_or_renderer):
+        def write_frame(self, frame_or_renderer, num_frames=1):
             tester.check_frame(self.i, frame_or_renderer)
-            super().write_frame(frame_or_renderer)
+            super().write_frame(frame_or_renderer, num_frames=num_frames)
 
     return TestSceneFileWriter

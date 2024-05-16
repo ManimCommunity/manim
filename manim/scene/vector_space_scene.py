@@ -4,8 +4,9 @@ from __future__ import annotations
 
 __all__ = ["VectorScene", "LinearTransformationScene"]
 
+from typing import Callable
+
 import numpy as np
-from colour import Color
 
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.geometry.line import Arrow, Line, Vector
@@ -26,7 +27,17 @@ from ..mobject.matrix import Matrix
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..scene.scene import Scene
-from ..utils.color import BLUE_D, GREEN_C, GREY, RED_C, WHITE, YELLOW
+from ..utils.color import (
+    BLACK,
+    BLUE_D,
+    GREEN_C,
+    GREY,
+    RED_C,
+    WHITE,
+    YELLOW,
+    ManimColor,
+    ParsableManimColor,
+)
 from ..utils.rate_functions import rush_from, rush_into
 from ..utils.space_ops import angle_of_vector
 
@@ -46,13 +57,13 @@ class VectorScene(Scene):
         super().__init__(**kwargs)
         self.basis_vector_stroke_width = basis_vector_stroke_width
 
-    def add_plane(self, animate=False, **kwargs):
+    def add_plane(self, animate: bool = False, **kwargs):
         """
         Adds a NumberPlane object to the background.
 
         Parameters
         ----------
-        animate : bool, optional
+        animate
             Whether or not to animate the addition of the plane via Create.
         **kwargs
             Any valid keyword arguments accepted by NumberPlane.
@@ -68,15 +79,15 @@ class VectorScene(Scene):
         self.add(plane)
         return plane
 
-    def add_axes(self, animate=False, color=WHITE, **kwargs):
+    def add_axes(self, animate: bool = False, color: bool = WHITE, **kwargs):
         """
         Adds a pair of Axes to the Scene.
 
         Parameters
         ----------
-        animate : bool, optional
+        animate
             Whether or not to animate the addition of the axes through Create.
-        color : bool, optional
+        color
             The color of the axes. Defaults to WHITE.
         """
         axes = Axes(color=color, axis_config={"unit_size": 1})
@@ -85,17 +96,17 @@ class VectorScene(Scene):
         self.add(axes)
         return axes
 
-    def lock_in_faded_grid(self, dimness=0.7, axes_dimness=0.5):
+    def lock_in_faded_grid(self, dimness: float = 0.7, axes_dimness: float = 0.5):
         """
         This method freezes the NumberPlane and Axes that were already
         in the background, and adds new, manipulatable ones to the foreground.
 
         Parameters
         ----------
-        dimness : int, float, optional
+        dimness
             The required dimness of the NumberPlane
 
-        axes_dimness : int, float, optional
+        axes_dimness
             The required dimness of the Axes.
         """
         plane = self.add_plane()
@@ -109,13 +120,13 @@ class VectorScene(Scene):
         self.renderer.camera = Camera(self.renderer.get_frame())
         self.clear()
 
-    def get_vector(self, numerical_vector, **kwargs):
+    def get_vector(self, numerical_vector: np.ndarray | list | tuple, **kwargs):
         """
         Returns an arrow on the Plane given an input numerical vector.
 
         Parameters
         ----------
-        numerical_vector : np.array, list, tuple
+        numerical_vector
             The Vector to plot.
         **kwargs
             Any valid keyword argument of Arrow.
@@ -132,22 +143,28 @@ class VectorScene(Scene):
             **kwargs,
         )
 
-    def add_vector(self, vector, color=YELLOW, animate=True, **kwargs):
+    def add_vector(
+        self,
+        vector: Arrow | list | tuple | np.ndarray,
+        color: str = YELLOW,
+        animate: bool = True,
+        **kwargs,
+    ):
         """
         Returns the Vector after adding it to the Plane.
 
         Parameters
         ----------
-        vector : Arrow, list, tuple, np.array
+        vector
             It can be a pre-made graphical vector, or the
             coordinates of one.
 
-        color : str
+        color
             The string of the hex color of the vector.
             This is only taken into consideration if
             'vector' is not an Arrow. Defaults to YELLOW.
 
-        animate : bool
+        animate
             Whether or not to animate the addition of the vector
             by using GrowArrow
 
@@ -168,25 +185,18 @@ class VectorScene(Scene):
         self.add(vector)
         return vector
 
-    def write_vector_coordinates(self, vector, **kwargs):
+    def write_vector_coordinates(self, vector: Arrow, **kwargs):
         """
         Returns a column matrix indicating the vector coordinates,
         after writing them to the screen.
 
         Parameters
         ----------
-        vector : :class:`.Arrow`
+        vector
             The arrow representing the vector.
 
         **kwargs
-            Any valid keyword arguments of :meth:`~.geometry.Vector.coordinate_label`:
-
-            integer_labels : :class:`bool`
-                Whether or not to round the coordinates to integers. Default: ``True``.
-            n_dim : :class:`int`
-                The number of dimensions of the vector. Default: ``2``.
-            color
-                The color of the label. Default: ``WHITE``.
+            Any valid keyword arguments of :meth:`~.Vector.coordinate_label`:
 
         Returns
         -------
@@ -197,16 +207,16 @@ class VectorScene(Scene):
         self.play(Write(coords))
         return coords
 
-    def get_basis_vectors(self, i_hat_color=X_COLOR, j_hat_color=Y_COLOR):
+    def get_basis_vectors(self, i_hat_color: str = X_COLOR, j_hat_color: str = Y_COLOR):
         """
         Returns a VGroup of the Basis Vectors (1,0) and (0,1)
 
         Parameters
         ----------
-        i_hat_color : str
+        i_hat_color
             The hex colour to use for the basis vector in the x direction
 
-        j_hat_color : str
+        j_hat_color
             The hex colour to use for the basis vector in the y direction
 
         Returns
@@ -252,32 +262,32 @@ class VectorScene(Scene):
 
     def get_vector_label(
         self,
-        vector,
+        vector: Vector,
         label,
-        at_tip=False,
-        direction="left",
-        rotate=False,
-        color=None,
-        label_scale_factor=LARGE_BUFF - 0.2,
+        at_tip: bool = False,
+        direction: str = "left",
+        rotate: bool = False,
+        color: str | None = None,
+        label_scale_factor: float = LARGE_BUFF - 0.2,
     ):
         """
         Returns naming labels for the passed vector.
 
         Parameters
         ----------
-        vector : Vector
+        vector
             Vector Object for which to get the label.
 
-        at_tip : bool
+        at_tip
             Whether or not to place the label at the tip of the vector.
 
-        direction : {"left"}
+        direction
             If the label should be on the "left" or right of the vector.
-        rotate : bool
+        rotate
             Whether or not to rotate it to align it with the vector.
-        color : str
+        color
             The color to give the label.
-        label_scale_factor (Union[int,float])
+        label_scale_factor
             How much to scale the label by.
 
         Returns
@@ -311,20 +321,22 @@ class VectorScene(Scene):
             label.shift((vector.get_end() - vector.get_start()) / 2)
         return label
 
-    def label_vector(self, vector, label, animate=True, **kwargs):
+    def label_vector(
+        self, vector: Vector, label: MathTex | str, animate: bool = True, **kwargs
+    ):
         """
         Shortcut method for creating, and animating the addition of
         a label for the vector.
 
         Parameters
         ----------
-        vector : Vector
+        vector
             The vector for which the label must be added.
 
-        label : MathTex, str
+        label
             The MathTex/string of the label.
 
-        animate : bool, optional
+        animate
             Whether or not to animate the labelling w/ Write
 
         **kwargs
@@ -361,7 +373,12 @@ class VectorScene(Scene):
         y_coord.set_color(Y_COLOR)
         return y_coord
 
-    def coords_to_vector(self, vector, coords_start=2 * RIGHT + 2 * UP, clean_up=True):
+    def coords_to_vector(
+        self,
+        vector: np.ndarray | list | tuple,
+        coords_start: np.ndarray | list | tuple = 2 * RIGHT + 2 * UP,
+        clean_up: bool = True,
+    ):
         """
         This method writes the vector as a column matrix (henceforth called the label),
         takes the values in it one by one, and form the corresponding
@@ -370,16 +387,16 @@ class VectorScene(Scene):
 
         Parameters
         ----------
-        vector : np.ndarray, list, tuple
+        vector
             The vector to show.
 
-        coords_start : np.ndarray,list,tuple, optional
+        coords_start
             The starting point of the location of
             the label of the vector that shows it
             numerically.
             Defaults to 2 * RIGHT + 2 * UP or (2,2)
 
-        clean_up : bool, optional
+        clean_up
             Whether or not to remove whatever
             this method did after it's done.
 
@@ -419,7 +436,12 @@ class VectorScene(Scene):
             self.clear()
             self.add(*starting_mobjects)
 
-    def vector_to_coords(self, vector, integer_labels=True, clean_up=True):
+    def vector_to_coords(
+        self,
+        vector: np.ndarray | list | tuple,
+        integer_labels: bool = True,
+        clean_up: bool = True,
+    ):
         """
         This method displays vector as a Vector() based vector, and then shows
         the corresponding lines that make up the x and y components of the vector.
@@ -428,14 +450,14 @@ class VectorScene(Scene):
 
         Parameters
         ----------
-        vector : np.ndarray, list, tuple
+        vector
             The vector to show.
 
-        integer_label : bool, optional
+        integer_labels
             Whether or not to round the value displayed.
             in the vector's label to the nearest integer
 
-        clean_up : bool, optional
+        clean_up
             Whether or not to remove whatever
             this method did after it's done.
 
@@ -477,7 +499,7 @@ class VectorScene(Scene):
             self.add(*starting_mobjects)
         return array, x_line, y_line
 
-    def show_ghost_movement(self, vector):
+    def show_ghost_movement(self, vector: Arrow | list | tuple | np.ndarray):
         """
         This method plays an animation that partially shows the entire plane moving
         in the direction of a particular vector. This is useful when you wish to
@@ -486,7 +508,7 @@ class VectorScene(Scene):
 
         Parameters
         ----------
-        vector : Arrow, list, tuple, np.ndarray
+        vector
             The vector which indicates the direction of movement.
         """
         if isinstance(vector, Arrow):
@@ -545,11 +567,12 @@ class LinearTransformationScene(VectorScene):
     .. manim:: LinearTransformationSceneExample
 
         class LinearTransformationSceneExample(LinearTransformationScene):
-            def __init__(self):
+            def __init__(self, **kwargs):
                 LinearTransformationScene.__init__(
                     self,
                     show_coordinates=True,
                     leave_ghost_vectors=True,
+                    **kwargs
                 )
 
             def construct(self):
@@ -567,12 +590,11 @@ class LinearTransformationScene(VectorScene):
         show_coordinates: bool = False,
         show_basis_vectors: bool = True,
         basis_vector_stroke_width: float = 6,
-        i_hat_color: Color = X_COLOR,
-        j_hat_color: Color = Y_COLOR,
+        i_hat_color: ParsableManimColor = X_COLOR,
+        j_hat_color: ParsableManimColor = Y_COLOR,
         leave_ghost_vectors: bool = False,
         **kwargs,
     ):
-
         super().__init__(**kwargs)
 
         self.include_background_plane = include_background_plane
@@ -580,8 +602,8 @@ class LinearTransformationScene(VectorScene):
         self.show_coordinates = show_coordinates
         self.show_basis_vectors = show_basis_vectors
         self.basis_vector_stroke_width = basis_vector_stroke_width
-        self.i_hat_color = i_hat_color
-        self.j_hat_color = j_hat_color
+        self.i_hat_color = ManimColor(i_hat_color)
+        self.j_hat_color = ManimColor(j_hat_color)
         self.leave_ghost_vectors = leave_ghost_vectors
         self.background_plane_kwargs = {
             "color": GREY,
@@ -593,6 +615,8 @@ class LinearTransformationScene(VectorScene):
                 "stroke_width": 1,
             },
         }
+
+        self.ghost_vectors = VGroup()
 
         self.foreground_plane_kwargs = {
             "x_range": np.array([-config["frame_width"], config["frame_width"], 1.0]),
@@ -641,18 +665,18 @@ class LinearTransformationScene(VectorScene):
             self.i_hat, self.j_hat = self.basis_vectors
             self.add(self.basis_vectors)
 
-    def add_special_mobjects(self, mob_list, *mobs_to_add):
+    def add_special_mobjects(self, mob_list: list, *mobs_to_add: Mobject):
         """
         Adds mobjects to a separate list that can be tracked,
         if these mobjects have some extra importance.
 
         Parameters
         ----------
-        mob_list : list
+        mob_list
             The special list to which you want to add
             these mobjects.
 
-        *mobs_to_add : Mobject
+        *mobs_to_add
             The mobjects to add.
 
         """
@@ -661,44 +685,46 @@ class LinearTransformationScene(VectorScene):
                 mob_list.append(mobject)
                 self.add(mobject)
 
-    def add_background_mobject(self, *mobjects):
+    def add_background_mobject(self, *mobjects: Mobject):
         """
         Adds the mobjects to the special list
         self.background_mobjects.
 
         Parameters
         ----------
-        *mobjects : Mobject
+        *mobjects
             The mobjects to add to the list.
         """
         self.add_special_mobjects(self.background_mobjects, *mobjects)
 
     # TODO, this conflicts with Scene.add_fore
-    def add_foreground_mobject(self, *mobjects):
+    def add_foreground_mobject(self, *mobjects: Mobject):
         """
         Adds the mobjects to the special list
         self.foreground_mobjects.
 
         Parameters
         ----------
-        *mobjects : Mobject
+        *mobjects
             The mobjects to add to the list
         """
         self.add_special_mobjects(self.foreground_mobjects, *mobjects)
 
-    def add_transformable_mobject(self, *mobjects):
+    def add_transformable_mobject(self, *mobjects: Mobject):
         """
         Adds the mobjects to the special list
         self.transformable_mobjects.
 
         Parameters
         ----------
-        *mobjects : Mobject
+        *mobjects
             The mobjects to add to the list.
         """
         self.add_special_mobjects(self.transformable_mobjects, *mobjects)
 
-    def add_moving_mobject(self, mobject, target_mobject=None):
+    def add_moving_mobject(
+        self, mobject: Mobject, target_mobject: Mobject | None = None
+    ):
         """
         Adds the mobject to the special list
         self.moving_mobject, and adds a property
@@ -708,28 +734,37 @@ class LinearTransformationScene(VectorScene):
 
         Parameters
         ----------
-        mobject : Mobject
+        mobject
             The mobjects to add to the list
 
-        target_mobject : Mobject, optional
+        target_mobject
             What the moving_mobject goes to, etc.
         """
         mobject.target = target_mobject
         self.add_special_mobjects(self.moving_mobjects, mobject)
 
-    def get_unit_square(self, color=YELLOW, opacity=0.3, stroke_width=3):
+    def get_ghost_vectors(self) -> VGroup:
+        """
+        Returns all ghost vectors ever added to ``self``. Each element is a ``VGroup`` of
+        two ghost vectors.
+        """
+        return self.ghost_vectors
+
+    def get_unit_square(
+        self, color: str = YELLOW, opacity: float = 0.3, stroke_width: float = 3
+    ):
         """
         Returns a unit square for the current NumberPlane.
 
         Parameters
         ----------
-        color : str, optional
+        color
             The string of the hex color code of the color wanted.
 
-        opacity : float, int, optional
+        opacity
             The opacity of the square
 
-        stroke_width : int, float, optional
+        stroke_width
             The stroke_width in pixels of the border of the square
 
         Returns
@@ -748,14 +783,14 @@ class LinearTransformationScene(VectorScene):
         square.move_to(self.plane.coords_to_point(0, 0), DL)
         return square
 
-    def add_unit_square(self, animate=False, **kwargs):
+    def add_unit_square(self, animate: bool = False, **kwargs):
         """
         Adds a unit square to the scene via
         self.get_unit_square.
 
         Parameters
         ----------
-        animate (bool)
+        animate
             Whether or not to animate the addition
             with DrawBorderThenFill.
         **kwargs
@@ -778,18 +813,20 @@ class LinearTransformationScene(VectorScene):
         self.square = square
         return self
 
-    def add_vector(self, vector, color=YELLOW, **kwargs):
+    def add_vector(
+        self, vector: Arrow | list | tuple | np.ndarray, color: str = YELLOW, **kwargs
+    ):
         """
         Adds a vector to the scene, and puts it in the special
         list self.moving_vectors.
 
         Parameters
         ----------
-        vector : Arrow,list,tuple,np.ndarray
+        vector
             It can be a pre-made graphical vector, or the
             coordinates of one.
 
-        color : str
+        color
             The string of the hex color of the vector.
             This is only taken into consideration if
             'vector' is not an Arrow. Defaults to YELLOW.
@@ -806,7 +843,7 @@ class LinearTransformationScene(VectorScene):
         self.moving_vectors.append(vector)
         return vector
 
-    def write_vector_coordinates(self, vector, **kwargs):
+    def write_vector_coordinates(self, vector: Arrow, **kwargs):
         """
         Returns a column matrix indicating the vector coordinates,
         after writing them to the screen, and adding them to the
@@ -814,7 +851,7 @@ class LinearTransformationScene(VectorScene):
 
         Parameters
         ----------
-        vector : Arrow
+        vector
             The arrow representing the vector.
 
         **kwargs
@@ -830,7 +867,12 @@ class LinearTransformationScene(VectorScene):
         return coords
 
     def add_transformable_label(
-        self, vector, label, transformation_name="L", new_label=None, **kwargs
+        self,
+        vector: Vector,
+        label: MathTex | str,
+        transformation_name: str | MathTex = "L",
+        new_label: str | MathTex | None = None,
+        **kwargs,
     ):
         """
         Method for creating, and animating the addition of
@@ -838,16 +880,16 @@ class LinearTransformationScene(VectorScene):
 
         Parameters
         ----------
-        vector : Vector
+        vector
             The vector for which the label must be added.
 
-        label : Union[:class:`~.MathTex`, :class:`str`]
+        label
             The MathTex/string of the label.
 
-        transformation_name : Union[:class:`str`, :class:`~.MathTex`], optional
+        transformation_name
             The name to give the transformation as a label.
 
-        new_label : Union[:class:`str`, :class:`~.MathTex`], optional
+        new_label
             What the label should display after a Linear Transformation
 
         **kwargs
@@ -873,7 +915,12 @@ class LinearTransformationScene(VectorScene):
         self.transformable_labels.append(label_mob)
         return label_mob
 
-    def add_title(self, title, scale_factor=1.5, animate=False):
+    def add_title(
+        self,
+        title: str | MathTex | Tex,
+        scale_factor: float = 1.5,
+        animate: bool = False,
+    ):
         """
         Adds a title, after scaling it, adding a background rectangle,
         moving it to the top and adding it to foreground_mobjects adding
@@ -881,13 +928,13 @@ class LinearTransformationScene(VectorScene):
 
         Parameters
         ----------
-        title : Union[:class:`str`, :class:`~.MathTex`, :class:`~.Tex`]
+        title
             What the title should be.
 
-        scale_factor : int, float, optional
+        scale_factor
             How much the title should be scaled by.
 
-        animate : bool
+        animate
             Whether or not to animate the addition.
 
         Returns
@@ -905,19 +952,21 @@ class LinearTransformationScene(VectorScene):
         self.title = title
         return self
 
-    def get_matrix_transformation(self, matrix):
+    def get_matrix_transformation(self, matrix: np.ndarray | list | tuple):
         """
         Returns a function corresponding to the linear
         transformation represented by the matrix passed.
 
         Parameters
         ----------
-        matrix : np.ndarray, list, tuple
+        matrix
             The matrix.
         """
         return self.get_transposed_matrix_transformation(np.array(matrix).T)
 
-    def get_transposed_matrix_transformation(self, transposed_matrix):
+    def get_transposed_matrix_transformation(
+        self, transposed_matrix: np.ndarray | list | tuple
+    ):
         """
         Returns a function corresponding to the linear
         transformation represented by the transposed
@@ -925,7 +974,7 @@ class LinearTransformationScene(VectorScene):
 
         Parameters
         ----------
-        matrix : np.ndarray, list, tuple
+        transposed_matrix
             The matrix.
         """
         transposed_matrix = np.array(transposed_matrix)
@@ -937,7 +986,7 @@ class LinearTransformationScene(VectorScene):
             raise ValueError("Matrix has bad dimensions")
         return lambda point: np.dot(point, transposed_matrix)
 
-    def get_piece_movement(self, pieces):
+    def get_piece_movement(self, pieces: list | tuple | np.ndarray):
         """
         This method returns an animation that moves an arbitrary
         mobject in "pieces" to its corresponding .target value.
@@ -946,7 +995,7 @@ class LinearTransformationScene(VectorScene):
 
         Parameters
         ----------
-        pieces : list, tuple, np.array
+        pieces
             The pieces for which the movement must be shown.
 
         Returns
@@ -954,13 +1003,19 @@ class LinearTransformationScene(VectorScene):
         Animation
             The animation of the movement.
         """
-        start = VGroup(*pieces)
-        target = VGroup(*(mob.target for mob in pieces))
-        if self.leave_ghost_vectors:
-            self.add(start.copy().fade(0.7))
+
+        v_pieces = [piece for piece in pieces if isinstance(piece, VMobject)]
+        start = VGroup(*v_pieces)
+        target = VGroup(*(mob.target for mob in v_pieces))
+
+        # don't add empty VGroups
+        if self.leave_ghost_vectors and start.submobjects:
+            # start.copy() gives a VGroup of Vectors
+            self.ghost_vectors.add(start.copy().fade(0.7))
+            self.add(self.ghost_vectors[-1])
         return Transform(start, target, lag_ratio=0)
 
-    def get_moving_mobject_movement(self, func):
+    def get_moving_mobject_movement(self, func: Callable[[np.ndarray], np.ndarray]):
         """
         This method returns an animation that moves a mobject
         in "self.moving_mobjects"  to its corresponding .target value.
@@ -969,7 +1024,7 @@ class LinearTransformationScene(VectorScene):
         Parameters
         ----------
 
-        func : function
+        func
             The function that determines where the .target of
             the moving mobject goes.
 
@@ -985,7 +1040,7 @@ class LinearTransformationScene(VectorScene):
             m.target.move_to(target_point)
         return self.get_piece_movement(self.moving_mobjects)
 
-    def get_vector_movement(self, func):
+    def get_vector_movement(self, func: Callable[[np.ndarray], np.ndarray]):
         """
         This method returns an animation that moves a mobject
         in "self.moving_vectors"  to its corresponding .target value.
@@ -994,7 +1049,7 @@ class LinearTransformationScene(VectorScene):
         Parameters
         ----------
 
-        func : function
+        func
             The function that determines where the .target of
             the moving mobject goes.
 
@@ -1026,7 +1081,7 @@ class LinearTransformationScene(VectorScene):
             )
         return self.get_piece_movement(self.transformable_labels)
 
-    def apply_matrix(self, matrix, **kwargs):
+    def apply_matrix(self, matrix: np.ndarray | list | tuple, **kwargs):
         """
         Applies the transformation represented by the
         given matrix to the number plane, and each vector/similar
@@ -1034,14 +1089,15 @@ class LinearTransformationScene(VectorScene):
 
         Parameters
         ----------
-        matrix : np.ndarray, list, tuple
+        matrix
             The matrix.
         **kwargs
             Any valid keyword argument of self.apply_transposed_matrix()
         """
+
         self.apply_transposed_matrix(np.array(matrix).T, **kwargs)
 
-    def apply_inverse(self, matrix, **kwargs):
+    def apply_inverse(self, matrix: np.ndarray | list | tuple, **kwargs):
         """
         This method applies the linear transformation
         represented by the inverse of the passed matrix
@@ -1049,14 +1105,16 @@ class LinearTransformationScene(VectorScene):
 
         Parameters
         ----------
-        matrix : np.ndarray, list, tuple
+        matrix
             The matrix whose inverse is to be applied.
         **kwargs
             Any valid keyword argument of self.apply_matrix()
         """
         self.apply_matrix(np.linalg.inv(matrix), **kwargs)
 
-    def apply_transposed_matrix(self, transposed_matrix, **kwargs):
+    def apply_transposed_matrix(
+        self, transposed_matrix: np.ndarray | list | tuple, **kwargs
+    ):
         """
         Applies the transformation represented by the
         given transposed matrix to the number plane,
@@ -1064,7 +1122,7 @@ class LinearTransformationScene(VectorScene):
 
         Parameters
         ----------
-        matrix : np.ndarray, list, tuple
+        transposed_matrix
             The matrix.
         **kwargs
             Any valid keyword argument of self.apply_function()
@@ -1077,7 +1135,7 @@ class LinearTransformationScene(VectorScene):
             kwargs["path_arc"] = net_rotation
         self.apply_function(func, **kwargs)
 
-    def apply_inverse_transpose(self, t_matrix, **kwargs):
+    def apply_inverse_transpose(self, t_matrix: np.ndarray | list | tuple, **kwargs):
         """
         Applies the inverse of the transformation represented
         by the given transposed matrix to the number plane and each
@@ -1085,7 +1143,7 @@ class LinearTransformationScene(VectorScene):
 
         Parameters
         ----------
-        matrix : np.ndarray, list, tuple
+        t_matrix
             The matrix.
         **kwargs
             Any valid keyword argument of self.apply_transposed_matrix()
@@ -1093,7 +1151,9 @@ class LinearTransformationScene(VectorScene):
         t_inv = np.linalg.inv(np.array(t_matrix).T).T
         self.apply_transposed_matrix(t_inv, **kwargs)
 
-    def apply_nonlinear_transformation(self, function, **kwargs):
+    def apply_nonlinear_transformation(
+        self, function: Callable[[np.ndarray], np.ndarray], **kwargs
+    ):
         """
         Applies the non-linear transformation represented
         by the given function to the number plane and each
@@ -1101,7 +1161,7 @@ class LinearTransformationScene(VectorScene):
 
         Parameters
         ----------
-        function : Function
+        function
             The function.
         **kwargs
             Any valid keyword argument of self.apply_function()
@@ -1109,7 +1169,12 @@ class LinearTransformationScene(VectorScene):
         self.plane.prepare_for_nonlinear_transform()
         self.apply_function(function, **kwargs)
 
-    def apply_function(self, function, added_anims=[], **kwargs):
+    def apply_function(
+        self,
+        function: Callable[[np.ndarray], np.ndarray],
+        added_anims: list = [],
+        **kwargs,
+    ):
         """
         Applies the given function to each of the mobjects in
         self.transformable_mobjects, and plays the animation showing
@@ -1117,11 +1182,11 @@ class LinearTransformationScene(VectorScene):
 
         Parameters
         ----------
-        function : Function
+        function
             The function that affects each point
             of each mobject in self.transformable_mobjects.
 
-        added_anims : list, optional
+        added_anims
             Any other animations that need to be played
             simultaneously with this.
 

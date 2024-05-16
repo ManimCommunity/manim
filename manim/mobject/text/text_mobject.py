@@ -6,7 +6,7 @@
 
 .. important::
 
-   See the corresponding tutorial :ref:`rendering-with-latex`
+   See the corresponding tutorial :ref:`using-text-objects`, especially for information about fonts.
 
 
 The simplest way to add text to your animations is to use the :class:`~.Text` class. It uses the Pango library to render text.
@@ -49,6 +49,8 @@ Examples
 
 from __future__ import annotations
 
+import functools
+
 __all__ = ["Text", "Paragraph", "MarkupText", "register_font"]
 
 
@@ -56,14 +58,13 @@ import copy
 import hashlib
 import os
 import re
+from collections.abc import Iterable, Sequence
 from contextlib import contextmanager
 from itertools import chain
 from pathlib import Path
-from typing import Iterable, Sequence
 
 import manimpango
 import numpy as np
-from colour import Color
 from manimpango import MarkupUtils, PangoUtils, TextSetting
 
 from manim import config, logger
@@ -71,12 +72,14 @@ from manim.constants import *
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.svg.svg_mobject import SVGMobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
-from manim.utils.color import Colors, color_gradient
+from manim.utils.color import ManimColor, ParsableManimColor, color_gradient
 from manim.utils.deprecation import deprecated
 
 TEXT_MOB_SCALE_FACTOR = 0.05
 DEFAULT_LINE_SPACING_SCALE = 0.3
 TEXT2SVG_ADJUSTMENT_FACTOR = 4.8
+
+__all__ = ["Text", "Paragraph", "MarkupText", "register_font"]
 
 
 def remove_invisible_chars(mobject: SVGMobject) -> SVGMobject:
@@ -92,7 +95,7 @@ def remove_invisible_chars(mobject: SVGMobject) -> SVGMobject:
     :class:`~.SVGMobject`
         The SVGMobject without unwanted invisible characters.
     """
-
+    # TODO: Refactor needed
     iscode = False
     if mobject.__class__.__name__ == "Text":
         mobject = mobject[:]
@@ -148,7 +151,7 @@ class Paragraph(VGroup):
         self,
         *text: Sequence[str],
         line_spacing: float = -1,
-        alignment: Optional[str] = None,
+        alignment: str | None = None,
         **kwargs,
     ) -> None:
         self.line_spacing = line_spacing
@@ -301,6 +304,13 @@ class Text(SVGMobject):
     ----------
     text
         The text that needs to be created as a mobject.
+    font
+        The font family to be used to render the text. This is either a system font or
+        one loaded with `register_font()`. Note that font family names may be different
+        across operating systems.
+    warn_missing_font
+        If True (default), Manim will issue a warning if the font does not exist in the
+        (case-sensitive) list of fonts returned from `manimpango.list_fonts()`.
 
     Returns
     -------
@@ -344,7 +354,7 @@ class Text(SVGMobject):
                )
                 text6.scale(1.3).shift(DOWN)
                 self.add(text1, text2, text3, text4, text5 , text6)
-                Group(*self.mobjects).arrange(DOWN, buff=.8).set_height(config.frame_height-LARGE_BUFF)
+                Group(*self.mobjects).arrange(DOWN, buff=.8).set(height=config.frame_height-LARGE_BUFF)
 
     .. manim:: TextMoreCustomization
             :save_last_frame:
@@ -401,12 +411,17 @@ class Text(SVGMobject):
 
     """
 
+    @staticmethod
+    @functools.cache
+    def font_list() -> list[str]:
+        return manimpango.list_fonts()
+
     def __init__(
         self,
         text: str,
         fill_opacity: float = 1.0,
         stroke_width: float = 0,
-        color: Color | str | None = None,
+        color: ParsableManimColor | None = None,
         font_size: float = DEFAULT_FONT_SIZE,
         line_spacing: float = -1,
         font: str = "",
@@ -419,15 +434,31 @@ class Text(SVGMobject):
         t2w: dict[str, str] = None,
         gradient: tuple = None,
         tab_width: int = 4,
+        warn_missing_font: bool = True,
         # Mobject
         height: float = None,
         width: float = None,
         should_center: bool = True,
         disable_ligatures: bool = False,
+        use_svg_cache: bool = False,
         **kwargs,
     ) -> None:
-
         self.line_spacing = line_spacing
+        if font and warn_missing_font:
+            fonts_list = Text.font_list()
+            # handle special case of sans/sans-serif
+            if font.lower() == "sans-serif":
+                font = "sans"
+            if font not in fonts_list:
+                # check if the capitalized version is in the supported fonts
+                if font.capitalize() in fonts_list:
+                    font = font.capitalize()
+                elif font.lower() in fonts_list:
+                    font = font.lower()
+                elif font.title() in fonts_list:
+                    font = font.title()
+                else:
+                    logger.warning(f"Font {font} not in {fonts_list}.")
         self.font = font
         self._font_size = float(font_size)
         # needs to be a float or else size is inflated when font_size = 24
@@ -452,7 +483,7 @@ class Text(SVGMobject):
         t2g = kwargs.pop("text2gradient", t2g)
         t2s = kwargs.pop("text2slant", t2s)
         t2w = kwargs.pop("text2weight", t2w)
-        self.t2c = t2c
+        self.t2c = {k: ManimColor(v).to_hex() for k, v in t2c.items()}
         self.t2f = t2f
         self.t2g = t2g
         self.t2s = t2s
@@ -471,8 +502,8 @@ class Text(SVGMobject):
         else:
             self.line_spacing = self._font_size + self._font_size * self.line_spacing
 
-        color = Color(color) if color else VMobject().color
-        file_name = self._text2svg(color)
+        color: ManimColor = ManimColor(color) if color else VMobject().color
+        file_name = self._text2svg(color.to_hex())
         PangoUtils.remove_last_M(file_name)
         super().__init__(
             file_name,
@@ -481,6 +512,7 @@ class Text(SVGMobject):
             height=height,
             width=width,
             should_center=should_center,
+            use_svg_cache=use_svg_cache,
             **kwargs,
         )
         self.text = text
@@ -488,26 +520,63 @@ class Text(SVGMobject):
             self.submobjects = [*self._gen_chars()]
         self.chars = self.get_group_class()(*self.submobjects)
         self.text = text_without_tabs.replace(" ", "").replace("\n", "")
-        if config.renderer == "opengl":
-            nppc = self.n_points_per_curve
-        else:
-            nppc = self.n_points_per_cubic_curve
+        nppc = self.n_points_per_curve
         for each in self:
             if len(each.points) == 0:
                 continue
             points = each.points
-            last = points[0]
-            each.clear_points()
+            curve_start = points[0]
+            assert len(curve_start) == self.dim, curve_start
+            # Some of the glyphs in this text might not be closed,
+            # so we close them by identifying when one curve ends
+            # but it is not where the next curve starts.
+            # It is more efficient to temporarily create a list
+            # of points and add them one at a time, then turn them
+            # into a numpy array at the end, rather than creating
+            # new numpy arrays every time a point or fixing line
+            # is added (which is O(n^2) for numpy arrays).
+            closed_curve_points = []
+            # OpenGL has points be part of quadratic Bezier curves;
+            # Cairo uses cubic Bezier curves.
+            if nppc == 3:  # RendererType.OPENGL
+
+                def add_line_to(end):
+                    nonlocal closed_curve_points
+                    start = closed_curve_points[-1]
+                    closed_curve_points += [
+                        start,
+                        (start + end) / 2,
+                        end,
+                    ]
+
+            else:  # RendererType.CAIRO
+
+                def add_line_to(end):
+                    nonlocal closed_curve_points
+                    start = closed_curve_points[-1]
+                    closed_curve_points += [
+                        start,
+                        (start + start + end) / 3,
+                        (start + end + end) / 3,
+                        end,
+                    ]
+
             for index, point in enumerate(points):
-                each.append_points([point])
+                closed_curve_points.append(point)
                 if (
                     index != len(points) - 1
                     and (index + 1) % nppc == 0
                     and any(point != points[index + 1])
                 ):
-                    each.add_line_to(last)
-                    last = points[index + 1]
-            each.add_line_to(last)
+                    # Add straight line from last point on this curve to the
+                    # start point on the next curve. We represent the line
+                    # as a cubic bezier curve where the two control points
+                    # are half-way between the start and stop point.
+                    add_line_to(curve_start)
+                    curve_start = points[index + 1]
+            # Make sure last curve is closed
+            add_line_to(curve_start)
+            each.points = np.array(closed_curve_points, ndmin=2)
         # anti-aliasing
         if height is None and width is None:
             self.scale(TEXT_MOB_SCALE_FACTOR)
@@ -594,10 +663,10 @@ class Text(SVGMobject):
             for start, end in self._find_indexes(word, self.text):
                 self.chars[start:end].set_color_by_gradient(*gradient)
 
-    def _text2hash(self, color: Color):
+    def _text2hash(self, color: ManimColor):
         """Generates ``sha256`` hash for file name."""
         settings = (
-            "PANGO" + self.font + self.slant + self.weight + color.hex_l
+            "PANGO" + self.font + self.slant + self.weight + str(color)
         )  # to differentiate Text and CairoText
         settings += str(self.t2f) + str(self.t2s) + str(self.t2w) + str(self.t2c)
         settings += str(self.line_spacing) + str(self._font_size)
@@ -642,7 +711,9 @@ class Text(SVGMobject):
         t2xwords = set(chain(*([*t2x.keys()] for t2x, _ in t2xs)))
         for word in t2xwords:
             setting_args = {
-                arg: t2x[word] if word in t2x else default_args[arg]
+                arg: str(t2x[word]) if word in t2x else default_args[arg]
+                # NOTE: when t2x[word] is a ManimColor, str will yield the
+                # hex representation
                 for t2x, arg in t2xs
             }
 
@@ -658,13 +729,13 @@ class Text(SVGMobject):
         if self.gradient:
             colors = color_gradient(self.gradient, len(self.text))
             for i in range(len(self.text)):
-                args["color"] = colors[i].hex
+                args["color"] = colors[i].to_hex()
                 settings.append(TextSetting(i, i + 1, **args))
 
         for word, gradient in self.t2g.items():
             if isinstance(gradient, str) or len(gradient) == 1:
                 color = gradient if isinstance(gradient, str) else gradient[0]
-                gradient = [Color(color)]
+                gradient = [ManimColor(color)]
             colors = (
                 color_gradient(gradient, len(word))
                 if len(gradient) != 1
@@ -672,11 +743,11 @@ class Text(SVGMobject):
             )
             for start, end in self._find_indexes(word, self.text):
                 for i in range(start, end):
-                    args["color"] = colors[i - start].hex
+                    args["color"] = colors[i - start].to_hex()
                     settings.append(TextSetting(i, i + 1, **args))
         return settings
 
-    def _text2settings(self, color: Color):
+    def _text2settings(self, color: str):
         """Converts the texts and styles to a setting for parsing."""
         t2xs = [
             (self.t2f, "font"),
@@ -685,8 +756,9 @@ class Text(SVGMobject):
             (self.t2c, "color"),
         ]
         # setting_args requires values to be strings
+
         default_args = {
-            arg: getattr(self, arg) if arg != "color" else str(color) for _, arg in t2xs
+            arg: getattr(self, arg) if arg != "color" else color for _, arg in t2xs
         }
 
         settings = self._get_settings_from_t2xs(t2xs, default_args)
@@ -742,7 +814,7 @@ class Text(SVGMobject):
 
         return settings
 
-    def _text2svg(self, color: Color):
+    def _text2svg(self, color: ManimColor):
         """Convert the text to SVG using Pango."""
         size = self._font_size
         line_spacing = self.line_spacing
@@ -778,9 +850,9 @@ class Text(SVGMobject):
         return svg_file
 
     def init_colors(self, propagate_colors=True):
-        if config.renderer == "opengl":
+        if config.renderer == RendererType.OPENGL:
             super().init_colors()
-        else:
+        elif config.renderer == RendererType.CAIRO:
             super().init_colors(propagate_colors=propagate_colors)
 
 
@@ -835,7 +907,7 @@ class MarkupText(SVGMobject):
     Here is a list of supported tags:
 
     - ``<b>bold</b>``, ``<i>italic</i>`` and ``<b><i>bold+italic</i></b>``
-    - ``<ul>underline</ul>`` and ``<s>strike through</s>``
+    - ``<u>underline</u>`` and ``<s>strike through</s>``
     - ``<tt>typewriter font</tt>``
     - ``<big>bigger font</big>`` and ``<small>smaller font</small>``
     - ``<sup>superscript</sup>`` and ``<sub>subscript</sub>``
@@ -914,7 +986,9 @@ class MarkupText(SVGMobject):
         Global weight setting, e.g. `NORMAL` or `BOLD`. Local overrides are possible.
     gradient
         Global gradient setting. Local overrides are possible.
-
+    warn_missing_font
+        If True (default), Manim will issue a warning if the font does not exist in the
+        (case-sensitive) list of fonts returned from `manimpango.list_fonts()`.
 
     Returns
     -------
@@ -1080,12 +1154,17 @@ class MarkupText(SVGMobject):
 
     """
 
+    @staticmethod
+    @functools.cache
+    def font_list() -> list[str]:
+        return manimpango.list_fonts()
+
     def __init__(
         self,
         text: str,
         fill_opacity: float = 1,
         stroke_width: float = 0,
-        color: Color | None = None,
+        color: ParsableManimColor | None = None,
         font_size: float = DEFAULT_FONT_SIZE,
         line_spacing: int = -1,
         font: str = "",
@@ -1098,11 +1177,26 @@ class MarkupText(SVGMobject):
         width: int = None,
         should_center: bool = True,
         disable_ligatures: bool = False,
+        warn_missing_font: bool = True,
         **kwargs,
     ) -> None:
-
         self.text = text
         self.line_spacing = line_spacing
+        if font and warn_missing_font:
+            fonts_list = Text.font_list()
+            # handle special case of sans/sans-serif
+            if font.lower() == "sans-serif":
+                font = "sans"
+            if font not in fonts_list:
+                # check if the capitalized version is in the supported fonts
+                if font.capitalize() in fonts_list:
+                    font = font.capitalize()
+                elif font.lower() in fonts_list:
+                    font = font.lower()
+                elif font.title() in fonts_list:
+                    font = font.title()
+                else:
+                    logger.warning(f"Font {font} not in {fonts_list}.")
         self.font = font
         self._font_size = float(font_size)
         self.slant = slant
@@ -1134,7 +1228,7 @@ class MarkupText(SVGMobject):
         else:
             self.line_spacing = self._font_size + self._font_size * self.line_spacing
 
-        color = Color(color) if color else VMobject().color
+        color: ManimColor = ManimColor(color) if color else VMobject().color
         file_name = self._text2svg(color)
 
         PangoUtils.remove_last_M(file_name)
@@ -1151,26 +1245,61 @@ class MarkupText(SVGMobject):
         self.chars = self.get_group_class()(*self.submobjects)
         self.text = text_without_tabs.replace(" ", "").replace("\n", "")
 
-        if config.renderer == "opengl":
-            nppc = self.n_points_per_curve
-        else:
-            nppc = self.n_points_per_cubic_curve
+        nppc = self.n_points_per_curve
         for each in self:
             if len(each.points) == 0:
                 continue
             points = each.points
-            last = points[0]
-            each.clear_points()
+            curve_start = points[0]
+            assert len(curve_start) == self.dim, curve_start
+            # Some of the glyphs in this text might not be closed,
+            # so we close them by identifying when one curve ends
+            # but it is not where the next curve starts.
+            # It is more efficient to temporarily create a list
+            # of points and add them one at a time, then turn them
+            # into a numpy array at the end, rather than creating
+            # new numpy arrays every time a point or fixing line
+            # is added (which is O(n^2) for numpy arrays).
+            closed_curve_points = []
+            # OpenGL has points be part of quadratic Bezier curves;
+            # Cairo uses cubic Bezier curves.
+            if nppc == 3:  # RendererType.OPENGL
+
+                def add_line_to(end):
+                    nonlocal closed_curve_points
+                    start = closed_curve_points[-1]
+                    closed_curve_points += [
+                        start,
+                        (start + end) / 2,
+                        end,
+                    ]
+
+            else:  # RendererType.CAIRO
+
+                def add_line_to(end):
+                    nonlocal closed_curve_points
+                    start = closed_curve_points[-1]
+                    closed_curve_points += [
+                        start,
+                        (start + start + end) / 3,
+                        (start + end + end) / 3,
+                        end,
+                    ]
+
             for index, point in enumerate(points):
-                each.append_points([point])
+                closed_curve_points.append(point)
                 if (
                     index != len(points) - 1
                     and (index + 1) % nppc == 0
                     and any(point != points[index + 1])
                 ):
-                    each.add_line_to(last)
-                    last = points[index + 1]
-            each.add_line_to(last)
+                    # Add straight line from last point on this curve to the
+                    # start point on the next curve.
+                    add_line_to(curve_start)
+                    curve_start = points[index + 1]
+            # Make sure last curve is closed
+            add_line_to(curve_start)
+            each.points = np.array(closed_curve_points, ndmin=2)
 
         if self.gradient:
             self.set_color_by_gradient(*self.gradient)
@@ -1215,10 +1344,14 @@ class MarkupText(SVGMobject):
         else:
             self.scale(font_val / self.font_size)
 
-    def _text2hash(self, color: Color):
+    def _text2hash(self, color: ParsableManimColor):
         """Generates ``sha256`` hash for file name."""
         settings = (
-            "MARKUPPANGO" + self.font + self.slant + self.weight + color.hex_l
+            "MARKUPPANGO"
+            + self.font
+            + self.slant
+            + self.weight
+            + ManimColor(color).to_hex().lower()
         )  # to differentiate from classical Pango Text
         settings += str(self.line_spacing) + str(self._font_size)
         settings += str(self.disable_ligatures)
@@ -1228,23 +1361,25 @@ class MarkupText(SVGMobject):
         hasher.update(id_str.encode())
         return hasher.hexdigest()[:16]
 
-    def _text2svg(self, color: Color | None):
+    def _text2svg(self, color: ParsableManimColor | None):
         """Convert the text to SVG using Pango."""
+        color = ManimColor(color)
         size = self._font_size
         line_spacing = self.line_spacing
         size /= TEXT2SVG_ADJUSTMENT_FACTOR
         line_spacing /= TEXT2SVG_ADJUSTMENT_FACTOR
 
         dir_name = config.get_dir("text_dir")
-        if not dir_name.exists():
+        if not dir_name.is_dir():
             dir_name.mkdir(parents=True)
         hash_name = self._text2hash(color)
         file_name = dir_name / (hash_name + ".svg")
+
         if file_name.exists():
             svg_file = str(file_name.resolve())
         else:
             final_text = (
-                f'<span foreground="{color}">{self.text}</span>'
+                f'<span foreground="{color.to_hex()}">{self.text}</span>'
                 if color is not None
                 else self.text
             )
@@ -1322,7 +1457,7 @@ class MarkupText(SVGMobject):
         if re.match("#[0-9a-f]{6}", col):
             return col
         else:
-            return Colors[col.lower()].value
+            return ManimColor(col).to_hex()
 
     def _extract_color_tags(self):
         """Used to determine which parts (if any) of the string should be formatted

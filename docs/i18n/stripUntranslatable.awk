@@ -25,7 +25,7 @@ BEGIN {
 	# The file location of where to put everything
 	# that has been stripped out
 	untranslatablefile="./untranslatable.po"
-	# Wether we are still reading the licence text
+	# Whether we are still reading the licence text
 	licencetext=1
 }
 

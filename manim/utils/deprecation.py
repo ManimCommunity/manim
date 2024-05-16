@@ -7,7 +7,8 @@ __all__ = ["deprecated", "deprecated_params"]
 
 import inspect
 import re
-from typing import Any, Callable, Iterable
+from collections.abc import Iterable
+from typing import Any, Callable
 
 from decorator import decorate, decorator
 
@@ -233,8 +234,9 @@ def deprecated_params(
     since: str | None = None,
     until: str | None = None,
     message: str | None = "",
-    redirections: None
-    | (Iterable[tuple[str, str] | Callable[..., dict[str, Any]]]) = None,
+    redirections: None | (
+        Iterable[tuple[str, str] | Callable[..., dict[str, Any]]]
+    ) = None,
 ) -> Callable:
     """Decorator to mark parameters of a callable as deprecated.
 

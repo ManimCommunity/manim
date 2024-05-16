@@ -90,6 +90,26 @@ def test_succession_in_succession_timing():
     assert nested_succession.active_animation is None
 
 
+def test_timescaled_succession():
+    s1, s2, s3 = Square(), Square(), Square()
+    anim = Succession(
+        FadeIn(s1, run_time=2),
+        FadeIn(s2),
+        FadeIn(s3),
+    )
+    anim.scene = MagicMock()
+    anim.run_time = 42
+    anim.begin()
+    anim.interpolate(0.2)
+    assert anim.active_index == 0
+    anim.interpolate(0.4)
+    assert anim.active_index == 0
+    anim.interpolate(0.6)
+    assert anim.active_index == 1
+    anim.interpolate(0.8)
+    assert anim.active_index == 2
+
+
 def test_animationbuilder_in_group():
     sqr = Square()
     circ = Circle()
@@ -108,7 +128,7 @@ def test_animationgroup_with_wait():
     animation_group.begin()
     timings = animation_group.anims_with_timings
 
-    assert timings == [(wait, 0.0, 1.0), (sqr_anim, 1.0, 2.0)]
+    assert timings.tolist() == [(wait, 0.0, 1.0), (sqr_anim, 1.0, 2.0)]
 
 
 @pytest.mark.parametrize(
@@ -149,3 +169,13 @@ def test_animationgroup_is_passing_remover_to_nested_animationgroups():
     assert sqr_animation.remover
     assert circ_animation.remover
     assert polygon_animation.remover
+
+
+def test_empty_animation_group_fails():
+    with pytest.raises(ValueError, match="Please add at least one subanimation."):
+        AnimationGroup().begin()
+
+
+def test_empty_succession_fails():
+    with pytest.raises(ValueError, match="Please add at least one subanimation."):
+        Succession().begin()

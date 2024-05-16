@@ -4,22 +4,53 @@ from __future__ import annotations
 
 __all__ = ["DecimalNumber", "Integer", "Variable"]
 
-from typing import Sequence
+from collections.abc import Sequence
 
 import numpy as np
 
 from manim import config
 from manim.constants import *
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.text.tex_mobject import MathTex, SingleStringMathTex
+from manim.mobject.text.tex_mobject import MathTex, SingleStringMathTex, Tex
+from manim.mobject.text.text_mobject import Text
 from manim.mobject.types.vectorized_mobject import VMobject
 from manim.mobject.value_tracker import ValueTracker
 
 string_to_mob_map = {}
 
+__all__ = ["DecimalNumber", "Integer", "Variable"]
+
 
 class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
     """An mobject representing a decimal number.
+
+    Parameters
+    ----------
+    number
+        The numeric value to be displayed. It can later be modified using :meth:`.set_value`.
+    num_decimal_places
+        The number of decimal places after the decimal separator. Values are automatically rounded.
+    mob_class
+        The class for rendering digits and units, by default :class:`.MathTex`.
+    include_sign
+        Set to ``True`` to include a sign for positive numbers and zero.
+    group_with_commas
+        When ``True`` thousands groups are separated by commas for readability.
+    digit_buff_per_font_unit
+        Additional spacing between digits. Scales with font size.
+    show_ellipsis
+        When a number has been truncated by rounding, indicate with an ellipsis (``...``).
+    unit
+        A unit string which can be placed to the right of the numerical values.
+    unit_buff_per_font_unit
+        An additional spacing between the numerical values and the unit. A value
+        of ``unit_buff_per_font_unit=0.003`` gives a decent spacing. Scales with font size.
+    include_background_rectangle
+        Adds a background rectangle to increase contrast on busy scenes.
+    edge_to_fix
+        Assuring right- or left-alignment of the full object.
+    font_size
+        Size of the font.
 
     Examples
     --------
@@ -33,6 +64,8 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
                     show_ellipsis=True,
                     num_decimal_places=3,
                     include_sign=True,
+                    unit=r"\text{M-Units}",
+                    unit_buff_per_font_unit=0.003
                 )
                 square = Square().to_edge(UP)
 
@@ -58,6 +91,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         digit_buff_per_font_unit: float = 0.001,
         show_ellipsis: bool = False,
         unit: str | None = None,  # Aligned to bottom unless it starts with "^"
+        unit_buff_per_font_unit: float = 0,
         include_background_rectangle: bool = False,
         edge_to_fix: Sequence[float] = LEFT,
         font_size: float = DEFAULT_FONT_SIZE,
@@ -65,7 +99,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         fill_opacity: float = 1.0,
         **kwargs,
     ):
-        super().__init__(**kwargs)
+        super().__init__(**kwargs, stroke_width=stroke_width)
         self.number = number
         self.num_decimal_places = num_decimal_places
         self.include_sign = include_sign
@@ -74,10 +108,10 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         self.digit_buff_per_font_unit = digit_buff_per_font_unit
         self.show_ellipsis = show_ellipsis
         self.unit = unit
+        self.unit_buff_per_font_unit = unit_buff_per_font_unit
         self.include_background_rectangle = include_background_rectangle
         self.edge_to_fix = edge_to_fix
         self._font_size = font_size
-        self.stroke_width = stroke_width
         self.fill_opacity = fill_opacity
 
         self.initial_config = kwargs.copy()
@@ -89,6 +123,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
                 "digit_buff_per_font_unit": digit_buff_per_font_unit,
                 "show_ellipsis": show_ellipsis,
                 "unit": unit,
+                "unit_buff_per_font_unit": unit_buff_per_font_unit,
                 "include_background_rectangle": include_background_rectangle,
                 "edge_to_fix": edge_to_fix,
                 "font_size": font_size,
@@ -130,14 +165,24 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
                 self._string_to_mob("\\dots", SingleStringMathTex, color=self.color),
             )
 
-        if self.unit is not None:
-            self.unit_sign = self._string_to_mob(self.unit, SingleStringMathTex)
-            self.add(self.unit_sign)
-
         self.arrange(
             buff=self.digit_buff_per_font_unit * self._font_size,
             aligned_edge=DOWN,
         )
+
+        if self.unit is not None:
+            self.unit_sign = self._string_to_mob(self.unit, SingleStringMathTex)
+            self.add(
+                self.unit_sign.next_to(
+                    self,
+                    direction=RIGHT,
+                    buff=(self.unit_buff_per_font_unit + self.digit_buff_per_font_unit)
+                    * self._font_size,
+                    aligned_edge=DOWN,
+                )
+            )
+
+        self.move_to(ORIGIN)
 
         # Handle alignment of parts that should be aligned
         # to the bottom
@@ -173,7 +218,6 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         return num_string
 
     def _string_to_mob(self, string: str, mob_class: VMobject | None = None, **kwargs):
-
         if mob_class is None:
             mob_class = self.mob_class
 
@@ -251,7 +295,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         for sm1, sm2 in zip(self.submobjects, old_submobjects):
             sm1.match_style(sm2)
 
-        if config.renderer != "opengl":
+        if config.renderer == RendererType.CAIRO:
             for mob in old_family:
                 # Dumb hack...due to how scene handles families
                 # of animated mobjects
@@ -299,16 +343,16 @@ class Variable(VMobject, metaclass=ConvertToOpenGL):
 
     Parameters
     ----------
-    var : Union[:class:`int`, :class:`float`]
+    var
         The initial value you need to keep track of and display.
-    label : Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`, :class:`~.Text`, :class:`~.SingleStringMathTex`]
+    label
         The label for your variable. Raw strings are convertex to :class:`~.MathTex` objects.
-    var_type : Union[:class:`DecimalNumber`, :class:`Integer`], optional
+    var_type
         The class used for displaying the number. Defaults to :class:`DecimalNumber`.
-    num_decimal_places : :class:`int`, optional
+    num_decimal_places
         The number of decimal places to display in your variable. Defaults to 2.
         If `var_type` is an :class:`Integer`, this parameter is ignored.
-    kwargs : Any
+    kwargs
             Other arguments to be passed to `~.Mobject`.
 
     Attributes
@@ -397,9 +441,13 @@ class Variable(VMobject, metaclass=ConvertToOpenGL):
     """
 
     def __init__(
-        self, var, label, var_type=DecimalNumber, num_decimal_places=2, **kwargs
+        self,
+        var: float,
+        label: str | Tex | MathTex | Text | SingleStringMathTex,
+        var_type: DecimalNumber | Integer = DecimalNumber,
+        num_decimal_places: int = 2,
+        **kwargs,
     ):
-
         self.label = MathTex(label) if isinstance(label, str) else label
         equals = MathTex("=").next_to(self.label, RIGHT)
         self.label.add(equals)

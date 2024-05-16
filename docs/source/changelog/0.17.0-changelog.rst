@@ -1,0 +1,296 @@
+*******
+v0.17.0
+*******
+
+:Date: December 02, 2022
+
+Contributors
+============
+
+A total of 32 people contributed to this
+release. People with a '+' by their names authored a patch for the first
+time.
+
+* Alex Lembcke
+* Alexander Vázquez
+* Benjamin Hackl
+* Duc Phat +
+* Hugues Devimeux
+* Ievgen Pyrogov +
+* Isaac Beh +
+* Jeff Hanke +
+* John Hammond +
+* Jérome Eertmans +
+* Kevin Lubick
+* Kian-Meng Ang +
+* Naveen M K
+* Nick Skriloff +
+* NotWearingPants
+* Onur Solmaz +
+* OpenRefactory, Inc +
+* Owen Samuel +
+* Pavel Zwerschke +
+* Sparsh Goenka
+* Taxo Rubio
+* ad-chaos +
+* fcrozatier
+* mostly documentation +
+* vahndi +
+
+
+The patches included in this release have been reviewed by
+the following contributors.
+
+* Benjamin Hackl
+* Darylgolden
+* Hugues Devimeux
+* Jan-Hendrik Müller
+* Kevin Lubick
+* Mohammed Belgoumri
+* Naveen M K
+* NotWearingPants
+* Raghav Goel
+* Sparsh Goenka
+* Tristan Schulz
+* ad-chaos
+* friedkeenan
+
+Pull requests merged
+====================
+
+A total of 63 pull requests were merged for this release.
+
+Breaking changes
+----------------
+
+* :pr:`2898`: Ported improved implementation of :class:`.SVGMobject` from 3b1b/manim
+   The implementation of :class:`.SVGMobject` is completely changed in this release.
+   Manim now uses the Python library ``svgelements`` to parse SVGs, instead of trying
+   to do it itself. The former class for SVG path objects, ``SVGPathMobject`` has been
+   replaced (without deprecation) with :class:`.VMobjectFromSVGPath`.
+
+   If you need to create a mobject from an SVG path string, you can do so via::
+
+        import svgelements as se
+        my_path_mobject = VMobjectFromSVGPath(se.Path(my_path_string))
+
+   The unused class ``TexSymbol`` has been removed. The modules
+   ``manim.mobject.svg.svg_path`` and ``manim.mobject.svg.style_utils`` became
+   superfluous due to the rework and have been removed.
+
+
+* :pr:`3030`: Added support for Python 3.11, dropped support for Python 3.7
+
+
+Highlights
+----------
+
+* :pr:`3049`: Added thematic guide for the ``manim-voiceover`` plugin
+   This new :doc:`thematic guide </guides/add_voiceovers>` provides a brief
+   introduction to ``manim-voiceover``, a plugin that helps to add voiceovers
+   to your manimations. Supports both working with your own voice as well as
+   synthetically generated voices.
+
+
+New features
+------------
+
+* :pr:`2883`: Added animation :class:`.RemoveTextLetterByLetter`
+
+
+* :pr:`3016`: Implemented :class:`.LineJointTypes` for both Cairo and OpenGL renderer
+
+
+* :pr:`3017`: Replaced renderer strings with :class:`.RendererType` enum entries
+
+
+Enhancements
+------------
+
+* :pr:`2927`: Allowed ``networkx`` to return 3D layouts when passing ``dim=3`` in the ``layout_config`` of a :class:`.Graph`
+
+
+* :pr:`3014`: Enabled code completion for :meth:`.Mobject.animate` for some IDEs
+   Uses a Union of the existing Generic `Mobject` Type `T` and `_Animation Builder` as the declared return type from `Mobject.animate` to improve code completion.
+
+Fixed bugs
+----------
+
+* :pr:`2846`: Prevent :class:`.TransformMatchingTex` from crashing when there is nothing to fade
+
+
+* :pr:`2885`: Always expand user when validating file-paths
+
+
+* :pr:`2888`: Fixed bug with propagation of ``tex_template`` value when using ``tempconfig``
+
+
+* :pr:`2895`: Fixed broken :class:`.ShowPassingFlashWithThinningStrokeWidth`
+
+
+* :pr:`2920`: Fixed alignment of faded lines when passing ``faded_line_ratio`` to :class:`.NumberPlane`
+
+
+* :pr:`2977`: Allow rendering of empty text strings
+
+
+* :pr:`2992`: Fixed ``CLI.tex_template_file`` config file setting
+
+
+* :pr:`3003`: Fixed setting ``run_time`` of :class:`.Succession` after creating the animation object
+
+
+* :pr:`3019`: Fixed rendering SVG paths with multiple move commands
+
+
+Documentation-related changes
+-----------------------------
+
+* :pr:`2881`: Fixed small typo in deep dive guide
+
+
+* :pr:`2886`: Added docstring to and fixed type hint of :func:`.get_winding_number`
+
+
+* :pr:`2892`: Corrected error in the ``PolygonOnAxes`` example
+
+
+* :pr:`2903`: Fixed minor grammar issues in :doc:`/faq/general`
+
+
+* :pr:`2904`: Fixed formatting and grammar issues in :doc:`/contributing/development`
+
+
+* :pr:`2911`: Disabled autoplay for ``SoundExample`` in documentation
+
+
+* :pr:`2914`: Added conda installation instructions
+
+
+* :pr:`2915`: Added documentation to :mod:`.three_dimensions`
+
+
+* :pr:`2919`: Corrected parameters and enhanced the description of :meth:`.ImageMobject.interpolate_color`
+
+
+* :pr:`2932`: Fixed whitespace formatting issue
+
+
+* :pr:`2933`: Improved answer to the "no scenes in this module" error
+
+
+* :pr:`2936`: Added installation instructions for Windows via ``winget``
+
+
+* :pr:`2962`: Disabled "Edit on GitHub" button in documentation
+
+
+* :pr:`2978`: Added documentation and example for :class:`.CyclicReplace`
+
+
+* :pr:`3001`: Added FAQ entry regarding failed ``manimpango`` build
+
+
+* :pr:`3004`: Fixed docbuild warnings
+
+
+* :pr:`3018`: Follow-up to :pr:`2988` -- fixes and improvements to some docstrings
+
+
+* :pr:`3022`: Corrected type hint in :meth:`Axes.coords_to_point`
+
+
+* :pr:`3035`: Include latex install instructions on ubuntu
+
+
+* :pr:`3044`: Added Debian dependencies required for pycairo and manimpango
+
+
+Changes concerning the testing system
+-------------------------------------
+
+* :pr:`2893`: Improved performance of ``test_threed.py``
+
+
+* :pr:`2981`: Implemented fallback save behavior for ``pytest --show_diff``
+
+
+* :pr:`2982`: Rewrote unstable tests for :mod:`.text_mobject` to be non-graphical
+
+
+* :pr:`2991`: Migrated ``os.path`` to ``pathlib.Path`` in tests
+
+
+* :pr:`3053`: Added threshold for pixel value errors in frame comparison tests
+
+
+Changes to our development infrastructure
+-----------------------------------------
+
+* :pr:`2925`: CI (test-arm): Updated python version to ``3.10.6``
+
+
+* :pr:`2963`: CI (test-arm): Always select the correct python version
+
+
+* :pr:`3029`: CI: Updated actions version and added dependabot config
+
+
+* :pr:`3045`: Updated python-opengl -> python3-opengl for Ubuntu CI task
+
+
+Code quality improvements and similar refactors
+-----------------------------------------------
+
+* :pr:`2872`: Add ``extract_frames.py`` utility script to help visualize test control data
+
+
+* :pr:`2877`: Fixed binder launch problem by adding missing optional ``notebook`` dependency
+
+
+* :pr:`2887`: Removed empty i18n files that caused filename clashes
+
+
+* :pr:`2931`: Updated ``mapbox-earcut``
+
+
+* :pr:`2938`: Suggested fixes by iCR, OpenRefactory, Inc.
+
+
+* :pr:`2954`: Fixed click version string in ``pyproject.toml``
+
+
+* :pr:`2958`: Fix missing stub packages for mypy
+
+
+* :pr:`2975`: Fixed broken links in README
+
+
+* :pr:`2980`: Migrate more ``os.path`` to ``pathlib.Path``
+
+
+* :pr:`2983`: Fixed Windows CI Pipeline
+
+
+* :pr:`2988`: Converted all types of parameters in docstrings to proper type annotations
+
+
+* :pr:`2994`: Fixed segmentation faults from doctests under Python 3.10
+
+
+* :pr:`2995`: Added encoding to ``open`` in :mod:`.utils.text_file_writing`
+
+
+* :pr:`3032`: Bump jupyter-core from 4.11.1 to 4.11.2
+
+
+* :pr:`3033`: Bump pillow from 9.2.0 to 9.3.0
+
+
+* :pr:`3054`: Removed unused ``GraphicalUnitTester``
+
+
+New releases
+------------
+
+* :pr:`3023`: Prepared new release: v0.17.0

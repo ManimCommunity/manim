@@ -48,7 +48,7 @@ def test_resolution_flag(tmp_path, manim_cfg_file, simple_scenes_path):
         # (800, 600, ";"),
     ]
 
-    for (width, height, separator) in resolutions:
+    for width, height, separator in resolutions:
         command = [
             sys.executable,
             "-m",
@@ -296,12 +296,8 @@ def test_custom_output_name_gif(tmp_path, simple_scenes_path):
     out, err, exit_code = capture(command)
     assert exit_code == 0, err
 
-    wrong_gif_path = (
-        tmp_path
-        / "videos"
-        / "simple_scenes"
-        / "480p15"
-        / add_version_before_extension(scene_name + ".gif")
+    wrong_gif_path = add_version_before_extension(
+        tmp_path / "videos" / "simple_scenes" / "480p15" / f"{scene_name}.gif"
     )
 
     assert not wrong_gif_path.exists(), (
@@ -350,12 +346,8 @@ def test_custom_output_name_mp4(tmp_path, simple_scenes_path):
         "The mp4 file does not respect the custom name: " + custom_name + ".mp4"
     )
 
-    unexpected_gif_path = (
-        tmp_path
-        / "videos"
-        / "simple_scenes"
-        / "480p15"
-        / add_version_before_extension(custom_name + ".gif")
+    unexpected_gif_path = add_version_before_extension(
+        tmp_path / "videos" / "simple_scenes" / "480p15" / f"{custom_name}.gif"
     )
     assert not unexpected_gif_path.exists(), "Found an unexpected gif file at " + str(
         unexpected_gif_path
@@ -418,12 +410,8 @@ def test_gif_format_output(tmp_path, manim_cfg_file, simple_scenes_path):
         unexpected_mp4_path,
     )
 
-    expected_gif_path = (
-        tmp_path
-        / "videos"
-        / "simple_scenes"
-        / "480p15"
-        / add_version_before_extension("SquareToCircle.gif")
+    expected_gif_path = add_version_before_extension(
+        tmp_path / "videos" / "simple_scenes" / "480p15" / "SquareToCircle.gif"
     )
     assert expected_gif_path.exists(), "gif file not found at " + str(expected_gif_path)
 
@@ -447,12 +435,8 @@ def test_mp4_format_output(tmp_path, manim_cfg_file, simple_scenes_path):
     out, err, exit_code = capture(command)
     assert exit_code == 0, err
 
-    unexpected_gif_path = (
-        tmp_path
-        / "videos"
-        / "simple_scenes"
-        / "480p15"
-        / add_version_before_extension("SquareToCircle.gif")
+    unexpected_gif_path = add_version_before_extension(
+        tmp_path / "videos" / "simple_scenes" / "480p15" / "SquareToCircle.gif"
     )
     assert not unexpected_gif_path.exists(), "unexpected gif file found at " + str(
         unexpected_gif_path,
@@ -489,12 +473,8 @@ def test_videos_not_created_when_png_format_set(
     out, err, exit_code = capture(command)
     assert exit_code == 0, err
 
-    unexpected_gif_path = (
-        tmp_path
-        / "videos"
-        / "simple_scenes"
-        / "480p15"
-        / add_version_before_extension("SquareToCircle.gif")
+    unexpected_gif_path = add_version_before_extension(
+        tmp_path / "videos" / "simple_scenes" / "480p15" / "SquareToCircle.gif"
     )
     assert not unexpected_gif_path.exists(), "unexpected gif file found at " + str(
         unexpected_gif_path,

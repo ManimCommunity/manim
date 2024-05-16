@@ -28,7 +28,8 @@ __all__ = [
 
 import inspect
 import types
-from typing import TYPE_CHECKING, Any, Callable, Iterable, Sequence
+from collections.abc import Iterable, Sequence
+from typing import TYPE_CHECKING, Any, Callable
 
 import numpy as np
 
@@ -36,7 +37,13 @@ from manim.mobject.opengl.opengl_mobject import OpenGLGroup, OpenGLMobject
 
 from .. import config
 from ..animation.animation import Animation
-from ..constants import DEFAULT_POINTWISE_FUNCTION_RUN_TIME, DEGREES, ORIGIN, OUT
+from ..constants import (
+    DEFAULT_POINTWISE_FUNCTION_RUN_TIME,
+    DEGREES,
+    ORIGIN,
+    OUT,
+    RendererType,
+)
 from ..mobject.mobject import Group, Mobject
 from ..utils.paths import path_along_arc, path_along_circles
 from ..utils.rate_functions import smooth, squish_rate_func
@@ -191,7 +198,7 @@ class Transform(Animation):
         self.target_copy = self.target_mobject.copy()
         # Note, this potentially changes the structure
         # of both mobject and target_mobject
-        if config["renderer"] == "opengl":
+        if config.renderer == RendererType.OPENGL:
             self.mobject.align_data_and_family(self.target_copy)
         else:
             self.mobject.align_data(self.target_copy)
@@ -205,8 +212,7 @@ class Transform(Animation):
     def clean_up_from_scene(self, scene: Scene) -> None:
         super().clean_up_from_scene(scene)
         if self.replace_mobject_with_target_in_scene:
-            scene.remove(self.mobject)
-            scene.add(self.target_mobject)
+            scene.replace(self.mobject, self.target_mobject)
 
     def get_all_mobjects(self) -> Sequence[Mobject]:
         return [
@@ -222,7 +228,7 @@ class Transform(Animation):
             self.starting_mobject,
             self.target_copy,
         ]
-        if config["renderer"] == "opengl":
+        if config.renderer == RendererType.OPENGL:
             return zip(*(mob.get_family() for mob in mobs))
         return zip(*(mob.family_members_with_points() for mob in mobs))
 
@@ -830,7 +836,7 @@ class FadeTransform(Transform):
         self.stretch = stretch
         self.dim_to_match = dim_to_match
         mobject.save_state()
-        if config["renderer"] == "opengl":
+        if config.renderer == RendererType.OPENGL:
             group = OpenGLGroup(mobject, target_mobject.copy())
         else:
             group = Group(mobject, target_mobject.copy())

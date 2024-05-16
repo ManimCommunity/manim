@@ -5,6 +5,7 @@ import pytest
 
 from manim import (
     Circle,
+    CurvesAsSubmobjects,
     Line,
     Mobject,
     Polygon,
@@ -39,6 +40,38 @@ def test_vmobject_point_from_propotion():
     obj.clear_points()
     with pytest.raises(Exception, match="with no points"):
         obj.point_from_proportion(0)
+
+
+def test_curves_as_submobjects_point_from_proportion():
+    obj = CurvesAsSubmobjects(VGroup())
+
+    with pytest.raises(ValueError, match="between 0 and 1"):
+        obj.point_from_proportion(2)
+    with pytest.raises(Exception, match="with no submobjects"):
+        obj.point_from_proportion(0)
+
+    obj.add(VMobject())
+    with pytest.raises(Exception, match="have no points"):
+        obj.point_from_proportion(0)
+
+    # submobject[0] is a line of length 4
+    obj.submobjects[0].set_points_as_corners(
+        [
+            np.array([0, 0, 0]),
+            np.array([4, 0, 0]),
+        ],
+    )
+    obj.add(VMobject())
+    # submobject[1] is a line of length 2
+    obj.submobjects[1].set_points_as_corners(
+        [
+            np.array([4, 0, 0]),
+            np.array([4, 2, 0]),
+        ],
+    )
+
+    # point at proportion 0.5 should be at length 3, point [3, 0, 0]
+    np.testing.assert_array_equal(obj.point_from_proportion(0.5), np.array([3, 0, 0]))
 
 
 def test_vgroup_init():

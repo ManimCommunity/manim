@@ -4,7 +4,7 @@ from __future__ import annotations
 
 __all__ = ["Brace", "BraceLabel", "ArcBrace", "BraceText", "BraceBetweenPoints"]
 
-from typing import Sequence
+from collections.abc import Sequence
 
 import numpy as np
 import svgelements as se
@@ -12,6 +12,7 @@ import svgelements as se
 from manim._config import config
 from manim.mobject.geometry.arc import Arc
 from manim.mobject.geometry.line import Line
+from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.text.tex_mobject import MathTex, Tex
 
@@ -23,6 +24,8 @@ from ...mobject.types.vectorized_mobject import VMobject
 from ...utils.color import BLACK
 from ..svg.svg_mobject import VMobjectFromSVGPath
 
+__all__ = ["Brace", "BraceBetweenPoints", "BraceLabel", "ArcBrace"]
+
 
 class Brace(VMobjectFromSVGPath):
     """Takes a mobject and draws a brace adjacent to it.
@@ -32,7 +35,7 @@ class Brace(VMobjectFromSVGPath):
 
     Parameters
     ----------
-    mobject : :class:`~.Mobject`
+    mobject
         The mobject adjacent to which the brace is placed.
     direction :
         The direction from which the brace faces the mobject.
@@ -61,7 +64,7 @@ class Brace(VMobjectFromSVGPath):
 
     def __init__(
         self,
-        mobject,
+        mobject: Mobject,
         direction: Sequence[float] | None = DOWN,
         buff=0.2,
         sharpness=2,
@@ -155,24 +158,47 @@ class Brace(VMobjectFromSVGPath):
 
 
 class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
+    """Create a brace with a label attached.
+
+    Parameters
+    ----------
+    obj
+        The mobject adjacent to which the brace is placed.
+    text
+        The label text.
+    brace_direction
+        The direction of the brace. By default ``DOWN``.
+    label_constructor
+        A class or function used to construct a mobject representing
+        the label. By default :class:`~.MathTex`.
+    font_size
+        The font size of the label, passed to the ``label_constructor``.
+    buff
+        The buffer between the mobject and the brace.
+    brace_config
+        Arguments to be passed to :class:`.Brace`.
+    kwargs
+        Additional arguments to be passed to :class:`~.VMobject`.
+    """
+
     def __init__(
         self,
-        obj,
-        text,
-        brace_direction=DOWN,
-        label_constructor=MathTex,
-        font_size=DEFAULT_FONT_SIZE,
-        buff=0.2,
+        obj: Mobject,
+        text: str,
+        brace_direction: np.ndarray = DOWN,
+        label_constructor: type = MathTex,
+        font_size: float = DEFAULT_FONT_SIZE,
+        buff: float = 0.2,
+        brace_config: dict | None = None,
         **kwargs,
     ):
         self.label_constructor = label_constructor
         super().__init__(**kwargs)
 
         self.brace_direction = brace_direction
-        self.buff = buff
-        if isinstance(obj, list):
-            obj = self.get_group_class()(*obj)
-        self.brace = Brace(obj, brace_direction, buff, **kwargs)
+        if brace_config is None:
+            brace_config = {}
+        self.brace = Brace(obj, brace_direction, buff, **brace_config)
 
         if isinstance(text, (tuple, list)):
             self.label = self.label_constructor(font_size=font_size, *text, **kwargs)
@@ -311,10 +337,12 @@ class ArcBrace(Brace):
 
     def __init__(
         self,
-        arc: Arc = Arc(start_angle=-1, angle=2, radius=1),
+        arc: Arc | None = None,
         direction: Sequence[float] = RIGHT,
         **kwargs,
     ):
+        if arc is None:
+            arc = Arc(start_angle=-1, angle=2, radius=1)
         arc_end_angle = arc.start_angle + arc.angle
         line = Line(UP * arc.start_angle, UP * arc_end_angle)
         scale_shift = RIGHT * np.log(arc.radius)

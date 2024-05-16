@@ -40,10 +40,11 @@ __all__ = [
 
 
 import itertools as it
-from typing import Iterable, Sequence
+from collections.abc import Iterable, Sequence
 
 import numpy as np
 
+from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.text.numbers import DecimalNumber, Integer
 from manim.mobject.text.tex_mobject import MathTex, Tex
@@ -72,6 +73,39 @@ def matrix_to_mobject(matrix):
 
 class Matrix(VMobject, metaclass=ConvertToOpenGL):
     """A mobject that displays a matrix on the screen.
+
+    Parameters
+    ----------
+    matrix
+        A numpy 2d array or list of lists.
+    v_buff
+        Vertical distance between elements, by default 0.8.
+    h_buff
+        Horizontal distance between elements, by default 1.3.
+    bracket_h_buff
+        Distance of the brackets from the matrix, by default ``MED_SMALL_BUFF``.
+    bracket_v_buff
+        Height of the brackets, by default ``MED_SMALL_BUFF``.
+    add_background_rectangles_to_entries
+        ``True`` if should add backgraound rectangles to entries, by default ``False``.
+    include_background_rectangle
+        ``True`` if should include background rectangle, by default ``False``.
+    element_to_mobject
+        The mobject class used to construct the elements, by default :class:`~.MathTex`.
+    element_to_mobject_config
+        Additional arguments to be passed to the constructor in ``element_to_mobject``,
+        by default ``{}``.
+    element_alignment_corner
+        The corner to which elements are aligned, by default ``DR``.
+    left_bracket
+        The left bracket type, by default ``"["``.
+    right_bracket
+        The right bracket type, by default ``"]"``.
+    stretch_brackets
+        ``True`` if should stretch the brackets to fit the height of matrix contents, by default ``True``.
+    bracket_config
+        Additional arguments to be passed to :class:`~.MathTex` when constructing
+        the brackets.
 
     Examples
     --------
@@ -145,43 +179,6 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         bracket_config: dict = {},
         **kwargs,
     ):
-        """
-
-        Parameters
-        ----------
-        matrix
-            A numpy 2d array or list of lists.
-        v_buff
-            Vertical distance between elements, by default 0.8.
-        h_buff
-            Horizontal distance between elements, by default 1.3.
-        bracket_h_buff
-            Distance of the brackets from the matrix, by default ``MED_SMALL_BUFF``.
-        bracket_v_buff
-            Height of the brackets, by default ``MED_SMALL_BUFF``.
-        add_background_rectangles_to_entries
-            ``True`` if should add backgraound rectangles to entries, by default ``False``.
-        include_background_rectangle
-            ``True`` if should include background rectangle, by default ``False``.
-        element_to_mobject
-            The mobject class used to construct the elements, by default :class:`~.MathTex`.
-        element_to_mobject_config
-            Additional arguments to be passed to the constructor in ``element_to_mobject``,
-            by default ``{}``.
-        element_alignment_corner
-            The corner to which elements are aligned, by default ``DR``.
-        left_bracket
-            The left bracket type, by default ``"["``.
-        right_bracket
-            The right bracket type, by default ``"]"``.
-        stretch_brackets
-            ``True`` if should stretch the brackets to fit the height of matrix contents, by default ``True``.
-        bracket_config
-            Additional arguments to be passed to :class:`~.MathTex` when constructing
-            the brackets.
-
-        """
-
         self.v_buff = v_buff
         self.h_buff = h_buff
         self.bracket_h_buff = bracket_h_buff
@@ -227,16 +224,16 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
                 )
         return self
 
-    def _add_brackets(self, left="[", right="]", **kwargs):
+    def _add_brackets(self, left: str = "[", right: str = "]", **kwargs):
         """Adds the brackets to the Matrix mobject.
 
         See Latex document for various bracket types.
 
         Parameters
         ----------
-        left : :class:`str`, optional
+        left
             the left bracket, by default "["
-        right : :class:`str`, optional
+        right
             the right bracket, by default "]"
 
         Returns
@@ -310,12 +307,12 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
             )
         )
 
-    def set_column_colors(self, *colors):
+    def set_column_colors(self, *colors: str):
         """Set individual colors for each columns of the matrix.
 
         Parameters
         ----------
-        colors : :class:`str`
+        colors
             The list of colors; each color specified corresponds to a column.
 
         Returns
@@ -362,12 +359,12 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         """
         return VGroup(*(VGroup(*row) for row in self.mob_matrix))
 
-    def set_row_colors(self, *colors):
+    def set_row_colors(self, *colors: str):
         """Set individual colors for each row of the matrix.
 
         Parameters
         ----------
-        colors : :class:`str`
+        colors
             The list of colors; each color specified corresponds to a row.
 
         Returns
@@ -487,9 +484,9 @@ class DecimalMatrix(Matrix):
 
     def __init__(
         self,
-        matrix,
-        element_to_mobject=DecimalNumber,
-        element_to_mobject_config={"num_decimal_places": 1},
+        matrix: Iterable,
+        element_to_mobject: Mobject = DecimalNumber,
+        element_to_mobject_config: dict[str, Mobject] = {"num_decimal_places": 1},
         **kwargs,
     ):
         """
@@ -497,11 +494,11 @@ class DecimalMatrix(Matrix):
 
         Parameters
         ----------
-        matrix : :class:`typing.Iterable`
+        matrix
             A numpy 2d array or list of lists
-        element_to_mobject : :class:`~.Mobject`, optional
+        element_to_mobject
             Mobject to use, by default DecimalNumber
-        element_to_mobject_config : Dict[:class:`str`, :class:`~.Mobject`], optional
+        element_to_mobject_config
             Config for the desired mobject, by default {"num_decimal_places": 1}
         """
         super().__init__(
@@ -530,15 +527,17 @@ class IntegerMatrix(Matrix):
                 self.add(m0)
     """
 
-    def __init__(self, matrix, element_to_mobject=Integer, **kwargs):
+    def __init__(
+        self, matrix: Iterable, element_to_mobject: Mobject = Integer, **kwargs
+    ):
         """
         Will round if there are decimal entries in the matrix.
 
         Parameters
         ----------
-        matrix : :class:`typing.Iterable`
+        matrix
             A numpy 2d array or list of lists
-        element_to_mobject : :class:`~.Mobject`, optional
+        element_to_mobject
             Mobject to use, by default Integer
         """
         super().__init__(matrix, element_to_mobject=element_to_mobject, **kwargs)
@@ -568,25 +567,25 @@ class MobjectMatrix(Matrix):
 
 
 def get_det_text(
-    matrix,
-    determinant=None,
-    background_rect=False,
-    initial_scale_factor=2,
+    matrix: Matrix,
+    determinant: int | str | None = None,
+    background_rect: bool = False,
+    initial_scale_factor: float = 2,
 ):
     r"""Helper function to create determinant.
 
     Parameters
     ----------
-    matrix : :class:`~.Matrix`
+    matrix
         The matrix whose determinant is to be created
 
-    determinant : :class:`int|str`
+    determinant
         The value of the determinant of the matrix
 
-    background_rect : :class:`bool`
+    background_rect
         The background rectangle
 
-    initial_scale_factor : :class:`float`
+    initial_scale_factor
         The scale of the text `det` w.r.t the matrix
 
     Returns

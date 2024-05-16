@@ -159,10 +159,30 @@ def test_AnimationBuilder(scene):
 
 @frames_comparison(last_frame=False)
 def test_ReplacementTransform(scene):
-    v1 = Vector()
-    v2 = Vector()
-    v3 = Line()
-    scene.play(ReplacementTransform(VGroup(v1, v2), v3))
+    yellow = Square(fill_opacity=1.0, fill_color=YELLOW)
+    yellow.move_to([0, 0.75, 0])
+
+    green = Square(fill_opacity=1.0, fill_color=GREEN)
+    green.move_to([-0.75, 0, 0])
+
+    blue = Square(fill_opacity=1.0, fill_color=BLUE)
+    blue.move_to([0.75, 0, 0])
+
+    orange = Square(fill_opacity=1.0, fill_color=ORANGE)
+    orange.move_to([0, -0.75, 0])
+
+    scene.add(yellow)
+    scene.add(VGroup(green, blue))
+    scene.add(orange)
+
+    purple = Circle(fill_opacity=1.0, fill_color=PURPLE)
+    purple.move_to(green)
+
+    scene.play(ReplacementTransform(green, purple))
+    # This pause is important to verify the purple circle remains behind
+    # the blue and orange squares, and the blue square remains behind the
+    # orange square after the transform fully completes.
+    scene.pause()
 
 
 @frames_comparison(last_frame=False)

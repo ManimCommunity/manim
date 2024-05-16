@@ -4,12 +4,12 @@ import inspect
 import sys
 
 
-def get_scenes_to_test(module_name):
+def get_scenes_to_test(module_name: str):
     """Get all Test classes of the module from which it is called. Used to fetch all the SceneTest of the module.
 
     Parameters
     ----------
-    module_name : :class:`str`
+    module_name
         The name of the module tested.
 
     Returns

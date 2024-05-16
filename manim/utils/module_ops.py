@@ -12,6 +12,8 @@ from pathlib import Path
 from .. import config, console, constants, logger
 from ..scene.scene_file_writer import SceneFileWriter
 
+__all__ = ["scene_classes_from_file"]
+
 
 def get_module(file_name: Path):
     if str(file_name) == "-":
@@ -33,11 +35,11 @@ def get_module(file_name: Path):
             logger.error(f"Failed to render scene: {str(e)}")
             sys.exit(2)
     else:
-        if Path(file_name).exists():
+        if file_name.exists():
             ext = file_name.suffix
             if ext != ".py":
                 raise ValueError(f"{file_name} is not a valid Manim python script.")
-            module_name = ext.replace(os.sep, ".").split(".")[-1]
+            module_name = ".".join(file_name.with_suffix("").parts)
 
             warnings.filterwarnings(
                 "default",
@@ -123,7 +125,9 @@ def prompt_user_for_choice(scene_classes):
         sys.exit(1)
 
 
-def scene_classes_from_file(file_path, require_single_scene=False, full_list=False):
+def scene_classes_from_file(
+    file_path: Path, require_single_scene=False, full_list=False
+):
     module = get_module(file_path)
     all_scene_classes = get_scene_classes_from_module(module)
     if full_list:

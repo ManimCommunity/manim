@@ -8,21 +8,21 @@ from manim.mobject.opengl.opengl_point_cloud_mobject import OpenGLPMobject
 from manim.mobject.opengl.opengl_three_dimensions import OpenGLSurface
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 
+from ...constants import RendererType
+
+__all__ = ["ConvertToOpenGL"]
+
 
 class ConvertToOpenGL(ABCMeta):
     """Metaclass for swapping (V)Mobject with its OpenGL counterpart at runtime
     depending on config.renderer. This metaclass should only need to be inherited
     on the lowest order inheritance classes such as Mobject and VMobject.
-
-    Note that with this implementation, changing the value of ``config.renderer``
-    after Manim has been imported won't have the desired effect and will lead to
-    spurious errors.
     """
 
     _converted_classes = []
 
-    def __new__(mcls, name, bases, namespace):
-        if config.renderer == "opengl":
+    def __new__(mcls, name, bases, namespace):  # noqa: B902
+        if config.renderer == RendererType.OPENGL:
             # Must check class names to prevent
             # cyclic importing.
             base_names_to_opengl = {
@@ -40,6 +40,6 @@ class ConvertToOpenGL(ABCMeta):
 
         return super().__new__(mcls, name, bases, namespace)
 
-    def __init__(cls, name, bases, namespace):
+    def __init__(cls, name, bases, namespace):  # noqa: B902
         super().__init__(name, bases, namespace)
         cls._converted_classes.append(cls)

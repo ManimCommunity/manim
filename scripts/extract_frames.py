@@ -1,4 +1,4 @@
-import os
+import pathlib
 import sys
 
 import numpy as np
@@ -10,9 +10,9 @@ def main():
         print_usage()
         sys.exit(1)
     npz_file = sys.argv[1]
-    output_folder = sys.argv[2]
-    if not os.path.exists(output_folder):
-        os.makedirs(output_folder)
+    output_folder = pathlib.Path(sys.argv[2])
+    if not output_folder.exists():
+        output_folder.mkdir(parents=True)
 
     data = np.load(npz_file)
     if "frame_data" not in data:
@@ -22,7 +22,7 @@ def main():
     frames = data["frame_data"]
     for i, frame in enumerate(frames):
         img = Image.fromarray(frame)
-        img.save(os.path.join(output_folder, f"frame{i}.png"))
+        img.save(output_folder / f"frame{i}.png")
     print(f"Saved {len(frames)} frames to {output_folder}")
 
 

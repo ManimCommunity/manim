@@ -73,6 +73,22 @@ def test_non_static_wait_detection(using_temp_config, disabling_caching):
     assert not scene.is_current_animation_frozen_frame()
 
 
+def test_wait_with_stop_condition(using_temp_config, disabling_caching):
+    class TestScene(Scene):
+        def construct(self):
+            self.wait_until(lambda: self.renderer.time >= 1)
+            assert self.renderer.time >= 1
+            d = Dot()
+            d.add_updater(lambda mobj, dt: self.add(Mobject()))
+            self.add(d)
+            self.play(Wait(run_time=5, stop_condition=lambda: len(self.mobjects) > 5))
+            assert len(self.mobjects) > 5
+            assert self.renderer.time < 2
+
+    scene = TestScene()
+    scene.render()
+
+
 def test_frozen_frame(using_temp_config, disabling_caching):
     scene = SceneForFrozenFrameTests()
     scene.render()

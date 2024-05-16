@@ -63,7 +63,6 @@ def test_NumberPlane():
     ]
 
     for test_data in testing_data:
-
         x_range, y_range = test_data
 
         x_start, x_end = x_range

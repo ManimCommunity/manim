@@ -2,12 +2,13 @@ from __future__ import annotations
 
 import re
 
-import click
-from cloup import option, option_group
+from cloup import Choice, option, option_group
 
-from manim.constants import QUALITIES
+from manim.constants import QUALITIES, RendererType
 
 from ... import logger
+
+__all__ = ["render_options"]
 
 
 def validate_scene_range(ctx, param, value):
@@ -55,15 +56,21 @@ render_options = option_group(
     ),
     option(
         "--format",
-        type=click.Choice(["png", "gif", "mp4", "webm", "mov"], case_sensitive=False),
+        type=Choice(["png", "gif", "mp4", "webm", "mov"], case_sensitive=False),
         default=None,
     ),
-    option("-s", "--save_last_frame", is_flag=True, default=None),
+    option(
+        "-s",
+        "--save_last_frame",
+        default=None,
+        is_flag=True,
+        help="Render and save only the last frame of a scene as a PNG image.",
+    ),
     option(
         "-q",
         "--quality",
         default=None,
-        type=click.Choice(
+        type=Choice(
             list(reversed([q["flag"] for q in QUALITIES.values() if q["flag"]])),  # type: ignore
             case_sensitive=False,
         ),
@@ -83,7 +90,7 @@ render_options = option_group(
         "--resolution",
         callback=validate_resolution,
         default=None,
-        help="Resolution in (W,H) for when 16:9 aspect ratio isn't possible.",
+        help='Resolution in "W,H" for when 16:9 aspect ratio isn\'t possible.',
     ),
     option(
         "--fps",
@@ -95,15 +102,12 @@ render_options = option_group(
     ),
     option(
         "--renderer",
-        type=click.Choice(["cairo", "opengl"], case_sensitive=False),
+        type=Choice(
+            [renderer_type.value for renderer_type in RendererType],
+            case_sensitive=False,
+        ),
         help="Select a renderer for your Scene.",
-        default=None,
-    ),
-    option(
-        "--use_opengl_renderer",
-        is_flag=True,
-        help="Render scenes using OpenGL (Deprecated).",
-        default=None,
+        default="cairo",
     ),
     option(
         "-g",
@@ -124,13 +128,6 @@ render_options = option_group(
         default=None,
         is_flag=True,
         help="Save section videos in addition to movie file.",
-    ),
-    option(
-        "-s",
-        "--save_last_frame",
-        default=None,
-        is_flag=True,
-        help="Save last frame as png (Deprecated).",
     ),
     option(
         "-t",

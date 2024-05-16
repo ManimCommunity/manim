@@ -12,6 +12,8 @@ from manim.utils.color import BLACK, WHITE, YELLOW, color_gradient, color_to_rgb
 from manim.utils.config_ops import _Uniforms
 from manim.utils.iterables import resize_with_interpolation
 
+__all__ = ["OpenGLPMobject", "OpenGLPGroup", "OpenGLPMPoint"]
+
 
 class OpenGLPMobject(OpenGLMobject):
     shader_folder = "true_dot"
@@ -162,7 +164,7 @@ class OpenGLPMobject(OpenGLMobject):
 
 class OpenGLPGroup(OpenGLPMobject):
     def __init__(self, *pmobs, **kwargs):
-        if not all([isinstance(m, OpenGLPMobject) for m in pmobs]):
+        if not all(isinstance(m, OpenGLPMobject) for m in pmobs):
             raise Exception("All submobjects must be of type OpenglPMObject")
         super().__init__(**kwargs)
         self.add(*pmobs)

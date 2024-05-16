@@ -2,6 +2,28 @@
 
 from __future__ import annotations
 
+import itertools as it
+from collections.abc import Sequence
+from typing import TYPE_CHECKING
+
+import numpy as np
+from mapbox_earcut import triangulate_float32 as earcut
+from scipy.spatial.transform import Rotation
+
+from manim.constants import DOWN, OUT, PI, RIGHT, TAU, UP, RendererType
+from manim.utils.iterables import adjacent_pairs
+
+if TYPE_CHECKING:
+    import numpy.typing as npt
+
+    from manim.typing import (
+        ManimFloat,
+        Point3D_Array,
+        Vector2D,
+        Vector2D_Array,
+        Vector3D,
+    )
+
 __all__ = [
     "quaternion_mult",
     "quaternion_from_angle_axis",
@@ -36,21 +58,18 @@ __all__ = [
 ]
 
 
-import itertools as it
-import math
-from typing import Sequence
-
-import numpy as np
-from mapbox_earcut import triangulate_float32 as earcut
-from scipy.spatial.transform import Rotation
-
-from .. import config
-from ..constants import DOWN, OUT, PI, RIGHT, TAU, UP
-from ..utils.iterables import adjacent_pairs
-
-
 def norm_squared(v: float) -> float:
     return np.dot(v, v)
+
+
+def cross(v1: Vector3D, v2: Vector3D) -> Vector3D:
+    return np.array(
+        [
+            v1[1] * v2[2] - v1[2] * v2[1],
+            v1[2] * v2[0] - v1[0] * v2[2],
+            v1[0] * v2[1] - v1[1] * v2[0],
+        ]
+    )
 
 
 # Quaternions
@@ -69,34 +88,19 @@ def quaternion_mult(
     Union[np.ndarray, List[Union[float, np.ndarray]]]
         Returns a list of product of two quaternions.
     """
-    if config.renderer == "opengl":
-        if len(quats) == 0:
-            return [1, 0, 0, 0]
-        result = quats[0]
-        for next_quat in quats[1:]:
-            w1, x1, y1, z1 = result
-            w2, x2, y2, z2 = next_quat
-            result = [
-                w1 * w2 - x1 * x2 - y1 * y2 - z1 * z2,
-                w1 * x2 + x1 * w2 + y1 * z2 - z1 * y2,
-                w1 * y2 + y1 * w2 + z1 * x2 - x1 * z2,
-                w1 * z2 + z1 * w2 + x1 * y2 - y1 * x2,
-            ]
-        return result
-    else:
-        q1 = quats[0]
-        q2 = quats[1]
-
-        w1, x1, y1, z1 = q1
-        w2, x2, y2, z2 = q2
-        return np.array(
-            [
-                w1 * w2 - x1 * x2 - y1 * y2 - z1 * z2,
-                w1 * x2 + x1 * w2 + y1 * z2 - z1 * y2,
-                w1 * y2 + y1 * w2 + z1 * x2 - x1 * z2,
-                w1 * z2 + z1 * w2 + x1 * y2 - y1 * x2,
-            ],
-        )
+    if len(quats) == 0:
+        return [1, 0, 0, 0]
+    result = quats[0]
+    for next_quat in quats[1:]:
+        w1, x1, y1, z1 = result
+        w2, x2, y2, z2 = next_quat
+        result = [
+            w1 * w2 - x1 * x2 - y1 * y2 - z1 * z2,
+            w1 * x2 + x1 * w2 + y1 * z2 - z1 * y2,
+            w1 * y2 + y1 * w2 + z1 * x2 - x1 * z2,
+            w1 * z2 + z1 * w2 + x1 * y2 - y1 * x2,
+        ]
+    return result
 
 
 def quaternion_from_angle_axis(
@@ -114,20 +118,17 @@ def quaternion_from_angle_axis(
         The angle for the quaternion.
     axis
         The axis for the quaternion
-    axis_normalized : bool, optional
+    axis_normalized
         Checks whether the axis is normalized, by default False
 
     Returns
     -------
-    List[float]
+    list[float]
         Gives back a quaternion from the angle and axis
     """
-    if config.renderer == "opengl":
-        if not axis_normalized:
-            axis = normalize(axis)
-        return [math.cos(angle / 2), *(math.sin(angle / 2) * axis)]
-    else:
-        return np.append(np.cos(angle / 2), np.sin(angle / 2) * normalize(axis))
+    if not axis_normalized:
+        axis = normalize(axis)
+    return [np.cos(angle / 2), *(np.sin(angle / 2) * axis)]
 
 
 def angle_axis_from_quaternion(quaternion: Sequence[float]) -> Sequence[float]:
@@ -267,7 +268,7 @@ def rotation_about_z(angle: float) -> np.ndarray:
 
     Parameters
     ----------
-    angle : float
+    angle
         Angle for the rotation matrix.
 
     Returns
@@ -275,7 +276,7 @@ def rotation_about_z(angle: float) -> np.ndarray:
     np.ndarray
         Gives back the rotated matrix.
     """
-    c, s = math.cos(angle), math.sin(angle)
+    c, s = np.cos(angle), np.sin(angle)
     return np.array(
         [
             [c, -s, 0],
@@ -291,12 +292,12 @@ def z_to_vector(vector: np.ndarray) -> np.ndarray:
     (normalized) vector provided as an argument
     """
     axis_z = normalize(vector)
-    axis_y = normalize(np.cross(axis_z, RIGHT))
-    axis_x = np.cross(axis_y, axis_z)
+    axis_y = normalize(cross(axis_z, RIGHT))
+    axis_x = cross(axis_y, axis_z)
     if np.linalg.norm(axis_y) == 0:
         # the vector passed just so happened to be in the x direction.
-        axis_x = normalize(np.cross(UP, axis_z))
-        axis_y = -np.cross(axis_x, axis_z)
+        axis_x = normalize(cross(UP, axis_z))
+        axis_y = -cross(axis_x, axis_z)
 
     return np.array([axis_x, axis_y, axis_z]).T
 
@@ -324,7 +325,7 @@ def angle_of_vector(vector: Sequence[float] | np.ndarray) -> float:
     return np.angle(complex(*vector[:2]))
 
 
-def angle_between_vectors(v1: np.ndarray, v2: np.ndarray) -> np.ndarray:
+def angle_between_vectors(v1: np.ndarray, v2: np.ndarray) -> float:
     """Returns the angle between two vectors.
     This angle will always be between 0 and pi
 
@@ -337,7 +338,7 @@ def angle_between_vectors(v1: np.ndarray, v2: np.ndarray) -> np.ndarray:
 
     Returns
     -------
-    np.ndarray
+    float
         The angle between the vectors.
     """
 
@@ -377,7 +378,7 @@ def normalize_along_axis(array: np.ndarray, axis: np.ndarray) -> np.ndarray:
     return array
 
 
-def get_unit_normal(v1: np.ndarray, v2: np.ndarray, tol: float = 1e-6) -> np.ndarray:
+def get_unit_normal(v1: Vector3D, v2: Vector3D, tol: float = 1e-6) -> Vector3D:
     """Gets the unit normal of the vectors.
 
     Parameters
@@ -394,16 +395,37 @@ def get_unit_normal(v1: np.ndarray, v2: np.ndarray, tol: float = 1e-6) -> np.nda
     np.ndarray
         The normal of the two vectors.
     """
-    v1, v2 = (normalize(i) for i in (v1, v2))
-    cp = np.cross(v1, v2)
-    cp_norm = np.linalg.norm(cp)
-    if cp_norm < tol:
-        # Vectors align, so find a normal to them in the plane shared with the z-axis
-        cp = np.cross(np.cross(v1, OUT), v1)
-        cp_norm = np.linalg.norm(cp)
-        if cp_norm < tol:
+    # Instead of normalizing v1 and v2, just divide by the greatest
+    # of all their absolute components, which is just enough
+    div1, div2 = max(np.abs(v1)), max(np.abs(v2))
+    if div1 == 0.0:
+        if div2 == 0.0:
             return DOWN
-    return normalize(cp)
+        u = v2 / div2
+    elif div2 == 0.0:
+        u = v1 / div1
+    else:
+        # Normal scenario: v1 and v2 are both non-null
+        u1, u2 = v1 / div1, v2 / div2
+        cp = cross(u1, u2)
+        cp_norm = np.sqrt(norm_squared(cp))
+        if cp_norm > tol:
+            return cp / cp_norm
+        # Otherwise, v1 and v2 were aligned
+        u = u1
+
+    # If you are here, you have an "unique", non-zero, unit-ish vector u
+    # If it's also too aligned to the Z axis, just return DOWN
+    if abs(u[0]) < tol and abs(u[1]) < tol:
+        return DOWN
+    # Otherwise rotate u in the plane it shares with the Z axis,
+    # 90° TOWARDS the Z axis. This is done via (u x [0, 0, 1]) x u,
+    # which gives [-xz, -yz, x²+y²] (slightly scaled as well)
+    cp = np.array([-u[0] * u[2], -u[1] * u[2], u[0] * u[0] + u[1] * u[1]])
+    cp_norm = np.sqrt(norm_squared(cp))
+    # Because the norm(u) == 0 case was filtered in the beginning,
+    # there is no need to check if the norm of cp is 0
+    return cp / cp_norm
 
 
 ###
@@ -547,8 +569,8 @@ def line_intersection(
         np.pad(np.array(i)[:, :2], ((0, 0), (0, 1)), constant_values=1)
         for i in (line1, line2)
     )
-    line1, line2 = (np.cross(*i) for i in padded)
-    x, y, z = np.cross(line1, line2)
+    line1, line2 = (cross(*i) for i in padded)
+    x, y, z = cross(line1, line2)
 
     if z == 0:
         raise ValueError(
@@ -559,10 +581,10 @@ def line_intersection(
 
 
 def find_intersection(
-    p0s: Sequence[np.ndarray],
-    v0s: Sequence[np.ndarray],
-    p1s: Sequence[np.ndarray],
-    v1s: Sequence[np.ndarray],
+    p0s: Sequence[np.ndarray] | Point3D_Array,
+    v0s: Sequence[np.ndarray] | Point3D_Array,
+    p1s: Sequence[np.ndarray] | Point3D_Array,
+    v1s: Sequence[np.ndarray] | Point3D_Array,
     threshold: float = 1e-5,
 ) -> Sequence[np.ndarray]:
     """
@@ -576,7 +598,7 @@ def find_intersection(
     result = []
 
     for p0, v0, p1, v1 in zip(*[p0s, v0s, p1s, v1s]):
-        normal = np.cross(v1, np.cross(v0, v1))
+        normal = cross(v1, cross(v0, v1))
         denom = max(np.dot(v0, normal), threshold)
         result += [p0 + np.dot(p1 - p0, normal) / denom * v0]
     return result
@@ -640,7 +662,39 @@ def shoelace_direction(x_y: np.ndarray) -> str:
     return "CW" if area > 0 else "CCW"
 
 
-def cross2d(a, b):
+def cross2d(
+    a: Vector2D | Vector2D_Array,
+    b: Vector2D | Vector2D_Array,
+) -> ManimFloat | npt.NDArray[ManimFloat]:
+    """Compute the determinant(s) of the passed
+    vector (sequences).
+
+    Parameters
+    ----------
+    a
+        A vector or a sequence of vectors.
+    b
+        A vector or a sequence of vectors.
+
+    Returns
+    -------
+    Sequence[float] | float
+        The determinant or sequence of determinants
+        of the first two components of the specified
+        vectors.
+
+    Examples
+    --------
+    .. code-block:: pycon
+
+        >>> cross2d(np.array([1, 2]), np.array([3, 4]))
+        -2
+        >>> cross2d(
+        ...     np.array([[1, 2, 0], [1, 0, 0]]),
+        ...     np.array([[3, 4, 0], [0, 1, 0]]),
+        ... )
+        array([-2,  1])
+    """
     if len(a.shape) == 2:
         return a[:, 0] * b[:, 1] - a[:, 1] * b[:, 0]
     else:
@@ -702,9 +756,14 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
 
         # Move the ring which j belongs to from the
         # attached list to the detached list
-        new_ring = next(filter(lambda ring: ring[0] <= j < ring[-1], detached_rings))
-        detached_rings.remove(new_ring)
-        attached_rings.append(new_ring)
+        new_ring = next(
+            (ring for ring in detached_rings if ring[0] <= j < ring[-1]), None
+        )
+        if new_ring is not None:
+            detached_rings.remove(new_ring)
+            attached_rings.append(new_ring)
+        else:
+            raise Exception("Could not find a ring to attach")
 
     # Setup linked list
     after = []
@@ -801,6 +860,6 @@ def perpendicular_bisector(
     """
     p1 = line[0]
     p2 = line[1]
-    direction = np.cross(p1 - p2, norm_vector)
+    direction = cross(p1 - p2, norm_vector)
     m = midpoint(p1, p2)
     return [m + direction, m - direction]

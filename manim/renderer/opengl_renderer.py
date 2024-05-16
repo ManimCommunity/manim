@@ -3,12 +3,8 @@ from __future__ import annotations
 import itertools as it
 import sys
 import time
+from functools import cached_property
 from typing import Any
-
-if sys.version_info < (3, 8):
-    from backports.cached_property import cached_property
-else:
-    from functools import cached_property
 
 import moderngl
 import numpy as np
@@ -38,6 +34,8 @@ from .vectorized_mobject_rendering import (
     render_opengl_vectorized_mobject_fill,
     render_opengl_vectorized_mobject_stroke,
 )
+
+__all__ = ["OpenGLCamera", "OpenGLRenderer"]
 
 
 class OpenGLCamera(OpenGLMobject):
@@ -215,15 +213,6 @@ class OpenGLCamera(OpenGLMobject):
     def interpolate(self, *args, **kwargs):
         super().interpolate(*args, **kwargs)
         self.refresh_rotation_matrix()
-
-
-points_per_curve = 3
-JOINT_TYPE_MAP = {
-    "auto": 0,
-    "round": 1,
-    "bevel": 2,
-    "miter": 3,
-}
 
 
 class OpenGLRenderer:
@@ -432,8 +421,9 @@ class OpenGLRenderer:
             self.update_frame(scene)
 
             if not self.skip_animations:
-                for _ in range(int(config.frame_rate * scene.duration)):
-                    self.file_writer.write_frame(self)
+                self.file_writer.write_frame(
+                    self, num_frames=int(config.frame_rate * scene.duration)
+                )
 
             if self.window is not None:
                 self.window.swap_buffers()

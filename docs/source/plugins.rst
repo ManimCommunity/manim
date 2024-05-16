@@ -81,6 +81,7 @@ For specifying multiple plugins, comma-separated values must be used.
 
 Creating Plugins
 ****************
+
 Plugins are intended to extend Manim's core functionality. If you aren't sure
 whether a feature should be included in Manim's core, feel free to ask over
 on the `Discord server <https://www.manim.community/discord/>`_. Visit
@@ -98,37 +99,34 @@ directory structure, build system, and naming are completely up to your
 discretion as an author. The aforementioned template plugin is only a model
 using Poetry since this is the build system Manim uses. The plugin's `entry
 point <https://packaging.python.org/specifications/entry-points/>`_ can be
-specified in poetry as:
+specified in Poetry as:
 
 .. code-block:: toml
 
     [tool.poetry.plugins."manim.plugins"]
     "name" = "object_reference"
 
-Here ``name`` is the name of the module of the plugin.
+.. versionremoved:: 0.19.0
 
-Here ``object_reference`` can point to either a function in a module or a module
-itself. For example,
+    Plugins should be imported explicitly to be usable in user code. The plugin
+    system will probably be refactored in the future to provide a more structured
+    interface.
 
-.. code-block:: toml
+A note on Renderer Compatibility
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-    [tool.poetry.plugins."manim.plugins"]
-    "manim_plugintemplate" = "manim_plugintemplate"
+Depending on which renderer is currently active, custom mobjects
+created in your plugin might want to behave differently as the
+corresponding mobject base classes are (unfortunately) not fully
+compatible.
 
-Here a module is used as ``object_reference``, and when this plugin is enabled,
-Manim will look for ``__all__`` keyword defined in ``manim_plugintemplate`` and
-everything as a global variable one by one.
+The currently active renderer can be queried by checking the value
+of ``manim.config.renderer``. All possible renderer types are given
+by :class:`.constants.RendererType`. The module :mod:`.manim.mobject.utils`
+contains utility functions that return the base class for the currently
+active renderer.
 
-If ``object_reference`` is a function, Manim calls the function and expects the
-function to return a list of modules or functions that need to be defined globally.
-
-For example,
-
-.. code-block:: toml
-
-    [tool.poetry.plugins."manim.plugins"]
-    "manim_plugintemplate" = "manim_awesomeplugin.imports:setup_things"
-
-Here, Manim will call the function ``setup_things`` defined in
-``manim_awesomeplugin.imports`` and calls that. It returns a list of function or
-modules which will be imported globally.
+A simple form of renderer compatibility (by hot-swapping the class
+inheritance chain) for Mobjects directly inheriting from
+:class:`.Mobject` or :class:`.VMobject` can be achieved by using the
+:class:`.mobject.opengl.opengl_compatibility.ConvertToOpenGL` metaclass.

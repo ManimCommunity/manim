@@ -1,22 +1,29 @@
 from __future__ import annotations
 
 import copy
+import inspect
 import itertools as it
 import random
 import sys
+from collections.abc import Iterable, Sequence
 from functools import partialmethod, wraps
 from math import ceil
-from typing import Iterable, Sequence
 
 import moderngl
 import numpy as np
-from colour import Color
 
 from manim import config, logger
 from manim.constants import *
+from manim.renderer.shader_wrapper import get_colormap_code
 from manim.utils.bezier import integer_interpolate, interpolate
-from manim.utils.color import *
-from manim.utils.color import Colors
+from manim.utils.color import (
+    WHITE,
+    ManimColor,
+    ParsableManimColor,
+    color_gradient,
+    color_to_rgb,
+    rgb_to_hex,
+)
 from manim.utils.config_ops import _Data, _Uniforms
 
 # from ..utils.iterables import batch_by_property
@@ -31,12 +38,25 @@ from manim.utils.iterables import (
     uniq_chain,
 )
 from manim.utils.paths import straight_path
-from manim.utils.simple_functions import get_parameters
 from manim.utils.space_ops import (
     angle_between_vectors,
     normalize,
     rotation_matrix_transpose,
 )
+
+
+def affects_shader_info_id(func):
+    @wraps(func)
+    def wrapper(self):
+        for mob in self.get_family():
+            func(mob)
+            mob.refresh_shader_wrapper_id()
+        return self
+
+    return wrapper
+
+
+__all__ = ["OpenGLMobject", "OpenGLGroup", "OpenGLPoint", "_AnimationBuilder"]
 
 
 class OpenGLMobject:
@@ -93,8 +113,10 @@ class OpenGLMobject:
         listen_to_events=False,
         model_matrix=None,
         should_render=True,
+        name: str | None = None,
         **kwargs,
     ):
+        self.name = self.__class__.__name__ if name is None else name
         # getattr in case data/uniforms are already defined in parent classes.
         self.data = getattr(self, "data", {})
         self.uniforms = getattr(self, "uniforms", {})
@@ -133,7 +155,7 @@ class OpenGLMobject:
         self.init_updaters()
         # self.init_event_listners()
         self.init_points()
-        self.color = Color(color) if color else None
+        self.color = ManimColor.parse(color)
         self.init_colors()
 
         self.shader_indices = None
@@ -152,19 +174,19 @@ class OpenGLMobject:
         return self.__class__.__name__
 
     def __repr__(self):
-        return self.__class__.__name__
+        return str(self.name)
 
     def __sub__(self, other):
-        raise NotImplementedError
+        return NotImplemented
 
     def __isub__(self, other):
-        raise NotImplementedError
+        return NotImplemented
 
     def __add__(self, mobject):
-        raise NotImplementedError
+        return NotImplemented
 
     def __iadd__(self, mobject):
-        raise NotImplementedError
+        return NotImplemented
 
     @classmethod
     def set_default(cls, **kwargs):
@@ -190,10 +212,10 @@ class OpenGLMobject:
             >>> from manim import Square, GREEN
             >>> Square.set_default(color=GREEN, fill_opacity=0.25)
             >>> s = Square(); s.color, s.fill_opacity
-            (<Color #83c167>, 0.25)
+            (ManimColor('#83C167'), 0.25)
             >>> Square.set_default()
             >>> s = Square(); s.color, s.fill_opacity
-            (<Color white>, 0.0)
+            (ManimColor('#FFFFFF'), 0.0)
 
         .. manim:: ChangedDefaultTextcolor
             :save_last_frame:
@@ -570,7 +592,7 @@ class OpenGLMobject:
         self.set_points(mobject.points)
 
     def clear_points(self):
-        self.resize_points(0)
+        self.points = np.empty((0, 3))
 
     def get_num_points(self):
         return len(self.points)
@@ -1364,7 +1386,7 @@ class OpenGLMobject:
         return list(it.chain(*(sm.get_updaters() for sm in self.get_family())))
 
     def add_updater(self, update_function, index=None, call_updater=False):
-        if "dt" in get_parameters(update_function):
+        if "dt" in inspect.signature(update_function).parameters:
             updater_list = self.time_based_updaters
         else:
             updater_list = self.non_time_updaters
@@ -1958,12 +1980,12 @@ class OpenGLMobject:
         for mob in self.get_family(recurse):
             mob.data[name] = rgbas.copy()
 
-    def set_color(self, color, opacity=None, recurse=True):
+    def set_color(self, color: ParsableManimColor | None, opacity=None, recurse=True):
         self.set_rgba_array(color, opacity, recurse=False)
         # Recurse to submobjects differently from how set_rgba_array
         # in case they implement set_color differently
         if color is not None:
-            self.color = Color(color)
+            self.color: ManimColor = ManimColor.parse(color)
         if opacity is not None:
             self.opacity = opacity
         if recurse:
@@ -2024,7 +2046,7 @@ class OpenGLMobject:
     # Background rectangle
 
     def add_background_rectangle(
-        self, color: Colors | None = None, opacity: float = 0.75, **kwargs
+        self, color: ParsableManimColor | None = None, opacity: float = 0.75, **kwargs
     ):
         # TODO, this does not behave well when the mobject has points,
         # since it gets displayed on top
@@ -2531,16 +2553,6 @@ class OpenGLMobject:
 
     # Operations touching shader uniforms
 
-    def affects_shader_info_id(func):
-        @wraps(func)
-        def wrapper(self):
-            for mob in self.get_family():
-                func(mob)
-                # mob.refresh_shader_wrapper_id()
-            return self
-
-        return wrapper
-
     @affects_shader_info_id
     def fix_in_frame(self):
         self.is_fixed_in_frame = 1.0
@@ -2623,12 +2635,15 @@ class OpenGLMobject:
 
     # For shader data
 
-    # def refresh_shader_wrapper_id(self):
-    #     self.shader_wrapper.refresh_id()
-    #     return self
+    def refresh_shader_wrapper_id(self):
+        self.get_shader_wrapper().refresh_id()
+        return self
 
     def get_shader_wrapper(self):
         from manim.renderer.shader_wrapper import ShaderWrapper
+
+        # if hasattr(self, "__shader_wrapper"):
+        # return self.__shader_wrapper
 
         self.shader_wrapper = ShaderWrapper(
             vert_data=self.get_shader_data(),
@@ -2719,7 +2734,7 @@ class OpenGLMobject:
 
 class OpenGLGroup(OpenGLMobject):
     def __init__(self, *mobjects, **kwargs):
-        if not all([isinstance(m, OpenGLMobject) for m in mobjects]):
+        if not all(isinstance(m, OpenGLMobject) for m in mobjects):
             raise Exception("All submobjects must be of type OpenGLMobject")
         super().__init__(**kwargs)
         self.add(*mobjects)

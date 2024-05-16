@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import math
-from typing import TYPE_CHECKING, Any, Iterable
+from collections.abc import Iterable
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
@@ -14,15 +15,15 @@ if TYPE_CHECKING:
 
 
 class _ScaleBase:
-    """Scale baseclass for graphing/functions."""
+    """Scale baseclass for graphing/functions.
+
+    Parameters
+    ----------
+    custom_labels
+        Whether to create custom labels when plotted on a :class:`~.NumberLine`.
+    """
 
     def __init__(self, custom_labels: bool = False):
-        """
-        Parameters
-        ----------
-        custom_labels
-            Whether to create custom labels when plotted on a :class:`~.NumberLine`.
-        """
         self.custom_labels = custom_labels
 
     def function(self, value: float) -> float:
@@ -122,9 +123,9 @@ class LogBase(_ScaleBase):
         ----------
         base
             The base of the log, by default 10.
-        custom_labels : bool, optional
+        custom_labels
             For use with :class:`~.Axes`:
-            Whetherer or not to include ``LaTeX`` axis labels, by default True.
+            Whether or not to include ``LaTeX`` axis labels, by default True.
 
         Examples
         --------

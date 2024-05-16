@@ -1,6 +1,5 @@
 """Helpers functions for devs to set up new graphical-units data."""
 
-
 from __future__ import annotations
 
 import tempfile
@@ -9,17 +8,18 @@ from pathlib import Path
 import numpy as np
 
 from manim import config, logger
+from manim.scene.scene import Scene
 
 
-def set_test_scene(scene_object, module_name):
+def set_test_scene(scene_object: type[Scene], module_name: str):
     """Function used to set up the test data for a new feature. This will basically set up a pre-rendered frame for a scene. This is meant to be used only
     when setting up tests. Please refer to the wiki.
 
     Parameters
     ----------
-    scene_object : :class:`~.Scene`
+    scene_object
         The scene with which we want to set up a new test.
-    module_name : :class:`str`
+    module_name
         The name of the module in which the functionality tested is contained. For example, ``Write`` is contained in the module ``creation``. This will be used in the folder architecture
         of ``/tests_data``.
 

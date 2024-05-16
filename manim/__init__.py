@@ -1,35 +1,22 @@
 #!/usr/bin/env python
-
-
 from __future__ import annotations
 
-import pkg_resources
+from importlib.metadata import version
 
-__version__: str = pkg_resources.get_distribution(__name__).version
+__version__ = version(__name__)
 
 
-import sys
+# isort: off
 
 # Importing the config module should be the first thing we do, since other
 # modules depend on the global config dict for initialization.
 from ._config import *
 
-# Workaround to set the renderer passed via CLI args *before* importing
-# Manim's classes (as long as the metaclass approach for switching
-# between OpenGL and cairo rendering is in place, classes depend
-# on the value of config.renderer).
-for i, arg in enumerate(sys.argv):
-    if arg.startswith("--renderer"):
-        if "=" in arg:
-            _, parsed_renderer = arg.split("=")
-        else:
-            parsed_renderer = sys.argv[i + 1]
-        config.renderer = parsed_renderer
-    elif arg == "--use_opengl_renderer":
-        config.renderer = "opengl"
-
 # many scripts depend on this -> has to be loaded first
-from .utils.commands import *  # isort:skip
+from .utils.commands import *
+
+# isort: on
+import numpy as np
 
 from .animation.animation import *
 from .animation.changing import *
@@ -56,6 +43,7 @@ from .constants import *
 from .mobject.frame import *
 from .mobject.geometry.arc import *
 from .mobject.geometry.boolean_ops import *
+from .mobject.geometry.labeled import *
 from .mobject.geometry.line import *
 from .mobject.geometry.polygram import *
 from .mobject.geometry.shape_matchers import *

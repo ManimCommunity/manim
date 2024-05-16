@@ -2,9 +2,16 @@
 
 from __future__ import annotations
 
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+
 __all__ = ["NumberLine", "UnitInterval"]
 
-from typing import Iterable, Sequence
+
+from collections.abc import Iterable, Sequence
+from typing import TYPE_CHECKING, Callable
+
+if TYPE_CHECKING:
+    from manim.mobject.geometry.tips import ArrowTip
 
 import numpy as np
 
@@ -49,6 +56,10 @@ class NumberLine(Line):
         The width of the tip.
     tip_height
         The height of the tip.
+    tip_shape
+        The mobject class used to construct the tip, or ``None`` (the
+        default) for the default arrow tip. Passed classes have to inherit
+        from :class:`.ArrowTip`.
     include_numbers
         Whether to add numbers to the tick marks. The number of decimal places is determined
         by the step size, this default can be overridden by ``decimal_number_config``.
@@ -140,6 +151,7 @@ class NumberLine(Line):
         include_tip: bool = False,
         tip_width: float = DEFAULT_ARROW_TIP_LENGTH,
         tip_height: float = DEFAULT_ARROW_TIP_LENGTH,
+        tip_shape: type[ArrowTip] | None = None,
         # numbers/labels
         include_numbers: bool = False,
         font_size: float = 36,
@@ -173,7 +185,7 @@ class NumberLine(Line):
                 "num_decimal_places": self._decimal_places_from_step(x_range[2]),
             }
 
-        # turn into into an np array to scale by just applying the function
+        # turn into a NumPy array to scale by just applying the function
         self.x_range = np.array(x_range, dtype=float)
         self.x_min, self.x_max, self.x_step = scaling.function(self.x_range)
         self.length = length
@@ -217,7 +229,11 @@ class NumberLine(Line):
         self.center()
 
         if self.include_tip:
-            self.add_tip(tip_length=self.tip_height, tip_width=self.tip_width)
+            self.add_tip(
+                tip_length=self.tip_height,
+                tip_width=self.tip_width,
+                tip_shape=tip_shape,
+            )
             self.tip.set_stroke(self.stroke_color, self.stroke_width)
 
         if self.include_ticks:
@@ -262,9 +278,10 @@ class NumberLine(Line):
         via ``self.ticks``."""
         ticks = VGroup()
         elongated_tick_size = self.tick_size * self.longer_tick_multiple
+        elongated_tick_offsets = self.numbers_with_elongated_ticks - self.x_min
         for x in self.get_tick_range():
             size = self.tick_size
-            if x in self.numbers_with_elongated_ticks:
+            if np.any(np.isclose(x - self.x_min, elongated_tick_offsets)):
                 size = elongated_tick_size
             ticks.add(self.get_tick(x, size))
         self.add(ticks)
@@ -459,7 +476,7 @@ class NumberLine(Line):
         num_mob.next_to(self.number_to_point(x), direction=direction, buff=buff)
         if x < 0 and self.label_direction[0] == 0:
             # Align without the minus sign
-            num_mob.shift(num_mob[0].get_width() * LEFT / 2)
+            num_mob.shift(num_mob[0].width * LEFT / 2)
         return num_mob
 
     def get_number_mobjects(self, *numbers, **kwargs) -> VGroup:
@@ -562,20 +579,18 @@ class NumberLine(Line):
         direction = self.label_direction if direction is None else direction
         buff = self.line_to_number_buff if buff is None else buff
         font_size = self.font_size if font_size is None else font_size
-        label_constructor = (
-            self.label_constructor if label_constructor is None else label_constructor
-        )
+        if label_constructor is None:
+            label_constructor = self.label_constructor
 
         labels = VGroup()
         for x, label in dict_values.items():
-
             # TODO: remove this check and ability to call
             # this method via CoordinateSystem.add_coordinates()
             # must be explicitly called
-            if isinstance(label, str) and self.label_constructor is MathTex:
+            if isinstance(label, str) and label_constructor is MathTex:
                 label = Tex(label)
             else:
-                label = self._create_label_tex(label)
+                label = self._create_label_tex(label, label_constructor)
 
             if hasattr(label, "font_size"):
                 label.font_size = font_size
@@ -589,28 +604,36 @@ class NumberLine(Line):
         return self
 
     def _create_label_tex(
-        self, label_tex: str | float | VMobject, **kwargs
+        self,
+        label_tex: str | float | VMobject,
+        label_constructor: Callable | None = None,
+        **kwargs,
     ) -> VMobject:
         """Checks if the label is a :class:`~.VMobject`, otherwise, creates a
-        label according to the ``label_constructor``.
+        label by passing ``label_tex`` to ``label_constructor``.
 
         Parameters
         ----------
         label_tex
-            The label to be compared against the above types.
+            The label for which a mobject should be created. If the label already
+            is a mobject, no new mobject is created.
         label_constructor
-            The VMobject class used to construct the label.
+            Optional. A class or function returning a mobject when
+            passing ``label_tex`` as an argument. If ``None`` is passed
+            (the default), the label constructor from the :attr:`.label_constructor`
+            attribute is used.
 
         Returns
         -------
         :class:`~.VMobject`
             The label.
         """
-
-        if isinstance(label_tex, VMobject):
+        if label_constructor is None:
+            label_constructor = self.label_constructor
+        if isinstance(label_tex, (VMobject, OpenGLVMobject)):
             return label_tex
         else:
-            return self.label_constructor(label_tex, **kwargs)
+            return label_constructor(label_tex, **kwargs)
 
     @staticmethod
     def _decimal_places_from_step(step) -> int:

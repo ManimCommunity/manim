@@ -13,6 +13,10 @@ from manim import Group, config, logger, tempconfig
 from manim.__main__ import main
 from manim.renderer.shader import shader_program_cache
 
+from ..constants import RendererType
+
+__all__ = ["ManimMagic"]
+
 try:
     from IPython import get_ipython
     from IPython.core.interactiveshell import InteractiveShell
@@ -128,21 +132,10 @@ else:
                 config.digest_args(args)
 
                 renderer = None
-                if config.renderer == "opengl":
-                    # Check if the imported mobjects extend the OpenGLMobject class
-                    # meaning ConvertToOpenGL did its job
-                    if "OpenGLMobject" in [
-                        parent_class.__name__ for parent_class in Group.mro()
-                    ]:
-                        from manim.renderer.opengl_renderer import OpenGLRenderer
+                if config.renderer == RendererType.OPENGL:
+                    from manim.renderer.opengl_renderer import OpenGLRenderer
 
-                        renderer = OpenGLRenderer()
-                    else:
-                        logger.warning(
-                            "Renderer must be set to OpenGL in the configuration file "
-                            "before importing Manim! Using cairo renderer instead.",
-                        )
-                        config.renderer = "cairo"
+                    renderer = OpenGLRenderer()
 
                 try:
                     SceneClass = local_ns[config["scene_names"][0]]
@@ -171,7 +164,7 @@ else:
                 if local_path in self.rendered_files:
                     self.rendered_files[local_path].unlink()
                 self.rendered_files[local_path] = tmpfile
-                os.makedirs(tmpfile.parent, exist_ok=True)
+                tmpfile.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy(local_path, tmpfile)
 
                 file_type = mimetypes.guess_type(config["output_file"])[0]

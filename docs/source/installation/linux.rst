@@ -5,10 +5,9 @@ The installation instructions depend on your particular operating
 system and package manager. If you happen to know exactly what you are doing,
 you can also simply ensure that your system has:
 
-- a reasonably recent version of Python 3 (3.7–3.10),
+- a reasonably recent version of Python 3 (3.9 or above),
 - with working Cairo bindings in the form of
   `pycairo <https://cairographics.org/pycairo/>`__,
-- FFmpeg accessible from the command line as ``ffmpeg``,
 - and `Pango <https://pango.gnome.org>`__ headers.
 
 Then, installing Manim is just a matter of running:
@@ -33,13 +32,13 @@ Required Dependencies
 apt – Ubuntu / Mint / Debian
 ****************************
 
-To first update your sources, and then install Cairo, Pango, and FFmpeg
+To first update your sources, and then install Cairo and Pango
 simply run:
 
 .. code-block:: bash
 
    sudo apt update
-   sudo apt install libcairo2-dev libpango1.0-dev ffmpeg
+   sudo apt install build-essential python3-dev libcairo2-dev libpango1.0-dev
 
 If you don't have python3-pip installed, install it via:
 
@@ -72,14 +71,6 @@ need the Python development headers:
 
    sudo dnf install python3-devel
 
-FFmpeg is only available via the RPMfusion repository which you have to
-configure first – please consult https://rpmfusion.org/Configuration/ for
-instructions. Then, install FFmpeg:
-
-.. code-block:: bash
-
-   sudo dnf install ffmpeg
-
 At this point you have all required dependencies and can install
 Manim by running:
 
@@ -100,12 +91,12 @@ pacman – Arch / Manjaro
 
 If you don't want to use the packaged version from AUR, here is what
 you need to do manually: Update your package sources, then install
-Cairo, Pango, and FFmpeg:
+Cairo and Pango:
 
 .. code-block:: bash
 
    sudo pacman -Syu
-   sudo pacman -S cairo pango ffmpeg
+   sudo pacman -S cairo pango
 
 If you don't have ``python-pip`` installed, get it by running:
 
@@ -137,6 +128,19 @@ You can use whichever LaTeX distribution you like or whichever is easiest
 to install with your package manager. Usually,
 `TeX Live <https://www.tug.org/texlive/>`__ is a good candidate if you don't
 care too much about disk space.
+
+For Debian-based systems (like Ubuntu), sufficient LaTeX dependencies can be
+installed by running:
+
+.. code-block:: bash
+
+   sudo apt install texlive texlive-latex-extra
+
+For Fedora (see `docs <https://docs.fedoraproject.org/en-US/neurofedora/latex/>`__):
+
+.. code-block:: bash
+
+   sudo dnf install texlive-scheme-full
 
 Should you choose to work with some smaller TeX distribution like
 `TinyTeX <https://yihui.org/tinytex/>`__ , the full list

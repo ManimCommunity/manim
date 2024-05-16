@@ -5,6 +5,8 @@ import inspect
 from pathlib import Path
 from typing import Callable
 
+import cairo
+import pytest
 from _pytest.fixtures import FixtureRequest
 
 from manim import Scene
@@ -25,6 +27,7 @@ from ._test_class_makers import (
 SCENE_PARAMETER_NAME = "scene"
 _tests_root_dir_path = Path(__file__).absolute().parents[2]
 PATH_CONTROL_DATA = _tests_root_dir_path / Path("control_data", "graphical_units_data")
+MIN_CAIRO_VERSION = 11800
 
 
 def frames_comparison(
@@ -45,10 +48,6 @@ def frames_comparison(
 
     Parameters
     ----------
-    test_name
-        The name of the test.
-    module_name
-        The module which the test belongs to.
     last_frame
         whether the test should test the last frame, by default True.
     renderer_class
@@ -85,6 +84,12 @@ def frames_comparison(
         @functools.wraps(tested_scene_construct)
         # The "request" parameter is meant to be used as a fixture by pytest. See below.
         def wrapper(*args, request: FixtureRequest, tmp_path, **kwargs):
+            # check for cairo version
+            if (
+                renderer_class is CairoRenderer
+                and cairo.cairo_version() < MIN_CAIRO_VERSION
+            ):
+                pytest.skip("Cairo version is too old. Skipping cairo graphical tests.")
             # Wraps the test_function to a construct method, to "freeze" the eventual additional arguments (parametrizations fixtures).
             construct = functools.partial(tested_scene_construct, *args, **kwargs)
 
@@ -161,7 +166,7 @@ def _make_test_comparing_frames(
     file_path: Path,
     base_scene: type[Scene],
     construct: Callable[[Scene], None],
-    renderer_class,  # Renderer type, there is no superclass renderer yet .....
+    renderer_class: type,  # Renderer type, there is no superclass renderer yet .....
     is_set_test_data_test: bool,
     last_frame: bool,
     show_diff: bool,
@@ -171,15 +176,15 @@ def _make_test_comparing_frames(
 
     Parameters
     ----------
-    file_path : Path
+    file_path
         The path of the control frames.
-    base_scene : Type[Scene]
+    base_scene
         The base scene class.
-    construct : Callable[[Scene], None]
+    construct
         The construct method (= the test function)
-    renderer_class : [type]
+    renderer_class
         The renderer base class.
-    show_diff : bool
+    show_diff
         whether to visually show_diff (see --show_diff)
 
     Returns
@@ -209,11 +214,13 @@ def _make_test_comparing_frames(
                 # If you pass a custom renderer to the Scene, the Camera class given as an argument in the Scene
                 # is not passed to the renderer. See __init__ of Scene.
                 # This potentially prevents OpenGL testing.
-                test_renderer=testRenderer(file_writer_class=file_writer_class)
-                if base_scene is not ThreeDScene
-                else testRenderer(
-                    file_writer_class=file_writer_class,
-                    camera_class=ThreeDCamera,
+                test_renderer=(
+                    testRenderer(file_writer_class=file_writer_class)
+                    if base_scene is not ThreeDScene
+                    else testRenderer(
+                        file_writer_class=file_writer_class,
+                        camera_class=ThreeDCamera,
+                    )
                 ),  # testRenderer(file_writer_class=file_writer_class),
             )
             scene_tested = sceneTested(skip_animations=True)

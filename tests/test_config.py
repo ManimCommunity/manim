@@ -7,6 +7,7 @@ from pathlib import Path
 import numpy as np
 
 from manim import WHITE, Scene, Square, Tex, Text, config, tempconfig
+from manim._config.utils import ManimConfig
 from tests.assert_utils import assert_dir_exists, assert_dir_filled, assert_file_exists
 
 
@@ -210,3 +211,22 @@ def test_dry_run_with_png_format_skipped_animations():
         assert config["dry_run"] is True
         scene = MyScene(skip_animations=True)
         scene.render()
+
+
+def test_tex_template_file(tmp_path):
+    """Test that a custom tex template file can be set from a config file."""
+    tex_file = Path(tmp_path / "my_template.tex")
+    tex_file.write_text("Hello World!")
+    tmp_cfg = tempfile.NamedTemporaryFile("w", dir=tmp_path, delete=False)
+    tmp_cfg.write(
+        f"""
+        [CLI]
+        tex_template_file = {tex_file}
+        """,
+    )
+    tmp_cfg.close()
+
+    custom_config = ManimConfig().digest_file(tmp_cfg.name)
+
+    assert Path(custom_config.tex_template_file) == tex_file
+    assert custom_config.tex_template.body == "Hello World!"
