@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import itertools as it
-from typing import TYPE_CHECKING, Sequence
+from collections.abc import Sequence
+from typing import TYPE_CHECKING
 
 import numpy as np
 from mapbox_earcut import triangulate_float32 as earcut
@@ -755,9 +756,14 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
 
         # Move the ring which j belongs to from the
         # attached list to the detached list
-        new_ring = next(filter(lambda ring: ring[0] <= j < ring[-1], detached_rings))
-        detached_rings.remove(new_ring)
-        attached_rings.append(new_ring)
+        new_ring = next(
+            (ring for ring in detached_rings if ring[0] <= j < ring[-1]), None
+        )
+        if new_ring is not None:
+            detached_rings.remove(new_ring)
+            attached_rings.append(new_ring)
+        else:
+            raise Exception("Could not find a ring to attach")
 
     # Setup linked list
     after = []

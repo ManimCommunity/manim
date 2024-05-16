@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import itertools as it
 import operator as op
+from collections.abc import Iterable, Sequence
 from functools import reduce, wraps
-from typing import Callable, Iterable, Sequence
+from typing import Callable
 
 import moderngl
 import numpy as np
@@ -1028,7 +1029,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         return alpha
 
-    def get_anchors_and_handles(self):
+    def get_anchors_and_handles(self) -> Iterable[np.ndarray]:
         """
         Returns anchors1, handles, anchors2,
         where (anchors1[i], handles[i], anchors2[i])
@@ -1060,27 +1061,21 @@ class OpenGLVMobject(OpenGLMobject):
         nppc = self.n_points_per_curve
         return self.points[nppc - 1 :: nppc]
 
-    def get_anchors(self) -> np.ndarray:
+    def get_anchors(self) -> Iterable[np.ndarray]:
         """Returns the anchors of the curves forming the OpenGLVMobject.
 
         Returns
         -------
-        np.ndarray
+        Iterable[np.ndarray]
             The anchors.
         """
         points = self.points
         if len(points) == 1:
             return points
-        return np.array(
-            list(
-                it.chain(
-                    *zip(
-                        self.get_start_anchors(),
-                        self.get_end_anchors(),
-                    )
-                ),
-            ),
-        )
+
+        s = self.get_start_anchors()
+        e = self.get_end_anchors()
+        return list(it.chain.from_iterable(zip(s, e)))
 
     def get_points_without_null_curves(self, atol=1e-9):
         nppc = self.n_points_per_curve

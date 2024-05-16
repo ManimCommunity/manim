@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-import json
 import os
+from collections.abc import Generator
 from pathlib import Path
 from subprocess import run
-from typing import Generator
+
+import av
 
 __all__ = [
     "capture",
@@ -14,27 +15,39 @@ __all__ = [
 
 
 def capture(command, cwd=None, command_input=None):
-    p = run(command, cwd=cwd, input=command_input, capture_output=True, text=True)
+    p = run(
+        command,
+        cwd=cwd,
+        input=command_input,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+    )
     out, err = p.stdout, p.stderr
     return out, err, p.returncode
 
 
 def get_video_metadata(path_to_video: str | os.PathLike) -> dict[str]:
-    command = [
-        "ffprobe",
-        "-v",
-        "error",
-        "-select_streams",
-        "v:0",
-        "-show_entries",
-        "stream=width,height,nb_frames,duration,avg_frame_rate,codec_name",
-        "-print_format",
-        "json",
-        str(path_to_video),
-    ]
-    config, err, exitcode = capture(command)
-    assert exitcode == 0, f"FFprobe error: {err}"
-    return json.loads(config)["streams"][0]
+    with av.open(str(path_to_video)) as container:
+        stream = container.streams.video[0]
+        ctxt = stream.codec_context
+        rate = stream.average_rate
+        if stream.duration is not None:
+            duration = float(stream.duration * stream.time_base)
+            num_frames = stream.frames
+        else:
+            num_frames = sum(1 for _ in container.decode(video=0))
+            duration = float(num_frames / stream.base_rate)
+
+        return {
+            "width": ctxt.width,
+            "height": ctxt.height,
+            "nb_frames": str(num_frames),
+            "duration": f"{duration:.6f}",
+            "avg_frame_rate": f"{rate.numerator}/{rate.denominator}",  # Can be a Fraction
+            "codec_name": stream.codec_context.name,
+            "pix_fmt": stream.codec_context.pix_fmt,
+        }
 
 
 def get_dir_layout(dirpath: Path) -> Generator[str, None, None]:

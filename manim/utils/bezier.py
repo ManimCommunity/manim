@@ -28,8 +28,9 @@ __all__ = [
 ]
 
 
+from collections.abc import Sequence
 from functools import reduce
-from typing import Any, Callable, Sequence, overload
+from typing import Any, Callable, overload
 
 import numpy as np
 import numpy.typing as npt
@@ -41,15 +42,13 @@ from ..utils.space_ops import cross2d, find_intersection
 @overload
 def bezier(
     points: BezierPoints,
-) -> Callable[[float | ColVector], Point3D | Point3D_Array]:
-    ...
+) -> Callable[[float | ColVector], Point3D | Point3D_Array]: ...
 
 
 @overload
 def bezier(
     points: Sequence[Point3D_Array],
-) -> Callable[[float | ColVector], Point3D_Array]:
-    ...
+) -> Callable[[float | ColVector], Point3D_Array]: ...
 
 
 def bezier(points):
@@ -999,23 +998,19 @@ def bezier_remap(
 
 
 @overload
-def interpolate(start: float, end: float, alpha: float) -> float:
-    ...
+def interpolate(start: float, end: float, alpha: float) -> float: ...
 
 
 @overload
-def interpolate(start: float, end: float, alpha: ColVector) -> ColVector:
-    ...
+def interpolate(start: float, end: float, alpha: ColVector) -> ColVector: ...
 
 
 @overload
-def interpolate(start: Point3D, end: Point3D, alpha: float) -> Point3D:
-    ...
+def interpolate(start: Point3D, end: Point3D, alpha: float) -> Point3D: ...
 
 
 @overload
-def interpolate(start: Point3D, end: Point3D, alpha: ColVector) -> Point3D_Array:
-    ...
+def interpolate(start: Point3D, end: Point3D, alpha: ColVector) -> Point3D_Array: ...
 
 
 def interpolate(start, end, alpha):
@@ -1094,13 +1089,11 @@ def integer_interpolate(
 
 
 @overload
-def mid(start: float, end: float) -> float:
-    ...
+def mid(start: float, end: float) -> float: ...
 
 
 @overload
-def mid(start: Point3D, end: Point3D) -> Point3D:
-    ...
+def mid(start: Point3D, end: Point3D) -> Point3D: ...
 
 
 def mid(start, end):
@@ -1122,18 +1115,15 @@ def mid(start, end):
 
 
 @overload
-def inverse_interpolate(start: float, end: float, value: float) -> float:
-    ...
+def inverse_interpolate(start: float, end: float, value: float) -> float: ...
 
 
 @overload
-def inverse_interpolate(start: float, end: float, value: Point3D) -> Point3D:
-    ...
+def inverse_interpolate(start: float, end: float, value: Point3D) -> Point3D: ...
 
 
 @overload
-def inverse_interpolate(start: Point3D, end: Point3D, value: Point3D) -> Point3D:
-    ...
+def inverse_interpolate(start: Point3D, end: Point3D, value: Point3D) -> Point3D: ...
 
 
 def inverse_interpolate(start, end, value):
@@ -1181,8 +1171,7 @@ def match_interpolate(
     old_start: float,
     old_end: float,
     old_value: float,
-) -> float:
-    ...
+) -> float: ...
 
 
 @overload
@@ -1192,8 +1181,7 @@ def match_interpolate(
     old_start: float,
     old_end: float,
     old_value: Point3D,
-) -> Point3D:
-    ...
+) -> Point3D: ...
 
 
 def match_interpolate(new_start, new_end, old_start, old_end, old_value):
@@ -1730,8 +1718,7 @@ def get_quadratic_approximation_of_cubic(
     h0: Point3D,
     h1: Point3D,
     a1: Point3D,
-) -> Point3D_Array:
-    ...
+) -> Point3D_Array: ...
 
 
 @overload
@@ -1740,8 +1727,7 @@ def get_quadratic_approximation_of_cubic(
     h0: Point3D_Array,
     h1: Point3D_Array,
     a1: Point3D_Array,
-) -> Point3D_Array:
-    ...
+) -> Point3D_Array: ...
 
 
 def get_quadratic_approximation_of_cubic(a0, h0, h1, a1):

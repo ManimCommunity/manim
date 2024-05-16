@@ -3,7 +3,7 @@ fail_fast: false
 exclude: ^(manim/grpc/gen/|docs/i18n/)
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v4.6.0
     hooks:
       - id: check-ast
         name: Validate Python
@@ -13,7 +13,7 @@ repos:
       - id: check-toml
         name: Validate Poetry
   - repo: https://github.com/pycqa/isort
-    rev: 5.12.0
+    rev: 5.13.2
     hooks:
       - id: isort
         name: isort (python)
@@ -24,27 +24,28 @@ repos:
         name: isort (pyi)
         types: [pyi]
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.10.1
+    rev: v3.15.2
     hooks:
       - id: pyupgrade
         name: Update code to new python versions
-        args: [--py37-plus]
+        args: [--py39-plus]
   - repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.10.0
     hooks:
       - id: python-check-blanket-noqa
         name: Precision flake ignores
   - repo: https://github.com/psf/black
-    rev: 23.7.0
+    rev: 24.4.2
     hooks:
       - id: black
   - repo: https://github.com/asottile/blacken-docs
-    rev: 1.15.0
+    rev: 1.16.0
     hooks:
       - id: blacken-docs
-        additional_dependencies: [black==22.3.0]
+        additional_dependencies: [black==24.4.0]
+        exclude: ^\.github/
   - repo: https://github.com/PyCQA/flake8
-    rev: 6.1.0
+    rev: 7.0.0
     hooks:
       - id: flake8
         additional_dependencies:
@@ -58,7 +59,7 @@ repos:
             flake8-simplify==0.14.1,
           ]
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.5.1
+    rev: v1.10.0
     hooks:
       - id: mypy
         additional_dependencies:
@@ -72,7 +73,7 @@ repos:
         files: ^manim/
 
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.5
+    rev: v2.2.6
     hooks:
       - id: codespell
         files: ^.*\.(py|md|rst)$

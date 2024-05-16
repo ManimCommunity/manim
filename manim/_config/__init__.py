@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Generator
 from contextlib import contextmanager
-from typing import Any, Generator
+from typing import Any
 
 from .cli_colors import parse_cli_ctx
 from .logger_utils import make_logger
@@ -36,6 +37,8 @@ logging.getLogger("PIL").setLevel(logging.INFO)
 logging.getLogger("matplotlib").setLevel(logging.INFO)
 
 config = ManimConfig().digest_parser(parser)
+# TODO: to be used in the future - see PR #620
+# https://github.com/ManimCommunity/manim/pull/620
 frame = ManimFrame(config)
 
 
