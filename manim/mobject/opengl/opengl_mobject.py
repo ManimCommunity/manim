@@ -5,9 +5,9 @@ import inspect
 import itertools as it
 import random
 import sys
+from collections.abc import Iterable, Sequence
 from functools import partialmethod, wraps
 from math import ceil
-from typing import Iterable, Sequence
 
 import moderngl
 import numpy as np

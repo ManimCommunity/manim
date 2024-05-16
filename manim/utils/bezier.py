@@ -33,8 +33,9 @@ __all__ = [
 ]
 
 
+from collections.abc import Sequence
 from functools import reduce
-from typing import Any, Callable, Sequence, overload
+from typing import Any, Callable, overload
 
 import numpy as np
 import numpy.typing as npt
