@@ -705,7 +705,6 @@ def is_closed(points: Point3D_Array) -> bool:
     start, end = points[0], points[-1]
     rtol = 1e-5
     atol = 1e-8
-    np.allclose()
     if abs(end[0] - start[0]) > atol + rtol * start[0]:
         return False
     if abs(end[1] - start[1]) > atol + rtol * start[1]:
