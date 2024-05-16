@@ -16,6 +16,9 @@ from manim.typing import (
 __all__ = [
     "bezier",
     "partial_bezier_points",
+    "split_bezier",
+    "subdivide_bezier",
+    "bezier_remap",
     "interpolate",
     "integer_interpolate",
     "mid",
@@ -297,116 +300,619 @@ def partial_bezier_points(points: BezierPoints, a: float, b: float) -> BezierPoi
     return arr
 
 
-def split_quadratic_bezier(points: QuadraticBezierPoints, t: float) -> BezierPoints:
-    """Split a quadratic Bézier curve at argument ``t`` into two quadratic curves.
+def split_bezier(points: BezierPoints, t: float) -> Point3D_Array:
+    r"""Split a Bézier curve at argument ``t`` into two curves.
+
+    .. note::
+
+        .. seealso::
+            `A Primer on Bézier Curves #10: Splitting curves. Pomax. <https://pomax.github.io/bezierinfo/#splitting>`_
+
+        As an example for a cubic Bézier curve, let :math:`p_0, p_1, p_2, p_3` be the points
+        needed for the curve :math:`C_0 = [p_0, \ p_1, \ p_2, \ p_3]`.
+
+        Define the 3 linear Béziers :math:`L_0, L_1, L_2` as interpolations of :math:`p_0, p_1, p_2, p_3`:
+
+        .. math::
+            L_0(t) &= p_0 + t(p_1 - p_0) \\
+            L_1(t) &= p_1 + t(p_2 - p_1) \\
+            L_2(t) &= p_2 + t(p_3 - p_2)
+
+        Define the 2 quadratic Béziers :math:`Q_0, Q_1` as interpolations of :math:`L_0, L_1, L_2`:
+
+        .. math::
+            Q_0(t) &= L_0(t) + t(L_1(t) - L_0(t)) \\
+            Q_1(t) &= L_1(t) + t(L_2(t) - L_1(t))
+
+        Then :math:`C_0` is the following interpolation of :math:`Q_0` and :math:`Q_1`:
+
+        .. math::
+            C_0(t) = Q_0(t) + t(Q_1(t) - Q_0(t))
+
+        Evaluating :math:`C_0` at a value :math:`t=t'` splits :math:`C_0` into two cubic Béziers :math:`H_0`
+        and :math:`H_1`, defined by some of the points we calculated earlier:
+
+        .. math::
+            H_0 &= [p_0, &\ L_0(t'), &\ Q_0(t'), &\ C_0(t') &] \\
+            H_1 &= [p_0(t'), &\ Q_1(t'), &\ L_2(t'), &\ p_3 &]
+
+        As the resulting curves are obtained from linear combinations of ``points``, everything can
+        be encoded into a matrix for efficiency, which is done for Bézier curves of degree up to 3.
+
+        .. seealso::
+            `A Primer on Bézier Curves #11: Splitting curves using matrices. Pomax. <https://pomax.github.io/bezierinfo/#matrixsplit>`_
+
+        For the simpler case of a quadratic Bézier curve:
+
+        .. math::
+            H_0
+            &=
+            \begin{pmatrix}
+                p_0 \\
+                (1-t) p_0 + t p_1 \\
+                (1-t)^2 p_0 + 2(1-t)t p_1 + t^2 p_2 \\
+            \end{pmatrix}
+            &=
+            \begin{pmatrix}
+                1 & 0 & 0 \\
+                (1-t) & t & 0\\
+                (1-t)^2 & 2(1-t)t & t^2
+            \end{pmatrix}
+            \begin{pmatrix}
+                p_0 \\
+                p_1 \\
+                p_2
+            \end{pmatrix}
+            \\
+            &
+            \\
+            H_1
+            &=
+            \begin{pmatrix}
+                (1-t)^2 p_0 + 2(1-t)t p_1 + t^2 p_2 \\
+                (1-t) p_1 + t p_2 \\
+                p_2
+            \end{pmatrix}
+            &=
+            \begin{pmatrix}
+                (1-t)^2 & 2(1-t)t & t^2 \\
+                0 & (1-t) & t \\
+                0 & 0 & 1
+            \end{pmatrix}
+            \begin{pmatrix}
+                p_0 \\
+                p_1 \\
+                p_2
+            \end{pmatrix}
+
+        from where one can define a :math:`(6, 3)` split matrix :math:`S_2` which can multiply
+        the array of ``points`` to compute the return value:
+
+        .. math::
+            S_2
+            &=
+            \begin{pmatrix}
+                1 & 0 & 0 \\
+                (1-t) & t & 0 \\
+                (1-t)^2 & 2(1-t)t & t^2 \\
+                (1-t)^2 & 2(1-t)t & t^2 \\
+                0 & (1-t) & t \\
+                0 & 0 & 1
+            \end{pmatrix}
+            \\
+            &
+            \\
+            S_2 P
+            &=
+            \begin{pmatrix}
+                1 & 0 & 0 \\
+                (1-t) & t & 0 \\
+                (1-t)^2 & 2(1-t)t & t^2 \\
+                (1-t)^2 & 2(1-t)t & t^2 \\
+                0 & (1-t) & t \\
+                0 & 0 & 1
+            \end{pmatrix}
+            \begin{pmatrix}
+                p_0 \\
+                p_1 \\
+                p_2
+            \end{pmatrix}
+            =
+            \begin{pmatrix}
+                \vert \\
+                H_0 \\
+                \vert \\
+                \vert \\
+                H_1 \\
+                \vert
+            \end{pmatrix}
+
+        For the previous example with a cubic Bézier curve:
+
+        .. math::
+            H_0
+            &=
+            \begin{pmatrix}
+                p_0 \\
+                (1-t) p_0 + t p_1 \\
+                (1-t)^2 p_0 + 2(1-t)t p_1 + t^2 p_2 \\
+                (1-t)^3 p_0 + 3(1-t)^2 t p_1 + 3(1-t)t^2 p_2 + t^3 p_3
+            \end{pmatrix}
+            &=
+            \begin{pmatrix}
+                1 & 0 & 0 & 0 \\
+                (1-t) & t & 0 & 0 \\
+                (1-t)^2 & 2(1-t)t & t^2 & 0 \\
+                (1-t)^3 & 3(1-t)^2 t & 3(1-t)t^2 & t^3
+            \end{pmatrix}
+            \begin{pmatrix}
+                p_0 \\
+                p_1 \\
+                p_2 \\
+                p_3
+            \end{pmatrix}
+            \\
+            &
+            \\
+            H_1
+            &=
+            \begin{pmatrix}
+                (1-t)^3 p_0 + 3(1-t)^2 t p_1 + 3(1-t)t^2 p_2 + t^3 p_3 \\
+                (1-t)^2 p_1 + 2(1-t)t p_2 + t^2 p_3 \\
+                (1-t) p_2 + t p_3 \\
+                p_3
+            \end{pmatrix}
+            &=
+            \begin{pmatrix}
+                (1-t)^3 & 3(1-t)^2 t & 3(1-t)t^2 & t^3 \\
+                0 & (1-t)^2 & 2(1-t)t & t^2 \\
+                0 & 0 & (1-t) & t \\
+                0 & 0 & 0 & 1
+            \end{pmatrix}
+            \begin{pmatrix}
+                p_0 \\
+                p_1 \\
+                p_2 \\
+                p_3
+            \end{pmatrix}
+
+        from where one can define a :math:`(8, 4)` split matrix :math:`S_3` which can multiply
+        the array of ``points`` to compute the return value:
+
+        .. math::
+            S_3
+            &=
+            \begin{pmatrix}
+                1 & 0 & 0 & 0 \\
+                (1-t) & t & 0 & 0 \\
+                (1-t)^2 & 2(1-t)t & t^2 & 0 \\
+                (1-t)^3 & 3(1-t)^2 t & 3(1-t)t^2 & t^3 \\
+                (1-t)^3 & 3(1-t)^2 t & 3(1-t)t^2 & t^3 \\
+                0 & (1-t)^2 & 2(1-t)t & t^2 \\
+                0 & 0 & (1-t) & t \\
+                0 & 0 & 0 & 1
+            \end{pmatrix}
+            \\
+            &
+            \\
+            S_3 P
+            &=
+            \begin{pmatrix}
+                1 & 0 & 0 & 0 \\
+                (1-t) & t & 0 & 0 \\
+                (1-t)^2 & 2(1-t)t & t^2 & 0 \\
+                (1-t)^3 & 3(1-t)^2 t & 3(1-t)t^2 & t^3 \\
+                (1-t)^3 & 3(1-t)^2 t & 3(1-t)t^2 & t^3 \\
+                0 & (1-t)^2 & 2(1-t)t & t^2 \\
+                0 & 0 & (1-t) & t \\
+                0 & 0 & 0 & 1
+            \end{pmatrix}
+            \begin{pmatrix}
+                p_0 \\
+                p_1 \\
+                p_2 \\
+                p_3
+            \end{pmatrix}
+            =
+            \begin{pmatrix}
+                \vert \\
+                H_0 \\
+                \vert \\
+                \vert \\
+                H_1 \\
+                \vert
+            \end{pmatrix}
 
     Parameters
     ----------
     points
-        The control points of the bezier curve
-        has shape ``[a1, h1, b1]``
+        The control points of the Bézier curve.
 
     t
-        The ``t``-value at which to split the Bézier curve
+        The ``t``-value at which to split the Bézier curve.
 
     Returns
     -------
-        The two Bézier curves as a list of tuples,
-        has the shape ``[a1, h1, b1], [a2, h2, b2]``
+    :class:`~.Point3D_Array`
+        An array containing the control points defining the two Bézier curves.
     """
-    a1, h1, a2 = points
-    s1 = interpolate(a1, h1, t)
-    s2 = interpolate(h1, a2, t)
-    p = interpolate(s1, s2, t)
 
-    return np.array((a1, s1, p, p, s2, a2))
+    points = np.asarray(points)
+    N, dim = points.shape
+    degree = N - 1
+
+    if degree == 3:
+        mt = 1 - t
+        mt2 = mt * mt
+        mt3 = mt2 * mt
+        t2 = t * t
+        t3 = t2 * t
+        two_mt_t = 2 * mt * t
+        three_mt2_t = 3 * mt2 * t
+        three_mt_t2 = 3 * mt * t2
+
+        # Split matrix S3 explained in the docstring
+        split_matrix = np.array(
+            [
+                [1, 0, 0, 0],
+                [mt, t, 0, 0],
+                [mt2, two_mt_t, t2, 0],
+                [mt3, three_mt2_t, three_mt_t2, t3],
+                [mt3, three_mt2_t, three_mt_t2, t3],
+                [0, mt2, two_mt_t, t2],
+                [0, 0, mt, t],
+                [0, 0, 0, 1],
+            ]
+        )
+
+        return split_matrix @ points
+
+    if degree == 2:
+        mt = 1 - t
+        mt2 = mt * mt
+        t2 = t * t
+        two_tmt = 2 * t * mt
+
+        # Split matrix S2 explained in the docstring
+        split_matrix = np.array(
+            [
+                [1, 0, 0],
+                [mt, t, 0],
+                [mt2, two_tmt, t2],
+                [mt2, two_tmt, t2],
+                [0, mt, t],
+                [0, 0, 1],
+            ]
+        )
+
+        return split_matrix @ points
+
+    if degree == 1:
+        middle = points[0] + t * (points[1] - points[0])
+        return np.array([points[0], middle, middle, points[1]])
+
+    if degree == 0:
+        return np.array([points[0], points[0]])
+
+    # Fallback case for nth degree Béziers
+    arr = np.empty((2, N, dim))
+    arr[1] = points
+    arr[0, 0] = points[0]
+
+    # Example for a cubic Bézier
+    # arr[0] = [P0 .. .. ..]
+    # arr[1] = [P0 P1 P2 P3]
+    for i in range(1, N):
+        # 1st iter: arr[1] = [L0 L1 L2 P3]
+        # 2nd iter: arr[1] = [Q0 Q1 L2 P3]
+        # 3rd iter: arr[1] = [C0 Q1 L2 P3]
+        arr[1, : N - i] += t * (arr[1, 1 : N - i + 1] - arr[1, : N - i])
+        # 1st iter: arr[0] = [P0 L0 .. ..]
+        # 2nd iter: arr[0] = [P0 L0 Q0 ..]
+        # 3rd iter: arr[0] = [P0 L0 Q0 C0]
+        arr[0, i] = arr[1, 0]
+
+    return arr.reshape(2 * N, dim)
 
 
-def subdivide_quadratic_bezier(points: QuadraticBezierPoints, n: int) -> BezierPoints:
-    """Subdivide a quadratic Bézier curve into ``n`` subcurves which have the same shape.
+# Memos explained in subdivide_bezier docstring
+SUBDIVISION_MATRICES = [{} for i in range(4)]
+
+
+def _get_subdivision_matrix(n_points: int, n_divisions: int) -> MatrixMN:
+    """Gets the matrix which subdivides a Bézier curve of
+    ``n_points`` control points into ``n_divisions`` parts.
+
+    Auxiliary function for :func:`subdivide_bezier`. See its
+    docstrings for an explanation of the matrix build process.
+
+    Parameters
+    ----------
+    n_points
+        The number of control points of the Bézier curve to
+        subdivide. This function only handles up to 4 points.
+    n_divisions
+        The number of parts to subdivide the Bézier curve into.
+
+    Returns
+    -------
+    MatrixMN
+        The matrix which, upon multiplying the control points of the
+        Bézier curve, subdivides it into ``n_divisions`` parts.
+    """
+    if n_points not in (1, 2, 3, 4):
+        raise NotImplementedError(
+            "This function does not support subdividing Bézier "
+            "curves with 0 or more than 4 control points."
+        )
+
+    subdivision_matrix = SUBDIVISION_MATRICES[n_points - 1].get(n_divisions, None)
+    if subdivision_matrix is not None:
+        return subdivision_matrix
+
+    subdivision_matrix = np.empty((n_points * n_divisions, n_points))
+
+    # Cubic Bézier
+    if n_points == 4:
+        for i in range(n_divisions):
+            i2 = i * i
+            i3 = i2 * i
+            ip1 = i + 1
+            ip12 = ip1 * ip1
+            ip13 = ip12 * ip1
+            nmi = n_divisions - i
+            nmi2 = nmi * nmi
+            nmi3 = nmi2 * nmi
+            nmim1 = nmi - 1
+            nmim12 = nmim1 * nmim1
+            nmim13 = nmim12 * nmim1
+
+            subdivision_matrix[4 * i : 4 * (i + 1)] = np.array(
+                [
+                    [
+                        nmi3,
+                        3 * nmi2 * i,
+                        3 * nmi * i2,
+                        i3,
+                    ],
+                    [
+                        nmi2 * nmim1,
+                        2 * nmi * nmim1 * i + nmi2 * ip1,
+                        nmim1 * i2 + 2 * nmi * i * ip1,
+                        i2 * ip1,
+                    ],
+                    [
+                        nmi * nmim12,
+                        nmim12 * i + 2 * nmi * nmim1 * ip1,
+                        2 * nmim1 * i * ip1 + nmi * ip12,
+                        i * ip12,
+                    ],
+                    [
+                        nmim13,
+                        3 * nmim12 * ip1,
+                        3 * nmim1 * ip12,
+                        ip13,
+                    ],
+                ]
+            )
+        subdivision_matrix /= n_divisions * n_divisions * n_divisions
+
+    # Quadratic Bézier
+    elif n_points == 3:
+        for i in range(n_divisions):
+            ip1 = i + 1
+            nmi = n_divisions - i
+            nmim1 = nmi - 1
+            subdivision_matrix[3 * i : 3 * (i + 1)] = np.array(
+                [
+                    [nmi * nmi, 2 * i * nmi, i * i],
+                    [nmi * nmim1, i * nmim1 + ip1 * nmi, i * ip1],
+                    [nmim1 * nmim1, 2 * ip1 * nmim1, ip1 * ip1],
+                ]
+            )
+        subdivision_matrix /= n_divisions * n_divisions
+
+    # Linear Bézier (straight line)
+    elif n_points == 2:
+        aux_range = np.arange(n_divisions + 1)
+        subdivision_matrix[::2, 1] = aux_range[:-1]
+        subdivision_matrix[1::2, 1] = aux_range[1:]
+        subdivision_matrix[:, 0] = subdivision_matrix[::-1, 1]
+        subdivision_matrix /= n_divisions
+
+    # Zero-degree Bézier (single point)
+    elif n_points == 1:
+        subdivision_matrix[:] = 1
+
+    SUBDIVISION_MATRICES[n_points - 1][n_divisions] = subdivision_matrix
+    return subdivision_matrix
+
+
+def subdivide_bezier(points: BezierPoints, n_divisions: int) -> Point3D_Array:
+    r"""Subdivide a Bézier curve into :math:`n` subcurves which have the same shape.
 
     The points at which the curve is split are located at the
-    arguments :math:`t = i/n` for :math:`i = 1, ..., n-1`.
+    arguments :math:`t = \frac{i}{n}`, for :math:`i \in \{1, ..., n-1\}`.
+
+    .. seealso::
+
+        * See :func:`split_bezier` for an explanation on how to split Bézier curves.
+        * See :func:`partial_bezier_points` for an extra understanding of this function.
+
+
+    .. note::
+        The resulting subcurves can be expressed as linear combinations of
+        ``points``, which can be encoded in a single matrix that is precalculated
+        for 2nd and 3rd degree Bézier curves.
+
+        As an example for a quadratic Bézier curve: taking inspiration from the
+        explanation in :func:`partial_bezier_points`, where the following matrix
+        :math:`P_2` was defined to extract the portion of a quadratic Bézier
+        curve for :math:`t \in [a, b]`:
+
+        .. math::
+            P_2
+            =
+            \begin{pmatrix}
+                (1-a)^2 & 2(1-a)a & a^2 \\
+                (1-a)(1-b) & a(1-b) + (1-a)b & ab \\
+                (1-b)^2 & 2(1-b)b & b^2
+            \end{pmatrix}
+
+        the plan is to replace :math:`[a, b]` with
+        :math:`\left[ \frac{i-1}{n}, \frac{i}{n} \right], \ \forall i \in \{1, ..., n\}`.
+
+        As an example for :math:`n = 2` divisions, construct :math:`P_1` for
+        the interval :math:`\left[ 0, \frac{1}{2} \right]`, and :math:`P_2` for the
+        interval :math:`\left[ \frac{1}{2}, 1 \right]`:
+
+        .. math::
+            P_1
+            =
+            \begin{pmatrix}
+                1 & 0 & 0 \\
+                0.5 & 0.5 & 0 \\
+                0.25 & 0.5 & 0.25
+            \end{pmatrix}
+            ,
+            \quad
+            P_2
+            =
+            \begin{pmatrix}
+                0.25 & 0.5 & 0.25 \\
+                0 & 0.5 & 0.5 \\
+                0 & 0 & 1
+            \end{pmatrix}
+
+        Therefore, the following :math:`(6, 3)` subdivision matrix :math:`D_2` can be
+        constructed, which will subdivide an array of ``points`` into 2 parts:
+
+        .. math::
+            D_2
+            =
+            \begin{pmatrix}
+                M_1 \\
+                M_2
+            \end{pmatrix}
+            =
+            \begin{pmatrix}
+                1 & 0 & 0 \\
+                0.5 & 0.5 & 0 \\
+                0.25 & 0.5 & 0.25 \\
+                0.25 & 0.5 & 0.25 \\
+                0 & 0.5 & 0.5 \\
+                0 & 0 & 1
+            \end{pmatrix}
+
+        For quadratic and cubic Bézier curves, the subdivision matrices are memoized for
+        efficiency. For higher degree curves, an iterative algorithm inspired by the
+        one from :func:`split_bezier` is used instead.
+
+    .. image:: /_static/bezier_subdivision_example.png
 
     Parameters
     ----------
     points
-        The control points of the Bézier curve in form ``[a1, h1, b1]``
+        The control points of the Bézier curve.
 
-    n
+    n_divisions
         The number of curves to subdivide the Bézier curve into
 
     Returns
     -------
-        The new points for the Bézier curve in the form ``[a1, h1, b1, a2, h2, b2, ...]``
-
-    .. image:: /_static/bezier_subdivision_example.png
-
+    :class:`~.Point3D_Array`
+        An array containing the points defining the new :math:`n` subcurves.
     """
-    beziers = np.empty((n, 3, 3))
-    current = points
-    for j in range(0, n):
-        i = n - j
-        tmp = split_quadratic_bezier(current, 1 / i)
-        beziers[j] = tmp[:3]
-        current = tmp[3:]
-    return beziers.reshape(-1, 3)
+    if n_divisions == 1:
+        return points
+
+    points = np.asarray(points)
+    N, dim = points.shape
+
+    if N <= 4:
+        subdivision_matrix = _get_subdivision_matrix(N, n_divisions)
+        return subdivision_matrix @ points
+
+    # Fallback case for an nth degree Bézier: successive splitting
+    beziers = np.empty((n_divisions, N, dim))
+    beziers[-1] = points
+    for curve_num in range(n_divisions - 1, 0, -1):
+        curr = beziers[curve_num]
+        prev = beziers[curve_num - 1]
+        prev[0] = curr[0]
+        a = (n_divisions - curve_num) / (n_divisions - curve_num + 1)
+        # Current state for an example cubic Bézier curve:
+        # prev = [P0 .. .. ..]
+        # curr = [P0 P1 P2 P3]
+        for i in range(1, N):
+            # 1st iter: curr = [L0 L1 L2 P3]
+            # 2nd iter: curr = [Q0 Q1 L2 P3]
+            # 3rd iter: curr = [C0 Q1 L2 P3]
+            curr[: N - i] += a * (curr[1 : N - i + 1] - curr[: N - i])
+            # 1st iter: prev = [P0 L0 .. ..]
+            # 2nd iter: prev = [P0 L0 Q0 ..]
+            # 3rd iter: prev = [P0 L0 Q0 C0]
+            prev[i] = curr[0]
+
+    return beziers.reshape(n_divisions * N, dim)
 
 
-def quadratic_bezier_remap(
-    triplets: QuadraticBezierPoints_Array, new_number_of_curves: int
-) -> QuadraticBezierPoints_Array:
-    """Remaps the number of curves to a higher amount by splitting bezier curves
+def bezier_remap(
+    bezier_tuples: BezierPoints_Array,
+    new_number_of_curves: int,
+) -> BezierPoints_Array:
+    """Subdivides each curve in ``bezier_tuples`` into as many parts as necessary, until the final number of
+    curves reaches a desired amount, ``new_number_of_curves``.
 
     Parameters
     ----------
-    triplets
-        The triplets of the quadratic bezier curves to be remapped shape(n, 3, 3)
+    bezier_tuples
+        An array of multiple Bézier curves of degree :math:`d` to be remapped. The shape of this array
+        must be ``(current_number_of_curves, nppc, dim)``, where:
 
+            *   ``current_number_of_curves`` is the current amount of curves in the array ``bezier_tuples``,
+            *   ``nppc`` is the amount of points per curve, such that their degree is ``nppc-1``, and
+            *   ``dim`` is the dimension of the points, usually :math:`3`.
     new_number_of_curves
         The number of curves that the output will contain. This needs to be higher than the current number.
 
     Returns
     -------
-        The new triplets for the quadratic bezier curves.
+    :class:`~.BezierPoints_Array`
+        The new array of shape ``(new_number_of_curves, nppc, dim)``,
+        containing the new Bézier curves after the remap.
     """
-    difference = new_number_of_curves - len(triplets)
-    if difference <= 0:
-        return triplets
-    new_triplets = np.zeros((new_number_of_curves, 3, 3))
-    idx = 0
-    for triplet in triplets:
-        if difference > 0:
-            tmp_noc = int(np.ceil(difference / len(triplets))) + 1
-            tmp = subdivide_quadratic_bezier(triplet, tmp_noc).reshape(-1, 3, 3)
-            for i in range(tmp_noc):
-                new_triplets[idx + i] = tmp[i]
-            difference -= tmp_noc - 1
-            idx += tmp_noc
-        else:
-            new_triplets[idx] = triplet
-            idx += 1
-    return new_triplets
+    bezier_tuples = np.asarray(bezier_tuples)
+    current_number_of_curves, nppc, dim = bezier_tuples.shape
+    # This is an array with values ranging from 0
+    # up to curr_num_curves,  with repeats such that
+    # its total length is target_num_curves.  For example,
+    # with curr_num_curves = 10, target_num_curves = 15, this
+    # would be [0, 0, 1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 8, 8, 9].
+    repeat_indices = (
+        np.arange(new_number_of_curves, dtype="i") * current_number_of_curves
+    ) // new_number_of_curves
 
-    """
-    This is an alternate version of the function just for documentation purposes
-    --------
+    # If the nth term of this list is k, it means
+    # that the nth curve of our path should be split
+    # into k pieces.
+    # In the above example our array had the following elements
+    # [0, 0, 1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 8, 8, 9]
+    # We have two 0s, one 1, two 2s and so on.
+    # The split factors array would hence be:
+    # [2, 1, 2, 1, 2, 1, 2, 1, 2, 1]
+    split_factors = np.zeros(current_number_of_curves, dtype="i")
+    np.add.at(split_factors, repeat_indices, 1)
 
-    difference = new_number_of_curves - len(triplets)
-    if difference <= 0:
-        return triplets
-    new_triplets = []
-    for triplet in triplets:
-        if difference > 0:
-            tmp_noc = int(np.ceil(difference / len(triplets))) + 1
-            tmp = subdivide_quadratic_bezier(triplet, tmp_noc).reshape(-1, 3, 3)
-            for i in range(tmp_noc):
-                new_triplets.append(tmp[i])
-            difference -= tmp_noc - 1
-        else:
-            new_triplets.append(triplet)
-    return new_triplets
-    """
+    new_tuples = np.empty((new_number_of_curves, nppc, dim))
+    index = 0
+    for curve, sf in zip(bezier_tuples, split_factors):
+        new_tuples[index : index + sf] = subdivide_bezier(curve, sf).reshape(
+            sf, nppc, dim
+        )
+        index += sf
+
+    return new_tuples
 
 
 # Linear interpolation variants

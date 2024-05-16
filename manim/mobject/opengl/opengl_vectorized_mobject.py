@@ -14,13 +14,13 @@ from manim.mobject.opengl.opengl_mobject import OpenGLMobject, OpenGLPoint
 from manim.renderer.shader_wrapper import ShaderWrapper
 from manim.utils.bezier import (
     bezier,
+    bezier_remap,
     get_quadratic_approximation_of_cubic,
     get_smooth_cubic_bezier_handle_points,
     integer_interpolate,
     interpolate,
     partial_bezier_points,
     proportions_along_bezier_curve_for_point,
-    quadratic_bezier_remap,
 )
 from manim.utils.color import BLACK, WHITE, ManimColor, ParsableManimColor
 from manim.utils.config_ops import _Data
@@ -1366,9 +1366,7 @@ class OpenGLVMobject(OpenGLMobject):
             inner_points = bezier_triplets[lower_index + 1 : upper_index]
             if len(inner_points) > 0:
                 if remap:
-                    new_triplets = quadratic_bezier_remap(
-                        inner_points, num_quadratics - 2
-                    )
+                    new_triplets = bezier_remap(inner_points, num_quadratics - 2)
                 else:
                     new_triplets = bezier_triplets
 
