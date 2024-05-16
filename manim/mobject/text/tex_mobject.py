@@ -26,9 +26,9 @@ __all__ = [
 import itertools as it
 import operator as op
 import re
+from collections.abc import Iterable
 from functools import reduce
 from textwrap import dedent
-from typing import Iterable
 
 from manim import config, logger
 from manim.constants import *

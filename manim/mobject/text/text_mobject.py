@@ -58,10 +58,10 @@ import copy
 import hashlib
 import os
 import re
+from collections.abc import Iterable, Sequence
 from contextlib import contextmanager
 from itertools import chain
 from pathlib import Path
-from typing import Iterable, Sequence
 
 import manimpango
 import numpy as np
@@ -412,7 +412,7 @@ class Text(SVGMobject):
     """
 
     @staticmethod
-    @functools.lru_cache(maxsize=None)
+    @functools.cache
     def font_list() -> list[str]:
         return manimpango.list_fonts()
 
@@ -907,7 +907,7 @@ class MarkupText(SVGMobject):
     Here is a list of supported tags:
 
     - ``<b>bold</b>``, ``<i>italic</i>`` and ``<b><i>bold+italic</i></b>``
-    - ``<ul>underline</ul>`` and ``<s>strike through</s>``
+    - ``<u>underline</u>`` and ``<s>strike through</s>``
     - ``<tt>typewriter font</tt>``
     - ``<big>bigger font</big>`` and ``<small>smaller font</small>``
     - ``<sup>superscript</sup>`` and ``<sub>subscript</sub>``
@@ -1155,7 +1155,7 @@ class MarkupText(SVGMobject):
     """
 
     @staticmethod
-    @functools.lru_cache(maxsize=None)
+    @functools.cache
     def font_list() -> list[str]:
         return manimpango.list_fonts()
 

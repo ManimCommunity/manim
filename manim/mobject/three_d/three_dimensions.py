@@ -19,7 +19,8 @@ __all__ = [
     "Torus",
 ]
 
-from typing import Any, Callable, Iterable, Sequence
+from collections.abc import Iterable, Sequence
+from typing import Any, Callable
 
 import numpy as np
 from typing_extensions import Self
