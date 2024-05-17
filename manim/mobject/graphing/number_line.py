@@ -346,6 +346,7 @@ class NumberLine(Line):
     def number_to_point(self, number: float | np.ndarray) -> np.ndarray:
         """Accepts a value along the number line and returns a point with
         respect to the scene.
+        Equivalent to `NumberLine @ number`
 
         Parameters
         ----------
@@ -365,6 +366,8 @@ class NumberLine(Line):
             >>> number_line.number_to_point(0)
             array([0., 0., 0.])
             >>> number_line.number_to_point(1)
+            array([1., 0., 0.])
+            >>> number_line @ 1
             array([1., 0., 0.])
             >>> number_line.number_to_point([1,2,3])
             array([[1., 0., 0.],

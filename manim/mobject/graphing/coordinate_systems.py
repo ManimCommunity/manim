@@ -561,7 +561,7 @@ class CoordinateSystem:
             class GetHorizontalLineExample(Scene):
                 def construct(self):
                     ax = Axes().add_coordinates()
-                    point = ax.c2p(-4, 1.5)
+                    point = ax @ (-4, 1.5)
 
                     dot = Dot(point)
                     line = ax.get_horizontal_line(point, line_func=Line)
