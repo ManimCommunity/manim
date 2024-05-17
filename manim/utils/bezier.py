@@ -600,7 +600,7 @@ def get_smooth_closed_cubic_bezier_handle_points(
                 0 \\
                 0 \\
                 0 \\
-                0
+                1
             \end{pmatrix}
             \begin{pmatrix}
                 1 & 0 & 0 & 0 & 1
