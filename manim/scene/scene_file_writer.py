@@ -518,7 +518,7 @@ class SceneFileWriter:
         if duration := len(self.audio_segment) < end:
             self.audio_segment += AudioSegment.silent(duration=end - duration)
 
-        sound = self.audio_segment[start : end]
+        sound = self.audio_segment[start:end]
         array = np.frombuffer(sound.raw_data, dtype=np.int16).reshape(1, -1)
         layout = "stereo" if sound.channels == 2 else "mono"
         frame = av.AudioFrame.from_ndarray(array, layout=layout)
