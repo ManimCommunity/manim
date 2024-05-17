@@ -251,7 +251,7 @@ class SceneFileWriter:
         Preps the writer for adding audio to the movie.
         """
         self.includes_sound = False
-        self.audio_segment = AudioSegment.empty()
+        self.audio_segment = AudioSegment.silent()
 
     def add_audio_segment(
         self,
@@ -495,12 +495,15 @@ class SceneFileWriter:
             self.video_container = video_container
             self.video_stream = stream
 
-            if self.includes_sound:
-                self.partial_movie_start_time = self.renderer.time
-                stream = self.video_container.add_stream(
-                    "libvorbis" if config.format == "webm" else "mp3"
-                )
-                self.audio_stream = stream
+            # No matter what is `self.includes_sound`,
+            # we need to add an audio stream, in the case we add audio
+            # to any one of the partial movies.
+            # This is needed because concat format needs all video
+            # files to have the same number of streams.
+            self.partial_movie_start_time = self.renderer.time
+            self.audio_stream = self.video_container.add_stream(
+                "libvorbis" if config.format == "webm" else "aac",
+            )
 
     def close_partial_movie_stream(self):
         """Close the currently opened video container.
@@ -509,29 +512,28 @@ class SceneFileWriter:
         in the video stream holding a partial file, and then close
         the corresponding container.
         """
+        start = int(np.ceil(1000 * self.partial_movie_start_time))
+        end = int(np.ceil(1000 * self.renderer.time))
+
+        if duration := len(self.audio_segment) < end:
+            self.audio_segment += AudioSegment.silent(duration=end - duration)
+
+        sound = self.audio_segment[start : end + 1]
+        array = np.frombuffer(sound.raw_data, dtype=np.int16).reshape(1, -1)
+        layout = "stereo" if sound.channels == 2 else "mono"
+        frame = av.AudioFrame.from_ndarray(array, layout=layout)
+        frame.rate = sound.frame_rate
+
+        for packet in self.audio_stream.encode(frame):
+            self.video_container.mux(packet)
+
+        # Flushing packets
+
         for packet in self.video_stream.encode():
             self.video_container.mux(packet)
 
-        if self.includes_sound:
-            start = int(np.ceil(1000 * self.partial_movie_start_time))
-            end = int(np.ceil(1000 * self.renderer.time))
-            duration = end - start
-            # TODO: check if we can avoid padding the sound to match duration
-            # this seems to be a problem if not sound if present (PyAV will throw an error)
-            sound = AudioSegment.silent(duration=duration).overlay(
-                self.audio_segment[start : end + 1]
-            )
-            array = np.array(sound.get_array_of_samples()).reshape((1, -1))
-            frame = av.AudioFrame.from_ndarray(
-                array, layout="stereo" if sound.channels == 2 else "mono"
-            )
-            frame.rate = sound.frame_rate
-
-            for packet in self.audio_stream.encode(frame):
-                self.video_container.mux(packet)
-
-            for packet in self.audio_stream.encode():
-                self.video_container.mux(packet)
+        for packet in self.audio_stream.encode():
+            self.video_container.mux(packet)
 
         self.video_container.close()
 
