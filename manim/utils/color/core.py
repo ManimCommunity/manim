@@ -27,7 +27,8 @@ import colorsys
 # logger = _config.logger
 import random
 import re
-from typing import Any, Sequence, TypeVar, Union, overload
+from collections.abc import Sequence
+from typing import Any, TypeVar, Union, overload
 
 import numpy as np
 import numpy.typing as npt
