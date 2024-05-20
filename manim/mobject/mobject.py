@@ -624,32 +624,11 @@ class Mobject:
 
     def __getattr__(self, attr: str) -> types.MethodType:
         # Add automatic compatibility layer
-        # between properties and get_* and set_*
-        # methods.
-        #
-        # In python 3.9+ we could change this
-        # logic to use str.remove_prefix instead.
-
-        if attr.startswith("get_"):
-            # Remove the "get_" prefix
-            to_get = attr[4:]
-
-            def getter(self):
-                warnings.warn(
-                    "This method is not guaranteed to stay around. Please prefer "
-                    "getting the attribute normally.",
-                    DeprecationWarning,
-                    stacklevel=2,
-                )
-
-                return getattr(self, to_get)
-
-            # Return a bound method
-            return types.MethodType(getter, self)
-
+        # between properties and and set_*
+        # methods. This is needed for .animate syntax
         if attr.startswith("set_"):
             # Remove the "set_" prefix
-            to_set = attr[4:]
+            to_set = attr.removeprefix("set_")
 
             def setter(self, value):
                 warnings.warn(
