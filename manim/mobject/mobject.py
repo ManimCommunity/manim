@@ -165,6 +165,9 @@ class Mobject:
     def submobjects(self, new_submobjects: list[Mobject]) -> None:
         self._assert_valid_submobjects(new_submobjects)
         self._submobjects = new_submobjects
+        for submob in new_submobjects:
+            if self not in submob.parents:
+                submob.parents.append(self)
         self.note_changed_family()
 
     @classmethod
