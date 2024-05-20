@@ -54,7 +54,7 @@ def select_resolution():
         show_default=False,
         default="480p",
     )
-    return [res for res in resolution_options if f"{res[0]}p" == choice][0]
+    return next(res for res in resolution_options if f"{res[0]}p" == choice)
 
 
 def update_cfg(cfg_dict: dict, project_cfg_path: Path):

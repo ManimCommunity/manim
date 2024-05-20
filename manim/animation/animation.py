@@ -180,7 +180,7 @@ class Animation:
     def __str__(self) -> str:
         if self.name:
             return self.name
-        return f"{self.__class__.__name__}({str(self.mobject)})"
+        return f"{self.__class__.__name__}({self.mobject!s})"
 
     def __repr__(self) -> str:
         return str(self)

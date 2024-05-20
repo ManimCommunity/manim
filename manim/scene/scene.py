@@ -230,7 +230,7 @@ class Scene:
             self.construct()
         except EndSceneEarlyException:
             pass
-        except RerunSceneException as e:
+        except RerunSceneException:
             self.remove(*self.mobjects)
             self.renderer.clear_screen()
             self.renderer.num_plays = 0
@@ -246,7 +246,7 @@ class Scene:
             or config["save_last_frame"]
         ):
             logger.info(
-                f"Rendered {str(self)}\nPlayed {self.renderer.num_plays} animations",
+                f"Rendered {self!s}\nPlayed {self.renderer.num_plays} animations",
             )
 
         # If preview open up the render after rendering.
@@ -308,7 +308,7 @@ class Scene:
     def next_section(
         self,
         name: str = "unnamed",
-        type: str = DefaultSectionType.NORMAL,
+        type: str = DefaultSectionType.NORMAL,  # noqa: A002
         skip_animations: bool = False,
     ) -> None:
         """Create separation here; the last section gets finished and a new one gets created.
@@ -555,7 +555,7 @@ class Scene:
                     mobj_list[i] = new_m
                     return True
             # Now check all the children of all these mobs.
-            for mob in mobj_list:  # noqa: SIM110
+            for mob in mobj_list:
                 if replace_in_list(mob.submobjects, old_m, new_m):
                     # If we found it in a submobject, stop looking.
                     return True
@@ -899,16 +899,15 @@ class Scene:
         for arg in arg_anims:
             try:
                 animations.append(prepare_animation(arg))
-            except TypeError:
+            except TypeError as e:
                 if inspect.ismethod(arg):
                     raise TypeError(
                         "Passing Mobject methods to Scene.play is no longer"
                         " supported. Use Mobject.animate instead.",
-                    )
-                else:
-                    raise TypeError(
-                        f"Unexpected argument {arg} passed to Scene.play().",
-                    )
+                    ) from e
+                raise TypeError(
+                    f"Unexpected argument {arg} passed to Scene.play().",
+                ) from e
 
         for animation in animations:
             for k, v in kwargs.items():
@@ -1555,8 +1554,7 @@ class Scene:
 
                     # second option: within the call to Scene.play
                     self.play(
-                        Transform(square, circle),
-                        subcaption="The square transforms."
+                        Transform(square, circle), subcaption="The square transforms."
                     )
 
         """
@@ -1645,9 +1643,8 @@ class Scene:
             self.camera_target = np.array([0, 0, 0], dtype=np.float32)
         elif char == "q":
             self.quit_interaction = True
-        else:
-            if char in self.key_to_function_map:
-                self.key_to_function_map[char]()
+        elif char in self.key_to_function_map:
+            self.key_to_function_map[char]()
 
     def on_key_release(self, symbol, modifiers):
         pass

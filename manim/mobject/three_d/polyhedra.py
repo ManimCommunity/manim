@@ -89,9 +89,13 @@ class Polyhedron(VGroup):
         self,
         vertex_coords: list[list[float] | np.ndarray],
         faces_list: list[list[int]],
-        faces_config: dict[str, str | int | float | bool] = {},
-        graph_config: dict[str, str | int | float | bool] = {},
+        faces_config: dict[str, str | int | float | bool] = None,
+        graph_config: dict[str, str | int | float | bool] = None,
     ):
+        if graph_config is None:
+            graph_config = {}
+        if faces_config is None:
+            faces_config = {}
         super().__init__()
         self.faces_config = dict(
             {"fill_opacity": 0.5, "shade_in_3d": True}, **faces_config

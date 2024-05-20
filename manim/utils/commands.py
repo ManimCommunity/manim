@@ -22,6 +22,7 @@ def capture(command, cwd=None, command_input=None):
         capture_output=True,
         text=True,
         encoding="utf-8",
+        check=False,
     )
     out, err = p.stdout, p.stderr
     return out, err, p.returncode

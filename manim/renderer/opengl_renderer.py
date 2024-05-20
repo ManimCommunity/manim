@@ -1,7 +1,7 @@
 from __future__ import annotations
 
+import contextlib
 import itertools as it
-import sys
 import time
 from functools import cached_property
 from typing import Any
@@ -46,15 +46,19 @@ class OpenGLCamera(OpenGLMobject):
         frame_shape=None,
         center_point=None,
         # Theta, phi, gamma
-        euler_angles=[0, 0, 0],
+        euler_angles=None,
         focal_distance=2,
-        light_source_position=[-10, 10, 10],
+        light_source_position=None,
         orthographic=False,
         minimum_polar_angle=-PI / 2,
         maximum_polar_angle=PI / 2,
         model_matrix=None,
         **kwargs,
     ):
+        if light_source_position is None:
+            light_source_position = [-10, 10, 10]
+        if euler_angles is None:
+            euler_angles = [0, 0, 0]
         self.use_z_index = True
         self.frame_rate = 60
         self.orthographic = orthographic
@@ -337,10 +341,8 @@ class OpenGLRenderer:
                 shader_wrapper.uniforms.items(),
                 self.perspective_uniforms.items(),
             ):
-                try:
+                with contextlib.suppress(KeyError):
                     shader.set_uniform(name, value)
-                except KeyError:
-                    pass
             try:
                 shader.set_uniform(
                     "u_view_matrix", self.scene.camera.formatted_view_matrix
@@ -569,7 +571,7 @@ class OpenGLRenderer:
         if pixel_shape is None:
             return np.array([0, 0, 0])
         pw, ph = pixel_shape
-        fw, fh = config["frame_width"], config["frame_height"]
+        _fw, fh = config["frame_width"], config["frame_height"]
         fc = self.camera.get_center()
         if relative:
             return 2 * np.array([px / pw, py / ph, 0])

@@ -34,14 +34,8 @@ from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import (
-    BLUE,
-    BLUE_D,
-    BLUE_E,
-    LIGHT_GREY,
-    WHITE,
     ManimColor,
     ParsableManimColor,
-    interpolate_color,
 )
 from manim.utils.iterables import tuplify
 from manim.utils.space_ops import normalize, perpendicular_bisector, z_to_vector
@@ -110,7 +104,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         u_range: Sequence[float] = [0, 1],
         v_range: Sequence[float] = [0, 1],
         resolution: Sequence[int] = 32,
-        surface_piece_config: dict = {},
+        surface_piece_config: dict = None,
         fill_color: ParsableManimColor = BLUE_D,
         fill_opacity: float = 1.0,
         checkerboard_colors: Sequence[ParsableManimColor] | bool = [BLUE_D, BLUE_E],
@@ -120,6 +114,8 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         pre_function_handle_to_anchor_scale_factor: float = 0.00001,
         **kwargs: Any,
     ) -> None:
+        if surface_piece_config is None:
+            surface_piece_config = {}
         self.u_range = u_range
         self.v_range = v_range
         super().__init__(**kwargs)
@@ -550,8 +546,10 @@ class Prism(Cube):
     """
 
     def __init__(
-        self, dimensions: tuple[float, float, float] | np.ndarray = [3, 2, 1], **kwargs
+        self, dimensions: tuple[float, float, float] | np.ndarray = None, **kwargs
     ) -> None:
+        if dimensions is None:
+            dimensions = [3, 2, 1]
         self.dimensions = dimensions
         super().__init__(**kwargs)
 

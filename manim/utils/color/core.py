@@ -137,24 +137,24 @@ class ManimColor:
             length = len(value)
             if all(isinstance(x, float) for x in value):
                 if length == 3:
-                    self._internal_value = ManimColor._internal_from_rgb(value, alpha)  # type: ignore
+                    self._internal_value = ManimColor._internal_from_rgb(value, alpha)
                 elif length == 4:
-                    self._internal_value = ManimColor._internal_from_rgba(value)  # type: ignore
+                    self._internal_value = ManimColor._internal_from_rgba(value)
                 else:
                     raise ValueError(
                         f"ManimColor only accepts lists/tuples/arrays of length 3 or 4, not {length}"
                     )
+            elif length == 3:
+                self._internal_value = ManimColor._internal_from_int_rgb(
+                    value,
+                    alpha,  # type: ignore
+                )
+            elif length == 4:
+                self._internal_value = ManimColor._internal_from_int_rgba(value)  # type: ignore
             else:
-                if length == 3:
-                    self._internal_value = ManimColor._internal_from_int_rgb(
-                        value, alpha  # type: ignore
-                    )
-                elif length == 4:
-                    self._internal_value = ManimColor._internal_from_int_rgba(value)  # type: ignore
-                else:
-                    raise ValueError(
-                        f"ManimColor only accepts lists/tuples/arrays of length 3 or 4, not {length}"
-                    )
+                raise ValueError(
+                    f"ManimColor only accepts lists/tuples/arrays of length 3 or 4, not {length}"
+                )
         elif hasattr(value, "get_hex") and callable(value.get_hex):
             result = re_hex.search(value.get_hex())
             if result is None:
@@ -216,7 +216,7 @@ class ManimColor:
 
     # TODO: Maybe make 8 nibble hex also convertible ?
     @staticmethod
-    def _internal_from_hex_string(hex: str, alpha: float) -> ManimColorInternal:
+    def _internal_from_hex_string(hex_: str, alpha: float) -> ManimColorInternal:
         """Internal function for converting a hex string into the internal representation of a ManimColor.
 
         .. warning::
@@ -237,9 +237,9 @@ class ManimColor:
         ManimColorInternal
             Internal color representation
         """
-        if len(hex) == 6:
-            hex += "00"
-        tmp = int(hex, 16)
+        if len(hex_) == 6:
+            hex_ += "00"
+        tmp = int(hex_, 16)
         return np.asarray(
             (
                 ((tmp >> 24) & 0xFF) / 255,
@@ -589,7 +589,7 @@ class ManimColor:
         return cls(rgba)
 
     @classmethod
-    def from_hex(cls, hex: str, alpha: float = 1.0) -> Self:
+    def from_hex(cls, hex: str, alpha: float = 1.0) -> Self:  # noqa: A002
         """Creates a Manim Color from a hex string, prefixes allowed # and 0x
 
         Parameters
@@ -1013,7 +1013,7 @@ def random_color() -> ManimColor:
     ManimColor
         _description_
     """
-    import manim.utils.color.manim_colors as manim_colors
+    from manim.utils.color import manim_colors
 
     return random.choice(manim_colors._all_manim_colors)
 

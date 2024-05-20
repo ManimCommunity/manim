@@ -133,10 +133,10 @@ class ThreeDScene(Scene):
                     "phi": cam.increment_phi,
                     "gamma": cam.increment_gamma,
                 }
-                cam.add_updater(lambda m, dt: methods[about](rate * dt))
+                cam.add_updater(lambda _, dt: methods[about](rate * dt))
                 self.add(self.camera)
-        except Exception:
-            raise ValueError("Invalid ambient rotation angle.")
+        except Exception as e:
+            raise ValueError("Invalid ambient rotation angle.") from e
 
     def stop_ambient_camera_rotation(self, about="theta"):
         """
@@ -155,8 +155,8 @@ class ThreeDScene(Scene):
                 self.remove(x)
             elif config.renderer == RendererType.OPENGL:
                 self.camera.clear_updaters()
-        except Exception:
-            raise ValueError("Invalid ambient rotation angle.")
+        except Exception as e:
+            raise ValueError("Invalid ambient rotation angle.") from e
 
     def begin_3dillusion_camera_rotation(
         self,
@@ -455,30 +455,43 @@ class SpecialThreeDScene(ThreeDScene):
     def __init__(
         self,
         cut_axes_at_radius=True,
-        camera_config={"should_apply_shading": True, "exponential_projection": True},
-        three_d_axes_config={
-            "num_axis_pieces": 1,
-            "axis_config": {
-                "unit_size": 2,
-                "tick_frequency": 1,
-                "numbers_with_elongated_ticks": [0, 1, 2],
-                "stroke_width": 2,
-            },
-        },
-        sphere_config={"radius": 2, "resolution": (24, 48)},
-        default_angled_camera_position={
-            "phi": 70 * DEGREES,
-            "theta": -110 * DEGREES,
-        },
+        camera_config=None,
+        three_d_axes_config=None,
+        sphere_config=None,
+        default_angled_camera_position=None,
         # When scene is extracted with -l flag, this
         # configuration will override the above configuration.
-        low_quality_config={
-            "camera_config": {"should_apply_shading": False},
-            "three_d_axes_config": {"num_axis_pieces": 1},
-            "sphere_config": {"resolution": (12, 24)},
-        },
+        low_quality_config=None,
         **kwargs,
     ):
+        if low_quality_config is None:
+            low_quality_config = {
+                "camera_config": {"should_apply_shading": False},
+                "three_d_axes_config": {"num_axis_pieces": 1},
+                "sphere_config": {"resolution": (12, 24)},
+            }
+        if default_angled_camera_position is None:
+            default_angled_camera_position = {
+                "phi": 70 * DEGREES,
+                "theta": -110 * DEGREES,
+            }
+        if sphere_config is None:
+            sphere_config = {"radius": 2, "resolution": (24, 48)}
+        if three_d_axes_config is None:
+            three_d_axes_config = {
+                "num_axis_pieces": 1,
+                "axis_config": {
+                    "unit_size": 2,
+                    "tick_frequency": 1,
+                    "numbers_with_elongated_ticks": [0, 1, 2],
+                    "stroke_width": 2,
+                },
+            }
+        if camera_config is None:
+            camera_config = {
+                "should_apply_shading": True,
+                "exponential_projection": True,
+            }
         self.cut_axes_at_radius = cut_axes_at_radius
         self.camera_config = camera_config
         self.three_d_axes_config = three_d_axes_config

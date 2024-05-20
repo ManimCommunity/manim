@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+from __future__ import annotations
 
 from manim import *
 
@@ -153,7 +153,7 @@ class SpiralInExample(Scene):
             ],
             color=PURPLE_B,
             fill_opacity=1,
-            stroke_width=0
+            stroke_width=0,
         ).shift(UP + 2 * RIGHT)
         shapes = VGroup(triangle, square, circle, pentagon, pi)
         self.play(SpiralIn(shapes, fade_in_fraction=0.9))

@@ -1186,7 +1186,7 @@ class Mobject:
         Parameters
         ----------
         scale_factor
-            The scaling factor :math:`\alpha`. If :math:`0 < |\alpha| < 1`, the mobject
+            The scaling factor :math:`\alpha`. If :math:`0 < |\alpha| < 1`, the mobject
             will shrink, and for :math:`|\alpha| > 1` it will grow. Furthermore,
             if :math:`\alpha < 0`, the mobject is also flipped.
         kwargs
@@ -1224,7 +1224,7 @@ class Mobject:
         )
         return self
 
-    def rotate_about_origin(self, angle: float, axis: Vector3D = OUT, axes=[]) -> Self:
+    def rotate_about_origin(self, angle: float, axis: Vector3D = OUT) -> Self:
         """Rotates the :class:`~.Mobject` about the ORIGIN, which is at [0,0,0]."""
         return self.rotate(angle, axis, about_point=ORIGIN)
 
@@ -1938,7 +1938,8 @@ class Mobject:
 
     def reduce_across_dimension(self, reduce_func: Callable, dim: int):
         """Find the min or max value from a dimension across all points in this and submobjects."""
-        assert dim >= 0 and dim <= 2
+        assert dim >= 0
+        assert dim <= 2
         if len(self.submobjects) == 0 and len(self.points) == 0:
             # If we have no points and no submobjects, return 0 (e.g. center)
             return 0
@@ -2014,7 +2015,7 @@ class Mobject:
 
         ::
 
-            sample = Arc(start_angle=PI/7, angle = PI/5)
+            sample = Arc(start_angle=PI / 7, angle=PI / 5)
 
             # These are all equivalent
             max_y_1 = sample.get_top()[1]
@@ -2438,10 +2439,10 @@ class Mobject:
             buff_x = buff_y = buff
 
         # Initialize alignments correctly
-        def init_alignments(alignments, num, mapping, name, dir):
+        def init_alignments(alignments, num, mapping, name, dir_):
             if alignments is None:
                 # Use cell_alignment as fallback
-                return [cell_alignment * dir] * num
+                return [cell_alignment * dir_] * num
             if len(alignments) != num:
                 raise ValueError(f"{name}_alignments has a mismatching size.")
             alignments = list(alignments)

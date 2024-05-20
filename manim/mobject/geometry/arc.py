@@ -63,7 +63,7 @@ from manim.utils.space_ops import (
 )
 
 if TYPE_CHECKING:
-    import manim.mobject.geometry.tips as tips
+    from manim.mobject.geometry import tips
     from manim.mobject.mobject import Mobject
     from manim.mobject.text.tex_mobject import SingleStringMathTex, Tex
     from manim.mobject.text.text_mobject import Text
@@ -92,9 +92,11 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         self,
         tip_length: float = DEFAULT_ARROW_TIP_LENGTH,
         normal_vector: Vector3D = OUT,
-        tip_style: dict = {},
+        tip_style: dict = None,
         **kwargs,
     ) -> None:
+        if tip_style is None:
+            tip_style = {}
         self.tip_length: float = tip_length
         self.normal_vector: Vector3D = normal_vector
         self.tip_style: dict = tip_style
@@ -400,7 +402,9 @@ class Arc(TipableVMobject):
             return line_intersection(line1=(a1, a1 + n1), line2=(a2, a2 + n2))
         except Exception:
             if warning:
-                warnings.warn("Can't find Arc center, using ORIGIN instead")
+                warnings.warn(
+                    "Can't find Arc center, using ORIGIN instead", stacklevel=1
+                )
             self._failed_to_get_center = True
             return np.array(ORIGIN)
 

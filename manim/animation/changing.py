@@ -39,7 +39,7 @@ class AnimatedBoundary(VGroup):
     def __init__(
         self,
         vmobject,
-        colors=[BLUE_D, BLUE_B, BLUE_E, GREY_BROWN],
+        colors=None,
         max_stroke_width=3,
         cycle_rate=0.5,
         back_and_forth=True,
@@ -47,6 +47,8 @@ class AnimatedBoundary(VGroup):
         fade_rate_func=smooth,
         **kwargs,
     ):
+        if colors is None:
+            colors = [BLUE_D, BLUE_B, BLUE_E, GREY_BROWN]
         super().__init__(**kwargs)
         self.colors = colors
         self.max_stroke_width = max_stroke_width

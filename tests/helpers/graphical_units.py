@@ -46,7 +46,7 @@ def set_test_scene(scene_object: type[Scene], module_name: str):
 
     assert not np.all(
         data == np.array([0, 0, 0, 255]),
-    ), f"Control data generated for {str(scene)} only contains empty pixels."
+    ), f"Control data generated for {scene!s} only contains empty pixels."
     assert data.shape == (480, 854, 4)
     tests_directory = Path(__file__).absolute().parent.parent
     path_control_data = Path(tests_directory) / "control_data" / "graphical_units_data"
@@ -54,4 +54,4 @@ def set_test_scene(scene_object: type[Scene], module_name: str):
     if not path.is_dir():
         path.mkdir(parents=True)
     np.savez_compressed(path / str(scene), frame_data=data)
-    logger.info(f"Test data for {str(scene)} saved in {path}\n")
+    logger.info(f"Test data for {scene!s} saved in {path}\n")

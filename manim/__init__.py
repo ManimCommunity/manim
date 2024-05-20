@@ -6,6 +6,7 @@ from importlib.metadata import version
 __version__ = version(__name__)
 
 
+# ruff: noqa: F401
 # isort: off
 
 # Importing the config module should be the first thing we do, since other

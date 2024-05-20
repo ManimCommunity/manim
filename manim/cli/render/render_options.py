@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+import sys
 
 from cloup import Choice, option, option_group
 
@@ -24,7 +25,7 @@ def validate_scene_range(ctx, param, value):
             return start, end
         except Exception:
             logger.error("Couldn't determine a range for -n option.")
-            exit()
+            sys.exit()
 
 
 def validate_resolution(ctx, param, value):
@@ -34,7 +35,7 @@ def validate_resolution(ctx, param, value):
             return (start, end)
         except Exception:
             logger.error("Resolution option is invalid.")
-            exit()
+            sys.exit()
 
 
 render_options = option_group(

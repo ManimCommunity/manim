@@ -191,7 +191,7 @@ def _texcode_for_environment(environment: str) -> tuple[str, str]:
         begin += "}"
 
     # While the \end command terminates at the first closing brace
-    split_at_brace = re.split("}", environment, 1)
+    split_at_brace = re.split("}", environment, maxsplit=1, flags=0)
     end = r"\end{" + split_at_brace[0] + "}"
 
     return begin, end

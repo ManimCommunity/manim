@@ -394,7 +394,9 @@ class CoordinateSystem:
             ax = ThreeDAxes()
             x_labels = range(-4, 5)
             z_labels = range(-4, 4, 2)
-            ax.add_coordinates(x_labels, None, z_labels)  # default y labels, custom x & z labels
+            ax.add_coordinates(
+                x_labels, None, z_labels
+            )  # default y labels, custom x & z labels
             ax.add_coordinates(x_labels)  # only x labels
 
         You can also specifically control the position and value of the labels using a dict.
@@ -405,7 +407,15 @@ class CoordinateSystem:
             x_pos = [x for x in range(1, 8)]
 
             # strings are automatically converted into a Tex mobject.
-            x_vals = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+            x_vals = [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday",
+            ]
             x_dict = dict(zip(x_pos, x_vals))
             ax.add_coordinates(x_dict)
         """
@@ -3151,7 +3161,7 @@ class PolarPlane(Axes):
             }
             for i in a_values
         ]
-        if self.azimuth_units == "PI radians" or self.azimuth_units == "TAU radians":
+        if self.azimuth_units in ("PI radians", "TAU radians"):
             a_tex = [
                 self.get_radian_label(
                     i["label"],
@@ -3244,25 +3254,24 @@ class PolarPlane(Axes):
         elif frac.denominator == 1:
             string = str(frac.numerator) + constant_label
 
+        elif self.azimuth_compact_fraction:
+            string = (
+                r"\tfrac{"
+                + str(frac.numerator)
+                + constant_label
+                + r"}{"
+                + str(frac.denominator)
+                + r"}"
+            )
         else:
-            if self.azimuth_compact_fraction:
-                string = (
-                    r"\tfrac{"
-                    + str(frac.numerator)
-                    + constant_label
-                    + r"}{"
-                    + str(frac.denominator)
-                    + r"}"
-                )
-            else:
-                string = (
-                    r"\tfrac{"
-                    + str(frac.numerator)
-                    + r"}{"
-                    + str(frac.denominator)
-                    + r"}"
-                    + constant_label
-                )
+            string = (
+                r"\tfrac{"
+                + str(frac.numerator)
+                + r"}{"
+                + str(frac.denominator)
+                + r"}"
+                + constant_label
+            )
 
         return MathTex(string, font_size=font_size, **kwargs)
 

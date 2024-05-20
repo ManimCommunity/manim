@@ -110,7 +110,7 @@ def process_pullrequests(lst, cur, github_repo, pr_nums):
             authors.add(pr.user)
             reviewers = reviewers.union(rev.user for rev in pr.get_reviews())
             pr_labels = [label.name for label in pr.labels]
-            for label in PR_LABELS.keys():
+            for label in PR_LABELS:
                 if label in pr_labels:
                     pr_by_labels[label].append(pr)
                     break  # ensure that PR is only added in one category
@@ -291,7 +291,7 @@ def main(token, prior, tag, additional, outfile):
         )
 
         pr_by_labels = contributions["PRs"]
-        for label in PR_LABELS.keys():
+        for label in PR_LABELS:
             pr_of_label = pr_by_labels[label]
 
             if pr_of_label:
@@ -301,7 +301,6 @@ def main(token, prior, tag, additional, outfile):
 
                 for PR in pr_by_labels[label]:
                     num = PR.number
-                    url = PR.html_url
                     title = PR.title
                     label = PR.labels
                     f.write(f"* :pr:`{num}`: {title}\n")

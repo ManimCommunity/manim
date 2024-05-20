@@ -32,7 +32,7 @@ if TYPE_CHECKING:
 
 from manim import __version__, config, logger
 
-from .. import config, console
+from .. import console
 
 
 def is_mp4_format() -> bool:
@@ -206,7 +206,7 @@ def open_file(file_path, in_browser=False):
         if config.preview_command:
             commands = [config.preview_command]
         commands.append(file_path)
-        sp.run(commands)
+        sp.run(commands, check=False)
 
 
 def open_media_file(file_writer: SceneFileWriter) -> None:

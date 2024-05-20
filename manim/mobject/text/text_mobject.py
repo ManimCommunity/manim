@@ -56,7 +56,6 @@ __all__ = ["Text", "Paragraph", "MarkupText", "register_font"]
 
 import copy
 import hashlib
-import os
 import re
 from collections.abc import Iterable, Sequence
 from contextlib import contextmanager
@@ -135,10 +134,17 @@ class Paragraph(VGroup):
     --------
     Normal usage::
 
-        paragraph = Paragraph('this is a awesome', 'paragraph',
-                              'With \nNewlines', '\tWith Tabs',
-                              '  With Spaces', 'With Alignments',
-                              'center', 'left', 'right')
+        paragraph = Paragraph(
+            "this is a awesome",
+            "paragraph",
+            "With \nNewlines",
+            "\tWith Tabs",
+            "  With Spaces",
+            "With Alignments",
+            "center",
+            "left",
+            "right",
+        )
 
     Remove unwanted invisible characters::
 
@@ -583,7 +589,7 @@ class Text(SVGMobject):
         self.initial_height = self.height
 
     def __repr__(self):
-        return f"Text({repr(self.original_text)})"
+        return f"Text({self.original_text!r})"
 
     @property
     def font_size(self):
@@ -1152,7 +1158,7 @@ class MarkupText(SVGMobject):
         >>> MarkupText('The horse does not eat cucumber salad.')
         MarkupText('The horse does not eat cucumber salad.')
 
-    """
+    """  # noqa: RUF002
 
     @staticmethod
     @functools.cache
@@ -1305,15 +1311,13 @@ class MarkupText(SVGMobject):
             self.set_color_by_gradient(*self.gradient)
         for col in colormap:
             self.chars[
-                col["start"]
-                - col["start_offset"] : col["end"]
+                col["start"] - col["start_offset"] : col["end"]
                 - col["start_offset"]
                 - col["end_offset"]
             ].set_color(self._parse_color(col["color"]))
         for grad in gradientmap:
             self.chars[
-                grad["start"]
-                - grad["start_offset"] : grad["end"]
+                grad["start"] - grad["start_offset"] : grad["end"]
                 - grad["start_offset"]
                 - grad["end_offset"]
             ].set_color_by_gradient(
@@ -1449,7 +1453,9 @@ class MarkupText(SVGMobject):
                     "end_offset": end_offset,
                 },
             )
-        self.text = re.sub("<gradient[^>]+>(.+?)</gradient>", r"\1", self.text, 0, re.S)
+        self.text = re.sub(
+            "<gradient[^>]+>(.+?)</gradient>", r"\1", self.text, count=0, flags=re.S
+        )
         return gradientmap
 
     def _parse_color(self, col):
@@ -1491,11 +1497,13 @@ class MarkupText(SVGMobject):
                     "end_offset": end_offset,
                 },
             )
-        self.text = re.sub("<color[^>]+>(.+?)</color>", r"\1", self.text, 0, re.S)
+        self.text = re.sub(
+            "<color[^>]+>(.+?)</color>", r"\1", self.text, count=0, flags=re.S
+        )
         return colormap
 
     def __repr__(self):
-        return f"MarkupText({repr(self.original_text)})"
+        return f"MarkupText({self.original_text!r})"
 
 
 @contextmanager

@@ -5,8 +5,8 @@ from zlib import crc32
 
 import pytest
 
-import manim.utils.hashing as hashing
 from manim import Square
+from manim.utils import hashing
 
 ALREADY_PROCESSED_PLACEHOLDER = hashing._Memoizer.ALREADY_PROCESSED_PLACEHOLDER
 
@@ -98,7 +98,7 @@ def test_JSON_with_wrong_keys():
         o_ser = hashing.get_json(el)
         dict_o = json.loads(o_ser)
         # check if this is an int (it meant that the lkey has been hashed)
-        assert int(list(dict_o.keys())[0])
+        assert int(next(iter(dict_o.keys())))
 
 
 def test_JSON_with_circular_references():

@@ -4,9 +4,9 @@ import logging
 
 import numpy as np
 
-logger = logging.getLogger(__name__)
-
 from manim import BackgroundRectangle, Circle, Sector
+
+logger = logging.getLogger(__name__)
 
 
 def test_get_arc_center():

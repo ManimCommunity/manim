@@ -12,10 +12,10 @@ def _get_caplog_record_msg(warn_caplog_manim):
     return message
 
 
-@pytest.fixture()
+@pytest.fixture
 def warn_caplog_manim(caplog):
     caplog.set_level(logging.WARNING, logger="manim")
-    yield caplog
+    return caplog
 
 
 @deprecated

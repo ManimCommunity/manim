@@ -22,6 +22,8 @@ if TYPE_CHECKING:
 
     NxGraph: TypeAlias = nx.classes.graph.Graph | nx.classes.digraph.DiGraph
 
+    from manim.scene.scene import Scene
+
 from manim.animation.composition import AnimationGroup
 from manim.animation.creation import Create, Uncreate
 from manim.mobject.geometry.arc import Dot, LabeledDot
@@ -477,11 +479,11 @@ def _determine_graph_layout(
             return cast(LayoutFunction, layout)(
                 nx_graph, scale=layout_scale, **layout_config
             )
-        except TypeError as e:
+        except TypeError:
             raise ValueError(
                 f"The layout '{layout}' is neither a recognized layout, a layout function,"
                 "nor a vertex placement dictionary.",
-            )
+            ) from None
 
 
 class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
@@ -849,7 +851,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
                 label_fill_color=label_fill_color,
                 vertex_type=vertex_type,
                 vertex_config=vertex_config[v],
-                vertex_mobject=vertex_mobjects[v] if v in vertex_mobjects else None,
+                vertex_mobject=vertex_mobjects.get(v, None),
             )
             for v in vertices
         ]
@@ -1513,7 +1515,8 @@ class Graph(GenericGraph):
                     *new_edges,
                     vertex_config=self.VERTEX_CONF,
                     positions={
-                        k: g.vertices[vertex_id].get_center() + 0.1 * DOWN for k in new_vertices
+                        k: g.vertices[vertex_id].get_center() + 0.1 * DOWN
+                        for k in new_vertices
                     },
                 )
                 if depth < self.DEPTH:

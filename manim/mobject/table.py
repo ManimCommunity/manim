@@ -202,11 +202,17 @@ class Table(VGroup):
             [float | str | VMobject],
             VMobject,
         ] = Paragraph,
-        element_to_mobject_config: dict = {},
-        arrange_in_grid_config: dict = {},
-        line_config: dict = {},
+        element_to_mobject_config: dict = None,
+        arrange_in_grid_config: dict = None,
+        line_config: dict = None,
         **kwargs,
     ):
+        if line_config is None:
+            line_config = {}
+        if arrange_in_grid_config is None:
+            arrange_in_grid_config = {}
+        if element_to_mobject_config is None:
+            element_to_mobject_config = {}
         self.row_labels = row_labels
         self.col_labels = col_labels
         self.top_left_entry = top_left_entry
@@ -1140,7 +1146,7 @@ class DecimalTable(Table):
         self,
         table: Iterable[Iterable[float | str]],
         element_to_mobject: Callable[[float | str], VMobject] = DecimalNumber,
-        element_to_mobject_config: dict = {"num_decimal_places": 1},
+        element_to_mobject_config: dict = None,
         **kwargs,
     ):
         """
@@ -1160,6 +1166,8 @@ class DecimalTable(Table):
         kwargs
             Additional arguments to be passed to :class:`~.Table`.
         """
+        if element_to_mobject_config is None:
+            element_to_mobject_config = {"num_decimal_places": 1}
         super().__init__(
             table,
             element_to_mobject=element_to_mobject,

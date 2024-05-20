@@ -297,7 +297,7 @@ class VectorScene(Scene):
         """
         if not isinstance(label, MathTex):
             if len(label) == 1:
-                label = "\\vec{\\textbf{%s}}" % label
+                label = f"\\vec{{\\textbf{{{label}}}}}"
             label = MathTex(label)
             if color is None:
                 color = vector.get_color()
@@ -904,9 +904,8 @@ class LinearTransformationScene(VectorScene):
         if new_label:
             label_mob.target_text = new_label
         else:
-            label_mob.target_text = "{}({})".format(
-                transformation_name,
-                label_mob.get_tex_string(),
+            label_mob.target_text = (
+                f"{transformation_name}({label_mob.get_tex_string()})"
             )
         label_mob.vector = vector
         label_mob.kwargs = kwargs
@@ -1172,7 +1171,7 @@ class LinearTransformationScene(VectorScene):
     def apply_function(
         self,
         function: Callable[[np.ndarray], np.ndarray],
-        added_anims: list = [],
+        added_anims: list = None,
         **kwargs,
     ):
         """
@@ -1193,6 +1192,8 @@ class LinearTransformationScene(VectorScene):
         **kwargs
             Any valid keyword argument of a self.play() call.
         """
+        if added_anims is None:
+            added_anims = []
         if "run_time" not in kwargs:
             kwargs["run_time"] = 3
         anims = (

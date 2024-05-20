@@ -10,6 +10,9 @@ from typing_extensions import TypeAlias
 __all__ = ["parse_module_attributes"]
 
 
+# ruff: noqa: E721
+
+
 AliasInfo: TypeAlias = dict[str, str]
 """Dictionary with a `definition` key containing the definition of
 a :class:`TypeAlias` as a string, and optionally a `doc` key containing
@@ -125,8 +128,7 @@ def parse_module_attributes() -> tuple[AliasDocsDict, DataDict]:
                 and (
                     (
                         # if TYPE_CHECKING
-                        type(node.test) is ast.Name
-                        and node.test.id == "TYPE_CHECKING"
+                        type(node.test) is ast.Name and node.test.id == "TYPE_CHECKING"
                     )
                     or (
                         # if typing.TYPE_CHECKING

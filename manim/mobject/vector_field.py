@@ -833,25 +833,24 @@ class StreamLines(VectorField):
                 line.set_stroke(
                     color=self.color, width=self.stroke_width, opacity=opacity
                 )
+            elif config.renderer == RendererType.OPENGL:
+                # scaled for compatibility with cairo
+                line.set_stroke(width=self.stroke_width / 4.0)
+                norms = np.array(
+                    [np.linalg.norm(self.func(point)) for point in line.points],
+                )
+                line.set_rgba_array_direct(
+                    self.values_to_rgbas(norms, opacity),
+                    name="stroke_rgba",
+                )
             else:
-                if config.renderer == RendererType.OPENGL:
-                    # scaled for compatibility with cairo
-                    line.set_stroke(width=self.stroke_width / 4.0)
-                    norms = np.array(
-                        [np.linalg.norm(self.func(point)) for point in line.points],
-                    )
-                    line.set_rgba_array_direct(
-                        self.values_to_rgbas(norms, opacity),
-                        name="stroke_rgba",
+                if np.any(self.z_range != np.array([0, 0.5, 0.5])):
+                    line.set_stroke(
+                        [self.pos_to_color(p) for p in line.get_anchors()],
                     )
                 else:
-                    if np.any(self.z_range != np.array([0, 0.5, 0.5])):
-                        line.set_stroke(
-                            [self.pos_to_color(p) for p in line.get_anchors()],
-                        )
-                    else:
-                        line.color_using_background_image(self.background_img)
-                    line.set_stroke(width=self.stroke_width, opacity=opacity)
+                    line.color_using_background_image(self.background_img)
+                line.set_stroke(width=self.stroke_width, opacity=opacity)
             self.add(line)
         self.stream_lines = [*self.submobjects]
 

@@ -12,7 +12,7 @@ def test_opengl_mobject_copy(using_opengl_renderer):
     orig.add(*(OpenGLMobject() for _ in range(10)))
     copy = orig.copy()
 
-    assert orig is orig
+    assert orig is orig  # noqa: PLR0124
     assert orig is not copy
     assert orig.submobjects is not copy.submobjects
     for i in range(10):
@@ -36,7 +36,7 @@ def test_bracelabel_copy(using_opengl_renderer, tmp_path):
     orig = BraceLabel(OpenGLMobject(), "label")
     copy = orig.copy()
 
-    assert orig is orig
+    assert orig is orig  # noqa: PLR0124
     assert orig is not copy
     assert orig.brace is not copy.brace
     assert orig.label is not copy.label

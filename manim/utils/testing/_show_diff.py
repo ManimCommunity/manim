@@ -13,8 +13,8 @@ def show_diff_helper(
     control_data_filename: str,
 ):
     """Will visually display with matplotlib differences between frame generated and the one expected."""
-    import matplotlib.gridspec as gridspec
     import matplotlib.pyplot as plt
+    from matplotlib import gridspec
 
     gs = gridspec.GridSpec(2, 2)
     fig = plt.figure()

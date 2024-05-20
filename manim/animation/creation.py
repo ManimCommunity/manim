@@ -229,11 +229,15 @@ class DrawBorderThenFill(Animation):
         rate_func: Callable[[float], float] = double_smooth,
         stroke_width: float = 2,
         stroke_color: str = None,
-        draw_border_animation_config: dict = {},  # what does this dict accept?
-        fill_animation_config: dict = {},
+        draw_border_animation_config: dict = None,  # what does this dict accept?
+        fill_animation_config: dict = None,
         introducer: bool = True,
         **kwargs,
     ) -> None:
+        if fill_animation_config is None:
+            fill_animation_config = {}
+        if draw_border_animation_config is None:
+            draw_border_animation_config = {}
         self._typecheck_input(vmobject)
         super().__init__(
             vmobject,

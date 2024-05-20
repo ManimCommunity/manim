@@ -10,7 +10,7 @@ import numpy as np
 from mapbox_earcut import triangulate_float32 as earcut
 from scipy.spatial.transform import Rotation
 
-from manim.constants import DOWN, OUT, PI, RIGHT, TAU, UP, RendererType
+from manim.constants import DOWN, OUT, PI, RIGHT, TAU, UP
 from manim.utils.iterables import adjacent_pairs
 
 if TYPE_CHECKING:
@@ -622,7 +622,7 @@ def get_winding_number(points: Sequence[np.ndarray]) -> float:
     >>> polygon = Square()
     >>> get_winding_number(polygon.get_vertices())
     1.0
-    >>> polygon.shift(2*UP)
+    >>> polygon.shift(2 * UP)
     Square
     >>> get_winding_number(polygon.get_vertices())
     0.0

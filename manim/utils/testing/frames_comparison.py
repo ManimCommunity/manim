@@ -99,7 +99,7 @@ def frames_comparison(
             # Example: if "length" is parametrized from 0 to 20, the kwargs
             # will be once with {"length" : 1}, etc.
             test_name_with_param = test_name + "_".join(
-                f"_{str(tup[0])}[{str(tup[1])}]" for tup in kwargs.items()
+                f"_{tup[0]!s}[{tup[1]!s}]" for tup in kwargs.items()
             )
 
             config_tests = _config_test(last_frame)
@@ -150,7 +150,7 @@ def frames_comparison(
 
         # Reach a bit into pytest internals to hoist the marks from our wrapped
         # function.
-        setattr(wrapper, "pytestmark", [])
+        wrapper.pytestmark = []
         new_marks = getattr(tested_scene_construct, "pytestmark", [])
         wrapper.pytestmark = new_marks
         return wrapper

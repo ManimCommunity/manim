@@ -319,11 +319,11 @@ def print_tex_error(tex_compilation_log, error_start_index, tex_source):
     # failure. This code finds the next such line after the error current error message
     line_of_tex_error = (
         int(
-            [
+            next(
                 log_line
                 for log_line in tex_compilation_log[error_start_index:]
                 if log_line.startswith("l.")
-            ][0]
+            )
             .split(" ")[0]
             .split(".")[1],
         )

@@ -17,7 +17,6 @@ from pygments.formatters.html import HtmlFormatter
 from pygments.lexers import get_lexer_by_name, guess_lexer_for_filename
 from pygments.styles import get_all_styles
 
-from manim import logger
 from manim.constants import *
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.geometry.polygram import RoundedRectangle
@@ -393,12 +392,7 @@ class Code(VGroup):
         tab_spaces is 2d array with rows as line numbers
         and columns as corresponding number of indentation_chars in front of that line in code.
         """
-        if (
-            self.background_color == "#111111"
-            or self.background_color == "#272822"
-            or self.background_color == "#202020"
-            or self.background_color == "#000000"
-        ):
+        if self.background_color in ("#111111", "#272822", "#202020", "#000000"):
             self.default_color = "#ffffff"
         else:
             self.default_color = "#000000"

@@ -107,10 +107,14 @@ class SampleSpace(Rectangle):
             parts.add(part)
         return parts
 
-    def get_horizontal_division(self, p_list, colors=[GREEN_E, BLUE_E], vect=DOWN):
+    def get_horizontal_division(self, p_list, colors=None, vect=DOWN):
+        if colors is None:
+            colors = [GREEN_E, BLUE_E]
         return self.get_division_along_dimension(p_list, 1, colors, vect)
 
-    def get_vertical_division(self, p_list, colors=[MAROON_B, YELLOW], vect=RIGHT):
+    def get_vertical_division(self, p_list, colors=None, vect=RIGHT):
+        if colors is None:
+            colors = [MAROON_B, YELLOW]
         return self.get_division_along_dimension(p_list, 0, colors, vect)
 
     def divide_horizontally(self, *args, **kwargs):
@@ -274,8 +278,8 @@ class BarChart(Axes):
 
         if y_range is None:
             y_range = [
-                min(0, min(self.values)),
-                max(0, max(self.values)),
+                min(0, *self.values),
+                max(0, *self.values),
                 round(max(self.values) / y_length, 2),
             ]
 

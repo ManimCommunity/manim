@@ -76,17 +76,21 @@ class ZoomedScene(MovingCameraScene):
         zoomed_display_center=None,
         zoomed_display_corner=UP + RIGHT,
         zoomed_display_corner_buff=DEFAULT_MOBJECT_TO_EDGE_BUFFER,
-        zoomed_camera_config={
-            "default_frame_stroke_width": 2,
-            "background_opacity": 1,
-        },
-        zoomed_camera_image_mobject_config={},
+        zoomed_camera_config=None,
+        zoomed_camera_image_mobject_config=None,
         zoomed_camera_frame_starting_position=ORIGIN,
         zoom_factor=0.15,
         image_frame_stroke_width=3,
         zoom_activated=False,
         **kwargs,
     ):
+        if zoomed_camera_image_mobject_config is None:
+            zoomed_camera_image_mobject_config = {}
+        if zoomed_camera_config is None:
+            zoomed_camera_config = {
+                "default_frame_stroke_width": 2,
+                "background_opacity": 1,
+            }
         self.zoomed_display_height = zoomed_display_height
         self.zoomed_display_width = zoomed_display_width
         self.zoomed_display_center = zoomed_display_center

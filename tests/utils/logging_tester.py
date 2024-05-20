@@ -41,7 +41,7 @@ def _check_logs(reference_logfile_path: Path, generated_logfile_path: Path) -> N
         newline = "\n"
         tab = "\t"
         assert len(diff_keys) == 0, (
-            f"Logs don't match at {index} log. : \n{newline.join([f'In {key} field, got -> {newline}{tab}{repr(gen_log[key])}. {newline}Expected : -> {newline}{tab}{repr(ref_log[key])}.' for key in diff_keys])}"
+            f"Logs don't match at {index} log. : \n{newline.join([f'In {key} field, got -> {newline}{tab}{gen_log[key]!r}. {newline}Expected : -> {newline}{tab}{ref_log[key]!r}.' for key in diff_keys])}"
             + f"\nPath of reference log: {reference_logfile}\nPath of generated logs: {generated_logfile}"
         )
 

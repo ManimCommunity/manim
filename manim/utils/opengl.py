@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import numpy as np
-import numpy.linalg as linalg
+from numpy import linalg
 
 from .. import config
 
@@ -31,7 +31,7 @@ def orthographic_projection_matrix(
     height=None,
     near=1,
     far=depth + 1,
-    format=True,
+    format=True,  # noqa: A002
 ):
     if width is None:
         width = config["frame_width"]
@@ -51,7 +51,7 @@ def orthographic_projection_matrix(
         return projection_matrix
 
 
-def perspective_projection_matrix(width=None, height=None, near=2, far=50, format=True):
+def perspective_projection_matrix(width=None, height=None, near=2, far=50, format=True):  # noqa: A002
     if width is None:
         width = config["frame_width"] / 6
     if height is None:

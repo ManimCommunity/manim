@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import sys
 from pathlib import Path
 
@@ -90,7 +92,7 @@ def test_gif_writing(tmp_path, transparent):
         ("webm", True, "vp9", "yuv420p"),
     ],
 )
-def test_codecs(tmp_path, format, transparent, codec, pixel_format):
+def test_codecs(tmp_path, format, transparent, codec, pixel_format):  # noqa: A002
     output_filename = f"codec_{format}_{'transparent' if transparent else 'opaque'}"
     with tempconfig(
         {

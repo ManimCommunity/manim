@@ -166,7 +166,7 @@ class SceneFileWriter:
         if len(self.sections) and self.sections[-1].is_empty():
             self.sections.pop()
 
-    def next_section(self, name: str, type: str, skip_animations: bool) -> None:
+    def next_section(self, name: str, type: str, skip_animations: bool) -> None:  # noqa: A002
         """Create segmentation cut here."""
         self.finish_last_section()
 
@@ -715,7 +715,6 @@ class SceneFileWriter:
                 av.open(movie_file_path) as video_input,
                 av.open(sound_file_path) as audio_input,
             ):
-
                 video_stream = video_input.streams.video[0]
                 audio_stream = audio_input.streams.audio[0]
                 output_container = av.open(

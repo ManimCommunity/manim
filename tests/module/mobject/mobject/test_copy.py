@@ -11,7 +11,7 @@ def test_mobject_copy():
     orig.add(*(Mobject() for _ in range(10)))
     copy = orig.copy()
 
-    assert orig is orig
+    assert orig is orig  # noqa: PLR0124
     assert orig is not copy
     assert orig.submobjects is not copy.submobjects
     for i in range(10):
@@ -35,7 +35,7 @@ def test_bracelabel_copy(tmp_path):
     orig = BraceLabel(Mobject(), "label")
     copy = orig.copy()
 
-    assert orig is orig
+    assert orig is orig  # noqa: PLR0124
     assert orig is not copy
     assert orig.brace is not copy.brace
     assert orig.label is not copy.label

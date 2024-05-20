@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import importlib.util
 import inspect
-import os
 import re
 import sys
 import types
@@ -32,29 +31,28 @@ def get_module(file_name: Path):
             exec(code, module.__dict__)
             return module
         except Exception as e:
-            logger.error(f"Failed to render scene: {str(e)}")
+            logger.error(f"Failed to render scene: {e!s}")
             sys.exit(2)
+    elif file_name.exists():
+        ext = file_name.suffix
+        if ext != ".py":
+            raise ValueError(f"{file_name} is not a valid Manim python script.")
+        module_name = ".".join(file_name.with_suffix("").parts)
+
+        warnings.filterwarnings(
+            "default",
+            category=DeprecationWarning,
+            module=module_name,
+        )
+
+        spec = importlib.util.spec_from_file_location(module_name, file_name)
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[module_name] = module
+        sys.path.insert(0, str(file_name.parent.absolute()))
+        spec.loader.exec_module(module)
+        return module
     else:
-        if file_name.exists():
-            ext = file_name.suffix
-            if ext != ".py":
-                raise ValueError(f"{file_name} is not a valid Manim python script.")
-            module_name = ".".join(file_name.with_suffix("").parts)
-
-            warnings.filterwarnings(
-                "default",
-                category=DeprecationWarning,
-                module=module_name,
-            )
-
-            spec = importlib.util.spec_from_file_location(module_name, file_name)
-            module = importlib.util.module_from_spec(spec)
-            sys.modules[module_name] = module
-            sys.path.insert(0, str(file_name.parent.absolute()))
-            spec.loader.exec_module(module)
-            return module
-        else:
-            raise FileNotFoundError(f"{file_name} not found")
+        raise FileNotFoundError(f"{file_name} not found")
 
 
 def get_scene_classes_from_module(module):

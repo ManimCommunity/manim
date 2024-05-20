@@ -106,7 +106,7 @@ class SingleStringMathTex(SVGMobject):
             self._organize_submobjects_left_to_right()
 
     def __repr__(self):
-        return f"{type(self).__name__}({repr(self.tex_string)})"
+        return f"{type(self).__name__}({self.tex_string!r})"
 
     @property
     def font_size(self):
@@ -175,8 +175,8 @@ class SingleStringMathTex(SVGMobject):
         tex = self._remove_stray_braces(tex)
 
         for context in ["array"]:
-            begin_in = ("\\begin{%s}" % context) in tex
-            end_in = ("\\end{%s}" % context) in tex
+            begin_in = (f"\\begin{{{context}}}") in tex
+            end_in = (f"\\end{{{context}}}") in tex
             if begin_in ^ end_in:
                 # Just turn this into a blank string,
                 # which means caller should leave a
@@ -300,7 +300,7 @@ class MathTex(SingleStringMathTex):
         # Separate out anything surrounded in double braces
         pre_split_length = len(tex_strings)
         tex_strings = [re.split("{{(.*?)}}", str(t)) for t in tex_strings]
-        tex_strings = sum(tex_strings, [])
+        tex_strings = reduce(op.iadd, tex_strings, [])
         if len(tex_strings) > pre_split_length:
             self.brace_notation_split_occurred = True
 

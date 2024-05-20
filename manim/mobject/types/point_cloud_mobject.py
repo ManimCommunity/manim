@@ -148,7 +148,9 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         for mob in self.family_members_with_points():
             num_points = self.get_num_points()
             mob.apply_over_attr_arrays(
-                lambda arr: arr[np.arange(0, num_points, factor)],
+                lambda arr, num_points=num_points: arr[
+                    np.arange(0, num_points, factor)
+                ],
             )
         return self
 
@@ -158,7 +160,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         """
         for mob in self.family_members_with_points():
             indices = np.argsort(np.apply_along_axis(function, 1, mob.points))
-            mob.apply_over_attr_arrays(lambda arr: arr[indices])
+            mob.apply_over_attr_arrays(lambda arr, indices=indices: arr[indices])
         return self
 
     def fade_to(self, color, alpha, family=True):

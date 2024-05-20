@@ -9,8 +9,6 @@ from manim.typing import (
     Point3D,
     Point3D_Array,
     PointDType,
-    QuadraticBezierPoints,
-    QuadraticBezierPoints_Array,
 )
 
 __all__ = [
@@ -1308,8 +1306,8 @@ def get_quadratic_approximation_of_cubic(
         ti_bounds.append(ti)
     ti_min, ti_max = ti_bounds
     np.seterr(**settings)
-    ti_min_in_range = has_infl & (0 < ti_min) & (ti_min < 1)
-    ti_max_in_range = has_infl & (0 < ti_max) & (ti_max < 1)
+    ti_min_in_range = has_infl & (ti_min > 0) & (ti_min < 1)
+    ti_max_in_range = has_infl & (ti_max > 0) & (ti_max < 1)
 
     # Choose a value of t which starts at 0.5,
     # but is updated to one of the inflection points

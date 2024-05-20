@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+import sys
 
 from cloup import Choice, option, option_group
 
@@ -16,7 +17,7 @@ def validate_gui_location(ctx, param, value):
             return (x_offset, y_offset)
         except Exception:
             logger.error("GUI location option is invalid.")
-            exit()
+            sys.exit()
 
 
 global_options = option_group(

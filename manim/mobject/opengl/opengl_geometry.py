@@ -79,9 +79,11 @@ class OpenGLTipableVMobject(OpenGLVMobject):
         self,
         tip_length=DEFAULT_ARROW_TIP_LENGTH,
         normal_vector=OUT,
-        tip_config={},
+        tip_config=None,
         **kwargs,
     ):
+        if tip_config is None:
+            tip_config = {}
         self.tip_length = tip_length
         self.normal_vector = normal_vector
         self.tip_config = tip_config

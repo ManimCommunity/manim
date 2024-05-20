@@ -171,14 +171,18 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         add_background_rectangles_to_entries: bool = False,
         include_background_rectangle: bool = False,
         element_to_mobject: type[MathTex] = MathTex,
-        element_to_mobject_config: dict = {},
+        element_to_mobject_config: dict = None,
         element_alignment_corner: Sequence[float] = DR,
         left_bracket: str = "[",
         right_bracket: str = "]",
         stretch_brackets: bool = True,
-        bracket_config: dict = {},
+        bracket_config: dict = None,
         **kwargs,
     ):
+        if bracket_config is None:
+            bracket_config = {}
+        if element_to_mobject_config is None:
+            element_to_mobject_config = {}
         self.v_buff = v_buff
         self.h_buff = h_buff
         self.bracket_h_buff = bracket_h_buff
@@ -486,7 +490,7 @@ class DecimalMatrix(Matrix):
         self,
         matrix: Iterable,
         element_to_mobject: Mobject = DecimalNumber,
-        element_to_mobject_config: dict[str, Mobject] = {"num_decimal_places": 1},
+        element_to_mobject_config: dict[str, Mobject] = None,
         **kwargs,
     ):
         """
@@ -501,6 +505,8 @@ class DecimalMatrix(Matrix):
         element_to_mobject_config
             Config for the desired mobject, by default {"num_decimal_places": 1}
         """
+        if element_to_mobject_config is None:
+            element_to_mobject_config = {"num_decimal_places": 1}
         super().__init__(
             matrix,
             element_to_mobject=element_to_mobject,

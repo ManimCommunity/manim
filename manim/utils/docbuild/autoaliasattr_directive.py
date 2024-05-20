@@ -12,7 +12,6 @@ from manim.utils.docbuild.module_parsing import parse_module_attributes
 
 if TYPE_CHECKING:
     from sphinx.application import Sphinx
-    from typing_extensions import TypeAlias
 
 __all__ = ["AliasAttrDocumenter"]
 
@@ -22,7 +21,7 @@ ALIAS_LIST = [
     alias_name
     for module_dict in ALIAS_DOCS_DICT.values()
     for category_dict in module_dict.values()
-    for alias_name in category_dict.keys()
+    for alias_name in category_dict
 ]
 
 
@@ -49,7 +48,9 @@ def smart_replace(base: str, alias: str, substitution: str) -> str:
     occurrences = []
     len_alias = len(alias)
     len_base = len(base)
-    condition = lambda char: (not char.isalnum()) and char != "_"
+
+    def condition(char):
+        return not char.isalnum() and char != "_"
 
     start = 0
     i = 0
