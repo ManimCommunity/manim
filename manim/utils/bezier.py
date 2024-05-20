@@ -701,6 +701,46 @@ def is_closed(points: Point3D_Array) -> bool:
         Whether the first and last points of the array are close enough or not
         to be considered the same, thus considering the defined spline as
         closed.
+
+    Examples
+    --------
+    .. code-block:: pycon
+
+        >>> import numpy as np
+        >>> from manim import is_closed
+        >>> is_closed(
+        ...     np.array(
+        ...         [
+        ...             [0, 0, 0],
+        ...             [1, 2, 3],
+        ...             [3, 2, 1],
+        ...             [0, 0, 0],
+        ...         ]
+        ...     )
+        ... )
+        True
+        >>> is_closed(
+        ...     np.array(
+        ...         [
+        ...             [0, 0, 0],
+        ...             [1, 2, 3],
+        ...             [3, 2, 1],
+        ...             [1e-10, 1e-10, 1e-10],
+        ...         ]
+        ...     )
+        ... )
+        True
+        >>> is_closed(
+        ...     np.array(
+        ...         [
+        ...             [0, 0, 0],
+        ...             [1, 2, 3],
+        ...             [3, 2, 1],
+        ...             [1e-2, 1e-2, 1e-2],
+        ...         ]
+        ...     )
+        ... )
+        False
     """
     start, end = points[0], points[-1]
     rtol = 1e-5
