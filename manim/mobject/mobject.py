@@ -627,7 +627,6 @@ class Mobject:
         # between properties and and set_*
         # methods. This is needed for .animate syntax
         if attr.startswith("set_"):
-            # Remove the "set_" prefix
             to_set = attr.removeprefix("set_")
 
             def setter(self, value):
