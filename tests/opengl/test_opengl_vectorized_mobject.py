@@ -55,7 +55,7 @@ def test_opengl_vmobject_add(using_opengl_renderer):
     assert len(obj.submobjects) == 1
 
 
-def test_opengl_vmobject_point_from_propotion(using_opengl_renderer):
+def test_opengl_vmobject_point_from_proportion(using_opengl_renderer):
     obj = OpenGLVMobject()
 
     # One long line, one short line
@@ -302,5 +302,9 @@ def test_vgroup_item_assignment_at_correct_position(using_opengl_renderer):
 def test_vgroup_item_assignment_only_allows_vmobjects(using_opengl_renderer):
     """Test VGroup item-assignment raises TypeError when invalid type is passed"""
     vgroup = VGroup(OpenGLVMobject())
-    with pytest.raises(TypeError, match="All submobjects must be of type VMobject"):
+    with pytest.raises(TypeError) as assign_str_info:
         vgroup[0] = "invalid object"
+    assert str(assign_str_info.value) == (
+        "Only values of type OpenGLVMobject can be added as submobjects of "
+        "VGroup, but the value invalid object (at index 0) is of type str."
+    )

@@ -65,7 +65,7 @@ def test_vmobject_add():
     assert len(obj.submobjects) == 1
 
 
-def test_vmobject_point_from_propotion():
+def test_vmobject_point_from_proportion():
     obj = VMobject()
 
     # One long line, one short line
@@ -330,7 +330,7 @@ def test_vgroup_supports_item_assigment():
 
 
 def test_vgroup_item_assignment_at_correct_position():
-    """Test VGroup item-assignment adds to correct position for VMObjects"""
+    """Test VGroup item-assignment adds to correct position for VMobjects"""
     n_items = 10
     vgroup = VGroup()
     for _i in range(n_items):
@@ -344,8 +344,12 @@ def test_vgroup_item_assignment_at_correct_position():
 def test_vgroup_item_assignment_only_allows_vmobjects():
     """Test VGroup item-assignment raises TypeError when invalid type is passed"""
     vgroup = VGroup(VMobject())
-    with pytest.raises(TypeError, match="All submobjects must be of type VMobject"):
+    with pytest.raises(TypeError) as assign_str_info:
         vgroup[0] = "invalid object"
+    assert str(assign_str_info.value) == (
+        "Only values of type VMobject can be added as submobjects of VGroup, "
+        "but the value invalid object (at index 0) is of type str."
+    )
 
 
 def test_trim_dummy():

@@ -25,15 +25,17 @@ def test_opengl_mobject_add(using_opengl_renderer):
 
     # check that OpenGLMobject.add() returns the OpenGLMobject (for chained calls)
     assert obj.add(OpenGLMobject()) is obj
+    assert len(obj.submobjects) == 13
+
     obj = OpenGLMobject()
 
     # an OpenGLMobject cannot contain itself
     with pytest.raises(ValueError) as add_self_info:
         obj.add(OpenGLMobject(), obj, OpenGLMobject())
-    print(str(add_self_info.value))
     assert str(add_self_info.value) == (
         "Cannot add OpenGLMobject as a submobject of itself (at index 1)."
     )
+    assert len(obj.submobjects) == 0
 
     # can only add Mobjects
     with pytest.raises(TypeError) as add_str_info:
@@ -42,6 +44,7 @@ def test_opengl_mobject_add(using_opengl_renderer):
         "Only values of type OpenGLMobject can be added as submobjects of "
         "OpenGLMobject, but the value foo (at index 2) is of type str."
     )
+    assert len(obj.submobjects) == 0
 
 
 def test_opengl_mobject_remove(using_opengl_renderer):
