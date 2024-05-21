@@ -288,7 +288,7 @@ def test_vgroup_supports_item_assigment(using_opengl_renderer):
 
 
 def test_vgroup_item_assignment_at_correct_position(using_opengl_renderer):
-    """Test VGroup item-assignment adds to correct position for OpenGLVMObjects"""
+    """Test VGroup item-assignment adds to correct position for OpenGLVMobjects"""
     n_items = 10
     vgroup = VGroup()
     for _i in range(n_items):
