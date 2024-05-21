@@ -93,6 +93,23 @@ you will need something like:
 
 Béziers
 -------
+Manim internally represents a ``Mobject`` by a collection of points. These
+points represent Bézier curves, which are a way of representing a curve using a
+sequence of points.
+
+.. note::
+
+   To learn more about Béziers, take a look at https://pomax.github.io/bezierinfo/
+
+
+Manim supports two different renderers, which each have different representations of
+Béziers: Cairo uses cubic Bézier curves, while OpenGL uses quadratic Bézier curves.
+
+Typehints like ``BezierPoints`` represent a single bezier curve, and ``BezierPath`` is
+essentially a sequence of ``BezierPoints``. A ``Spline`` is when a ``BezierPath``
+forms a closed curve. Manim also provides more specific type aliases when working with
+quadratic or cubic curves, and they are prefixed with their respective type (e.g. ``CubicBezierPoints``,
+which is a ``BezierPoints`` that specifically applies to cubic Bézier curves).
 
 
 Functions
