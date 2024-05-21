@@ -83,6 +83,7 @@ pytest = "^7.4.3"
 pygithub = "^2.1.1"
 pytest-cov = "^4.1.0"
 pytest-xdist = "^2.2"  # Using latest gives flaky tests
+ruff = "*"
 Sphinx = "^7.2.6"
 sphinx-copybutton = "^0.5.2"
 sphinxcontrib-programoutput = "^0.17"
@@ -101,9 +102,6 @@ types-Pygments = "^2.17.0.0"
 markers = "slow: Mark the test as slow. Can be skipped with --skip_slow"
 addopts = "--no-cov-on-fail --cov=manim --cov-report xml --cov-report term -n auto --dist=loadfile --durations=0"
 
-[tool.isort]
-profile = "black"
-
 [tool.coverage.run]
 omit = ["*tests*"]
 
@@ -118,3 +116,129 @@ exclude_lines = ["pragma: no cover"]
 [build-system]
 requires = ["setuptools", "poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+exclude = [
+  ".git",
+  ".github",
+  ".hg",
+  ".mypy_cache",
+  ".tox",
+  ".venv",
+  ".env",
+  "venv",
+  "env",
+  "secret",
+  "build",
+  "_build",
+  "buck-out",
+  "dist",
+  "media",
+  "migrations",
+]
+
+# show fixes made in stdout
+show-fixes = false
+
+target-version = "py39"
+
+[tool.ruff.lint]
+select = [
+    # flake8 builtins
+    "A",
+    # flake8-bugbear
+    "B",
+    # flake8-comprehensions
+    "C4",
+    # flake8-django
+    "DJ",
+    # pycodestyle
+    "E",
+    # Pyflakes
+    "F",
+    # isort
+    "I",
+    # flake8-no-pep420
+    "INP",
+    # Pylint
+    "PL",
+    # flake8-pytest style
+    "PT",
+    # pygrep hooks
+    "PGH",
+    # ruff
+    "RUF",
+    # flake8-simplify
+    "SIM",
+    # pyupgrade
+    "UP",
+]
+ignore = [
+  # due to use of np.array with default argments
+  "B008",
+  # global used but not assigned too
+  "PLW0602",
+  # ambiguous variable name
+  "E741",
+  # Mutable class attributes
+  "RUF012",
+  # [x, *y] instead of [x]+y
+  "RUF005",
+  # Use ternary operator
+  "SIM108",
+  # implicit optional
+  "RUF013",
+  # Too many branches
+  "PLR0911",
+  "PLR0912",
+  "PLR0913",
+  "PLR0914",
+  "PLR0915",
+  # for loop variables overwritten
+  "PLW2901",
+  # implicit namespaces (no __init__.py)
+  "INP001",
+  # magic number comparison
+  "PLR2004",
+  # type: ignore
+  "PGH003",
+  # due to the star-import usage of manim
+  "F403",
+  "F405",
+  # as recommended by https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules
+  "E111",
+  "E114",
+  "E117",
+  "E501",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = [
+  # pytest.raises(ValueError) too broad
+  "PT011",
+  # Fixture not returning anything, use leading underscore
+  "PT004",
+  # unused variable
+  "F841",
+  # useless expression
+  "B018",
+]
+"__init__.py" = [
+  "F401",
+  "F403"
+]
+
+[tool.ruff.lint.flake8-pytest-style]
+fixture-parentheses = false
+mark-parentheses = false
+parametrize-names-type = "csv"
+
+[tool.ruff.lint.isort]
+required-imports = ["from __future__ import annotations"]
+
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.codespell]
+write-changes = true
+ignore-words-list = ["medias", "nam"]
