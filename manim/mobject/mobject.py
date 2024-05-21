@@ -574,19 +574,21 @@ class Mobject:
         animate setting attributes.
 
         In addition to this method, there is a compatibility
-        layer that allows ``get_*`` and ``set_*`` methods to
+        layer that allows ``set_*`` methods to
         get and set generic attributes. For instance::
 
             >>> mob = Mobject()
             >>> mob.set_foo(0)
             Mobject
-            >>> mob.get_foo()
-            0
             >>> mob.foo
             0
+            >>> mob.set(foo=3)
+            Mobject
+            >>> mob.foo
+            3
 
         This compatibility layer does not interfere with any
-        ``get_*`` or ``set_*`` methods that are explicitly
+        set_*`` methods that are explicitly
         defined.
 
         .. warning::
