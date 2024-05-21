@@ -108,6 +108,9 @@ omit = ["*tests*"]
 [tool.coverage.report]
 exclude_lines = ["pragma: no cover"]
 
+[tool.isort]
+profile = "black"
+
 [tool.poetry.plugins]
 [tool.poetry.plugins."console_scripts"]
 "manim" = "manim.__main__:main"
