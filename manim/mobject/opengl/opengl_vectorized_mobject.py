@@ -15,13 +15,13 @@ from manim.mobject.opengl.opengl_mobject import OpenGLMobject, OpenGLPoint
 from manim.renderer.shader_wrapper import ShaderWrapper
 from manim.utils.bezier import (
     bezier,
+    bezier_remap,
     get_quadratic_approximation_of_cubic,
     get_smooth_cubic_bezier_handle_points,
     integer_interpolate,
     interpolate,
-    partial_quadratic_bezier_points,
+    partial_bezier_points,
     proportions_along_bezier_curve_for_point,
-    quadratic_bezier_remap,
 )
 from manim.utils.color import BLACK, WHITE, ManimColor, ParsableManimColor
 from manim.utils.config_ops import _Data
@@ -555,7 +555,7 @@ class OpenGLVMobject(OpenGLMobject):
                     alphas = np.linspace(0, 1, n + 1)
                     new_points.extend(
                         [
-                            partial_quadratic_bezier_points(tup, a1, a2)
+                            partial_bezier_points(tup, a1, a2)
                             for a1, a2 in zip(alphas, alphas[1:])
                         ],
                     )
@@ -1275,33 +1275,12 @@ class OpenGLVMobject(OpenGLMobject):
         if len(points) == 1:
             return np.repeat(points, nppc * n, 0)
 
-        bezier_groups = self.get_bezier_tuples_from_points(points)
-        norms = np.array([np.linalg.norm(bg[nppc - 1] - bg[0]) for bg in bezier_groups])
-        total_norm = sum(norms)
-        # Calculate insertions per curve (ipc)
-        if total_norm < 1e-6:
-            ipc = [n] + [0] * (len(bezier_groups) - 1)
-        else:
-            ipc = np.round(n * norms / sum(norms)).astype(int)
-
-        diff = n - sum(ipc)
-        for _ in range(diff):
-            ipc[np.argmin(ipc)] += 1
-        for _ in range(-diff):
-            ipc[np.argmax(ipc)] -= 1
-
-        new_length = sum(x + 1 for x in ipc)
-        new_points = np.empty((new_length, nppc, 3))
-        i = 0
-        for group, n_inserts in zip(bezier_groups, ipc):
-            # What was once a single quadratic curve defined
-            # by "group" will now be broken into n_inserts + 1
-            # smaller quadratic curves
-            alphas = np.linspace(0, 1, n_inserts + 2)
-            for a1, a2 in zip(alphas, alphas[1:]):
-                new_points[i] = partial_quadratic_bezier_points(group, a1, a2)
-                i = i + 1
-        return np.vstack(new_points)
+        bezier_tuples = self.get_bezier_tuples_from_points(points)
+        current_number_of_curves = len(bezier_tuples)
+        new_number_of_curves = current_number_of_curves + n
+        new_bezier_tuples = bezier_remap(bezier_tuples, new_number_of_curves)
+        new_points = new_bezier_tuples.reshape(-1, 3)
+        return new_points
 
     def interpolate(self, mobject1, mobject2, alpha, *args, **kwargs):
         super().interpolate(mobject1, mobject2, alpha, *args, **kwargs)
@@ -1354,7 +1333,7 @@ class OpenGLVMobject(OpenGLMobject):
             return self
         if lower_index == upper_index:
             self.append_points(
-                partial_quadratic_bezier_points(
+                partial_bezier_points(
                     bezier_triplets[lower_index],
                     lower_residue,
                     upper_residue,
@@ -1362,24 +1341,18 @@ class OpenGLVMobject(OpenGLMobject):
             )
         else:
             self.append_points(
-                partial_quadratic_bezier_points(
-                    bezier_triplets[lower_index], lower_residue, 1
-                ),
+                partial_bezier_points(bezier_triplets[lower_index], lower_residue, 1),
             )
             inner_points = bezier_triplets[lower_index + 1 : upper_index]
             if len(inner_points) > 0:
                 if remap:
-                    new_triplets = quadratic_bezier_remap(
-                        inner_points, num_quadratics - 2
-                    )
+                    new_triplets = bezier_remap(inner_points, num_quadratics - 2)
                 else:
                     new_triplets = bezier_triplets
 
                 self.append_points(np.asarray(new_triplets).reshape(-1, 3))
             self.append_points(
-                partial_quadratic_bezier_points(
-                    bezier_triplets[upper_index], 0, upper_residue
-                ),
+                partial_bezier_points(bezier_triplets[upper_index], 0, upper_residue),
             )
         return self
 

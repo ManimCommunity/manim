@@ -30,6 +30,7 @@ from manim.mobject.three_d.three_d_utils import (
 )
 from manim.utils.bezier import (
     bezier,
+    bezier_remap,
     get_smooth_handle_points,
     integer_interpolate,
     interpolate,
@@ -1693,40 +1694,11 @@ class VMobject(Mobject):
         if len(points) == 1:
             nppcc = self.n_points_per_cubic_curve
             return np.repeat(points, nppcc * n, 0)
-        bezier_quads = self.get_cubic_bezier_tuples_from_points(points)
-        curr_num = len(bezier_quads)
-        target_num = curr_num + n
-        # This is an array with values ranging from 0
-        # up to curr_num,  with repeats such that
-        # it's total length is target_num.  For example,
-        # with curr_num = 10, target_num = 15, this would
-        # be [0, 0, 1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 8, 8, 9]
-        repeat_indices = (np.arange(target_num, dtype="i") * curr_num) // target_num
-
-        # If the nth term of this list is k, it means
-        # that the nth curve of our path should be split
-        # into k pieces.
-        # In the above example our array had the following elements
-        # [0, 0, 1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 8, 8, 9]
-        # We have two 0s, one 1, two 2s and so on.
-        # The split factors array would hence be:
-        # [2, 1, 2, 1, 2, 1, 2, 1, 2, 1]
-        split_factors = np.zeros(curr_num, dtype="i")
-        for val in repeat_indices:
-            split_factors[val] += 1
-
-        new_points = np.zeros((0, self.dim))
-        for quad, sf in zip(bezier_quads, split_factors):
-            # What was once a single cubic curve defined
-            # by "quad" will now be broken into sf
-            # smaller cubic curves
-            alphas = np.linspace(0, 1, sf + 1)
-            for a1, a2 in zip(alphas, alphas[1:]):
-                new_points = np.append(
-                    new_points,
-                    partial_bezier_points(quad, a1, a2),
-                    axis=0,
-                )
+        bezier_tuples = self.get_cubic_bezier_tuples_from_points(points)
+        current_number_of_curves = len(bezier_tuples)
+        new_number_of_curves = current_number_of_curves + n
+        new_bezier_tuples = bezier_remap(bezier_tuples, new_number_of_curves)
+        new_points = new_bezier_tuples.reshape(-1, 3)
         return new_points
 
     def align_rgbas(self, vmobject: VMobject) -> Self:
