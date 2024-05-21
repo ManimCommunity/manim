@@ -92,6 +92,10 @@ def partial_bezier_points(points: BezierPoints, a: float, b: float) -> BezierPoi
     such that :math:`0 \le a < b \le 1`, return an array of the same size, which describes the
     portion of the original Bézier curve on the interval :math:`[a, b]`.
 
+    :func:`partial_bezier_points` is conceptually equivalent to calling :func:`split_bezier`
+    twice and discarding unused Bézier curves, but this is more efficient and doesn't waste
+    computations.
+
     .. seealso::
         See :func:`split_bezier` for an explanation on how to split Bézier curves.
 
