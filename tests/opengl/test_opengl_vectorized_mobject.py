@@ -43,6 +43,22 @@ def test_vgroup_init(using_opengl_renderer):
         VGroup(OpenGLMobject(), OpenGLMobject())
 
 
+def test_vgroup_iter_init(using_opengl_renderer):
+    """Test the VGroup instantiation with an iterable type."""
+
+    def basic_generator(n, type):
+        i = 0
+        while i < n:
+            i += 1
+            yield type()
+
+    obj = VGroup(basic_generator(5, OpenGLVMobject))
+    assert len(obj.submobjects) == 5
+
+    with pytest.raises(TypeError):
+        VGroup(basic_generator(5, OpenGLMobject))
+
+
 def test_vgroup_add(using_opengl_renderer):
     """Test the VGroup add method."""
     obj = VGroup()
