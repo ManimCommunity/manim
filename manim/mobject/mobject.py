@@ -116,6 +116,63 @@ class Mobject:
         self.generate_points()
         self.init_colors()
 
+    def _assert_valid_submobjects(self, submobjects: Iterable[Mobject]) -> Self:
+        """Check that all submobjects are actually instances of
+        :class:`Mobject`, and that none of them is ``self`` (a
+        :class:`Mobject` cannot contain itself).
+
+        This is an auxiliary function called when adding Mobjects to the
+        :attr:`submobjects` list.
+
+        This function is intended to be overridden by subclasses such as
+        :class:`VMobject`, which should assert that only other VMobjects
+        may be added into it.
+
+        Parameters
+        ----------
+        submobjects
+            The list containing values to validate.
+
+        Returns
+        -------
+        :class:`Mobject`
+            The Mobject itself.
+
+        Raises
+        ------
+        TypeError
+            If any of the values in `submobjects` is not a :class:`Mobject`.
+        ValueError
+            If there was an attempt to add a :class:`Mobject` as its own
+            submobject.
+        """
+        return self._assert_valid_submobjects_internal(submobjects, Mobject)
+
+    def _assert_valid_submobjects_internal(
+        self, submobjects: list[Mobject], mob_class: type[Mobject]
+    ) -> Self:
+        for i, submob in enumerate(submobjects):
+            if not isinstance(submob, mob_class):
+                error_message = (
+                    f"Only values of type {mob_class.__name__} can be added "
+                    f"as submobjects of {type(self).__name__}, but the value "
+                    f"{submob} (at index {i}) is of type "
+                    f"{type(submob).__name__}."
+                )
+                # Intended for subclasses such as VMobject, which
+                # cannot have regular Mobjects as submobjects
+                if isinstance(submob, Mobject):
+                    error_message += (
+                        " You can try adding this value into a Group instead."
+                    )
+                raise TypeError(error_message)
+            if submob is self:
+                raise ValueError(
+                    f"Cannot add {type(self).__name__} as a submobject of "
+                    f"itself (at index {i})."
+                )
+        return self
+
     @classmethod
     def animation_override_for(
         cls,
@@ -414,12 +471,19 @@ class Mobject:
             >>> len(outer.submobjects)
             1
 
+        Only Mobjects can be added::
+
+            >>> outer.add(3)
+            Traceback (most recent call last):
+            ...
+            TypeError: Only values of type Mobject can be added as submobjects of Mobject, but the value 3 (at index 0) is of type int.
+
         Adding an object to itself raises an error::
 
             >>> outer.add(outer)
             Traceback (most recent call last):
             ...
-            ValueError: Mobject cannot contain self
+            ValueError: Cannot add Mobject as a submobject of itself (at index 0).
 
         A given mobject cannot be added as a submobject
         twice to some parent::
@@ -433,12 +497,7 @@ class Mobject:
             [child]
 
         """
-        for m in mobjects:
-            if not isinstance(m, Mobject):
-                raise TypeError("All submobjects must be of type Mobject")
-            if m is self:
-                raise ValueError("Mobject cannot contain self")
-
+        self._assert_valid_submobjects(mobjects)
         unique_mobjects = remove_list_redundancies(mobjects)
         if len(mobjects) != len(unique_mobjects):
             logger.warning(
@@ -464,10 +523,7 @@ class Mobject:
         mobject
             The mobject to be inserted.
         """
-        if not isinstance(mobject, Mobject):
-            raise TypeError("All submobjects must be of type Mobject")
-        if mobject is self:
-            raise ValueError("Mobject cannot contain self")
+        self._assert_valid_submobjects([mobject])
         self.submobjects.insert(index, mobject)
 
     def __add__(self, mobject: Mobject):
@@ -520,13 +576,7 @@ class Mobject:
         :meth:`add`
 
         """
-        if self in mobjects:
-            raise ValueError("A mobject shouldn't contain itself")
-
-        for mobject in mobjects:
-            if not isinstance(mobject, Mobject):
-                raise TypeError("All submobjects must be of type Mobject")
-
+        self._assert_valid_submobjects(mobjects)
         self.remove(*mobjects)
         # dict.fromkeys() removes duplicates while maintaining order
         self.submobjects = list(dict.fromkeys(mobjects)) + self.submobjects

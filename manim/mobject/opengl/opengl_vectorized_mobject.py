@@ -25,7 +25,7 @@ from manim.utils.bezier import (
 )
 from manim.utils.color import BLACK, WHITE, ManimColor, ParsableManimColor
 from manim.utils.config_ops import _Data
-from manim.utils.iterables import listify, make_even, resize_with_interpolation
+from manim.utils.iterables import make_even, resize_with_interpolation, tuplify
 from manim.utils.space_ops import (
     angle_between_vectors,
     cross2d,
@@ -161,6 +161,9 @@ class OpenGLVMobject(OpenGLMobject):
         if stroke_color is not None:
             self.stroke_color = ManimColor.parse(stroke_color)
 
+    def _assert_valid_submobjects(self, submobjects: Iterable[OpenGLVMobject]) -> Self:
+        return self._assert_valid_submobjects_internal(submobjects, OpenGLVMobject)
+
     def get_group_class(self):
         return OpenGLVGroup
 
@@ -266,7 +269,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         if width is not None:
             for mob in self.get_family(recurse):
-                mob.stroke_width = np.array([[width] for width in listify(width)])
+                mob.stroke_width = np.array([[width] for width in tuplify(width)])
 
         if background is not None:
             for mob in self.get_family(recurse):
@@ -1659,8 +1662,6 @@ class OpenGLVGroup(OpenGLVMobject):
     """
 
     def __init__(self, *vmobjects, **kwargs):
-        if not all(isinstance(m, OpenGLVMobject) for m in vmobjects):
-            raise Exception("All submobjects must be of type OpenGLVMobject")
         super().__init__(**kwargs)
         self.add(*vmobjects)
 
@@ -1726,8 +1727,6 @@ class OpenGLVGroup(OpenGLVMobject):
                         (gr-circle_red).animate.shift(RIGHT)
                     )
         """
-        if not all(isinstance(m, OpenGLVMobject) for m in vmobjects):
-            raise TypeError("All submobjects must be of type OpenGLVMobject")
         return super().add(*vmobjects)
 
     def __add__(self, vmobject):
@@ -1773,8 +1772,7 @@ class OpenGLVGroup(OpenGLVMobject):
 
             >>> config.renderer = original_renderer
         """
-        if not all(isinstance(m, OpenGLVMobject) for m in value):
-            raise TypeError("All submobjects must be of type OpenGLVMobject")
+        self._assert_valid_submobjects(tuplify(value))
         self.submobjects[key] = value
 
 

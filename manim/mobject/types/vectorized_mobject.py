@@ -172,6 +172,9 @@ class VMobject(Mobject):
         if stroke_color is not None:
             self.stroke_color = ManimColor.parse(stroke_color)
 
+    def _assert_valid_submobjects(self, submobjects: Iterable[VMobject]) -> Self:
+        return self._assert_valid_submobjects_internal(submobjects, VMobject)
+
     # OpenGL compatibility
     @property
     def n_points_per_curve(self) -> int:
@@ -2016,14 +2019,6 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
                         (gr-circle_red).animate.shift(RIGHT)
                     )
         """
-        for m in vmobjects:
-            if not isinstance(m, (VMobject, OpenGLVMobject)):
-                raise TypeError(
-                    f"All submobjects of {self.__class__.__name__} must be of type VMobject. "
-                    f"Got {repr(m)} ({type(m).__name__}) instead. "
-                    "You can try using `Group` instead."
-                )
-
         return super().add(*vmobjects)
 
     def __add__(self, vmobject: VMobject) -> Self:
@@ -2061,8 +2056,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
             >>> new_obj = VMobject()
             >>> vgroup[0] = new_obj
         """
-        if not all(isinstance(m, (VMobject, OpenGLVMobject)) for m in value):
-            raise TypeError("All submobjects must be of type VMobject")
+        self._assert_valid_submobjects(tuplify(value))
         self.submobjects[key] = value
 
 
@@ -2390,8 +2384,7 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
             self.add_key_value_pair('s', square_obj)
 
         """
-        if not isinstance(value, (VMobject, OpenGLVMobject)):
-            raise TypeError("All submobjects must be of type VMobject")
+        self._assert_valid_submobjects([value])
         mob = value
         if self.show_keys:
             # This import is here and not at the top to avoid circular import
