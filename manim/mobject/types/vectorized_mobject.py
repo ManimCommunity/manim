@@ -2056,7 +2056,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
             >>> new_obj = VMobject()
             >>> vgroup[0] = new_obj
         """
-        self._assert_valid_submobjects([value])
+        self._assert_valid_submobjects(tuplify(value))
         self.submobjects[key] = value
 
 
