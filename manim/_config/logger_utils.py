@@ -100,6 +100,10 @@ def make_logger(
     logger.addHandler(rich_handler)
     logger.setLevel(verbosity)
 
+    if not (libav_logger := logging.getLogger()).hasHandlers():
+        libav_logger.addHandler(rich_handler)
+        libav_logger.setLevel(verbosity)
+
     return logger, console, error_console
 
 
