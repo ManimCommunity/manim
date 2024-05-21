@@ -121,29 +121,24 @@ requires = ["setuptools", "poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
-exclude = [
-  ".git",
+line-length = 88
+
+target-version = "py39"
+
+extend-exclude = [
   ".github",
   ".hg",
-  ".mypy_cache",
-  ".tox",
-  ".venv",
   ".env",
-  "venv",
   "env",
-  "secret",
   "build",
-  "_build",
   "buck-out",
-  "dist",
   "media",
-  "migrations",
 ]
 
 # show fixes made in stdout
 show-fixes = false
 
-target-version = "py39"
+fix = true
 
 [tool.ruff.format]
 docstring-code-format = true
