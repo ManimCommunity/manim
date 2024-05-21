@@ -33,8 +33,9 @@ __all__ = [
 ]
 
 
+from collections.abc import Sequence
 from functools import reduce
-from typing import Any, Callable, Sequence, overload
+from typing import Any, Callable, overload
 
 import numpy as np
 import numpy.typing as npt
@@ -1342,7 +1343,78 @@ def get_quadratic_approximation_of_cubic(
 
 
 def is_closed(points: Point3D_Array) -> bool:
-    return np.allclose(points[0], points[-1])  # type: ignore
+    """Returns ``True`` if the spline given by ``points`` is closed, by
+    checking if its first and last points are close to each other, or``False``
+    otherwise.
+
+    .. note::
+
+        This function reimplements :meth:`np.allclose`, because repeated
+        calling of :meth:`np.allclose` for only 2 points is inefficient.
+
+    Parameters
+    ----------
+    points
+        An array of points defining a spline.
+
+    Returns
+    -------
+    :class:`bool`
+        Whether the first and last points of the array are close enough or not
+        to be considered the same, thus considering the defined spline as
+        closed.
+
+    Examples
+    --------
+    .. code-block:: pycon
+
+        >>> import numpy as np
+        >>> from manim import is_closed
+        >>> is_closed(
+        ...     np.array(
+        ...         [
+        ...             [0, 0, 0],
+        ...             [1, 2, 3],
+        ...             [3, 2, 1],
+        ...             [0, 0, 0],
+        ...         ]
+        ...     )
+        ... )
+        True
+        >>> is_closed(
+        ...     np.array(
+        ...         [
+        ...             [0, 0, 0],
+        ...             [1, 2, 3],
+        ...             [3, 2, 1],
+        ...             [1e-10, 1e-10, 1e-10],
+        ...         ]
+        ...     )
+        ... )
+        True
+        >>> is_closed(
+        ...     np.array(
+        ...         [
+        ...             [0, 0, 0],
+        ...             [1, 2, 3],
+        ...             [3, 2, 1],
+        ...             [1e-2, 1e-2, 1e-2],
+        ...         ]
+        ...     )
+        ... )
+        False
+    """
+    start, end = points[0], points[-1]
+    rtol = 1e-5
+    atol = 1e-8
+    tolerance = atol + rtol * start
+    if abs(end[0] - start[0]) > tolerance[0]:
+        return False
+    if abs(end[1] - start[1]) > tolerance[1]:
+        return False
+    if abs(end[2] - start[2]) > tolerance[2]:
+        return False
+    return True
 
 
 def proportions_along_bezier_curve_for_point(

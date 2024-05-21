@@ -76,7 +76,8 @@ __all__ = [
 
 
 import itertools as it
-from typing import TYPE_CHECKING, Callable, Iterable, Sequence
+from collections.abc import Iterable, Sequence
+from typing import TYPE_CHECKING, Callable
 
 import numpy as np
 
