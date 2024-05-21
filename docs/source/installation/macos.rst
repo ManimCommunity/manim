@@ -25,7 +25,7 @@ and some required Python packages), run:
 
 .. code-block:: bash
 
-   brew install py3cairo
+   brew install py3cairo pipx
 
 On *Apple Silicon* based machines (i.e., devices with the M1 chip or similar; if
 you are unsure which processor you have check by opening the Apple menu, select
@@ -40,7 +40,7 @@ After all required dependencies are installed, simply run:
 
 .. code-block:: bash
 
-   pip3 install manim
+   pipx install manim
 
 to install Manim.
 
