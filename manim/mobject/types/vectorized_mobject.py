@@ -1931,7 +1931,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
         >>> vg  # not modified
         VGroup(Triangle)
         >>> vg += square
-        ... vg  # modifies vg
+        >>> vg  # modifies vg
         VGroup(Triangle, Square)
         >>> vg.remove(triangle)
         VGroup(Square)
@@ -1940,7 +1940,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
         >>> vg  # not modified
         VGroup(Square)
         >>> vg -= square
-        ... vg  # modifies vg
+        >>> vg  # modifies vg
         VGroup()
 
     .. manim:: ArcShapeIris
