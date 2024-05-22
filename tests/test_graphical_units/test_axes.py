@@ -293,8 +293,10 @@ def test_get_z_axis_label(scene):
 @frames_comparison
 def test_polar_graph(scene):
     polar = PolarPlane()
+
     def r(theta):
         return 4 * np.sin(theta * 4)
+
     polar_graph = polar.plot_polar_graph(r)
     scene.add(polar, polar_graph)
 
