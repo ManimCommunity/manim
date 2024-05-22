@@ -622,7 +622,7 @@ def get_winding_number(points: Sequence[np.ndarray]) -> float:
     >>> polygon = Square()
     >>> get_winding_number(polygon.get_vertices())
     1.0
-    >>> polygon.shift(2*UP)
+    >>> polygon.shift(2 * UP)
     Square
     >>> get_winding_number(polygon.get_vertices())
     0.0

@@ -135,10 +135,17 @@ class Paragraph(VGroup):
     --------
     Normal usage::
 
-        paragraph = Paragraph('this is a awesome', 'paragraph',
-                              'With \nNewlines', '\tWith Tabs',
-                              '  With Spaces', 'With Alignments',
-                              'center', 'left', 'right')
+        paragraph = Paragraph(
+            "this is a awesome",
+            "paragraph",
+            "With \nNewlines",
+            "\tWith Tabs",
+            "  With Spaces",
+            "With Alignments",
+            "center",
+            "left",
+            "right",
+        )
 
     Remove unwanted invisible characters::
 
@@ -1305,15 +1312,13 @@ class MarkupText(SVGMobject):
             self.set_color_by_gradient(*self.gradient)
         for col in colormap:
             self.chars[
-                col["start"]
-                - col["start_offset"] : col["end"]
+                col["start"] - col["start_offset"] : col["end"]
                 - col["start_offset"]
                 - col["end_offset"]
             ].set_color(self._parse_color(col["color"]))
         for grad in gradientmap:
             self.chars[
-                grad["start"]
-                - grad["start_offset"] : grad["end"]
+                grad["start"] - grad["start_offset"] : grad["end"]
                 - grad["start_offset"]
                 - grad["end_offset"]
             ].set_color_by_gradient(
