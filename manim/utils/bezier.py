@@ -29,6 +29,7 @@ from typing import TYPE_CHECKING, Any, Callable, overload
 import numpy as np
 from scipy import linalg
 
+from manim.typing import PointDType
 from ..utils.simple_functions import choose
 from ..utils.space_ops import cross2d, find_intersection
 
@@ -42,7 +43,6 @@ if TYPE_CHECKING:
         MatrixMN,
         Point3D,
         Point3D_Array,
-        PointDType,
     )
 
 # l is a commonly used name in linear algebra
