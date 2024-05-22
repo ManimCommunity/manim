@@ -146,6 +146,7 @@ class LogBase(_ScaleBase):
         """Inverse of ``function``. The value must be greater than 0"""
         if isinstance(value, np.ndarray):
             condition = value.any() <= 0
+
             def func(value, base):
                 return np.log(value) / np.log(base)
         else:
