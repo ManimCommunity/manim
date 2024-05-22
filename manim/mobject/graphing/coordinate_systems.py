@@ -394,7 +394,9 @@ class CoordinateSystem:
             ax = ThreeDAxes()
             x_labels = range(-4, 5)
             z_labels = range(-4, 4, 2)
-            ax.add_coordinates(x_labels, None, z_labels)  # default y labels, custom x & z labels
+            ax.add_coordinates(
+                x_labels, None, z_labels
+            )  # default y labels, custom x & z labels
             ax.add_coordinates(x_labels)  # only x labels
 
         You can also specifically control the position and value of the labels using a dict.
@@ -405,7 +407,15 @@ class CoordinateSystem:
             x_pos = [x for x in range(1, 8)]
 
             # strings are automatically converted into a Tex mobject.
-            x_vals = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+            x_vals = [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday",
+            ]
             x_dict = dict(zip(x_pos, x_vals))
             ax.add_coordinates(x_dict)
         """
