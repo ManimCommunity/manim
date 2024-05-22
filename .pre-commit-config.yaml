@@ -72,4 +72,6 @@ repos:
     hooks:
       - id: codespell
         files: ^.*\.(py|md|rst)$
-        args: ["-L", "medias,nam"]
+        # remove this after minimum python is >=3.11
+        additional_dependencies:
+          - tomli
