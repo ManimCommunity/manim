@@ -1826,7 +1826,7 @@ class VMobject(Mobject):
         num_curves = vmobject.get_num_curves()
         if num_curves == 0:
             self.clear_points()
-            return selftransformation
+            return self
 
         # The following two lines will compute which Bézier curves of the given Mobject must be processed.
         # The residue indicates the proportion of the selected Bézier curve which must be selected.
