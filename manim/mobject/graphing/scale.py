@@ -144,12 +144,18 @@ class LogBase(_ScaleBase):
 
     def inverse_function(self, value: float) -> float:
         """Inverse of ``function``. The value must be greater than 0"""
+
+        def func(value, base):
+            return (
+                np.log(value) / np.log(base)
+                if isinstance(value, np.ndarray)
+                else math.log
+            )
+
         if isinstance(value, np.ndarray):
             condition = value.any() <= 0
-            func = lambda value, base: np.log(value) / np.log(base)
         else:
             condition = value <= 0
-            func = math.log
 
         if condition:
             raise ValueError(

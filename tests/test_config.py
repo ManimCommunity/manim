@@ -102,7 +102,6 @@ def test_custom_dirs(tmp_path):
             "frame_rate": 15,
             "pixel_height": 854,
             "pixel_width": 480,
-            "save_sections": True,
             "sections_dir": "{media_dir}/test_sections",
             "video_dir": "{media_dir}/test_video",
             "partial_movie_dir": "{media_dir}/test_partial_movie_dir",

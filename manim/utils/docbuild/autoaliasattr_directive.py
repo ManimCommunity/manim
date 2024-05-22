@@ -48,7 +48,9 @@ def smart_replace(base: str, alias: str, substitution: str) -> str:
     occurrences = []
     len_alias = len(alias)
     len_base = len(base)
-    condition = lambda char: (not char.isalnum()) and char != "_"
+
+    def condition(char: str):
+        return not char.isalnum() and char != "_"
 
     start = 0
     i = 0

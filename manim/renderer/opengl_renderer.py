@@ -568,7 +568,7 @@ class OpenGLRenderer:
         if pixel_shape is None:
             return np.array([0, 0, 0])
         pw, ph = pixel_shape
-        fw, fh = config["frame_width"], config["frame_height"]
+        fh = config["frame_height"]
         fc = self.camera.get_center()
         if relative:
             return 2 * np.array([px / pw, py / ph, 0])
