@@ -122,9 +122,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
 line-length = 88
-
 target-version = "py39"
-
 extend-exclude = [
   ".github",
   ".hg",
@@ -134,10 +132,7 @@ extend-exclude = [
   "buck-out",
   "media",
 ]
-
 # show fixes made in stdout
-show-fixes = false
-
 fix = true
 
 [tool.ruff.format]
