@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy as np
 
 from manim.mobject.opengl.opengl_surface import OpenGLSurface

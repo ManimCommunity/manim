@@ -9,8 +9,6 @@ from manim.typing import (
     Point3D,
     Point3D_Array,
     PointDType,
-    QuadraticBezierPoints,
-    QuadraticBezierPoints_Array,
 )
 
 __all__ = [

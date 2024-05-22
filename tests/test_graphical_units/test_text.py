@@ -1,6 +1,6 @@
-import pytest
+from __future__ import annotations
 
-from manim import RED, MarkupText, Text, VGroup, VMobject
+from manim import RED, MarkupText, Text, VMobject
 
 __module_test__ = "text"
 

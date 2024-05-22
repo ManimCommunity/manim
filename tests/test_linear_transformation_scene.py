@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from manim import RIGHT, UP, LinearTransformationScene, Vector, VGroup
 
 __module_test__ = "vector_space_scene"

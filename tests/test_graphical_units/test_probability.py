@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from manim.constants import LEFT
 from manim.mobject.graphing.probability import BarChart
 from manim.mobject.text.tex_mobject import MathTex

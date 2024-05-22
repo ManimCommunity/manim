@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from manim import Circle, Square, ThreeDScene
 
 

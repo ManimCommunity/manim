@@ -477,7 +477,7 @@ def _determine_graph_layout(
             return cast(LayoutFunction, layout)(
                 nx_graph, scale=layout_scale, **layout_config
             )
-        except TypeError as e:
+        except TypeError:
             raise ValueError(
                 f"The layout '{layout}' is neither a recognized layout, a layout function,"
                 "nor a vertex placement dictionary.",

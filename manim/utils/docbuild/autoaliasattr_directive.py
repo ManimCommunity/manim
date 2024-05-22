@@ -12,7 +12,6 @@ from manim.utils.docbuild.module_parsing import parse_module_attributes
 
 if TYPE_CHECKING:
     from sphinx.application import Sphinx
-    from typing_extensions import TypeAlias
 
 __all__ = ["AliasAttrDocumenter"]
 

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy as np
 
 # Defined because pre-commit is inserting an unacceptable line-break
