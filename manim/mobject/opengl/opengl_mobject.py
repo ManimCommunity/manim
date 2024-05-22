@@ -165,6 +165,64 @@ class OpenGLMobject:
 
         self.should_render = should_render
 
+    def _assert_valid_submobjects(self, submobjects: Iterable[OpenGLMobject]) -> Self:
+        """Check that all submobjects are actually instances of
+        :class:`OpenGLMobject`, and that none of them is
+        ``self`` (an :class:`OpenGLMobject` cannot contain itself).
+
+        This is an auxiliary function called when adding OpenGLMobjects to the
+        :attr:`submobjects` list.
+
+        This function is intended to be overridden by subclasses such as
+        :class:`OpenGLVMobject`, which should assert that only other
+        OpenGLVMobjects may be added into it.
+
+        Parameters
+        ----------
+        submobjects
+            The list containing values to validate.
+
+        Returns
+        -------
+        :class:`OpenGLMobject`
+            The OpenGLMobject itself.
+
+        Raises
+        ------
+        TypeError
+            If any of the values in `submobjects` is not an
+            :class:`OpenGLMobject`.
+        ValueError
+            If there was an attempt to add an :class:`OpenGLMobject` as its own
+            submobject.
+        """
+        return self._assert_valid_submobjects_internal(submobjects, OpenGLMobject)
+
+    def _assert_valid_submobjects_internal(
+        self, submobjects: list[OpenGLMobject], mob_class: type[OpenGLMobject]
+    ) -> Self:
+        for i, submob in enumerate(submobjects):
+            if not isinstance(submob, mob_class):
+                error_message = (
+                    f"Only values of type {mob_class.__name__} can be added "
+                    f"as submobjects of {type(self).__name__}, but the value "
+                    f"{submob} (at index {i}) is of type "
+                    f"{type(submob).__name__}."
+                )
+                # Intended for subclasses such as OpenGLVMobject, which
+                # cannot have regular OpenGLMobjects as submobjects
+                if isinstance(submob, OpenGLMobject):
+                    error_message += (
+                        " You can try adding this value into a Group instead."
+                    )
+                raise TypeError(error_message)
+            if submob is self:
+                raise ValueError(
+                    f"Cannot add {type(self).__name__} as a submobject of "
+                    f"itself (at index {i})."
+                )
+        return self
+
     @classmethod
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
@@ -734,28 +792,33 @@ class OpenGLMobject:
             >>> len(outer.submobjects)
             1
 
+        Only OpenGLMobjects can be added::
+
+            >>> outer.add(3)
+            Traceback (most recent call last):
+            ...
+            TypeError: Only values of type OpenGLMobject can be added as submobjects of OpenGLMobject, but the value 3 (at index 0) is of type int.
+
         Adding an object to itself raises an error::
 
             >>> outer.add(outer)
             Traceback (most recent call last):
             ...
-            ValueError: OpenGLMobject cannot contain self
+            ValueError: Cannot add OpenGLMobject as a submobject of itself (at index 0).
 
         """
         if update_parent:
             assert len(mobjects) == 1, "Can't set multiple parents."
             mobjects[0].parent = self
 
-        if self in mobjects:
-            raise ValueError("OpenGLMobject cannot contain self")
+        self._assert_valid_submobjects(mobjects)
+
         if any(mobjects.count(elem) > 1 for elem in mobjects):
             logger.warning(
                 "Attempted adding some Mobject as a child more than once, "
                 "this is not possible. Repetitions are ignored.",
             )
         for mobject in mobjects:
-            if not isinstance(mobject, OpenGLMobject):
-                raise TypeError("All submobjects must be of type OpenGLMobject")
             if mobject not in self.submobjects:
                 self.submobjects.append(mobject)
             if self not in mobject.parents:
@@ -784,11 +847,7 @@ class OpenGLMobject:
         if update_parent:
             mobject.parent = self
 
-        if mobject is self:
-            raise ValueError("OpenGLMobject cannot contain self")
-
-        if not isinstance(mobject, OpenGLMobject):
-            raise TypeError("All submobjects must be of type OpenGLMobject")
+        self._assert_valid_submobjects([mobject])
 
         if mobject not in self.submobjects:
             self.submobjects.insert(index, mobject)
@@ -880,10 +939,12 @@ class OpenGLMobject:
         :meth:`add`
 
         """
+        self._assert_valid_submobjects(mobjects)
         self.submobjects = list_update(mobjects, self.submobjects)
         return self
 
     def replace_submobject(self, index, new_submob):
+        self._assert_valid_submobjects([new_submob])
         old_submob = self.submobjects[index]
         if self in old_submob.parents:
             old_submob.parents.remove(self)
@@ -2734,8 +2795,6 @@ class OpenGLMobject:
 
 class OpenGLGroup(OpenGLMobject):
     def __init__(self, *mobjects, **kwargs):
-        if not all(isinstance(m, OpenGLMobject) for m in mobjects):
-            raise Exception("All submobjects must be of type OpenGLMobject")
         super().__init__(**kwargs)
         self.add(*mobjects)
 
