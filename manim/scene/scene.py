@@ -1555,8 +1555,7 @@ class Scene:
 
                     # second option: within the call to Scene.play
                     self.play(
-                        Transform(square, circle),
-                        subcaption="The square transforms."
+                        Transform(square, circle), subcaption="The square transforms."
                     )
 
         """
