@@ -251,11 +251,6 @@ class SceneFileWriter:
         Preps the writer for adding audio to the movie.
         """
         self.includes_sound = False
-
-    def create_audio_segment(self):
-        """
-        Creates an empty, silent, Audio Segment.
-        """
         self.audio_segment = AudioSegment.silent()
 
     def add_audio_segment(
@@ -280,9 +275,7 @@ class SceneFileWriter:
         gain_to_background
             The gain of the segment from the background.
         """
-        if not self.includes_sound:
-            self.includes_sound = True
-            self.create_audio_segment()
+        self.includes_sound = True
         segment = self.audio_segment
         curr_end = segment.duration_seconds
         if time is None:
@@ -502,6 +495,16 @@ class SceneFileWriter:
             self.video_container = video_container
             self.video_stream = stream
 
+            # No matter what is `self.includes_sound`,
+            # we need to add an audio stream, in the case we add audio
+            # to any one of the partial movies.
+            # This is needed because concat format needs all video
+            # files to have the same number of streams.
+            self.partial_movie_start_time = self.renderer.time
+            self.audio_stream = self.video_container.add_stream(
+                "libvorbis" if config.format == "webm" else "aac",
+            )
+
     def close_partial_movie_stream(self):
         """Close the currently opened video container.
 
@@ -509,7 +512,27 @@ class SceneFileWriter:
         in the video stream holding a partial file, and then close
         the corresponding container.
         """
+        start = int(np.ceil(1000 * self.partial_movie_start_time))
+        end = int(np.ceil(1000 * self.renderer.time))
+
+        if duration := len(self.audio_segment) < end:
+            self.audio_segment += AudioSegment.silent(duration=end - duration)
+
+        sound = self.audio_segment[start:end]
+        array = np.frombuffer(sound.raw_data, dtype=np.int16).reshape(1, -1)
+        layout = "stereo" if sound.channels == 2 else "mono"
+        frame = av.AudioFrame.from_ndarray(array, layout=layout)
+        frame.rate = sound.frame_rate
+
+        for packet in self.audio_stream.encode(frame):
+            self.video_container.mux(packet)
+
+        # Flushing packets
+
         for packet in self.video_stream.encode():
+            self.video_container.mux(packet)
+
+        for packet in self.audio_stream.encode():
             self.video_container.mux(packet)
 
         self.video_container.close()
@@ -544,8 +567,8 @@ class SceneFileWriter:
         self,
         input_files: list[str],
         output_file: Path,
-        create_gif=False,
-        includes_sound=False,
+        create_gif: bool = False,
+        includes_sound: bool = False,
     ):
         file_list = self.partial_movie_directory / "partial_movie_file_list.txt"
         logger.debug(
@@ -568,17 +591,26 @@ class SceneFileWriter:
         partial_movies_input = av.open(
             str(file_list), options=av_options, format="concat"
         )
-        partial_movies_stream = partial_movies_input.streams.video[0]
+        partial_movies_video_stream = partial_movies_input.streams.video[0]
+        if includes_sound and not create_gif:
+            partial_movies_audio_stream = partial_movies_input.streams.audio[0]
+        else:
+            partial_movies_audio_stream = None
+
         output_container = av.open(str(output_file), mode="w")
         output_container.metadata["comment"] = (
             f"Rendered with Manim Community v{__version__}"
         )
-        output_stream = output_container.add_stream(
+        output_video_stream = output_container.add_stream(
             codec_name="gif" if create_gif else None,
-            template=partial_movies_stream if not create_gif else None,
+            template=partial_movies_video_stream if not create_gif else None,
         )
+        if includes_sound and config.format != "gif":
+            output_audio_stream = output_container.add_stream(
+                template=partial_movies_audio_stream if not create_gif else None,
+            )
         if config.transparent and config.format == "webm":
-            output_stream.pix_fmt = "yuva420p"
+            output_video_stream.pix_fmt = "yuva420p"
         if create_gif:
             """
             The following solution was largely inspired from this comment
@@ -586,14 +618,14 @@ class SceneFileWriter:
             and the following code
             https://github.com/imageio/imageio/blob/65d79140018bb7c64c0692ea72cb4093e8d632a0/imageio/plugins/pyav.py#L927-L996.
             """
-            output_stream.pix_fmt = "rgb8"
+            output_video_stream.pix_fmt = "rgb8"
             if config.transparent:
-                output_stream.pix_fmt = "pal8"
-            output_stream.width = config.pixel_width
-            output_stream.height = config.pixel_height
-            output_stream.rate = config.frame_rate
+                output_video_stream.pix_fmt = "pal8"
+            output_video_stream.width = config.pixel_width
+            output_video_stream.height = config.pixel_height
+            output_video_stream.rate = config.frame_rate
             graph = av.filter.Graph()
-            input_buffer = graph.add_buffer(template=partial_movies_stream)
+            input_buffer = graph.add_buffer(template=partial_movies_video_stream)
             split = graph.add("split")
             palettegen = graph.add("palettegen", "stats_mode=diff")
             paletteuse = graph.add(
@@ -618,27 +650,35 @@ class SceneFileWriter:
             while True:
                 try:
                     frame = graph.pull()
-                    frame.time_base = output_stream.codec_context.time_base
+                    frame.time_base = output_video_stream.codec_context.time_base
                     frame.pts = frames_written
                     frames_written += 1
-                    output_container.mux(output_stream.encode(frame))
+                    output_container.mux(output_video_stream.encode(frame))
                 except av.error.EOFError:
                     break
 
-            for packet in output_stream.encode():
+            for packet in output_video_stream.encode():
                 output_container.mux(packet)
 
         else:
-            for packet in partial_movies_input.demux(partial_movies_stream):
+            for packet in partial_movies_input.demux(
+                partial_movies_video_stream, partial_movies_audio_stream
+            ):
                 # We need to skip the "flushing" packets that `demux` generates.
                 if packet.dts is None:
                     continue
+
+                ptype = packet.stream.type
 
                 packet.dts = None  # This seems to be needed, as dts from consecutive
                 # files may not be monotically increasing, so we let libav compute it.
 
                 # We need to assign the packet to the new stream.
-                packet.stream = output_stream
+                if ptype == "video":
+                    packet.stream = output_video_stream
+                elif ptype == "audio":
+                    packet.stream = output_audio_stream
+
                 output_container.mux(packet)
 
         partial_movies_input.close()
@@ -668,85 +708,8 @@ class SceneFileWriter:
             partial_movie_files,
             movie_file_path,
             is_gif_format(),
-            self.includes_sound,
+            includes_sound=self.includes_sound,
         )
-
-        # handle sound
-        if self.includes_sound and config.format != "gif":
-            sound_file_path = movie_file_path.with_suffix(".wav")
-            # Makes sure sound file length will match video file
-            self.add_audio_segment(AudioSegment.silent(0))
-            self.audio_segment.export(
-                sound_file_path,
-                format="wav",
-                bitrate="312k",
-            )
-            # Audio added to a VP9 encoded (webm) video file needs
-            # to be encoded as vorbis or opus. Directly exporting
-            # self.audio_segment with such a codec works in principle,
-            # but tries to call ffmpeg via its CLI -- which we want
-            # to avoid. This is why we need to do the conversion
-            # manually.
-            if config.format == "webm":
-                with (
-                    av.open(sound_file_path) as wav_audio,
-                    av.open(sound_file_path.with_suffix(".ogg"), "w") as opus_audio,
-                ):
-                    wav_audio_stream = wav_audio.streams.audio[0]
-                    opus_audio_stream = opus_audio.add_stream("libvorbis")
-                    for frame in wav_audio.decode(wav_audio_stream):
-                        for packet in opus_audio_stream.encode(frame):
-                            opus_audio.mux(packet)
-
-                    for packet in opus_audio_stream.encode():
-                        opus_audio.mux(packet)
-
-                sound_file_path = sound_file_path.with_suffix(".ogg")
-
-            temp_file_path = movie_file_path.with_name(
-                f"{movie_file_path.stem}_temp{movie_file_path.suffix}"
-            )
-            av_options = {
-                "shortest": "1",
-                "metadata": f"comment=Rendered with Manim Community v{__version__}",
-            }
-
-            with (
-                av.open(movie_file_path) as video_input,
-                av.open(sound_file_path) as audio_input,
-            ):
-
-                video_stream = video_input.streams.video[0]
-                audio_stream = audio_input.streams.audio[0]
-                output_container = av.open(
-                    str(temp_file_path), mode="w", options=av_options
-                )
-                output_video_stream = output_container.add_stream(template=video_stream)
-                output_audio_stream = output_container.add_stream(template=audio_stream)
-
-                for packet in video_input.demux(video_stream):
-                    # We need to skip the "flushing" packets that `demux` generates.
-                    if packet.dts is None:
-                        continue
-
-                    # We need to assign the packet to the new stream.
-                    packet.stream = output_video_stream
-                    output_container.mux(packet)
-
-                for packet in audio_input.demux(audio_stream):
-                    # We need to skip the "flushing" packets that `demux` generates.
-                    if packet.dts is None:
-                        continue
-
-                    # We need to assign the packet to the new stream.
-                    packet.stream = output_audio_stream
-                    output_container.mux(packet)
-
-                output_container.close()
-
-            shutil.move(str(temp_file_path), str(movie_file_path))
-            sound_file_path.unlink()
-
         self.print_file_ready_message(str(movie_file_path))
         if write_to_movie():
             for file_path in partial_movie_files:
@@ -765,6 +728,7 @@ class SceneFileWriter:
                 self.combine_files(
                     section.get_clean_partial_movie_files(),
                     self.sections_output_dir / section.video,
+                    includes_sound=self.includes_sound,
                 )
                 sections_index.append(section.get_dict(self.sections_output_dir))
         with (self.sections_output_dir / f"{self.output_name}.json").open("w") as file:
