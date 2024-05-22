@@ -217,7 +217,7 @@ def there_and_back(t: float, inflection: float = 10.0) -> float:
 
 @zero
 def there_and_back_with_pause(t: float, pause_ratio: float = 1.0 / 3) -> float:
-    a = 1.0 / pause_ratio
+    a = 2.0 / (1.0 - pause_ratio)
     if t < 0.5 - pause_ratio / 2:
         return smooth(a * t)
     elif t < 0.5 + pause_ratio / 2:

@@ -7,7 +7,6 @@ build:
 
   apt_packages:
     - libpango1.0-dev
-    - ffmpeg
     - graphviz
 
 python:

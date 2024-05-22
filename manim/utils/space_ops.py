@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import itertools as it
-from typing import TYPE_CHECKING, Sequence
+from collections.abc import Sequence
+from typing import TYPE_CHECKING
 
 import numpy as np
 from mapbox_earcut import triangulate_float32 as earcut
@@ -621,7 +622,7 @@ def get_winding_number(points: Sequence[np.ndarray]) -> float:
     >>> polygon = Square()
     >>> get_winding_number(polygon.get_vertices())
     1.0
-    >>> polygon.shift(2*UP)
+    >>> polygon.shift(2 * UP)
     Square
     >>> get_winding_number(polygon.get_vertices())
     0.0

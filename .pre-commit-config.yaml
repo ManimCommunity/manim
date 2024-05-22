@@ -28,22 +28,17 @@ repos:
     hooks:
       - id: pyupgrade
         name: Update code to new python versions
-        args: [--py37-plus]
+        args: [--py39-plus]
   - repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.10.0
     hooks:
       - id: python-check-blanket-noqa
         name: Precision flake ignores
-  - repo: https://github.com/psf/black
-    rev: 24.4.2
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.4
     hooks:
-      - id: black
-  - repo: https://github.com/asottile/blacken-docs
-    rev: 1.16.0
-    hooks:
-      - id: blacken-docs
-        additional_dependencies: [black==24.4.0]
-        exclude: ^\.github/
+      - id: ruff-format
+        types: [python]
   - repo: https://github.com/PyCQA/flake8
     rev: 7.0.0
     hooks:
