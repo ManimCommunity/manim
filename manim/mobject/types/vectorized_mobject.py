@@ -1812,7 +1812,7 @@ class VMobject(Mobject):
             # Look at the "lower_index"-th Bézier curve and select its part from
             # t=lower_residue to t=upper_residue.
             self.points = partial_bezier_points(
-                vmobject.points[nppc * lower_index : nppc * lower_index + nppc],
+                vmobject.points[nppc * lower_index : nppc * (lower_index + 1)],
                 lower_residue,
                 upper_residue,
             )
@@ -1822,7 +1822,7 @@ class VMobject(Mobject):
             # Look at the "lower_index"-th Bezier curve and select its part from
             # t=lower_residue to t=1. This is the first curve in self.points.
             self.points[:nppc] = partial_bezier_points(
-                vmobject.points[nppc * lower_index : nppc * lower_index + nppc],
+                vmobject.points[nppc * lower_index : nppc * (lower_index + 1)],
                 lower_residue,
                 1,
             )
@@ -1834,7 +1834,7 @@ class VMobject(Mobject):
             # Look at the "upper_index"-th Bézier curve and select its part from
             # t=0 to t=upper_residue. This is the last curve in self.points.
             self.points[-nppc:] = partial_bezier_points(
-                vmobject.points[nppc * upper_index : nppc * upper_index + nppc],
+                vmobject.points[nppc * upper_index : nppc * (upper_index + 1)],
                 0,
                 upper_residue,
             )
