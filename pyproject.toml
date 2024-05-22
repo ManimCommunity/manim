@@ -132,7 +132,6 @@ extend-exclude = [
   "buck-out",
   "media",
 ]
-# show fixes made in stdout
 fix = true
 
 [tool.ruff.format]
