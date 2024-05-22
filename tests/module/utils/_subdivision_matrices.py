@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import numpy as np
 
 # Expected values for matrices in subdivide_bezier and others
