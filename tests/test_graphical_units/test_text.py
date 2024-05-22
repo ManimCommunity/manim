@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from manim import RED, MarkupText, Text, VMobject
 
 __module_test__ = "text"

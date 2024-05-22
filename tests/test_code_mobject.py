@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from manim.mobject.text.code_mobject import Code
 
 
