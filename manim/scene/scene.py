@@ -52,7 +52,8 @@ from ..utils.file_ops import open_media_file
 from ..utils.iterables import list_difference_update, list_update
 
 if TYPE_CHECKING:
-    from typing import Callable, Iterable
+    from collections.abc import Iterable
+    from typing import Callable
 
 
 class RerunSceneHandler(FileSystemEventHandler):
@@ -287,7 +288,7 @@ class Scene:
         Examples
         --------
         A typical manim script includes a class derived from :class:`Scene` with an
-        overridden :meth:`Scene.contruct` method:
+        overridden :meth:`Scene.construct` method:
 
         .. code-block:: python
 
@@ -1030,12 +1031,28 @@ class Scene:
         float
             The total ``run_time`` of all of the animations in the list.
         """
+        max_run_time = 0
+        frame_rate = (
+            1 / config.frame_rate
+        )  # config.frame_rate holds the number of frames per second
+        for animation in animations:
+            if animation.run_time <= 0:
+                raise ValueError(
+                    f"{animation} has a run_time of <= 0 seconds which Manim cannot render. "
+                    "Please set the run_time to be positive."
+                )
+            elif animation.run_time < frame_rate:
+                logger.warning(
+                    f"Original run time of {animation} is shorter than current frame "
+                    f"rate (1 frame every {frame_rate:.2f} sec.) which cannot be rendered. "
+                    "Rendering with the shortest possible duration instead."
+                )
+                animation.run_time = frame_rate
 
-        if len(animations) == 1 and isinstance(animations[0], Wait):
-            return animations[0].duration
+            if animation.run_time > max_run_time:
+                max_run_time = animation.run_time
 
-        else:
-            return np.max([animation.run_time for animation in animations])
+        return max_run_time
 
     def play(
         self,
@@ -1205,16 +1222,16 @@ class Scene:
         self.moving_mobjects = []
         self.static_mobjects = []
 
+        self.duration = self.get_run_time(self.animations)
         if len(self.animations) == 1 and isinstance(self.animations[0], Wait):
             if self.should_update_mobjects():
                 self.update_mobjects(dt=0)  # Any problems with this?
                 self.stop_condition = self.animations[0].stop_condition
             else:
-                self.duration = self.animations[0].duration
                 # Static image logic when the wait is static is done by the renderer, not here.
                 self.animations[0].is_static_wait = True
                 return None
-        self.duration = self.get_run_time(self.animations)
+
         return self
 
     def begin_animations(self) -> None:
@@ -1538,8 +1555,7 @@ class Scene:
 
                     # second option: within the call to Scene.play
                     self.play(
-                        Transform(square, circle),
-                        subcaption="The square transforms."
+                        Transform(square, circle), subcaption="The square transforms."
                     )
 
         """

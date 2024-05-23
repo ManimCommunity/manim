@@ -14,12 +14,12 @@ import random
 import sys
 import types
 import warnings
+from collections.abc import Iterable
 from functools import partialmethod, reduce
 from pathlib import Path
-from typing import TYPE_CHECKING, Callable, Iterable, Literal, TypeVar, Union
+from typing import TYPE_CHECKING, Callable, Literal
 
 import numpy as np
-from typing_extensions import Self, TypeAlias
 
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 
@@ -39,14 +39,9 @@ from ..utils.iterables import list_update, remove_list_redundancies
 from ..utils.paths import straight_path
 from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
 
-# TODO: Explain array_attrs
-
-TimeBasedUpdater: TypeAlias = Callable[["Mobject", float], None]
-NonTimeBasedUpdater: TypeAlias = Callable[["Mobject"], None]
-Updater: TypeAlias = Union[NonTimeBasedUpdater, TimeBasedUpdater]
-T = TypeVar("T", bound="Mobject")
-
 if TYPE_CHECKING:
+    from typing_extensions import Self, TypeAlias
+
     from manim.typing import (
         FunctionOverride,
         Image,
@@ -60,6 +55,10 @@ if TYPE_CHECKING:
     )
 
     from ..animation.animation import Animation
+
+    TimeBasedUpdater: TypeAlias = Callable[["Mobject", float], object]
+    NonTimeBasedUpdater: TypeAlias = Callable[["Mobject"], object]
+    Updater: TypeAlias = NonTimeBasedUpdater | TimeBasedUpdater
 
 
 class Mobject:
@@ -116,6 +115,63 @@ class Mobject:
         self.reset_points()
         self.generate_points()
         self.init_colors()
+
+    def _assert_valid_submobjects(self, submobjects: Iterable[Mobject]) -> Self:
+        """Check that all submobjects are actually instances of
+        :class:`Mobject`, and that none of them is ``self`` (a
+        :class:`Mobject` cannot contain itself).
+
+        This is an auxiliary function called when adding Mobjects to the
+        :attr:`submobjects` list.
+
+        This function is intended to be overridden by subclasses such as
+        :class:`VMobject`, which should assert that only other VMobjects
+        may be added into it.
+
+        Parameters
+        ----------
+        submobjects
+            The list containing values to validate.
+
+        Returns
+        -------
+        :class:`Mobject`
+            The Mobject itself.
+
+        Raises
+        ------
+        TypeError
+            If any of the values in `submobjects` is not a :class:`Mobject`.
+        ValueError
+            If there was an attempt to add a :class:`Mobject` as its own
+            submobject.
+        """
+        return self._assert_valid_submobjects_internal(submobjects, Mobject)
+
+    def _assert_valid_submobjects_internal(
+        self, submobjects: list[Mobject], mob_class: type[Mobject]
+    ) -> Self:
+        for i, submob in enumerate(submobjects):
+            if not isinstance(submob, mob_class):
+                error_message = (
+                    f"Only values of type {mob_class.__name__} can be added "
+                    f"as submobjects of {type(self).__name__}, but the value "
+                    f"{submob} (at index {i}) is of type "
+                    f"{type(submob).__name__}."
+                )
+                # Intended for subclasses such as VMobject, which
+                # cannot have regular Mobjects as submobjects
+                if isinstance(submob, Mobject):
+                    error_message += (
+                        " You can try adding this value into a Group instead."
+                    )
+                raise TypeError(error_message)
+            if submob is self:
+                raise ValueError(
+                    f"Cannot add {type(self).__name__} as a submobject of "
+                    f"itself (at index {i})."
+                )
+        return self
 
     @classmethod
     def animation_override_for(
@@ -237,7 +293,7 @@ class Mobject:
             cls.__init__ = cls._original__init__
 
     @property
-    def animate(self: T) -> _AnimationBuilder | T:
+    def animate(self) -> _AnimationBuilder | Self:
         """Used to animate the application of any method of :code:`self`.
 
         Any method called on :code:`animate` is converted to an animation of applying
@@ -415,12 +471,19 @@ class Mobject:
             >>> len(outer.submobjects)
             1
 
+        Only Mobjects can be added::
+
+            >>> outer.add(3)
+            Traceback (most recent call last):
+            ...
+            TypeError: Only values of type Mobject can be added as submobjects of Mobject, but the value 3 (at index 0) is of type int.
+
         Adding an object to itself raises an error::
 
             >>> outer.add(outer)
             Traceback (most recent call last):
             ...
-            ValueError: Mobject cannot contain self
+            ValueError: Cannot add Mobject as a submobject of itself (at index 0).
 
         A given mobject cannot be added as a submobject
         twice to some parent::
@@ -434,12 +497,7 @@ class Mobject:
             [child]
 
         """
-        for m in mobjects:
-            if not isinstance(m, Mobject):
-                raise TypeError("All submobjects must be of type Mobject")
-            if m is self:
-                raise ValueError("Mobject cannot contain self")
-
+        self._assert_valid_submobjects(mobjects)
         unique_mobjects = remove_list_redundancies(mobjects)
         if len(mobjects) != len(unique_mobjects):
             logger.warning(
@@ -465,10 +523,7 @@ class Mobject:
         mobject
             The mobject to be inserted.
         """
-        if not isinstance(mobject, Mobject):
-            raise TypeError("All submobjects must be of type Mobject")
-        if mobject is self:
-            raise ValueError("Mobject cannot contain self")
+        self._assert_valid_submobjects([mobject])
         self.submobjects.insert(index, mobject)
 
     def __add__(self, mobject: Mobject):
@@ -521,13 +576,7 @@ class Mobject:
         :meth:`add`
 
         """
-        if self in mobjects:
-            raise ValueError("A mobject shouldn't contain itself")
-
-        for mobject in mobjects:
-            if not isinstance(mobject, Mobject):
-                raise TypeError("All submobjects must be of type Mobject")
-
+        self._assert_valid_submobjects(mobjects)
         self.remove(*mobjects)
         # dict.fromkeys() removes duplicates while maintaining order
         self.submobjects = list(dict.fromkeys(mobjects)) + self.submobjects
@@ -1736,7 +1785,8 @@ class Mobject:
         curr_start, curr_end = self.get_start_and_end()
         curr_vect = curr_end - curr_start
         if np.all(curr_vect == 0):
-            raise Exception("Cannot position endpoints of closed loop")
+            self.points = start
+            return self
         target_vect = np.array(end) - np.array(start)
         axis = (
             normalize(np.cross(curr_vect, target_vect))
@@ -2014,7 +2064,7 @@ class Mobject:
 
         ::
 
-            sample = Arc(start_angle=PI/7, angle = PI/5)
+            sample = Arc(start_angle=PI / 7, angle=PI / 5)
 
             # These are all equivalent
             max_y_1 = sample.get_top()[1]
@@ -2837,7 +2887,8 @@ class Mobject:
             >>> result = rect.copy().become(circ, stretch=True)
             >>> result.height, result.width
             (2.0, 4.0)
-            >>> ellipse_eq = np.sum(result.get_anchors()**2 * [1/4, 1, 0], axis=1)
+            >>> ellipse_points = np.array(result.get_anchors())
+            >>> ellipse_eq = np.sum(ellipse_points**2 * [1/4, 1, 0], axis=1)
             >>> np.allclose(ellipse_eq, 1)
             True
 
@@ -2850,13 +2901,15 @@ class Mobject:
             >>> result = rect.copy().become(circ, match_height=True)
             >>> result.height, result.width
             (2.0, 2.0)
-            >>> circle_eq = np.sum(result.get_anchors()**2, axis=1)
+            >>> circle_points = np.array(result.get_anchors())
+            >>> circle_eq = np.sum(circle_points**2, axis=1)
             >>> np.allclose(circle_eq, 1)
             True
             >>> result = rect.copy().become(circ, match_width=True)
             >>> result.height, result.width
             (4.0, 4.0)
-            >>> circle_eq = np.sum(result.get_anchors()**2, axis=1)
+            >>> circle_points = np.array(result.get_anchors())
+            >>> circle_eq = np.sum(circle_points**2, axis=1)
             >>> np.allclose(circle_eq, 2**2)
             True
 
@@ -2926,7 +2979,7 @@ class Mobject:
         self,
         z_index_value: float,
         family: bool = True,
-    ) -> T:
+    ) -> Self:
         """Sets the :class:`~.Mobject`'s :attr:`z_index` to the value specified in `z_index_value`.
 
         Parameters

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "manim"
-version = "0.18.0"
+version = "0.18.1"
 description = "Animation engine for explanatory math videos."
 authors = ["The Manim Community Developers <contact@manim.community>", "3b1b <grant@3blue1brown.com>"]
 license="MIT"
@@ -28,6 +28,7 @@ packages = [
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.13"
+av = ">=9.0.0"
 click = ">=8.0"
 cloup = ">=2.0.0"
 dearpygui = { version = ">=1.0.0", optional = true }
@@ -82,6 +83,7 @@ pytest = "^7.4.3"
 pygithub = "^2.1.1"
 pytest-cov = "^4.1.0"
 pytest-xdist = "^2.2"  # Using latest gives flaky tests
+ruff = "*"
 Sphinx = "^7.2.6"
 sphinx-copybutton = "^0.5.2"
 sphinxcontrib-programoutput = "^0.17"
@@ -117,3 +119,24 @@ exclude_lines = ["pragma: no cover"]
 [build-system]
 requires = ["setuptools", "poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 88
+target-version = "py39"
+extend-exclude = [
+  ".github",
+  ".hg",
+  ".env",
+  "env",
+  "build",
+  "buck-out",
+  "media",
+]
+fix = true
+
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.codespell]
+write-changes = true
+ignore-words-list = ["medias", "nam"]

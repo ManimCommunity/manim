@@ -22,7 +22,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04, macos-latest, windows-latest]
+        os: [ubuntu-22.04, macos-13, windows-latest]
         python: ["3.9", "3.10", "3.11", "3.12"]
 
     steps:
@@ -50,12 +50,6 @@ jobs:
         id: cache-vars
         run: |
           echo "date=$(/bin/date -u "+%m%w%Y")" >> $GITHUB_OUTPUT
-
-      - name: Install and cache ffmpeg (all OS)
-        uses: FedericoCarboni/setup-ffmpeg@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-        id: setup-ffmpeg
 
       - name: Install system dependencies (Linux)
         if: runner.os == 'Linux'
