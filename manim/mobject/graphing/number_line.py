@@ -369,7 +369,7 @@ class NumberLine(Line):
             array([1., 0., 0.])
             >>> number_line @ 1
             array([1., 0., 0.])
-            >>> number_line.number_to_point([1,2,3])
+            >>> number_line.number_to_point([1, 2, 3])
             array([[1., 0., 0.],
                    [2., 0., 0.],
                    [3., 0., 0.]])
@@ -401,11 +401,11 @@ class NumberLine(Line):
 
             >>> from manim import NumberLine
             >>> number_line = NumberLine()
-            >>> number_line.point_to_number((0,0,0))
+            >>> number_line.point_to_number((0, 0, 0))
             0.0
-            >>> number_line.point_to_number((1,0,0))
+            >>> number_line.point_to_number((1, 0, 0))
             1.0
-            >>> number_line.point_to_number([[0.5,0,0],[1,0,0],[1.5,0,0]])
+            >>> number_line.point_to_number([[0.5, 0, 0], [1, 0, 0], [1.5, 0, 0]])
             array([0.5, 1. , 1.5])
 
         """
