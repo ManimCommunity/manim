@@ -27,7 +27,8 @@ import colorsys
 # logger = _config.logger
 import random
 import re
-from typing import Any, Sequence, TypeVar, Union, overload
+from collections.abc import Sequence
+from typing import Any, TypeVar, Union, overload
 
 import numpy as np
 import numpy.typing as npt
@@ -146,7 +147,8 @@ class ManimColor:
             else:
                 if length == 3:
                     self._internal_value = ManimColor._internal_from_int_rgb(
-                        value, alpha  # type: ignore
+                        value,
+                        alpha,  # type: ignore
                     )
                 elif length == 4:
                     self._internal_value = ManimColor._internal_from_int_rgba(value)  # type: ignore

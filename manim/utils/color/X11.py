@@ -22,6 +22,7 @@ List of Color Constants
 
 .. automanimcolormodule:: manim.utils.color.X11
 """
+
 from .core import ManimColor
 
 ALICEBLUE = ManimColor("#F0F8FF")

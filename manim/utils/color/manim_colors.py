@@ -215,6 +215,6 @@ LOGO_BLUE = ManimColor("#525893")
 LOGO_RED = ManimColor("#E07A5F")
 LOGO_BLACK = ManimColor("#343434")
 
-_all_manim_colors: List[ManimColor] = [
+_all_manim_colors: list[ManimColor] = [
     x for x in globals().values() if isinstance(x, ManimColor)
 ]

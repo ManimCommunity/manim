@@ -25,6 +25,8 @@ Examples
 
 """
 
+from __future__ import annotations
+
 __all__ = [
     "FocusOn",
     "Indicate",
@@ -37,7 +39,8 @@ __all__ = [
     "Blink",
 ]
 
-from typing import Callable, Iterable, Optional, Tuple, Type, Union
+from collections.abc import Iterable
+from typing import Callable
 
 import numpy as np
 
@@ -93,11 +96,11 @@ class FocusOn(Transform):
 
     def __init__(
         self,
-        focus_point: Union[np.ndarray, Mobject],
+        focus_point: np.ndarray | Mobject,
         opacity: float = 0.2,
         color: str = GREY,
         run_time: float = 2,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.focus_point = focus_point
         self.color = color
@@ -150,8 +153,8 @@ class Indicate(Transform):
         mobject: Mobject,
         scale_factor: float = 1.2,
         color: str = YELLOW,
-        rate_func: Callable[[float, Optional[float]], np.ndarray] = there_and_back,
-        **kwargs
+        rate_func: Callable[[float, float | None], np.ndarray] = there_and_back,
+        **kwargs,
     ) -> None:
         self.color = color
         self.scale_factor = scale_factor
@@ -217,7 +220,7 @@ class Flash(AnimationGroup):
 
     def __init__(
         self,
-        point: Union[np.ndarray, Mobject],
+        point: np.ndarray | Mobject,
         line_length: float = 0.2,
         num_lines: int = 12,
         flash_radius: float = 0.1,
@@ -225,7 +228,7 @@ class Flash(AnimationGroup):
         color: str = YELLOW,
         time_width: float = 1,
         run_time: float = 1.0,
-        **kwargs
+        **kwargs,
     ) -> None:
         if isinstance(point, Mobject):
             self.point = point.get_center()
@@ -255,7 +258,7 @@ class Flash(AnimationGroup):
         lines.set_stroke(width=self.line_stroke_width)
         return lines
 
-    def create_line_anims(self) -> Iterable["ShowPassingFlash"]:
+    def create_line_anims(self) -> Iterable[ShowPassingFlash]:
         return [
             ShowPassingFlash(
                 line,
@@ -301,11 +304,11 @@ class ShowPassingFlash(ShowPartial):
 
     """
 
-    def __init__(self, mobject: "VMobject", time_width: float = 0.1, **kwargs) -> None:
+    def __init__(self, mobject: VMobject, time_width: float = 0.1, **kwargs) -> None:
         self.time_width = time_width
         super().__init__(mobject, remover=True, introducer=True, **kwargs)
 
-    def _get_bounds(self, alpha: float) -> Tuple[float]:
+    def _get_bounds(self, alpha: float) -> tuple[float]:
         tw = self.time_width
         upper = interpolate(0, 1 + tw, alpha)
         lower = upper - tw
@@ -393,7 +396,7 @@ class ApplyWave(Homotopy):
         time_width: float = 1,
         ripples: int = 1,
         run_time: float = 2,
-        **kwargs
+        **kwargs,
     ) -> None:
         x_min = mobject.get_left()[0]
         x_max = mobject.get_right()[0]
@@ -459,7 +462,7 @@ class ApplyWave(Homotopy):
             y: float,
             z: float,
             t: float,
-        ) -> Tuple[float, float, float]:
+        ) -> tuple[float, float, float]:
             upper = interpolate(0, 1 + time_width, t)
             lower = upper - time_width
             relative_x = inverse_interpolate(x_min, x_max, x)
@@ -509,10 +512,10 @@ class Wiggle(Animation):
         scale_value: float = 1.1,
         rotation_angle: float = 0.01 * TAU,
         n_wiggles: int = 6,
-        scale_about_point: Optional[np.ndarray] = None,
-        rotate_about_point: Optional[np.ndarray] = None,
+        scale_about_point: np.ndarray | None = None,
+        rotate_about_point: np.ndarray | None = None,
         run_time: float = 2,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.scale_value = scale_value
         self.rotation_angle = rotation_angle
@@ -593,7 +596,7 @@ class Circumscribe(Succession):
     def __init__(
         self,
         mobject: Mobject,
-        shape: Type = Rectangle,
+        shape: type = Rectangle,
         fade_in=False,
         fade_out=False,
         time_width=0.3,
@@ -601,7 +604,7 @@ class Circumscribe(Succession):
         color: ParsableManimColor = YELLOW,
         run_time=1,
         stroke_width=DEFAULT_STROKE_WIDTH,
-        **kwargs
+        **kwargs,
     ):
         if shape is Rectangle:
             frame = SurroundingRectangle(
@@ -683,7 +686,7 @@ class Blink(Succession):
         time_off: float = 0.5,
         blinks: int = 1,
         hide_at_end: bool = False,
-        **kwargs
+        **kwargs,
     ):
         animations = [
             UpdateFromFunc(

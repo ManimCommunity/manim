@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Generator
 from contextlib import contextmanager
-from typing import Any, Generator
+from typing import Any
 
 from .cli_colors import parse_cli_ctx
 from .logger_utils import make_logger
@@ -67,7 +68,6 @@ def tempconfig(temp: ManimConfig | dict[str, Any]) -> Generator[None, None, None
        8.0
        >>> with tempconfig({"frame_height": 100.0}):
        ...     print(config["frame_height"])
-       ...
        100.0
        >>> config["frame_height"]
        8.0

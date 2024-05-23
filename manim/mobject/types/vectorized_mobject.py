@@ -14,18 +14,9 @@ __all__ = [
 
 import itertools as it
 import sys
-from typing import (
-    TYPE_CHECKING,
-    Callable,
-    Generator,
-    Generic,
-    Hashable,
-    Iterable,
-    Literal,
-    Mapping,
-    Sequence,
-    TypeVar,
-)
+
+from collections.abc import Generator, Hashable, Iterable, Mapping, Sequence
+from typing import TYPE_CHECKING, Callable, Literal
 
 import numpy as np
 from PIL.Image import Image
@@ -40,6 +31,7 @@ from manim.mobject.three_d.three_d_utils import (
 )
 from manim.utils.bezier import (
     bezier,
+    bezier_remap,
     get_smooth_handle_points,
     integer_interpolate,
     interpolate,
@@ -180,6 +172,9 @@ class VMobject(Mobject):
             self.fill_color = ManimColor.parse(fill_color)
         if stroke_color is not None:
             self.stroke_color = ManimColor.parse(stroke_color)
+
+    def _assert_valid_submobjects(self, submobjects: Iterable[VMobject]) -> Self:
+        return self._assert_valid_submobjects_internal(submobjects, VMobject)
 
     # OpenGL compatibility
     @property
@@ -1703,40 +1698,11 @@ class VMobject(Mobject):
         if len(points) == 1:
             nppcc = self.n_points_per_cubic_curve
             return np.repeat(points, nppcc * n, 0)
-        bezier_quads = self.get_cubic_bezier_tuples_from_points(points)
-        curr_num = len(bezier_quads)
-        target_num = curr_num + n
-        # This is an array with values ranging from 0
-        # up to curr_num,  with repeats such that
-        # it's total length is target_num.  For example,
-        # with curr_num = 10, target_num = 15, this would
-        # be [0, 0, 1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 8, 8, 9]
-        repeat_indices = (np.arange(target_num, dtype="i") * curr_num) // target_num
-
-        # If the nth term of this list is k, it means
-        # that the nth curve of our path should be split
-        # into k pieces.
-        # In the above example our array had the following elements
-        # [0, 0, 1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 8, 8, 9]
-        # We have two 0s, one 1, two 2s and so on.
-        # The split factors array would hence be:
-        # [2, 1, 2, 1, 2, 1, 2, 1, 2, 1]
-        split_factors = np.zeros(curr_num, dtype="i")
-        for val in repeat_indices:
-            split_factors[val] += 1
-
-        new_points = np.zeros((0, self.dim))
-        for quad, sf in zip(bezier_quads, split_factors):
-            # What was once a single cubic curve defined
-            # by "quad" will now be broken into sf
-            # smaller cubic curves
-            alphas = np.linspace(0, 1, sf + 1)
-            for a1, a2 in zip(alphas, alphas[1:]):
-                new_points = np.append(
-                    new_points,
-                    partial_bezier_points(quad, a1, a2),
-                    axis=0,
-                )
+        bezier_tuples = self.get_cubic_bezier_tuples_from_points(points)
+        current_number_of_curves = len(bezier_tuples)
+        new_number_of_curves = current_number_of_curves + n
+        new_bezier_tuples = bezier_remap(bezier_tuples, new_number_of_curves)
+        new_points = new_bezier_tuples.reshape(-1, 3)
         return new_points
 
     def align_rgbas(self, vmobject: VMobject) -> Self:
@@ -1964,19 +1930,21 @@ class VGroup(VMobject, Generic[VMobjectT], metaclass=ConvertToOpenGL):
         >>> triangle, square = Triangle(), Square()
         >>> vg.add(triangle)
         VGroup(Triangle)
-        >>> vg + square   # a new VGroup is constructed
+        >>> vg + square  # a new VGroup is constructed
         VGroup(Triangle, Square)
-        >>> vg            # not modified
+        >>> vg  # not modified
         VGroup(Triangle)
-        >>> vg += square; vg  # modifies vg
+        >>> vg += square
+        >>> vg  # modifies vg
         VGroup(Triangle, Square)
         >>> vg.remove(triangle)
         VGroup(Square)
-        >>> vg - square; # a new VGroup is constructed
+        >>> vg - square  # a new VGroup is constructed
         VGroup()
-        >>> vg   # not modified
+        >>> vg  # not modified
         VGroup(Square)
-        >>> vg -= square; vg # modifies vg
+        >>> vg -= square
+        >>> vg  # modifies vg
         VGroup()
 
     .. manim:: ArcShapeIris
@@ -2057,14 +2025,6 @@ class VGroup(VMobject, Generic[VMobjectT], metaclass=ConvertToOpenGL):
                         (gr-circle_red).animate.shift(RIGHT)
                     )
         """
-        for m in vmobjects:
-            if not isinstance(m, (VMobject, OpenGLVMobject)):
-                raise TypeError(
-                    f"All submobjects of {self.__class__.__name__} must be of type VMobject. "
-                    f"Got {repr(m)} ({type(m).__name__}) instead. "
-                    "You can try using `Group` instead."
-                )
-
         return super().add(*vmobjects)
 
     def __add__(self, vmobject: VMobject) -> Self:
@@ -2102,8 +2062,7 @@ class VGroup(VMobject, Generic[VMobjectT], metaclass=ConvertToOpenGL):
             >>> new_obj = VMobject()
             >>> vgroup[0] = new_obj
         """
-        if not all(isinstance(m, (VMobject, OpenGLVMobject)) for m in value):
-            raise TypeError("All submobjects must be of type VMobject")
+        self._assert_valid_submobjects(tuplify(value))
         self.submobjects[key] = value
 
 
@@ -2247,7 +2206,7 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
         Normal usage::
 
             square_obj = Square()
-            my_dict.add([('s', square_obj)])
+            my_dict.add([("s", square_obj)])
         """
         for key, value in dict(mapping_or_iterable).items():
             self.add_key_value_pair(key, value)
@@ -2274,7 +2233,7 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
         --------
         Normal usage::
 
-            my_dict.remove('square')
+            my_dict.remove("square")
         """
         if key not in self.submob_dict:
             raise KeyError("The given key '%s' is not present in the VDict" % str(key))
@@ -2299,7 +2258,7 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
         --------
         Normal usage::
 
-           self.play(Create(my_dict['s']))
+           self.play(Create(my_dict["s"]))
         """
         submob = self.submob_dict[key]
         return submob
@@ -2323,7 +2282,7 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
         Normal usage::
 
             square_obj = Square()
-            my_dict['sq'] = square_obj
+            my_dict["sq"] = square_obj
         """
         if key in self.submob_dict:
             self.remove(key)
@@ -2428,11 +2387,10 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
         Normal usage::
 
             square_obj = Square()
-            self.add_key_value_pair('s', square_obj)
+            self.add_key_value_pair("s", square_obj)
 
         """
-        if not isinstance(value, (VMobject, OpenGLVMobject)):
-            raise TypeError("All submobjects must be of type VMobject")
+        self._assert_valid_submobjects([value])
         mob = value
         if self.show_keys:
             # This import is here and not at the top to avoid circular import

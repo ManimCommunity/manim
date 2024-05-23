@@ -19,18 +19,15 @@ __all__ = [
 ]
 
 import itertools as it
-from typing import (
-    TYPE_CHECKING,
-    Callable,
+from collections.abc import (
     Collection,
     Generator,
     Hashable,
     Iterable,
     Reversible,
     Sequence,
-    TypeVar,
-    overload,
 )
+from typing import TYPE_CHECKING, Callable, TypeVar, overload
 
 import numpy as np
 
