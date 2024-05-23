@@ -14,7 +14,6 @@ __all__ = [
 
 import itertools as it
 import sys
-from collections.abc import Generator, Hashable, Iterable, Mapping, Sequence
 from typing import TYPE_CHECKING, Callable, Literal
 
 import numpy as np
@@ -48,6 +47,8 @@ from manim.utils.iterables import (
 from manim.utils.space_ops import rotate_vector, shoelace_direction
 
 if TYPE_CHECKING:
+    from collections.abc import Generator, Hashable, Iterable, Mapping, Sequence
+
     import numpy.typing as npt
     from typing_extensions import Self
 
