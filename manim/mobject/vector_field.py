@@ -12,7 +12,7 @@ import itertools as it
 import random
 from collections.abc import Iterable, Sequence
 from math import ceil, floor
-from typing import Callable
+from typing import TYPE_CHECKING, Callable
 
 import numpy as np
 from PIL import Image
