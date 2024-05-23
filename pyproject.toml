@@ -139,4 +139,10 @@ docstring-code-format = true
 
 [tool.codespell]
 write-changes = true
-ignore-words-list = ["medias", "nam"]
+ignore-words-list = [
+  "medias",
+  "nam",
+  "sherif",
+  "falsy",
+  "strager"
+]
