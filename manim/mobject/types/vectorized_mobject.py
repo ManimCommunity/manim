@@ -16,10 +16,10 @@ import itertools as it
 import sys
 from collections.abc import Generator, Hashable, Iterable, Mapping, Sequence
 from typing import TYPE_CHECKING, Callable, Literal
-from typing_extensions import TypeVar
 
 import numpy as np
 from PIL.Image import Image
+from typing_extensions import TypeVar
 
 from manim import config
 from manim.constants import *
