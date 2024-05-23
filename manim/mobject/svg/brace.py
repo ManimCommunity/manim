@@ -4,8 +4,8 @@ from __future__ import annotations
 
 __all__ = ["Brace", "BraceLabel", "ArcBrace", "BraceText", "BraceBetweenPoints"]
 
-from typing import TYPE_CHECKING
 from collections.abc import Sequence
+from typing import TYPE_CHECKING
 
 import numpy as np
 import svgelements as se
@@ -26,8 +26,7 @@ from ...utils.color import BLACK
 from ..svg.svg_mobject import VMobjectFromSVGPath
 
 if TYPE_CHECKING:
-    from manim.typing import Vector3D, Point3D
-
+    from manim.typing import Point3D, Vector3D
     from manim.utils.color.core import ParsableManimColor
 
 __all__ = ["Brace", "BraceBetweenPoints", "BraceLabel", "ArcBrace"]
