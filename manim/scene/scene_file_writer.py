@@ -715,7 +715,6 @@ class SceneFileWriter:
                 av.open(movie_file_path) as video_input,
                 av.open(sound_file_path) as audio_input,
             ):
-
                 video_stream = video_input.streams.video[0]
                 audio_stream = audio_input.streams.audio[0]
                 output_container = av.open(
