@@ -575,7 +575,7 @@ class Mobject:
 
         In addition to this method, there is a compatibility
         layer that allows ``set_*`` methods to
-        get and set generic attributes. For instance::
+        set generic attributes. For instance::
 
             >>> mob = Mobject()
             >>> mob.set_foo(0)
