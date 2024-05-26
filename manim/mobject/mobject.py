@@ -65,8 +65,8 @@ class Mobject:
     """Mathematical Object: base class for objects that can be displayed on screen.
 
     There is a compatibility layer that allows for
-    getting and setting generic attributes with ``get_*``
-    and ``set_*`` methods. See :meth:`set` for more details.
+    setting generic attributes with ``set_*`` methods.
+    See :meth:`set` for more details.
 
     Attributes
     ----------
