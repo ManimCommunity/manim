@@ -146,7 +146,7 @@ class CoordinateSystem:
         self.y_length = y_length
         self.num_sampled_graph_points_per_tick = 10
 
-    def coords_to_point(self, *coords: Point3D):
+    def coords_to_point(self, *coords: ManimFloat):
         raise NotImplementedError()
 
     def point_to_coords(self, point: Point3D):
