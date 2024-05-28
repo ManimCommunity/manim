@@ -8,6 +8,10 @@ import pytest
 from manim import LEFT, ORIGIN, PI, UR, Axes, Circle, ComplexPlane
 from manim import CoordinateSystem as CS
 from manim import NumberPlane, PolarPlane, ThreeDAxes, config, tempconfig
+from manim.utils.color import BLUE, GREEN, ORANGE, RED, YELLOW
+from manim.utils.testing.frames_comparison import frames_comparison
+
+__module_test__ = "coordinate_system_opengl"
 
 
 def test_initial_config(using_opengl_renderer):
@@ -126,3 +130,33 @@ def test_input_to_graph_point(using_opengl_renderer):
     # test the line_graph implementation
     position = np.around(ax.input_to_graph_point(x=PI, graph=line_graph), decimals=4)
     np.testing.assert_array_equal(position, (2.6928, 1.2876, 0))
+
+
+@frames_comparison
+def test_gradient_line_graph_x_axis(scene, using_opengl_renderer):
+    """Test that using `colorscale` generates a line whose gradient matches the y-axis"""
+    axes = Axes(x_range=[-3, 3], y_range=[-3, 3])
+
+    curve = axes.plot(
+        lambda x: 0.1 * x**3,
+        x_range=(-3, 3, 0.001),
+        colorscale=[BLUE, GREEN, YELLOW, ORANGE, RED],
+        colorscale_axis=0,
+    )
+
+    scene.add(axes, curve)
+
+
+@frames_comparison
+def test_gradient_line_graph_y_axis(scene, using_opengl_renderer):
+    """Test that using `colorscale` generates a line whose gradient matches the y-axis"""
+    axes = Axes(x_range=[-3, 3], y_range=[-3, 3])
+
+    curve = axes.plot(
+        lambda x: 0.1 * x**3,
+        x_range=(-3, 3, 0.001),
+        colorscale=[BLUE, GREEN, YELLOW, ORANGE, RED],
+        colorscale_axis=1,
+    )
+
+    scene.add(axes, curve)
