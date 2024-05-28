@@ -911,7 +911,6 @@ class VMobject(Mobject):
         :class:`VMobject`
             ``self``
         """
-        nppcc = self.n_points_per_cubic_curve
         self.add_cubic_bezier_curve_to(
             *(
                 interpolate(self.get_last_point(), point, t)
@@ -1060,7 +1059,6 @@ class VMobject(Mobject):
                     vmob.set_points_as_corners(corners).scale(2)
                     self.add(vmob)
         """
-        nppcc = self.n_points_per_cubic_curve
         points = np.array(points)
         # This will set the handles aligned with the anchors.
         # Id est, a bezier curve will be the segment from the two anchors such that the handles belongs to this segment.
