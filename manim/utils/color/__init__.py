@@ -49,8 +49,6 @@ The following modules contain the predefined color constants:
 
 from __future__ import annotations
 
-from typing import Dict, List
-
 from . import AS2700, BS381, X11, XKCD
 from .core import *
 from .manim_colors import *
