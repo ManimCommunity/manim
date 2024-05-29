@@ -109,7 +109,9 @@ class Line(TipableVMobject):
         self.pointwise_become_partial(self, buff_proportion, 1 - buff_proportion)
         return self
 
-    def _set_start_and_end_attrs(self, start: Point3D | Mobject, end: Point3D | Mobject) -> None:
+    def _set_start_and_end_attrs(
+        self, start: Point3D | Mobject, end: Point3D | Mobject
+    ) -> None:
         # If either start or end are Mobjects, this
         # gives their centers
         rough_start = self._pointify(start)

@@ -1562,7 +1562,7 @@ class Graph(GenericGraph):
                 graph[u],
                 graph[v],
                 buff=self._edge_config.get("buff", 0),
-                path_arc=self._edge_config.get("path_arc", 0)
+                path_arc=self._edge_config.get("path_arc", 0),
             )
 
     def __repr__(self: Graph) -> str:
@@ -1777,7 +1777,7 @@ class DiGraph(GenericGraph):
                 graph[u],
                 graph[v],
                 buff=self._edge_config.get("buff", 0),
-                path_arc=self._edge_config.get("path_arc", 0)
+                path_arc=self._edge_config.get("path_arc", 0),
             )
             edge.add_tip(tip)
 
