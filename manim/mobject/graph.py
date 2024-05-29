@@ -1558,7 +1558,12 @@ class Graph(GenericGraph):
     def update_edges(self, graph):
         for (u, v), edge in graph.edges.items():
             # Undirected graph has a Line edge
-            edge.put_start_and_end_on(graph[u].get_center(), graph[v].get_center())
+            edge.set_points_by_ends(
+                graph[u],
+                graph[v],
+                buff=self._edge_config.get("buff", 0),
+                path_arc=self._edge_config.get("path_arc", 0)
+            )
 
     def __repr__(self: Graph) -> str:
         return f"Undirected graph on {len(self.vertices)} vertices and {len(self.edges)} edges"
@@ -1767,10 +1772,13 @@ class DiGraph(GenericGraph):
         deformed.
         """
         for (u, v), edge in graph.edges.items():
-            edge_type = type(edge)
             tip = edge.pop_tips()[0]
-            new_edge = edge_type(self[u], self[v], **self._edge_config[(u, v)])
-            edge.become(new_edge)
+            edge.set_points_by_ends(
+                graph[u],
+                graph[v],
+                buff=self._edge_config.get("buff", 0),
+                path_arc=self._edge_config.get("path_arc", 0)
+            )
             edge.add_tip(tip)
 
     def __repr__(self: DiGraph) -> str:
