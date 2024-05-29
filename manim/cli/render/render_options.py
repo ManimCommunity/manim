@@ -100,7 +100,7 @@ render_options = option_group(
             case_sensitive=False,
         ),
         help="Select a renderer for your Scene.",
-        default="cairo",
+        default="opengl",
     ),
     option(
         "-g",
