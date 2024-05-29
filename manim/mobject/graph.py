@@ -560,6 +560,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         all other configuration options for a vertex.
     edge_type
         The mobject class used for displaying edges in the scene.
+        Must be a subclass of :class:`~.Line` for default updaters to work.
     edge_config
         Either a dictionary containing keyword arguments to be passed
         to the class specified via ``edge_type``, or a dictionary whose
@@ -1559,8 +1560,8 @@ class Graph(GenericGraph):
         for (u, v), edge in graph.edges.items():
             # Undirected graph has a Line edge
             edge.set_points_by_ends(
-                graph[u],
-                graph[v],
+                graph[u].get_center(),
+                graph[v].get_center(),
                 buff=self._edge_config.get("buff", 0),
                 path_arc=self._edge_config.get("path_arc", 0),
             )
@@ -1773,6 +1774,8 @@ class DiGraph(GenericGraph):
         """
         for (u, v), edge in graph.edges.items():
             tip = edge.pop_tips()[0]
+            # Passing the Mobject instead of the vertex makes the tip
+            # stop on the bounding box of the vertex.
             edge.set_points_by_ends(
                 graph[u],
                 graph[v],
