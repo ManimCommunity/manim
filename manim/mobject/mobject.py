@@ -34,7 +34,7 @@ from manim.utils.color import (
     interpolate_color,
 )
 from manim.utils.exceptions import MultiAnimationOverrideException
-from manim.utils.iterables import list_update, remove_list_redundancies, tuplify
+from manim.utils.iterables import list_update, remove_list_redundancies
 from manim.utils.paths import straight_path
 from manim.utils.space_ops import angle_between_vectors, normalize, rotation_matrix
 
