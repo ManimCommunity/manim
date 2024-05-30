@@ -147,7 +147,8 @@ class ManimColor:
             else:
                 if length == 3:
                     self._internal_value = ManimColor._internal_from_int_rgb(
-                        value, alpha  # type: ignore
+                        value,
+                        alpha,  # type: ignore
                     )
                 elif length == 4:
                     self._internal_value = ManimColor._internal_from_int_rgba(value)  # type: ignore

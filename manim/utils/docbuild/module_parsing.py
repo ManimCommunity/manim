@@ -125,8 +125,7 @@ def parse_module_attributes() -> tuple[AliasDocsDict, DataDict]:
                 and (
                     (
                         # if TYPE_CHECKING
-                        type(node.test) is ast.Name
-                        and node.test.id == "TYPE_CHECKING"
+                        type(node.test) is ast.Name and node.test.id == "TYPE_CHECKING"
                     )
                     or (
                         # if typing.TYPE_CHECKING

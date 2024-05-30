@@ -2109,7 +2109,7 @@ class Mobject:
 
         ::
 
-            sample = Arc(start_angle=PI/7, angle = PI/5)
+            sample = Arc(start_angle=PI / 7, angle=PI / 5)
 
             # These are all equivalent
             max_y_1 = sample.get_top()[1]
