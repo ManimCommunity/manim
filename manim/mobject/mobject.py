@@ -526,7 +526,6 @@ class Mobject:
 
         """
         self._assert_valid_submobjects(mobjects)
-        self._assert_valid_submobjects(mobjects)
         unique_mobjects = remove_list_redundancies(mobjects)
         if len(mobjects) != len(unique_mobjects):
             logger.warning(
