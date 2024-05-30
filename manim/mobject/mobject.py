@@ -114,9 +114,12 @@ class Mobject:
         self.target = target
         self.z_index = z_index
         self.point_hash = None
-        self._submobjects: list[Mobject] = []
+        # NOTE: the parents, _submobjects and _family attributes MUST BE
+        # IN THIS ORDER! Otherwise, Mobject.__deepcopy__() will break or
+        # generate a Mobject with a different hash!
         self.parents: list[Mobject] = []
-        self.family: list[Mobject] | None = [self]
+        self._submobjects: list[Mobject] = []
+        self._family: list[Mobject] | None = None
         self.updaters: list[Updater] = []
         self.updating_suspended = False
         self.color = ManimColor.parse(color)
@@ -423,7 +426,14 @@ class Mobject:
             if k == "parents":
                 result.parents = []
                 continue
-            setattr(result, k, copy.deepcopy(v, clone_from_id))
+            if k == "_submobjects":
+                # Call the submobjects property which calculates parents
+                result._submobjects = []
+                result.submobjects = copy.deepcopy(v, clone_from_id)
+            elif k == "_family":
+                result._family = None
+            else:
+                setattr(result, k, copy.deepcopy(v, clone_from_id))
         result.original_id = str(id(self))
         return result
 
@@ -2379,7 +2389,7 @@ class Mobject:
         :class:`Mobject`
             The Mobject itself.
         """
-        self.family = None
+        self._family = None
         # TODO: Implement when bounding boxes and updater statuses are implemented
         # if not only_changed_order:
         #     self.refresh_has_updater_status()
@@ -2409,12 +2419,12 @@ class Mobject:
         """
         if not recurse:
             return [self]
-        if self.family is None:
+        if self._family is None:
             # Reconstruct and save
             sub_families = (sm.get_family() for sm in self.submobjects)
             family = [self, *it.chain(*sub_families)]
-            self.family = remove_list_redundancies(family)
-        return self.family
+            self._family = remove_list_redundancies(family)
+        return self._family
 
     def family_members_with_points(self) -> list[Self]:
         return [m for m in self.get_family() if m.get_num_points() > 0]
