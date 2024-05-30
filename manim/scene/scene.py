@@ -26,6 +26,7 @@ from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import RED
 from manim.utils.deprecation import deprecated
+from manim.utils.exceptions import EndSceneEarlyException
 from manim.utils.family_ops import extract_mobject_family_members
 from manim.utils.iterables import list_difference_update
 from manim.utils.module_ops import get_module
@@ -84,7 +85,7 @@ class Scene:
         # Core state of the scene
         self.camera: Camera = Camera()
         self.camera.save_state()
-        self.__manager = manager
+        self.manager = manager
         self.mobjects: list[Mobject] = []
         self.id_to_mobject_map: dict[int, Mobject] = {}
         self.num_plays: int = 0
@@ -107,10 +108,6 @@ class Scene:
         if self.random_seed is not None:
             random.seed(self.random_seed)
             np.random.seed(self.random_seed)
-
-    @property
-    def manager(self) -> Manager:
-        return self.__manager
 
     def __str__(self) -> str:
         return self.__class__.__name__
@@ -253,7 +250,7 @@ class Scene:
 
         # End scene when exiting an embed
         if close_scene_on_exit:
-            raise EndScene()
+            raise EndSceneEarlyException()
 
     # Only these methods should touch the camera
     # Related to updating
@@ -532,7 +529,7 @@ class Scene:
         if (self.end_at_animation_number is not None) and (
             self.num_plays >= self.end_at_animation_number
         ):
-            raise EndScene()
+            raise EndSceneEarlyException()
 
     def stop_skipping(self) -> None:
         self.virtual_animation_start_time = self.time
@@ -903,7 +900,3 @@ class SceneState:
         scene.mobjects = [
             mob.become(mob_copy) for mob, mob_copy in self.mobjects_to_copies.items()
         ]
-
-
-class EndScene(Exception):
-    pass

@@ -10,4 +10,4 @@ class Test(Scene):
 
 
 with tempconfig({"renderer": "opengl", "preview": True, "parallel": False}):
-    Test().render()
+    Manager(Test).render()

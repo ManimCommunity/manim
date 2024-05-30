@@ -7,6 +7,7 @@ import numpy as np
 
 from manim import config, logger
 from manim.constants import RendererType
+from manim.utils.exceptions import EndSceneEarlyException
 
 from ..scene.scene import Scene, SceneState
 from .opengl_file_writer import FileWriter
@@ -22,13 +23,27 @@ if TYPE_CHECKING:
 __all__ = ("Manager",)
 
 
-class EndSceneError(Exception):
-    pass
-
-
 class Manager:
     """
     The Brain of Manim
+
+    .. note::
+
+        The only method of this class officially guarenteed to be
+        stable is :meth:`~.Manager.render`. Any other methods documented
+        are purely for development
+
+    Usage
+    -----
+
+        .. code-block:: python
+
+            class Manimation(Scene):
+                def construct(self):
+                    self.play(FadeIn(Circle()))
+
+
+            Manager(Manimation).render()
     """
 
     def __init__(self, scene_cls: type[Scene]) -> None:
@@ -46,12 +61,12 @@ class Manager:
         # Initialize window, if applicable
         if config.preview:
             self.window = Window()
+            self.renderer.use_window()
         else:
             self.window = None
 
         # file writer
         self.file_writer = FileWriter(self.scene.get_default_scene_name())  # TODO
-        self.renderer.use_window()
 
     @property
     def camera(self) -> Camera:
@@ -59,7 +74,6 @@ class Manager:
 
     @property
     def _renderer_class(self) -> type[RendererProtocol]:
-        # TODO: Implement based on renderer in config
         match config.renderer:
             case RendererType.OPENGL:
                 return OpenGLRenderer
@@ -107,7 +121,7 @@ class Manager:
         try:
             self.scene.construct()
             self._interact()
-        except EndSceneError:
+        except EndSceneEarlyException:
             pass
         except KeyboardInterrupt:
             # Get rid keyboard interrupt symbols
@@ -153,10 +167,9 @@ class Manager:
         self.time += dt
         self.scene._update_mobjects(dt)
 
-        if self.window is not None and self.window.is_closing:
-            raise EndSceneError()
-
         if self.window is not None:
+            if self.window.is_closing:
+                raise EndSceneEarlyException()
             self.window.clear()
 
         state = self.scene.get_state()
@@ -165,7 +178,7 @@ class Manager:
         if self.window is not None:
             self.window.swap_buffers()
             vt = self.time - self.virtual_animation_start_time
-            rt = time.time() - self.real_animation_start_time
+            rt = time.perf_counter() - self.real_animation_start_time
             if rt < vt:
                 self._update_frame(0)
 
@@ -173,7 +186,7 @@ class Manager:
         self.scene.pre_play()
 
         if self.window is not None:
-            self.real_animation_start_time = time.time()
+            self.real_animation_start_time = time.perf_counter()
             self.virtual_animation_start_time = self.time
 
         self.scene.begin_animations(animations)
@@ -206,5 +219,5 @@ class Manager:
 
     def _send_scene_to_renderer(self, state: SceneState):
         """Renders the State"""
-        result = self.renderer.render(self.camera, state.mobjects)
+        result = self.renderer.render(self.scene.camera, state.mobjects)
         return result
