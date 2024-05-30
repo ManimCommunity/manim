@@ -34,6 +34,7 @@ from ..utils.color import (
     color_gradient,
     interpolate_color,
 )
+from ..utils.decorators import internal
 from ..utils.exceptions import MultiAnimationOverrideException
 from ..utils.iterables import list_update, remove_list_redundancies
 from ..utils.paths import straight_path
@@ -83,6 +84,7 @@ class Mobject:
 
     animation_overrides = {}
 
+    @internal
     @classmethod
     def __init_subclass__(cls, **kwargs) -> None:
         super().__init_subclass__(**kwargs)
@@ -1712,6 +1714,7 @@ class Mobject:
 
         return self.rescale_to_fit(depth, 2, stretch=True, **kwargs)
 
+    @internal
     def set_coord(self, value, dim: int, direction: Vector3D = ORIGIN) -> Self:
         curr = self.get_coord(dim, direction)
         shift_vect = np.zeros(self.dim)
@@ -1902,6 +1905,7 @@ class Mobject:
         )
         return self
 
+    @internal
     def set_submobject_colors_by_gradient(self, *colors: Iterable[ParsableManimColor]):
         if len(colors) == 0:
             raise ValueError("Need at least one color")
@@ -1915,6 +1919,7 @@ class Mobject:
             mob.set_color(color, family=False)
         return self
 
+    @internal
     def set_submobject_colors_by_radial_gradient(
         self,
         center: Point3D | None = None,
@@ -2044,6 +2049,7 @@ class Mobject:
     def get_num_points(self) -> int:
         return len(self.points)
 
+    @internal
     def get_extremum_along_dim(
         self, points: Point3D_Array | None = None, dim: int = 0, key: int = 0
     ) -> np.ndarray | float:
@@ -2160,6 +2166,7 @@ class Mobject:
             dim,
         ) - self.reduce_across_dimension(min, dim)
 
+    @internal
     def get_coord(self, dim: int, direction: Vector3D = ORIGIN):
         """Meant to generalize ``get_x``, ``get_y`` and ``get_z``"""
         return self.get_extremum_along_dim(dim=dim, key=direction[dim])
@@ -2196,6 +2203,7 @@ class Mobject:
     def proportion_from_point(self, point: Point3D) -> float:
         raise NotImplementedError("Please override in a child class.")
 
+    @internal
     def get_pieces(self, n_pieces: float) -> Group:
         template = self.copy()
         template.submobjects = []
@@ -2312,11 +2320,13 @@ class Mobject:
         result = [self] if len(self.points) > 0 else []
         return result + self.submobjects
 
+    @internal
     def get_family(self, recurse: bool = True) -> list[Self]:
-        sub_families = [x.get_family() for x in self.submobjects]
+        sub_families = [x.get_family(recurse=recurse) for x in self.submobjects]
         all_mobjects = [self] + list(it.chain(*sub_families))
         return remove_list_redundancies(all_mobjects)
 
+    @internal
     def family_members_with_points(self) -> list[Self]:
         return [m for m in self.get_family() if m.get_num_points() > 0]
 
@@ -2683,6 +2693,7 @@ class Mobject:
         return self.shuffle(*args, **kwargs)
 
     # Alignment
+    @internal
     def align_data(self, mobject: Mobject, skip_point_alignment: bool = False) -> None:
         """Aligns the data of this mobject with another mobject.
 
@@ -2784,6 +2795,7 @@ class Mobject:
     def repeat_submobject(self, submob: Mobject) -> Self:
         return submob.copy()
 
+    @internal
     def interpolate(
         self,
         mobject1: Mobject,
@@ -2967,6 +2979,7 @@ class Mobject:
         return self
 
     # Errors
+    @internal
     def throw_error_if_no_points(self) -> None:
         if self.has_no_points():
             caller_name = sys._getframe(1).f_code.co_name

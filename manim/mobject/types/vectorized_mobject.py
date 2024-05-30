@@ -38,6 +38,7 @@ from manim.utils.bezier import (
     proportions_along_bezier_curve_for_point,
 )
 from manim.utils.color import BLACK, WHITE, ManimColor, ParsableManimColor
+from manim.utils.decorators import internal
 from manim.utils.iterables import (
     make_even,
     resize_array,
@@ -191,6 +192,7 @@ class VMobject(Mobject):
         return VMobject
 
     # Colors
+    @internal
     def init_colors(self, propagate_colors: bool = True) -> Self:
         self.set_fill(
             color=self.fill_color,
@@ -221,6 +223,7 @@ class VMobject(Mobject):
 
         return self
 
+    @internal
     def generate_rgbas_array(
         self, color: ManimColor | list[ManimColor], opacity: float | Iterable[float]
     ) -> RGBA_Array_Float:
@@ -249,6 +252,7 @@ class VMobject(Mobject):
             rgbas = np.append(rgbas, light_rgbas, axis=0)
         return rgbas
 
+    @internal
     def update_rgbas_array(
         self,
         array_name: str,
@@ -708,6 +712,7 @@ class VMobject(Mobject):
                 submob.z_index_group = self
         return self
 
+    @internal
     def set_points(self, points: Point3D_Array) -> Self:
         self.points: Point3D_Array = np.array(points)
         return self
@@ -795,6 +800,7 @@ class VMobject(Mobject):
         self.points = points
         return self
 
+    @internal
     def start_new_path(self, point: Point3D) -> Self:
         """Append a ``point`` to the :attr:`VMobject.points`, which will be the
         beginning of a new Bézier curve in the path given by the points. If
@@ -825,6 +831,7 @@ class VMobject(Mobject):
             self.append_points([point])
         return self
 
+    @internal
     def add_cubic_bezier_curve(
         self,
         anchor1: CubicBezierPoints,
@@ -836,9 +843,11 @@ class VMobject(Mobject):
         self.append_points([anchor1, handle1, handle2, anchor2])
 
     # what type is curves?
+    @internal
     def add_cubic_bezier_curves(self, curves) -> None:
         self.append_points(curves.flatten())
 
+    @internal
     def add_cubic_bezier_curve_to(
         self,
         handle1: CubicBezierPoints,
@@ -871,6 +880,7 @@ class VMobject(Mobject):
             self.append_points([self.get_last_point()] + new_points)
         return self
 
+    @internal
     def add_quadratic_bezier_curve_to(
         self,
         handle: QuadraticBezierPoints,
@@ -1114,11 +1124,13 @@ class VMobject(Mobject):
     def make_jagged(self) -> Self:
         return self.change_anchor_mode("jagged")
 
+    @internal
     def add_subpath(self, points: Point3D_Array) -> Self:
         assert len(points) % 4 == 0
         self.append_points(points)
         return self
 
+    @internal
     def append_vectorized_mobject(self, vectorized_mobject: VMobject) -> None:
         if self.has_new_path_started():
             # Remove last point, which is starting
@@ -1146,6 +1158,7 @@ class VMobject(Mobject):
         super().rotate(angle, axis, about_point, **kwargs)
         return self
 
+    @internal
     def scale_handle_to_anchor_distances(self, factor: float) -> Self:
         """If the distance between a given handle point H and its associated
         anchor point A is d, then it changes H to be a distances factor*d
@@ -1177,10 +1190,11 @@ class VMobject(Mobject):
             submob.set_anchors_and_handles(a1, new_h1, new_h2, a2)
         return self
 
-    #
+    @internal
     def consider_points_equals(self, p0: Point3D, p1: Point3D) -> bool:
         return np.allclose(p0, p1, atol=self.tolerance_for_point_equality)
 
+    @internal
     def consider_points_equals_2d(self, p0: Point2D, p1: Point2D) -> bool:
         """Determine if two points are close enough to be considered equal.
 
@@ -1207,11 +1221,13 @@ class VMobject(Mobject):
         return True
 
     # Information about line
+    @internal
     def get_cubic_bezier_tuples_from_points(
         self, points: Point3D_Array
     ) -> npt.NDArray[Point3D_Array]:
         return np.array(self.gen_cubic_bezier_tuples_from_points(points))
 
+    @internal
     def gen_cubic_bezier_tuples_from_points(
         self, points: Point3D_Array
     ) -> tuple[Point3D_Array]:
@@ -1238,6 +1254,7 @@ class VMobject(Mobject):
         # Basically take every nppcc element.
         return tuple(points[i : i + nppcc] for i in range(0, len(points), nppcc))
 
+    @internal
     def get_cubic_bezier_tuples(self) -> npt.NDArray[Point3D_Array]:
         return self.get_cubic_bezier_tuples_from_points(self.points)
 
@@ -1275,6 +1292,7 @@ class VMobject(Mobject):
             if (i2 - i1) >= nppcc
         )
 
+    @internal
     def get_subpaths_from_points(self, points: Point3D_Array) -> list[Point3D_Array]:
         return list(
             self._gen_subpaths_from_points(
@@ -1283,6 +1301,7 @@ class VMobject(Mobject):
             ),
         )
 
+    @internal
     def gen_subpaths_from_points_2d(
         self, points: Point3D_Array
     ) -> Generator[Point3D_Array]:
@@ -1291,6 +1310,7 @@ class VMobject(Mobject):
             lambda n: not self.consider_points_equals_2d(points[n - 1], points[n]),
         )
 
+    @internal
     def get_subpaths(self) -> list[Point3D_Array]:
         """Returns subpaths formed by the curves of the VMobject.
 
@@ -1303,6 +1323,7 @@ class VMobject(Mobject):
         """
         return self.get_subpaths_from_points(self.points)
 
+    @internal
     def get_nth_curve_points(self, n: int) -> Point3D_Array:
         """Returns the points defining the nth curve of the vmobject.
 
@@ -1320,6 +1341,7 @@ class VMobject(Mobject):
         nppcc = self.n_points_per_cubic_curve
         return self.points[nppcc * n : nppcc * (n + 1)]
 
+    @internal
     def get_nth_curve_function(self, n: int) -> Callable[[float], Point3D]:
         """Returns the expression of the nth curve.
 
@@ -1335,6 +1357,7 @@ class VMobject(Mobject):
         """
         return bezier(self.get_nth_curve_points(n))
 
+    @internal
     def get_nth_curve_length_pieces(
         self,
         n: int,
@@ -1363,6 +1386,7 @@ class VMobject(Mobject):
 
         return norms
 
+    @internal
     def get_nth_curve_length(
         self,
         n: int,
@@ -1387,6 +1411,7 @@ class VMobject(Mobject):
 
         return length
 
+    @internal
     def get_nth_curve_function_with_length(
         self,
         n: int,
@@ -1426,6 +1451,7 @@ class VMobject(Mobject):
         nppcc = self.n_points_per_cubic_curve
         return len(self.points) // nppcc
 
+    @internal
     def get_curve_functions(
         self,
     ) -> Generator[Callable[[float], Point3D]]:
@@ -1442,6 +1468,7 @@ class VMobject(Mobject):
         for n in range(num_curves):
             yield self.get_nth_curve_function(n)
 
+    @internal
     def get_curve_functions_with_lengths(
         self, **kwargs
     ) -> Generator[tuple[Callable[[float], Point3D], float]]:
@@ -1582,6 +1609,7 @@ class VMobject(Mobject):
 
         return alpha
 
+    @internal
     def get_anchors_and_handles(self) -> list[Point3D_Array]:
         """Returns anchors1, handles1, handles2, anchors2,
         where (anchors1[i], handles1[i], handles2[i], anchors2[i])
@@ -1596,6 +1624,7 @@ class VMobject(Mobject):
         nppcc = self.n_points_per_cubic_curve
         return [self.points[i::nppcc] for i in range(nppcc)]
 
+    @internal
     def get_start_anchors(self) -> Point3D_Array:
         """Returns the start anchors of the bezier curves.
 
@@ -1606,6 +1635,7 @@ class VMobject(Mobject):
         """
         return self.points[:: self.n_points_per_cubic_curve]
 
+    @internal
     def get_end_anchors(self) -> Point3D_Array:
         """Return the end anchors of the bezier curves.
 
@@ -1617,6 +1647,7 @@ class VMobject(Mobject):
         nppcc = self.n_points_per_cubic_curve
         return self.points[nppcc - 1 :: nppcc]
 
+    @internal
     def get_anchors(self) -> Point3D_Array:
         """Returns the anchors of the curves forming the VMobject.
 
@@ -1731,6 +1762,7 @@ class VMobject(Mobject):
         vmobject.set_points(new_path2)
         return self
 
+    @internal
     def insert_n_curves(self, n: int) -> Self:
         """Inserts n curves to the bezier curves of the vmobject.
 
@@ -1755,6 +1787,7 @@ class VMobject(Mobject):
             self.append_points([new_path_point])
         return self
 
+    @internal
     def insert_n_curves_to_point_list(
         self, n: int, points: Point3D_Array
     ) -> npt.NDArray[BezierPoints]:
@@ -1782,6 +1815,7 @@ class VMobject(Mobject):
         new_points = new_bezier_tuples.reshape(-1, 3)
         return new_points
 
+    @internal
     def align_rgbas(self, vmobject: VMobject) -> Self:
         attrs = ["fill_rgbas", "stroke_rgbas", "background_stroke_rgbas"]
         for attr in attrs:
@@ -1802,6 +1836,7 @@ class VMobject(Mobject):
         point.match_style(self)
         return point
 
+    @internal
     def interpolate_color(
         self, mobject1: VMobject, mobject2: VMobject, alpha: float
     ) -> None:
@@ -1826,6 +1861,7 @@ class VMobject(Mobject):
                     val = val.copy()
                 setattr(self, attr, val)
 
+    @internal
     def pointwise_become_partial(
         self,
         vmobject: VMobject,
@@ -1888,6 +1924,7 @@ class VMobject(Mobject):
             )
         return self
 
+    @internal
     def get_subcurve(self, a: float, b: float) -> Self:
         """Returns the subcurve of the VMobject between the interval [a, b].
         The curve is a VMobject itself.
