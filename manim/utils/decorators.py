@@ -1,18 +1,13 @@
 from __future__ import annotations
 
 import inspect
-from typing import TYPE_CHECKING, TypeVar
+from collections.abc import Callable
+from typing import Any, TypeVar
 
-if TYPE_CHECKING:
-    from collections.abc import Callable
-
-    from typing_extensions import ParamSpec
-
-    P = ParamSpec("P")
-    T = TypeVar("T")
+F = TypeVar("F", bound=Callable[..., Any])
 
 
-def internal(f: Callable[P, T]) -> Callable[P, T]:
+def internal(f: F, /) -> F:
     """
     This decorator marks a function as internal
     by adding a warning to the docstring of the object.
