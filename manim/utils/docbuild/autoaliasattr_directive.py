@@ -49,7 +49,7 @@ def smart_replace(base: str, alias: str, substitution: str) -> str:
     len_alias = len(alias)
     len_base = len(base)
 
-    def condition(char: str):
+    def condition(char: str) -> bool:
         return not char.isalnum() and char != "_"
 
     start = 0
