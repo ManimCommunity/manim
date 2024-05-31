@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import inspect
 from typing import TYPE_CHECKING, TypeVar
 
 if TYPE_CHECKING:
@@ -30,14 +31,15 @@ def internal(f: Callable[P, T]) -> Callable[P, T]:
         @internal  # does not do anything, don't use
         def _my_second_private_method(self): ...
     """
-    doc: str = f.__doc__ if f.__doc__ is not None else ""
-    newblockline = "\n    "
-    directive = f".. warning::{newblockline}"
-    directive += newblockline.join(
-        (
-            "This method is designed for internal use",
-            "and may not stay the same in future versions of Manim",
-        )
+    # we have to keep the "No description provided" or
+    # docutils doesn't parse the directive properly
+    doc = f.__doc__ or "No description provided"
+
+    directive = (
+        ".. warning::\n\n"
+        "    This method is designed for internal use and may not stay the same in future versions of Manim"
+        "    Use these in your code at your own risk"
     )
-    f.__doc__ = f"{directive}\n\n{doc}"
+
+    f.__doc__ = f"{directive}\n\n{inspect.cleandoc(doc)}"
     return f
