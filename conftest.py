@@ -5,12 +5,6 @@
 
 from __future__ import annotations
 
-try:
-    # https://github.com/moderngl/moderngl/issues/517
-    import readline  # required to prevent a segfault on Python 3.10 # noqa: F401
-except ModuleNotFoundError:  # windows
-    pass
-
 import cairo
 import moderngl
 
