@@ -139,6 +139,7 @@ select = [
   "E",
   "F",
   "I",
+  "UP",
 ]
 
 ignore = [
