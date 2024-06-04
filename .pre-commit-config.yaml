@@ -35,7 +35,7 @@ repos:
       - id: python-check-blanket-noqa
         name: Precision flake ignores
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.4.5
+    rev: v0.4.7
     hooks:
       - id: ruff-format
         types: [python]
