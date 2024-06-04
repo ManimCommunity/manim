@@ -134,6 +134,47 @@ extend-exclude = [
 ]
 fix = true
 
+[tool.ruff.lint]
+select = [
+  "E",
+  "F",
+  "I",
+]
+
+ignore = [
+  # due to the import * used in manim
+  "F403",
+  "F405",
+  # as recommended by https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules
+  "E111",
+  "E114",
+  "E117",
+  "E501",
+]
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = [
+  # unused variable
+  "F841",
+  # from __future__ import annotations
+  "I002",
+]
+
+"example_scenes/*" = [
+  "I002",
+]
+
+"__init__.py" = [
+  "F401",
+  "F403",
+]
+
+[tool.ruff.lint.isort]
+required-imports = ["from __future__ import annotations"]
+
 [tool.ruff.format]
 docstring-code-format = true
 
