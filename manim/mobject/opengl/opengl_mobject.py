@@ -2659,12 +2659,7 @@ class OpenGLMobject:
             glsl_snippet = glsl_snippet.replace(char, "point." + char)
         rgb_list = get_colormap_list(colormap)
         self.set_color_by_code(
-            "color.rgb = float_to_color({}, {}, {}, {});".format(
-                glsl_snippet,
-                float(min_value),
-                float(max_value),
-                get_colormap_code(rgb_list),
-            ),
+            f"color.rgb = float_to_color({glsl_snippet}, {float(min_value)}, {float(max_value)}, {get_colormap_code(rgb_list)});",
         )
         return self
 
