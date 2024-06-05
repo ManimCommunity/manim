@@ -31,9 +31,9 @@ def internal(f: F, /) -> F:
     doc = f.__doc__ or "No description provided"
 
     directive = (
-        ".. warning::\n\n"
-        "    This method is designed for internal use and may not stay the same in future versions of Manim"
-        "    Use these in your code at your own risk"
+        ".. warning::\n\n    "
+        "This method is designed for internal use and may not stay the same in future versions of Manim. "
+        "Use these in your code at your own risk"
     )
 
     f.__doc__ = f"{directive}\n\n{inspect.cleandoc(doc)}"
