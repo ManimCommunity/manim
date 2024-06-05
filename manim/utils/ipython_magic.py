@@ -3,13 +3,12 @@
 from __future__ import annotations
 
 import mimetypes
-import os
 import shutil
 from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from manim import Group, config, logger, tempconfig
+from manim import config, logger, tempconfig
 from manim.__main__ import main
 from manim.renderer.shader import shader_program_cache
 

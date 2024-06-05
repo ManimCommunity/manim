@@ -56,7 +56,6 @@ __all__ = ["Text", "Paragraph", "MarkupText", "register_font"]
 
 import copy
 import hashlib
-import os
 import re
 from collections.abc import Iterable, Sequence
 from contextlib import contextmanager
