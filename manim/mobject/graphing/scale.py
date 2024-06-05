@@ -182,7 +182,7 @@ class LogBase(_ScaleBase):
         tex_labels = [
             Integer(
                 self.base,
-                unit="^{%s}" % (f"{self.inverse_function(i):.{unit_decimal_places}f}"),
+                unit="^{%s}" % (f"{self.inverse_function(i):.{unit_decimal_places}f}"),  # noqa: UP031
                 **base_config,
             )
             for i in val_range

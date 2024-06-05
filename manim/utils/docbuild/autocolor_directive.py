@@ -38,7 +38,7 @@ class ManimColorModuleDocumenter(Directive):
             return [
                 nodes.error(
                     None,
-                    nodes.paragraph(text="Failed to import module '%s'" % module_name),
+                    nodes.paragraph(text=f"Failed to import module '{module_name}'"),
                 )
             ]
 

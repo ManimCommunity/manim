@@ -12,12 +12,6 @@ repos:
       - id: end-of-file-fixer
       - id: check-toml
         name: Validate Poetry
-  - repo: https://github.com/asottile/pyupgrade
-    rev: v3.15.2
-    hooks:
-      - id: pyupgrade
-        name: Update code to new python versions
-        args: [--py39-plus]
   - repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.10.0
     hooks:
