@@ -125,8 +125,9 @@ class Code(VGroup):
     line_no_buff
         Defines the spacing between line numbers and displayed code. Defaults to 0.4.
     style
-        Defines the style type of displayed code. You can see possible names of
-        styles by calling `list(pygments.styles.get_all_styles())`. Defaults to ``"vim"``.
+        Defines the style type of displayed code. To see a list possible
+        names of styles call ``list(pygments.styles.get_all_styles())``.
+        Defaults to ``"vim"``.
     language
         Specifies the programming language the given code was written in. If ``None``
         (the default), the language will be automatically detected. For the list of
