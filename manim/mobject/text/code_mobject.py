@@ -15,8 +15,8 @@ import numpy as np
 from pygments import highlight
 from pygments.formatters.html import HtmlFormatter
 from pygments.lexers import get_lexer_by_name, guess_lexer_for_filename
-from pygments.styles import get_all_styles
 
+# from pygments.styles import get_all_styles
 from manim.constants import *
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.geometry.polygram import RoundedRectangle
@@ -24,8 +24,6 @@ from manim.mobject.geometry.shape_matchers import SurroundingRectangle
 from manim.mobject.text.text_mobject import Paragraph
 from manim.mobject.types.vectorized_mobject import VGroup
 from manim.utils.color import WHITE
-
-__all__ = ["Code"]
 
 
 class Code(VGroup):
@@ -63,7 +61,7 @@ class Code(VGroup):
             background_stroke_width=1,
             background_stroke_color=WHITE,
             insert_line_no=True,
-            style=Code.styles_list[15],
+            style="solarized-dark",
             background="window",
             language="cpp",
         )
@@ -127,7 +125,8 @@ class Code(VGroup):
     line_no_buff
         Defines the spacing between line numbers and displayed code. Defaults to 0.4.
     style
-        Defines the style type of displayed code. You can see possible names of styles in with :attr:`styles_list`. Defaults to ``"vim"``.
+        Defines the style type of displayed code. You can see possible names of
+        styles by calling `list(pygments.styles.get_all_styles())`. Defaults to ``"vim"``.
     language
         Specifies the programming language the given code was written in. If ``None``
         (the default), the language will be automatically detected. For the list of
@@ -156,7 +155,7 @@ class Code(VGroup):
     # For more information about pygments.lexers visit https://pygments.org/docs/lexers/
     # from pygments.lexers import get_all_lexers
     # all_lexers = get_all_lexers()
-    styles_list = list(get_all_styles())
+    # styles_list = list(get_all_styles())
     # For more information about pygments.styles visit https://pygments.org/docs/styles/
 
     def __init__(
