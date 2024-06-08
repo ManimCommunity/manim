@@ -12,7 +12,7 @@ import re
 from pathlib import Path
 
 import numpy as np
-from pygments import highlight
+from pygments import highlight, styles
 from pygments.formatters.html import HtmlFormatter
 from pygments.lexers import get_lexer_by_name, guess_lexer_for_filename
 
@@ -61,7 +61,7 @@ class Code(VGroup):
             background_stroke_width=1,
             background_stroke_color=WHITE,
             insert_line_no=True,
-            style="solarized-dark",
+            style="emacs",
             background="window",
             language="cpp",
         )
@@ -126,7 +126,7 @@ class Code(VGroup):
         Defines the spacing between line numbers and displayed code. Defaults to 0.4.
     style
         Defines the style type of displayed code. To see a list possible
-        names of styles call ``list(pygments.styles.get_all_styles())``.
+        names of styles call :meth:`get_styles_list`.
         Defaults to ``"vim"``.
     language
         Specifies the programming language the given code was written in. If ``None``
@@ -157,6 +157,7 @@ class Code(VGroup):
     # from pygments.lexers import get_all_lexers
     # all_lexers = get_all_lexers()
     # styles_list = list(get_all_styles())
+    _styles_list_cache = None
     # For more information about pygments.styles visit https://pygments.org/docs/styles/
 
     def __init__(
@@ -287,6 +288,20 @@ class Code(VGroup):
                 **kwargs,
             )
         self.move_to(np.array([0, 0, 0]))
+
+    @classmethod
+    def get_styles_list(cls):
+        """Get list of available code styles.
+
+        Returns
+        -------
+        list[str]
+            The list of available code styles to use for the ``styles``
+            argument.
+        """
+        if cls._styles_list_cache is None:
+            cls._styles_list_cache = list(styles.get_all_styles())
+        return cls._styles_list_cache
 
     def _ensure_valid_file(self):
         """Function to validate file."""
