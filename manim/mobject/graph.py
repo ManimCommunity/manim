@@ -679,8 +679,11 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         """Helper method for populating the edges of the graph."""
         raise NotImplementedError("To be implemented in concrete subclasses")
 
-    def __getitem__(self: Graph, v: Hashable) -> Mobject:
-        return self.vertices[v]
+    def __getitem__(self: Graph, k: Hashable | tuple[Hashable, Hashable]) -> Mobject:
+        if isinstance(k, tuple):
+            return self.edges[k]
+        else:
+            return self.vertices[k]
 
     def _create_vertex(
         self,
