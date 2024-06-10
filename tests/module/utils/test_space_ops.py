@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 from manim.utils.space_ops import *
-from manim.utils.space_ops import shoelace, shoelace_direction
+from manim.utils.space_ops import shoelace
 
 
 def test_rotate_vector():
