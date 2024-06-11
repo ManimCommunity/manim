@@ -681,9 +681,11 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
 
     def __getitem__(self: Graph, k: Hashable | tuple[Hashable, Hashable]) -> Mobject:
         if isinstance(k, tuple):
-            return self.edges[k]
-        else:
-            return self.vertices[k]
+            if (edge := self.edges.get(k)) is not None:
+                return edge
+        elif (vertex := self.vertices.get(k)) is not None:
+            return vertex
+        raise ValueError(f"Could not find {k} in vertices or edges")
 
     def _create_vertex(
         self,
