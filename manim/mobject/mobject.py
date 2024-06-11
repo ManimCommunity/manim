@@ -200,6 +200,10 @@ class Mobject:
     def parents(self) -> list[Mobject]:
         return self._parents
 
+    @property
+    def family(self) -> list[Mobject]:
+        return self.get_family()
+
     @classmethod
     def animation_override_for(
         cls,
