@@ -114,7 +114,7 @@ class Mobject:
         self.target = target
         self.z_index = z_index
         self.point_hash = None
-        # NOTE: the parents, _submobjects and _family attributes MUST BE
+        # NOTE: the _parents, _submobjects and _family attributes MUST BE
         # IN THIS ORDER! Otherwise, Mobject.__deepcopy__() will break or
         # generate a Mobject with a different hash!
         self._parents: list[Mobject] = []
