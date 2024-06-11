@@ -117,7 +117,7 @@ class Mobject:
         # NOTE: the parents, _submobjects and _family attributes MUST BE
         # IN THIS ORDER! Otherwise, Mobject.__deepcopy__() will break or
         # generate a Mobject with a different hash!
-        self.parents: list[Mobject] = []
+        self._parents: list[Mobject] = []
         self._submobjects: list[Mobject] = []
         self._family: list[Mobject] | None = None
         self.updaters: list[Updater] = []
@@ -193,10 +193,12 @@ class Mobject:
     def submobjects(self, new_submobjects: list[Mobject]) -> None:
         self._assert_valid_submobjects(new_submobjects)
         self._submobjects = new_submobjects
-        for submob in new_submobjects:
-            if self not in submob.parents:
-                submob.parents.append(self)
+        self._add_as_parent_of_submobs(new_submobjects)
         self.note_changed_family()
+
+    @property
+    def parents(self) -> list[Mobject]:
+        return self._parents
 
     @classmethod
     def animation_override_for(
@@ -423,13 +425,12 @@ class Mobject:
             # This must be set manually because result has no attributes,
             # and specifically INSIDE the loop to preserve attribute order,
             # or test_hash_consistency() will fail!
-            if k == "parents":
-                result.parents = []
+            if k == "_parents":
+                result._parents = []
                 continue
             if k == "_submobjects":
-                # Call the submobjects property which calculates parents
-                result._submobjects = []
-                result.submobjects = copy.deepcopy(v, clone_from_id)
+                result._submobjects = copy.deepcopy(v, clone_from_id)
+                result._add_as_parent_of_submobs(result._submobjects)
             elif k == "_family":
                 result._family = None
             else:
@@ -457,6 +458,12 @@ class Mobject:
         Gets called upon creation. This is an empty method that can be implemented by
         subclasses.
         """
+
+    def _add_as_parent_of_submobs(self, mobjects: Iterable[Mobject]) -> Self:
+        for mobject in mobjects:
+            if self not in mobject._parents:
+                mobject._parents.append(self)
+        return self
 
     def add(self, *mobjects: Mobject) -> Self:
         """Add mobjects as submobjects.
@@ -543,10 +550,8 @@ class Mobject:
                 "this is not possible. Repetitions are ignored.",
             )
 
-        self.submobjects = list_update(self.submobjects, unique_mobjects)
-        for mobject in unique_mobjects:
-            if self not in mobject.parents:
-                mobject.parents.append(self)
+        self._submobjects = list_update(self._submobjects, unique_mobjects)
+        self._add_as_parent_of_submobs(mobjects)
         self.note_changed_family()
         return self
 
@@ -567,9 +572,8 @@ class Mobject:
         """
         self._assert_valid_submobjects([mobject])
         # TODO: should verify that subsequent submobjects are not repeated
-        self.submobjects.insert(index, mobject)
-        if self not in mobject.parents:
-            mobject.parents.append(self)
+        self._submobjects.insert(index, mobject)
+        self._add_as_parent_of_submobs([mobject])
         self.note_changed_family()
         # TODO: should return Self instead of None?
 
@@ -626,10 +630,8 @@ class Mobject:
         self._assert_valid_submobjects(mobjects)
         self.remove(*mobjects)
         # dict.fromkeys() removes duplicates while maintaining order
-        self.submobjects = list(dict.fromkeys(mobjects)) + self.submobjects
-        for mobject in mobjects:
-            if self not in mobject.parents:
-                mobject.parents.append(self)
+        self._submobjects = list(dict.fromkeys(mobjects)) + self._submobjects
+        self._add_as_parent_of_submobs(mobjects)
         self.note_changed_family()
         return self
 
@@ -656,10 +658,10 @@ class Mobject:
 
         """
         for mobject in mobjects:
-            if mobject in self.submobjects:
-                self.submobjects.remove(mobject)
-            if self in mobject.parents:
-                mobject.parents.remove(self)
+            if mobject in self._submobjects:
+                self._submobjects.remove(mobject)
+            if self in mobject._parents:
+                mobject._parents.remove(self)
         self.note_changed_family()
         return self
 
@@ -2394,7 +2396,7 @@ class Mobject:
         # if not only_changed_order:
         #     self.refresh_has_updater_status()
         #     self.refresh_bounding_box()
-        for parent in self.parents:
+        for parent in self._parents:
             parent.note_changed_family(only_changed_order)
         return self
 
@@ -2732,7 +2734,7 @@ class Mobject:
             def submob_func(m: Mobject):
                 return point_to_num_func(m.get_center())
 
-        self.submobjects.sort(key=submob_func)
+        self._submobjects.sort(key=submob_func)
         self.note_changed_family(only_changed_order=True)
         return self
 
@@ -2741,7 +2743,7 @@ class Mobject:
         if recursive:
             for submob in self.submobjects:
                 submob.shuffle(recursive=True)
-        random.shuffle(self.submobjects)
+        random.shuffle(self._submobjects)
         self.note_changed_family(only_changed_order=True)
         # TODO: should return Self instead of None?
 
@@ -2769,7 +2771,7 @@ class Mobject:
         if recursive:
             for submob in self.submobjects:
                 submob.invert(recursive=True)
-        self.submobjects.reverse()
+        self._submobjects.reverse()
         self.note_changed_family(only_changed_order=True)
         # TODO: should return Self instead of None?
 
@@ -2888,7 +2890,7 @@ class Mobject:
 
     def push_self_into_submobjects(self) -> Self:
         copy = self.copy()
-        copy.submobjects = []
+        copy._submobjects = []
         self.reset_points()
         self.add(copy)
         return self
