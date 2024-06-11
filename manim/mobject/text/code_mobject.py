@@ -157,7 +157,7 @@ class Code(VGroup):
     # from pygments.lexers import get_all_lexers
     # all_lexers = get_all_lexers()
     # styles_list = list(get_all_styles())
-    _styles_list_cache = None
+    _styles_list_cache: list[str] | None = None
     # For more information about pygments.styles visit https://pygments.org/docs/styles/
 
     def __init__(
