@@ -952,33 +952,6 @@ class OpenGLMobject:
         self.assemble_family()
         return self
 
-    def invert(self, recursive=False):
-        """Inverts the list of :attr:`submobjects`.
-
-        Parameters
-        ----------
-        recursive
-            If ``True``, all submobject lists of this mobject's family are inverted.
-
-        Examples
-        --------
-
-        .. manim:: InvertSumobjectsExample
-
-            class InvertSumobjectsExample(Scene):
-                def construct(self):
-                    s = VGroup(*[Dot().shift(i*0.1*RIGHT) for i in range(-20,20)])
-                    s2 = s.copy()
-                    s2.invert()
-                    s2.shift(DOWN)
-                    self.play(Write(s), Write(s2))
-        """
-        if recursive:
-            for submob in self.submobjects:
-                submob.invert(recursive=True)
-        list.reverse(self.submobjects)
-        self.assemble_family()
-
     # Submobject organization
 
     def arrange(self, direction=RIGHT, center=True, **kwargs):
@@ -1319,7 +1292,8 @@ class OpenGLMobject:
         if recursive:
             for submob in self.submobjects:
                 submob.invert(recursive=True)
-        list.reverse(self.submobjects)
+        self.submobjects.reverse()
+        # Is there supposed to be an assemble_family here?
 
     # Copying
 
@@ -2685,12 +2659,7 @@ class OpenGLMobject:
             glsl_snippet = glsl_snippet.replace(char, "point." + char)
         rgb_list = get_colormap_list(colormap)
         self.set_color_by_code(
-            "color.rgb = float_to_color({}, {}, {}, {});".format(
-                glsl_snippet,
-                float(min_value),
-                float(max_value),
-                get_colormap_code(rgb_list),
-            ),
+            f"color.rgb = float_to_color({glsl_snippet}, {float(min_value)}, {float(max_value)}, {get_colormap_code(rgb_list)});",
         )
         return self
 

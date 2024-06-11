@@ -1223,8 +1223,8 @@ class OpenGLVMobject(OpenGLMobject):
             return path
 
         for n in range(n_subpaths):
-            sp1 = get_nth_subpath(subpaths1, n)
-            sp2 = get_nth_subpath(subpaths2, n)
+            sp1 = np.asarray(get_nth_subpath(subpaths1, n))
+            sp2 = np.asarray(get_nth_subpath(subpaths2, n))
             diff1 = max(0, (len(sp2) - len(sp1)) // nppc)
             diff2 = max(0, (len(sp1) - len(sp2)) // nppc)
             sp1 = self.insert_n_curves_to_point_list(diff1, sp1)
