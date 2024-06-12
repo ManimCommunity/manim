@@ -1130,8 +1130,8 @@ class OpenGLMobject:
                 return len(sizes)
             raise ValueError(
                 f"At least one of the following parameters: '{name}s', "
-                f"{name}_alignments or "
-                f"{name}_{'widths' if name == 'col' else 'heights'}, "
+                f"'{name}_alignments' or "
+                f"'{name}_{'widths' if name == 'col' else 'heights'}', "
                 "must not be None"
             )
 
