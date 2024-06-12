@@ -2862,10 +2862,10 @@ class OpenGLMobject:
     def refresh_shader_data(self) -> None:
         self.get_shader_data()
 
-    def get_shader_uniforms(self):
+    def get_shader_uniforms(self) -> dict[str, Any]:
         return self.uniforms
 
-    def get_shader_vert_indices(self):
+    def get_shader_vert_indices(self) -> list[int]:
         return self.shader_indices
 
     @property
