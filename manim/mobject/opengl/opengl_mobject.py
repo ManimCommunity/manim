@@ -9,7 +9,7 @@ import types
 from collections.abc import Iterable, Iterator, Sequence
 from functools import partialmethod, wraps
 from math import ceil
-from typing import TYPE_CHECKING, Any, Callable, Self
+from typing import TYPE_CHECKING, Any, Callable
 
 import moderngl
 import numpy as np
@@ -48,6 +48,7 @@ from manim.utils.space_ops import (
 
 if TYPE_CHECKING:
     import numpy.typing as npt
+    from typing_extensions import Self, TypeAlias
 
     from manim.renderer.shader_wrapper import ShaderWrapper
     from manim.typing import (
