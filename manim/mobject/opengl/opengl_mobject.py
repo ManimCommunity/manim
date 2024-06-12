@@ -116,7 +116,7 @@ class OpenGLMobject:
 
     def __init__(
         self,
-        color: ParsableManimColor | list[ParsableManimColor] = WHITE,
+        color: ParsableManimColor | Iterable[ParsableManimColor] = WHITE,
         opacity: float = 1,
         dim: int = 3,  # TODO, get rid of this
         # Lighting parameters
@@ -383,7 +383,7 @@ class OpenGLMobject:
         return self
 
     @property
-    def animate(self) -> _AnimationBuilder:
+    def animate(self) -> _AnimationBuilder | Self:
         """Used to animate the application of a method.
 
         .. warning::
@@ -748,7 +748,7 @@ class OpenGLMobject:
     def __len__(self) -> int:
         return len(self.split())
 
-    def split(self) -> list[OpenGLMobject]:
+    def split(self) -> Sequence[OpenGLMobject]:
         return self.submobjects
 
     def assemble_family(self) -> Self:
@@ -760,13 +760,13 @@ class OpenGLMobject:
             parent.assemble_family()
         return self
 
-    def get_family(self, recurse: bool = True) -> list[OpenGLMobject]:
+    def get_family(self, recurse: bool = True) -> Sequence[OpenGLMobject]:
         if recurse and hasattr(self, "family"):
             return self.family
         else:
             return [self]
 
-    def family_members_with_points(self) -> list[OpenGLMobject]:
+    def family_members_with_points(self) -> Sequence[OpenGLMobject]:
         return [m for m in self.get_family() if m.has_points()]
 
     def add(self, *mobjects: OpenGLMobject, update_parent: bool = False) -> Self:
@@ -1016,8 +1016,8 @@ class OpenGLMobject:
         cell_alignment: Vector3D = ORIGIN,
         row_alignments: str | None = None,  # "ucd"
         col_alignments: str | None = None,  # "lcr"
-        row_heights: Iterable[float | None] | None = None,
-        col_widths: Iterable[float | None] | None = None,
+        row_heights: Sequence[float | None] | None = None,
+        col_widths: Sequence[float | None] | None = None,
         flow_order: str = "rd",
         **kwargs,
     ) -> Self:
@@ -1119,7 +1119,7 @@ class OpenGLMobject:
         def init_size(
             num: int | None,
             alignments: str | None,
-            sizes: Iterable[float | None] | None,
+            sizes: Sequence[float | None] | None,
             name: str,
         ) -> int:
             if num is not None:
@@ -1166,7 +1166,7 @@ class OpenGLMobject:
             mapping: dict[str, Vector3D],
             name: str,
             direction: Vector3D,
-        ) -> list[Vector3D]:
+        ) -> Sequence[Vector3D]:
             if str_alignments is None:
                 # Use cell_alignment as fallback
                 return [cell_alignment * direction] * num
@@ -1208,7 +1208,7 @@ class OpenGLMobject:
 
         # Reverse row_alignments and row_heights. Necessary since the
         # grid filling is handled bottom up for simplicity reasons.
-        def reverse(maybe_list: list[Any] | None) -> list[Any] | None:
+        def reverse(maybe_list: Sequence[Any] | None) -> Sequence[Any] | None:
             if maybe_list is not None:
                 maybe_list = list(maybe_list)
                 maybe_list.reverse()
@@ -1235,11 +1235,11 @@ class OpenGLMobject:
 
         # Initialize row_heights / col_widths correctly using measurements as fallback
         def init_sizes(
-            sizes: list[float | None] | None,
+            sizes: Sequence[float | None] | None,
             num: int,
-            measures: list[float],
+            measures: Sequence[float],
             name: str,
-        ) -> list[float]:
+        ) -> Sequence[float]:
             if sizes is None:
                 sizes = [None] * num
             if len(sizes) != num:
@@ -1464,16 +1464,16 @@ class OpenGLMobject:
                 submob.update(dt, recurse)
         return self
 
-    def get_time_based_updaters(self) -> list[TimeBasedUpdater]:
+    def get_time_based_updaters(self) -> Sequence[TimeBasedUpdater]:
         return self.time_based_updaters
 
     def has_time_based_updater(self) -> bool:
         return len(self.time_based_updaters) > 0
 
-    def get_updaters(self) -> list[Updater]:
+    def get_updaters(self) -> Sequence[Updater]:
         return self.time_based_updaters + self.non_time_updaters
 
-    def get_family_updaters(self) -> list[Updater]:
+    def get_family_updaters(self) -> Sequence[Updater]:
         return list(it.chain(*(sm.get_updaters() for sm in self.get_family())))
 
     def add_updater(
@@ -2807,7 +2807,7 @@ class OpenGLMobject:
         )
         return self.shader_wrapper
 
-    def get_shader_wrapper_list(self) -> list[ShaderWrapper]:
+    def get_shader_wrapper_list(self) -> Sequence[ShaderWrapper]:
         shader_wrappers = it.chain(
             [self.get_shader_wrapper()],
             *(sm.get_shader_wrapper_list() for sm in self.submobjects),
@@ -2824,7 +2824,7 @@ class OpenGLMobject:
                 result.append(shader_wrapper)
         return result
 
-    def check_data_alignment(self, array: np.ndarray, data_key: str) -> Self:
+    def check_data_alignment(self, array: npt.NDArray, data_key: str) -> Self:
         # Makes sure that self.data[key] can be broadcast into
         # the given array, meaning its length has to be either 1
         # or the length of the array
@@ -2836,7 +2836,7 @@ class OpenGLMobject:
             )
         return self
 
-    def get_resized_shader_data_array(self, length: float) -> np.ndarray:
+    def get_resized_shader_data_array(self, length: float) -> npt.NDArray:
         # If possible, try to populate an existing array, rather
         # than recreating it each frame
         points = self.points
@@ -2845,7 +2845,7 @@ class OpenGLMobject:
 
     def read_data_to_shader(
         self,
-        shader_data: np.ndarray,  # has structured data type, ex. ("point", np.float32, (3,))
+        shader_data: npt.NDArray,  # has structured data type, ex. ("point", np.float32, (3,))
         shader_data_key: str,
         data_key: str,
     ) -> None:
@@ -2854,7 +2854,7 @@ class OpenGLMobject:
         self.check_data_alignment(shader_data, data_key)
         shader_data[shader_data_key] = self.data[data_key]
 
-    def get_shader_data(self) -> np.ndarray:
+    def get_shader_data(self) -> npt.NDArray:
         shader_data = self.get_resized_shader_data_array(self.get_num_points())
         self.read_data_to_shader(shader_data, "point", "points")
         return shader_data
@@ -2865,11 +2865,11 @@ class OpenGLMobject:
     def get_shader_uniforms(self) -> dict[str, Any]:
         return self.uniforms
 
-    def get_shader_vert_indices(self) -> list[int]:
+    def get_shader_vert_indices(self) -> Sequence[int]:
         return self.shader_indices
 
     @property
-    def submobjects(self) -> list[OpenGLMobject]:
+    def submobjects(self) -> Sequence[OpenGLMobject]:
         return self._submobjects if hasattr(self, "_submobjects") else []
 
     @submobjects.setter
