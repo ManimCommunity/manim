@@ -1120,6 +1120,7 @@ class OpenGLMobject:
             num: int | None,
             alignments: str | None,
             sizes: Iterable[float | None] | None,
+            name: str,
         ) -> int:
             if num is not None:
                 return num
@@ -1127,9 +1128,15 @@ class OpenGLMobject:
                 return len(alignments)
             if sizes is not None:
                 return len(sizes)
+            raise ValueError(
+                f"At least one of the following parameters: '{name}s', "
+                f"{name}_alignments or "
+                f"{name}_{'widths' if name == 'col' else 'heights'}, "
+                "must not be None"
+            )
 
-        cols = init_size(cols, col_alignments, col_widths)
-        rows = init_size(rows, row_alignments, row_heights)
+        cols = init_size(cols, col_alignments, col_widths, "col")
+        rows = init_size(rows, row_alignments, row_heights, "row")
 
         # calculate rows cols
         if rows is None and cols is None:
@@ -1206,6 +1213,7 @@ class OpenGLMobject:
                 maybe_list = list(maybe_list)
                 maybe_list.reverse()
                 return maybe_list
+            return None
 
         row_alignments = reverse(row_alignments)
         row_heights = reverse(row_heights)
