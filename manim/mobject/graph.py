@@ -680,12 +680,12 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         raise NotImplementedError("To be implemented in concrete subclasses")
 
     def __getitem__(self: Graph, k: Hashable | tuple[Hashable, Hashable]) -> Mobject:
-        if isinstance(k, tuple):
-            if (edge := self.edges.get(k)) is not None:
-                return edge
-        elif (vertex := self.vertices.get(k)) is not None:
-            return vertex
-        raise ValueError(f"Could not find {k} in vertices or edges")
+        if k in self.vertices:
+            return self.vertices[k]
+        elif k in self.edges:
+            return self.edges[k]
+        else:
+            raise ValueError(f"Could not find {k} in vertices or edges")
 
     def _create_vertex(
         self,
