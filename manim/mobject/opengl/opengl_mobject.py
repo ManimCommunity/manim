@@ -65,6 +65,8 @@ if TYPE_CHECKING:
     NonTimeBasedUpdater: TypeAlias = Callable[["Mobject"], object]
     Updater: TypeAlias = NonTimeBasedUpdater | TimeBasedUpdater
 
+    T = TypeVar("T")
+
 
 def affects_shader_info_id(
     func: Callable[[OpenGLMobject], OpenGLMobject],
@@ -582,9 +584,9 @@ class OpenGLMobject:
         self.refresh_bounding_box()
         return self
 
-    A = TypeVar(bound=npt.NDArray)
-
-    def apply_over_attr_arrays(self, func: Callable[[A], A]) -> Self:
+    def apply_over_attr_arrays(
+        self, func: Callable[[npt.NDArray[T]], npt.NDArray[T]]
+    ) -> Self:
         # TODO: OpenGLMobject.get_array_attrs() doesn't even exist!
         for attr in self.get_array_attrs():
             setattr(self, attr, func(getattr(self, attr)))
