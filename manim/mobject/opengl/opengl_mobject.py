@@ -9,7 +9,7 @@ import types
 from collections.abc import Iterable, Iterator, Sequence
 from functools import partialmethod, wraps
 from math import ceil
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any, Callable, TypeVar
 
 import moderngl
 import numpy as np
@@ -582,9 +582,9 @@ class OpenGLMobject:
         self.refresh_bounding_box()
         return self
 
-    def apply_over_attr_arrays(
-        self, func: Callable[[npt.NDArray], npt.NDArray]
-    ) -> Self:
+    A = TypeVar(bound=npt.NDArray)
+
+    def apply_over_attr_arrays(self, func: Callable[[A], A]) -> Self:
         # TODO: OpenGLMobject.get_array_attrs() doesn't even exist!
         for attr in self.get_array_attrs():
             setattr(self, attr, func(getattr(self, attr)))
