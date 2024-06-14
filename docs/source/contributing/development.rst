@@ -84,6 +84,16 @@ For first-time contributors
       The following steps assume that you chose to install and work with
       Poetry.
 
+#. Build Rust Dependencies:
+
+    You will have to run the following.
+    This should build all rust dependencies so you do not get an import error in python
+
+    .. code-block:: shell
+
+        cd manimrust
+        maturin develop
+
 #. Install Pre-Commit:
 
    .. code-block:: shell

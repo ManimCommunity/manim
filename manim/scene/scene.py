@@ -33,6 +33,8 @@ from tqdm import tqdm
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
+from manimrust.cairo import CairoRenderer
+
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLPoint
 
@@ -41,9 +43,9 @@ from ..animation.animation import Animation, Wait, prepare_animation
 from ..camera.camera import Camera
 from ..constants import *
 from ..gui.gui import configure_pygui
-from ..renderer.cairo_renderer import CairoRenderer
 from ..renderer.opengl_renderer import OpenGLRenderer
 from ..renderer.shader import Object3D
+from .scene_file_writer import SceneFileWriter
 from ..utils import opengl, space_ops
 from ..utils.exceptions import EndSceneEarlyException, RerunSceneException
 from ..utils.family import extract_mobject_family_members
@@ -137,15 +139,16 @@ class Scene:
             self.mouse_drag_point = OpenGLPoint()
             if renderer is None:
                 renderer = OpenGLRenderer()
+            self.renderer.init_scene(self)
 
         if renderer is None:
             self.renderer = CairoRenderer(
-                camera_class=self.camera_class,
+                camera=self.camera_class(),
+                file_writer=SceneFileWriter(self),
                 skip_animations=self.skip_animations,
             )
         else:
             self.renderer = renderer
-        self.renderer.init_scene(self)
 
         self.mobjects = []
         # TODO, remove need for foreground mobjects

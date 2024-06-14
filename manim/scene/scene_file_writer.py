@@ -67,9 +67,9 @@ class SceneFileWriter:
 
     force_output_as_scene_name = False
 
-    def __init__(self, renderer, scene_name, **kwargs):
-        self.renderer = renderer
-        self.init_output_directories(scene_name)
+    def __init__(self, scene, **kwargs):
+        self.scene = scene
+        self.init_output_directories(type(scene).__name__)
         self.init_audio()
         self.frame_count = 0
         self.partial_movie_files: list[str] = []
@@ -465,7 +465,7 @@ class SceneFileWriter:
         the video stream of a partial movie file.
         """
         if file_path is None:
-            file_path = self.partial_movie_files[self.renderer.num_plays]
+            file_path = self.partial_movie_files[self.scene.renderer.num_plays]
         self.partial_movie_file_path = file_path
 
         fps = config["frame_rate"]
@@ -515,7 +515,7 @@ class SceneFileWriter:
         self.video_container.close()
 
         logger.info(
-            f"Animation {self.renderer.num_plays} : Partial movie file written in %(path)s",
+            f"Animation {self.scene.renderer.num_plays} : Partial movie file written in %(path)s",
             {"path": f"'{self.partial_movie_file_path}'"},
         )
 

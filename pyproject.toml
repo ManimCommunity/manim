@@ -56,6 +56,8 @@ svgelements = ">=1.8.0"
 tqdm = ">=4.0.0"
 typing-extensions = ">=4.0.0"
 watchdog = ">=2.0.0"
+maturin = "^1.6.0"
+manimrust = { path = "manimrust", develop = true }
 
 [tool.poetry.extras]
 jupyterlab = ["jupyterlab", "notebook"]

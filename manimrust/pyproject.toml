@@ -1,0 +1,28 @@
+[build-system]
+requires = ["maturin>=1.6,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "manimrust"
+requires-python = ">=3.9,<3.13"
+classifiers = [
+    "Programming Language :: Rust",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+]
+dynamic = ["version"]
+
+[tool.maturin]
+features = ["pyo3/extension-module"]
+
+[tool.poetry]
+name = "manimrust"
+version = "0.18.1"
+description = "Animation engine for explanatory math videos."
+authors = ["The Manim Community Developers <contact@manim.community>"]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.13"
+manim = { path="..", develop=true }
+
