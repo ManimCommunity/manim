@@ -38,6 +38,7 @@ from manim.mobject.opengl.opengl_mobject import OpenGLPoint
 
 from .. import config, logger
 from ..animation.animation import Animation, Wait, prepare_animation
+from ..camera.camera import Camera
 from ..constants import *
 from ..gui.gui import configure_pygui
 from ..renderer.cairo_renderer import CairoRenderer
@@ -49,7 +50,6 @@ from ..utils.family import extract_mobject_family_members
 from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
 from ..utils.file_ops import open_media_file
 from ..utils.iterables import list_difference_update, list_update
-from ..camera.camera import Camera
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
