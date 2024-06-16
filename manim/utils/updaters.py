@@ -36,58 +36,6 @@ SceneUpdater: TypeAlias = Callable[[float], None]
 
 
 class AbstractUpdaterWrapper:
-    """Wraps an :class:`Updater` function, inspects its signature and
-    calculates whether it's time-based or not.
-
-    If it has a single parameter (with no default value), it's considered
-    non-time-based: it doesn't depend on time.
-
-    If it has two parameters (with no default values), it's considered
-    time-based: it depends on time, and the affected Mobject has a change
-    on every frame which depends on the frame's duration dt.
-
-    .. note::
-        It's not mandatory that the parameters are named ``mob`` and ``dt``.
-
-    **Only parameters with no default values are considered in when determining
-    whether the updater is time-based or not.** For example, an updater
-    ``lambda mob, rate=5: ...`` is considered non-time-based since the 2nd
-    parameter ``rate`` has a default value of 5. **This allows for passing
-    functions with more than 2 parameters, as long as the extra parameters have
-    default values.**
-
-    A ``ValueError`` is raised if a function is passed which has 0 or more than
-    2 parameters with no default values.
-
-    When passing an instance method, the first parameter `self` is excluded
-    from the count. When passing a class method, the first parameter `cls` is
-    also excluded.
-
-    .. note ::
-        It is fine to call the 1st parameter ``self`` if the updater is not an
-        instance method: it will still be counted as a parameter. The rule
-        above only applies for instance methods. For example,
-        ``lambda self: self.move_to(square)`` is a valid non-time-based
-        updater, and ``lambda self, dt: self.rotate(dt)`` is time-based.
-
-    .. warning::
-        Do **NOT** name the 1st parameter ``cls`` if the function is not a class
-        method.
-
-    Attributes
-    ----------
-    updater
-        An updater function, whose first parameter is a Mobject and might
-        optionally have a second parameter which should be a float
-        representing a time change dt.
-
-    Raises
-    ------
-    ValueError
-        If an updater is passed with 0 or more than 2 parameters with no
-        default values.
-    """
-
     __slots__ = ["updater", "is_time_based"]
 
     def __init__(self, updater: MobjectUpdater | MeshUpdater):
@@ -144,6 +92,58 @@ class AbstractUpdaterWrapper:
 
 
 class MobjectUpdaterWrapper(AbstractUpdaterWrapper):
+    """Wraps a :class:`MobjectUpdater` function, inspects its signature and
+    calculates whether it's time-based or not.
+
+    If it has a single parameter (with no default value), it's considered
+    non-time-based: it doesn't depend on time.
+
+    If it has two parameters (with no default values), it's considered
+    time-based: it depends on time, and the affected Mobject has a change
+    on every frame which depends on the frame's duration dt.
+
+    .. note::
+        It's not mandatory that the parameters are named ``mob`` and ``dt``.
+
+    **Only parameters with no default values are considered in when determining
+    whether the updater is time-based or not.** For example, an updater
+    ``lambda mob, rate=5: ...`` is considered non-time-based since the 2nd
+    parameter ``rate`` has a default value of 5. **This allows for passing
+    functions with more than 2 parameters, as long as the extra parameters have
+    default values.**
+
+    A ``ValueError`` is raised if a function is passed which has 0 or more than
+    2 parameters with no default values.
+
+    When passing an instance method, the first parameter `self` is excluded
+    from the count. When passing a class method, the first parameter `cls` is
+    also excluded.
+
+    .. note ::
+        It is fine to call the 1st parameter ``self`` if the updater is not an
+        instance method: it will still be counted as a parameter. The rule
+        above only applies for instance methods. For example,
+        ``lambda self: self.move_to(square)`` is a valid non-time-based
+        updater, and ``lambda self, dt: self.rotate(dt)`` is time-based.
+
+    .. warning::
+        Do **NOT** name the 1st parameter ``cls`` if the function is not a
+        class method.
+
+    Attributes
+    ----------
+    updater
+        An updater function, whose first parameter is a :class:`Mobject` and
+        might optionally have a second parameter which should be a ``float``
+        representing a time change ``dt``.
+
+    Raises
+    ------
+    ValueError
+        If an updater is passed with 0 or more than 2 parameters with no
+        default values.
+    """
+
     def __init__(self, updater: MobjectUpdater):
         super().__init__(updater)
 
