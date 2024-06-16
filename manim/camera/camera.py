@@ -13,6 +13,7 @@ from functools import reduce
 from typing import Any, Callable
 
 import cairo
+from manimrust.cairo import CairoCamera
 import numpy as np
 from PIL import Image
 from scipy.spatial.distance import pdist
@@ -45,7 +46,7 @@ CAP_STYLE_MAP = {
 }
 
 
-class Camera:
+class Camera(CairoCamera):
     """Base camera class.
 
     This is the object which takes care of what exactly is displayed
@@ -689,17 +690,19 @@ class Camera:
         if len(points) == 0:
             return
 
-        ctx.new_path()
-        subpaths = vmobject.gen_subpaths_from_points_2d(points)
-        for subpath in subpaths:
-            quads = vmobject.gen_cubic_bezier_tuples_from_points(subpath)
-            ctx.new_sub_path()
-            start = subpath[0]
-            ctx.move_to(*start[:2])
-            for _p0, p1, p2, p3 in quads:
-                ctx.curve_to(*p1[:2], *p2[:2], *p3[:2])
-            if vmobject.consider_points_equals_2d(subpath[0], subpath[-1]):
-                ctx.close_path()
+        super().set_cairo_context_path(ctx, vmobject, points)
+
+        # ctx.new_path()
+        # subpaths = vmobject.gen_subpaths_from_points_2d(points)
+        # for subpath in subpaths:
+        # quads = vmobject.gen_cubic_bezier_tuples_from_points(subpath)
+        #     ctx.new_sub_path()
+        #     start = subpath[0]
+        #     ctx.move_to(*start[:2])
+        #     for _p0, p1, p2, p3 in quads:
+        #         ctx.curve_to(*p1[:2], *p2[:2], *p3[:2])
+        #     if vmobject.consider_points_equals_2d(subpath[0], subpath[-1]):
+        #         ctx.close_path()
         return self
 
     def set_cairo_context_color(

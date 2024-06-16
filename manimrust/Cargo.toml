@@ -9,6 +9,6 @@ name = "manimrust"
 crate-type = ["cdylib"]
 
 [dependencies]
-cairo-rs = "0.19.4"
+num-traits = "0.2.19"
 numpy = "0.21.0"
 pyo3 = "0.21.1"
