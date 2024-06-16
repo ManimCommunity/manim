@@ -31,3 +31,4 @@ Module Index
    ~utils.tex_file_writing
    ~utils.tex_templates
    typing
+   ~utils.updaters
