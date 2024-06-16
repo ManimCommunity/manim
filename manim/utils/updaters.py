@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import inspect
 from collections.abc import Callable
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
     from typing_extensions import TypeAlias
@@ -26,11 +26,11 @@ __all__ = [
 
 MobjectTimeBasedUpdater: TypeAlias = Callable[["Mobject", float], "Mobject"]
 MobjectNonTimeBasedUpdater: TypeAlias = Callable[["Mobject"], "Mobject"]
-MobjectUpdater: TypeAlias = MobjectNonTimeBasedUpdater | MobjectTimeBasedUpdater
+MobjectUpdater: TypeAlias = Union[MobjectNonTimeBasedUpdater, MobjectTimeBasedUpdater]
 
 MeshTimeBasedUpdater: TypeAlias = Callable[["Object3D", float], "Object3D"]
 MeshNonTimeBasedUpdater: TypeAlias = Callable[["Object3D"], "Object3D"]
-MeshUpdater: TypeAlias = MeshNonTimeBasedUpdater | MeshTimeBasedUpdater
+MeshUpdater: TypeAlias = Union[MeshNonTimeBasedUpdater, MeshTimeBasedUpdater]
 
 SceneUpdater: TypeAlias = Callable[[float], None]
 
@@ -128,7 +128,7 @@ class AbstractUpdaterWrapper:
             self._raise_error(num_non_default_parameters)
 
     def _raise_error(self, num_non_default_parameters: int):
-        updater_name = self.updater.__code__.co_qualname
+        updater_name = self.updater.__qualname__
         signature = str(inspect.signature(self.updater))
         full_name = updater_name + signature
 
