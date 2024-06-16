@@ -1,5 +1,6 @@
 use numpy::ndarray::{s, Array2, ArrayView1, ArrayView2, Axis};
 use numpy::PyReadonlyArray2;
+use pyo3::intern;
 use pyo3::prelude::*;
 use std::iter;
 
@@ -19,7 +20,9 @@ fn consider_points_equal_2d<T: num_traits::Float>(p1: ArrayView1<T>, p2: ArrayVi
 //     p1.iter().zip(p2.iter()).all(|(a, b)| a == b)
 // }
 
-fn gen_subpaths_from_points_2d<T: num_traits::Float + std::fmt::Debug>(points: ArrayView2<T>) -> Vec<Array2<T>> {
+fn gen_subpaths_from_points_2d<T: num_traits::Float + std::fmt::Debug>(
+    points: ArrayView2<T>,
+) -> Vec<Array2<T>> {
     let nppcc = 4;
     let filtered = (nppcc..points.len_of(Axis(0))).step_by(nppcc).filter(|&n| {
         !consider_points_equal_2d(
@@ -54,9 +57,7 @@ where
     let points = points.slice(s![..points.len_of(Axis(0)) - remainder, ..]);
     (0..points.len_of(Axis(0)))
         .step_by(nppcc)
-        .map(|i| {
-            points.slice(s![i..i + nppcc, ..]).to_owned()
-        })
+        .map(|i| points.slice(s![i..i + nppcc, ..]).to_owned())
         .collect()
 }
 
@@ -79,30 +80,25 @@ impl CairoCamera {
     ) -> PyResult<()> {
         let points = points.as_array();
         // We assume context is correct because serializing it into the Rust binding cairo::Context is too much work
-        ctx.call_method0(py, "new_path")?;
+        ctx.call_method0(py, intern!(py, "new_path"))?;
         let subpaths = gen_subpaths_from_points_2d(points);
         for subpath in subpaths {
             let quads = gen_cubic_bezier_tuples_from_points(subpath.view());
-            ctx.call_method0(py, "new_sub_path")?;
+            ctx.call_method0(py, intern!(py, "new_sub_path"))?;
             let start = subpath.index_axis(Axis(0), 0);
-            ctx.call_method1(
-                py,
-                "move_to",
-                (start[0], start[1]),
-            )?;
+            ctx.call_method1(py, intern!(py, "move_to"), (start[0], start[1]))?;
             for bezier_tuples in quads {
                 let _p0 = bezier_tuples.index_axis(Axis(0), 0);
                 let p1 = bezier_tuples.index_axis(Axis(0), 1);
                 let p2 = bezier_tuples.index_axis(Axis(0), 2);
                 let p3 = bezier_tuples.index_axis(Axis(0), 3);
-                ctx.call_method1(
-                    py,
-                    "curve_to",
-                    (p1[0], p1[1], p2[0], p2[1], p3[0], p3[1]),
-                )?;
+                ctx.call_method1(py, "curve_to", (p1[0], p1[1], p2[0], p2[1], p3[0], p3[1]))?;
 
-                if consider_points_equal_2d(subpath.index_axis(Axis(0), 0), subpath.index_axis(Axis(0), subpath.len_of(Axis(0)) - 1)) {
-                    ctx.call_method0(py, "close_path")?;
+                if consider_points_equal_2d(
+                    subpath.index_axis(Axis(0), 0),
+                    subpath.index_axis(Axis(0), subpath.len_of(Axis(0)) - 1),
+                ) {
+                    ctx.call_method0(py, intern!(py, "close_path"))?;
                 }
             }
         }
