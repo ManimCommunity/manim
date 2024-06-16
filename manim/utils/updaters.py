@@ -2,12 +2,13 @@ from __future__ import annotations
 
 import inspect
 from collections.abc import Callable
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, TypeVar, Union
 
 if TYPE_CHECKING:
     from typing_extensions import TypeAlias
 
     from manim.mobject.mobject import Mobject
+    from manim.mobject.opengl.opengl_mobject import OpenGLMobject
     from manim.opengl.shader import Object3D
 
 
@@ -24,8 +25,10 @@ __all__ = [
 ]
 
 
-MobjectTimeBasedUpdater: TypeAlias = Callable[["Mobject", float], "Mobject"]
-MobjectNonTimeBasedUpdater: TypeAlias = Callable[["Mobject"], "Mobject"]
+M = TypeVar("M", bound=Union["Mobject", "OpenGLMobject"])
+
+MobjectTimeBasedUpdater: TypeAlias = Callable[[M, float], M]
+MobjectNonTimeBasedUpdater: TypeAlias = Callable[[M], M]
 MobjectUpdater: TypeAlias = Union[MobjectNonTimeBasedUpdater, MobjectTimeBasedUpdater]
 
 MeshTimeBasedUpdater: TypeAlias = Callable[["Object3D", float], "Object3D"]
@@ -36,6 +39,33 @@ SceneUpdater: TypeAlias = Callable[[float], None]
 
 
 class AbstractUpdaterWrapper:
+    """Base class for :class:`MobjectUpdaterWrapper` and
+    :class:`MeshUpdaterWrapper`. See :class:`MobjectUpdaterWrapper` for more
+    information.
+
+    Parameters
+    ----------
+    updater
+        An updater function, whose first parameter is either a :class:`Mobject`
+        or an :class:`Object3D` (parent of :class:`Mesh`) and
+        might optionally have a second parameter which should be a ``float``
+        representing a time change ``dt``. This function should return the same
+        object in the 1st parameter after applying a change on it.
+
+    Attributes
+    ----------
+    updater
+        The same updater function passed as a parameter.
+    is_time_based
+        Whether :attr:`updater` is a time-based updater or not.
+
+    Raises
+    ------
+    ValueError
+        If an updater is passed with 0 or more than 2 parameters with no
+        default values.
+    """
+
     __slots__ = ["updater", "is_time_based"]
 
     def __init__(self, updater: MobjectUpdater | MeshUpdater):
@@ -130,12 +160,20 @@ class MobjectUpdaterWrapper(AbstractUpdaterWrapper):
         Do **NOT** name the 1st parameter ``cls`` if the function is not a
         class method.
 
-    Attributes
+    Parameters
     ----------
     updater
         An updater function, whose first parameter is a :class:`Mobject` and
         might optionally have a second parameter which should be a ``float``
-        representing a time change ``dt``.
+        representing a time change ``dt``. This function should return the same
+        :class:`Mobject` after applying a change on it.
+
+    Attributes
+    ----------
+    updater
+        The same updater function passed as a parameter.
+    is_time_based
+        Whether :attr:`updater` is a time-based updater or not.
 
     Raises
     ------
@@ -149,5 +187,32 @@ class MobjectUpdaterWrapper(AbstractUpdaterWrapper):
 
 
 class MeshUpdaterWrapper(AbstractUpdaterWrapper):
+    """Similar to :class:`MobjectUpdaterWrapper`, but for :class:`Object3D`,
+    parent of :class:`Mesh`. See the docs for :class:`MobjectUpdaterWrapper`
+    for more information.
+
+    Parameters
+    ----------
+    updater
+        An updater function, whose first parameter is an :class:`Object3D`
+        (parent of :class:`Mesh`) and might optionally have a second parameter
+        which should be a ``float`` representing a time change ``dt``. This
+        function should return the same :class:`Object3D` after applying a
+        change on it.
+
+    Attributes
+    ----------
+    updater
+        The same updater function passed as a parameter.
+    is_time_based
+        Whether :attr:`updater` is a time-based updater or not.
+
+    Raises
+    ------
+    ValueError
+        If an updater is passed with 0 or more than 2 parameters with no
+        default values.
+    """
+
     def __init__(self, updater: MeshUpdater):
         super().__init__(updater)
