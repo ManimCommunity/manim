@@ -92,7 +92,7 @@ impl CairoCamera {
                 let p1 = bezier_tuples.index_axis(Axis(0), 1);
                 let p2 = bezier_tuples.index_axis(Axis(0), 2);
                 let p3 = bezier_tuples.index_axis(Axis(0), 3);
-                ctx.call_method1(py, "curve_to", (p1[0], p1[1], p2[0], p2[1], p3[0], p3[1]))?;
+                ctx.call_method1(py, intern!(py, "curve_to"), (p1[0], p1[1], p2[0], p2[1], p3[0], p3[1]))?;
 
                 if consider_points_equal_2d(
                     subpath.index_axis(Axis(0), 0),
