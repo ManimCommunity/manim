@@ -41,6 +41,7 @@ from manim.utils.updaters import MobjectUpdaterWrapper
 if TYPE_CHECKING:
     from typing_extensions import Self
 
+    from manim.animation.animation import Animation
     from manim.typing import (
         FunctionOverride,
         Image,
@@ -53,8 +54,6 @@ if TYPE_CHECKING:
         Vector3D,
     )
     from manim.utils.updaters import MobjectTimeBasedUpdater, MobjectUpdater
-
-    from ..animation.animation import Animation
 
 
 class Mobject:
@@ -921,7 +920,11 @@ class Mobject:
         :meth:`has_time_based_updater`
 
         """
-        return [wrapper.updater for wrapper in self.updater_wrappers if t.is_time_based]
+        return [
+            wrapper.updater
+            for wrapper in self.updater_wrappers
+            if wrapper.is_time_based
+        ]
 
     def has_time_based_updater(self) -> bool:
         """Test if ``self`` has a time based updater.
