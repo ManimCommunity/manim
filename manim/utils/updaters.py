@@ -32,16 +32,18 @@ __all__ = [
 Mobj = TypeVar("Mobj", bound=Union["Mobject", "OpenGLMobject"])
 
 MobjectBasicUpdater: TypeAlias = Callable[[Mobj], Mobj]
-"""A function which updates a :class:`~.Mobject` on every frame."""
+"""A function which updates a :class:`~.Mobject` or :class:`~.OpenGLMobject` on
+every frame.
+"""
 
 MobjectDtUpdater: TypeAlias = Callable[[Mobj, float], Mobj]
-"""A function which updates a :class:`~.Mobject` on every frame, also depending
-also depending on the frame's duration ``dt``.
+"""A function which updates a :class:`~.Mobject` or :class:`~.OpenGLMobject` on
+every frame, also depending on the frame's duration ``dt``.
 """
 
 MobjectUpdater: TypeAlias = Union[MobjectBasicUpdater, MobjectDtUpdater]
-"""A function which updates a :class:`~.Mobject` on every frame, possibly
-depending on the frame's duration ``dt``.
+"""A function which updates a :class:`~.Mobject` or :class:`~.OpenGLMobject` on
+every frame, possibly depending on the frame's duration ``dt``.
 """
 
 MeshBasicUpdater: TypeAlias = Callable[["Object3D"], "Object3D"]
