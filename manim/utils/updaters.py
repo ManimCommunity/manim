@@ -1,6 +1,8 @@
 """Updater types and classes. Updaters are functions which update an object
-(a :class:`Mobject`, :class:`OpenGLMobject`, :class:`Object3D` or
-:class:`Scene`) on every frame, and might"""
+(a :class:`~.Mobject`, :class:`~.OpenGLMobject`, :class:`~.Object3D` or
+:class:`~.Scene`) on every frame, and might accept an additional parameter
+``dt`` which represents the frame's duration.
+"""
 
 from __future__ import annotations
 
