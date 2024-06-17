@@ -230,8 +230,8 @@ class MeshUpdaterWrapper(AbstractUpdaterWrapper):
     Parameters
     ----------
     updater
-        An updater function, whose first parameter is an :class:`Object3D`
-        (parent of :class:`Mesh`) and might optionally have a second parameter
+        An updater function, whose first parameter is an :class:`~.Object3D`
+        (parent of :class:`~.Mesh`) and might optionally have a second parameter
         which should be a ``float`` representing a time change ``dt``. This
         function should return the same :class:`~.Object3D` after applying a
         change on it.
