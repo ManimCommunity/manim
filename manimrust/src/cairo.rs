@@ -8,12 +8,8 @@ use std::iter;
 fn consider_points_equal_2d<T: num_traits::Float>(p1: ArrayView1<T>, p2: ArrayView1<T>) -> bool {
     let rtol = T::from(1e-5).expect("rtol is a float");
     let atol = T::from(1e-6).expect("atol is a float"); // TODO make this based off vmobject
-    if (p1[0] - p2[0]).abs() > atol + rtol * p1[0].abs() {
-        return false;
-    } else if (p1[1] - p2[1]).abs() > atol + rtol * p1[1].abs() {
-        return false;
-    }
-    true
+    ((p1[0] - p2[0]).abs() <= atol + rtol * p1[0].abs())
+        & ((p1[1] - p2[1]).abs() <= atol + rtol * p1[1].abs())
 }
 
 // fn consider_points_equal<T: num_traits::Float>(p1: ArrayView1<T>, p2: ArrayView1<T>) -> bool {
@@ -94,7 +90,7 @@ impl CairoCamera {
                 let p3 = bezier_tuples.index_axis(Axis(0), 3);
                 ctx.call_method1(py, intern!(py, "curve_to"), (p1[0], p1[1], p2[0], p2[1], p3[0], p3[1]))?;
 
-                if consider_points_equal_2d(
+                if !consider_points_equal_2d(
                     subpath.index_axis(Axis(0), 0),
                     subpath.index_axis(Axis(0), subpath.len_of(Axis(0)) - 1),
                 ) {
