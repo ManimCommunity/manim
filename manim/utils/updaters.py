@@ -1,3 +1,7 @@
+"""Updater types and classes. Updaters are functions which update an object
+(a :class:`Mobject`, :class:`OpenGLMobject`, :class:`Object3D` or
+:class:`Scene`) on every frame, and might"""
+
 from __future__ import annotations
 
 import inspect
@@ -9,15 +13,15 @@ if TYPE_CHECKING:
 
     from manim.mobject.mobject import Mobject
     from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-    from manim.opengl.shader import Object3D
+    from manim.renderer.shader import Object3D
 
 
 __all__ = [
-    "MobjectTimeBasedUpdater",
-    "MobjectNonTimeBasedUpdater",
+    "MobjectBasicUpdater",
+    "MobjectDtUpdater",
     "MobjectUpdater",
-    "MeshTimeBasedUpdater",
-    "MeshNonTimeBasedUpdater",
+    "MeshBasicUpdater",
+    "MeshDtUpdater",
     "MeshUpdater",
     "SceneUpdater",
     "MobjectUpdaterWrapper",
@@ -25,17 +29,38 @@ __all__ = [
 ]
 
 
-M = TypeVar("M", bound=Union["Mobject", "OpenGLMobject"])
+Mobj = TypeVar("Mobj", bound=Union["Mobject", "OpenGLMobject"])
 
-MobjectTimeBasedUpdater: TypeAlias = Callable[[M, float], M]
-MobjectNonTimeBasedUpdater: TypeAlias = Callable[[M], M]
-MobjectUpdater: TypeAlias = Union[MobjectNonTimeBasedUpdater, MobjectTimeBasedUpdater]
+MobjectBasicUpdater: TypeAlias = Callable[[Mobj], Mobj]
+"""A function which updates a :class:`~.Mobject` on every frame."""
 
-MeshTimeBasedUpdater: TypeAlias = Callable[["Object3D", float], "Object3D"]
-MeshNonTimeBasedUpdater: TypeAlias = Callable[["Object3D"], "Object3D"]
-MeshUpdater: TypeAlias = Union[MeshNonTimeBasedUpdater, MeshTimeBasedUpdater]
+MobjectDtUpdater: TypeAlias = Callable[[Mobj, float], Mobj]
+"""A function which updates a :class:`~.Mobject` on every frame, also depending
+also depending on the frame's duration ``dt``.
+"""
+
+MobjectUpdater: TypeAlias = Union[MobjectBasicUpdater, MobjectDtUpdater]
+"""A function which updates a :class:`~.Mobject` on every frame, possibly
+depending on the frame's duration ``dt``.
+"""
+
+MeshBasicUpdater: TypeAlias = Callable[["Object3D"], "Object3D"]
+"""A function which updates an :class:`~.Object3D` on every frame."""
+
+MeshDtUpdater: TypeAlias = Callable[["Object3D", float], "Object3D"]
+"""A function which updates an :class:`~.Object3D` on every frame, also
+depending on the frame's duration ``dt``.
+"""
+
+MeshUpdater: TypeAlias = Union[MeshBasicUpdater, MeshDtUpdater]
+"""A function which updates an :class:`~.Object3D` on every frame, possibly
+depending on the frame's duration ``dt``.
+"""
 
 SceneUpdater: TypeAlias = Callable[[float], None]
+"""A function which updates a :class:`~.Scene` on every frame, depending on the
+frame's duration ``dt``.
+"""
 
 
 class AbstractUpdaterWrapper:
@@ -46,11 +71,12 @@ class AbstractUpdaterWrapper:
     Parameters
     ----------
     updater
-        An updater function, whose first parameter is either a :class:`Mobject`
-        or an :class:`Object3D` (parent of :class:`Mesh`) and
-        might optionally have a second parameter which should be a ``float``
-        representing a time change ``dt``. This function should return the same
-        object in the 1st parameter after applying a change on it.
+        An updater function, whose first parameter is either a
+        :class:`~.Mobject` or an :class:`~.Object3D` (parent of
+        :class:`~.Mesh`), and might optionally have a second parameter which
+        should be a ``float`` representing a time change ``dt``. This function
+        should return the same object in the 1st parameter after applying a
+        change on it.
 
     Attributes
     ----------
@@ -125,48 +151,57 @@ class MobjectUpdaterWrapper(AbstractUpdaterWrapper):
     """Wraps a :class:`MobjectUpdater` function, inspects its signature and
     calculates whether it's time-based or not.
 
-    If it has a single parameter (with no default value), it's considered
-    non-time-based: it doesn't depend on time.
+    If it has a single parameter (with no default value), it's considered a
+    :class:`MobjectBasicUpdater` which doesn't depend on time.
 
-    If it has two parameters (with no default values), it's considered
-    time-based: it depends on time, and the affected Mobject has a change
-    on every frame which depends on the frame's duration dt.
+    If it has two parameters (with no default values), it's considered a
+    :class:`MobjectDtUpdater` which depends on time, and the affected
+    :class:`~.Mobject` has a change on every frame which depends on the frame's
+    duration ``dt``.
 
     .. note::
         It's not mandatory that the parameters are named ``mob`` and ``dt``.
 
     **Only parameters with no default values are considered in when determining
     whether the updater is time-based or not.** For example, an updater
-    ``lambda mob, rate=5: ...`` is considered non-time-based since the 2nd
-    parameter ``rate`` has a default value of 5. **This allows for passing
-    functions with more than 2 parameters, as long as the extra parameters have
-    default values.**
+    ``lambda mob, rate=5: ...`` is considered a :class:`MobjectBasicUpdater`
+    since the 2nd parameter ``rate`` has a default value of 5.
+
+    .. note::
+        The above rule allows for passing functions with more than 2
+        parameters, as long as the extra parameters have default values.
 
     A ``ValueError`` is raised if a function is passed which has 0 or more than
     2 parameters with no default values.
 
-    When passing an instance method, the first parameter `self` is excluded
-    from the count. When passing a class method, the first parameter `cls` is
+    When passing an instance method, the first parameter ``self`` is excluded
+    from the count. When passing a class method, the first parameter ``cls`` is
     also excluded.
 
     .. note ::
         It is fine to call the 1st parameter ``self`` if the updater is not an
         instance method: it will still be counted as a parameter. The rule
-        above only applies for instance methods. For example,
-        ``lambda self: self.move_to(square)`` is a valid non-time-based
-        updater, and ``lambda self, dt: self.rotate(dt)`` is time-based.
+        above only applies for instance methods.
+
+        For example, ``lambda self: self.move_to(square)`` is a valid
+        :class:`MobjectBasicUpdater`, and ``lambda self, dt: self.rotate(dt)``
+        is a :class:`MobjectDtUpdater`.
+
+        However, it is not recommended to name the 1st parameter ``self`` if
+        the updater is not a method, because it is not Pythonic. A better
+        option is ``mob``.
 
     .. warning::
         Do **NOT** name the 1st parameter ``cls`` if the function is not a
-        class method.
+        class method. Otherwise, the updater will not be parsed correctly.
 
     Parameters
     ----------
     updater
-        An updater function, whose first parameter is a :class:`Mobject` and
+        An updater function, whose first parameter is a :class:`~.Mobject` and
         might optionally have a second parameter which should be a ``float``
         representing a time change ``dt``. This function should return the same
-        :class:`Mobject` after applying a change on it.
+        :class:`~.Mobject` after applying a change on it.
 
     Attributes
     ----------
@@ -187,8 +222,9 @@ class MobjectUpdaterWrapper(AbstractUpdaterWrapper):
 
 
 class MeshUpdaterWrapper(AbstractUpdaterWrapper):
-    """Similar to :class:`MobjectUpdaterWrapper`, but for :class:`Object3D`,
-    parent of :class:`Mesh`. See the docs for :class:`MobjectUpdaterWrapper`
+    """Similar to :class:`MobjectUpdaterWrapper`, but wraps instead a
+    :class:`MeshUpdater` which modifies an :class:`~.Object3D`, parent of
+    :class:`~.Mesh`. See the docs for :class:`MobjectUpdaterWrapper`
     for more information.
 
     Parameters
@@ -197,7 +233,7 @@ class MeshUpdaterWrapper(AbstractUpdaterWrapper):
         An updater function, whose first parameter is an :class:`Object3D`
         (parent of :class:`Mesh`) and might optionally have a second parameter
         which should be a ``float`` representing a time change ``dt``. This
-        function should return the same :class:`Object3D` after applying a
+        function should return the same :class:`~.Object3D` after applying a
         change on it.
 
     Attributes

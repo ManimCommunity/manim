@@ -53,7 +53,7 @@ if TYPE_CHECKING:
         Point3D_Array,
         Vector3D,
     )
-    from manim.utils.updaters import MobjectTimeBasedUpdater, MobjectUpdater
+    from manim.utils.updaters import MobjectDtUpdater, MobjectUpdater
 
 
 class Mobject:
@@ -904,7 +904,7 @@ class Mobject:
                 submob.update(dt, recursive)
         return self
 
-    def get_time_based_updaters(self) -> Sequence[MobjectTimeBasedUpdater]:
+    def get_time_based_updaters(self) -> Sequence[MobjectDtUpdater]:
         """Return all updaters using the ``dt`` parameter.
 
         The updaters use this parameter as the input for difference in time.

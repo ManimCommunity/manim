@@ -16,7 +16,7 @@ from manim.utils.updaters import MeshUpdaterWrapper
 if TYPE_CHECKING:
     from typing_extensions import Self
 
-    from manim.utils.updaters import MeshTimeBasedUpdater, MeshUpdater
+    from manim.utils.updaters import MeshDtUpdater, MeshUpdater
 
 SHADER_FOLDER = Path(__file__).parent / "shaders"
 shader_program_cache: dict = {}
@@ -202,7 +202,7 @@ class Object3D:
                 wrapper.updater(self)
         return self
 
-    def get_time_based_updaters(self) -> Sequence[MeshTimeBasedUpdater]:
+    def get_time_based_updaters(self) -> Sequence[MeshDtUpdater]:
         return [
             wrapper.updater
             for wrapper in self.updater_wrappers

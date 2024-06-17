@@ -29,11 +29,11 @@ def test_UpdaterWrapper() -> None:
     assert wrapper.is_time_based
 
     # An updater cannot have no parameters
-    with pytest.raises(ValueError) as no_parameters_info:
-        wrapper = MobjectUpdaterWrapper(lambda: "Hello world")
+    with pytest.raises(ValueError):
+        wrapper = MobjectUpdaterWrapper(lambda: square.move_to(RIGHT))
 
     # An updater cannot have more than 2 parameters without a default value
-    with pytest.raises(ValueError) as three_parameters_info:
+    with pytest.raises(ValueError):
         wrapper = MobjectUpdaterWrapper(lambda mob, rate, third: mob.rotate(rate))
 
     # Only parameters with no default value are considered when determining
@@ -56,8 +56,18 @@ def test_UpdaterWrapper() -> None:
     assert wrapper.is_time_based
 
     # In general, if the function is not an instance method, the 1st parameter
-    # is always included, even if it's called "self".
+    # is almost always included, even if it's called "self".
     wrapper = MobjectUpdaterWrapper(lambda self: self.move_to(square))
     assert not wrapper.is_time_based
     wrapper = MobjectUpdaterWrapper(lambda self, dt: self.rotate(dt))
     assert wrapper.is_time_based
+
+    # The only exception is if it's called "cls". Don't call it "cls" if it's
+    # not a class method.
+    wrapper = MobjectUpdaterWrapper(lambda cls, dt: cls.rotate(dt))
+    assert (
+        not wrapper.is_time_based
+    )  # Only 1 parameter, dt, is considered, and it's used as a Mobject, not float
+    with pytest.raises(ValueError):
+        # Since cls is excluded, there are no other parameters
+        wrapper = MobjectUpdaterWrapper(lambda cls: cls.next_to(square))

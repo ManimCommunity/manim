@@ -60,7 +60,7 @@ if TYPE_CHECKING:
         Point3D_Array,
         Vector3D,
     )
-    from manim.utils.updaters import MobjectTimeBasedUpdater, MobjectUpdater
+    from manim.utils.updaters import MobjectDtUpdater, MobjectUpdater
 
     T = TypeVar("T")
 
@@ -1467,7 +1467,7 @@ class OpenGLMobject:
                 submob.update(dt, recurse)
         return self
 
-    def get_time_based_updaters(self) -> Sequence[MobjectTimeBasedUpdater]:
+    def get_time_based_updaters(self) -> Sequence[MobjectDtUpdater]:
         return [
             wrapper.updater
             for wrapper in self.updater_wrappers
