@@ -21,7 +21,7 @@ classifiers= [
     "Programming Language :: Python :: 3.12",
     "Natural Language :: English",
     ]
-exclude = ["scripts/","logo/","readme-assets/"]
+exclude = ["scripts/","logo/","readme-assets/","manim-forge/"]
 packages = [
     { include = "manim" },
 ]

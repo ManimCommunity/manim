@@ -2050,18 +2050,13 @@ files = [
 [[package]]
 name = "manimforge"
 version = "0.1.0"
-description = "Animation engine for explanatory math videos."
+description = ""
 optional = false
-python-versions = ">=3.9,<3.13"
-files = []
-develop = true
-
-[package.dependencies]
-maturin = ">=1.6,<2.0"
-
-[package.source]
-type = "directory"
-url = "manim-forge"
+python-versions = "<3.13,>=3.9"
+files = [
+    {file = "manimforge-0.1.0-cp311-cp311-manylinux_2_34_x86_64.whl", hash = "sha256:2e3270ac767511510e93b732588a6119476edb8bd1b37683f70df56fd45e1ae9"},
+    {file = "manimforge-0.1.0.tar.gz", hash = "sha256:cd65da2dad55770170220812d3e7831461b014d49913c8b6defbf413b74983cf"},
+]
 
 [[package]]
 name = "manimpango"
@@ -4723,4 +4718,4 @@ jupyterlab = ["jupyterlab", "notebook"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.13"
-content-hash = "ea4075a31cc7b8d952193bb34e0d34d972f4055649b8270da4a6772986f242eb"
+content-hash = "f655c539f991ee51b03e89bb0e5b1c064d5e451f55472902b653338b236ccfd1"
