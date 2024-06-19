@@ -2,7 +2,7 @@
 
 set -e
 cd "$(dirname "$0")"
-cd manimrust
+cd manim-forge
 maturin develop --release
 cd ..
 poetry run python test-render.py

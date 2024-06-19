@@ -91,7 +91,7 @@ For first-time contributors
 
     .. code-block:: shell
 
-        cd manimrust
+        cd manim-forge
         maturin develop
 
 #. Install Pre-Commit:

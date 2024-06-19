@@ -2048,6 +2048,22 @@ files = [
 ]
 
 [[package]]
+name = "manimforge"
+version = "0.1.0"
+description = "Animation engine for explanatory math videos."
+optional = false
+python-versions = ">=3.9,<3.13"
+files = []
+develop = true
+
+[package.dependencies]
+maturin = ">=1.6,<2.0"
+
+[package.source]
+type = "directory"
+url = "manim-forge"
+
+[[package]]
 name = "manimpango"
 version = "0.5.0"
 description = "Bindings for Pango for using with Manim."
@@ -2071,19 +2087,6 @@ files = [
     {file = "ManimPango-0.5.0-cp39-cp39-win_amd64.whl", hash = "sha256:b81d815b1a5e78376ae9b6aa2d7606d38cc19e31eb89480471462bbdf0fcd3c7"},
     {file = "ManimPango-0.5.0.tar.gz", hash = "sha256:299913bbccb0f15954b64401cf9df24607e1a01edda589ea77de1ed4cc2bc284"},
 ]
-
-[[package]]
-name = "manimrust"
-version = "0.1.0"
-description = ""
-optional = false
-python-versions = ">=3.8"
-files = []
-develop = true
-
-[package.source]
-type = "directory"
-url = "manimrust"
 
 [[package]]
 name = "mapbox-earcut"
@@ -2491,7 +2494,6 @@ description = "A cross platform helper library for ModernGL making window creati
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "moderngl-window-2.4.6.tar.gz", hash = "sha256:db9b4c27f35faa6f243b6d8cde6ada6da6e79541d62b8e536c0b20da29720c32"},
     {file = "moderngl_window-2.4.6-py3-none-any.whl", hash = "sha256:cfa81c2b222536270a077e2901f5f7a18e317f7332026ae443662555ebf7a66d"},
 ]
 
@@ -4721,4 +4723,4 @@ jupyterlab = ["jupyterlab", "notebook"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.13"
-content-hash = "b63960ab17f16945b06b5c540d46cd971f23ada463c7235296d00dad80a6bf88"
+content-hash = "ea4075a31cc7b8d952193bb34e0d34d972f4055649b8270da4a6772986f242eb"

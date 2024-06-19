@@ -1,0 +1,3 @@
+[submodule "manim-forge"]
+	path = manim-forge
+	url = https://github.com/JasonGrace2282/manim-forge.git
