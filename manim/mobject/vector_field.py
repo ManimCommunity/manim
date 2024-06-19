@@ -47,7 +47,7 @@ if TYPE_CHECKING:
     import numpy.typing as npt
     from typing_extensions import Self
 
-    from manim.typing import ManimFloat, MappingFunction, Point3D, Vector3D
+    from manim.typing import MappingFunction, Point3D, Vector3D
 
 DEFAULT_SCALAR_FIELD_COLORS: list = [BLUE_E, GREEN, YELLOW, RED]
 
