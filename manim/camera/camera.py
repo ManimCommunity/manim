@@ -14,10 +14,9 @@ from typing import Any, Callable
 
 import cairo
 import numpy as np
+from manimforge.cairo import CairoCamera
 from PIL import Image
 from scipy.spatial.distance import pdist
-
-from manimforge.cairo import CairoCamera
 
 from .. import config, logger
 from ..constants import *
