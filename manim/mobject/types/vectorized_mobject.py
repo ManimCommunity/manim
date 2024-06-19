@@ -161,6 +161,9 @@ class VMobject(Mobject):
         self.shade_in_3d: bool = shade_in_3d
         self.tolerance_for_point_equality: float = tolerance_for_point_equality
         self.n_points_per_cubic_curve: int = n_points_per_cubic_curve
+        self._bezier_t_values: npt.NDArray[float] = np.linspace(
+            0, 1, n_points_per_cubic_curve
+        )
         self.cap_style: CapStyleType = cap_style
         super().__init__(**kwargs)
         self.submobjects: list[VMobject]
@@ -755,7 +758,7 @@ class VMobject(Mobject):
         assert len(anchors1) == len(handles1) == len(handles2) == len(anchors2)
         nppcc = self.n_points_per_cubic_curve  # 4
         total_len = nppcc * len(anchors1)
-        self.points = np.zeros((total_len, self.dim))
+        self.points = np.empty((total_len, self.dim))
         # the following will, from the four sets, dispatch them in points such that
         # self.points = [
         #     anchors1[0], handles1[0], handles2[0], anchors1[0], anchors1[1],
@@ -767,23 +770,61 @@ class VMobject(Mobject):
         return self
 
     def clear_points(self) -> None:
+        # TODO: shouldn't this return self instead of None?
         self.points = np.zeros((0, self.dim))
 
     def append_points(self, new_points: Point3D_Array) -> Self:
+        """Append the given ``new_points`` to the end of
+        :attr:`VMobject.points`.
+
+        Parameters
+        ----------
+        new_points
+            An array of 3D points to append.
+
+        Returns
+        -------
+        :class:`VMobject`
+            The VMobject itself, after appending ``new_points``.
+        """
         # TODO, check that number new points is a multiple of 4?
         # or else that if len(self.points) % 4 == 1, then
         # len(new_points) % 4 == 3?
-        self.points = np.append(self.points, new_points, axis=0)
+        n = len(self.points)
+        points = np.empty((n + len(new_points), self.dim))
+        points[:n] = self.points
+        points[n:] = new_points
+        self.points = points
         return self
 
     def start_new_path(self, point: Point3D) -> Self:
-        if len(self.points) % 4 != 0:
+        """Append a ``point`` to the :attr:`VMobject.points`, which will be the
+        beginning of a new Bézier curve in the path given by the points. If
+        there's an unfinished curve at the end of :attr:`VMobject.points`,
+        complete it by appending the last Bézier curve's start anchor as many
+        times as needed.
+
+        Parameters
+        ----------
+        point
+            A 3D point to append to :attr:`VMobject.points`.
+
+        Returns
+        -------
+        :class:`VMobject`
+            The VMobject itself, after appending ``point`` and starting a new
+            curve.
+        """
+        n_points = len(self.points)
+        nppc = self.n_points_per_curve
+        if n_points % nppc != 0:
             # close the open path by appending the last
             # start anchor sufficiently often
             last_anchor = self.get_start_anchors()[-1]
-            for _ in range(4 - (len(self.points) % 4)):
-                self.append_points([last_anchor])
-        self.append_points([point])
+            closure = [last_anchor] * (nppc - (n_points % nppc))
+            self.append_points(closure + [point])
+        else:
+            self.append_points([point])
         return self
 
     def add_cubic_bezier_curve(
@@ -865,18 +906,17 @@ class VMobject(Mobject):
         ----------
 
         point
-            end of the straight line.
+            The end of the straight line.
 
         Returns
         -------
         :class:`VMobject`
             ``self``
         """
-        nppcc = self.n_points_per_cubic_curve
         self.add_cubic_bezier_curve_to(
             *(
-                interpolate(self.get_last_point(), point, a)
-                for a in np.linspace(0, 1, nppcc)[1:]
+                interpolate(self.get_last_point(), point, t)
+                for t in self._bezier_t_values[1:]
             )
         )
         return self
@@ -941,15 +981,54 @@ class VMobject(Mobject):
             self.add_line_to(self.get_subpaths()[-1][0])
 
     def add_points_as_corners(self, points: Iterable[Point3D]) -> Iterable[Point3D]:
-        for point in points:
-            self.add_line_to(point)
+        """Append multiple straight lines at the end of
+        :attr:`VMobject.points`, which connect the given ``points`` in order
+        starting from the end of the current path. These ``points`` would be
+        therefore the corners of the new polyline appended to the path.
+
+        Parameters
+        ----------
+        points
+            An array of 3D points representing the corners of the polyline to
+            append to :attr:`VMobject.points`.
+
+        Returns
+        -------
+        :class:`VMobject`
+            The VMobject itself, after appending the straight lines to its
+            path.
+        """
+        points = np.asarray(points).reshape(-1, self.dim)
+        if self.has_new_path_started():
+            # Pop the last point from self.points and
+            # add it to start_corners
+            start_corners = np.empty((len(points), self.dim))
+            start_corners[0] = self.points[-1]
+            start_corners[1:] = points[:-1]
+            end_corners = points
+            self.points = self.points[:-1]
+        else:
+            start_corners = points[:-1]
+            end_corners = points[1:]
+
+        nppcc = self.n_points_per_cubic_curve
+        new_points = np.empty((nppcc * start_corners.shape[0], self.dim))
+        new_points[::nppcc] = start_corners
+        new_points[nppcc - 1 :: nppcc] = end_corners
+        for i, t in enumerate(self._bezier_t_values):
+            new_points[i::nppcc] = interpolate(start_corners, end_corners, t)
+
+        self.append_points(new_points)
+        # TODO: shouldn't this method return self instead of points?
         return points
 
     def set_points_as_corners(self, points: Point3D_Array) -> Self:
-        """Given an array of points, set them as corner of the vmobject.
+        """Given an array of points, set them as corners of the
+        :class:`VMobject`.
 
-        To achieve that, this algorithm sets handles aligned with the anchors such that the resultant bezier curve will be the segment
-        between the two anchors.
+        To achieve that, this algorithm sets handles aligned with the anchors
+        such that the resultant Bézier curve will be the segment between the
+        two anchors.
 
         Parameters
         ----------
@@ -959,7 +1038,7 @@ class VMobject(Mobject):
         Returns
         -------
         :class:`VMobject`
-            ``self``
+            The VMobject itself, after setting the new points as corners.
 
 
         Examples
@@ -982,12 +1061,11 @@ class VMobject(Mobject):
                     vmob.set_points_as_corners(corners).scale(2)
                     self.add(vmob)
         """
-        nppcc = self.n_points_per_cubic_curve
         points = np.array(points)
         # This will set the handles aligned with the anchors.
         # Id est, a bezier curve will be the segment from the two anchors such that the handles belongs to this segment.
         self.set_anchors_and_handles(
-            *(interpolate(points[:-1], points[1:], a) for a in np.linspace(0, 1, nppcc))
+            *(interpolate(points[:-1], points[1:], t) for t in self._bezier_t_values)
         )
         return self
 
@@ -1038,17 +1116,15 @@ class VMobject(Mobject):
 
     def add_subpath(self, points: Point3D_Array) -> Self:
         assert len(points) % 4 == 0
-        self.points: Point3D_Array = np.append(self.points, points, axis=0)
+        self.append_points(points)
         return self
 
     def append_vectorized_mobject(self, vectorized_mobject: VMobject) -> None:
-        new_points = list(vectorized_mobject.points)
-
         if self.has_new_path_started():
             # Remove last point, which is starting
             # a new path
             self.points = self.points[:-1]
-        self.append_points(new_points)
+        self.append_points(vectorized_mobject.points)
 
     def apply_function(self, function: MappingFunction) -> Self:
         factor = self.pre_function_handle_to_anchor_scale_factor
@@ -2237,7 +2313,7 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
             my_dict.remove("square")
         """
         if key not in self.submob_dict:
-            raise KeyError("The given key '%s' is not present in the VDict" % str(key))
+            raise KeyError(f"The given key '{key!s}' is not present in the VDict")
         super().remove(self.submob_dict[key])
         del self.submob_dict[key]
         return self

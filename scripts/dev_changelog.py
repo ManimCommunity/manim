@@ -301,7 +301,6 @@ def main(token, prior, tag, additional, outfile):
 
                 for PR in pr_by_labels[label]:
                     num = PR.number
-                    url = PR.html_url
                     title = PR.title
                     label = PR.labels
                     f.write(f"* :pr:`{num}`: {title}\n")
