@@ -1,6 +1,8 @@
 #!/bin/bash
 
-cd manimrust || true
-maturin develop --release || exit 1
-cd .. || true
-python test-render.py
+set -e
+cd "$(dirname "$0")"
+cd manimrust
+maturin develop --release
+cd ..
+poetry run python test-render.py

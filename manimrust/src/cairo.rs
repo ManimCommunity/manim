@@ -57,6 +57,7 @@ where
         .collect()
 }
 
+/// The base class for Manim.Camera with --renderer=cairo
 #[pyclass(subclass)]
 pub struct CairoCamera;
 
@@ -98,7 +99,6 @@ impl CairoCamera {
                 subpath.index_axis(Axis(0), 0),
                 subpath.index_axis(Axis(0), subpath.len_of(Axis(0)) - 1),
             ) {
-                println!("Closing path at {:?}", subpath.index_axis(Axis(0), 0));
                 ctx.call_method0(py, intern!(py, "close_path"))?;
             }
 
