@@ -42,6 +42,9 @@ jobs:
           python-version: ${{ matrix.python }}
           cache: "poetry"
 
+      - name: Setup Rust (stable)
+        uses: dtolnay/rust-toolchain@stable
+
       - name: Setup macOS PATH
         if: runner.os == 'macOS'
         run: |
@@ -162,6 +165,12 @@ jobs:
         run: |
           poetry config installer.modern-installation false
           poetry install
+
+      - name: Compile latest Manim-Forge
+        run: |
+          cd manim-forge
+          maturin develop --release
+          cd ..
 
       - name: Run tests
         run: |

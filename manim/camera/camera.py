@@ -690,7 +690,9 @@ class Camera(CairoCamera):
         if len(points) == 0:
             return
 
-        super().set_cairo_context_path(ctx, vmobject, points)
+        super().set_cairo_context_path(
+            ctx, vmobject, np.asarray(points, dtype=np.float64)
+        )
 
         # ctx.new_path()
         # subpaths = vmobject.gen_subpaths_from_points_2d(points)
