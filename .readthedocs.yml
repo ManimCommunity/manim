@@ -16,6 +16,7 @@ build:
 
     post_install:
       - cd manim-forge
+      - pip install maturin
       - maturin develop --release
       - cd ..
 
