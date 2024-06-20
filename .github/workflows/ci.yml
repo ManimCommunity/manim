@@ -169,8 +169,8 @@ jobs:
       - name: Compile latest Manim-Forge
         run: |
           cd manim-forge
-          pip install maturin
-          maturin develop --release
+          poetry run pip install maturin
+          poetry run maturin develop --release
           cd ..
 
       - name: Run tests
