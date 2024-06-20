@@ -988,7 +988,7 @@ def average_color(*colors: ParsableManimColor) -> ManimColor:
 
 
 def random_bright_color(seed=None) -> ManimColor:
-    """Returns you a random bright color 
+    """Returns you a random bright color
 
     .. warning::
         This operation is very expensive please keep in mind the performance loss.
@@ -1006,7 +1006,7 @@ def random_bright_color(seed=None) -> ManimColor:
 
 
 def random_color(seed=None) -> ManimColor:
-    """Return you a random ManimColor 
+    """Return you a random ManimColor
 
     .. warning::
         This operation is very expensive please keep in mind the performance loss.
