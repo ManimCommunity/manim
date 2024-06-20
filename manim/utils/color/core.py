@@ -1017,6 +1017,7 @@ def random_color(seed=None) -> ManimColor:
         _description_
     """
     import manim.utils.color.manim_colors as manim_colors
+
     if seed is not None:
         random.seed(seed)
 
