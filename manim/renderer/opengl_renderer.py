@@ -11,7 +11,7 @@ from manim.camera.camera import Camera
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.renderer.buffers.buffer import STD140BufferFormat
 from manim.renderer.opengl_shader_program import load_shader_program_by_folder
-from manim.renderer.renderer import ImageType, Renderer, RendererData
+from manim.renderer.renderer import ImageType, Renderer, RendererData, RendererProtocol
 from manim.utils.iterables import listify
 from manim.utils.space_ops import cross2d, earclip_triangulation, z_to_vector
 
@@ -203,14 +203,14 @@ class ProgramManager:
         uniform_buffer_object.bind_to_uniform_block(idx)
 
 
-class OpenGLRenderer(Renderer):
+class OpenGLRenderer(Renderer, RendererProtocol):
     pixel_array_dtype = np.uint8
 
     def __init__(
         self,
         pixel_width: int = config.pixel_width,
         pixel_height: int = config.pixel_height,
-        samples=4,
+        samples: int = 4,
         background_color: c.ManimColor = color.BLACK,
         background_opacity: float = 1.0,
         background_image: str | None = None,
@@ -406,6 +406,12 @@ class OpenGLRenderer(Renderer):
             ibo.release()
         vao.release()
         # return data, data_size
+
+    def render_image(self, mob):
+        raise NotImplementedError  # TODO
+
+    def render_previous(self, camera: Camera) -> None:
+        raise NotImplementedError
 
     def render_vmobject(self, mob: OpenGLVMobject) -> None:  # type: ignore
         self.stencil_buffer_fbo.use()

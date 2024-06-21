@@ -85,9 +85,8 @@ def load_shader_program_by_folder(ctx: gl.Context, folder_name: str):
         raise RuntimeError("Loading Shader Program Error")
     if geometry_code is None:
         return ctx.program(vertex_shader=vertex_code, fragment_shader=fragment_code)
-    elif geometry_code is not None:
-        return ctx.program(
-            vertex_shader=vertex_code,
-            geometry_shader=geometry_code,
-            fragment_shader=fragment_code,
-        )
+    return ctx.program(
+        vertex_shader=vertex_code,
+        geometry_shader=geometry_code,
+        fragment_shader=fragment_code,
+    )

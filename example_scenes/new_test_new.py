@@ -22,18 +22,6 @@ from manim.mobject.text.numbers import DecimalNumber
 from manim.mobject.text.text_mobject import Text
 from manim.renderer.opengl_renderer import OpenGLRenderer
 
-
-def progress_through_animations(animations):
-    dt = t - last_t
-    last_t = t
-    for animation in animations:
-        animation.update_mobjects(dt)
-        alpha = t / animation.run_time
-        animation.interpolate(alpha)
-    self.update_frame(dt)
-    self.emit_frame()
-
-
 if __name__ == "__main__":
     with tempconfig({"renderer": "opengl"}):
         win = Window(

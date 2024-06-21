@@ -1,14 +1,22 @@
-from abc import ABC, abstractclassmethod, abstractstaticmethod
-from typing import TYPE_CHECKING
+from __future__ import annotations
+
+from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING, Protocol
 
 import numpy as np
 from typing_extensions import TypeAlias
 
-from manim import config
 from manim._config import logger
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.types.image_mobject import ImageMobject
-from manim.mobject.types.vectorized_mobject import VMobject
+
+if TYPE_CHECKING:
+    from collections.abc import Callable, Iterable, Sequence
+
+    import moderngl as gl
+
+    from manim.camera.camera import Camera
 
 ImageType: TypeAlias = np.ndarray
 
@@ -20,15 +28,15 @@ class RendererData:
 class Renderer(ABC):
     def __init__(self):
         self.capabilities = [
-            (OpenGLVMobject, self.render_vmobject),
-            (ImageMobject, self.render_image),
+            (OpenGLVMobject, self.render_vmobject),  # type: ignore
+            (ImageMobject, self.render_image),  # type: ignore
         ]
 
-    def render(self, camera, renderables: list[OpenGLVMobject]) -> None:  # Image
+    def render(self, camera, renderables: Iterable[OpenGLMobject]) -> None:  # Image
         self.pre_render(camera)
         for mob in renderables:
-            for type, render_func in self.capabilities:
-                if isinstance(mob, type):
+            for type_, render_func in self.capabilities:
+                if isinstance(mob, type_):
                     render_func(mob)
                     break
             else:
@@ -37,27 +45,54 @@ class Renderer(ABC):
                 )
         self.post_render()
 
-    def pre_render(self, camera):
+    @abstractmethod
+    def pre_render(self, camera: Camera):
         raise NotImplementedError
 
+    @abstractmethod
     def post_render(self):
         raise NotImplementedError
 
-    def use_window(self):
+    @abstractmethod
+    def render_vmobject(self, mob: OpenGLVMobject):
         raise NotImplementedError
 
-    @abstractclassmethod
-    def render_vmobject(self, mob: OpenGLVMobject) -> None:
+    @abstractmethod
+    def render_image(self, mob: ImageMobject):
         raise NotImplementedError
+
+
+class RendererProtocol(Protocol):
+    capabilities: Sequence[
+        tuple[type[OpenGLMobject], Callable[[type[OpenGLMobject]], object]]
+    ]
+
+    def render(self, camera: Camera, renderables: Iterable[OpenGLMobject]) -> None:
+        ...
+
+    def render_previous(self, camera: Camera) -> None:
+        ...
+
+    def pre_render(self, camera) -> object:
+        ...
+
+    def post_render(self) -> object:
+        ...
+
+    def use_window(self):
+        ...
+
+    def render_vmobject(self, mob: OpenGLVMobject) -> object:
+        ...
 
     def render_mesh(self, mob) -> None:
-        raise NotImplementedError
+        ...
 
-    def render_image(self, mob) -> None:
-        raise NotImplementedError
+    def render_image(self, mob: ImageMobject) -> None:
+        ...
 
     def get_pixels(self) -> ImageType:
-        raise NotImplementedError
+        ...
 
 
 # NOTE: The user should expect depth between renderers not to be handled discussed at 03.09.2023 Between jsonv and MrDiver
