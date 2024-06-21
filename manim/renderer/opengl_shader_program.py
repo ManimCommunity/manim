@@ -75,9 +75,9 @@ def load_shader_program_by_folder(ctx: gl.Context, folder_name: str):
     vertex_code = get_shader_code_from_file(Path(folder_name + "/vert.glsl"))
     geometry_code = get_shader_code_from_file(Path(folder_name + "/geom.glsl"))
     fragment_code = get_shader_code_from_file(Path(folder_name + "/frag.glsl"))
-    # print(folder_name)
-    # for i,l in enumerate(geometry_code.splitlines()):
-    #     print(str(i) + ":" + l )
+    print(folder_name)
+    # for i, l in enumerate(geometry_code.splitlines()):
+    #    print(str(i) + ":" + l)
     if vertex_code is None or fragment_code is None:
         logger.error(
             f"Invalid program definition for {folder_name} vertex or fragment shader not present"

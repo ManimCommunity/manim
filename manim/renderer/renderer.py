@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Protocol
 
 import numpy as np
@@ -21,6 +22,7 @@ if TYPE_CHECKING:
 ImageType: TypeAlias = np.ndarray
 
 
+@dataclass
 class RendererData:
     pass
 

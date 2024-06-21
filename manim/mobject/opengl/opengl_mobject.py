@@ -21,7 +21,6 @@ from manim.constants import *
 from manim.event_handler import EVENT_DISPATCHER
 from manim.event_handler.event_listener import EventListener
 from manim.event_handler.event_type import EventType
-from manim.renderer.shader_wrapper import ShaderWrapper, get_colormap_code
 from manim.utils.bezier import integer_interpolate, interpolate
 from manim.utils.color import *
 from manim.utils.deprecation import deprecated
@@ -60,7 +59,6 @@ if TYPE_CHECKING:
     PointUpdateFunction: TypeAlias = Callable[[np.ndarray], np.ndarray]
     from manim.renderer.renderer import RendererData
 
-    T = TypeVar("T", bound=RendererData)
     _F = TypeVar("_F", bound=Callable[..., Any])
 
 UNIFORM_DTYPE = np.float64
@@ -165,7 +163,7 @@ class OpenGLMobject:
         self.data: dict[str, np.ndarray] = {}
         self.uniforms: dict[str, float | np.ndarray] = {}
 
-        self.renderer_data: T | None = None
+        self.renderer_data: RendererData | None = None
         self.status = MobjectStatus()
 
         self.init_data()
@@ -1413,8 +1411,6 @@ class OpenGLMobject:
             ):
                 setattr(result, attr, result.family[self.family.index(value)])
             if isinstance(value, np.ndarray):
-                setattr(result, attr, value.copy())
-            if isinstance(value, ShaderWrapper):
                 setattr(result, attr, value.copy())
         return result
 

@@ -1,7 +1,5 @@
 #version 330
 
-#include "../include/camera_uniform_declarations.glsl"
-
 in vec3 point;
 in vec3 du_point;
 in vec3 dv_point;

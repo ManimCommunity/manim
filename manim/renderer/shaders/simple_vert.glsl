@@ -1,6 +1,6 @@
 #version 330
 
-#include "./include/camera_uniform_declarations.glsl"
+#include "./include/get_gl_Position.glsl"
 
 in vec3 point;
 
