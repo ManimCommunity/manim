@@ -70,6 +70,9 @@ class RendererProtocol(Protocol):
     def render(self, camera: Camera, renderables: Iterable[OpenGLMobject]) -> None:
         ...
 
+    def render_previous(self, camera: Camera) -> None:
+        ...
+
     def pre_render(self, camera) -> object:
         ...
 

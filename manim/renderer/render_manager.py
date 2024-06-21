@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import time
-from typing import TYPE_CHECKING, Any, Iterable
+from typing import TYPE_CHECKING, Any, Callable, Iterable
 
 import numpy as np
 
@@ -198,6 +198,23 @@ class Manager:
         if self.scene.skip_animations and self.window is not None:
             self._update_frame(dt=0)
 
+        self.scene.post_play()
+
+    def _wait(self, duration: float, *, stop_condition: Callable[[], bool] | None = None):
+        self.scene.pre_play()
+
+        update_mobjects = self.scene.should_update_mobjects()  # TODO: this method needs to be implemented
+        condition = stop_condition or (lambda: False)
+
+        last_t = 0
+        for t in self._calc_time_progression(duration):
+            if update_mobjects:
+                dt, last_t = t - last_t, t
+                self._update_frame(dt)
+                if condition():
+                    break
+            else:
+                self.renderer.render_previous(self.camera)
         self.scene.post_play()
 
     def _progress_through_animations(self, animations: Iterable[AnimationProtocol]):

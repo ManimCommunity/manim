@@ -261,21 +261,28 @@ class Scene:
 
     def should_update_mobjects(self) -> bool:
         """
-        This is only called when a single Wait animation is played.
+        This is called to check if a wait frame should be frozen
+
+        Returns
+        -------
+            bool: does it have to be rerendered or is it static
         """
-        wait_animation = self.animations[0]
-        if wait_animation.is_static_wait is None:
-            should_update = (
-                self.always_update_mobjects
-                or self.updaters
-                or wait_animation.stop_condition is not None
-                or any(
-                    mob.has_time_based_updater()
-                    for mob in self.get_mobject_family_members()
-                )
-            )
-            wait_animation.is_static_wait = not should_update
-        return not wait_animation.is_static_wait
+        # always rerender by returning True
+        # TODO: Apply caching here
+        return True
+        # wait_animation = self.animations[0]
+        # if wait_animation.is_static_wait is None:
+        #     should_update = (
+        #         self.always_update_mobjects
+        #         or self.updaters
+        #         or wait_animation.stop_condition is not None
+        #         or any(
+        #             mob.has_time_based_updater()
+        #             for mob in self.get_mobject_family_members()
+        #         )
+        #     )
+        #     wait_animation.is_static_wait = not should_update
+        # return not wait_animation.is_static_wait
 
     def has_time_based_updaters(self) -> bool:
         return any(
@@ -614,33 +621,29 @@ class Scene:
         note: str | None = None,
         ignore_presenter_mode: bool = False,
     ):
-        self.pre_play()
-        self.update_mobjects(dt=0)  # Any problems with this?
-        if (
-            self.presenter_mode
-            and not self.skip_animations
-            and not ignore_presenter_mode
-        ):
-            if note:
-                logger.info(note)
-            self.hold_loop()
-        else:
-            time_progression = self.get_wait_time_progression(duration, stop_condition)
-            last_t = 0
-            for t in time_progression:
-                dt = t - last_t
-                last_t = t
-                self.update_frame(dt)
-                self.emit_frame()
-                if stop_condition is not None and stop_condition():
-                    break
-        self.refresh_static_mobjects()
-        self.post_play()
-
-    def hold_loop(self):
-        while self.hold_on_wait:
-            self.update_frame(dt=1 / self.camera.fps)
-        self.hold_on_wait = True
+        self.manager._wait(duration, stop_condition=stop_condition)
+        # self.pre_play()
+        # self.update_mobjects(dt=0)  # Any problems with this?
+        # if (
+        #     self.presenter_mode
+        #     and not self.skip_animations
+        #     and not ignore_presenter_mode
+        # ):
+        #     if note:
+        #         logger.info(note)
+        #     self.hold_loop()
+        # else:
+        #     time_progression = self.get_wait_time_progression(duration, stop_condition)
+        #     last_t = 0
+        #     for t in time_progression:
+        #         dt = t - last_t
+        #         last_t = t
+        #         self.update_frame(dt)
+        #         self.emit_frame()
+        #         if stop_condition is not None and stop_condition():
+        #             break
+        # self.refresh_static_mobjects()
+        # self.post_play()
 
     def wait_until(self, stop_condition: Callable[[], bool], max_time: float = 60):
         self.wait(max_time, stop_condition=stop_condition)
