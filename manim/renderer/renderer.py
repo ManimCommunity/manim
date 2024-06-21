@@ -13,6 +13,7 @@ from manim.mobject.types.image_mobject import ImageMobject
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable, Sequence
+
     import moderngl as gl
 
     from manim.camera.camera import Camera
