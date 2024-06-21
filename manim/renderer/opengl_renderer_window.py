@@ -10,9 +10,6 @@ from screeninfo import get_monitors
 
 from .. import __version__, config
 
-if TYPE_CHECKING:
-    import manim.scene as m_scene
-
 
 class Window(FunWindow):
     fullscreen: bool = False
