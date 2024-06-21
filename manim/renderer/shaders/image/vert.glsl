@@ -1,7 +1,5 @@
 #version 330
 
-#include ../include/camera_uniform_declarations.glsl
-
 uniform sampler2D Texture;
 
 in vec3 point;
@@ -15,7 +13,7 @@ out float v_opacity;
 #include ../include/get_gl_Position.glsl
 #include ../include/position_point_into_frame.glsl
 
-void main(){
+void main() {
     v_im_coords = im_coords;
     v_opacity = opacity;
     gl_Position = get_gl_Position(position_point_into_frame(point));

@@ -16,7 +16,6 @@ from manim.mobject.opengl.opengl_mobject import (
     OpenGLMobject,
     OpenGLPoint,
 )
-from manim.renderer.shader_wrapper import ShaderWrapper
 from manim.utils.bezier import (
     bezier,
     get_quadratic_approximation_of_cubic,
@@ -112,9 +111,9 @@ class OpenGLVMobject(OpenGLMobject):
         self.background_image_file = background_image_file
         self.long_lines = long_lines
         self.joint_type = joint_type
+        self.joint_product = np.ones((3, 4))
+        self.joint_normal = np.zeros((0, 3))
         self.flat_stroke = flat_stroke
-        # TODO: Remove this because the new shader doesn't need it
-        self.anti_alias_width = 1.0
 
         self.needs_new_triangulation = True
         self.triangulation = np.zeros(0, dtype="i4")
@@ -155,7 +154,6 @@ class OpenGLVMobject(OpenGLMobject):
 
     def init_uniforms(self):
         super().init_uniforms()
-        self.uniforms["anti_alias_width"] = float(self.anti_alias_width)
         self.uniforms["joint_type"] = float(self.joint_type.value)
         self.uniforms["flat_stroke"] = float(self.flat_stroke)
 
@@ -1364,6 +1362,7 @@ class OpenGLVMobject(OpenGLMobject):
             setattr(self, attr, result)
 
     # TODO: compare to 3b1b/manim again check if something changed so we don't need the cairo interpolation anymore
+    # FIXME: JOINT_PRODUCT
     def pointwise_become_partial(
         self, vmobject: OpenGLVMobject, a: float, b: float, remap: bool = True
     ) -> Self:

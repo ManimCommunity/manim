@@ -1,79 +1,81 @@
 #version 330
 
-layout (triangles) in;
-layout (triangle_strip, max_vertices = 5) out;
+layout(triangles) in;
+layout(triangle_strip, max_vertices = 6) out;
 
-uniform float anti_alias_width;
+uniform bool winding;
 
-// Needed for get_gl_Position
-// uniform vec2 frame_shape;
-// uniform float focal_distance;
-// uniform float is_fixed_in_frame;
-// uniform float is_fixed_orientation;
-// uniform vec3 fixed_orientation_center;
-// Needed for finalize_color
-uniform vec3 light_source_position;
-uniform float gloss;
-uniform float shadow;
-uniform float reflectiveness;
-
-in vec3 bp[3];
-in vec3 v_global_unit_normal[3];
+in vec3 verts[3];
 in vec4 v_color[3];
+in vec3 v_base_point[3];
 in float v_vert_index[3];
+in vec3 v_unit_normal[3];
 
 out vec4 color;
 out float fill_all;
-
 out float orientation;
+// uv space is where the curve coincides with y = x^2
 out vec2 uv_coords;
-out float bezier_degree;
 
-// Analog of import for manim only
-#include ../include/camera_uniform_declarations.glsl
+// A quadratic bezier curve with these points coincides with y = x^2
+const vec2 SIMPLE_QUADRATIC[3] = vec2[3](
+        vec2(0.0, 0.0),
+        vec2(0.5, 0),
+        vec2(1.0, 1.0)
+    );
+
 #include ../include/quadratic_bezier_geometry_functions.glsl
 #include ../include/get_gl_Position.glsl
 #include ../include/get_unit_normal.glsl
 #include ../include/finalize_color.glsl
 
-const vec2 uv_coords_arr[3] = vec2[3](vec2(0, 0), vec2(0.5, 0), vec2(1, 1));
+void emit_triangle(vec3 points[3], vec4 v_color[3]) {
+    vec3 unit_normal = v_unit_normal[1];
 
-void emit_vertex_wrapper(vec3 point, int index)
-{
-    color = finalize_color(v_color[index], point, v_global_unit_normal[index], light_source_position, gloss, shadow);
-    gl_Position = get_gl_Position(point);
-    uv_coords = uv_coords_arr[index];
-    EmitVertex();
-}
+    orientation = sign(determinant(mat3(
+                    unit_normal,
+                    points[1] - points[0],
+                    points[2] - points[0]
+                )));
 
-void emit_simple_triangle()
-{
-    for(int i = 0; i < 3; i++)
-    {
-        emit_vertex_wrapper(bp[i], i);
+    for (int i = 0; i < 3; i++) {
+        uv_coords = SIMPLE_QUADRATIC[i];
+        color = finalize_color(v_color[i], points[i], unit_normal);
+        emit_gl_Position(points[i]);
+        EmitVertex();
     }
     EndPrimitive();
 }
 
-void main(){
-    // If vert indices are sequential, don't fill all
-    fill_all = float(
-        (v_vert_index[1] - v_vert_index[0]) != 1.0 ||
-        (v_vert_index[2] - v_vert_index[1]) != 1.0
+void emit_simple_triangle() {
+    emit_triangle(
+        vec3[3](verts[0], verts[1], verts[2]),
+        vec4[3](v_color[0], v_color[1], v_color[2])
     );
+}
 
-    if(fill_all == 1.0){
+void main() {
+    // Curves are marked as ended when the handle after
+    // the first anchor is set equal to that anchor
+    if (verts[0] == verts[1]) return;
+
+    if (winding) {
+        // Emit main triangle
+        fill_all = 1.0;
+        emit_triangle(
+            vec3[3](v_base_point[0], verts[0], verts[2]),
+            vec4[3](v_color[1], v_color[0], v_color[2])
+        );
+        // Edge triangle
+        fill_all = 0.0;
         emit_simple_triangle();
-        return;
-    }
-
-    vec3 new_bp[3];
-    bezier_degree = get_reduced_control_points(vec3[3](bp[0], bp[1], bp[2]), new_bp);
-    vec3 local_unit_normal = get_unit_normal(new_bp);
-    orientation = sign(dot(v_global_unit_normal[0], local_unit_normal));
-
-    if(bezier_degree >= 1){
+    } else {
+        // In this case, one should fill all if the vertices are
+        // not in sequential order
+        fill_all = float(
+                (v_vert_index[1] - v_vert_index[0]) != 1.0 ||
+                    (v_vert_index[2] - v_vert_index[1]) != 1.0
+            );
         emit_simple_triangle();
     }
-    // Don't emit any vertices for bezier_degree 0
 }

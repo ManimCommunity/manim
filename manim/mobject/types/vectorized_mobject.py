@@ -1,3 +1,6 @@
+#########################################
+# THIS FILE IS NOT USED IN EXPERIMENTAL #
+#########################################
 """Mobjects that use vector graphics."""
 
 from __future__ import annotations
