@@ -200,10 +200,14 @@ class Manager:
 
         self.scene.post_play()
 
-    def _wait(self, duration: float, *, stop_condition: Callable[[], bool] | None = None):
+    def _wait(
+        self, duration: float, *, stop_condition: Callable[[], bool] | None = None
+    ):
         self.scene.pre_play()
 
-        update_mobjects = self.scene.should_update_mobjects()  # TODO: this method needs to be implemented
+        update_mobjects = (
+            self.scene.should_update_mobjects()
+        )  # TODO: this method needs to be implemented
         condition = stop_condition or (lambda: False)
 
         last_t = 0
