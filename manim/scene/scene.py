@@ -612,6 +612,7 @@ class Scene:
         for anim in animations:
             anim.update_rate_info(run_time, rate_func, lag_ratio)
 
+        # NOTE: Should be changed at some point with the 2 pass rendering system 21.06.2024
         self.manager._play(*animations)
 
     def wait(

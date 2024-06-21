@@ -138,6 +138,7 @@ class Manager:
         In the future, this method could be used
         for two pass rendering
         """
+        ...
 
     def _tear_down(self):
         self.scene.tear_down()
