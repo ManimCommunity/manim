@@ -26,15 +26,26 @@ def test_mobject_add():
 
     # check that Mobject.add() returns the Mobject (for chained calls)
     assert obj.add(Mobject()) is obj
+    assert len(obj.submobjects) == 13
+
     obj = Mobject()
 
     # a Mobject cannot contain itself
-    with pytest.raises(ValueError):
-        obj.add(obj)
+    with pytest.raises(ValueError) as add_self_info:
+        obj.add(Mobject(), obj, Mobject())
+    assert str(add_self_info.value) == (
+        "Cannot add Mobject as a submobject of itself (at index 1)."
+    )
+    assert len(obj.submobjects) == 0
 
     # can only add Mobjects
-    with pytest.raises(TypeError):
-        obj.add("foo")
+    with pytest.raises(TypeError) as add_str_info:
+        obj.add(Mobject(), Mobject(), "foo")
+    assert str(add_str_info.value) == (
+        "Only values of type Mobject can be added as submobjects of Mobject, "
+        "but the value foo (at index 2) is of type str."
+    )
+    assert len(obj.submobjects) == 0
 
 
 def test_mobject_remove():

@@ -34,8 +34,7 @@ Installing Manim via Conda and related environment managers
 Conda is a package manager for Python that allows creating environments
 where all your dependencies are stored. Like this, you don't clutter up your PC with
 unwanted libraries and you can just delete the environment when you don't need it anymore.
-It is a good way to install manim since all dependencies like
-``ffmpeg``, ``pycairo``, etc. come with it.
+It is a good way to install manim since all dependencies like ``pycairo``, etc. come with it.
 Also, the installation steps are the same, no matter if you are
 on Windows, Linux, Intel Macs or on Apple Silicon.
 
@@ -69,7 +68,7 @@ in order for Manim to work properly, some additional system
 dependencies need to be installed first. The following pages have
 operating system specific instructions for you to follow.
 
-Manim requires Python version ``3.8`` or above to run.
+Manim requires Python version ``3.9`` or above to run.
 
 .. hint::
 

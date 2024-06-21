@@ -8,8 +8,9 @@ __all__ = [
 ]
 
 import itertools as it
+from collections.abc import Hashable, Iterable
 from copy import copy
-from typing import TYPE_CHECKING, Any, Hashable, Iterable, Literal, Protocol, cast
+from typing import TYPE_CHECKING, Any, Literal, Protocol, cast
 
 import networkx as nx
 import numpy as np
@@ -17,6 +18,7 @@ import numpy as np
 if TYPE_CHECKING:
     from typing_extensions import TypeAlias
 
+    from manim.scene.scene import Scene
     from manim.typing import Point3D
 
     NxGraph: TypeAlias = nx.classes.graph.Graph | nx.classes.digraph.DiGraph
@@ -476,7 +478,7 @@ def _determine_graph_layout(
             return cast(LayoutFunction, layout)(
                 nx_graph, scale=layout_scale, **layout_config
             )
-        except TypeError as e:
+        except TypeError:
             raise ValueError(
                 f"The layout '{layout}' is neither a recognized layout, a layout function,"
                 "nor a vertex placement dictionary.",
@@ -1512,7 +1514,8 @@ class Graph(GenericGraph):
                     *new_edges,
                     vertex_config=self.VERTEX_CONF,
                     positions={
-                        k: g.vertices[vertex_id].get_center() + 0.1 * DOWN for k in new_vertices
+                        k: g.vertices[vertex_id].get_center() + 0.1 * DOWN
+                        for k in new_vertices
                     },
                 )
                 if depth < self.DEPTH:

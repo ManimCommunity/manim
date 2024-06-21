@@ -26,9 +26,9 @@ __all__ = [
 import itertools as it
 import operator as op
 import re
+from collections.abc import Iterable
 from functools import reduce
 from textwrap import dedent
-from typing import Iterable
 
 from manim import config, logger
 from manim.constants import *
@@ -175,8 +175,8 @@ class SingleStringMathTex(SVGMobject):
         tex = self._remove_stray_braces(tex)
 
         for context in ["array"]:
-            begin_in = ("\\begin{%s}" % context) in tex
-            end_in = ("\\end{%s}" % context) in tex
+            begin_in = ("\\begin{%s}" % context) in tex  # noqa: UP031
+            end_in = ("\\end{%s}" % context) in tex  # noqa: UP031
             if begin_in ^ end_in:
                 # Just turn this into a blank string,
                 # which means caller should leave a

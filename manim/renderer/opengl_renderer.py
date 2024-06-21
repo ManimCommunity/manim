@@ -1,14 +1,9 @@
 from __future__ import annotations
 
 import itertools as it
-import sys
 import time
+from functools import cached_property
 from typing import Any
-
-if sys.version_info < (3, 8):
-    from backports.cached_property import cached_property
-else:
-    from functools import cached_property
 
 import moderngl
 import numpy as np
@@ -425,8 +420,9 @@ class OpenGLRenderer:
             self.update_frame(scene)
 
             if not self.skip_animations:
-                for _ in range(int(config.frame_rate * scene.duration)):
-                    self.file_writer.write_frame(self)
+                self.file_writer.write_frame(
+                    self, num_frames=int(config.frame_rate * scene.duration)
+                )
 
             if self.window is not None:
                 self.window.swap_buffers()
@@ -572,7 +568,7 @@ class OpenGLRenderer:
         if pixel_shape is None:
             return np.array([0, 0, 0])
         pw, ph = pixel_shape
-        fw, fh = config["frame_width"], config["frame_height"]
+        fh = config["frame_height"]
         fc = self.camera.get_center()
         if relative:
             return 2 * np.array([px / pw, py / ph, 0])

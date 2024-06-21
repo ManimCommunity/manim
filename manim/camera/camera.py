@@ -8,8 +8,9 @@ import copy
 import itertools as it
 import operator as op
 import pathlib
+from collections.abc import Iterable
 from functools import reduce
-from typing import Any, Callable, Iterable
+from typing import Any, Callable
 
 import cairo
 import numpy as np

@@ -18,7 +18,54 @@ from manim import (
 from manim.constants import PI
 
 
-def test_vmobject_point_from_propotion():
+def test_vmobject_add():
+    """Test the VMobject add method."""
+    obj = VMobject()
+    assert len(obj.submobjects) == 0
+
+    obj.add(VMobject())
+    assert len(obj.submobjects) == 1
+
+    # Can't add non-VMobject values to a VMobject.
+    with pytest.raises(TypeError) as add_int_info:
+        obj.add(3)
+    assert str(add_int_info.value) == (
+        "Only values of type VMobject can be added as submobjects of VMobject, "
+        "but the value 3 (at index 0) is of type int."
+    )
+    assert len(obj.submobjects) == 1
+
+    # Plain Mobjects can't be added to a VMobject if they're not
+    # VMobjects. Suggest adding them into a Group instead.
+    with pytest.raises(TypeError) as add_mob_info:
+        obj.add(Mobject())
+    assert str(add_mob_info.value) == (
+        "Only values of type VMobject can be added as submobjects of VMobject, "
+        "but the value Mobject (at index 0) is of type Mobject. You can try "
+        "adding this value into a Group instead."
+    )
+    assert len(obj.submobjects) == 1
+
+    with pytest.raises(TypeError) as add_vmob_and_mob_info:
+        # If only one of the added objects is not an instance of VMobject, none of them should be added
+        obj.add(VMobject(), Mobject())
+    assert str(add_vmob_and_mob_info.value) == (
+        "Only values of type VMobject can be added as submobjects of VMobject, "
+        "but the value Mobject (at index 1) is of type Mobject. You can try "
+        "adding this value into a Group instead."
+    )
+    assert len(obj.submobjects) == 1
+
+    # A VMobject or VGroup cannot contain itself.
+    with pytest.raises(ValueError) as add_self_info:
+        obj.add(obj)
+    assert str(add_self_info.value) == (
+        "Cannot add VMobject as a submobject of itself (at index 0)."
+    )
+    assert len(obj.submobjects) == 1
+
+
+def test_vmobject_point_from_proportion():
     obj = VMobject()
 
     # One long line, one short line
@@ -79,28 +126,77 @@ def test_vgroup_init():
     VGroup()
     VGroup(VMobject())
     VGroup(VMobject(), VMobject())
-    with pytest.raises(TypeError):
+
+    # A VGroup cannot contain non-VMobject values.
+    with pytest.raises(TypeError) as init_with_float_info:
+        VGroup(3.0)
+    assert str(init_with_float_info.value) == (
+        "Only values of type VMobject can be added as submobjects of VGroup, "
+        "but the value 3.0 (at index 0) is of type float."
+    )
+
+    with pytest.raises(TypeError) as init_with_mob_info:
         VGroup(Mobject())
-    with pytest.raises(TypeError):
-        VGroup(Mobject(), Mobject())
+    assert str(init_with_mob_info.value) == (
+        "Only values of type VMobject can be added as submobjects of VGroup, "
+        "but the value Mobject (at index 0) is of type Mobject. You can try "
+        "adding this value into a Group instead."
+    )
+
+    with pytest.raises(TypeError) as init_with_vmob_and_mob_info:
+        VGroup(VMobject(), Mobject())
+    assert str(init_with_vmob_and_mob_info.value) == (
+        "Only values of type VMobject can be added as submobjects of VGroup, "
+        "but the value Mobject (at index 1) is of type Mobject. You can try "
+        "adding this value into a Group instead."
+    )
 
 
 def test_vgroup_add():
     """Test the VGroup add method."""
     obj = VGroup()
     assert len(obj.submobjects) == 0
+
     obj.add(VMobject())
     assert len(obj.submobjects) == 1
-    with pytest.raises(TypeError):
+
+    # Can't add non-VMobject values to a VMobject or VGroup.
+    with pytest.raises(TypeError) as add_int_info:
+        obj.add(3)
+    assert str(add_int_info.value) == (
+        "Only values of type VMobject can be added as submobjects of VGroup, "
+        "but the value 3 (at index 0) is of type int."
+    )
+    assert len(obj.submobjects) == 1
+
+    # Plain Mobjects can't be added to a VMobject or VGroup if they're not
+    # VMobjects. Suggest adding them into a Group instead.
+    with pytest.raises(TypeError) as add_mob_info:
         obj.add(Mobject())
+    assert str(add_mob_info.value) == (
+        "Only values of type VMobject can be added as submobjects of VGroup, "
+        "but the value Mobject (at index 0) is of type Mobject. You can try "
+        "adding this value into a Group instead."
+    )
     assert len(obj.submobjects) == 1
-    with pytest.raises(TypeError):
-        # If only one of the added object is not an instance of VMobject, none of them should be added
+
+    with pytest.raises(TypeError) as add_vmob_and_mob_info:
+        # If only one of the added objects is not an instance of VMobject, none of them should be added
         obj.add(VMobject(), Mobject())
+    assert str(add_vmob_and_mob_info.value) == (
+        "Only values of type VMobject can be added as submobjects of VGroup, "
+        "but the value Mobject (at index 1) is of type Mobject. You can try "
+        "adding this value into a Group instead."
+    )
     assert len(obj.submobjects) == 1
-    with pytest.raises(ValueError):
-        # a Mobject cannot contain itself
+
+    # A VMobject or VGroup cannot contain itself.
+    with pytest.raises(ValueError) as add_self_info:
         obj.add(obj)
+    assert str(add_self_info.value) == (
+        "Cannot add VGroup as a submobject of itself (at index 0)."
+    )
+    assert len(obj.submobjects) == 1
 
 
 def test_vgroup_add_dunder():
@@ -234,7 +330,7 @@ def test_vgroup_supports_item_assigment():
 
 
 def test_vgroup_item_assignment_at_correct_position():
-    """Test VGroup item-assignment adds to correct position for VMObjects"""
+    """Test VGroup item-assignment adds to correct position for VMobjects"""
     n_items = 10
     vgroup = VGroup()
     for _i in range(n_items):
@@ -248,8 +344,12 @@ def test_vgroup_item_assignment_at_correct_position():
 def test_vgroup_item_assignment_only_allows_vmobjects():
     """Test VGroup item-assignment raises TypeError when invalid type is passed"""
     vgroup = VGroup(VMobject())
-    with pytest.raises(TypeError, match="All submobjects must be of type VMobject"):
+    with pytest.raises(TypeError) as assign_str_info:
         vgroup[0] = "invalid object"
+    assert str(assign_str_info.value) == (
+        "Only values of type VMobject can be added as submobjects of VGroup, "
+        "but the value invalid object (at index 0) is of type str."
+    )
 
 
 def test_trim_dummy():

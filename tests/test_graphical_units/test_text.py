@@ -1,6 +1,4 @@
-import pytest
-
-from manim import RED, MarkupText, Text, VGroup, VMobject
+from manim import RED, MarkupText, Text, VMobject
 
 __module_test__ = "text"
 

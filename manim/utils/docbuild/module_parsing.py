@@ -47,6 +47,7 @@ MANIM_ROOT = Path(__file__).resolve().parent.parent.parent
 # In the following, we will use ``type(xyz) is xyz_type`` instead of
 # isinstance checks to make sure no subclasses of the type pass the
 # check
+# ruff: noqa: E721
 
 
 def parse_module_attributes() -> tuple[AliasDocsDict, DataDict]:
@@ -125,8 +126,7 @@ def parse_module_attributes() -> tuple[AliasDocsDict, DataDict]:
                 and (
                     (
                         # if TYPE_CHECKING
-                        type(node.test) is ast.Name
-                        and node.test.id == "TYPE_CHECKING"
+                        type(node.test) is ast.Name and node.test.id == "TYPE_CHECKING"
                     )
                     or (
                         # if typing.TYPE_CHECKING
