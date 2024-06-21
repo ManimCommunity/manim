@@ -4,6 +4,8 @@ import itertools as it
 import operator as op
 from functools import reduce, wraps
 from typing import TYPE_CHECKING
+from manim.utils.space_ops import cross, line_intersects_path
+from manim.utils.iterables import resize_preserving_order
 
 import moderngl
 import numpy as np
@@ -93,6 +95,7 @@ class OpenGLVMobject(OpenGLMobject):
         background_image_file: str | None = None,
         long_lines: bool = False,
         joint_type: LineJointType = LineJointType.AUTO,
+        use_winding_fill: bool = True,
         flat_stroke: bool = False,
         **kwargs,
     ):
@@ -117,6 +120,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         self.needs_new_triangulation = True
         self.triangulation = np.zeros(0, dtype="i4")
+        self._use_winding_fill = use_winding_fill
 
         super().__init__(**kwargs)
         # self.refresh_unit_normal()
@@ -449,6 +453,13 @@ class OpenGLVMobject(OpenGLMobject):
     def get_joint_type(self) -> LineJointType:
         return LineJointType(int(self.uniforms["joint_type"]))
 
+    def use_winding_fill(self, value: bool = True, recurse: bool = True) -> Self:
+        for submob in self.get_family(recurse):
+            submob._use_winding_fill = value
+            if not value and submob.has_points():
+                submob.subdivide_intersections()
+        return self
+
     # Points
     def set_anchors_and_handles(self, anchors1, handles, anchors2):
         assert len(anchors1) == len(handles) == len(anchors2)
@@ -524,6 +535,70 @@ class OpenGLVMobject(OpenGLMobject):
         self.append_points(points)
         return self
 
+    # TODO: Typehint Point3D
+    def get_subpath_end_indices_from_points(self, points) -> np.ndarray:
+        atol = self.tolerance_for_point_equality
+        a0, h, a1 = points[0:-1:2], points[1::2], points[2::2]
+        # An anchor point is considered the end of a path
+        # if its following handle is sitting on top of it.
+        # To disambiguate this from cases with many null
+        # curves in a row, we also check that the following
+        # anchor is genuinely distinct
+        is_end = np.empty(len(points) // 2 + 1, dtype=bool)
+        is_end[:-1] = (a0 == h).all(1) & (abs(h - a1) > atol).any(1)
+        is_end[-1] = True
+        # If the curve immediately after an end marker is also an
+        # end marker, don't mark the second one
+        is_end[:-1] = is_end[:-1] & ~is_end[1:]
+        return np.array([2 * n for n, end in enumerate(is_end) if end])
+
+    def get_joint_products(self, refresh: bool = False) -> np.ndarray:
+        """
+        The 'joint product' is a 4-vector holding the cross and dot
+        product between tangent vectors at a joint
+        """
+        # FIXME: Add caching
+        # if not self.needs_new_joint_products and not refresh:
+        #     return self.joint_product
+
+        self.needs_new_joint_products = False
+        self._data_has_changed = True
+
+        points = self.points
+
+        if len(points) < 3:
+            return self.joint_product
+
+        # Find all the unit tangent vectors at each joint
+        a0, h, a1 = points[0:-1:2], points[1::2], points[2::2]
+        print(len(a0), len(h), len(a1))
+        a0_to_h = h - a0
+        h_to_a1 = a1 - h
+
+        vect_to_vert = np.zeros(points.shape)
+        vect_from_vert = np.zeros(points.shape)
+
+        vect_to_vert[1::2] = a0_to_h
+        vect_to_vert[2::2] = h_to_a1
+        vect_from_vert[0:-1:2] = a0_to_h
+        vect_from_vert[1::2] = h_to_a1
+
+        # Joint up closed loops, or mark unclosed paths as such
+        ends = self.get_subpath_end_indices()
+        starts = [0, *(e + 2 for e in ends[:-1])]
+        for start, end in zip(starts, ends):
+            if self.consider_points_equal(points[start], points[end]):
+                vect_to_vert[start] = vect_from_vert[end - 1]
+                vect_from_vert[end] = vect_to_vert[start + 1]
+            else:
+                vect_to_vert[start] = vect_from_vert[start]
+                vect_from_vert[end] = vect_to_vert[end]
+
+        # Compute dot and cross products
+        cross(vect_to_vert, vect_from_vert, out=self.joint_product[:, :3])
+        self.joint_product[:, 3] = (vect_to_vert * vect_from_vert).sum(1)
+        return self.joint_product
+
     def add_smooth_curve_to(self, point):
         if self.has_new_path_started():
             self.add_line_to(point)
@@ -558,6 +633,28 @@ class OpenGLVMobject(OpenGLMobject):
     def is_closed(self):
         return self.consider_points_equals(self.points[0], self.points[-1])
 
+    def subdivide_curves_by_condition(
+        self, tuple_to_subdivisions: Callable, recurse: bool = True
+    ) -> Self:
+        for vmob in self.get_family(recurse):
+            if not vmob.has_points():
+                continue
+            new_points = [vmob.points[0]]
+            for tup in vmob.get_bezier_tuples():
+                n_divisions = tuple_to_subdivisions(*tup)
+                if n_divisions > 0:
+                    alphas = np.linspace(0, 1, n_divisions + 2)
+                    new_points.extend(
+                        [
+                            partial_quadratic_bezier_points(tup, a1, a2)[1:]
+                            for a1, a2 in zip(alphas, alphas[1:])
+                        ]
+                    )
+                else:
+                    new_points.append(tup[1:])
+            vmob.set_points(np.vstack(new_points))
+        return self
+
     def subdivide_sharp_curves(self, angle_threshold=30 * DEGREES, recurse=True):
         vmobs = [vm for vm in self.get_family(recurse) if vm.has_points()]
         for vmob in vmobs:
@@ -581,6 +678,19 @@ class OpenGLVMobject(OpenGLMobject):
     def add_points_as_corners(self, points):
         for point in points:
             self.add_line_to(point)
+        return self
+
+    def subdivide_intersections(
+        self, recurse: bool = True, n_subdivisions: int = 1
+    ) -> Self:
+        path = self.get_anchors()
+
+        def tuple_to_subdivisions(b0, b1, b2):
+            if line_intersects_path(b0, b1, path):
+                return n_subdivisions
+            return 0
+
+        self.subdivide_curves_by_condition(tuple_to_subdivisions, recurse)
         return self
 
     def set_points_as_corners(self, points: Iterable[float]) -> Self:
@@ -613,6 +723,10 @@ class OpenGLVMobject(OpenGLMobject):
         else:
             self.make_approximately_smooth()
         return self
+
+    def is_smooth(self) -> bool:
+        dots = self.get_joint_products()[::2, 3]
+        return bool((dots > 1 - 1e-3).all())
 
     def change_anchor_mode(self, mode) -> Self:
         """Changes the anchor mode of the bezier curves. This will modify the handles.
@@ -734,6 +848,9 @@ class OpenGLVMobject(OpenGLMobject):
         self.set_points(self.points[::-1])
         return self
 
+    def consider_points_equal(self, p0, p1) -> bool:
+        return get_norm(p1 - p0) < self.tolerance_for_point_equality
+
     def get_bezier_tuples_from_points(self, points):
         nppc = self.n_points_per_curve
         remainder = len(points) % nppc
@@ -759,6 +876,9 @@ class OpenGLVMobject(OpenGLMobject):
             for i1, i2 in zip(split_indices, split_indices[1:])
             if (i2 - i1) >= nppc
         ]
+
+    def get_subpath_end_indices(self) -> np.ndarray:
+        return self.get_subpath_end_indices_from_points(self.points)
 
     def get_subpaths(self):
         """Returns subpaths formed by the curves of the OpenGLVMobject.
@@ -1203,56 +1323,70 @@ class OpenGLVMobject(OpenGLMobject):
 
     # Alignment
     def align_points(self, vmobject):
-        # TODO: This shortcut can be a bit over eager. What if they have the same length, but different subpath lengths?
-        if self.get_num_points() == len(vmobject.points):
-            return
+        winding = self._use_winding_fill and vmobject._use_winding_fill
+        if winding != self._use_winding_fill:
+            self.use_winding_fill(winding)
+        if winding != vmobject._use_winding_fill:
+            vmobject.use_winding_fill(winding)
+        if self.get_num_points() == len(vmobject.get_points()):
+            # If both have fill, and they have the same shape, just
+            # give them the same triangulation so that it's not recalculated
+            # needlessly throughout an animation
+            match_tris = (
+                not self._use_winding_fill
+                and self.has_fill()
+                and vmobject.has_fill()
+                and self.has_same_shape_as(vmobject)
+            )
+            if match_tris:
+                vmobject.triangulation = self.triangulation
+            for mob in [self, vmobject]:
+                mob.get_joint_products()
+            return self
 
         for mob in self, vmobject:
             # If there are no points, add one to
             # where the "center" is
             if not mob.has_points():
                 mob.start_new_path(mob.get_center())
-            # If there's only one point, turn it into
-            # a null curve
-            if mob.has_new_path_started():
-                mob.add_line_to(mob.points[0])
 
         # Figure out what the subpaths are, and align
         subpaths1 = self.get_subpaths()
         subpaths2 = vmobject.get_subpaths()
+        for subpaths in [subpaths1, subpaths2]:
+            subpaths.sort(
+                key=lambda sp: -sum(get_norm(p2 - p1) for p1, p2 in zip(sp, sp[1:]))
+            )
         n_subpaths = max(len(subpaths1), len(subpaths2))
+
         # Start building new ones
         new_subpaths1 = []
         new_subpaths2 = []
 
-        nppc = self.n_points_per_curve
-
         def get_nth_subpath(path_list, n):
             if n >= len(path_list):
-                # Create a null path at the very end
-                return [path_list[-1][-1]] * nppc
-            path = path_list[n]
-            # # Check for useless points at the end of the path and remove them
-            # # https://github.com/ManimCommunity/manim/issues/1959
-            # while len(path) > nppc:
-            #     # If the last nppc points are all equal to the preceding point
-            #     if self.consider_points_equals(path[-nppc:], path[-nppc - 1]):
-            #         path = path[:-nppc]
-            #     else:
-            #         break
-            return path
+                return np.vstack([path_list[0][:-1], path_list[0][::-1]])
+            return path_list[n]
 
         for n in range(n_subpaths):
             sp1 = get_nth_subpath(subpaths1, n)
             sp2 = get_nth_subpath(subpaths2, n)
-            diff1 = max(0, (len(sp2) - len(sp1)) // nppc)
-            diff2 = max(0, (len(sp1) - len(sp2)) // nppc)
+            diff1 = max(0, (len(sp2) - len(sp1)) // 2)
+            diff2 = max(0, (len(sp1) - len(sp2)) // 2)
             sp1 = self.insert_n_curves_to_point_list(diff1, sp1)
             sp2 = self.insert_n_curves_to_point_list(diff2, sp2)
+            if n > 0:
+                # Add intermediate anchor to mark path end
+                new_subpaths1.append(new_subpaths1[-1][-1])
+                new_subpaths2.append(new_subpaths2[-1][-1])
             new_subpaths1.append(sp1)
             new_subpaths2.append(sp2)
-        self.set_points(np.vstack(new_subpaths1))
-        vmobject.set_points(np.vstack(new_subpaths2))
+
+        for mob, paths in [(self, new_subpaths1), (vmobject, new_subpaths2)]:
+            new_points = np.vstack(paths)
+            mob.resize_points(len(new_points), resize_func=resize_preserving_order)
+            mob.set_points(new_points)
+            mob.get_joint_products()
         return self
 
     def insert_n_curves(self, n: int, recurse=True) -> Self:
@@ -1362,7 +1496,7 @@ class OpenGLVMobject(OpenGLMobject):
             setattr(self, attr, result)
 
     # TODO: compare to 3b1b/manim again check if something changed so we don't need the cairo interpolation anymore
-    # FIXME: JOINT_PRODUCT
+    # NOTE: JOINT_PRODUCT THIS SHOULD NOT TRIGGER REFRESH JOINTS
     def pointwise_become_partial(
         self, vmobject: OpenGLVMobject, a: float, b: float, remap: bool = True
     ) -> Self:
@@ -1382,53 +1516,51 @@ class OpenGLVMobject(OpenGLMobject):
             This option should be manually set to False if keeping the number of points is not needed
         """
         assert isinstance(vmobject, OpenGLVMobject)
-        # Partial curve includes three portions:
-        # - A middle section, which matches the curve exactly
-        # - A start, which is some ending portion of an inner cubic
-        # - An end, which is the starting portion of a later inner cubic
+        vm_points = vmobject.points
+        self.joint_product = vmobject.joint_product
         if a <= 0 and b >= 1:
-            self.set_points(vmobject.points)
+            self.set_points(vm_points)
             return self
-        bezier_triplets = vmobject.get_bezier_tuples()
-        num_quadratics = len(bezier_triplets)
+        num_curves = vmobject.get_num_curves()
 
-        # The following two lines will compute which bezier curves of the given mobject need to be processed.
-        # The residue basically indicates the proportion of the selected Bèzier curve.
-        # Ex: if lower_index is 3, and lower_residue is 0.4, then the algorithm will append to the points 0.4 of the third bezier curve
-        lower_index, lower_residue = integer_interpolate(0, num_quadratics, a)
-        upper_index, upper_residue = integer_interpolate(0, num_quadratics, b)
-        self.clear_points()
-        if num_quadratics == 0:
+        # Partial curve includes three portions:
+        # - A start, which is some ending portion of an inner quadratic
+        # - A middle section, which matches the curve exactly
+        # - An end, which is the starting portion of a later inner quadratic
+
+        lower_index, lower_residue = integer_interpolate(0, num_curves, a)
+        upper_index, upper_residue = integer_interpolate(0, num_curves, b)
+        i1 = 2 * lower_index
+        i2 = 2 * lower_index + 3
+        i3 = 2 * upper_index
+        i4 = 2 * upper_index + 3
+
+        new_points = vm_points.copy()
+        if num_curves == 0:
+            new_points[:] = 0
             return self
         if lower_index == upper_index:
-            self.append_points(
-                partial_quadratic_bezier_points(
-                    bezier_triplets[lower_index],
-                    lower_residue,
-                    upper_residue,
-                ),
+            tup = partial_quadratic_bezier_points(
+                vm_points[i1:i2], lower_residue, upper_residue
             )
+            new_points[:i1] = tup[0]
+            new_points[i1:i4] = tup
+            new_points[i4:] = tup[2]
         else:
-            self.append_points(
-                partial_quadratic_bezier_points(
-                    bezier_triplets[lower_index], lower_residue, 1
-                ),
+            low_tup = partial_quadratic_bezier_points(
+                vm_points[i1:i2], lower_residue, 1
             )
-            inner_points = bezier_triplets[lower_index + 1 : upper_index]
-            if len(inner_points) > 0:
-                if remap:
-                    new_triplets = quadratic_bezier_remap(
-                        inner_points, num_quadratics - 2
-                    )
-                else:
-                    new_triplets = bezier_triplets
-
-                self.append_points(np.asarray(new_triplets).reshape(-1, 3))
-            self.append_points(
-                partial_quadratic_bezier_points(
-                    bezier_triplets[upper_index], 0, upper_residue
-                ),
+            high_tup = partial_quadratic_bezier_points(
+                vm_points[i3:i4], 0, upper_residue
             )
+            new_points[0:i1] = low_tup[0]
+            new_points[i1:i2] = low_tup
+            # Keep new_points i2:i3 as they are
+            new_points[i3:i4] = high_tup
+            new_points[i4:] = high_tup[2]
+        self.joint_product[:i1] = [0, 0, 0, 1]
+        self.joint_product[i4:] = [0, 0, 0, 1]
+        self.set_points(new_points)
         return self
 
     def get_subcurve(self, a: float, b: float) -> Self:

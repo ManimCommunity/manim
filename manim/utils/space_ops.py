@@ -2,54 +2,121 @@
 
 from __future__ import annotations
 
-__all__ = [
-    "quaternion_mult",
-    "quaternion_from_angle_axis",
-    "angle_axis_from_quaternion",
-    "quaternion_conjugate",
-    "rotate_vector",
-    "thick_diagonal",
-    "rotation_matrix",
-    "rotation_about_z",
-    "z_to_vector",
-    "angle_of_vector",
-    "angle_between_vectors",
-    "normalize",
-    "get_unit_normal",
-    "compass_directions",
-    "regular_vertices",
-    "complex_to_R3",
-    "R3_to_complex",
-    "complex_func_to_R3_func",
-    "center_of_mass",
-    "midpoint",
-    "find_intersection",
-    "line_intersection",
-    "get_winding_number",
-    "shoelace",
-    "shoelace_direction",
-    "cross2d",
-    "earclip_triangulation",
-    "cartesian_to_spherical",
-    "spherical_to_cartesian",
-    "perpendicular_bisector",
-]
-
-
 import itertools as it
-import math
-from typing import Sequence
+from typing import TYPE_CHECKING, Sequence
 
 import numpy as np
 from mapbox_earcut import triangulate_float32 as earcut
 from scipy.spatial.transform import Rotation
 
-from ..constants import DOWN, OUT, PI, RIGHT, TAU, UP, RendererType
-from ..utils.iterables import adjacent_pairs
+from manim.constants import DOWN, OUT, PI, RIGHT, TAU, UP, RendererType
+from manim.utils.iterables import adjacent_pairs
+
+if TYPE_CHECKING:
+    import numpy.typing as npt
+
+    from manim.typing import (
+        ManimFloat,
+        Point3D_Array,
+        Vector2D,
+        Vector2D_Array,
+        Vector3D,
+    )
+
+__all__ = [
+    "R3_to_complex",
+    "angle_axis_from_quaternion",
+    "angle_between_vectors",
+    "angle_of_vector",
+    "cartesian_to_spherical",
+    "center_of_mass",
+    "compass_directions",
+    "complex_func_to_R3_func",
+    "complex_to_R3",
+    "cross2d",
+    "earclip_triangulation",
+    "find_intersection",
+    "get_unit_normal",
+    "get_winding_number",
+    "line_intersection",
+    "line_intersects_path",
+    "midpoint",
+    "normalize",
+    "perpendicular_bisector",
+    "quaternion_conjugate",
+    "quaternion_from_angle_axis",
+    "quaternion_mult",
+    "regular_vertices",
+    "rotate_vector",
+    "rotation_about_z",
+    "rotation_matrix",
+    "shoelace",
+    "shoelace_direction",
+    "spherical_to_cartesian",
+    "thick_diagonal",
+    "z_to_vector",
+]
+
+
+def line_intersects_path(
+    start,
+    end,
+    path,
+) -> bool:
+    """
+    Tests whether the line (start, end) intersects
+    a polygonal path defined by its vertices
+    """
+    n = len(path) - 1
+    p1 = np.empty((n, 2))
+    q1 = np.empty((n, 2))
+    p1[:] = start[:2]
+    q1[:] = end[:2]
+    p2 = path[:-1, :2]
+    q2 = path[1:, :2]
+
+    v1 = q1 - p1
+    v2 = q2 - p2
+
+    mis1 = cross2d(v1, p2 - p1) * cross2d(v1, q2 - p1) < 0
+    mis2 = cross2d(v2, p1 - p2) * cross2d(v2, q1 - p2) < 0
+    return bool((mis1 * mis2).any())
 
 
 def norm_squared(v: float) -> float:
     return np.dot(v, v)
+
+
+def cross(
+    v1: Vector3D | list[float],
+    v2: Vector3D | list[float],
+    out: np.ndarray | None = None,
+) -> Vector3D | Vector3D_Array:
+    is2d = isinstance(v1, np.ndarray) and len(v1.shape) == 2
+    if is2d:
+        x1, y1, z1 = v1[:, 0], v1[:, 1], v1[:, 2]
+        x2, y2, z2 = v2[:, 0], v2[:, 1], v2[:, 2]
+    else:
+        x1, y1, z1 = v1
+        x2, y2, z2 = v2
+    if out is None:
+        out = np.empty(np.shape(v1))
+    out.T[:] = [
+        y1 * z2 - z1 * y2,
+        z1 * x2 - x1 * z2,
+        x1 * y2 - y1 * x2,
+    ]
+    return out
+
+
+def crossVec3D(v1: Vector3D, v2: Vector3D) -> Vector3D:
+    return np.array(
+        [
+            v1[1] * v2[2] - v1[2] * v2[1],
+            v1[2] * v2[0] - v1[0] * v2[2],
+            v1[0] * v2[1] - v1[1] * v2[0],
+        ]
+    )
 
 
 # Quaternions
@@ -103,12 +170,12 @@ def quaternion_from_angle_axis(
 
     Returns
     -------
-    List[float]
+    list[float]
         Gives back a quaternion from the angle and axis
     """
     if not axis_normalized:
         axis = normalize(axis)
-    return [math.cos(angle / 2), *(math.sin(angle / 2) * axis)]
+    return [np.cos(angle / 2), *(np.sin(angle / 2) * axis)]
 
 
 def angle_axis_from_quaternion(quaternion: Sequence[float]) -> Sequence[float]:
@@ -256,7 +323,7 @@ def rotation_about_z(angle: float) -> np.ndarray:
     np.ndarray
         Gives back the rotated matrix.
     """
-    c, s = math.cos(angle), math.sin(angle)
+    c, s = np.cos(angle), np.sin(angle)
     return np.array(
         [
             [c, -s, 0],
@@ -298,12 +365,12 @@ def z_to_vector(vector: np.ndarray) -> np.ndarray:
     (normalized) vector provided as an argument
     """
     axis_z = normalize(vector)
-    axis_y = normalize(np.cross(axis_z, RIGHT))
-    axis_x = np.cross(axis_y, axis_z)
+    axis_y = normalize(cross(axis_z, RIGHT))
+    axis_x = cross(axis_y, axis_z)
     if np.linalg.norm(axis_y) == 0:
         # the vector passed just so happened to be in the x direction.
-        axis_x = normalize(np.cross(UP, axis_z))
-        axis_y = -np.cross(axis_x, axis_z)
+        axis_x = normalize(cross(UP, axis_z))
+        axis_y = -cross(axis_x, axis_z)
 
     return np.array([axis_x, axis_y, axis_z]).T
 
@@ -384,7 +451,7 @@ def normalize_along_axis(array: np.ndarray, axis: np.ndarray) -> np.ndarray:
     return array
 
 
-def get_unit_normal(v1: np.ndarray, v2: np.ndarray, tol: float = 1e-6) -> np.ndarray:
+def get_unit_normal(v1: Vector3D, v2: Vector3D, tol: float = 1e-6) -> Vector3D:
     """Gets the unit normal of the vectors.
 
     Parameters
@@ -401,16 +468,37 @@ def get_unit_normal(v1: np.ndarray, v2: np.ndarray, tol: float = 1e-6) -> np.nda
     np.ndarray
         The normal of the two vectors.
     """
-    v1, v2 = (normalize(i) for i in (v1, v2))
-    cp = np.cross(v1, v2)
-    cp_norm = np.linalg.norm(cp)
-    if cp_norm < tol:
-        # Vectors align, so find a normal to them in the plane shared with the z-axis
-        cp = np.cross(np.cross(v1, OUT), v1)
-        cp_norm = np.linalg.norm(cp)
-        if cp_norm < tol:
+    # Instead of normalizing v1 and v2, just divide by the greatest
+    # of all their absolute components, which is just enough
+    div1, div2 = max(np.abs(v1)), max(np.abs(v2))
+    if div1 == 0.0:
+        if div2 == 0.0:
             return DOWN
-    return normalize(cp)
+        u = v2 / div2
+    elif div2 == 0.0:
+        u = v1 / div1
+    else:
+        # Normal scenario: v1 and v2 are both non-null
+        u1, u2 = v1 / div1, v2 / div2
+        cp = cross(u1, u2)
+        cp_norm = np.sqrt(norm_squared(cp))
+        if cp_norm > tol:
+            return cp / cp_norm
+        # Otherwise, v1 and v2 were aligned
+        u = u1
+
+    # If you are here, you have an "unique", non-zero, unit-ish vector u
+    # If it's also too aligned to the Z axis, just return DOWN
+    if abs(u[0]) < tol and abs(u[1]) < tol:
+        return DOWN
+    # Otherwise rotate u in the plane it shares with the Z axis,
+    # 90° TOWARDS the Z axis. This is done via (u x [0, 0, 1]) x u,
+    # which gives [-xz, -yz, x²+y²] (slightly scaled as well)
+    cp = np.array([-u[0] * u[2], -u[1] * u[2], u[0] * u[0] + u[1] * u[1]])
+    cp_norm = np.sqrt(norm_squared(cp))
+    # Because the norm(u) == 0 case was filtered in the beginning,
+    # there is no need to check if the norm of cp is 0
+    return cp / cp_norm
 
 
 ###
@@ -554,8 +642,8 @@ def line_intersection(
         np.pad(np.array(i)[:, :2], ((0, 0), (0, 1)), constant_values=1)
         for i in (line1, line2)
     )
-    line1, line2 = (np.cross(*i) for i in padded)
-    x, y, z = np.cross(line1, line2)
+    line1, line2 = (cross(*i) for i in padded)
+    x, y, z = cross(line1, line2)
 
     if z == 0:
         raise ValueError(
@@ -566,10 +654,10 @@ def line_intersection(
 
 
 def find_intersection(
-    p0s: Sequence[np.ndarray],
-    v0s: Sequence[np.ndarray],
-    p1s: Sequence[np.ndarray],
-    v1s: Sequence[np.ndarray],
+    p0s: Sequence[np.ndarray] | Point3D_Array,
+    v0s: Sequence[np.ndarray] | Point3D_Array,
+    p1s: Sequence[np.ndarray] | Point3D_Array,
+    v1s: Sequence[np.ndarray] | Point3D_Array,
     threshold: float = 1e-5,
 ) -> Sequence[np.ndarray]:
     """
@@ -583,7 +671,7 @@ def find_intersection(
     result = []
 
     for p0, v0, p1, v1 in zip(*[p0s, v0s, p1s, v1s]):
-        normal = np.cross(v1, np.cross(v0, v1))
+        normal = cross(v1, cross(v0, v1))
         denom = max(np.dot(v0, normal), threshold)
         result += [p0 + np.dot(p1 - p0, normal) / denom * v0]
     return result
@@ -647,7 +735,39 @@ def shoelace_direction(x_y: np.ndarray) -> str:
     return "CW" if area > 0 else "CCW"
 
 
-def cross2d(a, b):
+def cross2d(
+    a: Vector2D | Vector2D_Array,
+    b: Vector2D | Vector2D_Array,
+) -> ManimFloat | npt.NDArray[ManimFloat]:
+    """Compute the determinant(s) of the passed
+    vector (sequences).
+
+    Parameters
+    ----------
+    a
+        A vector or a sequence of vectors.
+    b
+        A vector or a sequence of vectors.
+
+    Returns
+    -------
+    Sequence[float] | float
+        The determinant or sequence of determinants
+        of the first two components of the specified
+        vectors.
+
+    Examples
+    --------
+    .. code-block:: pycon
+
+        >>> cross2d(np.array([1, 2]), np.array([3, 4]))
+        -2
+        >>> cross2d(
+        ...     np.array([[1, 2, 0], [1, 0, 0]]),
+        ...     np.array([[3, 4, 0], [0, 1, 0]]),
+        ... )
+        array([-2,  1])
+    """
     if len(a.shape) == 2:
         return a[:, 0] * b[:, 1] - a[:, 1] * b[:, 0]
     else:
@@ -673,68 +793,73 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
     """
 
     rings = [list(range(e0, e1)) for e0, e1 in zip([0, *ring_ends], ring_ends)]
+    attached_rings = rings[:1]
+    detached_rings = rings[1:]
+    loop_connections = {}
 
-    def is_in(point, ring_id):
-        return (
-            abs(abs(get_winding_number([i - point for i in verts[rings[ring_id]]])) - 1)
-            < 1e-5
+    while detached_rings:
+        i_range, j_range = (
+            list(
+                filter(
+                    # Ignore indices that are already being
+                    # used to draw some connection
+                    lambda i: i not in loop_connections,
+                    it.chain(*ring_group),
+                ),
+            )
+            for ring_group in (attached_rings, detached_rings)
         )
 
-    def ring_area(ring_id):
-        ring = rings[ring_id]
-        s = 0
-        for i, j in zip(ring[1:], ring):
-            s += cross2d(verts[i], verts[j])
-        return abs(s) / 2
+        # Closest point on the attached rings to an estimated midpoint
+        # of the detached rings
+        tmp_j_vert = midpoint(verts[j_range[0]], verts[j_range[len(j_range) // 2]])
+        i = min(i_range, key=lambda i: norm_squared(verts[i] - tmp_j_vert))
+        # Closest point of the detached rings to the aforementioned
+        # point of the attached rings
+        j = min(j_range, key=lambda j: norm_squared(verts[i] - verts[j]))
+        # Recalculate i based on new j
+        i = min(i_range, key=lambda i: norm_squared(verts[i] - verts[j]))
 
-    # Points at the same position may cause problems
-    for i in rings:
-        verts[i[0]] += (verts[i[1]] - verts[i[0]]) * 1e-6
-        verts[i[-1]] += (verts[i[-2]] - verts[i[-1]]) * 1e-6
+        # Remember to connect the polygon at these points
+        loop_connections[i] = j
+        loop_connections[j] = i
 
-    # First, we should know which rings are directly contained in it for each ring
-
-    right = [max(verts[rings[i], 0]) for i in range(len(rings))]
-    left = [min(verts[rings[i], 0]) for i in range(len(rings))]
-    top = [max(verts[rings[i], 1]) for i in range(len(rings))]
-    bottom = [min(verts[rings[i], 1]) for i in range(len(rings))]
-    area = [ring_area(i) for i in range(len(rings))]
-
-    # The larger ring must be outside
-    rings_sorted = list(range(len(rings)))
-    rings_sorted.sort(key=lambda x: area[x], reverse=True)
-
-    def is_in_fast(ring_a, ring_b):
-        # Whether a is in b
-        return (
-            left[ring_b] <= left[ring_a] <= right[ring_a] <= right[ring_b]
-            and bottom[ring_b] <= bottom[ring_a] <= top[ring_a] <= top[ring_b]
-            and is_in(verts[rings[ring_a][0]], ring_b)
+        # Move the ring which j belongs to from the
+        # attached list to the detached list
+        new_ring = next(
+            (ring for ring in detached_rings if ring[0] <= j <= ring[-1]), None
         )
+        if new_ring is not None:
+            detached_rings.remove(new_ring)
+            attached_rings.append(new_ring)
+        else:
+            raise Exception("Could not find a ring to attach")
 
-    children = [[]] * len(rings)
-    for idx, i in enumerate(rings_sorted):
-        for j in rings_sorted[:idx][::-1]:
-            if is_in_fast(i, j):
-                children[j].append(i)
-                break
+    # Setup linked list
+    after = []
+    end0 = 0
+    for end1 in ring_ends:
+        after.extend(range(end0 + 1, end1))
+        after.append(end0)
+        end0 = end1
 
-    res = []
+    # Find an ordering of indices walking around the polygon
+    indices = []
+    i = 0
+    for _ in range(len(verts) + len(ring_ends) - 1):
+        # starting = False
+        if i in loop_connections:
+            j = loop_connections[i]
+            indices.extend([i, j])
+            i = after[j]
+        else:
+            indices.append(i)
+            i = after[i]
+        if i == 0:
+            break
 
-    # Then, we can use earcut for each part
-    used = [False] * len(rings)
-    for i in rings_sorted:
-        if used[i]:
-            continue
-        v = rings[i]
-        ring_ends = [len(v)]
-        for j in children[i]:
-            used[j] = True
-            v += rings[j]
-            ring_ends.append(len(v))
-        res += [v[i] for i in earcut(verts[v, :2], ring_ends)]
-
-    return res
+    meta_indices = earcut(verts[indices, :2], [len(indices)])
+    return [indices[mi] for mi in meta_indices]
 
 
 def cartesian_to_spherical(vec: Sequence[float]) -> np.ndarray:
@@ -805,6 +930,6 @@ def perpendicular_bisector(
     """
     p1 = line[0]
     p2 = line[1]
-    direction = np.cross(p1 - p2, norm_vector)
+    direction = cross(p1 - p2, norm_vector)
     m = midpoint(p1, p2)
     return [m + direction, m - direction]

@@ -40,7 +40,7 @@ def find_file(file_name: Path, directories: list[Path]) -> Path:
     raise OSError(f"{file_name} not Found")
 
 
-class ShaderWrapper:
+class ShaderWrapperioasdoij:
     def __init__(
         self,
         vert_data=None,

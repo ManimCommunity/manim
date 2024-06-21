@@ -440,7 +440,7 @@ class GLVMobjectManager:
         points = mob.points
         stroke_data = np.zeros(len(points), dtype=stroke_dtype)
         stroke_data["point"] = points
-        stroke_data["joint_product"] = mob.joint_product
+        stroke_data["joint_product"] = mob.get_joint_products()
         stroke_data["color"] = mob.renderer_data.stroke_rgbas
         stroke_data["stroke_width"] = mob.renderer_data.stroke_widths.reshape((-1, 1))
 
