@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 import moderngl as gl
 import numpy as np
 
-from dataclasses import dataclass
 import manim.constants as const
 import manim.utils.color.core as c
 import manim.utils.color.manim_colors as color
