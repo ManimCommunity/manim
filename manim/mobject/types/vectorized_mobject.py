@@ -15,7 +15,8 @@ __all__ = [
 import itertools as it
 import sys
 import typing
-from typing import TYPE_CHECKING, Callable, Sequence
+from collections.abc import Sequence
+from typing import TYPE_CHECKING, Callable
 
 import numpy as np
 from PIL.Image import Image
@@ -1829,19 +1830,21 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
         >>> triangle, square = Triangle(), Square()
         >>> vg.add(triangle)
         VGroup(Triangle)
-        >>> vg + square   # a new VGroup is constructed
+        >>> vg + square  # a new VGroup is constructed
         VGroup(Triangle, Square)
-        >>> vg            # not modified
+        >>> vg  # not modified
         VGroup(Triangle)
-        >>> vg += square; vg  # modifies vg
+        >>> vg += square
+        ... vg  # modifies vg
         VGroup(Triangle, Square)
         >>> vg.remove(triangle)
         VGroup(Square)
-        >>> vg - square; # a new VGroup is constructed
+        >>> vg - square  # a new VGroup is constructed
         VGroup()
-        >>> vg   # not modified
+        >>> vg  # not modified
         VGroup(Square)
-        >>> vg -= square; vg # modifies vg
+        >>> vg -= square
+        ... vg  # modifies vg
         VGroup()
 
     .. manim:: ArcShapeIris
@@ -2113,7 +2116,7 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
         Normal usage::
 
             square_obj = Square()
-            my_dict.add([('s', square_obj)])
+            my_dict.add([("s", square_obj)])
         """
         for key, value in dict(mapping_or_iterable).items():
             self.add_key_value_pair(key, value)
@@ -2140,7 +2143,7 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
         --------
         Normal usage::
 
-            my_dict.remove('square')
+            my_dict.remove("square")
         """
         if key not in self.submob_dict:
             raise KeyError("The given key '%s' is not present in the VDict" % str(key))
@@ -2165,7 +2168,7 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
         --------
         Normal usage::
 
-           self.play(Create(my_dict['s']))
+           self.play(Create(my_dict["s"]))
         """
         submob = self.submob_dict[key]
         return submob
@@ -2189,7 +2192,7 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
         Normal usage::
 
             square_obj = Square()
-            my_dict['sq'] = square_obj
+            my_dict["sq"] = square_obj
         """
         if key in self.submob_dict:
             self.remove(key)
@@ -2294,7 +2297,7 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
         Normal usage::
 
             square_obj = Square()
-            self.add_key_value_pair('s', square_obj)
+            self.add_key_value_pair("s", square_obj)
 
         """
         if not isinstance(value, (VMobject, OpenGLVMobject)):

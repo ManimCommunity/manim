@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Protocol, Sequence
+from typing import TYPE_CHECKING, Protocol
 
 if TYPE_CHECKING:
-    from .animation import Animation
     from .scene_buffer import SceneBuffer
 
 
@@ -14,17 +13,12 @@ class AnimationProtocol(Protocol):
     buffer: SceneBuffer
     apply_buffer: bool
 
-    def begin(self) -> None:
-        ...
+    def begin(self) -> None: ...
 
-    def finish(self) -> None:
-        ...
+    def finish(self) -> None: ...
 
-    def update_mobjects(self, dt: float) -> None:
-        ...
+    def update_mobjects(self, dt: float) -> None: ...
 
-    def interpolate(self, alpha: float) -> None:
-        ...
+    def interpolate(self, alpha: float) -> None: ...
 
-    def get_run_time(self) -> float:
-        ...
+    def get_run_time(self) -> float: ...

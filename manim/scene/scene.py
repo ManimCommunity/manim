@@ -2,11 +2,10 @@ from __future__ import annotations
 
 import inspect
 import os
-import platform
 import random
-import time
 from collections import OrderedDict
-from typing import TYPE_CHECKING, Sequence
+from collections.abc import Sequence
+from typing import TYPE_CHECKING
 
 import numpy as np
 from IPython.terminal import pt_inputhooks
@@ -14,7 +13,7 @@ from IPython.terminal.embed import InteractiveShellEmbed
 from pyglet.window import key
 from tqdm import tqdm as ProgressDisplay
 
-from manim import config, logger
+from manim import logger
 from manim.animation.animation import prepare_animation
 from manim.camera.camera import Camera
 from manim.constants import DEFAULT_WAIT_TIME
@@ -32,7 +31,8 @@ from manim.utils.iterables import list_difference_update
 from manim.utils.module_ops import get_module
 
 if TYPE_CHECKING:
-    from typing import Any, Callable, Iterable
+    from collections.abc import Iterable
+    from typing import Any, Callable
 
     from manim.animation.protocol import AnimationProtocol as Animation
     from manim.animation.scene_buffer import SceneBuffer

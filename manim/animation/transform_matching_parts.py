@@ -4,7 +4,6 @@ from __future__ import annotations
 
 __all__ = ["TransformMatchingShapes", "TransformMatchingTex"]
 
-from typing import TYPE_CHECKING
 
 import numpy as np
 
@@ -223,7 +222,7 @@ class TransformMatchingShapes(TransformMatchingAbstractBase):
     def get_mobject_key(mobject: Mobject) -> int:
         mobject.save_state()
         mobject.center()
-        mobject.set_height(1)
+        mobject.set(height=1)
         result = hash(np.round(mobject.points, 3).tobytes())
         mobject.restore()
         return result

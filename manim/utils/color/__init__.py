@@ -47,12 +47,12 @@ The following modules contain the predefined color constants:
 
 """
 
-from typing import Dict, List
+from __future__ import annotations
 
 from . import AS2700, BS381, X11, XKCD
 from .core import *
 from .manim_colors import *
 
-_all_color_dict: Dict[str, ManimColor] = {
+_all_color_dict: dict[str, ManimColor] = {
     k: v for k, v in globals().items() if isinstance(v, ManimColor)
 }

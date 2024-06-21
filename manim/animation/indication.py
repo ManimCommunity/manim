@@ -25,6 +25,8 @@ Examples
 
 """
 
+from __future__ import annotations
+
 __all__ = [
     "FocusOn",
     "Indicate",
@@ -34,9 +36,11 @@ __all__ = [
     "ApplyWave",
     "Circumscribe",
     "Wiggle",
+    "Blink",
 ]
 
-from typing import Callable, Iterable, Optional, Type, Union
+from collections.abc import Iterable
+from typing import Callable
 
 import numpy as np
 
@@ -52,12 +56,12 @@ from ..animation.creation import Create, ShowPartial, Uncreate
 from ..animation.fading import FadeIn, FadeOut
 from ..animation.movement import Homotopy
 from ..animation.transform import Transform
+from ..animation.updaters.update import UpdateFromFunc
 from ..constants import *
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import GREY, YELLOW, ParsableManimColor
-from ..utils.deprecation import deprecated
 from ..utils.rate_functions import smooth, there_and_back, wiggle
 from ..utils.space_ops import normalize
 
@@ -75,8 +79,6 @@ class FocusOn(Transform):
         The color of the spotlight.
     run_time
         The duration of the animation.
-    kwargs
-        Additional arguments to be passed to the :class:`~.Succession` constructor
 
     Examples
     --------
@@ -92,11 +94,11 @@ class FocusOn(Transform):
 
     def __init__(
         self,
-        focus_point: Union[np.ndarray, Mobject],
+        focus_point: np.ndarray | Mobject,
         opacity: float = 0.2,
         color: str = GREY,
         run_time: float = 2,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.focus_point = focus_point
         self.color = color
@@ -129,7 +131,7 @@ class Indicate(Transform):
     color
         The color the mobject temporally takes.
     rate_func
-        The function definig the animation progress at every point in time.
+        The function defining the animation progress at every point in time.
     kwargs
         Additional arguments to be passed to the :class:`~.Succession` constructor
 
@@ -146,17 +148,17 @@ class Indicate(Transform):
 
     def __init__(
         self,
-        mobject: "Mobject",
+        mobject: Mobject,
         scale_factor: float = 1.2,
         color: str = YELLOW,
-        rate_func: Callable[[float, Optional[float]], np.ndarray] = there_and_back,
-        **kwargs
+        rate_func: Callable[[float, float | None], np.ndarray] = there_and_back,
+        **kwargs,
     ) -> None:
         self.color = color
         self.scale_factor = scale_factor
         super().__init__(mobject, rate_func=rate_func, **kwargs)
 
-    def create_target(self) -> "Mobject":
+    def create_target(self) -> Mobject:
         target = self.mobject.copy()
         target.scale(self.scale_factor)
         target.set_color(self.color)
@@ -216,7 +218,7 @@ class Flash(AnimationGroup):
 
     def __init__(
         self,
-        point: Union[np.ndarray, Mobject],
+        point: np.ndarray | Mobject,
         line_length: float = 0.2,
         num_lines: int = 12,
         flash_radius: float = 0.1,
@@ -224,7 +226,7 @@ class Flash(AnimationGroup):
         color: str = YELLOW,
         time_width: float = 1,
         run_time: float = 1.0,
-        **kwargs
+        **kwargs,
     ) -> None:
         if isinstance(point, Mobject):
             self.point = point.get_center()
@@ -254,7 +256,7 @@ class Flash(AnimationGroup):
         lines.set_stroke(width=self.line_stroke_width)
         return lines
 
-    def create_line_anims(self) -> Iterable["ShowPassingFlash"]:
+    def create_line_anims(self) -> Iterable[ShowPassingFlash]:
         return [
             ShowPassingFlash(
                 line,
@@ -300,7 +302,7 @@ class ShowPassingFlash(ShowPartial):
 
     """
 
-    def __init__(self, mobject: "VMobject", time_width: float = 0.1, **kwargs) -> None:
+    def __init__(self, mobject: VMobject, time_width: float = 0.1, **kwargs) -> None:
         self.time_width = time_width
         super().__init__(mobject, remover=True, introducer=True, **kwargs)
 
@@ -385,14 +387,14 @@ class ApplyWave(Homotopy):
 
     def __init__(
         self,
-        mobject: "Mobject",
+        mobject: Mobject,
         direction: np.ndarray = UP,
         amplitude: float = 0.2,
         wave_func: Callable[[float], float] = smooth,
         time_width: float = 1,
         ripples: int = 1,
         run_time: float = 2,
-        **kwargs
+        **kwargs,
     ) -> None:
         x_min = mobject.get_left()[0]
         x_max = mobject.get_right()[0]
@@ -403,7 +405,7 @@ class ApplyWave(Homotopy):
             # This wave is build up as follows:
             # The time is split into 2*ripples phases. In every phase the amplitude
             # either rises to one or goes down to zero. Consecutive ripples will have
-            # their amplitudes in oppising directions (first ripple from 0 to 1 to 0,
+            # their amplitudes in opposing directions (first ripple from 0 to 1 to 0,
             # second from 0 to -1 to 0 and so on). This is how two ripples would be
             # divided into phases:
 
@@ -442,7 +444,7 @@ class ApplyWave(Homotopy):
                 return wave_func(t * phases)
             elif phase == phases - 1:
                 # last ripple. Rising or falling depending on the number of ripples
-                # The (ripples % 2)-term is used to make this destinction.
+                # The (ripples % 2)-term is used to make this distinction.
                 t -= phase / phases  # Time relative to the phase
                 return (1 - wave_func(t * phases)) * (2 * (ripples % 2) - 1)
             else:
@@ -504,14 +506,14 @@ class Wiggle(Animation):
 
     def __init__(
         self,
-        mobject: "Mobject",
+        mobject: Mobject,
         scale_value: float = 1.1,
         rotation_angle: float = 0.01 * TAU,
         n_wiggles: int = 6,
-        scale_about_point: Optional[np.ndarray] = None,
-        rotate_about_point: Optional[np.ndarray] = None,
+        scale_about_point: np.ndarray | None = None,
+        rotate_about_point: np.ndarray | None = None,
         run_time: float = 2,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.scale_value = scale_value
         self.rotation_angle = rotation_angle
@@ -532,8 +534,8 @@ class Wiggle(Animation):
 
     def interpolate_submobject(
         self,
-        submobject: "Mobject",
-        starting_submobject: "Mobject",
+        submobject: Mobject,
+        starting_submobject: Mobject,
         alpha: float,
     ) -> None:
         submobject.points[:, :] = starting_submobject.points
@@ -556,7 +558,7 @@ class Circumscribe(Succession):
     mobject
         The mobject to be circumscribed.
     shape
-        The shape with which to surrond the given mobject. Should be either
+        The shape with which to surround the given mobject. Should be either
         :class:`~.Rectangle` or :class:`~.Circle`
     fade_in
         Whether to make the surrounding shape to fade in. It will be drawn otherwise.
@@ -593,7 +595,7 @@ class Circumscribe(Succession):
     def __init__(
         self,
         mobject: Mobject,
-        shape: Type = Rectangle,
+        shape: type = Rectangle,
         fade_in=False,
         fade_out=False,
         time_width=0.3,
@@ -601,7 +603,7 @@ class Circumscribe(Succession):
         color: ParsableManimColor = YELLOW,
         run_time=1,
         stroke_width=DEFAULT_STROKE_WIDTH,
-        **kwargs
+        **kwargs,
     ):
         if shape is Rectangle:
             frame = SurroundingRectangle(
@@ -643,3 +645,68 @@ class Circumscribe(Succession):
             super().__init__(
                 ShowPassingFlash(frame, time_width, run_time=run_time), **kwargs
             )
+
+
+class Blink(Succession):
+    """Blink the mobject.
+
+    Parameters
+    ----------
+    mobject
+        The mobject to be blinked.
+    time_on
+        The duration that the mobject is shown for one blink.
+    time_off
+        The duration that the mobject is hidden for one blink.
+    blinks
+        The number of blinks
+    hide_at_end
+        Whether to hide the mobject at the end of the animation.
+    kwargs
+        Additional arguments to be passed to the :class:`~.Succession` constructor.
+
+    Examples
+    --------
+
+    .. manim:: BlinkingExample
+
+        class BlinkingExample(Scene):
+            def construct(self):
+                text = Text("Blinking").scale(1.5)
+                self.add(text)
+                self.play(Blink(text, blinks=3))
+
+    """
+
+    def __init__(
+        self,
+        mobject: Mobject,
+        time_on: float = 0.5,
+        time_off: float = 0.5,
+        blinks: int = 1,
+        hide_at_end: bool = False,
+        **kwargs,
+    ):
+        animations = [
+            UpdateFromFunc(
+                mobject,
+                update_function=lambda mob: mob.set_opacity(1.0),
+                run_time=time_on,
+            ),
+            UpdateFromFunc(
+                mobject,
+                update_function=lambda mob: mob.set_opacity(0.0),
+                run_time=time_off,
+            ),
+        ] * blinks
+
+        if not hide_at_end:
+            animations.append(
+                UpdateFromFunc(
+                    mobject,
+                    update_function=lambda mob: mob.set_opacity(1.0),
+                    run_time=time_on,
+                ),
+            )
+
+        super().__init__(*animations, **kwargs)

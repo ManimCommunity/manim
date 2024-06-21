@@ -13,14 +13,19 @@ __all__ = [
     "StealthTip",
 ]
 
+from typing import TYPE_CHECKING
+
 import numpy as np
 
 from manim.constants import *
 from manim.mobject.geometry.arc import Circle
 from manim.mobject.geometry.polygram import Square, Triangle
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.types.vectorized_mobject import VMobject
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject as VMobject
 from manim.utils.space_ops import angle_of_vector
+
+if TYPE_CHECKING:
+    from manim.typing import Point3D, Vector3D
 
 
 class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
@@ -55,8 +60,9 @@ class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
         ...         RegularPolygon.__init__(self, n=5, **kwargs)
         ...         self.width = length
         ...         self.stretch_to_fit_height(length)
-        >>> arr = Arrow(np.array([-2, -2, 0]), np.array([2, 2, 0]),
-        ...             tip_shape=MyCustomArrowTip)
+        >>> arr = Arrow(
+        ...     np.array([-2, -2, 0]), np.array([2, 2, 0]), tip_shape=MyCustomArrowTip
+        ... )
         >>> isinstance(arr.tip, RegularPolygon)
         True
         >>> from manim import Scene, Create
@@ -106,11 +112,11 @@ class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
                 self.add(*big_arrows, *small_arrows, *labels)
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         raise NotImplementedError("Has to be implemented in inheriting subclasses.")
 
     @property
-    def base(self):
+    def base(self) -> Point3D:
         r"""The base point of the arrow tip.
 
         This is the point connecting to the arrow line.
@@ -128,7 +134,7 @@ class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
         return self.point_from_proportion(0.5)
 
     @property
-    def tip_point(self):
+    def tip_point(self) -> Point3D:
         r"""The tip point of the arrow tip.
 
         Examples
@@ -144,7 +150,7 @@ class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
         return self.points[0]
 
     @property
-    def vector(self):
+    def vector(self) -> Vector3D:
         r"""The vector pointing from the base point to the tip point.
 
         Examples
@@ -160,7 +166,7 @@ class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
         return self.tip_point - self.base
 
     @property
-    def tip_angle(self):
+    def tip_angle(self) -> float:
         r"""The angle of the arrow tip.
 
         Examples
@@ -176,7 +182,7 @@ class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
         return angle_of_vector(self.vector)
 
     @property
-    def length(self):
+    def length(self) -> np.floating:
         r"""The length of the arrow tip.
 
         Examples
@@ -238,13 +244,13 @@ class ArrowTriangleTip(ArrowTip, Triangle):
 
     def __init__(
         self,
-        fill_opacity=0,
-        stroke_width=3,
-        length=DEFAULT_ARROW_TIP_LENGTH,
-        width=DEFAULT_ARROW_TIP_LENGTH,
-        start_angle=PI,
+        fill_opacity: float = 0,
+        stroke_width: float = 3,
+        length: float = DEFAULT_ARROW_TIP_LENGTH,
+        width: float = DEFAULT_ARROW_TIP_LENGTH,
+        start_angle: float = PI,
         **kwargs,
-    ):
+    ) -> None:
         Triangle.__init__(
             self,
             fill_opacity=fill_opacity,
@@ -264,7 +270,9 @@ class ArrowTriangleFilledTip(ArrowTriangleTip):
     This is the default arrow tip shape.
     """
 
-    def __init__(self, fill_opacity=1, stroke_width=0, **kwargs):
+    def __init__(
+        self, fill_opacity: float = 1, stroke_width: float = 0, **kwargs
+    ) -> None:
         super().__init__(fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs)
 
 
@@ -273,12 +281,12 @@ class ArrowCircleTip(ArrowTip, Circle):
 
     def __init__(
         self,
-        fill_opacity=0,
-        stroke_width=3,
-        length=DEFAULT_ARROW_TIP_LENGTH,
-        start_angle=PI,
+        fill_opacity: float = 0,
+        stroke_width: float = 3,
+        length: float = DEFAULT_ARROW_TIP_LENGTH,
+        start_angle: float = PI,
         **kwargs,
-    ):
+    ) -> None:
         self.start_angle = start_angle
         Circle.__init__(
             self, fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
@@ -290,7 +298,9 @@ class ArrowCircleTip(ArrowTip, Circle):
 class ArrowCircleFilledTip(ArrowCircleTip):
     r"""Circular arrow tip with filled tip."""
 
-    def __init__(self, fill_opacity=1, stroke_width=0, **kwargs):
+    def __init__(
+        self, fill_opacity: float = 1, stroke_width: float = 0, **kwargs
+    ) -> None:
         super().__init__(fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs)
 
 
@@ -299,12 +309,12 @@ class ArrowSquareTip(ArrowTip, Square):
 
     def __init__(
         self,
-        fill_opacity=0,
-        stroke_width=3,
-        length=DEFAULT_ARROW_TIP_LENGTH,
-        start_angle=PI,
+        fill_opacity: float = 0,
+        stroke_width: float = 3,
+        length: float = DEFAULT_ARROW_TIP_LENGTH,
+        start_angle: float = PI,
         **kwargs,
-    ):
+    ) -> None:
         self.start_angle = start_angle
         Square.__init__(
             self,
@@ -320,5 +330,7 @@ class ArrowSquareTip(ArrowTip, Square):
 class ArrowSquareFilledTip(ArrowSquareTip):
     r"""Square arrow tip with filled tip."""
 
-    def __init__(self, fill_opacity=1, stroke_width=0, **kwargs):
+    def __init__(
+        self, fill_opacity: float = 1, stroke_width: float = 0, **kwargs
+    ) -> None:
         super().__init__(fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs)

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from manim.event_handler.event_dispatcher import EventDispatcher
 
 # This is supposed to be a Singleton

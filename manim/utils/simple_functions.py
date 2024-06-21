@@ -6,14 +6,11 @@ __all__ = [
     "binary_search",
     "choose",
     "clip",
-    "get_parameters",
     "sigmoid",
 ]
 
 
-import inspect
 from functools import lru_cache
-from types import MappingProxyType
 from typing import Callable
 
 import numpy as np
@@ -128,23 +125,6 @@ def fdiv(
         where = True
 
     return np.true_divide(a, b, out=out, where=where)
-
-
-def get_parameters(function: Callable) -> MappingProxyType[str, inspect.Parameter]:
-    """Return the parameters of ``function`` as an ordered mapping of parameters'
-    names to their corresponding ``Parameter`` objects.
-
-    Examples
-    --------
-    ::
-
-        >>> get_parameters(get_parameters)
-        mappingproxy(OrderedDict([('function', <Parameter "function: 'Callable'">)]))
-
-        >>> tuple(get_parameters(choose))
-        ('n', 'k')
-    """
-    return inspect.signature(function).parameters
 
 
 def sigmoid(x: float) -> float:

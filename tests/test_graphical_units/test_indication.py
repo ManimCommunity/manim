@@ -43,13 +43,6 @@ def test_ShowPassingFlash(scene):
 
 
 @frames_comparison(last_frame=False)
-def test_ShowCreationThenFadeOut(scene):
-    square = Square()
-    scene.add(square)
-    scene.play(ShowCreationThenFadeOut(square.copy()))
-
-
-@frames_comparison(last_frame=False)
 def test_ApplyWave(scene):
     square = Square()
     scene.add(square)

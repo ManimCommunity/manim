@@ -1,7 +1,8 @@
 [flake8]
 # Exclude the grpc generated code
-exclude = ./manim/grpc/gen/*
-max-complexity = 15
+exclude = ./manim/grpc/gen/*, __pycache__,.git,
+per-file-ignores = __init__.py:F401
+max-complexity = 29
 max-line-length = 88
 statistics = True
 # Prevents some flake8-rst-docstrings errors
@@ -9,13 +10,16 @@ rst-roles = attr,class,func,meth,mod,obj,ref,doc,exc
 rst-directives = manim, SEEALSO, seealso
 docstring-convention=numpy
 
-select = A,A00,B,B9,C4,C90,D,E,F,F,PT,RST,SIM,W
+select = A,A00,B,B9,C4,C90,D,E,F,F,PT,RST,SIM,W,F401
 
                 # General Compatibility
 extend-ignore = E203, W503, D202, D212, D213, D404
 
                 # Misc
                 F401, F403, F405, F841, E501, E731, E402, F811, F821,
+
+                # multiple statements on one line (overload)
+                E704,
 
                 # Plug-in: flake8-builtins
                 A001, A002, A003,
@@ -25,9 +29,6 @@ extend-ignore = E203, W503, D202, D212, D213, D404
 
                 # Plug-in: flake8-simplify
                 SIM105, SIM106, SIM119,
-
-                # Plug-in: flake8-comprehensions
-                C901
 
                 # Plug-in: flake8-pytest-style
                 PT001, PT004, PT006, PT011, PT018, PT022, PT023,
@@ -40,4 +41,4 @@ extend-ignore = E203, W503, D202, D212, D213, D404
 
                 # Plug-in: flake8-rst-docstrings
                 RST201, RST203, RST210, RST212, RST213, RST215,
-                RST301, RST303,
+                RST301, RST303, RST499

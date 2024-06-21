@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import inspect
 import itertools as it
 import numbers
 import os
@@ -28,7 +29,6 @@ from manim.utils.deprecation import deprecated
 
 # from ..utils.iterables import batch_by_property
 from manim.utils.iterables import (
-    batch_by_property,
     list_update,
     listify,
     make_even,
@@ -38,7 +38,6 @@ from manim.utils.iterables import (
     uniq_chain,
 )
 from manim.utils.paths import straight_path
-from manim.utils.simple_functions import get_parameters
 from manim.utils.space_ops import (
     angle_between_vectors,
     angle_of_vector,
@@ -48,7 +47,8 @@ from manim.utils.space_ops import (
 )
 
 if TYPE_CHECKING:
-    from typing import Any, Callable, Iterable, Sequence, Union
+    from collections.abc import Iterable, Sequence
+    from typing import Any, Callable, Union
 
     from typing_extensions import Self, TypeAlias
 
@@ -1541,7 +1541,7 @@ class OpenGLMobject:
         index: int | None = None,
         call_updater: bool = False,
     ) -> Self:
-        if "dt" in get_parameters(update_function):
+        if "dt" in inspect.signature(update_function).parameters:
             updater_list: list[Updater] = self.time_based_updaters  # type: ignore
         else:
             updater_list: list[Updater] = self.non_time_updaters  # type: ignore
@@ -2887,18 +2887,18 @@ class OpenGLMobject:
 
     # Operations touching shader uniforms
     def fix_in_frame(self) -> Self:
-        self.uniforms["is_fixed_in_frame"] = float(1.0)
+        self.uniforms["is_fixed_in_frame"] = 1.0
         self.is_fixed_in_frame = True
         return self
 
     def fix_orientation(self) -> Self:
-        self.uniforms["is_fixed_orientation"] = float(1.0)
+        self.uniforms["is_fixed_orientation"] = 1.0
         self.is_fixed_orientation = True
         self.fixed_orientation_center = tuple(self.get_center())
         return self
 
     def unfix_from_frame(self) -> Self:
-        self.uniforms["is_fixed_in_frame"] = float(0.0)
+        self.uniforms["is_fixed_in_frame"] = 0.0
         self.is_fixed_in_frame = False
         return self
 
@@ -2951,12 +2951,7 @@ class OpenGLMobject:
             glsl_snippet = glsl_snippet.replace(char, "point." + char)
         rgb_list = get_colormap_list(colormap)
         self.set_color_by_code(
-            "color.rgb = float_to_color({}, {}, {}, {});".format(
-                glsl_snippet,
-                float(min_value),
-                float(max_value),
-                get_colormap_code(rgb_list),
-            ),
+            f"color.rgb = float_to_color({glsl_snippet}, {float(min_value)}, {float(max_value)}, {get_colormap_code(rgb_list)});",
         )
         return self
 

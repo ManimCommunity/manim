@@ -5,12 +5,7 @@
 
 from __future__ import annotations
 
-try:
-    # https://github.com/moderngl/moderngl/issues/517
-    import readline  # required to prevent a segfault on Python 3.10
-except ModuleNotFoundError:  # windows
-    pass
-
+import cairo
 import moderngl
 
 # If it is running Doctest the current directory
@@ -39,6 +34,7 @@ def pytest_report_header(config):
     info = ctx.info
     ctx.release()
     return (
+        f"\nCairo Version: {cairo.cairo_version()}",
         "\nOpenGL information",
         "------------------",
         f"vendor: {info['GL_VENDOR'].strip()}",

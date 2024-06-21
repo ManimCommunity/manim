@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import itertools as it
 import math
-import sys
-from typing import Any, Iterable
+from collections.abc import Iterable
+from typing import Any
 
 import moderngl
 import numpy as np
@@ -16,7 +16,6 @@ from manim.renderer.shader_wrapper import ShaderWrapper
 from manim.utils.color import BLACK, color_to_rgba
 
 from ..constants import *
-from ..constants import RADIANS
 from ..utils.simple_functions import fdiv
 from ..utils.space_ops import normalize
 

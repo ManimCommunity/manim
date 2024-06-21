@@ -77,16 +77,18 @@ directive:
         that is rendered in a reference block after the source code.
 
 """
+
 from __future__ import annotations
 
 import csv
 import itertools as it
-import os
 import re
 import shutil
 import sys
+import textwrap
 from pathlib import Path
 from timeit import timeit
+from typing import TYPE_CHECKING, Any
 
 import jinja2
 from docutils import nodes
@@ -94,8 +96,15 @@ from docutils.parsers.rst import Directive, directives  # type: ignore
 from docutils.statemachine import StringList
 
 from manim import QUALITIES
+from manim import __version__ as manim_version
 
-classnamedict = {}
+if TYPE_CHECKING:
+    from sphinx.application import Sphinx
+
+__all__ = ["ManimDirective"]
+
+
+classnamedict: dict[str, int] = {}
 
 
 class SkipManimNode(nodes.Admonition, nodes.Element):
@@ -108,13 +117,13 @@ class SkipManimNode(nodes.Admonition, nodes.Element):
     pass
 
 
-def visit(self, node, name=""):
+def visit(self: SkipManimNode, node: nodes.Element, name: str = "") -> None:
     self.visit_admonition(node, name)
     if not isinstance(node[0], nodes.title):
         node.insert(0, nodes.title("skip-manim", "Example Placeholder"))
 
 
-def depart(self, node):
+def depart(self: SkipManimNode, node: nodes.Element) -> None:
     self.depart_admonition(node)
 
 
@@ -141,6 +150,7 @@ class ManimDirective(Directive):
 
     See the module docstring for documentation.
     """
+
     has_content = True
     required_arguments = 1
     optional_arguments = 0
@@ -160,7 +170,7 @@ class ManimDirective(Directive):
     }
     final_argument_whitespace = True
 
-    def run(self):
+    def run(self) -> list[nodes.Element]:
         # Rendering is skipped if the tag skip-manim is present,
         # or if we are making the pot-files
         should_skip = (
@@ -169,16 +179,25 @@ class ManimDirective(Directive):
             or os.getenv("READTHEDOCS_VERSION_NAME", None) in ["3112", "3475"]
         )
         if should_skip:
+            clsname = self.arguments[0]
             node = SkipManimNode()
             self.state.nested_parse(
                 StringList(
                     [
-                        f"Placeholder block for ``{self.arguments[0]}``.",
+                        f"Placeholder block for ``{clsname}``.",
                         "",
                         ".. code-block:: python",
                         "",
                     ]
                     + ["    " + line for line in self.content]
+                    + [
+                        "",
+                        ".. raw:: html",
+                        "",
+                        f'    <pre data-manim-binder data-manim-classname="{clsname}">',
+                    ]
+                    + ["    " + line for line in self.content]
+                    + ["    </pre>"],
                 ),
                 self.content_offset,
                 node,
@@ -236,6 +255,13 @@ class ManimDirective(Directive):
             "",
             "    from manim import *\n",
             *("    " + line for line in self.content),
+            "",
+            ".. raw:: html",
+            "",
+            f'    <pre data-manim-binder data-manim-classname="{clsname}">',
+            *("    " + line for line in self.content),
+            "",
+            "    </pre>",
         ]
         source_block = "\n".join(source_block)
 
@@ -324,18 +350,18 @@ class ManimDirective(Directive):
 rendering_times_file_path = Path("../rendering_times.csv")
 
 
-def _write_rendering_stats(scene_name, run_time, file_name):
+def _write_rendering_stats(scene_name: str, run_time: str, file_name: str) -> None:
     with rendering_times_file_path.open("a") as file:
         csv.writer(file).writerow(
             [
                 re.sub(r"^(reference\/)|(manim\.)", "", file_name),
                 scene_name,
-                "%.3f" % run_time,
+                f"{run_time:.3f}",
             ],
         )
 
 
-def _log_rendering_times(*args):
+def _log_rendering_times(*args: tuple[Any]) -> None:
     if rendering_times_file_path.exists():
         with rendering_times_file_path.open() as file:
             data = list(csv.reader(file))
@@ -343,6 +369,9 @@ def _log_rendering_times(*args):
             sys.exit()
 
         print("\nRendering Summary\n-----------------\n")
+
+        # filter out empty lists caused by csv reader
+        data = [row for row in data if row]
 
         max_file_length = max(len(row[0]) for row in data)
         for key, group in it.groupby(data, key=lambda row: row[0]):
@@ -357,16 +386,16 @@ def _log_rendering_times(*args):
                 f"{key}{f'{time_sum:.3f}'.rjust(7, '.')}s  => {len(group)} EXAMPLES",
             )
             for row in group:
-                print(f"{' '*(max_file_length)} {row[2].rjust(7)}s {row[1]}")
+                print(f"{' ' * max_file_length} {row[2].rjust(7)}s {row[1]}")
         print("")
 
 
-def _delete_rendering_times(*args):
+def _delete_rendering_times(*args: tuple[Any]) -> None:
     if rendering_times_file_path.exists():
         rendering_times_file_path.unlink()
 
 
-def setup(app):
+def setup(app: Sphinx) -> dict[str, Any]:
     app.add_node(SkipManimNode, html=(visit, depart))
 
     setup.app = app
@@ -377,6 +406,16 @@ def setup(app):
 
     app.connect("builder-inited", _delete_rendering_times)
     app.connect("build-finished", _log_rendering_times)
+
+    app.add_js_file("manim-binder.min.js")
+    app.add_js_file(
+        None,
+        body=textwrap.dedent(
+            f"""\
+                window.initManimBinder({{branch: "v{manim_version}"}})
+            """
+        ).strip(),
+    )
 
     metadata = {"parallel_read_safe": False, "parallel_write_safe": True}
     return metadata

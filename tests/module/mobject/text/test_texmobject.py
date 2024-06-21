@@ -2,21 +2,20 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import numpy as np
 import pytest
 
 from manim import MathTex, SingleStringMathTex, Tex, TexTemplate, config, tempconfig
-from manim.mobject.types.vectorized_mobject import VMobject
-from manim.utils.color import RED
 
 
 def test_MathTex():
     MathTex("a^2 + b^2 = c^2")
-    assert Path(config.media_dir, "Tex", "eb38bdba08f46c80.svg").exists()
+    assert Path(config.media_dir, "Tex", "e4be163a00cf424f.svg").exists()
 
 
 def test_SingleStringMathTex():
     SingleStringMathTex("test")
-    assert Path(config.media_dir, "Tex", "5b2faa68ebf42d1e.svg").exists()
+    assert Path(config.media_dir, "Tex", "8ce17c7f5013209f.svg").exists()
 
 
 @pytest.mark.parametrize(  # : PT006
@@ -30,7 +29,7 @@ def test_double_braces_testing(text_input, length_sub):
 
 def test_tex():
     Tex("The horse does not eat cucumber salad.")
-    assert Path(config.media_dir, "Tex", "f2e45e6e82d750e6.svg").exists()
+    assert Path(config.media_dir, "Tex", "c3945e23e546c95a.svg").exists()
 
 
 def test_tex_temp_directory(tmpdir, monkeypatch):
@@ -43,12 +42,12 @@ def test_tex_temp_directory(tmpdir, monkeypatch):
     with tempconfig({"media_dir": "media"}):
         Tex("The horse does not eat cucumber salad.")
         assert Path("media", "Tex").exists()
-        assert Path("media", "Tex", "f2e45e6e82d750e6.svg").exists()
+        assert Path("media", "Tex", "c3945e23e546c95a.svg").exists()
 
 
 def test_percent_char_rendering():
     Tex(r"\%")
-    assert Path(config.media_dir, "Tex", "3f48edf8ebaf82c8.tex").exists()
+    assert Path(config.media_dir, "Tex", "4a583af4d19a3adf.tex").exists()
 
 
 def test_tex_whitespace_arg():
@@ -94,6 +93,23 @@ def test_tex_white_space_and_non_whitespace_args():
     assert len(tex[1]) == len("".join((str_part_2 + separator).split()))
     assert len(tex[2]) == len("".join((str_part_3 + separator).split()))
     assert len(tex[3]) == len("".join(str_part_4.split()))
+
+
+def test_multi_part_tex_with_empty_parts():
+    """Check that if a Tex or MathTex Mobject with multiple
+    string arguments is created where some of the parts render
+    as empty SVGs, then the number of family members with points
+    should still be the same as the snipped in one singular part.
+    """
+    tex_parts = ["(-1)", "^{", "0}"]
+    one_part_fomula = MathTex("".join(tex_parts))
+    multi_part_formula = MathTex(*tex_parts)
+
+    for one_part_glyph, multi_part_glyph in zip(
+        one_part_fomula.family_members_with_points(),
+        multi_part_formula.family_members_with_points(),
+    ):
+        np.testing.assert_allclose(one_part_glyph.points, multi_part_glyph.points)
 
 
 def test_tex_size():
@@ -194,3 +210,17 @@ def test_tempconfig_resetting_tex_template():
         assert config.tex_template.preamble == "Custom preamble!"
 
     assert config.tex_template.preamble != "Custom preamble!"
+
+
+def test_tex_garbage_collection(tmpdir, monkeypatch):
+    monkeypatch.chdir(tmpdir)
+    Path(tmpdir, "media").mkdir()
+
+    with tempconfig({"media_dir": "media"}):
+        tex_without_log = Tex("Hello World!")  # d771330b76d29ffb.tex
+        assert Path("media", "Tex", "d771330b76d29ffb.tex").exists()
+        assert not Path("media", "Tex", "d771330b76d29ffb.log").exists()
+
+    with tempconfig({"media_dir": "media", "no_latex_cleanup": True}):
+        tex_with_log = Tex("Hello World, again!")  # da27670a37b08799.tex
+        assert Path("media", "Tex", "da27670a37b08799.log").exists()

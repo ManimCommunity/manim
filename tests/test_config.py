@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 import tempfile
 from pathlib import Path
 
@@ -103,7 +102,6 @@ def test_custom_dirs(tmp_path):
             "frame_rate": 15,
             "pixel_height": 854,
             "pixel_width": 480,
-            "save_sections": True,
             "sections_dir": "{media_dir}/test_sections",
             "video_dir": "{media_dir}/test_video",
             "partial_movie_dir": "{media_dir}/test_partial_movie_dir",
@@ -221,7 +219,7 @@ def test_tex_template_file(tmp_path):
     tmp_cfg.write(
         f"""
         [CLI]
-        tex_template_file = { tex_file }
+        tex_template_file = {tex_file}
         """,
     )
     tmp_cfg.close()
