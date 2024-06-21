@@ -136,7 +136,7 @@ class Scene:
 
         return Manager(cls).render()
 
-    render = deprecated(run)
+    render = run
 
     def setup(self) -> None:
         """

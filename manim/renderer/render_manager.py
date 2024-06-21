@@ -7,6 +7,7 @@ import numpy as np
 
 from manim import config, logger
 from manim.constants import RendererType
+from manim.renderer.cairo_renderer import CairoRenderer
 from manim.utils.exceptions import EndSceneEarlyException
 
 from ..scene.scene import Scene, SceneState
@@ -29,7 +30,7 @@ class Manager:
 
     .. note::
 
-        The only method of this class officially guarenteed to be
+        The only method of this class officially guaranteed to be
         stable is :meth:`~.Manager.render`. Any other methods documented
         are purely for development
 
@@ -47,9 +48,6 @@ class Manager:
     """
 
     def __init__(self, scene_cls: type[Scene]) -> None:
-        # renderer
-        self.renderer = self._renderer_class()
-
         # scene
         self.scene: Scene = scene_cls(self)
 
@@ -61,9 +59,12 @@ class Manager:
         # Initialize window, if applicable
         if config.preview:
             self.window = Window()
-            self.renderer.use_window()
         else:
             self.window = None
+
+        # this must be done AFTER instantiating a window
+        self.renderer = self.create_renderer()
+        self.renderer.use_window()
 
         # file writer
         self.file_writer = FileWriter(self.scene.get_default_scene_name())  # TODO
@@ -72,11 +73,13 @@ class Manager:
     def camera(self) -> Camera:
         return self.scene.camera
 
-    @property
-    def _renderer_class(self) -> type[RendererProtocol]:
+    def create_renderer(self) -> RendererProtocol:
         match config.renderer:
             case RendererType.OPENGL:
-                return OpenGLRenderer
+                return OpenGLRenderer()
+
+            case RendererType.CAIRO:
+                return CairoRenderer()
 
             case rendertype:
                 raise ValueError(f"Invalid Config Renderer type {rendertype}")
@@ -118,6 +121,7 @@ class Manager:
         rendering system
         """
         self._setup()
+
         try:
             self.scene.construct()
             self._interact()
@@ -168,8 +172,6 @@ class Manager:
         self.scene._update_mobjects(dt)
 
         if self.window is not None:
-            if self.window.is_closing:
-                raise EndSceneEarlyException()
             self.window.clear()
 
         state = self.scene.get_state()
