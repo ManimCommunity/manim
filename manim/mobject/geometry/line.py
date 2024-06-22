@@ -74,13 +74,13 @@ class Line(TipableVMobject):
 
         Parameters
         ----------
-        start : Point3D | Mobject
+        start
             The start point or Mobject of the line.
-        end : Point3D | Mobject
+        end
             The end point or Mobject of the line.
-        buff : float, optional
-            The empty space between start and end and the line, by default 0
-        path_arc : float, optional
+        buff
+            The empty space between the start and end of the line, by default 0.
+        path_arc
             The angle of a circle spanned by this arc, by default 0 which is a straight line.
         """
         self._set_start_and_end_attrs(start, end)
