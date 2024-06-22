@@ -105,7 +105,7 @@ which are a way of representing a curve using a sequence of points.
 Manim supports two different renderers, which each have different representations of
 Béziers: Cairo uses cubic Bézier curves, while OpenGL uses quadratic Bézier curves.
 
-type hints like :class:`~.typing.BezierPoints` represent a single bezier curve, and :class:`~.typing.BezierPath`
+Type hints like :class:`~.typing.BezierPoints` represent a single bezier curve, and :class:`~.typing.BezierPath`
 represents multiple Bézier curves. A :class:`~.typing.Spline` is when the Bézier curves in a :class:`~.typing.BezierPath`
 forms a single connected curve. Manim also provides more specific type aliases when working with
 quadratic or cubic curves, and they are prefixed with their respective type (e.g. :class:`~.typing.CubicBezierPoints`,
