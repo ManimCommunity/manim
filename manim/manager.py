@@ -68,6 +68,7 @@ class Manager:
 
         # file writer
         self.file_writer = FileWriter(self.scene.get_default_scene_name())  # TODO
+        self._write_files = not config.dry_run
 
     @property
     def camera(self) -> Camera:
@@ -126,10 +127,6 @@ class Manager:
             self._interact()
         except EndSceneEarlyException:
             pass
-        except KeyboardInterrupt:
-            # Get rid keyboard interrupt symbols
-            print("", end="\r")
-            self.file_writer.ended_with_interrupt = True
         self._tear_down()
 
     def _render_second_pass(self) -> None:
@@ -141,6 +138,7 @@ class Manager:
 
     def _post_contruct(self) -> None:
         self.file_writer.finish()
+        self._write_files = False
 
     def _tear_down(self):
         self.scene.tear_down()
@@ -176,7 +174,7 @@ class Manager:
             self.window.clear()
 
         state = self.scene.get_state()
-        self._render_frame(state)
+        self._render_frame(state, write_frame=self._write_files)
 
         if self.window is not None:
             self.window.swap_buffers()
@@ -204,7 +202,7 @@ class Manager:
 
         self.scene.post_play()
 
-        self.file_writer.end_animation(allow_write=not config.dry_run)
+        self.file_writer.end_animation(allow_write=self._write_files)
 
     def _write_hashed_movie_file(self):
         """Compute the hash of a self.play call, and write it to a file
@@ -222,7 +220,7 @@ class Manager:
             hash_current_play = None
 
         self.file_writer.add_partial_movie_file(hash_current_play)
-        self.file_writer.begin_animation(allow_write=not config.dry_run)
+        self.file_writer.begin_animation(allow_write=self._write_files)
 
     def _wait(
         self, duration: float, *, stop_condition: Callable[[], bool] | None = None
@@ -259,8 +257,9 @@ class Manager:
     def _calc_runtime(self, animations: Iterable[AnimationProtocol]):
         return max(animation.get_run_time() for animation in animations)
 
-    def _render_frame(self, state: SceneState) -> None:
+    def _render_frame(self, state: SceneState, write_frame: bool = True) -> None:
         """Renders a frame based on a state, and writes it to a file"""
         self.renderer.render(self.scene.camera, state.mobjects)
-        frame = self.renderer.get_pixels()
-        self.file_writer.write_frame(frame)
+        if write_frame:
+            frame = self.renderer.get_pixels()
+            self.file_writer.write_frame(frame)
