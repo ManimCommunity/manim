@@ -2,25 +2,24 @@ from __future__ import annotations
 
 import time
 from collections.abc import Iterable
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Callable
 
 import numpy as np
 
 from manim import config, logger
 from manim.constants import RendererType
+from manim.file_writer import FileWriter
 from manim.renderer.cairo_renderer import CairoRenderer
+from manim.renderer.opengl_renderer import OpenGLRenderer
+from manim.renderer.opengl_renderer_window import Window
+from manim.scene.scene import Scene, SceneState
 from manim.utils.exceptions import EndSceneEarlyException
-
-from ..scene.scene import Scene, SceneState
-from .opengl_file_writer import FileWriter
-from .opengl_renderer import OpenGLRenderer
-from .opengl_renderer_window import Window
 
 if TYPE_CHECKING:
     from manim.animation.protocol import AnimationProtocol
 
-    from ..camera.camera import Camera
-    from .renderer import RendererProtocol
+    from .camera.camera import Camera
+    from .renderer.renderer import RendererProtocol
 
 __all__ = ("Manager",)
 
@@ -87,8 +86,6 @@ class Manager:
 
     def _setup(self) -> None:
         """Set up processes and manager"""
-        if self.file_writer.has_progress_display():
-            self.scene.show_animation_progress = False
 
         self.scene.setup()
 
@@ -187,11 +184,14 @@ class Manager:
                 self._update_frame(0)
 
     def _play(self, *animations: AnimationProtocol):
+        """Play a bunch of animations"""
         self.scene.pre_play()
 
         if self.window is not None:
             self.real_animation_start_time = time.perf_counter()
             self.virtual_animation_start_time = self.time
+
+        self._write_hashed_movie_file()
 
         self.scene.begin_animations(animations)
         self._progress_through_animations(animations)
@@ -201,6 +201,26 @@ class Manager:
             self._update_frame(dt=0)
 
         self.scene.post_play()
+
+        self.file_writer.end_animation()
+
+    def _write_hashed_movie_file(self):
+        """Compute the hash of a self.play call, and write it to a file
+
+        Essentially, a series of methods that need to be called to successfully
+        render a frame.
+        """
+
+        if config.disable_caching:
+            if not config.disable_caching_warning:
+                logger.info("Caching disabled...")
+            hash_current_play = f"uncached_{self.file_writer.num_plays:05}"
+        else:
+            # TODO: Implement some form of caching
+            hash_current_play = None
+
+        self.file_writer.add_partial_movie_file(hash_current_play)
+        self.file_writer.begin_animation(allow_write=not config.dry_run)
 
     def _wait(
         self, duration: float, *, stop_condition: Callable[[], bool] | None = None
@@ -237,12 +257,8 @@ class Manager:
     def _calc_runtime(self, animations: Iterable[AnimationProtocol]):
         return max(animation.get_run_time() for animation in animations)
 
-    def _render_frame(self, state: SceneState) -> Any | None:
+    def _render_frame(self, state: SceneState) -> None:
         """Renders a frame based on a state, and writes it to a file"""
-        data = self._send_scene_to_renderer(state)
-        # result = self.file_writer.write(data)
-
-    def _send_scene_to_renderer(self, state: SceneState):
-        """Renders the State"""
-        result = self.renderer.render(self.scene.camera, state.mobjects)
-        return result
+        self.renderer.render(self.scene.camera, state.mobjects)
+        frame = self.renderer.get_pixels()
+        self.file_writer.write_frame(frame)

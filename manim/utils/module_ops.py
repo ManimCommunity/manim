@@ -8,8 +8,9 @@ import types
 import warnings
 from pathlib import Path
 
+from manim.file_writer import FileWriter
+
 from .. import config, console, constants, logger
-from ..scene.scene_file_writer import SceneFileWriter
 
 __all__ = ["scene_classes_from_file"]
 
@@ -99,7 +100,7 @@ def get_scenes_to_render(scene_classes):
 
 def prompt_user_for_choice(scene_classes):
     num_to_class = {}
-    SceneFileWriter.force_output_as_scene_name = True
+    FileWriter.force_output_as_scene_name = True
     for count, scene_class in enumerate(scene_classes, 1):
         name = scene_class.__name__
         console.print(f"{count}: {name}", style="logging.level.info")

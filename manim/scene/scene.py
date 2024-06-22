@@ -36,7 +36,7 @@ if TYPE_CHECKING:
 
     from manim.animation.protocol import AnimationProtocol as Animation
     from manim.animation.scene_buffer import SceneBuffer
-    from manim.renderer.render_manager import Manager
+    from manim.manager import Manager
 
 # TODO: these keybindings should be made configurable
 

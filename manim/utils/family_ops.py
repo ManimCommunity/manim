@@ -7,15 +7,26 @@ __all__ = [
     "restructure_list_to_exclude_certain_family_members",
 ]
 
+from typing import TYPE_CHECKING
 
-def extract_mobject_family_members(mobject_list, only_those_with_points=False):
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Sequence
+
+    from manim.mobject.mobject import Mobject
+
+
+def extract_mobject_family_members(
+    mobject_list: Iterable[Mobject], only_those_with_points: bool = False
+) -> Sequence[Mobject]:
     result = list(it.chain(*(mob.get_family() for mob in mobject_list)))
     if only_those_with_points:
         result = [mob for mob in result if mob.has_points()]
     return result
 
 
-def restructure_list_to_exclude_certain_family_members(mobject_list, to_remove):
+def restructure_list_to_exclude_certain_family_members(
+    mobject_list: Iterable[Mobject], to_remove: Iterable[Mobject]
+) -> Sequence[Mobject]:
     """
     Removes anything in to_remove from mobject_list, but in the event that one of
     the items to be removed is a member of the family of an item in mobject_list,
@@ -43,8 +54,8 @@ def restructure_list_to_exclude_certain_family_members(mobject_list, to_remove):
 
 
 def recursive_mobject_remove(
-    mobjects: List[Mobject], to_remove: Set[Mobject]
-) -> Tuple[List[Mobject], bool]:
+    mobjects: list[Mobject], to_remove: set[Mobject]
+) -> tuple[Sequence[Mobject], bool]:
     """
     Takes in a list of mobjects, together with a set of mobjects to remove.
     The first component of what's removed is a new list such that any mobject

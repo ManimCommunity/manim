@@ -8,7 +8,6 @@ from manim.utils.hashing import get_hash_from_play_call
 
 from .. import config, logger
 from ..mobject.mobject import Mobject
-from ..scene.scene_file_writer import SceneFileWriter
 from ..utils.exceptions import EndSceneEarlyException
 from ..utils.iterables import list_update
 
@@ -32,7 +31,7 @@ class CairoRenderer:
 
     def __init__(
         self,
-        file_writer_class=SceneFileWriter,
+        file_writer_class=None,
         camera_class=None,
         skip_animations=False,
         **kwargs,

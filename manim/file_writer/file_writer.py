@@ -1,18 +1,23 @@
+"""The interface between scenes and ffmpeg."""
+
 from __future__ import annotations
 
-__all__ = ["SceneFileWriter"]
+__all__ = ["FileWriter"]
 
 import json
 import shutil
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import av
 import numpy as np
+import srt
+from PIL import Image
 from pydub import AudioSegment
-from tqdm import tqdm as ProgressDisplay
 
-from manim import config
+from manim import __version__
+from manim._config import config, logger
+from manim._config.logger_utils import set_file_logger
 from manim.utils.file_ops import (
     add_extension_if_not_present,
     add_version_before_extension,
@@ -24,57 +29,49 @@ from manim.utils.file_ops import (
 )
 from manim.utils.sounds import get_full_sound_file_path
 
+from .sections import DefaultSectionType, Section
+
 if TYPE_CHECKING:
-    from PIL.Image import Image
-
-    from manim.scene import Scene
+    from manim.typing import Image as ImageType
 
 
-class SceneFileWriter:
-    def __init__(
-        self,
-        scene: Scene,
-        write_to_movie: bool = False,
-        break_into_partial_movies: bool = False,
-        save_pngs: bool = False,  # TODO, this currently does nothing
-        png_mode: str = "RGBA",
-        save_last_frame: bool = False,
-        movie_file_extension: str = ".mp4",
-        # What python file is generating this scene
-        input_file_path: str = "",
-        # Where should this be written
-        output_directory: str | None = None,
-        file_name: str | None = None,
-        open_file_upon_completion: bool = False,
-        show_file_location_upon_completion: bool = False,
-        quiet: bool = False,
-        total_frames: int = 0,
-        progress_description_len: int = 40,
-    ):
-        self.scene: Scene = scene
-        self.write_to_movie = write_to_movie
-        self.break_into_partial_movies = break_into_partial_movies
-        self.save_pngs = save_pngs
-        self.png_mode = png_mode
-        self.save_last_frame = save_last_frame
-        self.movie_file_extension = movie_file_extension
-        self.input_file_path = input_file_path
-        self.output_directory = output_directory
-        self.file_name = file_name
-        self.open_file_upon_completion = open_file_upon_completion
-        self.show_file_location_upon_completion = show_file_location_upon_completion
-        self.quiet = quiet
-        self.total_frames = total_frames
-        self.progress_description_len = progress_description_len
+class FileWriter:
+    """
+    FileWriter is the object that actually writes the animations
+    played, into video files, using FFMPEG.
+    This is mostly for Manim's internal use. You will rarely, if ever,
+    have to use the methods for this class, unless tinkering with the very
+    fabric of Manim's reality.
 
-        # State during file writing
-        self.writing_process: sp.Popen | None = None
-        self.progress_display: ProgressDisplay | None = None
-        self.ended_with_interrupt: bool = False
-        self.init_output_directories()
+    Attributes
+    ----------
+        sections : list of :class:`.Section`
+            used to segment scene
+
+        sections_output_dir : :class:`pathlib.Path`
+            where are section videos stored
+
+        output_name : str
+            name of movie without extension and basis for section video names
+
+    Some useful attributes are:
+        "write_to_movie" (bool=False)
+            Whether or not to write the animations into a video file.
+        "movie_file_extension" (str=".mp4")
+            The file-type extension of the outputted video.
+        "partial_movie_files"
+            List of all the partial-movie files.
+
+    """
+
+    force_output_as_scene_name = False
+
+    def __init__(self, scene_name: str):
+        self.init_output_directories(scene_name)
         self.init_audio()
         self.frame_count = 0
-        self.partial_movie_files: list[str] = []
+        self.num_plays = 0
+        self.partial_movie_files: list[str | None] = []
         self.subcaptions: list[srt.Subtitle] = []
         self.sections: list[Section] = []
         # first section gets automatically created for convenience
@@ -83,7 +80,7 @@ class SceneFileWriter:
             name="autocreated", type=DefaultSectionType.NORMAL, skip_animations=False
         )
 
-    def init_output_directories(self, scene_name):
+    def init_output_directories(self, scene_name: str):
         """Initialise output directories.
 
         Notes
@@ -101,7 +98,7 @@ class SceneFileWriter:
         else:
             module_name = ""
 
-        if SceneFileWriter.force_output_as_scene_name:
+        if self.force_output_as_scene_name:
             self.output_name = Path(scene_name)
         elif config["output_file"] and not config["write_all"]:
             self.output_name = config.get_dir("output_file")
@@ -193,7 +190,7 @@ class SceneFileWriter:
             ),
         )
 
-    def add_partial_movie_file(self, hash_animation: str):
+    def add_partial_movie_file(self, hash_animation: str | None):
         """Adds a new partial movie file path to `scene.partial_movie_files` and current section from a hash.
         This method will compute the path from the hash. In addition to that it adds the new animation to the current section.
 
@@ -213,7 +210,7 @@ class SceneFileWriter:
         else:
             new_partial_movie_file = str(
                 self.partial_movie_directory
-                / f"{hash_animation}{config['movie_file_extension']}"
+                / f"{hash_animation}{config.movie_file_extension}"
             )
             self.partial_movie_files.append(new_partial_movie_file)
             self.sections[-1].partial_movie_files.append(new_partial_movie_file)
@@ -243,15 +240,21 @@ class SceneFileWriter:
         :class:`str`
             The name of the directory.
         """
-        pixel_height = config["pixel_height"]
-        frame_rate = config["frame_rate"]
+        pixel_height = config.pixel_height
+        frame_rate = config.frame_rate
         return f"{pixel_height}p{frame_rate}"
 
     # Sound
-    def init_audio(self) -> None:
-        self.includes_sound: bool = False
+    def init_audio(self):
+        """
+        Preps the writer for adding audio to the movie.
+        """
+        self.includes_sound = False
 
-    def create_audio_segment(self) -> None:
+    def create_audio_segment(self):
+        """
+        Creates an empty, silent, Audio Segment.
+        """
         self.audio_segment = AudioSegment.silent()
 
     def add_audio_segment(
@@ -259,7 +262,23 @@ class SceneFileWriter:
         new_segment: AudioSegment,
         time: float | None = None,
         gain_to_background: float | None = None,
-    ) -> None:
+    ):
+        """
+        This method adds an audio segment from an
+        AudioSegment type object and suitable parameters.
+
+        Parameters
+        ----------
+        new_segment
+            The audio segment to add
+
+        time
+            the timestamp at which the
+            sound should be added.
+
+        gain_to_background
+            The gain of the segment from the background.
+        """
         if not self.includes_sound:
             self.includes_sound = True
             self.create_audio_segment()
@@ -268,7 +287,7 @@ class SceneFileWriter:
         if time is None:
             time = curr_end
         if time < 0:
-            raise Exception("Adding sound at timestamp < 0")
+            raise ValueError("Adding sound at timestamp < 0")
 
         new_end = time + new_segment.duration_seconds
         diff = new_end - curr_end
@@ -288,13 +307,32 @@ class SceneFileWriter:
         sound_file: str,
         time: float | None = None,
         gain: float | None = None,
-        gain_to_background: float | None = None,
-    ) -> None:
+        **kwargs,
+    ):
+        """
+        This method adds an audio segment from a sound file.
+
+        Parameters
+        ----------
+        sound_file
+            The path to the sound file.
+
+        time
+            The timestamp at which the audio should be added.
+
+        gain
+            The gain of the given audio segment.
+
+        **kwargs
+            This method uses add_audio_segment, so any keyword arguments
+            used there can be referenced here.
+
+        """
         file_path = get_full_sound_file_path(sound_file)
         new_segment = AudioSegment.from_file(file_path)
         if gain:
             new_segment = new_segment.apply_gain(gain)
-        self.add_audio_segment(new_segment, time, gain_to_background)
+        self.add_audio_segment(new_segment, time, **kwargs)
 
     # Writers
     def begin_animation(self, allow_write: bool = False, file_path=None):
@@ -322,10 +360,9 @@ class SceneFileWriter:
         """
         if write_to_movie() and allow_write:
             self.close_partial_movie_stream()
+            self.num_plays += 1
 
-    def write_frame(
-        self, frame_or_renderer: np.ndarray | OpenGLRenderer, num_frames: int = 1
-    ):
+    def write_frame(self, frame: ImageType, num_frames: int = 1):
         """
         Used internally by Manim to write a frame to
         the FFMPEG input buffer.
@@ -338,11 +375,6 @@ class SceneFileWriter:
             The number of times to write frame.
         """
         if write_to_movie():
-            frame: np.ndarray = (
-                frame_or_renderer.get_frame()
-                if config.renderer == RendererType.OPENGL
-                else frame_or_renderer
-            )
             for _ in range(num_frames):
                 # Notes: precomputing reusing packets does not work!
                 # I.e., you cannot do `packets = encode(...)`
@@ -354,29 +386,27 @@ class SceneFileWriter:
                 for packet in self.video_stream.encode(av_frame):
                     self.video_container.mux(packet)
 
-        if is_png_format() and not config["dry_run"]:
-            image: Image = (
-                frame_or_renderer.get_image()
-                if config.renderer == RendererType.OPENGL
-                else Image.fromarray(frame_or_renderer)
-            )
+        if is_png_format() and not config.dry_run:
+            image = Image.fromarray(frame)
             target_dir = self.image_file_path.parent / self.image_file_path.stem
             extension = self.image_file_path.suffix
             self.output_image(
                 image,
                 target_dir,
                 extension,
-                config["zero_pad"],
+                config.zero_pad,
             )
 
-    def output_image(self, image: Image.Image, target_dir, ext, zero_pad: bool):
+    def output_image(
+        self, image: Image.Image, target_dir: str | Path, ext, zero_pad: bool
+    ):
         if zero_pad:
             image.save(f"{target_dir}{str(self.frame_count).zfill(zero_pad)}{ext}")
         else:
             image.save(f"{target_dir}{self.frame_count}{ext}")
         self.frame_count += 1
 
-    def save_final_image(self, image: np.ndarray):
+    def save_final_image(self, image: ImageType):
         """
         The name is a misnomer. This method saves the image
         passed to it as an in the default image directory.
@@ -426,11 +456,11 @@ class SceneFileWriter:
         the video stream of a partial movie file.
         """
         if file_path is None:
-            file_path = self.partial_movie_files[self.renderer.num_plays]
+            file_path = self.partial_movie_files[self.num_plays]
         self.partial_movie_file_path = file_path
 
-        fps = config["frame_rate"]
-        if fps == int(fps):  # fps is integer
+        fps = config.frame_rate
+        if isinstance(fps, float) and fps.is_integer():
             fps = int(fps)
 
         partial_movie_file_codec = "libx264"
@@ -476,7 +506,7 @@ class SceneFileWriter:
         self.video_container.close()
 
         logger.info(
-            f"Animation {self.renderer.num_plays} : Partial movie file written in %(path)s",
+            f"Animation {self.num_plays} : Partial movie file written in %(path)s",
             {"path": f"'{self.partial_movie_file_path}'"},
         )
 
@@ -517,7 +547,7 @@ class SceneFileWriter:
             fp.write("# This file is used internally by FFMPEG.\n")
             for pf_path in input_files:
                 pf_path = Path(pf_path).as_posix()
-                fp.write(f"file 'file:{pf_path}'\n")
+                fp.write(f"file '{pf_path}'\n")
 
         av_options = {
             "safe": "0",  # needed to read files
@@ -737,9 +767,9 @@ class SceneFileWriter:
             for file_name in self.partial_movie_directory.iterdir()
             if file_name != "partial_movie_file_list.txt"
         ]
-        if len(cached_partial_movies) > config["max_files_cached"]:
+        if len(cached_partial_movies) > config.max_files_cached:
             number_files_to_delete = (
-                len(cached_partial_movies) - config["max_files_cached"]
+                len(cached_partial_movies) - config.max_files_cached
             )
             oldest_files_to_delete = sorted(
                 cached_partial_movies,
@@ -748,7 +778,7 @@ class SceneFileWriter:
             for file_to_delete in oldest_files_to_delete:
                 file_to_delete.unlink()
             logger.info(
-                f"The partial movie directory is full (> {config['max_files_cached']} files). Therefore, manim has removed the {number_files_to_delete} oldest file(s)."
+                f"The partial movie directory is full (> {config.max_files_cached} files). Therefore, manim has removed the {number_files_to_delete} oldest file(s)."
                 " You can change this behaviour by changing max_files_cached in config.",
             )
 

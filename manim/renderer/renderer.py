@@ -3,20 +3,16 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Protocol
 
-import numpy as np
-from typing_extensions import TypeAlias
-
 from manim._config import logger
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.types.image_mobject import ImageMobject
+from manim.typing import Image as ImageType
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable, Sequence
 
     from manim.camera.camera import Camera
-
-ImageType: TypeAlias = np.ndarray
 
 
 class RendererData:

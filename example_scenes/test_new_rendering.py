@@ -9,5 +9,13 @@ class Test(Scene):
         self.play(Succession(*[Create(x) for x in VGroup(s, c, st).arrange()]))
 
 
-with tempconfig({"renderer": "opengl", "preview": True, "parallel": False}):
+with tempconfig(
+    {
+        "renderer": "opengl",
+        "preview": True,
+        "parallel": False,
+        "write_to_movie": True,
+        "disable_caching": True,
+    }
+):
     Manager(Test).render()
