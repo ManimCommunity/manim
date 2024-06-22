@@ -26,6 +26,10 @@ ModuleLevelAliasDict: TypeAlias = dict[str, AliasCategoryDict]
 classified by category in different `AliasCategoryDict` objects.
 """
 
+ModuleTypeVarDict: TypeAlias = dict[str, str]
+"""Dictionary containing every :class:`TypeVar` defined in a module"""
+
+
 AliasDocsDict: TypeAlias = dict[str, ModuleLevelAliasDict]
 """Dictionary which, for every module in Manim, contains documentation
 about their module-level attributes which are explicitly defined as
@@ -39,8 +43,12 @@ by Sphinx via the ``data`` role, hence the name) which are NOT
 explicitly defined as :class:`TypeAlias`.
 """
 
+TypeVarDict: TypeAlias = dict[str, ModuleTypeVarDict]
+"""A dictionary mapping a module to a dict of :class:`~typing.TypeVar`s"""
+
 ALIAS_DOCS_DICT: AliasDocsDict = {}
 DATA_DICT: DataDict = {}
+TYPEVAR_DICT: TypeVarDict = {}
 
 MANIM_ROOT = Path(__file__).resolve().parent.parent.parent
 
@@ -50,7 +58,7 @@ MANIM_ROOT = Path(__file__).resolve().parent.parent.parent
 # ruff: noqa: E721
 
 
-def parse_module_attributes() -> tuple[AliasDocsDict, DataDict]:
+def parse_module_attributes() -> tuple[AliasDocsDict, DataDict, TypeVarDict]:
     """Read all files, generate Abstract Syntax Trees from them, and
     extract useful information about the type aliases defined in the
     files: the category they belong to, their definition and their
@@ -68,9 +76,10 @@ def parse_module_attributes() -> tuple[AliasDocsDict, DataDict]:
     """
     global ALIAS_DOCS_DICT
     global DATA_DICT
+    global TYPEVAR_DICT
 
-    if ALIAS_DOCS_DICT or DATA_DICT:
-        return ALIAS_DOCS_DICT, DATA_DICT
+    if ALIAS_DOCS_DICT or DATA_DICT or TYPEVAR_DICT:
+        return ALIAS_DOCS_DICT, DATA_DICT, TYPEVAR_DICT
 
     for module_path in MANIM_ROOT.rglob("*.py"):
         module_name = module_path.resolve().relative_to(MANIM_ROOT)
@@ -84,6 +93,9 @@ def parse_module_attributes() -> tuple[AliasDocsDict, DataDict]:
         module_dict: ModuleLevelAliasDict = {}
         category_dict: AliasCategoryDict | None = None
         alias_info: AliasInfo | None = None
+
+        # For storing TypeVars
+        module_typevars: ModuleTypeVarDict = {}
 
         # For storing regular module attributes
         data_list: list[str] = []
@@ -172,6 +184,19 @@ def parse_module_attributes() -> tuple[AliasDocsDict, DataDict]:
                     alias_info = category_dict[alias_name]
                     continue
 
+                # Check if it is a typing.TypeVar
+                elif (
+                    type(node) is ast.Assign
+                    and type(node.targets[0]) is ast.Name
+                    and type(node.value) is ast.Call
+                    and type(node.value.func) is ast.Name
+                    and node.value.func.id.endswith("TypeVar")
+                ):
+                    module_typevars[node.targets[0].id] = ast.unparse(
+                        node.value
+                    ).replace("_", r"\_")
+                    continue
+
                 # If here, the node is not a TypeAlias definition
                 alias_info = None
 
@@ -185,7 +210,9 @@ def parse_module_attributes() -> tuple[AliasDocsDict, DataDict]:
                 else:
                     target = None
 
-                if type(target) is ast.Name:
+                if type(target) is ast.Name and not (
+                    type(node) is ast.Assign and target.id not in module_typevars
+                ):
                     data_name = target.id
                 else:
                     data_name = None
@@ -194,5 +221,7 @@ def parse_module_attributes() -> tuple[AliasDocsDict, DataDict]:
             ALIAS_DOCS_DICT[module_name] = module_dict
         if len(data_list) > 0:
             DATA_DICT[module_name] = data_list
+        if module_typevars:
+            TYPEVAR_DICT[module_name] = module_typevars
 
-    return ALIAS_DOCS_DICT, DATA_DICT
+    return ALIAS_DOCS_DICT, DATA_DICT, TYPEVAR_DICT
