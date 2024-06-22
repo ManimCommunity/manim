@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing_extensions import Self
+
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 
@@ -9,7 +11,7 @@ __all__ = ["NumberLine", "UnitInterval"]
 
 
 from collections.abc import Iterable, Sequence
-from typing import TYPE_CHECKING, Callable, Self
+from typing import TYPE_CHECKING, Callable
 
 if TYPE_CHECKING:
     from manim.mobject.geometry.tips import ArrowTip
