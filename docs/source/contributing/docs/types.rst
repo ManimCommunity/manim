@@ -1,18 +1,18 @@
-==================
-Choosing Typehints
-==================
+===================
+Choosing Type Hints
+===================
 In order to provide the best user experience,
-it's important that typehints are chosen correctly.
+it's important that type hints are chosen correctly.
 With the large variety of types provided by Manim, choosing
 which one to use can be difficult. This guide aims to
 aid you in the process of choosing the right type for the scenario.
 
 
-The first step is figuring out which category your typehint fits into.
+The first step is figuring out which category your type hint fits into.
 
 Coordinates
 -----------
-Coordinates encompasses two "main" categories: points, and vectors.
+Coordinates encompass two main categories: points, and vectors.
 
 
 Points
@@ -41,10 +41,10 @@ in space. For example:
                # it's a point3D
                status3D(coord)
 
-It's important to realize that the status functions worked with both
+It's important to realize that the status functions accepted both
 tuples/lists of the correct length, and ``NDArray``'s of the correct shape.
-If they only worked with ``NDArray``'s, we would use their "Internal" counterparts:
-``InternalPoint2D``, ``InternalPoint3D``, ``InternalPoint2D_Array`` and ``InternalPoint3D_Array``.
+If they only accepted ``NDArray``'s, we would use their ``Internal`` counterparts:
+:class:`~.typing.InternalPoint2D`, :class:`~.typing.InternalPoint3D`, :class:`~.typing.InternalPoint2D_Array` and :class:`~.typing.InternalPoint3D_Array`.
 
 In general, the type aliases prefixed with ``Internal`` should never be used on
 user-facing classes and functions, but should be reserved for internal behavior.
@@ -61,25 +61,25 @@ consider this slightly contrived function:
        return mob.shift(direction * scale_factor)
 
 Here we see an important example of the difference. ``direction`` can not, and
-should not, be typed as a ``Point3D`` because it does not work with something
-like ``direction=(0, 1, 0)``. You could type it as ``InternalPoint3D`` and
-the typechecker and linter would be happy; however, this makes the code harder
+should not, be typed as a :class:`~.typing.Point3D` because the function does not accept tuples/lists,
+like ``direction=(0, 1, 0)``. You could type it as :class:`~.typing.InternalPoint3D` and
+the type checker and linter would be happy; however, this makes the code harder
 to understand.
 
 As a general rule, if a parameter is called ``direction`` or ``axis``,
-it should be typehinted as some form of ``Vector``.
+it should be type hinted as some form of :class:`~.VectorND`.
 
 .. warning::
 
-   This is not always true. For example as of Manim 0.18.0, the direction
-   parameter of the Vector mobject should be ``Point2D | Point3D``
+   This is not always true. For example, as of Manim 0.18.0, the direction
+   parameter of the :class:`.Vector` Mobject should be ``Point2D | Point3D``,
    as it can also accept ``tuple[float, float]`` and ``tuple[float, float, float]``.
 
 Colors
 ------
-The interface manim provides for working with colors is :class:`.ManimColor`.
+The interface Manim provides for working with colors is :class:`.ManimColor`.
 The main color types Manim supports are RGB, RGBA, and HSV. You will want
-to typehint a function depending on which type it uses. If any color will work,
+to add type hints to a function depending on which type it uses. If any color will work,
 you will need something like:
 
 .. code-block:: python
@@ -87,15 +87,15 @@ you will need something like:
    if TYPE_CHECKING:
        from manim.utils.color import ParsableManimColor
 
-   # typehint stuff with ParsableManimColor
+   # type hint stuff with ParsableManimColor
 
 
 
 Béziers
 -------
-Manim internally represents a ``Mobject`` by a collection of points. These
-points represent Bézier curves, which are a way of representing a curve using a
-sequence of points.
+Manim internally represents a :class:`.Mobject` by a collection of points. In the case of :class:`.VMobject`,
+the most commonly used subclass of :class:`.Mobject`, these points represent Bézier curves,
+which are a way of representing a curve using a sequence of points.
 
 .. note::
 
@@ -105,11 +105,11 @@ sequence of points.
 Manim supports two different renderers, which each have different representations of
 Béziers: Cairo uses cubic Bézier curves, while OpenGL uses quadratic Bézier curves.
 
-Typehints like ``BezierPoints`` represent a single bezier curve, and ``BezierPath`` is
-essentially a sequence of ``BezierPoints``. A ``Spline`` is when a ``BezierPath``
-forms a closed curve. Manim also provides more specific type aliases when working with
-quadratic or cubic curves, and they are prefixed with their respective type (e.g. ``CubicBezierPoints``,
-which is a ``BezierPoints`` that specifically applies to cubic Bézier curves).
+type hints like :class:`~.typing.BezierPoints` represent a single bezier curve, and :class:`~.typing.BezierPath`
+represents multiple Bézier curves. A :class:`~.typing.Spline` is when the Bézier curves in a :class:`~.typing.BezierPath`
+forms a single connected curve. Manim also provides more specific type aliases when working with
+quadratic or cubic curves, and they are prefixed with their respective type (e.g. :class:`~.typing.CubicBezierPoints`,
+is a :class:`~.typing.BezierPoints` consisting of exactly 4 points representing a cubic Bézier curve).
 
 
 Functions
@@ -117,18 +117,18 @@ Functions
 Throughout the codebase, many different types of functions are used. The most obvious example
 is a rate function, which takes in a float and outputs a float (``Callable[[float], float]``).
 Another example is for overriding animations. One will often need to map a :class:`.Mobject`
-to an overridden :class:`Animation`, and for that we have the ``FunctionOverride`` typehint.
+to an overridden :class:`.Animation`, and for that we have the :class:`~.typing.FunctionOverride` type hint.
 
-``PathFuncType`` and ``MappingFunction`` are more niche, but are related to moving objects
+:class:`~.typing.PathFuncType` and :class:`~.typing.MappingFunction` are more niche, but are related to moving objects
 along a path, or applying functions. If you need to use it, you'll know.
 
 
 Images
 ------
-There are several representations of images in manim. The most common is
-the representation as a numpy array of floats representing the pixels of an image.
+There are several representations of images in Manim. The most common is
+the representation as a NumPy array of floats representing the pixels of an image.
 This is especially common when it comes to the OpenGL renderer.
 
-This is the usecase of the ``Image`` typehint. Sometimes, manim may use ``PIL.Image``,
-in which case one should use that typehint instead.
-Of course if a more specific type of image is needed, it can be annotated as such.
+This is the use case of the :class:`~.typing.Image` type hint. Sometimes, Manim may use ``PIL.Image``,
+in which case one should use that type hint instead.
+Of course, if a more specific type of image is needed, it can be annotated as such.
