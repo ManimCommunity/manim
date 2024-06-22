@@ -18,6 +18,7 @@ import numpy as np
 if TYPE_CHECKING:
     from typing_extensions import TypeAlias
 
+    from manim.scene.scene import Scene
     from manim.typing import Point3D
 
     NxGraph: TypeAlias = nx.classes.graph.Graph | nx.classes.digraph.DiGraph
@@ -477,7 +478,7 @@ def _determine_graph_layout(
             return cast(LayoutFunction, layout)(
                 nx_graph, scale=layout_scale, **layout_config
             )
-        except TypeError as e:
+        except TypeError:
             raise ValueError(
                 f"The layout '{layout}' is neither a recognized layout, a layout function,"
                 "nor a vertex placement dictionary.",

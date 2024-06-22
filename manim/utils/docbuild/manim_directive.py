@@ -82,7 +82,6 @@ from __future__ import annotations
 
 import csv
 import itertools as it
-import os
 import re
 import shutil
 import sys
@@ -356,7 +355,7 @@ def _write_rendering_stats(scene_name: str, run_time: str, file_name: str) -> No
             [
                 re.sub(r"^(reference\/)|(manim\.)", "", file_name),
                 scene_name,
-                "%.3f" % run_time,
+                f"{run_time:.3f}",
             ],
         )
 
