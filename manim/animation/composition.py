@@ -56,7 +56,7 @@ class AnimationGroup(Animation):
         self,
         *animations: Animation | Iterable[Animation] | types.GeneratorType[Animation],
         group: Group | VGroup | OpenGLGroup | OpenGLVGroup = None,
-        run_time: float | None = None,
+        run_time: float = 1.0,
         rate_func: Callable[[float], float] = linear,
         lag_ratio: float = 0,
         **kwargs,
