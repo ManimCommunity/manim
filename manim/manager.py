@@ -122,6 +122,7 @@ class Manager:
 
         try:
             self.scene.construct()
+            self._post_contruct()
             self._interact()
         except EndSceneEarlyException:
             pass
@@ -138,13 +139,14 @@ class Manager:
         """
         ...
 
+    def _post_contruct(self) -> None:
+        self.file_writer.finish()
+
     def _tear_down(self):
         self.scene.tear_down()
 
         if config.save_last_frame:
             self._update_frame(0)
-
-        self.file_writer.finish()
 
         if self.window is not None:
             self.window.close()
@@ -202,7 +204,7 @@ class Manager:
 
         self.scene.post_play()
 
-        self.file_writer.end_animation()
+        self.file_writer.end_animation(allow_write=not config.dry_run)
 
     def _write_hashed_movie_file(self):
         """Compute the hash of a self.play call, and write it to a file

@@ -547,7 +547,7 @@ class FileWriter:
             fp.write("# This file is used internally by FFMPEG.\n")
             for pf_path in input_files:
                 pf_path = Path(pf_path).as_posix()
-                fp.write(f"file '{pf_path}'\n")
+                fp.write(f"file 'file:{pf_path}'\n")
 
         av_options = {
             "safe": "0",  # needed to read files
