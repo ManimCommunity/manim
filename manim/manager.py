@@ -225,6 +225,8 @@ class Manager:
         Essentially, a series of methods that need to be called to successfully
         render a frame.
         """
+        if not config.write_to_movie:
+            return
 
         if config.disable_caching:
             if not config.disable_caching_warning:
