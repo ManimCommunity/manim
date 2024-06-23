@@ -17,13 +17,10 @@ ease_of_access_options = option_group(
         help="Display progress bars and/or keep them displayed.",
     ),
     option(
-        "-p",
         "--preview",
-        is_flag=True,
         help="Preview the Scene's animation. OpenGL does a live preview in a "
-        "popup window. Cairo opens the rendered video file in the system "
-        "default media player.",
-        default=None,
+        "popup window.",
+        default=True,
     ),
     option(
         "-f",

@@ -8,7 +8,6 @@ __all__ = [
     "guarantee_empty_existence",
     "seek_full_path_from_defaults",
     "modify_atime",
-    "open_file",
     "is_mp4_format",
     "is_gif_format",
     "is_png_format",
@@ -19,20 +18,14 @@ __all__ = [
 ]
 
 import os
-import platform
 import shutil
-import subprocess as sp
 import time
 from pathlib import Path
 from shutil import copyfile
-from typing import TYPE_CHECKING
 
 import numpy as np
 
-if TYPE_CHECKING:
-    from ..scene.scene_file_writer import SceneFileWriter
-
-from manim import __version__, config, logger
+from manim import __version__, config
 
 from .. import console
 
@@ -186,48 +179,6 @@ def modify_atime(file_path: str) -> None:
         The path of the file.
     """
     os.utime(file_path, times=(time.time(), Path(file_path).stat().st_mtime))
-
-
-def open_file(file_path, in_browser=False):
-    current_os = platform.system()
-    if current_os == "Windows":
-        os.startfile(file_path if not in_browser else file_path.parent)
-    else:
-        if current_os == "Linux":
-            commands = ["xdg-open"]
-            file_path = file_path if not in_browser else file_path.parent
-        elif current_os.startswith("CYGWIN"):
-            commands = ["cygstart"]
-            file_path = file_path if not in_browser else file_path.parent
-        elif current_os == "Darwin":
-            commands = ["open"] if not in_browser else ["open", "-R"]
-        else:
-            raise OSError("Unable to identify your operating system...")
-
-        # check after so that file path is set correctly
-        if config.preview_command:
-            commands = [config.preview_command]
-        commands.append(file_path)
-        sp.run(commands)
-
-
-def open_media_file(file_writer: SceneFileWriter) -> None:
-    file_paths = []
-
-    if config["save_last_frame"]:
-        file_paths.append(file_writer.image_file_path)
-    if write_to_movie() and not is_gif_format():
-        file_paths.append(file_writer.movie_file_path)
-    if write_to_movie() and is_gif_format():
-        file_paths.append(file_writer.gif_file_path)
-
-    for file_path in file_paths:
-        if config["show_in_file_browser"]:
-            open_file(file_path, True)
-        if config["preview"]:
-            open_file(file_path, False)
-
-            logger.info(f"Previewed File at: '{file_path}'")
 
 
 def get_template_names() -> list[str]:

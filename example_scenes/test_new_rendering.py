@@ -11,5 +11,5 @@ class Test(Scene):
         )
 
 
-with tempconfig({"write_to_movie": True, "disable_caching": True, "frame_rate": 60}):
+with tempconfig({"write_to_movie": False, "disable_caching": True, "frame_rate": 60}):
     Manager(Test).render()
