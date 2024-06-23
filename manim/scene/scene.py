@@ -24,7 +24,6 @@ from manim.mobject.mobject import Group, Point, _AnimationBuilder
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import RED
-from manim.utils.deprecation import deprecated
 from manim.utils.exceptions import EndSceneEarlyException
 from manim.utils.family_ops import extract_mobject_family_members
 from manim.utils.iterables import list_difference_update
@@ -57,7 +56,7 @@ class Scene:
 
     def __init__(
         self,
-        manager: Manager | None = None,
+        manager: Manager,
         window_config: dict = {},
         camera_config: dict = {},
         skip_animations: bool = False,
@@ -128,15 +127,6 @@ class Scene:
             self.replace(*to_replace_pairs)
         self.add(*buffer.to_add)
         buffer.clear()
-
-    @deprecated(message="Use Manager(Scene).render()")
-    @classmethod
-    def run(cls) -> None:
-        from ..renderer.render_manager import Manager
-
-        return Manager(cls).render()
-
-    render = run
 
     def setup(self) -> None:
         """
@@ -286,11 +276,9 @@ class Scene:
 
     def has_time_based_updaters(self) -> bool:
         return any(
-            [
-                sm.has_time_based_updater()
-                for mob in self.mobjects
-                for sm in mob.get_family()
-            ]
+            sm.has_time_based_updater()
+            for mob in self.mobjects
+            for sm in mob.get_family()
         )
 
     # Related to time
@@ -613,7 +601,7 @@ class Scene:
             anim.update_rate_info(run_time, rate_func, lag_ratio)
 
         # NOTE: Should be changed at some point with the 2 pass rendering system 21.06.2024
-        self.manager._play(*animations)
+        self.manager._play(*animations, run_time=run_time)
 
     def wait(
         self,

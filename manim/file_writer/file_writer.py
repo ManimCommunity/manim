@@ -398,7 +398,7 @@ class FileWriter:
             )
 
     def output_image(
-        self, image: Image.Image, target_dir: str | Path, ext, zero_pad: bool
+        self, image: Image.Image, target_dir: str | Path, ext, zero_pad: int
     ):
         if zero_pad:
             image.save(f"{target_dir}{str(self.frame_count).zfill(zero_pad)}{ext}")
@@ -460,7 +460,7 @@ class FileWriter:
         self.partial_movie_file_path = file_path
 
         fps = config.frame_rate
-        if isinstance(fps, float) and fps.is_integer():
+        if fps == int(fps):
             fps = int(fps)
 
         partial_movie_file_codec = "libx264"

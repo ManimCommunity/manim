@@ -90,6 +90,9 @@ class Manager:
 
         self.scene.setup()
 
+        # these are used for making sure it feels like the correct
+        # amount of time has passed in the window instead of rendering
+        # at full speed
         self.virtual_animation_start_time = 0
         self.real_animation_start_time = time.perf_counter()
 
@@ -163,10 +166,18 @@ class Manager:
         while not self.window.is_closing:
             # TODO: Replace with actual dt instead
             # of hardcoded dt
-            dt = 1 / self.camera.fps
+            dt = 1 / config.frame_rate
             self._update_frame(dt)
 
-    def _update_frame(self, dt: float) -> None:
+    def _update_frame(self, dt: float, *, write_to_file: bool | None = None) -> None:
+        """Update the current frame by ``dt``
+
+        Parameters
+        ----------
+            dt : the time in between frames
+            write_to_file : Whether to write the result to the output stream.
+                Default value checks :attr:`_write_files` to see if it should be written.
+        """
         self.time += dt
         self.scene._update_mobjects(dt)
 
@@ -174,16 +185,20 @@ class Manager:
             self.window.clear()
 
         state = self.scene.get_state()
-        self._render_frame(state, write_frame=self._write_files)
+        self._render_frame(state, write_file=write_to_file)
 
         if self.window is not None:
             self.window.swap_buffers()
+            # This recursively updates the window with dt=0 until the correct
+            # amount of time has passed
             vt = self.time - self.virtual_animation_start_time
             rt = time.perf_counter() - self.real_animation_start_time
             if rt < vt:
-                self._update_frame(0)
+                self._update_frame(0, write_to_file=False)
 
-    def _play(self, *animations: AnimationProtocol) -> None:
+    def _play(
+        self, *animations: AnimationProtocol, run_time: float | None = None
+    ) -> None:
         """Play a bunch of animations"""
         self.scene.pre_play()
 
@@ -194,7 +209,7 @@ class Manager:
         self._write_hashed_movie_file()
 
         self.scene.begin_animations(animations)
-        self._progress_through_animations(animations)
+        self._progress_through_animations(animations, run_time=run_time)
         self.scene.finish_animations(animations)
 
         if self.scene.skip_animations and self.window is not None:
@@ -223,7 +238,10 @@ class Manager:
         self.file_writer.begin_animation(allow_write=self._write_files)
 
     def _wait(
-        self, duration: float, *, stop_condition: Callable[[], bool] | None = None
+        self,
+        duration: float,
+        *,
+        stop_condition: Callable[[], bool] | None = None,
     ) -> None:
         self.scene.pre_play()
 
@@ -248,24 +266,33 @@ class Manager:
         self.file_writer.end_animation(allow_write=self._write_files)
 
     def _progress_through_animations(
-        self, animations: Iterable[AnimationProtocol]
+        self, animations: Iterable[AnimationProtocol], run_time: float | None = None
     ) -> None:
         last_t = 0.0
-        run_time = self._calc_runtime(animations)
+        run_time = run_time or self._calc_runtime(animations)
         for t in self._calc_time_progression(run_time):
             dt, last_t = t - last_t, t
             self.scene._update_animations(animations, t, dt)
             self._update_frame(dt)
 
     def _calc_time_progression(self, run_time: float) -> Iterable[float]:
-        return np.arange(0, run_time, 1 / self.camera.fps)
+        # we can't use endpoint=True because for two consecutive play calls
+        # that would cause an extra frame to be created
+        return np.arange(0, run_time, 1 / config.frame_rate)
 
     def _calc_runtime(self, animations: Iterable[AnimationProtocol]) -> float:
         return max(animation.get_run_time() for animation in animations)
 
-    def _render_frame(self, state: SceneState, write_frame: bool = True) -> None:
+    def _render_frame(self, state: SceneState, write_file: bool | None = None) -> None:
         """Renders a frame based on a state, and writes it to a file"""
+
+        # render the frame to the window
         self.renderer.render(self.scene.camera, state.mobjects)
-        if write_frame:
-            frame = self.renderer.get_pixels()
-            self.file_writer.write_frame(frame)
+
+        should_write = write_file if write_file is not None else self._write_files
+        if should_write:
+            self._write_frame_from_renderer()
+
+    def _write_frame_from_renderer(self):
+        frame = self.renderer.get_pixels()
+        self.file_writer.write_frame(frame)

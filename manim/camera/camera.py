@@ -21,7 +21,7 @@ from ..utils.space_ops import normalize
 
 
 class Camera(OpenGLMobject):
-    fps: int = 30
+    fps = config.frame_rate
 
     def __init__(
         self,
