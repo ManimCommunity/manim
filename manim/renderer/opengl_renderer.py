@@ -194,9 +194,8 @@ class ProgramManager:
     def write_uniforms(prog, uniforms):
         for name in prog:
             member = prog[name]
-            if isinstance(member, gl.Uniform):
-                if name in uniforms:
-                    member.value = uniforms[name]
+            if isinstance(member, gl.Uniform) and name in uniforms:
+                member.value = uniforms[name]
 
     @staticmethod
     def bind_to_uniform_block(uniform_buffer_object: gl.Buffer, idx: int = 0):
@@ -411,6 +410,9 @@ class OpenGLRenderer(Renderer, RendererProtocol):
         raise NotImplementedError  # TODO
 
     def render_previous(self, camera: Camera) -> None:
+        raise NotImplementedError
+
+    def render_mesh(self, mob) -> None:
         raise NotImplementedError
 
     def render_vmobject(self, mob: OpenGLVMobject) -> None:  # type: ignore

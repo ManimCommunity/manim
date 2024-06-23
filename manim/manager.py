@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import threading
 import time
 from collections.abc import Iterable
 from typing import TYPE_CHECKING, Callable
@@ -59,7 +58,7 @@ class Manager:
 
         # Initialize window, if applicable
         if config.preview:
-            self.window = Window()
+            self.window: Window | None = Window()
         else:
             self.window = None
 
@@ -69,7 +68,7 @@ class Manager:
 
         # file writer
         self.file_writer = FileWriter(self.scene.get_default_scene_name())  # TODO
-        self._write_files = not config.dry_run
+        self._write_files = config.write_to_movie
 
     @property
     def camera(self) -> Camera:
@@ -141,7 +140,7 @@ class Manager:
         self.file_writer.finish()
         self._write_files = False
 
-    def _tear_down(self):
+    def _tear_down(self) -> None:
         self.scene.tear_down()
 
         if config.save_last_frame:
@@ -167,7 +166,7 @@ class Manager:
             dt = 1 / self.camera.fps
             self._update_frame(dt)
 
-    def _update_frame(self, dt: float):
+    def _update_frame(self, dt: float) -> None:
         self.time += dt
         self.scene._update_mobjects(dt)
 
@@ -184,7 +183,7 @@ class Manager:
             if rt < vt:
                 self._update_frame(0)
 
-    def _play(self, *animations: AnimationProtocol):
+    def _play(self, *animations: AnimationProtocol) -> None:
         """Play a bunch of animations"""
         self.scene.pre_play()
 
@@ -205,7 +204,7 @@ class Manager:
 
         self.file_writer.end_animation(allow_write=self._write_files)
 
-    def _write_hashed_movie_file(self):
+    def _write_hashed_movie_file(self) -> None:
         """Compute the hash of a self.play call, and write it to a file
 
         Essentially, a series of methods that need to be called to successfully
@@ -220,15 +219,12 @@ class Manager:
             # TODO: Implement some form of caching
             hash_current_play = None
 
-        def begin_animation():
-            self.file_writer.add_partial_movie_file(hash_current_play)
-            self.file_writer.begin_animation(allow_write=self._write_files)
-
-        threading.Thread(target=begin_animation).start()
+        self.file_writer.add_partial_movie_file(hash_current_play)
+        self.file_writer.begin_animation(allow_write=self._write_files)
 
     def _wait(
         self, duration: float, *, stop_condition: Callable[[], bool] | None = None
-    ):
+    ) -> None:
         self.scene.pre_play()
 
         self._write_hashed_movie_file()
@@ -251,8 +247,10 @@ class Manager:
 
         self.file_writer.end_animation(allow_write=self._write_files)
 
-    def _progress_through_animations(self, animations: Iterable[AnimationProtocol]):
-        last_t = 0
+    def _progress_through_animations(
+        self, animations: Iterable[AnimationProtocol]
+    ) -> None:
+        last_t = 0.0
         run_time = self._calc_runtime(animations)
         for t in self._calc_time_progression(run_time):
             dt, last_t = t - last_t, t
@@ -262,7 +260,7 @@ class Manager:
     def _calc_time_progression(self, run_time: float) -> Iterable[float]:
         return np.arange(0, run_time, 1 / self.camera.fps)
 
-    def _calc_runtime(self, animations: Iterable[AnimationProtocol]):
+    def _calc_runtime(self, animations: Iterable[AnimationProtocol]) -> float:
         return max(animation.get_run_time() for animation in animations)
 
     def _render_frame(self, state: SceneState, write_frame: bool = True) -> None:

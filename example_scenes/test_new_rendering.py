@@ -13,9 +13,6 @@ class Test(Scene):
 
 with tempconfig(
     {
-        "renderer": "opengl",
-        "preview": True,
-        "parallel": False,
         "write_to_movie": True,
         "disable_caching": True,
     }
