@@ -45,7 +45,6 @@ networkx = ">=2.6"
 notebook = { version = ">=6.0.0", optional = true }
 numpy = ">=1.26"
 Pillow = ">=9.1"
-pycairo = ">=1.13,<2.0.0"
 pyopengl = "^3.1.6"
 pydub = ">=0.20.0"
 Pygments = ">=2.0.0"
