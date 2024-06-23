@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import threading
 import time
 from collections.abc import Iterable
 from typing import TYPE_CHECKING, Callable
@@ -219,13 +220,18 @@ class Manager:
             # TODO: Implement some form of caching
             hash_current_play = None
 
-        self.file_writer.add_partial_movie_file(hash_current_play)
-        self.file_writer.begin_animation(allow_write=self._write_files)
+        def begin_animation():
+            self.file_writer.add_partial_movie_file(hash_current_play)
+            self.file_writer.begin_animation(allow_write=self._write_files)
+
+        threading.Thread(target=begin_animation).start()
 
     def _wait(
         self, duration: float, *, stop_condition: Callable[[], bool] | None = None
     ):
         self.scene.pre_play()
+
+        self._write_hashed_movie_file()
 
         update_mobjects = (
             self.scene.should_update_mobjects()
@@ -242,6 +248,8 @@ class Manager:
             else:
                 self.renderer.render_previous(self.camera)
         self.scene.post_play()
+
+        self.file_writer.end_animation(allow_write=self._write_files)
 
     def _progress_through_animations(self, animations: Iterable[AnimationProtocol]):
         last_t = 0

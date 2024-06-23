@@ -7,6 +7,8 @@ class Test(Scene):
         c = Circle()
         st = Star(color=YELLOW, fill_color=YELLOW)
         self.play(Succession(*[Create(x) for x in VGroup(s, c, st).arrange()]))
+        self.wait()
+        self.play(*[Uncreate(x) for x in VGroup(s, c, st)])
 
 
 with tempconfig(
