@@ -8,7 +8,7 @@ import numpy as np
 from PIL import Image
 
 from manim.constants import *
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.mobject.mobject import Mobject
 from manim.utils.bezier import integer_interpolate, interpolate
 from manim.utils.color import *
 from manim.utils.config_ops import _Data, _Uniforms
@@ -16,10 +16,10 @@ from manim.utils.images import change_to_rgba_array, get_full_raster_image_path
 from manim.utils.iterables import listify
 from manim.utils.space_ops import normalize_along_axis
 
-__all__ = ["OpenGLSurface", "OpenGLTexturedSurface"]
+__all__ = ["Surface", "TexturedSurface"]
 
 
-class OpenGLSurface(OpenGLMobject):
+class Surface(Mobject):
     r"""Creates a Surface.
 
     Parameters
@@ -174,7 +174,7 @@ class OpenGLSurface(OpenGLMobject):
         return normalize_along_axis(normals, 1)
 
     def pointwise_become_partial(self, smobject, a, b, axis=None):
-        assert isinstance(smobject, OpenGLSurface)
+        assert isinstance(smobject, Surface)
         if axis is None:
             axis = self.prefered_creation_axis
         if a <= 0 and b >= 1:
@@ -345,7 +345,7 @@ class OpenGLSurface(OpenGLMobject):
         return self.get_triangle_indices()
 
 
-class OpenGLSurfaceGroup(OpenGLSurface):
+class SurfaceGroup(Surface):
     def __init__(self, *parametric_surfaces, resolution=None, **kwargs):
         self.resolution = (0, 0) if resolution is None else resolution
         super().__init__(uv_func=None, **kwargs)
@@ -355,7 +355,7 @@ class OpenGLSurfaceGroup(OpenGLSurface):
         pass  # Needed?
 
 
-class OpenGLTexturedSurface(OpenGLSurface):
+class TexturedSurface(Surface):
     shader_dtype = [
         ("point", np.float32, (3,)),
         ("du_point", np.float32, (3,)),
@@ -370,7 +370,7 @@ class OpenGLTexturedSurface(OpenGLSurface):
 
     def __init__(
         self,
-        uv_surface: OpenGLSurface,
+        uv_surface: Surface,
         image_file: str | Path,
         dark_image_file: str | Path = None,
         image_mode: str | Iterable[str] = "RGBA",
@@ -379,8 +379,8 @@ class OpenGLTexturedSurface(OpenGLSurface):
     ):
         self.uniforms = {}
 
-        if not isinstance(uv_surface, OpenGLSurface):
-            raise Exception("uv_surface must be of type OpenGLSurface")
+        if not isinstance(uv_surface, Surface):
+            raise Exception("uv_surface must be of type Surface")
         if isinstance(image_file, np.ndarray):
             image_file = change_to_rgba_array(image_file)
 

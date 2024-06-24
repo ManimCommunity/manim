@@ -8,7 +8,6 @@ import numpy as np
 from pathops import Path as SkiaPath
 from pathops import PathVerb, difference, intersection, union, xor
 
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VMobject
 
 if TYPE_CHECKING:
@@ -18,7 +17,7 @@ if TYPE_CHECKING:
 __all__ = ["Union", "Intersection", "Difference", "Exclusion"]
 
 
-class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
+class _BooleanOps(VMobject):
     """This class contains some helper functions which
     helps to convert to and from skia objects and manim
     objects (:class:`~.VMobject`).

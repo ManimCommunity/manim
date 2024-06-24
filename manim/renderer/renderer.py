@@ -4,9 +4,9 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Protocol
 
 from manim._config import logger
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+from manim.mobject.mobject import Mobject
 from manim.mobject.types.image_mobject import ImageMobject
+from manim.mobject.types.vectorized_mobject import VMobject
 from manim.typing import Image as ImageType
 
 if TYPE_CHECKING:
@@ -22,11 +22,11 @@ class RendererData:
 class Renderer(ABC):
     def __init__(self):
         self.capabilities = [
-            (OpenGLVMobject, self.render_vmobject),  # type: ignore
+            (VMobject, self.render_vmobject),  # type: ignore
             (ImageMobject, self.render_image),  # type: ignore
         ]
 
-    def render(self, camera, renderables: Iterable[OpenGLMobject]) -> None:  # Image
+    def render(self, camera, renderables: Iterable[Mobject]) -> None:  # Image
         self.pre_render(camera)
         for mob in renderables:
             for type_, render_func in self.capabilities:
@@ -48,7 +48,7 @@ class Renderer(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def render_vmobject(self, mob: OpenGLVMobject):
+    def render_vmobject(self, mob: VMobject):
         raise NotImplementedError
 
     @abstractmethod
@@ -57,11 +57,9 @@ class Renderer(ABC):
 
 
 class RendererProtocol(Protocol):
-    capabilities: Sequence[
-        tuple[type[OpenGLMobject], Callable[[type[OpenGLMobject]], object]]
-    ]
+    capabilities: Sequence[tuple[type[Mobject], Callable[[type[Mobject]], object]]]
 
-    def render(self, camera: Camera, renderables: Iterable[OpenGLMobject]) -> None: ...
+    def render(self, camera: Camera, renderables: Iterable[Mobject]) -> None: ...
 
     def render_previous(self, camera: Camera) -> None: ...
 
@@ -71,7 +69,7 @@ class RendererProtocol(Protocol):
 
     def use_window(self) -> None: ...
 
-    def render_vmobject(self, mob: OpenGLVMobject) -> object: ...
+    def render_vmobject(self, mob: VMobject) -> object: ...
 
     def render_mesh(self, mob) -> None: ...
 

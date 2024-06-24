@@ -20,8 +20,7 @@ from manim.constants import DEFAULT_WAIT_TIME
 from manim.event_handler import EVENT_DISPATCHER
 from manim.event_handler.event_type import EventType
 from manim.mobject.frame import FullScreenRectangle
-from manim.mobject.mobject import Group, Point, _AnimationBuilder
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
+from manim.mobject.mobject import Group, Mobject, Point, _AnimationBuilder
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import RED
 from manim.utils.exceptions import EndSceneEarlyException
@@ -82,17 +81,21 @@ class Scene:
         self.embed_error_sound = embed_error_sound
 
         # Core state of the scene
-        self.camera: Camera = Camera()
+        self.camera = Camera()
         self.camera.save_state()
+
+        # TODO: Remove this interdependency
         self.manager = manager
+
+        # core state of mobjects
         self.mobjects: list[Mobject] = []
         self.id_to_mobject_map: dict[int, Mobject] = {}
         self.num_plays: int = 0
         self.time: float = 0
         self.skip_time: float = 0
         self.original_skipping_status: bool = self.skip_animations
-        self.undo_stack = []
-        self.redo_stack = []
+        self.undo_stack: list[SceneState] = []
+        self.redo_stack: list[SceneState] = []
 
         if self.start_at_animation_number is not None:
             self.skip_animations = True

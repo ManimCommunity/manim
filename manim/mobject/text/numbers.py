@@ -10,7 +10,6 @@ import numpy as np
 
 from manim import config
 from manim.constants import *
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.text.tex_mobject import MathTex, SingleStringMathTex, Tex
 from manim.mobject.text.text_mobject import Text
 from manim.mobject.types.vectorized_mobject import VMobject
@@ -21,7 +20,7 @@ string_to_mob_map = {}
 __all__ = ["DecimalNumber", "Integer", "Variable"]
 
 
-class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
+class DecimalNumber(VMobject):
     """An mobject representing a decimal number.
 
     Parameters
@@ -337,7 +336,7 @@ class Integer(DecimalNumber):
         return int(np.round(super().get_value()))
 
 
-class Variable(VMobject, metaclass=ConvertToOpenGL):
+class Variable(VMobject):
     """A class for displaying text that shows "label = value" with
     the value continuously updated from a :class:`~.ValueTracker`.
 

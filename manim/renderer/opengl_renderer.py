@@ -8,7 +8,7 @@ import manim.utils.color.core as c
 import manim.utils.color.manim_colors as color
 from manim import config, logger
 from manim.camera.camera import Camera
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+from manim.mobject.types.vectorized_mobject import VMobject
 from manim.renderer.buffers.buffer import STD140BufferFormat
 from manim.renderer.opengl_shader_program import load_shader_program_by_folder
 from manim.renderer.renderer import ImageType, Renderer, RendererData, RendererProtocol
@@ -73,7 +73,7 @@ bounding_box:
 
 
 # TODO: Move into GLVMobjectManager
-def get_triangulation(self: OpenGLVMobject, normal_vector=None):
+def get_triangulation(self: VMobject, normal_vector=None):
     # Figure out how to triangulate the interior to know
     # how to send the points as to the vertex shader.
     # First triangles come directly from the points
@@ -325,7 +325,7 @@ class OpenGLRenderer(Renderer, RendererProtocol):
         ProgramManager.write_uniforms(self.vmobject_stroke_program, uniforms)
 
     # TODO: Move into GLVMobjectManager
-    def get_stroke_shader_data(self, mob: OpenGLVMobject) -> np.ndarray:
+    def get_stroke_shader_data(self, mob: VMobject) -> np.ndarray:
         if not isinstance(mob.renderer_data, GLRenderData):
             raise TypeError()
 
@@ -344,7 +344,7 @@ class OpenGLRenderer(Renderer, RendererProtocol):
         return stroke_data
 
     # TODO: Move into GLVMobjectManager
-    def get_fill_shader_data(self, mob: OpenGLVMobject) -> np.ndarray:
+    def get_fill_shader_data(self, mob: VMobject) -> np.ndarray:
         if not isinstance(mob.renderer_data, GLRenderData):
             raise TypeError()
 
@@ -415,7 +415,7 @@ class OpenGLRenderer(Renderer, RendererProtocol):
     def render_mesh(self, mob) -> None:
         raise NotImplementedError
 
-    def render_vmobject(self, mob: OpenGLVMobject) -> None:  # type: ignore
+    def render_vmobject(self, mob: VMobject) -> None:  # type: ignore
         self.stencil_buffer_fbo.use()
         self.stencil_buffer_fbo.clear()
         self.render_target_fbo.use()
@@ -524,7 +524,7 @@ class OpenGLRenderer(Renderer, RendererProtocol):
 
 class GLVMobjectManager:
     @staticmethod
-    def init_render_data(mob: OpenGLVMobject):
+    def init_render_data(mob: VMobject):
         logger.debug("Initializing GLRenderData")
         mob.renderer_data = GLRenderData()
 
@@ -547,7 +547,7 @@ class GLVMobjectManager:
         # print(mob.renderer_data)
 
     @staticmethod
-    def read_uniforms(mob: OpenGLVMobject):
+    def read_uniforms(mob: VMobject):
         uniforms = {}
         uniforms["reflectiveness"] = mob.reflectiveness
         uniforms["is_fixed_in_frame"] = float(mob.is_fixed_in_frame)

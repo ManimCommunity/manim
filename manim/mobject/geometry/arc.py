@@ -50,9 +50,7 @@ import numpy as np
 from typing_extensions import Self
 
 from manim.constants import *
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup as VGroup
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject as VMobject
+from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import BLACK, BLUE, RED, WHITE, ParsableManimColor
 from manim.utils.iterables import adjacent_pairs
 from manim.utils.space_ops import (
@@ -71,7 +69,7 @@ if TYPE_CHECKING:
     from manim.typing import CubicBezierPoints, Point3D, QuadraticBezierPoints, Vector3D
 
 
-class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
+class TipableVMobject(VMobject):
     """Meant for shared functionality between Arc and Line.
     Functionality can be classified broadly into these groups:
 
@@ -319,7 +317,7 @@ class Arc(TipableVMobject):
         self.scale(self.radius, about_point=ORIGIN)
         self.shift(self.arc_center)
 
-    # Points are set a bit differently when rendering via OpenGL.
+    # Points are set a bit differently when rendering via .
     # TODO: refactor Arc so that only one strategy for setting points
     # has to be used.
     def init_points(self) -> None:
@@ -962,7 +960,7 @@ class Annulus(Circle):
     init_points = generate_points
 
 
-class CubicBezier(VMobject, metaclass=ConvertToOpenGL):
+class CubicBezier(VMobject):
     """A cubic Bézier curve.
 
     Example
@@ -997,7 +995,7 @@ class CubicBezier(VMobject, metaclass=ConvertToOpenGL):
         self.add_cubic_bezier_curve(start_anchor, start_handle, end_handle, end_anchor)
 
 
-class ArcPolygon(VMobject, metaclass=ConvertToOpenGL):
+class ArcPolygon(VMobject):
     """A generalized polygon allowing for points to be connected with arcs.
 
     This version tries to stick close to the way :class:`Polygon` is used. Points
@@ -1116,7 +1114,7 @@ class ArcPolygon(VMobject, metaclass=ConvertToOpenGL):
         self.arcs = arcs
 
 
-class ArcPolygonFromArcs(VMobject, metaclass=ConvertToOpenGL):
+class ArcPolygonFromArcs(VMobject):
     """A generalized polygon allowing for points to be connected with arcs.
 
     This version takes in pre-defined arcs to generate the arcpolygon and introduces

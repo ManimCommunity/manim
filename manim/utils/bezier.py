@@ -7,9 +7,7 @@ from collections.abc import Iterable
 __all__ = [
     "bezier",
     "partial_bezier_points",
-    "partial_quadratic_bezier_points",
     "split_bezier",
-    "subdivide_quadratic_bezier",
     "subdivide_bezier",
     "bezier_remap",
     "quadratic_bezier_remap",
@@ -46,6 +44,7 @@ if TYPE_CHECKING:
         BezierPoints,
         BezierPoints_Array,
         ColVector,
+        InternalPoint3D_Array,
         MatrixMN,
         Point3D,
         Point3D_Array,
@@ -313,27 +312,6 @@ def partial_bezier_points(points: BezierPoints, a: float, b: float) -> BezierPoi
             arr[i:] += mu * (arr[i - 1 : -1] - arr[i:])
 
     return arr
-
-
-def partial_quadratic_bezier_points(points, a, b):
-    points = np.asarray(points, dtype=np.float64)
-    if a == 1:
-        return 3 * [points[-1]]
-
-    def curve(t):
-        return (
-            points[0] * (1 - t) * (1 - t)
-            + 2 * points[1] * t * (1 - t)
-            + points[2] * t * t
-        )
-
-    # bezier(points)
-    h0 = curve(a) if a > 0 else points[0]
-    h2 = curve(b) if b < 1 else points[2]
-    h1_prime = (1 - a) * points[1] + a * points[2]
-    end_prop = (b - a) / (1.0 - a)
-    h1 = (1 - end_prop) * h0 + end_prop * h1_prime
-    return [h0, h1, h2]
 
 
 def split_bezier(points: BezierPoints, t: float) -> Point3D_Array:
@@ -676,68 +654,6 @@ def split_quadratic_bezier(points: np.ndarray, t: float) -> np.ndarray:
     return np.array([a1, s1, p, p, s2, a2])
 
 
-def subdivide_quadratic_bezier(points: Iterable[float], n: int) -> np.ndarray:
-    """Subdivide a quadratic Bézier curve into ``n`` subcurves which have the same shape.
-
-    The points at which the curve is split are located at the
-    arguments :math:`t = i/n` for :math:`i = 1, ..., n-1`.
-
-    Parameters
-    ----------
-    points
-        The control points of the Bézier curve in form ``[a1, h1, b1]``
-
-    n
-        The number of curves to subdivide the Bézier curve into
-
-    Returns
-    -------
-        The new points for the Bézier curve in the form ``[a1, h1, b1, a2, h2, b2, ...]``
-
-    .. image:: /_static/bezier_subdivision_example.png
-
-    """
-    beziers = np.empty((n, 3, 3))
-    current = points
-    for j in range(0, n):
-        i = n - j
-        tmp = split_quadratic_bezier(current, 1 / i)
-        beziers[j] = tmp[:3]
-        current = tmp[3:]
-    return beziers.reshape(-1, 3)
-
-
-def subdivide_quadratic_bezier(points: Iterable[float], n: int) -> np.ndarray:
-    """Subdivide a quadratic Bézier curve into ``n`` subcurves which have the same shape.
-
-    The points at which the curve is split are located at the
-    arguments :math:`t = i/n` for :math:`i = 1, ..., n-1`.
-
-    Parameters
-    ----------
-    points
-        The control points of the Bézier curve in form ``[a1, h1, b1]``
-
-    n
-        The number of curves to subdivide the Bézier curve into
-
-    Returns
-    -------
-        The new points for the Bézier curve in the form ``[a1, h1, b1, a2, h2, b2, ...]``
-
-    .. image:: /_static/bezier_subdivision_example.png
-
-    """
-    beziers = np.empty((n, 3, 3))
-    current = points
-    for j in range(0, n):
-        i = n - j
-        tmp = split_quadratic_bezier(current, 1 / i)
-        beziers[j] = tmp[:3]
-        current = tmp[3:]
-    return beziers.reshape(-1, 3)
-
-
 # Memos explained in subdivide_bezier docstring
 SUBDIVISION_MATRICES = [{} for i in range(4)]
 
@@ -851,7 +767,7 @@ def _get_subdivision_matrix(n_points: int, n_divisions: int) -> MatrixMN:
     return subdivision_matrix
 
 
-def subdivide_bezier(points: BezierPoints, n_divisions: int) -> Point3D_Array:
+def subdivide_bezier(points: BezierPoints, n_divisions: int) -> InternalPoint3D_Array:
     r"""Subdivide a Bézier curve into :math:`n` subcurves which have the same shape.
 
     The points at which the curve is split are located at the
@@ -1063,7 +979,7 @@ def quadratic_bezier_remap(
     for triplet in triplets:
         if difference > 0:
             tmp_noc = int(np.ceil(difference / len(triplets))) + 1
-            tmp = subdivide_quadratic_bezier(triplet, tmp_noc).reshape(-1, 3, 3)
+            tmp = subdivide_bezier(triplet, tmp_noc).reshape(-1, 3, 3)
             for i in range(tmp_noc):
                 new_triplets[idx + i] = tmp[i]
             difference -= tmp_noc - 1
@@ -1084,7 +1000,7 @@ def quadratic_bezier_remap(
     for triplet in triplets:
         if difference > 0:
             tmp_noc = int(np.ceil(difference / len(triplets))) + 1
-            tmp = subdivide_quadratic_bezier(triplet, tmp_noc).reshape(-1, 3, 3)
+            tmp = subdivide_bezier(triplet, tmp_noc).reshape(-1, 3, 3)
             for i in range(tmp_noc):
                 new_triplets.append(tmp[i])
             difference -= tmp_noc - 1

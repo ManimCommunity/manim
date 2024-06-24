@@ -13,7 +13,6 @@ from manim._config import config
 from manim.mobject.geometry.arc import Arc
 from manim.mobject.geometry.line import Line
 from manim.mobject.mobject import Mobject
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.text.tex_mobject import MathTex, Tex
 
 from ...animation.composition import AnimationGroup
@@ -157,7 +156,7 @@ class Brace(VMobjectFromSVGPath):
         return vect / np.linalg.norm(vect)
 
 
-class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
+class BraceLabel(VMobject):
     """Create a brace with a label attached.
 
     Parameters

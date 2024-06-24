@@ -33,8 +33,6 @@ from typing import TYPE_CHECKING, Any, Callable
 
 import numpy as np
 
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-
 from ..animation.animation import Animation
 from ..constants import (
     DEFAULT_POINTWISE_FUNCTION_RUN_TIME,
@@ -475,7 +473,7 @@ class ApplyMethod(Transform):
                 "Whoops, looks like you accidentally invoked "
                 "the method you want to animate",
             )
-        assert isinstance(method.__self__, (Mobject, OpenGLMobject))
+        assert isinstance(method.__self__, Mobject)
 
     def create_target(self) -> Mobject:
         method = self.method
@@ -619,7 +617,7 @@ class ApplyFunction(Transform):
 
     def create_target(self) -> Any:
         target = self.function(self.mobject.copy())
-        if not isinstance(target, (Mobject, OpenGLMobject)):
+        if not isinstance(target, Mobject):
             raise TypeError(
                 "Functions passed to ApplyFunction must return object of type Mobject",
             )

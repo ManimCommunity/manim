@@ -11,17 +11,11 @@ from manim._config import config
 from manim.animation.animation import Animation, prepare_animation
 from manim.constants import RendererType
 from manim.mobject.mobject import Group, Mobject
-from manim.mobject.opengl.opengl_mobject import OpenGLGroup
 from manim.utils.iterables import remove_list_redundancies
 from manim.utils.parameter_parsing import flatten_iterable_parameters
 from manim.utils.rate_functions import linear
 
-from ..animation.animation import Animation, prepare_animation
-from ..constants import RendererType
-from ..mobject.mobject import Group, Mobject
-
 if TYPE_CHECKING:
-    from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup
     from manim.mobject.types.vectorized_mobject import VGroup
 
 
@@ -58,7 +52,7 @@ class AnimationGroup(Animation):
     def __init__(
         self,
         *animations: Animation | Iterable[Animation],
-        group: Group | VGroup | OpenGLGroup | OpenGLVGroup | None = None,
+        group: Group | VGroup | None = None,
         run_time: float | None = None,
         rate_func: Callable[[float], float] = linear,
         lag_ratio: float = 0,
@@ -73,7 +67,7 @@ class AnimationGroup(Animation):
                 [anim.mobject for anim in self.animations if not anim.is_introducer()],
             )
             if config["renderer"] == RendererType.OPENGL:
-                self.group = OpenGLGroup(*mobjects)
+                self.group = Group(*mobjects)
             else:
                 self.group = Group(*mobjects)
         super().__init__(

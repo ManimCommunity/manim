@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import Callable
 
-    import manim.mobject.opengl.opengl_mobject as glmob
+    import manim.mobject.mobject as glmob
     from manim.event_handler.event_type import EventType
 
 

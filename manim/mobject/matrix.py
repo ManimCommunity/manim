@@ -45,7 +45,6 @@ from collections.abc import Iterable, Sequence
 import numpy as np
 
 from manim.mobject.mobject import Mobject
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.text.numbers import DecimalNumber, Integer
 from manim.mobject.text.tex_mobject import MathTex, Tex
 
@@ -71,7 +70,7 @@ def matrix_to_mobject(matrix):
     return MathTex(matrix_to_tex_string(matrix))
 
 
-class Matrix(VMobject, metaclass=ConvertToOpenGL):
+class Matrix(VMobject):
     """A mobject that displays a matrix on the screen.
 
     Parameters

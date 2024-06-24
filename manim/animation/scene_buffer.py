@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import final
 
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
+from manim.mobject.mobject import Mobject
 
 __all__ = ["SceneBuffer"]
 

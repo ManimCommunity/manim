@@ -11,9 +11,7 @@ if TYPE_CHECKING:
 
 import numpy as np
 
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup as VGroup
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject as VMobject
+from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import (
     BLUE_B,
     BLUE_D,
@@ -104,7 +102,7 @@ class AnimatedBoundary(VGroup):
         return self
 
 
-class TracedPath(VMobject, metaclass=ConvertToOpenGL):
+class TracedPath(VMobject):
     """Traces the path of a point returned by a function call.
 
     Parameters

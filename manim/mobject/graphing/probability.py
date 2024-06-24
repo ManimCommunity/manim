@@ -14,7 +14,6 @@ from manim.constants import *
 from manim.mobject.geometry.polygram import Rectangle
 from manim.mobject.graphing.coordinate_systems import Axes
 from manim.mobject.mobject import Mobject
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.svg.brace import Brace
 from manim.mobject.text.tex_mobject import MathTex, Tex
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
@@ -133,7 +132,7 @@ class SampleSpace(Rectangle):
         braces = VGroup()
         for label, part in zip(labels, parts):
             brace = Brace(part, direction, min_num_quads=min_num_quads, buff=buff)
-            if isinstance(label, (Mobject, OpenGLMobject)):
+            if isinstance(label, Mobject):
                 label_mob = label
             else:
                 label_mob = MathTex(label)

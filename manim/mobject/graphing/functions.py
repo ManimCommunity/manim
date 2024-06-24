@@ -13,7 +13,6 @@ from isosurfaces import plot_isoline
 
 from manim import config
 from manim.mobject.graphing.scale import LinearBase, _ScaleBase
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VMobject
 
 if TYPE_CHECKING:
@@ -22,7 +21,7 @@ if TYPE_CHECKING:
 from manim.utils.color import YELLOW
 
 
-class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
+class ParametricFunction(VMobject):
     """A parametric curve.
 
     Parameters
@@ -222,7 +221,7 @@ class FunctionGraph(ParametricFunction):
         return self.parametric_function(x)
 
 
-class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
+class ImplicitFunction(VMobject):
     def __init__(
         self,
         func: Callable[[float, float], float],

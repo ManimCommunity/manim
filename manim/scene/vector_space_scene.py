@@ -12,7 +12,7 @@ from manim.mobject.geometry.arc import Dot
 from manim.mobject.geometry.line import Arrow, Line, Vector
 from manim.mobject.geometry.polygram import Rectangle
 from manim.mobject.graphing.coordinate_systems import Axes, NumberPlane
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.mobject.mobject import Mobject
 from manim.mobject.text.tex_mobject import MathTex, Tex
 from manim.utils.config_ops import update_dict_recursively
 
@@ -941,7 +941,7 @@ class LinearTransformationScene(VectorScene):
         LinearTransformationScene
             The scene with the title added to it.
         """
-        if not isinstance(title, (Mobject, OpenGLMobject)):
+        if not isinstance(title, (Mobject)):
             title = Tex(title).scale(scale_factor)
         title.to_edge(UP)
         title.add_background_rectangle()

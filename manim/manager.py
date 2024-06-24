@@ -9,7 +9,6 @@ import numpy as np
 from manim import config, logger
 from manim.constants import RendererType
 from manim.file_writer import FileWriter
-from manim.renderer.cairo_renderer import CairoRenderer
 from manim.renderer.opengl_renderer import OpenGLRenderer
 from manim.renderer.opengl_renderer_window import Window
 from manim.scene.scene import Scene, SceneState
@@ -78,9 +77,6 @@ class Manager:
         match config.renderer:
             case RendererType.OPENGL:
                 return OpenGLRenderer()
-
-            case RendererType.CAIRO:
-                return CairoRenderer()
 
             case rendertype:
                 raise ValueError(f"Invalid Config Renderer type {rendertype}")

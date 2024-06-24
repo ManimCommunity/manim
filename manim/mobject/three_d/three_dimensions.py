@@ -2,12 +2,17 @@
 
 from __future__ import annotations
 
+import numpy as np
+
+from manim.mobject.opengl.opengl_surface import Surface
+from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.typing import Point3D, Vector3D
 from manim.utils.color import BLUE, BLUE_D, BLUE_E, LIGHT_GREY, WHITE, interpolate_color
 
 __all__ = [
     "ThreeDVMobject",
     "Surface",
+    "SurfaceMesh",
     "Sphere",
     "Dot3D",
     "Cube",
@@ -22,7 +27,6 @@ __all__ = [
 from collections.abc import Iterable, Sequence
 from typing import Any, Callable
 
-import numpy as np
 from typing_extensions import Self
 
 from manim import config, logger
@@ -30,9 +34,7 @@ from manim.constants import *
 from manim.mobject.geometry.arc import Circle
 from manim.mobject.geometry.polygram import Square
 from manim.mobject.mobject import *
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-from manim.mobject.types.vectorized_mobject import VGroup, VMobject
+from manim.mobject.mobject import Mobject
 from manim.utils.color import (
     ManimColor,
     ParsableManimColor,
@@ -41,12 +43,58 @@ from manim.utils.iterables import tuplify
 from manim.utils.space_ops import normalize, perpendicular_bisector, z_to_vector
 
 
-class ThreeDVMobject(VMobject, metaclass=ConvertToOpenGL):
+class SurfaceMesh(VGroup):
+    def __init__(
+        self,
+        uv_surface,
+        resolution=None,
+        stroke_width=1,
+        normal_nudge=1e-2,
+        depth_test=True,
+        flat_stroke=False,
+        **kwargs,
+    ):
+        if not isinstance(uv_surface, Surface):
+            raise Exception("uv_surface must be of type Surface")
+        self.uv_surface = uv_surface
+        self.resolution = resolution if resolution is not None else (21, 21)
+        self.normal_nudge = normal_nudge
+        super().__init__(
+            stroke_width=stroke_width,
+            depth_test=depth_test,
+            flat_stroke=flat_stroke,
+            **kwargs,
+        )
+
+    def init_points(self):
+        uv_surface = self.uv_surface
+
+        full_nu, full_nv = uv_surface.resolution
+        part_nu, part_nv = self.resolution
+        u_indices = np.linspace(0, full_nu, part_nu).astype(int)
+        v_indices = np.linspace(0, full_nv, part_nv).astype(int)
+
+        points, du_points, dv_points = uv_surface.get_surface_points_and_nudged_points()
+        normals = uv_surface.get_unit_normals()
+        nudged_points = points + self.normal_nudge * normals
+
+        for ui in u_indices:
+            path = VMobject()
+            full_ui = full_nv * ui
+            path.set_points_smoothly(nudged_points[full_ui : full_ui + full_nv])
+            self.add(path)
+        for vi in v_indices:
+            path = VMobject()
+            path.set_points_smoothly(nudged_points[vi::full_nv])
+            self.add(path)
+
+
+class ThreeDVMobject(VMobject):
     def __init__(self, shade_in_3d: bool = True, **kwargs):
         super().__init__(shade_in_3d=shade_in_3d, **kwargs)
 
 
-class Surface(VGroup, metaclass=ConvertToOpenGL):
+class Surface(VGroup):
     """Creates a Parametric Surface using a checkerboard pattern.
 
     Parameters
@@ -316,7 +364,10 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
                             new_colors[i],
                             color_index,
                         )
-                        mob.set_color(mob_color, recurse=False)
+                        if config.renderer == RendererType.OPENGL:
+                            mob.set_color(mob_color, recurse=False)
+                        elif config.renderer == RendererType.CAIRO:
+                            mob.set_color(mob_color, family=False)
                         break
 
         return self
@@ -787,14 +838,12 @@ class Cylinder(Surface):
 
     def add_bases(self) -> None:
         """Adds the end caps of the cylinder."""
-        if config.renderer == RendererType.CAIRO:
-            # TODO: Surface should be made a separate mobject type
-            # (like it is for OpenGL) for the Cairo renderer too,
-            # to make them have the same interface.
-            raise NotImplementedError
-
-        color = self.color
-        opacity = self.opacity
+        if config.renderer == RendererType.OPENGL:
+            color = self.color
+            opacity = self.opacity
+        elif config.renderer == RendererType.CAIRO:
+            color = self.fill_color
+            opacity = self.fill_opacity
 
         self.base_top = Circle(
             radius=self.radius,
@@ -963,7 +1012,7 @@ class Line3D(Cylinder):
         :class:`numpy.array`
             Center of the :class:`Mobjects <.Mobject>` or point, or edge if direction is given.
         """
-        if isinstance(mob_or_point, (Mobject, OpenGLMobject)):
+        if isinstance(mob_or_point, Mobject):
             mob = mob_or_point
             if direction is None:
                 return mob.get_center()

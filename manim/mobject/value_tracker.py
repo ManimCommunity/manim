@@ -8,11 +8,10 @@ __all__ = ["ValueTracker", "ComplexValueTracker"]
 import numpy as np
 
 from manim.mobject.mobject import Mobject
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.utils.paths import straight_path
 
 
-class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
+class ValueTracker(Mobject):
     """A mobject that can be used for tracking (real-valued) parameters.
     Useful for animating parameter changes.
 

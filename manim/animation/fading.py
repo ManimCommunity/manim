@@ -23,8 +23,6 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-
 from ..animation.transform import Transform
 from ..constants import ORIGIN
 from ..mobject.mobject import Group, Mobject
@@ -69,7 +67,7 @@ class _Fade(Transform):
         self.point_target = False
         if shift is None:
             if target_position is not None:
-                if isinstance(target_position, (Mobject, OpenGLMobject)):
+                if isinstance(target_position, Mobject):
                     target_position = target_position.get_center()
                 shift = target_position - mobject.get_center()
                 self.point_target = True

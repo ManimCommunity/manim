@@ -2,14 +2,12 @@
 
 from __future__ import annotations
 
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+import manim.mobject.mobject as mobject
+from manim._config import config, logger
+from manim.constants import RendererType
+from manim.mobject.mobject import Mobject
+from manim.utils.rate_functions import linear, smooth
 
-from .. import config, logger
-from ..constants import RendererType
-from ..mobject import mobject
-from ..mobject.mobject import Mobject
-from ..mobject.opengl import opengl_mobject
-from ..utils.rate_functions import linear, smooth
 from .protocol import AnimationProtocol
 from .scene_buffer import SceneBuffer
 
@@ -17,9 +15,7 @@ __all__ = ["Animation", "Wait", "override_animation"]
 
 from collections.abc import Iterable, Sequence
 from copy import deepcopy
-from typing import TYPE_CHECKING, Callable
-
-from typing_extensions import Self, TypeVar
+from typing import TYPE_CHECKING, Callable, TypeVar
 
 if TYPE_CHECKING:
     from typing_extensions import Self
@@ -130,7 +126,7 @@ class Animation(AnimationProtocol):
 
     def __init__(
         self,
-        mobject: OpenGLMobject | None,
+        mobject: Mobject | None,
         lag_ratio: float = DEFAULT_ANIMATION_LAG_RATIO,
         run_time: float = DEFAULT_ANIMATION_RUN_TIME,
         rate_func: Callable[[float], float] = smooth,
@@ -157,10 +153,8 @@ class Animation(AnimationProtocol):
         self.buffer = SceneBuffer()
         self.apply_buffer = False  # ask scene to apply buffer
 
-        self.starting_mobject: OpenGLMobject = OpenGLMobject()
-        self.mobject: OpenGLMobject = (
-            mobject if mobject is not None else OpenGLMobject()
-        )
+        self.starting_mobject: Mobject = Mobject()
+        self.mobject: Mobject = mobject if mobject is not None else Mobject()
         if kwargs:
             logger.debug("Animation received extra kwargs: %s", kwargs)
 
@@ -172,10 +166,10 @@ class Animation(AnimationProtocol):
                 ),
             )
 
-    def _typecheck_input(self, mobject: Mobject | OpenGLMobject | None) -> None:
+    def _typecheck_input(self, mobject: Mobject | Mobject | None) -> None:
         if mobject is None:
             logger.debug("Animation with empty mobject")
-        elif not isinstance(mobject, (Mobject, OpenGLMobject)):
+        elif not isinstance(mobject, Mobject):
             raise TypeError("Animation only works on Mobjects")
 
     def __str__(self) -> str:
@@ -475,11 +469,7 @@ class Animation(AnimationProtocol):
         return self.introducer
 
 
-def prepare_animation(
-    anim: AnimationProtocol
-    | mobject._AnimationBuilder
-    | opengl_mobject._AnimationBuilder,
-) -> Animation:
+def prepare_animation(anim: AnimationProtocol | mobject._AnimationBuilder) -> Animation:
     r"""Returns either an unchanged animation, or the animation built
     from a passed animation factory.
 
@@ -506,7 +496,7 @@ def prepare_animation(
         TypeError: Object 42 cannot be converted to an animation
 
     """
-    if isinstance(anim, (mobject._AnimationBuilder, opengl_mobject._AnimationBuilder)):
+    if isinstance(anim, mobject._AnimationBuilder):
         return anim.build()
 
     if isinstance(anim, Animation):

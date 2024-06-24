@@ -7,8 +7,8 @@ __all__ = ["TransformMatchingShapes", "TransformMatchingTex"]
 
 import numpy as np
 
-from manim.mobject.opengl.opengl_mobject import OpenGLGroup, OpenGLMobject
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup, OpenGLVMobject
+from manim.mobject.mobject import Group, Mobject
+from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 
 from .._config import config
 from ..constants import RendererType
@@ -72,10 +72,10 @@ class TransformMatchingAbstractBase(AnimationGroup):
         key_map: dict | None = None,
         **kwargs,
     ):
-        if isinstance(mobject, OpenGLVMobject):
-            group_type = OpenGLVGroup
-        elif isinstance(mobject, OpenGLMobject):
-            group_type = OpenGLGroup
+        if isinstance(mobject, VMobject):
+            group_type = VGroup
+        elif isinstance(mobject, Mobject):
+            group_type = Group
         elif isinstance(mobject, VMobject):
             group_type = VGroup
         else:
@@ -143,7 +143,7 @@ class TransformMatchingAbstractBase(AnimationGroup):
             key = self.get_mobject_key(sm)
             if key not in shape_map:
                 if config["renderer"] == RendererType.OPENGL:
-                    shape_map[key] = OpenGLVGroup()
+                    shape_map[key] = VGroup()
                 else:
                     shape_map[key] = VGroup()
             shape_map[key].add(sm)
@@ -279,7 +279,7 @@ class TransformMatchingTex(TransformMatchingAbstractBase):
 
     @staticmethod
     def get_mobject_parts(mobject: Mobject) -> list[Mobject]:
-        if isinstance(mobject, (Group, VGroup, OpenGLGroup, OpenGLVGroup)):
+        if isinstance(mobject, (Group, VGroup, Group, VGroup)):
             return [
                 p
                 for s in mobject.submobjects

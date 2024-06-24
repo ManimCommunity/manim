@@ -5,11 +5,11 @@ __all__ = ["TrueDot", "DotCloud"]
 import numpy as np
 
 from manim.constants import ORIGIN, RIGHT, UP
-from manim.mobject.opengl.opengl_point_cloud_mobject import OpenGLPMobject
+from manim.mobject.types.point_cloud_mobject import PMobject
 from manim.utils.color import YELLOW
 
 
-class DotCloud(OpenGLPMobject):
+class DotCloud(PMobject):
     def __init__(
         self, color=YELLOW, stroke_width=2.0, radius=2.0, density=10, **kwargs
     ):
