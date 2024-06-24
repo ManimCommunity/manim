@@ -55,7 +55,6 @@ from .mobject.logo import *
 from .mobject.matrix import *
 from .mobject.mobject import *
 from .mobject.opengl.dot_cloud import *
-from .mobject.opengl.opengl_point_cloud_mobject import *
 from .mobject.svg.brace import *
 from .mobject.svg.svg_mobject import *
 from .mobject.table import *
