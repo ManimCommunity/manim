@@ -2,17 +2,6 @@
 
 from __future__ import annotations
 
-from manim.typing import (
-    BezierPoints,
-    ColVector,
-    MatrixMN,
-    Point3D,
-    Point3D_Array,
-    PointDType,
-    QuadraticBezierPoints,
-    QuadraticBezierPoints_Array,
-)
-
 __all__ = [
     "bezier",
     "partial_bezier_points",
@@ -33,13 +22,27 @@ __all__ = [
 
 from collections.abc import Sequence
 from functools import reduce
-from typing import Any, Callable, overload
+from typing import TYPE_CHECKING, Any, Callable, overload
 
 import numpy as np
-import numpy.typing as npt
 
+from manim.typing import PointDType
 from manim.utils.simple_functions import choose
 from manim.utils.space_ops import cross2d, find_intersection
+
+if TYPE_CHECKING:
+    import numpy.typing as npt
+
+    from manim.typing import (
+        BezierPoints,
+        BezierPoints_Array,
+        MatrixMN,
+        Point3D,
+        Point3D_Array,
+    )
+
+# l is a commonly used name in linear algebra
+# ruff: noqa: E741
 
 
 def bezier(
