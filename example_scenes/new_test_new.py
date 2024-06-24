@@ -98,9 +98,7 @@ if __name__ == "__main__":
 
         @win.event
         def on_draw():
-            dt = clock.update_time()
             renderer.render(camera, [vm2, vm3, vm4, clock_mobject, vm])
-            # update_circle(counter)
 
         @win.event
         def on_resize(width, height):
@@ -135,7 +133,6 @@ if __name__ == "__main__":
                     if virtual_time >= run_time:
                         animation.finish()
                         buffer = str(animation.buffer)
-                        print(f"{buffer = }")
                         has_finished = True
                     else:
                         animation.update_mobjects(dt)

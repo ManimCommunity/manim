@@ -5,13 +5,12 @@ from pyglet.window import Window
 
 import manim.utils.color.manim_colors as col
 from manim._config import tempconfig
-from manim.camera.camera import OpenGLCameraFrame
+from manim.camera.camera import Camera
 from manim.constants import OUT, RIGHT, UP
-from manim.mobject.geometry.arc import Circle
-from manim.mobject.geometry.polygram import Square
+from manim.mobject.geometry.geometry import Circle, Square
 from manim.mobject.logo import ManimBanner
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.text.numbers import DecimalNumber
+from manim.mobject.types.vectorized_mobject import VMobject
 from manim.renderer.opengl_renderer import OpenGLRenderer
 
 if __name__ == "__main__":
@@ -23,7 +22,7 @@ if __name__ == "__main__":
             config=Config(double_buffer=True, samples=0),
         )
         renderer = OpenGLRenderer(1920, 1080, background_color=col.GRAY)
-        # vm = OpenGLVMobject([col.RED, col.GREEN])
+        # vm = VMobject([col.RED, col.GREEN])
         vm = (
             Circle(
                 radius=1,
@@ -47,7 +46,7 @@ if __name__ == "__main__":
         # print(vm.fill_color)
         # print(vm.stroke_color)
 
-        camera = OpenGLCameraFrame()
+        camera = Camera()
         camera.save_state()
         renderer.init_camera(camera)
 
@@ -93,7 +92,7 @@ if __name__ == "__main__":
         @win.event
         def on_draw():
             dt = clock.update_time()
-            fps: OpenGLVMobject = DecimalNumber(dt)
+            fps: VMobject = DecimalNumber(dt)
             fps.fix_in_frame()
             renderer.render(camera, [vm, vm2, vm3, vm4, fps])
             # update_circle(counter)
