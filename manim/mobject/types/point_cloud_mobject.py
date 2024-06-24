@@ -1,21 +1,21 @@
 from __future__ import annotations
 
-__all__ = ["OpenGLPMobject", "OpenGLPGroup", "OpenGLPMPoint"]
+__all__ = ["PMobject", "PGroup", "PMPoint"]
 
 import moderngl
 import numpy as np
 
 from manim.constants import *
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.mobject.mobject import Mobject
 from manim.utils.bezier import interpolate
 from manim.utils.color import BLACK, WHITE, YELLOW, color_gradient, color_to_rgba
 from manim.utils.config_ops import _Uniforms
 from manim.utils.iterables import resize_with_interpolation
 
-__all__ = ["OpenGLPMobject", "OpenGLPGroup", "OpenGLPMPoint"]
+__all__ = ["PMobject", "PGroup", "PMPoint"]
 
 
-class OpenGLPMobject(OpenGLMobject):
+class PMobject(Mobject):
     shader_folder = "true_dot"
     # Scale for consistency with cairo units
     OPENGL_POINT_RADIUS_SCALE_FACTOR = 0.01
@@ -32,7 +32,7 @@ class OpenGLPMobject(OpenGLMobject):
         self.stroke_width = stroke_width
         super().__init__(color=color, render_primitive=render_primitive, **kwargs)
         self.point_radius = (
-            self.stroke_width * OpenGLPMobject.OPENGL_POINT_RADIUS_SCALE_FACTOR
+            self.stroke_width * PMobject.OPENGL_POINT_RADIUS_SCALE_FACTOR
         )
 
     def reset_points(self):
@@ -159,12 +159,12 @@ class OpenGLPMobject(OpenGLMobject):
 
     @staticmethod
     def get_mobject_type_class():
-        return OpenGLPMobject
+        return PMobject
 
 
-class OpenGLPGroup(OpenGLPMobject):
+class PGroup(PMobject):
     def __init__(self, *pmobs, **kwargs):
-        if not all(isinstance(m, OpenGLPMobject) for m in pmobs):
+        if not all(isinstance(m, PMobject) for m in pmobs):
             raise Exception("All submobjects must be of type OpenglPMObject")
         super().__init__(**kwargs)
         self.add(*pmobs)
@@ -175,7 +175,7 @@ class OpenGLPGroup(OpenGLPMobject):
                 mob.fade_to(color, alpha, family)
 
 
-class OpenGLPMPoint(OpenGLPMobject):
+class PMPoint(PMobject):
     def __init__(self, location=ORIGIN, stroke_width=4.0, **kwargs):
         self.location = location
         super().__init__(stroke_width=stroke_width, **kwargs)

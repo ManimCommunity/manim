@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 __all__ = [
-    "OpenGLImageMobject",
+    "ImageMobject",
 ]
 
 from pathlib import Path
@@ -10,13 +10,13 @@ import numpy as np
 from PIL import Image
 from PIL.Image import Resampling
 
-from manim.mobject.opengl.opengl_surface import OpenGLSurface, OpenGLTexturedSurface
+from manim.mobject.opengl.opengl_surface import Surface, TexturedSurface
 from manim.utils.images import get_full_raster_image_path
 
-__all__ = ["OpenGLImageMobject"]
+__all__ = ["ImageMobject"]
 
 
-class OpenGLImageMobject(OpenGLTexturedSurface):
+class ImageMobject(TexturedSurface):
     def __init__(
         self,
         filename_or_array: str | Path | np.ndarray,
@@ -45,7 +45,7 @@ class OpenGLImageMobject(OpenGLTexturedSurface):
         if width is None:
             width = height * self.size[0] / self.size[1]
 
-        surface = OpenGLSurface(
+        surface = Surface(
             lambda u, v: np.array([u, v, 0]),
             [-width / 2, width / 2],
             [-height / 2, height / 2],

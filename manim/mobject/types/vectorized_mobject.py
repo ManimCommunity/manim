@@ -7,12 +7,22 @@ from typing import TYPE_CHECKING
 
 import moderngl
 import numpy as np
-from numpy.typing import NDArray
+
+__all__ = [
+    "VMobject",
+    "VGroup",
+    "VDict",
+    "VectorizedPoint",
+    "CurvesAsSubmobjects",
+    "VectorizedPoint",
+    "DashedVMobject",
+    "VHighlight",
+]
 
 from manim.constants import *
-from manim.mobject.opengl.opengl_mobject import (
-    OpenGLMobject,
-    OpenGLPoint,
+from manim.mobject.mobject import (
+    Mobject,
+    Point,
 )
 from manim.utils.bezier import (
     bezier,
@@ -22,7 +32,7 @@ from manim.utils.bezier import (
     integer_interpolate,
     interpolate,
     inverse_interpolate,
-    partial_quadratic_bezier_points,
+    partial_bezier_points,
     proportions_along_bezier_curve_for_point,
     quadratic_bezier_remap,
 )
@@ -41,16 +51,16 @@ from manim.utils.space_ops import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable, Sequence
-    from typing import Callable
+    from collections.abc import Callable, Iterable, Sequence
 
+    import numpy.typing as npt
     from typing_extensions import Self
 
 DEFAULT_STROKE_COLOR = GREY_A
 DEFAULT_FILL_COLOR = GREY_C
 
 
-class OpenGLVMobject(OpenGLMobject):
+class VMobject(Mobject):
     """A vectorized mobject."""
 
     n_points_per_curve: int = 3
@@ -115,23 +125,24 @@ class OpenGLVMobject(OpenGLMobject):
         super().__init__(**kwargs)
         # self.refresh_unit_normal()
 
-    def get_group_class(self):
-        return OpenGLVGroup
+    @property
+    def group_class(self) -> type[VGroup]:  # type: ignore
+        return VGroup
 
     @staticmethod
     def get_mobject_type_class():
-        return OpenGLVMobject
+        return VMobject
 
     @property
     def rgbas(self):
         raise NotImplementedError(
-            "rgbas is not implemented for OpenGLVMobject. please use fill_rgba and stroke_rgba."
+            "rgbas is not implemented for VMobject. please use fill_rgba and stroke_rgba."
         )
 
     @rgbas.setter
     def rgbas(self, value):
         raise NotImplementedError(
-            "rgbas is not implemented for OpenGLVMobject. please use fill_rgba and stroke_rgba."
+            "rgbas is not implemented for VMobject. please use fill_rgba and stroke_rgba."
         )
 
     def init_data(self):
@@ -153,24 +164,24 @@ class OpenGLVMobject(OpenGLMobject):
         self.uniforms["flat_stroke"] = float(self.flat_stroke)
 
     # These are here just to make type checkers happy
-    def get_family(self, recurse: bool = True) -> list[OpenGLVMobject]:  # type: ignore
+    def get_family(self, recurse: bool = True) -> list[VMobject]:  # type: ignore
         return super().get_family(recurse)  # type: ignore
 
-    def family_members_with_points(self) -> list[OpenGLVMobject]:  # type: ignore
+    def family_members_with_points(self) -> list[VMobject]:  # type: ignore
         return super().family_members_with_points()  # type: ignore
 
-    def replicate(self, n: int) -> OpenGLVGroup:  # type: ignore
+    def replicate(self, n: int) -> VGroup:  # type: ignore
         return super().replicate(n)  # type: ignore
 
-    def get_grid(self, *args, **kwargs) -> OpenGLVGroup:  # type: ignore
+    def get_grid(self, *args, **kwargs) -> VGroup:  # type: ignore
         return super().get_grid(*args, **kwargs)  # type: ignore
 
     def __getitem__(self, value: int | slice) -> Self:  # type: ignore
         return super().__getitem__(value)  # type: ignore
 
-    def add(self, *vmobjects: OpenGLVMobject):  # type: ignore
-        if not all(isinstance(m, OpenGLVMobject) for m in vmobjects):
-            raise Exception("All submobjects must be of type OpenGLVMobject")
+    def add(self, *vmobjects: VMobject):  # type: ignore
+        if not all(isinstance(m, VMobject) for m in vmobjects):
+            raise Exception("All submobjects must be of type VMobject")
         super().add(*vmobjects)
 
     # Colors
@@ -211,20 +222,20 @@ class OpenGLVMobject(OpenGLMobject):
         opacity: float | None = None,
         recurse: bool = True,
     ) -> Self:
-        """Set the fill color and fill opacity of a :class:`OpenGLVMobject`.
+        """Set the fill color and fill opacity of a :class:`VMobject`.
 
         Parameters
         ----------
         color
-            Fill color of the :class:`OpenGLVMobject`.
+            Fill color of the :class:`VMobject`.
         opacity
-            Fill opacity of the :class:`OpenGLVMobject`.
+            Fill opacity of the :class:`VMobject`.
         recurse
             If ``True``, the fill color of all submobjects is also set.
 
         Returns
         -------
-        OpenGLVMobject
+        VMobject
             self. For chaining purposes.
 
         Examples
@@ -244,7 +255,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         See Also
         --------
-        :meth:`~.OpenGLVMobject.set_style`
+        :meth:`~.VMobject.set_style`
         """
         for mob in self.get_family(recurse):
             if color is not None:
@@ -332,7 +343,7 @@ class OpenGLVMobject(OpenGLMobject):
             "shadow": self.get_shadow(),
         }
 
-    def match_style(self, vmobject: OpenGLVMobject, recurse: bool = True):
+    def match_style(self, vmobject: VMobject, recurse: bool = True):
         self.set_style(**vmobject.get_style(), recurse=False)
         if recurse:
             # Does its best to match up submobject lists, and
@@ -492,8 +503,8 @@ class OpenGLVMobject(OpenGLMobject):
         else:
             self.append_points([self.get_last_point(), handle, anchor])
 
-    def add_line_to(self, point: Sequence[float] | NDArray[float]) -> Self:
-        """Add a straight line from the last point of OpenGLVMobject to the given point.
+    def add_line_to(self, point: Sequence[float] | npt.NDArray[float]) -> Self:
+        """Add a straight line from the last point of VMobject to the given point.
 
         Parameters
         ----------
@@ -564,7 +575,7 @@ class OpenGLVMobject(OpenGLMobject):
                     alphas = np.linspace(0, 1, n + 1)
                     new_points.extend(
                         [
-                            partial_quadratic_bezier_points(tup, a1, a2)
+                            partial_bezier_points(tup, a1, a2)
                             for a1, a2 in zip(alphas, alphas[1:])
                         ],
                     )
@@ -591,7 +602,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         Returns
         -------
-        OpenGLVMobject
+        VMobject
             self. For chaining purposes.
         """
         nppc = self.n_points_per_curve
@@ -616,7 +627,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         Returns
         -------
-        OpenGLVMobject
+        VMobject
             For chaining purposes.
         """
         assert mode in ("jagged", "approx_smooth", "true_smooth")
@@ -709,7 +720,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         Returns
         -------
-        :class:`OpenGLVMobject`
+        :class:`VMobject`
             Returns self.
 
         Examples
@@ -756,7 +767,7 @@ class OpenGLVMobject(OpenGLMobject):
         ]
 
     def get_subpaths(self):
-        """Returns subpaths formed by the curves of the OpenGLVMobject.
+        """Returns subpaths formed by the curves of the VMobject.
 
         Subpaths are ranges of curves with each pair of consecutive
         curves having their end/start points coincident.
@@ -850,24 +861,24 @@ class OpenGLVMobject(OpenGLMobject):
         return curve_func(residue)
 
     def point_from_proportion(self, alpha: float) -> np.ndarray:
-        """Gets the point at a proportion along the path of the :class:`OpenGLVMobject`.
+        """Gets the point at a proportion along the path of the :class:`VMobject`.
 
         Parameters
         ----------
         alpha
-            The proportion along the the path of the :class:`OpenGLVMobject`.
+            The proportion along the the path of the :class:`VMobject`.
 
         Returns
         -------
         :class:`numpy.ndarray`
-            The point on the :class:`OpenGLVMobject`.
+            The point on the :class:`VMobject`.
 
         Raises
         ------
         :exc:`ValueError`
             If ``alpha`` is not between 0 and 1.
         :exc:`Exception`
-            If the :class:`OpenGLVMobject` has no points.
+            If the :class:`VMobject` has no points.
         """
 
         if alpha <= 0:
@@ -985,25 +996,25 @@ class OpenGLVMobject(OpenGLMobject):
         self,
         point: Iterable[float | int],
     ) -> float:
-        """Returns the proportion along the path of the :class:`OpenGLVMobject`
+        """Returns the proportion along the path of the :class:`VMobject`
         a particular given point is at.
 
         Parameters
         ----------
         point
-            The Cartesian coordinates of the point which may or may not lie on the :class:`OpenGLVMobject`
+            The Cartesian coordinates of the point which may or may not lie on the :class:`VMobject`
 
         Returns
         -------
         float
-            The proportion along the path of the :class:`OpenGLVMobject`.
+            The proportion along the path of the :class:`VMobject`.
 
         Raises
         ------
         :exc:`ValueError`
             If ``point`` does not lie on the curve.
         :exc:`Exception`
-            If the :class:`OpenGLVMobject` has no points.
+            If the :class:`VMobject` has no points.
         """
         self.throw_error_if_no_points()
 
@@ -1070,7 +1081,7 @@ class OpenGLVMobject(OpenGLMobject):
         return self.points[nppc - 1 :: nppc]
 
     def get_anchors(self) -> np.ndarray:
-        """Returns the anchors of the curves forming the OpenGLVMobject.
+        """Returns the anchors of the curves forming the VMobject.
 
         Returns
         -------
@@ -1110,12 +1121,12 @@ class OpenGLVMobject(OpenGLMobject):
         ----------
         n_sample_points
             The number of points to sample. If ``None``, the number of points is calculated automatically.
-            Takes points on the outline of the :class:`OpenGLVMobject` and calculates the distance between them.
+            Takes points on the outline of the :class:`VMobject` and calculates the distance between them.
 
         Returns
         -------
         float
-            The length of the :class:`OpenGLVMobject`.
+            The length of the :class:`VMobject`.
         """
 
         if n_sample_points is None:
@@ -1260,7 +1271,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         Returns
         -------
-        OpenGLVMobject
+        VMobject
             for chaining.
         """
         for mob in self.get_family(recurse):
@@ -1327,7 +1338,7 @@ class OpenGLVMobject(OpenGLMobject):
             "shadow",
             "gloss",
             "stroke_width",
-            # TODO: eventually add these attributes to OpenGLVMobject
+            # TODO: eventually add these attributes to VMobject
             # "background_stroke_width",
             # "sheen_direction",
             # "sheen_factor",
@@ -1358,7 +1369,7 @@ class OpenGLVMobject(OpenGLMobject):
 
     # TODO: compare to 3b1b/manim again check if something changed so we don't need the cairo interpolation anymore
     def pointwise_become_partial(
-        self, vmobject: OpenGLVMobject, a: float, b: float, remap: bool = True
+        self, vmobject: VMobject, a: float, b: float, remap: bool = True
     ) -> Self:
         """Given two bounds a and b, transforms the points of the self vmobject into the points of the vmobject
         passed as parameter with respect to the bounds. Points here stand for control points of the bezier curves (anchors and handles)
@@ -1375,7 +1386,7 @@ class OpenGLVMobject(OpenGLMobject):
             if the point amount should be kept the same (True)
             This option should be manually set to False if keeping the number of points is not needed
         """
-        assert isinstance(vmobject, OpenGLVMobject)
+        assert isinstance(vmobject, VMobject)
         # Partial curve includes three portions:
         # - A middle section, which matches the curve exactly
         # - A start, which is some ending portion of an inner cubic
@@ -1426,8 +1437,8 @@ class OpenGLVMobject(OpenGLMobject):
         return self
 
     def get_subcurve(self, a: float, b: float) -> Self:
-        """Returns the subcurve of the OpenGLVMobject between the interval [a, b].
-        The curve is a OpenGLVMobject itself.
+        """Returns the subcurve of the VMobject between the interval [a, b].
+        The curve is a VMobject itself.
 
         Parameters
         ----------
@@ -1439,7 +1450,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         Returns
         -------
-        OpenGLVMobject
+        VMobject
             The subcurve between of [a, b]
         """
         vmob = self.copy()
@@ -1478,18 +1489,18 @@ class OpenGLVMobject(OpenGLMobject):
         return self
 
 
-class OpenGLVGroup(OpenGLVMobject):
+class VGroup(VMobject):
     """A group of vectorized mobjects.
 
-    This can be used to group multiple :class:`~.OpenGLVMobject` instances together
+    This can be used to group multiple :class:`~.VMobject` instances together
     in order to scale, move, ... them together.
 
     Examples
     --------
 
-    To add :class:`~.OpenGLVMobject`s to a :class:`~.OpenGLVGroup`, you can either use the
-    :meth:`~.OpenGLVGroup.add` method, or use the `+` and `+=` operators. Similarly, you
-    can subtract elements of a OpenGLVGroup via :meth:`~.OpenGLVGroup.remove` method, or
+    To add :class:`~.VMobject`s to a :class:`~.VGroup`, you can either use the
+    :meth:`~.VGroup.add` method, or use the `+` and `+=` operators. Similarly, you
+    can subtract elements of a VGroup via :meth:`~.VGroup.remove` method, or
     `-` and `-=` operators:
 
     .. doctest::
@@ -1499,29 +1510,29 @@ class OpenGLVGroup(OpenGLVMobject):
         >>> config.renderer = "opengl"
 
         >>> from manim import Triangle, Square
-        >>> from manim.opengl import OpenGLVGroup
+        >>> from manim.opengl import VGroup
         >>> config.renderer
         <RendererType.OPENGL: 'opengl'>
-        >>> vg = OpenGLVGroup()
+        >>> vg = VGroup()
         >>> triangle, square = Triangle(), Square()
         >>> vg.add(triangle)
-        OpenGLVGroup(Triangle)
-        >>> vg + square  # a new OpenGLVGroup is constructed
-        OpenGLVGroup(Triangle, Square)
+        VGroup(Triangle)
+        >>> vg + square  # a new VGroup is constructed
+        VGroup(Triangle, Square)
         >>> vg  # not modified
-        OpenGLVGroup(Triangle)
+        VGroup(Triangle)
         >>> vg += square  # modifies vg
         >>> vg
-        OpenGLVGroup(Triangle, Square)
+        VGroup(Triangle, Square)
         >>> vg.remove(triangle)
-        OpenGLVGroup(Square)
-        >>> vg - square  # a new OpenGLVGroup is constructed
-        OpenGLVGroup()
+        VGroup(Square)
+        >>> vg - square  # a new VGroup is constructed
+        VGroup()
         >>> vg  # not modified
-        OpenGLVGroup(Square)
+        VGroup(Square)
         >>> vg -= square  # modifies vg
         >>> vg
-        OpenGLVGroup()
+        VGroup()
 
         >>> config.renderer = original_renderer
 
@@ -1533,7 +1544,7 @@ class OpenGLVGroup(OpenGLVMobject):
                 colors = [DARK_BROWN, BLUE_E, BLUE_D, BLUE_A, TEAL_B, GREEN_B, YELLOW_E]
                 radius = [1 + rad * 0.1 for rad in range(len(colors))]
 
-                circles_group = OpenGLVGroup()
+                circles_group = VGroup()
 
                 # zip(radius, color) makes the iterator [(radius[i], color[i]) for i in range(radius)]
                 circles_group.add(*[Circle(radius=rad, stroke_width=10, color=col)
@@ -1542,8 +1553,8 @@ class OpenGLVGroup(OpenGLVMobject):
     """
 
     def __init__(self, *vmobjects, **kwargs):
-        if not all(isinstance(m, OpenGLVMobject) for m in vmobjects):
-            raise Exception("All submobjects must be of type OpenGLVMobject")
+        if not all(isinstance(m, VMobject) for m in vmobjects):
+            raise Exception("All submobjects must be of type VMobject")
         super().__init__(**kwargs)
         self.add(*vmobjects)
 
@@ -1568,41 +1579,41 @@ class OpenGLVGroup(OpenGLVMobject):
     @deprecated(
         since="0.18.2",
         until="0.19.0",
-        message="OpenGL has no concept of z_index. Use set_z instead",
+        message=" has no concept of z_index. Use set_z instead",
     )
     def set_z_index(self, z: float) -> Self:
         return self.set_z(z)
 
-    def add(self, *vmobjects: OpenGLVMobject):  # type: ignore
-        """Checks if all passed elements are an instance of OpenGLVMobject and then add them to submobjects
+    def add(self, *vmobjects: VMobject):  # type: ignore
+        """Checks if all passed elements are an instance of VMobject and then add them to submobjects
 
         Parameters
         ----------
         vmobjects
-            List of OpenGLVMobject to add
+            List of VMobject to add
 
         Returns
         -------
-        :class:`OpenGLVGroup`
+        :class:`VGroup`
 
         Raises
         ------
         TypeError
-            If one element of the list is not an instance of OpenGLVMobject
+            If one element of the list is not an instance of VMobject
 
         Examples
         --------
-        .. manim:: AddToOpenGLVGroup
+        .. manim:: AddToVGroup
 
-            class AddToOpenGLVGroup(Scene):
+            class AddToVGroup(Scene):
                 def construct(self):
                     circle_red = Circle(color=RED)
                     circle_green = Circle(color=GREEN)
                     circle_blue = Circle(color=BLUE)
                     circle_red.shift(LEFT)
                     circle_blue.shift(RIGHT)
-                    gr = OpenGLVGroup(circle_red, circle_green)
-                    gr2 = OpenGLVGroup(circle_blue) # Constructor uses add directly
+                    gr = VGroup(circle_red, circle_green)
+                    gr2 = VGroup(circle_blue) # Constructor uses add directly
                     self.add(gr,gr2)
                     self.wait()
                     gr += gr2 # Add group to another
@@ -1621,25 +1632,25 @@ class OpenGLVGroup(OpenGLVMobject):
                         (gr-circle_red).animate.shift(RIGHT)
                     )
         """
-        if not all(isinstance(m, OpenGLVMobject) for m in vmobjects):
-            raise TypeError("All submobjects must be of type OpenGLVMobject")
+        if not all(isinstance(m, VMobject) for m in vmobjects):
+            raise TypeError("All submobjects must be of type VMobject")
         return super().add(*vmobjects)
 
     def __add__(self, vmobject):
-        return OpenGLVGroup(*self.submobjects, vmobject)
+        return VGroup(*self.submobjects, vmobject)
 
     def __iadd__(self, vmobject):
         return self.add(vmobject)
 
     def __sub__(self, vmobject):
-        copy = OpenGLVGroup(*self.submobjects)
+        copy = VGroup(*self.submobjects)
         copy.remove(vmobject)
         return copy
 
     def __isub__(self, vmobject):
         return self.remove(vmobject)
 
-    def __setitem__(self, key: int, value: OpenGLVMobject | Sequence[OpenGLVMobject]):
+    def __setitem__(self, key: int, value: VMobject | Sequence[VMobject]):
         """Override the [] operator for item assignment.
 
         Parameters
@@ -1662,18 +1673,18 @@ class OpenGLVGroup(OpenGLVMobject):
             >>> original_renderer = config.renderer
             >>> config.renderer = "opengl"
 
-            >>> vgroup = OpenGLVGroup(OpenGLVMobject())
-            >>> new_obj = OpenGLVMobject()
+            >>> vgroup = VGroup(VMobject())
+            >>> new_obj = VMobject()
             >>> vgroup[0] = new_obj
 
             >>> config.renderer = original_renderer
         """
-        if not all(isinstance(m, OpenGLVMobject) for m in value):
-            raise TypeError("All submobjects must be of type OpenGLVMobject")
+        if not all(isinstance(m, VMobject) for m in value):
+            raise TypeError("All submobjects must be of type VMobject")
         self.submobjects[key] = value  # type: ignore
 
 
-class OpenGLVectorizedPoint(OpenGLPoint, OpenGLVMobject):
+class VectorizedPoint(Point, VMobject):
     def __init__(
         self,
         location=ORIGIN,
@@ -1682,8 +1693,8 @@ class OpenGLVectorizedPoint(OpenGLPoint, OpenGLVMobject):
         stroke_width=0,
         **kwargs,
     ):
-        OpenGLPoint.__init__(self, location, **kwargs)
-        OpenGLVMobject.__init__(
+        Point.__init__(self, location, **kwargs)
+        VMobject.__init__(
             self,
             color=color,
             fill_opacity=fill_opacity,
@@ -1693,7 +1704,7 @@ class OpenGLVectorizedPoint(OpenGLPoint, OpenGLVMobject):
         self.set_points(np.array([location]))
 
 
-class OpenGLCurvesAsSubmobjects(OpenGLVGroup):
+class CurvesAsSubmobjects(VGroup):
     """Convert a curve's elements to submobjects.
 
     Examples
@@ -1713,14 +1724,14 @@ class OpenGLCurvesAsSubmobjects(OpenGLVGroup):
     def __init__(self, vmobject, **kwargs):
         super().__init__(**kwargs)
         for tup in vmobject.get_bezier_tuples():
-            part = OpenGLVMobject()
+            part = VMobject()
             part.set_points(tup)
             part.match_style(vmobject)
             self.add(part)
 
 
-class OpenGLDashedVMobject(OpenGLVMobject):
-    """A :class:`OpenGLVMobject` composed of dashes instead of lines.
+class DashedVMobject(VMobject):
+    """A :class:`VMobject` composed of dashes instead of lines.
 
     Examples
     --------
@@ -1731,12 +1742,12 @@ class OpenGLDashedVMobject(OpenGLVMobject):
             def construct(self):
                 r = 0.5
 
-                top_row = OpenGLVGroup()  # Increasing num_dashes
+                top_row = VGroup()  # Increasing num_dashes
                 for dashes in range(2, 12):
                     circ = DashedVMobject(Circle(radius=r, color=WHITE), num_dashes=dashes)
                     top_row.add(circ)
 
-                middle_row = OpenGLVGroup()  # Increasing dashed_ratio
+                middle_row = VGroup()  # Increasing dashed_ratio
                 for ratio in np.arange(1 / 11, 1, 1 / 11):
                     circ = DashedVMobject(
                         Circle(radius=r, color=WHITE), dashed_ratio=ratio
@@ -1745,18 +1756,18 @@ class OpenGLDashedVMobject(OpenGLVMobject):
 
                 sq = DashedVMobject(Square(1.5, color=RED))
                 penta = DashedVMobject(RegularPolygon(5, color=BLUE))
-                bottom_row = OpenGLVGroup(sq, penta)
+                bottom_row = VGroup(sq, penta)
 
                 top_row.arrange(buff=0.4)
                 middle_row.arrange()
                 bottom_row.arrange(buff=1)
-                everything = OpenGLVGroup(top_row, middle_row, bottom_row).arrange(DOWN, buff=1)
+                everything = VGroup(top_row, middle_row, bottom_row).arrange(DOWN, buff=1)
                 self.add(everything)
     """
 
     def __init__(
         self,
-        vmobject: OpenGLVMobject,
+        vmobject: VMobject,
         num_dashes: int = 15,
         dashed_ratio: float = 0.5,
         color: ParsableManimColor = WHITE,
@@ -1787,12 +1798,349 @@ class OpenGLDashedVMobject(OpenGLVMobject):
         self.match_style(vmobject, recurse=False)
 
 
-class VHighlight(OpenGLVGroup):
+class VDict(VMobject):
+    """A VGroup-like class, also offering submobject access by
+    key, like a python dict
+
+    Parameters
+    ----------
+    mapping_or_iterable
+            The parameter specifying the key-value mapping of keys and mobjects.
+    show_keys
+            Whether to also display the key associated with
+            the mobject. This might be useful when debugging,
+            especially when there are a lot of mobjects in the
+            :class:`VDict`. Defaults to False.
+    kwargs
+            Other arguments to be passed to `Mobject`.
+
+    Attributes
+    ----------
+    show_keys : :class:`bool`
+            Whether to also display the key associated with
+            the mobject. This might be useful when debugging,
+            especially when there are a lot of mobjects in the
+            :class:`VDict`. When displayed, the key is towards
+            the left of the mobject.
+            Defaults to False.
+    submob_dict : :class:`dict`
+            Is the actual python dictionary that is used to bind
+            the keys to the mobjects.
+
+    Examples
+    --------
+
+    .. manim:: ShapesWithVDict
+
+        class ShapesWithVDict(Scene):
+            def construct(self):
+                square = Square().set_color(RED)
+                circle = Circle().set_color(YELLOW).next_to(square, UP)
+
+                # create dict from list of tuples each having key-mobject pair
+                pairs = [("s", square), ("c", circle)]
+                my_dict = VDict(pairs, show_keys=True)
+
+                # display it just like a VGroup
+                self.play(Create(my_dict))
+                self.wait()
+
+                text = Tex("Some text").set_color(GREEN).next_to(square, DOWN)
+
+                # add a key-value pair by wrapping it in a single-element list of tuple
+                # after attrs branch is merged, it will be easier like `.add(t=text)`
+                my_dict.add([("t", text)])
+                self.wait()
+
+                rect = Rectangle().next_to(text, DOWN)
+                # can also do key assignment like a python dict
+                my_dict["r"] = rect
+
+                # access submobjects like a python dict
+                my_dict["t"].set_color(PURPLE)
+                self.play(my_dict["t"].animate.scale(3))
+                self.wait()
+
+                # also supports python dict styled reassignment
+                my_dict["t"] = Tex("Some other text").set_color(BLUE)
+                self.wait()
+
+                # remove submobject by key
+                my_dict.remove("t")
+                self.wait()
+
+                self.play(Uncreate(my_dict["s"]))
+                self.wait()
+
+                self.play(FadeOut(my_dict["c"]))
+                self.wait()
+
+                self.play(FadeOut(my_dict["r"], shift=DOWN))
+                self.wait()
+
+                # you can also make a VDict from an existing dict of mobjects
+                plain_dict = {
+                    1: Integer(1).shift(DOWN),
+                    2: Integer(2).shift(2 * DOWN),
+                    3: Integer(3).shift(3 * DOWN),
+                }
+
+                vdict_from_plain_dict = VDict(plain_dict)
+                vdict_from_plain_dict.shift(1.5 * (UP + LEFT))
+                self.play(Create(vdict_from_plain_dict))
+
+                # you can even use zip
+                vdict_using_zip = VDict(zip(["s", "c", "r"], [Square(), Circle(), Rectangle()]))
+                vdict_using_zip.shift(1.5 * RIGHT)
+                self.play(Create(vdict_using_zip))
+                self.wait()
+    """
+
     def __init__(
         self,
-        vmobject: OpenGLVMobject,
+        mapping_or_iterable: (
+            Mapping[Hashable, VMobject] | Iterable[tuple[Hashable, VMobject]]
+        ) = {},
+        show_keys: bool = False,
+        **kwargs,
+    ) -> None:
+        super().__init__(**kwargs)
+        self.show_keys = show_keys
+        self.submob_dict = {}
+        self.add(mapping_or_iterable)
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({repr(self.submob_dict)})"
+
+    def add(
+        self,
+        mapping_or_iterable: (
+            Mapping[Hashable, VMobject] | Iterable[tuple[Hashable, VMobject]]
+        ),
+    ) -> Self:
+        """Adds the key-value pairs to the :class:`VDict` object.
+
+        Also, it internally adds the value to the `submobjects` :class:`list`
+        of :class:`~.Mobject`, which is responsible for actual on-screen display.
+
+        Parameters
+        ---------
+        mapping_or_iterable
+            The parameter specifying the key-value mapping of keys and mobjects.
+
+        Returns
+        -------
+        :class:`VDict`
+            Returns the :class:`VDict` object on which this method was called.
+
+        Examples
+        --------
+        Normal usage::
+
+            square_obj = Square()
+            my_dict.add([("s", square_obj)])
+        """
+        for key, value in dict(mapping_or_iterable).items():
+            self.add_key_value_pair(key, value)
+
+        return self
+
+    def remove(self, key: Hashable) -> Self:
+        """Removes the mobject from the :class:`VDict` object having the key `key`
+
+        Also, it internally removes the mobject from the `submobjects` :class:`list`
+        of :class:`~.Mobject`, (which is responsible for removing it from the screen)
+
+        Parameters
+        ----------
+        key
+            The key of the submoject to be removed.
+
+        Returns
+        -------
+        :class:`VDict`
+            Returns the :class:`VDict` object on which this method was called.
+
+        Examples
+        --------
+        Normal usage::
+
+            my_dict.remove("square")
+        """
+        if key not in self.submob_dict:
+            raise KeyError(f"The given key '{key!s}' is not present in the VDict")
+        super().remove(self.submob_dict[key])
+        del self.submob_dict[key]
+        return self
+
+    def __getitem__(self, key: Hashable):
+        """Override the [] operator for item retrieval.
+
+        Parameters
+        ----------
+        key
+           The key of the submoject to be accessed
+
+        Returns
+        -------
+        :class:`VMobject`
+           The submobject corresponding to the key `key`
+
+        Examples
+        --------
+        Normal usage::
+
+           self.play(Create(my_dict["s"]))
+        """
+        submob = self.submob_dict[key]
+        return submob
+
+    def __setitem__(self, key: Hashable, value: VMobject) -> None:
+        """Override the [] operator for item assignment.
+
+        Parameters
+        ----------
+        key
+            The key of the submoject to be assigned
+        value
+            The submobject to bind the key to
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        Normal usage::
+
+            square_obj = Square()
+            my_dict["sq"] = square_obj
+        """
+        if key in self.submob_dict:
+            self.remove(key)
+        self.add([(key, value)])
+
+    def __delitem__(self, key: Hashable):
+        """Override the del operator for deleting an item.
+
+        Parameters
+        ----------
+        key
+            The key of the submoject to be deleted
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        ::
+
+            >>> from manim import *
+            >>> my_dict = VDict({'sq': Square()})
+            >>> 'sq' in my_dict
+            True
+            >>> del my_dict['sq']
+            >>> 'sq' in my_dict
+            False
+
+        Notes
+        -----
+        Removing an item from a VDict does not remove that item from any Scene
+        that the VDict is part of.
+
+        """
+        del self.submob_dict[key]
+
+    def __contains__(self, key: Hashable):
+        """Override the in operator.
+
+        Parameters
+        ----------
+        key
+            The key to check membership of.
+
+        Returns
+        -------
+        :class:`bool`
+
+        Examples
+        --------
+        ::
+
+            >>> from manim import *
+            >>> my_dict = VDict({'sq': Square()})
+            >>> 'sq' in my_dict
+            True
+
+        """
+        return key in self.submob_dict
+
+    def get_all_submobjects(self) -> list[list]:
+        """To get all the submobjects associated with a particular :class:`VDict` object
+
+        Returns
+        -------
+        :class:`dict_values`
+            All the submobjects associated with the :class:`VDict` object
+
+        Examples
+        --------
+        Normal usage::
+
+            for submob in my_dict.get_all_submobjects():
+                self.play(Create(submob))
+        """
+        submobjects = self.submob_dict.values()
+        return submobjects
+
+    def add_key_value_pair(self, key: Hashable, value: VMobject) -> None:
+        """A utility function used by :meth:`add` to add the key-value pair
+        to :attr:`submob_dict`. Not really meant to be used externally.
+
+        Parameters
+        ----------
+        key
+            The key of the submobject to be added.
+        value
+            The mobject associated with the key
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        TypeError
+            If the value is not an instance of VMobject
+
+        Examples
+        --------
+        Normal usage::
+
+            square_obj = Square()
+            self.add_key_value_pair("s", square_obj)
+
+        """
+        self._assert_valid_submobjects([value])
+        mob = value
+        if self.show_keys:
+            # This import is here and not at the top to avoid circular import
+            from manim.mobject.text.tex_mobject import Tex
+
+            key_text = Tex(str(key)).next_to(value, LEFT)
+            mob.add(key_text)
+
+        self.submob_dict[key] = mob
+        super().add(value)
+
+
+class VHighlight(VGroup):
+    def __init__(
+        self,
+        vmobject: VMobject,
         n_layers: int = 5,
-        color_bounds: tuple[Color, Color] = (GREY_C, GREY_E),
+        color_bounds: tuple[ManimColor, ManimColor] = (GREY_C, GREY_E),
         max_stroke_addition: float = 5.0,
     ):
         outline = vmobject.replicate(n_layers)
