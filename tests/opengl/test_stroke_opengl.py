@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import manim.utils.color as C
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+from manim.mobject.types.vectorized_mobject import OpenGLVMobject
 
 
 def test_stroke_props_in_ctor(using_opengl_renderer):

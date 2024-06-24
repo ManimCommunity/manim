@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.mobject.mobject import OpenGLMobject
 
 
 def test_opengl_mobject_add(using_opengl_renderer):

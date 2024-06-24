@@ -1,5 +1,5 @@
 from manim import manim_colors as col
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+from manim.mobject.types.vectorized_mobject import OpenGLVMobject
 
 VMobject = OpenGLVMobject
 

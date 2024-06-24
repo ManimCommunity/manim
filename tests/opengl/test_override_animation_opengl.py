@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 
 from manim import Animation, override_animation
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.mobject.mobject import OpenGLMobject
 from manim.utils.exceptions import MultiAnimationOverrideException
 
 

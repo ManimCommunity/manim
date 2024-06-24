@@ -4,8 +4,8 @@ import numpy as np
 import pytest
 
 from manim import Circle, Line, Square, VDict, VGroup
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+from manim.mobject.mobject import OpenGLMobject
+from manim.mobject.types.vectorized_mobject import OpenGLVMobject
 
 
 def test_opengl_vmobject_add(using_opengl_renderer):
