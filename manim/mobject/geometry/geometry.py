@@ -4,10 +4,10 @@ import numpy as np
 
 from manim.constants import *
 from manim.mobject.mobject import Mobject
-from manim.mobject.opengl.opengl_vectorized_mobject import (
-    OpenGLDashedVMobject,
-    OpenGLVGroup,
-    OpenGLVMobject,
+from manim.mobject.types.vectorized_mobject import (
+    DashedVMobject,
+    VGroup,
+    VMobject,
 )
 from manim.utils.color import *
 from manim.utils.iterables import adjacent_n_tuples, adjacent_pairs
@@ -28,33 +28,31 @@ DEFAULT_ARROW_TIP_LENGTH = 0.35
 DEFAULT_ARROW_TIP_WIDTH = 0.35
 
 __all__ = [
-    "OpenGLTipableVMobject",
-    "OpenGLArc",
-    "OpenGLArcBetweenPoints",
-    "OpenGLCurvedArrow",
-    "OpenGLCurvedDoubleArrow",
-    "OpenGLCircle",
-    "OpenGLDot",
-    "OpenGLEllipse",
-    "OpenGLAnnularSector",
-    "OpenGLSector",
-    "OpenGLAnnulus",
-    "OpenGLLine",
-    "OpenGLDashedLine",
-    "OpenGLTangentLine",
-    "OpenGLElbow",
-    "OpenGLArrow",
-    "OpenGLVector",
-    "OpenGLDoubleArrow",
-    "OpenGLCubicBezier",
-    "OpenGLPolygon",
-    "OpenGLRegularPolygon",
-    "OpenGLTriangle",
-    "OpenGLArrowTip",
+    "TipableVMobject",
+    "Arc",
+    "ArcBetweenPoints",
+    "CurvedArrow",
+    "CurvedDoubleArrow",
+    "Circle",
+    "Dot",
+    "Ellipse",
+    "AnnularSector",
+    "Sector",
+    "Annulus",
+    "Line",
+    "DashedLine",
+    "TangentLine",
+    "Elbow",
+    "Arrow",
+    "Vector",
+    "DoubleArrow",
+    "CubicBezier",
+    "Polygon",
+    "ArrowTip",
 ]
 
 
-class OpenGLTipableVMobject(OpenGLVMobject):
+class TipableVMobject(VMobject):
     """
     Meant for shared functionality between Arc and Line.
     Functionality can be classified broadly into these groups:
@@ -116,7 +114,7 @@ class OpenGLTipableVMobject(OpenGLVMobject):
         config = {}
         config.update(self.tip_config)
         config.update(kwargs)
-        return OpenGLArrowTip(**config)
+        return ArrowTip(**config)
 
     def position_tip(self, tip, at_start=False):
         # Last two control points, defining both
@@ -163,7 +161,7 @@ class OpenGLTipableVMobject(OpenGLVMobject):
     # Getters
     def pop_tips(self):
         start, end = self.get_start_and_end()
-        result = OpenGLVGroup()
+        result = VGroup()
         if self.has_tip():
             result.add(self.tip)
             self.remove(self.tip)
@@ -178,7 +176,7 @@ class OpenGLTipableVMobject(OpenGLVMobject):
         Returns a VGroup (collection of VMobjects) containing
         the TipableVMObject instance's tips.
         """
-        result = OpenGLVGroup()
+        result = VGroup()
         if hasattr(self, "tip"):
             result.add(self.tip)
         if hasattr(self, "start_tip"):
@@ -220,7 +218,7 @@ class OpenGLTipableVMobject(OpenGLVMobject):
         return np.linalg.norm(start - end)
 
 
-class OpenGLArc(OpenGLTipableVMobject):
+class Arc(TipableVMobject):
     def __init__(
         self,
         start_angle=0,
@@ -240,7 +238,7 @@ class OpenGLArc(OpenGLTipableVMobject):
 
     def init_points(self):
         self.set_points(
-            OpenGLArc.create_quadratic_bezier_points(
+            Arc.create_quadratic_bezier_points(
                 angle=self.angle,
                 start_angle=self.start_angle,
                 n_components=self.n_components,
@@ -299,7 +297,7 @@ class OpenGLArc(OpenGLTipableVMobject):
         return self
 
 
-class OpenGLArcBetweenPoints(OpenGLArc):
+class ArcBetweenPoints(Arc):
     def __init__(self, start, end, angle=TAU / 4, **kwargs):
         super().__init__(angle=angle, **kwargs)
         if angle == 0:
@@ -307,19 +305,19 @@ class OpenGLArcBetweenPoints(OpenGLArc):
         self.put_start_and_end_on(start, end)
 
 
-class OpenGLCurvedArrow(OpenGLArcBetweenPoints):
+class CurvedArrow(ArcBetweenPoints):
     def __init__(self, start_point, end_point, **kwargs):
         super().__init__(start_point, end_point, **kwargs)
         self.add_tip()
 
 
-class OpenGLCurvedDoubleArrow(OpenGLCurvedArrow):
+class CurvedDoubleArrow(CurvedArrow):
     def __init__(self, start_point, end_point, **kwargs):
         super().__init__(start_point, end_point, **kwargs)
         self.add_tip(at_start=True)
 
 
-class OpenGLCircle(OpenGLArc):
+class Circle(Arc):
     def __init__(self, color=RED, **kwargs):
         super().__init__(0, TAU, color=color, **kwargs)
 
@@ -336,7 +334,7 @@ class OpenGLCircle(OpenGLArc):
         return self.point_from_proportion((angle - start_angle) / TAU)
 
 
-class OpenGLDot(OpenGLCircle):
+class Dot(Circle):
     def __init__(
         self,
         point=ORIGIN,
@@ -356,14 +354,14 @@ class OpenGLDot(OpenGLCircle):
         )
 
 
-class OpenGLEllipse(OpenGLCircle):
+class Ellipse(Circle):
     def __init__(self, width=2, height=1, **kwargs):
         super().__init__(**kwargs)
         self.set_width(width, stretch=True)
         self.set_height(height, stretch=True)
 
 
-class OpenGLAnnularSector(OpenGLArc):
+class AnnularSector(Arc):
     def __init__(
         self,
         inner_radius=1,
@@ -388,7 +386,7 @@ class OpenGLAnnularSector(OpenGLArc):
 
     def init_points(self):
         inner_arc, outer_arc = (
-            OpenGLArc(
+            Arc(
                 start_angle=self.start_angle,
                 angle=self.angle,
                 radius=radius,
@@ -403,12 +401,12 @@ class OpenGLAnnularSector(OpenGLArc):
         self.add_line_to(inner_arc.points[0])
 
 
-class OpenGLSector(OpenGLAnnularSector):
+class Sector(AnnularSector):
     def __init__(self, outer_radius=1, inner_radius=0, **kwargs):
         super().__init__(inner_radius=inner_radius, outer_radius=outer_radius, **kwargs)
 
 
-class OpenGLAnnulus(OpenGLCircle):
+class Annulus(Circle):
     def __init__(
         self,
         inner_radius=1,
@@ -428,15 +426,15 @@ class OpenGLAnnulus(OpenGLCircle):
 
     def init_points(self):
         self.radius = self.outer_radius
-        outer_circle = OpenGLCircle(radius=self.outer_radius)
-        inner_circle = OpenGLCircle(radius=self.inner_radius)
+        outer_circle = Circle(radius=self.outer_radius)
+        inner_circle = Circle(radius=self.inner_radius)
         inner_circle.reverse_points()
         self.append_points(outer_circle.points)
         self.append_points(inner_circle.points)
         self.shift(self.arc_center)
 
 
-class OpenGLLine(OpenGLTipableVMobject):
+class Line(TipableVMobject):
     def __init__(self, start=LEFT, end=RIGHT, buff=0, path_arc=0, **kwargs):
         self.dim = 3
         self.buff = buff
@@ -449,7 +447,7 @@ class OpenGLLine(OpenGLTipableVMobject):
 
     def set_points_by_ends(self, start, end, buff=0, path_arc=0):
         if path_arc:
-            self.set_points(OpenGLArc.create_quadratic_bezier_points(path_arc))
+            self.set_points(Arc.create_quadratic_bezier_points(path_arc))
             self.put_start_and_end_on(start, end)
         else:
             self.set_points_as_corners([start, end])
@@ -542,7 +540,7 @@ class OpenGLLine(OpenGLTipableVMobject):
         self.scale(length / self.get_length())
 
 
-class OpenGLDashedLine(OpenGLLine):
+class DashedLine(Line):
     def __init__(
         self, *args, dash_length=DEFAULT_DASH_LENGTH, dashed_ratio=0.5, **kwargs
     ):
@@ -551,7 +549,7 @@ class OpenGLDashedLine(OpenGLLine):
         super().__init__(*args, **kwargs)
         dashed_ratio = self.dashed_ratio
         num_dashes = self.calculate_num_dashes(dashed_ratio)
-        dashes = OpenGLDashedVMobject(
+        dashes = DashedVMobject(
             self,
             num_dashes=num_dashes,
             dashed_ratio=dashed_ratio,
@@ -584,7 +582,7 @@ class OpenGLDashedLine(OpenGLLine):
         return self.submobjects[-1].points[-2]
 
 
-class OpenGLTangentLine(OpenGLLine):
+class TangentLine(Line):
     def __init__(self, vmob, alpha, length=1, d_alpha=1e-6, **kwargs):
         self.length = length
         self.d_alpha = d_alpha
@@ -595,7 +593,7 @@ class OpenGLTangentLine(OpenGLLine):
         self.scale(self.length / self.get_length())
 
 
-class OpenGLElbow(OpenGLVMobject):
+class Elbow(VMobject):
     def __init__(self, width=0.2, angle=0, **kwargs):
         self.angle = angle
         super().__init__(self, **kwargs)
@@ -604,7 +602,7 @@ class OpenGLElbow(OpenGLVMobject):
         self.rotate(self.angle, about_point=ORIGIN)
 
 
-class OpenGLArrow(OpenGLLine):
+class Arrow(Line):
     def __init__(
         self,
         start=LEFT,
@@ -666,7 +664,7 @@ class OpenGLArrow(OpenGLLine):
             R = (-b + np.sqrt(b**2 - 4 * a * c)) / (2 * a)
 
             # Find arc points
-            points1 = OpenGLArc.create_quadratic_bezier_points(path_arc)
+            points1 = Arc.create_quadratic_bezier_points(path_arc)
             points2 = np.array(points1[::-1])
             points1 *= R + thickness / 2
             points2 *= R - thickness / 2
@@ -736,7 +734,7 @@ class OpenGLArrow(OpenGLLine):
         return self
 
 
-class OpenGLVector(OpenGLArrow):
+class Vector(Arrow):
     def __init__(self, direction=RIGHT, buff=0, **kwargs):
         self.buff = buff
         if len(direction) == 2:
@@ -744,19 +742,19 @@ class OpenGLVector(OpenGLArrow):
         super().__init__(ORIGIN, direction, buff=buff, **kwargs)
 
 
-class OpenGLDoubleArrow(OpenGLArrow):
+class DoubleArrow(Arrow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.add_tip(at_start=True)
 
 
-class OpenGLCubicBezier(OpenGLVMobject):
+class CubicBezier(VMobject):
     def __init__(self, a0, h0, h1, a1, **kwargs):
         super().__init__(**kwargs)
         self.add_cubic_bezier_curve(a0, h0, h1, a1)
 
 
-class OpenGLPolygon(OpenGLVMobject):
+class Polygon(VMobject):
     def __init__(self, *vertices, **kwargs):
         self.vertices = vertices
         super().__init__(**kwargs)
@@ -783,7 +781,7 @@ class OpenGLPolygon(OpenGLVMobject):
             cut_off_length = radius * np.tan(angle / 2)
             # Determines counterclockwise vs. clockwise
             sign = np.sign(np.cross(vect1, vect2)[2])
-            arc = OpenGLArcBetweenPoints(
+            arc = ArcBetweenPoints(
                 v2 - unit_vect1 * cut_off_length,
                 v2 + unit_vect2 * cut_off_length,
                 angle=sign * angle,
@@ -796,7 +794,7 @@ class OpenGLPolygon(OpenGLVMobject):
         arcs = [arcs[-1], *arcs[:-1]]
         for arc1, arc2 in adjacent_pairs(arcs):
             self.append_points(arc1.points)
-            line = OpenGLLine(arc1.get_end(), arc2.get_start())
+            line = Line(arc1.get_end(), arc2.get_start())
             # Make sure anchors are evenly distributed
             len_ratio = line.get_length() / arc1.get_arc_length()
             line.insert_n_curves(int(arc1.get_num_curves() * len_ratio))
@@ -804,7 +802,7 @@ class OpenGLPolygon(OpenGLVMobject):
         return self
 
 
-class OpenGLRegularPolygon(OpenGLPolygon):
+class RegularPolygon(Polygon):
     def __init__(self, n=6, start_angle=None, **kwargs):
         self.start_angle = start_angle
         if self.start_angle is None:
@@ -817,12 +815,12 @@ class OpenGLRegularPolygon(OpenGLPolygon):
         super().__init__(*vertices, **kwargs)
 
 
-class OpenGLTriangle(OpenGLRegularPolygon):
+class Triangle(RegularPolygon):
     def __init__(self, **kwargs):
         super().__init__(n=3, **kwargs)
 
 
-class OpenGLArrowTip(OpenGLTriangle):
+class ArrowTip(Triangle):
     def __init__(
         self,
         fill_opacity=1,
@@ -857,25 +855,3 @@ class OpenGLArrowTip(OpenGLTriangle):
 
     def get_length(self):
         return np.linalg.norm(self.get_vector())
-
-
-class OpenGLRectangle(OpenGLPolygon):
-    def __init__(self, color=WHITE, width=4.0, height=2.0, **kwargs):
-        super().__init__(UR, UL, DL, DR, color=color, **kwargs)
-
-        self.set_width(width, stretch=True)
-        self.set_height(height, stretch=True)
-
-
-class OpenGLSquare(OpenGLRectangle):
-    def __init__(self, side_length=2.0, **kwargs):
-        self.side_length = side_length
-
-        super().__init__(height=side_length, width=side_length, **kwargs)
-
-
-class OpenGLRoundedRectangle(OpenGLRectangle):
-    def __init__(self, corner_radius=0.5, **kwargs):
-        self.corner_radius = corner_radius
-        super().__init__(**kwargs)
-        self.round_corners(self.corner_radius)
