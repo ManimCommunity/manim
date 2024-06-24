@@ -303,8 +303,6 @@ class ManimConfig(MutableMapping):
         "renderer",
         "enable_gui",
         "gui_location",
-        "use_projection_fill_shaders",
-        "use_projection_stroke_shaders",
         "verbosity",
         "video_dir",
         "sections_dir",
@@ -315,7 +313,6 @@ class ManimConfig(MutableMapping):
         "write_all",
         "write_to_movie",
         "zero_pad",
-        "force_window",
         "no_latex_cleanup",
     }
 
@@ -584,10 +581,7 @@ class ManimConfig(MutableMapping):
             "custom_folders",
             "enable_gui",
             "fullscreen",
-            "use_projection_fill_shaders",
-            "use_projection_stroke_shaders",
             "enable_wireframe",
-            "force_window",
             "no_latex_cleanup",
         ]:
             setattr(self, key, parser["CLI"].getboolean(key, fallback=False))
@@ -760,11 +754,8 @@ class ManimConfig(MutableMapping):
             "background_color",
             "enable_gui",
             "fullscreen",
-            "use_projection_fill_shaders",
-            "use_projection_stroke_shaders",
             "zero_pad",
             "enable_wireframe",
-            "force_window",
             "dry_run",
             "no_latex_cleanup",
         ]:
@@ -997,15 +988,6 @@ class ManimConfig(MutableMapping):
     @enable_wireframe.setter
     def enable_wireframe(self, value: bool) -> None:
         self._set_boolean("enable_wireframe", value)
-
-    @property
-    def force_window(self) -> bool:
-        """Whether to force window when using the opengl renderer."""
-        return self._d["force_window"]
-
-    @force_window.setter
-    def force_window(self, value: bool) -> None:
-        self._set_boolean("force_window", value)
 
     @property
     def no_latex_cleanup(self) -> bool:
@@ -1353,37 +1335,6 @@ class ManimConfig(MutableMapping):
         if isinstance(value, str):
             value = value.lower()
         renderer = RendererType(value)
-        try:
-            from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-            from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-            from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
-
-            from ..mobject.mobject import Mobject
-            from ..mobject.types.vectorized_mobject import VMobject
-
-            for cls in ConvertToOpenGL._converted_classes:
-                if renderer == RendererType.OPENGL:
-                    conversion_dict = {
-                        Mobject: OpenGLMobject,
-                        VMobject: OpenGLVMobject,
-                    }
-                else:
-                    conversion_dict = {
-                        OpenGLMobject: Mobject,
-                        OpenGLVMobject: VMobject,
-                    }
-
-                cls.__bases__ = tuple(
-                    conversion_dict.get(base, base) for base in cls.__bases__
-                )
-        except ImportError:
-            # The renderer is set during the initial import of the
-            # library for the first time. The imports above cause an
-            # ImportError due to circular imports. However, the
-            # metaclass sets stuff up correctly in this case, so we
-            # can just do nothing.
-            pass
-
         self._set_from_enum("renderer", renderer, RendererType)
 
     @property
@@ -1449,24 +1400,6 @@ class ManimConfig(MutableMapping):
     @fullscreen.setter
     def fullscreen(self, value: bool) -> None:
         self._set_boolean("fullscreen", value)
-
-    @property
-    def use_projection_fill_shaders(self) -> bool:
-        """Use shaders for OpenGLVMobject fill which are compatible with transformation matrices."""
-        return self._d["use_projection_fill_shaders"]
-
-    @use_projection_fill_shaders.setter
-    def use_projection_fill_shaders(self, value: bool) -> None:
-        self._set_boolean("use_projection_fill_shaders", value)
-
-    @property
-    def use_projection_stroke_shaders(self) -> bool:
-        """Use shaders for OpenGLVMobject stroke which are compatible with transformation matrices."""
-        return self._d["use_projection_stroke_shaders"]
-
-    @use_projection_stroke_shaders.setter
-    def use_projection_stroke_shaders(self, value: bool) -> None:
-        self._set_boolean("use_projection_stroke_shaders", value)
 
     @property
     def zero_pad(self) -> int:
