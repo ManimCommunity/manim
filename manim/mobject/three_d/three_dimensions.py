@@ -32,7 +32,8 @@ from manim.mobject.geometry.polygram import Square
 from manim.mobject.mobject import *
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-from manim.mobject.types.vectorized_mobject import VGroup, VMobject
+from manim.mobject.types.vectorized_mobject import VGroup, VMobject, VectorizedPoint
+
 from manim.utils.color import (
     BLUE,
     BLUE_D,
@@ -728,8 +729,8 @@ class Cone(Surface):
 
         start = self.base_circle.get_center()
         end = start + normalized_direction * self.new_height
-        self.start_point = VMobject().set_points_as_corners([start] * 3)
-        self.end_point = VMobject().set_points_as_corners([end] * 3)
+        self.start_point = VectorizedPoint(start)
+        self.end_point = VectorizedPoint(end)
         self.add(self.start_point, self.end_point)
 
 
@@ -1179,12 +1180,12 @@ class Arrow3D(Line3D):
             **kwargs,
         )
         self.cone.shift(end)
-        self.end_point = VMobject().set_points_as_corners([end] * 3)
+        self.end_point = VectorizedPoint(end)
         self.add(self.end_point, self.cone)
         self.set_color(color)
 
     def get_end(self) -> np.ndarray:
-        return self.end_point.get_end()
+        return self.end_point.get_center()
 
 
 class Torus(Surface):
