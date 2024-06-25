@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import platform
 import time
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 from typing import TYPE_CHECKING, Callable
 
 import numpy as np
+from tqdm import tqdm
 
 from manim import config, logger
 from manim.constants import RendererType
@@ -16,6 +18,8 @@ from manim.scene.scene import Scene, SceneState
 from manim.utils.exceptions import EndSceneEarlyException
 
 if TYPE_CHECKING:
+    import numpy.typing as npt
+
     from manim.animation.protocol import AnimationProtocol
 
     from .camera.camera import Camera
@@ -239,6 +243,18 @@ class Manager:
         self.file_writer.add_partial_movie_file(hash_current_play)
         self.file_writer.begin_animation(allow_write=self._write_files)
 
+    def _create_progressbar(self, total: float, description: str, **kwargs) -> tqdm:
+        """Create a progressbar"""
+        return tqdm(
+            total=total,
+            unit="frames",
+            desc=description % {"num": self.file_writer.num_plays},
+            ascii=True if platform.system() == "Windows" else None,
+            leave=config.progress_bar == "leave",
+            disable=config.progress_bar == "none",
+            **kwargs,
+        )
+
     def _wait(
         self,
         duration: float,
@@ -254,32 +270,42 @@ class Manager:
         )  # TODO: this method needs to be implemented
         condition = stop_condition or (lambda: False)
 
-        last_t = 0
-        for t in self._calc_time_progression(duration):
-            if update_mobjects:
-                dt, last_t = t - last_t, t
-                self._update_frame(dt)
-                if condition():
-                    break
-            else:
-                self.renderer.render_previous(self.camera)
+        progression = self._calc_time_progression(duration)
+        with self._create_progressbar(
+            progression.shape[0], "Waiting %(num)d: "
+        ) as progress:
+            last_t = 0
+            for t in progression:
+                if update_mobjects:
+                    dt, last_t = t - last_t, t
+                    self._update_frame(dt)
+                    if condition():
+                        progress.update(duration - t)
+                        break
+                else:
+                    self.renderer.render_previous(self.camera)
+                progress.update(1)
         self.scene.post_play()
 
         self.file_writer.end_animation(allow_write=self._write_files)
 
     def _progress_through_animations(
-        self, animations: Iterable[AnimationProtocol], run_time: float | None = None
+        self, animations: Sequence[AnimationProtocol], run_time: float | None = None
     ) -> None:
         last_t = 0.0
         run_time = run_time or self._calc_runtime(animations)
-        for t in self._calc_time_progression(run_time):
-            dt, last_t = t - last_t, t
-            self.scene._update_animations(animations, t, dt)
-            self._update_frame(dt)
+        progression = self._calc_time_progression(run_time)
+        with self._create_progressbar(
+            progression.shape[0],
+            f"Animation %(num)d: {animations[0]}{', etc.' if len(animations) > 1 else ''}",
+        ) as progress:
+            for t in self._calc_time_progression(run_time):
+                dt, last_t = t - last_t, t
+                self.scene._update_animations(animations, t, dt)
+                self._update_frame(dt)
+                progress.update(1)
 
-    def _calc_time_progression(self, run_time: float) -> Iterable[float]:
-        # we can't use endpoint=True because for two consecutive play calls
-        # that would cause an extra frame to be created
+    def _calc_time_progression(self, run_time: float) -> npt.NDArray[np.float64]:
         return np.arange(0, run_time, 1 / config.frame_rate)
 
     def _calc_runtime(self, animations: Iterable[AnimationProtocol]) -> float:
