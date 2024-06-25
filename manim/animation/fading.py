@@ -12,7 +12,6 @@
 
 """
 
-
 from __future__ import annotations
 
 __all__ = [
@@ -31,7 +30,7 @@ from ..constants import ORIGIN
 from ..mobject.mobject import Group, Mobject
 
 if TYPE_CHECKING:
-    from ..scene import Scene
+    pass
 
 
 class _Fade(Transform):

@@ -1,5 +1,3 @@
-import pytest
-
 from manim import manim_colors as col
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 

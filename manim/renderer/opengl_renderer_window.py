@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import moderngl_window as mglw
 import numpy as np
 from moderngl_window.context.pyglet.window import Window as FunWindow
@@ -9,6 +7,8 @@ from moderngl_window.timers.clock import Timer
 from screeninfo import get_monitors
 
 from .. import __version__, config
+
+__all__ = ["Window"]
 
 
 class Window(FunWindow):

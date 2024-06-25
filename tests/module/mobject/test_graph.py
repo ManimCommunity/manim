@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import pytest
+
 from manim import DiGraph, Graph, Scene, Text, tempconfig
+from manim.mobject.graph import _layouts
 
 
 def test_graph_creation():
@@ -100,3 +103,78 @@ def test_custom_animation_mobject_list():
         scene.play(G.animate.remove_vertices(2))
         assert str(G) == "Undirected graph on 3 vertices and 0 edges"
         assert scene.mobjects == [G]
+
+
+def test_custom_graph_layout_dict():
+    G = Graph(
+        [1, 2, 3], [(1, 2), (2, 3)], layout={1: [0, 0, 0], 2: [1, 1, 0], 3: [1, -1, 0]}
+    )
+    assert str(G) == "Undirected graph on 3 vertices and 2 edges"
+    assert all(G.vertices[1].get_center() == [0, 0, 0])
+    assert all(G.vertices[2].get_center() == [1, 1, 0])
+    assert all(G.vertices[3].get_center() == [1, -1, 0])
+
+
+def test_graph_layouts():
+    for layout in (layout for layout in _layouts if layout not in ["tree", "partite"]):
+        G = Graph([1, 2, 3], [(1, 2), (2, 3)], layout=layout)
+        assert str(G) == "Undirected graph on 3 vertices and 2 edges"
+
+
+def test_tree_layout():
+    G = Graph([1, 2, 3], [(1, 2), (2, 3)], layout="tree", root_vertex=1)
+    assert str(G) == "Undirected graph on 3 vertices and 2 edges"
+
+
+def test_partite_layout():
+    G = Graph(
+        [1, 2, 3, 4, 5],
+        [(1, 2), (2, 3), (3, 4), (4, 5)],
+        layout="partite",
+        partitions=[[1, 2], [3, 4, 5]],
+    )
+    assert str(G) == "Undirected graph on 5 vertices and 4 edges"
+
+
+def test_custom_graph_layout_function():
+    def layout_func(graph, scale):
+        return {vertex: [vertex, vertex, 0] for vertex in graph}
+
+    G = Graph([1, 2, 3], [(1, 2), (2, 3)], layout=layout_func)
+    assert all(G.vertices[1].get_center() == [1, 1, 0])
+    assert all(G.vertices[2].get_center() == [2, 2, 0])
+    assert all(G.vertices[3].get_center() == [3, 3, 0])
+
+
+def test_custom_graph_layout_function_with_kwargs():
+    def layout_func(graph, scale, offset):
+        return {
+            vertex: [vertex * scale + offset, vertex * scale + offset, 0]
+            for vertex in graph
+        }
+
+    G = Graph(
+        [1, 2, 3], [(1, 2), (2, 3)], layout=layout_func, layout_config={"offset": 1}
+    )
+    assert all(G.vertices[1].get_center() == [3, 3, 0])
+    assert all(G.vertices[2].get_center() == [5, 5, 0])
+    assert all(G.vertices[3].get_center() == [7, 7, 0])
+
+
+def test_graph_change_layout():
+    for layout in (layout for layout in _layouts if layout not in ["tree", "partite"]):
+        G = Graph([1, 2, 3], [(1, 2), (2, 3)])
+        G.change_layout(layout=layout)
+        assert str(G) == "Undirected graph on 3 vertices and 2 edges"
+
+
+def test_tree_layout_no_root_error():
+    with pytest.raises(ValueError) as excinfo:
+        G = Graph([1, 2, 3], [(1, 2), (2, 3)], layout="tree")
+    assert str(excinfo.value) == "The tree layout requires the root_vertex parameter"
+
+
+def test_tree_layout_not_tree_error():
+    with pytest.raises(ValueError) as excinfo:
+        G = Graph([1, 2, 3], [(1, 2), (2, 3), (3, 1)], layout="tree", root_vertex=1)
+    assert str(excinfo.value) == "The tree layout must be used with trees"

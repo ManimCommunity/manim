@@ -1,4 +1,6 @@
 # For caching
+from __future__ import annotations
+
 import re
 from functools import lru_cache
 from pathlib import Path

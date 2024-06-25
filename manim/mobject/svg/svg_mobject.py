@@ -440,9 +440,9 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         if self.should_center:
             self.center()
         if self.svg_height is not None:
-            self.set_height(self.svg_height)
+            self.set(height=self.svg_height)
         if self.svg_width is not None:
-            self.set_width(self.svg_width)
+            self.set(width=self.svg_width)
 
 
 class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
@@ -509,17 +509,15 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
         all_points: list[np.ndarray] = []
         last_move = None
         curve_start = None
+        last_true_move = None
 
-        # These lambdas behave the same as similar functions in
-        # vectorized_mobject, except they add to a list of points instead
-        # of updating this Mobject's numpy array of points. This way,
-        # we don't observe O(n^2) behavior for complex paths due to
-        # numpy's need to re-allocate memory on every append.
-        def move_pen(pt):
-            nonlocal last_move, curve_start
+        def move_pen(pt, *, true_move: bool = False):
+            nonlocal last_move, curve_start, last_true_move
             last_move = pt
             if curve_start is None:
                 curve_start = last_move
+            if true_move:
+                last_true_move = last_move
 
         if self.n_points_per_curve == 4:
 
@@ -567,7 +565,7 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
         for segment in self.path_obj:
             segment_class = segment.__class__
             if segment_class == se.Move:
-                move_pen(_convert_point_to_3d(*segment.end))
+                move_pen(_convert_point_to_3d(*segment.end), true_move=True)
             elif segment_class == se.Line:
                 add_line(last_move, _convert_point_to_3d(*segment.end))
             elif segment_class == se.QuadraticBezier:
@@ -587,8 +585,8 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
                 # If the SVG path naturally ends at the beginning of the curve,
                 # we do *not* need to draw a closing line. To account for floating
                 # point precision, we use a small value to compare the two points.
-                if abs(np.linalg.norm(last_move - curve_start)) > 0.0001:
-                    add_line(last_move, curve_start)
+                if abs(np.linalg.norm(last_move - last_true_move)) > 0.0001:
+                    add_line(last_move, last_true_move)
                 curve_start = None
             else:
                 raise AssertionError(f"Not implemented: {segment_class}")

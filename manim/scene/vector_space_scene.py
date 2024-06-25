@@ -297,7 +297,7 @@ class VectorScene(Scene):
         """
         if not isinstance(label, MathTex):
             if len(label) == 1:
-                label = "\\vec{\\textbf{%s}}" % label
+                label = "\\vec{\\textbf{%s}}" % label  # noqa: UP031
             label = MathTex(label)
             if color is None:
                 color = vector.get_color()
@@ -572,7 +572,7 @@ class LinearTransformationScene(VectorScene):
                     self,
                     show_coordinates=True,
                     leave_ghost_vectors=True,
-                    *kwargs
+                    **kwargs
                 )
 
             def construct(self):
@@ -615,6 +615,8 @@ class LinearTransformationScene(VectorScene):
                 "stroke_width": 1,
             },
         }
+
+        self.ghost_vectors = VGroup()
 
         self.foreground_plane_kwargs = {
             "x_range": np.array([-config["frame_width"], config["frame_width"], 1.0]),
@@ -740,6 +742,13 @@ class LinearTransformationScene(VectorScene):
         """
         mobject.target = target_mobject
         self.add_special_mobjects(self.moving_mobjects, mobject)
+
+    def get_ghost_vectors(self) -> VGroup:
+        """
+        Returns all ghost vectors ever added to ``self``. Each element is a ``VGroup`` of
+        two ghost vectors.
+        """
+        return self.ghost_vectors
 
     def get_unit_square(
         self, color: str = YELLOW, opacity: float = 0.3, stroke_width: float = 3
@@ -895,9 +904,8 @@ class LinearTransformationScene(VectorScene):
         if new_label:
             label_mob.target_text = new_label
         else:
-            label_mob.target_text = "{}({})".format(
-                transformation_name,
-                label_mob.get_tex_string(),
+            label_mob.target_text = (
+                f"{transformation_name}({label_mob.get_tex_string()})"
             )
         label_mob.vector = vector
         label_mob.kwargs = kwargs
@@ -994,10 +1002,16 @@ class LinearTransformationScene(VectorScene):
         Animation
             The animation of the movement.
         """
-        start = VGroup(*pieces)
-        target = VGroup(*(mob.target for mob in pieces))
-        if self.leave_ghost_vectors:
-            self.add(start.copy().fade(0.7))
+
+        v_pieces = [piece for piece in pieces if isinstance(piece, VMobject)]
+        start = VGroup(*v_pieces)
+        target = VGroup(*(mob.target for mob in v_pieces))
+
+        # don't add empty VGroups
+        if self.leave_ghost_vectors and start.submobjects:
+            # start.copy() gives a VGroup of Vectors
+            self.ghost_vectors.add(start.copy().fade(0.7))
+            self.add(self.ghost_vectors[-1])
         return Transform(start, target, lag_ratio=0)
 
     def get_moving_mobject_movement(self, func: Callable[[np.ndarray], np.ndarray]):
@@ -1079,6 +1093,7 @@ class LinearTransformationScene(VectorScene):
         **kwargs
             Any valid keyword argument of self.apply_transposed_matrix()
         """
+
         self.apply_transposed_matrix(np.array(matrix).T, **kwargs)
 
     def apply_inverse(self, matrix: np.ndarray | list | tuple, **kwargs):

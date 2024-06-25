@@ -18,6 +18,8 @@ from .. import logger
 # of a dict holding all the relevant information
 # to that shader
 
+__all__ = ["ShaderWrapper"]
+
 
 def get_shader_dir():
     return Path(__file__).parent / "shaders"

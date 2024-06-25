@@ -10,8 +10,9 @@ __all__ = [
 
 import itertools as it
 import random
+from collections.abc import Iterable, Sequence
 from math import ceil, floor
-from typing import Callable, Iterable, Sequence
+from typing import Callable
 
 import numpy as np
 from PIL import Image
@@ -828,7 +829,9 @@ class StreamLines(VectorField):
             step = max(1, int(len(points) / self.max_anchors_per_line))
             line.set_points_smoothly(points[::step])
             if self.single_color:
-                line.set_stroke(self.color)
+                line.set_stroke(
+                    color=self.color, width=self.stroke_width, opacity=opacity
+                )
             else:
                 if config.renderer == RendererType.OPENGL:
                     # scaled for compatibility with cairo

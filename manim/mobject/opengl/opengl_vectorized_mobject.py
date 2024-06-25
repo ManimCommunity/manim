@@ -2,21 +2,18 @@ from __future__ import annotations
 
 import itertools as it
 import operator as op
-from functools import reduce, wraps
+from functools import reduce
 from typing import TYPE_CHECKING
 
 import moderngl
 import numpy as np
 from numpy.typing import NDArray
 
-from manim import config
 from manim.constants import *
 from manim.mobject.opengl.opengl_mobject import (
-    UNIFORM_DTYPE,
     OpenGLMobject,
     OpenGLPoint,
 )
-from manim.renderer.shader_wrapper import ShaderWrapper
 from manim.utils.bezier import (
     bezier,
     get_quadratic_approximation_of_cubic,
@@ -34,22 +31,18 @@ from manim.utils.deprecation import deprecated
 from manim.utils.iterables import (
     listify,
     make_even,
-    resize_array,
     resize_with_interpolation,
-    tuplify,
 )
 from manim.utils.space_ops import (
     angle_between_vectors,
-    cross2d,
-    earclip_triangulation,
     get_norm,
     get_unit_normal,
     shoelace_direction,
-    z_to_vector,
 )
 
 if TYPE_CHECKING:
-    from typing import Callable, Iterable, Optional, Sequence
+    from collections.abc import Iterable, Sequence
+    from typing import Callable
 
     from typing_extensions import Self
 

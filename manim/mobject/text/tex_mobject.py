@@ -26,15 +26,15 @@ __all__ = [
 import itertools as it
 import operator as op
 import re
+from collections.abc import Iterable
 from functools import reduce
 from textwrap import dedent
-from typing import Dict, Iterable, Optional
 
 from manim import config, logger
 from manim.constants import *
 from manim.mobject.geometry.line import Line
 from manim.mobject.svg.svg_mobject import SVGMobject
-from manim.mobject.types.vectorized_mobject import VectorizedPoint, VGroup, VMobject
+from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.tex import TexTemplate
 from manim.utils.tex_file_writing import tex_to_svg_file
 
@@ -175,8 +175,8 @@ class SingleStringMathTex(SVGMobject):
         tex = self._remove_stray_braces(tex)
 
         for context in ["array"]:
-            begin_in = ("\\begin{%s}" % context) in tex
-            end_in = ("\\end{%s}" % context) in tex
+            begin_in = ("\\begin{%s}" % context) in tex  # noqa: UP031
+            end_in = ("\\end{%s}" % context) in tex  # noqa: UP031
             if begin_in ^ end_in:
                 # Just turn this into a blank string,
                 # which means caller should leave a
@@ -338,10 +338,6 @@ class MathTex(SingleStringMathTex):
                 curr_index + num_submobs + len("".join(self.arg_separator.split()))
             )
             if num_submobs == 0:
-                # For cases like empty tex_strings, we want the corresponding
-                # part of the whole MathTex to be a VectorizedPoint
-                # positioned in the right part of the MathTex
-                sub_tex_mob.submobjects = [VectorizedPoint()]
                 last_submob_index = min(curr_index, len(self.submobjects) - 1)
                 sub_tex_mob.move_to(self.submobjects[last_submob_index], RIGHT)
             else:

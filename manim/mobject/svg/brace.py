@@ -4,7 +4,7 @@ from __future__ import annotations
 
 __all__ = ["Brace", "BraceLabel", "ArcBrace", "BraceText", "BraceBetweenPoints"]
 
-from typing import Sequence
+from collections.abc import Sequence
 
 import numpy as np
 import svgelements as se
@@ -23,6 +23,8 @@ from ...constants import *
 from ...mobject.types.vectorized_mobject import VMobject
 from ...utils.color import BLACK
 from ..svg.svg_mobject import VMobjectFromSVGPath
+
+__all__ = ["Brace", "BraceBetweenPoints", "BraceLabel", "ArcBrace"]
 
 
 class Brace(VMobjectFromSVGPath):

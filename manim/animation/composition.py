@@ -1,26 +1,29 @@
 """Tools for displaying multiple animations at once."""
 
-
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Callable, Sequence
+from collections.abc import Iterable, Sequence
+from typing import TYPE_CHECKING, Callable
 
 import numpy as np
 
-from manim import config, logger
+from manim._config import config
+from manim.animation.animation import Animation, prepare_animation
+from manim.constants import RendererType
+from manim.mobject.mobject import Group, Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLGroup
+from manim.utils.iterables import remove_list_redundancies
+from manim.utils.parameter_parsing import flatten_iterable_parameters
+from manim.utils.rate_functions import linear
 
 from ..animation.animation import Animation, prepare_animation
 from ..constants import RendererType
 from ..mobject.mobject import Group, Mobject
-from ..utils.iterables import remove_list_redundancies
-from ..utils.rate_functions import linear
 
 if TYPE_CHECKING:
     from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup
+    from manim.mobject.types.vectorized_mobject import VGroup
 
-    from ..mobject.types.vectorized_mobject import VGroup
-    from .scene_buffer import SceneBuffer
 
 __all__ = ["AnimationGroup", "Succession", "LaggedStart", "LaggedStartMap"]
 
@@ -54,14 +57,15 @@ class AnimationGroup(Animation):
 
     def __init__(
         self,
-        *animations: Animation,
+        *animations: Animation | Iterable[Animation],
         group: Group | VGroup | OpenGLGroup | OpenGLVGroup | None = None,
         run_time: float | None = None,
         rate_func: Callable[[float], float] = linear,
         lag_ratio: float = 0,
         **kwargs,
     ) -> None:
-        self.animations = [prepare_animation(anim) for anim in animations]
+        arg_anim = flatten_iterable_parameters(animations)
+        self.animations = [prepare_animation(anim) for anim in arg_anim]
         self.rate_func = rate_func
         self.group = group
         if self.group is None:
@@ -84,14 +88,21 @@ class AnimationGroup(Animation):
         for anim in self.animations:
             anim.begin()
             self.process_subanimation_buffer(anim.buffer)
+        if not self.animations:
+            raise ValueError(
+                f"Trying to play {self} without animations, this is not supported. "
+                "Please add at least one subanimation."
+            )
+
+        self.anim_group_time = 0.0
         if self.suspend_mobject_updating:
             self.group.suspend_updating()
 
     def finish(self) -> None:
+        self.interpolate(1)
+        self.anims_begun[:] = True
+        self.anims_begun[:] = True
         for anim in self.animations:
-            if self.remover:
-                anim.remover = self.remover
-            anim.finish()
             self.process_subanimation_buffer(anim.buffer)
 
         if self.suspend_mobject_updating:
@@ -99,7 +110,9 @@ class AnimationGroup(Animation):
         self._on_finish(self.buffer)
 
     def update_mobjects(self, dt: float) -> None:
-        for anim in self.animations:
+        for anim in self.anims_with_timings["anim"][
+            self.anims_begun & ~self.anims_finished
+        ]:
             anim.update_mobjects(dt)
 
     def init_run_time(self, run_time) -> float:
@@ -116,25 +129,30 @@ class AnimationGroup(Animation):
             The duration of the animation in seconds.
         """
         self.build_animations_with_timings()
-        if self.anims_with_timings:
-            self.max_end_time = np.max([awt[2] for awt in self.anims_with_timings])
-        else:
-            self.max_end_time = 0
+        # Note: if lag_ratio < 1, then not necessarily the final animation's
+        # end time will be the max end time! Therefore we must calculate the
+        # maximum over all the end times, and not just take the last one.
+        # Example: if you want to play 2 animations of 10s and 1s with a
+        # lag_ratio of 0.1, the 1st one will end at t=10 and the 2nd one will
+        # end at t=2, so the AnimationGroup will end at t=10.
+        self.max_end_time = max(self.anims_with_timings["end"], default=0)
         return self.max_end_time if run_time is None else run_time
 
     def build_animations_with_timings(self) -> None:
         """Creates a list of triplets of the form (anim, start_time, end_time)."""
+        run_times = np.array([anim.run_time for anim in self.animations])
+        num_animations = run_times.shape[0]
+        dtype = [("anim", "O"), ("start", "f8"), ("end", "f8")]
+        self.anims_with_timings = np.zeros(num_animations, dtype=dtype)
+        self.anims_begun = np.zeros(num_animations, dtype=bool)
+        self.anims_finished = np.zeros(num_animations, dtype=bool)
+        if num_animations == 0:
+            return
 
-        self.anims_with_timings = []
-        """List of tuple[Animation, start_time, end_time]"""
-
-        curr_time: float = 0
-        for anim in self.animations:
-            start_time: float = curr_time
-            end_time: float = start_time + anim.get_run_time()
-            self.anims_with_timings.append((anim, start_time, end_time))
-            # Start time of next animation is based on the lag_ratio
-            curr_time = (1 - self.lag_ratio) * start_time + self.lag_ratio * end_time
+        lags = run_times[:-1] * self.lag_ratio
+        self.anims_with_timings["anim"] = self.animations
+        self.anims_with_timings["start"][1:] = np.add.accumulate(lags)
+        self.anims_with_timings["end"] = self.anims_with_timings["start"] + run_times
 
     def interpolate(self, alpha: float) -> None:
         # Note, if the run_time of AnimationGroup has been
@@ -142,14 +160,30 @@ class AnimationGroup(Animation):
         # times might not correspond to actual times,
         # e.g. of the surrounding scene.  Instead they'd
         # be a rescaled version.  But that's okay!
-        time = self.rate_func(alpha) * self.max_end_time
-        for anim, start_time, end_time in self.anims_with_timings:
-            anim_time = end_time - start_time
-            if anim_time == 0:
-                sub_alpha = 0
-            else:
-                sub_alpha = np.clip((time - start_time) / anim_time, 0, 1)
-            anim.interpolate(sub_alpha)
+        anim_group_time = self.rate_func(alpha) * self.max_end_time
+        time_goes_back = anim_group_time < self.anim_group_time
+
+        # Only update ongoing animations
+        awt = self.anims_with_timings
+        new_begun = anim_group_time >= awt["start"]
+        new_finished = anim_group_time > awt["end"]
+        to_update = awt[
+            (self.anims_begun | new_begun) & (~self.anims_finished | ~new_finished)
+        ]
+
+        run_times = to_update["end"] - to_update["start"]
+        sub_alphas = (anim_group_time - to_update["start"]) / run_times
+        if time_goes_back:
+            sub_alphas[sub_alphas < 0] = 0
+        else:
+            sub_alphas[sub_alphas > 1] = 1
+
+        for anim_to_update, sub_alpha in zip(to_update["anim"], sub_alphas):
+            anim_to_update.interpolate(sub_alpha)
+
+        self.anim_group_time = anim_group_time
+        self.anims_begun = new_begun
+        self.anims_finished = new_finished
 
 
 class Succession(AnimationGroup):
@@ -193,7 +227,11 @@ class Succession(AnimationGroup):
         super().__init__(*animations, lag_ratio=lag_ratio, **kwargs)
 
     def begin(self) -> None:
-        assert len(self.animations) > 0
+        if not self.animations:
+            raise ValueError(
+                f"Trying to play {self} without animations, this is not supported. "
+                "Please add at least one subanimation."
+            )
         self.update_active_animation(0)
 
         for anim in self.animations:
@@ -219,8 +257,8 @@ class Succession(AnimationGroup):
             self.active_animation.begin()
             self.process_subanimation_buffer(self.active_animation.buffer)
             self.apply_buffer = True
-            self.active_start_time = self.anims_with_timings[index][1]
-            self.active_end_time = self.anims_with_timings[index][2]
+            self.active_start_time = self.anims_with_timings[index]["start"]
+            self.active_end_time = self.anims_with_timings[index]["end"]
 
     def next_animation(self) -> None:
         """Proceeds to the next animation.
@@ -238,7 +276,7 @@ class Succession(AnimationGroup):
             self.next_animation()
         if self.active_animation is not None and self.active_start_time is not None:
             elapsed = current_time - self.active_start_time
-            active_run_time = self.active_animation.get_run_time()
+            active_run_time = self.active_animation.run_time
             subalpha = elapsed / active_run_time if active_run_time != 0.0 else 1.0
             self.active_animation.interpolate(subalpha)
 

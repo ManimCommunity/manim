@@ -2,6 +2,11 @@ from __future__ import annotations
 
 import itertools as it
 
+__all__ = [
+    "extract_mobject_family_members",
+    "restructure_list_to_exclude_certain_family_members",
+]
+
 
 def extract_mobject_family_members(mobject_list, only_those_with_points=False):
     result = list(it.chain(*(mob.get_family() for mob in mobject_list)))

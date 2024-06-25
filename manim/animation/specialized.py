@@ -2,7 +2,8 @@ from __future__ import annotations
 
 __all__ = ["Broadcast"]
 
-from typing import Any, Sequence
+from collections.abc import Sequence
+from typing import Any
 
 from manim.animation.transform import Restore
 
@@ -84,7 +85,7 @@ class Broadcast(LaggedStart):
 
             mob.move_to(self.focal_point)
             mob.save_state()
-            mob.set_width(self.initial_width)
+            mob.set(width=self.initial_width)
 
             if fill_o:
                 mob.set_opacity(self.initial_opacity)
