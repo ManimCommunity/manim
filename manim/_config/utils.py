@@ -1173,11 +1173,7 @@ class ManimConfig(MutableMapping):
         return self.frame_x_radius * constants.RIGHT
 
     @property
-<<<<<<< HEAD
     def frame_rate(self) -> int:
-=======
-    def frame_rate(self) -> float:
->>>>>>> 08264dcf76cb78ccbe9b7a991be4dace03e65e57
         """Frame rate in frames per second."""
         return self._d["frame_rate"]
 
