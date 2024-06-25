@@ -33,6 +33,7 @@ def pytest_report_header(config):
     info = ctx.info
     ctx.release()
     return (
+        f"\nCairo Version: {cairo.cairo_version()}",
         "\nOpenGL information",
         "------------------",
         f"vendor: {info['GL_VENDOR'].strip()}",

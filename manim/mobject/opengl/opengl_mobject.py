@@ -59,6 +59,7 @@ if TYPE_CHECKING:
     Updater: TypeAlias = Union[TimeBasedUpdater, NonTimeUpdater]
     PointUpdateFunction: TypeAlias = Callable[[np.ndarray], np.ndarray]
     from manim.renderer.renderer import RendererData
+    from manim.typing import PathFuncType
 
     T = TypeVar("T", bound=RendererData)
     _F = TypeVar("_F", bound=Callable[..., Any])
@@ -424,10 +425,13 @@ class OpenGLMobject:
         self.refresh_bounding_box()
         return self
 
-    def reverse_points(self):
-        for mob in self.get_family():
-            for key in mob.data:
-                mob.data[key] = mob.data[key][::-1]
+    def reverse_points(self, recursive=False):
+        for key in self.data:
+            self.data[key] = self.data[key][::-1]
+        if recursive:
+            for mob in self.submobjects:
+                for key in mob.data:
+                    mob.data[key] = mob.data[key][::-1]
         return self
 
     def apply_points_function(
@@ -1336,10 +1340,10 @@ class OpenGLMobject:
                     s2.shift(DOWN)
                     self.play(Write(s), Write(s2))
         """
+        self.submobjects.reverse()
         if recursive:
             for submob in self.submobjects:
                 submob.reverse_submobjects(recursive=True)
-        self.submobjects.reverse()
         self.assemble_family()
 
     # Copying
@@ -2705,7 +2709,9 @@ class OpenGLMobject:
 
     # Interpolate
 
-    def interpolate(self, mobject1, mobject2, alpha, path_func=straight_path) -> Self:
+    def interpolate(
+        self, mobject1, mobject2, alpha, path_func: PathFuncType = straight_path()
+    ) -> Self:
         """Turns this :class:`~.OpenGLMobject` into an interpolation between ``mobject1``
         and ``mobject2``.
 

@@ -362,18 +362,15 @@ class Write(DrawBorderThenFill):
             lag_ratio = min(4.0 / max(1.0, length), 0.2)
         return run_time, lag_ratio
 
-    def reverse_submobjects(self) -> None:
-        self.mobject.invert(recursive=True)
-
     def begin(self) -> None:
         if self.reverse:
-            self.reverse_submobjects()
+            self.mobject.reverse_submobjects(recursive=True)
         super().begin()
 
     def finish(self) -> None:
         super().finish()
         if self.reverse:
-            self.reverse_submobjects()
+            self.mobject.reverse_submobjects(recursive=True)
 
 
 class Unwrite(Write):

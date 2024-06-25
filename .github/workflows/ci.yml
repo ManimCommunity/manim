@@ -71,6 +71,22 @@ jobs:
           # start xvfb in background
           sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
 
+      - name: Setup Cairo Cache
+        uses: actions/cache@v4
+        id: cache-cairo
+        if: runner.os == 'Linux' || runner.os == 'macOS'
+        with:
+          path: ${{ github.workspace }}/third_party
+          key: ${{ runner.os }}-dependencies-cairo-${{ hashFiles('.github/scripts/ci_build_cairo.py') }}
+
+      - name: Build and install Cairo (Linux and macOS)
+        if: (runner.os == 'Linux' || runner.os == 'macOS') && steps.cache-cairo.outputs.cache-hit != 'true'
+        run: python .github/scripts/ci_build_cairo.py
+
+      - name: Set env vars for Cairo (Linux and macOS)
+        if: runner.os == 'Linux' || runner.os == 'macOS'
+        run: python .github/scripts/ci_build_cairo.py --set-env-vars
+
       - name: Setup macOS cache
         uses: actions/cache@v4
         id: cache-macos

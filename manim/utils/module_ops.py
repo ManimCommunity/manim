@@ -14,6 +14,8 @@ from .. import config, console, constants, logger
 
 __all__ = ["scene_classes_from_file"]
 
+__all__ = ["scene_classes_from_file"]
+
 
 def get_module(file_name: Path):
     if str(file_name) == "-":
