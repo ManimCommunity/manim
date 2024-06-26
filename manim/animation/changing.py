@@ -4,6 +4,7 @@ from __future__ import annotations
 
 __all__ = ["AnimatedBoundary", "TracedPath"]
 
+from collections.abc import Sequence
 from typing import Callable
 
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
@@ -39,7 +40,7 @@ class AnimatedBoundary(VGroup[VMobjectT]):
     def __init__(
         self,
         vmobject: VMobjectT,
-        colors: list[ParsableManimColor] = [BLUE_D, BLUE_B, BLUE_E, GREY_BROWN],
+        colors: Sequence[ParsableManimColor] = [BLUE_D, BLUE_B, BLUE_E, GREY_BROWN],
         max_stroke_width: float = 3,
         cycle_rate: float = 0.5,
         back_and_forth: bool = True,
