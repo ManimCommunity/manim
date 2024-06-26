@@ -100,7 +100,7 @@ def test_subdivide_bezier() -> None:
 
 
 def test_get_smooth_cubic_bezier_handle_points() -> None:
-    """Test that :func:`get_smooth_cubic_bezier_handle_points` returns the
+    """Test that :func:`.get_smooth_cubic_bezier_handle_points` returns the
     correct handles, both for open and closed Bézier splines.
     """
     open_curve_corners = np.array(
