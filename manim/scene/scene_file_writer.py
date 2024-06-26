@@ -126,7 +126,7 @@ class SceneFileWriter:
                 self.output_name, config["movie_file_extension"]
             )
 
-            # TODO: /dev/null would be good in case sections_output_dir is used without bein set (doesn't work on Windows), everyone likes defensive programming, right?
+            # TODO: /dev/null would be good in case sections_output_dir is used without being set (doesn't work on Windows), everyone likes defensive programming, right?
             self.sections_output_dir = Path("")
             if config.save_sections:
                 self.sections_output_dir = guarantee_existence(
@@ -715,7 +715,6 @@ class SceneFileWriter:
                 av.open(movie_file_path) as video_input,
                 av.open(sound_file_path) as audio_input,
             ):
-
                 video_stream = video_input.streams.video[0]
                 audio_stream = audio_input.streams.audio[0]
                 output_container = av.open(

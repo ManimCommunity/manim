@@ -34,14 +34,8 @@ from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.types.vectorized_mobject import VectorizedPoint, VGroup, VMobject
 from manim.utils.color import (
-    BLUE,
-    BLUE_D,
-    BLUE_E,
-    LIGHT_GREY,
-    WHITE,
     ManimColor,
     ParsableManimColor,
-    interpolate_color,
 )
 from manim.utils.iterables import tuplify
 from manim.utils.space_ops import normalize, perpendicular_bisector, z_to_vector

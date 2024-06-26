@@ -83,6 +83,7 @@ pytest = "^7.4.3"
 pygithub = "^2.1.1"
 pytest-cov = "^4.1.0"
 pytest-xdist = "^2.2"  # Using latest gives flaky tests
+ruff = "*"
 Sphinx = "^7.2.6"
 sphinx-copybutton = "^0.5.2"
 sphinxcontrib-programoutput = "^0.17"
@@ -118,3 +119,66 @@ exclude_lines = ["pragma: no cover"]
 [build-system]
 requires = ["setuptools", "poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 88
+target-version = "py39"
+extend-exclude = [
+  ".github",
+  ".hg",
+  ".env",
+  "env",
+  "build",
+  "buck-out",
+  "media",
+]
+fix = true
+
+[tool.ruff.lint]
+select = [
+  "E",
+  "F",
+  "I",
+  "UP",
+]
+
+ignore = [
+  # due to the import * used in manim
+  "F403",
+  "F405",
+  # as recommended by https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules
+  "E111",
+  "E114",
+  "E117",
+  "E501",
+]
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = [
+  # unused variable
+  "F841",
+  # from __future__ import annotations
+  "I002",
+]
+
+"example_scenes/*" = [
+  "I002",
+]
+
+"__init__.py" = [
+  "F401",
+  "F403",
+]
+
+[tool.ruff.lint.isort]
+required-imports = ["from __future__ import annotations"]
+
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.codespell]
+write-changes = true
+ignore-words-list = ["medias", "nam"]

@@ -230,7 +230,7 @@ class Scene:
             self.construct()
         except EndSceneEarlyException:
             pass
-        except RerunSceneException as e:
+        except RerunSceneException:
             self.remove(*self.mobjects)
             self.renderer.clear_screen()
             self.renderer.num_plays = 0
@@ -1555,8 +1555,7 @@ class Scene:
 
                     # second option: within the call to Scene.play
                     self.play(
-                        Transform(square, circle),
-                        subcaption="The square transforms."
+                        Transform(square, circle), subcaption="The square transforms."
                     )
 
         """
