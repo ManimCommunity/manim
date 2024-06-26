@@ -27,7 +27,7 @@ classified by category in different `AliasCategoryDict` objects.
 """
 
 ModuleTypeVarDict: TypeAlias = dict[str, str]
-"""Dictionary containing every :class:`TypeVar` defined in a module"""
+"""Dictionary containing every :class:`TypeVar` defined in a module."""
 
 
 AliasDocsDict: TypeAlias = dict[str, ModuleLevelAliasDict]
@@ -44,7 +44,7 @@ explicitly defined as :class:`TypeAlias`.
 """
 
 TypeVarDict: TypeAlias = dict[str, ModuleTypeVarDict]
-"""A dictionary mapping a module to a dict of :class:`~typing.TypeVar`s"""
+"""A dictionary mapping module names to dictionaries of :class:`TypeVar` objects."""
 
 ALIAS_DOCS_DICT: AliasDocsDict = {}
 DATA_DICT: DataDict = {}
@@ -66,13 +66,17 @@ def parse_module_attributes() -> tuple[AliasDocsDict, DataDict, TypeVarDict]:
 
     Returns
     -------
-    ALIAS_DOCS_DICT : `AliasDocsDict`
+    ALIAS_DOCS_DICT : :class:`AliasDocsDict`
         A dictionary containing the information from all the type
-        aliases in Manim. See `AliasDocsDict` for more information.
+        aliases in Manim. See :class:`AliasDocsDict` for more information.
 
-    DATA_DICT : `DataDict`
+    DATA_DICT : :class:`DataDict`
         A dictionary containing the names of all DOCUMENTED
         module-level attributes which are not a :class:`TypeAlias`.
+
+    TYPEVAR_DICT : :class:`TypeVarDict`
+        A dictionary containing the definitions of :class:`TypeVar` objects,
+        organized by modules.
     """
     global ALIAS_DOCS_DICT
     global DATA_DICT
