@@ -1700,6 +1700,34 @@ def get_quadratic_approximation_of_cubic(a0, h0, h1, a1):
 
         This is sufficient to find proper control points for the quadratic
         Bézier curves.
+
+    Parameters
+    ----------
+    a0
+        The start anchor of a single cubic Bézier curve, or an array of
+        :math:`N` start anchors for :math:`N` curves.
+    h0
+        The first handle of a single cubic Bézier curve, or an array of
+        :math:`N` first handles for :math:`N` curves.
+    h1
+        The second handle of a single cubic Bézier curve, or an array of
+        :math:`N` second handles for :math:`N` curves.
+    a1
+        The end anchor of a single cubic Bézier curve, or an array of
+        :math:`N` end anchors for :math:`N` curves.
+
+    Returns
+    -------
+    result
+        An array containing either 6 points for 2 quadratic Bézier curves
+        approximating the original cubic curve, or :math:`6N` points for
+        :math:`2N` quadratic curves approximating :math:`N` cubic curves.
+
+    Raises
+    ------
+    ValueError
+        If ``a0``, ``h0``, ``h1`` and ``a1`` have different dimensions, or
+        if their number of dimensions is not 1 or 2.
     """
     a0 = np.asarray(a0)
     h0 = np.asarray(h0)
