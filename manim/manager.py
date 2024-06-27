@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 import platform
 import time
 from collections.abc import Iterable, Sequence
@@ -243,8 +244,15 @@ class Manager:
         self.file_writer.add_partial_movie_file(hash_current_play)
         self.file_writer.begin_animation(allow_write=self._write_files)
 
-    def _create_progressbar(self, total: float, description: str, **kwargs) -> tqdm:
+    def _create_progressbar(
+        self, total: float, description: str, **kwargs
+    ) -> tqdm | contextlib.nullcontext:
         """Create a progressbar"""
+        if not config.write_to_movie:
+            return contextlib.nullcontext(
+                # construct a class that pretends to be a progressbar
+                type("NullProgressbar", (object,), {"update": lambda _: None})
+            )
         return tqdm(
             total=total,
             unit="frames",
