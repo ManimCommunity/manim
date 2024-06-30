@@ -10,6 +10,8 @@ In particular, this class is what allows ``manim`` to act as ``manim render``.
     of ``click.Group``.
 """
 
+from __future__ import annotations
+
 import warnings
 
 import cloup

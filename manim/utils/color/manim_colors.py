@@ -121,7 +121,7 @@ These colors form Manim's default color space.
 
 """
 
-from typing import List
+from __future__ import annotations
 
 from .core import ManimColor
 

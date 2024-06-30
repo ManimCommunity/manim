@@ -10,7 +10,7 @@ import numpy as np
 from mapbox_earcut import triangulate_float32 as earcut
 from scipy.spatial.transform import Rotation
 
-from manim.constants import DOWN, OUT, PI, RIGHT, TAU, UP, RendererType
+from manim.constants import DOWN, OUT, PI, RIGHT, TAU, UP
 from manim.utils.iterables import adjacent_pairs
 
 if TYPE_CHECKING:
