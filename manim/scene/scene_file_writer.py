@@ -14,6 +14,7 @@ import numpy as np
 import srt
 from PIL import Image
 from pydub import AudioSegment
+from tempfile import NamedTemporaryFile
 
 from manim import __version__
 
@@ -330,7 +331,27 @@ class SceneFileWriter:
 
         """
         file_path = get_full_sound_file_path(sound_file)
-        new_segment = AudioSegment.from_file(file_path)
+        # TODO: maybe actually check the file, and don't just assume
+        # that it is a .wav/raw file just because it has a .wav/raw extension.
+        if file_path.suffix not in (".wav", ".raw"):
+            wav_file_path = NamedTemporaryFile(suffix=".wav", delete=False)
+            with av.open(file_path) as container:
+                stream = container.streams.audio[0]  # what if there are multiple streams?
+                with av.open(wav_file_path, "w", format="wav") as output:
+                    output_stream = output.add_stream("pcm_s16le")
+                    for frame in container.decode(stream):
+                        for packet in output_stream.encode(frame):
+                            output.mux(packet)
+                        
+                    for packet in output_stream.encode():
+                        output.mux(packet)
+            
+            new_segment = AudioSegment.from_file(wav_file_path.name)
+            wav_file_path.close()
+
+        else:
+            new_segment = AudioSegment.from_file(file_path)
+
         if gain:
             new_segment = new_segment.apply_gain(gain)
         self.add_audio_segment(new_segment, time, **kwargs)
