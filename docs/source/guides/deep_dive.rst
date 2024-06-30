@@ -725,7 +725,7 @@ and run time.
 .. note::
 
    Methods in :class:`.Manager` starting with an underscore ``_`` are intended to be
-   private, and are not guarenteed to be stable across versions of Manim. The :class:`.Manager`
+   private, and are not guaranteed to be stable across versions of Manim. The :class:`.Manager`
    class provides some "public" methods (methods not prefixed with ``_``) that can be overridden to
    change the behavior of the program.
 
