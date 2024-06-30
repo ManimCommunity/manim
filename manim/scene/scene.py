@@ -11,7 +11,6 @@ import numpy as np
 from IPython.terminal import pt_inputhooks
 from IPython.terminal.embed import InteractiveShellEmbed
 from pyglet.window import key
-from tqdm import tqdm as ProgressDisplay
 
 from manim import logger
 from manim.animation.animation import prepare_animation
@@ -520,47 +519,19 @@ class Scene:
         ):
             self.skip_time = self.time
             if not self.original_skipping_status:
-                self.stop_skipping()
+                self.skip_animations = False
         if (self.end_at_animation_number is not None) and (
             self.num_plays >= self.end_at_animation_number
         ):
             raise EndSceneEarlyException()
 
-    def stop_skipping(self) -> None:
-        self.virtual_animation_start_time = self.time
-        self.skip_animations = False
-
     # Methods associated with running animations
-
-    def get_wait_time_progression(
-        self, duration: float, stop_condition: Callable[[], bool] | None = None
-    ) -> list[float] | np.ndarray | ProgressDisplay:
-        kw: dict[str, Any] = {"desc": f"{self.num_plays} Waiting"}
-        if stop_condition is not None:
-            kw["n_iterations"] = -1  # So it doesn't show % progress
-            kw["override_skip_animations"] = True
-        return self.get_time_progression(duration, **kw)
-
-    def pre_play(self):  # Doesn't exist in Main
-        if self.presenter_mode and self.num_plays == 0:
-            self.hold_loop()
-
-        self.update_skipping_status()
-
-        # if not self.skip_animations:
-        #     self.file_writer.begin_animation()
-
-        self.refresh_static_mobjects()
 
     def post_play(self):
         # if not self.skip_animations:
         #     self.manager.file_writer.end_animation()
 
         self.num_plays += 1
-
-    def refresh_static_mobjects(self) -> None:
-        # self.camera.refresh_static_mobjects()
-        ...
 
     def begin_animations(self, animations: Iterable[Animation]) -> None:
         for animation in animations:

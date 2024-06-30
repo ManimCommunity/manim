@@ -1,11 +1,11 @@
 A deep dive into Manim's internals
 ==================================
 
-**Author:** `Benjamin Hackl <https://benjamin-hackl.at>`__
+**Authors:** `Benjamin Hackl <https://benjamin-hackl.at>`__ and `Aarush Deshpande <https://github.com/JasonGrace2282>`__
 
 .. admonition:: Disclaimer
 
-    This guide reflects the state of the library as of version ``v0.16.0``
+    This guide reflects the state of the library as of version ``v0.20.0``
     and primarily treats the Cairo renderer. The situation in the latest
     version of Manim might be different; in case of substantial deviations
     we will add a note below.
@@ -84,7 +84,7 @@ discussing the contents of the following chapters on a very high level.
   to prepare a scene for rendering; right until the point where the user-overridden
   ``construct`` method is ran. This includes a brief discussion on using Manim's CLI
   versus other means of rendering (e.g., via Jupyter notebooks, or in your Python
-  script by calling the :meth:`.Scene.render` method yourself).
+  script by calling the :meth:`.Manager.render` method yourself).
 - `Mobject Initialization`_: For the second chapter we dive into creating and handling
   Mobjects, the basic elements that should be displayed in our scene.
   We discuss the :class:`.Mobject` base class, how there are essentially
@@ -106,6 +106,25 @@ discussing the contents of the following chapters on a very high level.
   and cleanup for the next call to :meth:`.Scene.play`. In the end, after all of
   :meth:`.Scene.construct` has been run, the library combines the partial movie
   files to one video.
+
+.. hint::
+
+   As we move forward, try to keep in mind the responsibilities of every
+   class we introduce. We'll talk more about them in detail, but here's a brief
+   overview
+
+   * :class:`.Scene` is responsible for managing the classes :class:`Mobject`, :class:`.Animation`,
+     and :class:`.Camera`.
+
+   * :class:`.Manager` is responsible for coordinating the :class:`.Scene`, :class:`.Renderer`,
+     and :class:`.FileWriter`.
+
+   * :class:`.FileWriter` is responsible for writing frames and partial movie files, as well
+     as combining them all into a final movie file.
+
+   * :class:`.Renderer` is an abstract class which has to be subclassed.
+     It's job is to take information related to the :class:`.Camera`, and the mobjects
+     on the :class:`.Scene` at a certain frame, and to return the pixels in a frame.
 
 And with that, let us get *in medias res*.
 
@@ -202,8 +221,8 @@ have created a file ``toy_example.py`` which looks like this::
             self.play(FadeOut(blue_circle, small_dot))
 
     with tempconfig({"quality": "medium_quality", "preview": True}):
-        scene = ToyExample()
-        scene.render()
+        manager = Manager(ToyExample)
+        manager.render()
 
 With such a file, the desired scene is rendered by simply running this Python
 script via ``python toy_example.py``. Then, as described above, the library
@@ -218,10 +237,10 @@ dictionary, and upon leaving the context the original version of the
 configuration is restored. TL;DR: it provides a fancy way of temporarily setting
 configuration options.
 
-Inside the context manager, two things happen: an actual ``ToyExample``-scene
-object is instantiated, and the ``render`` method is called. Every way of using
+Inside the context manager, two things happen: a :class:`.Manager` is created for
+the ``ToyExample``-scene, and the ``render`` method is called. Every way of using
 Manim ultimately does something along of these lines, the library always instantiates
-the scene object and then calls its ``render`` method. To illustrate that this
+the manager of the scene object and then calls its ``render`` method. To illustrate that this
 really is the case, let us briefly look at the two most common ways of rendering
 scenes:
 
@@ -243,54 +262,75 @@ and the code creating the scene class and calling its render method is located
 `here <https://github.com/ManimCommunity/manim/blob/ac1ee9a683ce8b92233407351c681f7d71a4f2db/manim/utils/ipython_magic.py#L137-L138>`__.
 
 
-Now that we know that either way, a :class:`.Scene` object is created, let us investigate
-what Manim does when that happens. When instantiating our scene object
+Now that we know that either way, a :class:`.Manager` for a :class:`.Scene` object is created, let us investigate
+what Manim does when that happens. When instantiating our manager
 
 ::
 
-    scene = ToyExample()
+    manager = Manager(ToyExample)
 
-the ``Scene.__init__`` method is called, given that we did not implement our own initialization
-method. Inspecting the corresponding code (see
-`here <https://github.com/ManimCommunity/manim/blob/main/manim/scene/scene.py>`__)
-reveals that ``Scene.__init__`` first sets several attributes of the scene objects that do not
-depend on any configuration options set in ``config``. Then the scene inspects the value of
-``config.renderer``, and based on its value, either instantiates a ``CairoRenderer`` or an
-``OpenGLRenderer`` object and assigns it to its ``renderer`` attribute.
+The :meth:`.Manager.__init__` method is called. Looking at the source code (`here <https://github.com/ManimCommunity/manim/blob/experimental/manim/manager.py>`__),
+we see that the :meth:`.Scene.__init__` method is called,
+given that we did not implement our own initialization
+method. Inspecting the corresponding code (see `here <https://github.com/ManimCommunity/manim/blob/main/manim/scene/scene.py>`__)
+reveals that :class:`Scene.__init__` first sets several attributes of the scene objects that do not
+depend on any configuration options set in ``config``. It then initializes it's :class:`.Camera`.
+The purpose of a :class:`.Camera` is to keep track of what you can see in the scene. Think of it
+as a pair of eyes, that limit how far you can look sideways and vertically.
 
-The scene then asks its renderer to initialize the scene by calling
+The :class:`.Scene` also sets up :attr:`.Scene.mobjects`. This attribute keeps track of all the :class:`.Mobject`
+that have been added to the scene.
 
-::
+The :class:`.Manager` then continues on to create a :class:`.Window`, which is the popopen interactive window,
+and creates the renderer::
 
-    self.renderer.init_scene(self)
+    self.renderer = self.create_renderer()
+    self.renderer.use_window()
 
-Inspecting both the default Cairo renderer and the OpenGL renderer shows that the ``init_scene``
-method effectively makes the renderer instantiate a :class:`.SceneFileWriter` object, which
-basically is Manim's interface to ``libav`` (FFMPEG) and actually writes the movie file. The Cairo
-renderer (see the implementation `here <https://github.com/ManimCommunity/manim/blob/main/manim/renderer/cairo_renderer.py>`__) does not require any further initialization. The OpenGL renderer
-does some additional setup to enable the realtime rendering preview window, which we do not go
-into detail further here.
+If you hover over :attr:`.Manager.renderer`, you might see that the type is a :class:`.RendererProtocol`.
+A :class:`~typing.Protocol` is a contract for a class. It says that whatever the class is, it will implement
+the methods defined inside the protocol. In this case, it means that the renderer will have all the methods
+defined in :class:`.RendererProtocol`.
 
-.. warning::
+.. note::
 
-    Currently, there is a lot of interplay between a scene and its renderer. This is a flaw
-    in Manim's current architecture, and we are working on reducing this interdependency to
-    achieve a less convoluted code flow.
+   The point of using :class:`~typing.Protocol` is so that in the future, plugins
+   can swap out the renderer with their own version - either for speed, or for a different
+   behavior.
 
-After the renderer has been instantiated and initialized its file writer, the scene populates
-further initial attributes (notable mention: the ``mobjects`` attribute which keeps track
-of the mobjects that have been added to the scene). It is then done with its instantiation
-and ready to be rendered.
+
+For the rest of this article to take a concrete example, we'll use :class:`.OpenGLRenderer`.
+
+Finally, the :class:`.Manager` creates a :class:`.FileWriter`. This is the object that actually
+writes the partial movie files.
 
 The rest of this article is concerned with the last line in our toy example script::
 
-    scene.render()
+    manager.render()
 
 This is where the actual magic happens.
 
+.. note::
+
+   TODO TO REVIEWERS - Replace this link with the proper permanent link
+
 Inspecting the `implementation of the render method <https://github.com/ManimCommunity/manim/blob/df1a60421ea1119cbbbd143ef288d294851baaac/manim/scene/scene.py#L211>`__
-reveals that there are several hooks that can be used for pre- or postprocessing
-a scene. Unsurprisingly, :meth:`.Scene.render` describes the full *render cycle*
+we see that there are two passes of rendering.
+
+.. note::
+
+   As of the experimental branch at June 30th, 2024, two pass rendering
+   does not exist. This will proceed to explain the single pass rendering system.
+
+Looking around, we find that there are several hooks that can be used for pre- or postprocessing
+a scene (check out :meth:`.Manager._setup`, and :meth:`.Manager._tear_down`).
+
+.. note::
+
+   You might notice :attr:`.Manager.virtual_animation_start_time` and :attr:`.Manager.real_animation_start_time`
+   when looking through :meth:`.Manager._setup`. These will be explained later.
+
+Unsurprisingly, :meth:`.Manager.render` describes the full *render cycle*
 of a scene. During this life cycle, there are three custom methods whose base
 implementation is empty and that can be overwritten to suit your purposes. In
 the order they are called, these customizable methods are:
@@ -308,14 +348,14 @@ the order they are called, these customizable methods are:
   Python scripts).
 
 After these three methods are run, the animations have been fully rendered,
-and Manim calls :meth:`.CairoRenderer.scene_finished` to gracefully
+and Manim calls :meth:`.Manager.tear_down` to gracefully
 complete the rendering process. This checks whether any animations have been
 played -- and if so, it tells the :class:`.SceneFileWriter` to close the output
 file. If not, Manim assumes that a static image should be output
 which it then renders using the same strategy by calling the render loop
 (see below) once.
 
-**Back in our toy example,** the call to :meth:`.Scene.render` first
+**Back in our toy example,** the call to :meth:`.Manager.render` first
 triggers :meth:`.Scene.setup` (which only consists of ``pass``), followed by
 a call of :meth:`.Scene.construct`. At this point, our *animation script*
 is run, starting with the initialization of ``orange_square``.
@@ -348,16 +388,12 @@ of :class:`.Mobject`, you will find that not too much happens in there:
 - and finally, ``init_colors`` is called.
 
 Digging deeper, you will find that :meth:`.Mobject.reset_points` simply
-sets the ``points`` attribute of the mobject to an empty NumPy vector,
+sets the ``points`` attribute of the mobject to an empty NumPy array,
 while the other two methods, :meth:`.Mobject.generate_points` and
 :meth:`.Mobject.init_colors` are just implemented as ``pass``.
 
 This makes sense: :class:`.Mobject` is not supposed to be used as
-an *actual* object that is displayed on screen; in fact the camera
-(which we will discuss later in more detail; it is the class that is,
-for the Cairo renderer, responsible for "taking a picture" of the
-current scene) does not process "pure" :class:`Mobjects <.Mobject>`
-in any way, they *cannot* even appear in the rendered output.
+an *actual* object that is displayed on screen.
 
 This is where different types of mobjects come into play. Roughly
 speaking, the Cairo renderer setup knows three different types of
@@ -376,24 +412,24 @@ mobjects that can be rendered:
 
 As just mentioned, :class:`VMobjects <.VMobject>` represent vectorized
 mobjects. To render a :class:`.VMobject`, the camera looks at the
-``points`` attribute of a :class:`.VMobject` and divides it into sets
-of four points each. Each of these sets is then used to construct a
-cubic Bézier curve with the first and last entry describing the
-end points of the curve ("anchors"), and the second and third entry
-describing the control points in between ("handles").
+:attr:`~.VMobject.points` attribute of a :class:`.VMobject` and divides it into sets
+of three points each. Each of these sets is then used to construct a
+quadratic Bézier curve with the first and last entry describing the
+end points of the curve ("anchors"), and the second entry
+describing the control points in between ("handle").
 
 .. hint::
   To learn more about Bézier curves, take a look at the excellent
   online textbook `A Primer on Bézier curves <https://pomax.github.io/bezierinfo/>`__
   by `Pomax <https://twitter.com/TheRealPomax>`__ -- there is a playground representing
-  cubic Bézier curves `in §1 <https://pomax.github.io/bezierinfo/#introduction>`__,
+  quadratic Bézier curves `in §1 <https://pomax.github.io/bezierinfo/#introduction>`__,
   the red and yellow points are "anchors", and the green and blue
   points are "handles".
 
 In contrast to :class:`.Mobject`, :class:`.VMobject` can be displayed
 on screen (even though, technically, it is still considered a base class).
 To illustrate how points are processed, consider the following short example
-of a :class:`.VMobject` with 8 points (and thus made out of 8/4 = 2 cubic
+of a :class:`.VMobject` with 6 points (and thus made out of 6/3 = 2 cubic
 Bézier curves). The resulting :class:`.VMobject` is drawn in green.
 The handles are drawn as red dots with a line to their closest anchor.
 
@@ -430,6 +466,7 @@ The handles are drawn as red dots with a line to their closest anchor.
 
 
 .. warning::
+
   Manually setting the points of your :class:`.VMobject` is usually
   discouraged; there are specialized methods that can take care of
   that for you -- but it might be relevant when implementing your own,
@@ -561,59 +598,12 @@ is not a "flat" list of mobjects, but a list of mobjects which
 might contain mobjects themselves, and so on.
 
 Stepping through the code in :meth:`.Scene.add`, we see that first
-it is checked whether we are currently using the OpenGL renderer
-(which we are not) -- adding mobjects to the scene works slightly
-different (and actually easier!) for the OpenGL renderer. Then, the
-code branch for the Cairo renderer is entered and the list of so-called
-foreground mobjects (which are rendered on top of all other mobjects)
-is added to the list of passed mobjects. This is to ensure that the
-foreground mobjects will stay above of the other mobjects, even after
-adding the new ones. In our case, the list of foreground mobjects
-is actually empty, and nothing changes.
+we remove all the mobjects that are being added -- this is to make
+sure we don't add a :class:`.Mobject` twice! After that, we can safely
+add it to :attr:`.Scene.mobjects`.
 
-Next, :meth:`.Scene.restructure_mobjects` is called with the list
-of mobjects to be added as the ``to_remove`` argument, which might
-sound odd at first. Practically, this ensures that mobjects are not
-added twice, as mentioned above: if they were present in the scene
-``Scene.mobjects`` list before (even if they were contained as a
-child of some other mobject), they are first removed from the list.
-The way :meth:`.Scene.restrucutre_mobjects` works is rather aggressive:
-It always operates on a given list of mobjects; in the ``add`` method
-two different lists occur: the default one, ``Scene.mobjects`` (no extra
-keyword argument is passed), and ``Scene.moving_mobjects`` (which we will
-discuss later in more detail). It iterates through all of the members of
-the list, and checks whether any of the mobjects passed in ``to_remove``
-are contained as children (in any nesting level). If so, **their parent
-mobject is deconstructed** and their siblings are inserted directly
-one level higher. Consider the following example::
-
-  >>> from manim import Scene, Square, Circle, Group
-  >>> test_scene = Scene()
-  >>> mob1 = Square()
-  >>> mob2 = Circle()
-  >>> mob_group = Group(mob1, mob2)
-  >>> test_scene.add(mob_group)
-  <manim.scene.scene.Scene object at ...>
-  >>> test_scene.mobjects
-  [Group]
-  >>> test_scene.restructure_mobjects(to_remove=[mob1])
-  <manim.scene.scene.Scene object at ...>
-  >>> test_scene.mobjects
-  [Circle]
-
-Note that the group is disbanded and the circle moves into the
-root layer of mobjects in ``test_scene.mobjects``.
-
-After the mobject list is "restructured", the mobject to be added
-are simply appended to ``Scene.mobjects``. In our toy example,
-the ``Scene.mobjects`` list is actually empty, so the
-``restructure_mobjects`` method does not actually do anything. The
-``orange_square`` is simply added to ``Scene.mobjects``, and as
-the aforementioned ``Scene.moving_mobjects`` list is, at this point,
-also still empty, nothing happens and :meth:`.Scene.add` returns.
-
-We will hear more about the ``moving_mobject`` list when we discuss
-the render loop. Before we do that, let us look at the next line
+We will hear more from :class:`.Scene` soon.
+Before we do that, let us look at the next line
 of code in our toy example, which includes the initialization of
 an animation class,
 ::
@@ -642,11 +632,11 @@ the run time of animations is also fixed and known beforehand.
 The initialization of animations actually is not very exciting,
 :meth:`.Animation.__init__` merely sets some attributes derived
 from the passed keyword arguments and additionally ensures that
-the ``Animation.starting_mobject`` and ``Animation.mobject``
+the :attr:`~Animation.starting_mobject` and :attr:`~.Animation.mobject`
 attributes are populated. Once the animation is played, the
-``starting_mobject`` attribute holds an unmodified copy of the
+:attr:`~.Animation.starting_mobject` attribute holds an unmodified copy of the
 mobject the animation is attached to; during the initialization
-it is set to a placeholder mobject. The ``mobject`` attribute
+it is set to a placeholder mobject. The :attr:`~.Animation.mobject` attribute
 is set to the mobject the animation is attached to.
 
 Animations have a few special methods which are called during the
@@ -681,77 +671,80 @@ animation (like its ``run_time``, the ``rate_func``, etc.) are
 processed there -- and then the animation object is fully
 initialized and ready to be played.
 
+The Animation Buffer
+^^^^^^^^^^^^^^^^^^^^
+There's an attribute of animations that we have glossed
+over, and that is :attr:`.Animation.buffer`, of type :class:`.SceneBuffer`.
+The :attr:`~.Animation.buffer` is the animations way of communicating
+with what happens on the scene. If you want to modify
+the scene during the interpolation stage (outside of :meth:`~.Animation.begin` or :meth:`~.Animation.finish`),
+the attribute :attr:`.Animation.apply_buffer` is what tells the scene that the buffer
+should be processed.
+
+For example, an animation that adds a circle to the scene every frame might look like this
+
+.. code-block:: python
+
+   class CircleAnimation(Animation):
+      def begin(self) -> None:
+          self.circles = VGroup()
+
+      def interpolate(self, alpha: float) -> None:
+          # create and arrange the circles
+          self.circles.add(Circle())
+          self.circles().arrange()
+          # add the new circle to the scene
+          self.buffer.add(self.circles[-1])
+          # make sure the scene actually realizes something changed
+          self.apply_buffer = True
+
+Every time the :class:`.Scene` applies the buffer, it gets emptied out
+for use the next time.
+
 The ``play`` call: preparing to enter Manim's render loop
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 We are finally there, the render loop is in our reach. Let us
 walk through the code that is run when :meth:`.Scene.play` is called.
 
-.. hint::
+.. note::
 
-  Recall that this article is specifically about the Cairo renderer.
-  Up to here, things were more or less the same for the OpenGL renderer
-  as well; while some base mobjects might be different, the control flow
-  and lifecycle of mobjects is still more or less the same. There are more
-  substantial differences when it comes to the rendering loop.
+   In the future, control will not be passed to the Manager.
+   Instead, the Scene will keep track of every animation and
+   at the very end, the Manager will render everything.
 
 As you will see when inspecting the method, :meth:`.Scene.play` almost
-immediately passes over to the ``play`` method of the renderer,
-in our case :class:`.CairoRenderer.play`. The one thing :meth:`.Scene.play`
-takes care of is the management of subcaptions that you might have
-passed to it (see the the documentation of :meth:`.Scene.play` and
-:meth:`.Scene.add_subcaption` for more information).
+immediately passes over to the :class:`~.Manager._play` method of the :class:`.Manager`.
+The one thing :meth:`.Scene.play` does before that is preparing the animations.
+Whenever :attr:`.Mobject.animate` is called, it creates a new object called a
+:class:`._AnimationBuilder`. We have to make sure to convert that into an actual
+animation by calling it's :meth:`._AnimationBuilder.build` method.
+We also have to update the animations with the correct rate functions, lag ratios,
+and run time.
+
+.. note::
+
+   Methods in :class:`.Manager` starting with an underscore ``_`` are intended to be
+   private, and are not guarenteed to be stable across versions of Manim. The :class:`.Manager`
+   class provides some "public" methods (methods not prefixed with ``_``) that can be overridden to
+   change the behavior of the program.
 
 .. warning::
 
-  As has been said before, the communication between scene and renderer
-  is not in a very clean state at this point, so the following paragraphs
-  might be confusing if you don't run a debugger and step through the
-  code yourself a bit.
-
-Inside :meth:`.CairoRenderer.play`, the renderer first checks whether
-it may skip rendering of the current play call. This might happen, for example,
-when ``-s`` is passed to the CLI (i.e., only the last frame should be rendered),
-or when the ``-n`` flag is passed and the current play call is outside of the
-specified render bounds. The "skipping status" is updated in form of the
-call to :meth:`.CairoRenderer.update_skipping_status`.
-
-Next, the renderer asks the scene to process the animations in the play
-call so that renderer obtains all of the information it needs. To
-be more concrete, :meth:`.Scene.compile_animation_data` is called,
-which then takes care of several things:
-
-- The method processes all animations and the keyword arguments passed
-  to the initial :meth:`.Scene.play` call. In particular, this means
-  that it makes sure all arguments passed to the play call are actually
-  animations (or ``.animate`` syntax calls, which are also assembled to
-  be actual :class:`.Animation`-objects at that point). It also propagates
-  any animation-related keyword arguments (like ``run_time``,
-  or ``rate_func``) passed to :class:`.Scene.play` to each individual
-  animation. The processed animations are then stored in the ``animations``
-  attribute of the scene (which the renderer later reads...).
-- It adds all mobjects to which the animations that are played are
-  bound to to the scene (provided the animation is not an mobject-introducing
-  animation -- for these, the addition to the scene happens later).
-- In case the played animation is a :class:`.Wait` animation (this is the
-  case in a :meth:`.Scene.wait` call), the method checks whether a static
-  image should be rendered, or whether the render loop should be processed
-  as usual (see :meth:`.Scene.should_update_mobjects` for the exact conditions,
-  basically it checks whether there are any time-dependent updater functions
-  and so on).
-- Finally, the method determines the total run time of the play call (which
-  at this point is computed as the maximum of the run times of the passed
-  animations). This is stored in the ``duration`` attribute of the scene.
+   Subcaptions and audio is still in progress
 
 
-After the animation data has been compiled by the scene, the renderer
-continues to prepare for entering the render loop. It now checks the
-skipping status which has been determined before. If the renderer can
-skip this play call, it does so: it sets the current play call hash (which
-we will get back to in a moment) to ``None`` and increases the time of the
-renderer by the determined animation run time.
+After the :class:`.Scene` has done all the processing of animations,
+it hands out control to the :class:`.Manager`. The :class:`.Manager`
+then updates the skipping status of the :class:`.Scene`. This makes sure
+that if ``-s`` or ``-n`` is used for sections, the scene does the correct
+thing.
 
-Otherwise, the renderer checks whether or not Manim's caching system should
+The next important line is::
+
+    self._write_hashed_movie_file()
+
+Here, the :class:`.Manager` checks whether or not Manim's caching system should
 be used. The idea of the caching system is simple: for every play call, a
 hash value is computed, which is then stored and upon re-rendering the scene,
 the hash is generated again and checked against the stored value. If it is the
@@ -761,40 +754,28 @@ to learn more, the :func:`.get_hash_from_play_call` function in the
 :mod:`.utils.hashing` module is essentially the entry point to the caching
 mechanism.
 
-In the event that the animation has to be rendered, the renderer asks
-its :class:`.SceneFileWriter` to open an output container. The process
+In the event that the animation has to be rendered, the manager asks
+its :class:`.FileWriter` to open an output container. The process
 is started by a call to ``libav`` and opens a container to which rendered
 raw frames can be written. As long as the output is open, the container
 can be accessed via the ``output_container`` attribute of the file writer.
+
 With the writing process in place, the renderer then asks the scene
 to "begin" the animations.
 
 First, it literally *begins* all of the animations by calling their
-setup methods (:meth:`.Animation._setup_scene`, :meth:`.Animation.begin`).
+setup methods (:meth:`.Animation.begin`).
 In doing so, the mobjects that are newly introduced by an animation
 (like via :class:`.Create` etc.) are added to the scene. Furthermore, the
 animation suspends updater functions being called on its mobject, and
 it sets its mobject to the state that corresponds to the first frame
 of the animation.
 
-After this has happened for all animations in the current ``play`` call,
-the Cairo renderer determines which of the scene's mobjects can be
-painted statically to the background, and which ones have to be
-redrawn every frame. It does so by calling
-:meth:`.Scene.get_moving_and_static_mobjects`, and the resulting
-partition of mobjects is stored in the corresponding ``moving_mobjects``
-and ``static_mobjects`` attributes.
+.. note::
 
-.. NOTE::
+    Implementation of figuring out which mobjects have to be redrawn
+    is still in progress.
 
-  The mechanism that determines static and moving mobjects is
-  specific for the Cairo renderer, the OpenGL renderer works differently.
-  Basically, moving mobjects are determined by checking whether they,
-  any of their children, or any of the mobjects "below" them (in the
-  sense of the order in which mobjects are processed in the scene)
-  either have an update function attached, or whether they appear
-  in one of the current animations. See the implementation of
-  :meth:`.Scene.get_moving_mobjects` for more details.
 
 Up to this very point, we did not actually render any (partial)
 image or movie files from the scene yet. This is, however, about to change.
@@ -835,68 +816,28 @@ Time to render some frames.
 
 The render loop (for real this time)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Now we get to the meat of rendering, which happens in :meth:`.Manager._progress_through_animations`.
 
-As mentioned above, due to the mechanism that determines static and moving
-mobjects in the scene, the renderer knows which mobjects it can paint
-statically to the background of the scene. Practically, this means that
-it partially renders a scene (to produce a background image), and then
-when iterating through the time progression of the animation only the
-"moving mobjects" are re-painted on top of the static background.
-
-The renderer calls :meth:`.CairoRenderer.save_static_frame_data`, which
-first checks whether there are currently any static mobjects, and if there
-are, it updates the frame (only with the static mobjects; more about how
-exactly this works in a moment) and then saves a NumPy array representing
-the rendered frame in the ``static_image`` attribute. In our toy example,
-there are no static mobjects, and so the ``static_image`` attribute is
-simply set to ``None``.
-
-Next, the renderer asks the scene whether the current animation is
-a "frozen frame" animation, which would mean that the renderer actually
-does not have to repaint the moving mobjects in every frame of the time
-progression. It can then just take the latest static frame, and display it
-throughout the animation.
-
-.. NOTE::
-
-  An animation is considered a "frozen frame" animation if only a
-  static :class:`.Wait` animation is played. See the description
-  of :meth:`.Scene.compile_animation_data` above, or the
-  implementation of :meth:`.Scene.should_update_mobjects` for
-  more details.
-
-If this is not the case (just as in our toy example), the renderer
-then calls the :meth:`.Scene.play_internal` method, which is the
-integral part of the render loop (in which the library steps through
-the time progression of the animation and renders the corresponding
-frames).
-
-Within :meth:`.Scene.play_internal`, the following steps are performed:
-
-- The scene determines the run time of the animations by calling
-  :meth:`.Scene.get_run_time`. This method basically takes the maximum
+- The manager determines the run time of the animations by calling
+  :meth:`.Manager._calc_run_time`. This method basically takes the maximum
   ``run_time`` attribute of all of the animations passed to the
   :meth:`.Scene.play` call.
-- Then the *time progression* is constructed via the (internal)
-  :meth:`.Scene._get_animation_time_progression` method, which wraps
-  the actual :meth:`.Scene.get_time_progression` method. The time
-  progression is a ``tqdm`` `progress bar object <https://tqdm.github.io>`__
-  for an iterator over ``np.arange(0, run_time, 1 / config.frame_rate)``. In
+- Then, the progressbar is created by :meth:`.Manager._create_progressbar`,
+  which returns a ``tqdm`` `progress bar object <https://tqdm.github.io>`__
+  object (from the ``tqdm`` library), or a fake progressbar if
+  :attr:`.ManimConfig.write_to_movie` is ``False``.
+- Then the *time progression* is constructed via
+  :meth:`.Manager._calc_time_progression` method, which returns
+  ``np.arange(0, run_time, 1 / config.frame_rate)``. In
   other words, the time progression holds the time stamps (relative to the
   current animations, so starting at 0 and ending at the total animation run time,
   with the step size determined by the render frame rate) of the timeline where
   a new animation frame should be rendered.
 - Then the scene iterates over the time progression: for each time stamp ``t``,
-  :meth:`.Scene.update_to_time` is called, which ...
-
-  - ... first computes the time passed since the last update (which might be 0,
-    especially for the initial call) and references it as ``dt``,
-  - then (in the order in which the animations are passed to :meth:`.Scene.play`)
-    calls :meth:`.Animation.update_mobjects` to trigger all updater functions that
-    are attached to the respective animation except for the "main mobject" of
-    the animation (that is, for example, for :class:`.Transform` the unmodified
-    copies of start and target mobject -- see :meth:`.Animation.get_all_mobjects_to_update`
-    for more details),
+  we find the time difference between the current and previous frame (AKA ``dt``).
+  We then update the animations in the scene using ``dt`` by
+  - iterating over each animation
+  - next, we update the animations mobjects
   - then the relative time progression with respect to the current animation
     is computed (``alpha = t / animation.run_time``), which is then used to
     update the state of the animation with a call to :meth:`.Animation.interpolate`.
@@ -904,62 +845,29 @@ Within :meth:`.Scene.play_internal`, the following steps are performed:
     of all mobjects in the scene, all meshes, and finally those attached to
     the scene itself are run.
 
+  After updating the animations, we pass ``dt`` to :meth:`.Manager._update_frame` which...
+
+  - ... updates the total time passed
+  - Updates all the mobjects by calling :meth:`.Scene._update_mobjects`. This in turn
+    iterates over all the mobjects on the screen and updates them.
+  - After that, the current state of the scene is computed by :meth:`.Scene.get_state`,
+    which returns a :class:`.SceneState`.
+  - The state is then passed into :meth:`.Manager._render_frame`, which gets
+    the renderer to create the pixels. With :class:`.OpenGLRenderer`, this
+    also updates the window. :meth:`~.Manager._render_frame` also checks if it should write a frame,
+    and if so, writes a frame via the :class:`.FileWriter`.
+  - Finally, it uses a concept of virtual time vs real time to see
+    if the right amount of time has passed in the window. The virtual
+    time is the amount of time that is supposed to have passed (that is, ``t``).
+    The real time is how much time has actually passed in the window
+    (current time - start time of play). If the animations are progressing
+    faster than they would in real life, it will slow down the window by calling
+    :meth:`~.Manager._update_frame` with ``dt=0`` until that's no longer the case.
+    This is to make sure that animations never go too fast: it doesn't do anything if
+    animations are too slow!
+
 At this point, the internal (Python) state of all mobjects has been updated
-to match the currently processed timestamp. If rendering should not be skipped,
-then it is now time to *take a picture*!
-
-.. NOTE::
-
-  The update of the internal state (iteration over the time progression) happens
-  *always* once :meth:`.Scene.play_internal` is entered. This ensures that even
-  if frames do not need to be rendered (because, e.g., the ``-n`` CLI flag has
-  been passed, something has been cached, or because we might be in a *Section*
-  with skipped rendering), updater functions still run correctly, and the state
-  of the first frame that *is* rendered is kept consistent.
-
-To render an image, the scene calls the corresponding method of its renderer,
-:meth:`.CairoRenderer.render` and passes just the list of *moving mobjects* (remember,
-the *static mobjects* are assumed to have already been painted statically to
-the background of the scene). All of the hard work then happens when the renderer
-updates its current frame via a call to :meth:`.CairoRenderer.update_frame`:
-
-First, the renderer prepares its :class:`.Camera` by checking whether the renderer
-has a ``static_image`` different from ``None`` stored already. If so, it sets the
-image as the *background image* of the camera via :meth:`.Camera.set_frame_to_background`,
-and otherwise it just resets the camera via :meth:`.Camera.reset`. The camera is then
-asked to capture the scene with a call to :meth:`.Camera.capture_mobjects`.
-
-Things get a bit technical here, and at some point it is more efficient to
-delve into the implementation -- but here is a summary of what happens once the
-camera is asked to capture the scene:
-
-- First, a flat list of mobjects is created (so submobjects get extracted from
-  their parents). This list is then processed in groups of the same type of
-  mobjects (e.g., a batch of vectorized mobjects, followed by a batch of image mobjects,
-  followed by more vectorized mobjects, etc. -- in many cases there will just be
-  one batch of vectorized mobjects).
-- Depending on the type of the currently processed batch, the camera uses dedicated
-  *display functions* to convert the :class:`.Mobject` Python object to
-  a NumPy array stored in the camera's ``pixel_array`` attribute.
-  The most important example in that context is the display function for
-  vectorized mobjects, :meth:`.Camera.display_multiple_vectorized_mobjects`,
-  or the more particular (in case you did not add a background image to your
-  :class:`.VMobject`), :meth:`.Camera.display_multiple_non_background_colored_vmobjects`.
-  This method first gets the current Cairo context, and then, for every (vectorized)
-  mobject in the batch, calls :meth:`.Camera.display_vectorized`. There,
-  the actual background stroke, fill, and then stroke of the mobject is
-  drawn onto the context. See :meth:`.Camera.apply_stroke` and
-  :meth:`.Camera.set_cairo_context_color` for more details -- but it does not get
-  much deeper than that, in the latter method the actual Bézier curves
-  determined by the points of the mobject are drawn; this is where the low-level
-  interaction with Cairo happens.
-
-After all batches have been processed, the camera has an image representation
-of the Scene at the current time stamp in form of a NumPy array stored in its
-``pixel_array`` attribute. The renderer then takes this array and passes it to
-its :class:`.SceneFileWriter`. This concludes one iteration of the render loop,
-and once the time progression has been processed completely, a final bit
-of cleanup is performed before the :meth:`.Scene.play_internal` call is completed.
+to match the currently processed timestamp.
 
 A TL;DR for the render loop, in the context of our toy example, reads as follows:
 
@@ -968,23 +876,20 @@ A TL;DR for the render loop, in the context of our toy example, reads as follows
   medium render quality, the frame rate is 30 frames per second, and so the time
   progression with steps ``[0, 1/30, 2/30, ..., 89/30]`` is created.
 - In the internal render loop, each of these time stamps is processed:
-  there are no updater functions, so effectively the scene updates the
+  there are no updater functions, so effectively the manager updates the
   state of the transformation animation to the desired time stamp (for example,
   at time stamp ``t = 45/30``, the animation is completed to a rate of
   ``alpha = 0.5``).
-- Then the scene asks the renderer to do its job. The renderer asks its camera
-  to capture the scene, the only mobject that needs to be processed at this point
-  is the main mobject attached to the transformation; the camera converts the
-  current state of the mobject to entries in a NumPy array. The renderer passes
-  this array to the file writer.
+- Then the manager asks the renderer to do its job. The renderer then produces
+  the pixels, which are then fed into the :class:`.FileWriter`.
 - At the end of the loop, 90 frames have been passed to the file writer.
 
 Completing the render loop
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The last few steps in the :meth:`.Scene.play_internal` call are not too
+The last few steps in the :meth:`.Manager._play` call are not too
 exciting: for every animation, the corresponding :meth:`.Animation.finish`
-and :meth:`.Animation.clean_up_from_scene` methods are called.
+method is called.
 
 .. NOTE::
 
@@ -999,10 +904,7 @@ and :meth:`.Animation.clean_up_from_scene` methods are called.
   would be slightly longer than 1 second. We decided against this at some point.
 
 In the end, the time progression is closed (which completes the displayed progress bar)
-in the terminal. With the closing of the time progression, the
-:meth:`.Scene.play_internal` call is completed, and we return to the renderer,
-which now orders the :class:`.SceneFileWriter` to close the output container that has
-been opened for this animation: a partial movie file is written.
+in the terminal.
 
 This pretty much concludes the walkthrough of a :class:`.Scene.play` call,
 and actually there is not too much more to say for our toy example either: at
@@ -1025,5 +927,4 @@ which triggers the combination of the partial movie files into the final product
 And there you go! This is a more or less detailed description of how Manim works
 under the hood. While we did not discuss every single line of code in detail
 in this walkthrough, it should still give you a fairly good idea of how the general
-structural design of the library and at least the Cairo rendering flow in particular
-looks like.
+structural design of the library looks like.

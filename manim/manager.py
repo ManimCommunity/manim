@@ -120,7 +120,6 @@ class Manager:
         """
         self._render_first_pass()
         self._render_second_pass()
-        self._interact()
 
     def _render_first_pass(self) -> None:
         """
@@ -205,7 +204,7 @@ class Manager:
         self, *animations: AnimationProtocol, run_time: float | None = None
     ) -> None:
         """Play a bunch of animations"""
-        self.scene.pre_play()
+        self.scene.update_skipping_status()
 
         if self.window is not None:
             self.real_animation_start_time = time.perf_counter()
@@ -242,7 +241,8 @@ class Manager:
             hash_current_play = None
 
         self.file_writer.add_partial_movie_file(hash_current_play)
-        self.file_writer.begin_animation(allow_write=self._write_files)
+        if hash_current_play is not None and hash_current_play.startswith("uncached_"):
+            self.file_writer.begin_animation(allow_write=self._write_files)
 
     def _create_progressbar(
         self, total: float, description: str, **kwargs
