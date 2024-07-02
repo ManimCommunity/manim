@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import inspect
 import os
 import random
 from collections import OrderedDict
@@ -8,8 +7,6 @@ from collections.abc import Sequence
 from typing import TYPE_CHECKING
 
 import numpy as np
-from IPython.terminal import pt_inputhooks
-from IPython.terminal.embed import InteractiveShellEmbed
 from pyglet.window import key
 
 from manim import logger
@@ -18,15 +15,12 @@ from manim.camera.camera import Camera
 from manim.constants import DEFAULT_WAIT_TIME
 from manim.event_handler import EVENT_DISPATCHER
 from manim.event_handler.event_type import EventType
-from manim.mobject.frame import FullScreenRectangle
 from manim.mobject.mobject import Group, Point, _AnimationBuilder
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
-from manim.utils.color import RED
 from manim.utils.exceptions import EndSceneEarlyException
 from manim.utils.family_ops import extract_mobject_family_members
 from manim.utils.iterables import list_difference_update
-from manim.utils.module_ops import get_module
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -143,103 +137,6 @@ class Scene:
         """
         This method is used to clean up scenes
         """
-
-    def embed(
-        self,
-        close_scene_on_exit: bool = True,
-        show_animation_progress: bool = True,
-    ) -> None:
-        if not self.preview:
-            return  # Embed is only relevant with a preview
-        self.stop_skipping()
-        self.update_frame()
-        self.save_state()
-        self.show_animation_progress = show_animation_progress
-
-        # Create embedded IPython terminal to be configured
-        shell = InteractiveShellEmbed.instance()
-
-        # Use the locals namespace of the caller
-        caller_frame = inspect.currentframe().f_back
-        local_ns = dict(caller_frame.f_locals)
-
-        # Add a few custom shortcuts
-        local_ns.update(
-            play=self.play,
-            wait=self.wait,
-            add=self.add,
-            remove=self.remove,
-            clear=self.clear,
-            save_state=self.save_state,
-            undo=self.undo,
-            redo=self.redo,
-            i2g=self.i2g,
-            i2m=self.i2m,
-        )
-
-        # Enables gui interactions during the embed
-        def inputhook(context):
-            while not context.input_is_ready():
-                if not self.is_window_closing():
-                    self.update_frame(dt=0)
-            if self.is_window_closing():
-                shell.ask_exit()
-
-        pt_inputhooks.register("manim", inputhook)
-        shell.enable_gui("manim")
-
-        # This is hacky, but there's an issue with ipython which is that
-        # when you define lambda's or list comprehensions during a shell session,
-        # they are not aware of local variables in the surrounding scope. Because
-        # That comes up a fair bit during scene construction, to get around this,
-        # we (admittedly sketchily) update the global namespace to match the local
-        # namespace, since this is just a shell session anyway.
-        shell.events.register(
-            "pre_run_cell", lambda: shell.user_global_ns.update(shell.user_ns)
-        )
-
-        # Operation to run after each ipython command
-        def post_cell_func():
-            self.refresh_static_mobjects()
-            if not self.is_window_closing():
-                self.update_frame(dt=0, ignore_skipping=True)
-            self.save_state()
-
-        shell.events.register("post_run_cell", post_cell_func)
-
-        # Flash border, and potentially play sound, on exceptions
-        def custom_exc(shell, etype, evalue, tb, tb_offset=None):
-            # still show the error don't just swallow it
-            shell.showtraceback((etype, evalue, tb), tb_offset=tb_offset)
-            if self.embed_error_sound:
-                os.system("printf '\a'")
-            rect = FullScreenRectangle().set_stroke(RED, 30).set_fill(opacity=0)
-            rect.fix_in_frame()
-
-            from manim.animation.fading import FadeIn
-            from manim.utils.rate_functions import there_and_back
-
-            self.play(
-                FadeIn(rect, run_time=0.5, rate_func=there_and_back, remover=True)
-            )
-
-        shell.set_custom_exc((Exception,), custom_exc)
-
-        # Set desired exception mode
-        shell.magic(f"xmode {self.embed_exception_mode}")
-
-        # Launch shell
-        shell(
-            local_ns=local_ns,
-            # Pretend like we're embedding in the caller function, not here
-            stack_depth=2,
-            # Specify that the present module is the caller's, not here
-            module=get_module(caller_frame.f_globals["__file__"]),
-        )
-
-        # End scene when exiting an embed
-        if close_scene_on_exit:
-            raise EndSceneEarlyException()
 
     # Only these methods should touch the camera
     # Related to updating
@@ -449,7 +346,6 @@ class Scene:
         if extract_families:
             to_remove = extract_mobject_family_members(
                 to_remove,
-                use_z_index=self.renderer.camera.use_z_index,
             )
         _list = getattr(self, mobject_list_name)
         new_list = self.get_restructured_mobject_list(_list, to_remove)
@@ -465,7 +361,7 @@ class Scene:
         return self
 
     def clear(self):
-        self.mobjects = []
+        self.mobjects.clear()
         return self
 
     def get_mobjects(self) -> list[Mobject]:
@@ -526,11 +422,10 @@ class Scene:
             raise EndSceneEarlyException()
 
     # Methods associated with running animations
+    def pre_play(self):
+        """To be implemented in subclasses."""
 
     def post_play(self):
-        # if not self.skip_animations:
-        #     self.manager.file_writer.end_animation()
-
         self.num_plays += 1
 
     def begin_animations(self, animations: Iterable[Animation]) -> None:

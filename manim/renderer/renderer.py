@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Protocol
+from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 from manim._config import logger
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
@@ -10,7 +10,7 @@ from manim.mobject.types.image_mobject import ImageMobject
 from manim.typing import Image as ImageType
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Iterable, Sequence
+    from collections.abc import Iterable
 
     from manim.camera.camera import Camera
 
@@ -22,11 +22,11 @@ class RendererData:
 class Renderer(ABC):
     def __init__(self):
         self.capabilities = [
-            (OpenGLVMobject, self.render_vmobject),  # type: ignore
-            (ImageMobject, self.render_image),  # type: ignore
+            (OpenGLVMobject, self.render_vmobject),
+            (ImageMobject, self.render_image),
         ]
 
-    def render(self, camera, renderables: Iterable[OpenGLMobject]) -> None:  # Image
+    def render(self, camera: Camera, renderables: Iterable[OpenGLMobject]) -> None:
         self.pre_render(camera)
         for mob in renderables:
             for type_, render_func in self.capabilities:
@@ -56,26 +56,13 @@ class Renderer(ABC):
         raise NotImplementedError
 
 
+# Note: runtime checking is slow,
+# but it only happens once or twice so it should be fine
+@runtime_checkable
 class RendererProtocol(Protocol):
-    capabilities: Sequence[
-        tuple[type[OpenGLMobject], Callable[[type[OpenGLMobject]], object]]
-    ]
-
     def render(self, camera: Camera, renderables: Iterable[OpenGLMobject]) -> None: ...
 
-    def render_previous(self, camera: Camera) -> None: ...
-
-    def pre_render(self, camera) -> object: ...
-
-    def post_render(self) -> object: ...
-
     def use_window(self) -> None: ...
-
-    def render_vmobject(self, mob: OpenGLVMobject) -> object: ...
-
-    def render_mesh(self, mob) -> None: ...
-
-    def render_image(self, mob: ImageMobject) -> None: ...
 
     def get_pixels(self) -> ImageType: ...
 

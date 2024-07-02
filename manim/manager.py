@@ -10,10 +10,8 @@ import numpy as np
 from tqdm import tqdm
 
 from manim import config, logger
-from manim.constants import RendererType
 from manim.file_writer import FileWriter
-from manim.renderer.cairo_renderer import CairoRenderer
-from manim.renderer.opengl_renderer import OpenGLRenderer
+from manim.plugins import plugins
 from manim.renderer.opengl_renderer_window import Window
 from manim.scene.scene import Scene, SceneState
 from manim.utils.exceptions import EndSceneEarlyException
@@ -23,7 +21,6 @@ if TYPE_CHECKING:
 
     from manim.animation.protocol import AnimationProtocol
 
-    from .camera.camera import Camera
     from .renderer.renderer import RendererProtocol
 
 __all__ = ("Manager",)
@@ -72,23 +69,11 @@ class Manager:
         self.renderer.use_window()
 
         # file writer
-        self.file_writer = FileWriter(self.scene.get_default_scene_name())  # TODO
+        self.file_writer = FileWriter(self.scene.get_default_scene_name())
         self._write_files = config.write_to_movie
 
-    @property
-    def camera(self) -> Camera:
-        return self.scene.camera
-
     def create_renderer(self) -> RendererProtocol:
-        match config.renderer:
-            case RendererType.OPENGL:
-                return OpenGLRenderer()
-
-            case RendererType.CAIRO:
-                return CairoRenderer()
-
-            case rendertype:
-                raise ValueError(f"Invalid Config Renderer type {rendertype}")
+        return plugins.renderer()
 
     def _setup(self) -> None:
         """Set up processes and manager"""
@@ -283,14 +268,19 @@ class Manager:
         ) as progress:
             last_t = 0
             for t in progression:
+                dt, last_t = t - last_t, t
                 if update_mobjects:
-                    dt, last_t = t - last_t, t
                     self._update_frame(dt)
                     if condition():
                         progress.update(duration - t)
                         break
                 else:
-                    self.renderer.render_previous(self.camera)
+                    # if we don't need to update mobjects
+                    # we can just leave the mobjects on the window
+                    # and increment the time
+                    # but we still have to write frames
+                    self.time += dt
+                    self._write_frame_from_renderer()
                 progress.update(1)
         self.scene.post_play()
 
