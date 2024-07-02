@@ -5,8 +5,6 @@ from pathlib import Path
 
 import pytest
 
-from manim import tempconfig
-
 
 def pytest_addoption(parser):
     parser.addoption(
@@ -63,6 +61,9 @@ def reset_cfg_file():
 
 @pytest.fixture
 def using_opengl_renderer():
-    """Standard fixture for running with opengl that makes tests use a standard_config.cfg with a temp dir."""
-    with tempconfig({"renderer": "opengl"}):
-        yield
+    """Standard fixture for running with opengl that makes tests use a standard_config.cfg with a temp dir.
+
+    .. warning::
+
+        As of experimental, this fixture is deprecated and should not be using
+    """
