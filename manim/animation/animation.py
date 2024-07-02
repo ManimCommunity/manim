@@ -253,7 +253,9 @@ class Animation:
 
     def create_starting_mobject(self) -> Mobject:
         # Keep track of where the mobject starts
-        return self.mobject.copy()
+        starting_mobject = self.mobject.copy()
+        starting_mobject.updating_suspended = False
+        return starting_mobject
 
     def get_all_mobjects(self) -> Sequence[Mobject]:
         """Get all mobjects involved in the animation.
