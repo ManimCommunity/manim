@@ -4,10 +4,21 @@ build:
 
   tools:
     python: "3.11"
+    rust: "latest"
 
   apt_packages:
     - libpango1.0-dev
     - graphviz
+
+  jobs:
+    post_checkout:
+      - git submodule update --init --recursive
+
+    post_install:
+      - cd manim-forge
+      - pip install maturin
+      - poetry run maturin develop --release
+      - cd ..
 
 python:
    install:

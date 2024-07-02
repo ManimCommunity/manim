@@ -28,6 +28,8 @@ jobs:
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v4
+        with:
+          submodules: 'recurse'
 
       - name: Install Poetry
         run: |
@@ -39,6 +41,9 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
           cache: "poetry"
+
+      - name: Setup Rust (stable)
+        uses: dtolnay/rust-toolchain@stable
 
       - name: Setup macOS PATH
         if: runner.os == 'macOS'
@@ -160,6 +165,13 @@ jobs:
         run: |
           poetry config installer.modern-installation false
           poetry install
+
+      - name: Compile latest Manim-Forge
+        run: |
+          cd manim-forge
+          poetry run pip install maturin
+          poetry run maturin develop --release
+          cd ..
 
       - name: Run tests
         run: |

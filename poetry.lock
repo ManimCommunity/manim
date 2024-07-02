@@ -2048,6 +2048,17 @@ files = [
 ]
 
 [[package]]
+name = "manimforge"
+version = "0.1.0"
+description = ""
+optional = false
+python-versions = "<3.13,>=3.9"
+files = [
+    {file = "manimforge-0.1.0-cp311-cp311-manylinux_2_34_x86_64.whl", hash = "sha256:2e3270ac767511510e93b732588a6119476edb8bd1b37683f70df56fd45e1ae9"},
+    {file = "manimforge-0.1.0.tar.gz", hash = "sha256:cd65da2dad55770170220812d3e7831461b014d49913c8b6defbf413b74983cf"},
+]
+
+[[package]]
 name = "manimpango"
 version = "0.5.0"
 description = "Bindings for Pango for using with Manim."
@@ -2315,6 +2326,35 @@ files = [
 traitlets = "*"
 
 [[package]]
+name = "maturin"
+version = "1.6.0"
+description = "Build and publish crates with pyo3, cffi and uniffi bindings as well as rust binaries as python packages"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "maturin-1.6.0-py3-none-linux_armv6l.whl", hash = "sha256:d8620970bd0b6a0acb99dbd0b1c2ebb7a69909d25f6023bdff9635a39001aa51"},
+    {file = "maturin-1.6.0-py3-none-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:bd85edcb1b8e2bcddc1b7d16ce58ce00a66aa80c422745c8ad9e132ac40d4b48"},
+    {file = "maturin-1.6.0-py3-none-macosx_10_12_x86_64.whl", hash = "sha256:337899784955934dd67b30497d1dd5fab22da89f60bb079dbaf2eaa446b97a10"},
+    {file = "maturin-1.6.0-py3-none-manylinux_2_12_i686.manylinux2010_i686.musllinux_1_1_i686.whl", hash = "sha256:dbbbf25dc3c207b0a7bd4f3aea1df33d4f22b8508592796a6f36f4d8ed216db0"},
+    {file = "maturin-1.6.0-py3-none-manylinux_2_12_x86_64.manylinux2010_x86_64.musllinux_1_1_x86_64.whl", hash = "sha256:d92b045e90ed919a8a2520dda64e3f384e5e746ea51e1498cc6ac3e9e5c76054"},
+    {file = "maturin-1.6.0-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.musllinux_1_1_aarch64.whl", hash = "sha256:d67ca8dc7f3b2314bd3bf83c4de52645e220ee312fd526e53acc6a735f233fad"},
+    {file = "maturin-1.6.0-py3-none-manylinux_2_17_armv7l.manylinux2014_armv7l.musllinux_1_1_armv7l.whl", hash = "sha256:aa4eb7dca7d246b466392f21016f67ff09a9aff2305fa714ca25a2344e4639e7"},
+    {file = "maturin-1.6.0-py3-none-manylinux_2_17_ppc64le.manylinux2014_ppc64le.musllinux_1_1_ppc64le.whl", hash = "sha256:16ef860df20028618b5a064da06b02c1c47acba064a4d25aaf84662a459ec599"},
+    {file = "maturin-1.6.0-py3-none-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:4e931c92037128ade49cd26dd040d9c46ad8092d8170cc44f5c3a0b4a052d576"},
+    {file = "maturin-1.6.0-py3-none-win32.whl", hash = "sha256:c87d1a7596c42b589099adb831343a56e02373588366e4cede96cbdf8bd68f9d"},
+    {file = "maturin-1.6.0-py3-none-win_amd64.whl", hash = "sha256:a2a2436628c36d98dabd79b52256df7e12fc4fd1b122984d9373fdf918fd4609"},
+    {file = "maturin-1.6.0-py3-none-win_arm64.whl", hash = "sha256:50133965e52d8b5b969381fee3fde111ae2383905cdaba7650f256e08ccddcd4"},
+    {file = "maturin-1.6.0.tar.gz", hash = "sha256:b955025c24c8babc808db49e0ff90db8b4b1320dcc16b14eb26132841737230d"},
+]
+
+[package.dependencies]
+tomli = {version = ">=1.1.0", markers = "python_version < \"3.11\""}
+
+[package.extras]
+patchelf = ["patchelf"]
+zig = ["ziglang (>=0.10.0,<0.13.0)"]
+
+[[package]]
 name = "mccabe"
 version = "0.7.0"
 description = "McCabe checker, plugin for flake8"
@@ -2449,7 +2489,6 @@ description = "A cross platform helper library for ModernGL making window creati
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "moderngl-window-2.4.6.tar.gz", hash = "sha256:db9b4c27f35faa6f243b6d8cde6ada6da6e79541d62b8e536c0b20da29720c32"},
     {file = "moderngl_window-2.4.6-py3-none-any.whl", hash = "sha256:cfa81c2b222536270a077e2901f5f7a18e317f7332026ae443662555ebf7a66d"},
 ]
 
@@ -4679,4 +4718,4 @@ jupyterlab = ["jupyterlab", "notebook"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.13"
-content-hash = "482eafcb61a2e3c6f64af915960bb4ae1298620c2be1bd5201fa47907e2eec94"
+content-hash = "f655c539f991ee51b03e89bb0e5b1c064d5e451f55472902b653338b236ccfd1"
