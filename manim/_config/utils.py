@@ -316,7 +316,6 @@ class ManimConfig(MutableMapping):
         "write_to_movie",
         "zero_pad",
         "force_window",
-        "parallel",
         "no_latex_cleanup",
         "preview_command",
     }
@@ -590,7 +589,6 @@ class ManimConfig(MutableMapping):
             "use_projection_stroke_shaders",
             "enable_wireframe",
             "force_window",
-            "parallel",
             "no_latex_cleanup",
         ]:
             setattr(self, key, parser["CLI"].getboolean(key, fallback=False))
@@ -1060,14 +1058,6 @@ class ManimConfig(MutableMapping):
             )
 
     @property
-    def in_parallel(self) -> None:
-        return self._d["parallel"]
-
-    @in_parallel.setter
-    def in_parallel(self, val: bool) -> None:
-        self._set_boolean("parallel", val)
-
-    @property
     def ffmpeg_loglevel(self) -> str:
         """Verbosity level of ffmpeg (no flag)."""
         return self._d["ffmpeg_loglevel"]
@@ -1183,7 +1173,7 @@ class ManimConfig(MutableMapping):
         return self.frame_x_radius * constants.RIGHT
 
     @property
-    def frame_rate(self) -> float:
+    def frame_rate(self) -> int:
         """Frame rate in frames per second."""
         return self._d["frame_rate"]
 

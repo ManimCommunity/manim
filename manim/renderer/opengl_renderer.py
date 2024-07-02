@@ -194,9 +194,8 @@ class ProgramManager:
     def write_uniforms(prog, uniforms):
         for name in prog:
             member = prog[name]
-            if isinstance(member, gl.Uniform):
-                if name in uniforms:
-                    member.value = uniforms[name]
+            if isinstance(member, gl.Uniform) and name in uniforms:
+                member.value = uniforms[name]
 
     @staticmethod
     def bind_to_uniform_block(uniform_buffer_object: gl.Buffer, idx: int = 0):
@@ -413,6 +412,9 @@ class OpenGLRenderer(Renderer, RendererProtocol):
     def render_previous(self, camera: Camera) -> None:
         raise NotImplementedError
 
+    def render_mesh(self, mob) -> None:
+        raise NotImplementedError
+
     def render_vmobject(self, mob: OpenGLVMobject) -> None:  # type: ignore
         self.stencil_buffer_fbo.use()
         self.stencil_buffer_fbo.clear()
@@ -514,8 +516,10 @@ class OpenGLRenderer(Renderer, RendererProtocol):
 
     def get_pixels(self) -> ImageType:
         raw = self.output_fbo.read(components=4, dtype="f1", clamp=True)  # RGBA, floats
-        buf = np.frombuffer(raw, dtype=np.uint8).reshape((1080, 1920, -1))
-        return buf
+        y, x = self.output_fbo.viewport[2:4]
+        buf = np.frombuffer(raw, dtype=np.uint8).reshape((x, y, 4))
+        # FIXME: this is slow?
+        return buf[::-1]  # type: ignore
 
 
 class GLVMobjectManager:

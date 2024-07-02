@@ -35,6 +35,8 @@ from .animation.transform_matching_parts import *
 from .animation.updaters.mobject_update_utils import *
 from .animation.updaters.update import *
 from .constants import *
+from .file_writer import *
+from .manager import *
 from .mobject.frame import *
 from .mobject.geometry.arc import *
 from .mobject.geometry.boolean_ops import *
@@ -69,10 +71,7 @@ from .mobject.types.point_cloud_mobject import *
 from .mobject.types.vectorized_mobject import *
 from .mobject.value_tracker import *
 from .mobject.vector_field import *
-from .renderer.render_manager import *
 from .scene.scene import *
-from .scene.scene_file_writer import *
-from .scene.section import *
 from .scene.vector_space_scene import *
 from .utils import color, rate_functions, unit
 from .utils.bezier import *

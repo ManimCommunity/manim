@@ -99,7 +99,6 @@ global_options = option_group(
         help="Renders animations without outputting image or video files and disables the window",
         default=False,
     ),
-    option("--parallel", default=True, help="Renders all animations in parallel"),
     option(
         "--no_latex_cleanup",
         is_flag=True,

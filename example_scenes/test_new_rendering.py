@@ -6,8 +6,17 @@ class Test(Scene):
         s = Square()
         c = Circle()
         st = Star(color=YELLOW, fill_color=YELLOW)
-        self.play(Succession(*[Create(x) for x in VGroup(s, c, st).arrange()]))
+        self.play(
+            Succession(*[Create(x) for x in VGroup(s, c, st).arrange()], run_time=2)
+        )
 
 
-with tempconfig({"renderer": "opengl", "preview": True, "parallel": False}):
+with tempconfig(
+    {
+        "write_to_movie": True,
+        "disable_caching": True,
+        "frame_rate": 60,
+        "disable_caching_warning": True,
+    }
+):
     Manager(Test).render()
