@@ -301,6 +301,13 @@ class _CustomEncoder(json.JSONEncoder):
            The object encoder with the standard json process.
         """
         _Memoizer.mark_as_processed(obj)
+        if isinstance(obj, Mobject):
+            # Skip the _family attribute when encoding
+            family = obj._family
+            obj._family = None
+            encoded = super().encode(obj)
+            obj._family = family
+            return encoded
         if isinstance(obj, (dict, list, tuple)):
             return super().encode(self._cleaned_iterable(obj))
         return super().encode(obj)
