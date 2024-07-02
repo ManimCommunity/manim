@@ -121,7 +121,7 @@ def get_triangulation(self: OpenGLVMobject, normal_vector=None):
 
     # Triangulate
     inner_verts = points[inner_vert_indices]
-    inner_tri_indices = inner_vert_indices[earclip_triangulation(inner_verts, rings)]
+    inner_tri_indices = inner_vert_indices[earclip_triangulation(inner_verts, rings)]  # type: ignore
 
     tri_indices = np.hstack([indices, inner_tri_indices])
     self.triangulation = tri_indices
@@ -213,7 +213,6 @@ class OpenGLRenderer(Renderer, RendererProtocol):
         background_color: c.ManimColor = color.BLACK,
         background_opacity: float = 1.0,
         background_image: str | None = None,
-        substitute_output_fbo: gl.Framebuffer | None = None,
     ) -> None:
         super().__init__()
         self.pixel_width = pixel_width
@@ -372,7 +371,7 @@ class OpenGLRenderer(Renderer, RendererProtocol):
         format = gl.detect_format(self.render_texture_program, frame_data.dtype.names)
         vao = self.ctx.vertex_array(
             program=self.render_texture_program,
-            content=[(vbo, format, *frame_data.dtype.names)],
+            content=[(vbo, format, *frame_data.dtype.names)],  # type: ignore
         )
         self.ctx.copy_framebuffer(self.render_target_texture_fbo, self.color_buffer_fbo)
         self.render_target_texture.use(0)
@@ -518,7 +517,8 @@ class OpenGLRenderer(Renderer, RendererProtocol):
         raw = self.output_fbo.read(components=4, dtype="f1", clamp=True)  # RGBA, floats
         y, x = self.output_fbo.viewport[2:4]
         buf = np.frombuffer(raw, dtype=np.uint8).reshape((x, y, 4))
-        # FIXME: this is slow?
+        # this actually has the right type (uint8) but due to
+        # numpy typing being bad, we have to type: ignore it
         return buf[::-1]  # type: ignore
 
 

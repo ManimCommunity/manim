@@ -5,7 +5,7 @@ from pyglet.window import Window
 
 import manim.utils.color.manim_colors as col
 from manim._config import tempconfig
-from manim.camera.camera import OpenGLCameraFrame
+from manim.camera.camera import Camera
 from manim.constants import OUT, RIGHT, UP
 from manim.mobject.geometry.arc import Circle
 from manim.mobject.geometry.polygram import Square
@@ -47,7 +47,7 @@ if __name__ == "__main__":
         # print(vm.fill_color)
         # print(vm.stroke_color)
 
-        camera = OpenGLCameraFrame()
+        camera = Camera()
         camera.save_state()
         renderer.init_camera(camera)
 

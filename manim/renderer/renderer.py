@@ -20,6 +20,12 @@ class RendererData:
 
 
 class Renderer(ABC):
+    """Abstract class that handles dispatching mobjects to their specialized mobjects.
+
+    Specifically, it maps :class:`.OpenGLVMobject` to :meth:`render_vmobject`, :class:`.ImageMobject`
+    to :meth:`render_image`, etc.
+    """
+
     def __init__(self):
         self.capabilities = [
             (OpenGLVMobject, self.render_vmobject),
@@ -41,11 +47,11 @@ class Renderer(ABC):
 
     @abstractmethod
     def pre_render(self, camera: Camera):
-        raise NotImplementedError
+        """Actions before rendering any :class:`.OpenGLMobject`"""
 
     @abstractmethod
     def post_render(self):
-        raise NotImplementedError
+        """Actions before rendering any :class:`.OpenGLMobject`"""
 
     @abstractmethod
     def render_vmobject(self, mob: OpenGLVMobject):
@@ -60,11 +66,19 @@ class Renderer(ABC):
 # but it only happens once or twice so it should be fine
 @runtime_checkable
 class RendererProtocol(Protocol):
-    def render(self, camera: Camera, renderables: Iterable[OpenGLMobject]) -> None: ...
+    """The Protocol a renderer must implement to be used in :class:`.Manager`."""
 
-    def use_window(self) -> None: ...
+    def render(self, camera: Camera, renderables: Iterable[OpenGLMobject]) -> None:
+        """Render a group of Mobjects"""
+        ...
 
-    def get_pixels(self) -> ImageType: ...
+    def use_window(self) -> None:
+        """Hook called after instantiation."""
+        ...
+
+    def get_pixels(self) -> ImageType:
+        """Get the pixels that should be written to a file."""
+        ...
 
 
 # NOTE: The user should expect depth between renderers not to be handled discussed at 03.09.2023 Between jsonv and MrDiver

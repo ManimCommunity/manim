@@ -1,15 +1,14 @@
 from __future__ import annotations
 
-import os
 import random
-from collections import OrderedDict
+from collections import OrderedDict, deque
 from collections.abc import Sequence
 from typing import TYPE_CHECKING
 
 import numpy as np
 from pyglet.window import key
 
-from manim import logger
+from manim import config, logger
 from manim.animation.animation import prepare_animation
 from manim.camera.camera import Camera
 from manim.constants import DEFAULT_WAIT_TIME
@@ -19,7 +18,6 @@ from manim.mobject.mobject import Group, Point, _AnimationBuilder
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.exceptions import EndSceneEarlyException
-from manim.utils.family_ops import extract_mobject_family_members
 from manim.utils.iterables import list_difference_update
 
 if TYPE_CHECKING:
@@ -40,52 +38,54 @@ QUIT_KEY = "q"
 
 
 class Scene:
-    random_seed: int = 0
+    """The Canvas of Manim.
+
+    You can use it by putting the following into a
+    file ``manimation.py``
+
+    .. manim:: SceneWithSettings
+
+        class SceneWithSettings(Scene):
+            # set configuration attributes
+            random_seed = 1
+
+            # all the action happens here
+            def construct(self):
+                self.play(Create(ManimBanner()))
+
+    And then run ``manim -p manimation.py``. To write the result to a file,
+    do ``manim -w manimation.py``.
+
+    Attributes
+    ----------
+
+        random_seed : The seed for random and numpy.random
+        pan_sensitivity :
+    """
+
+    random_seed: int | None = None
     pan_sensitivity: float = 3.0
     max_num_saved_states: int = 50
-    default_camera_config: dict = {}
-    default_window_config: dict = {}
-    default_file_writer_config: dict = {}
 
-    def __init__(
-        self,
-        manager: Manager,
-        window_config: dict = {},
-        camera_config: dict = {},
-        skip_animations: bool = False,
-        always_update_mobjects: bool = False,
-        start_at_animation_number: int | None = None,
-        end_at_animation_number: int | None = None,
-        leave_progress_bars: bool = False,
-        preview: bool = True,
-        presenter_mode: bool = False,
-        show_animation_progress: bool = False,
-        embed_exception_mode: str = "",
-        embed_error_sound: bool = False,
-    ):
-        self.skip_animations = skip_animations
-        self.always_update_mobjects = always_update_mobjects
-        self.start_at_animation_number = start_at_animation_number
-        self.end_at_animation_number = end_at_animation_number
-        self.leave_progress_bars = leave_progress_bars
-        self.preview = preview
-        self.presenter_mode = presenter_mode
-        self.show_animation_progress = show_animation_progress
-        self.embed_exception_mode = embed_exception_mode
-        self.embed_error_sound = embed_error_sound
+    skip_animations: bool = False
+    always_update_mobjects: bool = False
+    start_at_animation_number: int = 0
+    end_at_animation_number: int | None = None
+    presenter_mode: bool = False
+    embed_exception_mode: str = ""
+    embed_error_sound: bool = False
 
+    def __init__(self, manager: Manager):
         # Core state of the scene
         self.camera: Camera = Camera()
-        self.camera.save_state()
         self.manager = manager
         self.mobjects: list[Mobject] = []
-        self.id_to_mobject_map: dict[int, Mobject] = {}
         self.num_plays: int = 0
+        # the time is updated by the manager
         self.time: float = 0
-        self.skip_time: float = 0
         self.original_skipping_status: bool = self.skip_animations
-        self.undo_stack = []
-        self.redo_stack = []
+        self.undo_stack: deque[SceneState] = deque()
+        self.redo_stack: list[SceneState] = []
 
         if self.start_at_animation_number is not None:
             self.skip_animations = True
@@ -132,6 +132,7 @@ class Scene:
         The entrypoint to animations in Manim.
         Should be overridden in the subclass to produce animations
         """
+        raise RuntimeError("Could not find the construct method, did you misspell it?")
 
     def tear_down(self) -> None:
         """
@@ -177,30 +178,7 @@ class Scene:
             for sm in mob.get_family()
         )
 
-    # Related to time
-
-    def get_time(self) -> float:
-        return self.time
-
-    def increment_time(self, dt: float) -> None:
-        self.time += dt
-
     # Related to internal mobject organization
-
-    def get_top_level_mobjects(self) -> list[Mobject]:
-        # Return only those which are not in the family
-        # of another mobject from the scene
-        mobjects = self.get_mobjects()
-        families = [m.get_family() for m in mobjects]
-
-        def is_top_level(mobject):
-            num_families = sum([(mobject in family) for family in families])
-            return num_families == 1
-
-        return list(filter(is_top_level, mobjects))
-
-    def get_mobject_family_members(self) -> list[Mobject]:
-        return extract_mobject_family_members(self.mobjects)
 
     def add(self, *new_mobjects: Mobject):
         """
@@ -209,18 +187,6 @@ class Scene:
         """
         self.remove(*new_mobjects)
         self.mobjects += new_mobjects
-        self.id_to_mobject_map.update(
-            {id(sm): sm for m in new_mobjects for sm in m.get_family()}
-        )
-        return self
-
-    def add_mobjects_among(self, values: Iterable):
-        """
-        This is meant mostly for quick prototyping,
-        e.g. to add all mobjects defined up to a point,
-        call self.add_mobjects_among(locals().values())
-        """
-        self.add(*filter(lambda m: isinstance(m, Mobject), values))
         return self
 
     def remove(self, *mobjects_to_remove: Mobject):
@@ -310,64 +276,23 @@ class Scene:
         """
         self.updaters = [f for f in self.updaters if f is not func]
 
-    def restructure_mobjects(
-        self,
-        to_remove: Mobject,
-        mobject_list_name: str = "mobjects",
-        extract_families: bool = True,
-    ):
-        """
-        tl:wr
-            If your scene has a Group(), and you removed a mobject from the Group,
-            this dissolves the group and puts the rest of the mobjects directly
-            in self.mobjects or self.foreground_mobjects.
-
-        In cases where the scene contains a group, e.g. Group(m1, m2, m3), but one
-        of its submobjects is removed, e.g. scene.remove(m1), the list of mobjects
-        will be edited to contain other submobjects, but not m1, e.g. it will now
-        insert m2 and m3 to where the group once was.
-
-        Parameters
-        ----------
-        to_remove
-            The Mobject to remove.
-
-        mobject_list_name
-            The list of mobjects ("mobjects", "foreground_mobjects" etc) to remove from.
-
-        extract_families
-            Whether the mobject's families should be recursively extracted.
-
-        Returns
-        -------
-        Scene
-            The Scene mobject with restructured Mobjects.
-        """
-        if extract_families:
-            to_remove = extract_mobject_family_members(
-                to_remove,
-            )
-        _list = getattr(self, mobject_list_name)
-        new_list = self.get_restructured_mobject_list(_list, to_remove)
-        setattr(self, mobject_list_name, new_list)
-
     def bring_to_front(self, *mobjects: Mobject):
         self.add(*mobjects)
         return self
 
     def bring_to_back(self, *mobjects: Mobject):
         self.remove(*mobjects)
-        self.mobjects = list(mobjects) + self.mobjects
+        self.mobjects = [*mobjects, *self.mobjects]
         return self
 
     def clear(self):
         self.mobjects.clear()
         return self
 
-    def get_mobjects(self) -> list[Mobject]:
+    def get_mobjects(self) -> Sequence[Mobject]:
         return list(self.mobjects)
 
-    def get_mobject_copies(self) -> list[Mobject]:
+    def get_mobject_copies(self) -> Sequence[Mobject]:
         return [m.copy() for m in self.mobjects]
 
     def point_to_mobject(
@@ -393,31 +318,18 @@ class Scene:
         else:
             return Group(*mobjects)
 
-    def id_to_mobject(self, id_value):
-        return self.id_to_mobject_map[id_value]
-
-    def ids_to_group(self, *id_values):
-        return self.get_group(
-            *filter(lambda x: x is not None, map(self.id_to_mobject, id_values))
-        )
-
-    def i2g(self, *id_values):
-        return self.ids_to_group(*id_values)
-
-    def i2m(self, id_value):
-        return self.id_to_mobject(id_value)
-
     # Related to skipping
 
     def update_skipping_status(self) -> None:
-        if (self.start_at_animation_number is not None) and (
-            self.num_plays == self.start_at_animation_number
+        if (
+            self.start_at_animation_number is not None
+            and self.num_plays == self.start_at_animation_number
+            and not self.original_skipping_status
         ):
-            self.skip_time = self.time
-            if not self.original_skipping_status:
-                self.skip_animations = False
-        if (self.end_at_animation_number is not None) and (
-            self.num_plays >= self.end_at_animation_number
+            self.skip_animations = False
+        if (
+            self.end_at_animation_number is not None
+            and self.num_plays >= self.end_at_animation_number
         ):
             raise EndSceneEarlyException()
 
@@ -477,8 +389,6 @@ class Scene:
         ignore_presenter_mode: bool = False,
     ):
         self.manager._wait(duration, stop_condition=stop_condition)
-        # self.pre_play()
-        # self.update_mobjects(dt=0)  # Any problems with this?
         # if (
         #     self.presenter_mode
         #     and not self.skip_animations
@@ -487,18 +397,6 @@ class Scene:
         #     if note:
         #         logger.info(note)
         #     self.hold_loop()
-        # else:
-        #     time_progression = self.get_wait_time_progression(duration, stop_condition)
-        #     last_t = 0
-        #     for t in time_progression:
-        #         dt = t - last_t
-        #         last_t = t
-        #         self.update_frame(dt)
-        #         self.emit_frame()
-        #         if stop_condition is not None and stop_condition():
-        #             break
-        # self.refresh_static_mobjects()
-        # self.post_play()
 
     def wait_until(self, stop_condition: Callable[[], bool], max_time: float = 60):
         self.wait(max_time, stop_condition=stop_condition)
@@ -513,9 +411,6 @@ class Scene:
             self.skip_animations = self.original_skipping_status
         return self
 
-    def emit_frame(self) -> None:
-        pass
-
     def add_sound(
         self,
         sound_file: str,
@@ -525,7 +420,7 @@ class Scene:
     ):
         if self.skip_animations:
             return
-        time = self.get_time() + time_offset
+        time = self.time + time_offset
         self.file_writer.add_sound(sound_file, time, gain, gain_to_background)
 
     # Helpers for interactive development
@@ -537,7 +432,7 @@ class Scene:
         scene_state.restore_scene(self)
 
     def save_state(self) -> None:
-        if not self.preview:
+        if not config.preview:
             return
         state = self.get_state()
         if self.undo_stack and state.mobjects_match(self.undo_stack[-1]):
@@ -545,40 +440,19 @@ class Scene:
         self.redo_stack = []
         self.undo_stack.append(state)
         if len(self.undo_stack) > self.max_num_saved_states:
-            self.undo_stack.pop(0)
+            self.undo_stack.popleft()
 
     def undo(self):
         if self.undo_stack:
             self.redo_stack.append(self.get_state())
             self.restore_state(self.undo_stack.pop())
-        self.refresh_static_mobjects()
 
     def redo(self):
         if self.redo_stack:
             self.undo_stack.append(self.get_state())
             self.restore_state(self.redo_stack.pop())
-        self.refresh_static_mobjects()
 
     # TODO: reimplement checkpoint feature with CE's section API
-
-    def save_mobject_to_file(
-        self, mobject: Mobject, file_path: str | None = None
-    ) -> None:
-        return
-        if file_path is None:
-            file_path = self.file_writer.get_saved_mobject_path(mobject)
-            if file_path is None:
-                return
-        mobject.save_to_file(file_path)
-
-    def load_mobject(self, file_name):
-        if os.path.exists(file_name):
-            path = file_name
-        else:
-            directory = self.file_writer.get_saved_mobject_directory()
-            path = os.path.join(directory, file_name)
-        return Mobject.load(path)
-
     # Event handling
 
     def on_mouse_motion(self, point: np.ndarray, d_point: np.ndarray) -> None:
@@ -694,7 +568,6 @@ class Scene:
             self.hold_on_wait = False
 
     def on_resize(self, width: int, height: int) -> None:
-        # self.camera.reset_pixel_shape(width, height)
         pass
 
     def on_show(self) -> None:

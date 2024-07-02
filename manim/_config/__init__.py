@@ -37,6 +37,7 @@ logging.getLogger("PIL").setLevel(logging.INFO)
 logging.getLogger("matplotlib").setLevel(logging.INFO)
 
 config = ManimConfig().digest_parser(parser)
+config._warn_about_config_options()
 # TODO: to be used in the future - see PR #620
 # https://github.com/ManimCommunity/manim/pull/620
 frame = ManimFrame(config)

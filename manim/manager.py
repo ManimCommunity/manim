@@ -30,11 +30,12 @@ class Manager:
     """
     The Brain of Manim
 
-    .. note::
+    .. warning::
 
-        The only method of this class officially guaranteed to be
-        stable is :meth:`~.Manager.render`. Any other methods documented
-        are purely for development
+        Only methods of this class that are not prefixed with an
+        underscore (``_``) are stable. If you override any of the
+        ``_`` methods, consider pinning your version of Manim.
+
 
     Usage
     -----
@@ -75,7 +76,7 @@ class Manager:
     def create_renderer(self) -> RendererProtocol:
         return plugins.renderer()
 
-    def _setup(self) -> None:
+    def setup(self) -> None:
         """Set up processes and manager"""
 
         self.scene.setup()
@@ -111,15 +112,13 @@ class Manager:
         Temporarily use the normal single pass
         rendering system
         """
-        self._setup()
+        self.setup()
 
-        try:
+        with contextlib.suppress(EndSceneEarlyException):
             self.scene.construct()
-            self._post_contruct()
+            self.post_contruct()
             self._interact()
-        except EndSceneEarlyException:
-            pass
-        self._tear_down()
+        self.tear_down()
 
     def _render_second_pass(self) -> None:
         """
@@ -128,11 +127,11 @@ class Manager:
         """
         ...
 
-    def _post_contruct(self) -> None:
+    def post_contruct(self) -> None:
         self.file_writer.finish()
         self._write_files = False
 
-    def _tear_down(self) -> None:
+    def tear_down(self) -> None:
         self.scene.tear_down()
 
         if config.save_last_frame:
@@ -168,6 +167,7 @@ class Manager:
         """
         self.time += dt
         self.scene._update_mobjects(dt)
+        self.scene.time = self.time
 
         if self.window is not None:
             self.window.clear()
@@ -230,22 +230,21 @@ class Manager:
 
     def _create_progressbar(
         self, total: float, description: str, **kwargs
-    ) -> tqdm | contextlib.nullcontext:
+    ) -> tqdm | contextlib.nullcontext[NullProgressBar]:
         """Create a progressbar"""
-        if not config.write_to_movie:
-            return contextlib.nullcontext(
-                # construct a class that pretends to be a progressbar
-                type("NullProgressbar", (object,), {"update": lambda _: None})
+
+        if not config.write_to_movie or not config.progress_bar:
+            return contextlib.nullcontext(NullProgressBar())
+        else:
+            return tqdm(
+                total=total,
+                unit="frames",
+                desc=description % {"num": self.file_writer.num_plays},
+                ascii=True if platform.system() == "Windows" else None,
+                leave=config.progress_bar == "leave",
+                disable=config.progress_bar == "none",
+                **kwargs,
             )
-        return tqdm(
-            total=total,
-            unit="frames",
-            desc=description % {"num": self.file_writer.num_plays},
-            ascii=True if platform.system() == "Windows" else None,
-            leave=config.progress_bar == "leave",
-            disable=config.progress_bar == "none",
-            **kwargs,
-        )
 
     def _wait(
         self,
@@ -321,3 +320,9 @@ class Manager:
     def _write_frame_from_renderer(self):
         frame = self.renderer.get_pixels()
         self.file_writer.write_frame(frame)
+
+
+class NullProgressBar:
+    """Fake progressbar."""
+
+    def update(self, _) -> None: ...

@@ -434,8 +434,6 @@ class FileWriter:
         frame in the default image directory.
         """
         if write_to_movie():
-            if hasattr(self, "writing_process"):
-                self.writing_process.terminate()
             self.combine_to_movie()
             if config.save_sections:
                 self.combine_to_section_videos()

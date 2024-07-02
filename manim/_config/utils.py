@@ -323,6 +323,17 @@ class ManimConfig(MutableMapping):
     def __init__(self) -> None:
         self._d: dict[str, Any | None] = {k: None for k in self._OPTS}
 
+    def _warn_about_config_options(self) -> None:
+        """Warns about incorrect config options, or permutations of config options."""
+
+        logger = logging.getLogger("manim")
+        if self.format == "webm":
+            logger.warning(
+                "Output format set as webm, this can be slower than other formats",
+            )
+        if not self.preview and not self.write_to_movie:
+            logger.warning("preview and write_to_movie disabled, this is a dry run. Try passing -p or -w.")
+
     # behave like a dict
     def __iter__(self) -> Iterator[str]:
         return iter(self._d)
@@ -1052,10 +1063,7 @@ class ManimConfig(MutableMapping):
             val,
             [None, "png", "gif", "mp4", "mov", "webm"],
         )
-        if self.format == "webm":
-            logging.getLogger("manim").warning(
-                "Output format set as webm, this can be slower than other formats",
-            )
+        self.resolve_movie_file_extension(self.transparent)
 
     @property
     def ffmpeg_loglevel(self) -> str:
@@ -1173,7 +1181,7 @@ class ManimConfig(MutableMapping):
         return self.frame_x_radius * constants.RIGHT
 
     @property
-    def frame_rate(self) -> int:
+    def frame_rate(self) -> float:
         """Frame rate in frames per second."""
         return self._d["frame_rate"]
 

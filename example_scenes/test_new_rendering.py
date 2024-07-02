@@ -13,6 +13,7 @@ class Test(Scene):
 
 with tempconfig(
     {
+        "preview": True,
         "write_to_movie": True,
         "disable_caching": True,
         "frame_rate": 60,
