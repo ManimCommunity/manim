@@ -5,15 +5,13 @@ import inspect
 from pathlib import Path
 from typing import Callable
 
-import cairo
-import pytest
 from _pytest.fixtures import FixtureRequest
 
 from manim import Scene
 from manim._config import tempconfig
 from manim._config.utils import ManimConfig
 from manim.camera.three_d_camera import ThreeDCamera
-from manim.renderer.cairo_renderer import CairoRenderer
+from manim.renderer.opengl_renderer import OpenGLRenderer
 from manim.scene.three_d_scene import ThreeDScene
 
 from ._frames_testers import _ControlDataWriter, _FramesTester
@@ -27,14 +25,13 @@ from ._test_class_makers import (
 SCENE_PARAMETER_NAME = "scene"
 _tests_root_dir_path = Path(__file__).absolute().parents[2]
 PATH_CONTROL_DATA = _tests_root_dir_path / Path("control_data", "graphical_units_data")
-MIN_CAIRO_VERSION = 11800
 
 
 def frames_comparison(
     func=None,
     *,
     last_frame: bool = True,
-    renderer_class=CairoRenderer,
+    renderer_class=OpenGLRenderer,
     base_scene=Scene,
     **custom_config,
 ):
@@ -84,12 +81,6 @@ def frames_comparison(
         @functools.wraps(tested_scene_construct)
         # The "request" parameter is meant to be used as a fixture by pytest. See below.
         def wrapper(*args, request: FixtureRequest, tmp_path, **kwargs):
-            # check for cairo version
-            if (
-                renderer_class is CairoRenderer
-                and cairo.cairo_version() < MIN_CAIRO_VERSION
-            ):
-                pytest.skip("Cairo version is too old. Skipping cairo graphical tests.")
             # Wraps the test_function to a construct method, to "freeze" the eventual additional arguments (parametrizations fixtures).
             construct = functools.partial(tested_scene_construct, *args, **kwargs)
 
