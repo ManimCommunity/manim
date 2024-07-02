@@ -665,6 +665,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         self._populate_edge_dict(edges, edge_type)
 
         self.add(*self.vertices.values())
+        self._vertex_count = len(self.vertices)
         self.add(*self.edges.values())
 
         self.add_updater(self.update_edges)
@@ -749,7 +750,8 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
 
         self.vertices[vertex] = vertex_mobject
         self.vertices[vertex].move_to(position)
-        self.add(self.vertices[vertex])
+        self.insert(self._vertex_count, self.vertices[vertex])
+        self._vertex_count += 1
 
         return self.vertices[vertex]
 
@@ -961,6 +963,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         to_remove.append(self.vertices.pop(vertex))
 
         self.remove(*to_remove)
+        self._vertex_count -= 1
         return self.get_group_class()(*to_remove)
 
     def remove_vertices(self, *vertices):
@@ -1043,7 +1046,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         self._edge_config[(u, v)] = edge_config
 
         edge_mobject = edge_type(
-            self[u].get_center(), self[v].get_center(), z_index=-1, **edge_config
+            self[u].get_center(), self[v].get_center(), **edge_config
         )
         self.edges[(u, v)] = edge_mobject
 
@@ -1551,7 +1554,6 @@ class Graph(GenericGraph):
             (u, v): edge_type(
                 self[u].get_center(),
                 self[v].get_center(),
-                z_index=-1,
                 **self._edge_config[(u, v)],
             )
             for (u, v) in edges
@@ -1758,7 +1760,6 @@ class DiGraph(GenericGraph):
             (u, v): edge_type(
                 self[u],
                 self[v],
-                z_index=-1,
                 **self._edge_config[(u, v)],
             )
             for (u, v) in edges
