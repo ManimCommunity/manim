@@ -1154,6 +1154,7 @@ class Arrow3D(Line3D):
         height: float = 0.3,
         base_radius: float = 0.08,
         color: ParsableManimColor = WHITE,
+        max_thickness_to_length_ratio: float = 5,
         **kwargs,
     ) -> None:
         super().__init__(
@@ -1176,6 +1177,53 @@ class Arrow3D(Line3D):
         self.end_point = VectorizedPoint(end)
         self.add(self.end_point, self.cone)
         self.set_color(color)
+        self.initial_thickness = self.thickness
+        self.max_thickness_to_length_ratio = max_thickness_to_length_ratio
+
+    def position_tip(self, tip: Cone):
+        tip.shift(-1 * self.end)
+
+    def add_tip(self, tip: Cone) -> Self:
+        self.position_tip(tip)
+        self.add(tip)
+        return self
+
+    def pop_tip(self) -> VGroup:
+        result = self.get_group_class()()
+        result.add(self.cone)
+        self.remove(self.cone)
+        return result
+
+    def _set_thickness_from_length(self) -> Self:
+        max_ratio = self.max_thickness_to_length_ratio
+        if config.renderer == RendererType.OPENGL:
+            self.set_stroke(
+                width=min(self.initial_thickness, max_ratio * self.get_length()),
+                recurse=False,
+            )
+        else:
+            self.set_stroke(
+                width=min(self.initial_thickness, max_ratio * self.get_length()),
+                family=False,
+            )
+        return self
+
+    def scale(self, factor: float, scale_tips: bool = False, **kwargs) -> Self:
+        # Add desc
+        if self.get_length() == 0:
+            return self
+
+        if scale_tips:
+            super().scale(factor, **kwargs)
+            self._set_thickness_from_length()
+            return self
+
+        old_tip = self.pop_tip()
+        super().scale(factor, **kwargs)
+        self._set_thickness_from_length()
+        self.add_tip(tip=old_tip)
+
+        return self
 
     def get_end(self) -> np.ndarray:
         return self.end_point.get_center()
