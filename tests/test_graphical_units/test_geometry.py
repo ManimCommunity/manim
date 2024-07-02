@@ -269,3 +269,90 @@ def test_LabeledArrow(scene):
         "0.5", start=LEFT * 3, end=RIGHT * 3 + UP * 2, label_position=0.5, font_size=15
     )
     scene.add(l_arrow)
+
+
+@frames_comparison
+def test_Triangle(scene):
+    triangle = Triangle()
+    scene.add(triangle)
+
+
+@frames_comparison
+def test_RectanglePoints(scene):
+    rectangle = Rectangle().set_points_as_corners([LEFT, RIGHT, UP])
+    scene.add(rectangle)
+
+
+@frames_comparison
+def test_Square(scene):
+    square = Square()
+    scene.add(square)
+
+
+@frames_comparison
+def test_Polygon(scene):
+    polygon = Polygon(*[np.array([x, y, 0]) for x, y in [(0, 0), (1, 1), (2, 0)]])
+    scene.add(polygon)
+
+
+@frames_comparison
+def test_Polygons(scene):
+    polygon1 = Polygon(*[np.array([x, y, 0]) for x, y in [(0, 0), (1, 1), (2, 0)]])
+    polygon2 = Polygon(*[np.array([x, y, 0]) for x, y in [(3, 0), (4, 1), (5, 0)]])
+    scene.add(polygon1, polygon2)
+
+
+@frames_comparison
+def test_RegularPolygon(scene):
+    regular_polygon = RegularPolygon(n=6)
+    scene.add(regular_polygon)
+
+
+@frames_comparison
+def test_RegularPolygonWithRotation(scene):
+    regular_polygon = RegularPolygon(n=5).rotate(PI / 4)
+    scene.add(regular_polygon)
+
+
+@frames_comparison
+def test_RegularPolygonWithFillOpacity(scene):
+    regular_polygon = RegularPolygon(n=7, fill_opacity=0.5)
+    scene.add(regular_polygon)
+
+
+@frames_comparison
+def test_RegularPolygonWithStrokeWidth(scene):
+    regular_polygon = RegularPolygon(n=8, stroke_width=5)
+    scene.add(regular_polygon)
+
+
+@frames_comparison
+def test_RegularPolygonWithColor(scene):
+    regular_polygon = RegularPolygon(n=9, color=BLUE)
+    scene.add(regular_polygon)
+
+
+@frames_comparison
+def test_RegularPolygonWithPosition(scene):
+    regular_polygon = RegularPolygon(n=10).shift(UP)
+    scene.add(regular_polygon)
+
+
+@frames_comparison
+def test_RegularPolygonWithScale(scene):
+    regular_polygon = RegularPolygon(n=11).scale(2)
+    scene.add(regular_polygon)
+
+
+@frames_comparison
+def test_RegularPolygonWithFilled(scene):
+    regular_polygon = RegularPolygon(n=12, fill_color=RED, fill_opacity=0.7)
+    scene.add(regular_polygon)
+
+
+@frames_comparison
+def test_RegularPolygonWithFilledAndStroked(scene):
+    regular_polygon = RegularPolygon(
+        n=13, fill_color=YELLOW, fill_opacity=0.5, stroke_color=GREEN, stroke_width=3
+    )
+    scene.add(regular_polygon)
