@@ -519,7 +519,7 @@ class OpenGLRenderer(Renderer, RendererProtocol):
         y, x = self.output_fbo.viewport[2:4]
         buf = np.frombuffer(raw, dtype=np.uint8).reshape((x, y, 4))
         # FIXME: this is slow?
-        return np.flip(buf, 0)
+        return buf[::-1]  # type: ignore
 
 
 class GLVMobjectManager:

@@ -94,9 +94,11 @@ class OpenGLVMobject(OpenGLMobject):
             fill_color = color
         if stroke_color is None:
             stroke_color = color
-        self.fill_color: Iterable[ManimColor] = listify(ManimColor.parse(fill_color))
+        self.fill_color: Sequence[ManimColor] = listify(ManimColor.parse(fill_color))
         self.set_fill(opacity=fill_opacity)
-        self.stroke_color = listify(ManimColor.parse(stroke_color))
+        self.stroke_color: Sequence[ManimColor] = listify(
+            ManimColor.parse(stroke_color)
+        )
         self.set_stroke(opacity=stroke_opacity)
         if stroke_width is None:
             stroke_width = DEFAULT_STROKE_WIDTH
@@ -115,7 +117,7 @@ class OpenGLVMobject(OpenGLMobject):
         super().__init__(**kwargs)
         # self.refresh_unit_normal()
 
-    def get_group_class(self):
+    def get_group_class(self) -> type[OpenGLVGroup]:  # type: ignore
         return OpenGLVGroup
 
     @staticmethod
@@ -207,7 +209,7 @@ class OpenGLVMobject(OpenGLMobject):
 
     def set_fill(
         self,
-        color: ParsableManimColor | Iterable[ParsableManimColor] | None = None,
+        color: ParsableManimColor | Sequence[ParsableManimColor] | None = None,
         opacity: float | None = None,
         recurse: bool = True,
     ) -> Self:
@@ -276,7 +278,7 @@ class OpenGLVMobject(OpenGLMobject):
 
     def set_backstroke(
         self,
-        color: Color | Iterable[Color] | None = None,
+        color: ManimColor | Iterable[ManimColor] | None = None,
         width: float | Iterable[float] = 3,
         background: bool = True,
     ) -> Self:
@@ -292,11 +294,9 @@ class OpenGLVMobject(OpenGLMobject):
     def set_style(
         self,
         fill_color: ParsableManimColor | Iterable[ParsableManimColor] | None = None,
-        fill_opacity: float | Iterable[float] | None = None,
-        fill_rgba: np.ndarray | None = None,
+        fill_opacity: float | None = None,
         stroke_color: ParsableManimColor | Iterable[ParsableManimColor] | None = None,
         stroke_opacity: float | Iterable[float] | None = None,
-        stroke_rgba: np.ndarray | None = None,
         stroke_width: float | Iterable[float] | None = None,
         stroke_background: bool = True,
         reflectiveness: float | None = None,

@@ -166,7 +166,6 @@ class Manager:
             + "Press `command + q` or `esc` to quit"
         )
         self.scene.skip_animations = False
-        self.scene.refresh_static_mobjects()
         while not self.window.is_closing:
             # TODO: Replace with actual dt instead
             # of hardcoded dt
