@@ -264,13 +264,13 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
 
     def get_end(self) -> Point3D:
         if self.has_tip():
-            return self.tip.get_start()
+            return self.tip.base
         else:
             return super().get_end()
 
     def get_start(self) -> Point3D:
         if self.has_start_tip():
-            return self.start_tip.get_start()
+            return self.start_tip.base
         else:
             return super().get_start()
 
