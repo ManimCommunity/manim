@@ -32,3 +32,38 @@ def test_digraph_add_edge(scene):
     )
     scene.play(g.animate.add_edges((0, 1)))
     scene.wait(0.1)
+
+
+@frames_comparison(last_frame=False)
+def test_graph_create(scene):
+    graph = Graph(
+        vertices=[1, 2, 3, 4, 5],
+        edges=[
+            (1, 2),
+            (1, 3),
+            (1, 4),
+            (1, 5),
+            (2, 3),
+            (2, 4),
+            (2, 5),
+            (3, 4),
+            (3, 5),
+            (4, 5),
+        ],
+        vertex_type=Circle,
+        vertex_config={"radius": 0.25},
+    )
+    scene.play(
+        AnimationGroup(
+            *(Create(vertex) for vertex in graph.vertices.values()),
+            lag_ratio=0.1,
+        ),
+        run_time=2,
+    )
+    scene.play(
+        AnimationGroup(
+            *(Create(edge) for edge in graph.edges.values()),
+            lag_ratio=0.1,
+        ),
+        run_time=2,
+    )
