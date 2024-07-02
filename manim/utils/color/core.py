@@ -987,7 +987,7 @@ def average_color(*colors: ParsableManimColor) -> ManimColor:
     return rgb_to_color(mean_rgb)
 
 
-def random_bright_color() -> ManimColor:
+def random_bright_color(seed=None) -> ManimColor:
     """Returns you a random bright color
 
     .. warning::
@@ -998,12 +998,14 @@ def random_bright_color() -> ManimColor:
     ManimColor
         A bright ManimColor
     """
+    if seed is not None:
+        random.seed(seed)
     curr_rgb = color_to_rgb(random_color())
     new_rgb = interpolate_arrays(curr_rgb, np.ones(len(curr_rgb)), 0.5)
     return ManimColor(new_rgb)
 
 
-def random_color() -> ManimColor:
+def random_color(seed=None) -> ManimColor:
     """Return you a random ManimColor
 
     .. warning::
@@ -1015,6 +1017,9 @@ def random_color() -> ManimColor:
         _description_
     """
     import manim.utils.color.manim_colors as manim_colors
+
+    if seed is not None:
+        random.seed(seed)
 
     return random.choice(manim_colors._all_manim_colors)
 
