@@ -14,11 +14,11 @@ __all__ = [
 
 import itertools as it
 import sys
-from collections.abc import Generator, Hashable, Iterable, Mapping, Sequence
-from typing import TYPE_CHECKING, Callable, Literal
+from typing import TYPE_CHECKING, Callable, Generic, Literal
 
 import numpy as np
 from PIL.Image import Image
+from typing_extensions import TypeVar
 
 from manim import config
 from manim.constants import *
@@ -47,6 +47,8 @@ from manim.utils.iterables import (
 from manim.utils.space_ops import rotate_vector, shoelace_direction
 
 if TYPE_CHECKING:
+    from collections.abc import Generator, Hashable, Iterable, Mapping, Sequence
+
     import numpy.typing as npt
     from typing_extensions import Self
 
@@ -521,7 +523,7 @@ class VMobject(Mobject):
     def get_fill_opacities(self) -> npt.NDArray[ManimFloat]:
         return self.get_fill_rgbas()[:, 3]
 
-    def get_stroke_rgbas(self, background: bool = False) -> RGBA_Array_float | Zeros:
+    def get_stroke_rgbas(self, background: bool = False) -> RGBA_Array_Float | Zeros:
         try:
             if background:
                 self.background_stroke_rgbas: RGBA_Array_Float
@@ -1977,7 +1979,10 @@ class VMobject(Mobject):
         return self
 
 
-class VGroup(VMobject, metaclass=ConvertToOpenGL):
+VMobjectT = TypeVar("VMobjectT", bound=VMobject, default=VMobject)
+
+
+class VGroup(VMobject, Generic[VMobjectT], metaclass=ConvertToOpenGL):
     """A group of vectorized mobjects.
 
     This can be used to group multiple :class:`~.VMobject` instances together
@@ -2036,7 +2041,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
 
     """
 
-    def __init__(self, *vmobjects, **kwargs):
+    def __init__(self, *vmobjects: VMobjectT, **kwargs):
         super().__init__(**kwargs)
         self.add(*vmobjects)
 
@@ -2513,7 +2518,7 @@ class VectorizedPoint(VMobject, metaclass=ConvertToOpenGL):
         self.set_points(np.array([new_loc]))
 
 
-class CurvesAsSubmobjects(VGroup):
+class CurvesAsSubmobjects(VGroup[VMobject]):
     """Convert a curve's elements to submobjects.
 
     Examples
