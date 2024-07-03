@@ -332,7 +332,9 @@ class ManimConfig(MutableMapping):
                 "Output format set as webm, this can be slower than other formats",
             )
         if not self.preview and not self.write_to_movie:
-            logger.warning("preview and write_to_movie disabled, this is a dry run. Try passing -p or -w.")
+            logger.warning(
+                "preview and write_to_movie disabled, this is a dry run. Try passing -p or -w."
+            )
 
     # behave like a dict
     def __iter__(self) -> Iterator[str]:
