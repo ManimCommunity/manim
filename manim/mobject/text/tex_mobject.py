@@ -175,8 +175,8 @@ class SingleStringMathTex(SVGMobject):
         tex = self._remove_stray_braces(tex)
 
         for context in ["array"]:
-            begin_in = ("\\begin{%s}" % context) in tex
-            end_in = ("\\end{%s}" % context) in tex
+            begin_in = ("\\begin{%s}" % context) in tex  # noqa: UP031
+            end_in = ("\\end{%s}" % context) in tex  # noqa: UP031
             if begin_in ^ end_in:
                 # Just turn this into a blank string,
                 # which means caller should leave a

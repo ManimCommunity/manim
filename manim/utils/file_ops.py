@@ -32,7 +32,7 @@ if TYPE_CHECKING:
 
 from manim import __version__, config, logger
 
-from .. import config, console
+from .. import console
 
 
 def is_mp4_format() -> bool:

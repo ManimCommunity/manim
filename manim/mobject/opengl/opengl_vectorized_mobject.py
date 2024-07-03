@@ -324,6 +324,7 @@ class OpenGLVMobject(OpenGLMobject):
         vmobject_style = vmobject.get_style()
         if config.renderer == RendererType.OPENGL:
             vmobject_style["stroke_width"] = vmobject_style["stroke_width"][0][0]
+            vmobject_style["fill_opacity"] = self.get_fill_opacity()
         self.set_style(**vmobject_style, recurse=False)
         if recurse:
             # Does its best to match up submobject lists, and
@@ -405,7 +406,7 @@ class OpenGLVMobject(OpenGLMobject):
         return self.get_stroke_opacities()[0]
 
     def get_color(self):
-        if self.has_stroke():
+        if not self.has_fill():
             return self.get_stroke_color()
         return self.get_fill_color()
 
@@ -1223,8 +1224,8 @@ class OpenGLVMobject(OpenGLMobject):
             return path
 
         for n in range(n_subpaths):
-            sp1 = get_nth_subpath(subpaths1, n)
-            sp2 = get_nth_subpath(subpaths2, n)
+            sp1 = np.asarray(get_nth_subpath(subpaths1, n))
+            sp2 = np.asarray(get_nth_subpath(subpaths2, n))
             diff1 = max(0, (len(sp2) - len(sp1)) // nppc)
             diff2 = max(0, (len(sp1) - len(sp2)) // nppc)
             sp1 = self.insert_n_curves_to_point_list(diff1, sp1)
