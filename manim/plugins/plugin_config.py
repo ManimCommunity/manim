@@ -8,11 +8,12 @@ from pydantic import BaseModel
 
 from manim.event_handler.window import WindowABC
 from manim.renderer.opengl_renderer import OpenGLRenderer
-from manim.renderer.renderer import RendererProtocol
 from manim.renderer.opengl_renderer_window import Window
+from manim.renderer.renderer import RendererProtocol
 
 if TYPE_CHECKING:
     from typing_extensions import TypeAlias
+
     from manim.manager import Manager
 
     HookFunction: TypeAlias = Callable[[Manager], object]
@@ -26,7 +27,6 @@ __all__ = (
 
 class Hooks(Enum):
     POST_CONSTRUCT = "post_construct"
-
 
 
 class PluginConfig(BaseModel):
@@ -89,11 +89,10 @@ class PluginConfig(BaseModel):
             if not all(callable(func) for func in functions):
                 raise ValueError("All hooks must be callables!")
             if not isinstance(hook, Hooks):
-                raise ValueError(f"Unknown hook type {hook}, must be an instance of enum {Hooks}")
+                raise ValueError(
+                    f"Unknown hook type {hook}, must be an instance of enum {Hooks}"
+                )
             self._hooks[hook].extend(functions)
 
 
-plugins = PluginConfig(
-    renderer=OpenGLRenderer,
-    window=Window
-)
+plugins = PluginConfig(renderer=OpenGLRenderer, window=Window)

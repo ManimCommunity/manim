@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from manim import config, logger
 
-from .plugin_config import plugins, Hooks
+from .plugin_config import Hooks, plugins
 from .plugins_flags import get_plugins, list_plugins
 
 __all__ = [

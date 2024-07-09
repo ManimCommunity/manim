@@ -12,7 +12,7 @@ from tqdm import tqdm
 from manim import config, logger
 from manim.event_handler.window import WindowABC
 from manim.file_writer import FileWriter
-from manim.plugins import plugins, Hooks
+from manim.plugins import Hooks, plugins
 from manim.scene.scene import Scene, SceneState
 from manim.utils.exceptions import EndSceneEarlyException
 
