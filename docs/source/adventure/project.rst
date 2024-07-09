@@ -19,7 +19,7 @@ by the original creator of manim, 3Blue1Brown.
 
 The next step is figuring out how the project should look: what content should it cover, in what order, etc. In this
 tutorial, we'll focus on two parts of vector addition: the algebraic way, and the geometric way. For the algebraic way,
-we'll show two vectors (as matricies) being added, and give a short explanation. After that we'll show the typical tip-to-tail
+we'll show two vectors (as matrices) being added, and give a short explanation. After that we'll show the typical tip-to-tail
 method for adding vectors graphically. Of course, choosing good examples is very important to help the viewer understand.
 In our case, we'll use the two vectors :math:`v_1\equiv\langle 2, 1\rangle` and :math:`v_2\equiv\langle 0,-3 \rangle`.
 
