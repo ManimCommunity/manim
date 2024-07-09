@@ -421,7 +421,7 @@ Manim allows us to smoothly transform one ``Mobject`` into another using ``Trans
 ``Transform`` vs ``ReplacementTransform``
 -----------------------------------------
 
-While ``Transform(mob1, mob2)`` changes the attributes of ``mob1`` to ``mob2``, ``ReplacementTransform(mob1, mob2)`` literally replaces ``mob1`` on the
+While ``Transform(mob1, mob2)`` changes the attributes of ``mob1`` into the attributes of ``mob2`` by copying the values, ``ReplacementTransform(mob1, mob2)`` instead replaces ``mob1`` in the
 scene with ``mob2``.
 
 Here is the same scene in the last section, but using ``ReplacementTransform``:
