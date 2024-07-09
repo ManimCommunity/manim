@@ -1061,7 +1061,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
             edge_config = {}
         else:
             edge_config = deepcopy(edge_config)
-        
+
         batch_default_config, custom_configs = GenericGraph._split_out_child_configs(
             edge_config, lambda k: isinstance(k, tuple)
         )
@@ -1075,7 +1075,10 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
                 self._add_edge(
                     edge,
                     edge_type=edge_type,
-                    edge_config={**batch_default_config, **custom_configs.get(edge, {})},
+                    edge_config={
+                        **batch_default_config,
+                        **custom_configs.get(edge, {}),
+                    },
                 ).submobjects
                 for edge in edges
             ),
@@ -1726,7 +1729,9 @@ class DiGraph(GenericGraph):
         return edge_config, tip_config.get("tip_config", {})
 
     def _create_edge_mobject(self, edge, edge_type):
-        edge_config, tip_config = DiGraph._split_out_tip_configs(self._edge_config[edge])
+        edge_config, tip_config = DiGraph._split_out_tip_configs(
+            self._edge_config[edge]
+        )
         u, v = edge
         edge_mobject = edge_type(
             self[u],

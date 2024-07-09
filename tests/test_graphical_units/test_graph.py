@@ -22,10 +22,7 @@ def test_digraph_add_edges(scene):
             "tip_shape": ArrowSquareTip,
             "tip_length": 0.15,
         },
-        (3, 4): {
-            "color": RED,
-            "tip_config": {"tip_length": 0.25, "tip_width": 0.25}
-        },
+        (3, 4): {"color": RED, "tip_config": {"tip_length": 0.25, "tip_width": 0.25}},
     }
 
     g = DiGraph(
