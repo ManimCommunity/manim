@@ -83,7 +83,6 @@ There are primarily 3 kinds of standard easing functions:
             self.wait()
 """
 
-
 from __future__ import annotations
 
 __all__ = [
@@ -179,13 +178,12 @@ def smoothererstep(t: float) -> float:
     The 1st, 2nd and 3rd derivatives (speed, acceleration and jerk) are zero at the endpoints.
     https://en.wikipedia.org/wiki/Smoothstep
     """
-    return (
-        0
-        if t <= 0
-        else 35 * t**4 - 84 * t**5 + 70 * t**6 - 20 * t**7
-        if t < 1
-        else 1
-    )
+    alpha = 0
+    if 0 < t < 1:
+        alpha = 35 * t**4 - 84 * t**5 + 70 * t**6 - 20 * t**7
+    elif t >= 1:
+        alpha = 1
+    return alpha
 
 
 @unit_interval
@@ -219,7 +217,7 @@ def there_and_back(t: float, inflection: float = 10.0) -> float:
 
 @zero
 def there_and_back_with_pause(t: float, pause_ratio: float = 1.0 / 3) -> float:
-    a = 1.0 / pause_ratio
+    a = 2.0 / (1.0 - pause_ratio)
     if t < 0.5 - pause_ratio / 2:
         return smooth(a * t)
     elif t < 0.5 + pause_ratio / 2:

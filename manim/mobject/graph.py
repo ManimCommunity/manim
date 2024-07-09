@@ -8,11 +8,20 @@ __all__ = [
 ]
 
 import itertools as it
+from collections.abc import Hashable, Iterable
 from copy import copy
-from typing import Hashable, Iterable
+from typing import TYPE_CHECKING, Any, Literal, Protocol, cast
 
 import networkx as nx
 import numpy as np
+
+if TYPE_CHECKING:
+    from typing_extensions import TypeAlias
+
+    from manim.scene.scene import Scene
+    from manim.typing import Point3D
+
+    NxGraph: TypeAlias = nx.classes.graph.Graph | nx.classes.digraph.DiGraph
 
 from manim.animation.composition import AnimationGroup
 from manim.animation.creation import Create, Uncreate
@@ -26,88 +35,290 @@ from manim.mobject.types.vectorized_mobject import VMobject
 from manim.utils.color import BLACK
 
 
-def _determine_graph_layout(
-    nx_graph: nx.classes.graph.Graph | nx.classes.digraph.DiGraph,
-    layout: str | dict = "spring",
-    layout_scale: float = 2,
-    layout_config: dict | None = None,
+class LayoutFunction(Protocol):
+    """A protocol for automatic layout functions that compute a layout for a graph to be used in :meth:`~.Graph.change_layout`.
+
+    .. note:: The layout function must be a pure function, i.e., it must not modify the graph passed to it.
+
+    Examples
+    --------
+
+    Here is an example that arranges nodes in an n x m grid in sorted order.
+
+    .. manim:: CustomLayoutExample
+        :save_last_frame:
+
+        class CustomLayoutExample(Scene):
+            def construct(self):
+                import numpy as np
+                import networkx as nx
+
+                # create custom layout
+                def custom_layout(
+                    graph: nx.Graph,
+                    scale: float | tuple[float, float, float] = 2,
+                    n: int | None = None,
+                    *args: Any,
+                    **kwargs: Any,
+                ):
+                    nodes = sorted(list(graph))
+                    height = len(nodes) // n
+                    return {
+                        node: (scale * np.array([
+                            (i % n) - (n-1)/2,
+                            -(i // n) + height/2,
+                            0
+                        ])) for i, node in enumerate(graph)
+                    }
+
+                # draw graph
+                n = 4
+                graph = Graph(
+                    [i for i in range(4 * 2 - 1)],
+                    [(0, 1), (0, 4), (1, 2), (1, 5), (2, 3), (2, 6), (4, 5), (5, 6)],
+                    labels=True,
+                    layout=custom_layout,
+                    layout_config={'n': n}
+                )
+                self.add(graph)
+
+    Several automatic layouts are provided by manim, and can be used by passing their name as the ``layout`` parameter to :meth:`~.Graph.change_layout`.
+    Alternatively, a custom layout function can be passed to :meth:`~.Graph.change_layout` as the ``layout`` parameter. Such a function must adhere to the :class:`~.LayoutFunction` protocol.
+
+    The :class:`~.LayoutFunction` s provided by manim are illustrated below:
+
+    - Circular Layout: places the vertices on a circle
+
+    .. manim:: CircularLayout
+        :save_last_frame:
+
+        class CircularLayout(Scene):
+            def construct(self):
+                graph = Graph(
+                    [1, 2, 3, 4, 5, 6],
+                    [(1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 1), (5, 1), (1, 3), (3, 5)],
+                    layout="circular",
+                    labels=True
+                )
+                self.add(graph)
+
+    - Kamada Kawai Layout: tries to place the vertices such that the given distances between them are respected
+
+    .. manim:: KamadaKawaiLayout
+        :save_last_frame:
+
+        class KamadaKawaiLayout(Scene):
+            def construct(self):
+                from collections import defaultdict
+                distances: dict[int, dict[int, float]] = defaultdict(dict)
+
+                # set desired distances
+                distances[1][2] = 1  # distance between vertices 1 and 2 is 1
+                distances[2][3] = 1  # distance between vertices 2 and 3 is 1
+                distances[3][4] = 2  # etc
+                distances[4][5] = 3
+                distances[5][6] = 5
+                distances[6][1] = 8
+
+                graph = Graph(
+                    [1, 2, 3, 4, 5, 6],
+                    [(1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 1)],
+                    layout="kamada_kawai",
+                    layout_config={"dist": distances},
+                    layout_scale=4,
+                    labels=True
+                )
+                self.add(graph)
+
+    - Partite Layout: places vertices into distinct partitions
+
+    .. manim:: PartiteLayout
+        :save_last_frame:
+
+        class PartiteLayout(Scene):
+            def construct(self):
+                graph = Graph(
+                    [1, 2, 3, 4, 5, 6],
+                    [(1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 1), (5, 1), (1, 3), (3, 5)],
+                    layout="partite",
+                    layout_config={"partitions": [[1,2],[3,4],[5,6]]},
+                    labels=True
+                )
+                self.add(graph)
+
+    - Planar Layout: places vertices such that edges do not cross
+
+    .. manim:: PlanarLayout
+        :save_last_frame:
+
+        class PlanarLayout(Scene):
+            def construct(self):
+                graph = Graph(
+                    [1, 2, 3, 4, 5, 6],
+                    [(1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 1), (5, 1), (1, 3), (3, 5)],
+                    layout="planar",
+                    layout_scale=4,
+                    labels=True
+                )
+                self.add(graph)
+
+    - Random Layout: randomly places vertices
+
+    .. manim:: RandomLayout
+        :save_last_frame:
+
+        class RandomLayout(Scene):
+            def construct(self):
+                graph = Graph(
+                    [1, 2, 3, 4, 5, 6],
+                    [(1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 1), (5, 1), (1, 3), (3, 5)],
+                    layout="random",
+                    labels=True
+                )
+                self.add(graph)
+
+    - Shell Layout: places vertices in concentric circles
+
+    .. manim:: ShellLayout
+        :save_last_frame:
+
+        class ShellLayout(Scene):
+            def construct(self):
+                nlist = [[1, 2, 3], [4, 5, 6, 7, 8, 9]]
+                graph = Graph(
+                    [1, 2, 3, 4, 5, 6, 7, 8, 9],
+                    [(1, 2), (2, 3), (3, 1), (4, 1), (4, 2), (5, 2), (6, 2), (6, 3), (7, 3), (8, 3), (8, 1), (9, 1)],
+                    layout="shell",
+                    layout_config={"nlist": nlist},
+                    labels=True
+                )
+                self.add(graph)
+
+    - Spectral Layout: places vertices using the eigenvectors of the graph Laplacian (clusters nodes which are an approximation of the ratio cut)
+
+    .. manim:: SpectralLayout
+        :save_last_frame:
+
+        class SpectralLayout(Scene):
+            def construct(self):
+                graph = Graph(
+                    [1, 2, 3, 4, 5, 6],
+                    [(1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 1), (5, 1), (1, 3), (3, 5)],
+                    layout="spectral",
+                    labels=True
+                )
+                self.add(graph)
+
+    - Sprial Layout: places vertices in a spiraling pattern
+
+    .. manim:: SpiralLayout
+        :save_last_frame:
+
+        class SpiralLayout(Scene):
+            def construct(self):
+                graph = Graph(
+                    [1, 2, 3, 4, 5, 6],
+                    [(1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 1), (5, 1), (1, 3), (3, 5)],
+                    layout="spiral",
+                    labels=True
+                )
+                self.add(graph)
+
+    - Spring Layout: places nodes according to the Fruchterman-Reingold force-directed algorithm (attempts to minimize edge length while maximizing node separation)
+
+    .. manim:: SpringLayout
+        :save_last_frame:
+
+        class SpringLayout(Scene):
+            def construct(self):
+                graph = Graph(
+                    [1, 2, 3, 4, 5, 6],
+                    [(1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 1), (5, 1), (1, 3), (3, 5)],
+                    layout="spring",
+                    labels=True
+                )
+                self.add(graph)
+
+    - Tree Layout: places vertices into a tree with a root node and branches (can only be used with legal trees)
+
+    .. manim:: TreeLayout
+        :save_last_frame:
+
+        class TreeLayout(Scene):
+            def construct(self):
+                graph = Graph(
+                    [1, 2, 3, 4, 5, 6, 7],
+                    [(1, 2), (1, 3), (2, 4), (2, 5), (3, 6), (3, 7)],
+                    layout="tree",
+                    layout_config={"root_vertex": 1},
+                    labels=True
+                )
+                self.add(graph)
+
+    """
+
+    def __call__(
+        self,
+        graph: NxGraph,
+        scale: float | tuple[float, float, float] = 2,
+        *args: Any,
+        **kwargs: Any,
+    ) -> dict[Hashable, Point3D]:
+        """Given a graph and a scale, return a dictionary of coordinates.
+
+        Parameters
+        ----------
+        graph : NxGraph
+            The underlying NetworkX graph to be laid out. DO NOT MODIFY.
+        scale : float | tuple[float, float, float], optional
+            Either a single float value, or a tuple of three float values specifying the scale along each axis.
+
+        Returns
+        -------
+        dict[Hashable, Point3D]
+            A dictionary mapping vertices to their positions.
+        """
+        ...
+
+
+def _partite_layout(
+    nx_graph: NxGraph,
+    scale: float = 2,
     partitions: list[list[Hashable]] | None = None,
-    root_vertex: Hashable | None = None,
-) -> dict:
-    automatic_layouts = {
-        "circular": nx.layout.circular_layout,
-        "kamada_kawai": nx.layout.kamada_kawai_layout,
-        "planar": nx.layout.planar_layout,
-        "random": nx.layout.random_layout,
-        "shell": nx.layout.shell_layout,
-        "spectral": nx.layout.spectral_layout,
-        "partite": nx.layout.multipartite_layout,
-        "tree": _tree_layout,
-        "spiral": nx.layout.spiral_layout,
-        "spring": nx.layout.spring_layout,
-    }
-
-    custom_layouts = ["random", "partite", "tree"]
-
-    if layout_config is None:
-        layout_config = {}
-
-    if isinstance(layout, dict):
-        return layout
-    elif layout in automatic_layouts and layout not in custom_layouts:
-        auto_layout = automatic_layouts[layout](
-            nx_graph, scale=layout_scale, **layout_config
-        )
-        # NetworkX returns a dictionary of 3D points if the dimension
-        # is specified to be 3. Otherwise, it returns a dictionary of
-        # 2D points, so adjusting is required.
-        if layout_config.get("dim") == 3:
-            return auto_layout
-        else:
-            return {k: np.append(v, [0]) for k, v in auto_layout.items()}
-    elif layout == "tree":
-        return _tree_layout(
-            nx_graph, root_vertex=root_vertex, scale=layout_scale, **layout_config
-        )
-    elif layout == "partite":
-        if partitions is None or len(partitions) == 0:
-            raise ValueError(
-                "The partite layout requires the 'partitions' parameter to contain the partition of the vertices",
-            )
-        partition_count = len(partitions)
-        for i in range(partition_count):
-            for v in partitions[i]:
-                if nx_graph.nodes[v] is None:
-                    raise ValueError(
-                        "The partition must contain arrays of vertices in the graph",
-                    )
-                nx_graph.nodes[v]["subset"] = i
-        # Add missing vertices to their own side
-        for v in nx_graph.nodes:
-            if "subset" not in nx_graph.nodes[v]:
-                nx_graph.nodes[v]["subset"] = partition_count
-
-        auto_layout = automatic_layouts["partite"](
-            nx_graph, scale=layout_scale, **layout_config
-        )
-        return {k: np.append(v, [0]) for k, v in auto_layout.items()}
-    elif layout == "random":
-        # the random layout places coordinates in [0, 1)
-        # we need to rescale manually afterwards...
-        auto_layout = automatic_layouts["random"](nx_graph, **layout_config)
-        for k, v in auto_layout.items():
-            auto_layout[k] = 2 * layout_scale * (v - np.array([0.5, 0.5]))
-        return {k: np.append(v, [0]) for k, v in auto_layout.items()}
-    else:
+    **kwargs: Any,
+) -> dict[Hashable, Point3D]:
+    if partitions is None or len(partitions) == 0:
         raise ValueError(
-            f"The layout '{layout}' is neither a recognized automatic layout, "
-            "nor a vertex placement dictionary.",
+            "The partite layout requires partitions parameter to contain the partition of the vertices",
         )
+    partition_count = len(partitions)
+    for i in range(partition_count):
+        for v in partitions[i]:
+            if nx_graph.nodes[v] is None:
+                raise ValueError(
+                    "The partition must contain arrays of vertices in the graph",
+                )
+            nx_graph.nodes[v]["subset"] = i
+    # Add missing vertices to their own side
+    for v in nx_graph.nodes:
+        if "subset" not in nx_graph.nodes[v]:
+            nx_graph.nodes[v]["subset"] = partition_count
+
+    return nx.layout.multipartite_layout(nx_graph, scale=scale, **kwargs)
+
+
+def _random_layout(nx_graph: NxGraph, scale: float = 2, **kwargs: Any):
+    # the random layout places coordinates in [0, 1)
+    # we need to rescale manually afterwards...
+    auto_layout = nx.layout.random_layout(nx_graph, **kwargs)
+    for k, v in auto_layout.items():
+        auto_layout[k] = 2 * scale * (v - np.array([0.5, 0.5]))
+    return {k: np.append(v, [0]) for k, v in auto_layout.items()}
 
 
 def _tree_layout(
-    T: nx.classes.graph.Graph | nx.classes.digraph.DiGraph,
-    root_vertex: Hashable | None,
+    T: NxGraph,
+    root_vertex: Hashable | None = None,
     scale: float | tuple | None = 2,
     vertex_spacing: tuple | None = None,
     orientation: str = "down",
@@ -212,6 +423,68 @@ def _tree_layout(
     return {v: (np.array([x, y, 0]) - center) * sf for v, (x, y) in pos.items()}
 
 
+LayoutName = Literal[
+    "circular",
+    "kamada_kawai",
+    "partite",
+    "planar",
+    "random",
+    "shell",
+    "spectral",
+    "spiral",
+    "spring",
+    "tree",
+]
+
+_layouts: dict[LayoutName, LayoutFunction] = {
+    "circular": cast(LayoutFunction, nx.layout.circular_layout),
+    "kamada_kawai": cast(LayoutFunction, nx.layout.kamada_kawai_layout),
+    "partite": cast(LayoutFunction, _partite_layout),
+    "planar": cast(LayoutFunction, nx.layout.planar_layout),
+    "random": cast(LayoutFunction, _random_layout),
+    "shell": cast(LayoutFunction, nx.layout.shell_layout),
+    "spectral": cast(LayoutFunction, nx.layout.spectral_layout),
+    "spiral": cast(LayoutFunction, nx.layout.spiral_layout),
+    "spring": cast(LayoutFunction, nx.layout.spring_layout),
+    "tree": cast(LayoutFunction, _tree_layout),
+}
+
+
+def _determine_graph_layout(
+    nx_graph: nx.classes.graph.Graph | nx.classes.digraph.DiGraph,
+    layout: LayoutName | dict[Hashable, Point3D] | LayoutFunction = "spring",
+    layout_scale: float | tuple[float, float, float] = 2,
+    layout_config: dict[str, Any] | None = None,
+) -> dict[Hashable, Point3D]:
+    if layout_config is None:
+        layout_config = {}
+
+    if isinstance(layout, dict):
+        return layout
+    elif layout in _layouts:
+        auto_layout = _layouts[layout](nx_graph, scale=layout_scale, **layout_config)
+        # NetworkX returns a dictionary of 3D points if the dimension
+        # is specified to be 3. Otherwise, it returns a dictionary of
+        # 2D points, so adjusting is required.
+        if (
+            layout_config.get("dim") == 3
+            or auto_layout[next(auto_layout.__iter__())].shape[0] == 3
+        ):
+            return auto_layout
+        else:
+            return {k: np.append(v, [0]) for k, v in auto_layout.items()}
+    else:
+        try:
+            return cast(LayoutFunction, layout)(
+                nx_graph, scale=layout_scale, **layout_config
+            )
+        except TypeError:
+            raise ValueError(
+                f"The layout '{layout}' is neither a recognized layout, a layout function,"
+                "nor a vertex placement dictionary.",
+            )
+
+
 class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
     """Abstract base class for graphs (that is, a collection of vertices
     connected with edges).
@@ -254,14 +527,14 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
     layout
         Either one of ``"spring"`` (the default), ``"circular"``, ``"kamada_kawai"``,
         ``"planar"``, ``"random"``, ``"shell"``, ``"spectral"``, ``"spiral"``, ``"tree"``, and ``"partite"``
-        for automatic vertex positioning using ``networkx``
+        for automatic vertex positioning primarily using ``networkx``
         (see `their documentation <https://networkx.org/documentation/stable/reference/drawing.html#module-networkx.drawing.layout>`_
-        for more details), or a dictionary specifying a coordinate (value)
-        for each vertex (key) for manual positioning.
+        for more details), a dictionary specifying a coordinate (value)
+        for each vertex (key) for manual positioning, or a .:class:`~.LayoutFunction` with a user-defined automatic layout.
     layout_config
-        Only for automatically generated layouts. A dictionary whose entries
-        are passed as keyword arguments to the automatic layout algorithm
-        specified via ``layout`` of``networkx``.
+        Only for automatic layouts. A dictionary whose entries
+        are passed as keyword arguments to the named layout or automatic layout function
+        specified via ``layout``.
         The ``tree`` layout also accepts a special parameter ``vertex_spacing``
         passed as a keyword argument inside the ``layout_config`` dictionary.
         Passing a tuple ``(space_x, space_y)`` as this argument overrides
@@ -288,6 +561,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         all other configuration options for a vertex.
     edge_type
         The mobject class used for displaying edges in the scene.
+        Must be a subclass of :class:`~.Line` for default updaters to work.
     edge_config
         Either a dictionary containing keyword arguments to be passed
         to the class specified via ``edge_type``, or a dictionary whose
@@ -301,8 +575,8 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         edges: list[tuple[Hashable, Hashable]],
         labels: bool | dict = False,
         label_fill_color: str = BLACK,
-        layout: str | dict = "spring",
-        layout_scale: float | tuple = 2,
+        layout: LayoutName | dict[Hashable, Point3D] | LayoutFunction = "spring",
+        layout_scale: float | tuple[float, float, float] = 2,
         layout_config: dict | None = None,
         vertex_type: type[Mobject] = Dot,
         vertex_config: dict | None = None,
@@ -318,15 +592,6 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         nx_graph.add_nodes_from(vertices)
         nx_graph.add_edges_from(edges)
         self._graph = nx_graph
-
-        self._layout = _determine_graph_layout(
-            nx_graph,
-            layout=layout,
-            layout_scale=layout_scale,
-            layout_config=layout_config,
-            partitions=partitions,
-            root_vertex=root_vertex,
-        )
 
         if isinstance(labels, dict):
             self._labels = labels
@@ -361,8 +626,14 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
 
         self.vertices = {v: vertex_type(**self._vertex_config[v]) for v in vertices}
         self.vertices.update(vertex_mobjects)
-        for v in self.vertices:
-            self[v].move_to(self._layout[v])
+
+        self.change_layout(
+            layout=layout,
+            layout_scale=layout_scale,
+            layout_config=layout_config,
+            partitions=partitions,
+            root_vertex=root_vertex,
+        )
 
         # build edge_config
         if edge_config is None:
@@ -399,7 +670,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         self.add_updater(self.update_edges)
 
     @staticmethod
-    def _empty_networkx_graph():
+    def _empty_networkx_graph() -> nx.classes.graph.Graph:
         """Return an empty networkx graph for the given graph type."""
         raise NotImplementedError("To be implemented in concrete subclasses")
 
@@ -415,13 +686,13 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
     def _create_vertex(
         self,
         vertex: Hashable,
-        position: np.ndarray | None = None,
+        position: Point3D | None = None,
         label: bool = False,
         label_fill_color: str = BLACK,
         vertex_type: type[Mobject] = Dot,
         vertex_config: dict | None = None,
         vertex_mobject: dict | None = None,
-    ) -> tuple[Hashable, np.ndarray, dict, Mobject]:
+    ) -> tuple[Hashable, Point3D, dict, Mobject]:
         if position is None:
             position = self.get_center()
 
@@ -459,7 +730,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
     def _add_created_vertex(
         self,
         vertex: Hashable,
-        position: np.ndarray,
+        position: Point3D,
         vertex_config: dict,
         vertex_mobject: Mobject,
     ) -> Mobject:
@@ -485,7 +756,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
     def _add_vertex(
         self,
         vertex: Hashable,
-        position: np.ndarray | None = None,
+        position: Point3D | None = None,
         label: bool = False,
         label_fill_color: str = BLACK,
         vertex_type: type[Mobject] = Dot,
@@ -540,7 +811,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         vertex_type: type[Mobject] = Dot,
         vertex_config: dict | None = None,
         vertex_mobjects: dict | None = None,
-    ) -> Iterable[tuple[Hashable, np.ndarray, dict, Mobject]]:
+    ) -> Iterable[tuple[Hashable, Point3D, dict, Mobject]]:
         if positions is None:
             positions = {}
         if vertex_mobjects is None:
@@ -944,9 +1215,9 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
 
     def change_layout(
         self,
-        layout: str | dict = "spring",
-        layout_scale: float = 2,
-        layout_config: dict | None = None,
+        layout: LayoutName | dict[Hashable, Point3D] | LayoutFunction = "spring",
+        layout_scale: float | tuple[float, float, float] = 2,
+        layout_config: dict[str, Any] | None = None,
         partitions: list[list[Hashable]] | None = None,
         root_vertex: Hashable | None = None,
     ) -> Graph:
@@ -970,14 +1241,19 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
                     self.play(G.animate.change_layout("circular"))
                     self.wait()
         """
+        layout_config = {} if layout_config is None else layout_config
+        if partitions is not None and "partitions" not in layout_config:
+            layout_config["partitions"] = partitions
+        if root_vertex is not None and "root_vertex" not in layout_config:
+            layout_config["root_vertex"] = root_vertex
+
         self._layout = _determine_graph_layout(
             self._graph,
             layout=layout,
             layout_scale=layout_scale,
             layout_config=layout_config,
-            partitions=partitions,
-            root_vertex=root_vertex,
         )
+
         for v in self.vertices:
             self[v].move_to(self._layout[v])
         return self
@@ -1239,7 +1515,8 @@ class Graph(GenericGraph):
                     *new_edges,
                     vertex_config=self.VERTEX_CONF,
                     positions={
-                        k: g.vertices[vertex_id].get_center() + 0.1 * DOWN for k in new_vertices
+                        k: g.vertices[vertex_id].get_center() + 0.1 * DOWN
+                        for k in new_vertices
                     },
                 )
                 if depth < self.DEPTH:
@@ -1283,7 +1560,12 @@ class Graph(GenericGraph):
     def update_edges(self, graph):
         for (u, v), edge in graph.edges.items():
             # Undirected graph has a Line edge
-            edge.put_start_and_end_on(graph[u].get_center(), graph[v].get_center())
+            edge.set_points_by_ends(
+                graph[u].get_center(),
+                graph[v].get_center(),
+                buff=self._edge_config.get("buff", 0),
+                path_arc=self._edge_config.get("path_arc", 0),
+            )
 
     def __repr__(self: Graph) -> str:
         return f"Undirected graph on {len(self.vertices)} vertices and {len(self.edges)} edges"
@@ -1492,10 +1774,15 @@ class DiGraph(GenericGraph):
         deformed.
         """
         for (u, v), edge in graph.edges.items():
-            edge_type = type(edge)
             tip = edge.pop_tips()[0]
-            new_edge = edge_type(self[u], self[v], **self._edge_config[(u, v)])
-            edge.become(new_edge)
+            # Passing the Mobject instead of the vertex makes the tip
+            # stop on the bounding box of the vertex.
+            edge.set_points_by_ends(
+                graph[u],
+                graph[v],
+                buff=self._edge_config.get("buff", 0),
+                path_arc=self._edge_config.get("path_arc", 0),
+            )
             edge.add_tip(tip)
 
     def __repr__(self: DiGraph) -> str:

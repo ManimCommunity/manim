@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import os
 import sys
+from datetime import datetime
 from pathlib import Path
 
 import manim
@@ -25,7 +26,7 @@ sys.path.insert(0, os.path.abspath("."))
 # -- Project information -----------------------------------------------------
 
 project = "Manim"
-copyright = "2020-2022, The Manim Community Dev Team"
+copyright = f"2020-{datetime.now().year}, The Manim Community Dev Team"
 author = "The Manim Community Dev Team"
 
 

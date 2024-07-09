@@ -1,6 +1,5 @@
 """Mobjects that represent coordinate systems."""
 
-
 from __future__ import annotations
 
 __all__ = [
@@ -14,7 +13,8 @@ __all__ = [
 
 import fractions as fr
 import numbers
-from typing import TYPE_CHECKING, Any, Callable, Iterable, Sequence, TypeVar, overload
+from collections.abc import Iterable, Sequence
+from typing import TYPE_CHECKING, Any, Callable, TypeVar, overload
 
 import numpy as np
 from typing_extensions import Self
@@ -27,6 +27,7 @@ from manim.mobject.geometry.polygram import Polygon, Rectangle, RegularPolygon
 from manim.mobject.graphing.functions import ImplicitFunction, ParametricFunction
 from manim.mobject.graphing.number_line import NumberLine
 from manim.mobject.graphing.scale import LinearBase
+from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_surface import OpenGLSurface
 from manim.mobject.text.tex_mobject import MathTex
@@ -96,10 +97,10 @@ class CoordinateSystem:
                     )
 
                 # Extra lines and labels for point (1,1)
-                graphs += grid.get_horizontal_line(grid.c2p(1, 1, 0), color=BLUE)
-                graphs += grid.get_vertical_line(grid.c2p(1, 1, 0), color=BLUE)
-                graphs += Dot(point=grid.c2p(1, 1, 0), color=YELLOW)
-                graphs += Tex("(1,1)").scale(0.75).next_to(grid.c2p(1, 1, 0))
+                graphs += grid.get_horizontal_line(grid @ (1, 1, 0), color=BLUE)
+                graphs += grid.get_vertical_line(grid @ (1, 1, 0), color=BLUE)
+                graphs += Dot(point=grid @ (1, 1, 0), color=YELLOW)
+                graphs += Tex("(1,1)").scale(0.75).next_to(grid @ (1, 1, 0))
                 title = Title(
                     # spaces between braces to prevent SyntaxError
                     r"Graphs of $y=x^{ {1}\over{n} }$ and $y=x^n (n=1,2,3,...,20)$",
@@ -145,7 +146,7 @@ class CoordinateSystem:
         self.y_length = y_length
         self.num_sampled_graph_points_per_tick = 10
 
-    def coords_to_point(self, *coords: Sequence[ManimFloat]):
+    def coords_to_point(self, *coords: ManimFloat):
         raise NotImplementedError()
 
     def point_to_coords(self, point: Point3D):
@@ -394,7 +395,9 @@ class CoordinateSystem:
             ax = ThreeDAxes()
             x_labels = range(-4, 5)
             z_labels = range(-4, 4, 2)
-            ax.add_coordinates(x_labels, None, z_labels)  # default y labels, custom x & z labels
+            ax.add_coordinates(
+                x_labels, None, z_labels
+            )  # default y labels, custom x & z labels
             ax.add_coordinates(x_labels)  # only x labels
 
         You can also specifically control the position and value of the labels using a dict.
@@ -405,7 +408,15 @@ class CoordinateSystem:
             x_pos = [x for x in range(1, 8)]
 
             # strings are automatically converted into a Tex mobject.
-            x_vals = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+            x_vals = [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday",
+            ]
             x_dict = dict(zip(x_pos, x_vals))
             ax.add_coordinates(x_dict)
         """
@@ -441,8 +452,7 @@ class CoordinateSystem:
         line_config: dict | None = ...,
         color: ParsableManimColor | None = ...,
         stroke_width: float = ...,
-    ) -> DashedLine:
-        ...
+    ) -> DashedLine: ...
 
     @overload
     def get_line_from_axis_to_point(
@@ -453,8 +463,7 @@ class CoordinateSystem:
         line_config: dict | None = ...,
         color: ParsableManimColor | None = ...,
         stroke_width: float = ...,
-    ) -> LineType:
-        ...
+    ) -> LineType: ...
 
     def get_line_from_axis_to_point(  # type: ignore[no-untyped-def]
         self,
@@ -562,7 +571,7 @@ class CoordinateSystem:
             class GetHorizontalLineExample(Scene):
                 def construct(self):
                     ax = Axes().add_coordinates()
-                    point = ax.c2p(-4, 1.5)
+                    point = ax @ (-4, 1.5)
 
                     dot = Dot(point)
                     line = ax.get_horizontal_line(point, line_func=Line)
@@ -855,9 +864,11 @@ class CoordinateSystem:
         function: Callable[[float], float],
         u_range: Sequence[float] | None = None,
         v_range: Sequence[float] | None = None,
-        colorscale: Sequence[ParsableManimColor]
-        | Sequence[tuple[ParsableManimColor, float]]
-        | None = None,
+        colorscale: (
+            Sequence[ParsableManimColor]
+            | Sequence[tuple[ParsableManimColor, float]]
+            | None
+        ) = None,
         colorscale_axis: int = 2,
         **kwargs: Any,
     ) -> Surface | OpenGLSurface:
@@ -1780,6 +1791,14 @@ class CoordinateSystem:
 
         return T_label_group
 
+    def __matmul__(self, coord: Point3D | Mobject):
+        if isinstance(coord, Mobject):
+            coord = coord.get_center()
+        return self.coords_to_point(*coord)
+
+    def __rmatmul__(self, point: Point3D):
+        return self.point_to_coords(point)
+
 
 class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
     """Creates a set of axes.
@@ -1980,6 +1999,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         self, *coords: float | Sequence[float] | Sequence[Sequence[float]] | np.ndarray
     ) -> np.ndarray:
         """Accepts coordinates from the axes and returns a point with respect to the scene.
+        Equivalent to `ax @ (coord1)`
 
         Parameters
         ----------
@@ -2007,6 +2027,8 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             >>> import numpy as np
             >>> ax = Axes()
             >>> np.around(ax.coords_to_point(1, 0, 0), 2)
+            array([0.86, 0.  , 0.  ])
+            >>> np.around(ax @ (1, 0, 0), 2)
             array([0.86, 0.  , 0.  ])
             >>> np.around(ax.coords_to_point([[0, 1], [1, 1], [1, 0]]), 2)
             array([[0.  , 0.75, 0.  ],
@@ -2571,7 +2593,7 @@ class ThreeDAxes(Axes):
                     self.set_camera_orientation(phi=2*PI/5, theta=PI/5)
                     axes = ThreeDAxes()
                     labels = axes.get_axis_labels(
-                        Tex("x-axis").scale(0.7), Text("y-axis").scale(0.45), Text("z-axis").scale(0.45)
+                        Text("x-axis").scale(0.7), Text("y-axis").scale(0.45), Text("z-axis").scale(0.45)
                     )
                     self.add(axes, labels)
         """
@@ -2653,14 +2675,12 @@ class NumberPlane(Axes):
 
     def __init__(
         self,
-        x_range: Sequence[float]
-        | None = (
+        x_range: Sequence[float] | None = (
             -config["frame_x_radius"],
             config["frame_x_radius"],
             1,
         ),
-        y_range: Sequence[float]
-        | None = (
+        y_range: Sequence[float] | None = (
             -config["frame_y_radius"],
             config["frame_y_radius"],
             1,

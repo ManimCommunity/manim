@@ -9,6 +9,7 @@ Both ``logger`` and ``console`` use the ``rich`` library to produce rich text
 format.
 
 """
+
 from __future__ import annotations
 
 import configparser
@@ -98,6 +99,10 @@ def make_logger(
     logger = logging.getLogger("manim")
     logger.addHandler(rich_handler)
     logger.setLevel(verbosity)
+
+    if not (libav_logger := logging.getLogger()).hasHandlers():
+        libav_logger.addHandler(rich_handler)
+        libav_logger.setLevel(verbosity)
 
     return logger, console, error_console
 
