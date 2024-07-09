@@ -42,7 +42,7 @@ a new file called `vector_addition.py`, and paste the contents here.
 
     # if you're used to rendering from the terminal,
     # this way you can just run the python file instead
-    # of doing manim -p vector_addition.py VectorAddition
+    # of executing manim -p vector_addition.py VectorAddition
     with tempconfig({"preview": True}):
         VectorAddition().render()
 
