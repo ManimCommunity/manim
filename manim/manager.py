@@ -10,9 +10,9 @@ import numpy as np
 from tqdm import tqdm
 
 from manim import config, logger
+from manim.event_handler.window import WindowABC
 from manim.file_writer import FileWriter
-from manim.plugins import plugins
-from manim.renderer.opengl_renderer_window import Window
+from manim.plugins import plugins, Hooks
 from manim.scene.scene import Scene, SceneState
 from manim.utils.exceptions import EndSceneEarlyException
 
@@ -30,12 +30,11 @@ class Manager:
     """
     The Brain of Manim
 
-    .. warning::
+    .. admonition:: Warning for Developers
 
         Only methods of this class that are not prefixed with an
         underscore (``_``) are stable. If you override any of the
         ``_`` methods, consider pinning your version of Manim.
-
 
     Usage
     -----
@@ -60,10 +59,7 @@ class Manager:
         self.time = 0
 
         # Initialize window, if applicable
-        if config.preview:
-            self.window: Window | None = Window()
-        else:
-            self.window = None
+        self.window = self.create_window()
 
         # this must be done AFTER instantiating a window
         self.renderer = self.create_renderer()
@@ -73,8 +69,31 @@ class Manager:
         self.file_writer = FileWriter(self.scene.get_default_scene_name())
         self._write_files = config.write_to_movie
 
+    # keep these as instance methods so subclasses
+    # have access to everything
     def create_renderer(self) -> RendererProtocol:
+        """Create and return a renderer instance.
+
+        This can be overridden in subclasses (plugins), if more processing
+        is needed.
+
+        Returns
+        -------
+            An instance of a renderer
+        """
         return plugins.renderer()
+
+    def create_window(self) -> WindowABC | None:
+        """Create and return a window instance.
+
+        This can be overridden in subclasses (plugins), if more
+        processing is needed.
+
+        Returns
+        -------
+            A window if previewing, else None
+        """
+        return plugins.window() if config.preview else None
 
     def setup(self) -> None:
         """Set up processes and manager"""
@@ -104,6 +123,7 @@ class Manager:
             with tempconfig({"preview": True}):
                 Manager(MyScene).render()
         """
+        config._warn_about_config_options()
         self._render_first_pass()
         self._render_second_pass()
 
@@ -118,6 +138,7 @@ class Manager:
             self.scene.construct()
             self.post_contruct()
             self._interact()
+
         self.tear_down()
 
     def _render_second_pass(self) -> None:
@@ -128,10 +149,16 @@ class Manager:
         ...
 
     def post_contruct(self) -> None:
+        """Run post-construct hooks, and clean up the file writer."""
+        for hook in plugins.hooks[Hooks.POST_CONSTRUCT]:
+            hook(self)
+
         self.file_writer.finish()
         self._write_files = False
 
     def tear_down(self) -> None:
+        """Tear down the scene and the window."""
+
         self.scene.tear_down()
 
         if config.save_last_frame:
@@ -142,12 +169,14 @@ class Manager:
             self.window = None
 
     def _interact(self) -> None:
+        """Live interaction with the Window"""
+
         if self.window is None:
             return
         logger.info(
             "\nTips: Using the keys `d`, `f`, or `z` "
-            + "you can interact with the scene. "
-            + "Press `command + q` or `esc` to quit"
+            "you can interact with the scene. "
+            "Press `command + q` or `esc` to quit"
         )
         self.scene.skip_animations = False
         while not self.window.is_closing:
@@ -179,6 +208,7 @@ class Manager:
             self.window.swap_buffers()
             # This recursively updates the window with dt=0 until the correct
             # amount of time has passed
+            # TODO: do ^ better with less overhead
             vt = self.time - self.virtual_animation_start_time
             rt = time.perf_counter() - self.real_animation_start_time
             if rt < vt:
@@ -188,6 +218,7 @@ class Manager:
         self, *animations: AnimationProtocol, run_time: float | None = None
     ) -> None:
         """Play a bunch of animations"""
+
         self.scene.update_skipping_status()
 
         if self.window is not None:
@@ -279,7 +310,7 @@ class Manager:
                     # and increment the time
                     # but we still have to write frames
                     self.time += dt
-                    self._write_frame_from_renderer()
+                    self.write_frame()
                 progress.update(1)
         self.scene.post_play()
 
@@ -315,9 +346,11 @@ class Manager:
 
         should_write = write_file if write_file is not None else self._write_files
         if should_write:
-            self._write_frame_from_renderer()
+            self.write_frame()
 
-    def _write_frame_from_renderer(self):
+    def write_frame(self):
+        """Take a frame from the renderer and write it in the file writer."""
+
         frame = self.renderer.get_pixels()
         self.file_writer.write_frame(frame)
 

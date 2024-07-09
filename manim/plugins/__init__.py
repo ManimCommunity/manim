@@ -2,11 +2,12 @@ from __future__ import annotations
 
 from manim import config, logger
 
-from .plugin_config import plugins
+from .plugin_config import plugins, Hooks
 from .plugins_flags import get_plugins, list_plugins
 
 __all__ = [
     "plugins",
+    "Hooks",
     "get_plugins",
     "list_plugins",
 ]
