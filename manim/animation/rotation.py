@@ -90,6 +90,7 @@ class Rotate(Rotating):
                     Rotate(Square(side_length=0.5), angle=2*PI, rate_func=linear),
                     )
     """
+
     def __init__(
         self,
         mobject: OpenGLMobject,
