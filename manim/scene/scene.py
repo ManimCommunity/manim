@@ -196,11 +196,12 @@ class Scene:
         return self
 
     def replace(self, mobject: OpenGLMobject, *replacements: OpenGLMobject):
-        """Replace one mobject in the scene with another, preserving draw order.
+        """Replace one Mobject in the scene with one or more other Mobjects,
+        preserving draw order.
 
         If ``mobject`` is a submobject of some other :class:`OpenGLMobject`
-        (e.g. a :class:`.Group`), the new_mobject will replace it inside the
-        group, without otherwise changing the parent mobject.
+        (e.g. a :class:`.Group`), the ``replacements`` will replace it inside
+        the group, without otherwise changing the parent mobject.
 
         Parameters
         ----------
