@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+__all__ = ["Manager"]
+
 import contextlib
 import platform
 import time
@@ -18,12 +20,10 @@ from manim.utils.exceptions import EndSceneEarlyException
 
 if TYPE_CHECKING:
     import numpy.typing as npt
+    from typing_extensions import Any
 
     from manim.animation.protocol import AnimationProtocol
-
-    from .renderer.renderer import RendererProtocol
-
-__all__ = ("Manager",)
+    from manim.renderer.renderer import RendererProtocol
 
 
 class Manager:
@@ -56,7 +56,7 @@ class Manager:
         if not isinstance(self.scene, Scene):
             raise ValueError(f"{self.scene!r} is not an instance of Scene")
 
-        self.time = 0
+        self.time = 0.0
 
         # Initialize window, if applicable
         self.window = self.create_window()
@@ -103,7 +103,7 @@ class Manager:
         # these are used for making sure it feels like the correct
         # amount of time has passed in the window instead of rendering
         # at full speed
-        self.virtual_animation_start_time = 0
+        self.virtual_animation_start_time = 0.0
         self.real_animation_start_time = time.perf_counter()
 
     def render(self) -> None:
@@ -227,7 +227,6 @@ class Manager:
 
         self._write_hashed_movie_file()
 
-        t0 = time.perf_counter()
         self.scene.begin_animations(animations)
         self._progress_through_animations(animations, run_time=run_time)
         self.scene.finish_animations(animations)
@@ -261,7 +260,7 @@ class Manager:
             self.file_writer.begin_animation(allow_write=self._write_files)
 
     def _create_progressbar(
-        self, total: float, description: str, **kwargs
+        self, total: float, description: str, **kwargs: dict[str, Any]
     ) -> tqdm | contextlib.nullcontext[NullProgressBar]:
         """Create a progressbar"""
 
@@ -349,7 +348,7 @@ class Manager:
         if should_write:
             self.write_frame()
 
-    def write_frame(self):
+    def write_frame(self) -> None:
         """Take a frame from the renderer and write it in the file writer."""
 
         frame = self.renderer.get_pixels()
@@ -359,4 +358,4 @@ class Manager:
 class NullProgressBar:
     """Fake progressbar."""
 
-    def update(self, _) -> None: ...
+    def update(self, _: Any) -> None: ...

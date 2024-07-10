@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import numpy as np
+from typing_extensions import Any, Self
 
 from manim.event_handler.event_listener import EventListener
 from manim.event_handler.event_type import EventType
 
 
 class EventDispatcher:
-    def __init__(self):
+    def __init__(self) -> None:
         self.event_listeners: dict[EventType, list[EventListener]] = {
             event_type: [] for event_type in EventType
         }
@@ -16,12 +17,12 @@ class EventDispatcher:
         self.pressed_keys: set[int] = set()
         self.draggable_object_listeners: list[EventListener] = []
 
-    def add_listener(self, event_listener: EventListener):
+    def add_listener(self, event_listener: EventListener) -> Self:
         assert isinstance(event_listener, EventListener)
         self.event_listeners[event_listener.event_type].append(event_listener)
         return self
 
-    def remove_listener(self, event_listener: EventListener):
+    def remove_listener(self, event_listener: EventListener) -> Self:
         assert isinstance(event_listener, EventListener)
         try:
             while event_listener in self.event_listeners[event_listener.event_type]:
@@ -31,7 +32,7 @@ class EventDispatcher:
             pass
         return self
 
-    def dispatch(self, event_type: EventType, **event_data):
+    def dispatch(self, event_type: EventType, **event_data: Any) -> bool | None:
         if event_type == EventType.MouseMotionEvent:
             self.mouse_point = event_data["point"]
         elif event_type == EventType.MouseDragEvent:

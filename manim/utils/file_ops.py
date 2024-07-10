@@ -30,11 +30,9 @@ from typing import TYPE_CHECKING
 import numpy as np
 
 if TYPE_CHECKING:
-    from ..scene.scene_file_writer import SceneFileWriter
+    from manim.scene.scene_file_writer import SceneFileWriter
 
-from manim import __version__, config, logger
-
-from .. import console
+from manim import __version__, config, console, logger
 
 
 def is_mp4_format() -> bool:
@@ -314,10 +312,12 @@ def get_sorted_integer_files(
         full_path = os.path.join(directory, file)
         if index_str.isdigit():
             index = int(index_str)
-            if remove_indices_greater_than is not None:
-                if index > remove_indices_greater_than:
-                    os.remove(full_path)
-                    continue
+            if (
+                remove_indices_greater_than is not None
+                and index > remove_indices_greater_than
+            ):
+                os.remove(full_path)
+                continue
             if extension is not None and not file.endswith(extension):
                 continue
             if index >= min_index and index < max_index:
@@ -325,4 +325,4 @@ def get_sorted_integer_files(
         elif remove_non_integer_files:
             os.remove(full_path)
     indexed_files.sort(key=lambda p: p[0])
-    return list(map(lambda p: os.path.join(directory, p[1]), indexed_files))
+    return [os.path.join(directory, p[1]) for p in indexed_files]

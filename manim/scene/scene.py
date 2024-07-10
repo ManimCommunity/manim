@@ -323,10 +323,10 @@ class Scene:
             raise EndSceneEarlyException()
 
     # Methods associated with running animations
-    def pre_play(self):
+    def pre_play(self) -> None:
         """To be implemented in subclasses."""
 
-    def post_play(self):
+    def post_play(self) -> None:
         self.num_plays += 1
 
     def begin_animations(self, animations: Iterable[Animation]) -> None:

@@ -50,7 +50,11 @@ if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
     from typing import Any, Callable, Union
 
+    import numpy.typing as npt
     from typing_extensions import Self, TypeAlias
+
+    from manim.renderer.renderer import RendererData
+    from manim.typing import PathFuncType, Point3D, Point3D_Array
 
     TimeBasedUpdater: TypeAlias = Callable[
         ["OpenGLMobject", float], "OpenGLMobject | None"
@@ -58,8 +62,6 @@ if TYPE_CHECKING:
     NonTimeUpdater: TypeAlias = Callable[["OpenGLMobject"], "OpenGLMobject" | None]
     Updater: TypeAlias = Union[TimeBasedUpdater, NonTimeUpdater]
     PointUpdateFunction: TypeAlias = Callable[[np.ndarray], np.ndarray]
-    from manim.renderer.renderer import RendererData
-    from manim.typing import PathFuncType
 
     T = TypeVar("T", bound=RendererData)
     _F = TypeVar("_F", bound=Callable[..., Any])
@@ -669,13 +671,15 @@ class OpenGLMobject:
                 parent.refresh_bounding_box()
         return self
 
-    def are_points_touching(self, points, buff: float = 0) -> np.ndarray:
+    def are_points_touching(
+        self, points: Point3D_Array, buff: float = 0
+    ) -> npt.NDArray[bool]:
         bb = self.get_bounding_box()
         mins = bb[0] - buff
         maxs = bb[2] + buff
         return ((points >= mins) * (points <= maxs)).all(1)
 
-    def is_point_touching(self, point, buff=MED_SMALL_BUFF):
+    def is_point_touching(self, point: Point3D, buff: float = MED_SMALL_BUFF) -> bool:
         return self.are_points_touching(np.array(point, ndmin=2), buff)[0]
 
     def is_touching(self, mobject: OpenGLMobject, buff: float = 1e-2) -> bool:
