@@ -23,7 +23,7 @@ from ...utils.color import (
 )
 from ...utils.iterables import stretch_array_to_length
 
-__all__ = ["PMobject", "Mobject1D", "Mobject2D", "PGroup", "PointCloudDot", "Point"]
+__all__ = ["PMobject", "Mobject1D", "Mobject2D", "PGroup", "PointCloudDot"]
 
 
 class PMobject(Mobject, metaclass=ConvertToOpenGL):
