@@ -11,3 +11,6 @@ class WindowABC(ABC):
 
     @abstractmethod
     def close(self): ...
+
+    @abstractmethod
+    def clear(self): ...

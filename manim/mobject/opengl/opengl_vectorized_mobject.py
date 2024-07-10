@@ -1448,21 +1448,6 @@ class OpenGLVMobject(OpenGLMobject):
 
     # Related to triangulation
 
-    def set_points(self, points):
-        super().set_points(points)
-        return self
-
-    def append_points(self, points):
-        return super().append_points(points)
-
-    def reverse_points(self):
-        return super().reverse_points()
-
-    def set_data(self, data):
-        super().set_data(data)
-        return self
-
-    # TODO, how to be smart about tangents here?
     def apply_function(self, function, make_smooth=False, **kwargs):
         super().apply_function(function, **kwargs)
         if self.make_smooth_after_applying_functions or make_smooth:

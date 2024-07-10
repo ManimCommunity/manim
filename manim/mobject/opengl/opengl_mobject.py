@@ -304,9 +304,9 @@ class OpenGLMobject:
         # Typically implemented in subclass, unless purposefully left blank
         pass
 
-    def set_data(self, data):
-        for key in data:
-            self.data[key] = data[key]
+    def set_data(self, data: dict[str, Any]):
+        for key, value in data.items():
+            self.data[key] = value
         return self
 
     def set_uniforms(self, uniforms):

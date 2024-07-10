@@ -341,7 +341,7 @@ Once you have defined your ``Count`` animation, you can play it in your :class:`
             self.start = start
             self.end = end
 
-        def interpolate_mobject(self, alpha: float) -> None:
+        def interpolate(self, alpha: float) -> None:
             # Set value of DecimalNumber according to alpha
             value = self.start + (alpha * (self.end - self.start))
             self.mobject.set_value(value)

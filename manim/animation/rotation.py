@@ -4,7 +4,7 @@ from __future__ import annotations
 
 __all__ = ["Rotating", "Rotate"]
 
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING
 
 import numpy as np
 
@@ -13,6 +13,8 @@ from ..constants import ORIGIN, OUT, PI, TAU
 from ..utils.rate_functions import linear
 
 if TYPE_CHECKING:
+    from manim.typing import RateFunc
+
     from ..mobject.opengl.opengl_mobject import OpenGLMobject
 
 
@@ -25,14 +27,10 @@ class Rotating(Animation):
         about_point: np.ndarray | None = None,
         about_edge: np.ndarray | None = None,
         run_time: float = 5.0,
-        rate_func: Callable[[float], float] = linear,
+        rate_func: RateFunc = linear,
         suspend_mobject_updating: bool = False,
         **kwargs,
     ):
-        self.angle = angle
-        self.axis = axis
-        self.about_point = about_point
-        self.about_edge = about_edge
         super().__init__(
             mobject,
             run_time=run_time,
@@ -40,12 +38,19 @@ class Rotating(Animation):
             suspend_mobject_updating=suspend_mobject_updating,
             **kwargs,
         )
+        self.angle = angle
+        self.axis = axis
+        self.about_point = about_point
+        self.about_edge = about_edge
 
-    def interpolate_mobject(self, alpha: float) -> None:
+    def interpolate(self, alpha: float) -> None:
         pairs = zip(
             self.mobject.family_members_with_points(),
             self.starting_mobject.family_members_with_points(),
         )
+        for sm1, sm2 in pairs:
+            sm1.points[:] = sm2.points
+
         self.mobject.rotate(
             self.rate_func(alpha) * self.angle,
             axis=self.axis,
@@ -65,5 +70,11 @@ class Rotate(Rotating):
         **kwargs,
     ):
         super().__init__(
-            mobject, angle, axis, run_time=run_time, about_edge=about_edge, **kwargs
+            mobject,
+            angle,
+            axis,
+            run_time=run_time,
+            about_edge=about_edge,
+            introducer=True,
+            **kwargs,
         )

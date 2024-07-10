@@ -227,6 +227,7 @@ class Manager:
 
         self._write_hashed_movie_file()
 
+        t0 = time.perf_counter()
         self.scene.begin_animations(animations)
         self._progress_through_animations(animations, run_time=run_time)
         self.scene.finish_animations(animations)

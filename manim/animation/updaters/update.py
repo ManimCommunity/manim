@@ -33,12 +33,12 @@ class UpdateFromFunc(Animation):
             mobject, suspend_mobject_updating=suspend_mobject_updating, **kwargs
         )
 
-    def interpolate_mobject(self, alpha: float) -> None:
+    def interpolate(self, alpha: float) -> None:
         self.update_function(self.mobject)
 
 
 class UpdateFromAlphaFunc(UpdateFromFunc):
-    def interpolate_mobject(self, alpha: float) -> None:
+    def interpolate(self, alpha: float) -> None:
         self.update_function(self.mobject, self.rate_func(alpha))
 
 
@@ -51,7 +51,7 @@ class MaintainPositionRelativeTo(Animation):
         )
         super().__init__(mobject, **kwargs)
 
-    def interpolate_mobject(self, alpha: float) -> None:
+    def interpolate(self, alpha: float) -> None:
         target = self.tracked_mobject.get_center()
         location = self.mobject.get_center()
         self.mobject.shift(target - location + self.diff)

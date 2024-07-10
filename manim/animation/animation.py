@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import numpy as np
+
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 
 from .. import config, logger
@@ -135,7 +137,7 @@ class Animation(AnimationProtocol):
         run_time: float = DEFAULT_ANIMATION_RUN_TIME,
         rate_func: Callable[[float], float] = smooth,
         reverse_rate_function: bool = False,
-        name: str | None = None,
+        name: str = "",
         remover: bool = False,  # remove a mobject from the screen at end of animation
         suspend_mobject_updating: bool = True,
         introducer: bool = False,
@@ -147,7 +149,7 @@ class Animation(AnimationProtocol):
         self.run_time: float = run_time
         self.rate_func: Callable[[float], float] = rate_func
         self.reverse_rate_function: bool = reverse_rate_function
-        self.name: str | None = name
+        self.name: str = name
         self.remover: bool = remover
         self.introducer: bool = introducer
         self.suspend_mobject_updating: bool = suspend_mobject_updating
@@ -218,7 +220,7 @@ class Animation(AnimationProtocol):
 
         # TODO: Figure out a way to check
         # if self.mobject in scene.get_mobject_family
-        if self.is_introducer():
+        if self.introducer:
             self.buffer.add(self.mobject)
 
     def finish(self) -> None:
@@ -231,15 +233,16 @@ class Animation(AnimationProtocol):
         if self.suspend_mobject_updating and self.mobject is not None:
             self.mobject.resume_updating()
 
+        # TODO: remove on_finish
         self._on_finish(self.buffer)
-        if self.is_remover():
+        if self.remover:
             self.buffer.remove(self.mobject)
 
     def create_starting_mobject(self) -> OpenGLMobject:
         # Keep track of where the mobject starts
         return self.mobject.copy()
 
-    def get_all_mobjects(self) -> Sequence[Mobject]:
+    def get_all_mobjects(self) -> Sequence[OpenGLMobject]:
         """Get all mobjects involved in the animation.
 
         Ordering must match the ordering of arguments to interpolate_submobject
@@ -280,7 +283,7 @@ class Animation(AnimationProtocol):
         self.buffer.add(*buffer.to_add)
         buffer.clear()
 
-    def get_all_mobjects_to_update(self) -> list[Mobject]:
+    def get_all_mobjects_to_update(self) -> Sequence[OpenGLMobject]:
         """Get all mobjects to be updated during the animation.
 
         Returns
@@ -307,19 +310,6 @@ class Animation(AnimationProtocol):
 
     # TODO: stop using alpha as parameter name in different meanings.
     def interpolate(self, alpha: float) -> None:
-        """Set the animation progress.
-
-        This method gets called for every frame during an animation.
-
-        Parameters
-        ----------
-        alpha
-            The relative time to set the animation to, 0 meaning the start, 1 meaning
-            the end.
-        """
-        self.interpolate_mobject(alpha)
-
-    def interpolate_mobject(self, alpha: float) -> None:
         """Interpolates the mobject of the :class:`Animation` based on alpha value.
 
         Parameters
@@ -336,13 +326,12 @@ class Animation(AnimationProtocol):
 
     def interpolate_submobject(
         self,
-        submobject: Mobject,
-        starting_submobject: Mobject,
+        submobject: OpenGLMobject,
+        starting_submobject: OpenGLMobject,
         # target_copy: Mobject, #Todo: fix - signature of interpolate_submobject differs in Transform().
         alpha: float,
     ) -> Animation:
-        # Typically implemented by subclass
-        raise NotImplementedError()
+        raise NotImplementedError("Implement in subclass")
 
     def get_sub_alpha(self, alpha: float, index: int, num_submobjects: int) -> float:
         """Get the animation progress of any submobjects subanimation.
@@ -368,13 +357,14 @@ class Animation(AnimationProtocol):
         full_length = (num_submobjects - 1) * lag_ratio + 1
         value = alpha * full_length
         lower = index * lag_ratio
+        raw_sub_alpha = np.clip((value - lower), 0, 1)
         if self.reverse_rate_function:
-            return self.rate_func(1 - (value - lower))
+            return self.rate_func(1 - raw_sub_alpha)
         else:
-            return self.rate_func(value - lower)
+            return self.rate_func(raw_sub_alpha)
 
     # Getters and setters
-    def set_run_time(self, run_time: float) -> Animation:
+    def set_run_time(self, run_time: float) -> Self:
         """Set the run time of the animation.
 
         Parameters
@@ -454,26 +444,6 @@ class Animation(AnimationProtocol):
         self.name = name
         return self
 
-    def is_remover(self) -> bool:
-        """Test if the animation is a remover.
-
-        Returns
-        -------
-        bool
-            ``True`` if the animation is a remover, ``False`` otherwise.
-        """
-        return self.remover
-
-    def is_introducer(self) -> bool:
-        """Test if the animation is an introducer.
-
-        Returns
-        -------
-        bool
-            ``True`` if the animation is an introducer, ``False`` otherwise.
-        """
-        return self.introducer
-
 
 def prepare_animation(
     anim: AnimationProtocol
@@ -551,10 +521,8 @@ class Wait(Animation):
 
         self.duration: float = run_time
         self.stop_condition = stop_condition
-        self.is_static_wait: bool = frozen_frame
+        self.is_static_wait: bool = bool(frozen_frame)
         super().__init__(None, run_time=run_time, rate_func=rate_func, **kwargs)
-        # quick fix to work in opengl setting:
-        self.mobject.shader_wrapper_list = []
 
     def begin(self) -> None:
         pass

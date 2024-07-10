@@ -80,6 +80,7 @@ directive:
 
 from __future__ import annotations
 
+import os
 import csv
 import itertools as it
 import re

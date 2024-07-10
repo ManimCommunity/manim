@@ -707,37 +707,6 @@ def subdivide_quadratic_bezier(points: Iterable[float], n: int) -> np.ndarray:
     return beziers.reshape(-1, 3)
 
 
-def subdivide_quadratic_bezier(points: Iterable[float], n: int) -> np.ndarray:
-    """Subdivide a quadratic Bézier curve into ``n`` subcurves which have the same shape.
-
-    The points at which the curve is split are located at the
-    arguments :math:`t = i/n` for :math:`i = 1, ..., n-1`.
-
-    Parameters
-    ----------
-    points
-        The control points of the Bézier curve in form ``[a1, h1, b1]``
-
-    n
-        The number of curves to subdivide the Bézier curve into
-
-    Returns
-    -------
-        The new points for the Bézier curve in the form ``[a1, h1, b1, a2, h2, b2, ...]``
-
-    .. image:: /_static/bezier_subdivision_example.png
-
-    """
-    beziers = np.empty((n, 3, 3))
-    current = points
-    for j in range(0, n):
-        i = n - j
-        tmp = split_quadratic_bezier(current, 1 / i)
-        beziers[j] = tmp[:3]
-        current = tmp[3:]
-    return beziers.reshape(-1, 3)
-
-
 # Memos explained in subdivide_bezier docstring
 SUBDIVISION_MATRICES = [{} for i in range(4)]
 
