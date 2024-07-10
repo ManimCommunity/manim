@@ -30,7 +30,7 @@ msgstr ""
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.clean_up_from_scene:0
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.get_sub_alpha:0
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.interpolate:0
-#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.interpolate:0
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.interpolate_mobject:0
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.set_name:0
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.set_rate_func:0
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.set_run_time:0
@@ -103,7 +103,7 @@ msgid "Whether updaters of the mobject should be suspended during the animation.
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation:34
-msgid "In the current implementation of this class, the specified rate function is applied within :meth:`.Animation.interpolate` call as part of the call to :meth:`.Animation.interpolate_submobject`. For subclasses of :class:`.Animation` that are implemented by overriding :meth:`interpolate`, the rate function has to be applied manually (e.g., by passing ``self.rate_func(alpha)`` instead of just ``alpha``)."
+msgid "In the current implementation of this class, the specified rate function is applied within :meth:`.Animation.interpolate_mobject` call as part of the call to :meth:`.Animation.interpolate_submobject`. For subclasses of :class:`.Animation` that are implemented by overriding :meth:`interpolate_mobject`, the rate function has to be applied manually (e.g., by passing ``self.rate_func(alpha)`` instead of just ``alpha``)."
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation:43
@@ -165,7 +165,7 @@ msgid "Set the animation progress."
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
-#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.interpolate:1
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.interpolate_mobject:1
 msgid "Interpolates the mobject of the :class:`Animation` based on alpha value."
 msgstr ""
 
@@ -212,7 +212,7 @@ msgstr ""
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.get_run_time:0
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.get_sub_alpha:0
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.interpolate:0
-#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.interpolate:0
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.interpolate_mobject:0
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.is_introducer:0
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.is_remover:0
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.set_name:0
@@ -296,7 +296,7 @@ msgstr ""
 msgid "The relative time to set the animation to, 0 meaning the start, 1 meaning the end."
 msgstr ""
 
-#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.interpolate:3
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.interpolate_mobject:3
 msgid "A float between 0 and 1 expressing the ratio to which the animation is completed. For example, alpha-values of 0, 0.5, and 1 correspond to the animation being completed 0%, 50%, and 100%, respectively."
 msgstr ""
 

@@ -155,7 +155,7 @@ msgid "Creating a custom animation"
 msgstr ""
 
 #: ../../source/tutorials/building_blocks.rst:298
-msgid "Even though Manim has many built-in animations, you will find times when you need to smoothly animate from one state of a :class:`~.Mobject` to another. If you find yourself in that situation, then you can define your own custom animation. You start by extending the :class:`~.Animation` class and overriding its :meth:`~.Animation.interpolate`. The :meth:`~.Animation.interpolate` method receives alpha as a parameter that starts at 0 and changes throughout the animation. So, you just have to manipulate self.mobject inside Animation according to the alpha value in its interpolate method. Then you get all the benefits of :class:`~.Animation` such as playing it for different run times or using different rate functions."
+msgid "Even though Manim has many built-in animations, you will find times when you need to smoothly animate from one state of a :class:`~.Mobject` to another. If you find yourself in that situation, then you can define your own custom animation. You start by extending the :class:`~.Animation` class and overriding its :meth:`~.Animation.interpolate_mobject`. The :meth:`~.Animation.interpolate_mobject` method receives alpha as a parameter that starts at 0 and changes throughout the animation. So, you just have to manipulate self.mobject inside Animation according to the alpha value in its interpolate_mobject method. Then you get all the benefits of :class:`~.Animation` such as playing it for different run times or using different rate functions."
 msgstr ""
 
 #: ../../source/tutorials/building_blocks.rst:305
@@ -167,11 +167,11 @@ msgid "You can start by creating your own ``Count`` class that extends :class:`~
 msgstr ""
 
 #: ../../source/tutorials/building_blocks.rst:314
-msgid "The only thing that you need to do is to define how you want it to look at every step of the animation. Manim provides you with the alpha value in the :meth:`~.Animation.interpolate` method based on frame rate of video, rate function, and run time of animation played. The alpha parameter holds a value between 0 and 1 representing the step of the currently playing animation. For example, 0 means the beginning of the animation, 0.5 means halfway through the animation, and 1 means the end of the animation."
+msgid "The only thing that you need to do is to define how you want it to look at every step of the animation. Manim provides you with the alpha value in the :meth:`~.Animation.interpolate_mobject` method based on frame rate of video, rate function, and run time of animation played. The alpha parameter holds a value between 0 and 1 representing the step of the currently playing animation. For example, 0 means the beginning of the animation, 0.5 means halfway through the animation, and 1 means the end of the animation."
 msgstr ""
 
 #: ../../source/tutorials/building_blocks.rst:319
-msgid "In the case of the ``Count`` animation, you just have to figure out a way to determine the number to display at the given alpha value and then set that value in the :meth:`~.Animation.interpolate` method of the ``Count`` animation. Suppose you are starting at 50 and incrementing until the :class:`~.DecimalNumber` reaches 100 at the end of the animation."
+msgid "In the case of the ``Count`` animation, you just have to figure out a way to determine the number to display at the given alpha value and then set that value in the :meth:`~.Animation.interpolate_mobject` method of the ``Count`` animation. Suppose you are starting at 50 and incrementing until the :class:`~.DecimalNumber` reaches 100 at the end of the animation."
 msgstr ""
 
 #: ../../source/tutorials/building_blocks.rst:322

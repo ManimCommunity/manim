@@ -23,7 +23,7 @@ msgid "Create the Mobject with sub-Mobjects flying in on spiral trajectories."
 msgstr ""
 
 #: ../../../manim/animation/creation.py:docstring of manim.animation.creation.SpiralIn:0
-#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.SpiralIn.interpolate:0
+#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.SpiralIn.interpolate_mobject:0
 msgid "Parameters"
 msgstr ""
 
@@ -47,12 +47,12 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.SpiralIn.interpolate:1:<autosummary>:1
-#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.SpiralIn.interpolate:1
+#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.SpiralIn.interpolate_mobject:1:<autosummary>:1
+#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.SpiralIn.interpolate_mobject:1
 msgid "Interpolates the mobject of the :class:`Animation` based on alpha value."
 msgstr ""
 
-#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.SpiralIn.interpolate:3
+#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.SpiralIn.interpolate_mobject:3
 msgid "A float between 0 and 1 expressing the ratio to which the animation is completed. For example, alpha-values of 0, 0.5, and 1 correspond to the animation being completed 0%, 50%, and 100%, respectively."
 msgstr ""
 
