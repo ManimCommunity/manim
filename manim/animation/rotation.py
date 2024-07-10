@@ -4,14 +4,12 @@ from __future__ import annotations
 
 __all__ = ["Rotating", "Rotate"]
 
-from collections.abc import Sequence
 from typing import TYPE_CHECKING, Callable
 
 import numpy as np
 
 from ..animation.animation import Animation
-from ..animation.transform import Transform
-from ..constants import OUT, PI, TAU, ORIGIN
+from ..constants import ORIGIN, OUT, PI, TAU
 from ..utils.rate_functions import linear
 
 if TYPE_CHECKING:
@@ -29,7 +27,7 @@ class Rotating(Animation):
         run_time: float = 5.0,
         rate_func: Callable[[float], float] = linear,
         suspend_mobject_updating: bool = False,
-        **kwargs
+        **kwargs,
     ):
         self.angle = angle
         self.axis = axis
@@ -40,7 +38,7 @@ class Rotating(Animation):
             run_time=run_time,
             rate_func=rate_func,
             suspend_mobject_updating=suspend_mobject_updating,
-            **kwargs
+            **kwargs,
         )
 
     def interpolate_mobject(self, alpha: float) -> None:
@@ -64,11 +62,8 @@ class Rotate(Rotating):
         axis: np.ndarray = OUT,
         run_time: float = 1,
         about_edge: np.ndarray = ORIGIN,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(
-            mobject, angle, axis,
-            run_time=run_time,
-            about_edge=about_edge,
-            **kwargs
+            mobject, angle, axis, run_time=run_time, about_edge=about_edge, **kwargs
         )

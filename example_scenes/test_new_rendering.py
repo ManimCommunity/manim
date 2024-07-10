@@ -5,7 +5,7 @@ class Test(Scene):
     def construct(self) -> None:
         s = Square()
         self.add(s)
-        self.play(Rotate(s, PI/2))
+        self.play(Rotate(s, PI / 2))
 
 
 with tempconfig(
