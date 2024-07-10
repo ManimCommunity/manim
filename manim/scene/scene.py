@@ -156,20 +156,9 @@ class Scene:
         """
         # always rerender by returning True
         # TODO: Apply caching here
-        return True
-        # wait_animation = self.animations[0]
-        # if wait_animation.is_static_wait is None:
-        #     should_update = (
-        #         self.always_update_mobjects
-        #         or self.updaters
-        #         or wait_animation.stop_condition is not None
-        #         or any(
-        #             mob.has_time_based_updater()
-        #             for mob in self.get_mobject_family_members()
-        #         )
-        #     )
-        #     wait_animation.is_static_wait = not should_update
-        # return not wait_animation.is_static_wait
+        return self.always_update_mobjects or any(
+            mob.has_updaters for mob in self.mobjects
+        )
 
     def has_time_based_updaters(self) -> bool:
         return any(

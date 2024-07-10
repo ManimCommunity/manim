@@ -235,7 +235,7 @@ class Animation(AnimationProtocol):
         if self.is_remover():
             self.buffer.remove(self.mobject)
 
-    def create_starting_mobject(self) -> Mobject:
+    def create_starting_mobject(self) -> OpenGLMobject:
         # Keep track of where the mobject starts
         return self.mobject.copy()
 

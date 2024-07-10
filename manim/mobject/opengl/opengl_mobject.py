@@ -1512,6 +1512,7 @@ class OpenGLMobject:
     def init_updaters(self) -> None:
         self.time_based_updaters: list[TimeBasedUpdater] = []
         self.non_time_updaters: list[NonTimeUpdater] = []
+        # so that we don't have to refind updaters
         self.has_updaters: bool = False
         self.updating_suspended: bool = False
 
@@ -2634,6 +2635,16 @@ class OpenGLMobject:
         return OpenGLMobject
 
     # Alignment
+
+    def is_aligned_with(self, mobject: OpenGLMobject) -> bool:
+        return (
+            len(self.data) == len(mobject.data)
+            and len(self.submobjects) == len(mobject.submobjects)
+            and all(
+                sm1.is_aligned_with(sm2)
+                for sm1, sm2 in zip(self.submobjects, mobject.submobjects)
+            )
+        )
 
     def align_data_and_family(self, mobject):
         self.align_family(mobject)

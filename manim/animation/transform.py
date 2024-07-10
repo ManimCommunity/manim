@@ -151,8 +151,8 @@ class Transform(Animation):
         self.replace_mobject_with_target_in_scene: bool = (
             replace_mobject_with_target_in_scene
         )
-        self.target_mobject: Mobject = (
-            target_mobject if target_mobject is not None else Mobject()
+        self.target_mobject: OpenGLMobject = (
+            target_mobject if target_mobject is not None else OpenGLMobject()
         )
         super().__init__(mobject, **kwargs)
 
@@ -193,13 +193,17 @@ class Transform(Animation):
         # call so that the actual target_mobject stays
         # preserved.
         self.target_mobject = self.create_target()
-        self.target_copy = self.target_mobject.copy()
         # Note, this potentially changes the structure
         # of both mobject and target_mobject
+        if self.mobject.is_aligned_with(self.target_mobject):
+            self.target_copy = self.target_mobject
+        else:
+            self.target_copy = self.target_mobject.copy()
         self.mobject.align_data_and_family(self.target_copy)
+
         super().begin()
 
-    def create_target(self) -> Mobject:
+    def create_target(self) -> OpenGLMobject:
         # Has no meaningful effect here, but may be useful
         # in subclasses
         return self.target_mobject
@@ -212,7 +216,7 @@ class Transform(Animation):
             self.buffer.remove(self.mobject)
             self.buffer.add(self.target_mobject)
 
-    def get_all_mobjects(self) -> Sequence[Mobject]:
+    def get_all_mobjects(self) -> Sequence[OpenGLMobject]:
         return [
             self.mobject,
             self.starting_mobject,
