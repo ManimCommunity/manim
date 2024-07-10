@@ -8,14 +8,13 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from ..animation.animation import Animation
-from ..constants import ORIGIN, OUT, PI, TAU
-from ..utils.rate_functions import linear
+from manim.animation.animation import Animation
+from manim.constants import ORIGIN, OUT, PI, TAU
+from manim.utils.rate_functions import linear
 
 if TYPE_CHECKING:
+    from manim.mobject.opengl.opengl_mobject import OpenGLMobject
     from manim.typing import RateFunc
-
-    from ..mobject.opengl.opengl_mobject import OpenGLMobject
 
 
 class Rotating(Animation):
@@ -61,6 +60,7 @@ class Rotating(Animation):
 
 class Rotate(Rotating):
     """Animation that rotates a Mobject.
+
     Parameters
     ----------
     mobject
@@ -75,6 +75,7 @@ class Rotate(Rotating):
         If ``about_point`` is ``None``, this argument specifies
         the direction of the bounding box point to be taken as
         the rotation center.
+
     Examples
     --------
     .. manim:: UsingRotate
