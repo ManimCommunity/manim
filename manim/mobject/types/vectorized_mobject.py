@@ -32,7 +32,6 @@ from ...constants import *
 from ...mobject.mobject import Mobject
 from ...utils.bezier import (
     bezier,
-    bezier_remap,
     get_smooth_cubic_bezier_handle_points,
     integer_interpolate,
     interpolate,
