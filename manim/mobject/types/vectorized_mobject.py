@@ -32,7 +32,8 @@ from ...constants import *
 from ...mobject.mobject import Mobject
 from ...utils.bezier import (
     bezier,
-    get_smooth_handle_points,
+    bezier_remap,
+    get_smooth_cubic_bezier_handle_points,
     integer_interpolate,
     interpolate,
     partial_bezier_points,
@@ -923,8 +924,8 @@ class VMobject(Mobject):
                 # The append is needed as the last element is not reached when slicing with numpy.
                 anchors = np.append(subpath[::nppcc], subpath[-1:], 0)
                 if mode == "smooth":
-                    h1, h2 = get_smooth_handle_points(anchors)
-                elif mode == "jagged":
+                    h1, h2 = get_smooth_cubic_bezier_handle_points(anchors)
+                else:  # mode == "jagged"
                     # The following will make the handles aligned with the anchors, thus making the bezier curve a segment
                     a1 = anchors[:-1]
                     a2 = anchors[1:]
