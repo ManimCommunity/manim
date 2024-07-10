@@ -199,7 +199,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
     def get_point_mobject(self, center=None):
         if center is None:
             center = self.get_center()
-        return Point(center)
+        return PMobject().set_points([center])
 
     def interpolate_color(self, mobject1, mobject2, alpha):
         self.rgbas = interpolate(mobject1.rgbas, mobject2.rgbas, alpha)
@@ -348,37 +348,3 @@ class PointCloudDot(Mobject1D):
                 )
             ],
         )
-
-
-class Point(PMobject):
-    """A mobject representing a point.
-
-    Examples
-    --------
-
-    .. manim:: ExamplePoint
-        :save_last_frame:
-
-        class ExamplePoint(Scene):
-            def construct(self):
-                colorList = [RED, GREEN, BLUE, YELLOW]
-                for i in range(200):
-                    point = Point(location=[0.63 * np.random.randint(-4, 4), 0.37 * np.random.randint(-4, 4), 0], color=np.random.choice(colorList))
-                    self.add(point)
-                for i in range(200):
-                    point = Point(location=[0.37 * np.random.randint(-4, 4), 0.63 * np.random.randint(-4, 4), 0], color=np.random.choice(colorList))
-                    self.add(point)
-                self.add(point)
-    """
-
-    def __init__(self, location=ORIGIN, color=BLACK, **kwargs):
-        self.location = location
-        super().__init__(color=color, **kwargs)
-
-    def init_points(self):
-        self.reset_points()
-        self.generate_points()
-        self.set_points([self.location])
-
-    def generate_points(self):
-        self.add_points([self.location])
