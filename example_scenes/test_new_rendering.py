@@ -6,6 +6,18 @@ class Test(Scene):
         s = Square()
         self.add(s)
         self.play(Rotate(s, PI / 2))
+        self.play(FadeOut(s))
+        sq = Square()
+        c = Circle()
+        st = Star()
+        VGroup(sq, c, st).arrange()
+        self.play(
+            Succession(
+                Create(sq),
+                DrawBorderThenFill(c),
+                Create(st),
+            )
+        )
 
 
 with tempconfig(

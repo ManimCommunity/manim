@@ -234,10 +234,6 @@ class Succession(AnimationGroup):
             )
         self.update_active_animation(0)
 
-        for anim in self.animations:
-            if anim.introducer and anim.mobject is not None:
-                self.buffer.add(anim.mobject)
-
     def finish(self) -> None:
         while self.active_animation is not None:
             self.next_animation()
