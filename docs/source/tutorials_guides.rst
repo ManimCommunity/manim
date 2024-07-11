@@ -7,4 +7,5 @@ Tutorials & Guides
 
    tutorials/index
    guides/index
+   adventure/index
    faq/index
