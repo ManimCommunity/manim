@@ -1294,39 +1294,10 @@ class OpenGLVMobject(OpenGLMobject):
             nppc = self.n_points_per_curve
             return np.repeat(points, nppc * n, 0)
         bezier_tuples = self.get_bezier_tuples()
-        curr_num = len(bezier_tuples)
-        target_num = curr_num + n
-        # This is an array with values ranging from 0
-        # up to curr_num,  with repeats such that
-        # it's total length is target_num.  For example,
-        # with curr_num = 10, target_num = 15, this would
-        # be [0, 0, 1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 8, 8, 9]
-        repeat_indices = (np.arange(target_num, dtype="i") * curr_num) // target_num
-
-        # If the nth term of this list is k, it means
-        # that the nth curve of our path should be split
-        # into k pieces.
-        # In the above example our array had the following elements
-        # [0, 0, 1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 8, 8, 9]
-        # We have two 0s, one 1, two 2s and so on.
-        # The split factors array would hence be:
-        # [2, 1, 2, 1, 2, 1, 2, 1, 2, 1]
-        split_factors = np.zeros(curr_num, dtype="i")
-        for val in repeat_indices:
-            split_factors[val] += 1
-
-        new_points = np.zeros((0, self.dim))
-        for tup, sf in zip(bezier_tuples, split_factors):
-            # What was once a single quadratic curve defined
-            # by "tup" will now be broken into sf
-            # smaller quadratic curves
-            alphas = np.linspace(0, 1, sf + 1)
-            for a1, a2 in zip(alphas, alphas[1:]):
-                new_points = np.append(
-                    new_points,
-                    partial_bezier_points(tup, a1, a2),
-                    axis=0,
-                )
+        current_number_of_curves = len(bezier_tuples)
+        new_number_of_curves = current_number_of_curves + n
+        new_bezier_tuples = bezier_remap(bezier_tuples, new_number_of_curves)
+        new_points = new_bezier_tuples.reshape(-1, 3)
         return new_points
 
     def interpolate_color(self, mobject1, mobject2, alpha):
