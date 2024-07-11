@@ -1,7 +1,8 @@
 import time
 
 import numpy as np
-import pyglet
+
+# import pyglet
 from pyglet.gl import Config
 from pyglet.window import Window
 
@@ -64,7 +65,7 @@ if __name__ == "__main__":
         # exit(0)
         renderer.use_window()
 
-        clock = pyglet.clock.get_default()
+        # clock = pyglet.clock.get_default()
 
         def update_circle(dt):
             vm.move_to((np.sin(dt) * 4, np.cos(dt) * 4, -1))
@@ -98,7 +99,7 @@ if __name__ == "__main__":
 
         @win.event
         def on_draw():
-            dt = clock.update_time()
+            # dt = clock.update_time()
             renderer.render(camera, [vm2, vm3, vm4, clock_mobject, vm])
             # update_circle(counter)
 
@@ -135,7 +136,7 @@ if __name__ == "__main__":
                     if virtual_time >= run_time:
                         animation.finish()
                         buffer = str(animation.buffer)
-                        print(f"{buffer = }")
+                        print(f"buffer = {buffer}")
                         has_finished = True
                     else:
                         animation.update_mobjects(dt)

@@ -639,7 +639,8 @@ class OpenGLVMobject(OpenGLMobject):
                 elif mode == "jagged":
                     new_subpath[1::nppc] = 0.5 * (anchors[:-1] + anchors[1:])
                 submob.append_points(new_subpath)
-            submob.refresh_triangulation()
+            # TODO: not implemented
+            # submob.refresh_triangulation()
         return self
 
     def make_smooth(self):
@@ -1273,14 +1274,13 @@ class OpenGLVMobject(OpenGLMobject):
         return self
 
     def insert_n_curves_to_point_list(self, n: int, points: np.ndarray) -> np.ndarray:
-        """Given an array of k points defining a bezier curves
-         (anchors and handles), returns points defining exactly
-        k + n bezier curves.
+        """Given an array of 3k points defining a Bézier curve (anchors and
+        handles), return 3(k+n) points defining exactly k + n Bézier curves.
 
         Parameters
         ----------
         n
-            Number of desired curves.
+            Number of desired curves to insert.
         points
             Starting points.
 
@@ -1289,34 +1289,45 @@ class OpenGLVMobject(OpenGLMobject):
         np.ndarray
             Points generated.
         """
-        nppc = self.n_points_per_curve
+
         if len(points) == 1:
+            nppc = self.n_points_per_curve
             return np.repeat(points, nppc * n, 0)
+        bezier_tuples = self.get_bezier_tuples()
+        curr_num = len(bezier_tuples)
+        target_num = curr_num + n
+        # This is an array with values ranging from 0
+        # up to curr_num,  with repeats such that
+        # it's total length is target_num.  For example,
+        # with curr_num = 10, target_num = 15, this would
+        # be [0, 0, 1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 8, 8, 9]
+        repeat_indices = (np.arange(target_num, dtype="i") * curr_num) // target_num
 
-        bezier_groups = self.get_bezier_tuples_from_points(points)
-        norms = np.array([get_norm(bg[nppc - 1] - bg[0]) for bg in bezier_groups])
-        total_norm = sum(norms)
-        # Calculate insertions per curve (ipc)
-        if total_norm < 1e-6:
-            ipc = [n] + [0] * (len(bezier_groups) - 1)
-        else:
-            ipc = np.round(n * norms / sum(norms)).astype(int)
+        # If the nth term of this list is k, it means
+        # that the nth curve of our path should be split
+        # into k pieces.
+        # In the above example our array had the following elements
+        # [0, 0, 1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 8, 8, 9]
+        # We have two 0s, one 1, two 2s and so on.
+        # The split factors array would hence be:
+        # [2, 1, 2, 1, 2, 1, 2, 1, 2, 1]
+        split_factors = np.zeros(curr_num, dtype="i")
+        for val in repeat_indices:
+            split_factors[val] += 1
 
-        diff = n - sum(ipc)
-        for _ in range(diff):
-            ipc[np.argmin(ipc)] += 1
-        for _ in range(-diff):
-            ipc[np.argmax(ipc)] -= 1
-
-        new_points = []
-        for group, n_inserts in zip(bezier_groups, ipc):
+        new_points = np.zeros((0, self.dim))
+        for tup, sf in zip(bezier_tuples, split_factors):
             # What was once a single quadratic curve defined
-            # by "group" will now be broken into n_inserts + 1
+            # by "tup" will now be broken into sf
             # smaller quadratic curves
-            alphas = np.linspace(0, 1, n_inserts + 2)
+            alphas = np.linspace(0, 1, sf + 1)
             for a1, a2 in zip(alphas, alphas[1:]):
-                new_points += partial_bezier_points(group, a1, a2)
-        return np.vstack(new_points)
+                new_points = np.append(
+                    new_points,
+                    partial_bezier_points(tup, a1, a2),
+                    axis=0,
+                )
+        return new_points
 
     def interpolate_color(self, mobject1, mobject2, alpha):
         attrs = [
