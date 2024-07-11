@@ -20,13 +20,14 @@ class Test(Scene):
         )
 
 
-with tempconfig(
-    {
-        "preview": True,
-        "write_to_movie": False,
-        "disable_caching": True,
-        "frame_rate": 60,
-        "disable_caching_warning": True,
-    }
-):
-    Manager(Test).render()
+if __name__ == "__main__":
+    with tempconfig(
+        {
+            "preview": True,
+            "write_to_movie": False,
+            "disable_caching": True,
+            "frame_rate": 60,
+            "disable_caching_warning": True,
+        }
+    ):
+        Manager(Test).render()
