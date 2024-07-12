@@ -13,7 +13,7 @@ from ..mobject.mobject import Mobject
 from ..mobject.opengl import opengl_mobject
 from ..utils.rate_functions import linear, smooth
 from .protocol import AnimationProtocol
-from .scene_buffer import SceneBuffer
+from .scene_buffer import SceneBuffer, SceneOperation
 
 __all__ = ["Animation", "Wait", "override_animation"]
 
@@ -277,10 +277,16 @@ class Animation(AnimationProtocol):
         This is used in animations that are proxies around
         other animations, like :class:`.AnimationGroup`
         """
-        self.buffer.remove(*buffer.to_remove)
-        for to_replace_pairs in buffer.to_replace:
-            self.buffer.replace(*to_replace_pairs)
-        self.buffer.add(*buffer.to_add)
+        for op, args, kwargs in buffer:
+            match op:
+                case SceneOperation.ADD:
+                    self.buffer.add(*args, **kwargs)
+                case SceneOperation.REMOVE:
+                    self.buffer.remove(*args, **kwargs)
+                case SceneOperation.REPLACE:
+                    self.buffer.replace(*args, **kwargs)
+                case o:
+                    raise NotImplementedError(f"Unknown operation {o}")
         buffer.clear()
 
     def get_all_mobjects_to_update(self) -> Sequence[OpenGLMobject]:
@@ -322,7 +328,7 @@ class Animation(AnimationProtocol):
         families = tuple(self.get_all_families_zipped())
         for i, mobs in enumerate(families):
             sub_alpha = self.get_sub_alpha(alpha, i, len(families))
-            self.interpolate_submobject(*mobs, sub_alpha)
+            self.interpolate_submobject(*mobs, sub_alpha)  # type: ignore
 
     def interpolate_submobject(
         self,
@@ -579,7 +585,7 @@ def override_animation(
     _F = TypeVar("_F", bound=Callable)
 
     def decorator(func: _F) -> _F:
-        func._override_animation = animation_class
+        func._override_animation = animation_class  # type: ignore
         return func
 
     return decorator

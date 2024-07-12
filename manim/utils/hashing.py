@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-import collections
+from collections.abc import Callable, Hashable
 import copy
 import inspect
 import json
@@ -14,14 +14,18 @@ from typing import Any
 
 import numpy as np
 
-from manim.animation.animation import Animation
-from manim.camera.camera import Camera
-from manim.mobject.mobject import Mobject
-
 from .. import config, logger
 
 if typing.TYPE_CHECKING:
+    from typing_extensions import TypeVar
+
     from manim.scene.scene import Scene
+    from manim.animation.protocol import AnimationProtocol
+    from manim.camera.camera import Camera
+    from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+
+    T = TypeVar("T")
+    S = TypeVar("S", default=str)
 
 __all__ = ["KEYS_TO_FILTER_OUT", "get_hash_from_play_call", "get_json"]
 
@@ -59,7 +63,7 @@ class _Memoizer:
         cls._already_processed.clear()
 
     @classmethod
-    def check_already_processed_decorator(cls: _Memoizer, is_method: bool = False):
+    def check_already_processed_decorator(cls, is_method: bool = False):
         """Decorator to handle the arguments that goes through the decorated function.
         Returns _ALREADY_PROCESSED_PLACEHOLDER if the obj has been processed, or lets
         the decorated function call go ahead.
@@ -102,7 +106,7 @@ class _Memoizer:
         return cls._handle_already_processed(obj, lambda x: x)
 
     @classmethod
-    def mark_as_processed(cls, obj: Any) -> None:
+    def mark_as_processed(cls, obj: Any) -> str:
         """Marks an object as processed.
 
         Parameters
@@ -131,7 +135,7 @@ class _Memoizer:
             # It makes no sense (and it'd slower) to memoize objects of these primitive
             # types.  Hence, we simply return the object.
             return obj
-        if isinstance(obj, collections.abc.Hashable):
+        if isinstance(obj, Hashable):
             try:
                 return cls._return(obj, hash, default_function)
             except TypeError:
@@ -144,11 +148,11 @@ class _Memoizer:
     @classmethod
     def _return(
         cls,
-        obj: typing.Any,
+        obj: T,
         obj_to_membership_sign: typing.Callable[[Any], int],
-        default_func,
+        default_func: Callable[[T], str],
         memoizing=True,
-    ) -> str | Any:
+    ) -> str:
         obj_membership_sign = obj_to_membership_sign(obj)
         if obj_membership_sign in cls._already_processed:
             return cls.ALREADY_PROCESSED_PLACEHOLDER
@@ -173,7 +177,7 @@ class _Memoizer:
 
 
 class _CustomEncoder(json.JSONEncoder):
-    def default(self, obj: Any):
+    def default(self, o: Any):
         """
         This method is used to serialize objects to JSON format.
 
@@ -196,11 +200,11 @@ class _CustomEncoder(json.JSONEncoder):
             Python object that JSON encoder will recognize
 
         """
-        if not (isinstance(obj, ModuleType)) and isinstance(
-            obj,
+        if not (isinstance(o, ModuleType)) and isinstance(
+            o,
             (MethodType, FunctionType),
         ):
-            cvars = inspect.getclosurevars(obj)
+            cvars = inspect.getclosurevars(o)
             cvardict = {**copy.copy(cvars.globals), **copy.copy(cvars.nonlocals)}
             for i in list(cvardict):
                 # NOTE : All module types objects are removed, because otherwise it
@@ -208,7 +212,7 @@ class _CustomEncoder(json.JSONEncoder):
                 if isinstance(cvardict[i], ModuleType):
                     del cvardict[i]
             try:
-                code = inspect.getsource(obj)
+                code = inspect.getsource(o)
             except (OSError, TypeError):
                 # This happens when rendering videos included in the documentation
                 # within doctests and should be replaced by a solution avoiding
@@ -216,23 +220,23 @@ class _CustomEncoder(json.JSONEncoder):
                 # See https://github.com/ManimCommunity/manim/pull/402.
                 code = ""
             return self._cleaned_iterable({"code": code, "nonlocals": cvardict})
-        elif isinstance(obj, np.ndarray):
-            if obj.size > 1000:
-                obj = np.resize(obj, (100, 100))
-                return f"TRUNCATED ARRAY: {repr(obj)}"
+        elif isinstance(o, np.ndarray):
+            if o.size > 1000:
+                o = np.resize(o, (100, 100))
+                return f"TRUNCATED ARRAY: {repr(o)}"
             # We return the repr and not a list to avoid the JsonEncoder to iterate over it.
-            return repr(obj)
-        elif hasattr(obj, "__dict__"):
-            temp = getattr(obj, "__dict__")
+            return repr(o)
+        elif hasattr(o, "__dict__"):
+            temp = getattr(o, "__dict__")
             # MappingProxy is scene-caching nightmare. It contains all of the object methods and attributes. We skip it as the mechanism will at some point process the object, but instantiated.
             # Indeed, there is certainly no case where scene-caching will receive only a non instancied object, as this is never used in the library or encouraged to be used user-side.
             if isinstance(temp, MappingProxyType):
                 return "MappingProxy"
             return self._cleaned_iterable(temp)
-        elif isinstance(obj, np.uint8):
-            return int(obj)
+        elif isinstance(o, np.uint8):
+            return int(o)
         # Serialize it with only the type of the object. You can change this to whatever string when debugging the serialization process.
-        return str(type(obj))
+        return str(type(o))
 
     def _cleaned_iterable(self, iterable: typing.Iterable[Any]):
         """Check for circular reference at each iterable that will go through the JSONEncoder, as well as key of the wrong format.
@@ -325,8 +329,8 @@ def get_json(obj: dict):
 def get_hash_from_play_call(
     scene_object: Scene,
     camera_object: Camera,
-    animations_list: typing.Iterable[Animation],
-    current_mobjects_list: typing.Iterable[Mobject],
+    animations_list: typing.Iterable[AnimationProtocol],
+    current_mobjects_list: typing.Iterable[OpenGLMobject],
 ) -> str:
     """Take the list of animations and a list of mobjects and output their hashes. This is meant to be used for `scene.play` function.
 

@@ -18,6 +18,7 @@ class Test(Scene):
                 Create(st),
             )
         )
+        self.play(*[FadeOut(mob) for mob in self.mobjects])
 
 
 if __name__ == "__main__":

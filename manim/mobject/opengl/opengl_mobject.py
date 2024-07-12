@@ -11,7 +11,7 @@ import sys
 from dataclasses import dataclass
 from functools import partialmethod, wraps
 from math import ceil
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Generic
 
 import moderngl
 import numpy as np
@@ -51,27 +51,35 @@ if TYPE_CHECKING:
     from typing import Any, Callable, Union
 
     import numpy.typing as npt
-    from typing_extensions import Self, TypeAlias
+    from typing_extensions import Self, TypeAlias, ParamSpec, Concatenate
 
     from manim.renderer.renderer import RendererData
     from manim.typing import PathFuncType, Point3D, Point3D_Array
+    from manim.animation.animation import Animation
 
     TimeBasedUpdater: TypeAlias = Callable[
         ["OpenGLMobject", float], "OpenGLMobject | None"
     ]
-    NonTimeUpdater: TypeAlias = Callable[["OpenGLMobject"], "OpenGLMobject" | None]
+    NonTimeUpdater: TypeAlias = Callable[["OpenGLMobject"], "OpenGLMobject | None"]
     Updater: TypeAlias = Union[TimeBasedUpdater, NonTimeUpdater]
     PointUpdateFunction: TypeAlias = Callable[[np.ndarray], np.ndarray]
 
     T = TypeVar("T", bound=RendererData)
     _F = TypeVar("_F", bound=Callable[..., Any])
+    M = TypeVar("M", bound="OpenGLMobject")
+
+    P = ParamSpec("P")
+    O = TypeVar("O")
+
+
+T_co = TypeVar("T_co", covariant=True, bound="OpenGLMobject")
 
 UNIFORM_DTYPE = np.float64
 
 
-def stash_mobject_pointers(func: _F) -> _F:
+def stash_mobject_pointers(func: Callable[Concatenate[M, P], O]) -> Callable[Concatenate[M, P], O]:
     @wraps(func)
-    def wrapper(self, *args, **kwargs):
+    def wrapper(self: M, *args: P.args, **kwargs: P.kwargs):
         uncopied_attrs = ["parents", "target", "saved_state"]
         stash = {}
         for attr in uncopied_attrs:
@@ -318,8 +326,12 @@ class OpenGLMobject:
             self.uniforms[key] = value
         return self
 
+    # https://github.com/python/typing/issues/802
+    # so we hack around it by doing | Self
+    # but this causes issues in Scene.play which only
+    # accepts _AnimationBuilder/Animations, not Mobjects
     @property
-    def animate(self) -> _AnimationBuilder:
+    def animate(self) -> _AnimationBuilder[Self] | Self:
         """Used to animate the application of a method.
 
         .. warning::
@@ -3167,8 +3179,8 @@ class OpenGLPoint(OpenGLMobject):
         self.set_points(np.array(new_loc, ndmin=2, dtype=float))
 
 
-class _AnimationBuilder:
-    def __init__(self, mobject):
+class _AnimationBuilder(Generic[T_co]):
+    def __init__(self, mobject: T_co):
         self.mobject = mobject
         self.mobject.generate_target()
 
@@ -3180,7 +3192,7 @@ class _AnimationBuilder:
         self.cannot_pass_args = False
         self.anim_args = {}
 
-    def __call__(self, **kwargs) -> _AnimationBuilder:
+    def __call__(self, **kwargs) -> _AnimationBuilder[T_co]:
         if self.cannot_pass_args:
             raise ValueError(
                 "Animation arguments must be passed before accessing methods and can only be passed once",
@@ -3191,7 +3203,7 @@ class _AnimationBuilder:
 
         return self
 
-    def __getattr__(self, method_name):
+    def __getattr__(self, method_name: str):
         method = getattr(self.mobject.target, method_name)
         has_overridden_animation = hasattr(method, "_override_animate")
 
@@ -3219,7 +3231,7 @@ class _AnimationBuilder:
 
         return update_target
 
-    def build(self):
+    def build(self) -> Animation:
         from manim.animation.transform import _MethodAnimation
 
         if self.overridden_animation:

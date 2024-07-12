@@ -10,6 +10,7 @@ from pyglet.window import key
 
 from manim import config, logger
 from manim.animation.animation import prepare_animation
+from manim.animation.scene_buffer import SceneBuffer, SceneOperation
 from manim.camera.camera import Camera
 from manim.constants import DEFAULT_WAIT_TIME
 from manim.event_handler import EVENT_DISPATCHER
@@ -17,7 +18,6 @@ from manim.event_handler.event_type import EventType
 from manim.mobject.mobject import Group, Point, _AnimationBuilder
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
-from manim.utils.exceptions import EndSceneEarlyException
 from manim.utils.iterables import list_difference_update
 
 if TYPE_CHECKING:
@@ -25,7 +25,6 @@ if TYPE_CHECKING:
     from typing import Any, Callable
 
     from manim.animation.protocol import AnimationProtocol
-    from manim.animation.scene_buffer import SceneBuffer
     from manim.manager import Manager
 
 # TODO: these keybindings should be made configurable
@@ -67,7 +66,6 @@ class Scene:
     pan_sensitivity: float = 3.0
     max_num_saved_states: int = 50
 
-    skip_animations: bool = False
     always_update_mobjects: bool = False
     start_at_animation_number: int = 0
     end_at_animation_number: int | None = None
@@ -83,12 +81,8 @@ class Scene:
         self.num_plays: int = 0
         # the time is updated by the manager
         self.time: float = 0
-        self.original_skipping_status: bool = self.skip_animations
         self.undo_stack: deque[SceneState] = deque()
         self.redo_stack: list[SceneState] = []
-
-        if self.start_at_animation_number is not None:
-            self.skip_animations = True
 
         # Items associated with interaction
         self.mouse_point = Point()
@@ -115,10 +109,16 @@ class Scene:
         return name
 
     def process_buffer(self, buffer: SceneBuffer) -> None:
-        self.remove(*buffer.to_remove)
-        for to_replace_pairs in buffer.to_replace:
-            self.replace(*to_replace_pairs)
-        self.add(*buffer.to_add)
+        for op, args, kwargs in buffer:
+            match op:
+                case SceneOperation.ADD:
+                    self.add(*args, **kwargs)
+                case SceneOperation.REMOVE:
+                    self.remove(*args, **kwargs)
+                case SceneOperation.REPLACE:
+                    self.replace(*args, **kwargs)
+                case o:
+                    raise NotImplementedError(f"Unknown operation {o}")
         buffer.clear()
 
     def setup(self) -> None:
@@ -310,19 +310,6 @@ class Scene:
 
     # Related to skipping
 
-    def update_skipping_status(self) -> None:
-        if (
-            self.start_at_animation_number is not None
-            and self.num_plays == self.start_at_animation_number
-            and not self.original_skipping_status
-        ):
-            self.skip_animations = False
-        if (
-            self.end_at_animation_number is not None
-            and self.num_plays >= self.end_at_animation_number
-        ):
-            raise EndSceneEarlyException()
-
     # Methods associated with running animations
     def pre_play(self) -> None:
         """To be implemented in subclasses."""
@@ -351,11 +338,6 @@ class Scene:
             animation.finish()
             self.process_buffer(animation.buffer)
 
-        if self.skip_animations:
-            self._update_mobjects(self.manager._calc_runtime(animations))
-        else:
-            self._update_mobjects(0)
-
     def play(
         self,
         *proto_animations: AnimationProtocol | _AnimationBuilder,
@@ -366,12 +348,13 @@ class Scene:
         if len(proto_animations) == 0:
             logger.warning("Called Scene.play with no animations")
             return
+        # build animationbuilders
         animations = [prepare_animation(x) for x in proto_animations]
         for anim in animations:
             anim.update_rate_info(run_time, rate_func, lag_ratio)
 
         # NOTE: Should be changed at some point with the 2 pass rendering system 21.06.2024
-        self.manager._play(*animations, run_time=run_time)
+        self.manager._play(*animations)
 
     def wait(
         self,
@@ -393,16 +376,6 @@ class Scene:
     def wait_until(self, stop_condition: Callable[[], bool], max_time: float = 60):
         self.wait(max_time, stop_condition=stop_condition)
 
-    def force_skipping(self):
-        self.original_skipping_status = self.skip_animations
-        self.skip_animations = True
-        return self
-
-    def revert_to_original_skipping_status(self):
-        if hasattr(self, "original_skipping_status"):
-            self.skip_animations = self.original_skipping_status
-        return self
-
     def add_sound(
         self,
         sound_file: str,
@@ -410,12 +383,9 @@ class Scene:
         gain: float | None = None,
         gain_to_background: float | None = None,
     ):
-        if self.skip_animations:
-            return
+        raise NotImplementedError("TODO")
         time = self.time + time_offset
         self.file_writer.add_sound(sound_file, time, gain, gain_to_background)
-
-    # Helpers for interactive development
 
     def get_state(self) -> SceneState:
         return SceneState(self)

@@ -17,6 +17,7 @@ from manim.file_writer import FileWriter
 from manim.plugins import Hooks, plugins
 from manim.scene.scene import Scene, SceneState
 from manim.utils.exceptions import EndSceneEarlyException
+from manim.utils.hashing import get_hash_from_play_call
 
 if TYPE_CHECKING:
     import numpy.typing as npt
@@ -178,7 +179,6 @@ class Manager:
             "you can interact with the scene. "
             "Press `command + q` or `esc` to quit"
         )
-        self.scene.skip_animations = False
         while not self.window.is_closing:
             # TODO: Replace with actual dt instead
             # of hardcoded dt
@@ -215,30 +215,25 @@ class Manager:
                 self._update_frame(0, write_to_file=False)
 
     def _play(
-        self, *animations: AnimationProtocol, run_time: float | None = None
+        self, *animations: AnimationProtocol
     ) -> None:
         """Play a bunch of animations"""
-
-        self.scene.update_skipping_status()
 
         if self.window is not None:
             self.real_animation_start_time = time.perf_counter()
             self.virtual_animation_start_time = self.time
 
-        self._write_hashed_movie_file()
+        self._write_hashed_movie_file(animations)
 
         self.scene.begin_animations(animations)
-        self._progress_through_animations(animations, run_time=run_time)
+        self._progress_through_animations(animations)
         self.scene.finish_animations(animations)
-
-        if self.scene.skip_animations and self.window is not None:
-            self._update_frame(dt=0)
 
         self.scene.post_play()
 
         self.file_writer.end_animation(allow_write=self._write_files)
 
-    def _write_hashed_movie_file(self) -> None:
+    def _write_hashed_movie_file(self, animations: Sequence[AnimationProtocol]) -> None:
         """Compute the hash of a self.play call, and write it to a file
 
         Essentially, a series of methods that need to be called to successfully
@@ -252,8 +247,16 @@ class Manager:
                 logger.info("Caching disabled...")
             hash_current_play = f"uncached_{self.file_writer.num_plays:05}"
         else:
-            # TODO: Implement some form of caching
-            hash_current_play = None
+            hash_current_play = get_hash_from_play_call(
+                self.scene,
+                self.scene.camera,
+                animations,
+                self.scene.mobjects,
+            )
+            if self.file_writer.is_already_cached(hash_current_play):
+                logger.info(f"Animation {self.file_writer.num_plays} : Using cached data (hash : {hash_current_play})")
+                # TODO: think about how to skip
+                raise NotImplementedError("Skipping cached animations is not implemented yet")
 
         self.file_writer.add_partial_movie_file(hash_current_play)
         if hash_current_play is not None and hash_current_play.startswith("uncached_"):
@@ -285,11 +288,11 @@ class Manager:
     ) -> None:
         self.scene.pre_play()
 
-        self._write_hashed_movie_file()
+        self._write_hashed_movie_file(animations=[])
 
         update_mobjects = (
             self.scene.should_update_mobjects()
-        )  # TODO: this method needs to be implemented
+        )
         condition = stop_condition or (lambda: False)
 
         progression = self._calc_time_progression(duration)
@@ -317,16 +320,17 @@ class Manager:
         self.file_writer.end_animation(allow_write=self._write_files)
 
     def _progress_through_animations(
-        self, animations: Sequence[AnimationProtocol], run_time: float | None = None
+        self, animations: Sequence[AnimationProtocol]
     ) -> None:
         last_t = 0.0
-        run_time = run_time or self._calc_runtime(animations)
+        # TODO: remove the run_time or
+        run_time = self._calc_runtime(animations)
         progression = self._calc_time_progression(run_time)
         with self._create_progressbar(
             progression.shape[0],
             f"Animation %(num)d: {animations[0]}{', etc.' if len(animations) > 1 else ''}",
         ) as progress:
-            for t in self._calc_time_progression(run_time):
+            for t in progression:
                 dt, last_t = t - last_t, t
                 self.scene._update_animations(animations, t, dt)
                 self._update_frame(dt)
@@ -342,6 +346,7 @@ class Manager:
         """Renders a frame based on a state, and writes it to a file"""
 
         # render the frame to the window
+        # TODO: change self.scene.camera to state.camera
         self.renderer.render(self.scene.camera, state.mobjects)
 
         should_write = write_file if write_file is not None else self._write_files
