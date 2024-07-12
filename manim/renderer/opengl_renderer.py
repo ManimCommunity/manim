@@ -11,7 +11,8 @@ from manim.camera.camera import Camera
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.renderer.buffers.buffer import STD140BufferFormat
 from manim.renderer.opengl_shader_program import load_shader_program_by_folder
-from manim.renderer.renderer import ImageType, Renderer, RendererData, RendererProtocol
+from manim.renderer.renderer import Renderer, RendererData, RendererProtocol
+from manim.typing import PixelArray
 from manim.utils.iterables import listify
 from manim.utils.space_ops import cross2d, earclip_triangulation, z_to_vector
 
@@ -513,7 +514,7 @@ class OpenGLRenderer(Renderer, RendererProtocol):
                     np.array(range(len(sub.points))),
                 )
 
-    def get_pixels(self) -> ImageType:
+    def get_pixels(self) -> PixelArray:
         raw = self.output_fbo.read(components=4, dtype="f1", clamp=True)  # RGBA, floats
         y, x = self.output_fbo.viewport[2:4]
         buf = np.frombuffer(raw, dtype=np.uint8).reshape((x, y, 4))

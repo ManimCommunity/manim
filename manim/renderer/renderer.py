@@ -4,15 +4,15 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 from manim._config import logger
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
-from manim.mobject.types.image_mobject import ImageMobject
-from manim.typing import Image as ImageType
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
     from manim.camera.camera import Camera
+    from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+    from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+    from manim.mobject.types.image_mobject import ImageMobject
+    from manim.typing import PixelArray
 
 
 class RendererData:
@@ -76,7 +76,7 @@ class RendererProtocol(Protocol):
         """Hook called after instantiation."""
         ...
 
-    def get_pixels(self) -> ImageType:
+    def get_pixels(self) -> PixelArray:
         """Get the pixels that should be written to a file."""
         ...
 
@@ -94,7 +94,7 @@ class RendererProtocol(Protocol):
 #     def add(img1, img2):
 #         raise NotImplementedError
 
-#     def subtract(*images: List[Image]):
+#     def subtract(*images: List[PixelArray]):
 #         raise NotImplementedError
 
 #     def mix():

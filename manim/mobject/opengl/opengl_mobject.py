@@ -22,6 +22,7 @@ from manim.constants import *
 from manim.event_handler import EVENT_DISPATCHER
 from manim.event_handler.event_listener import EventListener
 from manim.event_handler.event_type import EventType
+from manim.renderer.renderer import RendererData
 from manim.renderer.shader_wrapper import ShaderWrapper, get_colormap_code
 from manim.utils.bezier import integer_interpolate, interpolate
 from manim.utils.color import *
@@ -54,7 +55,6 @@ if TYPE_CHECKING:
     from typing_extensions import Concatenate, ParamSpec, Self, TypeAlias
 
     from manim.animation.animation import Animation
-    from manim.renderer.renderer import RendererData
     from manim.typing import PathFuncType, Point3D, Point3D_Array
 
     TimeBasedUpdater: TypeAlias = Callable[
@@ -64,12 +64,12 @@ if TYPE_CHECKING:
     Updater: TypeAlias = Union[TimeBasedUpdater, NonTimeUpdater]
     PointUpdateFunction: TypeAlias = Callable[[np.ndarray], np.ndarray]
 
-    R = TypeVar("R", bound=RendererData)
     M = TypeVar("M", bound="OpenGLMobject")
     T = TypeVar("T")
     P = ParamSpec("P")
 
 
+R = TypeVar("R", bound=RendererData)
 T_co = TypeVar("T_co", covariant=True, bound="OpenGLMobject")
 
 UNIFORM_DTYPE = np.float64

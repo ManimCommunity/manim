@@ -31,7 +31,7 @@ from manim.utils.file_ops import (
 from manim.utils.sounds import get_full_sound_file_path
 
 if TYPE_CHECKING:
-    from manim.typing import Image as ImageType
+    from manim.typing import PixelArray
 
 
 class FileWriter:
@@ -363,7 +363,7 @@ class FileWriter:
             self.close_partial_movie_stream()
             self.num_plays += 1
 
-    def write_frame(self, frame: ImageType, num_frames: int = 1) -> None:
+    def write_frame(self, frame: PixelArray, num_frames: int = 1) -> None:
         """
         Used internally by Manim to write a frame to
         the FFMPEG input buffer.
@@ -407,7 +407,7 @@ class FileWriter:
             image.save(f"{target_dir}{self.frame_count}{ext}")
         self.frame_count += 1
 
-    def save_final_image(self, image: ImageType) -> None:
+    def save_final_image(self, image: PixelArray) -> None:
         """
         The name is a misnomer. This method saves the image
         passed to it as an in the default image directory.
