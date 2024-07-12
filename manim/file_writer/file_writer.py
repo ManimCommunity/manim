@@ -18,6 +18,7 @@ from pydub import AudioSegment
 from manim import __version__
 from manim._config import config, logger
 from manim._config.logger_utils import set_file_logger
+from manim.file_writer.protocols import FileWriterProtocol
 from manim.file_writer.sections import DefaultSectionType, Section
 from manim.utils.file_ops import (
     add_extension_if_not_present,
@@ -34,7 +35,7 @@ if TYPE_CHECKING:
     from manim.typing import PixelArray
 
 
-class FileWriter:
+class FileWriter(FileWriterProtocol):
     """
     FileWriter is the object that actually writes the animations
     played, into video files, using FFMPEG.
@@ -282,7 +283,7 @@ class FileWriter:
             self.includes_sound = True
             self.create_audio_segment()
         segment = self.audio_segment
-        curr_end = segment.duration_seconds
+        curr_end: float = segment.duration_seconds
         if time is None:
             time = curr_end
         if time < 0:
@@ -407,7 +408,7 @@ class FileWriter:
             image.save(f"{target_dir}{self.frame_count}{ext}")
         self.frame_count += 1
 
-    def save_final_image(self, image: PixelArray) -> None:
+    def save_image(self, image: PixelArray) -> None:
         """
         The name is a misnomer. This method saves the image
         passed to it as an in the default image directory.
@@ -422,7 +423,7 @@ class FileWriter:
         if not config["output_file"]:
             self.image_file_path = add_version_before_extension(self.image_file_path)
 
-        image.save(self.image_file_path)
+        Image.fromarray(image).save(self.image_file_path)
         self.print_file_ready_message(self.image_file_path)
 
     def finish(self) -> None:

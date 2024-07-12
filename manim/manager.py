@@ -24,6 +24,7 @@ if TYPE_CHECKING:
     from typing_extensions import Any
 
     from manim.animation.protocol import AnimationProtocol
+    from manim.file_writer.protocols import FileWriterProtocol
     from manim.renderer.renderer import RendererProtocol
 
 
@@ -67,7 +68,7 @@ class Manager:
         self.renderer.use_window()
 
         # file writer
-        self.file_writer = FileWriter(self.scene.get_default_scene_name())
+        self.file_writer: FileWriterProtocol = self.create_file_writer()
         self._write_files = config.write_to_movie
 
     # keep these as instance methods so subclasses
@@ -95,6 +96,18 @@ class Manager:
             A window if previewing, else None
         """
         return plugins.window() if config.preview else None
+
+    def create_file_writer(self) -> FileWriterProtocol:
+        """Create and returna file writer instance.
+
+        This can be overridden in subclasses (plugins), if more
+        processing is needed.
+
+        Returns
+        -------
+            A file writer satisfying :class:`.FileWriterProtocol`
+        """
+        return FileWriter(self.scene.get_default_scene_name())
 
     def setup(self) -> None:
         """Set up processes and manager"""
