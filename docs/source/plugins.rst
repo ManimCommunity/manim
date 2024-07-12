@@ -106,7 +106,7 @@ specified in Poetry as:
     [tool.poetry.plugins."manim.plugins"]
     "name" = "object_reference"
 
-.. versionremoved:: 0.19.0
+.. versionremoved:: 0.18.1
 
     Plugins should be imported explicitly to be usable in user code. The plugin
     system will probably be refactored in the future to provide a more structured
