@@ -1198,9 +1198,9 @@ class OpenGLVMobject(OpenGLMobject):
         return normal
 
     # Alignment
-    def align_points(self, vmobject):
+    def align_points(self, vmobject: OpenGLVMobject) -> Self:
         # TODO: This shortcut can be a bit over eager. What if they have the same length, but different subpath lengths?
-        if self.get_num_points() == len(vmobject.points):
+        if self.get_num_points() == vmobject.get_num_points():
             return
 
         for mob in self, vmobject:
@@ -1293,7 +1293,7 @@ class OpenGLVMobject(OpenGLMobject):
         if len(points) == 1:
             nppc = self.n_points_per_curve
             return np.repeat(points, nppc * n, 0)
-        bezier_tuples = self.get_bezier_tuples()
+        bezier_tuples = self.get_bezier_tuples_from_points(points)
         current_number_of_curves = len(bezier_tuples)
         new_number_of_curves = current_number_of_curves + n
         new_bezier_tuples = bezier_remap(bezier_tuples, new_number_of_curves)

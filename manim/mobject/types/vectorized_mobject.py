@@ -32,6 +32,7 @@ from ...constants import *
 from ...mobject.mobject import Mobject
 from ...utils.bezier import (
     bezier,
+    bezier_remap,
     get_smooth_cubic_bezier_handle_points,
     integer_interpolate,
     interpolate,
@@ -1577,7 +1578,7 @@ class VMobject(Mobject):
         if len(points) == 1:
             nppcc = self.n_points_per_cubic_curve
             return np.repeat(points, nppcc * n, 0)
-        bezier_tuples = self.get_cubic_bezier_tuples()
+        bezier_tuples = self.get_cubic_bezier_tuples_from_points(points)
         current_number_of_curves = len(bezier_tuples)
         new_number_of_curves = current_number_of_curves + n
         new_bezier_tuples = bezier_remap(bezier_tuples, new_number_of_curves)
