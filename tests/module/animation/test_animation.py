@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from manim import FadeIn, Scene, config
+from manim import FadeIn, Scene
 
 
 @pytest.mark.parametrize(
@@ -15,7 +15,7 @@ def test_animation_forbidden_run_time(run_time):
         test_scene.play(FadeIn(None, run_time=run_time))
 
 
-def test_animation_run_time_shorter_than_frame_rate(caplog):
+def test_animation_run_time_shorter_than_frame_rate(caplog, config):
     test_scene = Scene()
     test_scene.play(FadeIn(None, run_time=1 / (config.frame_rate + 1)))
     assert (

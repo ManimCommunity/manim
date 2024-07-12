@@ -5,15 +5,15 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from manim import MathTex, SingleStringMathTex, Tex, TexTemplate, config, tempconfig
+from manim import MathTex, SingleStringMathTex, Tex, TexTemplate, tempconfig
 
 
-def test_MathTex():
+def test_MathTex(config):
     MathTex("a^2 + b^2 = c^2")
     assert Path(config.media_dir, "Tex", "e4be163a00cf424f.svg").exists()
 
 
-def test_SingleStringMathTex():
+def test_SingleStringMathTex(config):
     SingleStringMathTex("test")
     assert Path(config.media_dir, "Tex", "8ce17c7f5013209f.svg").exists()
 
@@ -27,7 +27,7 @@ def test_double_braces_testing(text_input, length_sub):
     assert len(t1.submobjects) == length_sub
 
 
-def test_tex():
+def test_tex(config):
     Tex("The horse does not eat cucumber salad.")
     assert Path(config.media_dir, "Tex", "c3945e23e546c95a.svg").exists()
 
@@ -45,7 +45,7 @@ def test_tex_temp_directory(tmpdir, monkeypatch):
         assert Path("media", "Tex", "c3945e23e546c95a.svg").exists()
 
 
-def test_percent_char_rendering():
+def test_percent_char_rendering(config):
     Tex(r"\%")
     assert Path(config.media_dir, "Tex", "4a583af4d19a3adf.tex").exists()
 
@@ -194,7 +194,7 @@ def test_error_in_nested_context(capsys):
     \end{align}
     """
 
-    with pytest.raises(ValueError) as err:
+    with pytest.raises(ValueError):
         Tex(invalid_tex)
 
     stdout = str(capsys.readouterr().out)
@@ -202,25 +202,25 @@ def test_error_in_nested_context(capsys):
     assert r"\begin{frame}" not in stdout
 
 
-def test_tempconfig_resetting_tex_template():
+def test_tempconfig_resetting_tex_template(config):
     my_template = TexTemplate()
     my_template.preamble = "Custom preamble!"
-    tex_template_config_value = config.tex_template
     with tempconfig({"tex_template": my_template}):
         assert config.tex_template.preamble == "Custom preamble!"
 
     assert config.tex_template.preamble != "Custom preamble!"
 
 
-def test_tex_garbage_collection(tmpdir, monkeypatch):
+def test_tex_garbage_collection(tmpdir, monkeypatch, config):
     monkeypatch.chdir(tmpdir)
     Path(tmpdir, "media").mkdir()
+    config.media_dir = "media"
 
-    with tempconfig({"media_dir": "media"}):
-        tex_without_log = Tex("Hello World!")  # d771330b76d29ffb.tex
-        assert Path("media", "Tex", "d771330b76d29ffb.tex").exists()
-        assert not Path("media", "Tex", "d771330b76d29ffb.log").exists()
+    tex_without_log = Tex("Hello World!")  # d771330b76d29ffb.tex
+    assert Path("media", "Tex", "d771330b76d29ffb.tex").exists()
+    assert not Path("media", "Tex", "d771330b76d29ffb.log").exists()
 
-    with tempconfig({"media_dir": "media", "no_latex_cleanup": True}):
-        tex_with_log = Tex("Hello World, again!")  # da27670a37b08799.tex
-        assert Path("media", "Tex", "da27670a37b08799.log").exists()
+    config.no_latex_cleanup = True
+
+    tex_with_log = Tex("Hello World, again!")  # da27670a37b08799.tex
+    assert Path("media", "Tex", "da27670a37b08799.log").exists()
