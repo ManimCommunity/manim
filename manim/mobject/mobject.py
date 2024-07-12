@@ -38,6 +38,7 @@ from ..utils.exceptions import MultiAnimationOverrideException
 from ..utils.iterables import list_update, remove_list_redundancies
 from ..utils.paths import straight_path
 from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
+from .builders import _AnimationBuilder, _UpdaterBuilder
 
 if TYPE_CHECKING:
     from typing_extensions import Self, TypeAlias
@@ -294,7 +295,7 @@ class Mobject:
             cls.__init__ = cls._original__init__
 
     @property
-    def animate(self) -> _AnimationBuilder | Self:
+    def animate(self) -> _AnimationBuilder[Self] | Self:
         """Used to animate the application of any method of :code:`self`.
 
         Any method called on :code:`animate` is converted to an animation of applying
@@ -390,6 +391,36 @@ class Mobject:
 
         """
         return _AnimationBuilder(self)
+
+    @property
+    def always(self) -> Self:
+        """Call a method on a mobject every frame.
+
+        This is syntactic sugar for ``mob.add_updater(lambda m: m.method())``
+
+        .. warning::
+
+            Attempting to add multiple updaters to the same mobject (such as
+            by calling this method more than once, and not removing the previous updater)
+            can have unintended side effects, such as one updater taking priority over the
+            other.
+
+
+        Example
+        -------
+
+            .. manim:: AlwaysExample
+
+                class AlwaysExample(Scene):
+                    def construct(self):
+                        sq = Square().to_edge(LEFT)
+                        t = Text("Hello World!").always.next_to(sq, UP)
+                        self.add(sq, t)
+                        self.play(sq.animate.to_edge(RIGHT))
+
+        """
+        # can't use typing.cast because Self is under typing_extensions
+        return _UpdaterBuilder(self)  # type: ignore
 
     def __deepcopy__(self, clone_from_id) -> Self:
         cls = self.__class__
@@ -3027,74 +3058,6 @@ class Group(Mobject, metaclass=ConvertToOpenGL):
     def __init__(self, *mobjects, **kwargs) -> None:
         super().__init__(**kwargs)
         self.add(*mobjects)
-
-
-class _AnimationBuilder:
-    def __init__(self, mobject) -> None:
-        self.mobject = mobject
-        self.mobject.generate_target()
-
-        self.overridden_animation = None
-        self.is_chaining = False
-        self.methods = []
-
-        # Whether animation args can be passed
-        self.cannot_pass_args = False
-        self.anim_args = {}
-
-    def __call__(self, **kwargs) -> Self:
-        if self.cannot_pass_args:
-            raise ValueError(
-                "Animation arguments must be passed before accessing methods and can only be passed once",
-            )
-
-        self.anim_args = kwargs
-        self.cannot_pass_args = True
-
-        return self
-
-    def __getattr__(self, method_name) -> types.MethodType:
-        method = getattr(self.mobject.target, method_name)
-        has_overridden_animation = hasattr(method, "_override_animate")
-
-        if (self.is_chaining and has_overridden_animation) or self.overridden_animation:
-            raise NotImplementedError(
-                "Method chaining is currently not supported for "
-                "overridden animations",
-            )
-
-        def update_target(*method_args, **method_kwargs):
-            if has_overridden_animation:
-                self.overridden_animation = method._override_animate(
-                    self.mobject,
-                    *method_args,
-                    anim_args=self.anim_args,
-                    **method_kwargs,
-                )
-            else:
-                self.methods.append([method, method_args, method_kwargs])
-                method(*method_args, **method_kwargs)
-            return self
-
-        self.is_chaining = True
-        self.cannot_pass_args = True
-
-        return update_target
-
-    def build(self) -> Animation:
-        from ..animation.transform import (  # is this to prevent circular import?
-            _MethodAnimation,
-        )
-
-        if self.overridden_animation:
-            anim = self.overridden_animation
-        else:
-            anim = _MethodAnimation(self.mobject, self.methods)
-
-        for attr, value in self.anim_args.items():
-            setattr(anim, attr, value)
-
-        return anim
 
 
 def override_animate(method) -> types.FunctionType:

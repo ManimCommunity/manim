@@ -43,3 +43,10 @@ def test_LastFrameWhenCleared(scene):
     scene.play(dot.animate.shift(UP * 2), rate_func=linear)
     square.clear_updaters()
     scene.wait()
+
+
+def test_always():
+    d = Dot()
+    sq = Square()
+    d.always.next_to(sq, UP)
+    assert len(d.updaters) == 1
