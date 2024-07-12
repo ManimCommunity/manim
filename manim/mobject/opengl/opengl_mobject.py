@@ -51,11 +51,11 @@ if TYPE_CHECKING:
     from typing import Any, Callable, Union
 
     import numpy.typing as npt
-    from typing_extensions import Self, TypeAlias, ParamSpec, Concatenate
+    from typing_extensions import Concatenate, ParamSpec, Self, TypeAlias
 
+    from manim.animation.animation import Animation
     from manim.renderer.renderer import RendererData
     from manim.typing import PathFuncType, Point3D, Point3D_Array
-    from manim.animation.animation import Animation
 
     TimeBasedUpdater: TypeAlias = Callable[
         ["OpenGLMobject", float], "OpenGLMobject | None"
@@ -77,7 +77,9 @@ T_co = TypeVar("T_co", covariant=True, bound="OpenGLMobject")
 UNIFORM_DTYPE = np.float64
 
 
-def stash_mobject_pointers(func: Callable[Concatenate[M, P], O]) -> Callable[Concatenate[M, P], O]:
+def stash_mobject_pointers(
+    func: Callable[Concatenate[M, P], O],
+) -> Callable[Concatenate[M, P], O]:
     @wraps(func)
     def wrapper(self: M, *args: P.args, **kwargs: P.kwargs):
         uncopied_attrs = ["parents", "target", "saved_state"]

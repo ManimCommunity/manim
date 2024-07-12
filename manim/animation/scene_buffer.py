@@ -1,18 +1,15 @@
 from __future__ import annotations
 
 from collections.abc import Iterator
-from typing import TYPE_CHECKING, Any, final
 from enum import Enum
+from typing import TYPE_CHECKING, Any, final
 
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-__all__ = [
-    "SceneBuffer",
-    "SceneOperation"
-]
+__all__ = ["SceneBuffer", "SceneOperation"]
 
 
 class SceneOperation(Enum):
@@ -53,7 +50,9 @@ class SceneBuffer:
     """
 
     def __init__(self) -> None:
-        self.operations: list[tuple[SceneOperation, Sequence[OpenGLMobject], dict[str, Any]]] = []
+        self.operations: list[
+            tuple[SceneOperation, Sequence[OpenGLMobject], dict[str, Any]]
+        ] = []
 
     def add(self, *mobs: OpenGLMobject, **kwargs: Any) -> None:
         """Add mobjects to the scene."""
@@ -63,7 +62,9 @@ class SceneBuffer:
         """Remove mobjects from the scene."""
         self.operations.append((SceneOperation.REMOVE, mobs, kwargs))
 
-    def replace(self, mob: OpenGLMobject, *replacements: OpenGLMobject, **kwargs: Any) -> None:
+    def replace(
+        self, mob: OpenGLMobject, *replacements: OpenGLMobject, **kwargs: Any
+    ) -> None:
         """Replace a ``mob`` with ``replacements`` on the scene."""
         self.operations.append((SceneOperation.REPLACE, (mob, *replacements), kwargs))
 
@@ -77,5 +78,7 @@ class SceneBuffer:
 
     __repr__ = __str__
 
-    def __iter__(self) -> Iterator[tuple[SceneOperation, Sequence[OpenGLMobject], dict[str, Any]]]:
+    def __iter__(
+        self,
+    ) -> Iterator[tuple[SceneOperation, Sequence[OpenGLMobject], dict[str, Any]]]:
         return iter(self.operations)

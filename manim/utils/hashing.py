@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable, Hashable
 import copy
 import inspect
 import json
 import typing
 import zlib
+from collections.abc import Callable, Hashable
 from time import perf_counter
 from types import FunctionType, MappingProxyType, MethodType, ModuleType
 from typing import Any
@@ -19,10 +19,10 @@ from .. import config, logger
 if typing.TYPE_CHECKING:
     from typing_extensions import TypeVar
 
-    from manim.scene.scene import Scene
     from manim.animation.protocol import AnimationProtocol
     from manim.camera.camera import Camera
     from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+    from manim.scene.scene import Scene
 
     T = TypeVar("T")
     S = TypeVar("S", default=str)

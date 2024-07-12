@@ -214,9 +214,7 @@ class Manager:
             if rt < vt:
                 self._update_frame(0, write_to_file=False)
 
-    def _play(
-        self, *animations: AnimationProtocol
-    ) -> None:
+    def _play(self, *animations: AnimationProtocol) -> None:
         """Play a bunch of animations"""
 
         if self.window is not None:
@@ -254,9 +252,13 @@ class Manager:
                 self.scene.mobjects,
             )
             if self.file_writer.is_already_cached(hash_current_play):
-                logger.info(f"Animation {self.file_writer.num_plays} : Using cached data (hash : {hash_current_play})")
+                logger.info(
+                    f"Animation {self.file_writer.num_plays} : Using cached data (hash : {hash_current_play})"
+                )
                 # TODO: think about how to skip
-                raise NotImplementedError("Skipping cached animations is not implemented yet")
+                raise NotImplementedError(
+                    "Skipping cached animations is not implemented yet"
+                )
 
         self.file_writer.add_partial_movie_file(hash_current_play)
         if hash_current_play is not None and hash_current_play.startswith("uncached_"):
@@ -290,9 +292,7 @@ class Manager:
 
         self._write_hashed_movie_file(animations=[])
 
-        update_mobjects = (
-            self.scene.should_update_mobjects()
-        )
+        update_mobjects = self.scene.should_update_mobjects()
         condition = stop_condition or (lambda: False)
 
         progression = self._calc_time_progression(duration)
