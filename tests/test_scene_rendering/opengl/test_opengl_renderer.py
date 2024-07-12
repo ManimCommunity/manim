@@ -3,6 +3,7 @@ from __future__ import annotations
 import platform
 from unittest.mock import Mock
 
+import numpy as np
 import pytest
 
 from manim.camera.camera import OpenGLRenderer
@@ -10,18 +11,21 @@ from tests.assert_utils import assert_file_exists
 from tests.test_scene_rendering.simple_scenes import *
 
 
-def test_write_to_movie_disables_window(using_temp_opengl_config, disabling_caching):
+def test_write_to_movie_disables_window(
+    config, using_temp_opengl_config, disabling_caching
+):
     """write_to_movie should disable window by default"""
     scene = SquareToCircle()
     renderer = scene.renderer
     renderer.update_frame = Mock(wraps=renderer.update_frame)
     scene.render()
     assert renderer.window is None
-    assert_file_exists(config["output_file"])
+    assert_file_exists(config.output_file)
 
 
 @pytest.mark.skip(reason="Temporarily skip due to failing in Windows CI")  # type: ignore
 def test_force_window_opengl_render_with_movies(
+    config,
     using_temp_opengl_config,
     force_window_config_write_to_movie,
     disabling_caching,
@@ -53,9 +57,10 @@ def test_force_window_opengl_render_with_format(
     renderer.window.close()
 
 
-@pytest.mark.parametrize("enable_preview", [False])
-def test_get_frame_with_preview_disabled(use_opengl_renderer):
+def test_get_frame_with_preview_disabled(config, using_opengl_renderer):
     """Get frame is able to fetch frame with the correct dimensions when preview is disabled"""
+    config.preview = False
+
     scene = SquareToCircle()
     assert isinstance(scene.renderer, OpenGLRenderer)
     assert not config.preview
@@ -70,9 +75,10 @@ def test_get_frame_with_preview_disabled(use_opengl_renderer):
 
 
 @pytest.mark.slow
-@pytest.mark.parametrize("enable_preview", [True])
-def test_get_frame_with_preview_enabled(use_opengl_renderer):
+def test_get_frame_with_preview_enabled(config, using_opengl_renderer):
     """Get frame is able to fetch frame with the correct dimensions when preview is enabled"""
+    config.preview = True
+
     scene = SquareToCircle()
     assert isinstance(scene.renderer, OpenGLRenderer)
     assert config.preview is True
@@ -86,8 +92,9 @@ def test_get_frame_with_preview_enabled(use_opengl_renderer):
     assert renderer.get_pixel_shape()[1] == frame.shape[0]
 
 
-@pytest.mark.parametrize("enable_preview", [True])
-def test_pixel_coords_to_space_coords(use_opengl_renderer):
+def test_pixel_coords_to_space_coords(config, using_opengl_renderer):
+    config.preview = True
+
     scene = SquareToCircle()
     assert isinstance(scene.renderer, OpenGLRenderer)
 

@@ -5,6 +5,8 @@ from pathlib import Path
 
 import pytest
 
+import manim
+
 
 def pytest_addoption(parser):
     parser.addoption(
@@ -41,6 +43,20 @@ def pytest_collection_modifyitems(config, items):
         for item in items:
             if "slow" in item.keywords:
                 item.add_marker(slow_skip)
+
+
+@pytest.fixture
+def config():
+    saved = manim.config.copy()
+    # we need to return the actual config so that tests
+    # using tempconfig pass
+    yield manim.config
+    manim.config.update(saved)
+
+
+@pytest.fixture
+def dry_run(config):
+    config.dry_run = True
 
 
 @pytest.fixture(scope="session")
