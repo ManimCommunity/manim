@@ -728,13 +728,22 @@ class OpenGLMobject(Generic[R]):
     def split(self) -> list[OpenGLMobject]:
         return self.submobjects
 
-    def assemble_family(self) -> Self:
+    def note_changed_family(self) -> Self:
+        """Updates bounding boxes and updater statuses.
+
+        This used to be called ``assemble_family``
+
+        .. warning::
+
+            Remove the above remark about ``assemble_family`` before experimental
+            is merged, it's a note to MrDiver and other devs
+        """
         sub_families = (sm.get_family() for sm in self.submobjects)
         self.family = [self, *uniq_chain(*sub_families)]
         self.refresh_has_updater_status()
         self.refresh_bounding_box()
         for parent in self.parents:
-            parent.assemble_family()
+            parent.note_changed_family()
         return self
 
     def get_family(self, recurse=True) -> list[OpenGLMobject]:
@@ -836,7 +845,7 @@ class OpenGLMobject(Generic[R]):
                 self.submobjects.append(mobject)
             if self not in mobject.parents:
                 mobject.parents.append(self)
-        self.assemble_family()
+        self.note_changed_family()
         return self
 
     def remove(self, *mobjects: OpenGLMobject, reassemble: bool = True) -> Self:
@@ -867,7 +876,7 @@ class OpenGLMobject(Generic[R]):
             if self in mobject.parents:
                 mobject.parents.remove(self)
         if reassemble:
-            self.assemble_family()
+            self.note_changed_family()
         return self
 
     def add_to_back(self, *mobjects: OpenGLMobject) -> Self:
@@ -924,7 +933,7 @@ class OpenGLMobject(Generic[R]):
             old_submob.parents.remove(self)
         self.submobjects[index] = new_submob
         new_submob.parents.append(self)
-        self.assemble_family()
+        self.note_changed_family()
         return self
 
     def insert_submobject(self, index: int, mobject: OpenGLMobject):
@@ -953,7 +962,7 @@ class OpenGLMobject(Generic[R]):
         if mobject not in self.submobjects:
             self.submobjects.insert(index, mobject)
 
-        self.assemble_family()
+        self.note_changed_family()
         return self
 
     def set_submobjects(self, submobject_list: list[OpenGLMobject]):
@@ -1335,7 +1344,7 @@ class OpenGLMobject(Generic[R]):
             for submob in self.submobjects:
                 submob.shuffle(recurse=True)
         random.shuffle(self.submobjects)
-        self.assemble_family()
+        self.note_changed_family()
         return self
 
     def reverse_submobjects(self, recursive=False):
@@ -1363,7 +1372,7 @@ class OpenGLMobject(Generic[R]):
         if recursive:
             for submob in self.submobjects:
                 submob.reverse_submobjects(recursive=True)
-        self.assemble_family()
+        self.note_changed_family()
 
     # Copying
 
