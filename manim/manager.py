@@ -265,7 +265,7 @@ class Manager:
             self.file_writer.begin_animation(allow_write=self._write_files)
 
     def _create_progressbar(
-        self, total: float, description: str, **kwargs: dict[str, Any]
+        self, total: float, description: str, **kwargs: Any
     ) -> tqdm | contextlib.nullcontext[NullProgressBar]:
         """Create a progressbar"""
 

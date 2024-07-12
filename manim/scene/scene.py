@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import random
 from collections import OrderedDict, deque
-from collections.abc import Sequence
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -21,7 +20,7 @@ from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.iterables import list_difference_update
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
+    from collections.abc import Iterable, Reversible, Sequence
     from typing import Any, Callable
 
     from manim.animation.protocol import AnimationProtocol
@@ -288,7 +287,7 @@ class Scene:
     def point_to_mobject(
         self,
         point: np.ndarray,
-        search_set: Iterable[OpenGLMobject] | None = None,
+        search_set: Reversible[OpenGLMobject] | None = None,
         buff: float = 0,
     ) -> OpenGLMobject | None:
         """

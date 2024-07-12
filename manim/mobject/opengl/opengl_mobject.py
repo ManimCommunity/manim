@@ -64,12 +64,10 @@ if TYPE_CHECKING:
     Updater: TypeAlias = Union[TimeBasedUpdater, NonTimeUpdater]
     PointUpdateFunction: TypeAlias = Callable[[np.ndarray], np.ndarray]
 
-    T = TypeVar("T", bound=RendererData)
-    _F = TypeVar("_F", bound=Callable[..., Any])
+    R = TypeVar("R", bound=RendererData)
     M = TypeVar("M", bound="OpenGLMobject")
-
+    T = TypeVar("T")
     P = ParamSpec("P")
-    O = TypeVar("O")
 
 
 T_co = TypeVar("T_co", covariant=True, bound="OpenGLMobject")
@@ -78,8 +76,8 @@ UNIFORM_DTYPE = np.float64
 
 
 def stash_mobject_pointers(
-    func: Callable[Concatenate[M, P], O],
-) -> Callable[Concatenate[M, P], O]:
+    func: Callable[Concatenate[M, P], T],
+) -> Callable[Concatenate[M, P], T]:
     @wraps(func)
     def wrapper(self: M, *args: P.args, **kwargs: P.kwargs):
         uncopied_attrs = ["parents", "target", "saved_state"]
@@ -117,7 +115,9 @@ class MobjectStatus:
     points_changed: bool = False
 
 
-class OpenGLMobject:
+# it's generic in its renderer, which is a little bit cursed
+# In the future, it should be replaced with a RendererData protocol
+class OpenGLMobject(Generic[R]):
     """Mathematical Object: base class for objects that can be displayed on screen.
 
     Attributes
@@ -178,7 +178,8 @@ class OpenGLMobject:
         self.data: dict[str, np.ndarray] = {}
         self.uniforms: dict[str, float | np.ndarray] = {}
 
-        self.renderer_data: T | None = None
+        # TODO replace with protocol
+        self.renderer_data: R | None = None
         self.status = MobjectStatus()
 
         self.init_data()
