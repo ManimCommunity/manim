@@ -454,7 +454,8 @@ class Animation(AnimationProtocol):
 def prepare_animation(
     anim: AnimationProtocol
     | mobject._AnimationBuilder
-    | opengl_mobject._AnimationBuilder,
+    | opengl_mobject._AnimationBuilder
+    | opengl_mobject.OpenGLMobject,
 ) -> Animation:
     r"""Returns either an unchanged animation, or the animation built
     from a passed animation factory.

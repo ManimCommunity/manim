@@ -339,7 +339,9 @@ class Scene:
 
     def play(
         self,
-        *proto_animations: AnimationProtocol | _AnimationBuilder,
+        # the OpenGLMobject is a side-effect of the return type of animate, it will
+        # raise a ValueError
+        *proto_animations: AnimationProtocol | _AnimationBuilder | OpenGLMobject,
         run_time: float | None = None,
         rate_func: Callable[[float], float] | None = None,
         lag_ratio: float | None = None,
