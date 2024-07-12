@@ -4,14 +4,14 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 from manim._config import logger
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+from manim.mobject.types.image_mobject import ImageMobject
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
     from manim.camera.camera import Camera
-    from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-    from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
-    from manim.mobject.types.image_mobject import ImageMobject
     from manim.typing import PixelArray
 
 
