@@ -598,21 +598,21 @@ lightness (for greyscale images), an `RGB_Array_Int` or an
 GrayscalePixelArray: TypeAlias = PixelArray
 """``shape: (height, width)``
 
-A 100% opaque grayscale `Image`, where every pixel value is a
+A 100% opaque grayscale `PixelArray`, where every pixel value is a
 `ManimInt` indicating its lightness (black -> gray -> white).
 """
 
 RGBPixelArray: TypeAlias = PixelArray
 """``shape: (height, width, 3)``
 
-A 100% opaque `Image` in color, where every pixel value is an
+A 100% opaque `PixelArray` in color, where every pixel value is an
 `RGB_Array_Int` object.
 """
 
 RGBAPixelArray: TypeAlias = PixelArray
 """``shape: (height, width, 4)``
 
-An `Image` in color where pixels can be transparent. Every pixel
+A `PixelArray` in color where pixels can be transparent. Every pixel
 value is an `RGBA_Array_Int` object.
 """
 
