@@ -6,13 +6,14 @@ __all__ = ["deprecated", "deprecated_params"]
 
 
 import inspect
+import logging
 import re
 from collections.abc import Iterable
 from typing import Any, Callable
 
 from decorator import decorate, decorator
 
-from .. import logger
+logger = logging.getLogger("manim")
 
 
 def _get_callable_info(callable: Callable) -> tuple[str, str]:
@@ -218,6 +219,7 @@ def deprecated(
             The return value of the given callable when being passed the given
             arguments.
         """
+        print("about to emit warning")
         logger.warning(warning_msg())
         return func(*args, **kwargs)
 
@@ -236,8 +238,9 @@ def deprecated_params(
     since: str | None = None,
     until: str | None = None,
     message: str | None = "",
-    redirections: None
-    | (Iterable[tuple[str, str] | Callable[..., dict[str, Any]]]) = None,
+    redirections: None | (
+        Iterable[tuple[str, str] | Callable[..., dict[str, Any]]]
+    ) = None,
 ) -> Callable:
     """Decorator to mark parameters of a callable as deprecated.
 

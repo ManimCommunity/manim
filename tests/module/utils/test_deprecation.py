@@ -14,8 +14,11 @@ def _get_caplog_record_msg(warn_caplog_manim):
 
 @pytest.fixture()
 def warn_caplog_manim(caplog):
-    caplog.set_level(logging.WARNING, logger="manim")
+    logger = logging.getLogger("manim")
+    logger.propagate = True
+    caplog.set_level(logging.INFO, logger="manim")
     yield caplog
+    logger.propagate = False
 
 
 @deprecated
