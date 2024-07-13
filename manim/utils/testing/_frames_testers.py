@@ -1,12 +1,11 @@
 from __future__ import annotations
 
 import contextlib
+import logging
 import warnings
 from pathlib import Path
 
-import logging
 import numpy as np
-
 
 from ._show_diff import show_diff_helper
 

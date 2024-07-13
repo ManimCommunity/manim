@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import copy
+import logging
 import re
 from pathlib import Path
 
-import logging
 import moderngl
 import numpy as np
 

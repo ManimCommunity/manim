@@ -5,7 +5,6 @@ import re
 
 from cloup import Choice, option, option_group
 
-
 __all__ = ["global_options"]
 
 logger = logging.getLogger("manim")

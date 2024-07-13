@@ -7,7 +7,6 @@ from cloup import Choice, option, option_group
 
 from manim.constants import QUALITIES, RendererType
 
-
 __all__ = ["render_options"]
 
 logger = logging.getLogger("manim")

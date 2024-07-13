@@ -238,9 +238,8 @@ def deprecated_params(
     since: str | None = None,
     until: str | None = None,
     message: str | None = "",
-    redirections: None | (
-        Iterable[tuple[str, str] | Callable[..., dict[str, Any]]]
-    ) = None,
+    redirections: None
+    | (Iterable[tuple[str, str] | Callable[..., dict[str, Any]]]) = None,
 ) -> Callable:
     """Decorator to mark parameters of a callable as deprecated.
 
