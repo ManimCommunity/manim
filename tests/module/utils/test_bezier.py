@@ -8,6 +8,7 @@ from _subdivision_matrices import SUBDIVISION_MATRICES
 from manim.typing import ManimFloat
 from manim.utils.bezier import (
     _get_subdivision_matrix,
+    get_quadratic_approximation_of_cubic,
     get_smooth_cubic_bezier_handle_points,
     partial_bezier_points,
     split_bezier,
@@ -164,6 +165,53 @@ def test_get_smooth_cubic_bezier_handle_points() -> None:
                 [-3 / 2, -1 / 2, 2],
                 [1 / 2, -3 / 2, 3 / 2],
                 [3 / 2, 1 / 2, 0],
+            ]
+        ),
+    )
+
+
+def test_get_quadratic_approximation_of_cubic() -> None:
+    C = np.array(
+        [
+            [-5, 2, 0],
+            [-4, 2, 0],
+            [-3, 2, 0],
+            [-2, 2, 0],
+            [-2, 2, 0],
+            [-7 / 3, 4 / 3, 0],
+            [-8 / 3, 2 / 3, 0],
+            [-3, 0, 0],
+            [-3, 0, 0],
+            [-1 / 3, -1, 0],
+            [7 / 3, -2, 0],
+            [5, -3, 0],
+        ]
+    )
+    a0, h0, h1, a1 = C[::4], C[1::4], C[2::4], C[3::4]
+
+    Q = get_quadratic_approximation_of_cubic(a0, h0, h1, a1)
+    assert np.allclose(
+        Q,
+        np.array(
+            [
+                [-5, 2, 0],
+                [-17 / 4, 2, 0],
+                [-7 / 2, 2, 0],
+                [-7 / 2, 2, 0],
+                [-11 / 4, 2, 0],
+                [-2, 2, 0],
+                [-2, 2, 0],
+                [-9 / 4, 3 / 2, 0],
+                [-5 / 2, 1, 0],
+                [-5 / 2, 1, 0],
+                [-11 / 4, 1 / 2, 0],
+                [-3, 0, 0],
+                [-3, 0, 0],
+                [-1, -3 / 4, 0],
+                [1, -3 / 2, 0],
+                [1, -3 / 2, 0],
+                [3, -9 / 4, 0],
+                [5, -3, 0],
             ]
         ),
     )
