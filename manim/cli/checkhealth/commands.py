@@ -6,7 +6,7 @@ your Manim installation.
 from __future__ import annotations
 
 import sys
-import time
+import timeit
 
 import click
 import cloup
@@ -63,13 +63,7 @@ def checkhealth():
             import manim as mn
 
             class CheckHealthDemo(mn.Scene):
-                def __init__(self):
-                    super().__init__()
-                    self.execution_time = None
-
-                def construct(self):
-                    start = time.time()
-
+                def _inner_construct(self):
                     banner = mn.ManimBanner().shift(mn.UP * 0.5)
                     self.play(banner.create())
                     self.wait(0.5)
@@ -86,7 +80,8 @@ def checkhealth():
                         mn.FadeOut(text_tex_group, shift=mn.DOWN),
                     )
 
-                    self.execution_time = time.time() - start
+                def construct(self):
+                    self.execution_time = timeit.timeit(self._inner_construct, number=1)
 
             with mn.tempconfig({"preview": True, "disable_caching": True}):
                 scene = CheckHealthDemo()
