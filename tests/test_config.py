@@ -53,7 +53,7 @@ def test_transparent(config):
     np.testing.assert_allclose(frame[0, 0], [0, 0, 0, 255])
 
     config.transparent = True
-    
+
     scene = MyScene()
     scene.render()
     frame = scene.renderer.get_frame()
@@ -63,7 +63,7 @@ def test_transparent(config):
 def test_transparent_by_background_opacity(config):
     config.dry_run = True
     config.background_opacity = 0.0
-    
+
     scene = MyScene()
     scene.render()
     frame = scene.renderer.get_frame()
