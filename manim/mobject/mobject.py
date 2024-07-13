@@ -396,15 +396,15 @@ class Mobject:
     def always(self) -> Self:
         """Call a method on a mobject every frame.
 
-        This is syntactic sugar for ``mob.add_updater(lambda m: m.method())``
+        This is syntactic sugar for ``mob.add_updater(lambda m: m.method(*args, **kwargs), call_updater=True)``.
+        Note that this will call the method immediately. If this behavior is not
+        desired, you should use :meth:`add_updater` directly.
 
         .. warning::
 
-            Attempting to add multiple updaters to the same mobject (such as
-            by calling this method more than once, and not removing the previous updater)
-            can have unintended side effects, such as one updater taking priority over the
-            other.
-
+            Chaining of methods is allowed, but each method will be added
+            as its own updater. If you are chaining methods, make sure they
+            do not interfere with each other or you may get unexpected results.
 
         Example
         -------
@@ -414,12 +414,12 @@ class Mobject:
                 class AlwaysExample(Scene):
                     def construct(self):
                         sq = Square().to_edge(LEFT)
-                        t = Text("Hello World!").always.next_to(sq, UP)
+                        t = Text("Hello World!")
+                        t.always.next_to(sq, UP)
                         self.add(sq, t)
                         self.play(sq.animate.to_edge(RIGHT))
-
         """
-        # can't use typing.cast because Self is under typing_extensions
+        # can't use typing.cast because Self is under TYPE_CHECKING
         return _UpdaterBuilder(self)  # type: ignore
 
     def __deepcopy__(self, clone_from_id) -> Self:
