@@ -83,7 +83,10 @@ class Manager:
         -------
             An instance of a renderer
         """
-        return plugins.renderer()
+        renderer = plugins.renderer()
+        if config.preview:
+            renderer.use_window()
+        return renderer
 
     def create_window(self) -> WindowABC | None:
         """Create and return a window instance.
@@ -167,7 +170,17 @@ class Manager:
         for hook in plugins.hooks[Hooks.POST_CONSTRUCT]:
             hook(self)
 
-        self.file_writer.finish()
+        if self.file_writer.num_plays:
+            self.file_writer.finish()
+        # otherwise no animations were played
+        elif config.write_to_movie or config.save_last_frame:
+            self.render_state(write_to_file=False)
+            # FIXME: for some reason the OpenGLRenderer does not give out the
+            # correct frame values here
+            frame = self.renderer.get_pixels()
+            # NOTE: add hooks for post-processing (e.g. gaussian blur)?
+            self.file_writer.save_image(frame)
+
         self._write_files = False
 
     def tear_down(self) -> None:
@@ -192,10 +205,10 @@ class Manager:
             "you can interact with the scene. "
             "Press `command + q` or `esc` to quit"
         )
+        # TODO: Replace with actual dt instead
+        # of hardcoded dt
+        dt = 1 / config.frame_rate
         while not self.window.is_closing:
-            # TODO: Replace with actual dt instead
-            # of hardcoded dt
-            dt = 1 / config.frame_rate
             self._update_frame(dt)
 
     def _update_frame(self, dt: float, *, write_to_file: bool | None = None) -> None:
@@ -214,8 +227,7 @@ class Manager:
         if self.window is not None:
             self.window.clear()
 
-        state = self.scene.get_state()
-        self._render_frame(state, write_file=write_to_file)
+        self.render_state(write_to_file=write_to_file)
 
         if self.window is not None:
             self.window.swap_buffers()
@@ -274,8 +286,7 @@ class Manager:
                 )
 
         self.file_writer.add_partial_movie_file(hash_current_play)
-        if hash_current_play is not None and hash_current_play.startswith("uncached_"):
-            self.file_writer.begin_animation(allow_write=self._write_files)
+        self.file_writer.begin_animation(allow_write=self._write_files)
 
     def _create_progressbar(
         self, total: float, description: str, **kwargs: Any
@@ -295,6 +306,7 @@ class Manager:
                 **kwargs,
             )
 
+    # TODO: change to a single wait animation
     def _wait(
         self,
         duration: float,
@@ -336,7 +348,6 @@ class Manager:
         self, animations: Sequence[AnimationProtocol]
     ) -> None:
         last_t = 0.0
-        # TODO: remove the run_time or
         run_time = self._calc_runtime(animations)
         progression = self._calc_time_progression(run_time)
         with self._create_progressbar(
@@ -350,13 +361,34 @@ class Manager:
                 progress.update(1)
 
     def _calc_time_progression(self, run_time: float) -> npt.NDArray[np.float64]:
+        """Compute the time values at which to evaluate the animation"""
+
         return np.arange(0, run_time, 1 / config.frame_rate)
 
     def _calc_runtime(self, animations: Iterable[AnimationProtocol]) -> float:
+        """Calculate the runtime of an iterable of animations.
+
+        .. warning::
+
+            If animations is a generator, this will consume the generator.
+        """
         return max(animation.get_run_time() for animation in animations)
 
-    def _render_frame(self, state: SceneState, write_file: bool | None = None) -> None:
-        """Renders a frame based on a state, and writes it to a file"""
+    def render_state(self, write_to_file: bool | None = None) -> None:
+        """Render the current state of the scene.
+
+        Any extra kwargs are passed to :meth:`_render_frame`.
+        """
+        state = self.scene.get_state()
+        self._render_frame(state, write_file=write_to_file)
+
+    def _render_frame(
+        self, state: SceneState, *, write_file: bool | None = None
+    ) -> None:
+        """Renders a frame based on a state, and writes it to a file.
+
+        Any extra kwargs are passed to :meth:`write_frame`.
+        """
 
         # render the frame to the window
         # TODO: change self.scene.camera to state.camera

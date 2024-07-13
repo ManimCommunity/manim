@@ -407,7 +407,7 @@ class OpenGLRenderer(Renderer, RendererProtocol):
         # return data, data_size
 
     def render_image(self, mob):
-        raise NotImplementedError  # TODO
+        raise NotImplementedError
 
     def render_previous(self, camera: Camera) -> None:
         raise NotImplementedError
@@ -415,7 +415,7 @@ class OpenGLRenderer(Renderer, RendererProtocol):
     def render_mesh(self, mob) -> None:
         raise NotImplementedError
 
-    def render_vmobject(self, mob: OpenGLVMobject) -> None:  # type: ignore
+    def render_vmobject(self, mob: OpenGLVMobject) -> None:
         self.stencil_buffer_fbo.use()
         self.stencil_buffer_fbo.clear()
         self.render_target_fbo.use()

@@ -410,20 +410,18 @@ class FileWriter(FileWriterProtocol):
 
     def save_image(self, image: PixelArray) -> None:
         """
-        The name is a misnomer. This method saves the image
-        passed to it as an in the default image directory.
+        Saves an image in the default image directory.
 
         Parameters
         ----------
         image
             The pixel array of the image to save.
         """
-        if config["dry_run"]:
-            return
         if not config["output_file"]:
             self.image_file_path = add_version_before_extension(self.image_file_path)
 
-        Image.fromarray(image).save(self.image_file_path)
+        image_processed = Image.fromarray(image)
+        image_processed.save(self.image_file_path)
         self.print_file_ready_message(self.image_file_path)
 
     def finish(self) -> None:
@@ -806,5 +804,6 @@ class FileWriter(FileWriterProtocol):
 
     def print_file_ready_message(self, file_path: str | Path) -> None:
         """Prints the "File Ready" message to STDOUT."""
-        config["output_file"] = file_path
-        logger.info("\nFile ready at %(file_path)s\n", {"file_path": f"'{file_path}'"})
+
+        config.output_file = str(file_path)
+        logger.info(f"\nFile ready at {str(file_path)!r}\n")

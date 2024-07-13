@@ -950,6 +950,7 @@ class ManimConfig(MutableMapping):
     def notify_outdated_version(self, value: bool) -> None:
         self._set_boolean("notify_outdated_version", value)
 
+    # TODO: Rename to write_to_file
     @property
     def write_to_movie(self) -> bool:
         """Whether to render the scene to a movie file (-w)."""
