@@ -5,9 +5,9 @@ import inspect
 from pathlib import Path
 from typing import Callable
 
-from _pytest.fixtures import FixtureRequest
+import pytest
 
-from manim import Scene
+from manim import Manager, Scene
 from manim._config import tempconfig
 from manim._config.utils import ManimConfig
 
@@ -17,6 +17,8 @@ from ._test_class_makers import (
     _make_scene_file_writer_class,
     _make_test_scene_class,
 )
+
+__all__ = ["frames_comparison"]
 
 SCENE_PARAMETER_NAME = "scene"
 _tests_root_dir_path = Path(__file__).absolute().parents[2]
@@ -55,7 +57,7 @@ def frames_comparison(
             SCENE_PARAMETER_NAME
             not in inspect.getfullargspec(tested_scene_construct).args
         ):
-            raise Exception(
+            raise ValueError(
                 f"Invalid graphical test function test function : must have {SCENE_PARAMETER_NAME!r} as one of the parameters.",
             )
 
@@ -64,16 +66,17 @@ def frames_comparison(
             functools.partial(tested_scene_construct, scene=None),
         )
 
-        if "__module_test__" not in tested_scene_construct.__globals__:
-            raise Exception(
+        module_name = tested_scene_construct.__globals__.get("__module_test__")
+        if module_name is None:
+            raise AttributeError(
                 "There is no module test name indicated for the graphical unit test. You have to declare __module_test__ in the test file.",
             )
-        module_name = tested_scene_construct.__globals__.get("__module_test__")
-        test_name = tested_scene_construct.__name__[len("test_") :]
+
+        test_name = tested_scene_construct.__name__.removeprefix("test_")
 
         @functools.wraps(tested_scene_construct)
         # The "request" parameter is meant to be used as a fixture by pytest. See below.
-        def wrapper(*args, request: FixtureRequest, tmp_path, **kwargs):
+        def wrapper(*args, request: pytest.FixtureRequest, tmp_path, **kwargs):
             # Wraps the test_function to a construct method, to "freeze" the eventual additional arguments (parametrizations fixtures).
             construct = functools.partial(tested_scene_construct, *args, **kwargs)
 
@@ -83,7 +86,7 @@ def frames_comparison(
             # Example: if "length" is parametrized from 0 to 20, the kwargs
             # will be once with {"length" : 1}, etc.
             test_name_with_param = test_name + "_".join(
-                f"_{str(tup[0])}[{str(tup[1])}]" for tup in kwargs.items()
+                f"_{k}[{v}]" for k, v in kwargs.items()
             )
 
             config_tests = _config_test(last_frame)
@@ -97,10 +100,7 @@ def frames_comparison(
                 config_tests.write_to_movie = True
 
             setting_test = request.config.getoption("--set_test")
-            try:
-                test_file_path = tested_scene_construct.__globals__["__file__"]
-            except Exception:
-                test_file_path = None
+            test_file_path = tested_scene_construct.__globals__.get("__file__")
             real_test = _make_test_comparing_frames(
                 file_path=_control_data_path(
                     test_file_path,
@@ -134,7 +134,7 @@ def frames_comparison(
 
         # Reach a bit into pytest internals to hoist the marks from our wrapped
         # function.
-        setattr(wrapper, "pytestmark", [])
+        wrapper.pytestmark = []  # type: ignore  # Do we really need this?
         new_marks = getattr(tested_scene_construct, "pytestmark", [])
         wrapper.pytestmark = new_marks  # type: ignore
         return wrapper
@@ -189,20 +189,10 @@ def _make_test_comparing_frames(
 
     def real_test():
         with frames_tester.testing():
-<<<<<<< HEAD
-            sceneTested = _make_test_scene_class(
-=======
             scene_tested: type[Scene] = _make_test_scene_class(
->>>>>>> 273c060c (Progress on rewriting frame stuff)
                 base_scene=base_scene,
                 construct_test=construct,
             )
-<<<<<<< HEAD
-            scene_tested = sceneTested(skip_animations=True)
-            scene_tested.render()
-            if last_frame:
-                frames_tester.check_frame(-1, scene_tested.renderer.get_frame())
-=======
             manager = Manager(scene_tested)
             manager.file_writer = file_writer_class(
                 manager.scene.get_default_scene_name()
@@ -210,7 +200,6 @@ def _make_test_comparing_frames(
             manager.render()
             if last_frame:
                 frames_tester.check_frame(-1, manager.renderer.get_pixels())
->>>>>>> 273c060c (Progress on rewriting frame stuff)
 
     return real_test
 

@@ -7,6 +7,8 @@ from manim.scene.scene import Scene
 
 from ._frames_testers import _FramesTester
 
+__all__ = ["_make_test_scene_class", "_make_scene_file_writer_class"]
+
 
 def _make_test_scene_class(
     base_scene: type[Scene],
@@ -28,8 +30,9 @@ class DummySceneFileWriter(FileWriterProtocol):
     """Delegate of SceneFileWriter used to test the frames."""
 
     def __init__(self, scene_name: str):
+        # we still need num_plays to satisfy the protocol
         self.num_plays = 0
-        self.frames = []
+        self.frames = 0
 
     def begin_animation(self, allow_write: bool = False):
         pass
@@ -44,7 +47,7 @@ class DummySceneFileWriter(FileWriterProtocol):
         pass
 
     def write_frame(self, frame):
-        self.frames.append(frame)
+        self.frames += 1
 
     def finish(self):
         pass
@@ -53,7 +56,7 @@ class DummySceneFileWriter(FileWriterProtocol):
 def _make_scene_file_writer_class(tester: _FramesTester) -> type[FileWriterProtocol]:
     class TestSceneFileWriter(DummySceneFileWriter):
         def write_frame(self, frame):
-            tester.check_frame(len(self.frames), frame)
+            tester.check_frame(self.frames, frame)
             super().write_frame(frame)
 
     return TestSceneFileWriter

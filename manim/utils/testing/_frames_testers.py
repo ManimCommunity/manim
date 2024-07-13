@@ -11,6 +11,8 @@ from manim.typing import PixelArray
 
 from ._show_diff import show_diff_helper
 
+__all__ = ["_FramesTester", "_ControlDataWriter"]
+
 FRAME_ABSOLUTE_TOLERANCE = 1.01
 FRAME_MISMATCH_RATIO_TOLERANCE = 1e-5
 
