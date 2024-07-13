@@ -1272,8 +1272,8 @@ class ManimConfig(MutableMapping):
     @background_opacity.setter
     def background_opacity(self, value: float) -> None:
         self._set_between("background_opacity", value, 0, 1)
-        if self.background_opacity == 0:
-            self.transparent = True
+        if self.background_opacity < 1:
+            self.resolve_movie_file_extension(is_transparent=True)
 
     @property
     def frame_size(self) -> tuple[int, int]:
@@ -1308,8 +1308,8 @@ class ManimConfig(MutableMapping):
 
     @property
     def transparent(self) -> bool:
-        """Whether the background opacity is 0.0 (-t)."""
-        return self._d["background_opacity"] == 0.0
+        """Whether the background opacity is less than 1.0 (-t)."""
+        return self._d["background_opacity"] < 1.0
 
     @transparent.setter
     def transparent(self, value: bool) -> None:
