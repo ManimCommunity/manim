@@ -99,6 +99,6 @@ class _UpdaterBuilder(Generic[T_co]):
                 lambda m: getattr(m, name)(*method_args, **method_kwargs),
                 call_updater=True,
             )
-            return mob
+            return self
 
         return add_updater
