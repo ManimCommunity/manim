@@ -99,6 +99,7 @@ def make_logger(
     logger = logging.getLogger("manim")
     logger.addHandler(rich_handler)
     logger.setLevel(verbosity)
+    logger.propagate = False
 
     if not (libav_logger := logging.getLogger()).hasHandlers():
         libav_logger.addHandler(rich_handler)
