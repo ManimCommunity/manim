@@ -642,7 +642,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         self.edges = {}
         self._edge_config = {}
         self.default_edge_config, _ = GenericGraph._split_out_child_configs(
-            edge_config, lambda k: isinstance(k, tuple)
+            edge_config, lambda e: e in edges
         )
 
         self.add_edges(*edges, edge_type=edge_type, edge_config=edge_config)
@@ -1063,7 +1063,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
             edge_config = deepcopy(edge_config)
 
         batch_default_config, custom_configs = GenericGraph._split_out_child_configs(
-            edge_config, lambda k: isinstance(k, tuple)
+            edge_config, lambda e: e in edges
         )
 
         edge_vertices = set(it.chain(*edges))
