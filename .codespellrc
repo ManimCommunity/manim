@@ -1,4 +1,4 @@
 [codespell]
-exclude-file=.codespell_ignorelines
-check-hidden=True
-ignore-words-list = nam,sherif,falsy
+check-hidden = True
+skip = .git,*.js,*.js.map,*.css,*.css.map,*.html,*.po,*.pot,poetry.lock,*.log,*.svg
+ignore-words = .codespell_ignorewords

@@ -9,6 +9,9 @@ In particular, this class is what allows ``manim`` to act as ``manim render``.
     This library isn't used as a dependency as we need to inherit from ``cloup.Group`` instead
     of ``click.Group``.
 """
+
+from __future__ import annotations
+
 import warnings
 
 import cloup

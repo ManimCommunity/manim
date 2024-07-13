@@ -9,6 +9,7 @@ movie vs writing a single frame).
 See :doc:`/guides/configuration` for an introduction to Manim's configuration system.
 
 """
+
 from __future__ import annotations
 
 import argparse
@@ -19,9 +20,9 @@ import logging
 import os
 import re
 import sys
-from collections.abc import Mapping, MutableMapping
+from collections.abc import Iterable, Iterator, Mapping, MutableMapping
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, ClassVar, Iterable, Iterator, NoReturn
+from typing import TYPE_CHECKING, Any, ClassVar, NoReturn
 
 import numpy as np
 
@@ -245,8 +246,7 @@ class ManimConfig(MutableMapping):
         config.background_color = RED
 
 
-        class MyScene(Scene):
-            ...
+        class MyScene(Scene): ...
 
     the background color will be set to RED, regardless of the contents of
     ``manim.cfg`` or the CLI arguments used when invoking manim.
@@ -263,7 +263,6 @@ class ManimConfig(MutableMapping):
         "dry_run",
         "enable_wireframe",
         "ffmpeg_loglevel",
-        "ffmpeg_executable",
         "format",
         "flush_cache",
         "frame_height",
@@ -318,6 +317,7 @@ class ManimConfig(MutableMapping):
         "zero_pad",
         "force_window",
         "no_latex_cleanup",
+        "preview_command",
     }
 
     def __init__(self) -> None:
@@ -651,7 +651,12 @@ class ManimConfig(MutableMapping):
         setattr(self, "window_size", window_size)
 
         # plugins
-        self.plugins = parser["CLI"].get("plugins", fallback="", raw=True).split(",")
+        plugins = parser["CLI"].get("plugins", fallback="", raw=True)
+        if plugins == "":
+            plugins = []
+        else:
+            plugins = plugins.split(",")
+        self.plugins = plugins
         # the next two must be set AFTER digesting pixel_width and pixel_height
         self["frame_height"] = parser["CLI"].getfloat("frame_height", 8.0)
         width = parser["CLI"].getfloat("frame_width", None)
@@ -672,10 +677,6 @@ class ManimConfig(MutableMapping):
         val = parser["ffmpeg"].get("loglevel")
         if val:
             self.ffmpeg_loglevel = val
-
-        # TODO: Fix the mess above and below
-        val = parser["ffmpeg"].get("ffmpeg_executable")
-        setattr(self, "ffmpeg_executable", val)
 
         try:
             val = parser["jupyter"].getboolean("media_embed")
@@ -767,6 +768,7 @@ class ManimConfig(MutableMapping):
             "force_window",
             "dry_run",
             "no_latex_cleanup",
+            "preview_command",
         ]:
             if hasattr(args, key):
                 attr = getattr(args, key)
@@ -1017,6 +1019,14 @@ class ManimConfig(MutableMapping):
         self._set_boolean("no_latex_cleanup", value)
 
     @property
+    def preview_command(self) -> str:
+        return self._d["preview_command"]
+
+    @preview_command.setter
+    def preview_command(self, value: str) -> None:
+        self._set_str("preview_command", value)
+
+    @property
     def verbosity(self) -> str:
         """Logger verbosity; "DEBUG", "INFO", "WARNING", "ERROR", or "CRITICAL" (-v)."""
         return self._d["verbosity"]
@@ -1060,15 +1070,7 @@ class ManimConfig(MutableMapping):
             val,
             ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
         )
-
-    @property
-    def ffmpeg_executable(self) -> str:
-        """Custom path to the ffmpeg executable."""
-        return self._d["ffmpeg_executable"]
-
-    @ffmpeg_executable.setter
-    def ffmpeg_executable(self, value: str) -> None:
-        self._set_str("ffmpeg_executable", value)
+        logging.getLogger("libav").setLevel(self.ffmpeg_loglevel)
 
     @property
     def media_embed(self) -> bool:
@@ -1201,7 +1203,7 @@ class ManimConfig(MutableMapping):
 
     @property
     def upto_animation_number(self) -> int:
-        """Stop rendering animations at this nmber. Use -1 to avoid skipping (-n)."""
+        """Stop rendering animations at this number. Use -1 to avoid skipping (-n)."""
         return self._d["upto_animation_number"]
 
     @upto_animation_number.setter
