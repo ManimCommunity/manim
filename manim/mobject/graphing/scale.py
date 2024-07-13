@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import math
-from typing import TYPE_CHECKING, Any, Iterable
+from collections.abc import Iterable
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
@@ -145,7 +146,9 @@ class LogBase(_ScaleBase):
         """Inverse of ``function``. The value must be greater than 0"""
         if isinstance(value, np.ndarray):
             condition = value.any() <= 0
-            func = lambda value, base: np.log(value) / np.log(base)
+
+            def func(value, base):
+                return np.log(value) / np.log(base)
         else:
             condition = value <= 0
             func = math.log
@@ -179,7 +182,7 @@ class LogBase(_ScaleBase):
         tex_labels = [
             Integer(
                 self.base,
-                unit="^{%s}" % (f"{self.inverse_function(i):.{unit_decimal_places}f}"),
+                unit="^{%s}" % (f"{self.inverse_function(i):.{unit_decimal_places}f}"),  # noqa: UP031
                 **base_config,
             )
             for i in val_range

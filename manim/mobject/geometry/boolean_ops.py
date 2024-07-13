@@ -142,7 +142,7 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
                 n1, n2 = self._convert_2d_to_3d_array(points)
                 vmobject.add_quadratic_bezier_curve_to(n1, n2)
             else:
-                raise Exception("Unsupported: %s" % path_verb)
+                raise Exception(f"Unsupported: {path_verb}")
         return vmobject
 
 

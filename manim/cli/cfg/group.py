@@ -5,6 +5,7 @@ cfg``. Here you can specify options, subcommands, and subgroups for the cfg
 group.
 
 """
+
 from __future__ import annotations
 
 from ast import literal_eval

@@ -266,7 +266,7 @@ The scene then asks its renderer to initialize the scene by calling
 
 Inspecting both the default Cairo renderer and the OpenGL renderer shows that the ``init_scene``
 method effectively makes the renderer instantiate a :class:`.SceneFileWriter` object, which
-basically is Manim's interface to ``ffmpeg`` and actually writes the movie file. The Cairo
+basically is Manim's interface to ``libav`` (FFMPEG) and actually writes the movie file. The Cairo
 renderer (see the implementation `here <https://github.com/ManimCommunity/manim/blob/main/manim/renderer/cairo_renderer.py>`__) does not require any further initialization. The OpenGL renderer
 does some additional setup to enable the realtime rendering preview window, which we do not go
 into detail further here.
@@ -310,8 +310,8 @@ the order they are called, these customizable methods are:
 After these three methods are run, the animations have been fully rendered,
 and Manim calls :meth:`.CairoRenderer.scene_finished` to gracefully
 complete the rendering process. This checks whether any animations have been
-played -- and if so, it tells the :class:`.SceneFileWriter` to close the pipe
-to ``ffmpeg``. If not, Manim assumes that a static image should be output
+played -- and if so, it tells the :class:`.SceneFileWriter` to close the output
+file. If not, Manim assumes that a static image should be output
 which it then renders using the same strategy by calling the render loop
 (see below) once.
 
@@ -762,10 +762,10 @@ to learn more, the :func:`.get_hash_from_play_call` function in the
 mechanism.
 
 In the event that the animation has to be rendered, the renderer asks
-its :class:`.SceneFileWriter` to start a writing process. The process
-is started by a call to ``ffmpeg`` and opens a pipe to which rendered
-raw frames can be written. As long as the pipe is open, the process
-can be accessed via the ``writing_process`` attribute of the file writer.
+its :class:`.SceneFileWriter` to open an output container. The process
+is started by a call to ``libav`` and opens a container to which rendered
+raw frames can be written. As long as the output is open, the container
+can be accessed via the ``output_container`` attribute of the file writer.
 With the writing process in place, the renderer then asks the scene
 to "begin" the animations.
 
@@ -815,7 +815,7 @@ time is extracted (3 seconds long) and stored in
 skip (it should not), then whether the animation is already
 cached (it is not). The corresponding animation hash value is
 determined and passed to the file writer, which then also calls
-``ffmpeg`` to start the writing process which waits for rendered
+``libav`` to start the writing process which waits for rendered
 frames from the library.
 
 The scene then ``begin``\ s the animation: for the
@@ -1001,7 +1001,7 @@ and :meth:`.Animation.clean_up_from_scene` methods are called.
 In the end, the time progression is closed (which completes the displayed progress bar)
 in the terminal. With the closing of the time progression, the
 :meth:`.Scene.play_internal` call is completed, and we return to the renderer,
-which now orders the :class:`.SceneFileWriter` to close the movie pipe that has
+which now orders the :class:`.SceneFileWriter` to close the output container that has
 been opened for this animation: a partial movie file is written.
 
 This pretty much concludes the walkthrough of a :class:`.Scene.play` call,

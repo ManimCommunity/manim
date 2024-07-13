@@ -60,8 +60,9 @@ class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
         ...         RegularPolygon.__init__(self, n=5, **kwargs)
         ...         self.width = length
         ...         self.stretch_to_fit_height(length)
-        >>> arr = Arrow(np.array([-2, -2, 0]), np.array([2, 2, 0]),
-        ...             tip_shape=MyCustomArrowTip)
+        >>> arr = Arrow(
+        ...     np.array([-2, -2, 0]), np.array([2, 2, 0]), tip_shape=MyCustomArrowTip
+        ... )
         >>> isinstance(arr.tip, RegularPolygon)
         True
         >>> from manim import Scene, Create
