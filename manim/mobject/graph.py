@@ -655,7 +655,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         raise NotImplementedError("To be implemented in concrete subclasses")
 
     @staticmethod
-    def _split_out_child_configs(config: dict, is_child_key) -> (dict, dict):
+    def _split_out_child_configs(config: dict, is_child_key) -> tuple[dict, dict]:
         parent_config = {k: v for k, v in config.items() if not is_child_key(k)}
         child_configs = {k: v for k, v in config.items() if is_child_key(k)}
         return parent_config, child_configs
@@ -1722,7 +1722,7 @@ class DiGraph(GenericGraph):
         return nx.DiGraph()
 
     @staticmethod
-    def _split_out_tip_configs(config: dict) -> (dict, dict):
+    def _split_out_tip_configs(config: dict) -> tuple[dict, dict]:
         edge_config, tip_config = GenericGraph._split_out_child_configs(
             config, lambda k: k == "tip_config"
         )
