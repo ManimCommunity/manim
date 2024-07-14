@@ -1527,14 +1527,14 @@ class OpenGLVGroup(OpenGLVMobject):
         return self
 
     @deprecated(
-        since="0.18.2",
-        until="0.19.0",
+        since="0.20.0",
+        until="0.21.0",
         message="OpenGL has no concept of z_index. Use set_z instead",
     )
     def set_z_index(self, z: float) -> Self:
         return self.set_z(z)
 
-    def add(self, *vmobjects: OpenGLVMobject):  # type: ignore
+    def add(self, *vmobjects: OpenGLVMobject):
         """Checks if all passed elements are an instance of OpenGLVMobject and then add them to submobjects
 
         Parameters

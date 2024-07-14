@@ -147,7 +147,7 @@ class Mobject:
         return self._assert_valid_submobjects_internal(submobjects, Mobject)
 
     def _assert_valid_submobjects_internal(
-        self, submobjects: list[Mobject], mob_class: type[Mobject]
+        self, submobjects: Iterable[Mobject], mob_class: type[Mobject]
     ) -> Self:
         for i, submob in enumerate(submobjects):
             if not isinstance(submob, mob_class):

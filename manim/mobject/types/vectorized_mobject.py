@@ -1902,8 +1902,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
                         (gr-circle_red).animate.shift(RIGHT)
                     )
         """
-        if not all(isinstance(m, (VMobject, OpenGLVMobject)) for m in vmobjects):
-            raise TypeError("All submobjects must be of type VMobject")
+        # leave here because the docstring is useful
         return super().add(*vmobjects)
 
     def __add__(self, vmobject):

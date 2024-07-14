@@ -23,9 +23,7 @@ import numpy as np
 
 from manim.constants import *
 from manim.mobject.geometry.arc import ArcBetweenPoints
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup as VGroup
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject as VMobject
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup, OpenGLVMobject
 from manim.utils.color import BLUE, WHITE, ParsableManimColor
 from manim.utils.iterables import adjacent_n_tuples, adjacent_pairs
 from manim.utils.space_ops import angle_between_vectors, normalize, regular_vertices
@@ -37,7 +35,7 @@ if TYPE_CHECKING:
     from manim.utils.color import ParsableManimColor
 
 
-class Polygram(VMobject, metaclass=ConvertToOpenGL):
+class Polygram(OpenGLVMobject):
     """A generalized :class:`Polygon`, allowing for disconnected sets of edges.
 
     Parameters
@@ -621,7 +619,7 @@ class Rectangle(Polygon):
         self.stretch_to_fit_height(height)
 
         v = self.get_vertices()
-        self.grid_lines = VGroup()
+        self.grid_lines = OpenGLVGroup()
 
         if grid_xstep or grid_ystep:
             from manim.mobject.geometry.line import Line
@@ -631,7 +629,7 @@ class Rectangle(Polygon):
         if grid_xstep:
             grid_xstep = abs(grid_xstep)
             count = int(width / grid_xstep)
-            grid = VGroup(
+            grid = OpenGLVGroup(
                 *(
                     Line(
                         v[1] + i * grid_xstep * RIGHT,
@@ -646,7 +644,7 @@ class Rectangle(Polygon):
         if grid_ystep:
             grid_ystep = abs(grid_ystep)
             count = int(height / grid_ystep)
-            grid = VGroup(
+            grid = OpenGLVGroup(
                 *(
                     Line(
                         v[1] + i * grid_ystep * DOWN,
@@ -720,7 +718,7 @@ class RoundedRectangle(Rectangle):
         self.round_corners(self.corner_radius)
 
 
-class Cutout(VMobject, metaclass=ConvertToOpenGL):
+class Cutout(OpenGLVMobject):
     """A shape with smaller cutouts.
 
     Parameters
