@@ -219,7 +219,6 @@ def deprecated(
             The return value of the given callable when being passed the given
             arguments.
         """
-        print("about to emit warning")
         logger.warning(warning_msg())
         return func(*args, **kwargs)
 
