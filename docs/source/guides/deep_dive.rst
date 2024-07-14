@@ -142,8 +142,8 @@ like
 ::
 
     with tempconfig({"quality": "medium_quality", "preview": True}):
-        scene = ToyExample()
-        scene.render()
+        manager = Manager(ToyExample)
+        manager.render()
 
 or whether you are rendering the code in a Jupyter notebook, you are still telling your
 python interpreter to import the library. The usual pattern used to do this is

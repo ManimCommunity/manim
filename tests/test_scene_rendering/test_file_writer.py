@@ -5,7 +5,7 @@ import av
 import numpy as np
 import pytest
 
-from manim import DR, Circle, Create, Scene, Star, tempconfig
+from manim import DR, Circle, Create, Manager, Scene, Star
 from manim.utils.commands import capture, get_video_metadata
 
 
@@ -32,18 +32,14 @@ class StarScene(Scene):
     "transparent",
     [False, True],
 )
-def test_gif_writing(tmp_path, transparent):
+def test_gif_writing(tmp_path, config, transparent):
     output_filename = f"gif_{'transparent' if transparent else 'opaque'}"
-    with tempconfig(
-        {
-            "media_dir": tmp_path,
-            "quality": "low_quality",
-            "format": "gif",
-            "transparent": transparent,
-            "output_file": output_filename,
-        }
-    ):
-        StarScene().render()
+    config.media_dir = tmp_path
+    config.quality = "low_quality"
+    config.format = "gif"
+    config.transparent = transparent
+    config.output_file = output_filename
+    Manager(StarScene).render()
 
     video_path = tmp_path / "videos" / "480p15" / f"{output_filename}.gif"
     assert video_path.exists()
@@ -90,18 +86,14 @@ def test_gif_writing(tmp_path, transparent):
         ("webm", True, "vp9", "yuv420p"),
     ],
 )
-def test_codecs(tmp_path, format, transparent, codec, pixel_format):
+def test_codecs(tmp_path, config, format, transparent, codec, pixel_format):
     output_filename = f"codec_{format}_{'transparent' if transparent else 'opaque'}"
-    with tempconfig(
-        {
-            "media_dir": tmp_path,
-            "quality": "low_quality",
-            "format": format,
-            "transparent": transparent,
-            "output_file": output_filename,
-        }
-    ):
-        StarScene().render()
+    config.media_dir = tmp_path
+    config.quality = "low_quality"
+    config.format = format
+    config.transparent = transparent
+    config.output_file = output_filename
+    Manager(StarScene).render()
 
     video_path = tmp_path / "videos" / "480p15" / f"{output_filename}.{format}"
     assert video_path.exists()

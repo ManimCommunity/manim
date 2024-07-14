@@ -84,7 +84,9 @@ def checkhealth():
                     self.execution_time = timeit.timeit(self._inner_construct, number=1)
 
             with mn.tempconfig({"preview": True, "disable_caching": True}):
-                scene = CheckHealthDemo()
-                scene.render()
+                manager = mn.Manager(CheckHealthDemo)
+                manager.render()
 
-                click.echo(f"Scene rendered in {scene.execution_time:.2f} seconds.")
+                click.echo(
+                    f"Scene rendered in {manager.scene.execution_time:.2f} seconds."
+                )
