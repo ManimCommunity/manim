@@ -349,6 +349,7 @@ class SceneFileWriter:
                         output_container.mux(packet)
 
             new_segment = AudioSegment.from_file(wav_file_path.name)
+            logger.info(f"Automatically converted {file_path} to .wav")
             wav_file_path.close()
 
         else:
