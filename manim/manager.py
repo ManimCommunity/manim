@@ -55,7 +55,7 @@ class Manager(Generic[Scene_co]):
 
     def __init__(self, scene_cls: type[Scene_co]) -> None:
         # scene
-        self.scene: Scene_co = scene_cls(self)
+        self.scene: Scene_co = scene_cls(manager=self)
 
         if not isinstance(self.scene, Scene):
             raise ValueError(f"{self.scene!r} is not an instance of Scene")
