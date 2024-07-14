@@ -1,8 +1,9 @@
-from manim import Circle, Square, ThreeDScene
+from manim import Circle, Manager, Square, ThreeDScene
 
 
 def test_fixed_mobjects():
-    scene = ThreeDScene()
+    manager = Manager(ThreeDScene)
+    scene = manager.scene
     s = Square()
     c = Circle()
     scene.add_fixed_in_frame_mobjects(s, c)

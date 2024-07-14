@@ -4,12 +4,13 @@ import datetime
 
 import pytest
 
-from manim import Circle, FadeIn, Group, Mobject, Scene, Square
+from manim import Circle, FadeIn, Group, Manager, Mobject, Scene, Square
 from manim.animation.animation import Wait
 
 
 def test_scene_add_remove(dry_run):
-    scene = Scene()
+    manager = Manager(Scene)
+    scene = manager.scene
     assert len(scene.mobjects) == 0
     scene.add(Mobject())
     assert len(scene.mobjects) == 1
@@ -26,7 +27,8 @@ def test_scene_add_remove(dry_run):
     # Check that Scene.add() returns the Scene (for chained calls)
     assert scene.add(Mobject()) is scene
     to_remove = Mobject()
-    scene = Scene()
+    manager = Manager(Scene)
+    scene = manager.scene
     scene.add(to_remove)
     scene.add(*(Mobject() for _ in range(10)))
     assert len(scene.mobjects) == 11
@@ -40,7 +42,8 @@ def test_scene_add_remove(dry_run):
 
 
 def test_scene_time(dry_run):
-    scene = Scene()
+    manager = Manager(Scene)
+    scene = manager.scene
     assert scene.renderer.time == 0
     scene.wait(2)
     assert scene.renderer.time == 2
@@ -52,7 +55,8 @@ def test_scene_time(dry_run):
 
 
 def test_subcaption(dry_run):
-    scene = Scene()
+    manager = Manager(Scene)
+    scene = manager.scene
     scene.add_subcaption("Testing add_subcaption", duration=1, offset=0)
     scene.wait()
     scene.play(
@@ -78,7 +82,8 @@ def test_replace(dry_run):
         for i in range(0, len(mobjs)):
             assert mobjs[i].name == names[i]
 
-    scene = Scene()
+    manager = Manager(Scene)
+    scene = manager.scene
 
     first = Mobject(name="first")
     second = Mobject(name="second")
