@@ -331,22 +331,22 @@ class SceneFileWriter:
 
         """
         file_path = get_full_sound_file_path(sound_file)
-        # TODO: maybe actually check the file, and don't just assume
-        # that it is a .wav/raw file just because it has a .wav/raw extension.
+        # we assume files with .wav / .raw suffix are actually
+        # .wav and .raw files, respectively.
         if file_path.suffix not in (".wav", ".raw"):
-            wav_file_path = NamedTemporaryFile(suffix=".wav", delete=False)
-            with av.open(file_path) as container:
-                stream = container.streams.audio[
-                    0
-                ]  # what if there are multiple streams?
-                with av.open(wav_file_path, "w", format="wav") as output:
-                    output_stream = output.add_stream("pcm_s16le")
-                    for frame in container.decode(stream):
+            wav_file_path = NamedTemporaryFile(suffix=".wav")
+            with (
+                av.open(file_path) as input_container,
+                av.open(wav_file_path, "w", format="wav") as output_container
+            ):
+                for audio_stream in input_container.streams.audio:
+                    output_stream = output_container.add_stream("pcm_s16le")
+                    for frame in input_container.decode(audio_stream):
                         for packet in output_stream.encode(frame):
-                            output.mux(packet)
+                            output_container.mux(packet)
 
                     for packet in output_stream.encode():
-                        output.mux(packet)
+                        output_container.mux(packet)
 
             new_segment = AudioSegment.from_file(wav_file_path.name)
             wav_file_path.close()
