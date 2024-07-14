@@ -18,7 +18,7 @@ follow `Homebrew's installation instructions <https://docs.brew.sh/Installation>
 
 
 Installing Manim
----------------------
+----------------
 
 As of July/2024, brew can install Manim including all required dependencies.
 To install Manim:
