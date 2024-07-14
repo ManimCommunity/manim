@@ -1052,6 +1052,7 @@ class ManimConfig(MutableMapping):
             val,
             [None, "png", "gif", "mp4", "mov", "webm"],
         )
+        self.resolve_movie_file_extension(self.transparent)
         if self.format == "webm":
             logging.getLogger("manim").warning(
                 "Output format set as webm, this can be slower than other formats",
