@@ -4,6 +4,7 @@ import tempfile
 from pathlib import Path
 
 import numpy as np
+import pytest
 
 from manim import WHITE, Scene, Square, Tex, Text, tempconfig
 from manim._config.utils import ManimConfig
@@ -31,6 +32,20 @@ def test_tempconfig(config):
             np.testing.assert_allclose(config[k], v)
         else:
             assert config[k] == v
+
+
+@pytest.mark.parametrize(
+    ("format", "expected_file_extension"),
+    [
+        ("mp4", ".mp4"),
+        ("webm", ".webm"),
+        ("mov", ".mov"),
+        ("gif", ".mp4"),
+    ],
+)
+def test_resolve_file_extensions(config, format, expected_file_extension):
+    config.format = format
+    assert config.movie_file_extension == expected_file_extension
 
 
 class MyScene(Scene):
