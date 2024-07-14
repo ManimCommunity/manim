@@ -1,9 +1,5 @@
 from __future__ import annotations
 
-import logging
-
-import pytest
-
 from manim.utils.deprecation import deprecated, deprecated_params
 
 
