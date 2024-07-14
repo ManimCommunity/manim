@@ -6,13 +6,14 @@ __all__ = ["deprecated", "deprecated_params"]
 
 
 import inspect
+import logging
 import re
 from collections.abc import Iterable
 from typing import Any, Callable
 
 from decorator import decorate, decorator
 
-from .. import logger
+logger = logging.getLogger("manim")
 
 
 def _get_callable_info(callable: Callable) -> tuple[str, str]:

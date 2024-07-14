@@ -75,6 +75,18 @@ def test_transparent(config):
     np.testing.assert_allclose(frame[0, 0], [0, 0, 0, 0])
 
 
+def test_transparent_by_background_opacity(config, dry_run):
+    config.background_opacity = 0.5
+    assert config.transparent is True
+
+    scene = MyScene()
+    scene.render()
+    frame = scene.renderer.get_frame()
+    np.testing.assert_allclose(frame[0, 0], [0, 0, 0, 127])
+    assert config.movie_file_extension == ".mov"
+    assert config.transparent is True
+
+
 def test_background_color(config):
     """Test the 'background_color' config option."""
 
