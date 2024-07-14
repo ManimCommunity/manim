@@ -337,7 +337,7 @@ class SceneFileWriter:
             wav_file_path = NamedTemporaryFile(suffix=".wav")
             with (
                 av.open(file_path) as input_container,
-                av.open(wav_file_path, "w", format="wav") as output_container
+                av.open(wav_file_path, "w", format="wav") as output_container,
             ):
                 for audio_stream in input_container.streams.audio:
                     output_stream = output_container.add_stream("pcm_s16le")
