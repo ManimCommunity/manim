@@ -60,8 +60,7 @@ def test_transparent(config):
     np.testing.assert_allclose(frame[0, 0], [0, 0, 0, 0])
 
 
-def test_transparent_by_background_opacity(config):
-    config.dry_run = True
+def test_transparent_by_background_opacity(config, dry_run):
     config.background_opacity = 0.5
     assert config.transparent is True
 
