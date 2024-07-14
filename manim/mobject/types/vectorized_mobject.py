@@ -47,6 +47,7 @@ from ...utils.space_ops import rotate_vector, shoelace_direction
 if TYPE_CHECKING:
     from typing_extensions import Self
 
+
 # TODO
 # - Change cubic curve groups to have 4 points instead of 3
 # - Change sub_path idea accordingly
@@ -1885,7 +1886,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
             f"submobject{'s' if len(self.submobjects) > 0 else ''}"
         )
 
-    def add(self, *vmobjects: VMobject):
+    def add(self, *vmobjects: OpenGLVMobject):
         """Checks if all passed elements are an instance of VMobject and then add them to submobjects
 
         Parameters

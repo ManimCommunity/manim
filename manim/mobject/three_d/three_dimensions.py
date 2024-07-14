@@ -30,9 +30,9 @@ from manim.constants import *
 from manim.mobject.geometry.arc import Circle
 from manim.mobject.geometry.polygram import Square
 from manim.mobject.mobject import *
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-from manim.mobject.types.vectorized_mobject import VectorizedPoint, VGroup, VMobject
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+from manim.mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from manim.utils.color import (
     ManimColor,
     ParsableManimColor,
@@ -41,12 +41,12 @@ from manim.utils.iterables import tuplify
 from manim.utils.space_ops import normalize, perpendicular_bisector, z_to_vector
 
 
-class ThreeDVMobject(VMobject, metaclass=ConvertToOpenGL):
+class ThreeDVMobject(OpenGLVMobject):
     def __init__(self, shade_in_3d: bool = True, **kwargs):
         super().__init__(shade_in_3d=shade_in_3d, **kwargs)
 
 
-class Surface(VGroup, metaclass=ConvertToOpenGL):
+class Surface(VGroup):
     """Creates a Parametric Surface using a checkerboard pattern.
 
     Parameters

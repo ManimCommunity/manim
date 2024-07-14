@@ -7,7 +7,7 @@ class Test(Scene):
         self.add(s)
         self.play(Rotate(s, PI / 2))
         self.play(FadeOut(s))
-        sq = Square()
+        sq = RegularPolygon(6)
         c = Circle()
         st = Star()
         VGroup(sq, c, st).arrange()
@@ -18,7 +18,7 @@ class Test(Scene):
                 Create(st),
             )
         )
-        self.play(*[FadeOut(mob) for mob in self.mobjects])
+        self.play(FadeOut(VGroup(*self.mobjects)))
 
 
 if __name__ == "__main__":

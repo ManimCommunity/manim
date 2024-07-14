@@ -23,7 +23,8 @@ import numpy as np
 
 from manim.constants import *
 from manim.mobject.geometry.arc import ArcBetweenPoints
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup, OpenGLVMobject
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+from manim.mobject.types.vectorized_mobject import VGroup
 from manim.utils.color import BLUE, WHITE, ParsableManimColor
 from manim.utils.iterables import adjacent_n_tuples, adjacent_pairs
 from manim.utils.space_ops import angle_between_vectors, normalize, regular_vertices
@@ -247,17 +248,17 @@ class Polygram(OpenGLVMobject):
 
             if evenly_distribute_anchors:
                 # Determine the average length of each curve
-                nonZeroLengthArcs = [arc for arc in arcs if len(arc.points) > 4]
-                if len(nonZeroLengthArcs):
+                non_zero_length_arcs = [arc for arc in arcs if len(arc.points) > 4]
+                if len(non_zero_length_arcs):
                     totalArcLength = sum(
-                        [arc.get_arc_length() for arc in nonZeroLengthArcs]
+                        [arc.get_arc_length() for arc in non_zero_length_arcs]
                     )
                     totalCurveCount = (
-                        sum([len(arc.points) for arc in nonZeroLengthArcs]) / 4
+                        sum([len(arc.points) for arc in non_zero_length_arcs]) / 4
                     )
-                    averageLengthPerCurve = totalArcLength / totalCurveCount
+                    average_length_per_curve = totalArcLength / totalCurveCount
                 else:
-                    averageLengthPerCurve = 1
+                    average_length_per_curve = 1
 
             # To ensure that we loop through starting with last
             arcs = [arcs[-1], *arcs[:-1]]
@@ -271,7 +272,7 @@ class Polygram(OpenGLVMobject):
                 # Make sure anchors are evenly distributed, if necessary
                 if evenly_distribute_anchors:
                     line.insert_n_curves(
-                        ceil(line.get_length() / averageLengthPerCurve)
+                        ceil(line.get_length() / average_length_per_curve)  # type: ignore
                     )
 
                 new_points.extend(line.points)
@@ -619,7 +620,7 @@ class Rectangle(Polygon):
         self.stretch_to_fit_height(height)
 
         v = self.get_vertices()
-        self.grid_lines = OpenGLVGroup()
+        self.grid_lines = VGroup()
 
         if grid_xstep or grid_ystep:
             from manim.mobject.geometry.line import Line
@@ -629,7 +630,7 @@ class Rectangle(Polygon):
         if grid_xstep:
             grid_xstep = abs(grid_xstep)
             count = int(width / grid_xstep)
-            grid = OpenGLVGroup(
+            grid = VGroup(
                 *(
                     Line(
                         v[1] + i * grid_xstep * RIGHT,
@@ -644,7 +645,7 @@ class Rectangle(Polygon):
         if grid_ystep:
             grid_ystep = abs(grid_ystep)
             count = int(height / grid_ystep)
-            grid = OpenGLVGroup(
+            grid = VGroup(
                 *(
                     Line(
                         v[1] + i * grid_ystep * DOWN,
