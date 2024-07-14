@@ -1,14 +1,15 @@
 from __future__ import annotations
 
+import logging
 import re
 
 from cloup import Choice, option, option_group
 
 from manim.constants import QUALITIES, RendererType
 
-from ... import logger
-
 __all__ = ["render_options"]
+
+logger = logging.getLogger("manim")
 
 
 def validate_scene_range(ctx, param, value):

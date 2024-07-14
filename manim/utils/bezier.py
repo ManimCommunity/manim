@@ -28,7 +28,6 @@ import numpy as np
 
 from manim.typing import PointDType
 from manim.utils.simple_functions import choose
-from manim.utils.space_ops import cross2d, find_intersection
 
 if TYPE_CHECKING:
     import numpy.typing as npt
@@ -39,6 +38,7 @@ if TYPE_CHECKING:
         MatrixMN,
         Point3D,
         Point3D_Array,
+        QuadraticBezierPoints_Array,
     )
 
 # l is a commonly used name in linear algebra
@@ -1610,74 +1610,147 @@ def get_smooth_open_cubic_bezier_handle_points(
     return H1, H2
 
 
-# Given 4 control points for a cubic bezier curve (or arrays of such)
-# return control points for 2 quadratics (or 2n quadratics) approximating them.
+@overload
 def get_quadratic_approximation_of_cubic(
     a0: Point3D, h0: Point3D, h1: Point3D, a1: Point3D
-) -> BezierPoints:
-    a0 = np.array(a0, ndmin=2)
-    h0 = np.array(h0, ndmin=2)
-    h1 = np.array(h1, ndmin=2)
-    a1 = np.array(a1, ndmin=2)
-    # Tangent vectors at the start and end.
-    T0 = h0 - a0
-    T1 = a1 - h1
+) -> QuadraticBezierPoints_Array: ...
 
-    # Search for inflection points.  If none are found, use the
-    # midpoint as a cut point.
-    # Based on http://www.caffeineowl.com/graphics/2d/vectorial/cubic-inflexion.html
-    has_infl = np.ones(len(a0), dtype=bool)
 
-    p = h0 - a0
-    q = h1 - 2 * h0 + a0
-    r = a1 - 3 * h1 + 3 * h0 - a0
+@overload
+def get_quadratic_approximation_of_cubic(
+    a0: Point3D_Array,
+    h0: Point3D_Array,
+    h1: Point3D_Array,
+    a1: Point3D_Array,
+) -> QuadraticBezierPoints_Array: ...
 
-    a = cross2d(q, r)
-    b = cross2d(p, r)
-    c = cross2d(p, q)
 
-    disc = b * b - 4 * a * c
-    has_infl &= disc > 0
-    sqrt_disc = np.sqrt(np.abs(disc))
-    settings = np.seterr(all="ignore")
-    ti_bounds = []
-    for sgn in [-1, +1]:
-        ti = (-b + sgn * sqrt_disc) / (2 * a)
-        ti[a == 0] = (-c / b)[a == 0]
-        ti[(a == 0) & (b == 0)] = 0
-        ti_bounds.append(ti)
-    ti_min, ti_max = ti_bounds
-    np.seterr(**settings)
-    ti_min_in_range = has_infl & (0 < ti_min) & (ti_min < 1)
-    ti_max_in_range = has_infl & (0 < ti_max) & (ti_max < 1)
+def get_quadratic_approximation_of_cubic(a0, h0, h1, a1):
+    r"""If ``a0``, ``h0``, ``h1`` and ``a1`` are the control points of a cubic
+    Bézier curve, approximate the curve with two quadratic Bézier curves and
+    return an array of 6 points, where the first 3 points represent the first
+    quadratic curve and the last 3 represent the second one.
 
-    # Choose a value of t which starts at 0.5,
-    # but is updated to one of the inflection points
-    # if they lie between 0 and 1
+    Otherwise, if ``a0``, ``h0``, ``h1`` and ``a1`` are _arrays_ of :math:`N`
+    points representing :math:`N` cubic Bézier curves, return an array of
+    :math:`6N` points where each group of :math:`6` consecutive points
+    approximates each of the :math:`N` curves in a similar way as above.
 
-    t_mid = 0.5 * np.ones(len(a0))
-    t_mid[ti_min_in_range] = ti_min[ti_min_in_range]
-    t_mid[ti_max_in_range] = ti_max[ti_max_in_range]
+    .. note::
+        If the cubic spline given by the original cubic Bézier curves is
+        smooth, this algorithm will generate a quadratic spline which is also
+        smooth.
 
-    m, n = a0.shape
-    t_mid = t_mid.repeat(n).reshape((m, n))
+        If a cubic Bézier is given by
 
-    # Compute bezier point and tangent at the chosen value of t (these are vectorized)
-    mid = bezier([a0, h0, h1, a1])(t_mid)  # type: ignore
-    Tm = bezier([h0 - a0, h1 - h0, a1 - h1])(t_mid)  # type: ignore
+        .. math::
+            C(t) = (1-t)^3 A_0 + 3(1-t)^2 t H_0 + 3(1-t)t^2 H_1 + t^3 A_1
 
-    # Intersection between tangent lines at end points
-    # and tangent in the middle
-    i0 = find_intersection(a0, T0, mid, Tm)
-    i1 = find_intersection(a1, T1, mid, Tm)
+        where :math:`A_0`, :math:`H_0`, :math:`H_1` and :math:`A_1` are its
+        control points, then this algorithm should generate two quadratic
+        Béziers given by
 
-    m, n = np.shape(a0)
-    result = np.zeros((6 * m, n))
+        .. math::
+            Q_0(t) &= (1-t)^2 A_0 + 2(1-t)t M_0 + t^2 K \\
+            Q_1(t) &= (1-t)^2 K + 2(1-t)t M_1 + t^2 A_1
+
+        where :math:`M_0` and :math:`M_1` are the respective handles to be
+        found for both curves, and :math:`K` is the end anchor of the 1st curve
+        and the start anchor of the 2nd, which must also be found.
+
+        To solve for :math:`M_0`, :math:`M_1` and :math:`K`, three conditions
+        can be imposed:
+
+        1.  :math:`Q_0'(0) = \frac{1}{2}C'(0)`. The derivative of the first
+            quadratic curve at :math:`t = 0` should be proportional to that of
+            the original cubic curve, also at :math:`t = 0`. Because the cubic
+            curve is split into two parts, it is necessary to divide this by
+            two: the speed of a point travelling through the curve should be
+            half of the original. This gives:
+
+            .. math::
+                Q_0'(0) &= \frac{1}{2}C'(0) \\
+                2(M_0 - A_0) &= \frac{3}{2}(H_0 - A_0) \\
+                2M_0 - 2A_0 &= \frac{3}{2}H_0 - \frac{3}{2}A_0 \\
+                2M_0 &= \frac{3}{2}H_0 + \frac{1}{2}A_0 \\
+                M_0 &= \frac{1}{4}(3H_0 + A_0)
+
+        2.  :math:`Q_1'(1) = \frac{1}{2}C'(1)`. The derivative of the second
+            quadratic curve at :math:`t = 1` should be half of that of the
+            original cubic curve for the same reasons as above, also at
+            :math:`t = 1`. This gives:
+
+            .. math::
+                Q_1'(1) &= \frac{1}{2}C'(1) \\
+                2(A_1 - M_1) &= \frac{3}{2}(A_1 - H_1) \\
+                2A_1 - 2M_1 &= \frac{3}{2}A_1 - \frac{3}{2}H_1 \\
+                -2M_1 &= -\frac{1}{2}A_1 - \frac{3}{2}H_1 \\
+                M_1 &= \frac{1}{4}(3H_1 + A_1)
+
+        3.  :math:`Q_0'(1) = Q_1'(0)`. The derivatives of both quadratic curves
+            should match at the point :math:`K`, in order for the final spline
+            to be smooth. This gives:
+
+            .. math::
+                Q_0'(1) &= Q_1'(0) \\
+                2(K - M_0) &= 2(M_1 - K) \\
+                2K - 2M_0 &= 2M_1 - 2K \\
+                4K &= 2M_0 + 2M_1 \\
+                K &= \frac{1}{2}(M_0 + M_1)
+
+        This is sufficient to find proper control points for the quadratic
+        Bézier curves.
+
+    Parameters
+    ----------
+    a0
+        The start anchor of a single cubic Bézier curve, or an array of
+        :math:`N` start anchors for :math:`N` curves.
+    h0
+        The first handle of a single cubic Bézier curve, or an array of
+        :math:`N` first handles for :math:`N` curves.
+    h1
+        The second handle of a single cubic Bézier curve, or an array of
+        :math:`N` second handles for :math:`N` curves.
+    a1
+        The end anchor of a single cubic Bézier curve, or an array of
+        :math:`N` end anchors for :math:`N` curves.
+
+    Returns
+    -------
+    result
+        An array containing either 6 points for 2 quadratic Bézier curves
+        approximating the original cubic curve, or :math:`6N` points for
+        :math:`2N` quadratic curves approximating :math:`N` cubic curves.
+
+    Raises
+    ------
+    ValueError
+        If ``a0``, ``h0``, ``h1`` and ``a1`` have different dimensions, or
+        if their number of dimensions is not 1 or 2.
+    """
+    a0 = np.asarray(a0)
+    h0 = np.asarray(h0)
+    h1 = np.asarray(h1)
+    a1 = np.asarray(a1)
+
+    if all(arr.ndim == 1 for arr in (a0, h0, h1, a1)):
+        num_curves, dim = 1, a0.shape[0]
+    elif all(arr.ndim == 2 for arr in (a0, h0, h1, a1)):
+        num_curves, dim = a0.shape
+    else:
+        raise ValueError("All arguments must be Point3D or Point3D_Array.")
+
+    m0 = 0.25 * (3 * h0 + a0)
+    m1 = 0.25 * (3 * h1 + a1)
+    k = 0.5 * (m0 + m1)
+
+    result = np.empty((6 * num_curves, dim))
     result[0::6] = a0
-    result[1::6] = i0
-    result[2::6] = mid
-    result[3::6] = mid
-    result[4::6] = i1
+    result[1::6] = m0
+    result[2::6] = k
+    result[3::6] = k
+    result[4::6] = m1
     result[5::6] = a1
     return result
 

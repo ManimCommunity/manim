@@ -44,11 +44,11 @@ if TYPE_CHECKING:
 
     from manim.typing import (
         FunctionOverride,
-        Image,
         ManimFloat,
         ManimInt,
         MappingFunction,
         PathFuncType,
+        PixelArray,
         Point3D,
         Point3D_Array,
         Vector3D,
@@ -825,7 +825,7 @@ class Mobject:
 
     # Displaying
 
-    def get_image(self, camera=None) -> Image:
+    def get_image(self, camera=None) -> PixelArray:
         if camera is None:
             from ..camera.camera import Camera
 

@@ -40,6 +40,8 @@ if TYPE_CHECKING:
 
 __all__ = ["config_file_paths", "make_config_parser", "ManimConfig", "ManimFrame"]
 
+logger = logging.getLogger("manim")
+
 
 def config_file_paths() -> list[Path]:
     """The paths where ``.cfg`` files will be searched for.
@@ -799,7 +801,7 @@ class ManimConfig(MutableMapping):
             try:
                 self.upto_animation_number = nflag[1]
             except Exception:
-                logging.getLogger("manim").info(
+                logger.info(
                     f"No end scene number specified in -n option. Rendering from {nflag[0]} onwards...",
                 )
 
@@ -1038,7 +1040,7 @@ class ManimConfig(MutableMapping):
             val,
             ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
         )
-        logging.getLogger("manim").setLevel(val)
+        logger.setLevel(val)
 
     @property
     def format(self) -> str:
@@ -1052,8 +1054,9 @@ class ManimConfig(MutableMapping):
             val,
             [None, "png", "gif", "mp4", "mov", "webm"],
         )
+        self.resolve_movie_file_extension(self.transparent)
         if self.format == "webm":
-            logging.getLogger("manim").warning(
+            logger.warning(
                 "Output format set as webm, this can be slower than other formats",
             )
 
@@ -1271,6 +1274,8 @@ class ManimConfig(MutableMapping):
     @background_opacity.setter
     def background_opacity(self, value: float) -> None:
         self._set_between("background_opacity", value, 0, 1)
+        if self.background_opacity < 1:
+            self.resolve_movie_file_extension(is_transparent=True)
 
     @property
     def frame_size(self) -> tuple[int, int]:
@@ -1305,8 +1310,8 @@ class ManimConfig(MutableMapping):
 
     @property
     def transparent(self) -> bool:
-        """Whether the background opacity is 0.0 (-t)."""
-        return self._d["background_opacity"] == 0.0
+        """Whether the background opacity is less than 1.0 (-t)."""
+        return self._d["background_opacity"] < 1.0
 
     @transparent.setter
     def transparent(self, value: bool) -> None:
@@ -1424,6 +1429,7 @@ class ManimConfig(MutableMapping):
         self._d.__setitem__("window_size", value)
 
     def resolve_movie_file_extension(self, is_transparent: bool) -> None:
+        prev_file_extension = self.movie_file_extension
         if is_transparent:
             self.movie_file_extension = ".webm" if self.format == "webm" else ".mov"
         elif self.format == "webm":
@@ -1432,6 +1438,11 @@ class ManimConfig(MutableMapping):
             self.movie_file_extension = ".mov"
         else:
             self.movie_file_extension = ".mp4"
+        if self.movie_file_extension != prev_file_extension:
+            logger.warning(
+                f"Output format changed to '{self.movie_file_extension}' "
+                "to support transparency",
+            )
 
     @property
     def enable_gui(self) -> bool:
@@ -1777,7 +1788,7 @@ class ManimConfig(MutableMapping):
     def tex_template_file(self, val: str) -> None:
         if val:
             if not os.access(val, os.R_OK):
-                logging.getLogger("manim").warning(
+                logger.warning(
                     f"Custom TeX template {val} not found or not readable.",
                 )
             else:
