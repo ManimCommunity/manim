@@ -225,7 +225,7 @@ class OpenGLRenderer(Renderer, RendererProtocol):
 
         # Initializing Context
         logger.debug("Initializing OpenGL context and framebuffers")
-        self.ctx: gl.Context = gl.create_context()
+        self.ctx: gl.Context = gl.create_context(standalone=not config.preview)
 
         # Those are the actual buffers that are used for rendering
         self.stencil_texture = self.ctx.texture(
