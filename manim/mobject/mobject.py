@@ -2166,7 +2166,6 @@ class Mobject:
             dim,
         ) - self.reduce_across_dimension(min, dim)
 
-    @internal
     def get_coord(self, dim: int, direction: Vector3D = ORIGIN):
         """Meant to generalize ``get_x``, ``get_y`` and ``get_z``"""
         return self.get_extremum_along_dim(dim=dim, key=direction[dim])

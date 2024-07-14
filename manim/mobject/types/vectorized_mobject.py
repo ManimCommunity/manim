@@ -738,6 +738,7 @@ class VMobject(Mobject):
             self.points = resize_func(self.points, new_length)
         return self
 
+    @internal
     def set_anchors_and_handles(
         self,
         anchors1: CubicBezierPoints,
