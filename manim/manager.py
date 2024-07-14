@@ -6,7 +6,7 @@ import contextlib
 import platform
 import time
 from collections.abc import Iterable, Sequence
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING, Callable, Generic, TypeVar
 
 import numpy as np
 from tqdm import tqdm
@@ -27,8 +27,10 @@ if TYPE_CHECKING:
     from manim.file_writer.protocols import FileWriterProtocol
     from manim.renderer.renderer import RendererProtocol
 
+Scene_co = TypeVar("Scene_co", covariant=True, bound=Scene)
 
-class Manager:
+
+class Manager(Generic[Scene_co]):
     """
     The Brain of Manim
 
@@ -51,9 +53,9 @@ class Manager:
             Manager(Manimation).render()
     """
 
-    def __init__(self, scene_cls: type[Scene]) -> None:
+    def __init__(self, scene_cls: type[Scene_co]) -> None:
         # scene
-        self.scene: Scene = scene_cls(self)
+        self.scene: Scene_co = scene_cls(self)
 
         if not isinstance(self.scene, Scene):
             raise ValueError(f"{self.scene!r} is not an instance of Scene")
