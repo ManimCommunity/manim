@@ -1,6 +1,7 @@
 """Mobjects that use vector graphics."""
 
 from __future__ import annotations
+
 from typing_extensions import deprecated
 
 __all__ = [
@@ -16,7 +17,7 @@ __all__ = [
 import itertools as it
 import sys
 from collections.abc import Generator, Hashable, Iterable, Mapping, Sequence
-from typing import TYPE_CHECKING, Callable, Literal
+from typing import TYPE_CHECKING, Callable, Literal, cast
 
 import numpy as np
 from PIL.Image import Image
@@ -46,8 +47,6 @@ from manim.utils.iterables import (
     tuplify,
 )
 from manim.utils.space_ops import rotate_vector, shoelace_direction
-
-from typing import cast
 
 if TYPE_CHECKING:
     import numpy.typing as npt
