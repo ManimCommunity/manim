@@ -316,13 +316,25 @@ class ManimConfig(MutableMapping):
         "write_to_movie",
         "zero_pad",
         "force_window",
-        "parallel",
         "no_latex_cleanup",
         "preview_command",
     }
 
     def __init__(self) -> None:
         self._d: dict[str, Any | None] = {k: None for k in self._OPTS}
+
+    def _warn_about_config_options(self) -> None:
+        """Warns about incorrect config options, or permutations of config options."""
+
+        logger = logging.getLogger("manim")
+        if self.format == "webm":
+            logger.warning(
+                "Output format set as webm, this can be slower than other formats",
+            )
+        if not self.preview and not self.write_to_movie:
+            logger.warning(
+                "preview and write_to_movie disabled, this is a dry run. Try passing -p or -w."
+            )
 
     # behave like a dict
     def __iter__(self) -> Iterator[str]:
@@ -590,7 +602,6 @@ class ManimConfig(MutableMapping):
             "use_projection_stroke_shaders",
             "enable_wireframe",
             "force_window",
-            "parallel",
             "no_latex_cleanup",
         ]:
             setattr(self, key, parser["CLI"].getboolean(key, fallback=False))
@@ -939,6 +950,7 @@ class ManimConfig(MutableMapping):
     def notify_outdated_version(self, value: bool) -> None:
         self._set_boolean("notify_outdated_version", value)
 
+    # TODO: Rename to write_to_file
     @property
     def write_to_movie(self) -> bool:
         """Whether to render the scene to a movie file (-w)."""
@@ -1054,18 +1066,7 @@ class ManimConfig(MutableMapping):
             val,
             [None, "png", "gif", "mp4", "mov", "webm"],
         )
-        if self.format == "webm":
-            logging.getLogger("manim").warning(
-                "Output format set as webm, this can be slower than other formats",
-            )
-
-    @property
-    def in_parallel(self) -> None:
-        return self._d["parallel"]
-
-    @in_parallel.setter
-    def in_parallel(self, val: bool) -> None:
-        self._set_boolean("parallel", val)
+        self.resolve_movie_file_extension(self.transparent)
 
     @property
     def ffmpeg_loglevel(self) -> str:

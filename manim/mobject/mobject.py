@@ -21,11 +21,10 @@ from typing import TYPE_CHECKING, Callable, Literal
 
 import numpy as np
 
+from manim import config, logger
+from manim.constants import *
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-
-from .. import config, logger
-from ..constants import *
-from ..utils.color import (
+from manim.utils.color import (
     BLACK,
     WHITE,
     YELLOW_C,
@@ -34,27 +33,26 @@ from ..utils.color import (
     color_gradient,
     interpolate_color,
 )
-from ..utils.exceptions import MultiAnimationOverrideException
-from ..utils.iterables import list_update, remove_list_redundancies
-from ..utils.paths import straight_path
-from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
+from manim.utils.exceptions import MultiAnimationOverrideException
+from manim.utils.iterables import list_update, remove_list_redundancies
+from manim.utils.paths import straight_path
+from manim.utils.space_ops import angle_between_vectors, normalize, rotation_matrix
 
 if TYPE_CHECKING:
     from typing_extensions import Self, TypeAlias
 
+    from manim.animation.animation import Animation
     from manim.typing import (
         FunctionOverride,
-        Image,
         ManimFloat,
         ManimInt,
         MappingFunction,
         PathFuncType,
+        PixelArray,
         Point3D,
         Point3D_Array,
         Vector3D,
     )
-
-    from ..animation.animation import Animation
 
     TimeBasedUpdater: TypeAlias = Callable[["Mobject", float], object]
     NonTimeBasedUpdater: TypeAlias = Callable[["Mobject"], object]
@@ -149,7 +147,7 @@ class Mobject:
         return self._assert_valid_submobjects_internal(submobjects, Mobject)
 
     def _assert_valid_submobjects_internal(
-        self, submobjects: list[Mobject], mob_class: type[Mobject]
+        self, submobjects: Iterable[Mobject], mob_class: type[Mobject]
     ) -> Self:
         for i, submob in enumerate(submobjects):
             if not isinstance(submob, mob_class):
@@ -825,9 +823,9 @@ class Mobject:
 
     # Displaying
 
-    def get_image(self, camera=None) -> Image:
+    def get_image(self, camera=None) -> PixelArray:
         if camera is None:
-            from ..camera.cairo_camera import CairoCamera as Camera
+            from manim.camera.cairo_camera import CairoCamera as Camera
 
             camera = Camera()
         camera.capture_mobject(self)

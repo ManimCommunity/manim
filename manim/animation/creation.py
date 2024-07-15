@@ -475,7 +475,7 @@ class SpiralIn(Animation):
 
         super().__init__(shapes, introducer=True, **kwargs)
 
-    def interpolate_mobject(self, alpha: float) -> None:
+    def interpolate(self, alpha: float) -> None:
         alpha = self.rate_func(alpha)
         for original_shape, shape in zip(self.shapes, self.mobject):
             shape.restore()
@@ -529,7 +529,7 @@ class ShowIncreasingSubsets(Animation):
             **kwargs,
         )
 
-    def interpolate_mobject(self, alpha: float) -> None:
+    def interpolate(self, alpha: float) -> None:
         n_submobs = len(self.all_submobs)
         value = (
             1 - self.rate_func(alpha)

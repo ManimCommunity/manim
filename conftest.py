@@ -5,7 +5,6 @@
 
 from __future__ import annotations
 
-import cairo
 import moderngl
 
 # If it is running Doctest the current directory
@@ -34,7 +33,6 @@ def pytest_report_header(config):
     info = ctx.info
     ctx.release()
     return (
-        f"\nCairo Version: {cairo.cairo_version()}",
         "\nOpenGL information",
         "------------------",
         f"vendor: {info['GL_VENDOR'].strip()}",

@@ -7,8 +7,11 @@ from pathlib import Path
 import numpy as np
 
 from manim import logger
+from manim.typing import PixelArray
 
 from ._show_diff import show_diff_helper
+
+__all__ = ["_FramesTester", "_ControlDataWriter"]
 
 FRAME_ABSOLUTE_TOLERANCE = 1.01
 FRAME_MISMATCH_RATIO_TOLERANCE = 1e-5
@@ -37,7 +40,7 @@ class _FramesTester:
                 f"when there are {self._number_frames} control frames for this test."
             )
 
-    def check_frame(self, frame_number: int, frame: np.ndarray):
+    def check_frame(self, frame_number: int, frame: PixelArray):
         assert frame_number < self._number_frames, (
             f"The tested scene is at frame number {frame_number} "
             f"when there are {self._number_frames} control frames."
@@ -74,7 +77,7 @@ class _FramesTester:
                     self._frames[frame_number],
                     self._file_path.name,
                 )
-            raise e
+            raise e from e
 
 
 class _ControlDataWriter(_FramesTester):
@@ -84,7 +87,7 @@ class _ControlDataWriter(_FramesTester):
         self._number_frames_written: int = 0
 
     # Actually write a frame.
-    def check_frame(self, index: int, frame: np.ndarray):
+    def check_frame(self, frame_number: int, frame: np.ndarray):
         frame = frame[np.newaxis, ...]
         self.frames = np.concatenate((self.frames, frame))
         self._number_frames_written += 1

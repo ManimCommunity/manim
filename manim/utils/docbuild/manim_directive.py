@@ -82,6 +82,7 @@ from __future__ import annotations
 
 import csv
 import itertools as it
+import os
 import re
 import shutil
 import sys
@@ -296,7 +297,7 @@ class ManimDirective(Directive):
         code = [
             "from manim import *",
             *user_code,
-            f"{clsname}().render()",
+            f"Manager({clsname}).render()",
         ]
 
         try:
@@ -350,7 +351,7 @@ class ManimDirective(Directive):
 rendering_times_file_path = Path("../rendering_times.csv")
 
 
-def _write_rendering_stats(scene_name: str, run_time: str, file_name: str) -> None:
+def _write_rendering_stats(scene_name: str, run_time: float, file_name: str) -> None:
     with rendering_times_file_path.open("a") as file:
         csv.writer(file).writerow(
             [

@@ -275,7 +275,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         else:
             return super().get_start()
 
-    def get_length(self) -> np.floating:
+    def get_length(self) -> float:
         start, end = self.get_start_and_end()
         return np.linalg.norm(start - end)
 

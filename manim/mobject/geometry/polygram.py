@@ -23,9 +23,8 @@ import numpy as np
 
 from manim.constants import *
 from manim.mobject.geometry.arc import ArcBetweenPoints
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup as VGroup
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject as VMobject
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+from manim.mobject.types.vectorized_mobject import VGroup
 from manim.utils.color import BLUE, WHITE, ParsableManimColor
 from manim.utils.iterables import adjacent_n_tuples, adjacent_pairs
 from manim.utils.space_ops import angle_between_vectors, normalize, regular_vertices
@@ -37,7 +36,7 @@ if TYPE_CHECKING:
     from manim.utils.color import ParsableManimColor
 
 
-class Polygram(VMobject, metaclass=ConvertToOpenGL):
+class Polygram(OpenGLVMobject):
     """A generalized :class:`Polygon`, allowing for disconnected sets of edges.
 
     Parameters
@@ -249,17 +248,17 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
 
             if evenly_distribute_anchors:
                 # Determine the average length of each curve
-                nonZeroLengthArcs = [arc for arc in arcs if len(arc.points) > 4]
-                if len(nonZeroLengthArcs):
+                non_zero_length_arcs = [arc for arc in arcs if len(arc.points) > 4]
+                if len(non_zero_length_arcs):
                     totalArcLength = sum(
-                        [arc.get_arc_length() for arc in nonZeroLengthArcs]
+                        [arc.get_arc_length() for arc in non_zero_length_arcs]
                     )
                     totalCurveCount = (
-                        sum([len(arc.points) for arc in nonZeroLengthArcs]) / 4
+                        sum([len(arc.points) for arc in non_zero_length_arcs]) / 4
                     )
-                    averageLengthPerCurve = totalArcLength / totalCurveCount
+                    average_length_per_curve = totalArcLength / totalCurveCount
                 else:
-                    averageLengthPerCurve = 1
+                    average_length_per_curve = 1
 
             # To ensure that we loop through starting with last
             arcs = [arcs[-1], *arcs[:-1]]
@@ -273,7 +272,7 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
                 # Make sure anchors are evenly distributed, if necessary
                 if evenly_distribute_anchors:
                     line.insert_n_curves(
-                        ceil(line.get_length() / averageLengthPerCurve)
+                        ceil(line.get_length() / average_length_per_curve)  # type: ignore
                     )
 
                 new_points.extend(line.points)
@@ -720,7 +719,7 @@ class RoundedRectangle(Rectangle):
         self.round_corners(self.corner_radius)
 
 
-class Cutout(VMobject, metaclass=ConvertToOpenGL):
+class Cutout(OpenGLVMobject):
     """A shape with smaller cutouts.
 
     Parameters

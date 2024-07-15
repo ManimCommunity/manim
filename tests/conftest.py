@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from manim import config, tempconfig
+import manim
 
 
 def pytest_addoption(parser):
@@ -45,6 +45,20 @@ def pytest_collection_modifyitems(config, items):
                 item.add_marker(slow_skip)
 
 
+@pytest.fixture
+def config():
+    saved = manim.config.copy()
+    # we need to return the actual config so that tests
+    # using tempconfig pass
+    yield manim.config
+    manim.config.update(saved)
+
+
+@pytest.fixture
+def dry_run(config):
+    config.dry_run = True
+
+
 @pytest.fixture(scope="session")
 def python_version():
     # use the same python executable as it is running currently
@@ -63,9 +77,9 @@ def reset_cfg_file():
 
 @pytest.fixture
 def using_opengl_renderer():
-    """Standard fixture for running with opengl that makes tests use a standard_config.cfg with a temp dir."""
-    with tempconfig({"renderer": "opengl"}):
-        yield
-    # as a special case needed to manually revert back to cairo
-    # due to side effects of setting the renderer
-    config.renderer = "cairo"
+    """Standard fixture for running with opengl that makes tests use a standard_config.cfg with a temp dir.
+
+    .. warning::
+
+        As of experimental, this fixture is deprecated and should not be using
+    """

@@ -16,10 +16,6 @@ from manim.utils.iterables import remove_list_redundancies
 from manim.utils.parameter_parsing import flatten_iterable_parameters
 from manim.utils.rate_functions import linear
 
-from ..animation.animation import Animation, prepare_animation
-from ..constants import RendererType
-from ..mobject.mobject import Group, Mobject
-
 if TYPE_CHECKING:
     from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup
     from manim.mobject.types.vectorized_mobject import VGroup
@@ -70,7 +66,7 @@ class AnimationGroup(Animation):
         self.group = group
         if self.group is None:
             mobjects = remove_list_redundancies(
-                [anim.mobject for anim in self.animations if not anim.is_introducer()],
+                [anim.mobject for anim in self.animations if not anim.introducer],
             )
             if config["renderer"] == RendererType.OPENGL:
                 self.group = OpenGLGroup(*mobjects)
@@ -233,10 +229,6 @@ class Succession(AnimationGroup):
                 "Please add at least one subanimation."
             )
         self.update_active_animation(0)
-
-        for anim in self.animations:
-            if not anim.is_introducer() and anim.mobject is not None:
-                self.buffer.add(anim.mobject)
 
     def finish(self) -> None:
         while self.active_animation is not None:

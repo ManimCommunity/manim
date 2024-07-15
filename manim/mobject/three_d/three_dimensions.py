@@ -30,9 +30,9 @@ from manim.constants import *
 from manim.mobject.geometry.arc import Circle
 from manim.mobject.geometry.polygram import Square
 from manim.mobject.mobject import *
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-from manim.mobject.types.vectorized_mobject import VGroup, VMobject
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+from manim.mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from manim.utils.color import (
     ManimColor,
     ParsableManimColor,
@@ -41,12 +41,12 @@ from manim.utils.iterables import tuplify
 from manim.utils.space_ops import normalize, perpendicular_bisector, z_to_vector
 
 
-class ThreeDVMobject(VMobject, metaclass=ConvertToOpenGL):
+class ThreeDVMobject(OpenGLVMobject):
     def __init__(self, shade_in_3d: bool = True, **kwargs):
         super().__init__(shade_in_3d=shade_in_3d, **kwargs)
 
 
-class Surface(VGroup, metaclass=ConvertToOpenGL):
+class Surface(VGroup):
     """Creates a Parametric Surface using a checkerboard pattern.
 
     Parameters
@@ -613,17 +613,18 @@ class Cone(Surface):
             **kwargs,
         )
         # used for rotations
+        self.new_height = height
         self._current_theta = 0
         self._current_phi = 0
-
+        self.base_circle = Circle(
+            radius=base_radius,
+            color=self.fill_color,
+            fill_opacity=self.fill_opacity,
+            stroke_width=0,
+        )
+        self.base_circle.shift(height * IN)
+        self._set_start_and_end_attributes(direction)
         if show_base:
-            self.base_circle = Circle(
-                radius=base_radius,
-                color=self.fill_color,
-                fill_opacity=self.fill_opacity,
-                stroke_width=0,
-            )
-            self.base_circle.shift(height * IN)
             self.add(self.base_circle)
 
         self._rotate_to_direction()
@@ -652,6 +653,12 @@ class Cone(Surface):
                 r * np.cos(self.theta),
             ],
         )
+
+    def get_start(self) -> np.ndarray:
+        return self.start_point.get_center()
+
+    def get_end(self) -> np.ndarray:
+        return self.end_point.get_center()
 
     def _rotate_to_direction(self) -> None:
         x, y, z = self.direction
@@ -706,6 +713,15 @@ class Cone(Surface):
             The direction of the apex.
         """
         return self.direction
+
+    def _set_start_and_end_attributes(self, direction):
+        normalized_direction = direction * np.linalg.norm(direction)
+
+        start = self.base_circle.get_center()
+        end = start + normalized_direction * self.new_height
+        self.start_point = VectorizedPoint(start)
+        self.end_point = VectorizedPoint(end)
+        self.add(self.start_point, self.end_point)
 
 
 class Cylinder(Surface):
@@ -1149,13 +1165,19 @@ class Arrow3D(Line3D):
             self.end - height * self.direction,
             **kwargs,
         )
-
         self.cone = Cone(
-            direction=self.direction, base_radius=base_radius, height=height, **kwargs
+            direction=self.direction,
+            base_radius=base_radius,
+            height=height,
+            **kwargs,
         )
         self.cone.shift(end)
-        self.add(self.cone)
+        self.end_point = VectorizedPoint(end)
+        self.add(self.end_point, self.cone)
         self.set_color(color)
+
+    def get_end(self) -> np.ndarray:
+        return self.end_point.get_center()
 
 
 class Torus(Surface):

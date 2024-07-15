@@ -301,16 +301,6 @@ def get_norm(vector: np.ndarray) -> float:
     return np.linalg.norm(vector)
 
 
-def normalize(vect: list[float], fall_back: list[float] | None = None) -> np.ndarray:
-    norm = get_norm(vect)
-    if norm > 0:
-        return np.array(vect) / norm
-    elif fall_back is not None:
-        return np.array(fall_back)
-    else:
-        return np.zeros(len(vect))
-
-
 def z_to_vector(vector: np.ndarray) -> np.ndarray:
     """
     Returns some matrix in SO(3) which takes the z-axis to the
@@ -373,12 +363,16 @@ def angle_between_vectors(v1: np.ndarray, v2: np.ndarray) -> float:
     )
 
 
-def normalize(vect: np.ndarray | tuple[float], fall_back=None) -> np.ndarray:
-    norm = np.linalg.norm(vect)
+def normalize(
+    vect: npt.NDArray[float], fall_back: npt.NDArray[float] | None = None
+) -> npt.NDArray[float]:
+    norm = get_norm(vect)
     if norm > 0:
         return np.array(vect) / norm
+    elif fall_back is not None:
+        return np.array(fall_back)
     else:
-        return fall_back or np.zeros(len(vect))
+        return np.zeros(len(vect))
 
 
 def normalize_along_axis(array: np.ndarray, axis: np.ndarray) -> np.ndarray:

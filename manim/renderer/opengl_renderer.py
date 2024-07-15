@@ -11,7 +11,8 @@ from manim.camera.camera import Camera
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.renderer.buffers.buffer import STD140BufferFormat
 from manim.renderer.opengl_shader_program import load_shader_program_by_folder
-from manim.renderer.renderer import ImageType, Renderer, RendererData, RendererProtocol
+from manim.renderer.renderer import Renderer, RendererData, RendererProtocol
+from manim.typing import PixelArray
 from manim.utils.iterables import listify
 from manim.utils.space_ops import cross2d, earclip_triangulation, z_to_vector
 
@@ -121,7 +122,7 @@ def get_triangulation(self: OpenGLVMobject, normal_vector=None):
 
     # Triangulate
     inner_verts = points[inner_vert_indices]
-    inner_tri_indices = inner_vert_indices[earclip_triangulation(inner_verts, rings)]
+    inner_tri_indices = inner_vert_indices[earclip_triangulation(inner_verts, rings)]  # type: ignore
 
     tri_indices = np.hstack([indices, inner_tri_indices])
     self.triangulation = tri_indices
@@ -194,9 +195,8 @@ class ProgramManager:
     def write_uniforms(prog, uniforms):
         for name in prog:
             member = prog[name]
-            if isinstance(member, gl.Uniform):
-                if name in uniforms:
-                    member.value = uniforms[name]
+            if isinstance(member, gl.Uniform) and name in uniforms:
+                member.value = uniforms[name]
 
     @staticmethod
     def bind_to_uniform_block(uniform_buffer_object: gl.Buffer, idx: int = 0):
@@ -214,7 +214,6 @@ class OpenGLRenderer(Renderer, RendererProtocol):
         background_color: c.ManimColor = color.BLACK,
         background_opacity: float = 1.0,
         background_image: str | None = None,
-        substitute_output_fbo: gl.Framebuffer | None = None,
     ) -> None:
         super().__init__()
         self.pixel_width = pixel_width
@@ -226,7 +225,7 @@ class OpenGLRenderer(Renderer, RendererProtocol):
 
         # Initializing Context
         logger.debug("Initializing OpenGL context and framebuffers")
-        self.ctx: gl.Context = gl.create_context()
+        self.ctx: gl.Context = gl.create_context(standalone=not config.preview)
 
         # Those are the actual buffers that are used for rendering
         self.stencil_texture = self.ctx.texture(
@@ -373,7 +372,7 @@ class OpenGLRenderer(Renderer, RendererProtocol):
         format = gl.detect_format(self.render_texture_program, frame_data.dtype.names)
         vao = self.ctx.vertex_array(
             program=self.render_texture_program,
-            content=[(vbo, format, *frame_data.dtype.names)],
+            content=[(vbo, format, *frame_data.dtype.names)],  # type: ignore
         )
         self.ctx.copy_framebuffer(self.render_target_texture_fbo, self.color_buffer_fbo)
         self.render_target_texture.use(0)
@@ -408,12 +407,15 @@ class OpenGLRenderer(Renderer, RendererProtocol):
         # return data, data_size
 
     def render_image(self, mob):
-        raise NotImplementedError  # TODO
+        raise NotImplementedError
 
     def render_previous(self, camera: Camera) -> None:
         raise NotImplementedError
 
-    def render_vmobject(self, mob: OpenGLVMobject) -> None:  # type: ignore
+    def render_mesh(self, mob) -> None:
+        raise NotImplementedError
+
+    def render_vmobject(self, mob: OpenGLVMobject) -> None:
         self.stencil_buffer_fbo.use()
         self.stencil_buffer_fbo.clear()
         self.render_target_fbo.use()
@@ -512,10 +514,13 @@ class OpenGLRenderer(Renderer, RendererProtocol):
                     np.array(range(len(sub.points))),
                 )
 
-    def get_pixels(self) -> ImageType:
+    def get_pixels(self) -> PixelArray:
         raw = self.output_fbo.read(components=4, dtype="f1", clamp=True)  # RGBA, floats
-        buf = np.frombuffer(raw, dtype=np.uint8).reshape((1080, 1920, -1))
-        return buf
+        y, x = self.output_fbo.viewport[2:4]
+        buf = np.frombuffer(raw, dtype=np.uint8).reshape((x, y, 4))
+        # this actually has the right type (uint8) but due to
+        # numpy typing being bad, we have to type: ignore it
+        return buf[::-1]  # type: ignore
 
 
 class GLVMobjectManager:

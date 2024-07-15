@@ -11,7 +11,7 @@ import sys
 from dataclasses import dataclass
 from functools import partialmethod, wraps
 from math import ceil
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Generic
 
 import moderngl
 import numpy as np
@@ -50,26 +50,36 @@ if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
     from typing import Any, Callable, Union
 
-    from typing_extensions import Self, TypeAlias
+    import numpy.typing as npt
+    from typing_extensions import Concatenate, ParamSpec, Self, TypeAlias
+
+    from manim.animation.animation import Animation
+    from manim.renderer.renderer import RendererData
+    from manim.typing import PathFuncType, Point3D, Point3D_Array
 
     TimeBasedUpdater: TypeAlias = Callable[
         ["OpenGLMobject", float], "OpenGLMobject | None"
     ]
-    NonTimeUpdater: TypeAlias = Callable[["OpenGLMobject"], "OpenGLMobject" | None]
+    NonTimeUpdater: TypeAlias = Callable[["OpenGLMobject"], "OpenGLMobject | None"]
     Updater: TypeAlias = Union[TimeBasedUpdater, NonTimeUpdater]
     PointUpdateFunction: TypeAlias = Callable[[np.ndarray], np.ndarray]
-    from manim.renderer.renderer import RendererData
-    from manim.typing import PathFuncType
 
-    T = TypeVar("T", bound=RendererData)
-    _F = TypeVar("_F", bound=Callable[..., Any])
+    M = TypeVar("M", bound="OpenGLMobject")
+    T = TypeVar("T")
+    P = ParamSpec("P")
+
+
+R = TypeVar("R", bound="RendererData")
+T_co = TypeVar("T_co", covariant=True, bound="OpenGLMobject")
 
 UNIFORM_DTYPE = np.float64
 
 
-def stash_mobject_pointers(func: _F) -> _F:
+def stash_mobject_pointers(
+    func: Callable[Concatenate[M, P], T],
+) -> Callable[Concatenate[M, P], T]:
     @wraps(func)
-    def wrapper(self, *args, **kwargs):
+    def wrapper(self: M, *args: P.args, **kwargs: P.kwargs):
         uncopied_attrs = ["parents", "target", "saved_state"]
         stash = {}
         for attr in uncopied_attrs:
@@ -105,7 +115,9 @@ class MobjectStatus:
     points_changed: bool = False
 
 
-class OpenGLMobject:
+# it's generic in its renderer, which is a little bit cursed
+# In the future, it should be replaced with a RendererData protocol
+class OpenGLMobject(Generic[R]):
     """Mathematical Object: base class for objects that can be displayed on screen.
 
     Attributes
@@ -166,7 +178,8 @@ class OpenGLMobject:
         self.data: dict[str, np.ndarray] = {}
         self.uniforms: dict[str, float | np.ndarray] = {}
 
-        self.renderer_data: T | None = None
+        # TODO replace with protocol
+        self.renderer_data: R | None = None
         self.status = MobjectStatus()
 
         self.init_data()
@@ -304,9 +317,9 @@ class OpenGLMobject:
         # Typically implemented in subclass, unless purposefully left blank
         pass
 
-    def set_data(self, data):
-        for key in data:
-            self.data[key] = data[key]
+    def set_data(self, data: dict[str, Any]):
+        for key, value in data.items():
+            self.data[key] = value
         return self
 
     def set_uniforms(self, uniforms):
@@ -316,8 +329,12 @@ class OpenGLMobject:
             self.uniforms[key] = value
         return self
 
+    # https://github.com/python/typing/issues/802
+    # so we hack around it by doing | Self
+    # but this causes issues in Scene.play which only
+    # accepts _AnimationBuilder/Animations, not Mobjects
     @property
-    def animate(self) -> _AnimationBuilder:
+    def animate(self) -> _AnimationBuilder[Self] | Self:
         """Used to animate the application of a method.
 
         .. warning::
@@ -669,13 +686,15 @@ class OpenGLMobject:
                 parent.refresh_bounding_box()
         return self
 
-    def are_points_touching(self, points, buff: float = 0) -> np.ndarray:
+    def are_points_touching(
+        self, points: Point3D_Array, buff: float = 0
+    ) -> npt.NDArray[bool]:
         bb = self.get_bounding_box()
         mins = bb[0] - buff
         maxs = bb[2] + buff
         return ((points >= mins) * (points <= maxs)).all(1)
 
-    def is_point_touching(self, point, buff=MED_SMALL_BUFF):
+    def is_point_touching(self, point: Point3D, buff: float = MED_SMALL_BUFF) -> bool:
         return self.are_points_touching(np.array(point, ndmin=2), buff)[0]
 
     def is_touching(self, mobject: OpenGLMobject, buff: float = 1e-2) -> bool:
@@ -709,13 +728,22 @@ class OpenGLMobject:
     def split(self) -> list[OpenGLMobject]:
         return self.submobjects
 
-    def assemble_family(self) -> Self:
+    def note_changed_family(self) -> Self:
+        """Updates bounding boxes and updater statuses.
+
+        This used to be called ``assemble_family``
+
+        .. warning::
+
+            Remove the above remark about ``assemble_family`` before experimental
+            is merged, it's a note to MrDiver and other devs
+        """
         sub_families = (sm.get_family() for sm in self.submobjects)
         self.family = [self, *uniq_chain(*sub_families)]
         self.refresh_has_updater_status()
         self.refresh_bounding_box()
         for parent in self.parents:
-            parent.assemble_family()
+            parent.note_changed_family()
         return self
 
     def get_family(self, recurse=True) -> list[OpenGLMobject]:
@@ -817,7 +845,7 @@ class OpenGLMobject:
                 self.submobjects.append(mobject)
             if self not in mobject.parents:
                 mobject.parents.append(self)
-        self.assemble_family()
+        self.note_changed_family()
         return self
 
     def remove(self, *mobjects: OpenGLMobject, reassemble: bool = True) -> Self:
@@ -848,7 +876,7 @@ class OpenGLMobject:
             if self in mobject.parents:
                 mobject.parents.remove(self)
         if reassemble:
-            self.assemble_family()
+            self.note_changed_family()
         return self
 
     def add_to_back(self, *mobjects: OpenGLMobject) -> Self:
@@ -905,7 +933,7 @@ class OpenGLMobject:
             old_submob.parents.remove(self)
         self.submobjects[index] = new_submob
         new_submob.parents.append(self)
-        self.assemble_family()
+        self.note_changed_family()
         return self
 
     def insert_submobject(self, index: int, mobject: OpenGLMobject):
@@ -934,7 +962,7 @@ class OpenGLMobject:
         if mobject not in self.submobjects:
             self.submobjects.insert(index, mobject)
 
-        self.assemble_family()
+        self.note_changed_family()
         return self
 
     def set_submobjects(self, submobject_list: list[OpenGLMobject]):
@@ -1316,7 +1344,7 @@ class OpenGLMobject:
             for submob in self.submobjects:
                 submob.shuffle(recurse=True)
         random.shuffle(self.submobjects)
-        self.assemble_family()
+        self.note_changed_family()
         return self
 
     def reverse_submobjects(self, recursive=False):
@@ -1344,7 +1372,7 @@ class OpenGLMobject:
         if recursive:
             for submob in self.submobjects:
                 submob.reverse_submobjects(recursive=True)
-        self.assemble_family()
+        self.note_changed_family()
 
     # Copying
 
@@ -1512,6 +1540,7 @@ class OpenGLMobject:
     def init_updaters(self) -> None:
         self.time_based_updaters: list[TimeBasedUpdater] = []
         self.non_time_updaters: list[NonTimeUpdater] = []
+        # so that we don't have to refind updaters
         self.has_updaters: bool = False
         self.updating_suspended: bool = False
 
@@ -2635,6 +2664,16 @@ class OpenGLMobject:
 
     # Alignment
 
+    def is_aligned_with(self, mobject: OpenGLMobject) -> bool:
+        return (
+            len(self.data) == len(mobject.data)
+            and len(self.submobjects) == len(mobject.submobjects)
+            and all(
+                sm1.is_aligned_with(sm2)
+                for sm1, sm2 in zip(self.submobjects, mobject.submobjects)
+            )
+        )
+
     def align_data_and_family(self, mobject):
         self.align_family(mobject)
         self.align_data(mobject)
@@ -3152,8 +3191,8 @@ class OpenGLPoint(OpenGLMobject):
         self.set_points(np.array(new_loc, ndmin=2, dtype=float))
 
 
-class _AnimationBuilder:
-    def __init__(self, mobject):
+class _AnimationBuilder(Generic[T_co]):
+    def __init__(self, mobject: T_co):
         self.mobject = mobject
         self.mobject.generate_target()
 
@@ -3165,7 +3204,7 @@ class _AnimationBuilder:
         self.cannot_pass_args = False
         self.anim_args = {}
 
-    def __call__(self, **kwargs) -> _AnimationBuilder:
+    def __call__(self, **kwargs) -> _AnimationBuilder[T_co]:
         if self.cannot_pass_args:
             raise ValueError(
                 "Animation arguments must be passed before accessing methods and can only be passed once",
@@ -3176,7 +3215,7 @@ class _AnimationBuilder:
 
         return self
 
-    def __getattr__(self, method_name):
+    def __getattr__(self, method_name: str):
         method = getattr(self.mobject.target, method_name)
         has_overridden_animation = hasattr(method, "_override_animate")
 
@@ -3204,7 +3243,7 @@ class _AnimationBuilder:
 
         return update_target
 
-    def build(self):
+    def build(self) -> Animation:
         from manim.animation.transform import _MethodAnimation
 
         if self.overridden_animation:

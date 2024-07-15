@@ -1,10 +1,21 @@
 from __future__ import annotations
 
-from typing import final
+from collections.abc import Iterator
+from enum import Enum
+from typing import TYPE_CHECKING, Any, final
 
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 
-__all__ = ["SceneBuffer"]
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+__all__ = ["SceneBuffer", "SceneOperation"]
+
+
+class SceneOperation(Enum):
+    ADD = "add"
+    REMOVE = "remove"
+    REPLACE = "replace"
 
 
 @final
@@ -19,42 +30,55 @@ class SceneBuffer:
 
     It is the scenes job to clear the buffer in between the beginning
     and end of animations.
+
+    To iterate over the operations, simply iterate over the buffer.
+
+    Example
+    -------
+
+        .. code-block:: pycon
+
+            >>> buffer = SceneBuffer()
+            >>> buffer.add(Square())
+            >>> buffer.remove(Circle())
+            >>> buffer.replace(Square(), Circle())
+            >>> for operation in buffer:
+            ...     print(operation)
+            (SceneOperation.ADD, (Square(),), {})
+            (SceneOperation.REMOVE, (Circle(),), {})
+            (SceneOperation.REPLACE, (Square(), Circle()), {})
     """
 
     def __init__(self) -> None:
-        self.to_remove: list[Mobject] = []
-        self.to_add: list[Mobject] = []
-        self.to_replace: list[tuple[Mobject, ...]] = []
-        self.deferred = False
+        self.operations: list[
+            tuple[SceneOperation, Sequence[OpenGLMobject], dict[str, Any]]
+        ] = []
 
-    def add(self, *mobs: Mobject) -> None:
-        self._check_deferred()
-        self.to_add.extend(mobs)
+    def add(self, *mobs: OpenGLMobject, **kwargs: Any) -> None:
+        """Add mobjects to the scene."""
+        self.operations.append((SceneOperation.ADD, mobs, kwargs))
 
-    def remove(self, *mobs: Mobject) -> None:
-        self._check_deferred()
-        self.to_remove.extend(mobs)
+    def remove(self, *mobs: OpenGLMobject, **kwargs: Any) -> None:
+        """Remove mobjects from the scene."""
+        self.operations.append((SceneOperation.REMOVE, mobs, kwargs))
 
-    def replace(self, mob: Mobject, *replacements: Mobject) -> None:
-        self._check_deferred()
-        self.to_replace.append((mob, *replacements))
+    def replace(
+        self, mob: OpenGLMobject, *replacements: OpenGLMobject, **kwargs: Any
+    ) -> None:
+        """Replace a ``mob`` with ``replacements`` on the scene."""
+        self.operations.append((SceneOperation.REPLACE, (mob, *replacements), kwargs))
 
     def clear(self) -> None:
-        self.to_remove.clear()
-        self.to_add.clear()
-
-    def deferred_clear(self) -> None:
-        """Clear ``self`` on next operation"""
-        self.deferred = True
-
-    def _check_deferred(self) -> None:
-        if self.deferred:
-            self.clear()
-            self.deferred = False
+        """Clear the buffer."""
+        self.operations.clear()
 
     def __str__(self) -> str:
-        to_add = self.to_add
-        to_remove = self.to_remove
-        return f"{type(self).__name__}({to_add=}, {to_remove=})"
+        operations = self.operations
+        return f"{type(self).__name__}({operations=})"
 
     __repr__ = __str__
+
+    def __iter__(
+        self,
+    ) -> Iterator[tuple[SceneOperation, Sequence[OpenGLMobject], dict[str, Any]]]:
+        return iter(self.operations)

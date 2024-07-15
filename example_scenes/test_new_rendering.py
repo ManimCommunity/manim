@@ -4,10 +4,31 @@ from manim import *
 class Test(Scene):
     def construct(self) -> None:
         s = Square()
+        self.add(s)
+        self.play(Rotate(s, PI / 2))
+        self.play(FadeOut(s))
+        sq = RegularPolygon(6)
         c = Circle()
-        st = Star(color=YELLOW, fill_color=YELLOW)
-        self.play(Succession(*[Create(x) for x in VGroup(s, c, st).arrange()]))
+        st = Star()
+        VGroup(sq, c, st).arrange()
+        self.play(
+            Succession(
+                Create(sq),
+                DrawBorderThenFill(c),
+                Create(st),
+            )
+        )
+        self.play(FadeOut(VGroup(*self.mobjects)))
 
 
-with tempconfig({"renderer": "opengl", "preview": True, "parallel": False}):
-    Manager(Test).render()
+if __name__ == "__main__":
+    with tempconfig(
+        {
+            "preview": True,
+            "write_to_movie": False,
+            "disable_caching": True,
+            "frame_rate": 60,
+            "disable_caching_warning": True,
+        }
+    ):
+        Manager(Test).render()

@@ -10,6 +10,7 @@ from typing import Any
 
 from manim import config, logger, tempconfig
 from manim.__main__ import main
+from manim.manager import Manager
 from manim.renderer.shader import shader_program_cache
 
 __all__ = ["ManimMagic"]
@@ -127,19 +128,20 @@ else:
             args = main(modified_args, standalone_mode=False, prog_name="manim")
             with tempconfig(local_ns.get("config", {})):
                 config.digest_args(args)
+                manager: Manager | None = None
 
                 try:
                     SceneClass = local_ns[config["scene_names"][0]]
-                    scene = SceneClass()
-                    scene.render()
+                    manager = Manager(SceneClass)
+                    manager.render()
                 finally:
                     # Shader cache becomes invalid as the context is destroyed
                     shader_program_cache.clear()
 
                     # Close OpenGL window here instead of waiting for the main thread to
                     # finish causing the window to stay open and freeze
-                    if scene.window is not None:
-                        scene.window.close()
+                    if manager is not None and manager.window is not None:
+                        manager.window.close()
 
                 if config["output_file"] is None:
                     logger.info("No output file produced")
@@ -166,7 +168,11 @@ else:
                     # set explicitly.
                     embed = "google.colab" in str(get_ipython())
 
-                if file_type.startswith("image"):
+                if file_type is None:
+                    raise Exception(
+                        "Could not guess file type, please contact the developers"
+                    )
+                elif file_type.startswith("image"):
                     result = Image(filename=config["output_file"])
                 else:
                     result = Video(

@@ -4,49 +4,61 @@ from __future__ import annotations
 
 __all__ = ["Rotating", "Rotate"]
 
-from collections.abc import Sequence
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING
 
 import numpy as np
 
-from ..animation.animation import Animation
-from ..animation.transform import Transform
-from ..constants import OUT, PI, TAU
-from ..utils.rate_functions import linear
+from manim.animation.animation import Animation
+from manim.constants import ORIGIN, OUT, PI, TAU
+from manim.utils.rate_functions import linear
 
 if TYPE_CHECKING:
-    from ..mobject.mobject import Mobject
+    from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+    from manim.typing import RateFunc
 
 
 class Rotating(Animation):
     def __init__(
         self,
-        mobject: Mobject,
+        mobject: OpenGLMobject,
+        angle: float = TAU,
         axis: np.ndarray = OUT,
-        radians: np.ndarray = TAU,
         about_point: np.ndarray | None = None,
         about_edge: np.ndarray | None = None,
-        run_time: float = 5,
-        rate_func: Callable[[float], float] = linear,
+        run_time: float = 5.0,
+        rate_func: RateFunc = linear,
+        suspend_mobject_updating: bool = False,
         **kwargs,
-    ) -> None:
+    ):
+        super().__init__(
+            mobject,
+            run_time=run_time,
+            rate_func=rate_func,
+            suspend_mobject_updating=suspend_mobject_updating,
+            **kwargs,
+        )
+        self.angle = angle
         self.axis = axis
-        self.radians = radians
         self.about_point = about_point
         self.about_edge = about_edge
-        super().__init__(mobject, run_time=run_time, rate_func=rate_func, **kwargs)
 
-    def interpolate_mobject(self, alpha: float) -> None:
-        self.mobject.become(self.starting_mobject)
+    def interpolate(self, alpha: float) -> None:
+        pairs = zip(
+            self.mobject.family_members_with_points(),
+            self.starting_mobject.family_members_with_points(),
+        )
+        for sm1, sm2 in pairs:
+            sm1.points[:] = sm2.points
+
         self.mobject.rotate(
-            self.rate_func(alpha) * self.radians,
+            self.rate_func(alpha) * self.angle,
             axis=self.axis,
             about_point=self.about_point,
             about_edge=self.about_edge,
         )
 
 
-class Rotate(Transform):
+class Rotate(Rotating):
     """Animation that rotates a Mobject.
 
     Parameters
@@ -67,7 +79,6 @@ class Rotate(Transform):
     Examples
     --------
     .. manim:: UsingRotate
-
         class UsingRotate(Scene):
             def construct(self):
                 self.play(
@@ -79,36 +90,23 @@ class Rotate(Transform):
                     ),
                     Rotate(Square(side_length=0.5), angle=2*PI, rate_func=linear),
                     )
-
     """
 
     def __init__(
         self,
-        mobject: Mobject,
+        mobject: OpenGLMobject,
         angle: float = PI,
         axis: np.ndarray = OUT,
-        about_point: Sequence[float] | None = None,
-        about_edge: Sequence[float] | None = None,
+        run_time: float = 1,
+        about_edge: np.ndarray = ORIGIN,
         **kwargs,
-    ) -> None:
-        if "path_arc" not in kwargs:
-            kwargs["path_arc"] = angle
-        if "path_arc_axis" not in kwargs:
-            kwargs["path_arc_axis"] = axis
-        self.angle = angle
-        self.axis = axis
-        self.about_edge = about_edge
-        self.about_point = about_point
-        if self.about_point is None:
-            self.about_point = mobject.get_center()
-        super().__init__(mobject, path_arc_centers=self.about_point, **kwargs)
-
-    def create_target(self) -> Mobject:
-        target = self.mobject.copy()
-        target.rotate(
-            self.angle,
-            axis=self.axis,
-            about_point=self.about_point,
-            about_edge=self.about_edge,
+    ):
+        super().__init__(
+            mobject,
+            angle,
+            axis,
+            run_time=run_time,
+            about_edge=about_edge,
+            introducer=True,
+            **kwargs,
         )
-        return target

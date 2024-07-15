@@ -114,9 +114,7 @@ def clip(a, min_a, max_a):
     return a
 
 
-def fdiv(
-    a: Scalable, b: Scalable, zero_over_zero_value: Scalable | None = None
-) -> Scalable:
+def fdiv(a: float, b: float, zero_over_zero_value: float | None = None) -> float:
     if zero_over_zero_value is not None:
         out = np.full_like(a, zero_over_zero_value)
         where = np.logical_or(a != 0, b != 0)

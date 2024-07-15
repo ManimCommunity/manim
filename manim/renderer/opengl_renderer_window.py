@@ -2,16 +2,18 @@ from __future__ import annotations
 
 import moderngl_window as mglw
 import numpy as np
-from moderngl_window.context.pyglet.window import Window as FunWindow
+from moderngl_window.context.pyglet.window import Window as PygletWindow
 from moderngl_window.timers.clock import Timer
 from screeninfo import get_monitors
 
-from .. import __version__, config
+from manim import __version__, config
+from manim.event_handler.window import WindowABC
 
 __all__ = ["Window"]
 
 
-class Window(FunWindow):
+class Window(PygletWindow, WindowABC):
+    name = "Manim Community"
     fullscreen: bool = False
     resizable: bool = False
     gl_version: tuple[int, int] = (3, 3)

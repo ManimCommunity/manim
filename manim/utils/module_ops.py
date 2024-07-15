@@ -6,15 +6,24 @@ import re
 import sys
 import types
 import warnings
-from pathlib import Path
+from typing import TYPE_CHECKING
 
-from .. import config, console, constants, logger
-from ..scene.scene_file_writer import SceneFileWriter
+from manim import config, console, constants, logger
+from manim.file_writer import FileWriter
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Sequence
+    from pathlib import Path
+
+    from typing_extensions import Any
+
+    from manim.scene.scene import Scene
+
 
 __all__ = ["scene_classes_from_file"]
 
 
-def get_module(file_name: Path):
+def get_module(file_name: Path) -> types.ModuleType:
     if str(file_name) == "-":
         module = types.ModuleType("input_scenes")
         logger.info(
@@ -56,10 +65,10 @@ def get_module(file_name: Path):
             raise FileNotFoundError(f"{file_name} not found")
 
 
-def get_scene_classes_from_module(module):
-    from ..scene.scene import Scene
+def get_scene_classes_from_module(module: types.ModuleType) -> list[type[Scene]]:
+    from manim.scene.scene import Scene
 
-    def is_child_scene(obj, module):
+    def is_child_scene(obj: Any, module: types.ModuleType) -> bool:
         return (
             inspect.isclass(obj)
             and issubclass(obj, Scene)
@@ -73,7 +82,7 @@ def get_scene_classes_from_module(module):
     ]
 
 
-def get_scenes_to_render(scene_classes):
+def get_scenes_to_render(scene_classes: Sequence[type[Scene]]) -> list[type[Scene]]:
     if not scene_classes:
         logger.error(constants.NO_SCENE_MESSAGE)
         return []
@@ -97,9 +106,9 @@ def get_scenes_to_render(scene_classes):
     return prompt_user_for_choice(scene_classes)
 
 
-def prompt_user_for_choice(scene_classes):
+def prompt_user_for_choice(scene_classes: Iterable[type[Scene]]) -> list[type[Scene]]:
     num_to_class = {}
-    SceneFileWriter.force_output_as_scene_name = True
+    FileWriter.force_output_as_scene_name = True
     for count, scene_class in enumerate(scene_classes, 1):
         name = scene_class.__name__
         console.print(f"{count}: {name}", style="logging.level.info")
@@ -125,8 +134,8 @@ def prompt_user_for_choice(scene_classes):
 
 
 def scene_classes_from_file(
-    file_path: Path, require_single_scene=False, full_list=False
-):
+    file_path: Path, require_single_scene: bool = False, full_list: bool = False
+) -> type[Scene] | list[type[Scene]]:
     module = get_module(file_path)
     all_scene_classes = get_scene_classes_from_module(module)
     if full_list:

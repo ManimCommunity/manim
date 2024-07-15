@@ -18,14 +18,15 @@ from typing import cast
 
 import cloup
 
-from ... import __version__, config, console, error_console, logger
-from ..._config import tempconfig
-from ...constants import EPILOG, RendererType
-from ...utils.module_ops import scene_classes_from_file
-from .ease_of_access_options import ease_of_access_options
-from .global_options import global_options
-from .output_options import output_options
-from .render_options import render_options
+from manim import __version__, config, console, error_console, logger
+from manim._config import tempconfig
+from manim.cli.render.ease_of_access_options import ease_of_access_options
+from manim.cli.render.global_options import global_options
+from manim.cli.render.output_options import output_options
+from manim.cli.render.render_options import render_options
+from manim.constants import EPILOG, RendererType
+from manim.manager import Manager
+from manim.utils.module_ops import scene_classes_from_file
 
 __all__ = ["render"]
 
@@ -95,10 +96,10 @@ def render(
             while keep_running:
                 for SceneClass in scene_classes_from_file(file):
                     with tempconfig({}):
-                        scene = SceneClass()
-                        rerun = scene.render()
+                        manager = Manager(SceneClass)
+                        rerun = manager.render()
                     if rerun or config["write_all"]:
-                        scene.num_plays = 0
+                        manager.scene.num_plays = 0
                         continue
                     else:
                         keep_running = False

@@ -21,10 +21,11 @@ output_options = option_group(
         help="Zero padding for PNG file names.",
     ),
     option(
+        "-w",
         "--write_to_movie",
         is_flag=True,
         default=None,
-        help="Write the video rendered with opengl to a file.",
+        help="Write the video to a file.",
     ),
     option(
         "--media_dir",
