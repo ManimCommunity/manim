@@ -2931,7 +2931,7 @@ class Mobject:
 
     def add_n_more_submobjects(self, n: int) -> Self:
         if n == 0:
-            return None
+            return self
 
         curr = len(self._submobjects)
         if curr == 0:
