@@ -22,6 +22,8 @@ if typing.TYPE_CHECKING:
     from manim.mobject.opengl.opengl_mobject import OpenGLMobject
     from manim.scene.scene import Scene
 
+    T = typing.TypeVar("T")
+
 __all__ = ["KEYS_TO_FILTER_OUT", "get_hash_from_play_call", "get_json"]
 
 # Sometimes there are elements that are not suitable for hashing (too long or

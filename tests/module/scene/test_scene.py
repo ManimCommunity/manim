@@ -4,11 +4,7 @@ import datetime
 
 import pytest
 
-<<<<<<< HEAD
 from manim import Circle, FadeIn, Group, Manager, Mobject, Scene, Square
-=======
-from manim import Circle, FadeIn, Group, Mobject, Scene, Square
->>>>>>> f1ce5122253882a20b6714adf728eccfa41162e9
 from manim.animation.animation import Wait
 
 

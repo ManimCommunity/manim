@@ -22,7 +22,6 @@ from manim.utils.bezier import (
     get_smooth_quadratic_bezier_handle_points,
     integer_interpolate,
     interpolate,
-    inverse_interpolate,
     partial_bezier_points,
     proportions_along_bezier_curve_for_point,
 )
@@ -860,48 +859,6 @@ class OpenGLVMobject(OpenGLMobject):
         n, residue = integer_interpolate(0, num_curves, alpha)
         curve_func = self.get_nth_curve_function(n)
         return curve_func(residue)
-
-    def point_from_proportion(self, alpha: float) -> np.ndarray:
-        """Gets the point at a proportion along the path of the :class:`OpenGLVMobject`.
-
-        Parameters
-        ----------
-        alpha
-            The proportion along the the path of the :class:`OpenGLVMobject`.
-
-        Returns
-        -------
-        :class:`numpy.ndarray`
-            The point on the :class:`OpenGLVMobject`.
-
-        Raises
-        ------
-        :exc:`ValueError`
-            If ``alpha`` is not between 0 and 1.
-        :exc:`Exception`
-            If the :class:`OpenGLVMobject` has no points.
-        """
-
-        if alpha <= 0:
-            return self.get_start()
-        elif alpha >= 1:
-            return self.get_end()
-
-        partials = [0.0]
-        for tup in self.get_bezier_tuples():
-            # Approximate length with straight line from start to end
-            arclen = get_norm(tup[0] - tup[-1])
-            partials.append(partials[-1] + arclen)
-        full = partials[-1]
-        if full == 0:
-            return self.get_start()
-        # First index where the partial length is more alpha times the full length
-        i = next(
-            (i for i, x in enumerate(partials) if x >= full * alpha),
-            len(partials),  # Default
-        )
-        residue = inverse_interpolate(partials[i - 1] / full, partials[i] / full, alpha)
-        return self.get_nth_curve_function(i - 1)(residue)  # type: ignore
 
     def get_nth_curve_length(
         self,

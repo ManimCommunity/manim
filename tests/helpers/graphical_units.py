@@ -8,7 +8,7 @@ from pathlib import Path
 
 import numpy as np
 
-from manim import Manager, logger
+from manim import Manager
 from manim.scene.scene import Scene
 
 logger = logging.getLogger("manim")
