@@ -437,7 +437,7 @@ class OpenGLTexturedSurface(OpenGLSurface):
         self.opacity = np.array([self.uv_surface.rgbas[:, 3]])
 
     def set_opacity(self, opacity, recurse=True):
-        for mob in self.get_family(recurse):
+        for mob in self.get_family(recurse=recurse):
             mob.opacity = np.array([[o] for o in listify(opacity)])
         return self
 

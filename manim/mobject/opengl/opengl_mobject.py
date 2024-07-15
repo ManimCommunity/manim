@@ -723,7 +723,7 @@ class OpenGLMobject:
     def refresh_bounding_box(
         self, recurse_down: bool = False, recurse_up: bool = True
     ) -> Self:
-        for mob in self.get_family(recurse_down):
+        for mob in self.get_family(recurse=recurse_down):
             mob.needs_new_bounding_box = True
         if recurse_up:
             for parent in self.parents:
@@ -762,7 +762,7 @@ class OpenGLMobject:
             parent.assemble_family()
         return self
 
-    def get_family(self, recurse: bool = True) -> Sequence[OpenGLMobject]:
+    def get_family(self, *, recurse: bool = True) -> Sequence[OpenGLMobject]:
         if recurse and hasattr(self, "family"):
             return self.family
         else:
@@ -2071,7 +2071,7 @@ class OpenGLMobject:
 
         # Color only
         if color is not None and opacity is None:
-            for mob in self.get_family(recurse):
+            for mob in self.get_family(recurse=recurse):
                 mob.data[name] = resize_array(
                     mob.data[name] if name in mob.data else np.empty((1, 3)), len(rgbs)
                 )
@@ -2079,7 +2079,7 @@ class OpenGLMobject:
 
         # Opacity only
         if color is None and opacity is not None:
-            for mob in self.get_family(recurse):
+            for mob in self.get_family(recurse=recurse):
                 mob.data[name] = resize_array(
                     mob.data[name] if name in mob.data else np.empty((1, 3)),
                     len(opacities),
@@ -2089,7 +2089,7 @@ class OpenGLMobject:
         # Color and opacity
         if color is not None and opacity is not None:
             rgbas = np.array([[*rgb, o] for rgb, o in zip(*make_even(rgbs, opacities))])
-            for mob in self.get_family(recurse):
+            for mob in self.get_family(recurse=recurse):
                 mob.data[name] = rgbas.copy()
         return self
 
@@ -2112,7 +2112,7 @@ class OpenGLMobject:
         recurse
             set to true to recursively apply this method to submobjects
         """
-        for mob in self.get_family(recurse):
+        for mob in self.get_family(recurse=recurse):
             mob.data[name] = rgbas.copy()
 
     def set_color(
@@ -2172,7 +2172,7 @@ class OpenGLMobject:
         return self.gloss
 
     def set_gloss(self, gloss: float, recurse: bool = True) -> Self:
-        for mob in self.get_family(recurse):
+        for mob in self.get_family(recurse=recurse):
             mob.gloss = gloss
         return self
 
@@ -2180,7 +2180,7 @@ class OpenGLMobject:
         return self.shadow
 
     def set_shadow(self, shadow: float, recurse: bool = True) -> Self:
-        for mob in self.get_family(recurse):
+        for mob in self.get_family(recurse=recurse):
             mob.shadow = shadow
         return self
 
