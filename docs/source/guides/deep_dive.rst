@@ -759,7 +759,6 @@ its :class:`.FileWriter` to open an output container. The process
 is started by a call to ``libav`` and opens a container to which rendered
 raw frames can be written. As long as the output is open, the container
 can be accessed via the ``output_container`` attribute of the file writer.
-
 With the writing process in place, the renderer then asks the scene
 to "begin" the animations.
 
@@ -904,7 +903,6 @@ method is called.
   would be slightly longer than 1 second. We decided against this at some point.
 
 In the end, the time progression is closed (which completes the displayed progress bar)
-in the terminal.
 
 This pretty much concludes the walkthrough of a :class:`.Scene.play` call,
 and actually there is not too much more to say for our toy example either: at

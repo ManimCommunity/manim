@@ -17,15 +17,10 @@ import numpy as np
 from .. import config, logger
 
 if typing.TYPE_CHECKING:
-    from typing_extensions import TypeVar
-
     from manim.animation.protocol import AnimationProtocol
     from manim.camera.camera import Camera
     from manim.mobject.opengl.opengl_mobject import OpenGLMobject
     from manim.scene.scene import Scene
-
-    T = TypeVar("T")
-    S = TypeVar("S", default=str)
 
 __all__ = ["KEYS_TO_FILTER_OUT", "get_hash_from_play_call", "get_json"]
 
@@ -37,8 +32,6 @@ KEYS_TO_FILTER_OUT = {
     "pixel_array",
     "pixel_array_to_cairo_context",
 }
-
-
 class _Memoizer:
     """Implements the memoization logic to optimize the hashing procedure and prevent
     the circular references within iterable processed.

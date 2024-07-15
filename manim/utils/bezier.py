@@ -1148,6 +1148,7 @@ def get_smooth_quadratic_bezier_handle_points(points: Point3D_Array) -> Point3D_
     return handles
 
 
+# Figuring out which Bézier curves most smoothly connect a sequence of points
 def get_smooth_cubic_bezier_handle_points(
     anchors: Point3D_Array,
 ) -> tuple[Point3D_Array, Point3D_Array]:

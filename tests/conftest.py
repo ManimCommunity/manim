@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import sys
 from pathlib import Path
 
@@ -43,6 +44,15 @@ def pytest_collection_modifyitems(config, items):
         for item in items:
             if "slow" in item.keywords:
                 item.add_marker(slow_skip)
+
+
+@pytest.fixture
+def manim_caplog(caplog):
+    logger = logging.getLogger("manim")
+    logger.propagate = True
+    caplog.set_level(logging.INFO, logger="manim")
+    yield caplog
+    logger.propagate = False
 
 
 @pytest.fixture

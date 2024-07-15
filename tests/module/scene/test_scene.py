@@ -4,7 +4,11 @@ import datetime
 
 import pytest
 
+<<<<<<< HEAD
 from manim import Circle, FadeIn, Group, Manager, Mobject, Scene, Square
+=======
+from manim import Circle, FadeIn, Group, Mobject, Scene, Square
+>>>>>>> f1ce5122253882a20b6714adf728eccfa41162e9
 from manim.animation.animation import Wait
 
 
@@ -26,30 +30,14 @@ def test_scene_add_remove(dry_run):
 
     # Check that Scene.add() returns the Scene (for chained calls)
     assert scene.add(Mobject()) is scene
-    to_remove = Mobject()
     manager = Manager(Scene)
     scene = manager.scene
-    scene.add(to_remove)
-    scene.add(*(Mobject() for _ in range(10)))
-    assert len(scene.mobjects) == 11
-    scene.remove(to_remove)
-    assert len(scene.mobjects) == 10
-    scene.remove(to_remove)
-    assert len(scene.mobjects) == 10
-
-    # Check that Scene.remove() returns the instance (for chained calls)
-    assert scene.add(Mobject()) is scene
-
-
-def test_scene_time(dry_run):
-    manager = Manager(Scene)
-    scene = manager.scene
-    assert scene.renderer.time == 0
+    assert scene.time == 0
     scene.wait(2)
-    assert scene.renderer.time == 2
+    assert scene.time == 2
     scene.play(FadeIn(Circle()), run_time=0.5)
-    assert pytest.approx(scene.renderer.time) == 2.5
-    scene.renderer._original_skipping_status = True
+    assert pytest.approx(scene.time) == 2.5
+    scene._original_skipping_status = True
     scene.play(FadeIn(Square()), run_time=5)  # this animation gets skipped.
     assert pytest.approx(scene.renderer.time) == 7.5
 

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import logging
 import re
 from functools import lru_cache
 from pathlib import Path
@@ -10,8 +11,6 @@ import numpy as np
 
 from manim.utils.iterables import resize_array
 
-from .. import logger
-
 # Mobjects that should be rendered with
 # the same shader will be organized and
 # clumped together based on keeping track
@@ -19,6 +18,8 @@ from .. import logger
 # to that shader
 
 __all__ = ["ShaderWrapper"]
+
+logger = logging.getLogger("manim")
 
 
 def get_shader_dir():

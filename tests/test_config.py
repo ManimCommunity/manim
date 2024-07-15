@@ -75,6 +75,18 @@ def test_transparent(config):
     np.testing.assert_allclose(frame[0, 0], [0, 0, 0, 0])
 
 
+def test_transparent_by_background_opacity(config, dry_run):
+    config.background_opacity = 0.5
+    assert config.transparent is True
+
+    manager = Manager(MyScene)
+    manager.render()
+    frame = manager.renderer.get_pixels()
+    np.testing.assert_allclose(frame[0, 0], [0, 0, 0, 127])
+    assert config.movie_file_extension == ".mov"
+    assert config.transparent is True
+
+
 def test_background_color(config):
     """Test the 'background_color' config option."""
 
@@ -220,7 +232,6 @@ def test_dry_run_with_png_format_skipped_animations(config, dry_run):
     assert config["dry_run"] is True
     manager = Manager(MyScene)
     manager.render()
-
 
 def test_tex_template_file(tmp_path):
     """Test that a custom tex template file can be set from a config file."""

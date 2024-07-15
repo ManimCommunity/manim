@@ -23,6 +23,7 @@ __all__ = ["frames_comparison"]
 SCENE_PARAMETER_NAME = "scene"
 _tests_root_dir_path = Path(__file__).absolute().parents[2]
 PATH_CONTROL_DATA = _tests_root_dir_path / Path("control_data", "graphical_units_data")
+MIN_CAIRO_VERSION = 11800
 
 
 def frames_comparison(

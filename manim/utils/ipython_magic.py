@@ -15,6 +15,8 @@ from manim.renderer.shader import shader_program_cache
 
 __all__ = ["ManimMagic"]
 
+__all__ = ["ManimMagic"]
+
 try:
     from IPython import get_ipython
     from IPython.core.interactiveshell import InteractiveShell

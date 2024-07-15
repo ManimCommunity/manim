@@ -30,6 +30,8 @@ from manim.utils.module_ops import scene_classes_from_file
 
 __all__ = ["render"]
 
+__all__ = ["render"]
+
 
 @cloup.command(
     context_settings=None,

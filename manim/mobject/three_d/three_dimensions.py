@@ -215,7 +215,7 @@ class Surface(VGroup):
 
     def set_fill_by_value(
         self,
-        axes: Mobject,
+        axes: OpenGLMobject,
         colorscale: list[ParsableManimColor] | ParsableManimColor | None = None,
         axis: int = 2,
         **kwargs,
@@ -962,8 +962,8 @@ class Line3D(Cylinder):
 
     def pointify(
         self,
-        mob_or_point: Mobject | Point3D,
-        direction: Vector3D = None,
+        mob_or_point: OpenGLMobject | Point3D,
+        direction: Vector3D | None = None,
     ) -> np.ndarray:
         """Gets a point representing the center of the :class:`Mobjects <.Mobject>`.
 
@@ -979,7 +979,7 @@ class Line3D(Cylinder):
         :class:`numpy.array`
             Center of the :class:`Mobjects <.Mobject>` or point, or edge if direction is given.
         """
-        if isinstance(mob_or_point, (Mobject, OpenGLMobject)):
+        if isinstance(mob_or_point, OpenGLMobject):
             mob = mob_or_point
             if direction is None:
                 return mob.get_center()

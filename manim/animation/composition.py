@@ -20,7 +20,6 @@ if TYPE_CHECKING:
     from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup
     from manim.mobject.types.vectorized_mobject import VGroup
 
-
 __all__ = ["AnimationGroup", "Succession", "LaggedStart", "LaggedStartMap"]
 
 
@@ -81,14 +80,15 @@ class AnimationGroup(Animation):
         return list(self.group)
 
     def begin(self) -> None:
-        for anim in self.animations:
-            anim.begin()
-            self.process_subanimation_buffer(anim.buffer)
         if not self.animations:
             raise ValueError(
                 f"Trying to play {self} without animations, this is not supported. "
                 "Please add at least one subanimation."
             )
+
+        for anim in self.animations:
+            anim.begin()
+            self.process_subanimation_buffer(anim.buffer)
 
         self.anim_group_time = 0.0
         if self.suspend_mobject_updating:

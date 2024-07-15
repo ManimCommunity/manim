@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import inspect
 import itertools as it
+import logging
 import numbers
 import os
 import pickle
@@ -17,7 +18,7 @@ import moderngl
 import numpy as np
 from typing_extensions import TypeVar
 
-from manim import config, logger
+from manim import config
 from manim.constants import *
 from manim.event_handler import EVENT_DISPATCHER
 from manim.event_handler.event_listener import EventListener
@@ -71,6 +72,8 @@ if TYPE_CHECKING:
 
 R = TypeVar("R", bound="RendererData")
 T_co = TypeVar("T_co", covariant=True, bound="OpenGLMobject")
+
+logger = logging.getLogger("manim")
 
 UNIFORM_DTYPE = np.float64
 

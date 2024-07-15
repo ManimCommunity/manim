@@ -41,10 +41,18 @@ from manim.utils.space_ops import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable, Sequence
-    from typing import Callable
+    from collections.abc import Callable, Iterable, Sequence
 
     from typing_extensions import Self
+
+__all__ = [
+    "OpenGLVMobject",
+    "OpenGLVGroup",
+    "OpenGLVectorizedPoint",
+    "OpenGLCurvesAsSubmobjects",
+    "OpenGLDashedVMobject",
+]
+
 
 DEFAULT_STROKE_COLOR = GREY_A
 DEFAULT_FILL_COLOR = GREY_C
@@ -116,6 +124,10 @@ class OpenGLVMobject(OpenGLMobject):
 
         super().__init__(**kwargs)
         # self.refresh_unit_normal()
+
+    def _assert_valid_submobjects(self, submobjects: Iterable[OpenGLVMobject]) -> Self:
+        return self._assert_valid_submobjects_internal(submobjects, OpenGLVMobject)
+
 
     def get_group_class(self) -> type[OpenGLVGroup]:  # type: ignore
         return OpenGLVGroup
@@ -982,6 +994,52 @@ class OpenGLVMobject(OpenGLMobject):
         for n in range(num_curves):
             yield self.get_nth_curve_function_with_length(n, **kwargs)
 
+    def point_from_proportion(self, alpha: float) -> np.ndarray:
+        """Gets the point at a proportion along the path of the :class:`OpenGLVMobject`.
+
+        Parameters
+        ----------
+        alpha
+            The proportion along the the path of the :class:`OpenGLVMobject`.
+
+        Returns
+        -------
+        :class:`numpy.ndarray`
+            The point on the :class:`OpenGLVMobject`.
+
+        Raises
+        ------
+        :exc:`ValueError`
+            If ``alpha`` is not between 0 and 1.
+        :exc:`Exception`
+            If the :class:`OpenGLVMobject` has no points.
+        """
+
+        if alpha < 0 or alpha > 1:
+            raise ValueError(f"Alpha {alpha} not between 0 and 1.")
+
+        self.throw_error_if_no_points()
+        if alpha == 1:
+            return self.points[-1]
+
+        curves_and_lengths = tuple(self.get_curve_functions_with_lengths())
+
+        target_length = alpha * np.sum(
+            np.fromiter((length for _, length in curves_and_lengths), dtype=np.float64)
+        )
+        current_length = 0
+
+        for curve, length in curves_and_lengths:
+            if current_length + length >= target_length:
+                if length != 0:
+                    residue = (target_length - current_length) / length
+                else:
+                    residue = 0
+
+                return curve(residue)
+
+            current_length += length
+
     def proportion_from_point(
         self,
         point: Iterable[float | int],
@@ -1038,7 +1096,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         return alpha
 
-    def get_anchors_and_handles(self):
+    def get_anchors_and_handles(self) -> Iterable[np.ndarray]:
         """
         Returns anchors1, handles, anchors2,
         where (anchors1[i], handles[i], anchors2[i])
@@ -1070,12 +1128,12 @@ class OpenGLVMobject(OpenGLMobject):
         nppc = self.n_points_per_curve
         return self.points[nppc - 1 :: nppc]
 
-    def get_anchors(self) -> np.ndarray:
+    def get_anchors(self) -> Iterable[np.ndarray]:
         """Returns the anchors of the curves forming the OpenGLVMobject.
 
         Returns
         -------
-        np.ndarray
+        Iterable[np.ndarray]
             The anchors.
         """
         points = self.points
@@ -1239,8 +1297,8 @@ class OpenGLVMobject(OpenGLMobject):
             return path
 
         for n in range(n_subpaths):
-            sp1 = get_nth_subpath(subpaths1, n)
-            sp2 = get_nth_subpath(subpaths2, n)
+            sp1 = np.asarray(get_nth_subpath(subpaths1, n))
+            sp2 = np.asarray(get_nth_subpath(subpaths2, n))
             diff1 = max(0, (len(sp2) - len(sp1)) // nppc)
             diff2 = max(0, (len(sp1) - len(sp2)) // nppc)
             sp1 = self.insert_n_curves_to_point_list(diff1, sp1)
@@ -1300,6 +1358,7 @@ class OpenGLVMobject(OpenGLMobject):
         new_points = new_bezier_tuples.reshape(-1, 3)
         return new_points
 
+
     def interpolate_color(self, mobject1, mobject2, alpha):
         attrs = [
             "fill_color",
@@ -1327,6 +1386,7 @@ class OpenGLVMobject(OpenGLMobject):
             if alpha == 1.0:
                 setattr(self, attr, getattr(mobject2, attr))
                 continue
+
 
             attr1 = getattr(mobject1, attr)
             attr2 = getattr(mobject2, attr)
@@ -1503,8 +1563,6 @@ class OpenGLVGroup(OpenGLVMobject):
     """
 
     def __init__(self, *vmobjects, **kwargs):
-        if not all(isinstance(m, OpenGLVMobject) for m in vmobjects):
-            raise Exception("All submobjects must be of type OpenGLVMobject")
         super().__init__(**kwargs)
         self.add(*vmobjects)
 
@@ -1582,8 +1640,6 @@ class OpenGLVGroup(OpenGLVMobject):
                         (gr-circle_red).animate.shift(RIGHT)
                     )
         """
-        if not all(isinstance(m, OpenGLVMobject) for m in vmobjects):
-            raise TypeError("All submobjects must be of type OpenGLVMobject")
         return super().add(*vmobjects)
 
     def __add__(self, vmobject):
@@ -1629,8 +1685,7 @@ class OpenGLVGroup(OpenGLVMobject):
 
             >>> config.renderer = original_renderer
         """
-        if not all(isinstance(m, OpenGLVMobject) for m in value):
-            raise TypeError("All submobjects must be of type OpenGLVMobject")
+        self._assert_valid_submobjects(tuplify(value))
         self.submobjects[key] = value  # type: ignore
 
 

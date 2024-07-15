@@ -58,7 +58,6 @@ if TYPE_CHECKING:
     NonTimeBasedUpdater: TypeAlias = Callable[["Mobject"], object]
     Updater: TypeAlias = NonTimeBasedUpdater | TimeBasedUpdater
 
-
 class Mobject:
     """Mathematical Object: base class for objects that can be displayed on screen.
 

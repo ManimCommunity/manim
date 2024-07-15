@@ -11,6 +11,8 @@ from manim.event_handler.window import WindowABC
 
 __all__ = ["Window"]
 
+__all__ = ["Window"]
+
 
 class Window(PygletWindow, WindowABC):
     name = "Manim Community"

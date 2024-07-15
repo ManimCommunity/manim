@@ -19,6 +19,8 @@ if TYPE_CHECKING:
 
     from manim.scene.scene import Scene
 
+__all__ = ["scene_classes_from_file"]
+
 
 __all__ = ["scene_classes_from_file"]
 

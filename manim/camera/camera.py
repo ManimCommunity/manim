@@ -1,3 +1,5 @@
+"""A camera that controls the FOV, orientation, and position of the scene."""
+
 from __future__ import annotations
 
 import math
