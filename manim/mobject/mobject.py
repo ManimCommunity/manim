@@ -22,7 +22,20 @@ from typing import TYPE_CHECKING, Callable, Literal
 import numpy as np
 
 from manim import config, logger
-from manim.constants import *
+from manim.constants import (
+    DEFAULT_MOBJECT_TO_EDGE_BUFFER,
+    DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
+    DL,
+    DOWN,
+    IN,
+    LEFT,
+    MED_SMALL_BUFF,
+    ORIGIN,
+    OUT,
+    RIGHT,
+    TAU,
+    UP,
+)
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.utils.color import (
     BLACK,
