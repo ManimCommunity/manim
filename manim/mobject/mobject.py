@@ -2938,7 +2938,7 @@ class Mobject:
             # If empty, simply add n point mobjects
             self._submobjects = [self.get_point_mobject() for _ in range(n)]
             for submob in self._submobjects:
-                self._parents.append(self)
+                submob._parents.append(self)
             self.note_changed_family()
             return self
 
