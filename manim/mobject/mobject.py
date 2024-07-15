@@ -2936,7 +2936,7 @@ class Mobject:
         curr = len(self._submobjects)
         if curr == 0:
             # If empty, simply add n point mobjects
-            self.submobjects = [self.get_point_mobject() for k in range(n)]
+            self.submobjects = [self.get_point_mobject() for _ in range(n)]
             self.note_changed_family()
             return self
 
