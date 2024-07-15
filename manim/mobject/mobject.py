@@ -573,7 +573,7 @@ class Mobject:
             )
 
         self._submobjects = list_update(self._submobjects, unique_mobjects)
-        self._add_as_parent_of_submobs(mobjects)
+        self._add_as_parent_of_submobs(unique_mobjects)
         self.note_changed_family()
         return self
 
@@ -978,7 +978,7 @@ class Mobject:
             else:
                 updater(self)
         if recursive:
-            for submob in self.submobjects:
+            for submob in self._submobjects:
                 submob.update(dt, recursive)
         return self
 
@@ -1169,7 +1169,7 @@ class Mobject:
         """
         self.updaters = []
         if recursive:
-            for submob in self.submobjects:
+            for submob in self._submobjects:
                 submob.clear_updaters()
         return self
 
@@ -1226,7 +1226,7 @@ class Mobject:
 
         self.updating_suspended = True
         if recursive:
-            for submob in self.submobjects:
+            for submob in self._submobjects:
                 submob.suspend_updating(recursive)
         return self
 
@@ -1251,7 +1251,7 @@ class Mobject:
         """
         self.updating_suspended = False
         if recursive:
-            for submob in self.submobjects:
+            for submob in self._submobjects:
                 submob.resume_updating(recursive)
         self.update(dt=0, recursive=recursive)
         return self
@@ -1411,7 +1411,7 @@ class Mobject:
         return self
 
     def apply_function_to_submobject_positions(self, function: MappingFunction) -> Self:
-        for submob in self.submobjects:
+        for submob in self._submobjects:
             submob.apply_function_to_position(function)
         return self
 
@@ -1811,7 +1811,7 @@ class Mobject:
 
     def space_out_submobjects(self, factor: float = 1.5, **kwargs) -> Self:
         self.scale(factor, **kwargs)
-        for submob in self.submobjects:
+        for submob in self._submobjects:
             submob.scale(1.0 / factor)
         return self
 
@@ -1833,7 +1833,7 @@ class Mobject:
     def replace(
         self, mobject: Mobject, dim_to_match: int = 0, stretch: bool = False
     ) -> Self:
-        if not mobject.get_num_points() and not mobject.submobjects:
+        if not mobject.get_num_points() and not mobject._submobjects:
             raise Warning("Attempting to replace mobject with no points")
         if stretch:
             self.stretch_to_fit_width(mobject.width)
@@ -1926,7 +1926,7 @@ class Mobject:
         return self
 
     def add_background_rectangle_to_submobjects(self, **kwargs) -> Self:
-        for submobject in self.submobjects:
+        for submobject in self._submobjects:
             submobject.add_background_rectangle(**kwargs)
         return self
 
@@ -1946,7 +1946,7 @@ class Mobject:
         of color
         """
         if family:
-            for submob in self.submobjects:
+            for submob in self._submobjects:
                 submob.set_color(color, family=family)
 
         self.color = ManimColor.parse(color)
@@ -2022,13 +2022,13 @@ class Mobject:
             new_color = interpolate_color(self.get_color(), color, alpha)
             self.set_color(new_color, family=False)
         if family:
-            for submob in self.submobjects:
+            for submob in self._submobjects:
                 submob.fade_to(color, alpha)
         return self
 
     def fade(self, darkness: float = 0.5, family: bool = True) -> Self:
         if family:
-            for submob in self.submobjects:
+            for submob in self._submobjects:
                 submob.fade(darkness, family)
         return self
 
@@ -2067,7 +2067,7 @@ class Mobject:
     def reduce_across_dimension(self, reduce_func: Callable, dim: int):
         """Find the min or max value from a dimension across all points in this and submobjects."""
         assert dim >= 0 and dim <= 2
-        if len(self.submobjects) == 0 and len(self.points) == 0:
+        if len(self._submobjects) == 0 and len(self.points) == 0:
             # If we have no points and no submobjects, return 0 (e.g. center)
             return 0
 
@@ -2080,7 +2080,7 @@ class Mobject:
             rv = reduce_func(self.points[:, dim])
         # Recursively ask submobjects (if any) for the biggest/
         # smallest dimension they have and compare it to the return value.
-        for mobj in self.submobjects:
+        for mobj in self._submobjects:
             value = mobj.reduce_across_dimension(reduce_func, dim)
             if rv is None:
                 rv = value
@@ -2091,8 +2091,8 @@ class Mobject:
     def nonempty_submobjects(self) -> Sequence[Mobject]:
         return [
             submob
-            for submob in self.submobjects
-            if len(submob.submobjects) != 0 or len(submob.points) != 0
+            for submob in self._submobjects
+            if len(submob._submobjects) != 0 or len(submob.points) != 0
         ]
 
     def get_merged_array(self, array_attr: str) -> np.ndarray:
@@ -2102,7 +2102,7 @@ class Mobject:
         traversal of the submobjects.
         """
         result = getattr(self, array_attr)
-        for submob in self.submobjects:
+        for submob in self._submobjects:
             result = np.append(result, submob.get_merged_array(array_attr), axis=0)
         return result
 
@@ -2276,7 +2276,7 @@ class Mobject:
 
     def get_pieces(self, n_pieces: float) -> Group:
         template = self.copy()
-        template.submobjects = []
+        template.set_submobjects([])
         alphas = np.linspace(0, 1, n_pieces + 1)
         return Group(
             *(
@@ -2445,7 +2445,7 @@ class Mobject:
             return [self]
         if self._family is None:
             # Reconstruct and save
-            sub_families = (sm.get_family() for sm in self.submobjects)
+            sub_families = (sm.get_family() for sm in self._submobjects)
             family = [self, *it.chain(*sub_families)]
             self._family = remove_list_redundancies(family)
         return self._family
@@ -2510,7 +2510,7 @@ class Mobject:
                     x = VGroup(s1, s2, s3, s4).set_x(0).arrange(buff=1.0)
                     self.add(x)
         """
-        for m1, m2 in zip(self.submobjects, self.submobjects[1:]):
+        for m1, m2 in zip(self._submobjects, self._submobjects[1:]):
             m2.next_to(m1, direction, buff, **kwargs)
         if center:
             self.center()
@@ -2936,7 +2936,9 @@ class Mobject:
         curr = len(self._submobjects)
         if curr == 0:
             # If empty, simply add n point mobjects
-            self.submobjects = [self.get_point_mobject() for _ in range(n)]
+            self._submobjects = [self.get_point_mobject() for _ in range(n)]
+            for submob in self._submobjects:
+                self._parents.append(self)
             self.note_changed_family()
             return self
 
@@ -2949,8 +2951,10 @@ class Mobject:
         for submob, sf in zip(self._submobjects, split_factors):
             new_submobs.append(submob)
             for _ in range(1, sf):
-                new_submobs.append(submob.copy().fade(1))
-        self.submobjects = new_submobs
+                submob_copy = submob.copy().fade(1)
+                submob_copy._parents.append(self)
+                new_submobs.append(submob_copy)
+        self._submobjects = new_submobs
         self.note_changed_family()
         return self
 
