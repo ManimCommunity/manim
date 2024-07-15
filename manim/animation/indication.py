@@ -48,7 +48,6 @@ from manim.mobject.geometry.arc import Circle, Dot
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import Rectangle
 from manim.mobject.geometry.shape_matchers import SurroundingRectangle
-from manim.scene.scene import Scene
 
 from .. import config
 from ..animation.animation import Animation

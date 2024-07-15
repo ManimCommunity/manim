@@ -128,7 +128,6 @@ class OpenGLVMobject(OpenGLMobject):
     def _assert_valid_submobjects(self, submobjects: Iterable[OpenGLVMobject]) -> Self:
         return self._assert_valid_submobjects_internal(submobjects, OpenGLVMobject)
 
-
     def get_group_class(self) -> type[OpenGLVGroup]:  # type: ignore
         return OpenGLVGroup
 
@@ -1358,7 +1357,6 @@ class OpenGLVMobject(OpenGLMobject):
         new_points = new_bezier_tuples.reshape(-1, 3)
         return new_points
 
-
     def interpolate_color(self, mobject1, mobject2, alpha):
         attrs = [
             "fill_color",
@@ -1386,7 +1384,6 @@ class OpenGLVMobject(OpenGLMobject):
             if alpha == 1.0:
                 setattr(self, attr, getattr(mobject2, attr))
                 continue
-
 
             attr1 = getattr(mobject1, attr)
             attr2 = getattr(mobject2, attr)

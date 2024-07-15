@@ -10,6 +10,7 @@ __all__ = ["global_options"]
 
 logger = logging.getLogger("manim")
 
+
 def validate_gui_location(ctx, param, value):
     if value:
         try:

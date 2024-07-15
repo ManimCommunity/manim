@@ -233,6 +233,7 @@ def test_dry_run_with_png_format_skipped_animations(config, dry_run):
     manager = Manager(MyScene)
     manager.render()
 
+
 def test_tex_template_file(tmp_path):
     """Test that a custom tex template file can be set from a config file."""
     tex_file = Path(tmp_path / "my_template.tex")

@@ -32,6 +32,8 @@ KEYS_TO_FILTER_OUT = {
     "pixel_array",
     "pixel_array_to_cairo_context",
 }
+
+
 class _Memoizer:
     """Implements the memoization logic to optimize the hashing procedure and prevent
     the circular references within iterable processed.
