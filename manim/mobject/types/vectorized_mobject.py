@@ -1,6 +1,7 @@
 """Mobjects that use vector graphics."""
 
 from __future__ import annotations
+
 from typing_extensions import deprecated
 
 __all__ = [
@@ -16,7 +17,7 @@ __all__ = [
 import itertools as it
 import sys
 from collections.abc import Generator, Hashable, Iterable, Mapping, Sequence
-from typing import TYPE_CHECKING, Callable, Literal
+from typing import TYPE_CHECKING, Callable, Literal, cast
 
 import numpy as np
 from PIL.Image import Image
@@ -40,14 +41,13 @@ from manim.utils.bezier import (
 )
 from manim.utils.color import BLACK, WHITE, ManimColor, ParsableManimColor
 from manim.utils.iterables import (
+    listify,
     make_even,
     resize_array,
     stretch_array_to_length,
     tuplify,
 )
 from manim.utils.space_ops import rotate_vector, shoelace_direction
-
-from typing import cast
 
 if TYPE_CHECKING:
     import numpy.typing as npt
@@ -169,8 +169,8 @@ class VMobject(Mobject):
             color = None
 
         if background_stroke_color is not None:
-            self.background_stroke_color: ManimColor = ManimColor(
-                background_stroke_color
+            self.background_stroke_color: ManimColor | list[ManimColor] = (
+                ManimColor.parse(background_stroke_color)
             )
             if background_stroke_opacity is not None:
                 self.background_stroke_color = self.background_stroke_color.opacity(
@@ -250,7 +250,7 @@ class VMobject(Mobject):
     def update_rgbas_array(
         self,
         array_name: str,
-        color: ManimColor | None,
+        color: ManimColor | list[ManimColor] | None,
     ) -> Self:
         if color is None:
             return self
@@ -273,7 +273,7 @@ class VMobject(Mobject):
 
     def set_fill(
         self,
-        color: ParsableManimColor | None = None,
+        color: ParsableManimColor | list[ParsableManimColor] | None = None,
         opacity: float | None = None,
         family: bool = True,
     ) -> Self:
@@ -312,30 +312,33 @@ class VMobject(Mobject):
         --------
         :meth:`~.VMobject.set_style`
         """
+        new_color: list[ManimColor] = [WHITE]
         if color is not None:
-            color = ManimColor.parse(color)
+            new_color: list[ManimColor] = listify(ManimColor.parse(color))
             if opacity is not None:
-                color = color.opacity(opacity)
+                new_color = [c.opacity(opacity) for c in new_color]
 
         if family:
             for submobject in self.submobjects:
                 submobject.set_fill(color, opacity, family)
-        self.update_rgbas_array("fill_rgbas", color)
+        self.update_rgbas_array("fill_rgbas", new_color)
         self.fill_rgbas: RGBA_Array_Float
         return self
 
     def set_stroke(
         self,
-        color: ParsableManimColor | None = None,
+        color: ParsableManimColor | list[ParsableManimColor] | None = None,
         width: float | None = None,
         opacity: float | None = None,
         background=False,
         family: bool = True,
     ) -> Self:
+        new_color: list[ManimColor] = [WHITE]
         if color is not None:
-            color = ManimColor.parse(color)
+            new_color: list[ManimColor] = listify(ManimColor.parse(color))
             if opacity is not None:
-                color = color.opacity(opacity)
+                new_color = [c.opacity(opacity) for c in new_color]
+
         if family:
             for submobject in self.submobjects:
                 submobject.set_stroke(color, width, opacity, background, family)
@@ -347,16 +350,13 @@ class VMobject(Mobject):
             array_name = "stroke_rgbas"
             width_name = "stroke_width"
             opacity_name = "stroke_opacity"
-        self.update_rgbas_array(array_name, color)
+        self.update_rgbas_array(array_name, new_color)
         if width is not None:
             setattr(self, width_name, width)
         if opacity is not None:
             setattr(self, opacity_name, opacity)
         if color is not None and background:
-            if isinstance(color, (list, tuple)):
-                self.background_stroke_color = ManimColor.parse(color)
-            else:
-                self.background_stroke_color = ManimColor(color)
+            self.background_stroke_color = ManimColor.parse(color)
         return self
 
     def set_cap_style(self, cap_style: CapStyleType) -> Self:
@@ -513,6 +513,10 @@ class VMobject(Mobject):
         """
         return self.get_fill_opacities()[0]
 
+    def set_fill_opacity(self, opacity: float):
+        self.fill_color = [x.opacity(opacity) for x in tuplify(self.fill_color)]
+        return self
+
     # TODO: Does this just do a copy?
     # TODO: I have the feeling that this function should not return None, does that have any usage ?
     def get_fill_colors(self) -> list[ManimColor | None]:
@@ -530,8 +534,8 @@ class VMobject(Mobject):
                 self.background_stroke_rgbas: RGBA_Array_Float
                 rgbas = self.background_stroke_rgbas
             else:
-                self.stroke_rgbas: RGBA_Array_Float
                 rgbas = self.stroke_rgbas
+                self.stroke_rgbas: RGBA_Array_Float
             return rgbas
         except AttributeError:
             return np.zeros((1, 4))

@@ -107,7 +107,7 @@ class BackgroundRectangle(SurroundingRectangle):
             buff=buff,
             **kwargs,
         )
-        self.original_fill_opacity: float = self.fill_opacity
+        self.original_fill_opacity: float = self.get_fill_opacities()
 
     def pointwise_become_partial(self, mobject: Mobject, a: Any, b: float) -> Self:
         self.set_fill(opacity=b * self.original_fill_opacity)
