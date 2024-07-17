@@ -1566,24 +1566,29 @@ class OpenGLMobject:
 
     def add_updater(
         self,
-        update_function: NonTimeUpdater,
+        update_function: NonTimeUpdater | Updater,
         index: int | None = None,
         call_updater: bool = False,
     ) -> Self:
+        if not isinstance(update_function, Updater):
+            update_function = Updater(update_function)
         return self._add_updater(
-            Updater(update_function),
+            update_function,
             index=index,
             call_updater=call_updater,
         )
 
     def add_dt_updater(
         self,
-        update_function: TimeBasedUpdater,
+        update_function: TimeBasedUpdater | Updater,
         index: int | None = None,
         call_updater: bool = False,
     ) -> Self:
+        if not isinstance(update_function, Updater):
+            update_function = Updater(update_function)
+        update_function.needs_dt = True
         return self._add_updater(
-            Updater(update_function, dt=True), index=index, call_updater=call_updater
+            update_function, index=index, call_updater=call_updater
         )
 
     def remove_updater(self, update_function: Updater) -> Self:
