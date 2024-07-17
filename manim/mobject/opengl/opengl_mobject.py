@@ -23,12 +23,9 @@ from manim.event_handler import EVENT_DISPATCHER
 from manim.event_handler.event_listener import EventListener
 from manim.event_handler.event_type import EventType
 from manim.mobject.updaters import Updater
-from manim.renderer.shader_wrapper import ShaderWrapper, get_colormap_code
 from manim.utils.bezier import integer_interpolate, interpolate
 from manim.utils.color import *
 from manim.utils.deprecation import deprecated
-
-# from ..utils.iterables import batch_by_property
 from manim.utils.iterables import (
     list_update,
     listify,
@@ -115,9 +112,7 @@ class MobjectStatus:
     points_changed: bool = False
 
 
-# it's generic in its renderer, which is a little bit cursed
-# In the future, it should be replaced with a RendererData protocol
-class OpenGLMobject(Generic[R]):
+class OpenGLMobject:
     """Mathematical Object: base class for objects that can be displayed on screen.
 
     Attributes
@@ -179,7 +174,7 @@ class OpenGLMobject(Generic[R]):
         self.uniforms: dict[str, float | np.ndarray] = {}
 
         # TODO replace with protocol
-        self.renderer_data: R | None = None
+        self.renderer_data: RendererData | None = None
         self.status = MobjectStatus()
 
         self.init_data()
@@ -1444,8 +1439,6 @@ class OpenGLMobject(Generic[R]):
             ):
                 setattr(result, attr, result.family[self.family.index(value)])
             if isinstance(value, np.ndarray):
-                setattr(result, attr, value.copy())
-            if isinstance(value, ShaderWrapper):
                 setattr(result, attr, value.copy())
         return result
 
