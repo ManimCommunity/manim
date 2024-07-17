@@ -29,29 +29,31 @@ class Updater(Generic[M]):
 
         .. code-block:: pycon
 
-            >>> from manim import Updater, Square
+            >>> from manim import Square
+            >>> from manim.mobject.updaters import Updater
             >>> def update(mob):
             ...     print("Updating mob")
             >>> updater = Updater(update)
             >>> updater(Square(), dt=0)  # still needs dt argument
-            'Updating mob'
+            Updating mob
             >>> def dt_update(mob, dt):
             ...     print("Updating mob with dt")
             >>> dt_updater = Updater(dt_update, dt=True)
             >>> dt_updater(Square(), dt=0.1)
-            'Updating mob with dt'
+            Updating mob with dt
 
 
         .. code-block:: pycon
 
-            >>> from manim import Updater, Square
+            >>> from manim import Square
+            >>> from manim.mobject.updaters import Updater
             >>> def update(mob):
             ...     print("Updating mob")
             >>> updater = Updater(update)
             >>> s = Square()
-            >>> s.add_updater(updater)
-            >>> s.update(dt=0)
-            'Updating mob'
+            >>> _ = s.add_updater(updater)
+            >>> _ = s.update(dt=0)
+            Updating mob
     """
 
     def __init__(
