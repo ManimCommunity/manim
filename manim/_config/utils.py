@@ -1264,7 +1264,9 @@ class ManimConfig(MutableMapping):
 
     @movie_file_extension.setter
     def movie_file_extension(self, value: str) -> None:
-        self._set_from_list("movie_file_extension", value, [".mp4", ".mov", ".webm"])
+        self._set_from_list(
+            "movie_file_extension", value, [".gif", ".mp4", ".mov", ".webm"]
+        )
 
     @property
     def background_opacity(self) -> float:
@@ -1436,6 +1438,8 @@ class ManimConfig(MutableMapping):
             self.movie_file_extension = ".webm"
         elif self.format == "mov":
             self.movie_file_extension = ".mov"
+        elif self.format == "gif":
+            self.movie_file_extension = ".gif"
         else:
             self.movie_file_extension = ".mp4"
         if self.movie_file_extension != prev_file_extension:
