@@ -1098,7 +1098,6 @@ class Camera:
         points,
     ):  # TODO: Write more detailed docstrings for this method.
         points = self.transform_points_pre_display(mobject, points)
-        shifted_points = points - self.frame_center
 
         result = np.zeros((len(points), 2))
         pixel_height = self.pixel_height
@@ -1112,8 +1111,8 @@ class Camera:
         # Flip on y-axis as you go
         height_mult *= -1
 
-        result[:, 0] = shifted_points[:, 0] * width_mult + width_add
-        result[:, 1] = shifted_points[:, 1] * height_mult + height_add
+        result[:, 0] = points[:, 0] * width_mult + width_add
+        result[:, 1] = points[:, 1] * height_mult + height_add
         return result.astype("int")
 
     def on_screen_pixels(self, pixel_coords: np.ndarray):
