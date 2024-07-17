@@ -164,7 +164,8 @@ class VMobject(Mobject):
         )
         self.cap_style: CapStyleType = cap_style
         super().__init__(**kwargs)
-        self.submobjects: list[VMobject]
+        self._submobjects: list[VMobject]
+        self._family: list[VMobject] | None
 
         # TODO: Find where color overwrites are happening and remove the color doubling
         # if "color" in kwargs:
