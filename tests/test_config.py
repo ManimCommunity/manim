@@ -40,7 +40,7 @@ def test_tempconfig(config):
         ("mp4", ".mp4"),
         ("webm", ".webm"),
         ("mov", ".mov"),
-        ("gif", ".mp4"),
+        ("gif", ".gif"),
     ],
 )
 def test_resolve_file_extensions(config, format, expected_file_extension):
