@@ -3,6 +3,14 @@ from manim import *
 
 class Test(Scene):
     def construct(self) -> None:
+        self.play(
+            Create(
+                t := Tex(
+                    "Hello, world!", stroke_color=RED, fill_color=BLUE, stroke_width=2
+                )
+            )
+        )
+        self.play(FadeOut(t))
         s = Square()
         self.add(s)
         self.play(Rotate(s, PI / 2))

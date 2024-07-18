@@ -289,6 +289,7 @@ class MathTex(SingleStringMathTex):
 
         if self.organize_left_to_right:
             self._organize_submobjects_left_to_right()
+        self.note_changed_family()
 
     def _break_up_tex_strings(self, tex_strings):
         # Separate out anything surrounded in double braces
