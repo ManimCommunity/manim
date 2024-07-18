@@ -289,6 +289,10 @@ class MathTex(SingleStringMathTex):
 
         if self.organize_left_to_right:
             self._organize_submobjects_left_to_right()
+
+        # 5 hours of work went into this line
+        # and it's still not perfect
+        # July 18, 2024
         self.note_changed_family()
 
     def _break_up_tex_strings(self, tex_strings):
