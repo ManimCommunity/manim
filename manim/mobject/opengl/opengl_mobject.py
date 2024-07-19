@@ -23,7 +23,7 @@ from manim.constants import *
 from manim.event_handler import EVENT_DISPATCHER
 from manim.event_handler.event_listener import EventListener
 from manim.event_handler.event_type import EventType
-from manim.renderer.shader_wrapper import ShaderWrapper, get_colormap_code
+from manim.renderer.shader_wrapper import get_colormap_code
 from manim.utils.bezier import integer_interpolate, interpolate
 from manim.utils.color import *
 from manim.utils.deprecation import deprecated
@@ -169,24 +169,22 @@ class OpenGLMobject(Generic[R]):
         self.name = self.__class__.__name__ if name is None else name
 
         # internal_state
+        self.points = np.zeros((0, 3))
         self.submobjects: list[OpenGLMobject] = []
         self.parents: list[OpenGLMobject] = []
         self.family: list[OpenGLMobject] = [self]
-        self.locked_data_keys: set[str] = set()
         self.needs_new_bounding_box: bool = True
+        self._bounding_box = np.zeros((3, 3))
         self._is_animating: bool = False
         self.saved_state: OpenGLMobject | None = None
         self.target: OpenGLMobject | None = None
 
-        self.data: dict[str, np.ndarray] = {}
-        self.uniforms: dict[str, float | np.ndarray] = {}
-
         # TODO replace with protocol
         self.renderer_data: R | None = None
+
+        # currently does nothing
         self.status = MobjectStatus()
 
-        self.init_data()
-        self.init_uniforms()
         self.init_updaters()
         self.init_event_listeners()
         self.init_points()
@@ -213,6 +211,14 @@ class OpenGLMobject(Generic[R]):
         if not isinstance(other, int):
             raise TypeError(f"Only int can be multiplied to Mobjects not {type(other)}")
         return self.replicate(other)
+
+    @property
+    def bounding_box(self) -> npt.NDArray[np.float64]:
+        return self._bounding_box
+
+    @bounding_box.setter
+    def bounding_box(self, box: npt.NDArray[np.float64]):
+        self._bounding_box = box
 
     @classmethod
     def set_default(cls, **kwargs):
@@ -261,39 +267,6 @@ class OpenGLMobject(Generic[R]):
             cls.__init__ = partialmethod(cls.__init__, **kwargs)
         else:
             cls.__init__ = cls._original__init__
-
-    @property
-    def points(self):
-        return self.data["points"]
-
-    @points.setter
-    def points(self, value):
-        self.data["points"] = value
-
-    @property
-    def bounding_box(self):
-        return self.data["bounding_box"]
-
-    @bounding_box.setter
-    def bounding_box(self, value):
-        self.data["bounding_box"] = value
-
-    @property
-    def rgbas(self):
-        return self.data["rgbas"]
-
-    @rgbas.setter
-    def rgbas(self, value):
-        self.data["rgbas"] = value
-
-    def init_data(self):
-        """Initializes the ``points``, ``bounding_box`` and ``rgbas`` attributes and groups them into self.data.
-        Subclasses can inherit and overwrite this method to extend `self.data`."""
-        self.data = {
-            "points": np.zeros((0, 3)),
-            "bounding_box": np.zeros((3, 3)),
-            "rgbas": np.zeros((1, 4)),
-        }
 
     def init_uniforms(self):
         """Initializes the uniforms.
@@ -1417,27 +1390,27 @@ class OpenGLMobject(Generic[R]):
 
         result = copy.copy(self)
 
-        # The line above is only a shallow copy, so the internal
-        # data which are numpyu arrays or other mobjects still
-        # need to be further copied.
-        result.data = {k: np.array(v) for k, v in self.data.items()}
-        result.uniforms = {k: np.array(v) for k, v in self.uniforms.items()}
+        result.parents = []
+        result.target = None
+        result.saved_state = None
+        #
 
+        result.data = {k: np.array(v) for k, v in self.data.items()}
+        result.points = np.array(self.points)
+        # result.uniforms = {k: np.array(v) for k, v in self.uniforms.items()}
+        #
         # Instead of adding using result.add, which does some checks for updating
         # updater statues and bounding box, just directly modify the family-related
         # lists
         result.submobjects = [sm.copy() for sm in self.submobjects]
         for sm in result.submobjects:
             sm.parents = [result]
-        result.family = [
-            result,
-            *it.chain(*(sm.get_family() for sm in result.submobjects)),
-        ]
 
+        result.note_changed_family()
         # Similarly, instead of calling match_updaters, since we know the status
-        # won't have changed, just directly match.
-        result.non_time_updaters = list(self.non_time_updaters)
-        result.time_based_updaters = list(self.time_based_updaters)
+        # won't have changed, just directly match with shallow copies.
+        result.non_time_updaters = self.non_time_updaters.copy()
+        result.time_based_updaters = self.time_based_updaters.copy()
 
         family = self.get_family()
         for attr, value in list(self.__dict__.items()):
@@ -1448,8 +1421,6 @@ class OpenGLMobject(Generic[R]):
             ):
                 setattr(result, attr, result.family[self.family.index(value)])
             if isinstance(value, np.ndarray):
-                setattr(result, attr, value.copy())
-            if isinstance(value, ShaderWrapper):
                 setattr(result, attr, value.copy())
         return result
 
@@ -2249,7 +2220,7 @@ class OpenGLMobject(Generic[R]):
         return self
 
     def set_rgba_array(
-        self, rgba_array: np.ndarray, name: str = "rgbas", recurse: bool = False
+        self, rgba_array: np.ndarray | None, name: str = "rgbas", recurse: bool = False
     ):
         """Directly set rgba data from `rgbas` and optionally do the same recursively
         with submobjects. This can be used if the `rgbas` have already been generated
@@ -2319,20 +2290,19 @@ class OpenGLMobject(Generic[R]):
         return self
 
     def set_color(self, color: ParsableManimColor | None, opacity=None, recurse=True):
-        self.set_rgba_array(color, opacity, recurse=False)
         # Recurse to submobjects differently from how set_rgba_array
         # in case they implement set_color differently
         if color is not None:
-            self.color: ManimColor = ManimColor.parse(color)
+            self.color: ManimColor = listify(ManimColor.parse(color))
         if opacity is not None:
-            self.opacity = opacity
+            self.color.set_opacity(opacity)
         if recurse:
             for submob in self.submobjects:
                 submob.set_color(color, recurse=True)
         return self
 
     def set_opacity(self, opacity, recurse=True):
-        self.set_rgba_array(color=None, opacity=opacity, recurse=False)
+        # self.set_rgba_array(color=None, opacity=opacity, recurse=False)
         if recurse:
             for submob in self.submobjects:
                 submob.set_opacity(opacity, recurse=True)
@@ -2342,7 +2312,7 @@ class OpenGLMobject(Generic[R]):
         return rgb_to_hex(self.rgbas[0, :3])
 
     def get_opacity(self):
-        return self.data["rgbas"][0, 3]
+        return self.color._internal_value[]
 
     def set_color_by_gradient(self, *colors: Color):
         if self.has_points():
@@ -2668,13 +2638,9 @@ class OpenGLMobject(Generic[R]):
     # Alignment
 
     def is_aligned_with(self, mobject: OpenGLMobject) -> bool:
-        return (
-            len(self.data) == len(mobject.data)
-            and len(self.submobjects) == len(mobject.submobjects)
-            and all(
-                sm1.is_aligned_with(sm2)
-                for sm1, sm2 in zip(self.submobjects, mobject.submobjects)
-            )
+        return len(self.submobjects) == len(mobject.submobjects) and all(
+            sm1.is_aligned_with(sm2)
+            for sm1, sm2 in zip(self.submobjects, mobject.submobjects)
         )
 
     def align_data_and_family(self, mobject):
@@ -2686,15 +2652,6 @@ class OpenGLMobject(Generic[R]):
             # Separate out how points are treated so that subclasses
             # can handle that case differently if they choose
             mob1.align_points(mob2)
-            for key in mob1.data.keys() & mob2.data.keys():
-                if key == "points":
-                    continue
-                arr1 = mob1.data[key]  # type: ignore
-                arr2 = mob2.data[key]
-                if len(arr2) > len(arr1):
-                    mob1.data[key] = resize_preserving_order(arr1, len(arr2))  # type: ignore
-                elif len(arr1) > len(arr2):
-                    mob2.data[key] = resize_preserving_order(arr2, len(arr1))
 
     def align_points(self, mobject) -> Self:
         max_len = max(self.get_num_points(), mobject.get_num_points())
@@ -2778,6 +2735,9 @@ class OpenGLMobject(Generic[R]):
         self.points = path_func(mobject1.points, mobject2.points, alpha)
         self.interpolate_color(mobject1, mobject2, alpha)
         return self
+
+    def interpolate_color(self, mobject1, mobject2, alpha):
+        raise NotImplementedError("Implemented in subclasses")
 
     def pointwise_become_partial(self, mobject, a, b):
         """

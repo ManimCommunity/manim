@@ -97,6 +97,7 @@ class OpenGLVMobject(OpenGLMobject):
         flat_stroke: bool = False,
         **kwargs,
     ):
+        super().__init__(**kwargs)
         if fill_color is None:
             fill_color = color
         if stroke_color is None:
@@ -107,8 +108,6 @@ class OpenGLVMobject(OpenGLMobject):
             ManimColor.parse(stroke_color)
         )
         self.set_stroke(opacity=stroke_opacity)
-        if stroke_width is None:
-            stroke_width = DEFAULT_STROKE_WIDTH
         self.stroke_width = listify(stroke_width)
         self.draw_stroke_behind_fill = draw_stroke_behind_fill
         self.background_image_file = background_image_file
@@ -121,7 +120,6 @@ class OpenGLVMobject(OpenGLMobject):
         self.needs_new_triangulation = True
         self.triangulation = np.zeros(0, dtype="i4")
 
-        super().__init__(**kwargs)
         # self.refresh_unit_normal()
 
     def _assert_valid_submobjects(self, submobjects: Iterable[OpenGLVMobject]) -> Self:
@@ -133,36 +131,6 @@ class OpenGLVMobject(OpenGLMobject):
     @staticmethod
     def get_mobject_type_class():
         return OpenGLVMobject
-
-    @property
-    def rgbas(self):
-        raise NotImplementedError(
-            "rgbas is not implemented for OpenGLVMobject. please use fill_rgba and stroke_rgba."
-        )
-
-    @rgbas.setter
-    def rgbas(self, value):
-        raise NotImplementedError(
-            "rgbas is not implemented for OpenGLVMobject. please use fill_rgba and stroke_rgba."
-        )
-
-    def init_data(self):
-        super().init_data()
-        self.data.pop("rgbas")
-        self.data.update(
-            {
-                "fill_rgba": np.zeros((1, 4)),
-                "stroke_rgba": np.zeros((1, 4)),
-                "stroke_width": np.zeros((1, 1)),
-                "unit_normal": np.zeros((1, 3)),
-            }
-        )
-
-    def init_uniforms(self):
-        super().init_uniforms()
-        self.uniforms["anti_alias_width"] = float(self.anti_alias_width)
-        self.uniforms["joint_type"] = float(self.joint_type.value)
-        self.uniforms["flat_stroke"] = float(self.flat_stroke)
 
     # These are here just to make type checkers happy
     def get_family(self, recurse: bool = True) -> list[OpenGLVMobject]:  # type: ignore
@@ -200,21 +168,6 @@ class OpenGLVMobject(OpenGLMobject):
         # self.set_gloss(self.gloss)
         # self.set_flat_stroke(self.flat_stroke)
         # self.color = self.get_color()
-        return self
-
-    def set_rgba_array(
-        self, rgba_array: np.ndarray, name: str | None = None, recurse: bool = False
-    ) -> Self:
-        if name is None:
-            names = ["fill_rgba", "stroke_rgba"]
-        else:
-            names = [name]
-
-        for name in names:
-            if name in self.data:
-                self.data[name] = rgba_array
-            else:
-                raise Exception(f"{name} is not a valid data name.")
         return self
 
     def set_fill(
@@ -258,11 +211,13 @@ class OpenGLVMobject(OpenGLMobject):
         --------
         :meth:`~.OpenGLVMobject.set_style`
         """
-        for mob in self.get_family(recurse):
-            if color is not None:
-                mob.fill_color = listify(ManimColor.parse(color))
-            if opacity is not None:
-                mob.fill_color = [c.set_opacity(opacity) for c in mob.fill_color]
+        if recurse:
+            for submob in self.submobjects:
+                submob.set_fill(color, opacity, recurse=True)
+        if color is not None:
+            self.fill_color = listify(ManimColor.parse(color))
+        if opacity is not None:
+            self.fill_color = [c.set_opacity(opacity) for c in self.fill_color]
         return self
 
     def set_stroke(
@@ -564,7 +519,7 @@ class OpenGLVMobject(OpenGLMobject):
         return self.consider_points_equals(self.points[0], self.points[-1])
 
     def subdivide_sharp_curves(self, angle_threshold=30 * DEGREES, recurse=True):
-        vmobs = [vm for vm in self.get_family(recurse) if vm.has_points()]
+        vmobs = [vm for vm in self.get_family(recurse=recurse) if vm.has_points()]
         for vmob in vmobs:
             new_points = []
             for tup in vmob.get_bezier_tuples():
@@ -1217,7 +1172,7 @@ class OpenGLVMobject(OpenGLMobject):
         if self.get_num_points() == vmobject.get_num_points():
             return
 
-        for mob in self, vmobject:
+        for mob in (self, vmobject):
             # If there are no points, add one to
             # where the "center" is
             if not mob.has_points():

@@ -135,8 +135,6 @@ class VMobject(Mobject):
         cap_style: CapStyleType = CapStyleType.AUTO,
         **kwargs,
     ):
-        self.fill_opacity = fill_opacity
-        self.stroke_opacity = stroke_opacity
         self.stroke_width = stroke_width
         if background_stroke_color is not None:
             self.background_stroke_color: ManimColor = ManimColor(
@@ -175,6 +173,11 @@ class VMobject(Mobject):
             self.fill_color = ManimColor.parse(fill_color)
         if stroke_color is not None:
             self.stroke_color = ManimColor.parse(stroke_color)
+
+        if fill_opacity is not None:
+            self.fill_color = self.fill_color.set_opacity(fill_opacity)
+        if stroke_opacity is not None:
+            self.stroke_color = self.stroke_color.set_opacity(stroke_opacity)
 
     def _assert_valid_submobjects(self, submobjects: Iterable[VMobject]) -> Self:
         return self._assert_valid_submobjects_internal(submobjects, VMobject)
