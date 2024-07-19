@@ -323,7 +323,7 @@ class ManimConfig(MutableMapping):
     }
 
     def __init__(self) -> None:
-        self._d: dict[str, Any | None] = {k: None for k in self._OPTS}
+        self._d: dict[str, Any | None] = dict.fromkeys(self._OPTS, None)
 
     # behave like a dict
     def __iter__(self) -> Iterator[str]:
