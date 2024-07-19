@@ -227,6 +227,8 @@ class Manager(Generic[Scene_co]):
         if self.window is not None:
             self.window.clear()
 
+            # if it's closing, then any subsequent methods will
+            # raise an error because the internal C window pointer is nullptr.
             if self.window.is_closing:
                 raise EndSceneEarlyException()
 
