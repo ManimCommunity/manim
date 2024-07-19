@@ -451,7 +451,7 @@ def prepare_animation(
     | mobject._AnimationBuilder
     | opengl_mobject._AnimationBuilder
     | opengl_mobject.OpenGLMobject,
-) -> Animation:
+) -> AnimationProtocol:
     r"""Returns either an unchanged animation, or the animation built
     from a passed animation factory.
 

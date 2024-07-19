@@ -3,11 +3,9 @@ from __future__ import annotations
 import itertools as it
 import operator as op
 from functools import reduce
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
-import moderngl
 import numpy as np
-from numpy.typing import NDArray
 
 from manim.constants import *
 from manim.mobject.opengl.opengl_mobject import (
@@ -30,7 +28,6 @@ from manim.utils.deprecation import deprecated
 from manim.utils.iterables import (
     listify,
     make_even,
-    resize_with_interpolation,
 )
 from manim.utils.space_ops import (
     angle_between_vectors,
@@ -42,6 +39,7 @@ from manim.utils.space_ops import (
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable, Sequence
 
+    import numpy.typing as npt
     from typing_extensions import Self
 
 __all__ = [
@@ -61,23 +59,6 @@ class OpenGLVMobject(OpenGLMobject):
     """A vectorized mobject."""
 
     n_points_per_curve: int = 3
-    stroke_shader_folder = "quadratic_bezier_stroke"
-    fill_shader_folder = "quadratic_bezier_fill"
-    fill_dtype = [
-        ("point", np.float32, (3,)),
-        ("unit_normal", np.float32, (3,)),
-        ("color", np.float32, (4,)),
-        ("vert_index", np.float32, (1,)),
-    ]
-    stroke_dtype = [
-        ("point", np.float32, (3,)),
-        ("prev_point", np.float32, (3,)),
-        ("next_point", np.float32, (3,)),
-        ("stroke_width", np.float32, (1,)),
-        ("color", np.float32, (4,)),
-    ]
-    render_primitive: int = moderngl.TRIANGLES
-
     pre_function_handle_to_anchor_scale_factor: float = 0.01
     make_smooth_after_applying_functions: bool = False
     tolerance_for_point_equality: float = 1e-8
@@ -250,12 +231,6 @@ class OpenGLVMobject(OpenGLMobject):
         self.set_stroke(color, width, background=background)
         return self
 
-    def align_stroke_width_data_to_points(self, recurse: bool = True) -> None:
-        for mob in self.get_family(recurse):
-            mob.data["stroke_width"] = resize_with_interpolation(
-                mob.data["stroke_width"], len(mob.points)
-            )
-
     def set_style(
         self,
         fill_color: ParsableManimColor | Iterable[ParsableManimColor] | None = None,
@@ -278,12 +253,6 @@ class OpenGLVMobject(OpenGLMobject):
                 recurse=False,
                 background=stroke_background,
             )
-            if reflectiveness is not None:
-                mob.set_reflectiveness(reflectiveness, recurse=False)
-            if gloss is not None:
-                mob.set_gloss(gloss, recurse=False)
-            if shadow is not None:
-                mob.set_shadow(shadow, recurse=False)
         return self
 
     def get_style(self):
@@ -292,9 +261,6 @@ class OpenGLVMobject(OpenGLMobject):
             "stroke_color": self.stroke_color.copy(),
             "stroke_width": self.stroke_width.copy(),
             # "stroke_background": self.draw_stroke_behind_fill,
-            "reflectiveness": self.get_reflectiveness(),
-            "gloss": self.get_gloss(),
-            "shadow": self.get_shadow(),
         }
 
     def match_style(self, vmobject: OpenGLVMobject, recurse: bool = True):
@@ -457,7 +423,7 @@ class OpenGLVMobject(OpenGLMobject):
         else:
             self.append_points([self.get_last_point(), handle, anchor])
 
-    def add_line_to(self, point: Sequence[float] | NDArray[float]) -> Self:
+    def add_line_to(self, point: Sequence[float] | npt.NDArray[float]) -> Self:
         """Add a straight line from the last point of OpenGLVMobject to the given point.
 
         Parameters
@@ -574,7 +540,9 @@ class OpenGLVMobject(OpenGLMobject):
             self.make_approximately_smooth()
         return self
 
-    def change_anchor_mode(self, mode) -> Self:
+    def change_anchor_mode(
+        self, mode: Literal["jagged", "approx_smooth", "true_smooth"]
+    ) -> Self:
         """Changes the anchor mode of the bezier curves. This will modify the handles.
 
         There can be only three modes, "jagged", "approx_smooth"  and "true_smooth".
@@ -644,11 +612,10 @@ class OpenGLVMobject(OpenGLMobject):
         if self.has_new_path_started():
             # Remove last point, which is starting
             # a new path
-            self.resize_data(len(self.points - 1))
+            self.points = self.points[:-1]
         self.append_points(new_points)
         return self
 
-    #
     def consider_points_equals(self, p0, p1):
         return np.linalg.norm(p1 - p0) < self.tolerance_for_point_equality
 

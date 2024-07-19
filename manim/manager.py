@@ -112,7 +112,7 @@ class Manager(Generic[Scene_co]):
         -------
             A file writer satisfying :class:`.FileWriterProtocol`
         """
-        return FileWriter(self.scene.get_default_scene_name())
+        return FileWriter(scene_name=self.scene.get_default_scene_name())
 
     def setup(self) -> None:
         """Set up processes and manager"""
@@ -122,6 +122,7 @@ class Manager(Generic[Scene_co]):
         # these are used for making sure it feels like the correct
         # amount of time has passed in the window instead of rendering
         # at full speed
+        # See the docstring of :meth:`_wait_for_animation_time`
         self.virtual_animation_start_time = 0.0
         self.real_animation_start_time = time.perf_counter()
 
@@ -190,9 +191,6 @@ class Manager(Generic[Scene_co]):
 
         self.scene.tear_down()
 
-        if config.save_last_frame:
-            self._update_frame(0)
-
         if self.window is not None:
             self.window.close()
             self.window = None
@@ -233,13 +231,27 @@ class Manager(Generic[Scene_co]):
 
         if self.window is not None:
             self.window.swap_buffers()
-            # This recursively updates the window with dt=0 until the correct
-            # amount of time has passed
-            # TODO: do ^ better with less overhead
-            vt = self.time - self.virtual_animation_start_time
+            self._wait_for_animation_time()
+
+    def _wait_for_animation_time(self) -> None:
+        """Wait for the real time to catch up to the "virtual" animation time.
+
+        Animations can render faster than real time, so we have to
+        slow the window down for the correct amount of time, such
+        as during a wait animation.
+        """
+
+        if self.window is None:
+            return
+
+        vt = self.time - self.virtual_animation_start_time
+        rt = time.perf_counter() - self.real_animation_start_time
+        # we can't sleep because we still need to poll for events,
+        # e.g. hitting Escape or close
+        while rt < vt:
+            # make sure to poll for events
+            self.window.swap_buffers()
             rt = time.perf_counter() - self.real_animation_start_time
-            if rt < vt:
-                self._update_frame(0, write_to_file=False)
 
     def _play(self, *animations: AnimationProtocol) -> None:
         """Play a bunch of animations"""
