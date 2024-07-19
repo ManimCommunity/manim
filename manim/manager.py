@@ -211,6 +211,10 @@ class Manager(Generic[Scene_co]):
         while not self.window.is_closing:
             self._update_frame(dt)
 
+    # ----------------------------------#
+    #         Animation Pipeline        #
+    # ----------------------------------#
+
     def _update_frame(self, dt: float, *, write_frame: bool | None = None) -> None:
         """Update the current frame by ``dt``
 
@@ -234,9 +238,7 @@ class Manager(Generic[Scene_co]):
 
         self.render_state(write_frame=write_frame)
 
-        if self.window is not None:
-            self.window.swap_buffers()
-            self._wait_for_animation_time()
+        self._wait_for_animation_time()
 
     def _wait_for_animation_time(self) -> None:
         """Wait for the real time to catch up to the "virtual" animation time.
@@ -249,11 +251,15 @@ class Manager(Generic[Scene_co]):
         if self.window is None:
             return
 
+        self.window.swap_buffers()
+
         vt = self.time - self.virtual_animation_start_time
         rt = time.perf_counter() - self.real_animation_start_time
         # we can't sleep because we still need to poll for events,
         # e.g. hitting Escape or close
         while rt < vt:
+            if self.window.is_closing:
+                raise EndSceneEarlyException()
             # make sure to poll for events
             self.window.swap_buffers()
             rt = time.perf_counter() - self.real_animation_start_time
@@ -312,7 +318,7 @@ class Manager(Generic[Scene_co]):
     ) -> tqdm | contextlib.nullcontext[NullProgressBar]:
         """Create a progressbar"""
 
-        if not config.write_to_movie or not config.progress_bar:
+        if not config.progress_bar:
             return contextlib.nullcontext(NullProgressBar())
         else:
             return tqdm(
@@ -336,28 +342,35 @@ class Manager(Generic[Scene_co]):
 
         self._write_hashed_movie_file(animations=[])
 
+        if self.window is not None:
+            self.real_animation_start_time = time.perf_counter()
+            self.virtual_animation_start_time = self.time
+
         update_mobjects = self.scene.should_update_mobjects()
         condition = stop_condition or (lambda: False)
 
         progression = self._calc_time_progression(duration)
+
+        state = self.scene.get_state()
+
         with self._create_progressbar(
             progression.shape[0], "Waiting %(num)d: "
         ) as progress:
             last_t = 0
             for t in progression:
                 dt, last_t = t - last_t, t
-                if update_mobjects:
+                if update_mobjects or stop_condition is not None:
                     self._update_frame(dt)
                     if condition():
-                        progress.update(duration - t)
                         break
                 else:
-                    # if we don't need to update mobjects
-                    # we can just leave the mobjects on the window
-                    # and increment the time
-                    # but we still have to write frames
                     self.time += dt
-                    self.write_frame()
+                    # this fixes it, but at that point we might as well
+                    # just not cache
+                    self.renderer.render(self.scene.camera, state.mobjects)
+                    if self.window is not None and self.window.is_closing:
+                        raise EndSceneEarlyException()
+                    self._wait_for_animation_time()
                 progress.update(1)
         self.scene.post_play()
 
@@ -392,6 +405,10 @@ class Manager(Generic[Scene_co]):
             If animations is a generator, this will consume the generator.
         """
         return max(animation.get_run_time() for animation in animations)
+
+    # -------------------------#
+    #         Rendering       #
+    # -------------------------#
 
     def render_state(self, write_frame: bool | None = None) -> None:
         """Render the current state of the scene.

@@ -521,7 +521,6 @@ class Wait(Animation):
         if stop_condition and frozen_frame:
             raise ValueError("A static Wait animation cannot have a stop condition.")
 
-        self.duration: float = run_time
         self.stop_condition = stop_condition
         self.is_static_wait: bool = bool(frozen_frame)
         super().__init__(None, run_time=run_time, rate_func=rate_func, **kwargs)
