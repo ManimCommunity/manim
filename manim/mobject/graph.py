@@ -338,10 +338,7 @@ def _tree_layout(
     parent = {u: root_vertex for u in children[root_vertex]}
     pos = {}
     obstruction = [0.0] * len(T)
-    if orientation == "down":
-        o = -1
-    else:
-        o = 1
+    o = -1 if orientation == "down" else 1
 
     def slide(v, dx):
         """
@@ -404,15 +401,9 @@ def _tree_layout(
         if isinstance(scale, (float, int)) and (width > 0 or height > 0):
             sf = 2 * scale / max(width, height)
         elif isinstance(scale, tuple):
-            if scale[0] is not None and width > 0:
-                sw = 2 * scale[0] / width
-            else:
-                sw = 1
+            sw = 2 * scale[0] / width if scale[0] is not None and width > 0 else 1
 
-            if scale[1] is not None and height > 0:
-                sh = 2 * scale[1] / height
-            else:
-                sh = 1
+            sh = 2 * scale[1] / height if scale[1] is not None and height > 0 else 1
 
             sf = np.array([sw, sh, 0])
         else:
@@ -851,7 +842,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
                 label_fill_color=label_fill_color,
                 vertex_type=vertex_type,
                 vertex_config=vertex_config[v],
-                vertex_mobject=vertex_mobjects[v] if v in vertex_mobjects else None,
+                vertex_mobject=vertex_mobjects.get(v, None),
             )
             for v in vertices
         ]

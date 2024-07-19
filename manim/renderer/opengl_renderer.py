@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 import itertools as it
 import time
 from functools import cached_property
@@ -336,10 +337,8 @@ class OpenGLRenderer:
                 shader_wrapper.uniforms.items(),
                 self.perspective_uniforms.items(),
             ):
-                try:
+                with contextlib.suppress(KeyError):
                     shader.set_uniform(name, value)
-                except KeyError:
-                    pass
             try:
                 shader.set_uniform(
                     "u_view_matrix", self.scene.camera.formatted_view_matrix

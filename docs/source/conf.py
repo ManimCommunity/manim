@@ -63,7 +63,7 @@ autodoc_type_aliases = {
     alias_name: f"~manim.{module}.{alias_name}"
     for module, module_dict in ALIAS_DOCS_DICT.items()
     for category_dict in module_dict.values()
-    for alias_name in category_dict.keys()
+    for alias_name in category_dict
 }
 autoclass_content = "both"
 
