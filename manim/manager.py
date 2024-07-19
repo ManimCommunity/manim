@@ -229,6 +229,9 @@ class Manager(Generic[Scene_co]):
         if self.window is not None:
             self.window.clear()
 
+            if self.window.is_closing:
+                raise EndSceneEarlyException()
+
         self.render_state(write_to_file=write_to_file)
 
         if self.window is not None:
