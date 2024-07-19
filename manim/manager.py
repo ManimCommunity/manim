@@ -177,7 +177,7 @@ class Manager(Generic[Scene_co]):
             self.file_writer.finish()
         # otherwise no animations were played
         elif config.write_to_movie or config.save_last_frame:
-            self.render_state(write_to_file=False)
+            self.render_state(write_frame=False)
             # FIXME: for some reason the OpenGLRenderer does not give out the
             # correct frame values here
             frame = self.renderer.get_pixels()
@@ -211,13 +211,13 @@ class Manager(Generic[Scene_co]):
         while not self.window.is_closing:
             self._update_frame(dt)
 
-    def _update_frame(self, dt: float, *, write_to_file: bool | None = None) -> None:
+    def _update_frame(self, dt: float, *, write_frame: bool | None = None) -> None:
         """Update the current frame by ``dt``
 
         Parameters
         ----------
             dt : the time in between frames
-            write_to_file : Whether to write the result to the output stream.
+            write_frame : Whether to write the result to the output stream (videos ONLY).
                 Default value checks :attr:`_write_files` to see if it should be written.
         """
         self.time += dt
@@ -227,7 +227,7 @@ class Manager(Generic[Scene_co]):
         if self.window is not None:
             self.window.clear()
 
-        self.render_state(write_to_file=write_to_file)
+        self.render_state(write_frame=write_frame)
 
         if self.window is not None:
             self.window.swap_buffers()
@@ -388,27 +388,32 @@ class Manager(Generic[Scene_co]):
         """
         return max(animation.get_run_time() for animation in animations)
 
-    def render_state(self, write_to_file: bool | None = None) -> None:
+    def render_state(self, write_frame: bool | None = None) -> None:
         """Render the current state of the scene.
 
         Any extra kwargs are passed to :meth:`_render_frame`.
         """
         state = self.scene.get_state()
-        self._render_frame(state, write_file=write_to_file)
+        self._render_frame(state, write_frame=write_frame)
 
     def _render_frame(
-        self, state: SceneState, *, write_file: bool | None = None
+        self, state: SceneState, *, write_frame: bool | None = None
     ) -> None:
-        """Renders a frame based on a state, and writes it to a file.
+        """Renders a frame based on a state, and writes it to the file writers stream.
 
-        Any extra kwargs are passed to :meth:`write_frame`.
+        This is used for writing a single frame. Any extra kwargs are passed to :meth:`write_frame`.
+
+        .. warning::
+
+            This method will not work if :meth:`.FileWriter.begin_animation` and
+            :meth:`.FileWriter.add_partial_movie_file` have not been called. Do NOT
+            use this to write a single frame!
         """
 
-        # render the frame to the window
         # TODO: change self.scene.camera to state.camera
         self.renderer.render(self.scene.camera, state.mobjects)
 
-        should_write = write_file if write_file is not None else self._write_files
+        should_write = write_frame if write_frame is not None else self._write_files
         if should_write:
             self.write_frame()
 
