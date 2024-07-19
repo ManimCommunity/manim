@@ -69,7 +69,6 @@ flake8-builtins = "^2.2.0"
 flake8-comprehensions = "^3.7.0"
 flake8-docstrings = "^1.7.0"
 flake8-pytest-style = "^1.7.2"
-flake8-simplify = "^0.14.1"
 flake8-rst-docstrings = "^0.3.0"
 furo = "^2023.09.10"
 gitpython = "^3"
@@ -139,6 +138,7 @@ select = [
   "E",
   "F",
   "I",
+  "SIM",
   "UP",
 ]
 
