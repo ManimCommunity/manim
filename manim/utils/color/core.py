@@ -27,7 +27,7 @@ import colorsys
 # logger = _config.logger
 import random
 import re
-from typing import Any, Sequence, TypeVar, Union, overload
+from typing import Any, Sequence, TypeVar, Union, overload, override
 
 import numpy as np
 import numpy.typing as npt
@@ -135,7 +135,8 @@ class ManimColor:
             else:
                 if length == 3:
                     self._internal_value = ManimColor._internal_from_int_rgb(
-                        value, alpha  # type: ignore
+                        value,
+                        alpha,  # type: ignore
                     )
                 elif length == 4:
                     self._internal_value = ManimColor._internal_from_int_rgba(value)  # type: ignore
@@ -189,6 +190,14 @@ class ManimColor:
         if value.shape[0] != 4:
             raise TypeError("Array must have 4 values exactly")
         self.__value: ManimColorInternal = value
+
+    @classmethod
+    def _construct_from_internal(cls, _internal: ManimColorInternal) -> Self:
+        """
+        This function is used as a proxy for constructing a color with an internal value,
+        this can be used by subclasses to hook into the construction of new objects using the internal value format
+        """
+        return cls(_internal)
 
     @staticmethod
     def _internal_from_integer(value: int, alpha: float) -> ManimColorInternal:
@@ -462,9 +471,9 @@ class ManimColor:
         str
             A hex string starting with a # with either 6 or 8 nibbles depending on your input, by default 6 i.e #XXXXXX
         """
-        tmp = f"#{int(self._internal_value[0]*255):02X}{int(self._internal_value[1]*255):02X}{int(self._internal_value[2]*255):02X}"
+        tmp = f"#{int(self._internal_value[0] * 255):02X}{int(self._internal_value[1] * 255):02X}{int(self._internal_value[2] * 255):02X}"
         if with_alpha:
-            tmp += f"{int(self._internal_value[3]*255):02X}"
+            tmp += f"{int(self._internal_value[3] * 255):02X}"
         return tmp
 
     def to_hsv(self) -> HSV_Array_Float:
@@ -481,7 +490,7 @@ class ManimColor:
         HSV_Array_Float
             A hsv array containing 3 elements of type float ranging from 0 to 1
         """
-        return colorsys.rgb_to_hsv(*self.to_rgb())
+        return np.array(colorsys.rgb_to_hsv(*self.to_rgb()))
 
     def to_hsl(self) -> HSL_Array_Float:
         """Converts the Manim Color to HSL array.
@@ -497,7 +506,7 @@ class ManimColor:
         HSL_Array_Float
             A hsl array containing 3 elements of type float ranging from 0 to 1
         """
-        return colorsys.rgb(*self.to_rgb())
+        return np.array(colorsys.rgb_to_hls(*self.to_rgb()))
 
     def invert(self, with_alpha=False) -> ManimColor:
         """Returns an linearly inverted version of the color (no inplace changes)
@@ -516,7 +525,13 @@ class ManimColor:
         ManimColor
             The linearly inverted ManimColor
         """
-        return ManimColor(1.0 - self._internal_value, with_alpha)
+        if with_alpha:
+            return self._construct_from_internal(1.0 - self._internal_value)
+        else:
+            alpha = self._internal_value[3]
+            new = 1.0 - self._internal_value
+            new[3] = alpha
+            return self._construct_from_internal(new)
 
     def interpolate(self, other: ManimColor, alpha: float) -> ManimColor:
         """Interpolates between the current and the given ManimColor an returns the interpolated color
@@ -535,7 +550,7 @@ class ManimColor:
         ManimColor
             The interpolated ManimColor
         """
-        return ManimColor(
+        return self._construct_from_internal(
             self._internal_value * (1 - alpha) + other._internal_value * alpha
         )
 
@@ -552,7 +567,9 @@ class ManimColor:
         ManimColor
             The new ManimColor with the same color value but the new opacity
         """
-        return ManimColor(self._internal_value, opacity)
+        tmp = self._internal_value.copy()
+        tmp[3] = opacity
+        return self._construct_from_internal(tmp)
 
     @classmethod
     def from_rgb(
@@ -684,7 +701,7 @@ class ManimColor:
     @classmethod
     def parse(
         cls,
-        color: ParsableManimColor | list[ParsableManimColor] | None,
+        color: ParsableManimColor | Sequence[ParsableManimColor] | None,
         alpha: float = 1.0,
     ) -> Self | list[Self]:
         """
@@ -757,66 +774,104 @@ class ManimColor:
 
 
 class HSV(ManimColor):
-    def __init__(self, hsv: HSV_Array_Float | HSV_Tuple_Float) -> None:
-        self.hsv = hsv
+    def __init__(
+        self, hsv: HSV_Array_Float | HSV_Tuple_Float, opacity: float = 1.0
+    ) -> None:
+        self.__hsv: HSV_Array_Float = np.asarray(hsv)
+        self.__opacity = opacity
         super().__init__(colorsys.hsv_to_rgb(*hsv))
 
     @property
     def hue(self) -> float:
-        return self.hsv[0]
+        return self.__hsv[0]
 
     @property
     def saturation(self) -> float:
-        return self.hsv[1]
+        return self.__hsv[1]
 
     @property
     def value(self) -> float:
-        return self.hsv[2]
+        return self.__hsv[2]
 
     @hue.setter
     def hue(self, value: float) -> None:
-        self.hsv[0] = value
-        self._internal_value[:3] = colorsys.hsv_to_rgb(*self.hsv)
+        self.__hsv[0] = value
+        self._internal_value[:3] = colorsys.hsv_to_rgb(*self.__hsv)
 
     @saturation.setter
     def saturation(self, value: float) -> None:
-        self.hsv[1] = value
-        self._internal_value[:3] = colorsys.hsv_to_rgb(*self.hsv)
+        self.__hsv[1] = value
+        self._internal_value[:3] = colorsys.hsv_to_rgb(*self.__hsv)
 
     @value.setter
     def value(self, value: float) -> None:
-        self.hsv[2] = value
-        self._internal_value[:3] = colorsys.hsv_to_rgb(*self.hsv)
-
-    def opacity(self, opacity: float) -> ManimColor:
-        return HSV(self.hsv, opacity)
+        self.__hsv[2] = value
+        self._internal_value[:3] = colorsys.hsv_to_rgb(*self.__hsv)
 
     @property
     def h(self) -> float:
-        return self.hsv[0]
+        return self.__hsv[0]
 
     @property
     def s(self) -> float:
-        return self.hsv[1]
+        return self.__hsv[1]
 
     @property
     def v(self) -> float:
-        return self.hsv[2]
+        return self.__hsv[2]
 
     @h.setter
     def h(self, value: float) -> None:
-        self.hsv[0] = value
-        self._internal_value[:3] = colorsys.hsv_to_rgb(*self.hsv)
+        self.__hsv[0] = value
 
     @s.setter
     def s(self, value: float) -> None:
-        self.hsv[1] = value
-        self._internal_value[:3] = colorsys.hsv_to_rgb(*self.hsv)
+        self.__hsv[1] = value
 
     @v.setter
     def v(self, value: float) -> None:
-        self.hsv[2] = value
-        self._internal_value[:3] = colorsys.hsv_to_rgb(*self.hsv)
+        self.__hsv[2] = value
+
+    @property
+    @override
+    def _internal_value(self) -> ManimColorInternal:
+        """Returns the internal value of the current Manim color [r,g,b,a] float array
+
+        Returns
+        -------
+        ManimColorInternal
+            internal color representation
+        """
+        return np.array(
+            [
+                *colorsys.hsv_to_rgb(self.__hsv[0], self.__hsv[1], self.__hsv[2]),
+                self.__opacity,
+            ],
+            dtype=float,
+        )
+
+    @_internal_value.setter
+    @override
+    def _internal_value(self, value: ManimColorInternal) -> None:
+        """Overwrites the internal color value of the ManimColor object
+
+        Parameters
+        ----------
+        value : ManimColorInternal
+            The value which will overwrite the current color
+
+        Raises
+        ------
+        TypeError
+            Raises a TypeError if an invalid array is passed
+        """
+        if not isinstance(value, np.ndarray):
+            raise TypeError("value must be a numpy array")
+        if value.shape[0] != 4:
+            raise TypeError("Array must have 4 values exactly")
+        tmp = colorsys.rgb_to_hsv(value[0], value[1], value[2])
+        self.__hsv: ManimColorInternal = np.array(tmp)
+        self.__opacity = value[3]
 
 
 ParsableManimColor: TypeAlias = Union[
