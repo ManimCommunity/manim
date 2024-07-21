@@ -23,10 +23,8 @@ def test_chained_animate():
     scale_factor = 2
     direction = np.array((1, 1, 0))
     anim = s.animate.scale(scale_factor).shift(direction).build()
-    assert (
-        anim.mobject.target.width == scale_factor * s.width
-        and (anim.mobject.target.get_center() == direction).all()
-    )
+    assert anim.mobject.target.width == scale_factor * s.width
+    assert (anim.mobject.target.get_center() == direction).all()
 
 
 def test_overridden_animate():
@@ -103,10 +101,8 @@ def test_chained_animate_with_args():
     run_time = 2
 
     anim = s.animate(run_time=run_time).scale(scale_factor).shift(direction).build()
-    assert (
-        anim.mobject.target.width == scale_factor * s.width
-        and (anim.mobject.target.get_center() == direction).all()
-    )
+    assert anim.mobject.target.width == scale_factor * s.width
+    assert (anim.mobject.target.get_center() == direction).all()
     assert anim.run_time == run_time
 
 
