@@ -59,7 +59,7 @@ cfg_file_contents = textwrap.dedent(
 
 @pytest.fixture
 def simple_scenes_path():
-    yield Path(__file__).parent / "simple_scenes.py"
+    return Path(__file__).parent / "simple_scenes.py"
 
 
 def cfg_file_create(cfg_file_contents, path):
@@ -73,7 +73,7 @@ def random_string():
     all_letters = string.ascii_lowercase
     a = random.Random()
     final_letters = [a.choice(all_letters) for _ in range(8)]
-    yield "".join(final_letters)
+    return "".join(final_letters)
 
 
 def test_plugin_warning(tmp_path, python_version, simple_scenes_path):
