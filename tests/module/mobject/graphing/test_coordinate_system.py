@@ -56,7 +56,7 @@ def test_dimension():
 
 def test_abstract_base_class():
     """Check that CoordinateSystem has some abstract methods."""
-    with pytest.raises(Exception):
+    with pytest.raises(NotImplementedError):
         CS().get_axes()
 
 
