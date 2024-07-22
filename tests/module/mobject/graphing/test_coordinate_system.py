@@ -202,10 +202,12 @@ def test_matmul_operations():
     mob = Dot().move_to((1, 2, 0))
     assert (ax @ mob == ax.coords_to_point(1, 2)).all()
 
-    # other coordinate systems like PolarPlane should override __matmul__ indirectly
+    # other coordinate systems like PolarPlane and ComplexPlane should override __matmul__ indirectly
     polar = PolarPlane()
-    # radius, azimuthal angle
     assert (polar @ (1, 2) == polar.polar_to_point(1, 2)).all()
+
+    complx = ComplexPlane()
+    assert (complx @ (1 + 2j) == complx.number_to_point(1 + 2j)).all()
 
     # Numberline doesn't inherit from CoordinateSystem, but it should still work
     n = NumberLine()

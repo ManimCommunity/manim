@@ -17,7 +17,7 @@ from collections.abc import Iterable, Sequence
 from typing import TYPE_CHECKING, Any, Callable, TypeVar, overload
 
 import numpy as np
-from typing_extensions import Self
+from typing_extensions import Self, TypedDict
 
 from manim import config
 from manim.constants import *
@@ -56,12 +56,23 @@ from manim.utils.simple_functions import binary_search
 from manim.utils.space_ops import angle_of_vector
 
 if TYPE_CHECKING:
-    import numpy.typing as npt
-
     from manim.mobject.mobject import Mobject
     from manim.typing import ManimFloat, Point2D, Point3D, Vector3D
 
     LineType = TypeVar("LineType", bound=Line)
+
+
+class _MatmulConfig(TypedDict):
+    """A dictionary for configuring the __matmul__/__rmatmul__ operation.
+
+    Parameters
+    ----------
+        method: The method to call
+        unpack: whether to unpack the parameter given to __matmul__/__rmatmul__
+    """
+
+    method: str
+    unpack: bool
 
 
 class CoordinateSystem:
@@ -1838,20 +1849,29 @@ class CoordinateSystem:
 
         return T_label_group
 
-    _matmul_method = "coords_to_point"
-    _rmatmul_method = "point_to_coords"
+    _matmul_config: _MatmulConfig = {
+        "method": "coords_to_point",
+        "unpack": True,
+    }
+    _rmatmul_config: _MatmulConfig = {"method": "point_to_coords", "unpack": False}
 
-    def __matmul__(self, coord: Sequence[float] | Mobject | npt.NDArray[np.float64]):
+    def __matmul__(self, coord):
         if isinstance(coord, Mobject):
             coord = coord.get_center()
-        method = getattr(self, self._matmul_method)
+        method = getattr(self, self._matmul_config["method"])
         assert callable(method)
-        return method(*coord)
+        return (
+            method(*coord) if self._matmul_config.get("unpack", True) else method(coord)
+        )
 
-    def __rmatmul__(self, point: Point3D):
-        method = getattr(self, self._rmatmul_method)
+    def __rmatmul__(self, point):
+        method = getattr(self, self._rmatmul_config["method"])
         assert callable(method)
-        return method(point)
+        return (
+            method(*point)
+            if self._rmatmul_config.get("unpack", False)
+            else method(point)
+        )
 
 
 class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
@@ -2993,8 +3013,11 @@ class PolarPlane(Axes):
                 self.add(polarplane_pi)
     """
 
-    _matmul_method = "polar_to_point"
-    _rmatmul_method = "point_to_polar"
+    _matmul_config = {
+        "method": "polar_to_point",
+        "unpack": True,
+    }
+    _rmatmul_config = {"method": "point_to_polar", "unpack": False}
 
     def __init__(
         self,
@@ -3365,6 +3388,10 @@ class ComplexPlane(NumberPlane):
                 )
 
     """
+
+    _matmul_config = {"method": "number_to_point", "unpack": False}
+
+    _rmatmul_config = {"method": "point_to_number", "unpack": False}
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(
