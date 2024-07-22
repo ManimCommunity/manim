@@ -654,10 +654,7 @@ class ManimConfig(MutableMapping):
 
         # plugins
         plugins = parser["CLI"].get("plugins", fallback="", raw=True)
-        if plugins == "":
-            plugins = []
-        else:
-            plugins = plugins.split(",")
+        plugins = [] if plugins == "" else plugins.split(",")
         self.plugins = plugins
         # the next two must be set AFTER digesting pixel_width and pixel_height
         self["frame_height"] = parser["CLI"].getfloat("frame_height", 8.0)

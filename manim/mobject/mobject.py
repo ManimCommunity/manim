@@ -1579,9 +1579,7 @@ class Mobject:
             return True
         if self.get_bottom()[1] > config["frame_y_radius"]:
             return True
-        if self.get_top()[1] < -config["frame_y_radius"]:
-            return True
-        return False
+        return self.get_top()[1] < -config["frame_y_radius"]
 
     def stretch_about_point(self, factor: float, dim: int, point: Point3D) -> Self:
         return self.stretch(factor, dim, about_point=point)
@@ -1996,7 +1994,7 @@ class Mobject:
 
         # If we do not have points (but do have submobjects)
         # use only the points from those.
-        if len(self.points) == 0:
+        if len(self.points) == 0:  # noqa: SIM108
             rv = None
         else:
             # Otherwise, be sure to include our own points
@@ -2005,10 +2003,7 @@ class Mobject:
         # smallest dimension they have and compare it to the return value.
         for mobj in self.submobjects:
             value = mobj.reduce_across_dimension(reduce_func, dim)
-            if rv is None:
-                rv = value
-            else:
-                rv = reduce_func([value, rv])
+            rv = value if rv is None else reduce_func([value, rv])
         return rv
 
     def nonempty_submobjects(self) -> list[Self]:
