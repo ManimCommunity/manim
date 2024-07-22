@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import copy
-import inspect
 import itertools as it
 import logging
 import numbers
@@ -23,12 +22,10 @@ from manim.constants import *
 from manim.event_handler import EVENT_DISPATCHER
 from manim.event_handler.event_listener import EventListener
 from manim.event_handler.event_type import EventType
-from manim.renderer.shader_wrapper import ShaderWrapper, get_colormap_code
+from manim.mobject.updaters import Updater
 from manim.utils.bezier import integer_interpolate, interpolate
 from manim.utils.color import *
 from manim.utils.deprecation import deprecated
-
-# from ..utils.iterables import batch_by_property
 from manim.utils.iterables import (
     list_update,
     listify,
@@ -49,7 +46,7 @@ from manim.utils.space_ops import (
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
-    from typing import Any, Callable, Union
+    from typing import Any, Callable
 
     import numpy.typing as npt
     from typing_extensions import Concatenate, ParamSpec, Self, TypeAlias
@@ -59,10 +56,9 @@ if TYPE_CHECKING:
     from manim.typing import PathFuncType, Point3D, Point3D_Array
 
     TimeBasedUpdater: TypeAlias = Callable[
-        ["OpenGLMobject", float], "OpenGLMobject | None"
+        Concatenate["OpenGLMobject", float, ...], object
     ]
-    NonTimeUpdater: TypeAlias = Callable[["OpenGLMobject"], "OpenGLMobject | None"]
-    Updater: TypeAlias = Union[TimeBasedUpdater, NonTimeUpdater]
+    NonTimeUpdater: TypeAlias = Callable[Concatenate["OpenGLMobject", ...], object]
     PointUpdateFunction: TypeAlias = Callable[[np.ndarray], np.ndarray]
 
     M = TypeVar("M", bound="OpenGLMobject")
@@ -74,8 +70,6 @@ R = TypeVar("R", bound="RendererData")
 T_co = TypeVar("T_co", covariant=True, bound="OpenGLMobject")
 
 logger = logging.getLogger("manim")
-
-UNIFORM_DTYPE = np.float64
 
 
 def stash_mobject_pointers(
@@ -118,9 +112,7 @@ class MobjectStatus:
     points_changed: bool = False
 
 
-# it's generic in its renderer, which is a little bit cursed
-# In the future, it should be replaced with a RendererData protocol
-class OpenGLMobject(Generic[R]):
+class OpenGLMobject:
     """Mathematical Object: base class for objects that can be displayed on screen.
 
     Attributes
@@ -182,7 +174,7 @@ class OpenGLMobject(Generic[R]):
         self.uniforms: dict[str, float | np.ndarray] = {}
 
         # TODO replace with protocol
-        self.renderer_data: R | None = None
+        self.renderer_data: RendererData | None = None
         self.status = MobjectStatus()
 
         self.init_data()
@@ -1436,8 +1428,7 @@ class OpenGLMobject(Generic[R]):
 
         # Similarly, instead of calling match_updaters, since we know the status
         # won't have changed, just directly match.
-        result.non_time_updaters = list(self.non_time_updaters)
-        result.time_based_updaters = list(self.time_based_updaters)
+        result.updater_list = self.updater_list.copy()
 
         family = self.get_family()
         for attr, value in list(self.__dict__.items()):
@@ -1448,8 +1439,6 @@ class OpenGLMobject(Generic[R]):
             ):
                 setattr(result, attr, result.family[self.family.index(value)])
             if isinstance(value, np.ndarray):
-                setattr(result, attr, value.copy())
-            if isinstance(value, ShaderWrapper):
                 setattr(result, attr, value.copy())
         return result
 
@@ -1541,65 +1530,73 @@ class OpenGLMobject(Generic[R]):
     # Updating
 
     def init_updaters(self) -> None:
-        self.time_based_updaters: list[TimeBasedUpdater] = []
-        self.non_time_updaters: list[NonTimeUpdater] = []
+        self.updater_list: list[Updater] = []
         # so that we don't have to refind updaters
         self.has_updaters: bool = False
         self.updating_suspended: bool = False
 
-    def update(self, dt: float = 0, recurse: bool = True) -> Self:
+    def update(self, dt: float = 0, *, recurse: bool = True) -> Self:
         if not self.has_updaters or self.updating_suspended:
             return self
-        for time_updater in self.time_based_updaters:
-            time_updater(self, dt)
-        for non_time_updater in self.non_time_updaters:
-            non_time_updater(self)
+        for updater in self.updater_list:
+            updater(self, dt)
         if recurse:
             for submob in self.submobjects:
-                submob.update(dt, recurse)
+                submob.update(dt, recurse=recurse)
         return self
 
-    def get_time_based_updaters(self) -> list[TimeBasedUpdater]:
-        return self.time_based_updaters
-
-    def has_time_based_updater(self) -> bool:
-        return len(self.time_based_updaters) > 0
-
-    def get_updaters(self) -> list[Updater]:
-        return self.time_based_updaters + self.non_time_updaters
-
     def get_family_updaters(self) -> list[Updater]:
-        return list(it.chain(*(sm.get_updaters() for sm in self.get_family())))
+        return list(it.chain(*(sm.updater_list for sm in self.get_family())))
 
-    def add_updater(
+    def _add_updater(
         self,
         update_function: Updater,
         index: int | None = None,
         call_updater: bool = False,
     ) -> Self:
-        if "dt" in inspect.signature(update_function).parameters:
-            updater_list: list[Updater] = self.time_based_updaters  # type: ignore
-        else:
-            updater_list: list[Updater] = self.non_time_updaters  # type: ignore
-
         if index is None:
-            updater_list.append(update_function)
+            self.updater_list.append(update_function)
         else:
-            updater_list.insert(index, update_function)
+            self.updater_list.insert(index, update_function)
 
         self.refresh_has_updater_status()
         if call_updater:
             self.update()
         return self
 
+    def add_updater(
+        self,
+        update_function: NonTimeUpdater | Updater,
+        index: int | None = None,
+        call_updater: bool = False,
+    ) -> Self:
+        if not isinstance(update_function, Updater):
+            update_function = Updater(update_function)
+        return self._add_updater(
+            update_function,
+            index=index,
+            call_updater=call_updater,
+        )
+
+    def add_dt_updater(
+        self,
+        update_function: TimeBasedUpdater | Updater,
+        index: int | None = None,
+        call_updater: bool = False,
+    ) -> Self:
+        if not isinstance(update_function, Updater):
+            update_function = Updater(update_function)
+        update_function.needs_dt = True
+        return self._add_updater(
+            update_function, index=index, call_updater=call_updater
+        )
+
     def remove_updater(self, update_function: Updater) -> Self:
-        updater_lists: list[list[Updater]] = [
-            self.time_based_updaters,  # type: ignore
-            self.non_time_updaters,  # type: ignore
-        ]
-        for updater_list in updater_lists:
-            while update_function in updater_list:
-                updater_list.remove(update_function)
+        to_remove = set()
+        for updater in self.updater_list:
+            if updater == update_function:
+                to_remove.add(updater)
+        self.updater_list = [u for u in self.updater_list if u not in to_remove]
         self.refresh_has_updater_status()
         return self
 
@@ -1613,9 +1610,8 @@ class OpenGLMobject(Generic[R]):
         return self
 
     def match_updaters(self, mobject: OpenGLMobject) -> Self:
-        self.clear_updaters()
-        for updater in mobject.get_updaters():
-            self.add_updater(updater)
+        # make a shallow copy - the update functions should stay linked
+        self.updater_list = mobject.updater_list.copy()
         return self
 
     def suspend_updating(self, recurse: bool = True) -> Self:
@@ -1637,7 +1633,7 @@ class OpenGLMobject(Generic[R]):
         return self
 
     def refresh_has_updater_status(self) -> Self:
-        self.has_updaters = any(mob.get_updaters() for mob in self.get_family())
+        self.has_updaters = any(mob.updater_list for mob in self.get_family())
         return self
 
     # Check if mark as static or not for camera

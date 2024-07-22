@@ -159,13 +159,6 @@ class Scene:
             mob.has_updaters for mob in self.mobjects
         )
 
-    def has_time_based_updaters(self) -> bool:
-        return any(
-            sm.has_time_based_updater()
-            for mob in self.mobjects
-            for sm in mob.get_family()
-        )
-
     # Related to internal mobject organization
 
     def add(self, *new_mobjects: OpenGLMobject):
