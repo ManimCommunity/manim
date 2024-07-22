@@ -509,12 +509,12 @@ class Animation:
 
             class ChangeDefaultAnimation(Scene):
                 def construct(self):
-                    Rotate.set_default(run_time=2,rate_func=rate_functions.linear)
+                    Rotate.set_default(run_time=2, rate_func=rate_functions.linear)
                     Indicate.set_default(color=None)
 
-                    S = Square(color=BLUE,fill_color=BLUE,fill_opacity=0.25)
+                    S = Square(color=BLUE, fill_color=BLUE, fill_opacity=0.25)
                     self.add(S)
-                    self.play(Rotate(S,PI))
+                    self.play(Rotate(S, PI))
                     self.play(Indicate(S))
 
                     Rotate.set_default()
