@@ -68,9 +68,7 @@ flake8-bugbear = "^23.11.28"
 flake8-builtins = "^2.2.0"
 flake8-comprehensions = "^3.7.0"
 flake8-docstrings = "^1.7.0"
-flake8-pytest-style = "^1.7.2"
 flake8-simplify = "^0.14.1"
-flake8-rst-docstrings = "^0.3.0"
 furo = "^2023.09.10"
 gitpython = "^3"
 isort = "^5.12.0"
@@ -139,6 +137,7 @@ select = [
   "E",
   "F",
   "I",
+  "PT",
   "UP",
 ]
 
@@ -146,6 +145,10 @@ ignore = [
   # due to the import * used in manim
   "F403",
   "F405",
+  # fixtures not returning anything should have leading underscore
+  "PT004",
+  # Exception too broad (this would require lots of changes + re.escape) for little benefit
+  "PT011",
   # as recommended by https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules
   "E111",
   "E114",
@@ -175,6 +178,10 @@ dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
 [tool.ruff.lint.isort]
 required-imports = ["from __future__ import annotations"]
+
+[tool.ruff.lint.flake8-pytest-style]
+fixture-parentheses = false
+mark-parentheses = false
 
 [tool.ruff.format]
 docstring-code-format = true
