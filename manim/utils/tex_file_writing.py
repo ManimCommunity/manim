@@ -35,7 +35,7 @@ def tex_to_svg_file(
     environment: str | None = None,
     tex_template: TexTemplate | None = None,
 ):
-    """Takes a tex expression and returns the svg version of the compiled tex
+    r"""Takes a tex expression and returns the svg version of the compiled tex
 
     Parameters
     ----------
@@ -76,7 +76,7 @@ def generate_tex_file(
     environment: str | None = None,
     tex_template: TexTemplate | None = None,
 ) -> Path:
-    """Takes a tex expression (and an optional tex environment),
+    r"""Takes a tex expression (and an optional tex environment),
     and returns a fully formed tex file ready for compilation.
 
     Parameters

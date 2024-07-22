@@ -1019,7 +1019,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         return VGroup(*self.lines)
 
     def get_value(self, degrees: bool = False) -> float:
-        """Get the value of an angle of the :class:`Angle` class.
+        r"""Get the value of an angle of the :class:`Angle` class.
 
         Parameters
         ----------
@@ -1053,7 +1053,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
 
     @staticmethod
     def from_three_points(A: Point3D, B: Point3D, C: Point3D, **kwargs) -> Angle:
-        """The angle between the lines AB and BC.
+        r"""The angle between the lines AB and BC.
 
         This constructs the angle :math:`\\angle ABC`.
 

@@ -244,15 +244,11 @@ class SceneFileWriter:
 
     # Sound
     def init_audio(self):
-        """
-        Preps the writer for adding audio to the movie.
-        """
+        """Preps the writer for adding audio to the movie."""
         self.includes_sound = False
 
     def create_audio_segment(self):
-        """
-        Creates an empty, silent, Audio Segment.
-        """
+        """Creates an empty, silent, Audio Segment."""
         self.audio_segment = AudioSegment.silent()
 
     def add_audio_segment(

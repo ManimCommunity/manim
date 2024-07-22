@@ -94,7 +94,7 @@ class _Fade(Transform):
 
 
 class FadeIn(_Fade):
-    """Fade in :class:`~.Mobject` s.
+    r"""Fade in :class:`~.Mobject` s.
 
     Parameters
     ----------
@@ -142,7 +142,7 @@ class FadeIn(_Fade):
 
 
 class FadeOut(_Fade):
-    """Fade out :class:`~.Mobject` s.
+    r"""Fade out :class:`~.Mobject` s.
 
     Parameters
     ----------

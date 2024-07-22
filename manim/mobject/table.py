@@ -85,7 +85,7 @@ from .utils import get_vectorized_mobject_class
 
 
 class Table(VGroup):
-    """A mobject that displays a table on the screen.
+    r"""A mobject that displays a table on the screen.
 
     Parameters
     ----------
@@ -1065,7 +1065,7 @@ class MobjectTable(Table):
 
 
 class IntegerTable(Table):
-    """A specialized :class:`~.Table` mobject for use with :class:`~.Integer`.
+    r"""A specialized :class:`~.Table` mobject for use with :class:`~.Integer`.
 
     Examples
     --------

@@ -1035,7 +1035,7 @@ class CoordinateSystem:
         dot: bool = False,
         dot_config: dict[str, Any] | None = None,
     ) -> Mobject:
-        """Creates a properly positioned label for the passed graph, with an optional dot.
+        r"""Creates a properly positioned label for the passed graph, with an optional dot.
 
         Parameters
         ----------

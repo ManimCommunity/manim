@@ -472,9 +472,7 @@ class OpenGLVMobject(OpenGLMobject):
         self.append_points(new_points)
 
     def add_cubic_bezier_curve_to(self, handle1, handle2, anchor):
-        """
-        Add cubic bezier curve to the path.
-        """
+        """Add cubic bezier curve to the path."""
         self.throw_error_if_no_points()
         quadratic_approx = get_quadratic_approximation_of_cubic(
             self.get_last_point(),

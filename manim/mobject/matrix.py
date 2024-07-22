@@ -72,7 +72,7 @@ def matrix_to_mobject(matrix):
 
 
 class Matrix(VMobject, metaclass=ConvertToOpenGL):
-    """A mobject that displays a matrix on the screen.
+    r"""A mobject that displays a matrix on the screen.
 
     Parameters
     ----------
@@ -279,7 +279,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         return self
 
     def get_columns(self):
-        """Return columns of the matrix as VGroups.
+        r"""Return columns of the matrix as VGroups.
 
         Returns
         --------
@@ -306,7 +306,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         )
 
     def set_column_colors(self, *colors: str):
-        """Set individual colors for each columns of the matrix.
+        r"""Set individual colors for each columns of the matrix.
 
         Parameters
         ----------
@@ -336,7 +336,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         return self
 
     def get_rows(self):
-        """Return rows of the matrix as VGroups.
+        r"""Return rows of the matrix as VGroups.
 
         Returns
         --------
@@ -358,7 +358,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         return VGroup(*(VGroup(*row) for row in self.mob_matrix))
 
     def set_row_colors(self, *colors: str):
-        """Set individual colors for each row of the matrix.
+        r"""Set individual colors for each row of the matrix.
 
         Parameters
         ----------
@@ -436,7 +436,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         return self.elements
 
     def get_brackets(self):
-        """Return the bracket mobjects.
+        r"""Return the bracket mobjects.
 
         Returns
         --------
@@ -462,7 +462,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
 
 
 class DecimalMatrix(Matrix):
-    """A mobject that displays a matrix with decimal entries on the screen.
+    r"""A mobject that displays a matrix with decimal entries on the screen.
 
     Examples
     --------
@@ -542,7 +542,7 @@ class IntegerMatrix(Matrix):
 
 
 class MobjectMatrix(Matrix):
-    """A mobject that displays a matrix of mobject entries on the screen.
+    r"""A mobject that displays a matrix of mobject entries on the screen.
 
     Examples
     --------

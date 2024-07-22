@@ -248,9 +248,7 @@ def rotation_matrix(
     axis: np.ndarray,
     homogeneous: bool = False,
 ) -> np.ndarray:
-    """
-    Rotation in R^3 about a specified axis of rotation.
-    """
+    """Rotation in R^3 about a specified axis of rotation."""
     inhomogeneous_rotation_matrix = Rotation.from_rotvec(
         angle * normalize(np.array(axis))
     ).as_matrix()

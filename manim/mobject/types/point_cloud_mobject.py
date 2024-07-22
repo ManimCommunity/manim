@@ -142,9 +142,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         return self
 
     def thin_out(self, factor=5):
-        """
-        Removes all but every nth point for n = factor
-        """
+        """Removes all but every nth point for n = factor"""
         for mob in self.family_members_with_points():
             num_points = self.get_num_points()
             mob.apply_over_attr_arrays(
@@ -153,9 +151,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         return self
 
     def sort_points(self, function=lambda p: p[0]):
-        """
-        Function is any map from R^3 to R
-        """
+        """Function is any map from R^3 to R"""
         for mob in self.family_members_with_points():
             indices = np.argsort(np.apply_along_axis(function, 1, mob.points))
             mob.apply_over_attr_arrays(lambda arr: arr[indices])

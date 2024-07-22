@@ -270,7 +270,7 @@ class Flash(AnimationGroup):
 
 
 class ShowPassingFlash(ShowPartial):
-    """Show only a sliver of the VMobject each frame.
+    r"""Show only a sliver of the VMobject each frame.
 
     Parameters
     ----------
@@ -551,7 +551,7 @@ class Wiggle(Animation):
 
 
 class Circumscribe(Succession):
-    """Draw a temporary line surrounding the mobject.
+    r"""Draw a temporary line surrounding the mobject.
 
     Parameters
     ----------

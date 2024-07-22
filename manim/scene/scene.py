@@ -1314,9 +1314,7 @@ class Scene:
         return True
 
     def interactive_embed(self):
-        """
-        Like embed(), but allows for screen interaction.
-        """
+        """Like embed(), but allows for screen interaction."""
         if not self.check_interactive_embed_is_valid():
             return
         self.interactive_mode = True
