@@ -842,7 +842,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
                 label_fill_color=label_fill_color,
                 vertex_type=vertex_type,
                 vertex_config=vertex_config[v],
-                vertex_mobject=vertex_mobjects.get(v, None),
+                vertex_mobject=vertex_mobjects.get(v),
             )
             for v in vertices
         ]
