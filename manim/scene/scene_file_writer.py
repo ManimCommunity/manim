@@ -751,7 +751,6 @@ class SceneFileWriter:
 
     def combine_to_section_videos(self) -> None:
         """Concatenate partial movie files for each section."""
-
         self.finish_last_section()
         sections_index: list[dict[str, Any]] = []
         for section in self.sections:

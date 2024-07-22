@@ -683,7 +683,6 @@ class Table(VGroup):
                         item.set_color(random_bright_color())
                     self.add(table)
         """
-
         return VGroup(*self.row_labels)
 
     def get_col_labels(self) -> VGroup:
@@ -712,7 +711,6 @@ class Table(VGroup):
                         item.set_color(random_bright_color())
                     self.add(table)
         """
-
         return VGroup(*self.col_labels)
 
     def get_labels(self) -> VGroup:

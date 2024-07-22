@@ -86,7 +86,6 @@ class ThreeDScene(Scene):
             The new center of the camera frame in cartesian coordinates.
 
         """
-
         if phi is not None:
             self.renderer.camera.set_phi(phi)
         if theta is not None:

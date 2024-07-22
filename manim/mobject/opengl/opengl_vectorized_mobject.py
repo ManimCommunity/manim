@@ -817,7 +817,6 @@ class OpenGLVMobject(OpenGLMobject):
         length : :class:`float`
             The length of the nth curve.
         """
-
         if sample_points is None:
             sample_points = 10
 
@@ -857,7 +856,6 @@ class OpenGLVMobject(OpenGLMobject):
         length : :class:`float`
             The length of the nth curve.
         """
-
         _, length = self.get_nth_curve_function_with_length(n, sample_points)
 
         return length
@@ -872,7 +870,6 @@ class OpenGLVMobject(OpenGLMobject):
         Iterable[Callable[[float], np.ndarray]]
             The functions for the curves.
         """
-
         num_curves = self.get_num_curves()
 
         for n in range(num_curves):
@@ -922,7 +919,6 @@ class OpenGLVMobject(OpenGLMobject):
         Iterable[Tuple[Callable[[float], np.ndarray], float]]
             The functions and lengths of the curves.
         """
-
         num_curves = self.get_num_curves()
 
         for n in range(num_curves):
@@ -948,7 +944,6 @@ class OpenGLVMobject(OpenGLMobject):
         :exc:`Exception`
             If the :class:`OpenGLVMobject` has no points.
         """
-
         if alpha < 0 or alpha > 1:
             raise ValueError(f"Alpha {alpha} not between 0 and 1.")
 
@@ -1103,7 +1098,6 @@ class OpenGLVMobject(OpenGLMobject):
         float
             The length of the :class:`OpenGLVMobject`.
         """
-
         return np.sum(
             length
             for _, length in self.get_curve_functions_with_lengths(

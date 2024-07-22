@@ -246,7 +246,8 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
 
     def get_tip(self):
         """Returns the TipableVMobject instance's (first) tip,
-        otherwise throws an exception."""
+        otherwise throws an exception.
+        """
         tips = self.get_tips()
         if len(tips) == 0:
             raise Exception("tip not found")
@@ -569,7 +570,6 @@ class Circle(Arc):
                     group = Group(group1, group2, group3).arrange(buff=1)
                     self.add(group)
         """
-
         # Ignores dim_to_match and stretch; result will always be a circle
         # TODO: Perhaps create an ellipse class to handle single-dimension stretching
 
@@ -609,7 +609,6 @@ class Circle(Arc):
                     self.add(circle, s1, s2)
 
         """
-
         start_angle = angle_of_vector(self.points[0] - self.get_center())
         proportion = (angle - start_angle) / TAU
         proportion -= np.floor(proportion)

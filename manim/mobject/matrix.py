@@ -241,7 +241,6 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         :class:`Matrix`
             The current matrix object (self).
         """
-
         # Height per row of LaTeX array with default settings
         BRACKET_HEIGHT = 0.5977
 
@@ -299,7 +298,6 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
                     m0.add(SurroundingRectangle(m0.get_columns()[1]))
                     self.add(m0)
         """
-
         return VGroup(
             *(
                 VGroup(*(row[i] for row in self.mob_matrix))

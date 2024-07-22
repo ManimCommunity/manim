@@ -187,7 +187,8 @@ class OpenGLTipableVMobject(OpenGLVMobject):
 
     def get_tip(self):
         """Returns the TipableVMobject instance's (first) tip,
-        otherwise throws an exception."""
+        otherwise throws an exception.
+        """
         tips = self.get_tips()
         if len(tips) == 0:
             raise Exception("tip not found")

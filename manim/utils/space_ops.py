@@ -193,7 +193,6 @@ def rotate_vector(
     ValueError
         If vector is not of dimension 2 or 3.
     """
-
     if len(vector) > 3:
         raise ValueError("Vector must have the correct dimensions.")
     if len(vector) == 2:
@@ -341,7 +340,6 @@ def angle_between_vectors(v1: np.ndarray, v2: np.ndarray) -> float:
     float
         The angle between the vectors.
     """
-
     return 2 * np.arctan2(
         np.linalg.norm(normalize(v1) - normalize(v2)),
         np.linalg.norm(normalize(v1) + normalize(v2)),
@@ -474,7 +472,6 @@ def regular_vertices(
     start_angle : :class:`float`
         The angle the vertices start at.
     """
-
     if start_angle is None:
         start_angle = 0 if n % 2 == 0 else TAU / 4
 
