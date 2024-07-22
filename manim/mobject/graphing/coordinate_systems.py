@@ -56,6 +56,8 @@ from manim.utils.simple_functions import binary_search
 from manim.utils.space_ops import angle_of_vector
 
 if TYPE_CHECKING:
+    import numpy.typing as npt
+
     from manim.mobject.mobject import Mobject
     from manim.typing import ManimFloat, Point2D, Point3D, Vector3D
 
@@ -1836,13 +1838,20 @@ class CoordinateSystem:
 
         return T_label_group
 
-    def __matmul__(self, coord: Point3D | Mobject):
+    _matmul_method = "coords_to_point"
+    _rmatmul_method = "point_to_coords"
+
+    def __matmul__(self, coord: Sequence[float] | Mobject | npt.NDArray[np.float64]):
         if isinstance(coord, Mobject):
             coord = coord.get_center()
-        return self.coords_to_point(*coord)
+        method = getattr(self, self._matmul_method)
+        assert callable(method)
+        return method(*coord)
 
     def __rmatmul__(self, point: Point3D):
-        return self.point_to_coords(point)
+        method = getattr(self, self._rmatmul_method)
+        assert callable(method)
+        return method(point)
 
 
 class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
@@ -2983,6 +2992,9 @@ class PolarPlane(Axes):
                 ).add_coordinates()
                 self.add(polarplane_pi)
     """
+
+    _matmul_method = "polar_to_point"
+    _rmatmul_method = "point_to_polar"
 
     def __init__(
         self,

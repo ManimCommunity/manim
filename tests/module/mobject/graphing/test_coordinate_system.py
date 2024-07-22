@@ -14,6 +14,7 @@ from manim import (
     Circle,
     ComplexPlane,
     Dot,
+    NumberLine,
     NumberPlane,
     PolarPlane,
     ThreeDAxes,
@@ -192,3 +193,22 @@ def test_input_to_graph_point():
     # test the line_graph implementation
     position = np.around(ax.input_to_graph_point(x=PI, graph=line_graph), decimals=4)
     np.testing.assert_array_equal(position, (2.6928, 1.2876, 0))
+
+
+def test_matmul_operations():
+    ax = Axes()
+    assert (ax @ (1, 2) == ax.coords_to_point(1, 2)).all()
+    # should work with mobjects too, using their center
+    mob = Dot().move_to((1, 2, 0))
+    assert (ax @ mob == ax.coords_to_point(1, 2)).all()
+
+    # other coordinate systems like PolarPlane should override __matmul__ indirectly
+    polar = PolarPlane()
+    # radius, azimuthal angle
+    assert (polar @ (1, 2) == polar.polar_to_point(1, 2)).all()
+
+    # Numberline doesn't inherit from CoordinateSystem, but it should still work
+    n = NumberLine()
+    assert (n @ 3 == n.number_to_point(3)).all()
+    mob = Dot().move_to(n @ 3)
+    assert mob @ n == n.point_to_number(mob.get_center())
