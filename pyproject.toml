@@ -67,7 +67,6 @@ flake8 = "^6.1.0"
 flake8-bugbear = "^23.11.28"
 flake8-builtins = "^2.2.0"
 flake8-comprehensions = "^3.7.0"
-flake8-docstrings = "^1.7.0"
 furo = "^2023.09.10"
 gitpython = "^3"
 isort = "^5.12.0"
@@ -133,6 +132,7 @@ fix = true
 
 [tool.ruff.lint]
 select = [
+  "D",
   "E",
   "F",
   "I",
@@ -142,6 +142,11 @@ select = [
 ]
 
 ignore = [
+  "D1",
+  "D203",
+  "D205",
+  "D212",
+  "D4",
   # due to the import * used in manim
   "F403",
   "F405",
@@ -150,6 +155,8 @@ ignore = [
   # Exception too broad (this would require lots of changes + re.escape) for little benefit
   "PT011",
   # as recommended by https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules
+  "D206",
+  "D300",
   "E111",
   "E114",
   "E117",
@@ -182,6 +189,9 @@ required-imports = ["from __future__ import annotations"]
 [tool.ruff.lint.flake8-pytest-style]
 fixture-parentheses = false
 mark-parentheses = false
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
 
 [tool.ruff.format]
 docstring-code-format = true
