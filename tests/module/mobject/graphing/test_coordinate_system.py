@@ -212,5 +212,27 @@ def test_matmul_operations():
     # Numberline doesn't inherit from CoordinateSystem, but it should still work
     n = NumberLine()
     assert (n @ 3 == n.number_to_point(3)).all()
-    mob = Dot().move_to(n @ 3)
-    assert mob @ n == n.point_to_number(mob.get_center())
+
+
+def test_rmatmul_operations():
+    point = (1, 2, 0)
+
+    ax = Axes()
+    assert (point @ ax == ax.point_to_coords(point)).all()
+
+    polar = PolarPlane()
+    assert point @ polar == polar.point_to_polar(point)
+
+    complx = ComplexPlane()
+    assert point @ complx == complx.point_to_number(point)
+
+    n = NumberLine()
+    point = n @ 4
+
+    assert (
+        tuple(point) @ n  # ndarray overrides __matmul__
+        == n.point_to_number(point)
+    ).all()
+
+    mob = Dot().move_to(point)
+    assert (mob @ n == n.point_to_number(mob.get_center())).all()

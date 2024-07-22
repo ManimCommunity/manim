@@ -1865,6 +1865,13 @@ class CoordinateSystem:
         )
 
     def __rmatmul__(self, point):
+        """Perform a point-to-coords action for a coordinate scene.
+
+        .. warning::
+
+            This will not work with NumPy arrays or other objects that
+            implement ``__matmul__``.
+        """
         method = getattr(self, self._rmatmul_config["method"])
         assert callable(method)
         return (
