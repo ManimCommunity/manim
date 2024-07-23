@@ -118,22 +118,22 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
 
         class MatrixExamples(Scene):
             def construct(self):
-                m0 = Matrix([[2, "\\pi"], [-1, 1]])
+                m0 = Matrix([[2, r"\pi"], [-1, 1]])
                 m1 = Matrix([[2, 0, 4], [-1, 1, 5]],
                     v_buff=1.3,
                     h_buff=0.8,
                     bracket_h_buff=SMALL_BUFF,
                     bracket_v_buff=SMALL_BUFF,
-                    left_bracket="\\{",
-                    right_bracket="\\}")
+                    left_bracket=r"\{",
+                    right_bracket=r"\}")
                 m1.add(SurroundingRectangle(m1.get_columns()[1]))
                 m2 = Matrix([[2, 1], [-1, 3]],
                     element_alignment_corner=UL,
                     left_bracket="(",
                     right_bracket=")")
                 m3 = Matrix([[2, 1], [-1, 3]],
-                    left_bracket="\\\\langle",
-                    right_bracket="\\\\rangle")
+                    left_bracket=r"\langle",
+                    right_bracket=r"\rangle")
                 m4 = Matrix([[2, 1], [-1, 3]],
                 ).set_column_colors(RED, GREEN)
                 m5 = Matrix([[2, 1], [-1, 3]],

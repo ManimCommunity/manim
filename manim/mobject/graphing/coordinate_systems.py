@@ -1072,7 +1072,7 @@ class CoordinateSystem:
                     sin = ax.plot(lambda x: np.sin(x), color=PURPLE_B)
                     label = ax.get_graph_label(
                         graph=sin,
-                        label= MathTex(r"\\frac{\\pi}{2}"),
+                        label= MathTex(r"\frac{\pi}{2}"),
                         x_val=PI / 2,
                         dot=True,
                         direction=UR,

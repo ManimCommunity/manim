@@ -290,7 +290,7 @@ class ShowPassingFlash(ShowPartial):
                 self.add(p, lbl)
                 p = p.copy().set_color(BLUE)
                 for time_width in [0.2, 0.5, 1, 2]:
-                    lbl.become(Tex(r"\\texttt{time\\_width={{%.1f}}}"%time_width))
+                    lbl.become(Tex(r"\texttt{time\_width={{%.1f}}}"%time_width))
                     self.play(ShowPassingFlash(
                         p.copy().set_color(BLUE),
                         run_time=2,
@@ -582,7 +582,7 @@ class Circumscribe(Succession):
 
         class UsingCircumscribe(Scene):
             def construct(self):
-                lbl = Tex(r"Circum-\\\\scribe").scale(2)
+                lbl = Tex(r"Circum-\\scribe").scale(2)
                 self.add(lbl)
                 self.play(Circumscribe(lbl))
                 self.play(Circumscribe(lbl, Circle))

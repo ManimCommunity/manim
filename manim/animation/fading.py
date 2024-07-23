@@ -119,7 +119,7 @@ class FadeIn(_Fade):
                 dot = Dot(UP * 2 + LEFT)
                 self.add(dot)
                 tex = Tex(
-                    "FadeIn with ", "shift ", " or target\\_position", " and scale"
+                    "FadeIn with ", "shift ", r" or target\_position", " and scale"
                 ).scale(1)
                 animations = [
                     FadeIn(tex[0]),
