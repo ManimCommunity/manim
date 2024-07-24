@@ -133,6 +133,8 @@ fix = true
 
 [tool.ruff.lint]
 select = [
+  "B",
+  "C4",
   "E",
   "F",
   "I",
@@ -142,6 +144,11 @@ select = [
 ]
 
 ignore = [
+  # mutable argument defaults (too many changes)
+  "B006",
+  # No function calls in defaults
+  # ignored because np.array() and straight_path()
+  "B008",
   # due to the import * used in manim
   "F403",
   "F405",
@@ -161,6 +168,8 @@ dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = [
+  # unused expression
+  "B018",
   # unused variable
   "F841",
   # from __future__ import annotations
