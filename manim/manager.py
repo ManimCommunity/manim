@@ -73,6 +73,9 @@ class Manager(Generic[Scene_co]):
         self.file_writer: FileWriterProtocol = self.create_file_writer()
         self._write_files = config.write_to_movie
 
+        # internal state
+        self._skipping = False
+
     # keep these as instance methods so subclasses
     # have access to everything
     def create_renderer(self) -> RendererProtocol:
@@ -165,7 +168,10 @@ class Manager(Generic[Scene_co]):
             self.scene.construct()
             return
         for section in self.scene.find_sections():
+            if section.skip:
+                self._skipping = True
             section()
+            self._skipping = False
             self.file_writer.next_section(
                 f"{self.scene}.{section.name}",
                 section.type_,
@@ -244,13 +250,16 @@ class Manager(Generic[Scene_co]):
             if self.window.is_closing:
                 raise EndSceneEarlyException()
 
-        self.render_state(write_to_file=write_to_file)
+        if not self._skipping:
+            self.render_state(write_to_file=write_to_file)
 
         if self.window is not None:
             self.window.swap_buffers()
             # This recursively updates the window with dt=0 until the correct
             # amount of time has passed
             # TODO: do ^ better with less overhead
+            if self._skipping:
+                return
             vt = self.time - self.virtual_animation_start_time
             rt = time.perf_counter() - self.real_animation_start_time
             if rt < vt:

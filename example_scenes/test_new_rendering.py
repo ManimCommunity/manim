@@ -11,7 +11,7 @@ class Test(Scene):
         self.play(Rotate(s, PI / 2))
         self.play(FadeOut(s))
 
-    @section
+    @section(skip=True)
     def three_mobjects(self) -> None:
         sq = RegularPolygon(6)
         c = Circle()
@@ -25,6 +25,10 @@ class Test(Scene):
             )
         )
         self.play(FadeOut(VGroup(sq, c, st)))
+
+    @section(skip=True)
+    def never_run(self) -> None:
+        self.play(Write(Text("This should never be run")))
 
 
 if __name__ == "__main__":
