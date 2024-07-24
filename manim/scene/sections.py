@@ -38,13 +38,13 @@ class SceneSection(Generic[P, T]):
 
 @overload
 def section(
-    func: Callable[P, T], *, skip: None = None, type_: str | None = None
+    func: Callable[P, T], *, skip: bool = False, type_: str | None = None
 ) -> SceneSection[P, T]: ...
 
 
 @overload
 def section(
-    func: None = None, *, skip: bool, type_: str | None = None
+    func: None = None, *, skip: bool = False, type_: str | None = None
 ) -> Callable[[Callable[P, T]], SceneSection[P, T]]: ...
 
 
