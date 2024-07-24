@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Generic, ParamSpec, TypeVar, overload
+from collections.abc import Callable
+from functools import partialmethod
+from typing import Generic, ParamSpec, TypeVar, cast, overload
 
 from manim.file_writer.sections import DefaultSectionType
-
-if TYPE_CHECKING:
-    from collections.abc import Callable
 
 __all__ = ["section"]
 
@@ -56,25 +55,14 @@ def section(
 ) -> SceneSection[P, T] | Callable[[Callable[P, T]], SceneSection[P, T]]:
     """Decorator to create a section in the scene."""
     if func is not None:
-        s = SceneSection(
+        section._section_order += 1  # type: ignore
+        return SceneSection(
             func,
             order=section._section_order,  # type: ignore
             type_=type_ or DefaultSectionType.NORMAL,
         )
-        section._section_order += 1  # type: ignore
-        return s
 
-    def wrapper(func: Callable[P, T]) -> SceneSection[P, T]:
-        s = SceneSection(
-            func,
-            order=section._section_order,  # type: ignore
-            skip=skip,
-            type_=type_ or DefaultSectionType.NORMAL,
-        )
-        section._section_order += 1  # type: ignore
-        return s
-
-    return wrapper
+    return cast(Callable, partialmethod(section, skip=skip, type_=type_))
 
 
 section._section_order = 0  # type: ignore
