@@ -47,11 +47,11 @@ import colorsys
 import random
 import re
 from collections.abc import Sequence
-from typing import Any, TypeVar, Union, overload, override
+from typing import Any, TypeVar, Union, overload
 
 import numpy as np
 import numpy.typing as npt
-from typing_extensions import Self, TypeAlias
+from typing_extensions import Self, TypeAlias, override
 
 from manim.typing import (
     HSL_Array_Float,
