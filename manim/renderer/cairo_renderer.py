@@ -15,10 +15,13 @@ from ..utils.iterables import list_update
 
 if typing.TYPE_CHECKING:
     import types
-    from typing import Any, Iterable
+    from collections.abc import Iterable
+    from typing import Any
 
     from manim.animation.animation import Animation
     from manim.scene.scene import Scene
+
+__all__ = ["CairoRenderer"]
 
 
 class CairoRenderer:
@@ -184,8 +187,7 @@ class CairoRenderer:
         if self.skip_animations:
             return
         self.time += num_frames * dt
-        for _ in range(num_frames):
-            self.file_writer.write_frame(frame)
+        self.file_writer.write_frame(frame, num_frames=num_frames)
 
     def freeze_current_frame(self, duration: float):
         """Adds a static frame to the movie for a given duration. The static frame is the current frame.

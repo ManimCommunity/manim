@@ -1,18 +1,19 @@
 """Helpers functions for devs to set up new graphical-units data."""
 
-
 from __future__ import annotations
 
+import logging
 import tempfile
 from pathlib import Path
 
 import numpy as np
 
-from manim import config, logger
 from manim.scene.scene import Scene
 
+logger = logging.getLogger("manim")
 
-def set_test_scene(scene_object: type[Scene], module_name: str):
+
+def set_test_scene(scene_object: type[Scene], module_name: str, config):
     """Function used to set up the test data for a new feature. This will basically set up a pre-rendered frame for a scene. This is meant to be used only
     when setting up tests. Please refer to the wiki.
 
@@ -47,7 +48,7 @@ def set_test_scene(scene_object: type[Scene], module_name: str):
 
     assert not np.all(
         data == np.array([0, 0, 0, 255]),
-    ), f"Control data generated for {str(scene)} only contains empty pixels."
+    ), f"Control data generated for {scene!s} only contains empty pixels."
     assert data.shape == (480, 854, 4)
     tests_directory = Path(__file__).absolute().parent.parent
     path_control_data = Path(tests_directory) / "control_data" / "graphical_units_data"

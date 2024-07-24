@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import numpy as np
 from pathops import Path as SkiaPath
 from pathops import PathVerb, difference, intersection, union, xor
@@ -9,7 +11,9 @@ from pathops import PathVerb, difference, intersection, union, xor
 from manim import config
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VMobject
-from manim.typing import Point2D_Array
+
+if TYPE_CHECKING:
+    from manim.typing import Point2D_Array, Point3D_Array
 
 from ...constants import RendererType
 
@@ -26,21 +30,21 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
         self,
         points: Point2D_Array,
         z_dim: float = 0.0,
-    ) -> list[np.ndarray]:
-        """Converts an iterable with coordinates in 2d to 3d by adding
-        :attr:`z_dim` as the z coordinate.
+    ) -> Point3D_Array:
+        """Converts an iterable with coordinates in 2D to 3D by adding
+        :attr:`z_dim` as the Z coordinate.
 
         Parameters
         ----------
         points:
-            An iterable which has the coordinates.
+            An iterable of points.
         z_dim:
-            The default value of z coordinate.
+            Default value for the Z coordinate.
 
         Returns
         -------
-        Point2D_Array
-            A list of array converted to 3d.
+        Point3D_Array
+            A list of the points converted to 3D.
 
         Example
         -------
@@ -66,7 +70,7 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
 
         Returns
         -------
-        SkiaPath:
+        SkiaPath
             The converted path.
         """
         path = SkiaPath()
@@ -138,7 +142,7 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
                 n1, n2 = self._convert_2d_to_3d_array(points)
                 vmobject.add_quadratic_bezier_curve_to(n1, n2)
             else:
-                raise Exception("Unsupported: %s" % path_verb)
+                raise Exception(f"Unsupported: {path_verb}")
         return vmobject
 
 

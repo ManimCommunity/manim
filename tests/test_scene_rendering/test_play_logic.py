@@ -5,8 +5,14 @@ from unittest.mock import Mock
 
 import pytest
 
-from manim import *
-from manim import config
+from manim import (
+    Dot,
+    Mobject,
+    Scene,
+    ValueTracker,
+    Wait,
+    np,
+)
 
 from .simple_scenes import (
     SceneForFrozenFrameTests,
@@ -18,12 +24,8 @@ from .simple_scenes import (
 )
 
 
-@pytest.mark.skipif(
-    sys.version_info < (3, 8),
-    reason="Mock object has a different implementation in python 3.7, which makes it broken with this logic.",
-)
 @pytest.mark.parametrize("frame_rate", argvalues=[15, 30, 60])
-def test_t_values(using_temp_config, disabling_caching, frame_rate):
+def test_t_values(config, using_temp_config, disabling_caching, frame_rate):
     """Test that the framerate corresponds to the number of t values generated"""
     config.frame_rate = frame_rate
     scene = SquareToCircle()
@@ -110,7 +112,7 @@ def test_t_values_with_cached_data(using_temp_config):
     assert scene.update_to_time.call_count == 10
 
 
-def test_t_values_save_last_frame(using_temp_config):
+def test_t_values_save_last_frame(config, using_temp_config):
     """Test that there is only one t value handled when only saving the last frame"""
     config.save_last_frame = True
     scene = SquareToCircle()

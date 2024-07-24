@@ -5,12 +5,11 @@ from __future__ import annotations
 __all__ = ["SceneFileWriter"]
 
 import json
-import os
 import shutil
-import subprocess
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+import av
 import numpy as np
 import srt
 from PIL import Image
@@ -24,11 +23,9 @@ from ..constants import RendererType
 from ..utils.file_ops import (
     add_extension_if_not_present,
     add_version_before_extension,
-    ensure_executable,
     guarantee_existence,
     is_gif_format,
     is_png_format,
-    is_webm_format,
     modify_atime,
     write_to_movie,
 )
@@ -83,14 +80,6 @@ class SceneFileWriter:
         self.next_section(
             name="autocreated", type=DefaultSectionType.NORMAL, skip_animations=False
         )
-        # fail fast if ffmpeg is not found
-        if not ensure_executable(Path(config.ffmpeg_executable)):
-            raise RuntimeError(
-                "Manim could not find ffmpeg, which is required for generating video output.\n"
-                "For installing ffmpeg please consult https://docs.manim.community/en/stable/installation.html\n"
-                "Make sure to either add ffmpeg to the PATH environment variable\n"
-                "or set path to the ffmpeg executable under the ffmpeg header in Manim's configuration."
-            )
 
     def init_output_directories(self, scene_name):
         """Initialise output directories.
@@ -105,10 +94,7 @@ class SceneFileWriter:
         if config["dry_run"]:  # in dry-run mode there is no output
             return
 
-        if config["input_file"]:
-            module_name = config.get_dir("input_file").stem
-        else:
-            module_name = ""
+        module_name = config.get_dir("input_file").stem if config["input_file"] else ""
 
         if SceneFileWriter.force_output_as_scene_name:
             self.output_name = Path(scene_name)
@@ -137,7 +123,7 @@ class SceneFileWriter:
                 self.output_name, config["movie_file_extension"]
             )
 
-            # TODO: /dev/null would be good in case sections_output_dir is used without bein set (doesn't work on Windows), everyone likes defensive programming, right?
+            # TODO: /dev/null would be good in case sections_output_dir is used without being set (doesn't work on Windows), everyone likes defensive programming, right?
             self.sections_output_dir = Path("")
             if config.save_sections:
                 self.sections_output_dir = guarantee_existence(
@@ -358,7 +344,7 @@ class SceneFileWriter:
             Whether or not to write to a video file.
         """
         if write_to_movie() and allow_write:
-            self.open_movie_pipe(file_path=file_path)
+            self.open_partial_movie_stream(file_path=file_path)
 
     def end_animation(self, allow_write: bool = False):
         """
@@ -371,9 +357,11 @@ class SceneFileWriter:
             Whether or not to write to a video file.
         """
         if write_to_movie() and allow_write:
-            self.close_movie_pipe()
+            self.close_partial_movie_stream()
 
-    def write_frame(self, frame_or_renderer: np.ndarray | OpenGLRenderer):
+    def write_frame(
+        self, frame_or_renderer: np.ndarray | OpenGLRenderer, num_frames: int = 1
+    ):
         """
         Used internally by Manim to write a frame to
         the FFMPEG input buffer.
@@ -382,40 +370,40 @@ class SceneFileWriter:
         ----------
         frame_or_renderer
             Pixel array of the frame.
+        num_frames
+            The number of times to write frame.
         """
-        if config.renderer == RendererType.OPENGL:
-            self.write_opengl_frame(frame_or_renderer)
-        elif config.renderer == RendererType.CAIRO:
-            frame = frame_or_renderer
-            if write_to_movie():
-                self.writing_process.stdin.write(frame.tobytes())
-            if is_png_format() and not config["dry_run"]:
-                self.output_image_from_array(frame)
-
-    def write_opengl_frame(self, renderer: OpenGLRenderer):
         if write_to_movie():
-            self.writing_process.stdin.write(
-                renderer.get_raw_frame_buffer_object_data(),
+            frame: np.ndarray = (
+                frame_or_renderer.get_frame()
+                if config.renderer == RendererType.OPENGL
+                else frame_or_renderer
             )
-        elif is_png_format() and not config["dry_run"]:
+            for _ in range(num_frames):
+                # Notes: precomputing reusing packets does not work!
+                # I.e., you cannot do `packets = encode(...)`
+                # and reuse it, as it seems that `mux(...)`
+                # consumes the packet.
+                # The same issue applies for `av_frame`,
+                # reusing it renders weird-looking frames.
+                av_frame = av.VideoFrame.from_ndarray(frame, format="rgba")
+                for packet in self.video_stream.encode(av_frame):
+                    self.video_container.mux(packet)
+
+        if is_png_format() and not config["dry_run"]:
+            image: Image = (
+                frame_or_renderer.get_image()
+                if config.renderer == RendererType.OPENGL
+                else Image.fromarray(frame_or_renderer)
+            )
             target_dir = self.image_file_path.parent / self.image_file_path.stem
             extension = self.image_file_path.suffix
             self.output_image(
-                renderer.get_image(),
+                image,
                 target_dir,
                 extension,
                 config["zero_pad"],
             )
-
-    def output_image_from_array(self, frame_data):
-        target_dir = self.image_file_path.parent / self.image_file_path.stem
-        extension = self.image_file_path.suffix
-        self.output_image(
-            Image.fromarray(frame_data),
-            target_dir,
-            extension,
-            config["zero_pad"],
-        )
 
     def output_image(self, image: Image.Image, target_dir, ext, zero_pad: bool):
         if zero_pad:
@@ -467,11 +455,11 @@ class SceneFileWriter:
         if self.subcaptions:
             self.write_subcaption_file()
 
-    def open_movie_pipe(self, file_path=None):
-        """
-        Used internally by Manim to initialise
-        FFMPEG and begin writing to FFMPEG's input
-        buffer.
+    def open_partial_movie_stream(self, file_path=None):
+        """Open a container holding a video stream.
+
+        This is used internally by Manim initialize the container holding
+        the video stream of a partial movie file.
         """
         if file_path is None:
             file_path = self.partial_movie_files[self.renderer.num_plays]
@@ -480,49 +468,48 @@ class SceneFileWriter:
         fps = config["frame_rate"]
         if fps == int(fps):  # fps is integer
             fps = int(fps)
-        if config.renderer == RendererType.OPENGL:
-            width, height = self.renderer.get_pixel_shape()
-        else:
-            height = config["pixel_height"]
-            width = config["pixel_width"]
 
-        command = [
-            config.ffmpeg_executable,
-            "-y",  # overwrite output file if it exists
-            "-f",
-            "rawvideo",
-            "-s",
-            "%dx%d" % (width, height),  # size of one frame
-            "-pix_fmt",
-            "rgba",
-            "-r",
-            str(fps),  # frames per second
-            "-i",
-            "-",  # The input comes from a pipe
-            "-an",  # Tells FFMPEG not to expect any audio
-            "-loglevel",
-            config["ffmpeg_loglevel"].lower(),
-            "-metadata",
-            f"comment=Rendered with Manim Community v{__version__}",
-        ]
-        if config.renderer == RendererType.OPENGL:
-            command += ["-vf", "vflip"]
-        if is_webm_format():
-            command += ["-vcodec", "libvpx-vp9", "-auto-alt-ref", "0"]
-        # .mov format
-        elif config["transparent"]:
-            command += ["-vcodec", "qtrle"]
-        else:
-            command += ["-vcodec", "libx264", "-pix_fmt", "yuv420p"]
-        command += [file_path]
-        self.writing_process = subprocess.Popen(command, stdin=subprocess.PIPE)
+        partial_movie_file_codec = "libx264"
+        partial_movie_file_pix_fmt = "yuv420p"
+        av_options = {
+            "an": "1",  # ffmpeg: -an, no audio
+            "crf": "23",  # ffmpeg: -crf, constant rate factor (improved bitrate)
+        }
 
-    def close_movie_pipe(self):
+        if config.format == "webm":
+            partial_movie_file_codec = "libvpx-vp9"
+            av_options["-auto-alt-ref"] = "1"
+            if config.transparent:
+                partial_movie_file_pix_fmt = "yuva420p"
+
+        elif config.transparent:
+            partial_movie_file_codec = "qtrle"
+            partial_movie_file_pix_fmt = "argb"
+
+        with av.open(file_path, mode="w") as video_container:
+            stream = video_container.add_stream(
+                partial_movie_file_codec,
+                rate=config.frame_rate,
+                options=av_options,
+            )
+            stream.pix_fmt = partial_movie_file_pix_fmt
+            stream.width = config.pixel_width
+            stream.height = config.pixel_height
+
+            self.video_container = video_container
+            self.video_stream = stream
+
+    def close_partial_movie_stream(self):
+        """Close the currently opened video container.
+
+        Used internally by Manim to first flush the remaining packages
+        in the video stream holding a partial file, and then close
+        the corresponding container.
         """
-        Used internally by Manim to gracefully stop writing to FFMPEG's input buffer
-        """
-        self.writing_process.stdin.close()
-        self.writing_process.wait()
+        for packet in self.video_stream.encode():
+            self.video_container.mux(packet)
+
+        self.video_container.close()
 
         logger.info(
             f"Animation {self.renderer.num_plays} : Partial movie file written in %(path)s",
@@ -567,37 +554,92 @@ class SceneFileWriter:
             for pf_path in input_files:
                 pf_path = Path(pf_path).as_posix()
                 fp.write(f"file 'file:{pf_path}'\n")
-        commands = [
-            config.ffmpeg_executable,
-            "-y",  # overwrite output file if it exists
-            "-f",
-            "concat",
-            "-safe",
-            "0",
-            "-i",
-            str(file_list),
-            "-loglevel",
-            config.ffmpeg_loglevel.lower(),
-            "-metadata",
-            f"comment=Rendered with Manim Community v{__version__}",
-            "-nostdin",
-        ]
 
-        if create_gif:
-            commands += [
-                "-vf",
-                f"fps={np.clip(config['frame_rate'], 1, 50)},split[s0][s1];[s0]palettegen=stats_mode=diff[p];[s1][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle",
-            ]
-        else:
-            commands += ["-c", "copy"]
+        av_options = {
+            "safe": "0",  # needed to read files
+        }
 
         if not includes_sound:
-            commands += ["-an"]
+            av_options["an"] = "1"
 
-        commands += [str(output_file)]
+        partial_movies_input = av.open(
+            str(file_list), options=av_options, format="concat"
+        )
+        partial_movies_stream = partial_movies_input.streams.video[0]
+        output_container = av.open(str(output_file), mode="w")
+        output_container.metadata["comment"] = (
+            f"Rendered with Manim Community v{__version__}"
+        )
+        output_stream = output_container.add_stream(
+            codec_name="gif" if create_gif else None,
+            template=partial_movies_stream if not create_gif else None,
+        )
+        if config.transparent and config.format == "webm":
+            output_stream.pix_fmt = "yuva420p"
+        if create_gif:
+            """
+            The following solution was largely inspired from this comment
+            https://github.com/imageio/imageio/issues/995#issuecomment-1580533018,
+            and the following code
+            https://github.com/imageio/imageio/blob/65d79140018bb7c64c0692ea72cb4093e8d632a0/imageio/plugins/pyav.py#L927-L996.
+            """
+            output_stream.pix_fmt = "rgb8"
+            if config.transparent:
+                output_stream.pix_fmt = "pal8"
+            output_stream.width = config.pixel_width
+            output_stream.height = config.pixel_height
+            output_stream.rate = config.frame_rate
+            graph = av.filter.Graph()
+            input_buffer = graph.add_buffer(template=partial_movies_stream)
+            split = graph.add("split")
+            palettegen = graph.add("palettegen", "stats_mode=diff")
+            paletteuse = graph.add(
+                "paletteuse", "dither=bayer:bayer_scale=5:diff_mode=rectangle"
+            )
+            output_sink = graph.add("buffersink")
 
-        combine_process = subprocess.Popen(commands)
-        combine_process.wait()
+            input_buffer.link_to(split)
+            split.link_to(palettegen, 0, 0)  # 1st input of split -> input of palettegen
+            split.link_to(paletteuse, 1, 0)  # 2nd output of split -> 1st input
+            palettegen.link_to(paletteuse, 0, 1)  # output of palettegen -> 2nd input
+            paletteuse.link_to(output_sink)
+
+            graph.configure()
+
+            for frame in partial_movies_input.decode(video=0):
+                graph.push(frame)
+
+            graph.push(None)  # EOF: https://github.com/PyAV-Org/PyAV/issues/886.
+
+            frames_written = 0
+            while True:
+                try:
+                    frame = graph.pull()
+                    frame.time_base = output_stream.codec_context.time_base
+                    frame.pts = frames_written
+                    frames_written += 1
+                    output_container.mux(output_stream.encode(frame))
+                except av.error.EOFError:
+                    break
+
+            for packet in output_stream.encode():
+                output_container.mux(packet)
+
+        else:
+            for packet in partial_movies_input.demux(partial_movies_stream):
+                # We need to skip the "flushing" packets that `demux` generates.
+                if packet.dts is None:
+                    continue
+
+                packet.dts = None  # This seems to be needed, as dts from consecutive
+                # files may not be monotically increasing, so we let libav compute it.
+
+                # We need to assign the packet to the new stream.
+                packet.stream = output_stream
+                output_container.mux(packet)
+
+        partial_movies_input.close()
+        output_container.close()
 
     def combine_to_movie(self):
         """Used internally by Manim to combine the separate
@@ -614,6 +656,10 @@ class SceneFileWriter:
         movie_file_path = self.movie_file_path
         if is_gif_format():
             movie_file_path = self.gif_file_path
+        if len(partial_movie_files) == 0:  # Prevent calling concat on empty list
+            logger.info("No animations are contained in this scene.")
+            return
+
         logger.info("Combining to Movie file.")
         self.combine_files(
             partial_movie_files,
@@ -623,44 +669,77 @@ class SceneFileWriter:
         )
 
         # handle sound
-        if self.includes_sound:
+        if self.includes_sound and config.format != "gif":
             sound_file_path = movie_file_path.with_suffix(".wav")
             # Makes sure sound file length will match video file
             self.add_audio_segment(AudioSegment.silent(0))
             self.audio_segment.export(
                 sound_file_path,
+                format="wav",
                 bitrate="312k",
             )
+            # Audio added to a VP9 encoded (webm) video file needs
+            # to be encoded as vorbis or opus. Directly exporting
+            # self.audio_segment with such a codec works in principle,
+            # but tries to call ffmpeg via its CLI -- which we want
+            # to avoid. This is why we need to do the conversion
+            # manually.
+            if config.format == "webm":
+                with (
+                    av.open(sound_file_path) as wav_audio,
+                    av.open(sound_file_path.with_suffix(".ogg"), "w") as opus_audio,
+                ):
+                    wav_audio_stream = wav_audio.streams.audio[0]
+                    opus_audio_stream = opus_audio.add_stream("libvorbis")
+                    for frame in wav_audio.decode(wav_audio_stream):
+                        for packet in opus_audio_stream.encode(frame):
+                            opus_audio.mux(packet)
+
+                    for packet in opus_audio_stream.encode():
+                        opus_audio.mux(packet)
+
+                sound_file_path = sound_file_path.with_suffix(".ogg")
+
             temp_file_path = movie_file_path.with_name(
                 f"{movie_file_path.stem}_temp{movie_file_path.suffix}"
             )
-            commands = [
-                config.ffmpeg_executable,
-                "-i",
-                str(movie_file_path),
-                "-i",
-                str(sound_file_path),
-                "-y",  # overwrite output file if it exists
-                "-c:v",
-                "copy",
-                "-c:a",
-                "aac",
-                "-b:a",
-                "320k",
-                # select video stream from first file
-                "-map",
-                "0:v:0",
-                # select audio stream from second file
-                "-map",
-                "1:a:0",
-                "-loglevel",
-                config.ffmpeg_loglevel.lower(),
-                "-metadata",
-                f"comment=Rendered with Manim Community v{__version__}",
-                # "-shortest",
-                str(temp_file_path),
-            ]
-            subprocess.call(commands)
+            av_options = {
+                "shortest": "1",
+                "metadata": f"comment=Rendered with Manim Community v{__version__}",
+            }
+
+            with (
+                av.open(movie_file_path) as video_input,
+                av.open(sound_file_path) as audio_input,
+            ):
+                video_stream = video_input.streams.video[0]
+                audio_stream = audio_input.streams.audio[0]
+                output_container = av.open(
+                    str(temp_file_path), mode="w", options=av_options
+                )
+                output_video_stream = output_container.add_stream(template=video_stream)
+                output_audio_stream = output_container.add_stream(template=audio_stream)
+
+                for packet in video_input.demux(video_stream):
+                    # We need to skip the "flushing" packets that `demux` generates.
+                    if packet.dts is None:
+                        continue
+
+                    # We need to assign the packet to the new stream.
+                    packet.stream = output_video_stream
+                    output_container.mux(packet)
+
+                for packet in audio_input.demux(audio_stream):
+                    # We need to skip the "flushing" packets that `demux` generates.
+                    if packet.dts is None:
+                        continue
+
+                    # We need to assign the packet to the new stream.
+                    packet.stream = output_audio_stream
+                    output_container.mux(packet)
+
+                output_container.close()
+
             shutil.move(str(temp_file_path), str(movie_file_path))
             sound_file_path.unlink()
 
@@ -725,6 +804,8 @@ class SceneFileWriter:
 
     def write_subcaption_file(self):
         """Writes the subcaption file."""
+        if config.output_file is None:
+            return
         subcaption_file = Path(config.output_file).with_suffix(".srt")
         subcaption_file.write_text(srt.compose(self.subcaptions), encoding="utf-8")
         logger.info(f"Subcaption file has been written as {subcaption_file}")

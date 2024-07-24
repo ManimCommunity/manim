@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import importlib.util
 import inspect
-import os
 import re
 import sys
 import types
@@ -11,6 +10,8 @@ from pathlib import Path
 
 from .. import config, console, constants, logger
 from ..scene.scene_file_writer import SceneFileWriter
+
+__all__ = ["scene_classes_from_file"]
 
 
 def get_module(file_name: Path):

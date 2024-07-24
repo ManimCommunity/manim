@@ -4,7 +4,8 @@ from __future__ import annotations
 
 __all__ = ["Brace", "BraceLabel", "ArcBrace", "BraceText", "BraceBetweenPoints"]
 
-from typing import Sequence
+from collections.abc import Sequence
+from typing import TYPE_CHECKING
 
 import numpy as np
 import svgelements as se
@@ -23,6 +24,12 @@ from ...constants import *
 from ...mobject.types.vectorized_mobject import VMobject
 from ...utils.color import BLACK
 from ..svg.svg_mobject import VMobjectFromSVGPath
+
+if TYPE_CHECKING:
+    from manim.typing import Point3D, Vector3D
+    from manim.utils.color.core import ParsableManimColor
+
+__all__ = ["Brace", "BraceBetweenPoints", "BraceLabel", "ArcBrace"]
 
 
 class Brace(VMobjectFromSVGPath):
@@ -63,13 +70,13 @@ class Brace(VMobjectFromSVGPath):
     def __init__(
         self,
         mobject: Mobject,
-        direction: Sequence[float] | None = DOWN,
-        buff=0.2,
-        sharpness=2,
-        stroke_width=0,
-        fill_opacity=1.0,
-        background_stroke_width=0,
-        background_stroke_color=BLACK,
+        direction: Vector3D | None = DOWN,
+        buff: float = 0.2,
+        sharpness: float = 2,
+        stroke_width: float = 0,
+        fill_opacity: float = 1.0,
+        background_stroke_width: float = 0,
+        background_stroke_color: ParsableManimColor = BLACK,
         **kwargs,
     ):
         path_string_template = (
@@ -123,7 +130,20 @@ class Brace(VMobjectFromSVGPath):
         for mob in mobject, self:
             mob.rotate(angle, about_point=ORIGIN)
 
-    def put_at_tip(self, mob, use_next_to=True, **kwargs):
+    def put_at_tip(self, mob: Mobject, use_next_to: bool = True, **kwargs):
+        """Puts the given mobject at the brace tip.
+
+        Parameters
+        ----------
+        mob
+            The mobject to be placed at the tip.
+        use_next_to
+            If true, then :meth:`next_to` is used to place the mobject at the
+            tip.
+        kwargs
+            Any additional keyword arguments are passed to :meth:`next_to` which
+            is used to put the mobject next to the brace tip.
+        """
         if use_next_to:
             mob.next_to(self.get_tip(), np.round(self.get_direction()), **kwargs)
         else:
@@ -134,16 +154,45 @@ class Brace(VMobjectFromSVGPath):
         return self
 
     def get_text(self, *text, **kwargs):
+        """Places the text at the brace tip.
+
+        Parameters
+        ----------
+        text
+            The text to be placed at the brace tip.
+        kwargs
+            Any additional keyword arguments are passed to :meth:`.put_at_tip` which
+            is used to position the text at the brace tip.
+
+        Returns
+        -------
+        :class:`~.Tex`
+        """
         text_mob = Tex(*text)
         self.put_at_tip(text_mob, **kwargs)
         return text_mob
 
     def get_tex(self, *tex, **kwargs):
+        """Places the tex at the brace tip.
+
+        Parameters
+        ----------
+        tex
+            The tex to be placed at the brace tip.
+        kwargs
+            Any further keyword arguments are passed to :meth:`.put_at_tip` which
+            is used to position the tex at the brace tip.
+
+        Returns
+        -------
+        :class:`~.MathTex`
+        """
         tex_mob = MathTex(*tex)
         self.put_at_tip(tex_mob, **kwargs)
         return tex_mob
 
     def get_tip(self):
+        """Returns the point at the brace tip."""
         # Returns the position of the seventh point in the path, which is the tip.
         if config["renderer"] == "opengl":
             return self.points[34]
@@ -151,6 +200,7 @@ class Brace(VMobjectFromSVGPath):
         return self.points[28]  # = 7*4
 
     def get_direction(self):
+        """Returns the direction from the center to the brace tip."""
         vect = self.get_tip() - self.get_center()
         return vect / np.linalg.norm(vect)
 
@@ -267,9 +317,9 @@ class BraceBetweenPoints(Brace):
 
     def __init__(
         self,
-        point_1: Sequence[float] | None,
-        point_2: Sequence[float] | None,
-        direction: Sequence[float] | None = ORIGIN,
+        point_1: Point3D | None,
+        point_2: Point3D | None,
+        direction: Vector3D | None = ORIGIN,
         **kwargs,
     ):
         if all(direction == ORIGIN):

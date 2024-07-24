@@ -17,7 +17,6 @@ __all__ = [
 from typing import TYPE_CHECKING
 
 import numpy as np
-from typing_extensions import Self
 
 from manim import config
 from manim.constants import *
@@ -31,7 +30,9 @@ from manim.utils.color import WHITE
 from manim.utils.space_ops import angle_of_vector, line_intersection, normalize
 
 if TYPE_CHECKING:
-    from manim.typing import Point2D, Point3D, Vector
+    from typing_extensions import Self
+
+    from manim.typing import Point2D, Point3D, Vector3D
     from manim.utils.color import ParsableManimColor
 
     from ..matrix import Matrix  # Avoid circular import
@@ -40,8 +41,8 @@ if TYPE_CHECKING:
 class Line(TipableVMobject):
     def __init__(
         self,
-        start: Point3D = LEFT,
-        end: Point3D = RIGHT,
+        start: Point3D | Mobject = LEFT,
+        end: Point3D | Mobject = RIGHT,
         buff: float = 0,
         path_arc: float | None = None,
         **kwargs,
@@ -62,16 +63,32 @@ class Line(TipableVMobject):
 
     def set_points_by_ends(
         self,
-        start: Point3D,
-        end: Point3D,
+        start: Point3D | Mobject,
+        end: Point3D | Mobject,
         buff: float = 0,
         path_arc: float = 0,
     ) -> None:
+        """Sets the points of the line based on its start and end points.
+        Unlike :meth:`put_start_and_end_on`, this method respects `self.buff` and
+        Mobject bounding boxes.
+
+        Parameters
+        ----------
+        start
+            The start point or Mobject of the line.
+        end
+            The end point or Mobject of the line.
+        buff
+            The empty space between the start and end of the line, by default 0.
+        path_arc
+            The angle of a circle spanned by this arc, by default 0 which is a straight line.
+        """
+        self._set_start_and_end_attrs(start, end)
         if path_arc:
             arc = ArcBetweenPoints(self.start, self.end, angle=self.path_arc)
             self.set_points(arc.points)
         else:
-            self.set_points_as_corners([start, end])
+            self.set_points_as_corners([self.start, self.end])
 
         self._account_for_buff(buff)
 
@@ -81,10 +98,7 @@ class Line(TipableVMobject):
         if buff == 0:
             return
         #
-        if self.path_arc == 0:
-            length = self.get_length()
-        else:
-            length = self.get_arc_length()
+        length = self.get_length() if self.path_arc == 0 else self.get_arc_length()
         #
         if length < 2 * buff:
             return
@@ -92,7 +106,9 @@ class Line(TipableVMobject):
         self.pointwise_become_partial(self, buff_proportion, 1 - buff_proportion)
         return self
 
-    def _set_start_and_end_attrs(self, start: Point3D, end: Point3D) -> None:
+    def _set_start_and_end_attrs(
+        self, start: Point3D | Mobject, end: Point3D | Mobject
+    ) -> None:
         # If either start or end are Mobjects, this
         # gives their centers
         rough_start = self._pointify(start)
@@ -107,7 +123,7 @@ class Line(TipableVMobject):
     def _pointify(
         self,
         mob_or_point: Mobject | Point3D,
-        direction: Vector | None = None,
+        direction: Vector3D | None = None,
     ) -> Point3D:
         """Transforms a mobject into its corresponding point. Does nothing if a point is passed.
 
@@ -163,16 +179,16 @@ class Line(TipableVMobject):
             self.generate_points()
         return super().put_start_and_end_on(start, end)
 
-    def get_vector(self) -> Vector:
+    def get_vector(self) -> Vector3D:
         return self.get_end() - self.get_start()
 
-    def get_unit_vector(self) -> Vector:
+    def get_unit_vector(self) -> Vector3D:
         return normalize(self.get_vector())
 
     def get_angle(self) -> float:
         return angle_of_vector(self.get_vector())
 
-    def get_projection(self, point: Point3D) -> Vector:
+    def get_projection(self, point: Point3D) -> Vector3D:
         """Returns the projection of a point onto a line.
 
         Parameters
@@ -579,7 +595,7 @@ class Arrow(Line):
             self.add_tip(tip=old_tips[1], at_start=True)
         return self
 
-    def get_normal_vector(self) -> Vector:
+    def get_normal_vector(self) -> Vector3D:
         """Returns the normal of a vector.
 
         Examples
@@ -632,6 +648,11 @@ class Arrow(Line):
 class Vector(Arrow):
     """A vector specialized for use in graphs.
 
+    .. caution::
+        Do not confuse with the :class:`~.Vector2D`,
+        :class:`~.Vector3D` or :class:`~.VectorND` type aliases,
+        which are not Mobjects!
+
     Parameters
     ----------
     direction
@@ -654,7 +675,9 @@ class Vector(Arrow):
                 self.add(plane, vector_1, vector_2)
     """
 
-    def __init__(self, direction: Vector = RIGHT, buff: float = 0, **kwargs) -> None:
+    def __init__(
+        self, direction: Point2D | Point3D = RIGHT, buff: float = 0, **kwargs
+    ) -> None:
         self.buff = buff
         if len(direction) == 2:
             direction = np.hstack([direction, 0])

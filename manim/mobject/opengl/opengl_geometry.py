@@ -23,10 +23,35 @@ from manim.utils.space_ops import (
 )
 
 DEFAULT_DOT_RADIUS = 0.08
-DEFAULT_SMALL_DOT_RADIUS = 0.04
 DEFAULT_DASH_LENGTH = 0.05
 DEFAULT_ARROW_TIP_LENGTH = 0.35
 DEFAULT_ARROW_TIP_WIDTH = 0.35
+
+__all__ = [
+    "OpenGLTipableVMobject",
+    "OpenGLArc",
+    "OpenGLArcBetweenPoints",
+    "OpenGLCurvedArrow",
+    "OpenGLCurvedDoubleArrow",
+    "OpenGLCircle",
+    "OpenGLDot",
+    "OpenGLEllipse",
+    "OpenGLAnnularSector",
+    "OpenGLSector",
+    "OpenGLAnnulus",
+    "OpenGLLine",
+    "OpenGLDashedLine",
+    "OpenGLTangentLine",
+    "OpenGLElbow",
+    "OpenGLArrow",
+    "OpenGLVector",
+    "OpenGLDoubleArrow",
+    "OpenGLCubicBezier",
+    "OpenGLPolygon",
+    "OpenGLRegularPolygon",
+    "OpenGLTriangle",
+    "OpenGLArrowTip",
+]
 
 
 class OpenGLTipableVMobject(OpenGLVMobject):
@@ -438,10 +463,7 @@ class OpenGLLine(OpenGLTipableVMobject):
         if buff == 0:
             return
         #
-        if self.path_arc == 0:
-            length = self.get_length()
-        else:
-            length = self.get_arc_length()
+        length = self.get_length() if self.path_arc == 0 else self.get_arc_length()
         #
         if length < 2 * buff:
             return

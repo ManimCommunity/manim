@@ -9,6 +9,7 @@ movie vs writing a single frame).
 See :doc:`/guides/configuration` for an introduction to Manim's configuration system.
 
 """
+
 from __future__ import annotations
 
 import argparse
@@ -19,19 +20,27 @@ import logging
 import os
 import re
 import sys
-from collections.abc import Mapping, MutableMapping
-from enum import EnumMeta
+from collections.abc import Iterable, Iterator, Mapping, MutableMapping
 from pathlib import Path
-from typing import Any, ClassVar, Iterable, Iterator, NoReturn
+from typing import TYPE_CHECKING, Any, ClassVar, NoReturn
 
 import numpy as np
-from typing_extensions import Self
 
-from .. import constants
-from ..constants import RendererType
-from ..typing import StrPath, Vector3
-from ..utils.color import ManimColor
-from ..utils.tex import TexTemplate, TexTemplateFromFile
+from manim import constants
+from manim.constants import RendererType
+from manim.utils.color import ManimColor
+from manim.utils.tex import TexTemplate
+
+if TYPE_CHECKING:
+    from enum import EnumMeta
+
+    from typing_extensions import Self
+
+    from manim.typing import StrPath, Vector3D
+
+__all__ = ["config_file_paths", "make_config_parser", "ManimConfig", "ManimFrame"]
+
+logger = logging.getLogger("manim")
 
 
 def config_file_paths() -> list[Path]:
@@ -239,8 +248,7 @@ class ManimConfig(MutableMapping):
         config.background_color = RED
 
 
-        class MyScene(Scene):
-            ...
+        class MyScene(Scene): ...
 
     the background color will be set to RED, regardless of the contents of
     ``manim.cfg`` or the CLI arguments used when invoking manim.
@@ -257,7 +265,6 @@ class ManimConfig(MutableMapping):
         "dry_run",
         "enable_wireframe",
         "ffmpeg_loglevel",
-        "ffmpeg_executable",
         "format",
         "flush_cache",
         "frame_height",
@@ -312,10 +319,11 @@ class ManimConfig(MutableMapping):
         "zero_pad",
         "force_window",
         "no_latex_cleanup",
+        "preview_command",
     }
 
     def __init__(self) -> None:
-        self._d: dict[str, Any | None] = {k: None for k in self._OPTS}
+        self._d: dict[str, Any | None] = dict.fromkeys(self._OPTS)
 
     # behave like a dict
     def __iter__(self) -> Iterator[str]:
@@ -645,7 +653,9 @@ class ManimConfig(MutableMapping):
         setattr(self, "window_size", window_size)
 
         # plugins
-        self.plugins = parser["CLI"].get("plugins", fallback="", raw=True).split(",")
+        plugins = parser["CLI"].get("plugins", fallback="", raw=True)
+        plugins = [] if plugins == "" else plugins.split(",")
+        self.plugins = plugins
         # the next two must be set AFTER digesting pixel_width and pixel_height
         self["frame_height"] = parser["CLI"].getfloat("frame_height", 8.0)
         width = parser["CLI"].getfloat("frame_width", None)
@@ -666,10 +676,6 @@ class ManimConfig(MutableMapping):
         val = parser["ffmpeg"].get("loglevel")
         if val:
             self.ffmpeg_loglevel = val
-
-        # TODO: Fix the mess above and below
-        val = parser["ffmpeg"].get("ffmpeg_executable")
-        setattr(self, "ffmpeg_executable", val)
 
         try:
             val = parser["jupyter"].getboolean("media_embed")
@@ -761,6 +767,7 @@ class ManimConfig(MutableMapping):
             "force_window",
             "dry_run",
             "no_latex_cleanup",
+            "preview_command",
         ]:
             if hasattr(args, key):
                 attr = getattr(args, key)
@@ -791,7 +798,7 @@ class ManimConfig(MutableMapping):
             try:
                 self.upto_animation_number = nflag[1]
             except Exception:
-                logging.getLogger("manim").info(
+                logger.info(
                     f"No end scene number specified in -n option. Rendering from {nflag[0]} onwards...",
                 )
 
@@ -827,7 +834,7 @@ class ManimConfig(MutableMapping):
 
         # Handle --tex_template
         if args.tex_template:
-            self.tex_template = TexTemplateFromFile(tex_filename=args.tex_template)
+            self.tex_template = TexTemplate.from_file(args.tex_template)
 
         if (
             self.renderer == RendererType.OPENGL
@@ -1011,6 +1018,14 @@ class ManimConfig(MutableMapping):
         self._set_boolean("no_latex_cleanup", value)
 
     @property
+    def preview_command(self) -> str:
+        return self._d["preview_command"]
+
+    @preview_command.setter
+    def preview_command(self, value: str) -> None:
+        self._set_str("preview_command", value)
+
+    @property
     def verbosity(self) -> str:
         """Logger verbosity; "DEBUG", "INFO", "WARNING", "ERROR", or "CRITICAL" (-v)."""
         return self._d["verbosity"]
@@ -1022,7 +1037,7 @@ class ManimConfig(MutableMapping):
             val,
             ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
         )
-        logging.getLogger("manim").setLevel(val)
+        logger.setLevel(val)
 
     @property
     def format(self) -> str:
@@ -1036,8 +1051,9 @@ class ManimConfig(MutableMapping):
             val,
             [None, "png", "gif", "mp4", "mov", "webm"],
         )
+        self.resolve_movie_file_extension(self.transparent)
         if self.format == "webm":
-            logging.getLogger("manim").warning(
+            logger.warning(
                 "Output format set as webm, this can be slower than other formats",
             )
 
@@ -1053,15 +1069,7 @@ class ManimConfig(MutableMapping):
             val,
             ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
         )
-
-    @property
-    def ffmpeg_executable(self) -> str:
-        """Custom path to the ffmpeg executable."""
-        return self._d["ffmpeg_executable"]
-
-    @ffmpeg_executable.setter
-    def ffmpeg_executable(self, value: str) -> None:
-        self._set_str("ffmpeg_executable", value)
+        logging.getLogger("libav").setLevel(self.ffmpeg_loglevel)
 
     @property
     def media_embed(self) -> bool:
@@ -1145,22 +1153,22 @@ class ManimConfig(MutableMapping):
         )
 
     @property
-    def top(self) -> Vector3:
+    def top(self) -> Vector3D:
         """Coordinate at the center top of the frame."""
         return self.frame_y_radius * constants.UP
 
     @property
-    def bottom(self) -> Vector3:
+    def bottom(self) -> Vector3D:
         """Coordinate at the center bottom of the frame."""
         return self.frame_y_radius * constants.DOWN
 
     @property
-    def left_side(self) -> Vector3:
+    def left_side(self) -> Vector3D:
         """Coordinate at the middle left of the frame."""
         return self.frame_x_radius * constants.LEFT
 
     @property
-    def right_side(self) -> Vector3:
+    def right_side(self) -> Vector3D:
         """Coordinate at the middle right of the frame."""
         return self.frame_x_radius * constants.RIGHT
 
@@ -1194,7 +1202,7 @@ class ManimConfig(MutableMapping):
 
     @property
     def upto_animation_number(self) -> int:
-        """Stop rendering animations at this nmber. Use -1 to avoid skipping (-n)."""
+        """Stop rendering animations at this number. Use -1 to avoid skipping (-n)."""
         return self._d["upto_animation_number"]
 
     @upto_animation_number.setter
@@ -1263,6 +1271,8 @@ class ManimConfig(MutableMapping):
     @background_opacity.setter
     def background_opacity(self, value: float) -> None:
         self._set_between("background_opacity", value, 0, 1)
+        if self.background_opacity < 1:
+            self.resolve_movie_file_extension(is_transparent=True)
 
     @property
     def frame_size(self) -> tuple[int, int]:
@@ -1297,8 +1307,8 @@ class ManimConfig(MutableMapping):
 
     @property
     def transparent(self) -> bool:
-        """Whether the background opacity is 0.0 (-t)."""
-        return self._d["background_opacity"] == 0.0
+        """Whether the background opacity is less than 1.0 (-t)."""
+        return self._d["background_opacity"] < 1.0
 
     @transparent.setter
     def transparent(self, value: bool) -> None:
@@ -1416,6 +1426,7 @@ class ManimConfig(MutableMapping):
         self._d.__setitem__("window_size", value)
 
     def resolve_movie_file_extension(self, is_transparent: bool) -> None:
+        prev_file_extension = self.movie_file_extension
         if is_transparent:
             self.movie_file_extension = ".webm" if self.format == "webm" else ".mov"
         elif self.format == "webm":
@@ -1424,6 +1435,11 @@ class ManimConfig(MutableMapping):
             self.movie_file_extension = ".mov"
         else:
             self.movie_file_extension = ".mp4"
+        if self.movie_file_extension != prev_file_extension:
+            logger.warning(
+                f"Output format changed to '{self.movie_file_extension}' "
+                "to support transparency",
+            )
 
     @property
     def enable_gui(self) -> bool:
@@ -1750,26 +1766,26 @@ class ManimConfig(MutableMapping):
         if not hasattr(self, "_tex_template") or not self._tex_template:
             fn = self._d["tex_template_file"]
             if fn:
-                self._tex_template = TexTemplateFromFile(tex_filename=fn)
+                self._tex_template = TexTemplate.from_file(fn)
             else:
                 self._tex_template = TexTemplate()
         return self._tex_template
 
     @tex_template.setter
-    def tex_template(self, val: TexTemplateFromFile | TexTemplate) -> None:
-        if isinstance(val, (TexTemplateFromFile, TexTemplate)):
+    def tex_template(self, val: TexTemplate) -> None:
+        if isinstance(val, TexTemplate):
             self._tex_template = val
 
     @property
     def tex_template_file(self) -> Path:
-        """File to read Tex template from (no flag).  See :class:`.TexTemplateFromFile`."""
+        """File to read Tex template from (no flag).  See :class:`.TexTemplate`."""
         return self._d["tex_template_file"]
 
     @tex_template_file.setter
     def tex_template_file(self, val: str) -> None:
         if val:
             if not os.access(val, os.R_OK):
-                logging.getLogger("manim").warning(
+                logger.warning(
                     f"Custom TeX template {val} not found or not readable.",
                 )
             else:
@@ -1787,6 +1803,8 @@ class ManimConfig(MutableMapping):
         self._d["plugins"] = value
 
 
+# TODO: to be used in the future - see PR #620
+# https://github.com/ManimCommunity/manim/pull/620
 class ManimFrame(Mapping):
     _OPTS: ClassVar[set[str]] = {
         "pixel_width",
@@ -1801,7 +1819,7 @@ class ManimFrame(Mapping):
         "left_side",
         "right_side",
     }
-    _CONSTANTS: ClassVar[dict[str, Vector3]] = {
+    _CONSTANTS: ClassVar[dict[str, Vector3D]] = {
         "UP": np.array((0.0, 1.0, 0.0)),
         "DOWN": np.array((0.0, -1.0, 0.0)),
         "RIGHT": np.array((1.0, 0.0, 0.0)),

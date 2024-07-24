@@ -5,8 +5,10 @@ cfg``. Here you can specify options, subcommands, and subgroups for the cfg
 group.
 
 """
+
 from __future__ import annotations
 
+import contextlib
 from ast import literal_eval
 from pathlib import Path
 
@@ -26,6 +28,17 @@ If left empty, the default colour will be used.[/red]
 """
 RICH_NON_STYLE_ENTRIES: str = ["log.width", "log.height", "log.timestamps"]
 
+__all__ = [
+    "value_from_string",
+    "value_from_string",
+    "is_valid_style",
+    "replace_keys",
+    "cfg",
+    "write",
+    "show",
+    "export",
+]
+
 
 def value_from_string(value: str) -> str | int | bool:
     """Extracts the literal of proper datatype from a string.
@@ -39,10 +52,8 @@ def value_from_string(value: str) -> str | int | bool:
     Union[:class:`str`, :class:`int`, :class:`bool`]
         Returns the literal of appropriate datatype.
     """
-    try:
+    with contextlib.suppress(SyntaxError, ValueError):
         value = literal_eval(value)
-    except (SyntaxError, ValueError):
-        pass
     return value
 
 

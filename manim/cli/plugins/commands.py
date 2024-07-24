@@ -5,12 +5,15 @@ plugin``. Here you can specify options, subcommands, and subgroups for the plugi
 group.
 
 """
+
 from __future__ import annotations
 
 import cloup
 
 from ...constants import CONTEXT_SETTINGS, EPILOG
 from ...plugins.plugins_flags import list_plugins
+
+__all__ = ["plugins"]
 
 
 @cloup.command(

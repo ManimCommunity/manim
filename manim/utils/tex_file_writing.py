@@ -12,12 +12,14 @@ import hashlib
 import os
 import re
 import unicodedata
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 
 from manim.utils.tex import TexTemplate
 
 from .. import config, logger
+
+__all__ = ["tex_to_svg_file"]
 
 
 def tex_hash(expression):

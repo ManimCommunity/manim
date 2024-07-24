@@ -5,9 +5,22 @@ import math
 import numpy as np
 import pytest
 
-from manim import LEFT, ORIGIN, PI, UR, Axes, Circle, ComplexPlane
+from manim import (
+    LEFT,
+    ORIGIN,
+    PI,
+    UR,
+    Axes,
+    Circle,
+    ComplexPlane,
+    Dot,
+    NumberPlane,
+    PolarPlane,
+    ThreeDAxes,
+    config,
+    tempconfig,
+)
 from manim import CoordinateSystem as CS
-from manim import NumberPlane, PolarPlane, ThreeDAxes, config, tempconfig
 
 
 def test_initial_config():
@@ -43,7 +56,7 @@ def test_dimension():
 
 def test_abstract_base_class():
     """Check that CoordinateSystem has some abstract methods."""
-    with pytest.raises(Exception):
+    with pytest.raises(NotImplementedError):
         CS().get_axes()
 
 
@@ -119,7 +132,15 @@ def test_coords_to_point():
 
     # a point with respect to the axes
     c2p_coord = np.around(ax.coords_to_point(2, 2), decimals=4)
-    np.testing.assert_array_equal(c2p_coord, (1.7143, 1.5, 0))
+    c2p_coord_matmul = np.around(ax @ (2, 2), decimals=4)
+
+    expected = (1.7143, 1.5, 0)
+
+    np.testing.assert_array_equal(c2p_coord, expected)
+    np.testing.assert_array_equal(c2p_coord_matmul, c2p_coord)
+
+    mob = Dot().move_to((2, 2, 0))
+    np.testing.assert_array_equal(np.around(ax @ mob, decimals=4), expected)
 
 
 def test_coords_to_point_vectorized():

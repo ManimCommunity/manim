@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+import logging
 import re
 
 from cloup import Choice, option, option_group
 
-from ... import logger
+__all__ = ["global_options"]
+
+logger = logging.getLogger("manim")
 
 
 def validate_gui_location(ctx, param, value):
@@ -102,5 +105,10 @@ global_options = option_group(
         is_flag=True,
         help="Prevents deletion of .aux, .dvi, and .log files produced by Tex and MathTex.",
         default=False,
+    ),
+    option(
+        "--preview_command",
+        help="The command used to preview the output file (for example vlc for video files)",
+        default="",
     ),
 )

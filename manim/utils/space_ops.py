@@ -2,7 +2,27 @@
 
 from __future__ import annotations
 
-from manim.typing import Point3D_Array, Vector, Vector3
+import itertools as it
+from collections.abc import Sequence
+from typing import TYPE_CHECKING
+
+import numpy as np
+from mapbox_earcut import triangulate_float32 as earcut
+from scipy.spatial.transform import Rotation
+
+from manim.constants import DOWN, OUT, PI, RIGHT, TAU, UP
+from manim.utils.iterables import adjacent_pairs
+
+if TYPE_CHECKING:
+    import numpy.typing as npt
+
+    from manim.typing import (
+        ManimFloat,
+        Point3D_Array,
+        Vector2D,
+        Vector2D_Array,
+        Vector3D,
+    )
 
 __all__ = [
     "quaternion_mult",
@@ -38,22 +58,11 @@ __all__ = [
 ]
 
 
-import itertools as it
-from typing import Sequence
-
-import numpy as np
-from mapbox_earcut import triangulate_float32 as earcut
-from scipy.spatial.transform import Rotation
-
-from ..constants import DOWN, OUT, PI, RIGHT, TAU, UP, RendererType
-from ..utils.iterables import adjacent_pairs
-
-
 def norm_squared(v: float) -> float:
     return np.dot(v, v)
 
 
-def cross(v1: Vector3, v2: Vector3) -> Vector3:
+def cross(v1: Vector3D, v2: Vector3D) -> Vector3D:
     return np.array(
         [
             v1[1] * v2[2] - v1[2] * v2[1],
@@ -114,7 +123,7 @@ def quaternion_from_angle_axis(
 
     Returns
     -------
-    List[float]
+    list[float]
         Gives back a quaternion from the angle and axis
     """
     if not axis_normalized:
@@ -369,7 +378,7 @@ def normalize_along_axis(array: np.ndarray, axis: np.ndarray) -> np.ndarray:
     return array
 
 
-def get_unit_normal(v1: Vector3, v2: Vector3, tol: float = 1e-6) -> Vector3:
+def get_unit_normal(v1: Vector3D, v2: Vector3D, tol: float = 1e-6) -> Vector3D:
     """Gets the unit normal of the vectors.
 
     Parameters
@@ -467,10 +476,7 @@ def regular_vertices(
     """
 
     if start_angle is None:
-        if n % 2 == 0:
-            start_angle = 0
-        else:
-            start_angle = TAU / 4
+        start_angle = 0 if n % 2 == 0 else TAU / 4
 
     start_vector = rotate_vector(RIGHT * radius, start_angle)
     vertices = compass_directions(n, start_vector)
@@ -613,7 +619,7 @@ def get_winding_number(points: Sequence[np.ndarray]) -> float:
     >>> polygon = Square()
     >>> get_winding_number(polygon.get_vertices())
     1.0
-    >>> polygon.shift(2*UP)
+    >>> polygon.shift(2 * UP)
     Square
     >>> get_winding_number(polygon.get_vertices())
     0.0
@@ -654,8 +660,9 @@ def shoelace_direction(x_y: np.ndarray) -> str:
 
 
 def cross2d(
-    a: Sequence[Vector] | Vector, b: Sequence[Vector] | Vector
-) -> Sequence[float] | float:
+    a: Vector2D | Vector2D_Array,
+    b: Vector2D | Vector2D_Array,
+) -> ManimFloat | npt.NDArray[ManimFloat]:
     """Compute the determinant(s) of the passed
     vector (sequences).
 
@@ -746,9 +753,14 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
 
         # Move the ring which j belongs to from the
         # attached list to the detached list
-        new_ring = next(filter(lambda ring: ring[0] <= j < ring[-1], detached_rings))
-        detached_rings.remove(new_ring)
-        attached_rings.append(new_ring)
+        new_ring = next(
+            (ring for ring in detached_rings if ring[0] <= j < ring[-1]), None
+        )
+        if new_ring is not None:
+            detached_rings.remove(new_ring)
+            attached_rings.append(new_ring)
+        else:
+            raise Exception("Could not find a ring to attach")
 
     # Setup linked list
     after = []

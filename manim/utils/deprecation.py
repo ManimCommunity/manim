@@ -6,12 +6,14 @@ __all__ = ["deprecated", "deprecated_params"]
 
 
 import inspect
+import logging
 import re
-from typing import Any, Callable, Iterable
+from collections.abc import Iterable
+from typing import Any, Callable
 
 from decorator import decorate, decorator
 
-from .. import logger
+logger = logging.getLogger("manim")
 
 
 def _get_callable_info(callable: Callable) -> tuple[str, str]:
@@ -104,9 +106,11 @@ def deprecated(
 
         from manim.utils.deprecation import deprecated
 
+
         @deprecated
         def foo(**kwargs):
             pass
+
 
         @deprecated
         class Bar:
@@ -116,6 +120,7 @@ def deprecated(
             @deprecated
             def baz(self):
                 pass
+
 
         foo()
         # WARNING  The function foo has been deprecated and may be removed in a later version.
@@ -130,14 +135,11 @@ def deprecated(
 
         from manim.utils.deprecation import deprecated
 
-        @deprecated(
-            since="v0.2",
-            until="v0.4",
-            replacement="bar",
-            message="It is cooler."
-        )
+
+        @deprecated(since="v0.2", until="v0.4", replacement="bar", message="It is cooler.")
         def foo():
             pass
+
 
         foo()
         # WARNING  The function foo has been deprecated since v0.2 and is expected to be removed after v0.4. Use bar instead. It is cooler.
@@ -146,9 +148,11 @@ def deprecated(
 
         from manim.utils.deprecation import deprecated
 
+
         @deprecated(since="05/01/2021", until="06/01/2021")
         def foo():
             pass
+
 
         foo()
         # WARNING  The function foo has been deprecated since 05/01/2021 and is expected to be removed after 06/01/2021.
@@ -285,9 +289,11 @@ def deprecated_params(
 
         from manim.utils.deprecation import deprecated_params
 
+
         @deprecated_params(params="a, b, c")
         def foo(**kwargs):
             pass
+
 
         foo(x=2, y=3, z=4)
         # No warning
@@ -299,14 +305,16 @@ def deprecated_params(
 
         from manim.utils.deprecation import deprecated_params
 
+
         @deprecated_params(
             params="a, b, c",
             since="v0.2",
             until="v0.4",
-            message="The letters x, y, z are cooler."
+            message="The letters x, y, z are cooler.",
         )
         def foo(**kwargs):
             pass
+
 
         foo(a=2)
         # WARNING  The parameter a of method foo has been deprecated since v0.2 and is expected to be removed after v0.4. The letters x, y, z are cooler.
@@ -315,13 +323,17 @@ def deprecated_params(
 
         from manim.utils.deprecation import deprecated_params
 
-        @deprecated_params(redirections=[
-            # Two ways to redirect one parameter to another:
-            ("old_param", "new_param"),
-            lambda old_param2: {"new_param22": old_param2}
-        ])
+
+        @deprecated_params(
+            redirections=[
+                # Two ways to redirect one parameter to another:
+                ("old_param", "new_param"),
+                lambda old_param2: {"new_param22": old_param2},
+            ]
+        )
         def foo(**kwargs):
             return kwargs
+
 
         foo(x=1, old_param=2)
         # WARNING  The parameter old_param of method foo has been deprecated and may be removed in a later version.
@@ -331,11 +343,13 @@ def deprecated_params(
 
         from manim.utils.deprecation import deprecated_params
 
-        @deprecated_params(redirections=[
-            lambda runtime_in_ms: {"run_time": runtime_in_ms / 1000}
-        ])
+
+        @deprecated_params(
+            redirections=[lambda runtime_in_ms: {"run_time": runtime_in_ms / 1000}]
+        )
         def foo(**kwargs):
             return kwargs
+
 
         foo(runtime_in_ms=500)
         # WARNING  The parameter runtime_in_ms of method foo has been deprecated and may be removed in a later version.
@@ -345,11 +359,13 @@ def deprecated_params(
 
         from manim.utils.deprecation import deprecated_params
 
-        @deprecated_params(redirections=[
-            lambda buff_x=1, buff_y=1: {"buff": (buff_x, buff_y)}
-        ])
+
+        @deprecated_params(
+            redirections=[lambda buff_x=1, buff_y=1: {"buff": (buff_x, buff_y)}]
+        )
         def foo(**kwargs):
             return kwargs
+
 
         foo(buff_x=2)
         # WARNING  The parameter buff_x of method foo has been deprecated and may be removed in a later version.
@@ -359,18 +375,23 @@ def deprecated_params(
 
         from manim.utils.deprecation import deprecated_params
 
-        @deprecated_params(redirections=[
-            lambda buff=1: {"buff_x": buff[0], "buff_y": buff[1]} if isinstance(buff, tuple)
-                    else {"buff_x": buff,    "buff_y": buff}
-        ])
+
+        @deprecated_params(
+            redirections=[
+                lambda buff=1: {"buff_x": buff[0], "buff_y": buff[1]}
+                if isinstance(buff, tuple)
+                else {"buff_x": buff, "buff_y": buff}
+            ]
+        )
         def foo(**kwargs):
             return kwargs
+
 
         foo(buff=0)
         # WARNING  The parameter buff of method foo has been deprecated and may be removed in a later version.
         # returns {"buff_x": 0, buff_y: 0}
 
-        foo(buff=(1,2))
+        foo(buff=(1, 2))
         # WARNING  The parameter buff of method foo has been deprecated and may be removed in a later version.
         # returns {"buff_x": 1, buff_y: 2}
 

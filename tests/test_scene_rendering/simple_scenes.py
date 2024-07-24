@@ -1,6 +1,23 @@
 from __future__ import annotations
 
+from enum import Enum
+
 from manim import *
+
+__all__ = [
+    "SquareToCircle",
+    "SceneWithMultipleCalls",
+    "SceneWithMultipleWaitCalls",
+    "NoAnimations",
+    "SceneWithStaticWait",
+    "SceneWithSceneUpdater",
+    "SceneForFrozenFrameTests",
+    "SceneWithNonStaticWait",
+    "StaticScene",
+    "InteractiveStaticScene",
+    "SceneWithSections",
+    "ElaborateSceneWithSections",
+]
 
 
 class SquareToCircle(Scene):

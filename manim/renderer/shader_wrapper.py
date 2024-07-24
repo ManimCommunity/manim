@@ -1,19 +1,22 @@
 from __future__ import annotations
 
 import copy
+import logging
 import re
 from pathlib import Path
 
 import moderngl
 import numpy as np
 
-from .. import logger
-
 # Mobjects that should be rendered with
 # the same shader will be organized and
 # clumped together based on keeping track
 # of a dict holding all the relevant information
 # to that shader
+
+__all__ = ["ShaderWrapper"]
+
+logger = logging.getLogger("manim")
 
 
 def get_shader_dir():
