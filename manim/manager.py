@@ -154,11 +154,23 @@ class Manager(Generic[Scene_co]):
         self.setup()
 
         with contextlib.suppress(EndSceneEarlyException):
-            self.scene.construct()
+            self.construct()
             self.post_contruct()
             self._interact()
 
         self.tear_down()
+
+    def construct(self) -> None:
+        if not self.scene.sections_api:
+            self.scene.construct()
+            return
+        for section in self.scene.find_sections():
+            section()
+            self.file_writer.next_section(
+                f"{self.scene}.{section.name}",
+                section.type_,
+                section.skip,
+            )
 
     def _render_second_pass(self) -> None:
         """

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import inspect
 import random
 from collections import OrderedDict, deque
 from typing import TYPE_CHECKING
@@ -17,6 +18,7 @@ from manim.event_handler.event_type import EventType
 from manim.mobject.mobject import Group, Point, _AnimationBuilder
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
+from manim.scene.sections import SceneSection
 from manim.utils.iterables import list_difference_update
 
 if TYPE_CHECKING:
@@ -71,6 +73,8 @@ class Scene:
     presenter_mode: bool = False
     embed_exception_mode: str = ""
     embed_error_sound: bool = False
+
+    sections_api: bool = False
 
     def __init__(self, manager: Manager):
         # Core state of the scene
@@ -131,12 +135,31 @@ class Scene:
         The entrypoint to animations in Manim.
         Should be overridden in the subclass to produce animations
         """
-        raise RuntimeError("Could not find the construct method, did you misspell it?")
+        raise RuntimeError(
+            "Could not find the construct method, did you misspell the name?"
+        )
 
     def tear_down(self) -> None:
         """
         This method is used to clean up scenes
         """
+
+    def find_sections(self) -> list[SceneSection]:
+        """Find all sections in a :class:`.Scene`"""
+
+        sections: list[SceneSection] = [
+            bound
+            for _, bound in inspect.getmembers(
+                self, predicate=lambda x: isinstance(x, SceneSection)
+            )
+        ]
+        # we can't care about the actual value of the order
+        # because that would break files with multiple scenes that have sections
+        sections.sort(key=lambda x: x.order)
+        # turn them into bound methods
+        for section in sections:
+            section.func = section.func.__get__(self, type(self))
+        return sections
 
     # Only these methods should touch the camera
     # Related to updating
