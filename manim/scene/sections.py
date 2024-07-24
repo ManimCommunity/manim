@@ -51,7 +51,7 @@ def section(
     func: Callable[P, T] | None = None,
     *,
     skip: bool = False,
-    type_: str | None = None,
+    type_: str = DefaultSectionType.NORMAL,
 ) -> SceneSection[P, T] | Callable[[Callable[P, T]], SceneSection[P, T]]:
     """Decorator to create a section in the scene."""
     if func is not None:
@@ -59,7 +59,7 @@ def section(
         return SceneSection(
             func,
             order=section._section_order,  # type: ignore
-            type_=type_ or DefaultSectionType.NORMAL,
+            type_=type_,
         )
 
     return cast(Callable, partialmethod(section, skip=skip, type_=type_))
