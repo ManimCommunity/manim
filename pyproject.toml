@@ -64,9 +64,7 @@ gui = ["dearpygui"]
 [tool.poetry.group.dev.dependencies]
 black = ">=23.11,<25.0"
 flake8 = "^6.1.0"
-flake8-bugbear = "^23.11.28"
 flake8-builtins = "^2.2.0"
-flake8-comprehensions = "^3.7.0"
 flake8-docstrings = "^1.7.0"
 furo = "^2023.09.10"
 gitpython = "^3"
