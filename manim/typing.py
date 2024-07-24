@@ -28,6 +28,10 @@ RGBA_Tuple_Int: TypeAlias = Tuple[int, int, int, int]
 HSV_Array_Float: TypeAlias = RGB_Array_Float
 HSV_Tuple_Float: TypeAlias = RGB_Tuple_Float
 
+HSVA_Array_Float: TypeAlias = RGBA_Array_Float
+HSVA_Tuple_Float: TypeAlias = RGBA_Tuple_Float
+
+
 HSL_Array_Float: TypeAlias = RGB_Array_Float
 HSL_Tuple_Float: TypeAlias = RGB_Tuple_Float
 
