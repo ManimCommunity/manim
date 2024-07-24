@@ -153,7 +153,7 @@ def test_mc_from_functions() -> None:
     nt.assert_equal(color.to_hex(True), "#FFFF00FF")
 
     color = ManimColor.from_hsv((1.0, 1.0, 1.0), alpha=0.0)
-    nt.assert_equal(color.to_hex(True), "#FF0000FF")
+    nt.assert_equal(color.to_hex(True), "#FF000000")
 
 
 def test_hsv_init() -> None:

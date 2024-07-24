@@ -47,7 +47,7 @@ import colorsys
 import random
 import re
 from collections.abc import Sequence
-from typing import Any, TypeVar, Union, overload
+from typing import Any, TypeVar, Union, overload, override
 
 import numpy as np
 import numpy.typing as npt
@@ -807,7 +807,7 @@ class ManimColor:
         return f"{self.__class__.__name__}('{self.to_hex()}')"
 
     def __str__(self) -> str:
-        return f"{self.to_hex()}"
+        return f"{self.to_hex(True)}"
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, ManimColor):
@@ -880,7 +880,8 @@ class HSV(ManimColor):
             raise ValueError("HSV Color must be an array of 3 values")
 
     @classmethod
-    def from_internal(cls, value: ManimColorInternal) -> Self:
+    @override
+    def _from_internal(cls, value: ManimColorInternal) -> Self:
         hsv = colorsys.rgb_to_hsv(*value[:3])
         hsva = [*hsv, value[-1]]
         return cls(np.array(hsva))
