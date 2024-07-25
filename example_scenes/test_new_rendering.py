@@ -9,6 +9,7 @@ class Test(Scene):
         s = Square()
         self.add(s)
         self.play(Rotate(s, PI / 2))
+        self.wait(7)
         self.play(FadeOut(s))
 
     @section(skip=True)

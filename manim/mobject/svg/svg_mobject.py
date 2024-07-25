@@ -495,13 +495,12 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
 
         self.handle_commands()
 
-        if config.renderer == "opengl":
-            if self.should_subdivide_sharp_curves:
-                # For a healthy triangulation later
-                self.subdivide_sharp_curves()
-            if self.should_remove_null_curves:
-                # Get rid of any null curves
-                self.set_points(self.get_points_without_null_curves())
+        if self.should_subdivide_sharp_curves:
+            # For a healthy triangulation later
+            self.subdivide_sharp_curves()
+        if self.should_remove_null_curves:
+            # Get rid of any null curves
+            self.set_points(self.get_points_without_null_curves())
 
     generate_points = init_points
 
