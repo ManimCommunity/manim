@@ -788,6 +788,7 @@ class ManimColor:
         ManimColor
             Either a list of colors or a singular color depending on the input
         """
+
         def isSequence(colors) -> TypeGuard[Sequence[ParsableManimColor]]:
             return isinstance(colors, (list, tuple))
 
@@ -895,7 +896,7 @@ class ManimColor:
             )
 
     def __rpow__(self, other: int | float | Self) -> Self:
-        return self ** other
+        return self**other
 
     def __invert__(self) -> Self:
         return self.invert()
@@ -908,23 +909,17 @@ class ManimColor:
 
     def __and__(self, other: Self) -> Self:
         return self._construct_from_space(
-            self._internal_from_integer(
-                self.to_integer() & int(other), 1.0
-            )
+            self._internal_from_integer(self.to_integer() & int(other), 1.0)
         )
 
     def __or__(self, other: Self) -> Self:
         return self._construct_from_space(
-            self._internal_from_integer(
-                self.to_integer() | int(other), 1.0
-            )
+            self._internal_from_integer(self.to_integer() | int(other), 1.0)
         )
 
     def __xor__(self, other: Self) -> Self:
         return self._construct_from_space(
-            self._internal_from_integer(
-                self.to_integer() ^ int(other), 1.0
-            )
+            self._internal_from_integer(self.to_integer() ^ int(other), 1.0)
         )
 
 
