@@ -6,6 +6,11 @@ class Test(Scene):
 
     @section
     def first_section(self) -> None:
+        line = Line()
+        line.add_updater(lambda m, dt: m.rotate(PI * dt))
+        t = Tex(r"Math! $\sum e^{i\theta}$").add_updater(lambda m: m.next_to(line, UP))
+        line.to_edge(LEFT)
+        self.add(line, t)
         s = Square()
         self.add(s)
         self.play(Rotate(s, PI / 2))
