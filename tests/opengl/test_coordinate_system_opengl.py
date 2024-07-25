@@ -20,7 +20,6 @@ from manim import (
     tempconfig,
 )
 from manim import CoordinateSystem as CS
-from manim import NumberPlane, PolarPlane, ThreeDAxes, config, tempconfig
 from manim.utils.color import BLUE, GREEN, ORANGE, RED, YELLOW
 from manim.utils.testing.frames_comparison import frames_comparison
 

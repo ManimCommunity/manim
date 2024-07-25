@@ -33,7 +33,6 @@ from manim.mobject.opengl.opengl_surface import OpenGLSurface
 from manim.mobject.text.tex_mobject import MathTex
 from manim.mobject.three_d.three_dimensions import Surface
 from manim.mobject.types.vectorized_mobject import (
-    CurvesAsSubmobjects,
     VDict,
     VectorizedPoint,
     VGroup,
