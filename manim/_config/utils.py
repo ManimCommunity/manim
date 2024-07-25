@@ -291,7 +291,6 @@ class ManimConfig(MutableMapping):
         "preview",
         "progress_bar",
         "quality",
-        "save_as_gif",
         "save_sections",
         "save_last_frame",
         "save_pngs",
@@ -589,7 +588,6 @@ class ManimConfig(MutableMapping):
             "save_last_frame",
             "write_all",
             "save_pngs",
-            "save_as_gif",
             "save_sections",
             "preview",
             "show_in_file_browser",
@@ -762,7 +760,6 @@ class ManimConfig(MutableMapping):
             "write_to_movie",
             "save_last_frame",
             "save_pngs",
-            "save_as_gif",
             "save_sections",
             "write_all",
             "disable_caching",
@@ -988,15 +985,6 @@ class ManimConfig(MutableMapping):
     @save_pngs.setter
     def save_pngs(self, value: bool) -> None:
         self._set_boolean("save_pngs", value)
-
-    @property
-    def save_as_gif(self) -> bool:
-        """Whether to save the rendered scene in .gif format (-i)."""
-        return self._d["save_as_gif"]
-
-    @save_as_gif.setter
-    def save_as_gif(self, value: bool) -> None:
-        self._set_boolean("save_as_gif", value)
 
     @property
     def save_sections(self) -> bool:
