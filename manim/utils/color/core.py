@@ -29,7 +29,7 @@ The current system is using a few indirections for ensuring a consistent behavio
 
 To implement a custom color space you must subclass :class:`ManimColor` and implement three important functions
 
-:func:`_internal_value` is a @property implemented on :class:`ManimColor` with the goal of keeping a consistent internal representation that can be referenced by other functions in :class:`ManimColor`.
+:func:`~.ManimColor._internal_value` is an ``@property`` implemented on :class:`ManimColor` with the goal of keeping a consistent internal representation that can be referenced by other functions in :class:`ManimColor`.
 The getter should always return a value in the format of `[r,g,b,a]` as a numpy array which is in accordance with the type :class:`ManimColorInternal`.
 The setter should always accept a value in the format `[r,g,b,a]` which can be converted to whatever attributes you need.
 This property acts as a proxy to whatever representation you need in your class.
