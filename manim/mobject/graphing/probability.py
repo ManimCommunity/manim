@@ -5,7 +5,7 @@ from __future__ import annotations
 __all__ = ["SampleSpace", "BarChart"]
 
 
-from typing import Iterable, MutableSequence, Sequence
+from collections.abc import Iterable, MutableSequence, Sequence
 
 import numpy as np
 
@@ -339,10 +339,7 @@ class BarChart(Axes):
         for i, (value, bar_name) in enumerate(zip(val_range, self.bar_names)):
             # to accommodate negative bars, the label may need to be
             # below or above the x_axis depending on the value of the bar
-            if self.values[i] < 0:
-                direction = UP
-            else:
-                direction = DOWN
+            direction = UP if self.values[i] < 0 else DOWN
             bar_name_label = self.x_axis.label_constructor(bar_name)
 
             bar_name_label.font_size = self.x_axis.font_size

@@ -12,7 +12,6 @@
 
 """
 
-
 from __future__ import annotations
 
 __all__ = [
@@ -58,10 +57,7 @@ class _Fade(Transform):
     ) -> None:
         if not mobjects:
             raise ValueError("At least one mobject must be passed.")
-        if len(mobjects) == 1:
-            mobject = mobjects[0]
-        else:
-            mobject = Group(*mobjects)
+        mobject = mobjects[0] if len(mobjects) == 1 else Group(*mobjects)
 
         self.point_target = False
         if shift is None:

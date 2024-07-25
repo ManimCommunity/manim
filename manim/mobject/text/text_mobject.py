@@ -56,12 +56,11 @@ __all__ = ["Text", "Paragraph", "MarkupText", "register_font"]
 
 import copy
 import hashlib
-import os
 import re
+from collections.abc import Iterable, Sequence
 from contextlib import contextmanager
 from itertools import chain
 from pathlib import Path
-from typing import Iterable, Sequence
 
 import manimpango
 import numpy as np
@@ -135,10 +134,17 @@ class Paragraph(VGroup):
     --------
     Normal usage::
 
-        paragraph = Paragraph('this is a awesome', 'paragraph',
-                              'With \nNewlines', '\tWith Tabs',
-                              '  With Spaces', 'With Alignments',
-                              'center', 'left', 'right')
+        paragraph = Paragraph(
+            "this is a awesome",
+            "paragraph",
+            "With \nNewlines",
+            "\tWith Tabs",
+            "  With Spaces",
+            "With Alignments",
+            "center",
+            "left",
+            "right",
+        )
 
     Remove unwanted invisible characters::
 
@@ -412,7 +418,7 @@ class Text(SVGMobject):
     """
 
     @staticmethod
-    @functools.lru_cache(maxsize=None)
+    @functools.cache
     def font_list() -> list[str]:
         return manimpango.list_fonts()
 
@@ -444,8 +450,21 @@ class Text(SVGMobject):
         **kwargs,
     ) -> None:
         self.line_spacing = line_spacing
-        if font and warn_missing_font and font not in Text.font_list():
-            logger.warning(f"Font {font} not in {Text.font_list()}.")
+        if font and warn_missing_font:
+            fonts_list = Text.font_list()
+            # handle special case of sans/sans-serif
+            if font.lower() == "sans-serif":
+                font = "sans"
+            if font not in fonts_list:
+                # check if the capitalized version is in the supported fonts
+                if font.capitalize() in fonts_list:
+                    font = font.capitalize()
+                elif font.lower() in fonts_list:
+                    font = font.lower()
+                elif font.title() in fonts_list:
+                    font = font.title()
+                else:
+                    logger.warning(f"Font {font} not in {fonts_list}.")
         self.font = font
         self._font_size = float(font_size)
         # needs to be a float or else size is inflated when font_size = 24
@@ -894,7 +913,7 @@ class MarkupText(SVGMobject):
     Here is a list of supported tags:
 
     - ``<b>bold</b>``, ``<i>italic</i>`` and ``<b><i>bold+italic</i></b>``
-    - ``<ul>underline</ul>`` and ``<s>strike through</s>``
+    - ``<u>underline</u>`` and ``<s>strike through</s>``
     - ``<tt>typewriter font</tt>``
     - ``<big>bigger font</big>`` and ``<small>smaller font</small>``
     - ``<sup>superscript</sup>`` and ``<sub>subscript</sub>``
@@ -1142,7 +1161,7 @@ class MarkupText(SVGMobject):
     """
 
     @staticmethod
-    @functools.lru_cache(maxsize=None)
+    @functools.cache
     def font_list() -> list[str]:
         return manimpango.list_fonts()
 
@@ -1169,8 +1188,21 @@ class MarkupText(SVGMobject):
     ) -> None:
         self.text = text
         self.line_spacing = line_spacing
-        if font and warn_missing_font and font not in Text.font_list():
-            logger.warning(f"Font {font} not in {Text.font_list()}.")
+        if font and warn_missing_font:
+            fonts_list = Text.font_list()
+            # handle special case of sans/sans-serif
+            if font.lower() == "sans-serif":
+                font = "sans"
+            if font not in fonts_list:
+                # check if the capitalized version is in the supported fonts
+                if font.capitalize() in fonts_list:
+                    font = font.capitalize()
+                elif font.lower() in fonts_list:
+                    font = font.lower()
+                elif font.title() in fonts_list:
+                    font = font.title()
+                else:
+                    logger.warning(f"Font {font} not in {fonts_list}.")
         self.font = font
         self._font_size = float(font_size)
         self.slant = slant
@@ -1279,15 +1311,13 @@ class MarkupText(SVGMobject):
             self.set_color_by_gradient(*self.gradient)
         for col in colormap:
             self.chars[
-                col["start"]
-                - col["start_offset"] : col["end"]
+                col["start"] - col["start_offset"] : col["end"]
                 - col["start_offset"]
                 - col["end_offset"]
             ].set_color(self._parse_color(col["color"]))
         for grad in gradientmap:
             self.chars[
-                grad["start"]
-                - grad["start_offset"] : grad["end"]
+                grad["start"] - grad["start_offset"] : grad["end"]
                 - grad["start_offset"]
                 - grad["end_offset"]
             ].set_color_by_gradient(
@@ -1423,7 +1453,9 @@ class MarkupText(SVGMobject):
                     "end_offset": end_offset,
                 },
             )
-        self.text = re.sub("<gradient[^>]+>(.+?)</gradient>", r"\1", self.text, 0, re.S)
+        self.text = re.sub(
+            "<gradient[^>]+>(.+?)</gradient>", r"\1", self.text, count=0, flags=re.S
+        )
         return gradientmap
 
     def _parse_color(self, col):
@@ -1465,7 +1497,9 @@ class MarkupText(SVGMobject):
                     "end_offset": end_offset,
                 },
             )
-        self.text = re.sub("<color[^>]+>(.+?)</color>", r"\1", self.text, 0, re.S)
+        self.text = re.sub(
+            "<color[^>]+>(.+?)</color>", r"\1", self.text, count=0, flags=re.S
+        )
         return colormap
 
     def __repr__(self):

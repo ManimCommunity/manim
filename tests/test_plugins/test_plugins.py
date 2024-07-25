@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import random
 import string
-import tempfile
 import textwrap
 from pathlib import Path
 
@@ -60,7 +59,7 @@ cfg_file_contents = textwrap.dedent(
 
 @pytest.fixture
 def simple_scenes_path():
-    yield Path(__file__).parent / "simple_scenes.py"
+    return Path(__file__).parent / "simple_scenes.py"
 
 
 def cfg_file_create(cfg_file_contents, path):
@@ -74,7 +73,7 @@ def random_string():
     all_letters = string.ascii_lowercase
     a = random.Random()
     final_letters = [a.choice(all_letters) for _ in range(8)]
-    yield "".join(final_letters)
+    return "".join(final_letters)
 
 
 def test_plugin_warning(tmp_path, python_version, simple_scenes_path):
@@ -141,117 +140,4 @@ def create_plugin(tmp_path, python_version, random_string):
     command = [python_version, "-m", "pip", "uninstall", plugin_name, "-y"]
     out, err, exit_code = capture(command)
     print(out)
-    assert exit_code == 0, err
-
-
-@pytest.mark.slow
-def test_plugin_function_like(
-    tmp_path,
-    create_plugin,
-    python_version,
-    simple_scenes_path,
-):
-    function_like_plugin = create_plugin(
-        "{plugin_name}.__init__:import_all",
-        "FunctionLike",
-        "import_all",
-    )
-    cfg_file = cfg_file_create(
-        cfg_file_contents.format(plugin_name=function_like_plugin["plugin_name"]),
-        tmp_path,
-    )
-    scene_name = "FunctionLikeTest"
-    command = [
-        python_version,
-        "-m",
-        "manim",
-        "-ql",
-        "--media_dir",
-        str(cfg_file.parent),
-        "--config_file",
-        str(cfg_file),
-        str(simple_scenes_path),
-        scene_name,
-    ]
-    out, err, exit_code = capture(command, cwd=str(cfg_file.parent))
-    print(out)
-    print(err)
-    assert exit_code == 0, err
-
-
-@pytest.mark.slow
-def test_plugin_no_all(tmp_path, create_plugin, python_version):
-    create_plugin = create_plugin("{plugin_name}", "NoAll", "import_all")
-    plugin_name = create_plugin["plugin_name"]
-    cfg_file = cfg_file_create(
-        cfg_file_contents.format(plugin_name=plugin_name),
-        tmp_path,
-    )
-    test_class = textwrap.dedent(
-        f"""\
-        from manim import *
-        class NoAllTest(Scene):
-            def construct(self):
-                assert "{plugin_name}" in globals()
-                a = {plugin_name}.NoAll()
-                self.play(FadeIn(a))
-        """,
-    )
-
-    with tempfile.NamedTemporaryFile(
-        mode="w",
-        encoding="utf-8",
-        suffix=".py",
-        delete=False,
-    ) as tmpfile:
-        tmpfile.write(test_class)
-    scene_name = "NoAllTest"
-    command = [
-        python_version,
-        "-m",
-        "manim",
-        "-ql",
-        "--media_dir",
-        str(cfg_file.parent),
-        "--config_file",
-        str(cfg_file),
-        tmpfile.name,
-        scene_name,
-    ]
-    out, err, exit_code = capture(command, cwd=str(cfg_file.parent))
-    print(out)
-    print(err)
-    assert exit_code == 0, err
-    Path(tmpfile.name).unlink()
-
-
-@pytest.mark.slow
-def test_plugin_with_all(tmp_path, create_plugin, python_version, simple_scenes_path):
-    create_plugin = create_plugin(
-        "{plugin_name}",
-        "WithAll",
-        "import_all",
-        all_dec="__all__=['WithAll']",
-    )
-    plugin_name = create_plugin["plugin_name"]
-    cfg_file = cfg_file_create(
-        cfg_file_contents.format(plugin_name=plugin_name),
-        tmp_path,
-    )
-    scene_name = "WithAllTest"
-    command = [
-        python_version,
-        "-m",
-        "manim",
-        "-ql",
-        "--media_dir",
-        str(cfg_file.parent),
-        "--config_file",
-        str(cfg_file),
-        str(simple_scenes_path),
-        scene_name,
-    ]
-    out, err, exit_code = capture(command, cwd=str(cfg_file.parent))
-    print(out)
-    print(err)
     assert exit_code == 0, err

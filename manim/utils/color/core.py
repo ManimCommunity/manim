@@ -27,7 +27,8 @@ import colorsys
 # logger = _config.logger
 import random
 import re
-from typing import Any, Sequence, TypeVar, Union, overload
+from collections.abc import Sequence
+from typing import Any, TypeVar, Union, overload
 
 import numpy as np
 import numpy.typing as npt
@@ -62,7 +63,7 @@ class ManimColor:
     It's internal representation is a 4 element array of floats corresponding
     to a [r,g,b,a] value where r,g,b,a can be between 0 to 1.
 
-    This is done in order to reduce the amount of color inconsitencies by constantly
+    This is done in order to reduce the amount of color inconsistencies by constantly
     casting between integers and floats which introduces errors.
 
     The class can accept any value of type :class:`ParsableManimColor` i.e.
@@ -146,7 +147,8 @@ class ManimColor:
             else:
                 if length == 3:
                     self._internal_value = ManimColor._internal_from_int_rgb(
-                        value, alpha  # type: ignore
+                        value,
+                        alpha,  # type: ignore
                     )
                 elif length == 4:
                     self._internal_value = ManimColor._internal_from_int_rgba(value)  # type: ignore
@@ -215,7 +217,7 @@ class ManimColor:
 
     # TODO: Maybe make 8 nibble hex also convertible ?
     @staticmethod
-    def _internal_from_hex_string(hex: str, alpha: float) -> ManimColorInternal:
+    def _internal_from_hex_string(hex_: str, alpha: float) -> ManimColorInternal:
         """Internal function for converting a hex string into the internal representation of a ManimColor.
 
         .. warning::
@@ -236,9 +238,9 @@ class ManimColor:
         ManimColorInternal
             Internal color representation
         """
-        if len(hex) == 6:
-            hex += "00"
-        tmp = int(hex, 16)
+        if len(hex_) == 6:
+            hex_ += "00"
+        tmp = int(hex_, 16)
         return np.asarray(
             (
                 ((tmp >> 24) & 0xFF) / 255,
@@ -473,9 +475,13 @@ class ManimColor:
         str
             A hex string starting with a # with either 6 or 8 nibbles depending on your input, by default 6 i.e #XXXXXX
         """
-        tmp = f"#{int(self._internal_value[0]*255):02X}{int(self._internal_value[1]*255):02X}{int(self._internal_value[2]*255):02X}"
+        tmp = (
+            f"#{int(self._internal_value[0] * 255):02X}"
+            f"{int(self._internal_value[1] * 255):02X}"
+            f"{int(self._internal_value[2] * 255):02X}"
+        )
         if with_alpha:
-            tmp += f"{int(self._internal_value[3]*255):02X}"
+            tmp += f"{int(self._internal_value[3] * 255):02X}"
         return tmp
 
     def to_hsv(self) -> HSV_Array_Float:
@@ -584,12 +590,12 @@ class ManimColor:
         return cls(rgba)
 
     @classmethod
-    def from_hex(cls, hex: str, alpha: float = 1.0) -> Self:
+    def from_hex(cls, hex_str: str, alpha: float = 1.0) -> Self:
         """Creates a Manim Color from a hex string, prefixes allowed # and 0x
 
         Parameters
         ----------
-        hex : str
+        hex_str : str
             The hex string to be converted (currently only supports 6 nibbles)
         alpha : float, optional
             alpha value to be used for the hex string, by default 1.0
@@ -599,7 +605,7 @@ class ManimColor:
         ManimColor
             The ManimColor represented by the hex string
         """
-        return cls(hex, alpha)
+        return cls(hex_str, alpha)
 
     @classmethod
     def from_hsv(
@@ -628,8 +634,7 @@ class ManimColor:
         cls,
         color: ParsableManimColor | None,
         alpha: float = ...,
-    ) -> Self:
-        ...
+    ) -> Self: ...
 
     @overload
     @classmethod
@@ -637,8 +642,7 @@ class ManimColor:
         cls,
         color: Sequence[ParsableManimColor],
         alpha: float = ...,
-    ) -> list[Self]:
-        ...
+    ) -> list[Self]: ...
 
     @classmethod
     def parse(

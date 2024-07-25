@@ -12,7 +12,8 @@ def test_TransformMatchingLeavesOneObject(scene):
     circle = Circle().shift(RIGHT)
     scene.add(square)
     scene.play(TransformMatchingShapes(square, circle))
-    assert len(scene.mobjects) == 1 and isinstance(scene.mobjects[0], Circle)
+    assert len(scene.mobjects) == 1
+    assert isinstance(scene.mobjects[0], Circle)
 
 
 @frames_comparison(last_frame=False)

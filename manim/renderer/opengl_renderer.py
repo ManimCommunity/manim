@@ -1,14 +1,10 @@
 from __future__ import annotations
 
+import contextlib
 import itertools as it
-import sys
 import time
+from functools import cached_property
 from typing import Any
-
-if sys.version_info < (3, 8):
-    from backports.cached_property import cached_property
-else:
-    from functools import cached_property
 
 import moderngl
 import numpy as np
@@ -67,12 +63,12 @@ class OpenGLCamera(OpenGLMobject):
         if self.orthographic:
             self.projection_matrix = opengl.orthographic_projection_matrix()
             self.unformatted_projection_matrix = opengl.orthographic_projection_matrix(
-                format=False,
+                format_=False,
             )
         else:
             self.projection_matrix = opengl.perspective_projection_matrix()
             self.unformatted_projection_matrix = opengl.perspective_projection_matrix(
-                format=False,
+                format_=False,
             )
 
         if frame_shape is None:
@@ -219,9 +215,6 @@ class OpenGLCamera(OpenGLMobject):
         self.refresh_rotation_matrix()
 
 
-points_per_curve = 3
-
-
 class OpenGLRenderer:
     def __init__(self, file_writer_class=SceneFileWriter, skip_animations=False):
         # Measured in pixel widths, used for vector graphics
@@ -344,10 +337,8 @@ class OpenGLRenderer:
                 shader_wrapper.uniforms.items(),
                 self.perspective_uniforms.items(),
             ):
-                try:
+                with contextlib.suppress(KeyError):
                     shader.set_uniform(name, value)
-                except KeyError:
-                    pass
             try:
                 shader.set_uniform(
                     "u_view_matrix", self.scene.camera.formatted_view_matrix
@@ -428,8 +419,9 @@ class OpenGLRenderer:
             self.update_frame(scene)
 
             if not self.skip_animations:
-                for _ in range(int(config.frame_rate * scene.duration)):
-                    self.file_writer.write_frame(self)
+                self.file_writer.write_frame(
+                    self, num_frames=int(config.frame_rate * scene.duration)
+                )
 
             if self.window is not None:
                 self.window.swap_buffers()
@@ -575,7 +567,7 @@ class OpenGLRenderer:
         if pixel_shape is None:
             return np.array([0, 0, 0])
         pw, ph = pixel_shape
-        fw, fh = config["frame_width"], config["frame_height"]
+        fh = config["frame_height"]
         fc = self.camera.get_center()
         if relative:
             return 2 * np.array([px / pw, py / ph, 0])

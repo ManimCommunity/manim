@@ -38,7 +38,7 @@ class ManimColorModuleDocumenter(Directive):
             return [
                 nodes.error(
                     None,
-                    nodes.paragraph(text="Failed to import module '%s'" % module_name),
+                    nodes.paragraph(text=f"Failed to import module '{module_name}'"),
                 )
             ]
 
@@ -69,10 +69,7 @@ class ManimColorModuleDocumenter(Directive):
                 luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b
 
                 # Choose the font color based on the background luminance
-                if luminance > 0.5:
-                    font_color = "black"
-                else:
-                    font_color = "white"
+                font_color = "black" if luminance > 0.5 else "white"
 
                 color_elements.append((member_name, member_obj.to_hex(), font_color))
 

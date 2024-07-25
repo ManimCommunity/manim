@@ -3,13 +3,14 @@
 from __future__ import annotations
 
 import itertools as it
-from typing import TYPE_CHECKING, Sequence
+from collections.abc import Sequence
+from typing import TYPE_CHECKING
 
 import numpy as np
 from mapbox_earcut import triangulate_float32 as earcut
 from scipy.spatial.transform import Rotation
 
-from manim.constants import DOWN, OUT, PI, RIGHT, TAU, UP, RendererType
+from manim.constants import DOWN, OUT, PI, RIGHT, TAU, UP
 from manim.utils.iterables import adjacent_pairs
 
 if TYPE_CHECKING:
@@ -475,10 +476,7 @@ def regular_vertices(
     """
 
     if start_angle is None:
-        if n % 2 == 0:
-            start_angle = 0
-        else:
-            start_angle = TAU / 4
+        start_angle = 0 if n % 2 == 0 else TAU / 4
 
     start_vector = rotate_vector(RIGHT * radius, start_angle)
     vertices = compass_directions(n, start_vector)
@@ -621,7 +619,7 @@ def get_winding_number(points: Sequence[np.ndarray]) -> float:
     >>> polygon = Square()
     >>> get_winding_number(polygon.get_vertices())
     1.0
-    >>> polygon.shift(2*UP)
+    >>> polygon.shift(2 * UP)
     Square
     >>> get_winding_number(polygon.get_vertices())
     0.0

@@ -12,17 +12,16 @@ from manim.utils.docbuild.module_parsing import parse_module_attributes
 
 if TYPE_CHECKING:
     from sphinx.application import Sphinx
-    from typing_extensions import TypeAlias
 
 __all__ = ["AliasAttrDocumenter"]
 
 
-ALIAS_DOCS_DICT, DATA_DICT = parse_module_attributes()
+ALIAS_DOCS_DICT, DATA_DICT, TYPEVAR_DICT = parse_module_attributes()
 ALIAS_LIST = [
     alias_name
     for module_dict in ALIAS_DOCS_DICT.values()
     for category_dict in module_dict.values()
-    for alias_name in category_dict.keys()
+    for alias_name in category_dict
 ]
 
 
@@ -49,7 +48,9 @@ def smart_replace(base: str, alias: str, substitution: str) -> str:
     occurrences = []
     len_alias = len(alias)
     len_base = len(base)
-    condition = lambda char: (not char.isalnum()) and char != "_"
+
+    def condition(char: str) -> bool:
+        return not char.isalnum() and char != "_"
 
     start = 0
     i = 0
@@ -99,10 +100,11 @@ class AliasAttrDocumenter(Directive):
 
     def run(self) -> list[nodes.Element]:
         module_name = self.arguments[0]
-        # Slice module_name[6:] to remove the "manim." prefix which is
         # not present in the keys of the DICTs
-        module_alias_dict = ALIAS_DOCS_DICT.get(module_name[6:], None)
-        module_attrs_list = DATA_DICT.get(module_name[6:], None)
+        module_name = module_name.removeprefix("manim.")
+        module_alias_dict = ALIAS_DOCS_DICT.get(module_name, None)
+        module_attrs_list = DATA_DICT.get(module_name, None)
+        module_typevars = TYPEVAR_DICT.get(module_name, None)
 
         content = nodes.container()
 
@@ -160,6 +162,11 @@ class AliasAttrDocumenter(Directive):
                         for A in ALIAS_LIST:
                             alias_doc = alias_doc.replace(f"`{A}`", f":class:`~.{A}`")
 
+                        # also hyperlink the TypeVars from that module
+                        if module_typevars is not None:
+                            for T in module_typevars:
+                                alias_doc = alias_doc.replace(f"`{T}`", f":class:`{T}`")
+
                         # Add all the lines with 4 spaces behind, to consider all the
                         # documentation as a paragraph INSIDE the `.. class::` block
                         doc_lines = alias_doc.split("\n")
@@ -170,6 +177,37 @@ class AliasAttrDocumenter(Directive):
                     alias_container = nodes.container()
                     self.state.nested_parse(unparsed, 0, alias_container)
                     category_alias_container += alias_container
+
+        # then add the module TypeVars section
+        if module_typevars is not None:
+            module_typevars_section = nodes.section(ids=[f"{module_name}.typevars"])
+            content += module_typevars_section
+
+            # Use a rubric (title-like), just like in `module.rst`
+            module_typevars_section += nodes.rubric(text="TypeVar's")
+
+            # name: str
+            # definition: TypeVarDict = dict[str, str]
+            for name, definition in module_typevars.items():
+                # Using the `.. class::` directive is CRUCIAL, since
+                # function/method parameters are always annotated via
+                # classes - therefore Sphinx expects a class
+                unparsed = ViewList(
+                    [
+                        f".. class:: {name}",
+                        "",
+                        "    .. parsed-literal::",
+                        "",
+                        f"        {definition}",
+                        "",
+                    ]
+                )
+
+                # Parse the reST text into a fresh container
+                # https://www.sphinx-doc.org/en/master/extdev/markupapi.html#parsing-directive-content-as-rest
+                typevar_container = nodes.container()
+                self.state.nested_parse(unparsed, 0, typevar_container)
+                module_typevars_section += typevar_container
 
         # Then, add the traditional "Module Attributes" section
         if module_attrs_list is not None:

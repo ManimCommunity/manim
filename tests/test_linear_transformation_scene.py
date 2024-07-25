@@ -20,5 +20,6 @@ def test_ghost_vectors_len_and_types():
     assert len(ghosts[0]) == 2
 
     # check types of ghost vectors
-    assert isinstance(ghosts, VGroup) and isinstance(ghosts[0], VGroup)
+    assert isinstance(ghosts, VGroup)
+    assert isinstance(ghosts[0], VGroup)
     assert all(isinstance(x, Vector) for x in ghosts[0])

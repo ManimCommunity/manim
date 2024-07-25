@@ -65,7 +65,8 @@ __all__ = [
 
 
 import itertools as it
-from typing import Callable, Iterable, Sequence
+from collections.abc import Iterable, Sequence
+from typing import Callable
 
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import Polygon
@@ -74,7 +75,6 @@ from manim.mobject.text.numbers import DecimalNumber, Integer
 from manim.mobject.text.tex_mobject import MathTex
 from manim.mobject.text.text_mobject import Paragraph
 
-from .. import config
 from ..animation.animation import Animation
 from ..animation.composition import AnimationGroup
 from ..animation.creation import Create, Write

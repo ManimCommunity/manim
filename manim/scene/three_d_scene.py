@@ -6,7 +6,7 @@ __all__ = ["ThreeDScene", "SpecialThreeDScene"]
 
 
 import warnings
-from typing import Iterable, Sequence
+from collections.abc import Iterable, Sequence
 
 import numpy as np
 
@@ -135,8 +135,8 @@ class ThreeDScene(Scene):
                 }
                 cam.add_updater(lambda m, dt: methods[about](rate * dt))
                 self.add(self.camera)
-        except Exception:
-            raise ValueError("Invalid ambient rotation angle.")
+        except Exception as e:
+            raise ValueError("Invalid ambient rotation angle.") from e
 
     def stop_ambient_camera_rotation(self, about="theta"):
         """
@@ -155,8 +155,8 @@ class ThreeDScene(Scene):
                 self.remove(x)
             elif config.renderer == RendererType.OPENGL:
                 self.camera.clear_updaters()
-        except Exception:
-            raise ValueError("Invalid ambient rotation angle.")
+        except Exception as e:
+            raise ValueError("Invalid ambient rotation angle.") from e
 
     def begin_3dillusion_camera_rotation(
         self,
@@ -283,16 +283,15 @@ class ThreeDScene(Scene):
                     frame_center = frame_center.get_center()
                 frame_center = list(frame_center)
 
+            zoom_value = None
+            if zoom is not None:
+                zoom_value = config.frame_height / (zoom * cam.height)
+
             for value, method in [
                 [theta, "theta"],
                 [phi, "phi"],
                 [gamma, "gamma"],
-                [
-                    config.frame_height / (zoom * cam.height)
-                    if zoom is not None
-                    else None,
-                    "zoom",
-                ],
+                [zoom_value, "zoom"],
                 [frame_center, "frame_center"],
             ]:
                 if value is not None:

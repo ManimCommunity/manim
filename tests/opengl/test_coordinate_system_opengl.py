@@ -5,7 +5,20 @@ import math
 import numpy as np
 import pytest
 
-from manim import LEFT, ORIGIN, PI, UR, Axes, Circle, ComplexPlane
+from manim import (
+    LEFT,
+    ORIGIN,
+    PI,
+    UR,
+    Axes,
+    Circle,
+    ComplexPlane,
+    NumberPlane,
+    PolarPlane,
+    ThreeDAxes,
+    config,
+    tempconfig,
+)
 from manim import CoordinateSystem as CS
 from manim import NumberPlane, PolarPlane, ThreeDAxes, config, tempconfig
 from manim.utils.color import BLUE, GREEN, ORANGE, RED, YELLOW
@@ -47,7 +60,7 @@ def test_dimension(using_opengl_renderer):
 
 def test_abstract_base_class(using_opengl_renderer):
     """Check that CoordinateSystem has some abstract methods."""
-    with pytest.raises(Exception):
+    with pytest.raises(NotImplementedError):
         CS().get_axes()
 
 

@@ -4,7 +4,8 @@ from __future__ import annotations
 
 __all__ = ["Rotating", "Rotate"]
 
-from typing import TYPE_CHECKING, Callable, Sequence
+from collections.abc import Sequence
+from typing import TYPE_CHECKING, Callable
 
 import numpy as np
 
@@ -59,7 +60,7 @@ class Rotate(Transform):
     about_point
         The rotation center.
     about_edge
-        If ``about_point``is ``None``, this argument specifies
+        If ``about_point`` is ``None``, this argument specifies
         the direction of the bounding box point to be taken as
         the rotation center.
 

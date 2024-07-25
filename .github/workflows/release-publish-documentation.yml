@@ -19,12 +19,13 @@ jobs:
     - name: Install system dependencies
       run: |
         sudo apt update && sudo apt install -y \
-          pkg-config libcairo-dev libpango1.0-dev ffmpeg wget fonts-roboto
+          pkg-config libcairo-dev libpango1.0-dev wget fonts-roboto
         wget -qO- "https://yihui.org/tinytex/install-bin-unix.sh" | sh
         echo ${HOME}/.TinyTeX/bin/x86_64-linux >> $GITHUB_PATH
 
     - name: Install LaTeX and Python dependencies
       run: |
+        tlmgr update --self
         tlmgr install \
           babel-english ctex doublestroke dvisvgm frcursive fundus-calligra jknapltx \
           mathastext microtype physics preview ragged2e relsize rsfs setspace standalone \
