@@ -7,14 +7,12 @@ from moderngl_window.timers.clock import Timer
 from screeninfo import get_monitors
 
 from manim import __version__, config
-from manim.event_handler.window import WindowABC
+from manim.event_handler.window import WindowProtocol
 
 __all__ = ["Window"]
 
-__all__ = ["Window"]
 
-
-class Window(PygletWindow, WindowABC):
+class Window(PygletWindow, WindowProtocol):
     name = "Manim Community"
     fullscreen: bool = False
     resizable: bool = False
@@ -22,7 +20,7 @@ class Window(PygletWindow, WindowABC):
     vsync: bool = True
     cursor: bool = True
 
-    def __init__(self, size=config.window_size):
+    def __init__(self, size=config.window_size) -> None:
         # TODO: remove size argument from window init,
         # move size computation below to config
 

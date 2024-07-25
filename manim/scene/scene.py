@@ -23,7 +23,7 @@ from manim.utils.iterables import list_difference_update
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Reversible, Sequence
-    from typing import Any, Callable
+    from typing import Any, Callable, Self
 
     from manim.animation.protocol import AnimationProtocol
     from manim.manager import Manager
@@ -76,7 +76,7 @@ class Scene:
 
     sections_api: bool = False
 
-    def __init__(self, manager: Manager):
+    def __init__(self, manager: Manager[Self]):
         # Core state of the scene
         self.camera: Camera = Camera()
         self.manager = manager

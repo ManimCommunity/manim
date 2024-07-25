@@ -12,9 +12,10 @@ import numpy as np
 from tqdm import tqdm
 
 from manim import config, logger
-from manim.event_handler.window import WindowABC
+from manim.event_handler.window import WindowProtocol
 from manim.file_writer import FileWriter
-from manim.plugins import Hooks, plugins
+from manim.renderer.opengl_renderer import OpenGLRenderer
+from manim.renderer.opengl_renderer_window import Window
 from manim.scene.scene import Scene, SceneState
 from manim.utils.exceptions import EndSceneEarlyException
 from manim.utils.hashing import get_hash_from_play_call
@@ -69,7 +70,6 @@ class Manager(Generic[Scene_co]):
         self.renderer = self.create_renderer()
         self.renderer.use_window()
 
-        # file writer
         self.file_writer: FileWriterProtocol = self.create_file_writer()
         self._write_files = config.write_to_movie
 
@@ -88,12 +88,12 @@ class Manager(Generic[Scene_co]):
         -------
             An instance of a renderer
         """
-        renderer = plugins.renderer()
+        renderer = OpenGLRenderer()
         if config.preview:
             renderer.use_window()
         return renderer
 
-    def create_window(self) -> WindowABC | None:
+    def create_window(self) -> WindowProtocol | None:
         """Create and return a window instance.
 
         This can be overridden in subclasses (plugins), if more
@@ -103,7 +103,7 @@ class Manager(Generic[Scene_co]):
         -------
             A window if previewing, else None
         """
-        return plugins.window() if config.preview else None
+        return Window() if config.preview else None
 
     def create_file_writer(self) -> FileWriterProtocol:
         """Create and returna file writer instance.
@@ -188,9 +188,6 @@ class Manager(Generic[Scene_co]):
 
     def post_contruct(self) -> None:
         """Run post-construct hooks, and clean up the file writer."""
-        for hook in plugins.hooks[Hooks.POST_CONSTRUCT]:
-            hook(self)
-
         if self.file_writer.num_plays:
             self.file_writer.finish()
         # otherwise no animations were played

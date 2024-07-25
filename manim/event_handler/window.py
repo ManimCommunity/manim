@@ -1,16 +1,14 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
+from typing import Protocol
 
 
-class WindowABC(ABC):
-    is_closing: bool
+class WindowProtocol(Protocol):
+    @property
+    def is_closing(self) -> bool: ...
 
-    @abstractmethod
-    def swap_buffers(self) -> None: ...
+    def swap_buffers(self) -> object: ...
 
-    @abstractmethod
-    def close(self) -> None: ...
+    def close(self) -> object: ...
 
-    @abstractmethod
-    def clear(self) -> None: ...
+    def clear(self) -> object: ...

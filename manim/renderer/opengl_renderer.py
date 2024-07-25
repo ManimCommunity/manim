@@ -295,7 +295,7 @@ class OpenGLRenderer(Renderer, RendererProtocol):
             self.ctx, "render_texture"
         )
 
-    def use_window(self):
+    def use_window(self) -> None:
         self.output_fbo.release()
         self.output_fbo = self.ctx.detect_framebuffer()
 
