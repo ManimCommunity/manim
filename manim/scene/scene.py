@@ -308,14 +308,14 @@ class Scene:
     def next_section(
         self,
         name: str = "unnamed",
-        type: str = DefaultSectionType.NORMAL,
+        section_type: str = DefaultSectionType.NORMAL,
         skip_animations: bool = False,
     ) -> None:
         """Create separation here; the last section gets finished and a new one gets created.
         ``skip_animations`` skips the rendering of all animations in this section.
         Refer to :doc:`the documentation</tutorials/output_and_config>` on how to use sections.
         """
-        self.renderer.file_writer.next_section(name, type, skip_animations)
+        self.renderer.file_writer.next_section(name, section_type, skip_animations)
 
     def __str__(self):
         return self.__class__.__name__

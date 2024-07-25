@@ -26,7 +26,7 @@ sys.path.insert(0, os.path.abspath("."))
 # -- Project information -----------------------------------------------------
 
 project = "Manim"
-copyright = f"2020-{datetime.now().year}, The Manim Community Dev Team"
+copyright = f"2020-{datetime.now().year}, The Manim Community Dev Team"  # noqa: A001
 author = "The Manim Community Dev Team"
 
 
