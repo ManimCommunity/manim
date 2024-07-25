@@ -198,13 +198,11 @@ class VMobject(Mobject):
     def init_colors(self, propagate_colors: bool = True) -> Self:
         self.set_fill(
             color=self.fill_color,
-            opacity=self.fill_opacity,
             family=propagate_colors,
         )
         self.set_stroke(
             color=self.stroke_color,
             width=self.stroke_width,
-            opacity=self.stroke_opacity,
             family=propagate_colors,
         )
         self.set_background_stroke(

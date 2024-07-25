@@ -9,10 +9,10 @@ class Test(Scene):
         s = Square()
         self.add(s)
         self.play(Rotate(s, PI / 2))
-        self.wait(7)
+        self.wait(1)
         self.play(FadeOut(s))
 
-    @section(skip=True)
+    @section
     def three_mobjects(self) -> None:
         sq = RegularPolygon(6)
         c = Circle()
