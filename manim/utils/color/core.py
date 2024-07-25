@@ -199,6 +199,10 @@ class ManimColor:
 
     @property
     def _internal_space(self) -> npt.NDArray[ManimFloat]:
+        """
+        This is a readonly property which is a custom representation for color space operations.
+        It is used for operators and can be used when implementing a custom color space.
+        """
         return self._internal_value
 
     @property
