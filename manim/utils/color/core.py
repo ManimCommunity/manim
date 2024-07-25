@@ -31,14 +31,14 @@ To implement a custom color space you must subclass :class:`ManimColor` and impl
 
 :func:`~.ManimColor._internal_value` is an ``@property`` implemented on :class:`ManimColor` with the goal of keeping a consistent internal representation that can be referenced by other functions in :class:`ManimColor`.
 The getter should always return a value in the format of ``[r,g,b,a]`` as a numpy array which is in accordance with the type :class:`.ManimColorInternal`.
-The setter should always accept a value in the format `[r,g,b,a]` which can be converted to whatever attributes you need.
+The setter should always accept a value in the format ``[r,g,b,a]`` which can be converted to whatever attributes you need.
 This property acts as a proxy to whatever representation you need in your class.
 
-:func:`_internal_space` this is a readonly @property implemented on :class:`ManimColor` with the goal of a useful representation that can be used by operators and interpolation and color transform functions.
-The only constraints on this value are that it needs to be a numpy array and the last value must be the opacity in a range `0.0` to `1.0`.
-Additionally your `__init__` must support this format as initialization value without additional parameters to ensure correct functionality of all other methods in :class:`ManimColor`.
+:func:`~ManimColor._internal_space` this is a readonly @property implemented on :class:`ManimColor` with the goal of a useful representation that can be used by operators and interpolation and color transform functions.
+The only constraints on this value are that it needs to be a numpy array and the last value must be the opacity in a range ``0.0`` to ``1.0``.
+Additionally your ``__init__`` must support this format as initialization value without additional parameters to ensure correct functionality of all other methods in :class:`ManimColor`.
 
-:func:`_from_internal` is a @classmethod that converts an [r,g,b,a] value into suitable parameters for your `__init__` method and calls the cls parameter.
+:func:`~ManimColor._from_internal`` is a ``@classmethod`` that converts an ``[r,g,b,a]`` value into suitable parameters for your ``__init__`` method and calls the cls parameter.
 """
 
 from __future__ import annotations
@@ -49,7 +49,7 @@ import colorsys
 import random
 import re
 from collections.abc import Sequence
-from typing import Any, TypeVar, Union, overload
+from typing import Any, TypeGuard, TypeVar, Union, overload
 
 import numpy as np
 import numpy.typing as npt
@@ -266,7 +266,7 @@ class ManimColor:
         hex : str
             hex string to be parsed
         alpha : float
-            alpha value used for the color
+            alpha value used for the color if the color is only 3 bytes long, if the color is 4 bytes long the parameter will not be used
 
         Returns
         -------
@@ -405,12 +405,9 @@ class ManimColor:
         """
         from . import _all_color_dict
 
-        upper_name = name.upper()
-
-        if upper_name in _all_color_dict:
-            tmp = _all_color_dict[upper_name]._internal_value
-            tmp[3] = alpha
-            return tmp
+        if tmp := _all_color_dict.get(name.upper()):
+            tmp._internal_value[3] = alpha
+            return tmp._internal_value.copy()
         else:
             raise ValueError(f"Color {name} not found")
 
@@ -621,14 +618,12 @@ class ManimColor:
         tmp[-1] = opacity
         return self._construct_from_space(tmp)
 
-    __INTO = TypeVar("__INTO", bound="ManimColor")
-
-    def into(self, classtype: type[__INTO]) -> __INTO:
+    def into(self, classtype: type[ManimColorT]) -> ManimColorT:
         """Converts the current color into a different colorspace that is given without changing the _internal_value
 
         Parameters
         ----------
-        classtype : type[__INTO]
+        classtype : type[ManimColorT]
             The class that is used for conversion, it must be a subclass of ManimColor which respects the specification
             HSV, RGBA, ...
 
@@ -793,11 +788,18 @@ class ManimColor:
         ManimColor
             Either a list of colors or a singular color depending on the input
         """
-        if isinstance(color, (list, tuple)):
+        def isSequence(colors) -> TypeGuard[Sequence[ParsableManimColor]]:
+            return isinstance(colors, (list, tuple))
+
+        def isParsable(color) -> TypeGuard[ParsableManimColor]:
+            return not isinstance(color, (list, tuple))
+
+        if isSequence(color):
             return [
                 cls._from_internal(ManimColor(c, alpha)._internal_value) for c in color
-            ]  # type: ignore
-        return cls._from_internal(ManimColor(color, alpha)._internal_value)  # type: ignore
+            ]
+        elif isParsable(color):
+            return cls._from_internal(ManimColor(color, alpha)._internal_value)
 
     @staticmethod
     def gradient(colors: list[ManimColor], length: int):
@@ -818,45 +820,89 @@ class ManimColor:
             )
         return np.allclose(self._internal_value, other._internal_value)
 
-    def __add__(self, other: ManimColor) -> ManimColor:
-        return self._construct_from_space(self._internal_value + other._internal_value)
+    def __add__(self, other: int | float | Self) -> Self:
+        if isinstance(other, (int, float)):
+            return self._construct_from_space(self._internal_space + other)
+        else:
+            return self._construct_from_space(
+                self._internal_space + other._internal_space
+            )
 
-    def __sub__(self, other: ManimColor) -> ManimColor:
-        return self._construct_from_space(self._internal_value - other._internal_value)
+    def __sub__(self, other: int | float | Self) -> Self:
+        if isinstance(other, (int, float)):
+            return self._construct_from_space(self._internal_space - other)
+        else:
+            return self._construct_from_space(
+                self._internal_space - other._internal_space
+            )
 
-    def __mul__(self, other: ManimColor) -> ManimColor:
-        return self._construct_from_space(self._internal_value * other._internal_value)
+    def __mul__(self, other: int | float | Self) -> Self:
+        if isinstance(other, (int, float)):
+            return self._construct_from_space(self._internal_space * other)
+        else:
+            return self._construct_from_space(
+                self._internal_space * other._internal_space
+            )
 
-    def __truediv__(self, other: ManimColor) -> ManimColor:
-        return self._construct_from_space(self._internal_value / other._internal_value)
+    def __truediv__(self, other: Self) -> Self:
+        if isinstance(other, (int, float)):
+            return self._construct_from_space(self._internal_space / other)
+        else:
+            return self._construct_from_space(
+                self._internal_space / other._internal_space
+            )
 
-    def __floordiv__(self, other: ManimColor) -> ManimColor:
-        return self._construct_from_space(self._internal_value // other._internal_value)
+    def __floordiv__(self, other: int | float | Self) -> Self:
+        if isinstance(other, (int, float)):
+            return self._construct_from_space(self._internal_space // other)
+        else:
+            return self._construct_from_space(
+                self._internal_space // other._internal_space
+            )
 
-    def __mod__(self, other: ManimColor) -> ManimColor:
-        return self._construct_from_space(self._internal_value % other._internal_value)
+    def __mod__(self, other: int | float | Self) -> Self:
+        if isinstance(other, (int, float)):
+            return self._construct_from_space(self._internal_space % other)
+        else:
+            return self._construct_from_space(
+                self._internal_space % other._internal_space
+            )
 
-    def __pow__(self, other: ManimColor) -> ManimColor:
-        return self._construct_from_space(self._internal_value**other._internal_value)
+    def __pow__(self, other: int | float | Self) -> Self:
+        if isinstance(other, (int, float)):
+            return self._construct_from_space(self._internal_space**other)
+        else:
+            return self._construct_from_space(
+                self._internal_space**other._internal_space
+            )
 
-    def __and__(self, other: ManimColor) -> ManimColor:
+    def __invert__(self) -> Self:
+        return self.invert()
+
+    def __int__(self) -> int:
+        return self.to_integer()
+
+    def __getitem__(self, index: int) -> float:
+        return self._internal_space[index]
+
+    def __and__(self, other: Self) -> Self:
         return self._construct_from_space(
-            ManimColor._internal_from_integer(
-                self.to_integer() & other.to_integer(), 1.0
+            self._internal_from_integer(
+                self.to_integer() & int(other), 1.0
             )
         )
 
-    def __or__(self, other: ManimColor) -> ManimColor:
+    def __or__(self, other: Self) -> Self:
         return self._construct_from_space(
-            ManimColor._internal_from_integer(
-                self.to_integer() | other.to_integer(), 1.0
+            self._internal_from_integer(
+                self.to_integer() | int(other), 1.0
             )
         )
 
-    def __xor__(self, other: ManimColor) -> ManimColor:
+    def __xor__(self, other: Self) -> Self:
         return self._construct_from_space(
-            ManimColor._internal_from_integer(
-                self.to_integer() ^ other.to_integer(), 1.0
+            self._internal_from_integer(
+                self.to_integer() ^ int(other), 1.0
             )
         )
 
@@ -1315,4 +1361,5 @@ __all__ = [
     "random_color",
     "get_shaded_rgb",
     "HSV",
+    "RGBA",
 ]
