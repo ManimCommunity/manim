@@ -53,7 +53,7 @@ from typing import Any, TypeVar, Union, overload
 
 import numpy as np
 import numpy.typing as npt
-from typing_extensions import Self, TypeAlias, override, TypeGuard
+from typing_extensions import Self, TypeAlias, TypeGuard, override
 
 from manim.typing import (
     HSL_Array_Float,
@@ -64,6 +64,7 @@ from manim.typing import (
     HSVA_Tuple_Float,
     ManimColorDType,
     ManimColorInternal,
+    ManimFloat,
     RGB_Array_Float,
     RGB_Array_Int,
     RGB_Tuple_Float,
