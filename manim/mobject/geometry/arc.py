@@ -400,7 +400,9 @@ class Arc(TipableVMobject):
             return line_intersection(line1=(a1, a1 + n1), line2=(a2, a2 + n2))
         except Exception:
             if warning:
-                warnings.warn("Can't find Arc center, using ORIGIN instead")
+                warnings.warn(
+                    "Can't find Arc center, using ORIGIN instead", stacklevel=1
+                )
             self._failed_to_get_center = True
             return np.array(ORIGIN)
 
