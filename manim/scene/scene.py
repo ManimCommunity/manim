@@ -567,7 +567,9 @@ class Scene:
 
 
 class SceneState:
-    def __init__(self, scene: Scene, ignore: list[OpenGLMobject] | None = None) -> None:
+    def __init__(
+        self, scene: Scene, ignore: Iterable[OpenGLMobject] | None = None
+    ) -> None:
         self.time = scene.time
         self.num_plays = scene.num_plays
         self.camera = scene.camera.copy()

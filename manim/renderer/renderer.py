@@ -4,14 +4,12 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 from manim._config import logger
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.types.image_mobject import ImageMobject
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
-
     from manim.camera.camera import Camera
+    from manim.scene.scene import SceneState
     from manim.typing import PixelArray
 
 
@@ -32,9 +30,9 @@ class Renderer(ABC):
             (ImageMobject, self.render_image),
         ]
 
-    def render(self, camera: Camera, renderables: Iterable[OpenGLMobject]) -> None:
-        self.pre_render(camera)
-        for mob in renderables:
+    def render(self, state: SceneState) -> None:
+        self.pre_render(state.camera)
+        for mob in state.mobjects:
             for type_, render_func in self.capabilities:
                 if isinstance(mob, type_):
                     render_func(mob)
@@ -68,7 +66,7 @@ class Renderer(ABC):
 class RendererProtocol(Protocol):
     """The Protocol a renderer must implement to be used in :class:`.Manager`."""
 
-    def render(self, camera: Camera, renderables: Iterable[OpenGLMobject]) -> None:
+    def render(self, state: SceneState) -> None:
         """Render a group of Mobjects"""
         ...
 
