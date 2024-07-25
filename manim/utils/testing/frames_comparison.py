@@ -150,7 +150,7 @@ def frames_comparison(
 
         # Reach a bit into pytest internals to hoist the marks from our wrapped
         # function.
-        setattr(wrapper, "pytestmark", [])
+        wrapper.pytestmark = []
         new_marks = getattr(tested_scene_construct, "pytestmark", [])
         wrapper.pytestmark = new_marks
         return wrapper

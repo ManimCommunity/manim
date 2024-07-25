@@ -1351,7 +1351,8 @@ class OpenGLMobject:
             for submob in self.submobjects:
                 submob.invert(recursive=True)
         self.submobjects.reverse()
-        # Is there supposed to be an assemble_family here?
+        self.assemble_family()
+        return self
 
     # Copying
 
@@ -1868,9 +1869,7 @@ class OpenGLMobject:
             return True
         if self.get_bottom()[1] > config.frame_y_radius:
             return True
-        if self.get_top()[1] < -config.frame_y_radius:
-            return True
-        return False
+        return self.get_top()[1] < -config.frame_y_radius
 
     def stretch_about_point(self, factor: float, dim: int, point: Point3D) -> Self:
         return self.stretch(factor, dim, about_point=point)
@@ -2569,10 +2568,7 @@ class OpenGLMobject:
             if key not in mobject1.data or key not in mobject2.data:
                 continue
 
-            if key in ("points", "bounding_box"):
-                func = path_func
-            else:
-                func = interpolate
+            func = path_func if key in ("points", "bounding_box") else interpolate
 
             self.data[key][:] = func(mobject1.data[key], mobject2.data[key], alpha)
 

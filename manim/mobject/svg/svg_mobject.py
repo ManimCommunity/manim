@@ -264,7 +264,8 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         """
         result = []
         for shape in svg.elements():
-            if isinstance(shape, se.Group):
+            # can we combine the two continue cases into one?
+            if isinstance(shape, se.Group):  # noqa: SIM114
                 continue
             elif isinstance(shape, se.Path):
                 mob = self.path_to_mobject(shape)

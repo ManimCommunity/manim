@@ -217,7 +217,7 @@ class ManimColor:
 
     # TODO: Maybe make 8 nibble hex also convertible ?
     @staticmethod
-    def _internal_from_hex_string(hex: str, alpha: float) -> ManimColorInternal:
+    def _internal_from_hex_string(hex_: str, alpha: float) -> ManimColorInternal:
         """Internal function for converting a hex string into the internal representation of a ManimColor.
 
         .. warning::
@@ -238,9 +238,9 @@ class ManimColor:
         ManimColorInternal
             Internal color representation
         """
-        if len(hex) == 6:
-            hex += "00"
-        tmp = int(hex, 16)
+        if len(hex_) == 6:
+            hex_ += "00"
+        tmp = int(hex_, 16)
         return np.asarray(
             (
                 ((tmp >> 24) & 0xFF) / 255,
@@ -590,12 +590,12 @@ class ManimColor:
         return cls(rgba)
 
     @classmethod
-    def from_hex(cls, hex: str, alpha: float = 1.0) -> Self:
+    def from_hex(cls, hex_str: str, alpha: float = 1.0) -> Self:
         """Creates a Manim Color from a hex string, prefixes allowed # and 0x
 
         Parameters
         ----------
-        hex : str
+        hex_str : str
             The hex string to be converted (currently only supports 6 nibbles)
         alpha : float, optional
             alpha value to be used for the hex string, by default 1.0
@@ -605,7 +605,7 @@ class ManimColor:
         ManimColor
             The ManimColor represented by the hex string
         """
-        return cls(hex, alpha)
+        return cls(hex_str, alpha)
 
     @classmethod
     def from_hsv(

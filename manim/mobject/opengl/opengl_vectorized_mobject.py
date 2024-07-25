@@ -1874,10 +1874,7 @@ class OpenGLDashedVMobject(OpenGLVMobject):
         if num_dashes > 0:
             # Assuming total length is 1
             dash_len = r / n
-            if vmobject.is_closed():
-                void_len = (1 - r) / n
-            else:
-                void_len = (1 - r) / (n - 1)
+            void_len = (1 - r) / n if vmobject.is_closed() else (1 - r) / (n - 1)
 
             self.add(
                 *(
