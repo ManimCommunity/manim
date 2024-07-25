@@ -4,7 +4,6 @@ from __future__ import annotations
 
 __all__ = ["Rotating", "Rotate"]
 
-from collections.abc import Sequence
 from typing import TYPE_CHECKING, Callable
 
 import numpy as np
@@ -16,6 +15,7 @@ from ..utils.rate_functions import linear
 
 if TYPE_CHECKING:
     from ..mobject.mobject import Mobject
+    from ..typing import Vector3D
 
 
 class Rotating(Animation):
@@ -87,8 +87,8 @@ class Rotate(Transform):
         mobject: Mobject,
         angle: float = PI,
         axis: np.ndarray = OUT,
-        about_point: Sequence[float] | None = None,
-        about_edge: Sequence[float] | None = None,
+        about_point: Vector3D | None = None,
+        about_edge: Vector3D | None = None,
         **kwargs,
     ) -> None:
         if "path_arc" not in kwargs:

@@ -14,7 +14,7 @@ from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import RoundedRectangle
 from manim.mobject.mobject import Mobject
 from manim.mobject.types.vectorized_mobject import VGroup
-from manim.utils.color import BLACK, RED, YELLOW, ManimColor, ParsableManimColor
+from manim.utils.color import BLACK, RED, YELLOW, ParsableManimColor
 
 
 class SurroundingRectangle(RoundedRectangle):
@@ -107,7 +107,7 @@ class BackgroundRectangle(SurroundingRectangle):
             buff=buff,
             **kwargs,
         )
-        self.original_fill_opacity: float = self.fill_opacity
+        self.original_fill_opacity: float = self.get_fill_opacities()
 
     def pointwise_become_partial(self, mobject: Mobject, a: Any, b: float) -> Self:
         self.set_fill(opacity=b * self.original_fill_opacity)
@@ -128,9 +128,6 @@ class BackgroundRectangle(SurroundingRectangle):
                 kwargs,
             )
         return self
-
-    def get_fill_color(self) -> ManimColor:
-        return self.color
 
 
 class Cross(VGroup):

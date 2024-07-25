@@ -96,7 +96,7 @@ class Mobject:
 
     def __init__(
         self,
-        color: ParsableManimColor | list[ParsableManimColor] = WHITE,
+        color: ParsableManimColor | list[ParsableManimColor] | None = WHITE,
         name: str | None = None,
         dim: int = 3,
         target=None,
@@ -400,13 +400,15 @@ class Mobject:
         return result
 
     def __repr__(self) -> str:
-        return str(self.name)
+        if hasattr(self, "name"):
+            return str(self.name)
+        return str(self.__class__.__name__)
 
     def reset_points(self) -> None:
         """Sets :attr:`points` to be an empty array."""
         self.points = np.zeros((0, self.dim))
 
-    def init_colors(self) -> None:
+    def init_colors(self) -> Self:
         """Initializes the colors.
 
         Gets called upon creation. This is an empty method that can be implemented by

@@ -197,6 +197,7 @@ class BarChart(Axes):
     bar_names
         A sequence of names for each bar. Does not have to match the length of ``values``.
     y_range
+        Takes the form (min, max, stepsize)
         The y_axis range of values. If ``None``, the range will be calculated based on the
         min/max of ``values`` and the step will be calculated based on ``y_length``.
     x_length

@@ -681,10 +681,11 @@ class Dot(Circle):
         point: Point3D = ORIGIN,
         radius: float = DEFAULT_DOT_RADIUS,
         stroke_width: float = 0,
-        fill_opacity: float = 1.0,
+        fill_opacity: float = None,
         color: ParsableManimColor = WHITE,
         **kwargs,
     ) -> None:
+        self.submobjects = []
         super().__init__(
             arc_center=point,
             radius=radius,

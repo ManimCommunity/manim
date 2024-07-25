@@ -113,7 +113,9 @@ class ManimColor:
         alpha: float = 1.0,
     ) -> None:
         if value is None:
-            self._internal_value = np.array((0, 0, 0, alpha), dtype=ManimColorDType)
+            self._internal_value = np.array(
+                (1.0, 1.0, 1.0, alpha), dtype=ManimColorDType
+            )
         elif isinstance(value, ManimColor):
             # logger.info(
             #     "ManimColor was passed another ManimColor. This is probably not what "
@@ -519,6 +521,39 @@ class ManimColor:
         """
         return ManimColor(1.0 - self._internal_value, with_alpha)
 
+    @overload
+    def opacity(self, opacity: float) -> ManimColor:
+        """Returns a new ManimColor with the same color and the given opacity
+
+        Parameters
+        ----------
+        opacity : float
+            The opacity for the new ManimColor
+
+        Returns
+        -------
+        ManimColor
+            The new ManimColor object with changed opacity
+        """
+
+    @overload
+    def opacity(self, opacity: None) -> float:
+        """Returns the opacity of the current ManimColor in a range from zero to one
+
+        Returns
+        -------
+        float
+            The opacity of the ManimColor
+        """
+
+    def opacity(self, opacity=None):
+        """Returns a new ManimColor with the same color and a new opacity or changes the opacity"""
+        if opacity is None:
+            return self._internal_value[3]
+        tmp = self._internal_value.copy()
+        tmp[3] = opacity
+        return ManimColor.parse(tmp)
+
     def interpolate(self, other: ManimColor, alpha: float) -> ManimColor:
         """Interpolates between the current and the given ManimColor an returns the interpolated color
 
@@ -676,7 +711,7 @@ class ManimColor:
         raise NotImplementedError
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}('{self.to_hex()}')"
+        return f"{self.__class__.__name__}('{self.to_hex(True)}')"
 
     def __str__(self) -> str:
         return f"{self.to_hex()}"
