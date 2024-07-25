@@ -53,7 +53,7 @@ from typing import Any, TypeVar, Union, overload
 
 import numpy as np
 import numpy.typing as npt
-from typing_extensions import Self, TypeAlias, override, TypeGuard
+from typing_extensions import Self, TypeAlias, TypeGuard, override
 
 from manim.typing import (
     HSL_Array_Float,
