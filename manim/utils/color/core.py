@@ -954,7 +954,7 @@ class HSV(ManimColor):
                 *colorsys.hsv_to_rgb(self.__hsv[0], self.__hsv[1], self.__hsv[2]),
                 self.__alpha,
             ],
-            dtype=float,
+            dtype=ManimColorDType,
         )
 
     @_internal_value.setter
