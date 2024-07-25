@@ -1352,6 +1352,7 @@ class OpenGLMobject:
                 submob.invert(recursive=True)
         self.submobjects.reverse()
         self.assemble_family()
+        return self
 
     # Copying
 
