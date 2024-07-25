@@ -641,9 +641,10 @@ class ManimColor:
 
     @classmethod
     def _from_internal(cls, value: ManimColorInternal) -> Self:
-        """This function is intended to be overwritten by custom color space classes which are subtypes of ManimColor
-        The function constructs a new Object of the given class by transforming the value in the internal format [r,g,b,a]
-        into a format which the constructor of the custom class can understand, look at HSV for an example
+        """This function is intended to be overwritten by custom color space classes which are subtypes of ManimColor.
+        
+        The function constructs a new object of the given class by transforming the value in the internal format ``[r,g,b,a]``
+        into a format which the constructor of the custom class can understand. Look at :class:`.HSV` for an example.
         """
         return cls(value)
 
