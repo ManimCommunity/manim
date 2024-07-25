@@ -113,7 +113,9 @@ class ManimColor:
         alpha: float = 1.0,
     ) -> None:
         if value is None:
-            self._internal_value = np.array((0, 0, 0, alpha), dtype=ManimColorDType)
+            self._internal_value = np.array(
+                (1.0, 1.0, 1.0, alpha), dtype=ManimColorDType
+            )
         elif isinstance(value, ManimColor):
             # logger.info(
             #     "ManimColor was passed another ManimColor. This is probably not what "

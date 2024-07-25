@@ -129,9 +129,6 @@ class BackgroundRectangle(SurroundingRectangle):
             )
         return self
 
-    def get_fill_color(self) -> ManimColor:
-        return self.color
-
 
 class Cross(VGroup):
     """Creates a cross.

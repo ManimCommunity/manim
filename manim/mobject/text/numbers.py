@@ -99,7 +99,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         fill_opacity: float = 1.0,
         **kwargs,
     ):
-        super().__init__(**kwargs, stroke_width=stroke_width)
+        super().__init__(**kwargs, stroke_width=stroke_width, fill_opacity=fill_opacity)
         self.number = number
         self.num_decimal_places = num_decimal_places
         self.include_sign = include_sign
@@ -112,7 +112,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         self.include_background_rectangle = include_background_rectangle
         self.edge_to_fix = edge_to_fix
         self._font_size = font_size
-        self.fill_opacity = fill_opacity
+        self.set_fill_opacity(fill_opacity)
 
         self.initial_config = kwargs.copy()
         self.initial_config.update(
@@ -133,7 +133,6 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         )
 
         self._set_submobjects_from_number(number)
-        self.init_colors()
 
     @property
     def font_size(self):
