@@ -29,12 +29,12 @@ The current system is using a few indirections for ensuring a consistent behavio
 
 To implement a custom color space you must subclass :class:`ManimColor` and implement three important functions
 
-:func:`~.ManimColor._internal_value` is an ``@property`` implemented on :class:`ManimColor` with the goal of keeping a consistent internal representation that can be referenced by other functions in :class:`ManimColor`.
+:attr:`~.ManimColor._internal_value` is an ``@property`` implemented on :class:`ManimColor` with the goal of keeping a consistent internal representation that can be referenced by other functions in :class:`ManimColor`.
 The getter should always return a value in the format of ``[r,g,b,a]`` as a numpy array which is in accordance with the type :class:`.ManimColorInternal`.
 The setter should always accept a value in the format ``[r,g,b,a]`` which can be converted to whatever attributes you need.
 This property acts as a proxy to whatever representation you need in your class.
 
-:func:`~ManimColor._internal_space` this is a readonly @property implemented on :class:`ManimColor` with the goal of a useful representation that can be used by operators and interpolation and color transform functions.
+:attr:`~ManimColor._internal_space` this is a readonly ``@property`` implemented on :class:`ManimColor` with the goal of a useful representation that can be used by operators and interpolation and color transform functions.
 The only constraints on this value are that it needs to be a numpy array and the last value must be the opacity in a range ``0.0`` to ``1.0``.
 Additionally your ``__init__`` must support this format as initialization value without additional parameters to ensure correct functionality of all other methods in :class:`ManimColor`.
 
