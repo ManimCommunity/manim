@@ -3,6 +3,7 @@ from __future__ import annotations
 import math
 
 import numpy as np
+import numpy.testing as nt
 import pytest
 
 from manim import (
@@ -197,42 +198,42 @@ def test_input_to_graph_point():
 
 def test_matmul_operations():
     ax = Axes()
-    assert (ax @ (1, 2) == ax.coords_to_point(1, 2)).all()
+    nt.assert_equal(ax @ (1, 2), ax.coords_to_point(1, 2))
     # should work with mobjects too, using their center
     mob = Dot().move_to((1, 2, 0))
-    assert (ax @ mob == ax.coords_to_point(1, 2)).all()
+    nt.assert_equal(ax @ mob, ax.coords_to_point(1, 2))
 
     # other coordinate systems like PolarPlane and ComplexPlane should override __matmul__ indirectly
     polar = PolarPlane()
-    assert (polar @ (1, 2) == polar.polar_to_point(1, 2)).all()
+    nt.assert_equal(polar @ (1, 2), polar.polar_to_point(1, 2))
 
     complx = ComplexPlane()
-    assert (complx @ (1 + 2j) == complx.number_to_point(1 + 2j)).all()
+    nt.assert_equal(complx @ (1 + 2j), complx.number_to_point(1 + 2j))
 
     # Numberline doesn't inherit from CoordinateSystem, but it should still work
     n = NumberLine()
-    assert (n @ 3 == n.number_to_point(3)).all()
+    nt.assert_equal(n @ 3, n.number_to_point(3))
 
 
 def test_rmatmul_operations():
     point = (1, 2, 0)
 
     ax = Axes()
-    assert (point @ ax == ax.point_to_coords(point)).all()
+    nt.assert_equal(point @ ax, ax.point_to_coords(point))
 
     polar = PolarPlane()
     assert point @ polar == polar.point_to_polar(point)
 
     complx = ComplexPlane()
-    assert point @ complx == complx.point_to_number(point)
+    nt.assert_equal(point @ complx, complx.point_to_number(point))
 
     n = NumberLine()
     point = n @ 4
 
-    assert (
-        tuple(point) @ n  # ndarray overrides __matmul__
-        == n.point_to_number(point)
-    ).all()
+    nt.assert_equal(
+        tuple(point) @ n,  # ndarray overrides __matmul__
+        n.point_to_number(point),
+    )
 
     mob = Dot().move_to(point)
-    assert (mob @ n == n.point_to_number(mob.get_center())).all()
+    nt.assert_equal(mob @ n, n.point_to_number(mob.get_center()))
