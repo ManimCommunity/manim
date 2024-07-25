@@ -146,7 +146,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         for mob in self.family_members_with_points():
             num_points = self.get_num_points()
             mob.apply_over_attr_arrays(
-                lambda arr: arr[np.arange(0, num_points, factor)],
+                lambda arr, n=num_points: arr[np.arange(0, n, factor)],
             )
         return self
 
@@ -154,7 +154,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         """Function is any map from R^3 to R"""
         for mob in self.family_members_with_points():
             indices = np.argsort(np.apply_along_axis(function, 1, mob.points))
-            mob.apply_over_attr_arrays(lambda arr: arr[indices])
+            mob.apply_over_attr_arrays(lambda arr, idx=indices: arr[idx])
         return self
 
     def fade_to(self, color, alpha, family=True):

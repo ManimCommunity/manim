@@ -898,16 +898,16 @@ class Scene:
         for arg in arg_anims:
             try:
                 animations.append(prepare_animation(arg))
-            except TypeError:
+            except TypeError as e:
                 if inspect.ismethod(arg):
                     raise TypeError(
                         "Passing Mobject methods to Scene.play is no longer"
                         " supported. Use Mobject.animate instead.",
-                    )
+                    ) from e
                 else:
                     raise TypeError(
                         f"Unexpected argument {arg} passed to Scene.play().",
-                    )
+                    ) from e
 
         for animation in animations:
             for k, v in kwargs.items():

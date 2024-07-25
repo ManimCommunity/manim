@@ -69,7 +69,7 @@ class OpenGLPMobject(OpenGLMobject):
         for mob in self.family_members_with_points():
             num_points = mob.get_num_points()
 
-            def thin_func():
+            def thin_func(num_points=num_points):
                 return np.arange(0, num_points, factor)
 
             if len(mob.points) == len(mob.rgbas):

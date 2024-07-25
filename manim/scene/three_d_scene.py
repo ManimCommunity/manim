@@ -134,8 +134,8 @@ class ThreeDScene(Scene):
                 }
                 cam.add_updater(lambda m, dt: methods[about](rate * dt))
                 self.add(self.camera)
-        except Exception:
-            raise ValueError("Invalid ambient rotation angle.")
+        except Exception as e:
+            raise ValueError("Invalid ambient rotation angle.") from e
 
     def stop_ambient_camera_rotation(self, about="theta"):
         """This method stops all ambient camera rotation."""
@@ -152,8 +152,8 @@ class ThreeDScene(Scene):
                 self.remove(x)
             elif config.renderer == RendererType.OPENGL:
                 self.camera.clear_updaters()
-        except Exception:
-            raise ValueError("Invalid ambient rotation angle.")
+        except Exception as e:
+            raise ValueError("Invalid ambient rotation angle.") from e
 
     def begin_3dillusion_camera_rotation(
         self,
