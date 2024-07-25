@@ -197,7 +197,7 @@ class ManimColor:
             )
 
     @property
-    def _internal_space(self) -> npt.NDArray:
+    def _internal_space(self) -> npt.NDArray[ManimFloat]:
         return self._internal_value
 
     @property
