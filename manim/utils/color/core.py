@@ -794,17 +794,17 @@ class ManimColor:
             Either a list of colors or a singular color depending on the input
         """
 
-        def isSequence(colors) -> TypeGuard[Sequence[ParsableManimColor]]:
+        def is_sequence(colors) -> TypeGuard[Sequence[ParsableManimColor]]:
             return isinstance(colors, (list, tuple))
 
-        def isParsable(color) -> TypeGuard[ParsableManimColor]:
+        def is_parsable(color) -> TypeGuard[ParsableManimColor]:
             return not isinstance(color, (list, tuple))
 
-        if isSequence(color):
+        if is_sequence(color):
             return [
                 cls._from_internal(ManimColor(c, alpha)._internal_value) for c in color
             ]
-        elif isParsable(color):
+        elif is_parsable(color):
             return cls._from_internal(ManimColor(color, alpha)._internal_value)
 
     @staticmethod
