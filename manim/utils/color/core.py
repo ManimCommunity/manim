@@ -18,6 +18,27 @@ Note this way uses the name of the colors in UPPERCASE.
 
     The colors of type "C" have an alias equal to the colorname without a letter,
     e.g. GREEN = GREEN_C
+
+===================
+Custom Color Spaces
+===================
+
+Hello dear visitor, you seem to be interested in implementing a custom color class for a color space we don't currently support.
+
+The current system is using a few indirections for ensuring a consistent behavior with all other color types in manim.
+
+To implement a custom color space you must subclass :class:`ManimColor` and implement three important functions
+
+:attr:`~.ManimColor._internal_value` is an ``@property`` implemented on :class:`ManimColor` with the goal of keeping a consistent internal representation that can be referenced by other functions in :class:`ManimColor`.
+The getter should always return a value in the format of ``[r,g,b,a]`` as a numpy array which is in accordance with the type :class:`.ManimColorInternal`.
+The setter should always accept a value in the format ``[r,g,b,a]`` which can be converted to whatever attributes you need.
+This property acts as a proxy to whatever representation you need in your class.
+
+:attr:`~ManimColor._internal_space` this is a readonly ``@property`` implemented on :class:`ManimColor` with the goal of a useful representation that can be used by operators and interpolation and color transform functions.
+The only constraints on this value are that it needs to be a numpy array and the last value must be the opacity in a range ``0.0`` to ``1.0``.
+Additionally your ``__init__`` must support this format as initialization value without additional parameters to ensure correct functionality of all other methods in :class:`ManimColor`.
+
+:func:`~ManimColor._from_internal` is a ``@classmethod`` that converts an ``[r,g,b,a]`` value into suitable parameters for your ``__init__`` method and calls the cls parameter.
 """
 
 from __future__ import annotations
@@ -32,13 +53,18 @@ from typing import Any, TypeVar, Union, overload
 
 import numpy as np
 import numpy.typing as npt
-from typing_extensions import Self, TypeAlias
+from typing_extensions import Self, TypeAlias, TypeGuard, override
 
 from manim.typing import (
+    HSL_Array_Float,
+    HSL_Tuple_Float,
     HSV_Array_Float,
     HSV_Tuple_Float,
+    HSVA_Array_Float,
+    HSVA_Tuple_Float,
     ManimColorDType,
     ManimColorInternal,
+    ManimFloat,
     RGB_Array_Float,
     RGB_Array_Int,
     RGB_Tuple_Float,
@@ -132,7 +158,7 @@ class ManimColor:
                 # This is not expected to be called on module initialization time
                 # It can be horribly slow to convert a string to a color because
                 # it has to access the dictionary of colors and find the right color
-                self._internal_value = ManimColor._internal_from_string(value)
+                self._internal_value = ManimColor._internal_from_string(value, alpha)
         elif isinstance(value, (list, tuple, np.ndarray)):
             length = len(value)
             if all(isinstance(x, float) for x in value):
@@ -147,8 +173,8 @@ class ManimColor:
             else:
                 if length == 3:
                     self._internal_value = ManimColor._internal_from_int_rgb(
-                        value,
-                        alpha,  # type: ignore
+                        value,  # type: ignore
+                        alpha,
                     )
                 elif length == 4:
                     self._internal_value = ManimColor._internal_from_int_rgba(value)  # type: ignore
@@ -160,7 +186,6 @@ class ManimColor:
             result = re_hex.search(value.get_hex())
             if result is None:
                 raise ValueError(f"Failed to parse a color from {value}")
-
             self._internal_value = ManimColor._internal_from_hex_string(
                 result.group(), alpha
             )
@@ -171,6 +196,14 @@ class ManimColor:
                 "list[int, int, int, int], list[float, float, float], "
                 f"list[float, float, float, float], not {type(value)}"
             )
+
+    @property
+    def _internal_space(self) -> npt.NDArray[ManimFloat]:
+        """
+        This is a readonly property which is a custom representation for color space operations.
+        It is used for operators and can be used when implementing a custom color space.
+        """
+        return self._internal_value
 
     @property
     def _internal_value(self) -> ManimColorInternal:
@@ -203,6 +236,14 @@ class ManimColor:
             raise TypeError("Array must have 4 values exactly")
         self.__value: ManimColorInternal = value
 
+    @classmethod
+    def _construct_from_space(cls, _space) -> Self:
+        """
+        This function is used as a proxy for constructing a color with an internal value,
+        this can be used by subclasses to hook into the construction of new objects using the internal value format
+        """
+        return cls(_space)
+
     @staticmethod
     def _internal_from_integer(value: int, alpha: float) -> ManimColorInternal:
         return np.asarray(
@@ -215,7 +256,6 @@ class ManimColor:
             dtype=ManimColorDType,
         )
 
-    # TODO: Maybe make 8 nibble hex also convertible ?
     @staticmethod
     def _internal_from_hex_string(hex_: str, alpha: float) -> ManimColorInternal:
         """Internal function for converting a hex string into the internal representation of a ManimColor.
@@ -231,7 +271,7 @@ class ManimColor:
         hex : str
             hex string to be parsed
         alpha : float
-            alpha value used for the color
+            alpha value used for the color if the color is only 3 bytes long, if the color is 4 bytes long the parameter will not be used
 
         Returns
         -------
@@ -239,7 +279,13 @@ class ManimColor:
             Internal color representation
         """
         if len(hex_) == 6:
-            hex_ += "00"
+            hex_ += "FF"
+        elif len(hex_) == 8:
+            alpha = (int(hex_, 16) & 0xFF) / 255
+        else:
+            raise ValueError(
+                "Hex colors must be specified with either 0x or # as prefix and contain 6 or 8 hexadecimal numbers"
+            )
         tmp = int(hex_, 16)
         return np.asarray(
             (
@@ -340,7 +386,7 @@ class ManimColor:
         return np.asarray(rgba, dtype=ManimColorDType)
 
     @staticmethod
-    def _internal_from_string(name: str) -> ManimColorInternal:
+    def _internal_from_string(name: str, alpha: float) -> ManimColorInternal:
         """Internal function for converting a string into the internal representation of a ManimColor.
         This is not used for hex strings, please refer to :meth:`_internal_from_hex` for this functionality.
 
@@ -364,10 +410,9 @@ class ManimColor:
         """
         from . import _all_color_dict
 
-        upper_name = name.upper()
-
-        if upper_name in _all_color_dict:
-            return _all_color_dict[upper_name]._internal_value
+        if tmp := _all_color_dict.get(name.upper()):
+            tmp._internal_value[3] = alpha
+            return tmp._internal_value.copy()
         else:
             raise ValueError(f"Color {name} not found")
 
@@ -382,9 +427,8 @@ class ManimColor:
         .. warning::
             This will return only the rgb part of the color
         """
-        return int.from_bytes(
-            (self._internal_value[:3] * 255).astype(int).tobytes(), "big"
-        )
+        tmp = (self._internal_value[:3] * 255).astype(dtype=np.byte).tobytes()
+        return int.from_bytes(tmp, "big")
 
     def to_rgb(self) -> RGB_Array_Float:
         """Converts the current ManimColor into a rgb array of floats
@@ -498,9 +542,25 @@ class ManimColor:
         HSV_Array_Float
             A hsv array containing 3 elements of type float ranging from 0 to 1
         """
-        return colorsys.rgb_to_hsv(*self.to_rgb())
+        return np.array(colorsys.rgb_to_hsv(*self.to_rgb()))
 
-    def invert(self, with_alpha=False) -> ManimColor:
+    def to_hsl(self) -> HSL_Array_Float:
+        """Converts the Manim Color to HSL array.
+
+        .. note::
+           Be careful this returns an array in the form `[h, s, l]` where the elements are floats.
+           This might be confusing because rgb can also be an array of floats so you might want to annotate the usage
+           of this function in your code by typing the variables with :class:`HSL_Array_Float` in order to differentiate
+           between rgb arrays and hsl arrays
+
+        Returns
+        -------
+        HSL_Array_Float
+            A hsl array containing 3 elements of type float ranging from 0 to 1
+        """
+        return np.array(colorsys.rgb_to_hls(*self.to_rgb()))
+
+    def invert(self, with_alpha=False) -> Self:
         """Returns an linearly inverted version of the color (no inplace changes)
 
         Parameters
@@ -517,9 +577,15 @@ class ManimColor:
         ManimColor
             The linearly inverted ManimColor
         """
-        return ManimColor(1.0 - self._internal_value, with_alpha)
+        if with_alpha:
+            return self._construct_from_space(1.0 - self._internal_space)
+        else:
+            alpha = self._internal_space[3]
+            new = 1.0 - self._internal_space
+            new[-1] = alpha
+            return self._construct_from_space(new)
 
-    def interpolate(self, other: ManimColor, alpha: float) -> ManimColor:
+    def interpolate(self, other: ManimColor, alpha: float) -> Self:
         """Interpolates between the current and the given ManimColor an returns the interpolated color
 
         Parameters
@@ -536,9 +602,51 @@ class ManimColor:
         ManimColor
             The interpolated ManimColor
         """
-        return ManimColor(
-            self._internal_value * (1 - alpha) + other._internal_value * alpha
+        return self._construct_from_space(
+            self._internal_space * (1 - alpha) + other._internal_space * alpha
         )
+
+    def opacity(self, opacity: float) -> Self:
+        """Creates a new ManimColor with the given opacity and the same color value as before
+
+        Parameters
+        ----------
+        opacity : float
+            The new opacity value to be used
+
+        Returns
+        -------
+        ManimColor
+            The new ManimColor with the same color value but the new opacity
+        """
+        tmp = self._internal_space.copy()
+        tmp[-1] = opacity
+        return self._construct_from_space(tmp)
+
+    def into(self, classtype: type[ManimColorT]) -> ManimColorT:
+        """Converts the current color into a different colorspace that is given without changing the _internal_value
+
+        Parameters
+        ----------
+        classtype : type[ManimColorT]
+            The class that is used for conversion, it must be a subclass of ManimColor which respects the specification
+            HSV, RGBA, ...
+
+        Returns
+        -------
+        __INTO
+            Color object of the type passed into classtype with the same internal value as previously
+        """
+        return classtype._from_internal(self._internal_value)
+
+    @classmethod
+    def _from_internal(cls, value: ManimColorInternal) -> Self:
+        """This function is intended to be overwritten by custom color space classes which are subtypes of ManimColor.
+
+        The function constructs a new object of the given class by transforming the value in the internal format ``[r,g,b,a]``
+        into a format which the constructor of the custom class can understand. Look at :class:`.HSV` for an example.
+        """
+        return cls(value)
 
     @classmethod
     def from_rgb(
@@ -565,7 +673,7 @@ class ManimColor:
         ManimColor
             Returns the ManimColor object
         """
-        return cls(rgb, alpha)
+        return cls._from_internal(ManimColor(rgb, alpha)._internal_value)
 
     @classmethod
     def from_rgba(
@@ -605,7 +713,7 @@ class ManimColor:
         ManimColor
             The ManimColor represented by the hex string
         """
-        return cls(hex_str, alpha)
+        return cls._from_internal(ManimColor(hex_str, alpha)._internal_value)
 
     @classmethod
     def from_hsv(
@@ -626,7 +734,28 @@ class ManimColor:
             The ManimColor with the corresponding RGB values to the HSV
         """
         rgb = colorsys.hsv_to_rgb(*hsv)
-        return cls(rgb, alpha)
+        return cls._from_internal(ManimColor(rgb, alpha)._internal_value)
+
+    @classmethod
+    def from_hsl(
+        cls, hsl: HSL_Array_Float | HSL_Tuple_Float, alpha: float = 1.0
+    ) -> Self:
+        """Creates a ManimColor from an HSL Array
+
+        Parameters
+        ----------
+        hsl : HSL_Array_Float | HSL_Tuple_Float
+            Any 3 Element Iterable containing floats from 0-1
+        alpha : float, optional
+            the alpha value to be used, by default 1.0
+
+        Returns
+        -------
+        ManimColor
+            The ManimColor with the corresponding RGB values to the HSL
+        """
+        rgb = colorsys.hls_to_rgb(*hsl)
+        return cls._from_internal(ManimColor(rgb, alpha)._internal_value)
 
     @overload
     @classmethod
@@ -647,7 +776,7 @@ class ManimColor:
     @classmethod
     def parse(
         cls,
-        color: ParsableManimColor | list[ParsableManimColor] | None,
+        color: ParsableManimColor | Sequence[ParsableManimColor] | None,
         alpha: float = 1.0,
     ) -> Self | list[Self]:
         """
@@ -665,9 +794,19 @@ class ManimColor:
         ManimColor
             Either a list of colors or a singular color depending on the input
         """
-        if isinstance(color, (list, tuple)):
-            return [cls(c, alpha) for c in color]  # type: ignore
-        return cls(color, alpha)  # type: ignore
+
+        def is_sequence(colors) -> TypeGuard[Sequence[ParsableManimColor]]:
+            return isinstance(colors, (list, tuple))
+
+        def is_parsable(color) -> TypeGuard[ParsableManimColor]:
+            return not isinstance(color, (list, tuple))
+
+        if is_sequence(color):
+            return [
+                cls._from_internal(ManimColor(c, alpha)._internal_value) for c in color
+            ]
+        elif is_parsable(color):
+            return cls._from_internal(ManimColor(color, alpha)._internal_value)
 
     @staticmethod
     def gradient(colors: list[ManimColor], length: int):
@@ -688,35 +827,225 @@ class ManimColor:
             )
         return np.allclose(self._internal_value, other._internal_value)
 
-    def __add__(self, other: ManimColor) -> ManimColor:
-        return ManimColor(self._internal_value + other._internal_value)
+    def __add__(self, other: int | float | Self) -> Self:
+        if isinstance(other, (int, float)):
+            return self._construct_from_space(self._internal_space + other)
+        else:
+            return self._construct_from_space(
+                self._internal_space + other._internal_space
+            )
 
-    def __sub__(self, other: ManimColor) -> ManimColor:
-        return ManimColor(self._internal_value - other._internal_value)
+    def __radd__(self, other: int | float | Self) -> Self:
+        return self + other
 
-    def __mul__(self, other: ManimColor) -> ManimColor:
-        return ManimColor(self._internal_value * other._internal_value)
+    def __sub__(self, other: int | float | Self) -> Self:
+        if isinstance(other, (int, float)):
+            return self._construct_from_space(self._internal_space - other)
+        else:
+            return self._construct_from_space(
+                self._internal_space - other._internal_space
+            )
 
-    def __truediv__(self, other: ManimColor) -> ManimColor:
-        return ManimColor(self._internal_value / other._internal_value)
+    def __rsub__(self, other: int | float | Self) -> Self:
+        return self - other
 
-    def __floordiv__(self, other: ManimColor) -> ManimColor:
-        return ManimColor(self._internal_value // other._internal_value)
+    def __mul__(self, other: int | float | Self) -> Self:
+        if isinstance(other, (int, float)):
+            return self._construct_from_space(self._internal_space * other)
+        else:
+            return self._construct_from_space(
+                self._internal_space * other._internal_space
+            )
 
-    def __mod__(self, other: ManimColor) -> ManimColor:
-        return ManimColor(self._internal_value % other._internal_value)
+    def __rmul__(self, other: int | float | Self) -> Self:
+        return self * other
 
-    def __pow__(self, other: ManimColor) -> ManimColor:
-        return ManimColor(self._internal_value**other._internal_value)
+    def __truediv__(self, other: int | float | Self) -> Self:
+        if isinstance(other, (int, float)):
+            return self._construct_from_space(self._internal_space / other)
+        else:
+            return self._construct_from_space(
+                self._internal_space / other._internal_space
+            )
 
-    def __and__(self, other: ManimColor) -> ManimColor:
-        return ManimColor(self.to_integer() & other.to_integer())
+    def __rtruediv__(self, other: int | float | Self) -> Self:
+        return self / other
 
-    def __or__(self, other: ManimColor) -> ManimColor:
-        return ManimColor(self.to_integer() | other.to_integer())
+    def __floordiv__(self, other: int | float | Self) -> Self:
+        if isinstance(other, (int, float)):
+            return self._construct_from_space(self._internal_space // other)
+        else:
+            return self._construct_from_space(
+                self._internal_space // other._internal_space
+            )
 
-    def __xor__(self, other: ManimColor) -> ManimColor:
-        return ManimColor(self.to_integer() ^ other.to_integer())
+    def __rfloordiv__(self, other: int | float | Self) -> Self:
+        return self // other
+
+    def __mod__(self, other: int | float | Self) -> Self:
+        if isinstance(other, (int, float)):
+            return self._construct_from_space(self._internal_space % other)
+        else:
+            return self._construct_from_space(
+                self._internal_space % other._internal_space
+            )
+
+    def __rmod__(self, other: int | float | Self) -> Self:
+        return self % other
+
+    def __pow__(self, other: int | float | Self) -> Self:
+        if isinstance(other, (int, float)):
+            return self._construct_from_space(self._internal_space**other)
+        else:
+            return self._construct_from_space(
+                self._internal_space**other._internal_space
+            )
+
+    def __rpow__(self, other: int | float | Self) -> Self:
+        return self**other
+
+    def __invert__(self) -> Self:
+        return self.invert()
+
+    def __int__(self) -> int:
+        return self.to_integer()
+
+    def __getitem__(self, index: int) -> float:
+        return self._internal_space[index]
+
+    def __and__(self, other: Self) -> Self:
+        return self._construct_from_space(
+            self._internal_from_integer(self.to_integer() & int(other), 1.0)
+        )
+
+    def __or__(self, other: Self) -> Self:
+        return self._construct_from_space(
+            self._internal_from_integer(self.to_integer() | int(other), 1.0)
+        )
+
+    def __xor__(self, other: Self) -> Self:
+        return self._construct_from_space(
+            self._internal_from_integer(self.to_integer() ^ int(other), 1.0)
+        )
+
+
+RGBA = ManimColor
+"""RGBA Color Space"""
+
+
+class HSV(ManimColor):
+    """HSV Color Space"""
+
+    def __init__(
+        self,
+        hsv: HSV_Array_Float | HSV_Tuple_Float | HSVA_Array_Float | HSVA_Tuple_Float,
+        alpha: float = 1.0,
+    ) -> None:
+        super().__init__(None)
+        if len(hsv) == 3:
+            self.__hsv: HSVA_Array_Float = np.asarray((*hsv, alpha))
+        elif len(hsv) == 4:
+            self.__hsv: HSVA_Array_Float = np.asarray(hsv)
+        else:
+            raise ValueError("HSV Color must be an array of 3 values")
+
+    @classmethod
+    @override
+    def _from_internal(cls, value: ManimColorInternal) -> Self:
+        hsv = colorsys.rgb_to_hsv(*value[:3])
+        hsva = [*hsv, value[-1]]
+        return cls(np.array(hsva))
+
+    @property
+    def hue(self) -> float:
+        return self.__hsv[0]
+
+    @property
+    def saturation(self) -> float:
+        return self.__hsv[1]
+
+    @property
+    def value(self) -> float:
+        return self.__hsv[2]
+
+    @hue.setter
+    def hue(self, value: float) -> None:
+        self.__hsv[0] = value
+
+    @saturation.setter
+    def saturation(self, value: float) -> None:
+        self.__hsv[1] = value
+
+    @value.setter
+    def value(self, value: float) -> None:
+        self.__hsv[2] = value
+
+    @property
+    def h(self) -> float:
+        return self.__hsv[0]
+
+    @property
+    def s(self) -> float:
+        return self.__hsv[1]
+
+    @property
+    def v(self) -> float:
+        return self.__hsv[2]
+
+    @h.setter
+    def h(self, value: float) -> None:
+        self.__hsv[0] = value
+
+    @s.setter
+    def s(self, value: float) -> None:
+        self.__hsv[1] = value
+
+    @v.setter
+    def v(self, value: float) -> None:
+        self.__hsv[2] = value
+
+    @property
+    def _internal_space(self) -> npt.NDArray:
+        return self.__hsv
+
+    @property
+    def _internal_value(self) -> ManimColorInternal:
+        """Returns the internal value of the current Manim color [r,g,b,a] float array
+
+        Returns
+        -------
+        ManimColorInternal
+            internal color representation
+        """
+        return np.array(
+            [
+                *colorsys.hsv_to_rgb(self.__hsv[0], self.__hsv[1], self.__hsv[2]),
+                self.__alpha,
+            ],
+            dtype=ManimColorDType,
+        )
+
+    @_internal_value.setter
+    def _internal_value(self, value: ManimColorInternal) -> None:
+        """Overwrites the internal color value of the ManimColor object
+
+        Parameters
+        ----------
+        value : ManimColorInternal
+            The value which will overwrite the current color
+
+        Raises
+        ------
+        TypeError
+            Raises a TypeError if an invalid array is passed
+        """
+        if not isinstance(value, np.ndarray):
+            raise TypeError("value must be a numpy array")
+        if value.shape[0] != 4:
+            raise TypeError("Array must have 4 values exactly")
+        tmp = colorsys.rgb_to_hsv(value[0], value[1], value[2])
+        self.__hsv = np.array(tmp)
+        self.__alpha = value[3]
 
 
 ParsableManimColor: TypeAlias = Union[
@@ -1053,4 +1382,6 @@ __all__ = [
     "random_bright_color",
     "random_color",
     "get_shaded_rgb",
+    "HSV",
+    "RGBA",
 ]
