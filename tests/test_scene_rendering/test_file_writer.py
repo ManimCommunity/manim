@@ -77,7 +77,7 @@ def test_gif_writing(tmp_path, config, transparent):
 
 @pytest.mark.slow
 @pytest.mark.parametrize(
-    "format, transparent, codec, pixel_format",
+    ("format", "transparent", "codec", "pixel_format"),
     [
         ("mp4", False, "h264", "yuv420p"),
         ("mov", False, "h264", "yuv420p"),

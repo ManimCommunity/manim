@@ -826,7 +826,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
             labels = {v: labels for v in vertices}
         else:
             assert isinstance(labels, dict)
-            base_labels = {v: False for v in vertices}
+            base_labels = dict.fromkeys(vertices, False)
             base_labels.update(labels)
             labels = base_labels
 
