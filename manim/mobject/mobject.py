@@ -2484,10 +2484,10 @@ class Mobject:
             buff_x = buff_y = buff
 
         # Initialize alignments correctly
-        def init_alignments(alignments, num, mapping, name, dir):
+        def init_alignments(alignments, num, mapping, name, dir_):
             if alignments is None:
                 # Use cell_alignment as fallback
-                return [cell_alignment * dir] * num
+                return [cell_alignment * dir_] * num
             if len(alignments) != num:
                 raise ValueError(f"{name}_alignments has a mismatching size.")
             alignments = list(alignments)
