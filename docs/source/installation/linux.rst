@@ -5,7 +5,7 @@ The installation instructions depend on your particular operating
 system and package manager. If you happen to know exactly what you are doing,
 you can also simply ensure that your system has:
 
-- a reasonably recent version of Python 3 (3.9 or above),
+- a reasonably recent version of Python 3 (3.10 or above),
 - with working Cairo bindings in the form of
   `pycairo <https://cairographics.org/pycairo/>`__,
 - and `Pango <https://pango.gnome.org>`__ headers.

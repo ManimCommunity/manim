@@ -674,13 +674,10 @@ class Mobject:
         # Add automatic compatibility layer
         # between properties and get_* and set_*
         # methods.
-        #
-        # In python 3.9+ we could change this
-        # logic to use str.remove_prefix instead.
 
         if attr.startswith("get_"):
             # Remove the "get_" prefix
-            to_get = attr[4:]
+            to_get = attr.removeprefix("get_")
 
             def getter(self):
                 warnings.warn(

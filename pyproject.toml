@@ -14,8 +14,6 @@ classifiers= [
     "Topic :: Scientific/Engineering",
     "Topic :: Multimedia :: Video",
     "Topic :: Multimedia :: Graphics",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -27,7 +25,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.13"
+python = ">=3.10,<3.13"
 av = ">=9.0.0"
 click = ">=8.0"
 cloup = ">=2.0.0"
