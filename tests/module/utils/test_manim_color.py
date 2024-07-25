@@ -14,6 +14,7 @@ from manim.utils.color import (
     ManimColor,
     ManimColorDType,
 )
+from manim.utils.color.XKCD import GREEN
 
 
 def test_init_with_int() -> None:
@@ -140,6 +141,15 @@ def test_opacity() -> None:
 
 def test_parse() -> None:
     nt.assert_equal(ManimColor.parse([RED, YELLOW]), [RED, YELLOW])
+
+
+def test_mc_operators() -> None:
+    c1 = RED
+    c2 = GREEN
+    halfway1 = 0.5 * c1 + 0.5 * c2
+    halfway2 = c1.interpolate(c2, 0.5)
+    nt.assert_equal(halfway1, halfway2)
+    nt.assert_array_equal((WHITE / 2.0)._internal_value, np.array([0.5, 0.5, 0.5, 0.5]))
 
 
 def test_mc_from_functions() -> None:
