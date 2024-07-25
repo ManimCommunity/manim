@@ -38,7 +38,7 @@ This property acts as a proxy to whatever representation you need in your class.
 The only constraints on this value are that it needs to be a numpy array and the last value must be the opacity in a range ``0.0`` to ``1.0``.
 Additionally your ``__init__`` must support this format as initialization value without additional parameters to ensure correct functionality of all other methods in :class:`ManimColor`.
 
-:func:`~ManimColor._from_internal`` is a ``@classmethod`` that converts an ``[r,g,b,a]`` value into suitable parameters for your ``__init__`` method and calls the cls parameter.
+:func:`~ManimColor._from_internal` is a ``@classmethod`` that converts an ``[r,g,b,a]`` value into suitable parameters for your ``__init__`` method and calls the cls parameter.
 """
 
 from __future__ import annotations
