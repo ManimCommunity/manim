@@ -279,7 +279,7 @@ class ManimColor:
             Internal color representation
         """
         if len(hex_) == 6:
-            hex += "FF"
+            hex_ += "FF"
         elif len(hex_) == 8:
             alpha = (int(hex_, 16) & 0xFF) / 255
         else:
