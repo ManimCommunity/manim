@@ -545,7 +545,6 @@ class GLVMobjectManager:
             [mob.get_unit_normal()], points_length, axis=0
         )
         mob.renderer_data.bounding_box = compute_bounding_box(mob)
-        # print(mob.renderer_data)
 
     @staticmethod
     def read_uniforms(mob: OpenGLVMobject):

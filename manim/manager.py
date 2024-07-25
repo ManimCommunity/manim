@@ -112,7 +112,7 @@ class Manager(Generic[Scene_co]):
         -------
             A file writer satisfying :class:`.FileWriterProtocol`
         """
-        return FileWriter(self.scene.get_default_scene_name())
+        return FileWriter(scene_name=self.scene.get_default_scene_name())
 
     def setup(self) -> None:
         """Set up processes and manager"""
@@ -122,6 +122,7 @@ class Manager(Generic[Scene_co]):
         # these are used for making sure it feels like the correct
         # amount of time has passed in the window instead of rendering
         # at full speed
+        # See the docstring of :meth:`_wait_for_animation_time`
         self.virtual_animation_start_time = 0.0
         self.real_animation_start_time = time.perf_counter()
 
@@ -176,7 +177,7 @@ class Manager(Generic[Scene_co]):
             self.file_writer.finish()
         # otherwise no animations were played
         elif config.write_to_movie or config.save_last_frame:
-            self.render_state(write_to_file=False)
+            self.render_state(write_frame=False)
             # FIXME: for some reason the OpenGLRenderer does not give out the
             # correct frame values here
             frame = self.renderer.get_pixels()
@@ -189,9 +190,6 @@ class Manager(Generic[Scene_co]):
         """Tear down the scene and the window."""
 
         self.scene.tear_down()
-
-        if config.save_last_frame:
-            self._update_frame(0)
 
         if self.window is not None:
             self.window.close()
@@ -213,13 +211,17 @@ class Manager(Generic[Scene_co]):
         while not self.window.is_closing:
             self._update_frame(dt)
 
-    def _update_frame(self, dt: float, *, write_to_file: bool | None = None) -> None:
+    # ----------------------------------#
+    #         Animation Pipeline        #
+    # ----------------------------------#
+
+    def _update_frame(self, dt: float, *, write_frame: bool | None = None) -> None:
         """Update the current frame by ``dt``
 
         Parameters
         ----------
             dt : the time in between frames
-            write_to_file : Whether to write the result to the output stream.
+            write_frame : Whether to write the result to the output stream (videos ONLY).
                 Default value checks :attr:`_write_files` to see if it should be written.
         """
         self.time += dt
@@ -229,20 +231,38 @@ class Manager(Generic[Scene_co]):
         if self.window is not None:
             self.window.clear()
 
+            # if it's closing, then any subsequent methods will
+            # raise an error because the internal C window pointer is nullptr.
             if self.window.is_closing:
                 raise EndSceneEarlyException()
 
-        self.render_state(write_to_file=write_to_file)
+        self.render_state(write_frame=write_frame)
 
-        if self.window is not None:
+        self._wait_for_animation_time()
+
+    def _wait_for_animation_time(self) -> None:
+        """Wait for the real time to catch up to the "virtual" animation time.
+
+        Animations can render faster than real time, so we have to
+        slow the window down for the correct amount of time, such
+        as during a wait animation.
+        """
+
+        if self.window is None:
+            return
+
+        self.window.swap_buffers()
+
+        vt = self.time - self.virtual_animation_start_time
+        rt = time.perf_counter() - self.real_animation_start_time
+        # we can't sleep because we still need to poll for events,
+        # e.g. hitting Escape or close
+        while rt < vt:
+            if self.window.is_closing:
+                raise EndSceneEarlyException()
+            # make sure to poll for events
             self.window.swap_buffers()
-            # This recursively updates the window with dt=0 until the correct
-            # amount of time has passed
-            # TODO: do ^ better with less overhead
-            vt = self.time - self.virtual_animation_start_time
             rt = time.perf_counter() - self.real_animation_start_time
-            if rt < vt:
-                self._update_frame(0, write_to_file=False)
 
     def _play(self, *animations: AnimationProtocol) -> None:
         """Play a bunch of animations"""
@@ -298,7 +318,7 @@ class Manager(Generic[Scene_co]):
     ) -> tqdm | contextlib.nullcontext[NullProgressBar]:
         """Create a progressbar"""
 
-        if not config.write_to_movie or not config.progress_bar:
+        if not config.progress_bar:
             return contextlib.nullcontext(NullProgressBar())
         else:
             return tqdm(
@@ -322,28 +342,35 @@ class Manager(Generic[Scene_co]):
 
         self._write_hashed_movie_file(animations=[])
 
+        if self.window is not None:
+            self.real_animation_start_time = time.perf_counter()
+            self.virtual_animation_start_time = self.time
+
         update_mobjects = self.scene.should_update_mobjects()
         condition = stop_condition or (lambda: False)
 
         progression = self._calc_time_progression(duration)
+
+        state = self.scene.get_state()
+
         with self._create_progressbar(
             progression.shape[0], "Waiting %(num)d: "
         ) as progress:
             last_t = 0
             for t in progression:
                 dt, last_t = t - last_t, t
-                if update_mobjects:
+                if update_mobjects or stop_condition is not None:
                     self._update_frame(dt)
                     if condition():
-                        progress.update(duration - t)
                         break
                 else:
-                    # if we don't need to update mobjects
-                    # we can just leave the mobjects on the window
-                    # and increment the time
-                    # but we still have to write frames
                     self.time += dt
-                    self.write_frame()
+                    # this fixes it, but at that point we might as well
+                    # just not cache
+                    self.renderer.render(self.scene.camera, state.mobjects)
+                    if self.window is not None and self.window.is_closing:
+                        raise EndSceneEarlyException()
+                    self._wait_for_animation_time()
                 progress.update(1)
         self.scene.post_play()
 
@@ -379,27 +406,36 @@ class Manager(Generic[Scene_co]):
         """
         return max(animation.get_run_time() for animation in animations)
 
-    def render_state(self, write_to_file: bool | None = None) -> None:
+    # -------------------------#
+    #         Rendering       #
+    # -------------------------#
+
+    def render_state(self, write_frame: bool | None = None) -> None:
         """Render the current state of the scene.
 
         Any extra kwargs are passed to :meth:`_render_frame`.
         """
         state = self.scene.get_state()
-        self._render_frame(state, write_file=write_to_file)
+        self._render_frame(state, write_frame=write_frame)
 
     def _render_frame(
-        self, state: SceneState, *, write_file: bool | None = None
+        self, state: SceneState, *, write_frame: bool | None = None
     ) -> None:
-        """Renders a frame based on a state, and writes it to a file.
+        """Renders a frame based on a state, and writes it to the file writers stream.
 
-        Any extra kwargs are passed to :meth:`write_frame`.
+        This is used for writing a single frame. Any extra kwargs are passed to :meth:`write_frame`.
+
+        .. warning::
+
+            This method will not work if :meth:`.FileWriter.begin_animation` and
+            :meth:`.FileWriter.add_partial_movie_file` have not been called. Do NOT
+            use this to write a single frame!
         """
 
-        # render the frame to the window
         # TODO: change self.scene.camera to state.camera
         self.renderer.render(self.scene.camera, state.mobjects)
 
-        should_write = write_file if write_file is not None else self._write_files
+        should_write = write_frame if write_frame is not None else self._write_files
         if should_write:
             self.write_frame()
 

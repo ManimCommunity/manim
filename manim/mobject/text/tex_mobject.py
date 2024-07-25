@@ -33,8 +33,9 @@ from textwrap import dedent
 from manim import config, logger
 from manim.constants import *
 from manim.mobject.geometry.line import Line
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.svg.svg_mobject import SVGMobject
-from manim.mobject.types.vectorized_mobject import VGroup, VMobject
+from manim.mobject.types.vectorized_mobject import VGroup
 from manim.utils.tex import TexTemplate
 from manim.utils.tex_file_writing import tex_to_svg_file
 
@@ -67,13 +68,13 @@ class SingleStringMathTex(SVGMobject):
         if kwargs.get("color") is None:
             # makes it so that color isn't explicitly passed for these mobs,
             # and can instead inherit from the parent
-            kwargs["color"] = VMobject().color
+            kwargs["color"] = OpenGLVMobject().color
 
         self._font_size = font_size
         self.organize_left_to_right = organize_left_to_right
         self.tex_environment = tex_environment
         if tex_template is None:
-            tex_template = config["tex_template"]
+            tex_template = config.tex_template
         self.tex_template = tex_template
 
         assert isinstance(tex_string, str)
@@ -289,6 +290,7 @@ class MathTex(SingleStringMathTex):
 
         if self.organize_left_to_right:
             self._organize_submobjects_left_to_right()
+        self.note_changed_family()
 
     def _break_up_tex_strings(self, tex_strings):
         # Separate out anything surrounded in double braces

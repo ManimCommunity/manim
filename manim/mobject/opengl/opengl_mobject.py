@@ -23,7 +23,6 @@ from manim.constants import *
 from manim.event_handler import EVENT_DISPATCHER
 from manim.event_handler.event_listener import EventListener
 from manim.event_handler.event_type import EventType
-from manim.renderer.shader_wrapper import ShaderWrapper, get_colormap_code
 from manim.utils.bezier import integer_interpolate, interpolate
 from manim.utils.color import *
 from manim.utils.deprecation import deprecated
@@ -31,11 +30,8 @@ from manim.utils.deprecation import deprecated
 # from ..utils.iterables import batch_by_property
 from manim.utils.iterables import (
     list_update,
-    listify,
-    make_even,
     resize_array,
     resize_preserving_order,
-    resize_with_interpolation,
     uniq_chain,
 )
 from manim.utils.paths import straight_path
@@ -49,7 +45,7 @@ from manim.utils.space_ops import (
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
-    from typing import Any, Callable, Union
+    from typing import Callable
 
     import numpy.typing as npt
     from typing_extensions import Concatenate, ParamSpec, Self, TypeAlias
@@ -62,7 +58,7 @@ if TYPE_CHECKING:
         ["OpenGLMobject", float], "OpenGLMobject | None"
     ]
     NonTimeUpdater: TypeAlias = Callable[["OpenGLMobject"], "OpenGLMobject | None"]
-    Updater: TypeAlias = Union[TimeBasedUpdater, NonTimeUpdater]
+    Updater: TypeAlias = TimeBasedUpdater | NonTimeUpdater
     PointUpdateFunction: TypeAlias = Callable[[np.ndarray], np.ndarray]
 
     M = TypeVar("M", bound="OpenGLMobject")
@@ -74,8 +70,6 @@ R = TypeVar("R", bound="RendererData")
 T_co = TypeVar("T_co", covariant=True, bound="OpenGLMobject")
 
 logger = logging.getLogger("manim")
-
-UNIFORM_DTYPE = np.float64
 
 
 def stash_mobject_pointers(
@@ -169,24 +163,22 @@ class OpenGLMobject(Generic[R]):
         self.name = self.__class__.__name__ if name is None else name
 
         # internal_state
+        self.points = np.zeros((0, 3))
         self.submobjects: list[OpenGLMobject] = []
         self.parents: list[OpenGLMobject] = []
         self.family: list[OpenGLMobject] = [self]
-        self.locked_data_keys: set[str] = set()
         self.needs_new_bounding_box: bool = True
+        self._bounding_box = np.zeros((3, 3))
         self._is_animating: bool = False
         self.saved_state: OpenGLMobject | None = None
         self.target: OpenGLMobject | None = None
 
-        self.data: dict[str, np.ndarray] = {}
-        self.uniforms: dict[str, float | np.ndarray] = {}
-
         # TODO replace with protocol
         self.renderer_data: R | None = None
+
+        # currently does nothing
         self.status = MobjectStatus()
 
-        self.init_data()
-        self.init_uniforms()
         self.init_updaters()
         self.init_event_listeners()
         self.init_points()
@@ -213,6 +205,14 @@ class OpenGLMobject(Generic[R]):
         if not isinstance(other, int):
             raise TypeError(f"Only int can be multiplied to Mobjects not {type(other)}")
         return self.replicate(other)
+
+    @property
+    def bounding_box(self) -> npt.NDArray[np.float64]:
+        return self._bounding_box
+
+    @bounding_box.setter
+    def bounding_box(self, box: npt.NDArray[np.float64]):
+        self._bounding_box = box
 
     @classmethod
     def set_default(cls, **kwargs):
@@ -262,50 +262,6 @@ class OpenGLMobject(Generic[R]):
         else:
             cls.__init__ = cls._original__init__
 
-    @property
-    def points(self):
-        return self.data["points"]
-
-    @points.setter
-    def points(self, value):
-        self.data["points"] = value
-
-    @property
-    def bounding_box(self):
-        return self.data["bounding_box"]
-
-    @bounding_box.setter
-    def bounding_box(self, value):
-        self.data["bounding_box"] = value
-
-    @property
-    def rgbas(self):
-        return self.data["rgbas"]
-
-    @rgbas.setter
-    def rgbas(self, value):
-        self.data["rgbas"] = value
-
-    def init_data(self):
-        """Initializes the ``points``, ``bounding_box`` and ``rgbas`` attributes and groups them into self.data.
-        Subclasses can inherit and overwrite this method to extend `self.data`."""
-        self.data = {
-            "points": np.zeros((0, 3)),
-            "bounding_box": np.zeros((3, 3)),
-            "rgbas": np.zeros((1, 4)),
-        }
-
-    def init_uniforms(self):
-        """Initializes the uniforms.
-
-        Gets called upon creation"""
-        self.uniforms = {
-            "is_fixed_in_frame": float(self.is_fixed_in_frame),
-            "gloss": float(self.gloss),
-            "shadow": float(self.shadow),
-            "reflectiveness": float(self.reflectiveness),
-        }
-
     def init_colors(self):
         """Initializes the colors.
 
@@ -319,18 +275,6 @@ class OpenGLMobject(Generic[R]):
         subclasses."""
         # Typically implemented in subclass, unless purposefully left blank
         pass
-
-    def set_data(self, data: dict[str, Any]):
-        for key, value in data.items():
-            self.data[key] = value
-        return self
-
-    def set_uniforms(self, uniforms):
-        for key, value in uniforms.items():
-            if isinstance(value, np.ndarray):
-                value = value.copy()
-            self.uniforms[key] = value
-        return self
 
     # https://github.com/python/typing/issues/802
     # so we hack around it by doing | Self
@@ -446,12 +390,7 @@ class OpenGLMobject(Generic[R]):
         return self
 
     def reverse_points(self, recursive=False):
-        for key in self.data:
-            self.data[key] = self.data[key][::-1]
-        if recursive:
-            for mob in self.submobjects:
-                for key in mob.data:
-                    mob.data[key] = mob.data[key][::-1]
+        self.points = self.points[::-1]
         return self
 
     def apply_points_function(
@@ -1379,6 +1318,7 @@ class OpenGLMobject(Generic[R]):
 
     # Copying
 
+    # TODO: don't use self
     @stash_mobject_pointers
     def serialize(self) -> bytes:
         return pickle.dumps(self)
@@ -1417,27 +1357,25 @@ class OpenGLMobject(Generic[R]):
 
         result = copy.copy(self)
 
-        # The line above is only a shallow copy, so the internal
-        # data which are numpyu arrays or other mobjects still
-        # need to be further copied.
-        result.data = {k: np.array(v) for k, v in self.data.items()}
-        result.uniforms = {k: np.array(v) for k, v in self.uniforms.items()}
+        result.parents = []
+        result.target = None
+        result.saved_state = None
+        #
 
+        result.points = np.array(self.points)
+        #
         # Instead of adding using result.add, which does some checks for updating
         # updater statues and bounding box, just directly modify the family-related
         # lists
         result.submobjects = [sm.copy() for sm in self.submobjects]
         for sm in result.submobjects:
             sm.parents = [result]
-        result.family = [
-            result,
-            *it.chain(*(sm.get_family() for sm in result.submobjects)),
-        ]
 
+        result.note_changed_family()
         # Similarly, instead of calling match_updaters, since we know the status
-        # won't have changed, just directly match.
-        result.non_time_updaters = list(self.non_time_updaters)
-        result.time_based_updaters = list(self.time_based_updaters)
+        # won't have changed, just directly match with shallow copies.
+        result.non_time_updaters = self.non_time_updaters.copy()
+        result.time_based_updaters = self.time_based_updaters.copy()
 
         family = self.get_family()
         for attr, value in list(self.__dict__.items()):
@@ -1448,8 +1386,6 @@ class OpenGLMobject(Generic[R]):
             ):
                 setattr(result, attr, result.family[self.family.index(value)])
             if isinstance(value, np.ndarray):
-                setattr(result, attr, value.copy())
-            if isinstance(value, ShaderWrapper):
                 setattr(result, attr, value.copy())
         return result
 
@@ -2216,123 +2152,20 @@ class OpenGLMobject(Generic[R]):
 
     # Color functions
 
-    def set_rgba_array_legacy(
-        self, color=None, opacity=None, name="rgbas", recurse=True
-    ):
-        if color is not None:
-            rgbs = np.array([color_to_rgb(c) for c in listify(color)])
-        if opacity is not None:
-            opacities = listify(opacity)
-
-        # Color only
-        if color is not None and opacity is None:
-            for mob in self.get_family(recurse):
-                mob.data[name] = resize_array(
-                    mob.data[name] if name in mob.data else np.empty((1, 3)), len(rgbs)
-                )
-                mob.data[name][:, :3] = rgbs
-
-        # Opacity only
-        if color is None and opacity is not None:
-            for mob in self.get_family(recurse):
-                mob.data[name] = resize_array(
-                    mob.data[name] if name in mob.data else np.empty((1, 3)),
-                    len(opacities),
-                )
-                mob.data[name][:, 3] = opacities
-
-        # Color and opacity
-        if color is not None and opacity is not None:
-            rgbas = np.array([[*rgb, o] for rgb, o in zip(*make_even(rgbs, opacities))])
-            for mob in self.get_family(recurse):
-                mob.data[name] = rgbas.copy()
-        return self
-
-    def set_rgba_array(
-        self, rgba_array: np.ndarray, name: str = "rgbas", recurse: bool = False
-    ):
-        """Directly set rgba data from `rgbas` and optionally do the same recursively
-        with submobjects. This can be used if the `rgbas` have already been generated
-        with the correct shape and simply need to be set.
-
-        Parameters
-        ----------
-        rgbas
-            the rgba to be set as data
-        name
-            the name of the data attribute to be set
-        recurse
-            set to true to recursively apply this method to submobjects
-        """
-        for mob in self.get_family(recurse):
-            mob.data[name] = np.array(rgba_array)  # type: ignore
-        return self
-
-    def set_color_by_rgba_func(
-        self, func: Callable[[np.ndarray], np.ndarray], recurse: bool = True
-    ):
-        """
-        Func should take in a point in R3 and output an rgba value
-        """
-        for mob in self.get_family(recurse):
-            rgba_array = np.asarray([func(point) for point in mob.points])
-            mob.set_rgba_array(rgba_array)
-        return self
-
-    def set_color_by_rgb_func(
-        self,
-        func: Callable[[np.ndarray], np.ndarray],
-        opacity: float = 1,
-        recurse: bool = True,
-    ):
-        """
-        Func should take in a point in R3 and output an rgb value
-        """
-        for mob in self.get_family(recurse):
-            rgba_array = np.asarray([[*func(point), opacity] for point in mob.points])
-            mob.set_rgba_array(rgba_array)
-        return self
-
-    def set_rgba_array_by_color(
-        self,
-        color=None,
-        opacity: float | Iterable[float] | None = None,
-        name: str = "rgbas",
-        recurse: bool = True,
-    ):
-        max_len = 0
-        if color is not None:
-            rgbs = np.array([color_to_rgb(c) for c in listify(color)])
-            max_len = len(rgbs)
-        if opacity is not None:
-            opacities = np.array(listify(opacity))
-            max_len = max(max_len, len(opacities))
-
-        for mob in self.get_family(recurse):
-            if max_len > len(mob.data[name]):  # type: ignore
-                mob.data[name] = resize_array(mob.data[name], max_len)  # type: ignore
-            size = len(mob.data[name])  # type: ignore
-            if color is not None:
-                mob.data[name][:, :3] = resize_array(rgbs, size)  # type: ignore
-            if opacity is not None:
-                mob.data[name][:, 3] = resize_array(opacities, size)  # type: ignore
-        return self
-
     def set_color(self, color: ParsableManimColor | None, opacity=None, recurse=True):
-        self.set_rgba_array(color, opacity, recurse=False)
         # Recurse to submobjects differently from how set_rgba_array
         # in case they implement set_color differently
         if color is not None:
             self.color: ManimColor = ManimColor.parse(color)
         if opacity is not None:
-            self.opacity = opacity
+            self.color.set_opacity(opacity)
         if recurse:
             for submob in self.submobjects:
                 submob.set_color(color, recurse=True)
         return self
 
     def set_opacity(self, opacity, recurse=True):
-        self.set_rgba_array(color=None, opacity=opacity, recurse=False)
+        # self.set_rgba_array(color=None, opacity=opacity, recurse=False)
         if recurse:
             for submob in self.submobjects:
                 submob.set_opacity(opacity, recurse=True)
@@ -2342,9 +2175,9 @@ class OpenGLMobject(Generic[R]):
         return rgb_to_hex(self.rgbas[0, :3])
 
     def get_opacity(self):
-        return self.data["rgbas"][0, 3]
+        return self.color._internal_value[3]
 
-    def set_color_by_gradient(self, *colors: Color):
+    def set_color_by_gradient(self, *colors: ParsableManimColor):
         if self.has_points():
             self.set_color(colors)
         else:
@@ -2367,30 +2200,6 @@ class OpenGLMobject(Generic[R]):
 
     def fade(self, darkness=0.5, recurse=True):
         self.set_opacity(1.0 - darkness, recurse=recurse)
-
-    def get_reflectiveness(self) -> np.ndarray:
-        return self.uniforms["reflectiveness"]
-
-    def set_reflectiveness(self, reflectiveness: float, recurse: bool = True):
-        for mob in self.get_family(recurse):
-            mob.uniforms["reflectiveness"] = float(reflectiveness)
-        return self
-
-    def get_shadow(self) -> np.ndarray:
-        return self.uniforms["shadow"]
-
-    def set_shadow(self, shadow: float, recurse: bool = True):
-        for mob in self.get_family(recurse):
-            mob.uniforms["shadow"] = float(shadow)
-        return self
-
-    def get_gloss(self) -> np.ndarray:
-        return self.uniforms["gloss"]
-
-    def set_gloss(self, gloss: float, recurse: bool = True):
-        for mob in self.get_family(recurse):
-            mob.uniforms["gloss"] = float(gloss)
-        return self
 
     # Background rectangle
 
@@ -2668,13 +2477,9 @@ class OpenGLMobject(Generic[R]):
     # Alignment
 
     def is_aligned_with(self, mobject: OpenGLMobject) -> bool:
-        return (
-            len(self.data) == len(mobject.data)
-            and len(self.submobjects) == len(mobject.submobjects)
-            and all(
-                sm1.is_aligned_with(sm2)
-                for sm1, sm2 in zip(self.submobjects, mobject.submobjects)
-            )
+        return len(self.submobjects) == len(mobject.submobjects) and all(
+            sm1.is_aligned_with(sm2)
+            for sm1, sm2 in zip(self.submobjects, mobject.submobjects)
         )
 
     def align_data_and_family(self, mobject):
@@ -2686,15 +2491,6 @@ class OpenGLMobject(Generic[R]):
             # Separate out how points are treated so that subclasses
             # can handle that case differently if they choose
             mob1.align_points(mob2)
-            for key in mob1.data.keys() & mob2.data.keys():
-                if key == "points":
-                    continue
-                arr1 = mob1.data[key]  # type: ignore
-                arr2 = mob2.data[key]
-                if len(arr2) > len(arr1):
-                    mob1.data[key] = resize_preserving_order(arr1, len(arr2))  # type: ignore
-                elif len(arr1) > len(arr2):
-                    mob2.data[key] = resize_preserving_order(arr2, len(arr1))
 
     def align_points(self, mobject) -> Self:
         max_len = max(self.get_num_points(), mobject.get_num_points())
@@ -2779,6 +2575,9 @@ class OpenGLMobject(Generic[R]):
         self.interpolate_color(mobject1, mobject2, alpha)
         return self
 
+    def interpolate_color(self, mobject1, mobject2, alpha):
+        raise NotImplementedError("Implemented in subclasses")
+
     def pointwise_become_partial(self, mobject, a, b):
         """
         Set points in such a way as to become only
@@ -2787,41 +2586,6 @@ class OpenGLMobject(Generic[R]):
         of mobject to become.
         """
         pass  # To implement in subclass
-
-    # Locking data
-
-    def lock_data(self, keys: Iterable[str]):
-        """
-        To speed up some animations, particularly transformations,
-        it can be handy to acknowledge which pieces of data
-        won't change during the animation so that calls to
-        interpolate can skip this, and so that it's not
-        read into the shader_wrapper objects needlessly
-        """
-        if self.has_updaters:
-            return
-        # Be sure shader data has most up to date information
-        self.refresh_shader_data()
-        self.locked_data_keys = set(keys)
-
-    def lock_matching_data(self, mobject1: OpenGLMobject, mobject2: OpenGLMobject):
-        for sm, sm1, sm2 in zip(
-            self.get_family(), mobject1.get_family(), mobject2.get_family()
-        ):
-            keys = sm.data.keys() & sm1.data.keys() & sm2.data.keys()
-            sm.lock_data(
-                list(
-                    filter(
-                        lambda key: np.all(sm1.data[key] == sm2.data[key]),  # type: ignore
-                        keys,
-                    )
-                )
-            )
-        return self
-
-    def unlock_data(self):
-        for mob in self.get_family():
-            mob.locked_data_keys = set()
 
     def become(
         self,
@@ -2888,8 +2652,6 @@ class OpenGLMobject(Generic[R]):
         family1 = self.get_family()
         family2 = mobject.get_family()
         for sm1, sm2 in zip(family1, family2):
-            sm1.set_data(sm2.data)
-            sm1.set_uniforms(sm2.uniforms)
             sm1.shader_folder = sm2.shader_folder
             sm1.texture_paths = sm2.texture_paths
             sm1.depth_test = sm2.depth_test
@@ -2906,22 +2668,7 @@ class OpenGLMobject(Generic[R]):
     def looks_identical(self, mobject: OpenGLMobject) -> bool:
         fam1 = self.family_members_with_points()
         fam2 = mobject.family_members_with_points()
-        if len(fam1) != len(fam2):
-            return False
-        for m1, m2 in zip(fam1, fam2):
-            for d1, d2 in [(m1.data, m2.data), (m1.uniforms, m2.uniforms)]:
-                if set(d1).difference(d2):
-                    return False
-                for key in d1:
-                    if (
-                        isinstance(d1[key], np.ndarray)
-                        and isinstance(d2[key], np.ndarray)
-                        and (d1[key].size != d2[key].size)
-                    ):
-                        return False
-                    if not np.isclose(d1[key], d2[key]).all():
-                        return False
-        return True
+        return len(fam1) == len(fam2)
 
     def has_same_shape_as(self, mobject: OpenGLMobject) -> bool:
         # Normalize both point sets by centering and making height 1
@@ -2933,20 +2680,16 @@ class OpenGLMobject(Generic[R]):
             return False
         return bool(np.isclose(points1, points2).all())
 
-    # Operations touching shader uniforms
     def fix_in_frame(self) -> Self:
-        self.uniforms["is_fixed_in_frame"] = 1.0
         self.is_fixed_in_frame = True
         return self
 
     def fix_orientation(self) -> Self:
-        self.uniforms["is_fixed_orientation"] = 1.0
         self.is_fixed_orientation = True
         self.fixed_orientation_center = tuple(self.get_center())
         return self
 
     def unfix_from_frame(self) -> Self:
-        self.uniforms["is_fixed_in_frame"] = 0.0
         self.is_fixed_in_frame = False
         return self
 
@@ -2961,58 +2704,6 @@ class OpenGLMobject(Generic[R]):
 
     def deactivate_depth_test(self):
         self.depth_test = False
-        return self
-
-    # Shader code manipulation
-    def replace_shader_code(self, old, new):
-        # TODO, will this work with VMobject structure, given
-        # that it does not simpler return shader_wrappers of
-        # family?
-        for wrapper in self.get_shader_wrapper_list():
-            wrapper.replace_code(old, new)
-        return self
-
-    def set_color_by_code(self, glsl_code):
-        """
-        Takes a snippet of code and inserts it into a
-        context which has the following variables:
-        vec4 color, vec3 point, vec3 unit_normal.
-        The code should change the color variable
-        """
-        self.replace_shader_code("///// INSERT COLOR FUNCTION HERE /////", glsl_code)
-        return self
-
-    def set_color_by_xyz_func(
-        self,
-        glsl_snippet,
-        min_value=-5.0,
-        max_value=5.0,
-        colormap="viridis",
-    ):
-        """
-        Pass in a glsl expression in terms of x, y and z which returns
-        a float.
-        """
-        # TODO, add a version of this which changes the point data instead
-        # of the shader code
-        for char in "xyz":
-            glsl_snippet = glsl_snippet.replace(char, "point." + char)
-        rgb_list = get_colormap_list(colormap)
-        self.set_color_by_code(
-            f"color.rgb = float_to_color({glsl_snippet}, {float(min_value)}, {float(max_value)}, {get_colormap_code(rgb_list)});",
-        )
-        return self
-
-    def check_data_alignment(self, array, data_key):
-        # Makes sure that self.data[key] can be broadcast into
-        # the given array, meaning its length has to be either 1
-        # or the length of the array
-        d_len = len(self.data[data_key])
-        if d_len != 1 and d_len != len(array):
-            self.data[data_key] = resize_with_interpolation(
-                self.data[data_key],
-                len(array),
-            )
         return self
 
     # Event Handlers
