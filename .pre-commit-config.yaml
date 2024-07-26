@@ -26,14 +26,6 @@ repos:
         args: [--exit-non-zero-on-fix]
       - id: ruff-format
         types: [python]
-  - repo: https://github.com/PyCQA/flake8
-    rev: 7.1.0
-    hooks:
-      - id: flake8
-        additional_dependencies:
-          [
-            flake8-builtins==1.5.3,
-          ]
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.11.0
     hooks:

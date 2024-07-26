@@ -48,6 +48,7 @@ from manim.utils.color import (
     ManimColor,
     ParsableManimColor,
     color_gradient,
+    interpolate_color,
     invert_color,
 )
 from manim.utils.config_ops import merge_dicts_recursively, update_dict_recursively
@@ -622,6 +623,8 @@ class CoordinateSystem:
         function: Callable[[float], float],
         x_range: Sequence[float] | None = None,
         use_vectorized: bool = False,
+        colorscale: Union[Iterable[Color], Iterable[Color, float]] | None = None,
+        colorscale_axis: int = 1,
         **kwargs: Any,
     ) -> ParametricFunction:
         """Generates a curve based on a function.
@@ -635,6 +638,12 @@ class CoordinateSystem:
         use_vectorized
             Whether to pass in the generated t value array to the function. Only use this if your function supports it.
             Output should be a numpy array of shape ``[y_0, y_1, ...]``
+        colorscale
+            Colors of the function. Optional parameter used when coloring a function by values. Passing a list of colors
+            and a colorscale_axis will color the function by y-value. Passing a list of tuples in the form ``(color, pivot)``
+            allows user-defined pivots where the color transitions.
+        colorscale_axis
+            Defines the axis on which the colorscale is applied (0 = x, 1 = y), default is y-axis (1).
         kwargs
             Additional parameters to be passed to :class:`~.ParametricFunction`.
 
@@ -712,7 +721,57 @@ class CoordinateSystem:
             use_vectorized=use_vectorized,
             **kwargs,
         )
+
         graph.underlying_function = function
+
+        if colorscale:
+            if type(colorscale[0]) in (list, tuple):
+                new_colors, pivots = [
+                    [i for i, j in colorscale],
+                    [j for i, j in colorscale],
+                ]
+            else:
+                new_colors = colorscale
+
+                ranges = [self.x_range, self.y_range]
+                pivot_min = ranges[colorscale_axis][0]
+                pivot_max = ranges[colorscale_axis][1]
+                pivot_frequency = (pivot_max - pivot_min) / (len(new_colors) - 1)
+                pivots = np.arange(
+                    start=pivot_min,
+                    stop=pivot_max + pivot_frequency,
+                    step=pivot_frequency,
+                )
+
+            resolution = 0.01 if len(x_range) == 2 else x_range[2]
+            sample_points = np.arange(x_range[0], x_range[1] + resolution, resolution)
+            color_list = []
+            for samp_x in sample_points:
+                axis_value = (samp_x, function(samp_x))[colorscale_axis]
+                if axis_value <= pivots[0]:
+                    color_list.append(new_colors[0])
+                elif axis_value >= pivots[-1]:
+                    color_list.append(new_colors[-1])
+                else:
+                    for i, pivot in enumerate(pivots):
+                        if pivot > axis_value:
+                            color_index = (axis_value - pivots[i - 1]) / (
+                                pivots[i] - pivots[i - 1]
+                            )
+                            color_index = min(color_index, 1)
+                            mob_color = interpolate_color(
+                                new_colors[i - 1],
+                                new_colors[i],
+                                color_index,
+                            )
+                            color_list.append(mob_color)
+                            break
+            if config.renderer == RendererType.OPENGL:
+                graph.set_color(color_list)
+            else:
+                graph.set_stroke(color_list)
+                graph.set_sheen_direction(RIGHT)
+
         return graph
 
     def plot_implicit_curve(

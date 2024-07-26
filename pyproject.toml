@@ -14,7 +14,6 @@ classifiers= [
     "Topic :: Scientific/Engineering",
     "Topic :: Multimedia :: Video",
     "Topic :: Multimedia :: Graphics",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -62,9 +61,6 @@ jupyterlab = ["jupyterlab", "notebook"]
 gui = ["dearpygui"]
 
 [tool.poetry.group.dev.dependencies]
-black = ">=23.11,<25.0"
-flake8 = "^6.1.0"
-flake8-builtins = "^2.2.0"
 furo = "^2023.09.10"
 gitpython = "^3"
 isort = "^5.12.0"
@@ -130,6 +126,7 @@ fix = true
 
 [tool.ruff.lint]
 select = [
+  "A",
   "B",
   "C4",
   "D",
@@ -174,6 +171,8 @@ dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = [
+  # flake8-builtins
+  "A",
   # unused expression
   "B018",
   # unused variable

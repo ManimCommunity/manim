@@ -135,7 +135,7 @@ class SceneWithSections(Scene):
         )
         self.wait(2)
 
-        self.next_section(type=PresentationSectionType.SKIP)
+        self.next_section(section_type=PresentationSectionType.SKIP)
         self.wait()
 
         self.next_section(

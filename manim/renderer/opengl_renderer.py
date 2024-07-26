@@ -63,12 +63,12 @@ class OpenGLCamera(OpenGLMobject):
         if self.orthographic:
             self.projection_matrix = opengl.orthographic_projection_matrix()
             self.unformatted_projection_matrix = opengl.orthographic_projection_matrix(
-                format=False,
+                format_=False,
             )
         else:
             self.projection_matrix = opengl.perspective_projection_matrix()
             self.unformatted_projection_matrix = opengl.perspective_projection_matrix(
-                format=False,
+                format_=False,
             )
 
         if frame_shape is None:
