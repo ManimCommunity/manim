@@ -7,6 +7,8 @@ __all__ = ["SceneFileWriter"]
 import json
 import shutil
 from pathlib import Path
+from queue import Queue
+from threading import Thread
 from typing import TYPE_CHECKING, Any
 
 import av
@@ -359,6 +361,33 @@ class SceneFileWriter:
         if write_to_movie() and allow_write:
             self.close_partial_movie_stream()
 
+    def listen_and_write(self):
+        """
+        For internal use only: blocks until new frame is available on the queue.
+        """
+        while True:
+            num_frames, frame_data = self.queue.get()
+            if frame_data is None:
+                break
+
+            self.encode_and_write_frame(frame_data, num_frames)
+
+    def encode_and_write_frame(self, frame: np.ndarray, num_frames: int) -> None:
+        """
+        For internal use only: takes a given frame in `np.ndarray` format and
+        write it to the stream
+        """
+        for _ in range(num_frames):
+            # Notes: precomputing reusing packets does not work!
+            # I.e., you cannot do `packets = encode(...)`
+            # and reuse it, as it seems that `mux(...)`
+            # consumes the packet.
+            # The same issue applies for `av_frame`,
+            # reusing it renders weird-looking frames.
+            av_frame = av.VideoFrame.from_ndarray(frame, format="rgba")
+            for packet in self.video_stream.encode(av_frame):
+                self.video_container.mux(packet)
+
     def write_frame(
         self, frame_or_renderer: np.ndarray | OpenGLRenderer, num_frames: int = 1
     ):
@@ -379,16 +408,10 @@ class SceneFileWriter:
                 if config.renderer == RendererType.OPENGL
                 else frame_or_renderer
             )
-            for _ in range(num_frames):
-                # Notes: precomputing reusing packets does not work!
-                # I.e., you cannot do `packets = encode(...)`
-                # and reuse it, as it seems that `mux(...)`
-                # consumes the packet.
-                # The same issue applies for `av_frame`,
-                # reusing it renders weird-looking frames.
-                av_frame = av.VideoFrame.from_ndarray(frame, format="rgba")
-                for packet in self.video_stream.encode(av_frame):
-                    self.video_container.mux(packet)
+            # print("before serialization")
+            # print(frame)
+            msg = (num_frames, frame)
+            self.queue.put(msg)
 
         if is_png_format() and not config["dry_run"]:
             image: Image = (
@@ -442,6 +465,7 @@ class SceneFileWriter:
         if write_to_movie():
             if hasattr(self, "writing_process"):
                 self.writing_process.terminate()
+
             self.combine_to_movie()
             if config.save_sections:
                 self.combine_to_section_videos()
@@ -499,6 +523,10 @@ class SceneFileWriter:
             self.video_container = video_container
             self.video_stream = stream
 
+            self.queue = Queue()
+            self.writer_thread = Thread(target=self.listen_and_write, args=())
+            self.writer_thread.start()
+
     def close_partial_movie_stream(self):
         """Close the currently opened video container.
 
@@ -506,6 +534,9 @@ class SceneFileWriter:
         in the video stream holding a partial file, and then close
         the corresponding container.
         """
+        self.queue.put((-1, None))
+        self.writer_thread.join()
+
         for packet in self.video_stream.encode():
             self.video_container.mux(packet)
 
