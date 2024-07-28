@@ -634,7 +634,7 @@ class ManimColor:
 
         Returns
         -------
-        __INTO
+        ManimColorT
             Color object of the type passed into classtype with the same internal value as previously
         """
         return classtype._from_internal(self._internal_value)
