@@ -17,7 +17,7 @@ from collections.abc import Iterable, Sequence
 from typing import TYPE_CHECKING, Any, Callable, TypeVar, overload
 
 import numpy as np
-from typing_extensions import Self, TypedDict
+from typing_extensions import NotRequired, Self, TypedDict
 
 from manim import config
 from manim.constants import *
@@ -72,7 +72,7 @@ class _MatmulConfig(TypedDict):
     """
 
     method: str
-    unpack: bool
+    unpack: NotRequired[bool]
 
 
 class CoordinateSystem:
@@ -3022,9 +3022,8 @@ class PolarPlane(Axes):
 
     _matmul_config = {
         "method": "polar_to_point",
-        "unpack": True,
     }
-    _rmatmul_config = {"method": "point_to_polar", "unpack": False}
+    _rmatmul_config = {"method": "point_to_polar"}
 
     def __init__(
         self,
@@ -3398,7 +3397,7 @@ class ComplexPlane(NumberPlane):
 
     _matmul_config = {"method": "number_to_point", "unpack": False}
 
-    _rmatmul_config = {"method": "point_to_number", "unpack": False}
+    _rmatmul_config = {"method": "point_to_number"}
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(
