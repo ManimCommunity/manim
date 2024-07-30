@@ -4,7 +4,7 @@ from manim import *
 class Test(Scene):
     sections_api = True
 
-    @section
+    @section(name="spinning_math")
     def first_section(self) -> None:
         line = Line()
         line.add_updater(lambda m, dt: m.rotate(PI * dt))

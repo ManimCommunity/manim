@@ -5,11 +5,11 @@ __all__ = ["Manager"]
 import contextlib
 import platform
 import time
+import warnings
 from collections.abc import Iterable, Sequence
 from typing import TYPE_CHECKING, Callable, Generic, TypeVar
 
 import numpy as np
-from tqdm import tqdm
 
 from manim import config, logger
 from manim.event_handler.window import WindowProtocol
@@ -19,6 +19,12 @@ from manim.renderer.opengl_renderer_window import Window
 from manim.scene.scene import Scene, SceneState
 from manim.utils.exceptions import EndSceneEarlyException
 from manim.utils.hashing import get_hash_from_play_call
+from manim.utils.progressbar import (
+    ExperimentalProgressBarWarning,
+    NullProgressBar,
+    ProgressBar,
+    ProgressBarProtocol,
+)
 
 if TYPE_CHECKING:
     import numpy.typing as npt
@@ -178,7 +184,7 @@ class Manager(Generic[Scene_co]):
             section()
             self._skipping = False
             self.file_writer.next_section(
-                f"{self.scene}.{section.name}",
+                section.name,
                 section.type_,
                 section.skip,
             )
@@ -200,7 +206,6 @@ class Manager(Generic[Scene_co]):
             # FIXME: for some reason the OpenGLRenderer does not give out the
             # correct frame values here
             frame = self.renderer.get_pixels()
-            # NOTE: add hooks for post-processing (e.g. gaussian blur)?
             self.file_writer.save_image(frame)
 
         self._write_files = False
@@ -340,13 +345,18 @@ class Manager(Generic[Scene_co]):
 
     def _create_progressbar(
         self, total: float, description: str, **kwargs: Any
-    ) -> tqdm | contextlib.nullcontext[NullProgressBar]:
+    ) -> contextlib.AbstractContextManager[ProgressBarProtocol]:
         """Create a progressbar"""
 
         if not config.progress_bar:
             return contextlib.nullcontext(NullProgressBar())
-        else:
-            return tqdm(
+
+        with warnings.catch_warnings():
+            if config.verbosity != "DEBUG":
+                # Note: update when rich/notebook tqdm is no longer experimental
+                warnings.simplefilter("ignore", category=ExperimentalProgressBarWarning)
+
+            return ProgressBar(
                 total=total,
                 unit="frames",
                 desc=description % {"num": self.file_writer.num_plays},
@@ -452,12 +462,6 @@ class Manager(Generic[Scene_co]):
 
         frame = self.renderer.get_pixels()
         self.file_writer.write_frame(frame)
-
-
-class NullProgressBar:
-    """Fake progressbar."""
-
-    def update(self, _: Any) -> None: ...
 
 
 def _calc_time_progression(run_time: float) -> npt.NDArray[np.float64]:

@@ -1,13 +1,19 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, TypeVar
+
 import moderngl_window as mglw
-import numpy as np
 from moderngl_window.context.pyglet.window import Window as PygletWindow
 from moderngl_window.timers.clock import Timer
 from screeninfo import get_monitors
 
 from manim import __version__, config
 from manim.event_handler.window import WindowProtocol
+
+if TYPE_CHECKING:
+    from typing_extensions import TypeGuard
+
+T = TypeVar("T")
 
 __all__ = ["Window"]
 
@@ -63,15 +69,20 @@ class Window(PygletWindow, WindowProtocol):
         self.position = initial_position
 
     def find_initial_position(self, size: tuple[int, int]) -> tuple[int, int]:
-        custom_position = config.window_position
+        custom_position = config.window_position.replace(" ", "").upper()
         monitors = get_monitors()
         mon_index = config.window_monitor
         monitor = monitors[min(mon_index, len(monitors) - 1)]
         window_width, window_height = size
+
         # Position might be specified with a string of the form
         # x,y for integers x and y
         if "," in custom_position:
-            return tuple(map(int, custom_position.split(",")))
+            pos = tuple(int(p) for p in custom_position.split(","))
+            if tuple_len_2(pos):
+                return pos
+            else:
+                raise ValueError("Expected position in the form x,y")
 
         # Alternatively, it might be specified with a string like
         # UR, OO, DL, etc. specifying what corner it should go to
@@ -83,23 +94,6 @@ class Window(PygletWindow, WindowProtocol):
             -monitor.y + char_to_n[custom_position[0]] * height_diff // 2,
         )
 
-    # Delegate event handling to scene
-    def pixel_coords_to_space_coords(
-        self, px: int, py: int, relative: bool = False
-    ) -> np.ndarray:
-        pw, ph = self.size
-        # TODO
-        fw, fh = (
-            config.frame_width,
-            config.frame_height,
-        ) or self.scene.camera.get_frame_shape()
-        fc = (
-            config.frame_width,
-            config.frame_height,
-        ) or self.scene.camera.get_frame_center()
-        if relative:
-            return np.array([px / pw, py / ph, 0])
-        else:
-            return np.array(
-                [fc[0] + px * fw / pw - fw / 2, fc[1] + py * fh / ph - fh / 2, 0]
-            )
+
+def tuple_len_2(pos: tuple[T, ...]) -> TypeGuard[tuple[T, T]]:
+    return len(pos) == 2
