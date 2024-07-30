@@ -32,7 +32,7 @@ class ProgressBarProtocol(Protocol):
     def update(self, n: int) -> object: ...
 
 
-class ProgressBar(tqdm, contextlib.AbstractContextManager, ProgressBarProtocol):
+class ProgressBar(tqdm, contextlib.AbstractContextManager[ProgressBarProtocol]):
     """A manim progress bar.
 
     This abstracts away whether a progress bar is used in a notebook, or via the terminal,
