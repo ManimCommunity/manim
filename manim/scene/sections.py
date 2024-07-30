@@ -103,7 +103,7 @@ def section(
         .. code-block:: python
 
             class MyScene(Scene):
-                use_sections_api = True
+                sections_api = True
 
                 @section
                 def first_section(self):
