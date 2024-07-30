@@ -317,7 +317,7 @@ class Manager(Generic[Scene_co]):
         Essentially, a series of methods that need to be called to successfully
         render a frame.
         """
-        if not config.write_to_movie:
+        if not config.write_to_movie or self._skipping:
             return
 
         if config.disable_caching:
