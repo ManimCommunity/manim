@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+import dataclasses
 from collections.abc import Callable
 from functools import partial
-from typing import Generic, ParamSpec, TypeVar, cast, final, overload
+from typing import ClassVar, Generic, ParamSpec, TypeVar, cast, final, overload
 
 from manim.file_writer.sections import DefaultSectionType
 
@@ -16,6 +17,7 @@ T = TypeVar("T")
 # mark as final because _cls_instance_count doesn't
 # work with inheritance
 @final
+@dataclasses.dataclass
 class SceneSection(Generic[P, T]):
     """A section in a :class:`.Scene`.
 
@@ -29,40 +31,27 @@ class SceneSection(Generic[P, T]):
         as an instance of :class:`.Scene`.
     """
 
-    _cls_instance_count = 0
+    _cls_instance_count: ClassVar[int] = 0
     """How many times the class has been instantiated.
 
     This is also used for ordering sections, because of the order
     decorators are called in a class.
     """
 
-    def __init__(
-        self,
-        func: Callable[P, T],
-        *,
-        type_: str,
-        skip: bool = False,
-        override_name: str | None = None,
-    ) -> None:
-        self.func = func
-        self.order = self._cls_instance_count
-        self.skip = skip
-        self.type_ = type_
-        self._override_name = override_name
+    func: Callable[P, T]
+    _: dataclasses.KW_ONLY
+    type_: str
+    skip: bool = False
+    override_name: str | None = None
 
+    def __post_init__(self) -> None:
+        self.order = self._cls_instance_count
         # update the instance count
         self.__class__._cls_instance_count += 1
 
     @property
     def name(self) -> str:
-        return (
-            self.func.__name__ if self._override_name is None else self._override_name
-        )
-
-    def __str__(self) -> str:
-        return f"{type(self).__name__}({self.name}, {self.order}, {self.skip})"
-
-    __repr__ = __str__
+        return self.func.__name__ if self.override_name is None else self.override_name
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> T:
         return self.func(*args, **kwargs)
