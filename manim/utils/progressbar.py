@@ -8,7 +8,7 @@ from typing import Protocol, cast
 from tqdm.asyncio import tqdm as asyncio_tqdm
 from tqdm.auto import tqdm as auto_tqdm
 from tqdm.rich import tqdm as rich_tqdm
-from tqdm.std import TqdmExperimentalWarning
+from tqdm.std import TqdmExperimentalWarning as ExperimentalProgressBarWarning
 
 __all__ = [
     "ProgressBar",
@@ -66,6 +66,3 @@ class NullProgressBar(ProgressBarProtocol):
 
     def update(self, n: int) -> None:
         """Do nothing"""
-
-
-ExperimentalProgressBarWarning = TqdmExperimentalWarning

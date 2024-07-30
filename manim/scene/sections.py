@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from functools import partial
-from typing import Generic, ParamSpec, TypeVar, cast, overload
+from typing import Generic, ParamSpec, TypeVar, cast, final, overload
 
 from manim.file_writer.sections import DefaultSectionType
 
@@ -13,6 +13,9 @@ P = ParamSpec("P")
 T = TypeVar("T")
 
 
+# mark as final because _cls_instance_count doesn't
+# work with inheritance
+@final
 class SceneSection(Generic[P, T]):
     """A section in a :class:`.Scene`.
 
