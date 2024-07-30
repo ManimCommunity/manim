@@ -93,10 +93,7 @@ class FileWriter(FileWriterProtocol):
         if config["dry_run"]:  # in dry-run mode there is no output
             return
 
-        if config["input_file"]:
-            module_name = config.get_dir("input_file").stem
-        else:
-            module_name = ""
+        module_name = config.get_dir("input_file").stem if config["input_file"] else ""
 
         if self.force_output_as_scene_name:
             self.output_name = Path(scene_name)

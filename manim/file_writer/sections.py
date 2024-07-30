@@ -34,23 +34,23 @@ class DefaultSectionType(str, Enum):
 
 
 class Section:
-    """A :class:`.Scene` can be segmented into multiple Sections.
+    r"""A :class:`.Scene` can be segmented into multiple Sections.
     Refer to :doc:`the documentation</tutorials/output_and_config>` for more info.
     It consists of multiple animations.
 
     Attributes
     ----------
-    type
-        Can be used by a third party applications to classify different types of sections.
-    video
-        Path to video file with animations belonging to section relative to sections directory.
-        If ``None``, then the section will not be saved.
-    name
-        Human readable, non-unique name for this section.
-    skip_animations
-        Skip rendering the animations in this section when ``True``.
-    partial_movie_files
-        Animations belonging to this section.
+        type\_
+            Can be used by a third party applications to classify different types of sections.
+        video
+            Path to video file with animations belonging to section relative to sections directory.
+            If ``None``, then the section will not be saved.
+        name
+            Human readable, non-unique name for this section.
+        skip_animations
+            Skip rendering the animations in this section when ``True``.
+        partial_movie_files
+            Animations belonging to this section.
 
     See Also
     --------

@@ -495,10 +495,7 @@ def regular_vertices(
     """
 
     if start_angle is None:
-        if n % 2 == 0:
-            start_angle = 0
-        else:
-            start_angle = TAU / 4
+        start_angle = 0 if n % 2 == 0 else TAU / 4
 
     start_vector = rotate_vector(RIGHT * radius, start_angle)
     vertices = compass_directions(n, start_vector)

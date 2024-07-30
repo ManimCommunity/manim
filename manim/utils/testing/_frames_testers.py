@@ -68,7 +68,8 @@ class _FramesTester:
                 warnings.warn(
                     f"Mismatch of {number_of_mismatches} pixel values in frame {frame_number} "
                     f"against control data in {self._file_path}. Below error threshold, "
-                    "continuing..."
+                    "continuing...",
+                    stacklevel=1,
                 )
                 return
 

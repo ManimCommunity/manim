@@ -757,9 +757,6 @@ class Cutout(OpenGLVMobject):
     def __init__(self, main_shape: VMobject, *mobjects: VMobject, **kwargs) -> None:
         super().__init__(**kwargs)
         self.append_points(main_shape.points)
-        if main_shape.get_direction() == "CW":
-            sub_direction = "CCW"
-        else:
-            sub_direction = "CW"
+        sub_direction = "CCW" if main_shape.get_direction() == "CW" else "CW"
         for mobject in mobjects:
             self.append_points(mobject.force_direction(sub_direction).points)

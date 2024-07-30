@@ -14,7 +14,6 @@ from functools import partialmethod, wraps
 from math import ceil
 from typing import TYPE_CHECKING, Generic
 
-import moderngl
 import numpy as np
 from typing_extensions import TypeVar
 
@@ -112,9 +111,7 @@ class MobjectStatus:
     points_changed: bool = False
 
 
-# it's generic in its renderer, which is a little bit cursed
-# In the future, it should be replaced with a RendererData protocol
-class OpenGLMobject(Generic[R]):
+class OpenGLMobject:
     """Mathematical Object: base class for objects that can be displayed on screen.
 
     Attributes
@@ -131,11 +128,6 @@ class OpenGLMobject(Generic[R]):
     """
 
     dim: int = 3
-    shader_folder: str = ""
-    render_primitive: int = moderngl.TRIANGLE_STRIP
-    shader_dtype: Sequence[tuple[str, type, tuple[int]]] = [
-        ("point", np.float32, (3,)),
-    ]
 
     def __init__(
         self,
@@ -174,7 +166,7 @@ class OpenGLMobject(Generic[R]):
         self.target: OpenGLMobject | None = None
 
         # TODO replace with protocol
-        self.renderer_data: R | None = None
+        self.renderer_data: RendererData | None = None
 
         # currently does nothing
         self.status = MobjectStatus()
@@ -1082,10 +1074,10 @@ class OpenGLMobject(Generic[R]):
             buff_x = buff_y = buff
 
         # Initialize alignments correctly
-        def init_alignments(alignments, num, mapping, name, dir):
+        def init_alignments(alignments, num, mapping, name, dir_):
             if alignments is None:
                 # Use cell_alignment as fallback
-                return [cell_alignment * dir] * num
+                return [cell_alignment * dir_] * num
             if len(alignments) != num:
                 raise ValueError(f"{name}_alignments has a mismatching size.")
             alignments = list(alignments)
@@ -1317,6 +1309,7 @@ class OpenGLMobject(Generic[R]):
             for submob in self.submobjects:
                 submob.reverse_submobjects(recursive=True)
         self.note_changed_family()
+        return self
 
     # Copying
 
@@ -1920,9 +1913,7 @@ class OpenGLMobject(Generic[R]):
             return True
         if self.get_bottom()[1] > config.frame_y_radius:
             return True
-        if self.get_top()[1] < -config.frame_y_radius:
-            return True
-        return False
+        return self.get_top()[1] < -config.frame_y_radius
 
     def stretch_about_point(self, factor, dim, point):
         return self.stretch(factor, dim, about_point=point)
@@ -2160,7 +2151,7 @@ class OpenGLMobject(Generic[R]):
         if color is not None:
             self.color: ManimColor = ManimColor.parse(color)
         if opacity is not None:
-            self.color.set_opacity(opacity)
+            self.color.opacity(opacity)
         if recurse:
             for submob in self.submobjects:
                 submob.set_color(color, recurse=True)
@@ -2572,7 +2563,6 @@ class OpenGLMobject(Generic[R]):
 
                     self.add(dotL, dotR, dotMiddle)
         """
-        # TODO: replace with list of attribute names with a locking system
         self.points = path_func(mobject1.points, mobject2.points, alpha)
         self.interpolate_color(mobject1, mobject2, alpha)
         return self

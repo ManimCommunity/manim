@@ -253,7 +253,9 @@ class DrawBorderThenFill(Animation):
 
     def _typecheck_input(self, vmobject: VMobject | OpenGLVMobject) -> None:
         if not isinstance(vmobject, (VMobject, OpenGLVMobject)):
-            raise TypeError("DrawBorderThenFill only works for vectorized Mobjects")
+            raise TypeError(
+                f"{self.__class__.__name__} only works for vectorized Mobjects"
+            )
 
     def begin(self) -> None:
         self.outline = self.get_outline()
@@ -354,10 +356,7 @@ class Write(DrawBorderThenFill):
     ) -> tuple[float, float]:
         length = len(vmobject.family_members_with_points())
         if run_time is None:
-            if length < 15:
-                run_time = 1
-            else:
-                run_time = 2
+            run_time = 1 if length < 15 else 2
         if lag_ratio is None:
             lag_ratio = min(4.0 / max(1.0, length), 0.2)
         return run_time, lag_ratio

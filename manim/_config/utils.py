@@ -654,21 +654,18 @@ class ManimConfig(MutableMapping):
         gui_location = tuple(
             map(int, re.split(r"[;,\-]", parser["CLI"]["gui_location"])),
         )
-        setattr(self, "gui_location", gui_location)
+        self.gui_location = gui_location
 
         window_size = parser["CLI"][
             "window_size"
         ]  # if not "default", get a tuple of the position
         if window_size != "default":
             window_size = tuple(map(int, re.split(r"[;,\-]", window_size)))
-        setattr(self, "window_size", window_size)
+        self.window_size = window_size
 
         # plugins
         plugins = parser["CLI"].get("plugins", fallback="", raw=True)
-        if plugins == "":
-            plugins = []
-        else:
-            plugins = plugins.split(",")
+        plugins = [] if plugins == "" else plugins.split(",")
         self.plugins = plugins
         # the next two must be set AFTER digesting pixel_width and pixel_height
         self["frame_height"] = parser["CLI"].getfloat("frame_height", 8.0)
@@ -685,7 +682,7 @@ class ManimConfig(MutableMapping):
 
         val = parser["CLI"].get("progress_bar")
         if val:
-            setattr(self, "progress_bar", val)
+            self.progress_bar = val
 
         val = parser["ffmpeg"].get("loglevel")
         if val:
@@ -695,11 +692,11 @@ class ManimConfig(MutableMapping):
             val = parser["jupyter"].getboolean("media_embed")
         except ValueError:
             val = None
-        setattr(self, "media_embed", val)
+        self.media_embed = val
 
         val = parser["jupyter"].get("media_width")
         if val:
-            setattr(self, "media_width", val)
+            self.media_width = val
 
         val = parser["CLI"].get("quality", fallback="", raw=True)
         if val:
@@ -849,15 +846,12 @@ class ManimConfig(MutableMapping):
         if args.tex_template:
             self.tex_template = TexTemplate.from_file(args.tex_template)
 
-        if (
-            self.renderer == RendererType.OPENGL
-            and getattr(args, "write_to_movie") is None
-        ):
+        if self.renderer == RendererType.OPENGL and args.write_to_movie is None:
             # --write_to_movie was not passed on the command line, so don't generate video.
             self["write_to_movie"] = False
 
         # Handle --gui_location flag.
-        if getattr(args, "gui_location") is not None:
+        if args.gui_location is not None:
             self.gui_location = args.gui_location
 
         return self

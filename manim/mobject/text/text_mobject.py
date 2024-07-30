@@ -69,8 +69,9 @@ from manimpango import MarkupUtils, PangoUtils, TextSetting
 from manim import config, logger
 from manim.constants import *
 from manim.mobject.geometry.arc import Dot
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.svg.svg_mobject import SVGMobject
-from manim.mobject.types.vectorized_mobject import VGroup, VMobject
+from manim.mobject.types.vectorized_mobject import VGroup
 from manim.utils.color import ManimColor, ParsableManimColor, color_gradient
 from manim.utils.deprecation import deprecated
 
@@ -508,7 +509,7 @@ class Text(SVGMobject):
         else:
             self.line_spacing = self._font_size + self._font_size * self.line_spacing
 
-        color: ManimColor = ManimColor(color) if color else VMobject().color
+        color: ManimColor = ManimColor(color) if color else OpenGLVMobject().color
         file_name = self._text2svg(color.to_hex())
         PangoUtils.remove_last_M(file_name)
         super().__init__(
@@ -1452,7 +1453,9 @@ class MarkupText(SVGMobject):
                     "end_offset": end_offset,
                 },
             )
-        self.text = re.sub("<gradient[^>]+>(.+?)</gradient>", r"\1", self.text, 0, re.S)
+        self.text = re.sub(
+            "<gradient[^>]+>(.+?)</gradient>", r"\1", self.text, count=0, flags=re.S
+        )
         return gradientmap
 
     def _parse_color(self, col):
@@ -1494,7 +1497,9 @@ class MarkupText(SVGMobject):
                     "end_offset": end_offset,
                 },
             )
-        self.text = re.sub("<color[^>]+>(.+?)</color>", r"\1", self.text, 0, re.S)
+        self.text = re.sub(
+            "<color[^>]+>(.+?)</color>", r"\1", self.text, count=0, flags=re.S
+        )
         return colormap
 
     def __repr__(self):

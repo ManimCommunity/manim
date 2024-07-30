@@ -67,6 +67,7 @@ class DefaultGroup(cloup.Group):
         warnings.warn(
             "Use default param of DefaultGroup or set_default_command() instead",
             DeprecationWarning,
+            stacklevel=1,
         )
 
         def _decorator(f):
