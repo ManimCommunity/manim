@@ -179,15 +179,15 @@ class Manager(Generic[Scene_co]):
             self.scene.construct()
             return
         for section in self.scene.find_sections():
-            if section.skip:
-                self._skipping = True
-            section()
-            self._skipping = False
             self.file_writer.next_section(
                 section.name,
                 section.type_,
                 section.skip,
             )
+            if section.skip:
+                self._skipping = True
+            section()
+            self._skipping = False
 
     def _render_second_pass(self) -> None:
         """
