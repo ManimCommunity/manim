@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import dataclasses
 from collections.abc import Callable
+from enum import Enum
 from functools import partial
 from typing import ClassVar, Generic, ParamSpec, TypeVar, cast, final, overload
 
@@ -53,6 +54,22 @@ class SceneSection(Generic[P, T]):
     @property
     def name(self) -> str:
         return self.func.__name__ if self.override_name is None else self.override_name
+
+    def __str__(self) -> str:
+        s = ""
+        for field in dataclasses.fields(self):
+            name = field.name
+            if name == "func":
+                s += f"name={self.name}"
+            elif name == "override_name":
+                continue
+            else:
+                attr = getattr(self, name)
+                if isinstance(attr, Enum):
+                    attr = attr.value
+                s += f"{name}={attr}"
+            s += ", "
+        return f"{self.__class__.__name__}({s.removesuffix(', ')})"
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> T:
         return self.func(*args, **kwargs)
