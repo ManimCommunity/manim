@@ -43,6 +43,7 @@ class SceneSection(Generic[P, T]):
     type_: str
     skip: bool = False
     override_name: str | None = None
+    order: int = dataclasses.field(init=False)
 
     def __post_init__(self) -> None:
         self.order = self._cls_instance_count
