@@ -250,7 +250,9 @@ class DrawBorderThenFill(Animation):
 
     def _typecheck_input(self, vmobject: VMobject | OpenGLVMobject) -> None:
         if not isinstance(vmobject, (VMobject, OpenGLVMobject)):
-            raise TypeError(f"{self.__class__.__name__} only works for vectorized Mobjects")
+            raise TypeError(
+                f"{self.__class__.__name__} only works for vectorized Mobjects"
+            )
 
     def begin(self) -> None:
         self.outline = self.get_outline()
