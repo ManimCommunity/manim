@@ -91,17 +91,6 @@ def stash_mobject_pointers(
     return wrapper
 
 
-def affects_shader_info_id(func):
-    @wraps(func)
-    def wrapper(self):
-        for mob in self.get_family():
-            func(mob)
-            mob.refresh_shader_wrapper_id()
-        return self
-
-    return wrapper
-
-
 @dataclass
 class MobjectStatus:
     color_changed: bool = False
@@ -1399,7 +1388,7 @@ class OpenGLMobject:
 
     def restore(self):
         """Restores the state that was previously saved with :meth:`~.OpenGLMobject.save_state`."""
-        if not hasattr(self, "saved_state") or self.save_state is None:
+        if self.saved_state is None:
             raise Exception("Trying to restore without having saved")
         self.become(self.saved_state)
         return self
@@ -2644,10 +2633,8 @@ class OpenGLMobject:
         family1 = self.get_family()
         family2 = mobject.get_family()
         for sm1, sm2 in zip(family1, family2):
-            sm1.shader_folder = sm2.shader_folder
             sm1.texture_paths = sm2.texture_paths
             sm1.depth_test = sm2.depth_test
-            sm1.render_primitive = sm2.render_primitive
         # Make sure named family members carry over
         for attr, value in list(mobject.__dict__.items()):
             if isinstance(value, OpenGLMobject) and value in family2:
@@ -2655,6 +2642,7 @@ class OpenGLMobject:
         self.refresh_bounding_box(recurse_down=True)
         if match_updaters:
             self.match_updaters(mobject)
+        self.note_changed_family()
         return self
 
     def looks_identical(self, mobject: OpenGLMobject) -> bool:
