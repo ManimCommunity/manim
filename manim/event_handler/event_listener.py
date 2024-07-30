@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 from typing import TYPE_CHECKING, Callable
 
 if TYPE_CHECKING:
@@ -23,12 +24,10 @@ class EventListener:
     def __eq__(self, other: Any) -> bool:
         return_val = False
         if isinstance(other, EventListener):
-            try:
+            with contextlib.suppress(Exception):
                 return_val = (
                     self.callback == other.callback
                     and self.mobject == other.mobject
                     and self.event_type == other.event_type
                 )
-            except Exception:
-                pass
         return return_val

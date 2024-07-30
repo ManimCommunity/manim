@@ -20,7 +20,7 @@ __all__ = [
 
 # let tqdm figure out whether we're in a notebook
 # but replace the basic tqdm with tqdm.rich.tqdm
-if auto_tqdm is asyncio_tqdm:
+if auto_tqdm is asyncio_tqdm:  # noqa: SIM108
     tqdm = rich_tqdm
 else:
     # we're in a notebook
