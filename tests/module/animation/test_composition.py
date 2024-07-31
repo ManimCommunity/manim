@@ -140,7 +140,7 @@ def test_animationgroup_with_wait():
 
 
 @pytest.mark.parametrize(
-    "animation_remover, animation_group_remover",
+    ("animation_remover", "animation_group_remover"),
     [(False, True), (True, False)],
 )
 def test_animationgroup_is_passing_remover_to_animations(

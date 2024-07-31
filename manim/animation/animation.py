@@ -6,8 +6,7 @@ import numpy as np
 
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 
-from .. import config, logger
-from ..constants import RendererType
+from .. import logger
 from ..mobject import mobject
 from ..mobject.mobject import Mobject
 from ..mobject.opengl import opengl_mobject
@@ -255,11 +254,7 @@ class Animation(AnimationProtocol):
         return self.mobject, self.starting_mobject
 
     def get_all_families_zipped(self) -> Iterable[tuple]:
-        if config["renderer"] == RendererType.OPENGL:
-            return zip(*(mob.get_family() for mob in self.get_all_mobjects()))
-        return zip(
-            *(mob.family_members_with_points() for mob in self.get_all_mobjects())
-        )
+        return zip(*(mob.get_family() for mob in self.get_all_mobjects()))
 
     def update_mobjects(self, dt: float) -> None:
         """
@@ -456,7 +451,7 @@ def prepare_animation(
     | mobject._AnimationBuilder
     | opengl_mobject._AnimationBuilder
     | opengl_mobject.OpenGLMobject,
-) -> Animation:
+) -> AnimationProtocol:
     r"""Returns either an unchanged animation, or the animation built
     from a passed animation factory.
 
@@ -526,7 +521,6 @@ class Wait(Animation):
         if stop_condition and frozen_frame:
             raise ValueError("A static Wait animation cannot have a stop condition.")
 
-        self.duration: float = run_time
         self.stop_condition = stop_condition
         self.is_static_wait: bool = bool(frozen_frame)
         super().__init__(None, run_time=run_time, rate_func=rate_func, **kwargs)

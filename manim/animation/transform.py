@@ -30,7 +30,7 @@ __all__ = [
 
 import inspect
 import types
-from collections.abc import Iterable, Sequence
+from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any, Callable
 
 import numpy as np
@@ -185,15 +185,14 @@ class Transform(Animation):
             self._path_func = path_func
 
     def begin(self) -> None:
-        # Use a copy of target_mobject for the align_data
-        # call so that the actual target_mobject stays
-        # preserved.
         self.target_mobject = self.create_target()
-        # Note, this potentially changes the structure
-        # of both mobject and target_mobject
         if self.mobject.is_aligned_with(self.target_mobject):
             self.target_copy = self.target_mobject
         else:
+            # Use a copy of target_mobject for the align_data_and_family
+            # call so that the actual target_mobject stays
+            # preserved, since calling align_data will potentially
+            # change the structure of both arguments
             self.target_copy = self.target_mobject.copy()
         self.mobject.align_data_and_family(self.target_copy)
 
@@ -220,7 +219,9 @@ class Transform(Animation):
             self.target_copy,
         ]
 
-    def get_all_families_zipped(self) -> Iterable[tuple]:  # more precise typing?
+    def get_all_families_zipped(
+        self,
+    ) -> zip[tuple[OpenGLMobject, OpenGLMobject, OpenGLMobject]]:
         mobs = [
             self.mobject,
             self.starting_mobject,
