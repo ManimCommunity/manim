@@ -292,6 +292,11 @@ class MathTex(SingleStringMathTex):
             self._organize_submobjects_left_to_right()
         self.note_changed_family()
 
+        # 5 hours of work went into this line
+        # and it's still not perfect
+        # July 18, 2024
+        self.note_changed_family()
+
     def _break_up_tex_strings(self, tex_strings):
         # Separate out anything surrounded in double braces
         pre_split_length = len(tex_strings)
