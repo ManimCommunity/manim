@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-import dataclasses
 from collections.abc import Callable
-from enum import Enum
-from functools import partial
-from typing import ClassVar, Generic, ParamSpec, TypeVar, cast, final, overload
+from typing import ClassVar, Generic, ParamSpec, TypeVar, final, overload
+
+from typing_extensions import TypedDict, Unpack
 
 from manim.file_writer.sections import DefaultSectionType
 
@@ -15,10 +14,18 @@ P = ParamSpec("P")
 T = TypeVar("T")
 
 
+class SceneSectionData(TypedDict, total=False):
+    """(Public) data for a :class:`.SceneSection` in a :class:`.Scene`."""
+
+    skip: bool
+    type_: str
+    name: str
+    order: int
+
+
 # mark as final because _cls_instance_count doesn't
 # work with inheritance
 @final
-@dataclasses.dataclass
 class SceneSection(Generic[P, T]):
     """A section in a :class:`.Scene`.
 
@@ -39,37 +46,35 @@ class SceneSection(Generic[P, T]):
     decorators are called in a class.
     """
 
-    func: Callable[P, T]
-    _: dataclasses.KW_ONLY
-    type_: str
-    skip: bool = False
-    override_name: str | None = None
-    order: int = dataclasses.field(init=False)
+    def __init__(
+        self, func: Callable[P, T], **kwargs: Unpack[SceneSectionData]
+    ) -> None:
+        self.func = func
 
-    def __post_init__(self) -> None:
+        self.skip = False
+        self.type_ = DefaultSectionType.NORMAL
+        self.name = func.__name__
+
+        # update the order for finding section orders
         self.order = self._cls_instance_count
-        # update the instance count
         self.__class__._cls_instance_count += 1
 
-    @property
-    def name(self) -> str:
-        return self.func.__name__ if self.override_name is None else self.override_name
+        # we assume that users have a typechecker on
+        # and aren't doing any weird stuff
+        self.__dict__.update(kwargs)
 
     def __str__(self) -> str:
-        s = ""
-        for field in dataclasses.fields(self):
-            name = field.name
-            if name == "func":
-                s += f"name={self.name}"
-            elif name == "override_name":
-                continue
-            else:
-                attr = getattr(self, name)
-                if isinstance(attr, Enum):
-                    attr = attr.value
-                s += f"{name}={attr}"
-            s += ", "
-        return f"{self.__class__.__name__}({s.removesuffix(', ')})"
+        name = self.name
+        skip = self.skip
+        section_type = self.type_
+        order = self.order
+        return f"{self.__class__.__name__}({name=}, {order=}, {skip=}, {section_type=})"
+
+    def __repr__(self) -> str:
+        # return a slightly more verbose repr
+        s = str(self).removesuffix(")")
+        func = self.func
+        return f"{s}, {func=})"
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> T:
         return self.func(*args, **kwargs)
@@ -78,29 +83,19 @@ class SceneSection(Generic[P, T]):
 @overload
 def section(
     func: Callable[P, T],
-    *,
-    skip: bool = False,
-    type_: str = DefaultSectionType.NORMAL,
-    name: str | None = None,
+    **kwargs: Unpack[SceneSectionData],
 ) -> SceneSection[P, T]: ...
 
 
 @overload
 def section(
     func: None = None,
-    *,
-    skip: bool = False,
-    type_: str = DefaultSectionType.NORMAL,
-    name: str | None = None,
+    **kwargs: Unpack[SceneSectionData],
 ) -> Callable[[Callable[P, T]], SceneSection[P, T]]: ...
 
 
 def section(
-    func: Callable[P, T] | None = None,
-    *,
-    skip: bool = False,
-    type_: str = DefaultSectionType.NORMAL,
-    name: str | None = None,
+    func: Callable[P, T] | None = None, **kwargs: Unpack[SceneSectionData]
 ) -> SceneSection[P, T] | Callable[[Callable[P, T]], SceneSection[P, T]]:
     r"""Decorator to create a section in the scene.
 
@@ -132,10 +127,9 @@ def section(
             The name of the section, by default the name of the method.
     """
     if func is not None:
-        return SceneSection(
-            func,
-            type_=type_,
-            skip=skip,
-            override_name=name,
-        )
-    return cast(Callable, partial(section, skip=skip, type_=type_))
+        return SceneSection(func, **kwargs)
+
+    def wrapper(func: Callable[P, T]) -> SceneSection[P, T]:
+        return SceneSection(func, **kwargs)
+
+    return wrapper
