@@ -320,7 +320,7 @@ class OpenGLVMobject(OpenGLMobject):
 
     # TODO, it's weird for these to return the first of various lists
     # rather than the full information
-    def get_fill_color(self) -> str:
+    def get_fill_color(self) -> ManimColor:
         """
         If there are multiple colors (for gradient)
         this returns the first one
@@ -334,7 +334,7 @@ class OpenGLVMobject(OpenGLMobject):
         """
         return self.get_fill_opacities()[0]
 
-    def get_stroke_color(self) -> str:
+    def get_stroke_color(self) -> ManimColor:
         return self.get_stroke_colors()[0]
 
     def get_stroke_width(self) -> float | np.ndarray:
@@ -343,7 +343,7 @@ class OpenGLVMobject(OpenGLMobject):
     def get_stroke_opacity(self) -> float:
         return self.get_stroke_opacities()[0]
 
-    def get_color(self) -> str:
+    def get_color(self) -> ManimColor:
         if self.has_fill():
             return self.get_fill_color()
         return self.get_stroke_color()

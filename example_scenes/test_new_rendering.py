@@ -10,13 +10,13 @@ class Test(Scene):
         line.add_updater(lambda m, dt: m.rotate(PI * dt))
         t = Tex(r"Math! $\sum e^{i\theta}$").add_updater(lambda m: m.next_to(line, UP))
         line.to_edge(LEFT)
-        self.add(line)
+        self.add(line, t)
         s = Square()
         t = Tex(
             "Hello, world!", stroke_color=RED, fill_color=BLUE, stroke_width=2
         ).to_edge(RIGHT)
-        self.add(s)
-        self.play(Rotate(s, PI / 2), Create(t))
+        self.add(t)
+        self.play(Create(t), Rotate(s, PI / 2))
         self.wait(1)
         self.play(FadeOut(s))
 
