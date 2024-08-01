@@ -18,6 +18,7 @@ from PIL import Image
 from pydub import AudioSegment
 
 from manim import __version__
+from manim.typing import PixelArray
 
 from .. import config, logger
 from .._config.logger_utils import set_file_logger
@@ -372,7 +373,7 @@ class SceneFileWriter:
 
             self.encode_and_write_frame(frame_data, num_frames)
 
-    def encode_and_write_frame(self, frame: np.ndarray, num_frames: int) -> None:
+    def encode_and_write_frame(self, frame: PixelArray, num_frames: int) -> None:
         """
         For internal use only: takes a given frame in `np.ndarray` format and
         write it to the stream
@@ -452,7 +453,7 @@ class SceneFileWriter:
         image.save(self.image_file_path)
         self.print_file_ready_message(self.image_file_path)
 
-    def finish(self):
+    def finish(self) -> None:
         """
         Finishes writing to the FFMPEG buffer or writing images
         to output directory.
@@ -475,7 +476,7 @@ class SceneFileWriter:
         if self.subcaptions:
             self.write_subcaption_file()
 
-    def open_partial_movie_stream(self, file_path=None):
+    def open_partial_movie_stream(self, file_path=None) -> None:
         """Open a container holding a video stream.
 
         This is used internally by Manim initialize the container holding
@@ -519,11 +520,11 @@ class SceneFileWriter:
             self.video_container = video_container
             self.video_stream = stream
 
-            self.queue = Queue()
+            self.queue: Queue[tuple[int, PixelArray]] = Queue()
             self.writer_thread = Thread(target=self.listen_and_write, args=())
             self.writer_thread.start()
 
-    def close_partial_movie_stream(self):
+    def close_partial_movie_stream(self) -> None:
         """Close the currently opened video container.
 
         Used internally by Manim to first flush the remaining packages
