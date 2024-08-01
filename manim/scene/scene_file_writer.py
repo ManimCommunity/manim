@@ -375,7 +375,7 @@ class SceneFileWriter:
 
     def encode_and_write_frame(self, frame: PixelArray, num_frames: int) -> None:
         """
-        For internal use only: takes a given frame in `np.ndarray` format and
+        For internal use only: takes a given frame in ``np.ndarray`` format and
         write it to the stream
         """
         for _ in range(num_frames):
@@ -520,7 +520,7 @@ class SceneFileWriter:
             self.video_container = video_container
             self.video_stream = stream
 
-            self.queue: Queue[tuple[int, PixelArray]] = Queue()
+            self.queue: Queue[tuple[int, PixelArray | None]] = Queue()
             self.writer_thread = Thread(target=self.listen_and_write, args=())
             self.writer_thread.start()
 
