@@ -408,8 +408,7 @@ class SceneFileWriter:
                 if config.renderer == RendererType.OPENGL
                 else frame_or_renderer
             )
-            # print("before serialization")
-            # print(frame)
+
             msg = (num_frames, frame)
             self.queue.put(msg)
 
