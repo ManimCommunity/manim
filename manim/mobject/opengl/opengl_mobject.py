@@ -1344,7 +1344,6 @@ class OpenGLMobject:
         result.parents = []
         result.target = None
         result.saved_state = None
-        #
 
         result.points = np.array(self.points)
         #
@@ -1356,13 +1355,16 @@ class OpenGLMobject:
             sm.parents = [result]
 
         result.note_changed_family()
+        for current, copy_ in zip(self.get_family(), result.get_family()):
+            copy_.points = np.array(current.points)
+            copy_.match_color(current)
         # Similarly, instead of calling match_updaters, since we know the status
         # won't have changed, just directly match with shallow copies.
         result.non_time_updaters = self.non_time_updaters.copy()
         result.time_based_updaters = self.time_based_updaters.copy()
 
         family = self.get_family()
-        for attr, value in list(self.__dict__.items()):
+        for attr, value in self.__dict__.items():
             if (
                 isinstance(value, OpenGLMobject)
                 and value is not self
@@ -2153,17 +2155,14 @@ class OpenGLMobject:
                 submob.set_opacity(opacity, recurse=True)
         return self
 
-    def get_color(self):
-        return rgb_to_hex(self.rgbas[0, :3])
+    def get_color(self) -> ManimColor:
+        return self.color
 
     def get_opacity(self):
-        return self.color._internal_value[3]
+        return self.color.opacity()
 
     def set_color_by_gradient(self, *colors: ParsableManimColor):
-        if self.has_points():
-            self.set_color(colors)
-        else:
-            self.set_submobject_colors_by_gradient(*colors)
+        self.set_submobject_colors_by_gradient(*colors)
         return self
 
     def set_submobject_colors_by_gradient(self, *colors):
