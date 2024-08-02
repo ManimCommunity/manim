@@ -206,10 +206,7 @@ class Transform(Animation):
     def finish(self) -> None:
         super().finish()
         if self.replace_mobject_with_target_in_scene:
-            # Ideally this should stay at the same z-level as
-            # the original mobject, but this is difficult to implement
-            self.buffer.remove(self.mobject)
-            self.buffer.add(self.target_mobject)
+            self.buffer.replace(self.mobject, self.target_mobject)
 
     def get_all_mobjects(self) -> Sequence[OpenGLMobject]:
         return [

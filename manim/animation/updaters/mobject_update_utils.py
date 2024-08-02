@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 __all__ = [
-    "assert_is_mobject_method",
+    "always",
+    "f_always",
     "always_redraw",
     "turn_animation_into_updater",
     "cycle_animation",
@@ -11,24 +12,66 @@ __all__ = [
 
 
 import inspect
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING, Any, Callable, TypeVar, cast
 
 import numpy as np
 
-from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 
 if TYPE_CHECKING:
+    import types
+
+    from typing_extensions import Concatenate, ParamSpec, TypeIs
+
     from manim.animation.protocol import AnimationProtocol
 
-
-def assert_is_mobject_method(method: Callable) -> None:
-    assert inspect.ismethod(method)
-    mobject = method.__self__
-    assert isinstance(mobject, (Mobject, OpenGLMobject))
+    P = ParamSpec("P")
 
 
-def always_redraw(func: Callable[[], Mobject]) -> Mobject:
+M = TypeVar("M", bound=OpenGLMobject)
+
+
+# TODO: figure out how to typehint as MethodType[OpenGLMobject] to avoid the cast
+# madness in always/f_always
+def is_mobject_method(method: Callable[..., Any]) -> TypeIs[types.MethodType]:
+    return inspect.ismethod(method) and isinstance(method.__self__, OpenGLMobject)
+
+
+def always(
+    method: Callable[Concatenate[M, P], object], *args: P.args, **kwargs: P.kwargs
+) -> M:
+    if not is_mobject_method(method):
+        raise ValueError("always must take a method of a Mobject")
+    mobject = cast(M, method.__self__)
+    func = method.__func__
+    mobject.add_updater(lambda m: func(m, *args, **kwargs))
+    return mobject
+
+
+def f_always(
+    method: Callable[Concatenate[M, ...], None],
+    *arg_generators: Callable[[], object],
+    **kwargs,
+) -> M:
+    """
+    More functional version of always, where instead
+    of taking in args, it takes in functions which output
+    the relevant arguments.
+    """
+    if not is_mobject_method(method):
+        raise ValueError("f_always must take a method of a Mobject")
+    mobject = cast(M, method.__self__)
+    func = method.__func__
+
+    def updater(mob):
+        args = [arg_generator() for arg_generator in arg_generators]
+        func(mob, *args, **kwargs)
+
+    mobject.add_updater(updater)
+    return mobject
+
+
+def always_redraw(func: Callable[[], M]) -> M:
     """Redraw the mobject constructed by a function every frame.
 
     This function returns a mobject with an attached updater that
@@ -72,9 +115,10 @@ def always_redraw(func: Callable[[], Mobject]) -> Mobject:
     return mob
 
 
+# TODO: create a new Protocol for AnimationWithMobject
 def turn_animation_into_updater(
-    animation: AnimationProtocol, cycle: bool = False, **kwargs
-) -> Mobject:
+    animation: AnimationProtocol, cycle: bool = False
+) -> OpenGLMobject:
     """
     Add an updater to the animation's mobject which applies
     the interpolation and update functions of the animation
@@ -98,14 +142,15 @@ def turn_animation_into_updater(
                 self.wait(0.5)
                 self.play(banner.expand(), run_time=0.5)
     """
-    mobject = animation.mobject
+    mobject = cast(OpenGLMobject, animation.mobject)
     animation.suspend_mobject_updating = False
     animation.begin()
-    animation.total_time = 0
+    total_time = 0
 
-    def update(m: Mobject, dt: float):
+    def update(m: OpenGLMobject, dt: float):
+        nonlocal total_time
         run_time = animation.get_run_time()
-        time_ratio = animation.total_time / run_time
+        time_ratio = total_time / run_time
         if cycle:
             alpha = time_ratio % 1
         else:
@@ -116,11 +161,11 @@ def turn_animation_into_updater(
                 return
         animation.interpolate(alpha)
         animation.update_mobjects(dt)
-        animation.total_time += dt
+        total_time += dt
 
     mobject.add_updater(update)
     return mobject
 
 
-def cycle_animation(animation: AnimationProtocol, **kwargs) -> Mobject:
+def cycle_animation(animation: AnimationProtocol, **kwargs) -> OpenGLMobject:
     return turn_animation_into_updater(animation, cycle=True, **kwargs)
