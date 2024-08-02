@@ -38,9 +38,9 @@ Cameras
 *******
 
 .. inheritance-diagram::
-   manim.camera.cairo_camera
+   manim.camera.camera
    :parts: 1
-   :top-classes: manim.camera.camera.Camera, manim.mobject.mobject.Mobject
+   :top-classes: manim.camera.camera.Camera, manim.mobject.opengl.opengl_mobject.OpenGLMobject
 
 Mobjects
 ********
