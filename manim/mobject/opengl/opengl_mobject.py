@@ -15,7 +15,7 @@ from math import ceil
 from typing import TYPE_CHECKING, Generic
 
 import numpy as np
-from typing_extensions import TypeVar
+from typing_extensions import TypedDict, TypeVar
 
 from manim import config
 from manim.constants import *
@@ -41,6 +41,8 @@ from manim.utils.space_ops import (
     normalize,
     rotation_matrix_transpose,
 )
+
+__all__ = ["OpenGLMobject", "MobjectKwargs"]
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
@@ -100,6 +102,18 @@ class MobjectStatus:
     points_changed: bool = False
 
 
+# TODO: add this to the **kwargs of all mobjects that use OpenGLMobject
+class MobjectKwargs(TypedDict, total=False):
+    opacity: float
+    reflectiveness: float
+    shadow: float
+    gloss: float
+    is_fixed_in_frame: bool
+    is_fixed_orientation: bool
+    depth_test: bool
+    name: str
+
+
 class OpenGLMobject:
     """Mathematical Object: base class for objects that can be displayed on screen.
 
@@ -118,6 +132,8 @@ class OpenGLMobject:
 
     dim: int = 3
 
+    # WARNING: when changing a parameter here, be sure to update the
+    # TypedDict above so that autocomplete works for users
     def __init__(
         self,
         color=WHITE,
@@ -125,19 +141,16 @@ class OpenGLMobject:
         reflectiveness: float = 0.0,
         shadow: float = 0.0,
         gloss: float = 0.0,
-        texture_paths: dict[str, str] | None = None,
         is_fixed_in_frame: bool = False,
         is_fixed_orientation: bool = False,
         depth_test: bool = True,
         name: str | None = None,
-        **kwargs,
     ):
         self.color = color
         self.opacity = opacity
         self.reflectiveness = reflectiveness
         self.shadow = shadow
         self.gloss = gloss
-        self.texture_paths = texture_paths
         self.is_fixed_in_frame = is_fixed_in_frame
         self.is_fixed_orientation = is_fixed_orientation
         self.depth_test = depth_test
@@ -1203,8 +1216,8 @@ class OpenGLMobject:
             if v_buff is None:
                 v_buff = v_buff_ratio * self[0].get_height()
 
-        x_unit = h_buff + max([sm.get_width() for sm in submobs])
-        y_unit = v_buff + max([sm.get_height() for sm in submobs])
+        x_unit = h_buff + max(sm.get_width() for sm in submobs)
+        y_unit = v_buff + max(sm.get_height() for sm in submobs)
 
         for index, sm in enumerate(submobs):
             if fill_rows_first:
@@ -2274,7 +2287,7 @@ class OpenGLMobject:
         return all_points[index]
 
     def get_continuous_bounding_box_point(self, direction):
-        dl, center, ur = self.get_bounding_box()
+        _dl, center, ur = self.get_bounding_box()
         corner_vect = ur - center
         return center + direction / np.max(
             np.abs(
@@ -2632,7 +2645,6 @@ class OpenGLMobject:
         family1 = self.get_family()
         family2 = mobject.get_family()
         for sm1, sm2 in zip(family1, family2):
-            sm1.texture_paths = sm2.texture_paths
             sm1.depth_test = sm2.depth_test
         # Make sure named family members carry over
         for attr, value in list(mobject.__dict__.items()):

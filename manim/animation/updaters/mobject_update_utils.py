@@ -41,7 +41,8 @@ def always_redraw(func: Callable[[], Mobject]) -> Mobject:
         A function without (required) input arguments that returns
         a mobject.
 
-    Examples --------
+    Examples
+    --------
     .. manim:: TangentAnimation
 
         class TangentAnimation(Scene):

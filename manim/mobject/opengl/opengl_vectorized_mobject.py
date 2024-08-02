@@ -6,9 +6,11 @@ from functools import reduce
 from typing import TYPE_CHECKING, Literal
 
 import numpy as np
+from typing_extensions import Unpack
 
 from manim.constants import *
 from manim.mobject.opengl.opengl_mobject import (
+    MobjectKwargs,
     OpenGLMobject,
     OpenGLPoint,
 )
@@ -56,6 +58,21 @@ DEFAULT_STROKE_COLOR = GREY_A
 DEFAULT_FILL_COLOR = GREY_C
 
 
+# TODO: add this to the **kwargs of all mobjects that use OpenGLVMobject
+class VMobjectKwargs(MobjectKwargs, total=False):
+    color: ParsableManimColor | list[ParsableManimColor]
+    fill_color: ParsableManimColor | list[ParsableManimColor]
+    fill_opacity: float
+    stroke_color: ParsableManimColor | list[ParsableManimColor]
+    stroke_opacity: float
+    stroke_width: float
+    draw_stroke_behind_fill: bool
+    background_image_file: str
+    long_lines: bool
+    joint_type: LineJointType
+    flat_stroke: bool
+
+
 class OpenGLVMobject(OpenGLMobject):
     """A vectorized mobject."""
 
@@ -64,6 +81,8 @@ class OpenGLVMobject(OpenGLMobject):
     make_smooth_after_applying_functions: bool = False
     tolerance_for_point_equality: float = 1e-8
 
+    # WARNING: before updating the __init__ update the VMobjectKwargs TypedDict
+    # so users can get autocomplete
     def __init__(
         self,
         color: ParsableManimColor | list[ParsableManimColor] | None = None,
@@ -77,7 +96,7 @@ class OpenGLVMobject(OpenGLMobject):
         long_lines: bool = False,
         joint_type: LineJointType = LineJointType.AUTO,
         flat_stroke: bool = False,
-        **kwargs,
+        **kwargs: Unpack[MobjectKwargs],
     ):
         super().__init__(**kwargs)
         if fill_color is None:
