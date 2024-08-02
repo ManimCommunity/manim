@@ -5,7 +5,7 @@ import re
 
 from cloup import Choice, option, option_group
 
-from manim.constants import QUALITIES, RendererType
+from manim.constants import QUALITIES
 
 __all__ = ["render_options"]
 
@@ -104,29 +104,6 @@ render_options = option_group(
         help="Render at this frame rate.",
     ),
     option(
-        "--renderer",
-        type=Choice(
-            [renderer_type.value for renderer_type in RendererType],
-            case_sensitive=False,
-        ),
-        help="Select a renderer for your Scene.",
-        default="opengl",
-    ),
-    option(
-        "-g",
-        "--save_pngs",
-        is_flag=True,
-        default=None,
-        help="Save each frame as png (Deprecated).",
-    ),
-    option(
-        "-i",
-        "--save_as_gif",
-        default=None,
-        is_flag=True,
-        help="Save as a gif (Deprecated).",
-    ),
-    option(
         "--save_sections",
         default=None,
         is_flag=True,
@@ -137,17 +114,5 @@ render_options = option_group(
         "--transparent",
         is_flag=True,
         help="Render scenes with alpha channel.",
-    ),
-    option(
-        "--use_projection_fill_shaders",
-        is_flag=True,
-        help="Use shaders for OpenGLVMobject fill which are compatible with transformation matrices.",
-        default=None,
-    ),
-    option(
-        "--use_projection_stroke_shaders",
-        is_flag=True,
-        help="Use shaders for OpenGLVMobject stroke which are compatible with transformation matrices.",
-        default=None,
     ),
 )
