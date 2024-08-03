@@ -21,11 +21,10 @@ from typing import TYPE_CHECKING, Callable, Literal
 
 import numpy as np
 
+from manim import config, logger
+from manim.constants import *
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-
-from .. import config, logger
-from ..constants import *
-from ..utils.color import (
+from manim.utils.color import (
     BLACK,
     WHITE,
     YELLOW_C,
@@ -34,14 +33,15 @@ from ..utils.color import (
     color_gradient,
     interpolate_color,
 )
-from ..utils.exceptions import MultiAnimationOverrideException
-from ..utils.iterables import list_update, remove_list_redundancies
-from ..utils.paths import straight_path
-from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
+from manim.utils.exceptions import MultiAnimationOverrideException
+from manim.utils.iterables import list_update, remove_list_redundancies
+from manim.utils.paths import straight_path
+from manim.utils.space_ops import angle_between_vectors, normalize, rotation_matrix
 
 if TYPE_CHECKING:
     from typing_extensions import Self, TypeAlias
 
+    from manim.animation.animation import Animation
     from manim.typing import (
         FunctionOverride,
         ManimFloat,
@@ -53,8 +53,6 @@ if TYPE_CHECKING:
         Point3D_Array,
         Vector3D,
     )
-
-    from ..animation.animation import Animation
 
     TimeBasedUpdater: TypeAlias = Callable[["Mobject", float], object]
     NonTimeBasedUpdater: TypeAlias = Callable[["Mobject"], object]
@@ -149,7 +147,7 @@ class Mobject:
         return self._assert_valid_submobjects_internal(submobjects, Mobject)
 
     def _assert_valid_submobjects_internal(
-        self, submobjects: list[Mobject], mob_class: type[Mobject]
+        self, submobjects: Iterable[Mobject], mob_class: type[Mobject]
     ) -> Self:
         for i, submob in enumerate(submobjects):
             if not isinstance(submob, mob_class):
@@ -267,10 +265,12 @@ class Mobject:
 
             >>> from manim import Square, GREEN
             >>> Square.set_default(color=GREEN, fill_opacity=0.25)
-            >>> s = Square(); s.color, s.fill_opacity
+            >>> s = Square()
+            >>> s.color, s.fill_opacity
             (ManimColor('#83C167'), 0.25)
             >>> Square.set_default()
-            >>> s = Square(); s.color, s.fill_opacity
+            >>> s = Square()
+            >>> s.color, s.fill_opacity
             (ManimColor('#FFFFFF'), 0.0)
 
         .. manim:: ChangedDefaultTextcolor
@@ -676,13 +676,10 @@ class Mobject:
         # Add automatic compatibility layer
         # between properties and get_* and set_*
         # methods.
-        #
-        # In python 3.9+ we could change this
-        # logic to use str.remove_prefix instead.
 
         if attr.startswith("get_"):
             # Remove the "get_" prefix
-            to_get = attr[4:]
+            to_get = attr.removeprefix("get_")
 
             def getter(self):
                 warnings.warn(
@@ -827,7 +824,7 @@ class Mobject:
 
     def get_image(self, camera=None) -> PixelArray:
         if camera is None:
-            from ..camera.camera import Camera
+            from manim.camera.cairo_camera import CairoCamera as Camera
 
             camera = Camera()
         camera.capture_mobject(self)
@@ -1341,12 +1338,12 @@ class Mobject:
         # Default to applying matrix about the origin, not mobjects center
         if ("about_point" not in kwargs) and ("about_edge" not in kwargs):
             kwargs["about_point"] = ORIGIN
-        full_matrix = np.identity(self.dim)
-        matrix = np.array(matrix)
-        full_matrix[: matrix.shape[0], : matrix.shape[1]] = matrix
-        self.apply_points_function_about_point(
-            lambda points: np.dot(points, full_matrix.T), **kwargs
-        )
+        # full_matrix = np.identity(self.dim)
+        # matrix = np.array(matrix)
+        # full_matrix[: matrix.shape[0], : matrix.shape[1]] = matrix
+        # self.apply_points_function_about_point(
+        #     lambda points: np.dot(points, full_matrix.T), **kwargs
+        # )
         return self
 
     def apply_complex_function(
@@ -3040,6 +3037,45 @@ class Group(Mobject, metaclass=ConvertToOpenGL):
     def __init__(self, *mobjects, **kwargs) -> None:
         super().__init__(**kwargs)
         self.add(*mobjects)
+
+
+class Point(Mobject, metaclass=ConvertToOpenGL):
+    def __init__(
+        self,
+        location: np.ndarray = ORIGIN,
+        artificial_width: float = 1e-6,
+        artificial_height: float = 1e-6,
+        **kwargs,
+    ):
+        self.artificial_width = artificial_width
+        self.artificial_height = artificial_height
+        super().__init__(**kwargs)
+        self.set_location(location)
+
+    @property
+    def width(self):
+        return self.artificial_width
+
+    @property
+    def height(self):
+        return self.artificial_height
+
+    # TODO: properties vs. getter methods?
+
+    def get_width(self):
+        return self.artificial_width
+
+    def get_height(self):
+        return self.artificial_height
+
+    def get_location(self):
+        return self.points[0].copy()
+
+    def get_bounding_box_point(self, *args, **kwargs):
+        return self.get_location()
+
+    def set_location(self, new_loc):
+        self.set_points(np.array(new_loc, ndmin=2, dtype=float))
 
 
 class _AnimationBuilder:

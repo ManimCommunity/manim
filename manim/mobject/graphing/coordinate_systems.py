@@ -980,21 +980,8 @@ class CoordinateSystem:
                         )
                     self.add(axes, trig_plane)
         """
-        if config.renderer == RendererType.CAIRO:
+        if config.renderer == RendererType.OPENGL:
             surface = Surface(
-                lambda u, v: self.c2p(u, v, function(u, v)),
-                u_range=u_range,
-                v_range=v_range,
-                **kwargs,
-            )
-            if colorscale:
-                surface.set_fill_by_value(
-                    axes=self.copy(),
-                    colorscale=colorscale,
-                    axis=colorscale_axis,
-                )
-        elif config.renderer == RendererType.OPENGL:
-            surface = OpenGLSurface(
                 lambda u, v: self.c2p(u, v, function(u, v)),
                 u_range=u_range,
                 v_range=v_range,
@@ -1003,6 +990,9 @@ class CoordinateSystem:
                 colorscale_axis=colorscale_axis,
                 **kwargs,
             )
+        elif config.renderer == RendererType.CAIRO:
+            # TODO: CairoSurface?
+            raise NotImplementedError
 
         return surface
 
@@ -2483,6 +2473,7 @@ class ThreeDAxes(Axes):
         self.z_axis = z_axis
 
         if config.renderer == RendererType.CAIRO:
+            # TODO: check in how far these methods are supported by new VMobject class
             self._add_3d_pieces()
             self._set_axis_shading()
 

@@ -18,7 +18,8 @@ from ..animation.animation import Animation
 from ..utils.rate_functions import linear
 
 if TYPE_CHECKING:
-    from ..mobject.mobject import Mobject, VMobject
+    from ..mobject.mobject import Mobject
+    from ..mobject.types.vectorized_mobject import VMobject
 
 
 class Homotopy(Animation):
@@ -125,7 +126,7 @@ class PhaseFlow(Animation):
             **kwargs,
         )
 
-    def interpolate_mobject(self, alpha: float) -> None:
+    def interpolate(self, alpha: float) -> None:
         if hasattr(self, "last_alpha"):
             dt = self.virtual_time * (
                 self.rate_func(alpha) - self.rate_func(self.last_alpha)
@@ -161,6 +162,6 @@ class MoveAlongPath(Animation):
             mobject, suspend_mobject_updating=suspend_mobject_updating, **kwargs
         )
 
-    def interpolate_mobject(self, alpha: float) -> None:
+    def interpolate(self, alpha: float) -> None:
         point = self.path.point_from_proportion(self.rate_func(alpha))
         self.mobject.move_to(point)

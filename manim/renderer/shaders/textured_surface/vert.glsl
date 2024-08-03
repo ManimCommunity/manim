@@ -1,6 +1,6 @@
 #version 330
 
-#include ../include/camera_uniform_declarations.glsl
+#include "../include/camera_uniform_declarations.glsl"
 
 in vec3 point;
 in vec3 du_point;
@@ -13,11 +13,12 @@ out vec3 v_normal;
 out vec2 v_im_coords;
 out float v_opacity;
 
-#include ../include/position_point_into_frame.glsl
-#include ../include/get_gl_Position.glsl
-#include ../include/get_rotated_surface_unit_normal_vector.glsl
+#include "../include/get_gl_Position.glsl"
+#include "../include/get_rotated_surface_unit_normal_vector.glsl"
+#include "../include/position_point_into_frame.glsl"
 
-void main(){
+void main()
+{
     xyz_coords = position_point_into_frame(point);
     v_normal = get_rotated_surface_unit_normal_vector(point, du_point, dv_point);
     v_im_coords = im_coords;

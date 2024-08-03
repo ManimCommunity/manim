@@ -5,7 +5,8 @@ in vec4 in_color;
 
 out vec4 v_color;
 
-void main() {
+void main()
+{
     v_color = in_color;
     gl_Position = vec4(in_vert, 0.0, 1.0);
 }

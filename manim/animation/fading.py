@@ -19,18 +19,22 @@ __all__ = [
     "FadeIn",
 ]
 
+from typing import TYPE_CHECKING
+
 import numpy as np
 
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 
 from ..animation.transform import Transform
 from ..constants import ORIGIN
-from ..mobject.mobject import Group, Mobject
-from ..scene.scene import Scene
+from ..mobject.mobject import Group
+
+if TYPE_CHECKING:
+    pass
 
 
 class _Fade(Transform):
-    """Fade :class:`~.Mobject` s in or out.
+    """Fade :class:`~.OpenGLMobject` s in or out.
 
     Parameters
     ----------
@@ -49,9 +53,9 @@ class _Fade(Transform):
 
     def __init__(
         self,
-        *mobjects: Mobject,
+        *mobjects: OpenGLMobject,
         shift: np.ndarray | None = None,
-        target_position: np.ndarray | Mobject | None = None,
+        target_position: np.ndarray | OpenGLMobject | None = None,
         scale: float = 1,
         **kwargs,
     ) -> None:
@@ -62,7 +66,7 @@ class _Fade(Transform):
         self.point_target = False
         if shift is None:
             if target_position is not None:
-                if isinstance(target_position, (Mobject, OpenGLMobject)):
+                if isinstance(target_position, OpenGLMobject):
                     target_position = target_position.get_center()
                 shift = target_position - mobject.get_center()
                 self.point_target = True
@@ -72,29 +76,29 @@ class _Fade(Transform):
         self.scale_factor = scale
         super().__init__(mobject, **kwargs)
 
-    def _create_faded_mobject(self, fadeIn: bool) -> Mobject:
+    def _create_faded_mobject(self, fade_in: bool) -> OpenGLMobject:
         """Create a faded, shifted and scaled copy of the mobject.
 
         Parameters
         ----------
-        fadeIn
+        fade_in
             Whether the faded mobject is used to fade in.
 
         Returns
         -------
-        Mobject
+        OpenGLMobject
             The faded, shifted and scaled copy of the mobject.
         """
         faded_mobject = self.mobject.copy()
         faded_mobject.fade(1)
-        direction_modifier = -1 if fadeIn and not self.point_target else 1
+        direction_modifier = -1 if fade_in and not self.point_target else 1
         faded_mobject.shift(self.shift_vector * direction_modifier)
         faded_mobject.scale(self.scale_factor)
         return faded_mobject
 
 
 class FadeIn(_Fade):
-    """Fade in :class:`~.Mobject` s.
+    """Fade in :class:`~.OpenGLMobject` s.
 
     Parameters
     ----------
@@ -131,18 +135,18 @@ class FadeIn(_Fade):
 
     """
 
-    def __init__(self, *mobjects: Mobject, **kwargs) -> None:
+    def __init__(self, *mobjects: OpenGLMobject, **kwargs) -> None:
         super().__init__(*mobjects, introducer=True, **kwargs)
 
     def create_target(self):
         return self.mobject
 
     def create_starting_mobject(self):
-        return self._create_faded_mobject(fadeIn=True)
+        return self._create_faded_mobject(fade_in=True)
 
 
 class FadeOut(_Fade):
-    """Fade out :class:`~.Mobject` s.
+    """Fade out :class:`~.OpenGLMobject` s.
 
     Parameters
     ----------
@@ -179,12 +183,12 @@ class FadeOut(_Fade):
 
     """
 
-    def __init__(self, *mobjects: Mobject, **kwargs) -> None:
+    def __init__(self, *mobjects: OpenGLMobject, **kwargs) -> None:
         super().__init__(*mobjects, remover=True, **kwargs)
 
     def create_target(self):
-        return self._create_faded_mobject(fadeIn=False)
+        return self._create_faded_mobject(fade_in=False)
 
-    def clean_up_from_scene(self, scene: Scene = None) -> None:
-        super().clean_up_from_scene(scene)
+    def begin(self) -> None:
+        super().begin()
         self.interpolate(0)

@@ -291,10 +291,8 @@ class ManimConfig(MutableMapping):
         "preview",
         "progress_bar",
         "quality",
-        "save_as_gif",
         "save_sections",
         "save_last_frame",
-        "save_pngs",
         "scene_names",
         "show_in_file_browser",
         "tex_dir",
@@ -305,8 +303,6 @@ class ManimConfig(MutableMapping):
         "renderer",
         "enable_gui",
         "gui_location",
-        "use_projection_fill_shaders",
-        "use_projection_stroke_shaders",
         "verbosity",
         "video_dir",
         "sections_dir",
@@ -324,6 +320,23 @@ class ManimConfig(MutableMapping):
 
     def __init__(self) -> None:
         self._d: dict[str, Any | None] = dict.fromkeys(self._OPTS)
+
+    def _warn_about_config_options(self) -> None:
+        """Warns about incorrect config options, or permutations of config options."""
+
+        logger = logging.getLogger("manim")
+        if self.format == "webm":
+            logger.warning(
+                "Output format set as webm, this can be slower than other formats",
+            )
+        if not self.preview and not self.write_to_movie:
+            logger.warning(
+                "preview and write_to_movie disabled, this is a dry run. Try passing -p or -w."
+            )
+        elif self.preview and self.write_to_movie:
+            logger.warning(
+                "Both preview and write_to_movie enabled, this can be slower than just previewing."
+            )
 
     # behave like a dict
     def __iter__(self) -> Iterator[str]:
@@ -575,8 +588,6 @@ class ManimConfig(MutableMapping):
             "write_to_movie",
             "save_last_frame",
             "write_all",
-            "save_pngs",
-            "save_as_gif",
             "save_sections",
             "preview",
             "show_in_file_browser",
@@ -587,8 +598,6 @@ class ManimConfig(MutableMapping):
             "custom_folders",
             "enable_gui",
             "fullscreen",
-            "use_projection_fill_shaders",
-            "use_projection_stroke_shaders",
             "enable_wireframe",
             "force_window",
             "no_latex_cleanup",
@@ -745,8 +754,6 @@ class ManimConfig(MutableMapping):
             "show_in_file_browser",
             "write_to_movie",
             "save_last_frame",
-            "save_pngs",
-            "save_as_gif",
             "save_sections",
             "write_all",
             "disable_caching",
@@ -760,8 +767,6 @@ class ManimConfig(MutableMapping):
             "background_color",
             "enable_gui",
             "fullscreen",
-            "use_projection_fill_shaders",
-            "use_projection_stroke_shaders",
             "zero_pad",
             "enable_wireframe",
             "force_window",
@@ -933,6 +938,7 @@ class ManimConfig(MutableMapping):
     def notify_outdated_version(self, value: bool) -> None:
         self._set_boolean("notify_outdated_version", value)
 
+    # TODO: Rename to write_to_file
     @property
     def write_to_movie(self) -> bool:
         """Whether to render the scene to a movie file (-w)."""
@@ -959,24 +965,6 @@ class ManimConfig(MutableMapping):
     @write_all.setter
     def write_all(self, value: bool) -> None:
         self._set_boolean("write_all", value)
-
-    @property
-    def save_pngs(self) -> bool:
-        """Whether to save all frames in the scene as images files (-g)."""
-        return self._d["save_pngs"]
-
-    @save_pngs.setter
-    def save_pngs(self, value: bool) -> None:
-        self._set_boolean("save_pngs", value)
-
-    @property
-    def save_as_gif(self) -> bool:
-        """Whether to save the rendered scene in .gif format (-i)."""
-        return self._d["save_as_gif"]
-
-    @save_as_gif.setter
-    def save_as_gif(self, value: bool) -> None:
-        self._set_boolean("save_as_gif", value)
 
     @property
     def save_sections(self) -> bool:
@@ -1049,10 +1037,6 @@ class ManimConfig(MutableMapping):
             [None, "png", "gif", "mp4", "mov", "webm"],
         )
         self.resolve_movie_file_extension(self.transparent)
-        if self.format == "webm":
-            logger.warning(
-                "Output format set as webm, this can be slower than other formats",
-            )
 
     @property
     def ffmpeg_loglevel(self) -> str:
@@ -1464,24 +1448,6 @@ class ManimConfig(MutableMapping):
     @fullscreen.setter
     def fullscreen(self, value: bool) -> None:
         self._set_boolean("fullscreen", value)
-
-    @property
-    def use_projection_fill_shaders(self) -> bool:
-        """Use shaders for OpenGLVMobject fill which are compatible with transformation matrices."""
-        return self._d["use_projection_fill_shaders"]
-
-    @use_projection_fill_shaders.setter
-    def use_projection_fill_shaders(self, value: bool) -> None:
-        self._set_boolean("use_projection_fill_shaders", value)
-
-    @property
-    def use_projection_stroke_shaders(self) -> bool:
-        """Use shaders for OpenGLVMobject stroke which are compatible with transformation matrices."""
-        return self._d["use_projection_stroke_shaders"]
-
-    @use_projection_stroke_shaders.setter
-    def use_projection_stroke_shaders(self, value: bool) -> None:
-        self._set_boolean("use_projection_stroke_shaders", value)
 
     @property
     def zero_pad(self) -> int:

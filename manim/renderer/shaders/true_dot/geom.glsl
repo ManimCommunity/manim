@@ -1,7 +1,7 @@
 #version 330
 
-layout (points) in;
-layout (triangle_strip, max_vertices = 4) out;
+layout(points) in;
+layout(triangle_strip, max_vertices = 4) out;
 
 // Needed for get_gl_Position
 uniform vec2 frame_shape;
@@ -20,9 +20,10 @@ out float point_radius;
 out vec2 center;
 out vec2 point;
 
-#include ../include/get_gl_Position.glsl
+#include "../include/get_gl_Position.glsl"
 
-void main() {
+void main()
+{
     color = v_color[0];
     point_radius = v_point_radius[0];
     center = v_point[0].xy;
@@ -30,7 +31,8 @@ void main() {
     point_radius = v_point_radius[0] / max(1.0 - v_point[0].z / focal_distance / frame_shape.y, 0.0);
     float rpa = point_radius + anti_alias_width;
 
-    for(int i = 0; i < 4; i++){
+    for (int i = 0; i < 4; i++)
+    {
         // To account for perspective
 
         int x_index = 2 * (i % 2) - 1;

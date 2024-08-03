@@ -48,7 +48,6 @@ from manim.mobject.geometry.arc import Circle, Dot
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import Rectangle
 from manim.mobject.geometry.shape_matchers import SurroundingRectangle
-from manim.scene.scene import Scene
 
 from .. import config
 from ..animation.animation import Animation
@@ -307,7 +306,7 @@ class ShowPassingFlash(ShowPartial):
         self.time_width = time_width
         super().__init__(mobject, remover=True, introducer=True, **kwargs)
 
-    def _get_bounds(self, alpha: float) -> tuple[float]:
+    def _get_bounds(self, alpha: float) -> tuple[float, float]:
         tw = self.time_width
         upper = interpolate(0, 1 + tw, alpha)
         lower = upper - tw
@@ -315,8 +314,8 @@ class ShowPassingFlash(ShowPartial):
         lower = max(lower, 0)
         return (lower, upper)
 
-    def clean_up_from_scene(self, scene: Scene) -> None:
-        super().clean_up_from_scene(scene)
+    def finish(self) -> None:
+        super().finish()
         for submob, start in self.get_all_families_zipped():
             submob.pointwise_become_partial(start, 0, 1)
 
@@ -550,6 +549,7 @@ class Wiggle(Animation):
         )
 
 
+# TODO: get rid of this if condition madness
 class Circumscribe(Succession):
     """Draw a temporary line surrounding the mobject.
 

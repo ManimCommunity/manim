@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from manim import BLACK, Mobject, Scene, VMobject
+from manim import BLACK, Manager, Mobject, Scene, VMobject
 
 
 def test_import_color():
@@ -12,7 +12,8 @@ def test_import_color():
 
 
 def test_background_color():
-    S = Scene()
+    manager = Manager(Scene)
+    S = manager.scene
     S.camera.background_color = "#ff0000"
     S.renderer.update_frame(S)
     np.testing.assert_array_equal(
