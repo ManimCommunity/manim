@@ -227,11 +227,7 @@ class ManimDirective(Directive):
             + self.options.get("ref_functions", [])
             + self.options.get("ref_methods", [])
         )
-        if ref_content:
-            ref_block = "References: " + " ".join(ref_content)
-
-        else:
-            ref_block = ""
+        ref_block = "References: " + " ".join(ref_content) if ref_content else ""
 
         if "quality" in self.options:
             quality = f'{self.options["quality"]}_quality'

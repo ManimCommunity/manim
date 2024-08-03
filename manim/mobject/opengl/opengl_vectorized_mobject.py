@@ -6,9 +6,11 @@ from functools import reduce
 from typing import TYPE_CHECKING, Literal
 
 import numpy as np
+from typing_extensions import Unpack
 
 from manim.constants import *
 from manim.mobject.opengl.opengl_mobject import (
+    MobjectKwargs,
     OpenGLMobject,
     OpenGLPoint,
 )
@@ -24,6 +26,7 @@ from manim.utils.bezier import (
     proportions_along_bezier_curve_for_point,
 )
 from manim.utils.color import *
+from manim.utils.color.core import ParsableManimColor
 from manim.utils.deprecation import deprecated
 from manim.utils.iterables import (
     listify,
@@ -55,6 +58,21 @@ DEFAULT_STROKE_COLOR = GREY_A
 DEFAULT_FILL_COLOR = GREY_C
 
 
+# TODO: add this to the **kwargs of all mobjects that use OpenGLVMobject
+class VMobjectKwargs(MobjectKwargs, total=False):
+    color: ParsableManimColor | list[ParsableManimColor]
+    fill_color: ParsableManimColor | list[ParsableManimColor]
+    fill_opacity: float
+    stroke_color: ParsableManimColor | list[ParsableManimColor]
+    stroke_opacity: float
+    stroke_width: float
+    draw_stroke_behind_fill: bool
+    background_image_file: str
+    long_lines: bool
+    joint_type: LineJointType
+    flat_stroke: bool
+
+
 class OpenGLVMobject(OpenGLMobject):
     """A vectorized mobject."""
 
@@ -63,6 +81,8 @@ class OpenGLVMobject(OpenGLMobject):
     make_smooth_after_applying_functions: bool = False
     tolerance_for_point_equality: float = 1e-8
 
+    # WARNING: before updating the __init__ update the VMobjectKwargs TypedDict
+    # so users can get autocomplete
     def __init__(
         self,
         color: ParsableManimColor | list[ParsableManimColor] | None = None,
@@ -76,7 +96,7 @@ class OpenGLVMobject(OpenGLMobject):
         long_lines: bool = False,
         joint_type: LineJointType = LineJointType.AUTO,
         flat_stroke: bool = False,
-        **kwargs,
+        **kwargs: Unpack[MobjectKwargs],
     ):
         super().__init__(**kwargs)
         if fill_color is None:
@@ -198,7 +218,7 @@ class OpenGLVMobject(OpenGLMobject):
         if color is not None:
             self.fill_color = listify(ManimColor.parse(color))
         if opacity is not None:
-            self.fill_color = [c.set_opacity(opacity) for c in self.fill_color]
+            self.fill_color = [c.opacity(opacity) for c in self.fill_color]
         return self
 
     def set_stroke(
@@ -213,7 +233,7 @@ class OpenGLVMobject(OpenGLMobject):
             if color is not None:
                 mob.stroke_color = listify(ManimColor.parse(color))
             if opacity is not None:
-                mob.stroke_color = [c.set_opacity(opacity) for c in mob.stroke_color]
+                mob.stroke_color = [c.opacity(opacity) for c in mob.stroke_color]
 
             if width is not None:
                 mob.stroke_width = listify(width)
@@ -319,7 +339,7 @@ class OpenGLVMobject(OpenGLMobject):
 
     # TODO, it's weird for these to return the first of various lists
     # rather than the full information
-    def get_fill_color(self) -> str:
+    def get_fill_color(self) -> ManimColor:
         """
         If there are multiple colors (for gradient)
         this returns the first one
@@ -333,7 +353,7 @@ class OpenGLVMobject(OpenGLMobject):
         """
         return self.get_fill_opacities()[0]
 
-    def get_stroke_color(self) -> str:
+    def get_stroke_color(self) -> ManimColor:
         return self.get_stroke_colors()[0]
 
     def get_stroke_width(self) -> float | np.ndarray:
@@ -342,7 +362,7 @@ class OpenGLVMobject(OpenGLMobject):
     def get_stroke_opacity(self) -> float:
         return self.get_stroke_opacities()[0]
 
-    def get_color(self) -> str:
+    def get_color(self) -> ManimColor:
         if self.has_fill():
             return self.get_fill_color()
         return self.get_stroke_color()
@@ -1655,25 +1675,26 @@ class OpenGLDashedVMobject(OpenGLVMobject):
         **kwargs,
     ):
         super().__init__(**kwargs)
+        self.dashed_ratio = dashed_ratio
+        self.num_dashes = num_dashes
+        r = self.dashed_ratio
+        n = self.num_dashes
 
         if num_dashes > 0:
-            # End points of the unit interval for division
-            alphas = np.linspace(0, 1, num_dashes + 1)
-
-            # This determines the length of each "dash"
-            full_d_alpha = 1.0 / num_dashes
-            partial_d_alpha = full_d_alpha * positive_space_ratio
-
-            # Rescale so that the last point of vmobject will
-            # be the end of the last dash
-            alphas /= 1 - full_d_alpha + partial_d_alpha
+            # Assuming total length is 1
+            dash_len = r / n
+            void_len = (1 - r) / n if vmobject.is_closed() else (1 - r) / (n - 1)
 
             self.add(
-                *[
-                    vmobject.get_subcurve(alpha, alpha + partial_d_alpha)
-                    for alpha in alphas[:-1]
-                ]
+                *(
+                    vmobject.get_subcurve(
+                        i * (dash_len + void_len),
+                        i * (dash_len + void_len) + dash_len,
+                    )
+                    for i in range(n)
+                )
             )
+
         # Family is already taken care of by get_subcurve
         # implementation
         self.match_style(vmobject, recurse=False)
@@ -1684,7 +1705,7 @@ class VHighlight(OpenGLVGroup):
         self,
         vmobject: OpenGLVMobject,
         n_layers: int = 5,
-        color_bounds: tuple[Color, Color] = (GREY_C, GREY_E),
+        color_bounds: tuple[ManimColor, ManimColor] = (GREY_C, GREY_E),
         max_stroke_addition: float = 5.0,
     ):
         outline = vmobject.replicate(n_layers)

@@ -463,10 +463,7 @@ class OpenGLLine(OpenGLTipableVMobject):
         if buff == 0:
             return
         #
-        if self.path_arc == 0:
-            length = self.get_length()
-        else:
-            length = self.get_arc_length()
+        length = self.get_length() if self.path_arc == 0 else self.get_arc_length()
         #
         if length < 2 * buff:
             return

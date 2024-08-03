@@ -72,6 +72,7 @@ from manim.mobject.types.vectorized_mobject import *
 from manim.mobject.value_tracker import *
 from manim.mobject.vector_field import *
 from manim.scene.scene import *
+from manim.scene.sections import *
 from manim.scene.vector_space_scene import *
 from manim.utils import color, rate_functions, unit
 from manim.utils.bezier import *

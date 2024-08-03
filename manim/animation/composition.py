@@ -97,7 +97,7 @@ class AnimationGroup(Animation):
     def finish(self) -> None:
         self.interpolate(1)
         self.anims_begun[:] = True
-        self.anims_begun[:] = True
+        self.anims_finished[:] = True
         for anim in self.animations:
             self.process_subanimation_buffer(anim.buffer)
 

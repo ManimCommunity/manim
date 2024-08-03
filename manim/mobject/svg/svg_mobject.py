@@ -98,27 +98,13 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         should_center: bool = True,
         height: float | None = 2,
         width: float | None = None,
-        color: str | None = None,
         opacity: float | None = None,
-        fill_color: str | None = None,
-        fill_opacity: float | None = None,
-        stroke_color: str | None = None,
-        stroke_opacity: float | None = None,
-        stroke_width: float | None = None,
         svg_default: dict | None = None,
         path_string_config: dict | None = None,
         use_svg_cache: bool = True,
         **kwargs,
     ):
-        super().__init__(
-            color=color,
-            stroke_color=stroke_color,
-            stroke_opacity=stroke_opacity,
-            stroke_width=stroke_width,
-            fill_opacity=fill_opacity,
-            fill_color=fill_color,
-            **kwargs,
-        )
+        super().__init__(**kwargs)
 
         # process keyword arguments
         self.file_name = Path(file_name) if file_name is not None else None
@@ -139,9 +125,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             }
         self.svg_default = svg_default
 
-        if path_string_config is None:
-            path_string_config = {}
-        self.path_string_config = path_string_config
+        self.path_string_config = path_string_config or {}
 
         self.init_svg_mobject(use_svg_cache=use_svg_cache)
 
@@ -263,7 +247,8 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         """
         result = []
         for shape in svg.elements():
-            if isinstance(shape, se.Group):
+            # can we combine the two continue cases into one?
+            if isinstance(shape, se.Group):  # noqa: SIM114
                 continue
             elif isinstance(shape, se.Path):
                 mob = self.path_to_mobject(shape)

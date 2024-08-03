@@ -14,8 +14,6 @@ classifiers= [
     "Topic :: Scientific/Engineering",
     "Topic :: Multimedia :: Video",
     "Topic :: Multimedia :: Graphics",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -27,7 +25,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.13"
+python = ">=3.10,<3.13"
 av = ">=9.0.0"
 click = ">=8.0"
 cloup = ">=2.0.0"
@@ -64,13 +62,8 @@ jupyterlab = ["jupyterlab", "notebook"]
 gui = ["dearpygui"]
 
 [tool.poetry.group.dev.dependencies]
-black = ">=23.11,<25.0"
 flake8 = "^6.1.0"
-flake8-bugbear = "^23.11.28"
-flake8-builtins = "^2.2.0"
-flake8-comprehensions = "^3.7.0"
 flake8-docstrings = "^1.7.0"
-flake8-simplify = "^0.14.1"
 furo = "^2023.09.10"
 gitpython = "^3"
 isort = "^5.12.0"
@@ -137,14 +130,23 @@ fix = true
 
 [tool.ruff.lint]
 select = [
+  "A",
+  "B",
+  "C4",
   "E",
   "F",
   "I",
   "PT",
+  "SIM",
   "UP",
 ]
 
 ignore = [
+  # mutable argument defaults (too many changes)
+  "B006",
+  # No function calls in defaults
+  # ignored because np.array() and straight_path()
+  "B008",
   # due to the import * used in manim
   "F403",
   "F405",
@@ -164,6 +166,10 @@ dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = [
+  # flake8-builtins
+  "A",
+  # unused expression
+  "B018",
   # unused variable
   "F841",
   # from __future__ import annotations

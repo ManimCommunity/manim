@@ -224,7 +224,7 @@ class _CustomEncoder(json.JSONEncoder):
             # We return the repr and not a list to avoid the JsonEncoder to iterate over it.
             return repr(o)
         elif hasattr(o, "__dict__"):
-            temp = getattr(o, "__dict__")
+            temp = o.__dict__
             # MappingProxy is scene-caching nightmare. It contains all of the object methods and attributes. We skip it as the mechanism will at some point process the object, but instantiated.
             # Indeed, there is certainly no case where scene-caching will receive only a non instancied object, as this is never used in the library or encouraged to be used user-side.
             if isinstance(temp, MappingProxyType):

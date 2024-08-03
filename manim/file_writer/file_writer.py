@@ -77,7 +77,7 @@ class FileWriter(FileWriterProtocol):
         # first section gets automatically created for convenience
         # if you need the first section to be skipped, add a first section by hand, it will replace this one
         self.next_section(
-            name="autocreated", type=DefaultSectionType.NORMAL, skip_animations=False
+            name="autocreated", type_=DefaultSectionType.NORMAL, skip_animations=False
         )
 
     def init_output_directories(self, scene_name: str) -> None:
@@ -93,10 +93,7 @@ class FileWriter(FileWriterProtocol):
         if config["dry_run"]:  # in dry-run mode there is no output
             return
 
-        if config["input_file"]:
-            module_name = config.get_dir("input_file").stem
-        else:
-            module_name = ""
+        module_name = config.get_dir("input_file").stem if config["input_file"] else ""
 
         if self.force_output_as_scene_name:
             self.output_name = Path(scene_name)
@@ -165,7 +162,7 @@ class FileWriter(FileWriterProtocol):
         if len(self.sections) and self.sections[-1].is_empty():
             self.sections.pop()
 
-    def next_section(self, name: str, type: str, skip_animations: bool) -> None:
+    def next_section(self, name: str, type_: str, skip_animations: bool) -> None:
         """Create segmentation cut here."""
         self.finish_last_section()
 
@@ -183,7 +180,7 @@ class FileWriter(FileWriterProtocol):
 
         self.sections.append(
             Section(
-                type,
+                type_,
                 section_video,
                 name,
                 skip_animations,

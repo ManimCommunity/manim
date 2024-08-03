@@ -291,10 +291,8 @@ class ManimConfig(MutableMapping):
         "preview",
         "progress_bar",
         "quality",
-        "save_as_gif",
         "save_sections",
         "save_last_frame",
-        "save_pngs",
         "scene_names",
         "show_in_file_browser",
         "tex_dir",
@@ -305,8 +303,6 @@ class ManimConfig(MutableMapping):
         "renderer",
         "enable_gui",
         "gui_location",
-        "use_projection_fill_shaders",
-        "use_projection_stroke_shaders",
         "verbosity",
         "video_dir",
         "sections_dir",
@@ -336,6 +332,10 @@ class ManimConfig(MutableMapping):
         if not self.preview and not self.write_to_movie:
             logger.warning(
                 "preview and write_to_movie disabled, this is a dry run. Try passing -p or -w."
+            )
+        elif self.preview and self.write_to_movie:
+            logger.warning(
+                "Both preview and write_to_movie enabled, this can be slower than just previewing."
             )
 
     # behave like a dict
@@ -588,8 +588,6 @@ class ManimConfig(MutableMapping):
             "write_to_movie",
             "save_last_frame",
             "write_all",
-            "save_pngs",
-            "save_as_gif",
             "save_sections",
             "preview",
             "show_in_file_browser",
@@ -600,8 +598,6 @@ class ManimConfig(MutableMapping):
             "custom_folders",
             "enable_gui",
             "fullscreen",
-            "use_projection_fill_shaders",
-            "use_projection_stroke_shaders",
             "enable_wireframe",
             "force_window",
             "no_latex_cleanup",
@@ -656,21 +652,18 @@ class ManimConfig(MutableMapping):
         gui_location = tuple(
             map(int, re.split(r"[;,\-]", parser["CLI"]["gui_location"])),
         )
-        setattr(self, "gui_location", gui_location)
+        self.gui_location = gui_location
 
         window_size = parser["CLI"][
             "window_size"
         ]  # if not "default", get a tuple of the position
         if window_size != "default":
             window_size = tuple(map(int, re.split(r"[;,\-]", window_size)))
-        setattr(self, "window_size", window_size)
+        self.window_size = window_size
 
         # plugins
         plugins = parser["CLI"].get("plugins", fallback="", raw=True)
-        if plugins == "":
-            plugins = []
-        else:
-            plugins = plugins.split(",")
+        plugins = [] if plugins == "" else plugins.split(",")
         self.plugins = plugins
         # the next two must be set AFTER digesting pixel_width and pixel_height
         self["frame_height"] = parser["CLI"].getfloat("frame_height", 8.0)
@@ -687,7 +680,7 @@ class ManimConfig(MutableMapping):
 
         val = parser["CLI"].get("progress_bar")
         if val:
-            setattr(self, "progress_bar", val)
+            self.progress_bar = val
 
         val = parser["ffmpeg"].get("loglevel")
         if val:
@@ -697,11 +690,11 @@ class ManimConfig(MutableMapping):
             val = parser["jupyter"].getboolean("media_embed")
         except ValueError:
             val = None
-        setattr(self, "media_embed", val)
+        self.media_embed = val
 
         val = parser["jupyter"].get("media_width")
         if val:
-            setattr(self, "media_width", val)
+            self.media_width = val
 
         val = parser["CLI"].get("quality", fallback="", raw=True)
         if val:
@@ -761,8 +754,6 @@ class ManimConfig(MutableMapping):
             "show_in_file_browser",
             "write_to_movie",
             "save_last_frame",
-            "save_pngs",
-            "save_as_gif",
             "save_sections",
             "write_all",
             "disable_caching",
@@ -776,8 +767,6 @@ class ManimConfig(MutableMapping):
             "background_color",
             "enable_gui",
             "fullscreen",
-            "use_projection_fill_shaders",
-            "use_projection_stroke_shaders",
             "zero_pad",
             "enable_wireframe",
             "force_window",
@@ -852,15 +841,12 @@ class ManimConfig(MutableMapping):
         if args.tex_template:
             self.tex_template = TexTemplate.from_file(args.tex_template)
 
-        if (
-            self.renderer == RendererType.OPENGL
-            and getattr(args, "write_to_movie") is None
-        ):
+        if self.renderer == RendererType.OPENGL and args.write_to_movie is None:
             # --write_to_movie was not passed on the command line, so don't generate video.
             self["write_to_movie"] = False
 
         # Handle --gui_location flag.
-        if getattr(args, "gui_location") is not None:
+        if args.gui_location is not None:
             self.gui_location = args.gui_location
 
         return self
@@ -979,24 +965,6 @@ class ManimConfig(MutableMapping):
     @write_all.setter
     def write_all(self, value: bool) -> None:
         self._set_boolean("write_all", value)
-
-    @property
-    def save_pngs(self) -> bool:
-        """Whether to save all frames in the scene as images files (-g)."""
-        return self._d["save_pngs"]
-
-    @save_pngs.setter
-    def save_pngs(self, value: bool) -> None:
-        self._set_boolean("save_pngs", value)
-
-    @property
-    def save_as_gif(self) -> bool:
-        """Whether to save the rendered scene in .gif format (-i)."""
-        return self._d["save_as_gif"]
-
-    @save_as_gif.setter
-    def save_as_gif(self, value: bool) -> None:
-        self._set_boolean("save_as_gif", value)
 
     @property
     def save_sections(self) -> bool:
@@ -1480,24 +1448,6 @@ class ManimConfig(MutableMapping):
     @fullscreen.setter
     def fullscreen(self, value: bool) -> None:
         self._set_boolean("fullscreen", value)
-
-    @property
-    def use_projection_fill_shaders(self) -> bool:
-        """Use shaders for OpenGLVMobject fill which are compatible with transformation matrices."""
-        return self._d["use_projection_fill_shaders"]
-
-    @use_projection_fill_shaders.setter
-    def use_projection_fill_shaders(self, value: bool) -> None:
-        self._set_boolean("use_projection_fill_shaders", value)
-
-    @property
-    def use_projection_stroke_shaders(self) -> bool:
-        """Use shaders for OpenGLVMobject stroke which are compatible with transformation matrices."""
-        return self._d["use_projection_stroke_shaders"]
-
-    @use_projection_stroke_shaders.setter
-    def use_projection_stroke_shaders(self, value: bool) -> None:
-        self._set_boolean("use_projection_stroke_shaders", value)
 
     @property
     def zero_pad(self) -> int:

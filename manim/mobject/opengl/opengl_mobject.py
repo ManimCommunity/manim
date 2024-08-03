@@ -14,9 +14,8 @@ from functools import partialmethod, wraps
 from math import ceil
 from typing import TYPE_CHECKING, Generic
 
-import moderngl
 import numpy as np
-from typing_extensions import TypeVar
+from typing_extensions import TypedDict, TypeVar
 
 from manim import config
 from manim.constants import *
@@ -42,6 +41,8 @@ from manim.utils.space_ops import (
     normalize,
     rotation_matrix_transpose,
 )
+
+__all__ = ["OpenGLMobject", "MobjectKwargs"]
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
@@ -92,17 +93,6 @@ def stash_mobject_pointers(
     return wrapper
 
 
-def affects_shader_info_id(func):
-    @wraps(func)
-    def wrapper(self):
-        for mob in self.get_family():
-            func(mob)
-            mob.refresh_shader_wrapper_id()
-        return self
-
-    return wrapper
-
-
 @dataclass
 class MobjectStatus:
     color_changed: bool = False
@@ -112,9 +102,19 @@ class MobjectStatus:
     points_changed: bool = False
 
 
-# it's generic in its renderer, which is a little bit cursed
-# In the future, it should be replaced with a RendererData protocol
-class OpenGLMobject(Generic[R]):
+# TODO: add this to the **kwargs of all mobjects that use OpenGLMobject
+class MobjectKwargs(TypedDict, total=False):
+    opacity: float
+    reflectiveness: float
+    shadow: float
+    gloss: float
+    is_fixed_in_frame: bool
+    is_fixed_orientation: bool
+    depth_test: bool
+    name: str
+
+
+class OpenGLMobject:
     """Mathematical Object: base class for objects that can be displayed on screen.
 
     Attributes
@@ -131,12 +131,9 @@ class OpenGLMobject(Generic[R]):
     """
 
     dim: int = 3
-    shader_folder: str = ""
-    render_primitive: int = moderngl.TRIANGLE_STRIP
-    shader_dtype: Sequence[tuple[str, type, tuple[int]]] = [
-        ("point", np.float32, (3,)),
-    ]
 
+    # WARNING: when changing a parameter here, be sure to update the
+    # TypedDict above so that autocomplete works for users
     def __init__(
         self,
         color=WHITE,
@@ -144,19 +141,16 @@ class OpenGLMobject(Generic[R]):
         reflectiveness: float = 0.0,
         shadow: float = 0.0,
         gloss: float = 0.0,
-        texture_paths: dict[str, str] | None = None,
         is_fixed_in_frame: bool = False,
         is_fixed_orientation: bool = False,
         depth_test: bool = True,
         name: str | None = None,
-        **kwargs,
     ):
         self.color = color
         self.opacity = opacity
         self.reflectiveness = reflectiveness
         self.shadow = shadow
         self.gloss = gloss
-        self.texture_paths = texture_paths
         self.is_fixed_in_frame = is_fixed_in_frame
         self.is_fixed_orientation = is_fixed_orientation
         self.depth_test = depth_test
@@ -174,7 +168,7 @@ class OpenGLMobject(Generic[R]):
         self.target: OpenGLMobject | None = None
 
         # TODO replace with protocol
-        self.renderer_data: R | None = None
+        self.renderer_data: RendererData | None = None
 
         # currently does nothing
         self.status = MobjectStatus()
@@ -237,10 +231,12 @@ class OpenGLMobject(Generic[R]):
 
             >>> from manim import Square, GREEN
             >>> Square.set_default(color=GREEN, fill_opacity=0.25)
-            >>> s = Square(); s.color, s.fill_opacity
+            >>> s = Square()
+            >>> s.color, s.fill_opacity
             (ManimColor('#83C167'), 0.25)
             >>> Square.set_default()
-            >>> s = Square(); s.color, s.fill_opacity
+            >>> s = Square()
+            >>> s.color, s.fill_opacity
             (ManimColor('#FFFFFF'), 0.0)
 
         .. manim:: ChangedDefaultTextcolor
@@ -1080,10 +1076,10 @@ class OpenGLMobject(Generic[R]):
             buff_x = buff_y = buff
 
         # Initialize alignments correctly
-        def init_alignments(alignments, num, mapping, name, dir):
+        def init_alignments(alignments, num, mapping, name, dir_):
             if alignments is None:
                 # Use cell_alignment as fallback
-                return [cell_alignment * dir] * num
+                return [cell_alignment * dir_] * num
             if len(alignments) != num:
                 raise ValueError(f"{name}_alignments has a mismatching size.")
             alignments = list(alignments)
@@ -1220,8 +1216,8 @@ class OpenGLMobject(Generic[R]):
             if v_buff is None:
                 v_buff = v_buff_ratio * self[0].get_height()
 
-        x_unit = h_buff + max([sm.get_width() for sm in submobs])
-        y_unit = v_buff + max([sm.get_height() for sm in submobs])
+        x_unit = h_buff + max(sm.get_width() for sm in submobs)
+        y_unit = v_buff + max(sm.get_height() for sm in submobs)
 
         for index, sm in enumerate(submobs):
             if fill_rows_first:
@@ -1315,6 +1311,7 @@ class OpenGLMobject(Generic[R]):
             for submob in self.submobjects:
                 submob.reverse_submobjects(recursive=True)
         self.note_changed_family()
+        return self
 
     # Copying
 
@@ -1360,7 +1357,6 @@ class OpenGLMobject(Generic[R]):
         result.parents = []
         result.target = None
         result.saved_state = None
-        #
 
         result.points = np.array(self.points)
         #
@@ -1372,13 +1368,16 @@ class OpenGLMobject(Generic[R]):
             sm.parents = [result]
 
         result.note_changed_family()
+        for current, copy_ in zip(self.get_family(), result.get_family()):
+            copy_.points = np.array(current.points)
+            copy_.match_color(current)
         # Similarly, instead of calling match_updaters, since we know the status
         # won't have changed, just directly match with shallow copies.
         result.non_time_updaters = self.non_time_updaters.copy()
         result.time_based_updaters = self.time_based_updaters.copy()
 
         family = self.get_family()
-        for attr, value in list(self.__dict__.items()):
+        for attr, value in self.__dict__.items():
             if (
                 isinstance(value, OpenGLMobject)
                 and value is not self
@@ -1404,7 +1403,7 @@ class OpenGLMobject(Generic[R]):
 
     def restore(self):
         """Restores the state that was previously saved with :meth:`~.OpenGLMobject.save_state`."""
-        if not hasattr(self, "saved_state") or self.save_state is None:
+        if self.saved_state is None:
             raise Exception("Trying to restore without having saved")
         self.become(self.saved_state)
         return self
@@ -1918,9 +1917,7 @@ class OpenGLMobject(Generic[R]):
             return True
         if self.get_bottom()[1] > config.frame_y_radius:
             return True
-        if self.get_top()[1] < -config.frame_y_radius:
-            return True
-        return False
+        return self.get_top()[1] < -config.frame_y_radius
 
     def stretch_about_point(self, factor, dim, point):
         return self.stretch(factor, dim, about_point=point)
@@ -2158,7 +2155,7 @@ class OpenGLMobject(Generic[R]):
         if color is not None:
             self.color: ManimColor = ManimColor.parse(color)
         if opacity is not None:
-            self.color.set_opacity(opacity)
+            self.color.opacity(opacity)
         if recurse:
             for submob in self.submobjects:
                 submob.set_color(color, recurse=True)
@@ -2171,17 +2168,14 @@ class OpenGLMobject(Generic[R]):
                 submob.set_opacity(opacity, recurse=True)
         return self
 
-    def get_color(self):
-        return rgb_to_hex(self.rgbas[0, :3])
+    def get_color(self) -> ManimColor:
+        return self.color
 
     def get_opacity(self):
-        return self.color._internal_value[3]
+        return self.color.opacity()
 
     def set_color_by_gradient(self, *colors: ParsableManimColor):
-        if self.has_points():
-            self.set_color(colors)
-        else:
-            self.set_submobject_colors_by_gradient(*colors)
+        self.set_submobject_colors_by_gradient(*colors)
         return self
 
     def set_submobject_colors_by_gradient(self, *colors):
@@ -2293,7 +2287,7 @@ class OpenGLMobject(Generic[R]):
         return all_points[index]
 
     def get_continuous_bounding_box_point(self, direction):
-        dl, center, ur = self.get_bounding_box()
+        _dl, center, ur = self.get_bounding_box()
         corner_vect = ur - center
         return center + direction / np.max(
             np.abs(
@@ -2570,7 +2564,6 @@ class OpenGLMobject(Generic[R]):
 
                     self.add(dotL, dotR, dotMiddle)
         """
-        # TODO: replace with list of attribute names with a locking system
         self.points = path_func(mobject1.points, mobject2.points, alpha)
         self.interpolate_color(mobject1, mobject2, alpha)
         return self
@@ -2652,10 +2645,7 @@ class OpenGLMobject(Generic[R]):
         family1 = self.get_family()
         family2 = mobject.get_family()
         for sm1, sm2 in zip(family1, family2):
-            sm1.shader_folder = sm2.shader_folder
-            sm1.texture_paths = sm2.texture_paths
             sm1.depth_test = sm2.depth_test
-            sm1.render_primitive = sm2.render_primitive
         # Make sure named family members carry over
         for attr, value in list(mobject.__dict__.items()):
             if isinstance(value, OpenGLMobject) and value in family2:
@@ -2663,6 +2653,7 @@ class OpenGLMobject(Generic[R]):
         self.refresh_bounding_box(recurse_down=True)
         if match_updaters:
             self.match_updaters(mobject)
+        self.note_changed_family()
         return self
 
     def looks_identical(self, mobject: OpenGLMobject) -> bool:

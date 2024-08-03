@@ -96,7 +96,8 @@ from manim.utils.color import ManimColor
 from .. import config
 from ..animation.animation import Animation
 from ..animation.composition import Succession
-from ..mobject.mobject import Group, Mobject
+from ..mobject.mobject import Group
+from ..mobject.opengl.opengl_mobject import OpenGLMobject
 from ..utils.bezier import integer_interpolate
 from ..utils.rate_functions import double_smooth, linear
 
@@ -127,8 +128,8 @@ class ShowPartial(Animation):
 
     def interpolate_submobject(
         self,
-        submobject: Mobject,
-        starting_submobject: Mobject,
+        submobject: OpenGLMobject,
+        starting_submobject: OpenGLMobject,
         alpha: float,
     ) -> Self:
         submobject.pointwise_become_partial(
@@ -231,7 +232,7 @@ class DrawBorderThenFill(Animation):
         run_time: float = 2,
         rate_func: Callable[[float], float] = double_smooth,
         stroke_width: float = 2,
-        stroke_color: str = None,
+        stroke_color: ManimColor | None = None,
         draw_border_animation_config: dict = {},  # what does this dict accept?
         fill_animation_config: dict = {},
         introducer: bool = True,
@@ -251,15 +252,19 @@ class DrawBorderThenFill(Animation):
         self.fill_animation_config = fill_animation_config
         self.outline = self.get_outline()
 
-    def _typecheck_input(self, vmobject: VMobject | OpenGLVMobject) -> None:
-        if not isinstance(vmobject, (VMobject, OpenGLVMobject)):
-            raise TypeError("DrawBorderThenFill only works for vectorized Mobjects")
+    def _typecheck_input(self, vmobject: OpenGLVMobject) -> None:
+        if not isinstance(vmobject, OpenGLVMobject):
+            raise TypeError(
+                f"{self.__class__.__name__} only works for vectorized Mobjects"
+            )
 
     def begin(self) -> None:
+        # this self.get_outline() has to be called
+        # before super().begin(), for whatever reason
         self.outline = self.get_outline()
         super().begin()
 
-    def get_outline(self) -> Mobject:
+    def get_outline(self) -> OpenGLMobject:
         outline = self.mobject.copy()
         outline.set_fill(opacity=0)
         for sm in outline.family_members_with_points():
@@ -273,16 +278,16 @@ class DrawBorderThenFill(Animation):
             return vmobject.get_stroke_color()
         return vmobject.get_color()
 
-    def get_all_mobjects(self) -> Sequence[Mobject]:
+    def get_all_mobjects(self) -> Sequence[OpenGLMobject]:
         return [*super().get_all_mobjects(), self.outline]
 
     def interpolate_submobject(
         self,
-        submobject: Mobject,
-        starting_submobject: Mobject,
-        outline,
+        submobject: OpenGLMobject,
+        starting_submobject: OpenGLMobject,
+        outline: OpenGLMobject,
         alpha: float,
-    ) -> None:  # Fixme: not matching the parent class? What is outline doing here?
+    ) -> None:
         index: int
         subalpha: int
         index, subalpha = integer_interpolate(0, 2, alpha)
@@ -354,10 +359,7 @@ class Write(DrawBorderThenFill):
     ) -> tuple[float, float]:
         length = len(vmobject.family_members_with_points())
         if run_time is None:
-            if length < 15:
-                run_time = 1
-            else:
-                run_time = 2
+            run_time = 1 if length < 15 else 2
         if lag_ratio is None:
             lag_ratio = min(4.0 / max(1.0, length), 0.2)
         return run_time, lag_ratio
@@ -455,7 +457,7 @@ class SpiralIn(Animation):
 
     def __init__(
         self,
-        shapes: Mobject,
+        shapes: OpenGLMobject,
         scale_factor: float = 8,
         fade_in_fraction=0.3,
         **kwargs,
@@ -512,7 +514,7 @@ class ShowIncreasingSubsets(Animation):
 
     def __init__(
         self,
-        group: Mobject,
+        group: OpenGLMobject,
         suspend_mobject_updating: bool = False,
         int_func: Callable[[np.ndarray], np.ndarray] = np.floor,
         reverse_rate_function=False,
@@ -640,7 +642,7 @@ class ShowSubmobjectsOneByOne(ShowIncreasingSubsets):
 
     def __init__(
         self,
-        group: Iterable[Mobject],
+        group: Iterable[OpenGLMobject],
         int_func: Callable[[np.ndarray], np.ndarray] = np.ceil,
         **kwargs,
     ) -> None:
@@ -725,7 +727,7 @@ class TypeWithCursor(AddTextLetterByLetter):
     def __init__(
         self,
         text: Text,
-        cursor: Mobject,
+        cursor: OpenGLMobject,
         buff: float = 0.1,
         keep_cursor_y: bool = True,
         leave_cursor_on: bool = True,

@@ -265,10 +265,12 @@ class Mobject:
 
             >>> from manim import Square, GREEN
             >>> Square.set_default(color=GREEN, fill_opacity=0.25)
-            >>> s = Square(); s.color, s.fill_opacity
+            >>> s = Square()
+            >>> s.color, s.fill_opacity
             (ManimColor('#83C167'), 0.25)
             >>> Square.set_default()
-            >>> s = Square(); s.color, s.fill_opacity
+            >>> s = Square()
+            >>> s.color, s.fill_opacity
             (ManimColor('#FFFFFF'), 0.0)
 
         .. manim:: ChangedDefaultTextcolor
@@ -674,13 +676,10 @@ class Mobject:
         # Add automatic compatibility layer
         # between properties and get_* and set_*
         # methods.
-        #
-        # In python 3.9+ we could change this
-        # logic to use str.remove_prefix instead.
 
         if attr.startswith("get_"):
             # Remove the "get_" prefix
-            to_get = attr[4:]
+            to_get = attr.removeprefix("get_")
 
             def getter(self):
                 warnings.warn(
@@ -1339,12 +1338,12 @@ class Mobject:
         # Default to applying matrix about the origin, not mobjects center
         if ("about_point" not in kwargs) and ("about_edge" not in kwargs):
             kwargs["about_point"] = ORIGIN
-        full_matrix = np.identity(self.dim)
-        matrix = np.array(matrix)
-        full_matrix[: matrix.shape[0], : matrix.shape[1]] = matrix
-        self.apply_points_function_about_point(
-            lambda points: np.dot(points, full_matrix.T), **kwargs
-        )
+        # full_matrix = np.identity(self.dim)
+        # matrix = np.array(matrix)
+        # full_matrix[: matrix.shape[0], : matrix.shape[1]] = matrix
+        # self.apply_points_function_about_point(
+        #     lambda points: np.dot(points, full_matrix.T), **kwargs
+        # )
         return self
 
     def apply_complex_function(
@@ -1577,9 +1576,7 @@ class Mobject:
             return True
         if self.get_bottom()[1] > config["frame_y_radius"]:
             return True
-        if self.get_top()[1] < -config["frame_y_radius"]:
-            return True
-        return False
+        return self.get_top()[1] < -config["frame_y_radius"]
 
     def stretch_about_point(self, factor: float, dim: int, point: Point3D) -> Self:
         return self.stretch(factor, dim, about_point=point)
@@ -1994,7 +1991,7 @@ class Mobject:
 
         # If we do not have points (but do have submobjects)
         # use only the points from those.
-        if len(self.points) == 0:
+        if len(self.points) == 0:  # noqa: SIM108
             rv = None
         else:
             # Otherwise, be sure to include our own points
@@ -2003,10 +2000,7 @@ class Mobject:
         # smallest dimension they have and compare it to the return value.
         for mobj in self.submobjects:
             value = mobj.reduce_across_dimension(reduce_func, dim)
-            if rv is None:
-                rv = value
-            else:
-                rv = reduce_func([value, rv])
+            rv = value if rv is None else reduce_func([value, rv])
         return rv
 
     def nonempty_submobjects(self) -> list[Self]:
@@ -2487,10 +2481,10 @@ class Mobject:
             buff_x = buff_y = buff
 
         # Initialize alignments correctly
-        def init_alignments(alignments, num, mapping, name, dir):
+        def init_alignments(alignments, num, mapping, name, dir_):
             if alignments is None:
                 # Use cell_alignment as fallback
-                return [cell_alignment * dir] * num
+                return [cell_alignment * dir_] * num
             if len(alignments) != num:
                 raise ValueError(f"{name}_alignments has a mismatching size.")
             alignments = list(alignments)

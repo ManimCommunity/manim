@@ -304,10 +304,7 @@ def get_sorted_integer_files(
 ) -> list[str]:
     indexed_files = []
     for file in os.listdir(directory):
-        if "." in file:
-            index_str = file[: file.index(".")]
-        else:
-            index_str = file
+        index_str = file[: file.index(".")] if "." in file else file
 
         full_path = os.path.join(directory, file)
         if index_str.isdigit():

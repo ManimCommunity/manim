@@ -1855,9 +1855,7 @@ def is_closed(points: Point3D_Array) -> bool:
         return False
     if abs(end[1] - start[1]) > tolerance[1]:
         return False
-    if abs(end[2] - start[2]) > tolerance[2]:
-        return False
-    return True
+    return abs(end[2] - start[2]) <= tolerance[2]
 
 
 def proportions_along_bezier_curve_for_point(

@@ -6,15 +6,13 @@ __all__ = ["Rotating", "Rotate"]
 
 from typing import TYPE_CHECKING
 
-import numpy as np
-
 from manim.animation.animation import Animation
 from manim.constants import ORIGIN, OUT, PI, TAU
 from manim.utils.rate_functions import linear
 
 if TYPE_CHECKING:
     from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-    from manim.typing import RateFunc
+    from manim.typing import Point3D, RateFunc, Vector3D
 
 
 class Rotating(Animation):
@@ -22,17 +20,15 @@ class Rotating(Animation):
         self,
         mobject: OpenGLMobject,
         angle: float = TAU,
-        axis: np.ndarray = OUT,
-        about_point: np.ndarray | None = None,
-        about_edge: np.ndarray | None = None,
-        run_time: float = 5.0,
+        axis: Vector3D = OUT,
+        about_point: Point3D | None = None,
+        about_edge: Vector3D | None = None,
         rate_func: RateFunc = linear,
         suspend_mobject_updating: bool = False,
         **kwargs,
     ):
         super().__init__(
             mobject,
-            run_time=run_time,
             rate_func=rate_func,
             suspend_mobject_updating=suspend_mobject_updating,
             **kwargs,
@@ -79,6 +75,7 @@ class Rotate(Rotating):
     Examples
     --------
     .. manim:: UsingRotate
+
         class UsingRotate(Scene):
             def construct(self):
                 self.play(
@@ -89,16 +86,16 @@ class Rotate(Rotating):
                         rate_func=linear,
                     ),
                     Rotate(Square(side_length=0.5), angle=2*PI, rate_func=linear),
-                    )
+                )
     """
 
     def __init__(
         self,
         mobject: OpenGLMobject,
         angle: float = PI,
-        axis: np.ndarray = OUT,
+        axis: Vector3D = OUT,
         run_time: float = 1,
-        about_edge: np.ndarray = ORIGIN,
+        about_edge: Vector3D = ORIGIN,
         **kwargs,
     ):
         super().__init__(

@@ -295,7 +295,7 @@ class OpenGLRenderer(Renderer, RendererProtocol):
             self.ctx, "render_texture"
         )
 
-    def use_window(self):
+    def use_window(self) -> None:
         self.output_fbo.release()
         self.output_fbo = self.ctx.detect_framebuffer()
 
@@ -369,10 +369,10 @@ class OpenGLRenderer(Renderer, RendererProtocol):
         )
         frame_data["uv"] = np.array([[0, 0], [0, 1], [1, 0], [1, 0], [0, 1], [1, 1]])
         vbo = self.ctx.buffer(frame_data.tobytes())
-        format = gl.detect_format(self.render_texture_program, frame_data.dtype.names)
+        format_ = gl.detect_format(self.render_texture_program, frame_data.dtype.names)
         vao = self.ctx.vertex_array(
             program=self.render_texture_program,
-            content=[(vbo, format, *frame_data.dtype.names)],  # type: ignore
+            content=[(vbo, format_, *frame_data.dtype.names)],  # type: ignore
         )
         self.ctx.copy_framebuffer(self.render_target_texture_fbo, self.color_buffer_fbo)
         self.render_target_texture.use(0)

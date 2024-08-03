@@ -198,13 +198,11 @@ class VMobject(Mobject):
     def init_colors(self, propagate_colors: bool = True) -> Self:
         self.set_fill(
             color=self.fill_color,
-            opacity=self.fill_opacity,
             family=propagate_colors,
         )
         self.set_stroke(
             color=self.stroke_color,
             width=self.stroke_width,
-            opacity=self.stroke_opacity,
             family=propagate_colors,
         )
         self.set_background_stroke(
@@ -1216,9 +1214,7 @@ class VMobject(Mobject):
         atol = self.tolerance_for_point_equality
         if abs(p0[0] - p1[0]) > atol + rtol * abs(p1[0]):
             return False
-        if abs(p0[1] - p1[1]) > atol + rtol * abs(p1[1]):
-            return False
-        return True
+        return abs(p0[1] - p1[1]) <= atol + rtol * abs(p1[1])
 
     # Information about line
     def get_cubic_bezier_tuples_from_points(
@@ -2726,15 +2722,12 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
             if vmobject.is_closed():
                 void_len = (1 - r) / n
             else:
-                if n == 1:
-                    void_len = 1 - r
-                else:
-                    void_len = (1 - r) / (n - 1)
+                void_len = 1 - r if n == 1 else (1 - r) / (n - 1)
 
             period = dash_len + void_len
             phase_shift = (dash_offset % 1) * period
 
-            if vmobject.is_closed():
+            if vmobject.is_closed():  # noqa: SIM108
                 # closed curves have equal amount of dashes and voids
                 pattern_len = 1
             else:

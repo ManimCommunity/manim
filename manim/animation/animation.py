@@ -18,6 +18,7 @@ __all__ = ["Animation", "Wait", "override_animation"]
 
 from collections.abc import Iterable, Sequence
 from copy import deepcopy
+from functools import partialmethod
 from typing import TYPE_CHECKING, Callable
 
 from typing_extensions import Self, TypeVar
@@ -444,6 +445,52 @@ class Animation(AnimationProtocol):
         """
         self.name = name
         return self
+
+    @classmethod
+    def __init_subclass__(cls, **kwargs) -> None:
+        super().__init_subclass__(**kwargs)
+
+        cls._original__init__ = cls.__init__
+
+    @classmethod
+    def set_default(cls, **kwargs) -> None:
+        """Sets the default values of keyword arguments.
+
+        If this method is called without any additional keyword
+        arguments, the original default values of the initialization
+        method of this class are restored.
+
+        Parameters
+        ----------
+
+        kwargs
+            Passing any keyword argument will update the default
+            values of the keyword arguments of the initialization
+            function of this class.
+
+        Examples
+        --------
+
+        .. manim:: ChangeDefaultAnimation
+
+            class ChangeDefaultAnimation(Scene):
+                def construct(self):
+                    Rotate.set_default(run_time=2, rate_func=rate_functions.linear)
+                    Indicate.set_default(color=None)
+
+                    S = Square(color=BLUE, fill_color=BLUE, fill_opacity=0.25)
+                    self.add(S)
+                    self.play(Rotate(S, PI))
+                    self.play(Indicate(S))
+
+                    Rotate.set_default()
+                    Indicate.set_default()
+
+        """
+        if kwargs:
+            cls.__init__ = partialmethod(cls.__init__, **kwargs)
+        else:
+            cls.__init__ = cls._original__init__
 
 
 def prepare_animation(

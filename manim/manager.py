@@ -5,19 +5,26 @@ __all__ = ["Manager"]
 import contextlib
 import platform
 import time
+import warnings
 from collections.abc import Iterable, Sequence
 from typing import TYPE_CHECKING, Callable, Generic, TypeVar
 
 import numpy as np
-from tqdm import tqdm
 
 from manim import config, logger
-from manim.event_handler.window import WindowABC
+from manim.event_handler.window import WindowProtocol
 from manim.file_writer import FileWriter
-from manim.plugins import Hooks, plugins
+from manim.renderer.opengl_renderer import OpenGLRenderer
+from manim.renderer.opengl_renderer_window import Window
 from manim.scene.scene import Scene, SceneState
 from manim.utils.exceptions import EndSceneEarlyException
 from manim.utils.hashing import get_hash_from_play_call
+from manim.utils.progressbar import (
+    ExperimentalProgressBarWarning,
+    NullProgressBar,
+    ProgressBar,
+    ProgressBarProtocol,
+)
 
 if TYPE_CHECKING:
     import numpy.typing as npt
@@ -53,6 +60,10 @@ class Manager(Generic[Scene_co]):
             Manager(Manimation).render()
     """
 
+    window_class: type[WindowProtocol] = Window  # type: ignore[type-abstract]
+    file_writer_class: type[FileWriterProtocol] = FileWriter
+    renderer_class: type[RendererProtocol] = OpenGLRenderer
+
     def __init__(self, scene_cls: type[Scene_co]) -> None:
         # scene
         self.scene: Scene_co = scene_cls(manager=self)
@@ -69,9 +80,11 @@ class Manager(Generic[Scene_co]):
         self.renderer = self.create_renderer()
         self.renderer.use_window()
 
-        # file writer
         self.file_writer: FileWriterProtocol = self.create_file_writer()
         self._write_files = config.write_to_movie
+
+        # internal state
+        self._skipping = False
 
     # keep these as instance methods so subclasses
     # have access to everything
@@ -85,12 +98,12 @@ class Manager(Generic[Scene_co]):
         -------
             An instance of a renderer
         """
-        renderer = plugins.renderer()
+        renderer = self.renderer_class()
         if config.preview:
             renderer.use_window()
         return renderer
 
-    def create_window(self) -> WindowABC | None:
+    def create_window(self) -> WindowProtocol | None:
         """Create and return a window instance.
 
         This can be overridden in subclasses (plugins), if more
@@ -100,7 +113,7 @@ class Manager(Generic[Scene_co]):
         -------
             A window if previewing, else None
         """
-        return plugins.window() if config.preview else None
+        return self.window_class() if config.preview else None
 
     def create_file_writer(self) -> FileWriterProtocol:
         """Create and returna file writer instance.
@@ -112,7 +125,7 @@ class Manager(Generic[Scene_co]):
         -------
             A file writer satisfying :class:`.FileWriterProtocol`
         """
-        return FileWriter(scene_name=self.scene.get_default_scene_name())
+        return self.file_writer_class(scene_name=self.scene.get_default_scene_name())
 
     def setup(self) -> None:
         """Set up processes and manager"""
@@ -155,11 +168,26 @@ class Manager(Generic[Scene_co]):
         self.setup()
 
         with contextlib.suppress(EndSceneEarlyException):
-            self.scene.construct()
+            self.construct()
             self.post_contruct()
             self._interact()
 
         self.tear_down()
+
+    def construct(self) -> None:
+        if not self.scene.sections_api:
+            self.scene.construct()
+            return
+        for section in self.scene.find_sections():
+            self.file_writer.next_section(
+                section.name,
+                section.type_,
+                section.skip,
+            )
+            if section.skip:
+                self._skipping = True
+            section()
+            self._skipping = False
 
     def _render_second_pass(self) -> None:
         """
@@ -170,9 +198,6 @@ class Manager(Generic[Scene_co]):
 
     def post_contruct(self) -> None:
         """Run post-construct hooks, and clean up the file writer."""
-        for hook in plugins.hooks[Hooks.POST_CONSTRUCT]:
-            hook(self)
-
         if self.file_writer.num_plays:
             self.file_writer.finish()
         # otherwise no animations were played
@@ -181,7 +206,6 @@ class Manager(Generic[Scene_co]):
             # FIXME: for some reason the OpenGLRenderer does not give out the
             # correct frame values here
             frame = self.renderer.get_pixels()
-            # NOTE: add hooks for post-processing (e.g. gaussian blur)?
             self.file_writer.save_image(frame)
 
         self._write_files = False
@@ -229,15 +253,16 @@ class Manager(Generic[Scene_co]):
         self.scene.time = self.time
 
         if self.window is not None:
-            self.window.clear()
+            if not self._skipping:
+                self.window.clear()
 
             # if it's closing, then any subsequent methods will
             # raise an error because the internal C window pointer is nullptr.
             if self.window.is_closing:
                 raise EndSceneEarlyException()
 
-        self.render_state(write_frame=write_frame)
-
+        if not self._skipping:
+            self.render_state(write_frame=write_frame)
         self._wait_for_animation_time()
 
     def _wait_for_animation_time(self) -> None:
@@ -253,6 +278,9 @@ class Manager(Generic[Scene_co]):
 
         self.window.swap_buffers()
 
+        if self._skipping:
+            return
+
         vt = self.time - self.virtual_animation_start_time
         rt = time.perf_counter() - self.real_animation_start_time
         # we can't sleep because we still need to poll for events,
@@ -266,6 +294,8 @@ class Manager(Generic[Scene_co]):
 
     def _play(self, *animations: AnimationProtocol) -> None:
         """Play a bunch of animations"""
+
+        self.scene.pre_play()
 
         if self.window is not None:
             self.real_animation_start_time = time.perf_counter()
@@ -287,7 +317,7 @@ class Manager(Generic[Scene_co]):
         Essentially, a series of methods that need to be called to successfully
         render a frame.
         """
-        if not config.write_to_movie:
+        if not config.write_to_movie or self._skipping:
             return
 
         if config.disable_caching:
@@ -315,13 +345,18 @@ class Manager(Generic[Scene_co]):
 
     def _create_progressbar(
         self, total: float, description: str, **kwargs: Any
-    ) -> tqdm | contextlib.nullcontext[NullProgressBar]:
+    ) -> contextlib.AbstractContextManager[ProgressBarProtocol]:
         """Create a progressbar"""
 
         if not config.progress_bar:
             return contextlib.nullcontext(NullProgressBar())
-        else:
-            return tqdm(
+
+        with warnings.catch_warnings():
+            if config.verbosity != "DEBUG":
+                # Note: update when rich/notebook tqdm is no longer experimental
+                warnings.simplefilter("ignore", category=ExperimentalProgressBarWarning)
+
+            return ProgressBar(
                 total=total,
                 unit="frames",
                 desc=description % {"num": self.file_writer.num_plays},
@@ -349,7 +384,7 @@ class Manager(Generic[Scene_co]):
         update_mobjects = self.scene.should_update_mobjects()
         condition = stop_condition or (lambda: False)
 
-        progression = self._calc_time_progression(duration)
+        progression = _calc_time_progression(duration)
 
         state = self.scene.get_state()
 
@@ -365,9 +400,7 @@ class Manager(Generic[Scene_co]):
                         break
                 else:
                     self.time += dt
-                    # this fixes it, but at that point we might as well
-                    # just not cache
-                    self.renderer.render(self.scene.camera, state.mobjects)
+                    self.renderer.render(state)
                     if self.window is not None and self.window.is_closing:
                         raise EndSceneEarlyException()
                     self._wait_for_animation_time()
@@ -380,8 +413,8 @@ class Manager(Generic[Scene_co]):
         self, animations: Sequence[AnimationProtocol]
     ) -> None:
         last_t = 0.0
-        run_time = self._calc_runtime(animations)
-        progression = self._calc_time_progression(run_time)
+        run_time = _calc_runtime(animations)
+        progression = _calc_time_progression(run_time)
         with self._create_progressbar(
             progression.shape[0],
             f"Animation %(num)d: {animations[0]}{', etc.' if len(animations) > 1 else ''}",
@@ -391,20 +424,6 @@ class Manager(Generic[Scene_co]):
                 self.scene._update_animations(animations, t, dt)
                 self._update_frame(dt)
                 progress.update(1)
-
-    def _calc_time_progression(self, run_time: float) -> npt.NDArray[np.float64]:
-        """Compute the time values at which to evaluate the animation"""
-
-        return np.arange(0, run_time, 1 / config.frame_rate)
-
-    def _calc_runtime(self, animations: Iterable[AnimationProtocol]) -> float:
-        """Calculate the runtime of an iterable of animations.
-
-        .. warning::
-
-            If animations is a generator, this will consume the generator.
-        """
-        return max(animation.get_run_time() for animation in animations)
 
     # -------------------------#
     #         Rendering       #
@@ -432,8 +451,7 @@ class Manager(Generic[Scene_co]):
             use this to write a single frame!
         """
 
-        # TODO: change self.scene.camera to state.camera
-        self.renderer.render(self.scene.camera, state.mobjects)
+        self.renderer.render(state)
 
         should_write = write_frame if write_frame is not None else self._write_files
         if should_write:
@@ -446,7 +464,17 @@ class Manager(Generic[Scene_co]):
         self.file_writer.write_frame(frame)
 
 
-class NullProgressBar:
-    """Fake progressbar."""
+def _calc_time_progression(run_time: float) -> npt.NDArray[np.float64]:
+    """Compute the time values at which to evaluate the animation"""
 
-    def update(self, _: Any) -> None: ...
+    return np.arange(0, run_time, 1 / config.frame_rate)
+
+
+def _calc_runtime(animations: Iterable[AnimationProtocol]) -> float:
+    """Calculate the runtime of an iterable of animations.
+
+    .. warning::
+
+        If animations is a generator, this will consume the generator.
+    """
+    return max(animation.get_run_time() for animation in animations)

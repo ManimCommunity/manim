@@ -2,20 +2,26 @@ from manim import *
 
 
 class Test(Scene):
-    def construct(self) -> None:
-        self.play(
-            Create(
-                t := Tex(
-                    "Hello, world!", stroke_color=RED, fill_color=BLUE, stroke_width=2
-                )
-            )
-        )
-        self.play(FadeOut(t))
+    sections_api = True
+
+    @section(name="spinning_math")
+    def first_section(self) -> None:
+        line = Line()
+        line.add_updater(lambda m, dt: m.rotate(PI * dt))
+        t = Tex(r"Math! $\sum e^{i\theta}$").add_updater(lambda m: m.next_to(line, UP))
+        line.to_edge(LEFT)
+        self.add(line, t)
         s = Square()
-        self.add(s)
-        self.play(Rotate(s, PI / 2))
-        self.wait(7)
+        t = Tex(
+            "Hello, world!", stroke_color=RED, fill_color=BLUE, stroke_width=2
+        ).to_edge(RIGHT)
+        self.add(t)
+        self.play(Create(t), Rotate(s, PI / 2))
+        self.wait(1)
         self.play(FadeOut(s))
+
+    @section
+    def three_mobjects(self) -> None:
         sq = RegularPolygon(6)
         c = Circle()
         st = Star()
@@ -27,7 +33,11 @@ class Test(Scene):
                 Create(st),
             )
         )
-        self.play(FadeOut(VGroup(*self.mobjects)))
+        self.play(FadeOut(VGroup(sq, c, st)))
+
+    @section(skip=True)
+    def never_run(self) -> None:
+        self.play(Write(Text("This should never be run")))
 
 
 if __name__ == "__main__":
