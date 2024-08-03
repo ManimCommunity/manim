@@ -219,6 +219,8 @@ class OpenGLRenderer(Renderer, RendererProtocol):
         self.pixel_width = pixel_width
         self.pixel_height = pixel_height
         self.samples = samples
+        if background_opacity:
+            background_color = background_color.opacity(background_opacity)
         self.background_color = background_color.to_rgba()
         self.background_image = background_image
         self.rgb_max_val: float = np.iinfo(self.pixel_array_dtype).max

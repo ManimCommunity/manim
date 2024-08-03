@@ -135,7 +135,7 @@ def frames_comparison(
 
         # Reach a bit into pytest internals to hoist the marks from our wrapped
         # function.
-        wrapper.pytestmark = []  # type: ignore  # Do we really need this?
+        wrapper.pytestmark = []  # type: ignore
         new_marks = getattr(tested_scene_construct, "pytestmark", [])
         wrapper.pytestmark = new_marks  # type: ignore
         return wrapper
