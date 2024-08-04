@@ -921,8 +921,8 @@ class Line3D(Cylinder):
         **kwargs,
     ):
         self.thickness = thickness
-        self.set_start_and_end_attrs(start, end, **kwargs)
         self.resolution = (2, resolution) if isinstance(resolution, int) else resolution
+        self.set_start_and_end_attrs(start, end, **kwargs)
         if color is not None:
             self.set_color(color)
 
