@@ -895,6 +895,8 @@ class Line3D(Cylinder):
         The thickness of the line.
     color
         The color of the line.
+    resolution
+        The cylinder resolution of the line.
 
     Examples
     --------
@@ -915,10 +917,12 @@ class Line3D(Cylinder):
         end: np.ndarray = RIGHT,
         thickness: float = 0.02,
         color: ParsableManimColor | None = None,
+        resolution: int = 24,
         **kwargs,
     ):
         self.thickness = thickness
         self.set_start_and_end_attrs(start, end, **kwargs)
+        self.resolution = resolution
         if color is not None:
             self.set_color(color)
 
@@ -951,6 +955,7 @@ class Line3D(Cylinder):
             height=np.linalg.norm(self.vect),
             radius=self.thickness,
             direction=self.direction,
+            resolution=(2, self.resolution),
             **kwargs,
         )
         self.shift((self.start + self.end) / 2)
@@ -1122,6 +1127,8 @@ class Arrow3D(Line3D):
         The base radius of the conical tip.
     color
         The color of the arrow.
+    resolution
+        The resolution of the arrow line.
 
     Examples
     --------
@@ -1148,10 +1155,16 @@ class Arrow3D(Line3D):
         height: float = 0.3,
         base_radius: float = 0.08,
         color: ParsableManimColor = WHITE,
+        resolution: int = 24,
         **kwargs,
     ) -> None:
         super().__init__(
-            start=start, end=end, thickness=thickness, color=color, **kwargs
+            start=start,
+            end=end,
+            thickness=thickness,
+            color=color,
+            resolution=resolution,
+            **kwargs
         )
 
         self.length = np.linalg.norm(self.vect)
