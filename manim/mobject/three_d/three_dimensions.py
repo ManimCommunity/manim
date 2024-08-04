@@ -1164,7 +1164,7 @@ class Arrow3D(Line3D):
             thickness=thickness,
             color=color,
             resolution=resolution,
-            **kwargs
+            **kwargs,
         )
 
         self.length = np.linalg.norm(self.vect)
