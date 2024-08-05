@@ -50,7 +50,6 @@ def render(
 
     SCENES is an optional list of scenes in the file.
     """
-
     if args["save_as_gif"]:
         logger.warning("--save_as_gif is deprecated, please use --format=gif instead!")
         args["format"] = "gif"

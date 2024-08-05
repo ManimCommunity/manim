@@ -44,7 +44,6 @@ def smart_replace(base: str, alias: str, substitution: str) -> str:
     str
         The new string after the alias substitution.
     """
-
     occurrences = []
     len_alias = len(alias)
     len_base = len(base)

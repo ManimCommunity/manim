@@ -192,7 +192,6 @@ def _make_test_comparing_frames(
     Callable[[], None]
         The pytest test.
     """
-
     if is_set_test_data_test:
         frames_tester = _ControlDataWriter(file_path, size_frame=size_frame)
     else:

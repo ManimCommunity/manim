@@ -5,7 +5,8 @@ from manim.mobject.text.numbers import DecimalNumber
 
 def test_font_size():
     """Test that DecimalNumber returns the correct font_size value
-    after being scaled."""
+    after being scaled.
+    """
     num = DecimalNumber(0).scale(0.3)
 
     assert round(num.font_size, 5) == 14.4

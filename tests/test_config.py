@@ -58,7 +58,6 @@ class MyScene(Scene):
 
 def test_transparent(config):
     """Test the 'transparent' config option."""
-
     config.verbosity = "ERROR"
     config.dry_run = True
 
@@ -89,7 +88,6 @@ def test_transparent_by_background_opacity(config, dry_run):
 
 def test_background_color(config):
     """Test the 'background_color' config option."""
-
     config.background_color = WHITE
     config.verbosity = "ERROR"
     config.dry_run = True
@@ -217,7 +215,6 @@ def test_temporary_dry_run(config):
 
 def test_dry_run_with_png_format(config, dry_run):
     """Test that there are no exceptions when running a png without output"""
-
     config.write_to_movie = False
     config.disable_caching = True
     assert config.dry_run is True

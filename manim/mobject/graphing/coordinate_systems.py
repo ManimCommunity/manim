@@ -334,7 +334,6 @@ class CoordinateSystem:
                     )
                     self.add(ax, y_label)
         """
-
         return self._get_axis_label(
             label, self.get_y_axis(), edge, direction, buff=buff, **kwargs
         )
@@ -367,7 +366,6 @@ class CoordinateSystem:
         :class:`~.Mobject`
             The positioned label along the given axis.
         """
-
         label = self.x_axis._create_label_tex(label)
         label.next_to(axis.get_edge_center(edge), direction=direction, buff=buff)
         label.shift_onto_screen(buff=MED_SMALL_BUFF)
@@ -421,7 +419,6 @@ class CoordinateSystem:
             x_dict = dict(zip(x_pos, x_vals))
             ax.add_coordinates(x_dict)
         """
-
         self.coordinate_labels = VGroup()
         # if nothing is passed to axes_numbers, produce axes with default labelling
         if not axes_numbers:
@@ -502,7 +499,6 @@ class CoordinateSystem:
             :meth:`~.CoordinateSystem.get_vertical_line`
             :meth:`~.CoordinateSystem.get_horizontal_line`
         """
-
         line_config = line_config if line_config is not None else {}
 
         if color is None:
@@ -579,7 +575,6 @@ class CoordinateSystem:
 
                     self.add(ax, line, dot)
         """
-
         return self.get_line_from_axis_to_point(1, point, **kwargs)
 
     def get_lines_to_point(self, point: Sequence[float], **kwargs) -> VGroup:
@@ -616,7 +611,6 @@ class CoordinateSystem:
                     lines_2 = ax.get_lines_to_point(circ.get_corner(DL), color=BLUE_B)
                     self.add(ax, lines_1, lines_2, circ)
         """
-
         return VGroup(
             self.get_horizontal_line(point, **kwargs),
             self.get_vertical_line(point, **kwargs),
@@ -709,7 +703,6 @@ class CoordinateSystem:
 
                     self.add(axes, curves)
         """
-
         t_range = np.array(self.x_range, dtype=float)
         if x_range is not None:
             t_range[: len(x_range)] = x_range
@@ -1046,7 +1039,6 @@ class CoordinateSystem:
 
                     self.add(ax, curve, sq)
         """
-
         if hasattr(graph, "underlying_function"):
             return graph.function(x)
         else:
@@ -1102,7 +1094,7 @@ class CoordinateSystem:
         dot: bool = False,
         dot_config: dict[str, Any] | None = None,
     ) -> Mobject:
-        """Creates a properly positioned label for the passed graph, with an optional dot.
+        r"""Creates a properly positioned label for the passed graph, with an optional dot.
 
         Parameters
         ----------
@@ -1139,7 +1131,7 @@ class CoordinateSystem:
                     sin = ax.plot(lambda x: np.sin(x), color=PURPLE_B)
                     label = ax.get_graph_label(
                         graph=sin,
-                        label= MathTex(r"\\frac{\\pi}{2}"),
+                        label= MathTex(r"\frac{\pi}{2}"),
                         x_val=PI / 2,
                         dot=True,
                         direction=UR,
@@ -1147,7 +1139,6 @@ class CoordinateSystem:
 
                     self.add(ax, sin, label)
         """
-
         if dot_config is None:
             dot_config = {}
         if color is None:
@@ -1267,7 +1258,6 @@ class CoordinateSystem:
                         ax, bounding_line, quadratic, rects_right, rects_left, bounded_rects
                     )
         """
-
         # setting up x_range, overwrite user's third input
         if x_range is None:
             if bounded_graph is None:
@@ -1457,7 +1447,6 @@ class CoordinateSystem:
             ax.angle_of_tangent(x=3, graph=curve)
             # 1.4056476493802699
         """
-
         p0 = np.array([*self.input_to_graph_coords(x, graph)])
         p1 = np.array([*self.input_to_graph_coords(x + dx, graph)])
         return angle_of_vector(p1 - p0)
@@ -1489,7 +1478,6 @@ class CoordinateSystem:
             ax.slope_of_tangent(x=-2, graph=curve)
             # -3.5000000259052038
         """
-
         return np.tan(self.angle_of_tangent(x, graph, **kwargs))
 
     def plot_derivative_graph(
@@ -1765,7 +1753,6 @@ class CoordinateSystem:
 
                     self.add(ax, curve, lines)
         """
-
         x_range = x_range if x_range is not None else self.x_range
 
         return VGroup(
@@ -1827,7 +1814,6 @@ class CoordinateSystem:
                     t_label = axes.get_T_label(x_val=4, graph=func, label=Tex("x-value"))
                     self.add(axes, func, t_label)
         """
-
         T_label_group = VGroup()
         triangle = RegularPolygon(n=3, start_angle=np.pi / 2, stroke_width=0).set_fill(
             color=triangle_color,
@@ -2019,7 +2005,6 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
                 )
             )
         """
-
         for default_config, passed_config in zip(default_configs, passed_configs):
             if passed_config is not None:
                 update_dict_recursively(default_config, passed_config)
@@ -2264,7 +2249,6 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
                     )
                     self.add(ax, labels)
         """
-
         self.axis_labels = VGroup(
             self.get_x_axis_label(x_label),
             self.get_y_axis_label(y_label),
@@ -2551,7 +2535,6 @@ class ThreeDAxes(Axes):
                     self.set_camera_orientation(phi=2*PI/5, theta=PI/5)
                     self.add(ax, lab)
         """
-
         positioned_label = self._get_axis_label(
             label, self.get_y_axis(), edge, direction, buff=buff, **kwargs
         )
@@ -2602,7 +2585,6 @@ class ThreeDAxes(Axes):
                     self.set_camera_orientation(phi=2*PI/5, theta=PI/5)
                     self.add(ax, lab)
         """
-
         positioned_label = self._get_axis_label(
             label, self.get_z_axis(), edge, direction, buff=buff, **kwargs
         )
@@ -2656,7 +2638,6 @@ class ThreeDAxes(Axes):
                     )
                     self.add(axes, labels)
         """
-
         self.axis_labels = VGroup(
             self.get_x_axis_label(x_label),
             self.get_y_axis_label(y_label),
@@ -2880,7 +2861,6 @@ class NumberPlane(Axes):
             The first (i.e the non-faded lines parallel to `axis_parallel_to`) and second
              (i.e the faded lines parallel to `axis_parallel_to`) sets of lines, respectively.
         """
-
         line = Line(axis_parallel_to.get_start(), axis_parallel_to.get_end())
         if ratio_faded_lines == 0:  # don't show faded lines
             ratio_faded_lines = 1  # i.e. set ratio to 1
@@ -3392,7 +3372,6 @@ class ComplexPlane(NumberPlane):
         np.ndarray
             The point on the plane.
         """
-
         number = complex(number)
         return self.coords_to_point(number.real, number.imag)
 
@@ -3413,7 +3392,6 @@ class ComplexPlane(NumberPlane):
         complex
             A complex number consisting of real and imaginary components.
         """
-
         x, y = self.point_to_coords(point)
         return complex(x, y)
 
@@ -3451,7 +3429,6 @@ class ComplexPlane(NumberPlane):
         :class:`~.VGroup`
             A :class:`~.VGroup` containing the positioned label mobjects.
         """
-
         # TODO: Make this work the same as coord_sys.add_coordinates()
         if len(numbers) == 0:
             numbers = self._get_default_coordinate_values()
@@ -3482,6 +3459,5 @@ class ComplexPlane(NumberPlane):
         kwargs
             Additional arguments to be passed to :meth:`~.NumberLine.get_number_mobject`, i.e. :class:`~.DecimalNumber`.
         """
-
         self.add(self.get_coordinate_labels(*numbers, **kwargs))
         return self

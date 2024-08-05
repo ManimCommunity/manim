@@ -541,7 +541,6 @@ def split_bezier(points: BezierPoints, t: float) -> Point3D_Array:
     :class:`~.Point3D_Array`
         An array containing the control points defining the two Bézier curves.
     """
-
     points = np.asarray(points)
     N, dim = points.shape
     degree = N - 1
@@ -1941,7 +1940,6 @@ def point_lies_on_bezier(
     bool
         Whether the point lies on the curve.
     """
-
     roots = proportions_along_bezier_curve_for_point(point, control_points, round_to)
 
     return len(roots) > 0

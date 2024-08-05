@@ -66,7 +66,6 @@ def logs_comparison(
     Callable[[Any], Any]
         The test wrapped with which we are going to make the comparison.
     """
-
     control_data_file = Path(control_data_file)
     log_path_from_media_dir = Path(log_path_from_media_dir)
 

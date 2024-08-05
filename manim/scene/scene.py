@@ -680,7 +680,6 @@ class Scene:
         list
             The list of mobjects with the mobjects to remove removed.
         """
-
         new_mobjects = []
 
         def add_safe_mobjects_from_list(list_to_examine, set_to_remove):
@@ -1315,9 +1314,7 @@ class Scene:
         return True
 
     def interactive_embed(self):
-        """
-        Like embed(), but allows for screen interaction.
-        """
+        """Like embed(), but allows for screen interaction."""
         if not self.check_interactive_embed_is_valid():
             return
         self.interactive_mode = True

@@ -321,7 +321,8 @@ class OpenGLMobject:
 
     def init_data(self) -> None:
         """Initializes the ``points``, ``bounding_box`` and ``rgbas`` attributes and groups them into self.data.
-        Subclasses can inherit and overwrite this method to extend `self.data`."""
+        Subclasses can inherit and overwrite this method to extend `self.data`.
+        """
         self.points = np.zeros((0, 3))
         self.bounding_box = np.zeros((3, 3))
         self.rgbas = np.zeros((1, 4))
@@ -329,14 +330,16 @@ class OpenGLMobject:
     def init_colors(self) -> None:
         """Initializes the colors.
 
-        Gets called upon creation"""
+        Gets called upon creation
+        """
         self.set_color(self.color, self.opacity)
 
     def init_points(self):
         """Initializes :attr:`points` and therefore the shape.
 
         Gets called upon creation. This is an empty method that can be implemented by
-        subclasses."""
+        subclasses.
+        """
         # Typically implemented in subclass, unless purposefully left blank
         pass
 
@@ -368,7 +371,6 @@ class OpenGLMobject:
 
 
         """
-
         for attr, value in kwargs.items():
             setattr(self, attr, value)
 
@@ -501,7 +503,6 @@ class OpenGLMobject:
         :meth:`length_over_dim`
 
         """
-
         # Get the length across the X dimension
         return self.length_over_dim(0)
 
@@ -539,7 +540,6 @@ class OpenGLMobject:
         :meth:`length_over_dim`
 
         """
-
         # Get the length across the Y dimension
         return self.length_over_dim(1)
 
@@ -560,7 +560,6 @@ class OpenGLMobject:
         :meth:`length_over_dim`
 
         """
-
         # Get the length across the Z dimension
         return self.length_over_dim(2)
 
@@ -875,7 +874,6 @@ class OpenGLMobject:
         update_parent
             Whether or not to set ``mobject.parent`` to ``self``.
         """
-
         if update_parent:
             mobject.parent = self
 
@@ -2643,7 +2641,6 @@ class OpenGLMobject:
                     circ.become(square)
                     self.wait(0.5)
         """
-
         if stretch:
             mobject.stretch_to_fit_height(self.height)
             mobject.stretch_to_fit_width(self.width)

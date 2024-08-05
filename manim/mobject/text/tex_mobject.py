@@ -191,7 +191,6 @@ class SingleStringMathTex(SVGMobject):
         This is important when the braces in the TeX code are spread over
         multiple arguments as in, e.g., ``MathTex(r"e^{i", r"\tau} = 1")``.
         """
-
         # "\{" does not count (it's a brace literal), but "\\{" counts (it's a new line and then brace)
         num_lefts = tex.count("{") - tex.count("\\{") + tex.count("\\\\{")
         num_rights = tex.count("}") - tex.count("\\}") + tex.count("\\\\}")
