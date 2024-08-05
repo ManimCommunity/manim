@@ -154,8 +154,9 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
 
     def _set_submobjects_from_number(self, number):
         self.number = number
+        # the self.add below will recalculate the family,
+        # no need to do it here.
         self.submobjects = []
-        self.note_changed_family()
 
         num_string = self._get_num_string(number)
         self.add(*(map(self._string_to_mob, num_string)))

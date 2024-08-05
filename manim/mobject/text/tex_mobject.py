@@ -64,11 +64,6 @@ class SingleStringMathTex(SVGMobject):
         font_size: float = DEFAULT_FONT_SIZE,
         **kwargs,
     ):
-        # if kwargs.get("color") is None:
-        # makes it so that color isn't explicitly passed for these mobs,
-        # and can instead inherit from the parent
-        # kwargs["color"] = OpenGLVMobject().color
-
         self._font_size = font_size
         self.organize_left_to_right = organize_left_to_right
         self.tex_environment = tex_environment

@@ -295,8 +295,8 @@ class OpenGLVMobject(OpenGLMobject):
             for m in self.submobjects:
                 m.match_color(mobject, recurse=True)
         if isinstance(mobject, OpenGLVMobject):
-            self.set_fill(color=mobject.get_fill_color(), recurse=False)
-            self.set_stroke(color=mobject.get_stroke_color(), recurse=False)
+            self.set_fill(color=mobject.get_fill_color(), recurse=recurse)
+            self.set_stroke(color=mobject.get_stroke_color(), recurse=recurse)
         else:
             self.set_color(mobject.get_color(), recurse=recurse)
         return self
