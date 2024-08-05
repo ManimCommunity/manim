@@ -232,12 +232,12 @@ class OpenGLMobject:
             >>> from manim import Square, GREEN
             >>> Square.set_default(color=GREEN, fill_opacity=0.25)
             >>> s = Square()
-            >>> s.color, s.fill_opacity
-            (ManimColor('#83C167'), 0.25)
+            >>> s.get_color().to_hex(with_alpha=True)
+            '#83C1673F'
             >>> Square.set_default()
             >>> s = Square()
-            >>> s.color, s.fill_opacity
-            (ManimColor('#FFFFFF'), 0.0)
+            >>> s.get_color().to_hex(with_alpha=True)
+            '#FFFFFFFF'
 
         .. manim:: ChangedDefaultTextcolor
             :save_last_frame:
@@ -667,15 +667,7 @@ class OpenGLMobject:
         return self.submobjects
 
     def note_changed_family(self) -> Self:
-        """Updates bounding boxes and updater statuses.
-
-        This used to be called ``assemble_family``
-
-        .. warning::
-
-            Remove the above remark about ``assemble_family`` before experimental
-            is merged, it's a note to MrDiver and other devs
-        """
+        """Updates bounding boxes and updater statuses."""
         sub_families = (sm.get_family() for sm in self.submobjects)
         self.family = [self, *uniq_chain(*sub_families)]
         self.refresh_has_updater_status()
@@ -684,16 +676,16 @@ class OpenGLMobject:
             parent.note_changed_family()
         return self
 
-    def get_family(self, recurse=True) -> list[OpenGLMobject]:
-        if recurse and hasattr(self, "family"):
+    def get_family(self, recurse: bool = True) -> Sequence[OpenGLMobject]:
+        if recurse:
             return self.family
         else:
             return [self]
 
-    def family_members_with_points(self) -> list[OpenGLMobject]:
+    def family_members_with_points(self) -> Sequence[OpenGLMobject]:
         return [m for m in self.get_family() if m.has_points()]
 
-    def get_ancestors(self, extended: bool = False) -> list[OpenGLMobject]:
+    def get_ancestors(self, extended: bool = False) -> Sequence[OpenGLMobject]:
         """
         Returns parents, grandparents, etc.
         Order of result should be from higher members of the hierarchy down.
@@ -1260,6 +1252,7 @@ class OpenGLMobject:
             self.submobjects.sort(key=submob_func)
         else:
             self.submobjects.sort(key=lambda m: point_to_num_func(m.get_center()))
+        self.note_changed_family()
         return self
 
     def shuffle(self, recurse=False):
@@ -2522,6 +2515,7 @@ class OpenGLMobject:
             null_mob = self.copy()
             null_mob.set_points([self.get_center()])
             self.submobjects = [null_mob.copy() for k in range(n)]
+            self.note_changed_family()
             return self
         target = curr + n
         repeat_indices = (np.arange(target) * curr) // target
@@ -2537,6 +2531,7 @@ class OpenGLMobject:
                     new_submob.set_opacity(0)
                 new_submobs.append(new_submob)
         self.submobjects = new_submobs
+        self.note_changed_family()
         return self
 
     # Interpolate
@@ -2647,7 +2642,7 @@ class OpenGLMobject:
         for sm1, sm2 in zip(family1, family2):
             sm1.depth_test = sm2.depth_test
         # Make sure named family members carry over
-        for attr, value in list(mobject.__dict__.items()):
+        for attr, value in mobject.__dict__.items():
             if isinstance(value, OpenGLMobject) and value in family2:
                 setattr(self, attr, family1[family2.index(value)])
         self.refresh_bounding_box(recurse_down=True)

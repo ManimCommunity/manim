@@ -321,10 +321,11 @@ class VMobject(Mobject):
         if family:
             for submobject in self.submobjects:
                 submobject.set_fill(color, opacity, family)
-        self.update_rgbas_array("fill_rgbas", color, opacity)
-        self.fill_rgbas: RGBA_Array_Float
+
+        if color is not None:
+            self.fill_color = ManimColor.parse(color)
         if opacity is not None:
-            self.fill_opacity = opacity
+            self.fill_color = [c.opacity(opacity) for c in self.fill_color]
         return self
 
     def set_stroke(

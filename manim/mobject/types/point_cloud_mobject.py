@@ -176,6 +176,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         for attr, array in zip(attrs, arrays):
             setattr(self, attr, array)
         self.submobjects = []
+        self.note_changed_family()
         return self
 
     def get_color(self):

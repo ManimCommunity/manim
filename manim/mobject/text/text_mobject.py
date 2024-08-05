@@ -525,6 +525,7 @@ class Text(SVGMobject):
         self.text = text
         if self.disable_ligatures:
             self.submobjects = [*self._gen_chars()]
+            self.note_changed_family()
         self.chars = self.get_group_class()(*self.submobjects)
         self.text = text_without_tabs.replace(" ", "").replace("\n", "")
         nppc = self.n_points_per_curve
