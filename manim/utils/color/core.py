@@ -505,7 +505,7 @@ class ManimColor:
         tmp[3] = alpha * 255
         return tmp.astype(int)
 
-    def to_hex(self, with_alpha: bool = False) -> str:
+    def to_hex(self, *, with_alpha: bool = False) -> str:
         """Converts the manim color to a hexadecimal representation of the color
 
         Parameters
@@ -560,7 +560,7 @@ class ManimColor:
         """
         return np.array(colorsys.rgb_to_hls(*self.to_rgb()))
 
-    def invert(self, with_alpha=False) -> Self:
+    def invert(self, *, with_alpha: bool = False) -> Self:
         """Returns an linearly inverted version of the color (no inplace changes)
 
         Parameters

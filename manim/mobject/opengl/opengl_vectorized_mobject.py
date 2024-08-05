@@ -85,10 +85,9 @@ class OpenGLVMobject(OpenGLMobject):
     # so users can get autocomplete
     def __init__(
         self,
-        color: ParsableManimColor | list[ParsableManimColor] | None = None,
-        fill_color: ParsableManimColor | list[ParsableManimColor] | None = None,
+        fill_color: ParsableManimColor | Sequence[ParsableManimColor] | None = None,
         fill_opacity: float | None = None,
-        stroke_color: ParsableManimColor | list[ParsableManimColor] | None = None,
+        stroke_color: ParsableManimColor | Sequence[ParsableManimColor] | None = None,
         stroke_opacity: float | None = None,
         stroke_width: float = DEFAULT_STROKE_WIDTH,
         draw_stroke_behind_fill: bool = False,
@@ -100,23 +99,17 @@ class OpenGLVMobject(OpenGLMobject):
     ):
         super().__init__(**kwargs)
         if fill_color is None:
-            fill_color = color
+            fill_color = self.color
         if stroke_color is None:
-            stroke_color = color
-        self.fill_color: Sequence[ManimColor] = listify(ManimColor.parse(fill_color))
-        self.set_fill(opacity=fill_opacity)
-        self.stroke_color: Sequence[ManimColor] = listify(
-            ManimColor.parse(stroke_color)
-        )
-        self.set_stroke(opacity=stroke_opacity)
+            stroke_color = self.color
+        self.set_fill(color=fill_color, opacity=fill_opacity)
+        self.set_stroke(color=stroke_color, opacity=stroke_opacity)
         self.stroke_width = listify(stroke_width)
         self.draw_stroke_behind_fill = draw_stroke_behind_fill
         self.background_image_file = background_image_file
         self.long_lines = long_lines
         self.joint_type = joint_type
         self.flat_stroke = flat_stroke
-        # TODO: Remove this because the new shader doesn't need it
-        self.anti_alias_width = 1.0
 
         self.needs_new_triangulation = True
         self.triangulation = np.zeros(0, dtype="i4")
@@ -134,10 +127,10 @@ class OpenGLVMobject(OpenGLMobject):
         return OpenGLVMobject
 
     # These are here just to make type checkers happy
-    def get_family(self, recurse: bool = True) -> list[OpenGLVMobject]:  # type: ignore
+    def get_family(self, recurse: bool = True) -> Sequence[OpenGLVMobject]:
         return super().get_family(recurse)  # type: ignore
 
-    def family_members_with_points(self) -> list[OpenGLVMobject]:  # type: ignore
+    def family_members_with_points(self) -> Sequence[OpenGLVMobject]:  # type: ignore
         return super().family_members_with_points()  # type: ignore
 
     def replicate(self, n: int) -> OpenGLVGroup:  # type: ignore
@@ -216,7 +209,7 @@ class OpenGLVMobject(OpenGLMobject):
             for submob in self.submobjects:
                 submob.set_fill(color, opacity, recurse=True)
         if color is not None:
-            self.fill_color = listify(ManimColor.parse(color))
+            self.fill_color: list[ManimColor] = listify(ManimColor.parse(color))
         if opacity is not None:
             self.fill_color = [c.opacity(opacity) for c in self.fill_color]
         return self
@@ -295,6 +288,17 @@ class OpenGLVMobject(OpenGLMobject):
                 submobs2 = [vmobject]
             for sm1, sm2 in zip(*make_even(submobs1, submobs2)):
                 sm1.match_style(sm2)
+        return self
+
+    def match_color(self, mobject: OpenGLMobject, recurse=True) -> Self:
+        if recurse:
+            for m in self.submobjects:
+                m.match_color(mobject, recurse=True)
+        if isinstance(mobject, OpenGLVMobject):
+            self.set_fill(color=mobject.get_fill_color(), recurse=False)
+            self.set_stroke(color=mobject.get_stroke_color(), recurse=False)
+        else:
+            self.set_color(mobject.get_color(), recurse=recurse)
         return self
 
     def set_color(self, color, opacity=None, recurse=True) -> Self:
@@ -1583,6 +1587,7 @@ class OpenGLVGroup(OpenGLVMobject):
         """
         self._assert_valid_submobjects(tuplify(value))
         self.submobjects[key] = value  # type: ignore
+        self.note_changed_family()
 
 
 class OpenGLVectorizedPoint(OpenGLPoint, OpenGLVMobject):

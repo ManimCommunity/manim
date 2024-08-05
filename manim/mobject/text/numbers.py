@@ -155,6 +155,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
     def _set_submobjects_from_number(self, number):
         self.number = number
         self.submobjects = []
+        self.note_changed_family()
 
         num_string = self._get_num_string(number)
         self.add(*(map(self._string_to_mob, num_string)))

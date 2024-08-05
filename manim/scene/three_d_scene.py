@@ -512,6 +512,7 @@ class SpecialThreeDScene(ThreeDScene):
                     piece.shade_in_3d = True
                 new_pieces.match_style(axis.pieces)
                 axis.pieces.submobjects = new_pieces.submobjects
+                axis.pieces.note_changed_family()
             for tick in axis.tick_marks:
                 tick.add(VectorizedPoint(1.5 * tick.get_center()))
         return axes
