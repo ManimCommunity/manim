@@ -31,16 +31,16 @@ class _FramesTester:
     def testing(self):
         with np.load(self._file_path) as data:
             self._frames = data["frame_data"]
-            # For backward compatibility, when the control data contains only one frame (<= v0.8.0)
-            if len(self._frames.shape) != 4:
-                self._frames = np.expand_dims(self._frames, axis=0)
-            logger.debug(self._frames.shape)
-            self._number_frames = np.ma.size(self._frames, axis=0)
-            yield
-            assert self._frames_compared == self._number_frames, (
-                f"The scene tested contained {self._frames_compared} frames, "
-                f"when there are {self._number_frames} control frames for this test."
-            )
+        # For backward compatibility, when the control data contains only one frame (<= v0.8.0)
+        if len(self._frames.shape) != 4:
+            self._frames = np.expand_dims(self._frames, axis=0)
+        logger.debug(self._frames.shape)
+        self._number_frames = np.ma.size(self._frames, axis=0)
+        yield
+        assert self._frames_compared == self._number_frames, (
+            f"The scene tested contained {self._frames_compared} frames, "
+            f"when there are {self._number_frames} control frames for this test."
+        )
 
     def check_frame(self, frame_number: int, frame: PixelArray):
         assert frame_number < self._number_frames, (
@@ -56,7 +56,7 @@ class _FramesTester:
                 verbose=False,
             )
             self._frames_compared += 1
-        except AssertionError as e:
+        except AssertionError:
             number_of_matches = np.isclose(
                 frame, self._frames[frame_number], atol=FRAME_ABSOLUTE_TOLERANCE
             ).sum()
@@ -80,7 +80,7 @@ class _FramesTester:
                     self._frames[frame_number],
                     self._file_path.name,
                 )
-            raise e from e
+            raise
 
 
 class _ControlDataWriter(_FramesTester):

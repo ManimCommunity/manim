@@ -56,12 +56,12 @@ class Homotopy(Animation):
         **kwargs,
     ) -> None:
         self.homotopy = homotopy
-        self.apply_function_kwargs = (
-            apply_function_kwargs if apply_function_kwargs is not None else {}
-        )
+        self.apply_function_kwargs = apply_function_kwargs or {}
         super().__init__(mobject, run_time=run_time, **kwargs)
 
-    def function_at_time_t(self, t: float) -> tuple[float, float, float]:
+    def function_at_time_t(
+        self, t: float
+    ) -> Callable[[tuple[float, float, float]], tuple[float, float, float]]:
         return lambda p: self.homotopy(*p, t)
 
     def interpolate_submobject(
@@ -70,7 +70,7 @@ class Homotopy(Animation):
         starting_submobject: Mobject,
         alpha: float,
     ) -> None:
-        submobject.points = starting_submobject.points
+        submobject.match_points(starting_submobject)
         submobject.apply_function(
             self.function_at_time_t(alpha), **self.apply_function_kwargs
         )

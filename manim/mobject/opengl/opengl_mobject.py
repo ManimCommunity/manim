@@ -53,7 +53,7 @@ if TYPE_CHECKING:
 
     from manim.animation.animation import Animation
     from manim.renderer.renderer import RendererData
-    from manim.typing import PathFuncType, Point3D, Point3D_Array
+    from manim.typing import ManimFloat, PathFuncType, Point3D, Point3D_Array
 
     TimeBasedUpdater: TypeAlias = Callable[
         ["OpenGLMobject", float], "OpenGLMobject | None"
@@ -157,12 +157,12 @@ class OpenGLMobject:
         self.name = self.__class__.__name__ if name is None else name
 
         # internal_state
-        self.points = np.zeros((0, 3))
+        self.points: npt.NDArray[ManimFloat] = np.zeros((0, 3))
         self.submobjects: list[OpenGLMobject] = []
         self.parents: list[OpenGLMobject] = []
         self.family: list[OpenGLMobject] = [self]
         self.needs_new_bounding_box: bool = True
-        self._bounding_box = np.zeros((3, 3))
+        self._bounding_box: npt.NDArray[ManimFloat] = np.zeros((3, 3))
         self._is_animating: bool = False
         self.saved_state: OpenGLMobject | None = None
         self.target: OpenGLMobject | None = None
@@ -370,7 +370,7 @@ class OpenGLMobject:
         self.refresh_bounding_box()
         return self
 
-    def set_points(self, points):
+    def set_points(self, points: npt.NDArray[ManimFloat]) -> Self:
         if len(points) == len(self.points):
             self.points[:] = points
         elif isinstance(points, np.ndarray):
@@ -555,7 +555,7 @@ class OpenGLMobject:
 
     # Others related to points
 
-    def match_points(self, mobject):
+    def match_points(self, mobject: OpenGLMobject) -> Self:
         """Edit points, positions, and submobjects to be identical
         to another :class:`~.OpenGLMobject`, while keeping the style unchanged.
 
@@ -1361,9 +1361,12 @@ class OpenGLMobject:
             sm.parents = [result]
 
         result.note_changed_family()
-        for current, copy_ in zip(self.get_family(), result.get_family()):
-            copy_.points = np.array(current.points)
-            copy_.match_color(current)
+
+        # this seems correct, but is not needed in 3b1b manim - investigate
+        # for current, copy_ in zip(self.get_family(), result.get_family()):
+        #     copy_.points = np.array(current.points)
+        #     copy_.match_color(current)
+
         # Similarly, instead of calling match_updaters, since we know the status
         # won't have changed, just directly match with shallow copies.
         result.non_time_updaters = self.non_time_updaters.copy()
@@ -1720,7 +1723,7 @@ class OpenGLMobject:
 
     def apply_function(self, function: PointUpdateFunction, **kwargs) -> Self:
         # Default to applying matrix about the origin, not mobjects center
-        if len(kwargs) == 0:
+        if not kwargs:
             kwargs["about_point"] = ORIGIN
         self.apply_points_function(
             lambda points: np.array([function(p) for p in points]), **kwargs
