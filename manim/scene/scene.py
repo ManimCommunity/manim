@@ -620,7 +620,7 @@ class Scene:
 
     def restructure_mobjects(
         self,
-        to_remove:list[Mobject],
+        to_remove: list[Mobject],
         mobject_list_name: str = "mobjects",
         extract_families: bool = True,
     ):
