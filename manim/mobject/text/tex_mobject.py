@@ -12,7 +12,7 @@ r"""Mobjects representing text rendered using LaTeX.
 
 from __future__ import annotations
 
-from manim.utils.color import ManimColor
+from manim.utils.color import BLACK, WHITE, ManimColor, ParsableManimColor
 
 __all__ = [
     "SingleStringMathTex",
@@ -34,7 +34,7 @@ from manim import config, logger
 from manim.constants import *
 from manim.mobject.geometry.line import Line
 from manim.mobject.svg.svg_mobject import SVGMobject
-from manim.mobject.types.vectorized_mobject import VGroup, VMobject
+from manim.mobject.types.vectorized_mobject import VGroup
 from manim.utils.tex import TexTemplate
 from manim.utils.tex_file_writing import tex_to_svg_file
 
@@ -62,13 +62,9 @@ class SingleStringMathTex(SVGMobject):
         tex_environment: str = "align*",
         tex_template: TexTemplate | None = None,
         font_size: float = DEFAULT_FONT_SIZE,
+        color: ParsableManimColor | None = WHITE,
         **kwargs,
     ):
-        if kwargs.get("color") is None:
-            # makes it so that color isn't explicitly passed for these mobs,
-            # and can instead inherit from the parent
-            kwargs["color"] = VMobject().color
-
         self._font_size = font_size
         self.organize_left_to_right = organize_left_to_right
         self.tex_environment = tex_environment
@@ -88,6 +84,7 @@ class SingleStringMathTex(SVGMobject):
             should_center=should_center,
             stroke_width=stroke_width,
             height=height,
+            color=color,
             path_string_config={
                 "should_subdivide_sharp_curves": True,
                 "should_remove_null_curves": True,
@@ -211,10 +208,13 @@ class SingleStringMathTex(SVGMobject):
         return self.tex_string
 
     def init_colors(self, propagate_colors=True):
-        if config.renderer == RendererType.OPENGL:
-            super().init_colors()
-        elif config.renderer == RendererType.CAIRO:
-            super().init_colors(propagate_colors=propagate_colors)
+        for submobject in self.submobjects:
+            if submobject.color == BLACK:
+                submobject.color = self.color
+                if config.renderer == RendererType.OPENGL:
+                    submobject.init_colors()
+                elif config.renderer == RendererType.CAIRO:
+                    submobject.init_colors(propagate_colors=propagate_colors)
 
 
 class MathTex(SingleStringMathTex):
