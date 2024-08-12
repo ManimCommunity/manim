@@ -52,7 +52,7 @@ from ..utils.file_ops import open_media_file
 from ..utils.iterables import list_difference_update, list_update
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
+    from collections.abc import Iterable, Sequence
     from typing import Callable
 
 
@@ -620,7 +620,7 @@ class Scene:
 
     def restructure_mobjects(
         self,
-        to_remove: Mobject,
+        to_remove: Sequence[Mobject],
         mobject_list_name: str = "mobjects",
         extract_families: bool = True,
     ):
