@@ -334,7 +334,9 @@ class SceneFileWriter:
         # we assume files with .wav / .raw suffix are actually
         # .wav and .raw files, respectively.
         if file_path.suffix not in (".wav", ".raw"):
-            wav_file_path = NamedTemporaryFile(suffix=".wav")
+            # we need to pass delete=False to work on Windows
+            # TODO: figure out a way to cache the wav file generated (benchmark needed)
+            wav_file_path = NamedTemporaryFile(suffix=".wav", delete=False)
             with (
                 av.open(file_path) as input_container,
                 av.open(wav_file_path, "w", format="wav") as output_container,
@@ -351,7 +353,7 @@ class SceneFileWriter:
             new_segment = AudioSegment.from_file(wav_file_path.name)
             logger.info(f"Automatically converted {file_path} to .wav")
             wav_file_path.close()
-
+            Path(wav_file_path.name).unlink()
         else:
             new_segment = AudioSegment.from_file(file_path)
 
