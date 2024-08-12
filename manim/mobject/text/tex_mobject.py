@@ -12,7 +12,7 @@ r"""Mobjects representing text rendered using LaTeX.
 
 from __future__ import annotations
 
-from manim.utils.color import BLACK, WHITE, ManimColor, ParsableManimColor
+from manim.utils.color import BLACK, ManimColor, ParsableManimColor
 
 __all__ = [
     "SingleStringMathTex",
@@ -34,7 +34,7 @@ from manim import config, logger
 from manim.constants import *
 from manim.mobject.geometry.line import Line
 from manim.mobject.svg.svg_mobject import SVGMobject
-from manim.mobject.types.vectorized_mobject import VGroup
+from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.tex import TexTemplate
 from manim.utils.tex_file_writing import tex_to_svg_file
 
@@ -62,9 +62,12 @@ class SingleStringMathTex(SVGMobject):
         tex_environment: str = "align*",
         tex_template: TexTemplate | None = None,
         font_size: float = DEFAULT_FONT_SIZE,
-        color: ParsableManimColor | None = WHITE,
+        color: ParsableManimColor | None = None,
         **kwargs,
     ):
+        if color is None:
+            color = VMobject().color
+
         self._font_size = font_size
         self.organize_left_to_right = organize_left_to_right
         self.tex_environment = tex_environment
