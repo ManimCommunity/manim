@@ -1579,9 +1579,7 @@ class Mobject:
             return True
         if self.get_bottom()[1] > config["frame_y_radius"]:
             return True
-        if self.get_top()[1] < -config["frame_y_radius"]:
-            return True
-        return False
+        return self.get_top()[1] < -config["frame_y_radius"]
 
     def stretch_about_point(self, factor: float, dim: int, point: Point3D) -> Self:
         return self.stretch(factor, dim, about_point=point)
@@ -1988,14 +1986,15 @@ class Mobject:
 
     def reduce_across_dimension(self, reduce_func: Callable, dim: int):
         """Find the min or max value from a dimension across all points in this and submobjects."""
-        assert dim >= 0 and dim <= 2
+        assert dim >= 0
+        assert dim <= 2
         if len(self.submobjects) == 0 and len(self.points) == 0:
             # If we have no points and no submobjects, return 0 (e.g. center)
             return 0
 
         # If we do not have points (but do have submobjects)
         # use only the points from those.
-        if len(self.points) == 0:
+        if len(self.points) == 0:  # noqa: SIM108
             rv = None
         else:
             # Otherwise, be sure to include our own points
@@ -2004,10 +2003,7 @@ class Mobject:
         # smallest dimension they have and compare it to the return value.
         for mobj in self.submobjects:
             value = mobj.reduce_across_dimension(reduce_func, dim)
-            if rv is None:
-                rv = value
-            else:
-                rv = reduce_func([value, rv])
+            rv = value if rv is None else reduce_func([value, rv])
         return rv
 
     def nonempty_submobjects(self) -> list[Self]:
@@ -2488,10 +2484,10 @@ class Mobject:
             buff_x = buff_y = buff
 
         # Initialize alignments correctly
-        def init_alignments(alignments, num, mapping, name, dir):
+        def init_alignments(alignments, num, mapping, name, dir_):
             if alignments is None:
                 # Use cell_alignment as fallback
-                return [cell_alignment * dir] * num
+                return [cell_alignment * dir_] * num
             if len(alignments) != num:
                 raise ValueError(f"{name}_alignments has a mismatching size.")
             alignments = list(alignments)

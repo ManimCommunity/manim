@@ -18,7 +18,7 @@ def test_SingleStringMathTex(config, using_opengl_renderer):
 
 
 @pytest.mark.parametrize(  # : PT006
-    "text_input,length_sub",
+    ("text_input", "length_sub"),
     [("{{ a }} + {{ b }} = {{ c }}", 5), (r"\frac{1}{a+b\sqrt{2}}", 1)],
 )
 def test_double_braces_testing(using_opengl_renderer, text_input, length_sub):

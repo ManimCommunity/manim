@@ -41,6 +41,10 @@ __all__ = [
     "RGBA_Tuple_Int",
     "HSV_Array_Float",
     "HSV_Tuple_Float",
+    "HSL_Array_Float",
+    "HSL_Tuple_Float",
+    "HSVA_Array_Float",
+    "HSVA_Tuple_Float",
     "ManimColorInternal",
     "PointDType",
     "InternalPoint2D",
@@ -213,6 +217,46 @@ HSB) format.
 
 Its components describe, in order, the Hue, Saturation and Value (or
 Brightness) in the represented color.
+"""
+
+HSVA_Array_Float: TypeAlias = RGBA_Array_Float
+"""``shape: (4,)``
+
+A :class:`numpy.ndarray` of 4 floats between 0 and 1, representing a
+color in HSVA (or HSBA) format.
+
+Its components describe, in order, the Hue, Saturation and Value (or
+Brightness) in the represented color.
+"""
+
+HSVA_Tuple_Float: TypeAlias = RGBA_Tuple_Float
+"""``shape: (4,)``
+
+A tuple of 4 floats between 0 and 1, representing a color in HSVA (or
+HSBA) format.
+
+Its components describe, in order, the Hue, Saturation and Value (or
+Brightness) in the represented color.
+"""
+
+HSL_Array_Float: TypeAlias = RGB_Array_Float
+"""``shape: (3,)``
+
+A :class:`numpy.ndarray` of 3 floats between 0 and 1, representing a
+color in HSL format.
+
+Its components describe, in order, the Hue, Saturation and Lightness
+in the represented color.
+"""
+
+HSL_Tuple_Float: TypeAlias = RGB_Tuple_Float
+"""``shape: (3,)``
+
+A :class:`numpy.ndarray` of 3 floats between 0 and 1, representing a
+color in HSL format.
+
+Its components describe, in order, the Hue, Saturation and Lightness
+in the represented color.
 """
 
 ManimColorInternal: TypeAlias = RGBA_Array_Float
