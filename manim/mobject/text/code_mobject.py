@@ -44,9 +44,9 @@ class CodeColorFormatter:
         language,
         file_name,
     ):
+        self.code = code
         self.lexer: Lexer = self.find_lexer(file_name, code, language)
 
-        self.code = code
         self.style = self.get_style(style)
 
         self.bg_color = self.style.background_color
@@ -393,7 +393,7 @@ def create_code_string(file_name: str | Path, code: str) -> str:
             )
 
     if file_name:
-        assert isinstance(file_name, str | Path)
+        assert isinstance(file_name, (str, Path))
         file_path = _search_file_path(file_name)
         return file_path.read_text(encoding="utf-8")
 
