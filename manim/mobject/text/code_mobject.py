@@ -90,12 +90,10 @@ class CodeColorFormatter:
                 lastval = value
                 lasttype = token_type
 
-            elif value == " ":
+            elif value == " " or self.styles[token_type] == self.styles[lasttype]:
+                # NOTE This is hack for later efficiency, will broke token hierarchy if other style coding checks is added in future
                 lastval += value
-            elif value != "\n" and self.styles[token_type] == self.styles[lasttype]:
-                # NOTE This is hack for later efficiency, will broke token hierarchy if other style coding checks is added
-                lasttype = lasttype
-                lastval += value
+
             else:
                 add_to_mapping(lastval, lasttype)
                 lastval = value
@@ -128,11 +126,13 @@ class CodeColorFormatter:
     def find_lexer(file_name: str, code: str, language) -> Lexer:
         try:
             if language:
-                return get_lexer_by_name(language)
+                lexer = get_lexer_by_name(language)
             elif file_name:
-                return get_lexer_for_filename(file_name, code)
+                lexer = get_lexer_for_filename(file_name, code)
             elif code:
-                return guess_lexer(code)
+                lexer = guess_lexer(code)
+
+            return lexer
 
         except ClassNotFound as a:
             a.add_note(
@@ -197,7 +197,7 @@ class Code(VGroup):
             background_stroke_width=1,
             background_stroke_color=WHITE,
             insert_line_no=True,
-            style=Code.styles_list[15],
+            style="emacs",
             background="window",
             language="cpp",
         )

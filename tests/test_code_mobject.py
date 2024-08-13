@@ -1,15 +1,21 @@
-from utility_for_code_test import CODE_1
-
+from manim.mobject.mobject import Mobject
 from manim.mobject.text.code_mobject import Code, CodeColorFormatter, create_code_string
 from manim.mobject.text.text_mobject import Paragraph
 from manim.mobject.types.vectorized_mobject import VGroup
 
 PATH = "tests/utility_for_code_test.py"
 
+INFILE = """\
+def test()
+    print("Hi")
+    for i in out:
+        print(i, "see you")
+"""
+
 
 class TestInternals:
     def test_formatter(self):
-        code_str = create_code_string(PATH)
+        code_str = create_code_string(PATH, None)
         formatter = CodeColorFormatter("dracula", code_str, "python", PATH)
         mapping = formatter.format_code()
         for line in mapping:
@@ -20,19 +26,19 @@ class TestInternals:
 
 class TestCreation:
     def test_from_file(self):
-        file = Code("tests/utility_for_code_test.pyt.py")
+        file = Code(PATH)
         assert isinstance(file, VGroup)
         self.attributes(file)
 
     def test_from_code_snippet(self):
-        code = Code(code=CODE_1, language="python")
+        code = Code(code=INFILE, language="python")
         assert isinstance(code, VGroup)
         self.attributes(code)
 
     def attributes(self, inst: Code):
         assert hasattr(inst, "code")
-        assert isinstance(inst, Paragraph)
+        assert isinstance(inst.code, Paragraph)
         assert hasattr(inst, "line_numbers")
-        assert isinstance(inst, VGroup)
+        assert isinstance(inst.line_numbers, Paragraph)
         assert hasattr(inst, "background_mobject")
-        assert isinstance(inst, VGroup)
+        assert isinstance(inst.background_mobject, Mobject)
