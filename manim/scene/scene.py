@@ -97,6 +97,15 @@ class Scene:
             def construct(self):
                 self.play(Write(Text("Hello World!")))
 
+    You can specify the seed for random functions inside Manim via :attr:`Scene.random_seed`.
+
+    .. code-block:: python
+
+        class MyScene(Scene):
+            random_seed = 3
+
+            def construct(self): ...
+
     """
 
     random_seed: int | None = None
