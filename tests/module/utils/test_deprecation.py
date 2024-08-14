@@ -1,11 +1,8 @@
 from __future__ import annotations
 
+import pytest
+
 from manim.utils.deprecation import deprecated, deprecated_params
-
-
-def _get_caplog_record_msg(manim_caplog):
-    logger_name, level, message = manim_caplog.record_tuples[0]
-    return message
 
 
 @deprecated
@@ -67,88 +64,61 @@ class QuuzAll:
 doc_admonition = "\n\n.. attention:: Deprecated\n  "
 
 
-def test_deprecate_class_no_args(manim_caplog):
+def test_deprecate_class_no_args():
     """Test the deprecation of a class (decorator with no arguments)."""
-    f = Foo()
-    assert len(manim_caplog.record_tuples) == 1
-    msg = _get_caplog_record_msg(manim_caplog)
-    assert (
-        msg
-        == "The class Foo has been deprecated and may be removed in a later version."
-    )
+
+    msg = "The class Foo has been deprecated and may be removed in a later version."
+    with pytest.warns(FutureWarning, match=msg):
+        f = Foo()
     assert f.__doc__ == f"{doc_admonition}{msg}"
 
 
-def test_deprecate_class_since(manim_caplog):
+def test_deprecate_class_since():
     """Test the deprecation of a class (decorator with since argument)."""
-    b = Bar()
-    assert len(manim_caplog.record_tuples) == 1
-    msg = _get_caplog_record_msg(manim_caplog)
-    assert (
-        msg
-        == "The class Bar has been deprecated since v0.6.0 and may be removed in a later version."
-    )
+    msg = "The class Bar has been deprecated since v0.6.0 and may be removed in a later version."
+    with pytest.warns(FutureWarning, match=msg):
+        b = Bar()
     assert b.__doc__ == f"The Bar class.{doc_admonition}{msg}"
 
 
-def test_deprecate_class_until(manim_caplog):
+def test_deprecate_class_until():
     """Test the deprecation of a class (decorator with until argument)."""
-    bz = Baz()
-    assert len(manim_caplog.record_tuples) == 1
-    msg = _get_caplog_record_msg(manim_caplog)
-    assert (
-        msg
-        == "The class Baz has been deprecated and is expected to be removed after 06/01/2021."
-    )
+    msg = "The class Baz has been deprecated and is expected to be removed after 06/01/2021."
+    with pytest.warns(FutureWarning, match=msg):
+        bz = Baz()
     assert bz.__doc__ == f"The Baz class.{doc_admonition}{msg}"
 
 
-def test_deprecate_class_since_and_until(manim_caplog):
+def test_deprecate_class_since_and_until():
     """Test the deprecation of a class (decorator with since and until arguments)."""
-    qx = Qux()
-    assert len(manim_caplog.record_tuples) == 1
-    msg = _get_caplog_record_msg(manim_caplog)
-    assert (
-        msg
-        == "The class Qux has been deprecated since 0.7.0 and is expected to be removed after 0.9.0-rc2."
-    )
+    msg = "The class Qux has been deprecated since 0.7.0 and is expected to be removed after 0.9.0-rc2."
+    with pytest.warns(FutureWarning, match=msg):
+        qx = Qux()
     assert qx.__doc__ == f"{doc_admonition}{msg}"
 
 
-def test_deprecate_class_msg(manim_caplog):
+def test_deprecate_class_msg():
     """Test the deprecation of a class (decorator with msg argument)."""
-    qu = Quux()
-    assert len(manim_caplog.record_tuples) == 1
-    msg = _get_caplog_record_msg(manim_caplog)
-    assert (
-        msg
-        == "The class Quux has been deprecated and may be removed in a later version. Use something else."
-    )
+    msg = "The class Quux has been deprecated and may be removed in a later version. Use something else."
+    with pytest.warns(FutureWarning, match=msg):
+        qu = Quux()
     assert qu.__doc__ == f"{doc_admonition}{msg}"
 
 
-def test_deprecate_class_replacement(manim_caplog):
+def test_deprecate_class_replacement():
     """Test the deprecation of a class (decorator with replacement argument)."""
-    qz = Quuz()
-    assert len(manim_caplog.record_tuples) == 1
-    msg = _get_caplog_record_msg(manim_caplog)
-    assert (
-        msg
-        == "The class Quuz has been deprecated and may be removed in a later version. Use ReplaceQuuz instead."
-    )
+    msg = "The class Quuz has been deprecated and may be removed in a later version. Use ReplaceQuuz instead."
+    with pytest.warns(FutureWarning, match=msg):
+        qz = Quuz()
     doc_msg = "The class Quuz has been deprecated and may be removed in a later version. Use :class:`~.ReplaceQuuz` instead."
     assert qz.__doc__ == f"{doc_admonition}{doc_msg}"
 
 
-def test_deprecate_class_all(manim_caplog):
+def test_deprecate_class_all():
     """Test the deprecation of a class (decorator with all arguments)."""
-    qza = QuuzAll()
-    assert len(manim_caplog.record_tuples) == 1
-    msg = _get_caplog_record_msg(manim_caplog)
-    assert (
-        msg
-        == "The class QuuzAll has been deprecated since 0.7.0 and is expected to be removed after 1.2.1. Use ReplaceQuuz instead. Don't use this please."
-    )
+    msg = "The class QuuzAll has been deprecated since 0.7.0 and is expected to be removed after 1.2.1. Use ReplaceQuuz instead. Don't use this please."
+    with pytest.warns(FutureWarning, match=msg):
+        qza = QuuzAll()
     doc_msg = "The class QuuzAll has been deprecated since 0.7.0 and is expected to be removed after 1.2.1. Use :class:`~.ReplaceQuuz` instead. Don't use this please."
     assert qza.__doc__ == f"{doc_admonition}{doc_msg}"
 
@@ -233,156 +203,106 @@ class Top:
         return kwargs
 
 
-def test_deprecate_func_no_args(manim_caplog):
+def test_deprecate_func_no_args():
     """Test the deprecation of a method (decorator with no arguments)."""
-    useless()
-    assert len(manim_caplog.record_tuples) == 1
-    msg = _get_caplog_record_msg(manim_caplog)
-    assert (
-        msg
-        == "The function useless has been deprecated and may be removed in a later version."
-    )
+    msg = "The function useless has been deprecated and may be removed in a later version."
+    with pytest.warns(FutureWarning, match=msg):
+        useless()
     assert useless.__doc__ == f"{doc_admonition}{msg}"
 
 
-def test_deprecate_func_in_class_since_and_message(manim_caplog):
+def test_deprecate_func_in_class_since_and_message():
     """Test the deprecation of a method within a class (decorator with since and message arguments)."""
     t = Top()
-    t.mid_func()
-    assert len(manim_caplog.record_tuples) == 1
-    msg = _get_caplog_record_msg(manim_caplog)
-    assert (
-        msg
-        == "The method Top.mid_func has been deprecated since 0.8.0 and may be removed in a later version. This method is useless."
-    )
+    msg = "The method Top.mid_func has been deprecated since 0.8.0 and may be removed in a later version. This method is useless."
+    with pytest.warns(FutureWarning, match=msg):
+        t.mid_func()
     assert t.mid_func.__doc__ == f"Middle function in Top.{doc_admonition}{msg}"
 
 
-def test_deprecate_nested_class_until_and_replacement(manim_caplog):
+def test_deprecate_nested_class_until_and_replacement():
     """Test the deprecation of a nested class (decorator with until and replacement arguments)."""
-    n = Top().Nested()
-    assert len(manim_caplog.record_tuples) == 1
-    msg = _get_caplog_record_msg(manim_caplog)
-    assert (
-        msg
-        == "The class Top.Nested has been deprecated and is expected to be removed after 1.4.0. Use Top.NewNested instead."
-    )
+    msg = "The class Top.Nested has been deprecated and is expected to be removed after 1.4.0. Use Top.NewNested instead."
+    with pytest.warns(FutureWarning, match=msg):
+        n = Top().Nested()
     doc_msg = "The class Top.Nested has been deprecated and is expected to be removed after 1.4.0. Use :class:`~.Top.NewNested` instead."
     assert n.__doc__ == f"{doc_admonition}{doc_msg}"
 
 
-def test_deprecate_nested_class_func_since_and_until(manim_caplog):
+def test_deprecate_nested_class_func_since_and_until():
     """Test the deprecation of a method within a nested class (decorator with since and until arguments)."""
     n = Top().NewNested()
-    n.nested_func()
-    assert len(manim_caplog.record_tuples) == 1
-    msg = _get_caplog_record_msg(manim_caplog)
-    assert (
-        msg
-        == "The method Top.NewNested.nested_func has been deprecated since 1.0.0 and is expected to be removed after 12/25/2025."
-    )
+    msg = "The method Top.NewNested.nested_func has been deprecated since 1.0.0 and is expected to be removed after 12/25/2025."
+    with pytest.warns(FutureWarning, match=msg):
+        n.nested_func()
     assert (
         n.nested_func.__doc__
         == f"Nested function in Top.NewNested.{doc_admonition}{msg}"
     )
 
 
-def test_deprecate_nested_func(manim_caplog):
+def test_deprecate_nested_func():
     """Test the deprecation of a nested method (decorator with no arguments)."""
     b = Top().Bottom()
     answer = b.normal_func()
-    answer(1)
-    assert len(manim_caplog.record_tuples) == 1
-    msg = _get_caplog_record_msg(manim_caplog)
-    assert (
-        msg
-        == "The method Top.Bottom.normal_func.<locals>.nested_func has been deprecated and may be removed in a later version."
-    )
+    msg = "The method Top.Bottom.normal_func.<locals>.nested_func has been deprecated and may be removed in a later version."
+    with pytest.warns(FutureWarning, match=msg):
+        answer(1)
     assert answer.__doc__ == f"{doc_admonition}{msg}"
 
 
-def test_deprecate_func_params(manim_caplog):
+def test_deprecate_func_params():
     """Test the deprecation of method parameters (decorator with params argument)."""
     t = Top()
-    t.foo(a=2, b=3, z=4)
-    assert len(manim_caplog.record_tuples) == 1
-    msg = _get_caplog_record_msg(manim_caplog)
-    assert (
-        msg
-        == "The parameters a and b of method Top.foo have been deprecated and may be removed in a later version. Use something else."
-    )
+    msg = "The parameters a and b of method Top.foo have been deprecated and may be removed in a later version. Use something else."
+    with pytest.warns(FutureWarning, match=msg):
+        t.foo(a=2, b=3, z=4)
 
 
-def test_deprecate_func_single_param_since_and_until(manim_caplog):
+def test_deprecate_func_single_param_since_and_until():
     """Test the deprecation of a single method parameter (decorator with since and until arguments)."""
     t = Top()
-    t.bar(a=1, b=2)
-    assert len(manim_caplog.record_tuples) == 1
-    msg = _get_caplog_record_msg(manim_caplog)
-    assert (
-        msg
-        == "The parameter a of method Top.bar has been deprecated since v0.2 and is expected to be removed after v0.4."
-    )
+    msg = "The parameter a of method Top.bar has been deprecated since v0.2 and is expected to be removed after v0.4."
+    with pytest.warns(FutureWarning, match=msg):
+        t.bar(a=1, b=2)
 
 
-def test_deprecate_func_param_redirect_tuple(manim_caplog):
+def test_deprecate_func_param_redirect_tuple():
     """Test the deprecation of a method parameter and redirecting it to a new one using tuple."""
     t = Top()
-    obj = t.baz(x=1, old_param=2)
-    assert len(manim_caplog.record_tuples) == 1
-    msg = _get_caplog_record_msg(manim_caplog)
-    assert (
-        msg
-        == "The parameter old_param of method Top.baz has been deprecated and may be removed in a later version."
-    )
+    msg = "The parameter old_param of method Top.baz has been deprecated and may be removed in a later version."
+    with pytest.warns(FutureWarning, match=msg):
+        obj = t.baz(x=1, old_param=2)
     assert obj == {"x": 1, "new_param": 2}
 
 
-def test_deprecate_func_param_redirect_lambda(manim_caplog):
+def test_deprecate_func_param_redirect_lambda():
     """Test the deprecation of a method parameter and redirecting it to a new one using lambda function."""
     t = Top()
-    obj = t.qux(runtime_in_ms=500)
-    assert len(manim_caplog.record_tuples) == 1
-    msg = _get_caplog_record_msg(manim_caplog)
-    assert (
-        msg
-        == "The parameter runtime_in_ms of method Top.qux has been deprecated and may be removed in a later version."
-    )
+    msg = "The parameter runtime_in_ms of method Top.qux has been deprecated and may be removed in a later version."
+    with pytest.warns(FutureWarning, match=msg):
+        obj = t.qux(runtime_in_ms=500)
     assert obj == {"run_time": 0.5}
 
 
-def test_deprecate_func_param_redirect_many_to_one(manim_caplog):
+def test_deprecate_func_param_redirect_many_to_one():
     """Test the deprecation of multiple method parameters and redirecting them to one."""
     t = Top()
-    obj = t.quux(point2D_x=3, point2D_y=5)
-    assert len(manim_caplog.record_tuples) == 1
-    msg = _get_caplog_record_msg(manim_caplog)
-    assert (
-        msg
-        == "The parameters point2D_x and point2D_y of method Top.quux have been deprecated and may be removed in a later version."
-    )
+    msg = "The parameters point2D_x and point2D_y of method Top.quux have been deprecated and may be removed in a later version."
+    with pytest.warns(FutureWarning, match=msg):
+        obj = t.quux(point2D_x=3, point2D_y=5)
     assert obj == {"point2D": (3, 5)}
 
 
-def test_deprecate_func_param_redirect_one_to_many(manim_caplog):
+def test_deprecate_func_param_redirect_one_to_many():
     """Test the deprecation of one method parameter and redirecting it to many."""
     t = Top()
-    obj1 = t.quuz(point2D=0)
-    assert len(manim_caplog.record_tuples) == 1
-    msg = _get_caplog_record_msg(manim_caplog)
-    assert (
-        msg
-        == "The parameter point2D of method Top.quuz has been deprecated and may be removed in a later version."
-    )
+    msg = "The parameter point2D of method Top.quuz has been deprecated and may be removed in a later version."
+    with pytest.warns(FutureWarning, match=msg):
+        obj1 = t.quuz(point2D=0)
     assert obj1 == {"x": 0, "y": 0}
 
-    manim_caplog.clear()
-
-    obj2 = t.quuz(point2D=(2, 3))
-    assert len(manim_caplog.record_tuples) == 1
-    msg = _get_caplog_record_msg(manim_caplog)
-    assert (
-        msg
-        == "The parameter point2D of method Top.quuz has been deprecated and may be removed in a later version."
-    )
+    msg = "The parameter point2D of method Top.quuz has been deprecated and may be removed in a later version."
+    with pytest.warns(FutureWarning, match=msg):
+        obj2 = t.quuz(point2D=(2, 3))
     assert obj2 == {"x": 2, "y": 3}
