@@ -96,12 +96,12 @@ def deprecated(
 
 
 def deprecated(
-    func: Callable | None = None,
+    func: Callable[P, T] | None = None,
     since: str | None = None,
     until: str | None = None,
     replacement: str | None = None,
     message: str = "",
-) -> Callable:
+) -> Callable[P, T] | Callable[[Callable[P, T]], Callable[P, T]]:
     """Decorator to mark a callable as deprecated.
 
     The decorated callable will cause a warning when used. The docstring of the
@@ -185,7 +185,11 @@ def deprecated(
     """
     # If used as factory:
     if func is None:
-        return lambda func: deprecated(func, since, until, replacement, message)
+
+        def wrapper(f: Callable[P, T]) -> Callable[P, T]:
+            return deprecated(f, since, until, replacement, message)
+
+        return wrapper
 
     what, name = _get_callable_info(func)
 
