@@ -132,6 +132,12 @@ class CoordinateSystem:
         elif len(x_range) == 2:
             x_range = [*x_range, default_step]
 
+        x0, x, dx = x_range
+        if 0 in (dx, x0 + x):
+            raise ValueError(
+                "Axes does not handle x_range's of 0, maybe you wanted to use NumberLine instead?"
+            )
+
         if y_range is None:
             y_range = [
                 round(-config["frame_y_radius"]),
@@ -140,6 +146,12 @@ class CoordinateSystem:
             ]
         elif len(y_range) == 2:
             y_range = [*y_range, default_step]
+
+        y0, y, dy = y_range
+        if 0 in (dy, y0 + y):
+            raise ValueError(
+                "Axes does not handle y_range's of 0, maybe you wanted to use NumberLine instead?"
+            )
 
         self.x_range = x_range
         self.y_range = y_range
