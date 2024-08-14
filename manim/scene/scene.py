@@ -14,6 +14,7 @@ import random
 import threading
 import time
 import types
+import warnings
 from queue import Queue
 
 import srt
@@ -98,17 +99,30 @@ class Scene:
 
     """
 
+    random_seed: int | None = None
+
     def __init__(
         self,
-        renderer=None,
-        camera_class=Camera,
-        always_update_mobjects=False,
-        random_seed=None,
-        skip_animations=False,
+        renderer: OpenGLRenderer | CairoRenderer | None = None,
+        camera_class: type[Camera] = Camera,
+        always_update_mobjects: bool = False,
+        random_seed: int | None = None,
+        skip_animations: bool = False,
     ):
         self.camera_class = camera_class
         self.always_update_mobjects = always_update_mobjects
-        self.random_seed = random_seed
+
+        if random_seed is not None:
+            warnings.warn(
+                "Setting the random seed in the Scene constructor is deprecated. "
+                "Please set the class attribute random_seed instead.",
+                category=FutureWarning,
+                # assuming no scene subclassing, this should refer
+                # to instantiation of the Scene
+                stacklevel=4,
+            )
+            self.random_seed = random_seed
+
         self.skip_animations = skip_animations
 
         self.animations = None
