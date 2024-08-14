@@ -60,6 +60,8 @@ class CodeColorFormatter:
                 value = self.default_color
             self.styles[token] = value
 
+        self.format_code()
+
     def format_code(self):
         def add_to_mapping(word: str, token: _TokenType):
             self.mapping[-1].append((word, "#" + self.styles[token]))
@@ -99,6 +101,7 @@ class CodeColorFormatter:
                 lastval = value
                 lasttype = token_type
 
+    def get_mapping(self):
         return self.mapping
 
     def get_colors(self):
@@ -131,6 +134,8 @@ class CodeColorFormatter:
                 lexer = get_lexer_for_filename(file_name, code)
             elif code:
                 lexer = guess_lexer(code)
+            else:
+                raise ClassNotFound
 
             return lexer
 
@@ -314,7 +319,7 @@ class Code(VGroup):
         code_string = create_code_string(file_name, code)
 
         formatter = CodeColorFormatter(style, code_string, language, file_name)
-        mapping = formatter.format_code()
+        mapping = formatter.get_mapping()
         bg_color, default_color = formatter.get_colors()
 
         self.code = ColoredCodeText(

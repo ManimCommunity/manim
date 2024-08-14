@@ -17,7 +17,7 @@ class TestInternals:
     def test_formatter(self):
         code_str = create_code_string(PATH, None)
         formatter = CodeColorFormatter("dracula", code_str, "python", PATH)
-        mapping = formatter.format_code()
+        mapping = formatter.get_mapping()
         for line in mapping:
             for stylemap in line:
                 if "\n" in stylemap[0]:
