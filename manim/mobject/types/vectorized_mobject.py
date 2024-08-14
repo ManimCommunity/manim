@@ -1518,8 +1518,9 @@ class VMobject(Mobject):
                 return curve(residue)
 
             current_length += length
-        raise Exception(
-            "Not sure how you reached here, please file a bug report at https://github.com/ManimCommunity/manim/issues/new/choose"
+        raise ZeroDivisionError(
+            "Not sure how you reached here, please file a bug report at https://github.com/ManimCommunity/manim/issues/new/choose.\n"
+            "Most likely, it was due to a zero division of some kind."
         )
 
     def proportion_from_point(
