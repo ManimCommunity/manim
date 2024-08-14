@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import datetime
+import random
 
+import numpy as np
 import pytest
 
 from manim import Circle, FadeIn, Group, Mobject, Scene, Square
@@ -113,7 +115,13 @@ def test_random_seed():
 
     good = GoodScene()
     assert good.random_seed == 3
+    random_random = random.random()
+    np_random = np.random.random()
 
     with pytest.warns(FutureWarning):
         bad = BadScene()
     assert bad.random_seed == 3
+
+    # check that they both actually set the seed
+    assert random.random() == random_random
+    assert np.random.random() == np_random
