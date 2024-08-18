@@ -75,6 +75,18 @@ class CodeColorFormatter:
             else:
                 return token
 
+        def parse_newlines_from_string(line: str):
+            if len(lastval) > 1:
+                parts = line.split("\n")
+
+                if parts[-1] == "":
+                    parts.pop()  # Otherwise there is one wrong newline
+                for literal in parts:
+                    add_to_mapping(literal, lasttype)
+                    self.mapping.append([])
+            else:
+                self.mapping.append([])
+
         self.mapping: list[tuple[str, str]] = [[]]
         self.tokens = self.lexer.get_tokens(self.code)
         lasttype, lastval = next(self.tokens)
@@ -83,23 +95,32 @@ class CodeColorFormatter:
             token_type = style_token_support(token_type)
 
             if "\n" in lastval:
-                if len(lastval) > 1:
-                    # There is cases in which Tokeniser returns values with newline attached into.
-                    culled = lastval.removesuffix("\n")
-                    add_to_mapping(culled, lasttype)
-
-                self.mapping.append([])
+                parse_newlines_from_string(lastval)
                 lastval = value
                 lasttype = token_type
 
             elif value == " " or self.styles[token_type] == self.styles[lasttype]:
-                # NOTE This is hack for later efficiency, will broke token hierarchy if other style coding checks is added in future
+                # NOTE This conflates together whitespaces to other tokentype literals and same color string literals
+                # if other type of token styles than coloring is added, this needs to go.
                 lastval += value
 
             else:
                 add_to_mapping(lastval, lasttype)
                 lastval = value
                 lasttype = token_type
+
+        if lastval:
+            if "\n" in lastval:
+                parse_newlines_from_string(lastval)
+            else:
+                add_to_mapping(lastval, lasttype)
+
+        # Removing empty lines from end
+        # It seems like Paragraph does not handle those well
+        # and causes line number missaligment
+        # In some situations Tokenazer throws newline to end that was not originally there
+        while self.mapping[-1] == []:
+            self.mapping.pop()
 
     def get_mapping(self):
         return self.mapping
@@ -110,6 +131,7 @@ class CodeColorFormatter:
     @staticmethod
     def opposite_color(color: str) -> str:
         """Generate opposite color string"""
+        # TODO ManimColor may have some better methods to transform colors from string?
         if color == "#000000":
             return "#ffffff"
         elif color == "#ffffff":
@@ -153,17 +175,15 @@ class CodeColorFormatter:
                 style = styles.get_style_by_name(style)
                 return style
             else:
-                raise TypeError
-
+                logger.warning(
+                    f'Style should be a string type. Used value {style} is type of {type(style)}. Using default type "{cls.DEFAULT_STYLE}"  '
+                )
+                return styles.get_style_by_name(cls.DEFAULT_STYLE)
         except ClassNotFound:
             logger.warning(
                 f'{Code.__name__}: style "{style}" is not supported, using default style: "{cls.DEFAULT_STYLE}" '
             )
-            return styles.get_style_by_name(cls.DEFAULT_STYLE)
-        except TypeError:
-            logger.warning(
-                f'Style should be a string type. Used value {style} is type of {type(style)}. Using default type "{cls.DEFAULT_STYLE}"  '
-            )
+
             return styles.get_style_by_name(cls.DEFAULT_STYLE)
 
 

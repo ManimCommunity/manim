@@ -1,5 +1,9 @@
+"""
+Docstring
 # This file is to test file functionalities of Code-Class
-# test_code_mobject.py test will call this file
+# test_code_mobject.py test is using this file
+"""
+
 import numpy as np
 
 CODE_1 = """\
@@ -46,4 +50,4 @@ finally:
     recovery = "Why not"
 
 print("Resolution")
-# Last bit
+# lastbit
