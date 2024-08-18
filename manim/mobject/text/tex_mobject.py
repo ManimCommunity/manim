@@ -212,12 +212,15 @@ class SingleStringMathTex(SVGMobject):
 
     def init_colors(self, propagate_colors=True):
         for submobject in self.submobjects:
-            if submobject.color == BLACK:
-                submobject.color = self.color
-                if config.renderer == RendererType.OPENGL:
-                    submobject.init_colors()
-                elif config.renderer == RendererType.CAIRO:
-                    submobject.init_colors(propagate_colors=propagate_colors)
+            # needed to preserve original (non-black)
+            # TeX colors of individual submobjects
+            if submobject.color != BLACK:
+                continue
+            submobject.color = self.color
+            if config.renderer == RendererType.OPENGL:
+                submobject.init_colors()
+            elif config.renderer == RendererType.CAIRO:
+                submobject.init_colors(propagate_colors=propagate_colors)
 
 
 class MathTex(SingleStringMathTex):
@@ -428,7 +431,9 @@ class MathTex(SingleStringMathTex):
 
 
 class Tex(MathTex):
-    r"""A string compiled with LaTeX in normal mode.
+    r"""A string compiled with LaTeX in normal mode. The color can be set using
+    the `color` argument. Any parts of the `tex_string` that are colored by the
+    commands`\color` or `\textcolor` will retain their original color.
 
     Tests
     -----
