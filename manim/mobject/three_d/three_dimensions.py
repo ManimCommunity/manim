@@ -896,7 +896,11 @@ class Line3D(Cylinder):
     color
         The color of the line.
     resolution
-        The cylinder resolution of the line.
+        The resolution of the line.
+        By default this value is the number of points the line will sampled at.
+        If you want the line to also come out checkered, use a tuple.
+        For example, for a line made of 24 points with 4 checker points on each
+        cylinder, pass the tuple (4, 24).
 
     Examples
     --------
