@@ -10,7 +10,7 @@ is exposed to Manim's global name space):
 
     >>> from manim import DVIPSNAMES
     >>> DVIPSNAMES.DARKORCHID
-    ManimColor("#A4538A")
+    ManimColor('#A4538A')
 
 List of Color Constants
 -----------------------

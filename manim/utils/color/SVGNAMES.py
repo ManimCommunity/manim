@@ -10,7 +10,7 @@ is exposed to Manim's global name space):
 
     >>> from manim import SVGNAMES
     >>> SVGNAMES.LIGHTCORAL
-    ManimColor("##EF7F7F")
+    ManimColor('#EF7F7F')
 
 List of Color Constants
 -----------------------
