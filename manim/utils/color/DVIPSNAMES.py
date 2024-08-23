@@ -15,8 +15,8 @@ is exposed to Manim's global name space):
 List of Color Constants
 -----------------------
 
-These hex values (taken from https://en.wikibooks.org/wiki/LaTeX/Colors#The_68_standard_colors_known_to_dvips)
-are intended to simulate the ones defined in the DVIPS driver:
+These hex values are derived from those specified in the `xcolor` package
+documentation (see https://ctan.org/pkg/xcolor):
 
 .. automanimcolormodule:: manim.utils.color.DVIPSNAMES
 
