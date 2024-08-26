@@ -8,6 +8,7 @@ import json
 import shutil
 from pathlib import Path
 from queue import Queue
+from tempfile import NamedTemporaryFile
 from threading import Thread
 from typing import TYPE_CHECKING, Any
 
@@ -330,7 +331,32 @@ class SceneFileWriter:
 
         """
         file_path = get_full_sound_file_path(sound_file)
-        new_segment = AudioSegment.from_file(file_path)
+        # we assume files with .wav / .raw suffix are actually
+        # .wav and .raw files, respectively.
+        if file_path.suffix not in (".wav", ".raw"):
+            # we need to pass delete=False to work on Windows
+            # TODO: figure out a way to cache the wav file generated (benchmark needed)
+            wav_file_path = NamedTemporaryFile(suffix=".wav", delete=False)
+            with (
+                av.open(file_path) as input_container,
+                av.open(wav_file_path, "w", format="wav") as output_container,
+            ):
+                for audio_stream in input_container.streams.audio:
+                    output_stream = output_container.add_stream("pcm_s16le")
+                    for frame in input_container.decode(audio_stream):
+                        for packet in output_stream.encode(frame):
+                            output_container.mux(packet)
+
+                    for packet in output_stream.encode():
+                        output_container.mux(packet)
+
+            new_segment = AudioSegment.from_file(wav_file_path.name)
+            logger.info(f"Automatically converted {file_path} to .wav")
+            wav_file_path.close()
+            Path(wav_file_path.name).unlink()
+        else:
+            new_segment = AudioSegment.from_file(file_path)
+
         if gain:
             new_segment = new_segment.apply_gain(gain)
         self.add_audio_segment(new_segment, time, **kwargs)
