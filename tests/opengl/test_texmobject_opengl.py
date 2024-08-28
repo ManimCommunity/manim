@@ -4,21 +4,21 @@ from pathlib import Path
 
 import pytest
 
-from manim import MathTex, SingleStringMathTex, Tex, config
+from manim import MathTex, SingleStringMathTex, Tex
 
 
-def test_MathTex(using_opengl_renderer):
+def test_MathTex(config, using_opengl_renderer):
     MathTex("a^2 + b^2 = c^2")
     assert Path(config.media_dir, "Tex", "e4be163a00cf424f.svg").exists()
 
 
-def test_SingleStringMathTex(using_opengl_renderer):
+def test_SingleStringMathTex(config, using_opengl_renderer):
     SingleStringMathTex("test")
     assert Path(config.media_dir, "Tex", "8ce17c7f5013209f.svg").exists()
 
 
 @pytest.mark.parametrize(  # : PT006
-    "text_input,length_sub",
+    ("text_input", "length_sub"),
     [("{{ a }} + {{ b }} = {{ c }}", 5), (r"\frac{1}{a+b\sqrt{2}}", 1)],
 )
 def test_double_braces_testing(using_opengl_renderer, text_input, length_sub):
@@ -26,7 +26,7 @@ def test_double_braces_testing(using_opengl_renderer, text_input, length_sub):
     assert len(t1.submobjects) == length_sub
 
 
-def test_tex(using_opengl_renderer):
+def test_tex(config, using_opengl_renderer):
     Tex("The horse does not eat cucumber salad.")
     assert Path(config.media_dir, "Tex", "c3945e23e546c95a.svg").exists()
 

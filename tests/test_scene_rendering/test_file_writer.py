@@ -81,7 +81,7 @@ def test_gif_writing(tmp_path, transparent):
 
 @pytest.mark.slow
 @pytest.mark.parametrize(
-    "format, transparent, codec, pixel_format",
+    ("format", "transparent", "codec", "pixel_format"),
     [
         ("mp4", False, "h264", "yuv420p"),
         ("mov", False, "h264", "yuv420p"),
@@ -143,6 +143,17 @@ def test_codecs(tmp_path, format, transparent, codec, pixel_format):
         else np.array(240, dtype=np.uint8)
     )
     np.testing.assert_allclose(first_frame[-1, -1], target_rgba_center, atol=5)
+
+
+def test_scene_with_non_raw_or_wav_audio(manim_caplog):
+    class SceneWithMP3(Scene):
+        def construct(self):
+            file_path = Path(__file__).parent / "click.mp3"
+            self.add_sound(file_path)
+            self.wait()
+
+    SceneWithMP3().render()
+    assert "click.mp3 to .wav" in manim_caplog.text
 
 
 @pytest.mark.slow

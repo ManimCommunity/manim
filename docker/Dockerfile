@@ -36,9 +36,9 @@ RUN pip install -r docs/requirements.txt
 
 ARG NB_USER=manimuser
 ARG NB_UID=1000
-ENV USER ${NB_USER}
-ENV NB_UID ${NB_UID}
-ENV HOME /manim
+ENV USER=${NB_USER}
+ENV NB_UID=${NB_UID}
+ENV HOME=/manim
 
 RUN adduser --disabled-password \
     --gecos "Default user" \

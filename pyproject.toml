@@ -14,7 +14,6 @@ classifiers= [
     "Topic :: Scientific/Engineering",
     "Topic :: Multimedia :: Video",
     "Topic :: Multimedia :: Graphics",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -62,15 +61,8 @@ jupyterlab = ["jupyterlab", "notebook"]
 gui = ["dearpygui"]
 
 [tool.poetry.group.dev.dependencies]
-black = ">=23.11,<25.0"
 flake8 = "^6.1.0"
-flake8-bugbear = "^23.11.28"
-flake8-builtins = "^2.2.0"
-flake8-comprehensions = "^3.7.0"
 flake8-docstrings = "^1.7.0"
-flake8-pytest-style = "^1.7.2"
-flake8-simplify = "^0.14.1"
-flake8-rst-docstrings = "^0.3.0"
 furo = "^2023.09.10"
 gitpython = "^3"
 isort = "^5.12.0"
@@ -137,16 +129,30 @@ fix = true
 
 [tool.ruff.lint]
 select = [
+  "A",
+  "B",
+  "C4",
   "E",
   "F",
   "I",
+  "PT",
+  "SIM",
   "UP",
 ]
 
 ignore = [
+  # mutable argument defaults (too many changes)
+  "B006",
+  # No function calls in defaults
+  # ignored because np.array() and straight_path()
+  "B008",
   # due to the import * used in manim
   "F403",
   "F405",
+  # fixtures not returning anything should have leading underscore
+  "PT004",
+  # Exception too broad (this would require lots of changes + re.escape) for little benefit
+  "PT011",
   # as recommended by https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules
   "E111",
   "E114",
@@ -159,6 +165,10 @@ dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = [
+  # flake8-builtins
+  "A",
+  # unused expression
+  "B018",
   # unused variable
   "F841",
   # from __future__ import annotations
@@ -176,6 +186,10 @@ dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
 [tool.ruff.lint.isort]
 required-imports = ["from __future__ import annotations"]
+
+[tool.ruff.lint.flake8-pytest-style]
+fixture-parentheses = false
+mark-parentheses = false
 
 [tool.ruff.format]
 docstring-code-format = true

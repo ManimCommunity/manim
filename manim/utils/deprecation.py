@@ -6,16 +6,17 @@ __all__ = ["deprecated", "deprecated_params"]
 
 
 import inspect
+import logging
 import re
 from collections.abc import Iterable
 from typing import Any, Callable
 
 from decorator import decorate, decorator
 
-from .. import logger
+logger = logging.getLogger("manim")
 
 
-def _get_callable_info(callable: Callable) -> tuple[str, str]:
+def _get_callable_info(callable_: Callable, /) -> tuple[str, str]:
     """Returns type and name of a callable.
 
     Parameters
@@ -29,8 +30,8 @@ def _get_callable_info(callable: Callable) -> tuple[str, str]:
         The type and name of the callable. Type can can be one of "class", "method" (for
         functions defined in classes) or "function"). For methods, name is Class.method.
     """
-    what = type(callable).__name__
-    name = callable.__qualname__
+    what = type(callable_).__name__
+    name = callable_.__qualname__
     if what == "function" and "." in name:
         what = "method"
     elif what != "function":
