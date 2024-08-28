@@ -405,7 +405,7 @@ A little bit later on, we will learn how to leverage the ``stop_condition`` para
 Transforming Mobjects
 =====================
 
-Manim allows us to smoothly transform one ``Mobject`` into another using ``Transform`` and ``ReplacementTransform``.
+Manim allows us to smoothly transform one :class:`.Mobject` into another using :class:`.Transform` and :class:`.ReplacementTransform`.
 ``Transform(mob1, mob2)`` turns the attributes of ``mob1`` into the attributes of ``mob2``.
 
 .. manim:: TransformAnimation
@@ -421,10 +421,10 @@ Manim allows us to smoothly transform one ``Mobject`` into another using ``Trans
 ``Transform`` vs ``ReplacementTransform``
 -----------------------------------------
 
-While ``Transform(mob1, mob2)`` changes the attributes of ``mob1`` into the attributes of ``mob2`` by copying the values, ``ReplacementTransform(mob1, mob2)`` instead replaces ``mob1`` in the
+While :class:`Transform(mob1, mob2)` changes the attributes of ``mob1`` into the attributes of ``mob2`` by copying the values, :class:`ReplacementTransform(mob1, mob2)` instead replaces ``mob1`` in the
 scene with ``mob2``.
 
-Here is the same scene in the last section, but using ``ReplacementTransform``:
+Here is the same scene in the last section, but using :class:`.ReplacementTransform`:
 
 .. manim:: ReplacementTransformAnimation
 
@@ -457,7 +457,8 @@ Ultimately, the choice of which to use is up to the programmer. However, some ex
 ``.animate`` Syntax
 -------------------
 
-One of the most powerful features of Manim is it's ``.animate`` syntax. It allows you to animate the changing of an attribute of a mobject. You can see an example below:
+One of the most powerful features of Manim is it's :attr:`~.Mobject.animate` syntax.
+It allows you to animate the changing of an attribute of a mobject. You can see an example below:
 
 .. manim:: AnimateSyntaxExample
 
