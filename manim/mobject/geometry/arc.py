@@ -897,17 +897,15 @@ class Sector(AnnularSector):
 
         class ExampleSector(Scene):
             def construct(self):
-                sector = Sector(outer_radius=2, inner_radius=1)
-                sector2 = Sector(outer_radius=2.5, inner_radius=0.8).move_to([-3, 0, 0])
+                sector = Sector(radius=2)
+                sector2 = Sector(radius=2.5, angle=60*DEGREES).move_to([-3, 0, 0])
                 sector.set_color(RED)
                 sector2.set_color(PINK)
                 self.add(sector, sector2)
     """
 
-    def __init__(
-        self, outer_radius: float = 1, inner_radius: float = 0, **kwargs
-    ) -> None:
-        super().__init__(inner_radius=inner_radius, outer_radius=outer_radius, **kwargs)
+    def __init__(self, radius: float = 1, **kwargs) -> None:
+        super().__init__(inner_radius = 0, outer_radius = radius, **kwargs)
 
 
 class Annulus(Circle):
