@@ -382,6 +382,10 @@ As an example, check out the rate function below.
 
           self.play(Create(Circle(), rate_func=there_and_back_three), run_time=4)
 
+This rate function will spend 1/3rd of the time finishing the animate, the next 1/3rd of the time "undoing" the animation,
+and the final 1/3rd of the animation replaying the first 1/3rd. As you can see, it returns the amount of the animation
+completed as a value between 0 to 1.
+
 ----------------------
 The ``Wait`` Animation
 ----------------------

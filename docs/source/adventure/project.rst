@@ -14,7 +14,7 @@ A Basic Project
 Introduction
 ############
 Throughout this guide, we'll walk you through how to create a simple 30 second video about vector addition. If you don't
-already know what that is, it's recommended you watch `this<https://youtu.be/fNk_zzaMoSs?si=fQDML214IeNl0OZ1>`_ video
+already know what that is, it's recommended you watch `this <https://youtu.be/fNk_zzaMoSs?si=fQDML214IeNl0OZ1>`_ video
 by the original creator of manim, 3Blue1Brown.
 
 The next step is figuring out how the project should look: what content should it cover, in what order, etc. In this
@@ -27,27 +27,22 @@ In our case, we'll use the two vectors :math:`v_1\equiv\langle 2, 1\rangle` and 
 Algebraic Vector Addition
 #########################
 
-We'll start with the basic setup needed for every manim video. Create
-a new file called `vector_addition.py`, and paste the contents here.
+We'll start with the basic setup needed for every manim video.
+To do this, we can use the manim cli to speed stuff up. In the terminal,
+run::
 
-.. code-block:: python
+  manim init project VectorAddition
 
-    from manim import *
+This should create a folder called ``VectorAddition`` with the basic setup.
 
+.. hint::
 
-    class VectorAddition(Scene):
-        def construct(self) -> None:
-            self.play(Create(Circle()))
+   You may want to open this folder in your IDE (like VS Code, or PyCharm).
 
+You will have a ``manim.cfg`` file, where you configuration will be stored, and a ``main.py`` script.
+The ``main.py`` script is where you will write your scenes.
 
-    # if you're used to rendering from the terminal,
-    # this way you can just run the python file instead
-    # of executing manim -p vector_addition.py VectorAddition
-    with tempconfig({"preview": True}):
-        VectorAddition().render()
-
-If you did it correctly, running the python file (either through your IDE
-or through the terminal with ``python3 vector_addition.py``) should render a scene
+If you did it correctly, running the python file with ``manim -p main.py`` should render a scene
 with a circle being created:
 
 .. manim:: CreateCircle
@@ -55,7 +50,16 @@ with a circle being created:
 
    class CreateCircle(Scene):
       def construct(self):
-          self.play(Create(Circle()))
+          circle = Circle()
+          circle.set_fill(PINK, opacity=0.5)
+
+          square = Square()
+          square.flip(RIGHT)
+          square.rotate(-3 * TAU / 8)
+
+          self.play(Create(square))
+          self.play(Transform(square, circle))
+          self.play(FadeOut(square))
 
 ============
 Introduction
