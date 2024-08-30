@@ -905,7 +905,7 @@ class Sector(AnnularSector):
     """
 
     def __init__(self, radius: float = 1, **kwargs) -> None:
-        super().__init__(inner_radius = 0, outer_radius = radius, **kwargs)
+        super().__init__(inner_radius=0, outer_radius=radius, **kwargs)
 
 
 class Annulus(Circle):
