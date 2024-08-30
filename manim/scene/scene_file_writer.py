@@ -7,6 +7,9 @@ __all__ = ["SceneFileWriter"]
 import json
 import shutil
 from pathlib import Path
+from queue import Queue
+from tempfile import NamedTemporaryFile
+from threading import Thread
 from typing import TYPE_CHECKING, Any
 
 import av
@@ -16,6 +19,7 @@ from PIL import Image
 from pydub import AudioSegment
 
 from manim import __version__
+from manim.typing import PixelArray
 
 from .. import config, logger
 from .._config.logger_utils import set_file_logger
@@ -323,7 +327,32 @@ class SceneFileWriter:
 
         """
         file_path = get_full_sound_file_path(sound_file)
-        new_segment = AudioSegment.from_file(file_path)
+        # we assume files with .wav / .raw suffix are actually
+        # .wav and .raw files, respectively.
+        if file_path.suffix not in (".wav", ".raw"):
+            # we need to pass delete=False to work on Windows
+            # TODO: figure out a way to cache the wav file generated (benchmark needed)
+            wav_file_path = NamedTemporaryFile(suffix=".wav", delete=False)
+            with (
+                av.open(file_path) as input_container,
+                av.open(wav_file_path, "w", format="wav") as output_container,
+            ):
+                for audio_stream in input_container.streams.audio:
+                    output_stream = output_container.add_stream("pcm_s16le")
+                    for frame in input_container.decode(audio_stream):
+                        for packet in output_stream.encode(frame):
+                            output_container.mux(packet)
+
+                    for packet in output_stream.encode():
+                        output_container.mux(packet)
+
+            new_segment = AudioSegment.from_file(wav_file_path.name)
+            logger.info(f"Automatically converted {file_path} to .wav")
+            wav_file_path.close()
+            Path(wav_file_path.name).unlink()
+        else:
+            new_segment = AudioSegment.from_file(file_path)
+
         if gain:
             new_segment = new_segment.apply_gain(gain)
         self.add_audio_segment(new_segment, time, **kwargs)
@@ -355,6 +384,31 @@ class SceneFileWriter:
         if write_to_movie() and allow_write:
             self.close_partial_movie_stream()
 
+    def listen_and_write(self):
+        """For internal use only: blocks until new frame is available on the queue."""
+        while True:
+            num_frames, frame_data = self.queue.get()
+            if frame_data is None:
+                break
+
+            self.encode_and_write_frame(frame_data, num_frames)
+
+    def encode_and_write_frame(self, frame: PixelArray, num_frames: int) -> None:
+        """
+        For internal use only: takes a given frame in ``np.ndarray`` format and
+        write it to the stream
+        """
+        for _ in range(num_frames):
+            # Notes: precomputing reusing packets does not work!
+            # I.e., you cannot do `packets = encode(...)`
+            # and reuse it, as it seems that `mux(...)`
+            # consumes the packet.
+            # The same issue applies for `av_frame`,
+            # reusing it renders weird-looking frames.
+            av_frame = av.VideoFrame.from_ndarray(frame, format="rgba")
+            for packet in self.video_stream.encode(av_frame):
+                self.video_container.mux(packet)
+
     def write_frame(
         self, frame_or_renderer: np.ndarray | OpenGLRenderer, num_frames: int = 1
     ):
@@ -375,16 +429,9 @@ class SceneFileWriter:
                 if config.renderer == RendererType.OPENGL
                 else frame_or_renderer
             )
-            for _ in range(num_frames):
-                # Notes: precomputing reusing packets does not work!
-                # I.e., you cannot do `packets = encode(...)`
-                # and reuse it, as it seems that `mux(...)`
-                # consumes the packet.
-                # The same issue applies for `av_frame`,
-                # reusing it renders weird-looking frames.
-                av_frame = av.VideoFrame.from_ndarray(frame, format="rgba")
-                for packet in self.video_stream.encode(av_frame):
-                    self.video_container.mux(packet)
+
+            msg = (num_frames, frame)
+            self.queue.put(msg)
 
         if is_png_format() and not config["dry_run"]:
             image: Image = (
@@ -426,7 +473,7 @@ class SceneFileWriter:
         image.save(self.image_file_path)
         self.print_file_ready_message(self.image_file_path)
 
-    def finish(self):
+    def finish(self) -> None:
         """
         Finishes writing to the FFMPEG buffer or writing images
         to output directory.
@@ -436,8 +483,6 @@ class SceneFileWriter:
         frame in the default image directory.
         """
         if write_to_movie():
-            if hasattr(self, "writing_process"):
-                self.writing_process.terminate()
             self.combine_to_movie()
             if config.save_sections:
                 self.combine_to_section_videos()
@@ -451,7 +496,7 @@ class SceneFileWriter:
         if self.subcaptions:
             self.write_subcaption_file()
 
-    def open_partial_movie_stream(self, file_path=None):
+    def open_partial_movie_stream(self, file_path=None) -> None:
         """Open a container holding a video stream.
 
         This is used internally by Manim initialize the container holding
@@ -495,13 +540,20 @@ class SceneFileWriter:
             self.video_container = video_container
             self.video_stream = stream
 
-    def close_partial_movie_stream(self):
+            self.queue: Queue[tuple[int, PixelArray | None]] = Queue()
+            self.writer_thread = Thread(target=self.listen_and_write, args=())
+            self.writer_thread.start()
+
+    def close_partial_movie_stream(self) -> None:
         """Close the currently opened video container.
 
         Used internally by Manim to first flush the remaining packages
         in the video stream holding a partial file, and then close
         the corresponding container.
         """
+        self.queue.put((-1, None))
+        self.writer_thread.join()
+
         for packet in self.video_stream.encode():
             self.video_container.mux(packet)
 

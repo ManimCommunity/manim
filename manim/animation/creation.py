@@ -250,7 +250,9 @@ class DrawBorderThenFill(Animation):
 
     def _typecheck_input(self, vmobject: VMobject | OpenGLVMobject) -> None:
         if not isinstance(vmobject, (VMobject, OpenGLVMobject)):
-            raise TypeError("DrawBorderThenFill only works for vectorized Mobjects")
+            raise TypeError(
+                f"{self.__class__.__name__} only works for vectorized Mobjects"
+            )
 
     def begin(self) -> None:
         self.outline = self.get_outline()
@@ -281,7 +283,7 @@ class DrawBorderThenFill(Animation):
         alpha: float,
     ) -> None:  # Fixme: not matching the parent class? What is outline doing here?
         index: int
-        subalpha: int
+        subalpha: float
         index, subalpha = integer_interpolate(0, 2, alpha)
         if index == 0:
             submobject.pointwise_become_partial(outline, 0, subalpha)
