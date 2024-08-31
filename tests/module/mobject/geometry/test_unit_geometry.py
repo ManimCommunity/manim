@@ -43,4 +43,4 @@ def test_changing_Square_side_length_updates_the_square_appropriately():
 
 def test_Square_side_length_consistent_after_scale_and_rotation():
     sq = Square(side_length=1).scale(3).rotate(np.pi / 4)
-    assert sq.side_length == 3
+    assert np.isclose(sq.side_length, 3)
