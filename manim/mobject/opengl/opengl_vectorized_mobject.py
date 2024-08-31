@@ -290,17 +290,6 @@ class OpenGLVMobject(OpenGLMobject):
                 sm1.match_style(sm2)
         return self
 
-    def match_color(self, mobject: OpenGLMobject, recurse=True) -> Self:
-        if recurse:
-            for m in self.submobjects:
-                m.match_color(mobject, recurse=True)
-        if isinstance(mobject, OpenGLVMobject):
-            self.set_fill(color=mobject.get_fill_color(), recurse=recurse)
-            self.set_stroke(color=mobject.get_stroke_color(), recurse=recurse)
-        else:
-            self.set_color(mobject.get_color(), recurse=recurse)
-        return self
-
     def set_color(self, color, opacity=None, recurse=True) -> Self:
         self.set_fill(color, opacity=opacity, recurse=recurse)
         self.set_stroke(color, opacity=opacity, recurse=recurse)
