@@ -4,7 +4,7 @@ import logging
 
 import numpy as np
 
-from manim import BackgroundRectangle, Circle, Sector
+from manim import BackgroundRectangle, Circle, Sector, Square
 
 logger = logging.getLogger(__name__)
 
@@ -25,3 +25,22 @@ def test_BackgroundRectangle(manim_caplog):
         "Argument {'hello': 'world'} is ignored in BackgroundRectangle.set_style."
         in manim_caplog.text
     )
+
+
+def test_Square_side_length_reflets_correct_width_and_height():
+    sq = Square(side_length=1).scale(3)
+    assert sq.side_length == 3
+    assert sq.height == 3
+    assert sq.width == 3
+
+
+def test_changing_Square_side_length_updates_the_square_appropriately():
+    sq = Square(side_length=1)
+    sq.side_length = 3
+    assert sq.height == 3
+    assert sq.width == 3
+
+
+def test_Square_side_length_consistent_after_scale_and_rotation():
+    sq = Square(side_length=1).scale(3).rotate(np.pi / 4)
+    assert np.isclose(sq.side_length, 3)
