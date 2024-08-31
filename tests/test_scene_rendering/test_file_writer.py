@@ -137,6 +137,17 @@ def test_codecs(tmp_path, config, format, transparent, codec, pixel_format):
     np.testing.assert_allclose(first_frame[-1, -1], target_rgba_center, atol=5)
 
 
+def test_scene_with_non_raw_or_wav_audio(manim_caplog):
+    class SceneWithMP3(Scene):
+        def construct(self):
+            file_path = Path(__file__).parent / "click.mp3"
+            self.add_sound(file_path)
+            self.wait()
+
+    SceneWithMP3().render()
+    assert "click.mp3 to .wav" in manim_caplog.text
+
+
 @pytest.mark.slow
 def test_unicode_partial_movie(tmpdir, simple_scenes_path):
     # Characters that failed for a user on Windows

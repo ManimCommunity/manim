@@ -289,7 +289,7 @@ class DrawBorderThenFill(Animation):
         alpha: float,
     ) -> None:
         index: int
-        subalpha: int
+        subalpha: float
         index, subalpha = integer_interpolate(0, 2, alpha)
         if index == 0:
             submobject.pointwise_become_partial(outline, 0, subalpha)
