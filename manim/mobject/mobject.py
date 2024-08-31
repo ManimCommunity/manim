@@ -1318,11 +1318,12 @@ class Mobject:
 
     def apply_function(self, function: MappingFunction, **kwargs) -> Self:
         # Default to applying matrix about the origin, not mobjects center
-        if len(kwargs) == 0:
+        if not kwargs:
             kwargs["about_point"] = ORIGIN
         self.apply_points_function_about_point(
             lambda points: np.apply_along_axis(function, 1, points), **kwargs
         )
+        self.note_changed_family()
         return self
 
     def apply_function_to_position(self, function: MappingFunction) -> Self:

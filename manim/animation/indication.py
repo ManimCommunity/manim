@@ -394,6 +394,7 @@ class ApplyWave(Homotopy):
         time_width: float = 1,
         ripples: int = 1,
         run_time: float = 2,
+        introducer: bool = True,
         **kwargs,
     ) -> None:
         x_min = mobject.get_left()[0]
@@ -468,7 +469,9 @@ class ApplyWave(Homotopy):
             nudge = wave(wave_phase) * vect
             return np.array([x, y, z]) + nudge
 
-        super().__init__(homotopy, mobject, run_time=run_time, **kwargs)
+        super().__init__(
+            homotopy, mobject, run_time=run_time, introducer=introducer, **kwargs
+        )
 
 
 class Wiggle(Animation):
