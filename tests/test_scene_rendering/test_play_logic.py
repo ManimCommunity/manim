@@ -27,7 +27,6 @@ from .simple_scenes import (
 @pytest.mark.parametrize("frame_rate", argvalues=[15, 30, 60])
 def test_t_values(config, using_temp_config, disabling_caching, frame_rate):
     """Test that the framerate corresponds to the number of times animations are updated"""
-
     config.frame_rate = frame_rate
     manager = Manager(SquareToCircle)
     scene = manager.scene
