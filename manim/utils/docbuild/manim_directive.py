@@ -174,7 +174,7 @@ class ManimDirective(Directive):
         # Rendering is skipped if the tag skip-manim is present,
         # or if we are making the pot-files
         should_skip = (
-            "skip-manim" in self.state.document.settings.env.app.builder.tags.tags
+            "skip-manim" in self.state.document.settings.env.app.builder.tags
             or self.state.document.settings.env.app.builder.name == "gettext"
         )
         if should_skip:
