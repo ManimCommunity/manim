@@ -7,8 +7,8 @@ __module_test__ = "tex_mobject"
 @frames_comparison
 def test_color_inheritance(scene):
     """Test that Text and MarkupText correctly inherit colour from
-    their parent class."""
-
+    their parent class.
+    """
     VMobject.set_default(color=RED)
     tex = Tex("test color inheritance")
     mathtex = MathTex("test color inheritance")

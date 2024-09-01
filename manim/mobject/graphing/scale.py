@@ -90,7 +90,6 @@ class LinearBase(_ScaleBase):
         scale_factor
             The slope of the linear function, by default 1.0
         """
-
         super().__init__()
         self.scale_factor = scale_factor
 
@@ -177,7 +176,6 @@ class LogBase(_ScaleBase):
         base_config
             Additional arguments to be passed to :class:`~.Integer`.
         """
-
         # uses `format` syntax to control the number of decimal places.
         tex_labels = [
             Integer(
