@@ -431,9 +431,11 @@ class MathTex(SingleStringMathTex):
 
 
 class Tex(MathTex):
-    r"""A string compiled with LaTeX in normal mode. The color can be set using
-    the `color` argument. Any parts of the `tex_string` that are colored by the
-    commands`\color` or `\textcolor` will retain their original color.
+    r"""A string compiled with LaTeX in normal mode.
+    
+    The color can be set using
+    the ``color`` argument. Any parts of the ``tex_string`` that are colored by the
+    TeX commands ``\color`` or ``\textcolor`` will retain their original color.
 
     Tests
     -----
