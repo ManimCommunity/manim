@@ -133,6 +133,7 @@ select = [
   "E",
   "F",
   "I",
+  "PGH",
   "PT",
   "SIM",
   "UP",
@@ -202,7 +203,3 @@ convention = "numpy"
 
 [tool.ruff.format]
 docstring-code-format = true
-
-[tool.codespell]
-write-changes = true
-ignore-words-list = ["medias", "nam"]
