@@ -323,7 +323,6 @@ class ManimConfig(MutableMapping):
 
     def _warn_about_config_options(self) -> None:
         """Warns about incorrect config options, or permutations of config options."""
-
         logger = logging.getLogger("manim")
         if self.format == "webm":
             logger.warning(
@@ -385,7 +384,6 @@ class ManimConfig(MutableMapping):
         :meth:`~ManimConfig.digest_parser`
 
         """
-
         if isinstance(obj, ManimConfig):
             self._d.update(obj._d)
             if obj.tex_template:

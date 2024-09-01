@@ -294,9 +294,7 @@ class ReplacementTransform(Transform):
 
 
 class TransformFromCopy(Transform):
-    """
-    Performs a reversed Transform
-    """
+    """Performs a reversed Transform"""
 
     def __init__(
         self, mobject: OpenGLMobject, target_mobject: OpenGLMobject, **kwargs

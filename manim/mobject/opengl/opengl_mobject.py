@@ -24,7 +24,6 @@ from manim.event_handler.event_listener import EventListener
 from manim.event_handler.event_type import EventType
 from manim.utils.bezier import integer_interpolate, interpolate
 from manim.utils.color import *
-from manim.utils.deprecation import deprecated
 
 # from ..utils.iterables import batch_by_property
 from manim.utils.iterables import (
@@ -261,16 +260,28 @@ class OpenGLMobject:
     def init_colors(self):
         """Initializes the colors.
 
-        Gets called upon creation"""
+        Gets called upon creation
+        """
         self.set_color(self.color, self.opacity)
 
     def init_points(self):
         """Initializes :attr:`points` and therefore the shape.
 
         Gets called upon creation. This is an empty method that can be implemented by
-        subclasses."""
+        subclasses.
+        """
         # Typically implemented in subclass, unless purposefully left blank
         pass
+
+    def set_data(self, data: dict[str, Any]) -> Self:
+        for key in data:
+            self.data[key] = data[key].copy()
+        return self
+
+    def set_uniforms(self, uniforms: dict[str, Any]) -> Self:
+        for key in uniforms:
+            self.uniforms[key] = uniforms[key]  # Copy?
+        return self
 
     # https://github.com/python/typing/issues/802
     # so we hack around it by doing | Self
@@ -486,7 +497,6 @@ class OpenGLMobject:
         :meth:`length_over_dim`
 
         """
-
         # Get the length across the X dimension
         return self.length_over_dim(0)
 
@@ -524,7 +534,6 @@ class OpenGLMobject:
         :meth:`length_over_dim`
 
         """
-
         # Get the length across the Y dimension
         return self.length_over_dim(1)
 
@@ -545,7 +554,6 @@ class OpenGLMobject:
         :meth:`length_over_dim`
 
         """
-
         # Get the length across the Z dimension
         return self.length_over_dim(2)
 
@@ -1664,7 +1672,7 @@ class OpenGLMobject:
         return self
 
     def _handle_scale_side_effects(self, scale_factor: float | np.ndarray) -> None:
-        """In case subclasses, such as DecimalNumber, need to make
+        r"""In case subclasses, such as DecimalNumber, need to make
         any other changes when the size gets altered by scaling.
         This method can be overridden in subclasses.
 
@@ -2798,10 +2806,6 @@ class OpenGLMobject:
             caller_name = sys._getframe(1).f_code.co_name
             raise Exception(message.format(caller_name))
 
-    @deprecated(
-        since="v0.17.2",
-        message="The usage of this method is discouraged please set attributes directly",
-    )
     def set(self, **kwargs) -> Self:
         """Sets attributes.
 
@@ -2830,7 +2834,6 @@ class OpenGLMobject:
 
 
         """
-
         for attr, value in kwargs.items():
             setattr(self, attr, value)
 

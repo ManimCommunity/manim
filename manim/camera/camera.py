@@ -41,13 +41,6 @@ class Camera(OpenGLMobject):
     def get_orientation(self):
         return Rotation.from_quat(self.orientation)
 
-    def to_default_state(self):
-        self.center()
-        self.set_height(config.frame_width)
-        self.set_width(config.frame_height)
-        self.set_orientation(Rotation.identity())
-        return self
-
     def get_euler_angles(self):
         return self.get_orientation().as_euler("zxz")[::-1]
 
@@ -63,8 +56,8 @@ class Camera(OpenGLMobject):
     def get_inverse_camera_rotation_matrix(self):
         return self.get_orientation().as_matrix().T
 
-    def rotate(self, angle: float, axis: np.ndarray = OUT, **kwargs):  # type: ignore
-        rot = Rotation.from_rotvec(axis * normalize(axis))  # type: ignore
+    def rotate(self, angle: float, axis: np.ndarray = OUT, **kwargs):
+        rot = Rotation.from_rotvec(axis * normalize(axis))
         self.set_orientation(rot * self.get_orientation())
 
     def set_euler_angles(

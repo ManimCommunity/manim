@@ -74,7 +74,7 @@ render_options = option_group(
         "--quality",
         default=None,
         type=Choice(
-            list(reversed([q["flag"] for q in QUALITIES.values() if q["flag"]])),  # type: ignore
+            reversed([q["flag"] for q in QUALITIES.values() if q["flag"]]),  # type: ignore[arg-type]
             case_sensitive=False,
         ),
         help="Render quality at the follow resolution framerates, respectively: "

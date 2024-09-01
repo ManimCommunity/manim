@@ -163,9 +163,9 @@ class ManimColor:
             length = len(value)
             if all(isinstance(x, float) for x in value):
                 if length == 3:
-                    self._internal_value = ManimColor._internal_from_rgb(value, alpha)  # type: ignore
+                    self._internal_value = ManimColor._internal_from_rgb(value, alpha)  # type: ignore[arg-type]
                 elif length == 4:
-                    self._internal_value = ManimColor._internal_from_rgba(value)  # type: ignore
+                    self._internal_value = ManimColor._internal_from_rgba(value)  # type: ignore[arg-type]
                 else:
                     raise ValueError(
                         f"ManimColor only accepts lists/tuples/arrays of length 3 or 4, not {length}"
@@ -173,11 +173,11 @@ class ManimColor:
             else:
                 if length == 3:
                     self._internal_value = ManimColor._internal_from_int_rgb(
-                        value,  # type: ignore
+                        value,  # type: ignore[arg-type]
                         alpha,
                     )
                 elif length == 4:
-                    self._internal_value = ManimColor._internal_from_int_rgba(value)  # type: ignore
+                    self._internal_value = ManimColor._internal_from_int_rgba(value)  # type: ignore[arg-type]
                 else:
                     raise ValueError(
                         f"ManimColor only accepts lists/tuples/arrays of length 3 or 4, not {length}"

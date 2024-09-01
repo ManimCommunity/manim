@@ -165,7 +165,6 @@ class Top:
     @deprecated(since="0.8.0", message="This method is useless.")
     def mid_func(self):
         """Middle function in Top."""
-
         pass
 
     @deprecated(until="1.4.0", replacement="Top.NewNested")
@@ -180,7 +179,6 @@ class Top:
         @deprecated(since="1.0.0", until="12/25/2025")
         def nested_func(self):
             """Nested function in Top.NewNested."""
-
             pass
 
     class Bottom:

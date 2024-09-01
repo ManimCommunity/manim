@@ -98,7 +98,7 @@ class _Fade(Transform):
 
 
 class FadeIn(_Fade):
-    """Fade in :class:`~.OpenGLMobject` s.
+    r"""Fade in :class:`~.OpenGLMobject` s.
 
     Parameters
     ----------
@@ -123,7 +123,7 @@ class FadeIn(_Fade):
                 dot = Dot(UP * 2 + LEFT)
                 self.add(dot)
                 tex = Tex(
-                    "FadeIn with ", "shift ", " or target\\_position", " and scale"
+                    "FadeIn with ", "shift ", r" or target\_position", " and scale"
                 ).scale(1)
                 animations = [
                     FadeIn(tex[0]),
@@ -146,7 +146,7 @@ class FadeIn(_Fade):
 
 
 class FadeOut(_Fade):
-    """Fade out :class:`~.OpenGLMobject` s.
+    r"""Fade out :class:`~.OpenGLMobject` s.
 
     Parameters
     ----------

@@ -140,13 +140,10 @@ class Scene:
         )
 
     def tear_down(self) -> None:
-        """
-        This method is used to clean up scenes
-        """
+        """This method is used to clean up scenes"""
 
     def find_sections(self) -> list[SceneSection]:
         """Find all sections in a :class:`.Scene`"""
-
         sections: list[SceneSection] = [
             bound
             for _, bound in inspect.getmembers(

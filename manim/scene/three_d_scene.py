@@ -86,7 +86,6 @@ class ThreeDScene(Scene):
             The new center of the camera frame in cartesian coordinates.
 
         """
-
         if phi is not None:
             self.renderer.camera.set_phi(phi)
         if theta is not None:
@@ -139,9 +138,7 @@ class ThreeDScene(Scene):
             raise ValueError("Invalid ambient rotation angle.") from e
 
     def stop_ambient_camera_rotation(self, about="theta"):
-        """
-        This method stops all ambient camera rotation.
-        """
+        """This method stops all ambient camera rotation."""
         about: str = about.lower()
         try:
             if config.renderer == RendererType.CAIRO:
@@ -205,9 +202,7 @@ class ThreeDScene(Scene):
         self.add(self.renderer.camera.phi_tracker)
 
     def stop_3dillusion_camera_rotation(self):
-        """
-        This method stops all illusion camera rotations.
-        """
+        """This method stops all illusion camera rotations."""
         self.renderer.camera.theta_tracker.clear_updaters()
         self.remove(self.renderer.camera.theta_tracker)
         self.renderer.camera.phi_tracker.clear_updaters()
@@ -546,7 +541,5 @@ class SpecialThreeDScene(ThreeDScene):
         return self.default_angled_camera_position
 
     def set_camera_to_default_position(self):
-        """
-        Sets the camera to its default position.
-        """
+        """Sets the camera to its default position."""
         self.set_camera_orientation(**self.default_angled_camera_position)

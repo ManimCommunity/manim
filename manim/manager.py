@@ -129,7 +129,6 @@ class Manager(Generic[Scene_co]):
 
     def setup(self) -> None:
         """Set up processes and manager"""
-
         self.scene.setup()
 
         # these are used for making sure it feels like the correct
@@ -212,7 +211,6 @@ class Manager(Generic[Scene_co]):
 
     def tear_down(self) -> None:
         """Tear down the scene and the window."""
-
         self.scene.tear_down()
 
         if self.window is not None:
@@ -221,7 +219,6 @@ class Manager(Generic[Scene_co]):
 
     def _interact(self) -> None:
         """Live interaction with the Window"""
-
         if self.window is None:
             return
         logger.info(
@@ -272,7 +269,6 @@ class Manager(Generic[Scene_co]):
         slow the window down for the correct amount of time, such
         as during a wait animation.
         """
-
         if self.window is None:
             return
 
@@ -294,7 +290,6 @@ class Manager(Generic[Scene_co]):
 
     def _play(self, *animations: AnimationProtocol) -> None:
         """Play a bunch of animations"""
-
         self.scene.pre_play()
 
         if self.window is not None:
@@ -347,7 +342,6 @@ class Manager(Generic[Scene_co]):
         self, total: float, description: str, **kwargs: Any
     ) -> contextlib.AbstractContextManager[ProgressBarProtocol]:
         """Create a progressbar"""
-
         if not config.progress_bar:
             return contextlib.nullcontext(NullProgressBar())
 
@@ -450,7 +444,6 @@ class Manager(Generic[Scene_co]):
             :meth:`.FileWriter.add_partial_movie_file` have not been called. Do NOT
             use this to write a single frame!
         """
-
         self.renderer.render(state)
 
         should_write = write_frame if write_frame is not None else self._write_files
@@ -459,14 +452,12 @@ class Manager(Generic[Scene_co]):
 
     def write_frame(self) -> None:
         """Take a frame from the renderer and write it in the file writer."""
-
         frame = self.renderer.get_pixels()
         self.file_writer.write_frame(frame)
 
 
 def _calc_time_progression(run_time: float) -> npt.NDArray[np.float64]:
     """Compute the time values at which to evaluate the animation"""
-
     return np.arange(0, run_time, 1 / config.frame_rate)
 
 

@@ -542,7 +542,6 @@ def split_bezier(points: BezierPoints, t: float) -> Point3D_Array:
     :class:`~.Point3D_Array`
         An array containing the control points defining the two Bézier curves.
     """
-
     points = np.asarray(points)
     N, dim = points.shape
     degree = N - 1
@@ -1115,7 +1114,7 @@ def match_interpolate(
     return interpolate(
         new_start,
         new_end,
-        old_alpha,  # type: ignore
+        old_alpha,  # type: ignore[arg-type]
     )
 
 
@@ -1931,7 +1930,7 @@ def proportions_along_bezier_curve_for_point(
             # Roots will be none, but in this specific instance, we don't need to consider that.
             continue
         bezier_polynom = np.polynomial.Polynomial(terms[::-1])
-        polynom_roots = bezier_polynom.roots()  # type: ignore
+        polynom_roots = bezier_polynom.roots()
         if len(polynom_roots) > 0:
             polynom_roots = np.around(polynom_roots, int(np.log10(1 / round_to)))
         roots.append(polynom_roots)
@@ -1939,7 +1938,7 @@ def proportions_along_bezier_curve_for_point(
     roots = [[root for root in rootlist if root.imag == 0] for rootlist in roots]
     # Get common roots
     # arg-type: ignore
-    roots = reduce(np.intersect1d, roots)  # type: ignore
+    roots = reduce(np.intersect1d, roots)
     result = np.asarray([r.real for r in roots if 0 <= r.real <= 1])
     return result
 
@@ -1971,7 +1970,6 @@ def point_lies_on_bezier(
     bool
         Whether the point lies on the curve.
     """
-
     roots = proportions_along_bezier_curve_for_point(point, control_points, round_to)
 
     return len(roots) > 0

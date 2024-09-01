@@ -217,7 +217,6 @@ def main(token, prior, tag, additional, outfile):
 
     ADDITIONAL includes additional PR(s) that have not been recognized automatically.
     """
-
     lst_release, cur_release = prior, tag
 
     github = Github(token)

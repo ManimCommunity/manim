@@ -623,7 +623,6 @@ def override_animation(
                 self.play(FadeIn(MySquare()))
 
     """
-
     _F = TypeVar("_F", bound=Callable)
 
     def decorator(func: _F) -> _F:

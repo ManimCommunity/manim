@@ -192,7 +192,6 @@ def rotate_vector(
     ValueError
         If vector is not of dimension 2 or 3.
     """
-
     if len(vector) > 3:
         raise ValueError("Vector must have the correct dimensions.")
     if len(vector) == 2:
@@ -248,9 +247,7 @@ def rotation_matrix(
     axis: np.ndarray,
     homogeneous: bool = False,
 ) -> np.ndarray:
-    """
-    Rotation in R^3 about a specified axis of rotation.
-    """
+    """Rotation in R^3 about a specified axis of rotation."""
     inhomogeneous_rotation_matrix = Rotation.from_rotvec(
         angle * normalize(np.array(axis))
     ).as_matrix()
@@ -356,7 +353,6 @@ def angle_between_vectors(v1: np.ndarray, v2: np.ndarray) -> float:
     float
         The angle between the vectors.
     """
-
     return 2 * np.arctan2(
         np.linalg.norm(normalize(v1) - normalize(v2)),
         np.linalg.norm(normalize(v1) + normalize(v2)),
@@ -493,7 +489,6 @@ def regular_vertices(
     start_angle : :class:`float`
         The angle the vertices start at.
     """
-
     if start_angle is None:
         start_angle = 0 if n % 2 == 0 else TAU / 4
 
@@ -734,7 +729,6 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
     list
         A list of indices giving a triangulation of a polygon.
     """
-
     rings = [list(range(e0, e1)) for e0, e1 in zip([0, *ring_ends], ring_ends)]
 
     def is_in(point, ring_id):

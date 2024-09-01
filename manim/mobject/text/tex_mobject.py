@@ -12,7 +12,7 @@ r"""Mobjects representing text rendered using LaTeX.
 
 from __future__ import annotations
 
-from manim.utils.color import ManimColor
+from manim.utils.color import BLACK, ManimColor, ParsableManimColor
 
 __all__ = [
     "SingleStringMathTex",
@@ -62,6 +62,7 @@ class SingleStringMathTex(SVGMobject):
         tex_environment: str = "align*",
         tex_template: TexTemplate | None = None,
         font_size: float = DEFAULT_FONT_SIZE,
+        color: ParsableManimColor | None = None,
         **kwargs,
     ):
         self._font_size = font_size
@@ -83,6 +84,7 @@ class SingleStringMathTex(SVGMobject):
             should_center=should_center,
             stroke_width=stroke_width,
             height=height,
+            color=color,
             path_string_config={
                 "should_subdivide_sharp_curves": True,
                 "should_remove_null_curves": True,
@@ -186,7 +188,6 @@ class SingleStringMathTex(SVGMobject):
         This is important when the braces in the TeX code are spread over
         multiple arguments as in, e.g., ``MathTex(r"e^{i", r"\tau} = 1")``.
         """
-
         # "\{" does not count (it's a brace literal), but "\\{" counts (it's a new line and then brace)
         num_lefts = tex.count("{") - tex.count("\\{") + tex.count("\\\\{")
         num_rights = tex.count("}") - tex.count("\\}") + tex.count("\\\\}")
@@ -204,6 +205,19 @@ class SingleStringMathTex(SVGMobject):
 
     def get_tex_string(self):
         return self.tex_string
+
+    def init_colors(self, propagate_colors=True):
+        for submobject in self.submobjects:
+            # needed to preserve original (non-black)
+            # TeX colors of individual submobjects
+            if submobject.color != BLACK:
+                continue
+            submobject.color = self.color
+            if config.renderer == RendererType.OPENGL:
+                submobject.init_colors()
+            elif config.renderer == RendererType.CAIRO:
+                submobject.init_colors(propagate_colors=propagate_colors)
+        return self
 
 
 class MathTex(SingleStringMathTex):
@@ -423,6 +437,10 @@ class MathTex(SingleStringMathTex):
 
 class Tex(MathTex):
     r"""A string compiled with LaTeX in normal mode.
+
+    The color can be set using
+    the ``color`` argument. Any parts of the ``tex_string`` that are colored by the
+    TeX commands ``\color`` or ``\textcolor`` will retain their original color.
 
     Tests
     -----

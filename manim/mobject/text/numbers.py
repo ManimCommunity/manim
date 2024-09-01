@@ -22,7 +22,7 @@ __all__ = ["DecimalNumber", "Integer", "Variable"]
 
 
 class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
-    """An mobject representing a decimal number.
+    r"""An mobject representing a decimal number.
 
     Parameters
     ----------
