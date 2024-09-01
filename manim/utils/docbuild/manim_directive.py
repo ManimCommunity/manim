@@ -92,7 +92,7 @@ from typing import TYPE_CHECKING, Any
 
 import jinja2
 from docutils import nodes
-from docutils.parsers.rst import Directive, directives  # type: ignore
+from docutils.parsers.rst import Directive, directives
 from docutils.statemachine import StringList
 
 from manim import QUALITIES
