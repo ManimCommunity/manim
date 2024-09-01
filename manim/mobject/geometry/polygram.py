@@ -104,7 +104,6 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
                    [-1., -1.,  0.],
                    [ 1., -1.,  0.]])
         """
-
         return self.get_start_anchors()
 
     def get_vertex_groups(self) -> np.ndarray[Point3D_Array]:
@@ -129,7 +128,6 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
                     [-1.,  1.,  0.],
                     [-2.,  0.,  0.]]])
         """
-
         vertex_groups = []
 
         group = []
@@ -204,7 +202,6 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
                     shapes.arrange(RIGHT)
                     self.add(shapes)
         """
-
         if radius == 0:
             return self
 
@@ -685,8 +682,15 @@ class Square(Rectangle):
     """
 
     def __init__(self, side_length: float = 2.0, **kwargs) -> None:
-        self.side_length = side_length
         super().__init__(height=side_length, width=side_length, **kwargs)
+
+    @property
+    def side_length(self):
+        return np.linalg.norm(self.get_vertices()[0] - self.get_vertices()[1])
+
+    @side_length.setter
+    def side_length(self, value):
+        self.scale(value / self.side_length)
 
 
 class RoundedRectangle(Rectangle):
