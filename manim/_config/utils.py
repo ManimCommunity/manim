@@ -372,7 +372,6 @@ class ManimConfig(MutableMapping):
         :meth:`~ManimConfig.digest_parser`
 
         """
-
         if isinstance(obj, ManimConfig):
             self._d.update(obj._d)
             if obj.tex_template:

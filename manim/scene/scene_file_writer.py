@@ -248,15 +248,11 @@ class SceneFileWriter:
 
     # Sound
     def init_audio(self):
-        """
-        Preps the writer for adding audio to the movie.
-        """
+        """Preps the writer for adding audio to the movie."""
         self.includes_sound = False
 
     def create_audio_segment(self):
-        """
-        Creates an empty, silent, Audio Segment.
-        """
+        """Creates an empty, silent, Audio Segment."""
         self.audio_segment = AudioSegment.silent()
 
     def add_audio_segment(
@@ -389,9 +385,7 @@ class SceneFileWriter:
             self.close_partial_movie_stream()
 
     def listen_and_write(self):
-        """
-        For internal use only: blocks until new frame is available on the queue.
-        """
+        """For internal use only: blocks until new frame is available on the queue."""
         while True:
             num_frames, frame_data = self.queue.get()
             if frame_data is None:
@@ -805,7 +799,6 @@ class SceneFileWriter:
 
     def combine_to_section_videos(self) -> None:
         """Concatenate partial movie files for each section."""
-
         self.finish_last_section()
         sections_index: list[dict[str, Any]] = []
         for section in self.sections:

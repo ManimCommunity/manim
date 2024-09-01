@@ -104,7 +104,6 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
                    [-1., -1.,  0.],
                    [ 1., -1.,  0.]])
         """
-
         return self.get_start_anchors()
 
     def get_vertex_groups(self) -> np.ndarray[Point3D_Array]:
@@ -129,7 +128,6 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
                     [-1.,  1.,  0.],
                     [-2.,  0.,  0.]]])
         """
-
         vertex_groups = []
 
         group = []
@@ -204,7 +202,6 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
                     shapes.arrange(RIGHT)
                     self.add(shapes)
         """
-
         if radius == 0:
             return self
 
