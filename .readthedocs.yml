@@ -3,7 +3,7 @@ build:
   os: ubuntu-22.04
 
   tools:
-    python: "3.11"
+    python: "3.12"
 
   apt_packages:
     - libpango1.0-dev
