@@ -1029,7 +1029,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         return VGroup(*self.lines)
 
     def get_value(self, degrees: bool = False) -> float:
-        """Get the value of an angle of the :class:`Angle` class.
+        r"""Get the value of an angle of the :class:`Angle` class.
 
         Parameters
         ----------
@@ -1054,7 +1054,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
 
                     angle = Angle(line1, line2, radius=0.4)
 
-                    value = DecimalNumber(angle.get_value(degrees=True), unit="^{\\circ}")
+                    value = DecimalNumber(angle.get_value(degrees=True), unit=r"^{\circ}")
                     value.next_to(angle, UR)
 
                     self.add(line1, line2, angle, value)

@@ -94,7 +94,7 @@ class _Fade(Transform):
 
 
 class FadeIn(_Fade):
-    """Fade in :class:`~.Mobject` s.
+    r"""Fade in :class:`~.Mobject` s.
 
     Parameters
     ----------
@@ -119,7 +119,7 @@ class FadeIn(_Fade):
                 dot = Dot(UP * 2 + LEFT)
                 self.add(dot)
                 tex = Tex(
-                    "FadeIn with ", "shift ", " or target\\_position", " and scale"
+                    "FadeIn with ", "shift ", r" or target\_position", " and scale"
                 ).scale(1)
                 animations = [
                     FadeIn(tex[0]),
@@ -142,7 +142,7 @@ class FadeIn(_Fade):
 
 
 class FadeOut(_Fade):
-    """Fade out :class:`~.Mobject` s.
+    r"""Fade out :class:`~.Mobject` s.
 
     Parameters
     ----------
@@ -166,7 +166,7 @@ class FadeOut(_Fade):
                 dot = Dot(UP * 2 + LEFT)
                 self.add(dot)
                 tex = Tex(
-                    "FadeOut with ", "shift ", " or target\\_position", " and scale"
+                    "FadeOut with ", "shift ", r" or target\_position", " and scale"
                 ).scale(1)
                 animations = [
                     FadeOut(tex[0]),

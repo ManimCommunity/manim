@@ -1067,7 +1067,7 @@ class MobjectTable(Table):
 
 
 class IntegerTable(Table):
-    """A specialized :class:`~.Table` mobject for use with :class:`~.Integer`.
+    r"""A specialized :class:`~.Table` mobject for use with :class:`~.Integer`.
 
     Examples
     --------
@@ -1081,14 +1081,14 @@ class IntegerTable(Table):
                     [[0,30,45,60,90],
                     [90,60,45,30,0]],
                     col_labels=[
-                        MathTex("\\\\frac{\\sqrt{0}}{2}"),
-                        MathTex("\\\\frac{\\sqrt{1}}{2}"),
-                        MathTex("\\\\frac{\\sqrt{2}}{2}"),
-                        MathTex("\\\\frac{\\sqrt{3}}{2}"),
-                        MathTex("\\\\frac{\\sqrt{4}}{2}")],
-                    row_labels=[MathTex("\\sin"), MathTex("\\cos")],
+                        MathTex(r"\frac{\sqrt{0}}{2}"),
+                        MathTex(r"\frac{\sqrt{1}}{2}"),
+                        MathTex(r"\frac{\sqrt{2}}{2}"),
+                        MathTex(r"\frac{\sqrt{3}}{2}"),
+                        MathTex(r"\frac{\sqrt{4}}{2}")],
+                    row_labels=[MathTex(r"\sin"), MathTex(r"\cos")],
                     h_buff=1,
-                    element_to_mobject_config={"unit": "^{\\circ}"})
+                    element_to_mobject_config={"unit": r"^{\circ}"})
                 self.add(t0)
     """
 
