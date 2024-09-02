@@ -1,31 +1,6 @@
-macOS
+MacOS
 =====
-
-For the sake of simplicity, the following instructions assume that you have
-the popular `package manager Homebrew <https://brew.sh>`__ installed. While
-you can certainly also install all dependencies without it, using Homebrew
-makes the process much easier.
-
-If you want to use Homebrew but do not have it installed yet, please
-follow `Homebrew's installation instructions <https://docs.brew.sh/Installation>`__.
-
-.. note::
-
-   For a while after Apple released its new ARM-based processors (the Apple Silicon chips like the *"M1 chip"*),
-   the recommended way of installing Manim relied on *Rosetta*, Apple's compatibility
-   layer between Intel and ARM architectures. This is no longer necessary, Manim can
-   (and is recommended to) be installed natively.
-
-
-Installing Manim
-----------------
-
-As of July/2024, brew can install Manim including all required dependencies.
-To install Manim:
-
-.. code-block:: bash
-
-   brew install manim
+For installing Manim, please refer to the :doc:`installation instructions <../installation>`.
 
 .. _macos-optional-dependencies:
 
@@ -56,9 +31,9 @@ Should you choose to work with some partial TeX distribution, the full list
 of LaTeX packages which Manim interacts with in some way (a subset might
 be sufficient for your particular application) is::
 
-   amsmath babel-english cbfonts-fd cm-super ctex doublestroke dvisvgm everysel
+   amsmath babel-english cbfonts-fd cm-super count1to ctex doublestroke dvisvgm everysel
    fontspec frcursive fundus-calligra gnu-freefont jknapltx latex-bin
-   mathastext microtype ms physics preview ragged2e relsize rsfs
+   mathastext microtype multitoc physics preview prelim2e ragged2e relsize rsfs
    setspace standalone tipa wasy wasysym xcolor xetex xkeyval
 
 

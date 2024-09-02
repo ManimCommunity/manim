@@ -65,8 +65,7 @@ Manim is a Python library, and it can be
 installed via `pip <https://pypi.org/project/manim/>`__
 or `conda <https://anaconda.org/conda-forge/manim/>`__. However,
 in order for Manim to work properly, some additional system
-dependencies need to be installed first. The following pages have
-operating system specific instructions for you to follow.
+dependencies need to be installed first.
 
 Manim requires Python version ``3.9`` or above to run.
 
@@ -80,12 +79,23 @@ Manim requires Python version ``3.9`` or above to run.
    Discussion `directly on GitHub
    <https://github.com/ManimCommunity/manim/discussions>`__.
 
-.. toctree::
-   :maxdepth: 2
 
-   installation/windows
-   installation/macos
-   installation/linux
+To install Manim locally, check out the following pages. Note
+that the process for Linux is slightly different - if you're
+on Linux please follow the instructions in the `Linux section <installation/linux>`_.
+
+.. toctree::
+   :maxdepth: 1
+
+   installation/locally
+
+
+Once you've installed the core dependencies, you can proceed to
+install the optional dependencies, depending on your system.
+
+- :doc:`installation/windows`
+- :doc:`installation/macos`
+- :doc:`installation/linux`
 
 Once Manim is installed locally, you can proceed to our
 :doc:`quickstart guide <tutorials/quickstart>` which walks you
