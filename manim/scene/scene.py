@@ -153,9 +153,6 @@ class Scene:
         # we can't care about the actual value of the order
         # because that would break files with multiple scenes that have sections
         sections.sort(key=lambda x: x.order)
-        # turn them into bound methods
-        for section in sections:
-            section.func = section.func.__get__(self, type(self))
         return sections
 
     # Only these methods should touch the camera

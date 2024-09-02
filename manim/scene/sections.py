@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import types
 from collections.abc import Callable
 from typing import ClassVar, Generic, ParamSpec, TypeVar, final, overload
 
@@ -78,6 +79,11 @@ class SceneSection(Generic[P, T]):
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> T:
         return self.func(*args, **kwargs)
+
+    # bind func to the Scene
+    def __get__(self, instance: None, _owner: type) -> SceneSection[P, T]:
+        self.func = types.MethodType(self.func, instance)
+        return self
 
 
 @overload
