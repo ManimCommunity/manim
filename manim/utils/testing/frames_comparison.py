@@ -10,6 +10,7 @@ import pytest
 from manim import Manager, Scene
 from manim._config import tempconfig
 from manim._config.utils import ManimConfig
+from manim.renderer.opengl_renderer import OpenGLRenderer
 
 from ._frames_testers import _ControlDataWriter, _FramesTester
 from ._test_class_makers import (
@@ -212,6 +213,9 @@ def _make_test_comparing_frames(
             manager.render()
             if last_frame:
                 frames_tester.check_frame(-1, manager.renderer.get_pixels())
+            if isinstance(manager.renderer, OpenGLRenderer):
+                manager.renderer.ctx.release()
+                manager.renderer.output_fbo.release()
 
     return real_test
 
