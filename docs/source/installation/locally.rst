@@ -3,7 +3,7 @@ Installing Manim Locally
 For the most part, installing Manim is the same across operating systems. However,
 you can take some shortcuts depending on your operating system.
 
-- MacOS users can use `Homebrew <https://brew.sh>`_ to install Manim - check out the section for :ref:`MacOS<macos_homebrew>`.
+- macOS users can use `Homebrew <https://brew.sh>`_ to install Manim - check out the section for :ref:`macOS<macos_homebrew>`.
 
 
 However, if you don't want to use a package manager, check out the section for :ref:`all operating systems<all_os>`.
@@ -23,7 +23,7 @@ python version is ``3.9`` or higher, you can proceed to :ref:`installing Manim w
 
 .. hint::
 
-   On MacOS and some Linux distributions, you may have to use ``python3`` instead of ``python``.
+   On macOS and some Linux distributions, you may have to use ``python3`` instead of ``python``.
    In this document, we will use ``python``, but depending on your operating system you may have to
    use ``python3``.
 
@@ -62,7 +62,7 @@ To confirm Manim is working, you can run::
 
 .. _macos_homebrew:
 
-MacOS
+macOS
 =====
 The easiest way to install Manim on macOS is via the popular `package manager Homebrew <https://brew.sh>`__.
 If you want to use Homebrew but do not have it installed yet, please
