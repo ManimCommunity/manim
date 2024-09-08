@@ -42,6 +42,7 @@ class Label(VGroup):
     --------
     .. manim:: LabelExample
         :save_last_frame:
+        :quality: high
 
         class LabelExample(Scene):
             def construct(self):
@@ -250,6 +251,7 @@ class LabeledPolygram(Polygram):
     --------
     .. manim:: LabeledPolygramExample
         :save_last_frame:
+        :quality: high
 
         class LabeledPolygramExample(Scene):
             def construct(self):
@@ -288,6 +290,7 @@ class LabeledPolygram(Polygram):
 
     .. manim:: LabeledCountryExample
         :save_last_frame:
+        :quality: high
 
         import requests
         import json

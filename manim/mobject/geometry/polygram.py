@@ -784,11 +784,22 @@ class ConvexHull(Polygram):
     --------
     .. manim:: ConvexHullExample
         :save_last_frame:
+        :quality: high
 
         class ConvexHullExample(Scene):
             def construct(self):
-                points = np.random.uniform(low=-3, high=3, size=(100, 3))
-                points[:,2] = 0
+                points = [
+                    [-2.35, -2.25, 0],
+                    [1.65, -2.25, 0],
+                    [2.65, -0.25, 0],
+                    [1.65, 1.75, 0],
+                    [-0.35, 2.75, 0],
+                    [-2.35, 0.75, 0],
+                    [-0.35, -1.25, 0],
+                    [0.65, -0.25, 0],
+                    [-1.35, 0.25, 0],
+                    [0.15, 0.75, 0]
+                ]
                 hull = ConvexHull(*points, color=BLUE)
                 dots = VGroup(*[Dot(point) for point in points])
                 self.add(hull)

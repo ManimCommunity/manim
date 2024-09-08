@@ -124,7 +124,8 @@ class QuickHull:
                 ):
                     horizon.boundary.append(subfacet)
             return 1
-        return 0
+        else:
+            return 0
 
     def build(self, points):
         num, dim = points.shape

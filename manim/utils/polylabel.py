@@ -67,6 +67,12 @@ class Cell:
     def __gt__(self, other):
         return self.d > other.d
 
+    def __le__(self, other):
+        return self.d <= other.d
+
+    def __ge__(self, other):
+        return self.d >= other.d
+
 
 def PolyLabel(rings, precision=1):
     """Find the pole of inaccessibility using a grid approach."""
