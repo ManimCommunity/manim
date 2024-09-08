@@ -83,6 +83,10 @@ class FileWriter(FileWriterProtocol):
             name="autocreated", type_=DefaultSectionType.NORMAL, skip_animations=False
         )
 
+    @classmethod
+    def use_output_as_scene_name(cls) -> None:
+        cls.force_output_as_scene_name = True
+
     def init_output_directories(self, scene_name: str) -> None:
         """Initialise output directories.
 

@@ -19,11 +19,8 @@ __all__ = ("AnimationProtocol",)
 class AnimationProtocol(Protocol):
     """A protocol that all animations must implement."""
 
-    # it has internal mutability, so we don't need a setter
-    @property
-    def buffer(self) -> SceneBuffer:
-        """The interface to the scene. This can be used to add, remove, or replace mobjects on the scene."""
-        raise NotImplementedError
+    buffer: SceneBuffer
+    """The interface to the scene. This can be used to add, remove, or replace mobjects on the scene."""
 
     apply_buffer: bool
     """Normally, the buffer is only applied at the beginning and end of an animation.

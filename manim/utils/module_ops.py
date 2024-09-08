@@ -84,33 +84,33 @@ def get_scene_classes_from_module(module: types.ModuleType) -> list[type[Scene]]
     ]
 
 
-def get_scenes_to_render(scene_classes: Sequence[type[Scene]]) -> list[type[Scene]]:
+def get_scenes_to_render(scene_classes: Sequence[type[Scene]]) -> Sequence[type[Scene]]:
     if not scene_classes:
         logger.error(constants.NO_SCENE_MESSAGE)
         return []
-    if config["write_all"]:
+    if config.write_all:
         return scene_classes
     result = []
-    for scene_name in config["scene_names"]:
-        found = False
+    for scene_name in config.scene_names:
+        if not scene_name:
+            continue
         for scene_class in scene_classes:
             if scene_class.__name__ == scene_name:
                 result.append(scene_class)
-                found = True
                 break
-        if not found and (scene_name != ""):
+        else:
             logger.error(constants.SCENE_NOT_FOUND_MESSAGE.format(scene_name))
     if result:
         return result
     if len(scene_classes) == 1:
-        config["scene_names"] = [scene_classes[0].__name__]
+        config.scene_names = [scene_classes[0].__name__]
         return [scene_classes[0]]
     return prompt_user_for_choice(scene_classes)
 
 
 def prompt_user_for_choice(scene_classes: Iterable[type[Scene]]) -> list[type[Scene]]:
     num_to_class = {}
-    FileWriter.force_output_as_scene_name = True
+    FileWriter.use_output_as_scene_name()
     for count, scene_class in enumerate(scene_classes, 1):
         name = scene_class.__name__
         console.print(f"{count}: {name}", style="logging.level.info")
@@ -137,7 +137,7 @@ def prompt_user_for_choice(scene_classes: Iterable[type[Scene]]) -> list[type[Sc
 
 def scene_classes_from_file(
     file_path: Path, require_single_scene: bool = False, full_list: bool = False
-) -> type[Scene] | list[type[Scene]]:
+) -> Sequence[type[Scene]]:
     module = get_module(file_path)
     all_scene_classes = get_scene_classes_from_module(module)
     if full_list:
@@ -145,5 +145,5 @@ def scene_classes_from_file(
     scene_classes_to_render = get_scenes_to_render(all_scene_classes)
     if require_single_scene:
         assert len(scene_classes_to_render) == 1
-        return scene_classes_to_render[0]
+        return [scene_classes_to_render[0]]
     return scene_classes_to_render
