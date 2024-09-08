@@ -13,6 +13,7 @@ __all__ = [
     "Square",
     "RoundedRectangle",
     "Cutout",
+    "ConvexHull",
 ]
 
 
@@ -27,6 +28,7 @@ from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import BLUE, WHITE, ParsableManimColor
 from manim.utils.iterables import adjacent_n_tuples, adjacent_pairs
+from manim.utils.qhull import QuickHull
 from manim.utils.space_ops import angle_between_vectors, normalize, regular_vertices
 
 if TYPE_CHECKING:
@@ -764,3 +766,54 @@ class Cutout(VMobject, metaclass=ConvertToOpenGL):
         sub_direction = "CCW" if main_shape.get_direction() == "CW" else "CW"
         for mobject in mobjects:
             self.append_points(mobject.force_direction(sub_direction).points)
+
+
+class ConvexHull(Polygram):
+    """Constructs a convex hull for a set of points in no particular order.
+
+    Parameters
+    ----------
+    points
+        The points to consider.
+    tolerance
+        The tolerance used by quickhull.
+    kwargs
+        Forwarded to the parent constructor.
+
+    Examples
+    --------
+    .. manim:: ConvexHullExample
+        :save_last_frame:
+
+        class ConvexHullExample(Scene):
+            def construct(self):
+                points = np.random.uniform(low=-3, high=3, size=(100, 3))
+                points[:,2] = 0
+                hull = ConvexHull(*points, color=BLUE)
+                dots = VGroup(*[Dot(point) for point in points])
+                self.add(hull)
+                self.add(dots)
+    """
+
+    def __init__(self, *points: Point3D, tolerance: float = 1e-5, **kwargs) -> None:
+        # Build Convex Hull
+        array = np.array(points)[:, :2]
+        hull = QuickHull(tolerance)
+        hull.build(array)
+
+        # Extract Vertices
+        facets = set(hull.facets) - hull.removed
+        facet = facets.pop()
+        subfacets = list(facet.subfacets)
+        while len(subfacets) <= len(facets):
+            sf = subfacets[-1]
+            (facet,) = hull.neighbors[sf] - {facet}
+            (sf,) = facet.subfacets - {sf}
+            subfacets.append(sf)
+
+        # Setup Vertices as Point3D
+        coordinates = np.vstack([sf.coordinates for sf in subfacets])
+        vertices = np.hstack((coordinates, np.zeros((len(coordinates), 1))))
+
+        # Call Polygram
+        super().__init__(vertices, **kwargs)

@@ -139,6 +139,20 @@ def test_RoundedRectangle(scene):
 
 
 @frames_comparison
+def test_ConvexHull(scene):
+    a = ConvexHull(
+        *[
+            np.array([-2.753, -0.612, 0]),
+            np.array([0.226, -1.766, 0]),
+            np.array([1.950, 1.260, 0]),
+            np.array([-2.754, 0.949, 0]),
+            np.array([1.679, 2.220, 0]),
+        ]
+    )
+    scene.add(a)
+
+
+@frames_comparison
 def test_Arrange(scene):
     s1 = Square()
     s2 = Square()
@@ -269,3 +283,20 @@ def test_LabeledArrow(scene):
         "0.5", start=LEFT * 3, end=RIGHT * 3 + UP * 2, label_position=0.5, font_size=15
     )
     scene.add(l_arrow)
+
+
+@frames_comparison
+def test_LabeledPolygram(scene):
+    polygram = LabeledPolygram(
+        [
+            [-2.5, -2.5, 0],
+            [2.5, -2.5, 0],
+            [2.5, 2.5, 0],
+            [-2.5, 2.5, 0],
+            [-2.5, -2.5, 0],
+        ],
+        [[-1, -1, 0], [0.5, -1, 0], [0.5, 0.5, 0], [-1, 0.5, 0], [-1, -1, 0]],
+        [[1, 1, 0], [2, 1, 0], [2, 2, 0], [1, 2, 0], [1, 1, 0]],
+        label="C",
+    )
+    scene.add(polygram)
