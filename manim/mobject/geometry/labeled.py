@@ -46,12 +46,11 @@ class Label(VGroup):
         class LabelExample(Scene):
             def construct(self):
                 label = Label(
-                    label          = 'Text',
-                    font_size      = 20,
+                    label          = Text('Label Text', font='sans-serif'),
                     label_color    = WHITE,
                     label_frame    = True
                 )
-                label.move_to(UP)
+                label.scale(3)
                 self.add(label)
     """
 
