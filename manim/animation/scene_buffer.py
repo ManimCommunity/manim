@@ -1,13 +1,11 @@
 from __future__ import annotations
 
-from collections.abc import Iterator
+from collections.abc import Iterator, Sequence
 from enum import Enum
-from typing import TYPE_CHECKING, Any, final
-
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 
 __all__ = ["SceneBuffer", "SceneOperation"]
 
@@ -18,7 +16,6 @@ class SceneOperation(Enum):
     REPLACE = "replace"
 
 
-@final
 class SceneBuffer:
     """
     A "buffer" between :class:`.Scene` and :class:`.Animation`
@@ -41,12 +38,12 @@ class SceneBuffer:
             >>> buffer = SceneBuffer()
             >>> buffer.add(Square())
             >>> buffer.remove(Circle())
-            >>> buffer.replace(Square(), Circle())
+            >>> buffer.replace(Square(), Circle(), flag=True)
             >>> for operation in buffer:
             ...     print(operation)
             (SceneOperation.ADD, (Square(),), {})
             (SceneOperation.REMOVE, (Circle(),), {})
-            (SceneOperation.REPLACE, (Square(), Circle()), {})
+            (SceneOperation.REPLACE, (Square(), Circle()), {"flag": True})
     """
 
     def __init__(self) -> None:

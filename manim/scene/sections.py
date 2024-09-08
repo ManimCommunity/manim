@@ -2,11 +2,14 @@ from __future__ import annotations
 
 import types
 from collections.abc import Callable
-from typing import ClassVar, Generic, ParamSpec, TypeVar, final, overload
+from typing import TYPE_CHECKING, ClassVar, Generic, ParamSpec, TypeVar, final, overload
 
-from typing_extensions import TypedDict, Unpack
+from typing_extensions import Self, TypedDict, Unpack
 
 from manim.file_writer.sections import DefaultSectionType
+
+if TYPE_CHECKING:
+    from .scene import Scene
 
 __all__ = ["section"]
 
@@ -56,7 +59,7 @@ class SceneSection(Generic[P, T]):
         self.type_ = DefaultSectionType.NORMAL
         self.name = func.__name__
 
-        # update the order for finding section orders
+        # update the order counter
         self.order = self._cls_instance_count
         self.__class__._cls_instance_count += 1
 
@@ -80,10 +83,20 @@ class SceneSection(Generic[P, T]):
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> T:
         return self.func(*args, **kwargs)
 
-    # bind func to the Scene
-    def __get__(self, instance: None, _owner: type) -> SceneSection[P, T]:
+    def bind(self, instance: Scene) -> Self:
+        """Binds :attr:`func` to the scene instance, making :attr:`func` a method.
+
+        This allows the section to be called without the scene being passed explicitly.
+        """
         self.func = types.MethodType(self.func, instance)
         return self
+
+    def __get__(self, instance: Scene, _owner: type[Scene]) -> Self:
+        """Descriptor to bind the section to the scene instance.
+
+        This is called implicitly by python when methods are being bound.
+        """
+        return self.bind(instance)
 
 
 @overload
@@ -132,10 +145,8 @@ def section(
         name : str, optional
             The name of the section, by default the name of the method.
     """
-    if func is not None:
-        return SceneSection(func, **kwargs)
 
     def wrapper(func: Callable[P, T]) -> SceneSection[P, T]:
         return SceneSection(func, **kwargs)
 
-    return wrapper
+    return wrapper(func) if func is not None else wrapper

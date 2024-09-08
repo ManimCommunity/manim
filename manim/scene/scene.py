@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from pyglet.window import key
+from typing_extensions import assert_never
 
 from manim import config, logger
 from manim.animation.animation import prepare_animation
@@ -120,8 +121,8 @@ class Scene:
                     self.remove(*args, **kwargs)
                 case SceneOperation.REPLACE:
                     self.replace(*args, **kwargs)
-                case o:
-                    raise NotImplementedError(f"Unknown operation {o}")
+                case _:
+                    assert_never(op)
         buffer.clear()
 
     def setup(self) -> None:

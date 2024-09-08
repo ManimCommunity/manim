@@ -2,7 +2,13 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable, Sequence
+from copy import deepcopy
+from functools import partialmethod
+from typing import TYPE_CHECKING, Callable, cast, overload
+
 import numpy as np
+from typing_extensions import Self, TypeVar, assert_never
 
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 
@@ -11,20 +17,16 @@ from ..mobject import mobject
 from ..mobject.mobject import Mobject
 from ..mobject.opengl import opengl_mobject
 from ..utils.rate_functions import linear, smooth
-from .protocol import AnimationProtocol
+from .protocol import AnimationProtocol, MobjectAnimation
 from .scene_buffer import SceneBuffer, SceneOperation
-
-__all__ = ["Animation", "Wait", "override_animation"]
-
-from collections.abc import Iterable, Sequence
-from copy import deepcopy
-from functools import partialmethod
-from typing import TYPE_CHECKING, Callable
-
-from typing_extensions import Self, TypeVar
 
 if TYPE_CHECKING:
     from typing_extensions import Self
+
+M = TypeVar("M", bound=OpenGLMobject)
+
+
+__all__ = ["Animation", "Wait", "override_animation"]
 
 
 DEFAULT_ANIMATION_RUN_TIME: float = 1.0
@@ -281,8 +283,8 @@ class Animation(AnimationProtocol):
                     self.buffer.remove(*args, **kwargs)
                 case SceneOperation.REPLACE:
                     self.buffer.replace(*args, **kwargs)
-                case o:
-                    raise NotImplementedError(f"Unknown operation {o}")
+                case _:
+                    assert_never(op)
         buffer.clear()
 
     def get_all_mobjects_to_update(self) -> Sequence[OpenGLMobject]:
@@ -493,9 +495,20 @@ class Animation(AnimationProtocol):
             cls.__init__ = cls._original__init__
 
 
+@overload
+def prepare_animation(anim: MobjectAnimation[M]) -> MobjectAnimation[M]: ...
+
+
+@overload
 def prepare_animation(
     anim: AnimationProtocol
-    | mobject._AnimationBuilder
+    | opengl_mobject._AnimationBuilder
+    | opengl_mobject.OpenGLMobject,
+) -> AnimationProtocol: ...
+
+
+def prepare_animation(
+    anim: AnimationProtocol
     | opengl_mobject._AnimationBuilder
     | opengl_mobject.OpenGLMobject,
 ) -> AnimationProtocol:
@@ -528,10 +541,14 @@ def prepare_animation(
     if isinstance(anim, (mobject._AnimationBuilder, opengl_mobject._AnimationBuilder)):
         return anim.build()
 
-    if isinstance(anim, Animation):
-        return anim
-
-    raise TypeError(f"Object {anim} cannot be converted to an animation")
+    # if it has these three methods it probably is an AnimationProtocol
+    # but we don't use isinstance because it's slow
+    try:
+        for method in ("begin", "finish", "update_mobjects"):
+            getattr(anim, method)
+        return cast(AnimationProtocol, anim)
+    except AttributeError:
+        raise TypeError(f"Object {anim} cannot be converted to an animation") from None
 
 
 class Wait(Animation):

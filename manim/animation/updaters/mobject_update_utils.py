@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 
     from typing_extensions import Concatenate, ParamSpec, TypeIs
 
-    from manim.animation.protocol import AnimationProtocol
+    from manim.animation.protocol import MobjectAnimation
 
     P = ParamSpec("P")
 
@@ -115,10 +115,9 @@ def always_redraw(func: Callable[[], M]) -> M:
     return mob
 
 
-# TODO: create a new Protocol for AnimationWithMobject
 def turn_animation_into_updater(
-    animation: AnimationProtocol, cycle: bool = False
-) -> OpenGLMobject:
+    animation: MobjectAnimation[M], cycle: bool = False
+) -> M:
     """
     Add an updater to the animation's mobject which applies
     the interpolation and update functions of the animation
@@ -142,7 +141,7 @@ def turn_animation_into_updater(
                 self.wait(0.5)
                 self.play(banner.expand(), run_time=0.5)
     """
-    mobject = cast(OpenGLMobject, animation.mobject)
+    mobject = animation.mobject
     animation.suspend_mobject_updating = False
     animation.begin()
     total_time = 0
@@ -167,5 +166,5 @@ def turn_animation_into_updater(
     return mobject
 
 
-def cycle_animation(animation: AnimationProtocol, **kwargs) -> OpenGLMobject:
+def cycle_animation(animation: MobjectAnimation[M], **kwargs) -> M:
     return turn_animation_into_updater(animation, cycle=True, **kwargs)

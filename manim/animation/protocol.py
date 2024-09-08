@@ -2,32 +2,78 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Protocol
 
+from typing_extensions import TypeVar
+
 if TYPE_CHECKING:
+    from manim.mobject.opengl.opengl_mobject import OpenGLMobject
     from manim.typing import RateFunc
 
     from .scene_buffer import SceneBuffer
+
+M = TypeVar("M", bound="OpenGLMobject", default="OpenGLMobject")
 
 
 __all__ = ("AnimationProtocol",)
 
 
 class AnimationProtocol(Protocol):
-    buffer: SceneBuffer
+    """A protocol that all animations must implement."""
+
+    # it has internal mutability, so we don't need a setter
+    @property
+    def buffer(self) -> SceneBuffer:
+        """The interface to the scene. This can be used to add, remove, or replace mobjects on the scene."""
+        raise NotImplementedError
+
     apply_buffer: bool
+    """Normally, the buffer is only applied at the beginning and end of an animation.
 
-    def begin(self) -> object: ...
+    To apply it mid animation, set :attr:`apply_buffer` to ``True``."""
 
-    def finish(self) -> object: ...
+    def begin(self) -> object:
+        """Called before the animation starts.
 
-    def update_mobjects(self, dt: float) -> object: ...
+        This is where all setup for the animation should be done, such
+        as creating copies/targets of the mobject to animate, etc.
+        """
 
-    def interpolate(self, alpha: float) -> object: ...
+    def finish(self) -> object:
+        """Called after the animation finishes.
 
-    def get_run_time(self) -> float: ...
+        This is where all cleanup should happen, such as removing
+        mobjects from the scene, etc.
+        """
+
+    def interpolate(self, alpha: float) -> object:
+        """This is called every frame of the animation.
+
+        This method should update the animation to the given ``alpha`` value.
+
+        Parameters
+        ----------
+            alpha : a value in the interval :math:`[0, 1]` representing the proportion of the animation that has passed.
+        """
+
+    def get_run_time(self) -> float:
+        """Compute and return the run time of the animation."""
+        raise NotImplementedError
 
     def update_rate_info(
         self,
         run_time: float | None,
         rate_func: RateFunc | None,
         lag_ratio: float | None,
-    ) -> object: ...
+    ) -> object:
+        """Update the rate information for the animation.
+
+        If any value is ``None``, it should not update
+        the animation's corresponding attribute.
+        """
+
+
+class MobjectAnimation(AnimationProtocol, Protocol[M]):
+    mobject: M
+    """The mobject that is being animated."""
+
+    suspend_mobject_updating: bool
+    """Whether to suspend updating the mobject during the animation."""
