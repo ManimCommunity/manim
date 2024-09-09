@@ -388,6 +388,7 @@ class ConvexHull3D(Polyhedron):
     --------
     .. manim:: ConvexHull3DExample
         :save_last_frame:
+        :quality: high
 
         class ConvexHull3DExample(ThreeDScene):
             def construct(self):

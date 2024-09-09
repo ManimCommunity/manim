@@ -142,11 +142,11 @@ def test_RoundedRectangle(scene):
 def test_ConvexHull(scene):
     a = ConvexHull(
         *[
-            np.array([-2.753, -0.612, 0]),
-            np.array([0.226, -1.766, 0]),
-            np.array([1.950, 1.260, 0]),
-            np.array([-2.754, 0.949, 0]),
-            np.array([1.679, 2.220, 0]),
+            [-2.7, -0.6, 0],
+            [0.2, -1.7, 0],
+            [1.9, 1.2, 0],
+            [-2.7, 0.9, 0],
+            [1.6, 2.2, 0],
         ]
     )
     scene.add(a)

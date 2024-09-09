@@ -2,14 +2,24 @@
 from __future__ import annotations
 
 from queue import PriorityQueue
+from typing import TYPE_CHECKING
 
 import numpy as np
 
+if TYPE_CHECKING:
+    from manim.typing import Point3D
+
 
 class Polygon:
-    """Polygon class to compute and store associated data."""
+    def __init__(self, rings: list[np.ndarray]) -> None:
+        """
+        Initializes the Polygon with the given rings.
 
-    def __init__(self, rings):
+        Parameters
+        ----------
+        rings : list[np.ndarray]
+            List of arrays, each representing a polygonal ring
+        """
         # Flatten Array
         csum = np.cumsum([ring.shape[0] for ring in rings])
         self.array = np.concatenate(rings, axis=0)
@@ -32,14 +42,14 @@ class Polygon:
             cy = np.sum((y + yr) * factor) / (6.0 * self.area)
             self.centroid = np.array([cx, cy])
 
-    def compute_distance(self, point):
+    def compute_distance(self, point: np.ndarray) -> float:
         """Compute the minimum distance from a point to the polygon."""
         scalars = np.einsum("ij,ij->i", self.norm, point - self.start)
         clips = np.clip(scalars, 0, 1).reshape(-1, 1)
         d = np.min(np.linalg.norm(self.start + self.diff * clips - point, axis=1))
         return d if self.inside(point) else -d
 
-    def inside(self, point):
+    def inside(self, point: np.ndarray) -> bool:
         """Check if a point is inside the polygon."""
         # Views
         px, py = point
@@ -53,29 +63,55 @@ class Polygon:
 
 
 class Cell:
-    """Cell class to represent a square in the grid covering the polygon."""
+    def __init__(self, c: np.ndarray, h: float, polygon: Polygon) -> None:
+        """
+        Initializes the Cell, a square in the mesh covering the polygon.
 
-    def __init__(self, c, h, polygon):
+        Parameters
+        ----------
+        c : np.ndarray
+            Center coordinates of the Cell.
+        h : float
+            Half-Size of the Cell.
+        polygon : Polygon
+            Polygon object for which the distance is computed.
+        """
         self.c = c
         self.h = h
         self.d = polygon.compute_distance(self.c)
         self.p = self.d + self.h * np.sqrt(2)
 
-    def __lt__(self, other):
+    def __lt__(self, other: Cell) -> bool:
         return self.d < other.d
 
-    def __gt__(self, other):
+    def __gt__(self, other: Cell) -> bool:
         return self.d > other.d
 
-    def __le__(self, other):
+    def __le__(self, other: Cell) -> bool:
         return self.d <= other.d
 
-    def __ge__(self, other):
+    def __ge__(self, other: Cell) -> bool:
         return self.d >= other.d
 
 
-def PolyLabel(rings, precision=1):
-    """Find the pole of inaccessibility using a grid approach."""
+def PolyLabel(rings: list[list[Point3D]], precision: float = 0.01) -> Cell:
+    """
+    Finds the pole of inaccessibility (the point that is farthest from the edges of the polygon)
+    using an iterative grid-based approach.
+
+    Parameters
+    ----------
+    rings : list[list[Point3D]]
+        A list of lists, where each list is a sequence of points representing the rings of the polygon.
+        Typically, multiple rings indicate holes in the polygon.
+    precision : float, optional
+        The precision of the result (default is 0.01).
+
+    Returns
+    -------
+    Cell
+        A Cell containing the pole of inaccessibility to a given precision.
+    """
     # Precompute Polygon Data
     array = [np.array(ring)[:, :2] for ring in rings]
     polygon = Polygon(array)

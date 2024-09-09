@@ -5,30 +5,30 @@ import numpy as np
 
 
 class Point:
-    def __init__(self, coordinates):
+    def __init__(self, coordinates: np.ndarray) -> None:
         self.coordinates = coordinates
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(self.coordinates.tobytes())
 
-    def __eq__(self, other):
+    def __eq__(self, other: Point) -> bool:
         return np.array_equal(self.coordinates, other.coordinates)
 
 
 class SubFacet:
-    def __init__(self, coordinates):
+    def __init__(self, coordinates: np.ndarray) -> None:
         self.coordinates = coordinates
         self.points = frozenset(Point(c) for c in coordinates)
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(self.points)
 
-    def __eq__(self, other):
+    def __eq__(self, other: SubFacet) -> bool:
         return self.points == other.points
 
 
 class Facet:
-    def __init__(self, coordinates, normal=None, internal=None):
+    def __init__(self, coordinates: np.ndarray, internal: np.ndarray) -> None:
         self.coordinates = coordinates
         self.center = np.mean(coordinates, axis=0)
         self.normal = self.compute_normal(internal)
@@ -37,41 +37,68 @@ class Facet:
             for i in range(self.coordinates.shape[0])
         )
 
-    def compute_normal(self, internal):
+    def compute_normal(self, internal: np.ndarray) -> np.ndarray:
         centered = self.coordinates - self.center
         _, _, vh = np.linalg.svd(centered)
         normal = vh[-1, :]
         normal /= np.linalg.norm(normal)
 
+        # If the normal points towards the internal point, flip it!
         if np.dot(normal, self.center - internal) < 0:
             normal *= -1
 
         return normal
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(self.subfacets)
 
-    def __eq__(self, other):
+    def __eq__(self, other: Facet) -> bool:
         return self.subfacets == other.subfacets
 
 
 class Horizon:
-    def __init__(self):
-        self.facets = set()
-        self.boundary = []
+    def __init__(self) -> None:
+        self.facets: set[Facet] = set()
+        self.boundary: list[SubFacet] = []
 
 
 class QuickHull:
-    def __init__(self, tolerance=1e-5):
-        self.facets = []
-        self.removed = set()
-        self.outside = {}
-        self.neighbors = {}
-        self.unclaimed = None
-        self.internal = None
+    """
+    QuickHull algorithm for constructing a convex hull from a set of points.
+
+    Parameters
+    ----------
+    tolerance: float, optional
+        A tolerance threshold for determining when points lie on the convex hull (default is 1e-5).
+
+    Attributes
+    ----------
+    facets: list[Facet]
+        List of facets considered.
+    removed: set[Facet]
+        Set of internal facets that have been removed from the hull during the construction process.
+    outside: dict[Facet, tuple[np.ndarray, np.ndarray | None]]
+        Dictionary mapping each facet to its outside points and eye point.
+    neighbors: dict[SubFacet, set[Facet]]
+        Mapping of subfacets to their neighboring facets. Each subfacet links precisely two neighbors.
+    unclaimed: np.ndarray | None
+        Points that have not yet been classified as inside or outside the current hull.
+    internal: np.ndarray | None
+        An internal point (i.e., the center of the initial simplex) used as a reference during hull construction.
+    tolerance: float
+        The tolerance used to determine if points are considered outside the current hull.
+    """
+
+    def __init__(self, tolerance: float = 1e-5) -> None:
+        self.facets: list[Facet] = []
+        self.removed: set[Facet] = set()
+        self.outside: dict[Facet, tuple[np.ndarray, np.ndarray | None]] = {}
+        self.neighbors: dict[SubFacet, set[Facet]] = {}
+        self.unclaimed: np.ndarray | None = None
+        self.internal: np.ndarray | None = None
         self.tolerance = tolerance
 
-    def initialize(self, points):
+    def initialize(self, points: np.ndarray) -> None:
         # Sample Points
         simplex = points[
             np.random.choice(points.shape[0], points.shape[1] + 1, replace=False)
@@ -90,7 +117,7 @@ class QuickHull:
             for sf in f.subfacets:
                 self.neighbors.setdefault(sf, set()).add(f)
 
-    def classify(self, facet):
+    def classify(self, facet: Facet) -> None:
         if not self.unclaimed.size:
             self.outside[facet] = (None, None)
             return
@@ -106,14 +133,19 @@ class QuickHull:
         self.outside[facet] = (outside, eye)
         self.unclaimed = self.unclaimed[~mask]
 
-    def compute_horizon(self, eye, start_facet):
+    def compute_horizon(self, eye: np.ndarray, start_facet: Facet) -> Horizon:
         horizon = Horizon()
         self._recursive_horizon(eye, start_facet, horizon)
         return horizon
 
-    def _recursive_horizon(self, eye, facet, horizon):
+    def _recursive_horizon(
+        self, eye: np.ndarray, facet: Facet, horizon: Horizon
+    ) -> int:
+        visible = np.dot(facet.normal, eye - facet.center) > 0
+        if not visible:
+            return False
         # If the eye is visible from the facet...
-        if np.dot(facet.normal, eye - facet.center) > 0:
+        else:
             # Label the facet as visible and cross each edge
             horizon.facets.add(facet)
             for subfacet in facet.subfacets:
@@ -123,16 +155,14 @@ class QuickHull:
                     eye, neighbor, horizon
                 ):
                     horizon.boundary.append(subfacet)
-            return 1
-        else:
-            return 0
+            return True
 
-    def build(self, points):
+    def build(self, points: np.ndarray):
         num, dim = points.shape
         if (dim == 0) or (num < dim + 1):
             raise ValueError("Not enough points supplied to build Convex Hull!")
         if dim == 1:
-            return np.array([np.min(points), np.max(points)])
+            raise ValueError("The Convex Hull of 1D data is its min-max!")
 
         self.initialize(points)
         while True:

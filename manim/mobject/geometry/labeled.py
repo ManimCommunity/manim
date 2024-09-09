@@ -247,6 +247,10 @@ class LabeledPolygram(Polygram):
         If the input is open, LabeledPolygram will attempt to close it.
         This may cause the polygon to intersect itself leading to unexpected results.
 
+    .. tip::
+        Make sure the precision corresponds to the scale of your inputs!
+        For instance, if the bounding box of your polygon stretches from 0 to 10,000, a precision of 1.0 or 10.0 should be sufficient.
+
     Examples
     --------
     .. manim:: LabeledPolygramExample
