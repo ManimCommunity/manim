@@ -330,7 +330,7 @@ class NumberLine(Line):
             x_max += 1e-6
 
         # Handle cases where min and max are both positive or both negative
-        if x_min < x_max < 0 or x_max > x_min >= 0:
+        if x_min < x_max < 0 or x_max > x_min > 0:
             tick_range = np.arange(x_min, x_max, x_step)
         else:
             start_point = 0
