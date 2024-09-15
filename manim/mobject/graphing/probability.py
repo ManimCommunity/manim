@@ -283,7 +283,7 @@ class BarChart(Axes):
             y_step_target = max(self.values) / y_length
             y_range = [
                 *y_range,
-                round(y_step_target, max(2, int(np.ceil(-np.log10(y_step_target)))))
+                round(y_step_target, max(2, int(np.ceil(-np.log10(y_step_target))))),
             ]
 
         if x_length is None:
