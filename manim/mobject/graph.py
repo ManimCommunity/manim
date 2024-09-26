@@ -25,14 +25,15 @@ if TYPE_CHECKING:
 
 from manim.animation.composition import AnimationGroup
 from manim.animation.creation import Create, Uncreate
-from manim.mobject.geometry.arc import Dot, LabeledDot
+from manim.constants import RIGHT, UP
+from manim.mobject.geometry.arc import Circle, Dot, LabeledDot
 from manim.mobject.geometry.line import Line
 from manim.mobject.mobject import Mobject, override_animate
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.text.tex_mobject import MathTex
 from manim.mobject.types.vectorized_mobject import VMobject
-from manim.utils.color import BLACK
+from manim.utils.color import BLACK, WHITE
 
 
 class LayoutFunction(Protocol):
@@ -578,7 +579,6 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         edge_config: dict | None = None,
     ) -> None:
         super().__init__()
-
         nx_graph = self._empty_networkx_graph()
         nx_graph.add_nodes_from(vertices)
         nx_graph.add_edges_from(edges)
@@ -1538,10 +1538,20 @@ class Graph(GenericGraph):
     def _populate_edge_dict(
         self, edges: list[tuple[Hashable, Hashable]], edge_type: type[Mobject]
     ):
+        print("Custom graph population")
         self.edges = {
             (u, v): edge_type(
                 self[u].get_center(),
                 self[v].get_center(),
+                z_index=-1,
+                **self._edge_config[(u, v)],
+            )
+            if u != v
+            else Circle.from_three_points(
+                self[u].get_center(),
+                self[u].get_center() + RIGHT,
+                self[u].get_center() + UP,
+                color=self._edge_config[(u, v)].get("stroke_color", WHITE),
                 z_index=-1,
                 **self._edge_config[(u, v)],
             )
