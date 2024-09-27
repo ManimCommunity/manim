@@ -25,7 +25,6 @@ if TYPE_CHECKING:
 
 from manim.animation.composition import AnimationGroup
 from manim.animation.creation import Create, Uncreate
-from manim.constants import RIGHT, UP
 from manim.mobject.geometry.arc import Circle, Dot, LabeledDot
 from manim.mobject.geometry.line import Line
 from manim.mobject.mobject import Mobject, override_animate
@@ -1539,24 +1538,54 @@ class Graph(GenericGraph):
         self, edges: list[tuple[Hashable, Hashable]], edge_type: type[Mobject]
     ):
         print("Custom graph population")
-        self.edges = {
-            (u, v): edge_type(
-                self[u].get_center(),
-                self[v].get_center(),
-                z_index=-1,
-                **self._edge_config[(u, v)],
-            )
-            if u != v
-            else Circle.from_three_points(
-                self[u].get_center(),
-                self[u].get_center() + RIGHT,
-                self[u].get_center() + UP,
-                color=self._edge_config[(u, v)].get("stroke_color", WHITE),
-                z_index=-1,
-                **self._edge_config[(u, v)],
-            )
-            for (u, v) in edges
-        }
+
+        # self.edges = {
+        #     (u, v): edge_type(
+        #         self[u].get_center(),
+        #         self[v].get_center(),
+        #         z_index=-1,
+        #         **self._edge_config[(u, v)],
+        #     )
+        #     if u != v
+        #     else Circle.from_three_points(
+        #         self[u].get_center(),
+        #         self[u].get_center() + RIGHT,
+        #         self[u].get_center() + UP,
+        #         color=self._edge_config[(u, v)].get("stroke_color", WHITE),
+        #         z_index=-1,
+        #         **self._edge_config[(u, v)],
+        #     )
+        #     for (u, v) in edges
+        # }
+
+        self.edges = {}
+        for u, v in edges:
+            if u != v:
+                self.edges[(u, v)] = edge_type(
+                    self[u].get_center(),
+                    self[v].get_center(),
+                    z_index=-1,
+                    **self._edge_config[(u, v)],
+                )
+            else:
+                # ? Get orientation to determine the direction of the circle: outwards the graph
+                def _get_circle_points(edge):
+                    e, c = self[edge].get_center(), self.get_center()
+                    vec = (e - c) / np.linalg.norm(e - c)
+                    ort = np.array([vec[1], -vec[0], 0])
+                    p1 = e + vec
+                    p2 = e + 1 / 2 * vec + 1 / 2 * ort
+                    return p1, p2
+
+                p1, p2 = _get_circle_points(u)
+                self.edges[(u, v)] = Circle.from_three_points(
+                    self[u].get_center(),
+                    p1,
+                    p2,
+                    color=self._edge_config[(u, v)].get("stroke_color", WHITE),
+                    z_index=-1,
+                    **self._edge_config[(u, v)],
+                )
 
     def update_edges(self, graph):
         for (u, v), edge in graph.edges.items():
