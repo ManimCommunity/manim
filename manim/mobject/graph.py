@@ -25,7 +25,8 @@ if TYPE_CHECKING:
 
 from manim.animation.composition import AnimationGroup
 from manim.animation.creation import Create, Uncreate
-from manim.mobject.geometry.arc import Circle, Dot, LabeledDot
+from manim.constants import PI
+from manim.mobject.geometry.arc import Dot, LabeledDot
 from manim.mobject.geometry.line import Line
 from manim.mobject.mobject import Mobject, override_animate
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
@@ -663,6 +664,19 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
     def _empty_networkx_graph() -> nx.classes.graph.Graph:
         """Return an empty networkx graph for the given graph type."""
         raise NotImplementedError("To be implemented in concrete subclasses")
+
+    def _get_arc_parameters_for_self_loops(
+        self, edge: Hashable, angle_between_points: float = PI / 2
+    ):
+        """Method to get required parameters for self loops edges to draw an arc."""
+        e, c = self[edge].get_center(), self.get_center()
+        vec = (e - c) / np.linalg.norm(e - c)
+        ort = np.array([vec[1], -vec[0], 0])
+        r = self[edge].radius  # Get vertex Dot radius
+        angle = angle_between_points / 2
+        p1 = e + r * (vec * np.cos(angle) + ort * np.sin(angle))
+        p2 = e + r * (vec * np.cos(-angle) + ort * np.sin(-angle))
+        return p1, p2, 2 * PI - angle_between_points
 
     def _populate_edge_dict(
         self, edges: list[tuple[Hashable, Hashable]], edge_type: type[Mobject]
@@ -1537,65 +1551,46 @@ class Graph(GenericGraph):
     def _populate_edge_dict(
         self, edges: list[tuple[Hashable, Hashable]], edge_type: type[Mobject]
     ):
-        print("Custom graph population")
-
-        # self.edges = {
-        #     (u, v): edge_type(
-        #         self[u].get_center(),
-        #         self[v].get_center(),
-        #         z_index=-1,
-        #         **self._edge_config[(u, v)],
-        #     )
-        #     if u != v
-        #     else Circle.from_three_points(
-        #         self[u].get_center(),
-        #         self[u].get_center() + RIGHT,
-        #         self[u].get_center() + UP,
-        #         color=self._edge_config[(u, v)].get("stroke_color", WHITE),
-        #         z_index=-1,
-        #         **self._edge_config[(u, v)],
-        #     )
-        #     for (u, v) in edges
-        # }
-
         self.edges = {}
         for u, v in edges:
             if u != v:
                 self.edges[(u, v)] = edge_type(
                     self[u].get_center(),
                     self[v].get_center(),
-                    z_index=-1,
+                    z_index=self._edge_config[(u, v)].pop("z_index", -1),
                     **self._edge_config[(u, v)],
                 )
             else:
-                # ? Get orientation to determine the direction of the circle: outwards the graph
-                def _get_circle_points(edge):
-                    e, c = self[edge].get_center(), self.get_center()
-                    vec = (e - c) / np.linalg.norm(e - c)
-                    ort = np.array([vec[1], -vec[0], 0])
-                    p1 = e + vec
-                    p2 = e + 1 / 2 * vec + 1 / 2 * ort
-                    return p1, p2
-
-                p1, p2 = _get_circle_points(u)
-                self.edges[(u, v)] = Circle.from_three_points(
-                    self[u].get_center(),
+                p1, p2, arc_angle = self._get_arc_parameters_for_self_loops(u)
+                self.edges[(u, v)] = edge_type(
                     p1,
                     p2,
-                    color=self._edge_config[(u, v)].get("stroke_color", WHITE),
-                    z_index=-1,
+                    path_arc=self._edge_config[(u, v)].pop("path_arc", arc_angle),
+                    color=self._edge_config[(u, v)].pop("color", WHITE),
+                    z_index=self._edge_config[(u, v)].pop("z_index", -1),
                     **self._edge_config[(u, v)],
                 )
 
     def update_edges(self, graph):
         for (u, v), edge in graph.edges.items():
             # Undirected graph has a Line edge
-            edge.set_points_by_ends(
-                graph[u].get_center(),
-                graph[v].get_center(),
-                buff=self._edge_config.get("buff", 0),
-                path_arc=self._edge_config.get("path_arc", 0),
-            )
+            if u == v:
+                # Update self-loops edges
+                p1, p2, arc_angle = self._get_arc_parameters_for_self_loops(u)
+                edge.set_points_by_ends(
+                    p1,
+                    p2,
+                    buff=self._edge_config.get("buff", edge.buff),
+                    path_arc=arc_angle,
+                )
+            else:
+                # Update regular edges
+                edge.set_points_by_ends(
+                    graph[u].get_center(),
+                    graph[v].get_center(),
+                    buff=self._edge_config.get("buff", edge.buff),
+                    path_arc=self._edge_config.get("path_arc", edge.path_arc),
+                )
 
     def __repr__(self: Graph) -> str:
         return f"Undirected graph on {len(self.vertices)} vertices and {len(self.edges)} edges"
@@ -1784,15 +1779,25 @@ class DiGraph(GenericGraph):
     def _populate_edge_dict(
         self, edges: list[tuple[Hashable, Hashable]], edge_type: type[Mobject]
     ):
-        self.edges = {
-            (u, v): edge_type(
-                self[u],
-                self[v],
-                z_index=-1,
-                **self._edge_config[(u, v)],
-            )
-            for (u, v) in edges
-        }
+        self.edges = {}
+        for u, v in edges:
+            if u != v:
+                self.edges[(u, v)] = edge_type(
+                    self[u],
+                    self[v],
+                    z_index=self._edge_config[(u, v)].pop("z_index", -1),
+                    **self._edge_config[(u, v)],
+                )
+            else:
+                p1, p2, arc_angle = self._get_arc_parameters_for_self_loops(u)
+                self.edges[(u, v)] = edge_type(
+                    p1,
+                    p2,
+                    path_arc=self._edge_config[(u, v)].pop("path_arc", arc_angle),
+                    color=self._edge_config[(u, v)].pop("color", WHITE),
+                    z_index=self._edge_config[(u, v)].pop("z_index", -1),
+                    **self._edge_config[(u, v)],
+                )
 
         for (u, v), edge in self.edges.items():
             edge.add_tip(**self._tip_config[(u, v)])
@@ -1807,12 +1812,25 @@ class DiGraph(GenericGraph):
             tip = edge.pop_tips()[0]
             # Passing the Mobject instead of the vertex makes the tip
             # stop on the bounding box of the vertex.
-            edge.set_points_by_ends(
-                graph[u],
-                graph[v],
-                buff=self._edge_config.get("buff", 0),
-                path_arc=self._edge_config.get("path_arc", 0),
-            )
+
+            if u == v:
+                # Update self-loops edges
+                p1, p2, arc_angle = self._get_arc_parameters_for_self_loops(u)
+                edge.set_points_by_ends(
+                    p1,
+                    p2,
+                    buff=self._edge_config.get("buff", edge.buff),
+                    path_arc=arc_angle,
+                )
+            else:
+                # Update regular edges
+                edge.set_points_by_ends(
+                    graph[u],
+                    graph[v],
+                    buff=self._edge_config.get("buff", edge.buff),
+                    path_arc=self._edge_config.get("path_arc", edge.path_arc),
+                )
+
             edge.add_tip(tip)
 
     def __repr__(self: DiGraph) -> str:
