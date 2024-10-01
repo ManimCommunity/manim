@@ -588,9 +588,12 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
             self._labels = labels
         elif isinstance(labels, bool):
             if labels:
-                self._labels = {
-                    v: MathTex(v, fill_color=label_fill_color) for v in vertices
-                }
+                self._labels = {v: MathTex(v, color=label_fill_color) for v in vertices}
+                # Using `color=` instead of `fill_color=` fixes the `labels=True` issue
+                # as `stroke_color` is missing otherwise and blends with the background.
+                # We could initialize it there, but setting color applies it for both
+                # stroke and fill, so that the label is visible in the right color in the end.
+
             else:
                 self._labels = {}
 
