@@ -669,16 +669,16 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         raise NotImplementedError("To be implemented in concrete subclasses")
 
     def _get_arc_parameters_for_self_loops(
-        self, edge: Hashable, angle_between_points: float = PI / 2
+        self, vertex: Hashable, angle_between_points: float = PI / 2
     ):
         """Method to get required parameters for self loops edges to draw an arc."""
-        e, c = self[edge].get_center(), self.get_center()
-        vec = (e - c) / np.linalg.norm(e - c)
+        edge_center, graph_center = self[vertex].get_center(), self.get_center()
+        vec = (edge_center - graph_center) / np.linalg.norm(edge_center - graph_center)
         ort = np.array([vec[1], -vec[0], 0])
-        r = self[edge].radius  # Get vertex Dot radius
+        r = self[vertex].radius  # Get vertex Dot radius
         angle = angle_between_points / 2
-        p1 = e + r * (vec * np.cos(angle) + ort * np.sin(angle))
-        p2 = e + r * (vec * np.cos(-angle) + ort * np.sin(-angle))
+        p1 = edge_center + r * (vec * np.cos(angle) + ort * np.sin(angle))
+        p2 = edge_center + r * (vec * np.cos(-angle) + ort * np.sin(-angle))
         return p1, p2, 2 * PI - angle_between_points
 
     def _populate_edge_dict(
