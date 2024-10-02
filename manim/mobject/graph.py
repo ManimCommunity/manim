@@ -678,7 +678,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         """Return an empty networkx graph for the given graph type."""
         raise NotImplementedError("To be implemented in concrete subclasses")
 
-    def _get_arc_parameters_for_self_loops(
+    def _get_self_loop_parameters(
         self, vertex: Hashable, angle_between_points: float = PI / 2
     ):
         """Method to get required parameters for self loops edges to draw an arc."""
@@ -1600,7 +1600,7 @@ class Graph(GenericGraph):
                     **self._edge_config[(u, v)],
                 )
             else:
-                p1, p2, arc_angle = self._get_arc_parameters_for_self_loops(u)
+                p1, p2, arc_angle = self._get_self_loop_parameters(u)
                 self.edges[(u, v)] = edge_type(
                     p1,
                     p2,
@@ -1618,7 +1618,7 @@ class Graph(GenericGraph):
             # Undirected graph has a Line edge
             if u == v:
                 # Update self-loops edges
-                p1, p2, arc_angle = self._get_arc_parameters_for_self_loops(u)
+                p1, p2, arc_angle = self._get_self_loop_parameters(u)
                 edge.set_points_by_ends(
                     p1,
                     p2,
@@ -1832,7 +1832,7 @@ class DiGraph(GenericGraph):
                     **self._edge_config[(u, v)],
                 )
             else:
-                p1, p2, arc_angle = self._get_arc_parameters_for_self_loops(u)
+                p1, p2, arc_angle = self._get_self_loop_parameters(u)
                 self.edges[(u, v)] = edge_type(
                     p1,
                     p2,
@@ -1861,7 +1861,7 @@ class DiGraph(GenericGraph):
 
             if u == v:
                 # Update self-loops edges
-                p1, p2, arc_angle = self._get_arc_parameters_for_self_loops(u)
+                p1, p2, arc_angle = self._get_self_loop_parameters(u)
                 edge.set_points_by_ends(
                     p1,
                     p2,
