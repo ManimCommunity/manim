@@ -695,6 +695,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         self,
         edge: tuple[Hashable, Hashable],
         label: str | SingleStringMathTex | Text | Tex,
+        edge_label_type: type[Mobject] = LabeledDot,
     ):
         """Set the label for the edge."""
         edge_obj = self.edges[edge]
@@ -706,7 +707,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
 
         # TODO How can we access the background color of the scene?
         background_color = BLACK
-        rendered_label = LabeledDot(label=label, color=background_color)
+        rendered_label = edge_label_type(label=label, color=background_color)
 
         # Scale the label if it is too large compared to the edge
         rendered_label.scale_to_fit_width(
@@ -1592,6 +1593,7 @@ class Graph(GenericGraph):
         self.edges = {}
         for u, v in edges:
             edge_label = self._edge_config.get((u, v), {}).pop("label", None)
+            edge_label_type = self._edge_config[(u, v)].pop("label_type", LabeledDot)
             if u != v:
                 self.edges[(u, v)] = edge_type(
                     self[u].get_center(),
@@ -1611,7 +1613,9 @@ class Graph(GenericGraph):
                 )
 
             if edge_label is not None:
-                self._add_edge_label((u, v), edge_label)
+                self._add_edge_label(
+                    (u, v), edge_label, edge_label_type=edge_label_type
+                )
 
     def update_edges(self, graph):
         for (u, v), edge in graph.edges.items():
@@ -1824,6 +1828,7 @@ class DiGraph(GenericGraph):
         self.edges = {}
         for u, v in edges:
             edge_label = self._edge_config.get((u, v), {}).pop("label", None)
+            edge_label_type = self._edge_config[(u, v)].pop("label_type", LabeledDot)
             if u != v:
                 self.edges[(u, v)] = edge_type(
                     self[u],
@@ -1843,7 +1848,9 @@ class DiGraph(GenericGraph):
                 )
 
             if edge_label is not None:
-                self._add_edge_label((u, v), edge_label)
+                self._add_edge_label(
+                    (u, v), edge_label, edge_label_type=edge_label_type
+                )
 
         for (u, v), edge in self.edges.items():
             edge.add_tip(**self._tip_config[(u, v)])
