@@ -20,6 +20,22 @@ class GraphScene(Scene):
             (4, 4): "2",
         }
 
+        class CustomLabelledDot(LabeledDot):
+            def __init__(self, **kwargs):
+                print("This is a custom LabelledDot class")
+                super().__init__(**kwargs)
+
+        edge_config = {
+            (1, 2): {"color": RED},
+            (2, 3): {"color": BLUE},
+            # You can use a custom class for edge labels as long as it can be initialized with a label keyword and a color keyword
+            (3, 5): {"color": GREEN, "label_type": CustomLabelledDot},
+            # weights have priority over labels in edge_config
+            (3, 1): {"color": YELLOW, "label": "3"},
+            (1, 5): {"color": ORANGE},
+            (4, 4): {"color": PURPLE},
+        }
+
         # Graph generation
 
         g = DiGraph(
@@ -28,6 +44,7 @@ class GraphScene(Scene):
             labels=labels,
             weights=weights,
             layout=layout,
+            edge_config=edge_config,
         )
 
         # Rendering the graphs
