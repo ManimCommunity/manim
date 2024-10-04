@@ -1524,6 +1524,31 @@ class Graph(GenericGraph):
                                        (4, 7): {"stroke_color": RED}})
                 self.add(g)
 
+    The edges in graphs can also be labeled, by associating weights to them.
+    They can be configured for each edge individually.
+
+    .. note::
+
+        In ``edge_config``, edges can be passed in both directions: if
+        ``(u, v)`` is an edge in the graph, both ``(u, v)`` as well
+        as ``(v, u)`` can be used as keys in the dictionary.
+
+    .. manim:: WeightedGraph
+        :save_last_frame:
+
+        class WeightedGraph(Scene):
+            def construct(self):
+                vertices = [1, 2, 3, 4, 5]
+                edges = [(1, 5), (2, 3), (2, 4), (2, 5),
+                         (3, 4), (4, 4), (5, 3)]
+                weights = {(1, 5): 1, (2, 3): 2, (2, 4): 3, (2, 5): 1,
+                           (3, 4): 4, (4, 4): 5, (5, 3): 6}
+                g = Graph(vertices, edges, layout="circular", weights=weights,
+                          labels=True,
+                          edge_config={(2, 4): {"label_text_color": BLUE},
+                                       (3, 4): {"label_background_color": RED}})
+                self.add(g)
+
     You can also lay out a partite graph on columns by specifying
     a list of the vertices on each side and choosing the partite layout.
 
@@ -1826,6 +1851,7 @@ class DiGraph(GenericGraph):
                 edges = [
                     (0, 1),
                     (1, 2),
+                    (2, 2),
                     (3, 2),
                     (3, 4),
                 ]
@@ -1839,6 +1865,9 @@ class DiGraph(GenericGraph):
                     (3, 4): {
                         "color": RED,
                         "tip_config": {"tip_length": 0.25, "tip_width": 0.25}
+                    },
+                    (1, 2): {
+                        "label": "3",
                     },
                 }
 
@@ -1864,6 +1893,7 @@ class DiGraph(GenericGraph):
                 edges = [
                     (0, 1),
                     (1, 2),
+                    (2, 2),
                     (3, 2),
                     (3, 4),
                 ]
@@ -1872,6 +1902,7 @@ class DiGraph(GenericGraph):
                     "stroke_width": 2,
                     "tip_config": {"tip_length": 0, "tip_width": 0},
                     (3, 4): {"color": RED},
+                    (1, 2): {"label": "3"},
                 }
 
                 g = DiGraph(
