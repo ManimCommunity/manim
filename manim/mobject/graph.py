@@ -23,6 +23,7 @@ if TYPE_CHECKING:
 
     NxGraph: TypeAlias = nx.classes.graph.Graph | nx.classes.digraph.DiGraph
 
+from manim import config
 from manim.animation.composition import AnimationGroup
 from manim.animation.creation import Create, Uncreate
 from manim.constants import PI
@@ -34,7 +35,7 @@ from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.text.tex_mobject import MathTex, SingleStringMathTex, Tex
 from manim.mobject.text.text_mobject import Text
 from manim.mobject.types.vectorized_mobject import VMobject
-from manim.utils.color import BLACK, WHITE
+from manim.utils.color import BLACK, ManimColor, ParsableManimColor
 
 
 class LayoutFunction(Protocol):
@@ -705,24 +706,32 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         edge: tuple[Hashable, Hashable],
         label: str | SingleStringMathTex | Text | Tex,
         edge_label_type: type[Mobject] = LabeledDot,
+        label_text_color: ParsableManimColor = None,
+        label_background_color: ParsableManimColor = None,
     ):
         """Set the label for the edge."""
         edge_obj = self.edges[edge]
 
         # Creates the MathTex object if the label is a string
         if isinstance(label, str):
-            label_color = edge_obj.get_color()
+            if label_text_color is not None:
+                label_color = label_text_color
+            else:
+                label_color = edge_obj.get_color()
             label = MathTex(label, color=label_color)
 
-        # TODO How can we access the background color of the scene?
-        background_color = BLACK
+        if label_background_color is not None:
+            background_color = label_background_color
+        else:
+            background_color = ManimColor.parse(config["background_color"])
         rendered_label = edge_label_type(label=label, color=background_color)
 
-        # Scale the label if it is too large compared to the edge
+        # Scale the label if it is too large compared to the edge length
         rendered_label.scale_to_fit_width(
             min(edge_obj.get_arc_length() / 4, rendered_label.get_width())
         )
 
+        # Position the label in the middle of the edge
         rendered_label.move_to(edge_obj.point_from_proportion(0.5))
         edge_obj.add(rendered_label)
 
@@ -1601,51 +1610,52 @@ class Graph(GenericGraph):
     ):
         self.edges = {}
         for u, v in edges:
-            edge_label = self._edge_config.get((u, v), {}).pop("label", None)
-            edge_label_type = self._edge_config[(u, v)].pop("label_type", LabeledDot)
-            if u != v:
-                self.edges[(u, v)] = edge_type(
-                    self[u].get_center(),
-                    self[v].get_center(),
-                    z_index=self._edge_config[(u, v)].pop("z_index", -1),
-                    **self._edge_config[(u, v)],
-                )
-            else:
-                p1, p2, arc_angle = self._get_self_loop_parameters(u)
-                self.edges[(u, v)] = edge_type(
-                    p1,
-                    p2,
-                    path_arc=self._edge_config[(u, v)].pop("path_arc", arc_angle),
-                    color=self._edge_config[(u, v)].pop("color", WHITE),
-                    z_index=self._edge_config[(u, v)].pop("z_index", -1),
-                    **self._edge_config[(u, v)],
-                )
+            label = self._edge_config.get((u, v), {}).pop("label", None)
+            label_type = self._edge_config[(u, v)].pop("label_type", LabeledDot)
+            label_text_color = self._edge_config[(u, v)].pop("label_text_color", None)
+            label_background_color = self._edge_config[(u, v)].pop(
+                "label_background_color", None
+            )
 
-            if edge_label is not None:
+            if u == v:
+                p1, p2, arc_angle = self._get_self_loop_parameters(u)
+            else:
+                p1, p2, arc_angle = self[u].get_center(), self[v].get_center(), 0
+
+            self.edges[(u, v)] = edge_type(
+                p1,
+                p2,
+                path_arc=self._edge_config[(u, v)].pop("path_arc", arc_angle),
+                z_index=self._edge_config[(u, v)].pop("z_index", -1),
+                **self._edge_config[(u, v)],
+            )
+
+            if label is not None:
                 self._add_edge_label(
-                    (u, v), edge_label, edge_label_type=edge_label_type
+                    (u, v),
+                    label,
+                    edge_label_type=label_type,
+                    label_text_color=label_text_color,
+                    label_background_color=label_background_color,
                 )
 
     def update_edges(self, graph):
         for (u, v), edge in graph.edges.items():
             # Undirected graph has a Line edge
+
             if u == v:
-                # Update self-loops edges
+                # Update self-loop
                 p1, p2, arc_angle = self._get_self_loop_parameters(u)
-                edge.set_points_by_ends(
-                    p1,
-                    p2,
-                    buff=self._edge_config.get("buff", edge.buff),
-                    path_arc=arc_angle,
-                )
             else:
                 # Update regular edges
-                edge.set_points_by_ends(
-                    graph[u].get_center(),
-                    graph[v].get_center(),
-                    buff=self._edge_config.get("buff", edge.buff),
-                    path_arc=self._edge_config.get("path_arc", edge.path_arc),
-                )
+                p1, p2, arc_angle = graph[u], graph[v], edge.path_arc
+
+            edge.set_points_by_ends(
+                p1,
+                p2,
+                buff=self._edge_config.get("buff", edge.buff),
+                path_arc=self._edge_config[(u, v)].get("path_arc", arc_angle),
+            )
 
     def __repr__(self: Graph) -> str:
         return f"Undirected graph on {len(self.vertices)} vertices and {len(self.edges)} edges"
@@ -1836,29 +1846,33 @@ class DiGraph(GenericGraph):
     ):
         self.edges = {}
         for u, v in edges:
-            edge_label = self._edge_config.get((u, v), {}).pop("label", None)
-            edge_label_type = self._edge_config[(u, v)].pop("label_type", LabeledDot)
-            if u != v:
-                self.edges[(u, v)] = edge_type(
-                    self[u],
-                    self[v],
-                    z_index=self._edge_config[(u, v)].pop("z_index", -1),
-                    **self._edge_config[(u, v)],
-                )
-            else:
-                p1, p2, arc_angle = self._get_self_loop_parameters(u)
-                self.edges[(u, v)] = edge_type(
-                    p1,
-                    p2,
-                    path_arc=self._edge_config[(u, v)].pop("path_arc", arc_angle),
-                    color=self._edge_config[(u, v)].pop("color", WHITE),
-                    z_index=self._edge_config[(u, v)].pop("z_index", -1),
-                    **self._edge_config[(u, v)],
-                )
+            label = self._edge_config.get((u, v), {}).pop("label", None)
+            label_type = self._edge_config[(u, v)].pop("label_type", LabeledDot)
+            label_text_color = self._edge_config[(u, v)].pop("label_text_color", None)
+            label_background_color = self._edge_config[(u, v)].pop(
+                "label_background_color", None
+            )
 
-            if edge_label is not None:
+            if u == v:
+                p1, p2, arc_angle = self._get_self_loop_parameters(u)
+            else:
+                p1, p2, arc_angle = self[u].get_center(), self[v].get_center(), 0
+
+            self.edges[(u, v)] = edge_type(
+                p1,
+                p2,
+                path_arc=self._edge_config[(u, v)].pop("path_arc", arc_angle),
+                z_index=self._edge_config[(u, v)].pop("z_index", -1),
+                **self._edge_config[(u, v)],
+            )
+
+            if label is not None:
                 self._add_edge_label(
-                    (u, v), edge_label, edge_label_type=edge_label_type
+                    (u, v),
+                    label,
+                    edge_label_type=label_type,
+                    label_text_color=label_text_color,
+                    label_background_color=label_background_color,
                 )
 
         for (u, v), edge in self.edges.items():
@@ -1876,22 +1890,18 @@ class DiGraph(GenericGraph):
             # stop on the bounding box of the vertex.
 
             if u == v:
-                # Update self-loops edges
+                # Update self-loop
                 p1, p2, arc_angle = self._get_self_loop_parameters(u)
-                edge.set_points_by_ends(
-                    p1,
-                    p2,
-                    buff=self._edge_config.get("buff", edge.buff),
-                    path_arc=arc_angle,
-                )
             else:
                 # Update regular edges
-                edge.set_points_by_ends(
-                    graph[u],
-                    graph[v],
-                    buff=self._edge_config.get("buff", edge.buff),
-                    path_arc=self._edge_config.get("path_arc", edge.path_arc),
-                )
+                p1, p2, arc_angle = graph[u], graph[v], edge.path_arc
+
+            edge.set_points_by_ends(
+                p1,
+                p2,
+                buff=self._edge_config.get("buff", edge.buff),
+                path_arc=self._edge_config[(u, v)].get("path_arc", arc_angle),
+            )
 
             edge.add_tip(tip)
 
