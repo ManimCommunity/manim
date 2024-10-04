@@ -682,13 +682,22 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         self, vertex: Hashable, angle_between_points: float = PI / 2
     ):
         """Method to get required parameters for self loops edges to draw an arc."""
-        edge_center, graph_center = self[vertex].get_center(), self.get_center()
-        vec = (edge_center - graph_center) / np.linalg.norm(edge_center - graph_center)
+        vertex_obj = self.vertices[vertex]
+        vertex_center, graph_center = vertex_obj.get_center(), self.get_center()
+
+        vec = (vertex_center - graph_center) / np.linalg.norm(
+            vertex_center - graph_center
+        )
         ort = np.array([vec[1], -vec[0], 0])
-        r = self[vertex].radius  # Get vertex Dot radius
+
+        # r = vertex_obj.get_radius()  # Get vertex Dot radius
+        r = (
+            min(vertex_obj.get_width(), vertex_obj.get_height()) / 2
+        )  # Get vertex 'radius' for any type of VMobject
         angle = angle_between_points / 2
-        p1 = edge_center + r * (vec * np.cos(angle) + ort * np.sin(angle))
-        p2 = edge_center + r * (vec * np.cos(-angle) + ort * np.sin(-angle))
+
+        p1 = vertex_center + r * (vec * np.cos(angle) + ort * np.sin(angle))
+        p2 = vertex_center + r * (vec * np.cos(-angle) + ort * np.sin(-angle))
         return p1, p2, 2 * PI - angle_between_points
 
     def _add_edge_label(
