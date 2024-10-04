@@ -515,6 +515,11 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         custom labels can be specified by passing a dictionary whose keys are
         the vertices, and whose values are the corresponding vertex labels
         (rendered via, e.g., :class:`~.Text` or :class:`~.Tex`).
+    weights
+        Controls whether or not edges are labeled. If ``None`` (the default),
+        edges are not labeled. Labels can be specified by passing a dictionary
+        whose keys are the edges, and whose values are the corresponding edges labels
+        (rendered via, e.g., :class:`~.Text` or :class:`~.Tex`).
     label_fill_color
         Sets the fill color of the default labels generated when ``labels``
         is set to ``True``. Has no effect for other values of ``labels``.
@@ -683,7 +688,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
     def _get_self_loop_parameters(
         self, vertex: Hashable, angle_between_points: float = PI / 2
     ):
-        """Method to get required parameters for self loops edges to draw an arc."""
+        """Returns the required parameters for self loops edges to draw an arc."""
         vertex_obj = self.vertices[vertex]
         vertex_center, graph_center = vertex_obj.get_center(), self.get_center()
 
@@ -708,7 +713,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         label_text_color: ParsableManimColor = None,
         label_background_color: ParsableManimColor = None,
     ):
-        """Set the label for the edge."""
+        """Add the given label to the given edge."""
         edge_obj = self.edges[edge]
 
         # create the MathTex object if the label is a string
@@ -1346,6 +1351,11 @@ class Graph(GenericGraph):
         custom labels can be specified by passing a dictionary whose keys are
         the vertices, and whose values are the corresponding vertex labels
         (rendered via, e.g., :class:`~.Text` or :class:`~.Tex`).
+    weights
+        Controls whether or not edges are labeled. If ``None`` (the default),
+        edges are not labeled. Labels can be specified by passing a dictionary
+        whose keys are the edges, and whose values are the corresponding edges labels
+        (rendered via, e.g., :class:`~.Text` or :class:`~.Tex`).
     label_fill_color
         Sets the fill color of the default labels generated when ``labels``
         is set to ``True``. Has no effect for other values of ``labels``.
@@ -1691,6 +1701,11 @@ class DiGraph(GenericGraph):
         names (as specified in ``vertices``) via :class:`~.MathTex`. Alternatively,
         custom labels can be specified by passing a dictionary whose keys are
         the vertices, and whose values are the corresponding vertex labels
+        (rendered via, e.g., :class:`~.Text` or :class:`~.Tex`).
+    weights
+        Controls whether or not edges are labeled. If ``None`` (the default),
+        edges are not labeled. Labels can be specified by passing a dictionary
+        whose keys are the edges, and whose values are the corresponding edges labels
         (rendered via, e.g., :class:`~.Text` or :class:`~.Tex`).
     label_fill_color
         Sets the fill color of the default labels generated when ``labels``
