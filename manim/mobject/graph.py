@@ -1648,7 +1648,11 @@ class Graph(GenericGraph):
                 p1, p2, arc_angle = self._get_self_loop_parameters(u)
             else:
                 # Update regular edges
-                p1, p2, arc_angle = graph[u], graph[v], edge.path_arc
+                p1, p2, arc_angle = (
+                    graph[u].get_center(),
+                    graph[v].get_center(),
+                    edge.path_arc,
+                )
 
             edge.set_points_by_ends(
                 p1,
@@ -1856,7 +1860,7 @@ class DiGraph(GenericGraph):
             if u == v:
                 p1, p2, arc_angle = self._get_self_loop_parameters(u)
             else:
-                p1, p2, arc_angle = self[u].get_center(), self[v].get_center(), 0
+                p1, p2, arc_angle = self[u], self[v], 0
 
             self.edges[(u, v)] = edge_type(
                 p1,
