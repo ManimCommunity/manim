@@ -658,6 +658,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
                 self._tip_config[e] = copy(default_tip_config)
                 self._edge_config[e] = copy(default_edge_config)
 
+        # add weights to edges
         if weights is not None:
             for e, w in weights.items():
                 if w is None:
@@ -691,10 +692,8 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         )
         ort = np.array([vec[1], -vec[0], 0])
 
-        # r = vertex_obj.get_radius()  # Get vertex Dot radius
-        r = (
-            min(vertex_obj.get_width(), vertex_obj.get_height()) / 2
-        )  # Get vertex 'radius' for any type of VMobject
+        # get vertex 'radius' for any type of VMobject
+        r = min(vertex_obj.get_width(), vertex_obj.get_height()) / 2
         angle = angle_between_points / 2
 
         p1 = vertex_center + r * (vec * np.cos(angle) + ort * np.sin(angle))
@@ -712,7 +711,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         """Set the label for the edge."""
         edge_obj = self.edges[edge]
 
-        # Creates the MathTex object if the label is a string
+        # create the MathTex object if the label is a string
         if isinstance(label, str):
             if label_text_color is not None:
                 label_color = label_text_color
@@ -726,12 +725,12 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
             background_color = ManimColor.parse(config["background_color"])
         rendered_label = edge_label_type(label=label, color=background_color)
 
-        # Scale the label if it is too large compared to the edge length
+        # scale the label if it is too large compared to the edge length
         rendered_label.scale_to_fit_width(
             min(edge_obj.get_arc_length() / 4, rendered_label.get_width())
         )
 
-        # Position the label in the middle of the edge
+        # move the label to the middle of the edge
         rendered_label.move_to(edge_obj.point_from_proportion(0.5))
         edge_obj.add(rendered_label)
 
@@ -1644,10 +1643,10 @@ class Graph(GenericGraph):
             # Undirected graph has a Line edge
 
             if u == v:
-                # Update self-loop
+                # update self-loop
                 p1, p2, arc_angle = self._get_self_loop_parameters(u)
             else:
-                # Update regular edges
+                # update regular edges
                 p1, p2, arc_angle = (
                     graph[u].get_center(),
                     graph[v].get_center(),
@@ -1894,10 +1893,10 @@ class DiGraph(GenericGraph):
             # stop on the bounding box of the vertex.
 
             if u == v:
-                # Update self-loop
+                # update self-loop
                 p1, p2, arc_angle = self._get_self_loop_parameters(u)
             else:
-                # Update regular edges
+                # update regular edges
                 p1, p2, arc_angle = graph[u], graph[v], edge.path_arc
 
             edge.set_points_by_ends(
