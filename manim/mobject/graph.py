@@ -687,8 +687,26 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
 
     def _get_self_loop_parameters(
         self, vertex: Hashable, angle_between_points: float = PI / 2
-    ):
-        """Returns the required parameters for self loops edges to draw an arc."""
+    ) -> tuple[Point3D, Point3D, float]:
+        """Compute the required parameters for self loops edges to draw an arc.
+
+        Parameters
+        ----------
+
+        vertex
+            The vertex identifier.
+        angle_between_points
+            The angle between the two points of the arc, relative to the vertex
+            center.
+
+        Returns
+        -------
+
+        tuple[Point3D, Point3D, float]
+            The tuple composed of the starting point of the arc, its ending point
+            and the angle of a circle spanned by this arc.
+
+        """
         vertex_obj = self.vertices[vertex]
         vertex_center, graph_center = vertex_obj.get_center(), self.get_center()
 
@@ -712,8 +730,30 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         edge_label_type: type[Mobject] = LabeledDot,
         label_text_color: ParsableManimColor = None,
         label_background_color: ParsableManimColor = None,
-    ):
-        """Add the given label to the given edge."""
+    ) -> None:
+        """Add the given label to the given edge.
+
+        Parameters
+        ----------
+
+        edge
+            A tuple of two hashable vertex identifiers.
+        label
+            The label to be added to the edge. This is rendered as :class:`~.MathTex`
+            by default (i.e., when passing a :class:`str`), but other classes
+            representing rendered strings like :class:`~.Text` or :class:`~.Tex`
+            can be passed as well.
+        edge_label_type
+            The mobject class used for displaying edge labels in the scene.
+            It uses a :class:`~.LabelledDot` by default.
+        label_text_color
+            The color of the label text. If ``None`` (the default), the color of the
+            edge is used.
+        label_background_color
+            The background color of the label. If ``None`` (the default), the
+            ``config.background_color`` is used.
+
+        """
         edge_obj = self.edges[edge]
 
         # create the MathTex object if the label is a string
