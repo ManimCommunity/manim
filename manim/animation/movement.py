@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import pygame
+
 __all__ = [
     "Homotopy",
     "SmoothedVectorizedHomotopy",
@@ -112,16 +114,23 @@ class PhaseFlow(Animation):
         virtual_time: float = 1,
         suspend_mobject_updating: bool = False,
         rate_func: Callable[[float], float] = linear,
+        sound_file: str = "path/to/your/sound.wav",  # Addition
         **kwargs,
     ) -> None:
         self.virtual_time = virtual_time
         self.function = function
+        self.sound_file = sound_file  # Addition
         super().__init__(
             mobject,
             suspend_mobject_updating=suspend_mobject_updating,
             rate_func=rate_func,
             **kwargs,
         )
+
+    def begin(self) -> None:  # Addition
+        super().begin()
+        # Play sound at the start of the animation
+        pygame.mixer.Sound(self.sound_file).play()
 
     def interpolate_mobject(self, alpha: float) -> None:
         if hasattr(self, "last_alpha"):
