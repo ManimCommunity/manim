@@ -32,8 +32,8 @@ class GraphScene(Scene):
             (3, 5): {"color": GREEN, "label_type": CustomLabelledDot},
             # weights have priority over labels in edge_config
             (3, 1): {"color": YELLOW, "label": "3"},
-            (1, 5): {"color": ORANGE},
-            (4, 4): {"color": PURPLE},
+            (1, 5): {"color": ORANGE, "label_text_color": BLUE},
+            (4, 4): {"color": PURPLE, "label_background_color": YELLOW},
         }
 
         # Graph generation
