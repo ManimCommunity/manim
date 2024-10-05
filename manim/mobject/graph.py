@@ -686,7 +686,10 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         raise NotImplementedError("To be implemented in concrete subclasses")
 
     def _get_self_loop_parameters(
-        self, vertex: Hashable, angle_between_points: float = PI / 2
+        self,
+        vertex: Hashable,
+        angle_between_points: float = PI / 2,
+        angle_sum: float = 2 * PI,
     ) -> tuple[Point3D, Point3D, float]:
         """Compute the required parameters for self loops edges to draw an arc.
 
@@ -698,6 +701,8 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         angle_between_points
             The angle between the two points of the arc, relative to the vertex
             center.
+        angle_sum
+            The total angle spanned by the angle and the two end-points.
 
         Returns
         -------
@@ -718,10 +723,12 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         # get vertex 'radius' for any type of VMobject
         r = min(vertex_obj.get_width(), vertex_obj.get_height()) / 2
         angle = angle_between_points / 2
+        # TODO: rotate the label to compensate the path_arc
 
         p1 = vertex_center + r * (vec * np.cos(angle) + ort * np.sin(angle))
         p2 = vertex_center + r * (vec * np.cos(-angle) + ort * np.sin(-angle))
-        return p1, p2, 2 * PI - angle_between_points
+
+        return p1, p2, angle_sum - angle_between_points
 
     def _add_edge_label(
         self,
@@ -1693,7 +1700,9 @@ class Graph(GenericGraph):
 
             if u == v:
                 # create self-loop
-                p1, p2, arc_angle = self._get_self_loop_parameters(u)
+                p1, p2, arc_angle = self._get_self_loop_parameters(
+                    u, angle_between_points=3 * PI / 4, angle_sum=5 / 2 * PI
+                )
             else:
                 # create regular edges
                 p1, p2, arc_angle = self[u].get_center(), self[v].get_center(), 0
@@ -1721,7 +1730,9 @@ class Graph(GenericGraph):
 
             if u == v:
                 # update self-loop
-                p1, p2, arc_angle = self._get_self_loop_parameters(u)
+                p1, p2, arc_angle = self._get_self_loop_parameters(
+                    u, angle_between_points=3 * PI / 4, angle_sum=5 / 2 * PI
+                )
             else:
                 # update regular edges
                 p1, p2, arc_angle = (
