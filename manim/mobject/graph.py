@@ -1854,6 +1854,23 @@ class DiGraph(GenericGraph):
                 )
                 self.wait()
 
+    The edges of the DiGraph can be labeled, by associating weights to them.
+    You can also define bidirectional edges.
+
+    .. manim:: WeightedBidirectionalEdgeDiGraph
+        :save_last_frame:
+
+        class WeightedBidirectionalEdgeDiGraph(Scene):
+            def construct(self):
+                vertices = [1, 2, 3, 4, 5]
+                edges = [(1, 5), (2, 3), (2, 4), (2, 5),
+                         (3, 2), (3, 4), (4, 4), (5, 3)]
+                weights = {(1, 5): 1, (2, 3): 2, (2, 4): 3, (2, 5): 1,
+                           (3, 2): 3, (3, 4): 4, (4, 4): 5, (5, 3): 6}
+                g = DiGraph(vertices, edges, layout="circular", weights=weights,
+                          labels=True)
+                self.add(g)
+
     You can customize the edges and arrow tips globally or locally.
 
     .. manim:: CustomDiGraph
