@@ -3,6 +3,7 @@ from __future__ import annotations
 import math
 
 import numpy as np
+import numpy.testing as nt
 import pytest
 
 from manim import (
@@ -14,6 +15,7 @@ from manim import (
     Circle,
     ComplexPlane,
     Dot,
+    NumberLine,
     NumberPlane,
     PolarPlane,
     ThreeDAxes,
@@ -192,3 +194,46 @@ def test_input_to_graph_point():
     # test the line_graph implementation
     position = np.around(ax.input_to_graph_point(x=PI, graph=line_graph), decimals=4)
     np.testing.assert_array_equal(position, (2.6928, 1.2876, 0))
+
+
+def test_matmul_operations():
+    ax = Axes()
+    nt.assert_equal(ax @ (1, 2), ax.coords_to_point(1, 2))
+    # should work with mobjects too, using their center
+    mob = Dot().move_to((1, 2, 0))
+    nt.assert_equal(ax @ mob, ax.coords_to_point(1, 2))
+
+    # other coordinate systems like PolarPlane and ComplexPlane should override __matmul__ indirectly
+    polar = PolarPlane()
+    nt.assert_equal(polar @ (1, 2), polar.polar_to_point(1, 2))
+
+    complx = ComplexPlane()
+    nt.assert_equal(complx @ (1 + 2j), complx.number_to_point(1 + 2j))
+
+    # Numberline doesn't inherit from CoordinateSystem, but it should still work
+    n = NumberLine()
+    nt.assert_equal(n @ 3, n.number_to_point(3))
+
+
+def test_rmatmul_operations():
+    point = (1, 2, 0)
+
+    ax = Axes()
+    nt.assert_equal(point @ ax, ax.point_to_coords(point))
+
+    polar = PolarPlane()
+    assert point @ polar == polar.point_to_polar(point)
+
+    complx = ComplexPlane()
+    nt.assert_equal(point @ complx, complx.point_to_number(point))
+
+    n = NumberLine()
+    point = n @ 4
+
+    nt.assert_equal(
+        tuple(point) @ n,  # ndarray overrides __matmul__
+        n.point_to_number(point),
+    )
+
+    mob = Dot().move_to(point)
+    nt.assert_equal(mob @ n, n.point_to_number(mob.get_center()))
