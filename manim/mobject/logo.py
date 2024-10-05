@@ -149,7 +149,7 @@ class ManimBanner(VGroup):
         self.scale_factor = 1
 
         self.M = VMobjectFromSVGPath(MANIM_SVG_PATHS[0]).flip(cst.RIGHT).center()
-        self.M.set(stroke_width=0).scale(
+        self.M.set_stroke(width=0).scale(
             7 * cst.DEFAULT_FONT_SIZE * cst.SCALE_FACTOR_PER_FONT_POINT
         )
         self.M.set_fill(color=self.font_color, opacity=1).shift(
@@ -166,7 +166,7 @@ class ManimBanner(VGroup):
         anim = VGroup()
         for ind, path in enumerate(MANIM_SVG_PATHS[1:]):
             tex = VMobjectFromSVGPath(path).flip(cst.RIGHT).center()
-            tex.set(stroke_width=0).scale(
+            tex.set_stroke(width=0).scale(
                 cst.DEFAULT_FONT_SIZE * cst.SCALE_FACTOR_PER_FONT_POINT
             )
             if ind > 0:
@@ -261,7 +261,7 @@ class ManimBanner(VGroup):
                     )
 
         """
-        if direction not in ["left", "right", "center"]:
+        if direction.lower() not in {"left", "right", "center"}:
             raise ValueError("direction must be 'left', 'right' or 'center'.")
 
         m_shape_offset = 6.25 * self.scale_factor
@@ -301,7 +301,7 @@ class ManimBanner(VGroup):
             if alpha == 1:
                 self.remove(*[self.anim])
                 self.add_to_back(self.anim)
-                mob.shapes.set_z_index(0)
+                mob.shapes.set_z(0)
                 mob.shapes.save_state()
                 mob.M.save_state()
 

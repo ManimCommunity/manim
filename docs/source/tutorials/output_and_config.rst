@@ -18,7 +18,7 @@ At this point, you have just executed the following command.
 
 Let's dissect what just happened step by step.  First, this command executes
 manim on the file ``scene.py``, which contains our animation code.  Further,
-this command tells manim exactly which ``Scene`` is to be rendered, in this case,
+this command tells manim exactly which :class:`.Scene` is to be rendered, in this case,
 it is ``SquareToCircle``.  This is necessary because a single scene file may
 contain more than one scene.  Next, the flag `-p` tells manim to play the scene
 once it's rendered, and the `-ql` flag tells manim to render the scene in low
@@ -140,19 +140,30 @@ resolutions, e.g. ``-s -ql``, ``-s -qh``
 Sections
 ********
 
-In addition to the movie output file one can use sections. Each section produces
-its own output video. The cuts between two sections can be set like this:
+In addition to the movie output file one can use sections. If :attr:`ManimConfig.save_sections` is ``True``,
+each section produces its own output video. In order to use sections, set :attr:`~Scene.sections_api` to ``True``.
 
 .. code-block:: python
 
-    def construct(self):
-        # play the first animations...
-        # you don't need a section in the very beginning as it gets created automatically
-        self.next_section()
-        # play more animations...
-        self.next_section("this is an optional name that doesn't have to be unique")
-        # play even more animations...
-        self.next_section("this is a section without any animations, it will be removed")
+    class MyScene(Scene):
+        sections_api = True
+
+        @section
+        def introduction(self):
+            # play the first animations...
+            # the default name of this section is the name of the method
+            ...
+
+        @section(name="this is an optional name that doesn't have to be unique")
+        def second_section(self):
+            # play more animations...
+            ...
+
+        @section(skip=True)
+        def finale(self):
+            # play even more animations...
+            # however, they won't be included in the final output video
+            ...
 
 All the animations between two of these cuts get concatenated into a single output
 video file.
@@ -160,24 +171,42 @@ Be aware that you need at least one animation in each section. For example this 
 
 .. code-block:: python
 
-   def construct(self):
-       self.next_section()
-       # this section doesn't have any animations and will be removed
-       # but no error will be thrown
-       # feel free to tend your flock of empty sections if you so desire
-       self.add(Circle())
-       self.next_section()
+   class SectionsExampleWithNoAnimations(Scene):
+      sections_api = True
+
+      @section
+      def first(self):
+          self.next_section()
+          # this section doesn't have any animations and will be removed
+          # but no error will be thrown
+          # feel free to tend your flock of empty sections if you so desire
+          self.add(Circle())
+
+      @section
+      def next(self):
+          # play some animations
+          ...
 
 One way of fixing this is to wait a little:
 
 .. code-block:: python
 
-   def construct(self):
-       self.next_section()
-       self.add(Circle())
-       # now we wait 1sec and have an animation to satisfy the section
-       self.wait()
-       self.next_section()
+   class SectionsExampleWithNoAnimations(Scene):
+      sections_api = True
+
+      @section
+      def first(self):
+          self.next_section()
+          # this section doesn't have any animations and will be removed
+          # but no error will be thrown
+          # feel free to tend your flock of empty sections if you so desire
+          self.add(Circle())
+          self.wait()
+
+      @section
+      def next(self):
+          # play some animations
+          ...
 
 For videos to be created for each section you have to add the ``--save_sections`` flag to the Manim call like this:
 
@@ -258,13 +287,20 @@ You can also skip rendering all animations belonging to a section like this:
 
 .. code-block:: python
 
-    def construct(self):
-        self.next_section(skip_animations=True)
-        # play some animations that shall be skipped...
-        self.next_section()
-        # play some animations that won't get skipped...
+   class SkippingSections(Scene):
+      sections_api = True
 
+      @section(skip=True)
+      def first(self):
+          # play some animations
+          # things here will execute, but they
+          # won't be written to the output file
+          ...
 
+      @section
+      def next(self):
+          # play some animations
+          ...
 
 
 Some command line flags
@@ -277,9 +313,9 @@ When executing the command
    manim -pql scene.py SquareToCircle
 
 it specifies the scene to render.  This is not necessary now.  When a single
-file contains only one ``Scene`` class, it will just render the ``Scene``
-class.  When a single file contains more than one ``Scene`` class, manim will
-let you choose a ``Scene`` class. If your file contains multiple ``Scene``
+file contains only one :class:`.Scene` class, it will just render the :class:`.Scene`
+class.  When a single file contains more than one :class:`.Scene` class, manim will
+let you choose a :class:`.Scene` class. If your file contains multiple :class:`.Scene`
 classes, and you want to render them all, you can use the ``-a`` flag.
 
 As discussed previously, the ``-ql`` specifies low render quality (854x480
@@ -294,7 +330,7 @@ the file browser at the location of the animation instead of playing it, you
 can use the ``-f`` flag.  You can also omit these two flags.
 
 Finally, by default manim will output .mp4 files.  If you want your animations
-in .gif format instead, use the ``--format gif`` flag.  The output files will
+in .gif format instead, use the ``--format=gif`` flag.  The output files will
 be in the same folder as the .mp4 files, and with the same name, but a
 different file extension.
 

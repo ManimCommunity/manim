@@ -38,6 +38,7 @@ from manim.utils.bezier import (
     proportions_along_bezier_curve_for_point,
 )
 from manim.utils.color import BLACK, WHITE, ManimColor, ParsableManimColor
+from manim.utils.deprecation import deprecated
 from manim.utils.iterables import (
     make_even,
     resize_array,
@@ -134,8 +135,6 @@ class VMobject(Mobject):
         cap_style: CapStyleType = CapStyleType.AUTO,
         **kwargs,
     ):
-        self.fill_opacity = fill_opacity
-        self.stroke_opacity = stroke_opacity
         self.stroke_width = stroke_width
         if background_stroke_color is not None:
             self.background_stroke_color: ManimColor = ManimColor(
@@ -175,6 +174,11 @@ class VMobject(Mobject):
         if stroke_color is not None:
             self.stroke_color = ManimColor.parse(stroke_color)
 
+        if fill_opacity is not None:
+            self.fill_color = self.fill_color.set_opacity(fill_opacity)
+        if stroke_opacity is not None:
+            self.stroke_color = self.stroke_color.set_opacity(stroke_opacity)
+
     def _assert_valid_submobjects(self, submobjects: Iterable[VMobject]) -> Self:
         return self._assert_valid_submobjects_internal(submobjects, VMobject)
 
@@ -194,13 +198,11 @@ class VMobject(Mobject):
     def init_colors(self, propagate_colors: bool = True) -> Self:
         self.set_fill(
             color=self.fill_color,
-            opacity=self.fill_opacity,
             family=propagate_colors,
         )
         self.set_stroke(
             color=self.stroke_color,
             width=self.stroke_width,
-            opacity=self.stroke_opacity,
             family=propagate_colors,
         )
         self.set_background_stroke(
@@ -319,10 +321,11 @@ class VMobject(Mobject):
         if family:
             for submobject in self.submobjects:
                 submobject.set_fill(color, opacity, family)
-        self.update_rgbas_array("fill_rgbas", color, opacity)
-        self.fill_rgbas: RGBA_Array_Float
+
+        if color is not None:
+            self.fill_color = ManimColor.parse(color)
         if opacity is not None:
-            self.fill_opacity = opacity
+            self.fill_color = [c.opacity(opacity) for c in self.fill_color]
         return self
 
     def set_stroke(
@@ -709,6 +712,18 @@ class VMobject(Mobject):
     def set_points(self, points: Point3D_Array) -> Self:
         self.points: Point3D_Array = np.array(points)
         return self
+
+    def set_z(self, z: float) -> Self:
+        self.points[..., -1] = z
+        return self
+
+    @deprecated(
+        since="0.18.2",
+        until="0.19.0",
+        message="OpenGL has no concept of z_index. Use set_z instead",
+    )
+    def set_z_index(self, z: float) -> Self:
+        return self.set_z(z)
 
     def resize_points(
         self,
@@ -2069,7 +2084,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
             f"submobject{'s' if len(self.submobjects) > 0 else ''}"
         )
 
-    def add(self, *vmobjects: VMobject) -> Self:
+    def add(self, *vmobjects: OpenGLVMobject) -> Self:
         """Checks if all passed elements are an instance of VMobject and then add them to submobjects
 
         Parameters
@@ -2117,6 +2132,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
                         (gr-circle_red).animate.shift(RIGHT)
                     )
         """
+        # leave here because the docstring is useful
         return super().add(*vmobjects)
 
     def __add__(self, vmobject: VMobject) -> Self:
@@ -2328,7 +2344,7 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
             my_dict.remove("square")
         """
         if key not in self.submob_dict:
-            raise KeyError(f"The given key '{key!s}' is not present in the VDict")
+            raise KeyError(f"The given key {key!r} is not present in the VDict")
         super().remove(self.submob_dict[key])
         del self.submob_dict[key]
         return self

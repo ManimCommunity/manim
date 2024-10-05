@@ -66,12 +66,11 @@ __all__ = [
     "PI",
     "TAU",
     "DEGREES",
+    "RADIANS",
     "QUALITIES",
     "DEFAULT_QUALITY",
     "EPILOG",
     "CONTEXT_SETTINGS",
-    "SHIFT_VALUE",
-    "CTRL_VALUE",
     "RendererType",
     "LineJointType",
     "CapStyleType",
@@ -197,6 +196,9 @@ TAU = 2 * PI
 DEGREES = TAU / 360
 """The exchange rate between radians and degrees."""
 
+RADIANS: float = 1.0
+"""Just a default to select for camera."""
+
 # Video qualities
 QUALITIES: dict[str, dict[str, str | int | None]] = {
     "fourk_quality": {
@@ -240,8 +242,6 @@ QUALITIES: dict[str, dict[str, str | int | None]] = {
 DEFAULT_QUALITY = "high_quality"
 
 EPILOG = "Made with <3 by Manim Community developers."
-SHIFT_VALUE = 65505
-CTRL_VALUE = 65507
 
 CONTEXT_SETTINGS = Context.settings(
     align_option_groups=True,

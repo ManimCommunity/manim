@@ -1,10 +1,11 @@
-from manim import RIGHT, UP, LinearTransformationScene, Vector, VGroup
+from manim import RIGHT, UP, LinearTransformationScene, Manager, Vector, VGroup
 
 __module_test__ = "vector_space_scene"
 
 
 def test_ghost_vectors_len_and_types():
-    scene = LinearTransformationScene()
+    manager = Manager(LinearTransformationScene)
+    scene = manager.scene
     scene.leave_ghost_vectors = True
 
     # prepare vectors (they require a vmobject as their target)
