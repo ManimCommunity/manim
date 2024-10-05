@@ -1692,8 +1692,10 @@ class Graph(GenericGraph):
             )
 
             if u == v:
+                # create self-loop
                 p1, p2, arc_angle = self._get_self_loop_parameters(u)
             else:
+                # create regular edges
                 p1, p2, arc_angle = self[u].get_center(), self[v].get_center(), 0
 
             self.edges[(u, v)] = edge_type(
@@ -1943,9 +1945,14 @@ class DiGraph(GenericGraph):
             )
 
             if u == v:
+                # create self-loop
                 p1, p2, arc_angle = self._get_self_loop_parameters(u)
+            elif (v, u) in edges:
+                # create bidirectional edges
+                p1, p2, arc_angle = self[u].get_center(), self[v], PI / 3
             else:
-                p1, p2, arc_angle = self[u], self[v], 0
+                # create regular edges
+                p1, p2, arc_angle = self[u].get_center(), self[v], 0
 
             self.edges[(u, v)] = edge_type(
                 p1,
@@ -1982,8 +1989,8 @@ class DiGraph(GenericGraph):
                 # update self-loop
                 p1, p2, arc_angle = self._get_self_loop_parameters(u)
             else:
-                # update regular edges
-                p1, p2, arc_angle = graph[u], graph[v], edge.path_arc
+                # update regular edges and bidirectional edges
+                p1, p2, arc_angle = graph[u].get_center(), graph[v], edge.path_arc
 
             edge.set_points_by_ends(
                 p1,
