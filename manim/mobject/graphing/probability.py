@@ -280,12 +280,11 @@ class BarChart(Axes):
             ]
 
         elif len(y_range) == 2:
-            y_range = [*y_range, round(max(self.values) / y_length, 2)]
-            # y_step_target = max(self.values) / y_length
-            # y_range = [
-            #    *y_range,
-            #    round(y_step_target, max(2, int(np.ceil(-np.log10(y_step_target))))),
-            # ]
+            y_step_target = max(self.values) / y_length
+            y_range = [
+                *y_range,
+                round(y_step_target, max(2, int(np.ceil(-np.log10(y_step_target))))),
+            ]
 
         if x_length is None:
             x_length = min(len(self.values), config.frame_width - 2)
