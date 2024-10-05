@@ -33,7 +33,7 @@ import numpy as np
 
 T = TypeVar("T")
 U = TypeVar("U")
-F = TypeVar("F", np.float_, np.int_)
+F = TypeVar("F", np.float64, np.int_)
 H = TypeVar("H", bound=Hashable)
 
 
@@ -311,8 +311,8 @@ def resize_array(nparray: npt.NDArray[F], length: int) -> npt.NDArray[F]:
 
 
 def resize_preserving_order(
-    nparray: npt.NDArray[np.float_], length: int
-) -> npt.NDArray[np.float_]:
+    nparray: npt.NDArray[np.float64], length: int
+) -> npt.NDArray[np.float64]:
     """Extends/truncates nparray so that ``len(result) == length``.
         The elements of nparray are duplicated to achieve the desired length
         (favours earlier elements).
