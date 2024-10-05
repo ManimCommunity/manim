@@ -281,6 +281,8 @@ class BarChart(Axes):
 
         elif len(y_range) == 2:
             y_step_target = max(self.values) / y_length
+            # Round the step size to a suitable (ceil) number of decimal places based on its magnitude (log10(x)). Avoids step size of 0.
+            # At least 2 decimals will be used in the case of large numbers.
             y_range = [
                 *y_range,
                 round(y_step_target, max(2, int(np.ceil(-np.log10(y_step_target))))),
