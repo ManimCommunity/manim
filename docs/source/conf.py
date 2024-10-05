@@ -51,6 +51,7 @@ extensions = [
     "sphinx.ext.inheritance_diagram",
     "sphinxcontrib.programoutput",
     "myst_parser",
+    "sphinx_togglebutton"
 ]
 
 # Automatically generate stub pages when using the .. autosummary directive

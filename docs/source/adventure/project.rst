@@ -85,8 +85,9 @@ stick with a simple text-based intro. Try to recreate the following:
             self.play(Unwrite(intro), Unwrite(vec_txts), run_time=.5)
             self.wait(0.2)
 
-.. dropdown:: Authors Solution
-
+.. admonition:: Authors solution
+    :class: dropdown
+        
     .. code-block:: python
 
         class AdventureIntro(Scene):
