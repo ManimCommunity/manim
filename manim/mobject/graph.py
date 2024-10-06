@@ -702,7 +702,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
             The angle between the two points of the arc, relative to the vertex
             center.
         angle_sum
-            The total angle spanned by the angle and the two end-points.
+            The sum of the `angle_between_points` and the angle spanned by the self-loop arc.
 
         Returns
         -------
@@ -723,7 +723,6 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         # get vertex 'radius' for any type of VMobject
         r = min(vertex_obj.get_width(), vertex_obj.get_height()) / 2
         angle = angle_between_points / 2
-        # TODO: rotate the label to compensate the path_arc
 
         p1 = vertex_center + r * (vec * np.cos(angle) + ort * np.sin(angle))
         p2 = vertex_center + r * (vec * np.cos(-angle) + ort * np.sin(-angle))
@@ -1691,15 +1690,23 @@ class Graph(GenericGraph):
     ):
         self.edges = {}
         for u, v in edges:
+            # should pop the configuration values before creating the edge
             label = self._edge_config.get((u, v), {}).pop("label", None)
-            label_type = self._edge_config[(u, v)].pop("label_type", LabeledDot)
-            label_text_color = self._edge_config[(u, v)].pop("label_text_color", None)
-            label_background_color = self._edge_config[(u, v)].pop(
-                "label_background_color", None
-            )
+            if label is not None:
+                label_type = self._edge_config[(u, v)].pop("label_type", LabeledDot)
+                label_text_color = self._edge_config[(u, v)].pop(
+                    "label_text_color", None
+                )
+                label_background_color = self._edge_config[(u, v)].pop(
+                    "label_background_color", None
+                )
 
             if u == v:
                 # create self-loop
+                # TODO: should default used angle parameters be set as a graph variable?
+                #      it is still customizable as edge_config[(u, v)]["path_arc"]
+                #      as priority over this value
+                #      but it could allow to set it globally at graph creation
                 p1, p2, arc_angle = self._get_self_loop_parameters(
                     u, angle_between_points=3 * PI / 4, angle_sum=5 / 2 * PI
                 )
@@ -1965,18 +1972,28 @@ class DiGraph(GenericGraph):
     ):
         self.edges = {}
         for u, v in edges:
+            # should pop the configuration values before creating the edge
             label = self._edge_config.get((u, v), {}).pop("label", None)
-            label_type = self._edge_config[(u, v)].pop("label_type", LabeledDot)
-            label_text_color = self._edge_config[(u, v)].pop("label_text_color", None)
-            label_background_color = self._edge_config[(u, v)].pop(
-                "label_background_color", None
-            )
+            if label is not None:
+                label_type = self._edge_config[(u, v)].pop("label_type", LabeledDot)
+                label_text_color = self._edge_config[(u, v)].pop(
+                    "label_text_color", None
+                )
+                label_background_color = self._edge_config[(u, v)].pop(
+                    "label_background_color", None
+                )
 
             if u == v:
                 # create self-loop
                 p1, p2, arc_angle = self._get_self_loop_parameters(u)
             elif (v, u) in edges:
                 # create bidirectional edges
+                # TODO: should we remove bidirectional edges support?
+
+                # TODO: should default arc_angle be set as a graph variable?
+                #      it is still customizable as edge_config[(u, v)]["path_arc"]
+                #      as priority over this value
+                #      but it could allow to set it globally at graph creation
                 p1, p2, arc_angle = self[u].get_center(), self[v], PI / 3
             else:
                 # create regular edges
@@ -1990,6 +2007,11 @@ class DiGraph(GenericGraph):
                 **self._edge_config[(u, v)],
             )
 
+            # add tip
+            edge = self.edges[(u, v)]
+            edge.add_tip(**self._tip_config[(u, v)])
+
+            # add label
             if label is not None:
                 self._add_edge_label(
                     (u, v),
@@ -1998,9 +2020,6 @@ class DiGraph(GenericGraph):
                     label_text_color=label_text_color,
                     label_background_color=label_background_color,
                 )
-
-        for (u, v), edge in self.edges.items():
-            edge.add_tip(**self._tip_config[(u, v)])
 
     def update_edges(self, graph):
         """Updates the edges to stick at their corresponding vertices.
