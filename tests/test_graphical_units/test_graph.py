@@ -27,16 +27,6 @@ def test_DiGraphLoopEdge(scene):
 
 
 @frames_comparison
-def test_DiGraphBidirectionalEdge(scene):
-    vertices = [1, 2, 3, 4, 5]
-    edges = [(1, 2), (1, 5), (2, 4), (3, 2), (4, 5), (4, 1), (5, 1), (5, 3)]
-    labels = True
-    layout = "circular"
-    g = DiGraph(vertices, edges, labels=labels, layout=layout)
-    scene.add(g)
-
-
-@frames_comparison
 def test_WeightedGraph(scene):
     vertices = [1, 2, 3, 4, 5]
     edges = [(1, 3), (2, 3), (3, 4), (4, 2), (4, 5), (5, 1), (5, 3)]
@@ -108,26 +98,6 @@ def test_GraphWeightedLoopEdge(scene):
     labels = True
     layout = "circular"
     g = Graph(vertices, edges, labels=labels, layout=layout, weights=weights)
-    scene.add(g)
-
-
-@frames_comparison
-def test_DiGraphWeightedBidirectionalEdge(scene):
-    vertices = [1, 2, 3, 4, 5]
-    edges = [(1, 2), (1, 5), (2, 4), (3, 2), (4, 5), (4, 3), (2, 1), (5, 3)]
-    weights = {
-        (1, 2): 1,
-        (1, 5): 2,
-        (2, 4): 1,
-        (3, 2): 4,
-        (4, 5): 3,
-        (4, 3): 5,
-        (2, 1): 3,
-        (5, 3): 2,
-    }
-    labels = True
-    layout = "circular"
-    g = DiGraph(vertices, edges, labels=labels, layout=layout, weights=weights)
     scene.add(g)
 
 

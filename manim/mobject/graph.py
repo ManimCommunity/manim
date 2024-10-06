@@ -1900,18 +1900,17 @@ class DiGraph(GenericGraph):
                 self.wait()
 
     The edges of the DiGraph can be labeled, by associating weights to them.
-    You can also define bidirectional edges.
 
-    .. manim:: WeightedBidirectionalEdgeDiGraph
+    .. manim:: WeightedEdgeDiGraph
         :save_last_frame:
 
-        class WeightedBidirectionalEdgeDiGraph(Scene):
+        class WeightedEdgeDiGraph(Scene):
             def construct(self):
                 vertices = [1, 2, 3, 4, 5]
                 edges = [(1, 5), (2, 3), (2, 4), (2, 5),
-                         (3, 2), (3, 4), (4, 4), (5, 3)]
+                         (3, 4), (4, 4), (5, 3)]
                 weights = {(1, 5): 1, (2, 3): 2, (2, 4): 3, (2, 5): 1,
-                           (3, 2): 3, (3, 4): 4, (4, 4): 5, (5, 3): 6}
+                           (3, 4): 4, (4, 4): 5, (5, 3): 6}
                 g = DiGraph(vertices, edges, layout="circular", weights=weights,
                           labels=True)
                 self.add(g)
@@ -2067,15 +2066,6 @@ class DiGraph(GenericGraph):
                 arc_angle = self._loop_config[(u, u)].get("path_arc")
                 points_angle = self._loop_config[(u, u)].get("angle_between_points")
                 p1, p2 = self._get_self_loop_parameters(u, points_angle)
-            elif (v, u) in edges:
-                # create bidirectional edges
-                # TODO: should we remove bidirectional edges support?
-
-                # TODO: should default arc_angle be set as a graph variable?
-                #      it is still customizable as edge_config[(u, v)]["path_arc"]
-                #      as priority over this value
-                #      but it could allow to set it globally at graph creation
-                p1, p2, arc_angle = self[u].get_center(), self[v], PI / 3
             else:
                 # create regular edges
                 p1, p2, arc_angle = self[u].get_center(), self[v], 0
