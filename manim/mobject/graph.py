@@ -641,9 +641,11 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         if edge_config is None:
             edge_config = {}
         default_tip_config = {}
+        default_loop_config = self._default_loop_config
         default_edge_config = {}
         if edge_config:
             default_tip_config = edge_config.pop("tip_config", {})
+            default_loop_config = edge_config.pop("loop_config", default_loop_config)
             default_edge_config = {
                 k: v
                 for k, v in edge_config.items()
@@ -652,15 +654,20 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
                 )  # everything that is not an edge is an option
             }
         self._edge_config = {}
+        self._loop_config = {}
         self._tip_config = {}
         for e in edges:
             if e in edge_config:
                 self._tip_config[e] = edge_config[e].pop(
                     "tip_config", copy(default_tip_config)
                 )
+                self._loop_config[e] = edge_config[e].pop(
+                    "loop_config", copy(default_loop_config)
+                )
                 self._edge_config[e] = edge_config[e]
             else:
                 self._tip_config[e] = copy(default_tip_config)
+                self._loop_config[e] = copy(default_loop_config)
                 self._edge_config[e] = copy(default_edge_config)
 
         # add weights to edges
@@ -686,11 +693,8 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         raise NotImplementedError("To be implemented in concrete subclasses")
 
     def _get_self_loop_parameters(
-        self,
-        vertex: Hashable,
-        angle_between_points: float = PI / 2,
-        angle_sum: float = 2 * PI,
-    ) -> tuple[Point3D, Point3D, float]:
+        self, vertex: Hashable, angle_between_points: float = PI / 2
+    ) -> tuple[Point3D, Point3D]:
         """Compute the required parameters for self loops edges to draw an arc.
 
         Parameters
@@ -701,15 +705,12 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         angle_between_points
             The angle between the two points of the arc, relative to the vertex
             center.
-        angle_sum
-            The sum of the `angle_between_points` and the angle spanned by the self-loop arc.
 
         Returns
         -------
 
         tuple[Point3D, Point3D, float]
-            The tuple composed of the starting point of the arc, its ending point
-            and the angle of a circle spanned by this arc.
+            The tuple composed of the starting point of the arc and its ending point.
 
         """
         vertex_obj = self.vertices[vertex]
@@ -727,7 +728,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         p1 = vertex_center + r * (vec * np.cos(angle) + ort * np.sin(angle))
         p2 = vertex_center + r * (vec * np.cos(-angle) + ort * np.sin(-angle))
 
-        return p1, p2, angle_sum - angle_between_points
+        return p1, p2
 
     def _add_edge_label(
         self,
@@ -1681,6 +1682,47 @@ class Graph(GenericGraph):
                 self.play(self.camera.auto_zoom(g, margin=1), run_time=0.5)
     """
 
+    def __init__(
+        self,
+        vertices: list[Hashable],
+        edges: list[tuple[Hashable, Hashable]],
+        labels: bool | dict = False,
+        weights: dict = None,
+        label_fill_color: str = BLACK,
+        layout: LayoutName | dict[Hashable, Point3D] | LayoutFunction = "spring",
+        layout_scale: float | tuple[float, float, float] = 2,
+        layout_config: dict | None = None,
+        vertex_type: type[Mobject] = Dot,
+        vertex_config: dict | None = None,
+        vertex_mobjects: dict | None = None,
+        edge_type: type[Mobject] = Line,
+        partitions: list[list[Hashable]] | None = None,
+        root_vertex: Hashable | None = None,
+        edge_config: dict | None = None,
+    ) -> None:
+        self._default_loop_config = {
+            "angle_between_points": 3 / 4 * PI,
+            "path_arc": 7 / 4 * PI,
+        }
+
+        super().__init__(
+            vertices=vertices,
+            edges=edges,
+            labels=labels,
+            weights=weights,
+            label_fill_color=label_fill_color,
+            layout=layout,
+            layout_scale=layout_scale,
+            layout_config=layout_config,
+            vertex_type=vertex_type,
+            vertex_config=vertex_config,
+            vertex_mobjects=vertex_mobjects,
+            edge_type=edge_type,
+            partitions=partitions,
+            root_vertex=root_vertex,
+            edge_config=edge_config,
+        )
+
     @staticmethod
     def _empty_networkx_graph() -> nx.Graph:
         return nx.Graph()
@@ -1690,7 +1732,7 @@ class Graph(GenericGraph):
     ):
         self.edges = {}
         for u, v in edges:
-            # should pop the configuration values before creating the edge
+            # should pop the label configuration values before creating the edge
             label = self._edge_config.get((u, v), {}).pop("label", None)
             if label is not None:
                 label_type = self._edge_config[(u, v)].pop("label_type", LabeledDot)
@@ -1703,13 +1745,9 @@ class Graph(GenericGraph):
 
             if u == v:
                 # create self-loop
-                # TODO: should default used angle parameters be set as a graph variable?
-                #      it is still customizable as edge_config[(u, v)]["path_arc"]
-                #      as priority over this value
-                #      but it could allow to set it globally at graph creation
-                p1, p2, arc_angle = self._get_self_loop_parameters(
-                    u, angle_between_points=3 * PI / 4, angle_sum=5 / 2 * PI
-                )
+                arc_angle = self._loop_config[(u, u)].get("path_arc")
+                points_angle = self._loop_config[(u, u)].get("angle_between_points")
+                p1, p2 = self._get_self_loop_parameters(u, points_angle)
             else:
                 # create regular edges
                 p1, p2, arc_angle = self[u].get_center(), self[v].get_center(), 0
@@ -1737,9 +1775,9 @@ class Graph(GenericGraph):
 
             if u == v:
                 # update self-loop
-                p1, p2, arc_angle = self._get_self_loop_parameters(
-                    u, angle_between_points=3 * PI / 4, angle_sum=5 / 2 * PI
-                )
+                arc_angle = self._loop_config[(u, u)].get("path_arc")
+                points_angle = self._loop_config[(u, u)].get("angle_between_points")
+                p1, p2 = self._get_self_loop_parameters(u, points_angle)
             else:
                 # update regular edges
                 p1, p2, arc_angle = (
@@ -1963,6 +2001,47 @@ class DiGraph(GenericGraph):
 
     """
 
+    def __init__(
+        self,
+        vertices: list[Hashable],
+        edges: list[tuple[Hashable, Hashable]],
+        labels: bool | dict = False,
+        weights: dict = None,
+        label_fill_color: str = BLACK,
+        layout: LayoutName | dict[Hashable, Point3D] | LayoutFunction = "spring",
+        layout_scale: float | tuple[float, float, float] = 2,
+        layout_config: dict | None = None,
+        vertex_type: type[Mobject] = Dot,
+        vertex_config: dict | None = None,
+        vertex_mobjects: dict | None = None,
+        edge_type: type[Mobject] = Line,
+        partitions: list[list[Hashable]] | None = None,
+        root_vertex: Hashable | None = None,
+        edge_config: dict | None = None,
+    ) -> None:
+        self._default_loop_config = {
+            "angle_between_points": PI / 2,
+            "path_arc": 3 / 2 * PI,
+        }
+
+        super().__init__(
+            vertices=vertices,
+            edges=edges,
+            labels=labels,
+            weights=weights,
+            label_fill_color=label_fill_color,
+            layout=layout,
+            layout_scale=layout_scale,
+            layout_config=layout_config,
+            vertex_type=vertex_type,
+            vertex_config=vertex_config,
+            vertex_mobjects=vertex_mobjects,
+            edge_type=edge_type,
+            partitions=partitions,
+            root_vertex=root_vertex,
+            edge_config=edge_config,
+        )
+
     @staticmethod
     def _empty_networkx_graph() -> nx.DiGraph:
         return nx.DiGraph()
@@ -1985,7 +2064,9 @@ class DiGraph(GenericGraph):
 
             if u == v:
                 # create self-loop
-                p1, p2, arc_angle = self._get_self_loop_parameters(u)
+                arc_angle = self._loop_config[(u, u)].get("path_arc")
+                points_angle = self._loop_config[(u, u)].get("angle_between_points")
+                p1, p2 = self._get_self_loop_parameters(u, points_angle)
             elif (v, u) in edges:
                 # create bidirectional edges
                 # TODO: should we remove bidirectional edges support?
@@ -2034,7 +2115,9 @@ class DiGraph(GenericGraph):
 
             if u == v:
                 # update self-loop
-                p1, p2, arc_angle = self._get_self_loop_parameters(u)
+                arc_angle = self._loop_config[(u, u)].get("path_arc")
+                points_angle = self._loop_config[(u, u)].get("angle_between_points")
+                p1, p2 = self._get_self_loop_parameters(u, points_angle)
             else:
                 # update regular edges and bidirectional edges
                 p1, p2, arc_angle = graph[u].get_center(), graph[v], edge.path_arc
