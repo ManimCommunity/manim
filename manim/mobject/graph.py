@@ -784,7 +784,36 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
 
         # move the label to the middle of the edge
         rendered_label.move_to(edge_obj.point_from_proportion(0.5))
+
+        edge_obj.weight_label = rendered_label
         edge_obj.add(rendered_label)
+
+    def _update_edge_label(
+        self,
+        edge: tuple[Hashable, Hashable],
+    ) -> None:
+        """Update the given edge's weight label if it has any.
+
+        Parameters
+        ----------
+
+        edge
+            A tuple of two hashable vertex identifiers.
+
+        """
+        edge_obj = self.edges[edge]
+        weight_label = None
+        if hasattr(edge_obj, "weight_label"):
+            weight_label = edge_obj.weight_label
+
+        if weight_label is not None:
+            # scale the label if it is too large compared to the edge length
+            # weight_label.scale_to_fit_width(
+            #     min(edge_obj.get_arc_length() / 4, weight_label.get_width())
+            # )
+
+            # move the label to the middle of the edge
+            weight_label.move_to(edge_obj.point_from_proportion(0.5))
 
     def _populate_edge_dict(
         self, edges: list[tuple[Hashable, Hashable]], edge_type: type[Mobject]
@@ -1770,6 +1799,8 @@ class Graph(GenericGraph):
                 )
 
     def update_edges(self, graph):
+        # TODO: Fix animations with weights.
+
         for (u, v), edge in graph.edges.items():
             # Undirected graph has a Line edge
 
@@ -1792,6 +1823,8 @@ class Graph(GenericGraph):
                 buff=self._edge_config.get("buff", edge.buff),
                 path_arc=self._edge_config[(u, v)].get("path_arc", arc_angle),
             )
+
+            self._update_edge_label((u, v))
 
     def __repr__(self: Graph) -> str:
         return f"Undirected graph on {len(self.vertices)} vertices and {len(self.edges)} edges"
@@ -2079,6 +2112,7 @@ class DiGraph(GenericGraph):
             )
 
             # add tip
+            # for (u, v), edge in self.edges.items():
             edge = self.edges[(u, v)]
             edge.add_tip(**self._tip_config[(u, v)])
 
@@ -2098,7 +2132,15 @@ class DiGraph(GenericGraph):
         Arrow tips need to be repositioned since otherwise they can be
         deformed.
         """
+        # TODO: Fix animations with weights.
+
         for (u, v), edge in graph.edges.items():
+            weight_label = None
+            if hasattr(edge, "weight_label"):
+                weight_label = edge.weight_label
+                edge.remove(weight_label)
+                edge.weight_label = None
+
             tip = edge.pop_tips()[0]
             # Passing the Mobject instead of the vertex makes the tip
             # stop on the bounding box of the vertex.
@@ -2109,7 +2151,7 @@ class DiGraph(GenericGraph):
                 points_angle = self._loop_config[(u, u)].get("angle_between_points")
                 p1, p2 = self._get_self_loop_parameters(u, points_angle)
             else:
-                # update regular edges and bidirectional edges
+                # update regular edges
                 p1, p2, arc_angle = graph[u].get_center(), graph[v], edge.path_arc
 
             edge.set_points_by_ends(
@@ -2120,6 +2162,10 @@ class DiGraph(GenericGraph):
             )
 
             edge.add_tip(tip)
+            if weight_label is not None:
+                edge.add(weight_label)
+                edge.weight_label = weight_label
+                self._update_edge_label((u, v))
 
     def __repr__(self: DiGraph) -> str:
         return f"Directed graph on {len(self.vertices)} vertices and {len(self.edges)} edges"
