@@ -191,3 +191,79 @@ def test_LoopsConfiguration(scene):
         edge_config=edge_config,
     )
     scene.add(g)
+
+
+@frames_comparison(last_frame=False)
+def test_MovingGraph(scene):
+    vertices = [1, 2, 3, 4]
+    edges = [(1, 2), (2, 3), (3, 4), (1, 3), (3, 3), (4, 1)]
+    weights = {
+        (1, 2): 1,
+        (2, 3): 2,
+        (3, 4): 1,
+        (1, 3): 3,
+        (3, 3): 5,
+        (4, 1): 1,
+    }
+    layout = "circular"
+    edge_config = {
+        "weight_config": {
+            "min_size_ratio": 1 / 6,
+            "max_size_ratio": 1 / 5,
+        }
+    }
+    g = Graph(
+        vertices,
+        edges,
+        labels=True,
+        layout=layout,
+        weights=weights,
+        edge_config=edge_config,
+    )
+    scene.play(Create(g))
+    scene.wait()
+    scene.play(
+        g[1].animate.move_to([3, 2, 0]),
+        g[2].animate.move_to([0, -3, 0]),
+        g[3].animate.move_to([-1, -2, 0]),
+        g[4].animate.move_to([-3, 1, 0]),
+    )
+    scene.wait()
+
+
+@frames_comparison(last_frame=False)
+def test_MovingDiGraph(scene):
+    vertices = [1, 2, 3, 4]
+    edges = [(1, 2), (2, 3), (3, 4), (1, 3), (3, 3), (4, 1)]
+    weights = {
+        (1, 2): 1,
+        (2, 3): 2,
+        (3, 4): 1,
+        (1, 3): 3,
+        (3, 3): 5,
+        (4, 1): 1,
+    }
+    layout = "circular"
+    edge_config = {
+        "weight_config": {
+            "min_size_ratio": 1 / 4,
+            "max_size_ratio": 1 / 3,
+        }
+    }
+    g = DiGraph(
+        vertices,
+        edges,
+        labels=True,
+        layout=layout,
+        weights=weights,
+        edge_config=edge_config,
+    )
+    scene.play(Create(g))
+    scene.wait()
+    scene.play(
+        g[1].animate.move_to([3, 2, 0]),
+        g[2].animate.move_to([0, -3, 0]),
+        g[3].animate.move_to([-1, -2, 0]),
+        g[4].animate.move_to([-3, 1, 0]),
+    )
+    scene.wait()
