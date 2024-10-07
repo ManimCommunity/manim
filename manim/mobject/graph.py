@@ -35,7 +35,7 @@ from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.text.tex_mobject import MathTex, SingleStringMathTex, Tex
 from manim.mobject.text.text_mobject import Text
 from manim.mobject.types.vectorized_mobject import VMobject
-from manim.utils.color import BLACK, ManimColor, ParsableManimColor
+from manim.utils.color import BLACK, ManimColor
 
 
 class LayoutFunction(Protocol):
@@ -641,11 +641,33 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         if edge_config is None:
             edge_config = {}
         default_tip_config = {}
-        default_loop_config = self._default_loop_config
+
+        # is defined in the concrete classes
+        if hasattr(self, "_default_loop_config"):
+            default_loop_config = self._default_loop_config
+        else:
+            default_loop_config = {}
+
+        default_weight_config = {
+            "label": None,
+            "label_type": LabeledDot,
+            "position_ratio": 0.5,
+            "min_size_ratio": 1 / 6,
+            "max_size_ratio": 1 / 4,
+            "label_text_color": None,
+            "label_background_color": None,
+        }
+
         default_edge_config = {}
         if edge_config:
             default_tip_config = edge_config.pop("tip_config", {})
-            default_loop_config = edge_config.pop("loop_config", default_loop_config)
+
+            l_config = edge_config.pop("loop_config", {})
+            default_loop_config.update(l_config)
+
+            w_config = edge_config.pop("weight_config", {})
+            default_weight_config.update(w_config)
+
             default_edge_config = {
                 k: v
                 for k, v in edge_config.items()
@@ -654,20 +676,30 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
                 )  # everything that is not an edge is an option
             }
         self._edge_config = {}
-        self._loop_config = {}
         self._tip_config = {}
+        self._loop_config = {}
+        self._weight_config = {}
         for e in edges:
             if e in edge_config:
                 self._tip_config[e] = edge_config[e].pop(
                     "tip_config", copy(default_tip_config)
                 )
-                self._loop_config[e] = edge_config[e].pop(
-                    "loop_config", copy(default_loop_config)
-                )
+
+                # update instead of replacing
+                loop_config = copy(default_loop_config)
+                loop_config.update(edge_config[e].pop("loop_config", {}))
+                self._loop_config[e] = loop_config
+
+                # update instead of replacing
+                weight_config = copy(default_weight_config)
+                weight_config.update(edge_config[e].pop("weight_config", {}))
+                self._weight_config[e] = weight_config
+
                 self._edge_config[e] = edge_config[e]
             else:
                 self._tip_config[e] = copy(default_tip_config)
                 self._loop_config[e] = copy(default_loop_config)
+                self._weight_config[e] = copy(default_weight_config)
                 self._edge_config[e] = copy(default_edge_config)
 
         # add weights to edges
@@ -677,9 +709,11 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
                     continue
                 elif not isinstance(w, (str, SingleStringMathTex, Text, Tex, MathTex)):
                     w = str(w)
-                self._edge_config[e]["label"] = w
+                self._weight_config[e]["label"] = w
 
         self.default_edge_config = default_edge_config
+        self.default_loop_config = default_loop_config
+        self.default_weight_config = default_weight_config
         self._populate_edge_dict(edges, edge_type)
 
         self.add(*self.vertices.values())
@@ -733,35 +767,39 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
     def _add_edge_label(
         self,
         edge: tuple[Hashable, Hashable],
-        label: str | SingleStringMathTex | Text | Tex,
-        edge_label_type: type[Mobject] = LabeledDot,
-        label_text_color: ParsableManimColor = None,
-        label_background_color: ParsableManimColor = None,
+        weight_config: dict | None = None,
     ) -> None:
-        """Add the given label to the given edge.
+        """Add the label corresponding to the given weight_config to the given edge,
+        or `self._weight_config` if ``None`` and if it has any.
 
         Parameters
         ----------
 
         edge
             A tuple of two hashable vertex identifiers.
-        label
-            The label to be added to the edge. This is rendered as :class:`~.MathTex`
-            by default (i.e., when passing a :class:`str`), but other classes
-            representing rendered strings like :class:`~.Text` or :class:`~.Tex`
-            can be passed as well.
-        edge_label_type
-            The mobject class used for displaying edge labels in the scene.
-            It uses a :class:`~.LabelledDot` by default.
-        label_text_color
-            The color of the label text. If ``None`` (the default), the color of the
-            edge is used.
-        label_background_color
-            The background color of the label. If ``None`` (the default), the
-            ``config.background_color`` is used.
+
+        weight_config
+            The configuration for the weight label. If ``None``, the configuration
+            stored in `self._weight_config` is used.
 
         """
         edge_obj = self.edges[edge]
+
+        if weight_config is None:
+            weight_config = self._weight_config.get(edge, {})
+        else:
+            w_config = copy(self.default_weight_config)
+            w_config.update(weight_config)
+            weight_config = w_config
+
+        label = weight_config.get("label", None)
+
+        if label is None:
+            return
+
+        edge_label_type = weight_config.get("label_type", LabeledDot)
+        label_text_color = weight_config.get("label_text_color", None)
+        label_background_color = weight_config.get("label_background_color", None)
 
         # create the MathTex object if the label is a string
         if isinstance(label, str):
@@ -778,12 +816,16 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         rendered_label = edge_label_type(label=label, color=background_color)
 
         # scale the label if it is too large compared to the edge length
-        rendered_label.scale_to_fit_width(
-            min(edge_obj.get_arc_length() / 4, rendered_label.get_width())
-        )
+        min_ratio = weight_config.get("min_size_ratio", 1 / 6)
+        max_ratio = weight_config.get("max_size_ratio", 1 / 4)
+        min_size = edge_obj.get_arc_length() * min_ratio
+        max_size = edge_obj.get_arc_length() * max_ratio
+        final_size = np.clip(min_size, rendered_label.get_width(), max_size)
+        rendered_label.scale_to_fit_width(final_size)
 
-        # move the label to the middle of the edge
-        rendered_label.move_to(edge_obj.point_from_proportion(0.5))
+        # move the label to the right position on the edge
+        pos = weight_config.get("position_ratio", 0.5)
+        rendered_label.move_to(edge_obj.point_from_proportion(pos))
 
         edge_obj.weight_label = rendered_label
         edge_obj.add(rendered_label)
@@ -807,13 +849,19 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
             weight_label = edge_obj.weight_label
 
         if weight_label is not None:
-            # scale the label if it is too large compared to the edge length
-            # weight_label.scale_to_fit_width(
-            #     min(edge_obj.get_arc_length() / 4, weight_label.get_width())
-            # )
+            weight_config = self._weight_config.get(edge, {})
 
-            # move the label to the middle of the edge
-            weight_label.move_to(edge_obj.point_from_proportion(0.5))
+            # scale the label if it is too large compared to the edge length
+            min_ratio = weight_config.get("min_size_ratio", 1 / 6)
+            max_ratio = weight_config.get("max_size_ratio", 1 / 4)
+            min_size = edge_obj.get_arc_length() * min_ratio
+            max_size = edge_obj.get_arc_length() * max_ratio
+            final_size = np.clip(min_size, weight_label.get_width(), max_size)
+            weight_label.scale_to_fit_width(final_size)
+
+            # move the label to the right position on the edge
+            pos = weight_config.get("position_ratio", 0.5)
+            weight_label.move_to(edge_obj.point_from_proportion(pos))
 
     def _populate_edge_dict(
         self, edges: list[tuple[Hashable, Hashable]], edge_type: type[Mobject]
@@ -1178,13 +1226,37 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
 
         self._graph.add_edge(u, v)
 
+        # configuration
+        loop_config = self.default_loop_config.copy()
+        loop_config.update(edge_config.pop("loop_config", {}))
+        self._loop_config[(u, v)] = loop_config
+
+        weight_config = self.default_weight_config.copy()
+        weight_config.update(edge_config.pop("weight_config", {}))
+        self._weight_config[(u, v)] = weight_config
+
         base_edge_config = self.default_edge_config.copy()
         base_edge_config.update(edge_config)
+
         edge_config = base_edge_config
         self._edge_config[(u, v)] = edge_config
 
+        # mobject creation
+        if u == v:
+            # create self-loop
+            arc_angle = self._loop_config[(u, u)].get("path_arc")
+            points_angle = self._loop_config[(u, u)].get("angle_between_points")
+            p1, p2 = self._get_self_loop_parameters(u, points_angle)
+        else:
+            # create regular edges
+            p1, p2, arc_angle = self[u].get_center(), self[v].get_center(), 0
+
         edge_mobject = edge_type(
-            self[u].get_center(), self[v].get_center(), z_index=-1, **edge_config
+            p1,
+            p2,
+            path_arc=edge_config.pop("path_arc", arc_angle),
+            z_index=edge_config.pop("z_index", -1),
+            **edge_config,
         )
         self.edges[(u, v)] = edge_mobject
 
@@ -1761,17 +1833,6 @@ class Graph(GenericGraph):
     ):
         self.edges = {}
         for u, v in edges:
-            # should pop the label configuration values before creating the edge
-            label = self._edge_config.get((u, v), {}).pop("label", None)
-            if label is not None:
-                label_type = self._edge_config[(u, v)].pop("label_type", LabeledDot)
-                label_text_color = self._edge_config[(u, v)].pop(
-                    "label_text_color", None
-                )
-                label_background_color = self._edge_config[(u, v)].pop(
-                    "label_background_color", None
-                )
-
             if u == v:
                 # create self-loop
                 arc_angle = self._loop_config[(u, u)].get("path_arc")
@@ -1789,14 +1850,8 @@ class Graph(GenericGraph):
                 **self._edge_config[(u, v)],
             )
 
-            if label is not None:
-                self._add_edge_label(
-                    (u, v),
-                    label,
-                    edge_label_type=label_type,
-                    label_text_color=label_text_color,
-                    label_background_color=label_background_color,
-                )
+            # add label if there is one
+            self._add_edge_label((u, v))
 
     def update_edges(self, graph):
         # TODO: Fix animations with weights.
@@ -1973,9 +2028,6 @@ class DiGraph(GenericGraph):
                         "color": RED,
                         "tip_config": {"tip_length": 0.25, "tip_width": 0.25}
                     },
-                    (1, 2): {
-                        "label": "3",
-                    },
                 }
 
                 g = DiGraph(
@@ -2009,7 +2061,6 @@ class DiGraph(GenericGraph):
                     "stroke_width": 2,
                     "tip_config": {"tip_length": 0, "tip_width": 0},
                     (3, 4): {"color": RED},
-                    (1, 2): {"label": "3"},
                 }
 
                 g = DiGraph(
@@ -2083,17 +2134,6 @@ class DiGraph(GenericGraph):
     ):
         self.edges = {}
         for u, v in edges:
-            # should pop the configuration values before creating the edge
-            label = self._edge_config.get((u, v), {}).pop("label", None)
-            if label is not None:
-                label_type = self._edge_config[(u, v)].pop("label_type", LabeledDot)
-                label_text_color = self._edge_config[(u, v)].pop(
-                    "label_text_color", None
-                )
-                label_background_color = self._edge_config[(u, v)].pop(
-                    "label_background_color", None
-                )
-
             if u == v:
                 # create self-loop
                 arc_angle = self._loop_config[(u, u)].get("path_arc")
@@ -2112,19 +2152,11 @@ class DiGraph(GenericGraph):
             )
 
             # add tip
-            # for (u, v), edge in self.edges.items():
             edge = self.edges[(u, v)]
             edge.add_tip(**self._tip_config[(u, v)])
 
-            # add label
-            if label is not None:
-                self._add_edge_label(
-                    (u, v),
-                    label,
-                    edge_label_type=label_type,
-                    label_text_color=label_text_color,
-                    label_background_color=label_background_color,
-                )
+            # add label if there is one
+            self._add_edge_label((u, v))
 
     def update_edges(self, graph):
         """Updates the edges to stick at their corresponding vertices.
