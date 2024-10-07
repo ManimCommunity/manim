@@ -650,12 +650,12 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
 
         default_weight_config = {
             "label": None,
-            "label_type": LabeledDot,
+            "weight_type": LabeledDot,
             "position_ratio": 0.5,
             "min_size_ratio": 1 / 6,
             "max_size_ratio": 1 / 4,
-            "label_text_color": None,
-            "label_background_color": None,
+            "text_color": None,
+            "background_color": None,
         }
 
         default_edge_config = {}
@@ -797,9 +797,9 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         if label is None:
             return
 
-        edge_label_type = weight_config.get("label_type", LabeledDot)
-        label_text_color = weight_config.get("label_text_color", None)
-        label_background_color = weight_config.get("label_background_color", None)
+        edge_weight_type = weight_config.get("weight_type", LabeledDot)
+        label_text_color = weight_config.get("text_color", None)
+        label_background_color = weight_config.get("background_color", None)
 
         # create the MathTex object if the label is a string
         if isinstance(label, str):
@@ -813,7 +813,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
             background_color = label_background_color
         else:
             background_color = ManimColor.parse(config["background_color"])
-        rendered_label = edge_label_type(label=label, color=background_color)
+        rendered_label = edge_weight_type(label=label, color=background_color)
 
         # scale the label if it is too large compared to the edge length
         min_ratio = weight_config.get("min_size_ratio", 1 / 6)
@@ -1652,9 +1652,62 @@ class Graph(GenericGraph):
                 weights = {(1, 5): 1, (2, 3): 2, (2, 4): 3, (2, 5): 1,
                            (3, 4): 4, (4, 4): 5, (5, 3): 6}
                 g = Graph(vertices, edges, layout="circular", weights=weights,
-                          labels=True,
-                          edge_config={(2, 4): {"label_text_color": BLUE},
-                                       (3, 4): {"label_background_color": RED}})
+                          labels=True)
+                self.add(g)
+
+    Similarly, self-loop edges and weights can be configured globally or individually.
+
+    .. note::
+
+        In the weight configuration, possible parameters are ``weight_type``, ``position_ratio``,
+        ``min_size_ratio``, ``max_size_ratio``, ``text_color`` and ``background_color``.
+        In the loop configuration, possible parameters are ``angle_between_points`` and ``path_arc``.
+
+    .. manim:: LoopsAndWeightsConfig
+        :save_last_frame:
+
+        class LoopsAndWeightsConfig(Scene):
+            def construct(self):
+                vertices = [1, 2, 3, 4, 5]
+
+                edges = [(1, 5), (2, 2), (2, 3), (2, 4),
+                            (2, 5), (3, 4), (4, 4), (5, 3), (5, 5)]
+
+                weights = {(1, 5): 1, (2, 2): 4, (2, 3): 2, (2, 4): 3,
+                            (2, 5): 1, (3, 4): 4, (4, 4): 5, (5, 3): 6,
+                            (5, 5): 3}
+
+                edge_config = {
+                    # global configuration
+                    "loop_config": {
+                        "angle_between_points": PI,
+                        "path_arc": 3 * PI / 2,
+                    },
+                    "weight_config": {
+                        "position_ratio": 0.3,
+                        "min_size_ratio": 1 / 6,
+                        "max_size_ratio": 1 / 4,
+                        "text_color": BLUE,
+                    },
+
+                    # individual configuration
+                    (2, 2): {
+                        "loop_config": {
+                            "path_arc": 12/7 * PI,
+                        }
+                    },
+                    (3, 4): {
+                        "weight_config": {
+                            "position_ratio": 0.5,
+                            "min_size_ratio": 1 / 3,
+                            "max_size_ratio": 1 / 3,
+                            "text_color": RED,
+                        }
+                    }
+                }
+
+                g = Graph(vertices, edges, layout="circular", weights=weights,
+                            labels=True, edge_config=edge_config)
                 self.add(g)
 
     You can also lay out a partite graph on columns by specifying

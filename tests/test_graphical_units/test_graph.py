@@ -137,14 +137,14 @@ def test_WeightsConfiguration(scene):
             "position_ratio": 0.3,
             "min_size_ratio": 1 / 6,
             "max_size_ratio": 1 / 4,
-            "label_text_color": BLUE,
+            "text_color": BLUE,
         },
         (1, 2): {
             "weight_config": {
                 "label": "5",
                 "min_size_ratio": 1 / 3,
                 "max_size_ratio": 1 / 3,
-                "label_text_color": RED,
+                "text_color": RED,
             }
         },
     }
