@@ -66,17 +66,12 @@ def test_WeightedDiGraph(scene):
         (5, 4): 1.5,
         (5, 1): "7/2",
     }
-    edge_config = {
-        (2, 3): {"label_background_color": WHITE, "label_text_color": BLACK},
-        (5, 1): {"label_text_color": YELLOW},
-    }
     g = DiGraph(
         vertices,
         edges,
         labels=labels,
         weights=weights,
         layout=layout,
-        edge_config=edge_config,
     )
     scene.add(g)
 
@@ -118,4 +113,81 @@ def test_DiGraphWeightedLoopEdge(scene):
     labels = True
     layout = "circular"
     g = DiGraph(vertices, edges, labels=labels, layout=layout, weights=weights)
+    scene.add(g)
+
+
+@frames_comparison
+def test_WeightsConfiguration(scene):
+    vertices = [1, 2, 3, 4, 5]
+    edges = [(1, 2), (1, 5), (2, 4), (3, 2), (4, 5), (4, 3), (3, 3), (5, 3)]
+    weights = {
+        (1, 2): 1,
+        (1, 5): 2,
+        (2, 4): 1,
+        (3, 2): 4,
+        (4, 5): 3,
+        (4, 3): 5,
+        (3, 3): 1,
+        (5, 3): 2,
+    }
+    labels = True
+    layout = "circular"
+    edge_config = {
+        "weight_config": {
+            "position_ratio": 0.3,
+            "min_size_ratio": 1 / 6,
+            "max_size_ratio": 1 / 4,
+            "label_text_color": BLUE,
+        },
+        (1, 2): {
+            "weight_config": {
+                "label": "5",
+                "min_size_ratio": 1 / 3,
+                "max_size_ratio": 1 / 3,
+                "label_text_color": RED,
+            }
+        },
+    }
+    g = Graph(
+        vertices,
+        edges,
+        labels=labels,
+        layout=layout,
+        weights=weights,
+        edge_config=edge_config,
+    )
+    scene.add(g)
+
+
+@frames_comparison
+def test_LoopsConfiguration(scene):
+    vertices = [1, 2, 3, 4, 5]
+    edges = [(1, 1), (1, 2), (2, 4), (3, 2), (4, 5), (4, 3), (3, 3), (5, 3), (5, 5)]
+    weights = {
+        (1, 1): 1,
+        (1, 2): 2,
+        (2, 4): 1,
+        (3, 2): 4,
+        (4, 5): 3,
+        (4, 3): 5,
+        (3, 3): 1,
+        (5, 3): 2,
+        (5, 5): 4,
+    }
+    labels = True
+    layout = "circular"
+    edge_config = {
+        "loop_config": {"angle_between_points": PI, "path_arc": 3 * PI / 2},
+        (3, 3): {
+            "loop_config": {"angle_between_points": PI / 2, "path_arc": 15 / 8 * PI}
+        },
+    }
+    g = Graph(
+        vertices,
+        edges,
+        labels=labels,
+        layout=layout,
+        weights=weights,
+        edge_config=edge_config,
+    )
     scene.add(g)
