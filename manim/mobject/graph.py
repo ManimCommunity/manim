@@ -743,7 +743,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         Returns
         -------
 
-        tuple[Point3D, Point3D, float]
+        tuple[Point3D, Point3D]
             The tuple composed of the starting point of the arc and its ending point.
 
         """
