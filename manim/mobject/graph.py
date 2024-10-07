@@ -1907,8 +1907,6 @@ class Graph(GenericGraph):
             self._add_edge_label((u, v))
 
     def update_edges(self, graph):
-        # TODO: Fix animations with weights.
-
         for (u, v), edge in graph.edges.items():
             # Undirected graph has a Line edge
 
@@ -2217,8 +2215,6 @@ class DiGraph(GenericGraph):
         Arrow tips need to be repositioned since otherwise they can be
         deformed.
         """
-        # TODO: Fix animations with weights.
-
         for (u, v), edge in graph.edges.items():
             weight_label = None
             if hasattr(edge, "weight_label"):
