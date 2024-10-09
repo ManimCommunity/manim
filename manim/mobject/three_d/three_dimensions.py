@@ -895,6 +895,12 @@ class Line3D(Cylinder):
         The thickness of the line.
     color
         The color of the line.
+    resolution
+        The resolution of the line.
+        By default this value is the number of points the line will sampled at.
+        If you want the line to also come out checkered, use a tuple.
+        For example, for a line made of 24 points with 4 checker points on each
+        cylinder, pass the tuple (4, 24).
 
     Examples
     --------
@@ -915,9 +921,11 @@ class Line3D(Cylinder):
         end: np.ndarray = RIGHT,
         thickness: float = 0.02,
         color: ParsableManimColor | None = None,
+        resolution: int | Sequence[int] = 24,
         **kwargs,
     ):
         self.thickness = thickness
+        self.resolution = (2, resolution) if isinstance(resolution, int) else resolution
         self.set_start_and_end_attrs(start, end, **kwargs)
         if color is not None:
             self.set_color(color)
@@ -951,6 +959,7 @@ class Line3D(Cylinder):
             height=np.linalg.norm(self.vect),
             radius=self.thickness,
             direction=self.direction,
+            resolution=self.resolution,
             **kwargs,
         )
         self.shift((self.start + self.end) / 2)
@@ -1122,6 +1131,8 @@ class Arrow3D(Line3D):
         The base radius of the conical tip.
     color
         The color of the arrow.
+    resolution
+        The resolution of the arrow line.
 
     Examples
     --------
@@ -1148,10 +1159,16 @@ class Arrow3D(Line3D):
         height: float = 0.3,
         base_radius: float = 0.08,
         color: ParsableManimColor = WHITE,
+        resolution: int | Sequence[int] = 24,
         **kwargs,
     ) -> None:
         super().__init__(
-            start=start, end=end, thickness=thickness, color=color, **kwargs
+            start=start,
+            end=end,
+            thickness=thickness,
+            color=color,
+            resolution=resolution,
+            **kwargs,
         )
 
         self.length = np.linalg.norm(self.vect)
