@@ -93,6 +93,9 @@ class AnimationGroup(Animation):
             self.group.suspend_updating()
         for anim in self.animations:
             anim.begin()
+        else:
+            for anim in self.animations:
+                anim.finish()
 
     def _setup_scene(self, scene) -> None:
         for anim in self.animations:
