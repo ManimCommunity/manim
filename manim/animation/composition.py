@@ -93,9 +93,6 @@ class AnimationGroup(Animation):
             self.group.suspend_updating()
         for anim in self.animations:
             anim.begin()
-        else:
-            for anim in self.animations:
-                anim.finish()
 
     def _setup_scene(self, scene) -> None:
         for anim in self.animations:
@@ -106,6 +103,8 @@ class AnimationGroup(Animation):
         self.anims_begun[:] = True
         self.anims_finished[:] = True
         if self.suspend_mobject_updating:
+            for anim in self.animations:    
+                anim.finish()               
             self.group.resume_updating()
 
     def clean_up_from_scene(self, scene: Scene) -> None:
