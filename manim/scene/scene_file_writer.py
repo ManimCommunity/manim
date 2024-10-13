@@ -756,37 +756,47 @@ class SceneFileWriter:
                 "metadata": f"comment=Rendered with Manim Community v{__version__}",
             }
 
+            output_container = av.open(
+                str(temp_file_path), mode="w", options=av_options
+            )
             with (
-                av.open(movie_file_path) as video_input,
-                av.open(sound_file_path) as audio_input,
+                av.open(str(movie_file_path), mode="r") as video_input,
+                av.open(str(sound_file_path), mode="r") as audio_input,
             ):
                 video_stream = video_input.streams.video[0]
-                audio_stream = audio_input.streams.audio[0]
-                output_container = av.open(
-                    str(temp_file_path), mode="w", options=av_options
-                )
                 output_video_stream = output_container.add_stream(template=video_stream)
-                output_audio_stream = output_container.add_stream(template=audio_stream)
+                audio_streams = audio_input.streams.audio
+                output_audio_streams = []
+                for audio_stream in audio_streams:
+                    if config.format == "mp4":
+                        output_audio_stream = output_container.add_stream(
+                            codec_name=audio_stream.codec_context.name,
+                            rate=audio_stream.codec_context.sample_rate,
+                        )
+                    else:
+                        output_audio_stream = output_container.add_stream(template=audio_stream)
+                    output_audio_streams.append(output_audio_stream)
 
                 for packet in video_input.demux(video_stream):
                     # We need to skip the "flushing" packets that `demux` generates.
                     if packet.dts is None:
                         continue
 
-                    # We need to assign the packet to the new stream.
                     packet.stream = output_video_stream
                     output_container.mux(packet)
 
-                for packet in audio_input.demux(audio_stream):
-                    # We need to skip the "flushing" packets that `demux` generates.
-                    if packet.dts is None:
-                        continue
+                for audio_stream, output_audio_stream in zip(
+                    audio_streams, output_audio_streams
+                ):
+                    for packet in audio_input.demux(audio_stream):
+                        # We need to skip the "flushing" packets that `demux` generates.
+                        if packet.dts is None:
+                            continue
 
-                    # We need to assign the packet to the new stream.
-                    packet.stream = output_audio_stream
-                    output_container.mux(packet)
+                        packet.stream = output_audio_stream
+                        output_container.mux(packet)
 
-                output_container.close()
+            output_container.close()
 
             shutil.move(str(temp_file_path), str(movie_file_path))
             sound_file_path.unlink()
