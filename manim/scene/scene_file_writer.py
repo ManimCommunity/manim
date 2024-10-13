@@ -774,7 +774,9 @@ class SceneFileWriter:
                             rate=audio_stream.codec_context.sample_rate,
                         )
                     else:
-                        output_audio_stream = output_container.add_stream(template=audio_stream)
+                        output_audio_stream = output_container.add_stream(
+                            template=audio_stream
+                        )
                     output_audio_streams.append(output_audio_stream)
 
                 for packet in video_input.demux(video_stream):
