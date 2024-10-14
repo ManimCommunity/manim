@@ -40,6 +40,23 @@ if TYPE_CHECKING:
     from manim.renderer.opengl_renderer import OpenGLRenderer
 
 
+def to_av_frame_rate(fps):
+    epsilon1 = 1e-4
+    epsilon2 = 0.02
+
+    if isinstance(fps, int):
+        (num, denom) = (fps, 1)
+    elif abs(fps - round(fps)) < epsilon1:
+        (num, denom) = (round(fps), 1)
+    else:
+        denom = 1001
+        num = round(fps * denom / 1000) * 1000
+        if abs(fps - num / denom) >= epsilon2:
+            raise ValueError("invalid frame rate")
+
+    return av.utils.Fraction(num, denom)
+
+
 class SceneFileWriter:
     """
     SceneFileWriter is the object that actually writes the animations
@@ -506,9 +523,7 @@ class SceneFileWriter:
             file_path = self.partial_movie_files[self.renderer.num_plays]
         self.partial_movie_file_path = file_path
 
-        fps = config["frame_rate"]
-        if fps == int(fps):  # fps is integer
-            fps = int(fps)
+        fps = to_av_frame_rate(config.frame_rate)
 
         partial_movie_file_codec = "libx264"
         partial_movie_file_pix_fmt = "yuv420p"
@@ -530,7 +545,7 @@ class SceneFileWriter:
         with av.open(file_path, mode="w") as video_container:
             stream = video_container.add_stream(
                 partial_movie_file_codec,
-                rate=config.frame_rate,
+                rate=fps,
                 options=av_options,
             )
             stream.pix_fmt = partial_movie_file_pix_fmt
@@ -636,7 +651,7 @@ class SceneFileWriter:
                 output_stream.pix_fmt = "pal8"
             output_stream.width = config.pixel_width
             output_stream.height = config.pixel_height
-            output_stream.rate = config.frame_rate
+            output_stream.rate = to_av_frame_rate(config.frame_rate)
             graph = av.filter.Graph()
             input_buffer = graph.add_buffer(template=partial_movies_stream)
             split = graph.add("split")
@@ -663,7 +678,8 @@ class SceneFileWriter:
             while True:
                 try:
                     frame = graph.pull()
-                    frame.time_base = output_stream.codec_context.time_base
+                    if output_stream.codec_context.time_base is not None:
+                        frame.time_base = output_stream.codec_context.time_base
                     frame.pts = frames_written
                     frames_written += 1
                     output_container.mux(output_stream.encode(frame))
