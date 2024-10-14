@@ -57,6 +57,38 @@ def to_av_frame_rate(fps):
     return av.utils.Fraction(num, denom)
 
 
+def convert_audio(input_path: Path, output_path: Path, codec_name: str):
+    with (
+        av.open(input_path) as input_audio,
+        av.open(output_path, "w") as output_audio,
+    ):
+        input_audio_stream = input_audio.streams.audio[0]
+        output_audio_stream = output_audio.add_stream(codec_name)
+        for frame in input_audio.decode(input_audio_stream):
+            for packet in output_audio_stream.encode(frame):
+                output_audio.mux(packet)
+
+        for packet in output_audio_stream.encode():
+            output_audio.mux(packet)
+
+
+def get_out_format(path: Path | str, check_config=False) -> str:
+    if isinstance(path, str):
+        path = Path(path)
+
+    suffix = path.suffix.lower()
+    if not suffix.startswith("."):
+        raise ValueError(f"{path}: no suffix")
+
+    out_format = suffix[1:]
+    if check_config and config.format is not None and config.format != out_format:
+        raise Exception(
+            f"config.format ({config.format}) and suffix of output ({suffix}) do not match"
+        )
+
+    return out_format
+
+
 class SceneFileWriter:
     """
     SceneFileWriter is the object that actually writes the animations
@@ -350,19 +382,7 @@ class SceneFileWriter:
             # we need to pass delete=False to work on Windows
             # TODO: figure out a way to cache the wav file generated (benchmark needed)
             wav_file_path = NamedTemporaryFile(suffix=".wav", delete=False)
-            with (
-                av.open(file_path) as input_container,
-                av.open(wav_file_path, "w", format="wav") as output_container,
-            ):
-                for audio_stream in input_container.streams.audio:
-                    output_stream = output_container.add_stream("pcm_s16le")
-                    for frame in input_container.decode(audio_stream):
-                        for packet in output_stream.encode(frame):
-                            output_container.mux(packet)
-
-                    for packet in output_stream.encode():
-                        output_container.mux(packet)
-
+            convert_audio(file_path, wav_file_path, "pcm_s16le")
             new_segment = AudioSegment.from_file(wav_file_path.name)
             logger.info(f"Automatically converted {file_path} to .wav")
             wav_file_path.close()
@@ -524,6 +544,7 @@ class SceneFileWriter:
         self.partial_movie_file_path = file_path
 
         fps = to_av_frame_rate(config.frame_rate)
+        out_format = get_out_format(file_path)
 
         partial_movie_file_codec = "libx264"
         partial_movie_file_pix_fmt = "yuv420p"
@@ -532,7 +553,7 @@ class SceneFileWriter:
             "crf": "23",  # ffmpeg: -crf, constant rate factor (improved bitrate)
         }
 
-        if config.format == "webm":
+        if out_format == "webm":
             partial_movie_file_codec = "libvpx-vp9"
             av_options["-auto-alt-ref"] = "1"
             if config.transparent:
@@ -629,6 +650,7 @@ class SceneFileWriter:
             str(file_list), options=av_options, format="concat"
         )
         partial_movies_stream = partial_movies_input.streams.video[0]
+        out_format = get_out_format(output_file, check_config=True)
         output_container = av.open(str(output_file), mode="w")
         output_container.metadata["comment"] = (
             f"Rendered with Manim Community v{__version__}"
@@ -637,7 +659,7 @@ class SceneFileWriter:
             codec_name="gif" if create_gif else None,
             template=partial_movies_stream if not create_gif else None,
         )
-        if config.transparent and config.format == "webm":
+        if config.transparent and out_format == "webm":
             output_stream.pix_fmt = "yuva420p"
         if create_gif:
             """
@@ -720,6 +742,8 @@ class SceneFileWriter:
         movie_file_path = self.movie_file_path
         if is_gif_format():
             movie_file_path = self.gif_file_path
+
+        out_format = get_out_format(movie_file_path)
         if len(partial_movie_files) == 0:  # Prevent calling concat on empty list
             logger.info("No animations are contained in this scene.")
             return
@@ -733,7 +757,7 @@ class SceneFileWriter:
         )
 
         # handle sound
-        if self.includes_sound and config.format != "gif":
+        if self.includes_sound and out_format != "gif":
             sound_file_path = movie_file_path.with_suffix(".wav")
             # Makes sure sound file length will match video file
             self.add_audio_segment(AudioSegment.silent(0))
@@ -748,21 +772,16 @@ class SceneFileWriter:
             # but tries to call ffmpeg via its CLI -- which we want
             # to avoid. This is why we need to do the conversion
             # manually.
-            if config.format == "webm":
-                with (
-                    av.open(sound_file_path) as wav_audio,
-                    av.open(sound_file_path.with_suffix(".ogg"), "w") as opus_audio,
-                ):
-                    wav_audio_stream = wav_audio.streams.audio[0]
-                    opus_audio_stream = opus_audio.add_stream("libvorbis")
-                    for frame in wav_audio.decode(wav_audio_stream):
-                        for packet in opus_audio_stream.encode(frame):
-                            opus_audio.mux(packet)
-
-                    for packet in opus_audio_stream.encode():
-                        opus_audio.mux(packet)
-
-                sound_file_path = sound_file_path.with_suffix(".ogg")
+            if out_format == "webm":
+                ogg_sound_file_path = sound_file_path.with_suffix(".ogg")
+                convert_audio(sound_file_path, ogg_sound_file_path, "libvorbis")
+                sound_file_path = ogg_sound_file_path
+            elif out_format == "mp4":
+                # Similarly, pyav may reject wav audio in an .mp4 file;
+                # convert to AAC.
+                aac_sound_file_path = sound_file_path.with_suffix(".aac")
+                convert_audio(sound_file_path, aac_sound_file_path, "aac")
+                sound_file_path = aac_sound_file_path
 
             temp_file_path = movie_file_path.with_name(
                 f"{movie_file_path.stem}_temp{movie_file_path.suffix}"
