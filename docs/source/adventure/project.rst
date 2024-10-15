@@ -159,7 +159,7 @@ Hints
 
 Use :class:`.Title` to display the title at the top of the Scene.
 
-Use :class:`.MathTex` to represent the matrices, try not to hardcode the values into the LaTeX string, instead, use python string formatting, this will allow us to define the resultant vector dynamically.
+Use :class:`.MathTex` to represent the matrices, and try not to hardcode the values into the LaTeX string. Instead, you can use python string formatting and numpy vector addition, which will make it easier to change the vectors later if we need to.
 
 .. code-block:: python
 
@@ -220,8 +220,7 @@ Use :class:`.MathTex` to represent the matrices, try not to hardcode the values 
 Geometric vector addition
 ============================
 
-Lastly, let's show the vector addition geometrically, let's reproduce the following:
-
+Lastly, let's show the vector addition geometrically. Try your best to reconstruct the following:
 
 .. manim:: GeometricAddition
     :hide_source:
@@ -253,21 +252,21 @@ Lastly, let's show the vector addition geometrically, let's reproduce the follow
             self.label.add_updater(label_updater, call_updater=True)
             super().__init__(self.vector, self.label, **kwargs)
 
-        @override_animation(Create)
-        def _create_vec_write_label(self) -> AnimationGroup:
-            return AnimationGroup(
-                Create(self.vector),
-                Write(self.label),
-                lag_ratio=0
-            )
+            @override_animation(Create)
+            def _create_vec_write_label(self) -> AnimationGroup:
+                return AnimationGroup(
+                    Create(self.vector),
+                    Write(self.label),
+                    lag_ratio=0
+                )
 
-        @override_animation(Uncreate)
-        def _uncreate_vec_unwrite_label(self) -> AnimationGroup:
-            return AnimationGroup(
-                Uncreate(self.vector),
-                Unwrite(self.label),
-                lag_ratio=0
-            )
+            @override_animation(Uncreate)
+            def _uncreate_vec_unwrite_label(self) -> AnimationGroup:
+                return AnimationGroup(
+                    Uncreate(self.vector),
+                    Unwrite(self.label),
+                    lag_ratio=0
+                )
 
     class GeometricAddition(Scene):
         def construct(self):
@@ -356,10 +355,30 @@ Hints
 
 Use :class:`.NumberPlane` to define the cartesian plane.
 
-Use :class:`.Arrow` for the vectors.
+Use :class:`.Arrow` for the vectors.:
 
-To make sure the label of the vector and the vector shift together, you can define a custom :class:`.VGroup` class.
+To make sure the label of the vector and the vector shift together, you can define a custom :class:`.VGroup` subclass.
+Take a look at the decorator :meth:`override_animation` to override the :class:`.Create` and :class:`.Uncreate` animations, it will come in handy when animating the subclass.
 
+.. code-block:: python
+
+      class VectorGroup(VGroup):
+            def __init__(
+                ...
+            ) -> None:
+                ...
+
+            @override_animation(Create)
+            def _create_vec_write_label(self) -> AnimationGroup:
+                return AnimationGroup(
+                    ...
+                )
+
+            @override_animation(Uncreate)
+            def _uncreate_vec_unwrite_label(self) -> AnimationGroup:
+                return AnimationGroup(
+                    ...
+                )
 
 .. admonition:: Authors solution
     :class: dropdown
