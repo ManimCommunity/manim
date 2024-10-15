@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-import os
+import subprocess
 import sys
 import webbrowser
 from pathlib import Path
 
-path_makefile = Path(__file__).parents[1] / "docs"
-os.system(f"cd {path_makefile} && make html")
+path_makefile = Path(__file__).resolve().parents[1] / "docs"
+subprocess.run(["make", "html"], cwd=path_makefile)
 
 website = (path_makefile / "build" / "html" / "index.html").absolute().as_uri()
 try:  # Allows you to pass a custom browser if you want.
