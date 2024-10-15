@@ -1501,6 +1501,7 @@ class Mobject:
                     self.add(tex_top, tex_side)
                     tex_side.to_edge(LEFT)
                     c.to_edge(RIGHT, buff=0)
+                    self.add(c)
 
         """
         return self.align_on_border(edge, buff)
