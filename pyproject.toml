@@ -55,6 +55,7 @@ svgelements = ">=1.8.0"
 tqdm = ">=4.0.0"
 typing-extensions = ">=4.0.0"
 watchdog = ">=2.0.0"
+sphinx-togglebutton = "^0.3.2"
 
 [tool.poetry.extras]
 jupyterlab = ["jupyterlab", "notebook"]

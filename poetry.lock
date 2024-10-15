@@ -2331,6 +2331,7 @@ description = "A cross platform helper library for ModernGL making window creati
 optional = false
 python-versions = ">=3.8"
 files = [
+    {file = "moderngl-window-2.4.6.tar.gz", hash = "sha256:db9b4c27f35faa6f243b6d8cde6ada6da6e79541d62b8e536c0b20da29720c32"},
     {file = "moderngl_window-2.4.6-py3-none-any.whl", hash = "sha256:cfa81c2b222536270a077e2901f5f7a18e317f7332026ae443662555ebf7a66d"},
 ]
 
@@ -3781,7 +3782,7 @@ win32 = ["pywin32"]
 name = "setuptools"
 version = "74.0.0"
 description = "Easily download, build, install, upgrade, and uninstall Python packages"
-optional = true
+optional = false
 python-versions = ">=3.8"
 files = [
     {file = "setuptools-74.0.0-py3-none-any.whl", hash = "sha256:0274581a0037b638b9fc1c6883cc71c0210865aaa76073f7882376b641b84e8f"},
@@ -3996,6 +3997,26 @@ theme-furo = ["furo (>=2023.7.0,<2023.8.0)"]
 theme-pydata = ["pydata-sphinx-theme (>=0.13.0,<0.14.0)"]
 theme-rtd = ["sphinx-rtd-theme (>=1.0,<2.0)"]
 theme-sbt = ["sphinx-book-theme (>=1.0,<2.0)"]
+
+[[package]]
+name = "sphinx-togglebutton"
+version = "0.3.2"
+description = "Toggle page content and collapse admonitions in Sphinx."
+optional = false
+python-versions = "*"
+files = [
+    {file = "sphinx-togglebutton-0.3.2.tar.gz", hash = "sha256:ab0c8b366427b01e4c89802d5d078472c427fa6e9d12d521c34fa0442559dc7a"},
+    {file = "sphinx_togglebutton-0.3.2-py3-none-any.whl", hash = "sha256:9647ba7874b7d1e2d43413d8497153a85edc6ac95a3fea9a75ef9c1e08aaae2b"},
+]
+
+[package.dependencies]
+docutils = "*"
+setuptools = "*"
+sphinx = "*"
+wheel = "*"
+
+[package.extras]
+sphinx = ["matplotlib", "myst-nb", "numpy", "sphinx-book-theme", "sphinx-design", "sphinx-examples"]
 
 [[package]]
 name = "sphinxcontrib-applehelp"
@@ -4492,6 +4513,20 @@ optional = ["python-socks", "wsaccel"]
 test = ["websockets"]
 
 [[package]]
+name = "wheel"
+version = "0.44.0"
+description = "A built-package format for Python"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "wheel-0.44.0-py3-none-any.whl", hash = "sha256:2376a90c98cc337d18623527a97c31797bd02bad0033d41547043a1cbfbe448f"},
+    {file = "wheel-0.44.0.tar.gz", hash = "sha256:a29c3f2817e95ab89aa4660681ad547c0e9547f20e75b0562fe7723c9a2a9d49"},
+]
+
+[package.extras]
+test = ["pytest (>=6.0.0)", "setuptools (>=65)"]
+
+[[package]]
 name = "wrapt"
 version = "1.16.0"
 description = "Module for decorators, wrappers and monkey patching."
@@ -4596,4 +4631,4 @@ jupyterlab = ["jupyterlab", "notebook"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.13"
-content-hash = "45fc15c147b17909cef557a417fabb5412f83e5a917f669d1c8d462ab5491664"
+content-hash = "664a8e2ee063b0846d12a3c9f2f4c2c4dd9a18dcf2aa6e0e8535f1dd5cb43864"
