@@ -95,6 +95,11 @@ def make_logger(
         keywords=HIGHLIGHTED_KEYWORDS,
     )
 
+    # redirect warnings.warn to logging.warn
+    logging.captureWarnings(True)
+    py_warning = logging.getLogger("py.warnings")
+    py_warning.addHandler(rich_handler)
+
     # finally, the logger
     logger = logging.getLogger("manim")
     logger.addHandler(rich_handler)
