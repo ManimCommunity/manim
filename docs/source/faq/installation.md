@@ -120,6 +120,7 @@ of [ManimPango's README](https://github.com/ManimCommunity/ManimPango).
 
 ---
 
+(not-on-path)=
 ## I am using Windows and get the error `X is not recognized as an internal or external command, operable program or batch file`
 
 Regardless of whether `X` says `python` or `manim`, this means that the executable you
