@@ -26,7 +26,6 @@ from typing import TYPE_CHECKING, Any, Callable, overload
 
 import numpy as np
 
-from manim.typing import ColVector
 from manim.utils.simple_functions import choose
 
 if TYPE_CHECKING:
@@ -35,6 +34,7 @@ if TYPE_CHECKING:
     from manim.typing import (
         BezierPoints,
         BezierPoints_Array,
+        ColVector,
         MatrixMN,
         Point3D,
         Point3D_Array,
@@ -73,34 +73,38 @@ def bezier(points):
     bezier_func : :class:`typing.Callable` [[:class:`float` | :class:`~.ColVector`], :class:`~.Point3D` | :class:`~.Point3D_Array`]
         Function describing the Bézier curve. The behaviour of this function depends on
         the shape of ``points``:
-        *   If ``points`` was a :math:`(d+1, 3)` array representing a single Bézier curve,
-            then ``bezier_func`` can receive either:
-            *   a :class:`float` ``t``, in which case it returns a
-                single :math:`(1, 3)`-shaped :class:`~.Point3D` representing the evaluation
-                of the Bézier at ``t``, or
-            *   an :math:`(n, 1)`-shaped :class:`~.ColVector`
-                containing :math:`n` values to evaluate the Bézier curve at, returning instead
-                an :math:`(n, 3)`-shaped :class:`~.Point3D_Array` containing the points
-                resulting from evaluating the Bézier at each of the :math:`n` values.
-            .. warning::
-                If passing a vector of :math:`t`-values to ``bezier_func``, it **must**
-                be a column vector/matrix of shape :math:`(n, 1)`. Passing an 1D array of
-                shape :math:`(n,)` is not supported and **will result in undefined behaviour**.
-        *   If ``points`` was a :math:`(d+1, M, 3)` array describing :math:`M` Bézier curves,
-            then ``bezier_func`` can receive either:
-            *   a :class:`float` ``t``, in which case it returns an
-                :math:`(M, 3)`-shaped :class:`~.Point3D_Array` representing the evaluation
-                of the :math:`M` Bézier curves at the same value ``t``, or
-            *   an :math:`(M, 1)`-shaped
-                :class:`~.ColVector` containing :math:`M` values, such that the :math:`i`-th
-                Bézier curve defined by ``points`` is evaluated at the corresponding :math:`i`-th
-                value in ``t``, returning again an :math:`(M, 3)`-shaped :class:`~.Point3D_Array`
-                containing those :math:`M` evaluations.
-            .. warning::
-                Unlike the previous case, if you pass a :class:`~.ColVector` to ``bezier_func``,
-                it **must** contain exactly :math:`M` values, each value for each of the :math:`M`
-                Bézier curves defined by ``points``. Any array of shape other than :math:`(M, 1)`
-                **will result in undefined behaviour**.
+
+            *   If ``points`` was a :math:`(d+1, 3)` array representing a single Bézier curve,
+                then ``bezier_func`` can receive either:
+
+                *   a :class:`float` ``t``, in which case it returns a
+                    single :math:`(1, 3)`-shaped :class:`~.Point3D` representing the evaluation
+                    of the Bézier at ``t``, or
+                *   an :math:`(n, 1)`-shaped :class:`~.ColVector`
+                    containing :math:`n` values to evaluate the Bézier curve at, returning instead
+                    an :math:`(n, 3)`-shaped :class:`~.Point3D_Array` containing the points
+                    resulting from evaluating the Bézier at each of the :math:`n` values.
+                .. warning::
+                    If passing a vector of :math:`t`-values to ``bezier_func``, it **must**
+                    be a column vector/matrix of shape :math:`(n, 1)`. Passing an 1D array of
+                    shape :math:`(n,)` is not supported and **will result in undefined behaviour**.
+
+            *   If ``points`` was a :math:`(d+1, M, 3)` array describing :math:`M` Bézier curves,
+                then ``bezier_func`` can receive either:
+
+                *   a :class:`float` ``t``, in which case it returns an
+                    :math:`(M, 3)`-shaped :class:`~.Point3D_Array` representing the evaluation
+                    of the :math:`M` Bézier curves at the same value ``t``, or
+                *   an :math:`(M, 1)`-shaped
+                    :class:`~.ColVector` containing :math:`M` values, such that the :math:`i`-th
+                    Bézier curve defined by ``points`` is evaluated at the corresponding :math:`i`-th
+                    value in ``t``, returning again an :math:`(M, 3)`-shaped :class:`~.Point3D_Array`
+                    containing those :math:`M` evaluations.
+                .. warning::
+                    Unlike the previous case, if you pass a :class:`~.ColVector` to ``bezier_func``,
+                    it **must** contain exactly :math:`M` values, each value for each of the :math:`M`
+                    Bézier curves defined by ``points``. Any array of shape other than :math:`(M, 1)`
+                    **will result in undefined behaviour**.
     """
     P = np.asarray(points)
     degree = P.shape[0] - 1
@@ -950,9 +954,10 @@ def bezier_remap(
         An array of multiple Bézier curves of degree :math:`d` to be remapped. The shape of this array
         must be ``(current_number_of_curves, nppc, dim)``, where:
 
-            *   ``current_number_of_curves`` is the current amount of curves in the array ``bezier_tuples``,
-            *   ``nppc`` is the amount of points per curve, such that their degree is ``nppc-1``, and
-            *   ``dim`` is the dimension of the points, usually :math:`3`.
+        *   ``current_number_of_curves`` is the current amount of curves in the array ``bezier_tuples``,
+        *   ``nppc`` is the amount of points per curve, such that their degree is ``nppc-1``, and
+        *   ``dim`` is the dimension of the points, usually :math:`3`.
+
     new_number_of_curves
         The number of curves that the output will contain. This needs to be higher than the current number.
 
@@ -1031,10 +1036,14 @@ def interpolate(start, end, alpha):
     -------
     :class:`float` | :class:`~.ColVector` | :class:`~.Point3D` | :class:`~.Point3D_Array`
         The result of the linear interpolation.
+
         *   If ``start`` and ``end`` are of type :class:`float`, and:
+
             * ``alpha`` is also a :class:`float`, the return is simply another :class:`float`.
             * ``alpha`` is a :class:`~.ColVector`, the return is another :class:`~.ColVector`.
+
         *   If ``start`` and ``end`` are of type :class:`~.Point3D`, and:
+
             * ``alpha`` is a :class:`float`, the return is another :class:`~.Point3D`.
             * ``alpha`` is a :class:`~.ColVector`, the return is a :class:`~.Point3D_Array`.
     """
