@@ -16,7 +16,7 @@ to make one of them available on your system.
 Required Dependencies
 ---------------------
 
-Manim requires a recent version of Python (3.9 or above)
+Manim requires a recent version of Python (3.10 or above)
 in order to work.
 
 Chocolatey
@@ -35,7 +35,7 @@ Pip
 ***
 
 As mentioned above, Manim needs a reasonably recent version of
-Python 3 (3.9 or above).
+Python 3 (3.10 or above).
 
 **Python:** Head over to https://www.python.org, download an installer
 for a recent version of Python, and follow its instructions to get Python

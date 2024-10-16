@@ -388,7 +388,8 @@ class OpenGLTexturedSurface(OpenGLSurface):
         if isinstance(image_mode, (str, Path)):
             image_mode = [image_mode] * 2
         image_mode_light, image_mode_dark = image_mode
-        texture_paths = {
+        # TODO: move to renderer
+        _texture_paths = {
             "LightTexture": self.get_image_from_file(
                 image_file,
                 image_mode_light,
@@ -407,7 +408,7 @@ class OpenGLTexturedSurface(OpenGLSurface):
         self.v_range = uv_surface.v_range
         self.resolution = uv_surface.resolution
         self.gloss = self.uv_surface.gloss
-        super().__init__(texture_paths=texture_paths, **kwargs)
+        super().__init__(**kwargs)
 
     def get_image_from_file(
         self,

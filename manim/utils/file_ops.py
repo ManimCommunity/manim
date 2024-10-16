@@ -27,12 +27,12 @@ from pathlib import Path
 from shutil import copyfile
 from typing import TYPE_CHECKING
 
+import numpy as np
+
 if TYPE_CHECKING:
-    from ..scene.scene_file_writer import SceneFileWriter
+    from manim.scene.scene_file_writer import SceneFileWriter
 
-from manim import __version__, config, logger
-
-from .. import console
+from manim import __version__, config, console, logger
 
 
 def is_mp4_format() -> bool:
@@ -292,3 +292,34 @@ def copy_template_files(
     copyfile(template_scene_path, Path.resolve(project_dir / "main.py"))
     console.print("\n\t[green]copied[/green] [blue]main.py[/blue]\n")
     add_import_statement(Path.resolve(project_dir / "main.py"))
+
+
+def get_sorted_integer_files(
+    directory: str,
+    min_index: float = 0,
+    max_index: float = np.inf,
+    remove_non_integer_files: bool = False,
+    remove_indices_greater_than: float | None = None,
+    extension: str | None = None,
+) -> list[str]:
+    indexed_files = []
+    for file in os.listdir(directory):
+        index_str = file[: file.index(".")] if "." in file else file
+
+        full_path = os.path.join(directory, file)
+        if index_str.isdigit():
+            index = int(index_str)
+            if (
+                remove_indices_greater_than is not None
+                and index > remove_indices_greater_than
+            ):
+                os.remove(full_path)
+                continue
+            if extension is not None and not file.endswith(extension):
+                continue
+            if index >= min_index and index < max_index:
+                indexed_files.append((index, file))
+        elif remove_non_integer_files:
+            os.remove(full_path)
+    indexed_files.sort(key=lambda p: p[0])
+    return [os.path.join(directory, p[1]) for p in indexed_files]

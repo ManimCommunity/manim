@@ -21,7 +21,8 @@
 
 Manim is an animation engine for explanatory math videos. It's used to create precise animations programmatically, as demonstrated in the videos of [3Blue1Brown](https://www.3blue1brown.com/).
 
-> NOTE: This repository is maintained by the Manim Community and is not associated with Grant Sanderson or 3Blue1Brown in any way (although we are definitely indebted to him for providing his work to the world). If you would like to study how Grant makes his videos, head over to his repository ([3b1b/manim](https://github.com/3b1b/manim)). This fork is updated more frequently than his, and it's recommended to use this fork if you'd like to use Manim for your own projects.
+> [!NOTE]
+> This repository is maintained by the Manim Community and is not associated with Grant Sanderson or 3Blue1Brown in any way (although we are definitely indebted to him for providing his work to the world). If you would like to study how Grant makes his videos, head over to his repository ([3b1b/manim](https://github.com/3b1b/manim)). This fork is updated more frequently than his, and it's recommended to use this fork if you'd like to use Manim for your own projects.
 
 ## Table of Contents:
 
@@ -35,7 +36,8 @@ Manim is an animation engine for explanatory math videos. It's used to create pr
 
 ## Installation
 
-> **WARNING:** These instructions are for the community version _only_. Trying to use these instructions to install [3b1b/manim](https://github.com/3b1b/manim) or instructions there to install this version will cause problems. Read [this](https://docs.manim.community/en/stable/faq/installation.html#why-are-there-different-versions-of-manim) and decide which version you wish to install, then only follow the instructions for your desired version.
+> [!WARNING]
+> These instructions are for the community version _only_. Trying to use these instructions to install [3b1b/manim](https://github.com/3b1b/manim) or instructions there to install this version will cause problems. Read [this](https://docs.manim.community/en/stable/faq/installation.html#why-are-there-different-versions-of-manim) and decide which version you wish to install, then only follow the instructions for your desired version.
 
 Manim requires a few dependencies that must be installed prior to using it. If you
 want to try it out first before installing it locally, you can do so
@@ -71,7 +73,7 @@ In order to view the output of this scene, save the code in a file called `examp
 manim -p -ql example.py SquareToCircle
 ```
 
-You should see your native video player program pop up and play a simple scene in which a square is transformed into a circle. You may find some more simple examples within this
+You should see a window pop up and play a simple scene in which a square is transformed into a circle. You may find some more simple examples within this
 [GitHub repository](example_scenes). You can also visit the [official gallery](https://docs.manim.community/en/stable/examples.html) for more advanced examples.
 
 Manim also ships with a `%%manim` IPython magic which allows to use it conveniently in JupyterLab (as well as classic Jupyter) notebooks. See the
@@ -84,13 +86,15 @@ The general usage of Manim is as follows:
 
 ![manim-illustration](https://raw.githubusercontent.com/ManimCommunity/manim/main/docs/source/_static/command.png)
 
-The `-p` flag in the command above is for previewing, meaning the video file will automatically open when it is done rendering. The `-ql` flag is for a faster rendering at a lower quality.
+The `-p` flag in the command above is for previewing, meaning a window will show up to render it in real time.
+The `-ql` flag is for a faster rendering at a lower quality.
 
 Some other useful flags include:
 
 -  `-s` to skip to the end and just show the final frame.
 -  `-n <number>` to skip ahead to the `n`'th animation of a scene.
 -  `-f` show the file in the file browser.
+-  `-w` to actually write the result into a video file.
 
 For a thorough list of command line arguments, visit the [documentation](https://docs.manim.community/en/stable/guides/configuration.html).
 

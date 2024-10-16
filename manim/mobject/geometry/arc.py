@@ -51,7 +51,8 @@ from typing_extensions import Self
 
 from manim.constants import *
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.types.vectorized_mobject import VGroup, VMobject
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup as VGroup
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject as VMobject
 from manim.utils.color import BLACK, BLUE, RED, WHITE, ParsableManimColor
 from manim.utils.iterables import adjacent_pairs
 from manim.utils.space_ops import (
@@ -275,7 +276,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         else:
             return super().get_start()
 
-    def get_length(self) -> np.floating:
+    def get_length(self) -> float:
         start, end = self.get_start_and_end()
         return np.linalg.norm(start - end)
 
