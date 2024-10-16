@@ -358,7 +358,7 @@ Use :class:`.NumberPlane` to define the cartesian plane.
 Use :class:`.Arrow` for the vectors.:
 
 To make sure the label of the vector and the vector shift together, you can define a custom :class:`.VGroup` subclass.
-Take a look at the decorator :meth:`override_animation` to override the :class:`.Create` and :class:`.Uncreate` animations, it will come in handy when animating the subclass.
+Take a look at the decorator :func:`.override_animation` to override the :class:`.Create` and :class:`.Uncreate` animations, it will come in handy when animating the subclass.
 
 .. code-block:: python
 

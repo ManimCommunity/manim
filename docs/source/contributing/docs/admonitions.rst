@@ -96,7 +96,7 @@ Dropdown
          A dropdown
 
 Make sure you leave a line between ":class:" and the text below, otherwise the dropdown won't render.
-
+   
 .. admonition:: A dropdown
       :class: dropdown
       
