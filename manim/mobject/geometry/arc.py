@@ -63,6 +63,8 @@ from manim.utils.space_ops import (
 )
 
 if TYPE_CHECKING:
+    from typing import Any
+
     import manim.mobject.geometry.tips as tips
     from manim.mobject.mobject import Mobject
     from manim.mobject.text.tex_mobject import SingleStringMathTex, Tex
@@ -93,7 +95,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         tip_length: float = DEFAULT_ARROW_TIP_LENGTH,
         normal_vector: Vector3D = OUT,
         tip_style: dict = {},
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         self.tip_length: float = tip_length
         self.normal_vector: Vector3D = normal_vector
@@ -126,10 +128,10 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
     def create_tip(
         self,
         tip_shape: type[tips.ArrowTip] | None = None,
-        tip_length: float = None,
-        tip_width: float = None,
+        tip_length: float | None = None,
+        tip_width: float | None = None,
         at_start: bool = False,
-    ):
+    ) -> tips.ArrowTip | tips.ArrowTriangleFilledTip:
         """Stylises the tip, positions it spatially, and returns
         the newly instantiated tip to the caller.
         """
@@ -142,13 +144,13 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         tip_shape: type[tips.ArrowTip] | None = None,
         tip_length: float | None = None,
         tip_width: float | None = None,
-    ):
+    ) -> tips.ArrowTip | tips.ArrowTriangleFilledTip:
         """Returns a tip that has been stylistically configured,
         but has not yet been given a position in space.
         """
         from manim.mobject.geometry.tips import ArrowTriangleFilledTip
 
-        style = {}
+        style: dict[str, Any] = {}
 
         if tip_shape is None:
             tip_shape = ArrowTriangleFilledTip
@@ -166,7 +168,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         tip = tip_shape(length=tip_length, **style)
         return tip
 
-    def position_tip(self, tip: tips.ArrowTip, at_start: bool = False):
+    def position_tip(self, tip: tips.ArrowTip, at_start: bool = False) -> tips.ArrowTip:
         # Last two control points, defining both
         # the end, and the tangency direction
         if at_start:
@@ -180,11 +182,13 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
             angles[1] - PI - tip.tip_angle,
         )  # Rotates the tip along the azimuthal
         if not hasattr(self, "_init_positioning_axis"):
-            axis = [
-                np.sin(angles[1]),
-                -np.cos(angles[1]),
-                0,
-            ]  # Obtains the perpendicular of the tip
+            axis = np.array(
+                [
+                    np.sin(angles[1]),
+                    -np.cos(angles[1]),
+                    0,
+                ]
+            )  # Obtains the perpendicular of the tip
             tip.rotate(
                 -angles[2] + PI / 2,
                 axis=axis,
@@ -244,7 +248,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
             result.add(self.start_tip)
         return result
 
-    def get_tip(self):
+    def get_tip(self) -> VMobject:
         """Returns the TipableVMobject instance's (first) tip,
         otherwise throws an exception.
         """
@@ -297,12 +301,12 @@ class Arc(TipableVMobject):
 
     def __init__(
         self,
-        radius: float = 1.0,
+        radius: float | None = 1.0,
         start_angle: float = 0,
         angle: float = TAU / 4,
         num_components: int = 9,
         arc_center: Point3D = ORIGIN,
-        **kwargs,
+        **kwargs: Any,
     ):
         if radius is None:  # apparently None is passed by ArcBetweenPoints
             radius = 1.0
@@ -439,8 +443,8 @@ class ArcBetweenPoints(Arc):
         start: Point3D,
         end: Point3D,
         angle: float = TAU / 4,
-        radius: float = None,
-        **kwargs,
+        radius: float | None = None,
+        **kwargs: Any,
     ) -> None:
         if radius is not None:
             self.radius = radius
@@ -460,7 +464,7 @@ class ArcBetweenPoints(Arc):
 
         super().__init__(radius=radius, angle=angle, **kwargs)
         if angle == 0:
-            self.set_points_as_corners([LEFT, RIGHT])
+            self.set_points_as_corners(np.array([LEFT, RIGHT]))
         self.put_start_and_end_on(start, end)
 
         if radius is None:
@@ -472,7 +476,7 @@ class ArcBetweenPoints(Arc):
 
 
 class CurvedArrow(ArcBetweenPoints):
-    def __init__(self, start_point: Point3D, end_point: Point3D, **kwargs) -> None:
+    def __init__(self, start_point: Point3D, end_point: Point3D, **kwargs: Any) -> None:
         from manim.mobject.geometry.tips import ArrowTriangleFilledTip
 
         tip_shape = kwargs.pop("tip_shape", ArrowTriangleFilledTip)
@@ -481,7 +485,7 @@ class CurvedArrow(ArcBetweenPoints):
 
 
 class CurvedDoubleArrow(CurvedArrow):
-    def __init__(self, start_point: Point3D, end_point: Point3D, **kwargs) -> None:
+    def __init__(self, start_point: Point3D, end_point: Point3D, **kwargs: Any) -> None:
         if "tip_shape_end" in kwargs:
             kwargs["tip_shape"] = kwargs.pop("tip_shape_end")
         from manim.mobject.geometry.tips import ArrowTriangleFilledTip
@@ -520,7 +524,7 @@ class Circle(Arc):
         self,
         radius: float | None = None,
         color: ParsableManimColor = RED,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         super().__init__(
             radius=radius,
@@ -617,7 +621,9 @@ class Circle(Arc):
         return self.point_from_proportion(proportion)
 
     @staticmethod
-    def from_three_points(p1: Point3D, p2: Point3D, p3: Point3D, **kwargs) -> Self:
+    def from_three_points(
+        p1: Point3D, p2: Point3D, p3: Point3D, **kwargs: Any
+    ) -> Circle:
         """Returns a circle passing through the specified
         three points.
 
@@ -637,8 +643,8 @@ class Circle(Arc):
                     self.add(NumberPlane(), circle, dots)
         """
         center = line_intersection(
-            perpendicular_bisector([p1, p2]),
-            perpendicular_bisector([p2, p3]),
+            perpendicular_bisector(np.array([p1, p2])),
+            perpendicular_bisector(np.array([p2, p3])),
         )
         radius = np.linalg.norm(p1 - center)
         return Circle(radius=radius, **kwargs).shift(center)
@@ -682,7 +688,7 @@ class Dot(Circle):
         stroke_width: float = 0,
         fill_opacity: float = 1.0,
         color: ParsableManimColor = WHITE,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         super().__init__(
             arc_center=point,
@@ -703,7 +709,7 @@ class AnnotationDot(Dot):
         stroke_width: float = 5,
         stroke_color: ParsableManimColor = WHITE,
         fill_color: ParsableManimColor = BLUE,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         super().__init__(
             radius=radius,
@@ -752,7 +758,7 @@ class LabeledDot(Dot):
         self,
         label: str | SingleStringMathTex | Text | Tex,
         radius: float | None = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         if isinstance(label, str):
             from manim import MathTex
@@ -793,7 +799,7 @@ class Ellipse(Circle):
                 self.add(ellipse_group)
     """
 
-    def __init__(self, width: float = 2, height: float = 1, **kwargs) -> None:
+    def __init__(self, width: float = 2, height: float = 1, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.stretch_to_fit_width(width)
         self.stretch_to_fit_height(height)
@@ -854,7 +860,7 @@ class AnnularSector(Arc):
         fill_opacity: float = 1,
         stroke_width: float = 0,
         color: ParsableManimColor = WHITE,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         self.inner_radius = inner_radius
         self.outer_radius = outer_radius
@@ -903,7 +909,7 @@ class Sector(AnnularSector):
                 self.add(sector, sector2)
     """
 
-    def __init__(self, radius: float = 1, **kwargs) -> None:
+    def __init__(self, radius: float = 1, **kwargs: Any) -> None:
         super().__init__(inner_radius=0, outer_radius=radius, **kwargs)
 
 
@@ -939,7 +945,7 @@ class Annulus(Circle):
         stroke_width: float = 0,
         color: ParsableManimColor = WHITE,
         mark_paths_closed: bool = False,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         self.mark_paths_closed = mark_paths_closed  # is this even used?
         self.inner_radius = inner_radius
@@ -989,7 +995,7 @@ class CubicBezier(VMobject, metaclass=ConvertToOpenGL):
         start_handle: CubicBezierPoints,
         end_handle: CubicBezierPoints,
         end_anchor: CubicBezierPoints,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
         self.add_cubic_bezier_curve(start_anchor, start_handle, end_handle, end_anchor)
@@ -1080,7 +1086,7 @@ class ArcPolygon(VMobject, metaclass=ConvertToOpenGL):
         angle: float = PI / 4,
         radius: float | None = None,
         arc_config: list[dict] | None = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         n = len(vertices)
         point_pairs = [(vertices[k], vertices[(k + 1) % n]) for k in range(n)]
@@ -1219,7 +1225,7 @@ class ArcPolygonFromArcs(VMobject, metaclass=ConvertToOpenGL):
                 self.wait(2)
     """
 
-    def __init__(self, *arcs: Arc | ArcBetweenPoints, **kwargs) -> None:
+    def __init__(self, *arcs: Arc | ArcBetweenPoints, **kwargs: Any) -> None:
         if not all(isinstance(m, (Arc, ArcBetweenPoints)) for m in arcs):
             raise ValueError(
                 "All ArcPolygon submobjects must be of type Arc/ArcBetweenPoints",
