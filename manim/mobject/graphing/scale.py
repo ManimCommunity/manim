@@ -117,7 +117,6 @@ class LinearBase(_ScaleBase):
 class UnitLinearBase(LinearBase):
     def __init__(self):
         """The default scaling class."""
-
         super().__init__(scale_factor=1.0)
 
     def function(self, value: float) -> float:
