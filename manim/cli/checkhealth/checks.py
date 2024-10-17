@@ -1,14 +1,12 @@
 """Auxiliary module for the checkhealth subcommand, contains
-the actual check implementations."""
+the actual check implementations.
+"""
 
 from __future__ import annotations
 
 import os
 import shutil
-import subprocess
 from typing import Callable
-
-from ..._config import config
 
 __all__ = ["HEALTH_CHECKS"]
 
@@ -102,45 +100,6 @@ def is_manim_executable_associated_to_this_library():
     # some sort of python script. second condition happens when
     # the executable is actually a Windows batch file.
     return b"manim.__main__" in manim_exec or b'"%~dp0\\manim"' in manim_exec
-
-
-@healthcheck(
-    description="Checking whether ffmpeg is available",
-    recommendation=(
-        "Manim does not work without ffmpeg. Please follow our "
-        "installation instructions "
-        "at https://docs.manim.community/en/stable/installation.html "
-        "to download ffmpeg. Then, either ...\n\n"
-        "(a) ... make the ffmpeg executable available to your system's PATH,\n"
-        "(b) or, alternatively, use <manim cfg write --open> to create a "
-        "custom configuration and set the ffmpeg_executable variable to the "
-        "full absolute path to the ffmpeg executable."
-    ),
-)
-def is_ffmpeg_available():
-    path_to_ffmpeg = shutil.which(config.ffmpeg_executable)
-    return path_to_ffmpeg is not None and os.access(path_to_ffmpeg, os.X_OK)
-
-
-@healthcheck(
-    description="Checking whether ffmpeg is working",
-    recommendation=(
-        "Your installed version of ffmpeg does not support x264 encoding, "
-        "which manim requires. Please follow our installation instructions "
-        "at https://docs.manim.community/en/stable/installation.html "
-        "to download and install a newer version of ffmpeg."
-    ),
-    skip_on_failed=[is_ffmpeg_available],
-)
-def is_ffmpeg_working():
-    ffmpeg_version = subprocess.run(
-        [config.ffmpeg_executable, "-version"],
-        stdout=subprocess.PIPE,
-    ).stdout.decode()
-    return (
-        ffmpeg_version.startswith("ffmpeg version")
-        and "--enable-libx264" in ffmpeg_version
-    )
 
 
 @healthcheck(

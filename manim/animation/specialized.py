@@ -2,7 +2,8 @@ from __future__ import annotations
 
 __all__ = ["Broadcast"]
 
-from typing import Any, Sequence
+from collections.abc import Sequence
+from typing import Any
 
 from manim.animation.transform import Restore
 
@@ -69,10 +70,7 @@ class Broadcast(LaggedStart):
         anims = []
 
         # Works by saving the mob that is passed into the animation, scaling it to 0 (or the initial_width) and then restoring the original mob.
-        if mobject.fill_opacity:
-            fill_o = True
-        else:
-            fill_o = False
+        fill_o = bool(mobject.fill_opacity)
 
         for _ in range(self.n_mobs):
             mob = mobject.copy()

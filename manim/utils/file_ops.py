@@ -198,14 +198,15 @@ def open_file(file_path, in_browser=False):
             commands = ["cygstart"]
             file_path = file_path if not in_browser else file_path.parent
         elif current_os == "Darwin":
-            if is_gif_format():
-                commands = ["ffplay", "-loglevel", config["ffmpeg_loglevel"].lower()]
-            else:
-                commands = ["open"] if not in_browser else ["open", "-R"]
+            commands = ["open"] if not in_browser else ["open", "-R"]
         else:
             raise OSError("Unable to identify your operating system...")
+
+        # check after so that file path is set correctly
+        if config.preview_command:
+            commands = [config.preview_command]
         commands.append(file_path)
-        sp.Popen(commands)
+        sp.run(commands)
 
 
 def open_media_file(file_writer: SceneFileWriter) -> None:

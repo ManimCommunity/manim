@@ -90,7 +90,7 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
                 quads = vmobject.get_bezier_tuples_from_points(subpath)
                 start = subpath[0]
                 path.moveTo(*start[:2])
-                for p0, p1, p2 in quads:
+                for _p0, p1, p2 in quads:
                     path.quadTo(*p1[:2], *p2[:2])
                 if vmobject.consider_points_equals(subpath[0], subpath[-1]):
                     path.close()
@@ -100,7 +100,7 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
                 quads = vmobject.gen_cubic_bezier_tuples_from_points(subpath)
                 start = subpath[0]
                 path.moveTo(*start[:2])
-                for p0, p1, p2, p3 in quads:
+                for _p0, p1, p2, p3 in quads:
                     path.cubicTo(*p1[:2], *p2[:2], *p3[:2])
 
                 if vmobject.consider_points_equals_2d(subpath[0], subpath[-1]):
@@ -142,7 +142,7 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
                 n1, n2 = self._convert_2d_to_3d_array(points)
                 vmobject.add_quadratic_bezier_curve_to(n1, n2)
             else:
-                raise Exception("Unsupported: %s" % path_verb)
+                raise Exception(f"Unsupported: {path_verb}")
         return vmobject
 
 

@@ -10,8 +10,9 @@ __all__ = [
 
 import itertools as it
 import random
+from collections.abc import Iterable, Sequence
 from math import ceil, floor
-from typing import Callable, Iterable, Sequence
+from typing import Callable
 
 import numpy as np
 from PIL import Image
@@ -352,7 +353,6 @@ class VectorField(VGroup):
             This vector field.
 
         """
-
         self.stop_submobject_movement()
         self.submob_movement_updater = lambda mob, dt: mob.nudge_submobjects(
             dt * speed,
@@ -950,7 +950,6 @@ class StreamLines(VectorField):
                     self.wait(stream_lines.virtual_time / stream_lines.flow_speed)
 
         """
-
         for line in self.stream_lines:
             run_time = line.duration / flow_speed
             line.anim = line_animation_class(
@@ -1010,7 +1009,6 @@ class StreamLines(VectorField):
                     self.play(stream_lines.end_animation())
 
         """
-
         if self.flow_animation is None:
             raise ValueError("You have to start the animation before fading it out.")
 

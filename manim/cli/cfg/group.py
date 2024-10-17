@@ -5,8 +5,10 @@ cfg``. Here you can specify options, subcommands, and subgroups for the cfg
 group.
 
 """
+
 from __future__ import annotations
 
+import contextlib
 from ast import literal_eval
 from pathlib import Path
 
@@ -50,10 +52,8 @@ def value_from_string(value: str) -> str | int | bool:
     Union[:class:`str`, :class:`int`, :class:`bool`]
         Returns the literal of appropriate datatype.
     """
-    try:
+    with contextlib.suppress(SyntaxError, ValueError):
         value = literal_eval(value)
-    except (SyntaxError, ValueError):
-        pass
     return value
 
 
@@ -196,7 +196,7 @@ To save your config please save that file and place it in your current working d
                         """Not enough values in input.
 You may have added a new entry to default.cfg, in which case you will have to
 modify write_cfg_subcmd_input to account for it.""",
-                    )
+                    ) from None
                 if temp:
                     while temp and not _is_expected_datatype(
                         temp,

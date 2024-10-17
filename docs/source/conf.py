@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import os
 import sys
+from datetime import datetime
 from pathlib import Path
 
 import manim
@@ -25,7 +26,7 @@ sys.path.insert(0, os.path.abspath("."))
 # -- Project information -----------------------------------------------------
 
 project = "Manim"
-copyright = "2020-2022, The Manim Community Dev Team"
+copyright = f"2020-{datetime.now().year}, The Manim Community Dev Team"  # noqa: A001
 author = "The Manim Community Dev Team"
 
 
@@ -62,7 +63,7 @@ autodoc_type_aliases = {
     alias_name: f"~manim.{module}.{alias_name}"
     for module, module_dict in ALIAS_DOCS_DICT.items()
     for category_dict in module_dict.values()
-    for alias_name in category_dict.keys()
+    for alias_name in category_dict
 }
 autoclass_content = "both"
 

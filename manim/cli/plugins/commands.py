@@ -5,6 +5,7 @@ plugin``. Here you can specify options, subcommands, and subgroups for the plugi
 group.
 
 """
+
 from __future__ import annotations
 
 import cloup

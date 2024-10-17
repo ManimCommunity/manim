@@ -18,10 +18,11 @@ jobs:
     env:
       DISPLAY: :0
       PYTEST_ADDOPTS: "--color=yes" # colors in pytest
+      PYTHONIOENCODING: "utf8"
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04, macos-latest, windows-latest]
+        os: [ubuntu-22.04, macos-13, windows-latest]
         python: ["3.9", "3.10", "3.11", "3.12"]
 
     steps:
@@ -50,12 +51,6 @@ jobs:
         run: |
           echo "date=$(/bin/date -u "+%m%w%Y")" >> $GITHUB_OUTPUT
 
-      - name: Install and cache ffmpeg (all OS)
-        uses: FedericoCarboni/setup-ffmpeg@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-        id: setup-ffmpeg
-
       - name: Install system dependencies (Linux)
         if: runner.os == 'Linux'
         uses: awalsh128/cache-apt-pkgs-action@latest
@@ -77,7 +72,7 @@ jobs:
           sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
 
       - name: Setup Cairo Cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: cache-cairo
         if: runner.os == 'Linux' || runner.os == 'macOS'
         with:
@@ -93,7 +88,7 @@ jobs:
         run: python .github/scripts/ci_build_cairo.py --set-env-vars
 
       - name: Setup macOS cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: cache-macos
         if: runner.os == 'macOS'
         with:
@@ -130,12 +125,12 @@ jobs:
       - name: Setup Windows cache
         id: cache-windows
         if: runner.os == 'Windows'
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}\ManimCache
           key: ${{ runner.os }}-dependencies-tinytex-${{ hashFiles('.github/manimdependency.json') }}-${{ steps.cache-vars.outputs.date }}-1
 
-      - uses: ssciwr/setup-mesa-dist-win@v1
+      - uses: ssciwr/setup-mesa-dist-win@v2
 
       - name: Install system dependencies (Windows)
         if: runner.os == 'Windows' && steps.cache-windows.outputs.cache-hit != 'true'
@@ -143,7 +138,7 @@ jobs:
           $tinyTexPackages = $(python -c "import json;print(' '.join(json.load(open('.github/manimdependency.json'))['windows']['tinytex']))") -Split ' '
           $OriPath = $env:PATH
           echo "Install Tinytex"
-          Invoke-WebRequest "https://github.com/yihui/tinytex-releases/releases/download/daily/TinyTeX-1.zip" -O "$($env:TMP)\TinyTex.zip"
+          Invoke-WebRequest "https://github.com/yihui/tinytex-releases/releases/download/daily/TinyTeX-1.zip" -OutFile "$($env:TMP)\TinyTex.zip"
           Expand-Archive -LiteralPath "$($env:TMP)\TinyTex.zip" -DestinationPath "$($PWD)\ManimCache\LatexWindows"
           $env:Path = "$($PWD)\ManimCache\LatexWindows\TinyTeX\bin\windows;$($env:PATH)"
           tlmgr update --self

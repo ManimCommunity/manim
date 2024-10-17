@@ -65,7 +65,8 @@ __all__ = [
 
 
 import itertools as it
-from typing import Callable, Iterable, Sequence
+from collections.abc import Iterable, Sequence
+from typing import Callable
 
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import Polygon
@@ -74,7 +75,6 @@ from manim.mobject.text.numbers import DecimalNumber, Integer
 from manim.mobject.text.tex_mobject import MathTex
 from manim.mobject.text.text_mobject import Paragraph
 
-from .. import config
 from ..animation.animation import Animation
 from ..animation.composition import AnimationGroup
 from ..animation.creation import Create, Write
@@ -85,7 +85,7 @@ from .utils import get_vectorized_mobject_class
 
 
 class Table(VGroup):
-    """A mobject that displays a table on the screen.
+    r"""A mobject that displays a table on the screen.
 
     Parameters
     ----------
@@ -683,7 +683,6 @@ class Table(VGroup):
                         item.set_color(random_bright_color())
                     self.add(table)
         """
-
         return VGroup(*self.row_labels)
 
     def get_col_labels(self) -> VGroup:
@@ -712,7 +711,6 @@ class Table(VGroup):
                         item.set_color(random_bright_color())
                     self.add(table)
         """
-
         return VGroup(*self.col_labels)
 
     def get_labels(self) -> VGroup:
@@ -1067,7 +1065,7 @@ class MobjectTable(Table):
 
 
 class IntegerTable(Table):
-    """A specialized :class:`~.Table` mobject for use with :class:`~.Integer`.
+    r"""A specialized :class:`~.Table` mobject for use with :class:`~.Integer`.
 
     Examples
     --------
@@ -1081,14 +1079,14 @@ class IntegerTable(Table):
                     [[0,30,45,60,90],
                     [90,60,45,30,0]],
                     col_labels=[
-                        MathTex("\\\\frac{\\sqrt{0}}{2}"),
-                        MathTex("\\\\frac{\\sqrt{1}}{2}"),
-                        MathTex("\\\\frac{\\sqrt{2}}{2}"),
-                        MathTex("\\\\frac{\\sqrt{3}}{2}"),
-                        MathTex("\\\\frac{\\sqrt{4}}{2}")],
-                    row_labels=[MathTex("\\sin"), MathTex("\\cos")],
+                        MathTex(r"\frac{\sqrt{0}}{2}"),
+                        MathTex(r"\frac{\sqrt{1}}{2}"),
+                        MathTex(r"\frac{\sqrt{2}}{2}"),
+                        MathTex(r"\frac{\sqrt{3}}{2}"),
+                        MathTex(r"\frac{\sqrt{4}}{2}")],
+                    row_labels=[MathTex(r"\sin"), MathTex(r"\cos")],
                     h_buff=1,
-                    element_to_mobject_config={"unit": "^{\\circ}"})
+                    element_to_mobject_config={"unit": r"^{\circ}"})
                 self.add(t0)
     """
 

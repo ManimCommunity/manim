@@ -21,7 +21,7 @@
 from __future__ import annotations
 
 from os import PathLike
-from typing import Callable, Literal, Union
+from typing import Callable, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -41,6 +41,10 @@ __all__ = [
     "RGBA_Tuple_Int",
     "HSV_Array_Float",
     "HSV_Tuple_Float",
+    "HSL_Array_Float",
+    "HSL_Tuple_Float",
+    "HSVA_Array_Float",
+    "HSVA_Tuple_Float",
     "ManimColorInternal",
     "PointDType",
     "InternalPoint2D",
@@ -77,10 +81,10 @@ __all__ = [
     "FunctionOverride",
     "PathFuncType",
     "MappingFunction",
-    "Image",
-    "GrayscaleImage",
-    "RGBImage",
-    "RGBAImage",
+    "PixelArray",
+    "GrayscalePixelArray",
+    "RGBPixelArray",
+    "RGBAPixelArray",
     "StrPath",
     "StrOrBytesPath",
 ]
@@ -215,6 +219,46 @@ Its components describe, in order, the Hue, Saturation and Value (or
 Brightness) in the represented color.
 """
 
+HSVA_Array_Float: TypeAlias = RGBA_Array_Float
+"""``shape: (4,)``
+
+A :class:`numpy.ndarray` of 4 floats between 0 and 1, representing a
+color in HSVA (or HSBA) format.
+
+Its components describe, in order, the Hue, Saturation and Value (or
+Brightness) in the represented color.
+"""
+
+HSVA_Tuple_Float: TypeAlias = RGBA_Tuple_Float
+"""``shape: (4,)``
+
+A tuple of 4 floats between 0 and 1, representing a color in HSVA (or
+HSBA) format.
+
+Its components describe, in order, the Hue, Saturation and Value (or
+Brightness) in the represented color.
+"""
+
+HSL_Array_Float: TypeAlias = RGB_Array_Float
+"""``shape: (3,)``
+
+A :class:`numpy.ndarray` of 3 floats between 0 and 1, representing a
+color in HSL format.
+
+Its components describe, in order, the Hue, Saturation and Lightness
+in the represented color.
+"""
+
+HSL_Tuple_Float: TypeAlias = RGB_Tuple_Float
+"""``shape: (3,)``
+
+A :class:`numpy.ndarray` of 3 floats between 0 and 1, representing a
+color in HSL format.
+
+Its components describe, in order, the Hue, Saturation and Lightness
+in the represented color.
+"""
+
 ManimColorInternal: TypeAlias = RGBA_Array_Float
 """``shape: (4,)``
 
@@ -257,9 +301,9 @@ parameter can handle being passed a `Point3D` instead.
 """
 
 InternalPoint2D_Array: TypeAlias = npt.NDArray[PointDType]
-"""``shape: (N, 3)``
+"""``shape: (N, 2)``
 
-An array of `Point2D` objects: ``[[float, float], ...]``.
+An array of `InternalPoint2D` objects: ``[[float, float], ...]``.
 
 .. note::
     This type alias is mostly made available for internal use, and
@@ -319,7 +363,7 @@ further type information.
 Vector types
 """
 
-Vector2D: TypeAlias = Point2D
+Vector2D: TypeAlias = npt.NDArray[PointDType]
 """``shape: (2,)``
 
 A 2-dimensional vector: ``[float, float]``.
@@ -332,7 +376,7 @@ parameter can handle being passed a `Vector3D` instead.
     VMobjects!
 """
 
-Vector2D_Array: TypeAlias = Point2D_Array
+Vector2D_Array: TypeAlias = npt.NDArray[PointDType]
 """``shape: (M, 2)``
 
 An array of `Vector2D` objects: ``[[float, float], ...]``.
@@ -341,7 +385,7 @@ Normally, a function or method which expects a `Vector2D_Array` as a
 parameter can handle being passed a `Vector3D_Array` instead.
 """
 
-Vector3D: TypeAlias = Point3D
+Vector3D: TypeAlias = npt.NDArray[PointDType]
 """``shape: (3,)``
 
 A 3-dimensional vector: ``[float, float, float]``.
@@ -351,13 +395,13 @@ A 3-dimensional vector: ``[float, float, float]``.
     VMobjects!
 """
 
-Vector3D_Array: TypeAlias = Point3D_Array
+Vector3D_Array: TypeAlias = npt.NDArray[PointDType]
 """``shape: (M, 3)``
 
 An array of `Vector3D` objects: ``[[float, float, float], ...]``.
 """
 
-VectorND: TypeAlias = Union[npt.NDArray[PointDType], tuple[float, ...]]
+VectorND: TypeAlias = npt.NDArray[PointDType]
 """``shape (N,)``
 
 An :math:`N`-dimensional vector: ``[float, ...]``.
@@ -368,19 +412,19 @@ An :math:`N`-dimensional vector: ``[float, ...]``.
     collisions.
 """
 
-VectorND_Array: TypeAlias = Union[npt.NDArray[PointDType], tuple[VectorND, ...]]
+VectorND_Array: TypeAlias = npt.NDArray[PointDType]
 """``shape (M, N)``
 
 An array of `VectorND` objects: ``[[float, ...], ...]``.
 """
 
-RowVector: TypeAlias = Union[npt.NDArray[PointDType], tuple[tuple[float, ...]]]
+RowVector: TypeAlias = npt.NDArray[PointDType]
 """``shape: (1, N)``
 
 A row vector: ``[[float, ...]]``.
 """
 
-ColVector: TypeAlias = Union[npt.NDArray[PointDType], tuple[tuple[float], ...]]
+ColVector: TypeAlias = npt.NDArray[PointDType]
 """``shape: (N, 1)``
 
 A column vector: ``[[float], [float], ...]``.
@@ -392,13 +436,13 @@ A column vector: ``[[float], [float], ...]``.
 Matrix types
 """
 
-MatrixMN: TypeAlias = Union[npt.NDArray[PointDType], tuple[tuple[float, ...], ...]]
+MatrixMN: TypeAlias = npt.NDArray[PointDType]
 """``shape: (M, N)``
 
 A matrix: ``[[float, ...], [float, ...], ...]``.
 """
 
-Zeros: TypeAlias = Union[npt.NDArray[PointDType], tuple[tuple[Literal[0], ...], ...]]
+Zeros: TypeAlias = MatrixMN
 """``shape: (M, N)``
 
 A `MatrixMN` filled with zeros, typically created with
@@ -582,7 +626,7 @@ MappingFunction: TypeAlias = Callable[[Point3D], Point3D]
 Image types
 """
 
-Image: TypeAlias = npt.NDArray[ManimInt]
+PixelArray: TypeAlias = npt.NDArray[ManimInt]
 """``shape: (height, width) | (height, width, 3) | (height, width, 4)``
 
 A rasterized image with a height of ``height`` pixels and a width of
@@ -595,24 +639,24 @@ lightness (for greyscale images), an `RGB_Array_Int` or an
 `RGBA_Array_Int`.
 """
 
-GrayscaleImage: TypeAlias = Image
+GrayscalePixelArray: TypeAlias = PixelArray
 """``shape: (height, width)``
 
-A 100% opaque grayscale `Image`, where every pixel value is a
+A 100% opaque grayscale `PixelArray`, where every pixel value is a
 `ManimInt` indicating its lightness (black -> gray -> white).
 """
 
-RGBImage: TypeAlias = Image
+RGBPixelArray: TypeAlias = PixelArray
 """``shape: (height, width, 3)``
 
-A 100% opaque `Image` in color, where every pixel value is an
+A 100% opaque `PixelArray` in color, where every pixel value is an
 `RGB_Array_Int` object.
 """
 
-RGBAImage: TypeAlias = Image
+RGBAPixelArray: TypeAlias = PixelArray
 """``shape: (height, width, 4)``
 
-An `Image` in color where pixels can be transparent. Every pixel
+A `PixelArray` in color where pixels can be transparent. Every pixel
 value is an `RGBA_Array_Int` object.
 """
 

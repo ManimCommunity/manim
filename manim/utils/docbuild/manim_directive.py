@@ -77,11 +77,11 @@ directive:
         that is rendered in a reference block after the source code.
 
 """
+
 from __future__ import annotations
 
 import csv
 import itertools as it
-import os
 import re
 import shutil
 import sys
@@ -92,7 +92,7 @@ from typing import TYPE_CHECKING, Any
 
 import jinja2
 from docutils import nodes
-from docutils.parsers.rst import Directive, directives  # type: ignore
+from docutils.parsers.rst import Directive, directives
 from docutils.statemachine import StringList
 
 from manim import QUALITIES
@@ -150,6 +150,7 @@ class ManimDirective(Directive):
 
     See the module docstring for documentation.
     """
+
     has_content = True
     required_arguments = 1
     optional_arguments = 0
@@ -224,11 +225,7 @@ class ManimDirective(Directive):
             + self.options.get("ref_functions", [])
             + self.options.get("ref_methods", [])
         )
-        if ref_content:
-            ref_block = "References: " + " ".join(ref_content)
-
-        else:
-            ref_block = ""
+        ref_block = "References: " + " ".join(ref_content) if ref_content else ""
 
         if "quality" in self.options:
             quality = f'{self.options["quality"]}_quality'
@@ -354,7 +351,7 @@ def _write_rendering_stats(scene_name: str, run_time: str, file_name: str) -> No
             [
                 re.sub(r"^(reference\/)|(manim\.)", "", file_name),
                 scene_name,
-                "%.3f" % run_time,
+                f"{run_time:.3f}",
             ],
         )
 
@@ -384,7 +381,7 @@ def _log_rendering_times(*args: tuple[Any]) -> None:
                 f"{key}{f'{time_sum:.3f}'.rjust(7, '.')}s  => {len(group)} EXAMPLES",
             )
             for row in group:
-                print(f"{' '*(max_file_length)} {row[2].rjust(7)}s {row[1]}")
+                print(f"{' ' * max_file_length} {row[2].rjust(7)}s {row[1]}")
         print("")
 
 
