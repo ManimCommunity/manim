@@ -14,7 +14,6 @@ from PIL.Image import Resampling
 from manim.mobject.geometry.shape_matchers import SurroundingRectangle
 
 from ... import config
-from ...camera.camera import Camera
 from ...constants import *
 from ...mobject.mobject import Mobject
 from ...utils.bezier import interpolate
@@ -302,7 +301,7 @@ class ImageMobject(AbstractImageMobject):
 class ImageMobjectFromCamera(AbstractImageMobject):
     def __init__(
         self,
-        camera: Camera,
+        camera,
         default_display_frame_config: dict[str, Any] | None = None,
         **kwargs: Any,
     ) -> None:
