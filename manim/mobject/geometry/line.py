@@ -431,7 +431,7 @@ class Elbow(VMobject, metaclass=ConvertToOpenGL):
     def __init__(self, width: float = 0.2, angle: float = 0, **kwargs: Any) -> None:
         self.angle = angle
         super().__init__(**kwargs)
-        self.set_points_as_corners([UP, UP + RIGHT, RIGHT])
+        self.set_points_as_corners(np.array([UP, UP + RIGHT, RIGHT]))
         self.scale_to_fit_width(width, about_point=ORIGIN)
         self.rotate(self.angle, about_point=ORIGIN)
 
@@ -959,7 +959,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
             )
             angle_mobject = Elbow(**kwargs)
             angle_mobject.set_points_as_corners(
-                [anchor_angle_1, anchor_middle, anchor_angle_2],
+                np.array([anchor_angle_1, anchor_middle, anchor_angle_2]),
             )
         else:
             angle_1 = angle_of_vector(anchor_angle_1 - inter)
