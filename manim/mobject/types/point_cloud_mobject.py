@@ -83,7 +83,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         self,
         points: npt.NDArray,
         rgbas: npt.NDArray | None = None,
-        color=None,
+        color: ParsableManimColor | None = None,
         alpha: float = 1,
     ) -> Self:
         """Add points.
@@ -110,7 +110,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         mobs = self.family_members_with_points() if family else [self]
         for mob in mobs:
             mob.rgbas[:, :] = rgba
-        self.color = color
+        self.color = ManimColor.parse(color)
         return self
 
     def get_stroke_width(self) -> int:
@@ -132,8 +132,8 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         self,
         center: Point3D | None = None,
         radius: float = 1,
-        inner_color: ManimColor = WHITE,
-        outer_color: ManimColor = BLACK,
+        inner_color: ParsableManimColor = WHITE,
+        outer_color: ParsableManimColor = BLACK,
     ) -> Self:
         start_rgba, end_rgba = list(map(color_to_rgba, [inner_color, outer_color]))
         if center is None:
@@ -199,16 +199,16 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
     def get_color(self) -> ManimColor:
         return rgba_to_color(self.rgbas[0, :])
 
-    def point_from_proportion(self, alpha: float):
+    def point_from_proportion(self, alpha: float) -> Any:
         index = alpha * (self.get_num_points() - 1)
-        return self.points[index]
+        return self.points[np.floor(index)]
 
     @staticmethod
-    def get_mobject_type_class() -> PMobject:
+    def get_mobject_type_class() -> type[PMobject]:
         return PMobject
 
     # Alignment
-    def align_points_with_larger(self, larger_mobject: PMobject) -> None:
+    def align_points_with_larger(self, larger_mobject: Mobject) -> None:
         assert isinstance(larger_mobject, PMobject)
         self.apply_over_attr_arrays(
             lambda a: stretch_array_to_length(a, larger_mobject.get_num_points()),
@@ -247,14 +247,21 @@ class Mobject1D(PMobject, metaclass=ConvertToOpenGL):
         self.epsilon = 1.0 / self.density
         super().__init__(**kwargs)
 
-    def add_line(self, start: npt.NDArray, end: npt.NDArray, color=None) -> None:
+    def add_line(
+        self,
+        start: npt.NDArray,
+        end: npt.NDArray,
+        color: ParsableManimColor | None = None,
+    ) -> None:
         start, end = list(map(np.array, [start, end]))
         length = np.linalg.norm(end - start)
         if length == 0:
-            points = [start]
+            points = np.array([start])
         else:
             epsilon = self.epsilon / length
-            points = [interpolate(start, end, t) for t in np.arange(0, 1, epsilon)]
+            points = np.array(
+                [interpolate(start, end, t) for t in np.arange(0, 1, epsilon)]
+            )
         self.add_points(points, color=color)
 
 
@@ -299,10 +306,11 @@ class PGroup(PMobject):
 
     def fade_to(
         self, color: ParsableManimColor, alpha: float, family: bool = True
-    ) -> None:
+    ) -> Self:
         if family:
             for mob in self.submobjects:
                 mob.fade_to(color, alpha, family)
+        return self
 
 
 class PointCloudDot(Mobject1D):
@@ -359,16 +367,18 @@ class PointCloudDot(Mobject1D):
 
     def generate_points(self) -> None:
         self.add_points(
-            [
-                r * (np.cos(theta) * RIGHT + np.sin(theta) * UP)
-                for r in np.arange(self.epsilon, self.radius, self.epsilon)
-                # Num is equal to int(stop - start)/ (step + 1) reformulated.
-                for theta in np.linspace(
-                    0,
-                    2 * np.pi,
-                    num=int(2 * np.pi * (r + self.epsilon) / self.epsilon),
-                )
-            ],
+            np.array(
+                [
+                    r * (np.cos(theta) * RIGHT + np.sin(theta) * UP)
+                    for r in np.arange(self.epsilon, self.radius, self.epsilon)
+                    # Num is equal to int(stop - start)/ (step + 1) reformulated.
+                    for theta in np.linspace(
+                        0,
+                        2 * np.pi,
+                        num=int(2 * np.pi * (r + self.epsilon) / self.epsilon),
+                    )
+                ]
+            ),
         )
 
 
@@ -405,4 +415,4 @@ class Point(PMobject):
         self.set_points([self.location])
 
     def generate_points(self) -> None:
-        self.add_points([self.location])
+        self.add_points(np.array([self.location]))
