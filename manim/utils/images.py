@@ -9,7 +9,8 @@ __all__ = [
     "change_to_rgba_array",
 ]
 
-from pathlib import Path
+from pathlib import Path, PurePath
+from typing import TYPE_CHECKING
 
 import numpy as np
 from PIL import Image
@@ -17,8 +18,11 @@ from PIL import Image
 from .. import config
 from ..utils.file_ops import seek_full_path_from_defaults
 
+if TYPE_CHECKING:
+    import numpy.typing as npt
 
-def get_full_raster_image_path(image_file_name: str) -> Path:
+
+def get_full_raster_image_path(image_file_name: str | PurePath) -> Path:
     return seek_full_path_from_defaults(
         image_file_name,
         default_dir=config.get_dir("assets_dir"),
@@ -26,7 +30,7 @@ def get_full_raster_image_path(image_file_name: str) -> Path:
     )
 
 
-def get_full_vector_image_path(image_file_name: str) -> Path:
+def get_full_vector_image_path(image_file_name: str | PurePath) -> Path:
     return seek_full_path_from_defaults(
         image_file_name,
         default_dir=config.get_dir("assets_dir"),
@@ -49,7 +53,7 @@ def invert_image(image: np.array) -> Image:
     return Image.fromarray(arr)
 
 
-def change_to_rgba_array(image, dtype="uint8"):
+def change_to_rgba_array(image: npt.NDArray, dtype="uint8") -> npt.NDArray:
     """Converts an RGB array into RGBA with the alpha value opacity maxed."""
     pa = image
     if len(pa.shape) == 2:
