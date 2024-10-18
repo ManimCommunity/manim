@@ -129,7 +129,7 @@ class BackgroundRectangle(SurroundingRectangle):
         self.set_fill(opacity=b * self.original_fill_opacity)
         return self
 
-    def set_style(self, fill_opacity: float, **kwargs: Any) -> Self:  # type: ignore[override]
+    def set_style(self, fill_opacity: float, **kwargs: Any) -> Self:
         # Unchangeable style, except for fill_opacity
         # All other style arguments are ignored
         super().set_style(
