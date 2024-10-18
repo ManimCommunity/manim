@@ -4,6 +4,7 @@ from __future__ import annotations
 
 __all__ = ["SurroundingRectangle", "BackgroundRectangle", "Cross", "Underline"]
 
+from collections.abc import Sequence
 from typing import Any
 
 from typing_extensions import Self
@@ -59,6 +60,14 @@ class SurroundingRectangle(RoundedRectangle):
         self.buff = buff
         self.move_to(mobject)
 
+    @classmethod
+    def multiple(
+        self,
+        mobjects: Sequence[Mobject],
+        **kwargs,
+    ) -> SurroundingRectangle:
+        return SurroundingRectangle(VGroup(*mobjects), **kwargs)
+
 
 class BackgroundRectangle(SurroundingRectangle):
     """A background rectangle. Its default color is the background color
@@ -108,6 +117,14 @@ class BackgroundRectangle(SurroundingRectangle):
             **kwargs,
         )
         self.original_fill_opacity: float = self.fill_opacity
+
+    @classmethod
+    def multiple(
+        self,
+        mobjects: Sequence[Mobject],
+        **kwargs,
+    ) -> BackgroundRectangle:
+        return BackgroundRectangle(VGroup(*mobjects), **kwargs)
 
     def pointwise_become_partial(self, mobject: Mobject, a: Any, b: float) -> Self:
         self.set_fill(opacity=b * self.original_fill_opacity)
