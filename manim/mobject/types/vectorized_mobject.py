@@ -47,6 +47,8 @@ from manim.utils.iterables import (
 from manim.utils.space_ops import rotate_vector, shoelace_direction
 
 if TYPE_CHECKING:
+    from typing import Any
+
     import numpy.typing as npt
     from typing_extensions import Self
 
@@ -132,7 +134,7 @@ class VMobject(Mobject):
         tolerance_for_point_equality: float = 1e-6,
         n_points_per_cubic_curve: int = 4,
         cap_style: CapStyleType = CapStyleType.AUTO,
-        **kwargs,
+        **kwargs: Any,
     ):
         self.fill_opacity = fill_opacity
         self.stroke_opacity = stroke_opacity
@@ -2056,7 +2058,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
 
     """
 
-    def __init__(self, *vmobjects, **kwargs):
+    def __init__(self, *vmobjects: Any, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.add(*vmobjects)
 
