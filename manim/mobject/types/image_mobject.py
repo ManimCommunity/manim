@@ -187,6 +187,7 @@ class ImageMobject(AbstractImageMobject):
     ) -> None:
         self.fill_opacity: float = 1
         self.stroke_opacity: float = 1
+        self.invert_image = invert
         self.image_mode = image_mode
         if isinstance(filename_or_array, (str, pathlib.PurePath)):
             path = get_full_raster_image_path(filename_or_array)
@@ -199,7 +200,7 @@ class ImageMobject(AbstractImageMobject):
         self.pixel_array = change_to_rgba_array(
             self.pixel_array, self.pixel_array_dtype
         )
-        if self.invert:
+        if self.invert_image:
             self.pixel_array[:, :, :3] = (
                 np.iinfo(self.pixel_array_dtype).max - self.pixel_array[:, :, :3]
             )
