@@ -206,11 +206,11 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         return self.points[np.floor(index)]
 
     @staticmethod
-    def get_mobject_type_class() -> PMobject:
+    def get_mobject_type_class() -> type[PMobject]:
         return PMobject
 
     # Alignment
-    def align_points_with_larger(self, larger_mobject: PMobject) -> None:
+    def align_points_with_larger(self, larger_mobject: Mobject) -> None:
         assert isinstance(larger_mobject, PMobject)
         self.apply_over_attr_arrays(
             lambda a: stretch_array_to_length(a, larger_mobject.get_num_points()),
