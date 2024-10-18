@@ -44,6 +44,7 @@ if TYPE_CHECKING:
 
     from manim.typing import (
         FunctionOverride,
+        InternalPoint3D,
         ManimFloat,
         ManimInt,
         MappingFunction,
@@ -2168,7 +2169,7 @@ class Mobject:
         self.throw_error_if_no_points()
         return np.array(self.points[-1])
 
-    def get_start_and_end(self) -> tuple[Point3D, Point3D]:
+    def get_start_and_end(self) -> tuple[InternalPoint3D, InternalPoint3D]:
         """Returns starting and ending point of a stroke as a ``tuple``."""
         return self.get_start(), self.get_end()
 

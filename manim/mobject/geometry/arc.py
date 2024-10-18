@@ -69,7 +69,13 @@ if TYPE_CHECKING:
     from manim.mobject.mobject import Mobject
     from manim.mobject.text.tex_mobject import SingleStringMathTex, Tex
     from manim.mobject.text.text_mobject import Text
-    from manim.typing import CubicBezierPoints, Point3D, QuadraticBezierPoints, Vector3D
+    from manim.typing import (
+        CubicBezierPoints,
+        InternalPoint3D,
+        Point3D,
+        QuadraticBezierPoints,
+        Vector3D,
+    )
 
 
 class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
@@ -267,13 +273,13 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
     def get_last_handle(self) -> Point3D:
         return self.points[-2]
 
-    def get_end(self) -> Point3D:
+    def get_end(self) -> InternalPoint3D:
         if self.has_tip():
             return self.tip.get_start()
         else:
             return super().get_end()
 
-    def get_start(self) -> Point3D:
+    def get_start(self) -> InternalPoint3D:
         if self.has_start_tip():
             return self.start_tip.get_start()
         else:
@@ -383,7 +389,7 @@ class Arc(TipableVMobject):
         handles2 = anchors[1:] - (d_theta / 3) * tangent_vectors[1:]
         self.set_anchors_and_handles(anchors[:-1], handles1, handles2, anchors[1:])
 
-    def get_arc_center(self, warning: bool = True) -> Point3D:
+    def get_arc_center(self, warning: bool = True) -> InternalPoint3D:
         """Looks at the normals to the first two
         anchors, and finds their intersection points
         """
@@ -411,7 +417,7 @@ class Arc(TipableVMobject):
             self._failed_to_get_center = True
             return np.array(ORIGIN)
 
-    def move_arc_center_to(self, point: Point3D) -> Self:
+    def move_arc_center_to(self, point: InternalPoint3D) -> Self:
         self.shift(point - self.get_arc_center())
         return self
 

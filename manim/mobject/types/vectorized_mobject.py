@@ -55,6 +55,7 @@ if TYPE_CHECKING:
     from manim.typing import (
         BezierPoints,
         CubicBezierPoints,
+        InternalPoint3D_Array,
         ManimFloat,
         MappingFunction,
         Point2D,
@@ -709,7 +710,7 @@ class VMobject(Mobject):
         return self
 
     def set_points(self, points: Point3D_Array) -> Self:
-        self.points: Point3D_Array = np.array(points)
+        self.points: InternalPoint3D_Array = np.array(points)
         return self
 
     def resize_points(

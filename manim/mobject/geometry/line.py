@@ -32,7 +32,7 @@ from manim.utils.space_ops import angle_of_vector, line_intersection, normalize
 if TYPE_CHECKING:
     from typing_extensions import Self
 
-    from manim.typing import Point2D, Point3D, Vector3D
+    from manim.typing import InternalPoint3D, Point2D, Point3D, Vector3D
     from manim.utils.color import ParsableManimColor
 
     from ..matrix import Matrix  # Avoid circular import
@@ -124,7 +124,7 @@ class Line(TipableVMobject):
         self,
         mob_or_point: Mobject | Point3D,
         direction: Vector3D | None = None,
-    ) -> Point3D:
+    ) -> InternalPoint3D:
         """Transforms a mobject into its corresponding point. Does nothing if a point is passed.
 
         ``direction`` determines the location of the point along its bounding box in that direction.
