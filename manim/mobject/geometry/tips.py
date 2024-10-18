@@ -27,7 +27,7 @@ from manim.utils.space_ops import angle_of_vector
 if TYPE_CHECKING:
     from typing import Any
 
-    from manim.typing import Point3D, Vector3D
+    from manim.typing import InternalPoint3D, Point3D, Vector3D
 
 
 class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
@@ -136,7 +136,7 @@ class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
         return self.point_from_proportion(0.5)
 
     @property
-    def tip_point(self) -> Point3D:
+    def tip_point(self) -> InternalPoint3D:
         r"""The tip point of the arrow tip.
 
         Examples
