@@ -1,10 +1,10 @@
 import sys
+from fractions import Fraction
 from pathlib import Path
 
 import av
 import numpy as np
 import pytest
-from fractions import Fraction
 
 from manim import DR, Circle, Create, Scene, Star, tempconfig
 from manim.scene.scene_file_writer import to_av_frame_rate
