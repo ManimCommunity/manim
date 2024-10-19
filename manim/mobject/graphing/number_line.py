@@ -663,7 +663,7 @@ class NumberLine(Line):
         self.x_min, self.x_max, self.x_step = self.scaling.function(self.x_range)
         self.x_range_tracker.set_value(self.x_min)
 
-        # 更新刻度和数字
+
         if self.include_ticks:
             self.add_ticks()
         if self.include_numbers:
@@ -684,10 +684,8 @@ class NumberLine(Line):
         current_kwargs = {k: v for k, v in self.__dict__.items() if
                           k not in ['x_range', 'length', 'include_ticks', 'include_numbers', 'scaling']}
 
-        # 保存当前的子对象
         current_submobjects = list(self.submobjects)
 
-        # 重新初始化
         self.__init__(
             x_range=[current_x_min, self.x_max, self.x_step],
             length=self.length,
@@ -697,7 +695,6 @@ class NumberLine(Line):
             **current_kwargs
         )
 
-        # 恢复之前的子对象
         self.submobjects = current_submobjects
 
 
