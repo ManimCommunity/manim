@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from manim import *
 
 
@@ -17,10 +19,17 @@ class AnimatableNumberLine(NumberLine):
 
     def rebuild(self):
         self.clear()
-        self.__init__(x_range=self.get_x_range(), length=self.length,
-                      include_ticks=self.include_ticks, include_numbers=self.include_numbers,
-                      **{k: v for k, v in self.__dict__.items() if
-                         k not in ['x_range', 'length', 'include_ticks', 'include_numbers']})
+        self.__init__(
+            x_range=self.get_x_range(),
+            length=self.length,
+            include_ticks=self.include_ticks,
+            include_numbers=self.include_numbers,
+            **{
+                k: v
+                for k, v in self.__dict__.items()
+                if k not in ["x_range", "length", "include_ticks", "include_numbers"]
+            },
+        )
 
 
 class ChangeNumberLineRange(Animation):
@@ -60,8 +69,15 @@ class AnimatableNumberPlane(NumberPlane):
 
     def rebuild(self):
         self.clear()
-        self.__init__(x_range=self.get_x_range(), y_range=self.get_y_range(),
-                      **{k: v for k, v in self.__dict__.items() if k not in ['x_range', 'y_range']})
+        self.__init__(
+            x_range=self.get_x_range(),
+            y_range=self.get_y_range(),
+            **{
+                k: v
+                for k, v in self.__dict__.items()
+                if k not in ["x_range", "y_range"]
+            },
+        )
 
     def get_lines(self):
         x_lines = VGroup()
