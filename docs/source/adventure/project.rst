@@ -23,9 +23,9 @@ we'll show two vectors (as matrices) being added, and give a short explanation. 
 method for adding vectors graphically. Of course, choosing good examples is very important to help the viewer understand.
 In our case, we'll use the two vectors :math:`v_1\equiv\langle 2, 1\rangle` and :math:`v_2\equiv\langle 0,-3 \rangle`.
 
-#########################
-Algebraic Vector Addition
-#########################
+################
+Vector Addition
+################
 
 We'll start with the basic setup needed for every manim video.
 To do this, we can use the manim cli to speed stuff up. In the terminal,
@@ -85,8 +85,10 @@ stick with a simple text-based intro. Try to recreate the following:
             self.play(Unwrite(intro), Unwrite(vec_txts), run_time=.5)
             self.wait(0.2)
 
-.. dropdown:: Authors Solution
 
+.. admonition:: Authors solution
+    :class: dropdown
+        
     .. code-block:: python
 
         class AdventureIntro(Scene):
@@ -103,6 +105,410 @@ stick with a simple text-based intro. Try to recreate the following:
                 self.wait(1)
                 self.play(Unwrite(intro), Unwrite(vec_txts), run_time=0.5)
                 self.wait(0.2)
+
+============================
+Algebraic vector addition
+============================
+
+Then, let's show the viewer how vector addition between two vectors is done algebraically.
+Once again, try to recreate the following:
+
+
+.. manim:: AlgebraicAddition
+    :hide_source:
+    :ref_classes: Title MathTex Paragraph Tex Text Write Unwrite Create FadeIn
+    
+    class AlgebraicAddition(Scene):
+
+        def construct(self):
+            title = Title("Vector Addition Algebraically")
+
+            v1x, v1y = (2, 2)
+            v2x, v2y = (0, -3)
+            math = MathTex(r"""
+                \begin{bmatrix} %(v1x)d \\ %(v1y)d \end{bmatrix}
+                +\begin{bmatrix} %(v2x)d \\ %(v2y)d \end{bmatrix}
+            """ % {
+                'v1x': v1x,
+                'v2x': v2x,
+                'v1y': v1y,
+                'v2y': v2y
+            }).shift(DOWN)
+
+            resultant_vector = r"=\begin{bmatrix} %(x)d \\ %(y)d \end{bmatrix}" % {
+                'x': v1x+v2x,
+                'y': v1y+v2y
+            }
+            math_with_answer = MathTex(
+                math.get_tex_string()+resultant_vector
+            ).move_to(math.get_center())
+
+            self.play(Write(math), FadeIn(title))
+            self.wait(2)
+            self.play(
+                math.animate.shift(2*UP).set_opacity(0.5),
+                Write(math_with_answer)
+            )
+            conclusion = Paragraph("As you can see,\nYou add each component individually").to_edge(DOWN)
+            self.play(Write(conclusion))
+            self.wait(2)
+            self.play(Unwrite(math), Unwrite(math_with_answer), Unwrite(conclusion), Unwrite(title))
+
+Hints
+-----
+
+Use :class:`.Title` to display the title at the top of the Scene.
+
+Use :class:`.MathTex` to represent the matrices, and try not to hardcode the values into the LaTeX string. Instead, you can use python string formatting and numpy vector addition, which will make it easier to change the vectors later if we need to.
+
+.. code-block:: python
+
+    v1x, v1y = (2, 2)
+    v2x, v2y = ...
+    math = MathTex(r"""
+                ... %(v1x)d \\ %(v1y)d ...
+                + ... %(v2x)d \\ %(v2y)d ...
+            """ % {
+                'v1x': v1x,
+                'v2x': v2x,
+                'v1y': v1y,
+                'v2y': v2y
+            })
+
+.. admonition:: Authors solution
+    :class: dropdown
+        
+    .. code-block:: python
+
+        class AlgebraicAddition(Scene):
+
+            def construct(self):
+                title = Title("Vector Addition Algebraically")
+
+                v1x, v1y = (2, 2)
+                v2x, v2y = (0, -3)
+                math = MathTex(r"""
+                    \begin{bmatrix} %(v1x)d \\ %(v1y)d \end{bmatrix}
+                    +\begin{bmatrix} %(v2x)d \\ %(v2y)d \end{bmatrix}
+                """ % {
+                    'v1x': v1x,
+                    'v2x': v2x,
+                    'v1y': v1y,
+                    'v2y': v2y
+                }).shift(DOWN)
+
+                resultant_vector = r"=\begin{bmatrix} %(x)d \\ %(y)d \end{bmatrix}" % {
+                    'x': v1x+v2x,
+                    'y': v1y+v2y
+                }
+                math_with_answer = MathTex(
+                    math.get_tex_string()+resultant_vector
+                ).move_to(math.get_center())
+
+                self.play(Write(math), FadeIn(title))
+                self.wait(2)
+                self.play(
+                    math.animate.shift(2*UP).set_opacity(0.5),
+                    Write(math_with_answer)
+                )
+                conclusion = Paragraph("As you can see,\nYou add each component individually").to_edge(DOWN)
+                self.play(Write(conclusion))
+                self.wait(2)
+                self.play(Unwrite(math), Unwrite(math_with_answer), Unwrite(conclusion), Unwrite(title))
+
+============================
+Geometric vector addition
+============================
+
+Lastly, let's show the vector addition geometrically. Try your best to reconstruct the following:
+
+.. manim:: GeometricAddition
+    :hide_source:
+    :ref_classes: Title MathTex Paragraph Tex Text Write Unwrite Create FadeIn NumberPlane Arrow AnimationGroup ReplacementTransform VGroup
+    
+    class VectorGroup(VGroup):
+        def __init__(
+            self, start, end, labelname: str,
+            vector_color: ParsableManimColor, direction = RIGHT,
+            plane: NumberPlane | None = None, **kwargs
+        ) -> None:
+            if plane is not None:
+                # if using a plane convert from plane units
+                # to Munits
+                start = plane.c2p(*start)
+                end = plane.c2p(*end)
+
+            self.vector = Arrow(
+                start,
+                end,
+                color=vector_color,
+                buff=0
+            )
+            self.label = MathTex(labelname, color=vector_color)
+
+            def label_updater(m: MathTex, d=direction):
+                m.next_to(self.vector, direction=d, **kwargs)
+
+            self.label.add_updater(label_updater, call_updater=True)
+            super().__init__(self.vector, self.label, **kwargs)
+
+            @override_animation(Create)
+            def _create_vec_write_label(self) -> AnimationGroup:
+                return AnimationGroup(
+                    Create(self.vector),
+                    Write(self.label),
+                    lag_ratio=0
+                )
+
+            @override_animation(Uncreate)
+            def _uncreate_vec_unwrite_label(self) -> AnimationGroup:
+                return AnimationGroup(
+                    Uncreate(self.vector),
+                    Unwrite(self.label),
+                    lag_ratio=0
+                )
+
+    class GeometricAddition(Scene):
+        def construct(self):
+            title = Text("Now let's take a look at it geometrically")
+            self.play(Write(title))
+            self.wait(2)
+            self.play(Unwrite(title))
+
+            plane = NumberPlane()
+
+            sum_point = (2, -1, 0)
+
+            v1 = VectorGroup(
+                ORIGIN,
+                (2, 2, 0),
+                r"\boldsymbol{\vec{v}_1}",
+                RED,
+                direction=UP,
+                plane=plane
+            )
+
+            v2 = VectorGroup(
+                ORIGIN,
+                (0, -3, 0),
+                r"\boldsymbol{\vec{v}_2}",
+                YELLOW,
+                direction=LEFT,
+                plane=plane
+            )
+
+            v1moved = VectorGroup(
+                (0, -3, 0),
+                sum_point,
+                r"\boldsymbol{\vec{v}_1}",
+                v1.vector.get_color(),
+                plane=plane
+            )
+
+            v2moved = VectorGroup(
+                (2, 2, 0),
+                sum_point,
+                r"\boldsymbol{\vec{v}_2}",
+                v2.vector.get_color(),
+                plane=plane
+            )
+
+            sum_vec = VectorGroup(
+                ORIGIN,
+                sum_point,
+                r"\boldsymbol{\vec{v}_1}+\boldsymbol{\vec{v}_2}",
+                ORANGE,
+                direction=DOWN,
+                plane=plane
+            )
+
+            self.play(Create(plane), Create(v1))
+            self.wait(0.5)
+            self.play(Create(v2))
+            self.wait()
+
+            # animate movement of vectors
+            self.play(
+                Succession(
+                    ReplacementTransform(v1.copy(), v1moved),
+                    ReplacementTransform(v2.copy(), v2moved)
+                )
+            )
+            self.wait()
+            # draw sum vector
+            self.play(Create(sum_vec))
+            self.wait()
+            self.play(*[
+                Uncreate(x)
+                for x in (
+                    plane,
+                    v1,
+                    v2,
+                    v1moved,
+                    v2moved,
+                    sum_vec
+                )
+            ])
+
+Hints
+-----
+
+Use :class:`.NumberPlane` to define the cartesian plane.
+
+Use :class:`.Arrow` for the vectors.:
+
+To make sure the label of the vector and the vector shift together, you can define a custom :class:`.VGroup` subclass.
+Take a look at the decorator :func:`.override_animation` to override the :class:`.Create` and :class:`.Uncreate` animations, it will come in handy when animating the subclass.
+
+.. code-block:: python
+
+      class VectorGroup(VGroup):
+            def __init__(
+                ...
+            ) -> None:
+                ...
+
+            @override_animation(Create)
+            def _create_vec_write_label(self) -> AnimationGroup:
+                return AnimationGroup(
+                    ...
+                )
+
+            @override_animation(Uncreate)
+            def _uncreate_vec_unwrite_label(self) -> AnimationGroup:
+                return AnimationGroup(
+                    ...
+                )
+
+.. admonition:: Authors solution
+    :class: dropdown
+        
+    .. code-block:: python
+
+        class VectorGroup(VGroup):
+            def __init__(
+                self, start, end, labelname: str,
+                vector_color: ParsableManimColor, direction = RIGHT,
+                plane: NumberPlane | None = None, **kwargs
+            ) -> None:
+                if plane is not None:
+                    # if using a plane convert from plane units
+                    # to Munits
+                    start = plane.c2p(*start)
+                    end = plane.c2p(*end)
+
+                self.vector = Arrow(
+                    start,
+                    end,
+                    color=vector_color,
+                    buff=0
+                )
+                self.label = MathTex(labelname, color=vector_color)
+
+                def label_updater(m: MathTex, d=direction):
+                    m.next_to(self.vector, direction=d, **kwargs)
+
+                self.label.add_updater(label_updater, call_updater=True)
+                super().__init__(self.vector, self.label, **kwargs)
+
+            @override_animation(Create)
+            def _create_vec_write_label(self) -> AnimationGroup:
+                return AnimationGroup(
+                    Create(self.vector),
+                    Write(self.label),
+                    lag_ratio=0
+                )
+
+            @override_animation(Uncreate)
+            def _uncreate_vec_unwrite_label(self) -> AnimationGroup:
+                return AnimationGroup(
+                    Uncreate(self.vector),
+                    Unwrite(self.label),
+                    lag_ratio=0
+                )
+
+        class GeometricAddition(Scene):
+            def construct(self):
+                title = Text("Now let's take a look at it geometrically")
+                self.play(Write(title))
+                self.wait(2)
+                self.play(Unwrite(title))
+
+                plane = NumberPlane()
+
+                sum_point = (2, -1, 0)
+
+                v1 = VectorGroup(
+                    ORIGIN,
+                    (2, 2, 0),
+                    r"\boldsymbol{\vec{v}_1}",
+                    RED,
+                    direction=UP,
+                    plane=plane
+                )
+
+                v2 = VectorGroup(
+                    ORIGIN,
+                    (0, -3, 0),
+                    r"\boldsymbol{\vec{v}_2}",
+                    YELLOW,
+                    direction=LEFT,
+                    plane=plane
+                )
+
+                v1moved = VectorGroup(
+                    (0, -3, 0),
+                    sum_point,
+                    r"\boldsymbol{\vec{v}_1}",
+                    v1.vector.get_color(),
+                    plane=plane
+                )
+
+                v2moved = VectorGroup(
+                    (2, 2, 0),
+                    sum_point,
+                    r"\boldsymbol{\vec{v}_2}",
+                    v2.vector.get_color(),
+                    plane=plane
+                )
+
+                sum_vec = VectorGroup(
+                    ORIGIN,
+                    sum_point,
+                    r"\boldsymbol{\vec{v}_1}+\boldsymbol{\vec{v}_2}",
+                    ORANGE,
+                    direction=DOWN,
+                    plane=plane
+                )
+
+                self.play(Create(plane), Create(v1))
+                self.wait(0.5)
+                self.play(Create(v2))
+                self.wait()
+
+                # animate movement of vectors
+                self.play(
+                    Succession(
+                        ReplacementTransform(v1.copy(), v1moved),
+                        ReplacementTransform(v2.copy(), v2moved)
+                    )
+                )
+                self.wait()
+                # draw sum vector
+                self.play(Create(sum_vec))
+                self.wait()
+                self.play(*[
+                    Uncreate(x)
+                    for x in (
+                        plane,
+                        v1,
+                        v2,
+                        v1moved,
+                        v2moved,
+                        sum_vec
+                    )
+                ])
+
 
 
 ################
