@@ -669,7 +669,7 @@ class NumberLine(Line):
         if self.include_numbers:
             self.add_numbers()
 
-        # 更新长度
+
         if self.length:
             self.set_length(self.length)
             self.unit_size = self.get_unit_size()
