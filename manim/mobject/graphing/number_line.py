@@ -1,6 +1,7 @@
 """Mobject representing a number line."""
 
 from __future__ import annotations
+from manim import Animation
 
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
@@ -27,6 +28,7 @@ from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.bezier import interpolate
 from manim.utils.config_ops import merge_dicts_recursively
 from manim.utils.space_ops import normalize
+from manim.mobject.value_tracker import ValueTracker
 
 
 class NumberLine(Line):
@@ -137,6 +139,7 @@ class NumberLine(Line):
 
     def __init__(
         self,
+
         x_range: Sequence[float] | None = None,  # must be first
         length: float | None = None,
         unit_size: float = 1,
@@ -188,8 +191,10 @@ class NumberLine(Line):
             }
 
         # turn into a NumPy array to scale by just applying the function
+        self.scaling = scaling
         self.x_range = np.array(x_range, dtype=float)
-        self.x_min, self.x_max, self.x_step = scaling.function(self.x_range)
+        self.x_min, self.x_max, self.x_step = self.scaling.function(self.x_range)
+        self.x_range_tracker = ValueTracker(self.x_min)
         self.length = length
         self.unit_size = unit_size
         # ticks
@@ -267,6 +272,11 @@ class NumberLine(Line):
                     font_size=self.font_size,
                 )
 
+    def clear(self):
+        self.submobjects = []
+        self.points = np.zeros((0, 3))
+        return self
+
     def rotate_about_zero(self, angle: float, axis: Sequence[float] = OUT, **kwargs):
         return self.rotate_about_number(0, angle, axis, **kwargs)
 
@@ -325,7 +335,7 @@ class NumberLine(Line):
         np.ndarray
             A numpy array of floats represnting values along the number line.
         """
-        x_min, x_max, x_step = self.x_range
+        x_min, x_max, x_step = self.get_x_range()
         if not self.include_tip:
             x_max += 1e-6
 
@@ -345,40 +355,31 @@ class NumberLine(Line):
         return self.scaling.function(tick_range)
 
     def number_to_point(self, number: float | np.ndarray) -> np.ndarray:
-        """Accepts a value along the number line and returns a point with
-        respect to the scene.
-        Equivalent to `NumberLine @ number`
-
-        Parameters
-        ----------
-        number
-            The value to be transformed into a coordinate. Or a list of values.
-
-        Returns
-        -------
-        np.ndarray
-            A point with respect to the scene's coordinate system. Or a list of points.
+        """
+        ...
 
         Examples
         --------
-
-            >>> from manim import NumberLine
-            >>> number_line = NumberLine()
-            >>> number_line.number_to_point(0)
-            array([0., 0., 0.])
-            >>> number_line.number_to_point(1)
-            array([1., 0., 0.])
-            >>> number_line @ 1
-            array([1., 0., 0.])
-            >>> number_line.number_to_point([1, 2, 3])
-            array([[1., 0., 0.],
-                   [2., 0., 0.],
-                   [3., 0., 0.]])
+        >>> number_line = NumberLine(x_range=[-10, 10, 1])
+        >>> number_line.number_to_point(0)
+        array([0., 0., 0.])
+        >>> number_line.number_to_point(1)
+        array([1., 0., 0.])
+        >>> number_line @ 1
+        array([1., 0., 0.])
+        >>> number_line.number_to_point([1, 2, 3])
+        array([[1., 0., 0.],
+               [2., 0., 0.],
+               [3., 0., 0.]])
+        >>> number_line.set_x_range([-5, 5, 1])
+        >>> number_line.number_to_point(1)
+        array([2., 0., 0.])
         """
         number = np.asarray(number)
         scalar = number.ndim == 0
         number = self.scaling.inverse_function(number)
-        alphas = (number - self.x_range[0]) / (self.x_range[1] - self.x_range[0])
+        x_min, x_max, _ = self.get_x_range()
+        alphas = (number - x_min) / (x_max - x_min)
         alphas = float(alphas) if scalar else np.vstack(alphas)
         val = interpolate(self.get_start(), self.get_end(), alphas)
         return val
@@ -399,23 +400,21 @@ class NumberLine(Line):
 
         Examples
         --------
-
-            >>> from manim import NumberLine
-            >>> number_line = NumberLine()
-            >>> number_line.point_to_number((0, 0, 0))
-            0.0
-            >>> number_line.point_to_number((1, 0, 0))
-            1.0
-            >>> number_line.point_to_number([[0.5, 0, 0], [1, 0, 0], [1.5, 0, 0]])
-            array([0.5, 1. , 1.5])
-
+        >>> number_line = NumberLine(x_range=[-10, 10, 1])
+        >>> number_line.point_to_number((0, 0, 0))
+        0.0
+        >>> number_line.point_to_number((1, 0, 0))
+        1.0
+        >>> import numpy as np
+        >>> np.round(number_line.point_to_number(np.array([[0.5, 0, 0], [1, 0, 0], [1.5, 0, 0]])), decimals=1)
+        array([0.5, 1. , 1.5])
         """
         point = np.asarray(point)
         start, end = self.get_start_and_end()
         unit_vect = normalize(end - start)
         proportion = np.dot(point - start, unit_vect) / np.dot(end - start, unit_vect)
-        return interpolate(self.x_min, self.x_max, proportion)
-
+        x_min, x_max, _ = self.get_x_range()
+        return interpolate(x_min, x_max, proportion)
     def n2p(self, number: float | np.ndarray) -> np.ndarray:
         """Abbreviation for :meth:`~.NumberLine.number_to_point`."""
         return self.number_to_point(number)
@@ -655,6 +654,52 @@ class NumberLine(Line):
             other = other.get_center()
         return self.p2n(other)
 
+    def get_x_range(self):
+        x_min = self.x_range_tracker.get_value()
+        return [x_min, self.x_max, self.x_step]
+
+    def set_x_range(self, new_range):
+        self.x_range = np.array(new_range, dtype=float)
+        self.x_min, self.x_max, self.x_step = self.scaling.function(self.x_range)
+        self.x_range_tracker.set_value(self.x_min)
+
+        # 更新刻度和数字
+        if self.include_ticks:
+            self.add_ticks()
+        if self.include_numbers:
+            self.add_numbers()
+
+        # 更新长度
+        if self.length:
+            self.set_length(self.length)
+            self.unit_size = self.get_unit_size()
+        else:
+            self.scale(self.unit_size)
+
+        self.center()
+
+    def rebuild(self):
+        current_x_min = self.x_range_tracker.get_value()
+        current_scaling = self.scaling
+        current_kwargs = {k: v for k, v in self.__dict__.items() if
+                          k not in ['x_range', 'length', 'include_ticks', 'include_numbers', 'scaling']}
+
+        # 保存当前的子对象
+        current_submobjects = list(self.submobjects)
+
+        # 重新初始化
+        self.__init__(
+            x_range=[current_x_min, self.x_max, self.x_step],
+            length=self.length,
+            include_ticks=self.include_ticks,
+            include_numbers=self.include_numbers,
+            scaling=current_scaling,
+            **current_kwargs
+        )
+
+        # 恢复之前的子对象
+        self.submobjects = current_submobjects
+
 
 class UnitInterval(NumberLine):
     def __init__(
@@ -685,3 +730,17 @@ class UnitInterval(NumberLine):
             decimal_number_config=decimal_number_config,
             **kwargs,
         )
+
+class ChangeNumberLineRange(Animation):
+    def __init__(self, number_line, new_range, **kwargs):
+        self.new_range = new_range
+        super().__init__(number_line, **kwargs)
+
+    def interpolate_mobject(self, alpha):
+        current_x_min = interpolate(
+            self.mobject.get_x_range()[0],
+            self.new_range[0],
+            alpha
+        )
+        current_range = [current_x_min, self.new_range[1], self.new_range[2]]
+        self.mobject.set_x_range(current_range)
