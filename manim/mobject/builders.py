@@ -90,12 +90,10 @@ class _UpdaterBuilder(Generic[T_co]):
     def __init__(self, mobject: T_co):
         self._mobject = mobject
 
-    def __getattribute__(self, name: str, /):
+    def __getattr__(self, name: str, /):
         # just return a function that will add the updater
         def add_updater(*method_args, **method_kwargs):
-            # use object __getattr__ to avoid infinite recursion
-            mob = object.__getattribute__(self, "_mobject")
-            mob.add_updater(
+            self._mobject.add_updater(
                 lambda m: getattr(m, name)(*method_args, **method_kwargs),
                 call_updater=True,
             )
