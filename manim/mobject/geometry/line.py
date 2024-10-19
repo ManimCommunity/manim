@@ -96,7 +96,7 @@ class Line(TipableVMobject):
 
     init_points = generate_points
 
-    def _account_for_buff(self, buff: float) -> Self:
+    def _account_for_buff(self, buff: float) -> None:
         if buff == 0:
             return
         #
@@ -106,7 +106,7 @@ class Line(TipableVMobject):
             return
         buff_proportion = buff / length
         self.pointwise_become_partial(self, buff_proportion, 1 - buff_proportion)
-        return self
+        return
 
     def _set_start_and_end_attrs(
         self, start: Point3D | Mobject, end: Point3D | Mobject
