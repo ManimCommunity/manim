@@ -6,6 +6,7 @@ __all__ = ["SceneFileWriter"]
 
 import json
 import shutil
+from fractions import Fraction
 from pathlib import Path
 from queue import Queue
 from tempfile import NamedTemporaryFile
@@ -54,7 +55,7 @@ def to_av_frame_rate(fps):
         if abs(fps - num / denom) >= epsilon2:
             raise ValueError("invalid frame rate")
 
-    return av.utils.Fraction(num, denom)
+    return Fraction(num, denom)
 
 
 def convert_audio(input_path: Path, output_path: Path, codec_name: str):
