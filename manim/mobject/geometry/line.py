@@ -151,7 +151,9 @@ class Line(TipableVMobject):
         self.init_points()
 
     def put_start_and_end_on(
-        self, start: InternalPoint3D, end: InternalPoint3D
+        self,
+        start: InternalPoint3D,
+        end: InternalPoint3D,  # type: ignore[override]
     ) -> Self:
         """Sets starts and end coordinates of a line.
 
@@ -543,7 +545,7 @@ class Arrow(Line):
         self.add_tip(tip_shape=tip_shape)
         self._set_stroke_width_from_length()
 
-    def scale(self, factor: float, scale_tips: bool = False, **kwargs: Any) -> Self:
+    def scale(self, factor: float, scale_tips: bool = False, **kwargs: Any) -> Self:  # type: ignore[override]
         r"""Scale an arrow, but keep stroke width and arrow tip size fixed.
 
 
