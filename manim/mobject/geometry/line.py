@@ -54,13 +54,14 @@ class Line(TipableVMobject):
         self.path_arc = path_arc
         self._set_start_and_end_attrs(start, end)
         super().__init__(**kwargs)
+        # TODO: Deal with the situation where path_arc is None
 
     def generate_points(self) -> None:
         self.set_points_by_ends(
             start=self.start,
             end=self.end,
             buff=self.buff,
-            path_arc=self.path_arc,
+            path_arc=self.path_arc,  # type: ignore[arg-type]
         )
 
     def set_points_by_ends(
@@ -90,7 +91,7 @@ class Line(TipableVMobject):
             arc = ArcBetweenPoints(self.start, self.end, angle=self.path_arc)
             self.set_points(arc.points)
         else:
-            self.set_points_as_corners([self.start, self.end])
+            self.set_points_as_corners(np.array([self.start, self.end]))
 
         self._account_for_buff(buff)
 
@@ -141,9 +142,9 @@ class Line(TipableVMobject):
         if isinstance(mob_or_point, (Mobject, OpenGLMobject)):
             mob = mob_or_point
             if direction is None:
-                return mob.get_center()
+                return mob.get_center()  # type: ignore[return-value]
             else:
-                return mob.get_boundary_point(direction)
+                return mob.get_boundary_point(direction)  # type: ignore[return-value]
         return np.array(mob_or_point)
 
     def set_path_arc(self, new_value: float) -> None:
@@ -152,7 +153,7 @@ class Line(TipableVMobject):
 
     def put_start_and_end_on(
         self,
-        start: InternalPoint3D,
+        start: InternalPoint3D,  # type: ignore[override]
         end: InternalPoint3D,  # type: ignore[override]
     ) -> Self:
         """Sets starts and end coordinates of a line.
@@ -222,7 +223,8 @@ class Line(TipableVMobject):
         return self
 
     def set_length(self, length: float) -> Self:
-        return self.scale(length / self.get_length())
+        scale_factor: float = length / self.get_length()
+        return self.scale(scale_factor)
 
 
 class DashedLine(Line):
@@ -304,7 +306,7 @@ class DashedLine(Line):
             array([-1.,  0.,  0.])
         """
         if len(self.submobjects) > 0:
-            return self.submobjects[0].get_start()
+            return self.submobjects[0].get_start()  # type: ignore[return-value]
         else:
             return super().get_start()
 
@@ -319,7 +321,7 @@ class DashedLine(Line):
             array([1., 0., 0.])
         """
         if len(self.submobjects) > 0:
-            return self.submobjects[-1].get_end()
+            return self.submobjects[-1].get_end()  # type: ignore[return-value]
         else:
             return super().get_end()
 
@@ -959,7 +961,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
                 + quadrant[0] * radius * line1.get_unit_vector()
                 + quadrant[1] * radius * line2.get_unit_vector()
             )
-            angle_mobject = Elbow(**kwargs)
+            angle_mobject: VMobject = Elbow(**kwargs)
             angle_mobject.set_points_as_corners(
                 np.array([anchor_angle_1, anchor_middle, anchor_angle_2]),
             )

@@ -130,7 +130,7 @@ class BackgroundRectangle(SurroundingRectangle):
         return self
 
     def get_fill_color(self) -> ManimColor:
-        return self.color
+        return self.color  # type: ignore[has-type]
 
 
 class Cross(VGroup):

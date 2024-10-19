@@ -215,7 +215,7 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
         if radius == 0:
             return self
 
-        new_points = []
+        new_points: list[InternalPoint3D] = []
 
         for vertices in self.get_vertex_groups():
             arcs = []
@@ -284,7 +284,7 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
 
                 new_points.extend(line.points)
 
-        self.set_points(new_points)
+        self.set_points(np.array(new_points))
 
         return self
 

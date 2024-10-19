@@ -1588,7 +1588,7 @@ class VMobject(Mobject):
         nppcc = self.n_points_per_cubic_curve
         return [self.points[i::nppcc] for i in range(nppcc)]
 
-    def get_start_anchors(self) -> Point3D_Array:
+    def get_start_anchors(self) -> InternalPoint3D_Array:
         """Returns the start anchors of the bezier curves.
 
         Returns
