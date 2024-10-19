@@ -1,4 +1,5 @@
 import sys
+from fractions import Fraction
 from pathlib import Path
 
 import av
@@ -6,6 +7,7 @@ import numpy as np
 import pytest
 
 from manim import DR, Circle, Create, Scene, Star, tempconfig
+from manim.scene.scene_file_writer import to_av_frame_rate
 from manim.utils.commands import capture, get_video_metadata
 
 
@@ -175,3 +177,11 @@ def test_unicode_partial_movie(tmpdir, simple_scenes_path):
 
     _, err, exit_code = capture(command)
     assert exit_code == 0, err
+
+
+def test_frame_rates():
+    assert to_av_frame_rate(25) == Fraction(25, 1)
+    assert to_av_frame_rate(24.0) == Fraction(24, 1)
+    assert to_av_frame_rate(23.976) == Fraction(24 * 1000, 1001)
+    assert to_av_frame_rate(23.98) == Fraction(24 * 1000, 1001)
+    assert to_av_frame_rate(59.94) == Fraction(60 * 1000, 1001)
