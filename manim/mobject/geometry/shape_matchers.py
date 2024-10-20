@@ -50,7 +50,7 @@ class SurroundingRectangle(RoundedRectangle):
         corner_radius: float = 0.0,
         **kwargs,
     ) -> None:
-        target = mobject 
+        target = mobject
         if not isinstance(target, Mobject):
             target = VGroup(*mobject)
         super().__init__(
@@ -114,7 +114,6 @@ class BackgroundRectangle(SurroundingRectangle):
             **kwargs,
         )
         self.original_fill_opacity: float = self.fill_opacity
-
 
     def pointwise_become_partial(self, mobject: Mobject, a: Any, b: float) -> Self:
         self.set_fill(opacity=b * self.original_fill_opacity)
