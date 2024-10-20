@@ -280,15 +280,15 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
 
     def get_end(self) -> InternalPoint3D:
         if self.has_tip():
-            return self.tip.get_start()
+            return self.tip.get_start()  # type: ignore[return-value]
         else:
-            return super().get_end()
+            return super().get_end()  # type: ignore[return-value]
 
     def get_start(self) -> InternalPoint3D:
         if self.has_start_tip():
-            return self.start_tip.get_start()
+            return self.start_tip.get_start()  # type: ignore[return-value]
         else:
-            return super().get_start()
+            return super().get_start()  # type: ignore[return-value]
 
     def get_length(self) -> float:
         start, end = self.get_start_and_end()
