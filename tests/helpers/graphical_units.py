@@ -2,13 +2,15 @@
 
 from __future__ import annotations
 
+import logging
 import tempfile
 from pathlib import Path
 
 import numpy as np
 
-from manim import logger
 from manim.scene.scene import Scene
+
+logger = logging.getLogger("manim")
 
 
 def set_test_scene(scene_object: type[Scene], module_name: str, config):

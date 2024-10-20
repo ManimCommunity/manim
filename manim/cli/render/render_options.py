@@ -1,14 +1,15 @@
 from __future__ import annotations
 
+import logging
 import re
 
 from cloup import Choice, option, option_group
 
 from manim.constants import QUALITIES, RendererType
 
-from ... import logger
-
 __all__ = ["render_options"]
+
+logger = logging.getLogger("manim")
 
 
 def validate_scene_range(ctx, param, value):
@@ -71,7 +72,7 @@ render_options = option_group(
         "--quality",
         default=None,
         type=Choice(
-            list(reversed([q["flag"] for q in QUALITIES.values() if q["flag"]])),  # type: ignore
+            reversed([q["flag"] for q in QUALITIES.values() if q["flag"]]),  # type: ignore[arg-type]
             case_sensitive=False,
         ),
         help="Render quality at the follow resolution framerates, respectively: "

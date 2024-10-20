@@ -26,9 +26,7 @@ from typing import TYPE_CHECKING, Any, Callable, overload
 
 import numpy as np
 
-from manim.typing import PointDType
 from manim.utils.simple_functions import choose
-from manim.utils.space_ops import cross2d, find_intersection
 
 if TYPE_CHECKING:
     import numpy.typing as npt
@@ -36,56 +34,138 @@ if TYPE_CHECKING:
     from manim.typing import (
         BezierPoints,
         BezierPoints_Array,
+        ColVector,
         MatrixMN,
         Point3D,
         Point3D_Array,
+        QuadraticBezierPoints_Array,
     )
 
 # l is a commonly used name in linear algebra
 # ruff: noqa: E741
 
 
+@overload
 def bezier(
-    points: Sequence[Point3D] | Point3D_Array,
-) -> Callable[[float], Point3D]:
-    """Classic implementation of a bezier curve.
+    points: BezierPoints,
+) -> Callable[[float | ColVector], Point3D | Point3D_Array]: ...
+
+
+@overload
+def bezier(
+    points: Sequence[Point3D_Array],
+) -> Callable[[float | ColVector], Point3D_Array]: ...
+
+
+def bezier(points):
+    """Classic implementation of a Bézier curve.
 
     Parameters
     ----------
     points
-        points defining the desired bezier curve.
+        :math:`(d+1, 3)`-shaped array of :math:`d+1` control points defining a single Bézier
+        curve of degree :math:`d`. Alternatively, for vectorization purposes, ``points`` can
+        also be a :math:`(d+1, M, 3)`-shaped sequence of :math:`d+1` arrays of :math:`M`
+        control points each, which define `M` Bézier curves instead.
 
     Returns
     -------
-        function describing the bezier curve.
-        You can pass a t value between 0 and 1 to get the corresponding point on the curve.
-    """
-    n = len(points) - 1
-    # Cubic Bezier curve
-    if n == 3:
-        return lambda t: np.asarray(
-            (1 - t) ** 3 * points[0]
-            + 3 * t * (1 - t) ** 2 * points[1]
-            + 3 * (1 - t) * t**2 * points[2]
-            + t**3 * points[3],
-            dtype=PointDType,
-        )
-    # Quadratic Bezier curve
-    if n == 2:
-        return lambda t: np.asarray(
-            (1 - t) ** 2 * points[0] + 2 * t * (1 - t) * points[1] + t**2 * points[2],
-            dtype=PointDType,
-        )
+    bezier_func : :class:`typing.Callable` [[:class:`float` | :class:`~.ColVector`], :class:`~.Point3D` | :class:`~.Point3D_Array`]
+        Function describing the Bézier curve. The behaviour of this function depends on
+        the shape of ``points``:
 
-    return lambda t: np.asarray(
-        np.asarray(
-            [
-                (((1 - t) ** (n - k)) * (t**k) * choose(n, k) * point)
-                for k, point in enumerate(points)
-            ],
-            dtype=PointDType,
-        ).sum(axis=0)
-    )
+            *   If ``points`` was a :math:`(d+1, 3)` array representing a single Bézier curve,
+                then ``bezier_func`` can receive either:
+
+                *   a :class:`float` ``t``, in which case it returns a
+                    single :math:`(1, 3)`-shaped :class:`~.Point3D` representing the evaluation
+                    of the Bézier at ``t``, or
+                *   an :math:`(n, 1)`-shaped :class:`~.ColVector`
+                    containing :math:`n` values to evaluate the Bézier curve at, returning instead
+                    an :math:`(n, 3)`-shaped :class:`~.Point3D_Array` containing the points
+                    resulting from evaluating the Bézier at each of the :math:`n` values.
+                .. warning::
+                    If passing a vector of :math:`t`-values to ``bezier_func``, it **must**
+                    be a column vector/matrix of shape :math:`(n, 1)`. Passing an 1D array of
+                    shape :math:`(n,)` is not supported and **will result in undefined behaviour**.
+
+            *   If ``points`` was a :math:`(d+1, M, 3)` array describing :math:`M` Bézier curves,
+                then ``bezier_func`` can receive either:
+
+                *   a :class:`float` ``t``, in which case it returns an
+                    :math:`(M, 3)`-shaped :class:`~.Point3D_Array` representing the evaluation
+                    of the :math:`M` Bézier curves at the same value ``t``, or
+                *   an :math:`(M, 1)`-shaped
+                    :class:`~.ColVector` containing :math:`M` values, such that the :math:`i`-th
+                    Bézier curve defined by ``points`` is evaluated at the corresponding :math:`i`-th
+                    value in ``t``, returning again an :math:`(M, 3)`-shaped :class:`~.Point3D_Array`
+                    containing those :math:`M` evaluations.
+                .. warning::
+                    Unlike the previous case, if you pass a :class:`~.ColVector` to ``bezier_func``,
+                    it **must** contain exactly :math:`M` values, each value for each of the :math:`M`
+                    Bézier curves defined by ``points``. Any array of shape other than :math:`(M, 1)`
+                    **will result in undefined behaviour**.
+    """
+    P = np.asarray(points)
+    degree = P.shape[0] - 1
+
+    if degree == 0:
+
+        def zero_bezier(t):
+            return np.ones_like(t) * P[0]
+
+        return zero_bezier
+
+    if degree == 1:
+
+        def linear_bezier(t):
+            return P[0] + t * (P[1] - P[0])
+
+        return linear_bezier
+
+    if degree == 2:
+
+        def quadratic_bezier(t):
+            t2 = t * t
+            mt = 1 - t
+            mt2 = mt * mt
+            return mt2 * P[0] + 2 * t * mt * P[1] + t2 * P[2]
+
+        return quadratic_bezier
+
+    if degree == 3:
+
+        def cubic_bezier(t):
+            t2 = t * t
+            t3 = t2 * t
+            mt = 1 - t
+            mt2 = mt * mt
+            mt3 = mt2 * mt
+            return mt3 * P[0] + 3 * t * mt2 * P[1] + 3 * t2 * mt * P[2] + t3 * P[3]
+
+        return cubic_bezier
+
+    def nth_grade_bezier(t):
+        is_scalar = not isinstance(t, np.ndarray)
+        if is_scalar:
+            B = np.empty((1, *P.shape))
+        else:
+            t = t.reshape(-1, *[1 for dim in P.shape])
+            B = np.empty((t.shape[0], *P.shape))
+        B[:] = P
+
+        for i in range(degree):
+            # After the i-th iteration (i in [0, ..., d-1]) there are evaluations at t
+            # of (d-i) Bezier curves of grade (i+1), stored in the first d-i slots of B
+            B[:, : degree - i] += t * (B[:, 1 : degree - i + 1] - B[:, : degree - i])
+
+        # In the end, there shall be the evaluation at t of a single Bezier curve of
+        # grade d, stored in the first slot of B
+        if is_scalar:
+            return B[0, 0]
+        return B[:, 0]
+
+    return nth_grade_bezier
 
 
 def partial_bezier_points(points: BezierPoints, a: float, b: float) -> BezierPoints:
@@ -541,7 +621,6 @@ def split_bezier(points: BezierPoints, t: float) -> Point3D_Array:
     :class:`~.Point3D_Array`
         An array containing the control points defining the two Bézier curves.
     """
-
     points = np.asarray(points)
     N, dim = points.shape
     degree = N - 1
@@ -875,9 +954,10 @@ def bezier_remap(
         An array of multiple Bézier curves of degree :math:`d` to be remapped. The shape of this array
         must be ``(current_number_of_curves, nppc, dim)``, where:
 
-            *   ``current_number_of_curves`` is the current amount of curves in the array ``bezier_tuples``,
-            *   ``nppc`` is the amount of points per curve, such that their degree is ``nppc-1``, and
-            *   ``dim`` is the dimension of the points, usually :math:`3`.
+        *   ``current_number_of_curves`` is the current amount of curves in the array ``bezier_tuples``,
+        *   ``nppc`` is the amount of points per curve, such that their degree is ``nppc-1``, and
+        *   ``dim`` is the dimension of the points, usually :math:`3`.
+
     new_number_of_curves
         The number of curves that the output will contain. This needs to be higher than the current number.
 
@@ -928,13 +1008,46 @@ def interpolate(start: float, end: float, alpha: float) -> float: ...
 
 
 @overload
+def interpolate(start: float, end: float, alpha: ColVector) -> ColVector: ...
+
+
+@overload
 def interpolate(start: Point3D, end: Point3D, alpha: float) -> Point3D: ...
 
 
-def interpolate(
-    start: int | float | Point3D, end: int | float | Point3D, alpha: float | Point3D
-) -> float | Point3D:
-    return (1 - alpha) * start + alpha * end
+@overload
+def interpolate(start: Point3D, end: Point3D, alpha: ColVector) -> Point3D_Array: ...
+
+
+def interpolate(start, end, alpha):
+    """Linearly interpolates between two values ``start`` and ``end``.
+
+    Parameters
+    ----------
+    start
+        The start of the range.
+    end
+        The end of the range.
+    alpha
+        A float between 0 and 1, or an :math:`(n, 1)` column vector containing
+        :math:`n` floats between 0 and 1 to interpolate in a vectorized fashion.
+
+    Returns
+    -------
+    :class:`float` | :class:`~.ColVector` | :class:`~.Point3D` | :class:`~.Point3D_Array`
+        The result of the linear interpolation.
+
+        *   If ``start`` and ``end`` are of type :class:`float`, and:
+
+            * ``alpha`` is also a :class:`float`, the return is simply another :class:`float`.
+            * ``alpha`` is a :class:`~.ColVector`, the return is another :class:`~.ColVector`.
+
+        *   If ``start`` and ``end`` are of type :class:`~.Point3D`, and:
+
+            * ``alpha`` is a :class:`float`, the return is another :class:`~.Point3D`.
+            * ``alpha`` is a :class:`~.ColVector`, the return is a :class:`~.Point3D_Array`.
+    """
+    return start + alpha * (end - start)
 
 
 def integer_interpolate(
@@ -1114,7 +1227,7 @@ def match_interpolate(
     return interpolate(
         new_start,
         new_end,
-        old_alpha,  # type: ignore
+        old_alpha,  # type: ignore[arg-type]
     )
 
 
@@ -1610,74 +1723,147 @@ def get_smooth_open_cubic_bezier_handle_points(
     return H1, H2
 
 
-# Given 4 control points for a cubic bezier curve (or arrays of such)
-# return control points for 2 quadratics (or 2n quadratics) approximating them.
+@overload
 def get_quadratic_approximation_of_cubic(
     a0: Point3D, h0: Point3D, h1: Point3D, a1: Point3D
-) -> BezierPoints:
-    a0 = np.array(a0, ndmin=2)
-    h0 = np.array(h0, ndmin=2)
-    h1 = np.array(h1, ndmin=2)
-    a1 = np.array(a1, ndmin=2)
-    # Tangent vectors at the start and end.
-    T0 = h0 - a0
-    T1 = a1 - h1
+) -> QuadraticBezierPoints_Array: ...
 
-    # Search for inflection points.  If none are found, use the
-    # midpoint as a cut point.
-    # Based on http://www.caffeineowl.com/graphics/2d/vectorial/cubic-inflexion.html
-    has_infl = np.ones(len(a0), dtype=bool)
 
-    p = h0 - a0
-    q = h1 - 2 * h0 + a0
-    r = a1 - 3 * h1 + 3 * h0 - a0
+@overload
+def get_quadratic_approximation_of_cubic(
+    a0: Point3D_Array,
+    h0: Point3D_Array,
+    h1: Point3D_Array,
+    a1: Point3D_Array,
+) -> QuadraticBezierPoints_Array: ...
 
-    a = cross2d(q, r)
-    b = cross2d(p, r)
-    c = cross2d(p, q)
 
-    disc = b * b - 4 * a * c
-    has_infl &= disc > 0
-    sqrt_disc = np.sqrt(np.abs(disc))
-    settings = np.seterr(all="ignore")
-    ti_bounds = []
-    for sgn in [-1, +1]:
-        ti = (-b + sgn * sqrt_disc) / (2 * a)
-        ti[a == 0] = (-c / b)[a == 0]
-        ti[(a == 0) & (b == 0)] = 0
-        ti_bounds.append(ti)
-    ti_min, ti_max = ti_bounds
-    np.seterr(**settings)
-    ti_min_in_range = has_infl & (0 < ti_min) & (ti_min < 1)
-    ti_max_in_range = has_infl & (0 < ti_max) & (ti_max < 1)
+def get_quadratic_approximation_of_cubic(a0, h0, h1, a1):
+    r"""If ``a0``, ``h0``, ``h1`` and ``a1`` are the control points of a cubic
+    Bézier curve, approximate the curve with two quadratic Bézier curves and
+    return an array of 6 points, where the first 3 points represent the first
+    quadratic curve and the last 3 represent the second one.
 
-    # Choose a value of t which starts at 0.5,
-    # but is updated to one of the inflection points
-    # if they lie between 0 and 1
+    Otherwise, if ``a0``, ``h0``, ``h1`` and ``a1`` are _arrays_ of :math:`N`
+    points representing :math:`N` cubic Bézier curves, return an array of
+    :math:`6N` points where each group of :math:`6` consecutive points
+    approximates each of the :math:`N` curves in a similar way as above.
 
-    t_mid = 0.5 * np.ones(len(a0))
-    t_mid[ti_min_in_range] = ti_min[ti_min_in_range]
-    t_mid[ti_max_in_range] = ti_max[ti_max_in_range]
+    .. note::
+        If the cubic spline given by the original cubic Bézier curves is
+        smooth, this algorithm will generate a quadratic spline which is also
+        smooth.
 
-    m, n = a0.shape
-    t_mid = t_mid.repeat(n).reshape((m, n))
+        If a cubic Bézier is given by
 
-    # Compute bezier point and tangent at the chosen value of t (these are vectorized)
-    mid = bezier([a0, h0, h1, a1])(t_mid)  # type: ignore
-    Tm = bezier([h0 - a0, h1 - h0, a1 - h1])(t_mid)  # type: ignore
+        .. math::
+            C(t) = (1-t)^3 A_0 + 3(1-t)^2 t H_0 + 3(1-t)t^2 H_1 + t^3 A_1
 
-    # Intersection between tangent lines at end points
-    # and tangent in the middle
-    i0 = find_intersection(a0, T0, mid, Tm)
-    i1 = find_intersection(a1, T1, mid, Tm)
+        where :math:`A_0`, :math:`H_0`, :math:`H_1` and :math:`A_1` are its
+        control points, then this algorithm should generate two quadratic
+        Béziers given by
 
-    m, n = np.shape(a0)
-    result = np.zeros((6 * m, n))
+        .. math::
+            Q_0(t) &= (1-t)^2 A_0 + 2(1-t)t M_0 + t^2 K \\
+            Q_1(t) &= (1-t)^2 K + 2(1-t)t M_1 + t^2 A_1
+
+        where :math:`M_0` and :math:`M_1` are the respective handles to be
+        found for both curves, and :math:`K` is the end anchor of the 1st curve
+        and the start anchor of the 2nd, which must also be found.
+
+        To solve for :math:`M_0`, :math:`M_1` and :math:`K`, three conditions
+        can be imposed:
+
+        1.  :math:`Q_0'(0) = \frac{1}{2}C'(0)`. The derivative of the first
+            quadratic curve at :math:`t = 0` should be proportional to that of
+            the original cubic curve, also at :math:`t = 0`. Because the cubic
+            curve is split into two parts, it is necessary to divide this by
+            two: the speed of a point travelling through the curve should be
+            half of the original. This gives:
+
+            .. math::
+                Q_0'(0) &= \frac{1}{2}C'(0) \\
+                2(M_0 - A_0) &= \frac{3}{2}(H_0 - A_0) \\
+                2M_0 - 2A_0 &= \frac{3}{2}H_0 - \frac{3}{2}A_0 \\
+                2M_0 &= \frac{3}{2}H_0 + \frac{1}{2}A_0 \\
+                M_0 &= \frac{1}{4}(3H_0 + A_0)
+
+        2.  :math:`Q_1'(1) = \frac{1}{2}C'(1)`. The derivative of the second
+            quadratic curve at :math:`t = 1` should be half of that of the
+            original cubic curve for the same reasons as above, also at
+            :math:`t = 1`. This gives:
+
+            .. math::
+                Q_1'(1) &= \frac{1}{2}C'(1) \\
+                2(A_1 - M_1) &= \frac{3}{2}(A_1 - H_1) \\
+                2A_1 - 2M_1 &= \frac{3}{2}A_1 - \frac{3}{2}H_1 \\
+                -2M_1 &= -\frac{1}{2}A_1 - \frac{3}{2}H_1 \\
+                M_1 &= \frac{1}{4}(3H_1 + A_1)
+
+        3.  :math:`Q_0'(1) = Q_1'(0)`. The derivatives of both quadratic curves
+            should match at the point :math:`K`, in order for the final spline
+            to be smooth. This gives:
+
+            .. math::
+                Q_0'(1) &= Q_1'(0) \\
+                2(K - M_0) &= 2(M_1 - K) \\
+                2K - 2M_0 &= 2M_1 - 2K \\
+                4K &= 2M_0 + 2M_1 \\
+                K &= \frac{1}{2}(M_0 + M_1)
+
+        This is sufficient to find proper control points for the quadratic
+        Bézier curves.
+
+    Parameters
+    ----------
+    a0
+        The start anchor of a single cubic Bézier curve, or an array of
+        :math:`N` start anchors for :math:`N` curves.
+    h0
+        The first handle of a single cubic Bézier curve, or an array of
+        :math:`N` first handles for :math:`N` curves.
+    h1
+        The second handle of a single cubic Bézier curve, or an array of
+        :math:`N` second handles for :math:`N` curves.
+    a1
+        The end anchor of a single cubic Bézier curve, or an array of
+        :math:`N` end anchors for :math:`N` curves.
+
+    Returns
+    -------
+    result
+        An array containing either 6 points for 2 quadratic Bézier curves
+        approximating the original cubic curve, or :math:`6N` points for
+        :math:`2N` quadratic curves approximating :math:`N` cubic curves.
+
+    Raises
+    ------
+    ValueError
+        If ``a0``, ``h0``, ``h1`` and ``a1`` have different dimensions, or
+        if their number of dimensions is not 1 or 2.
+    """
+    a0 = np.asarray(a0)
+    h0 = np.asarray(h0)
+    h1 = np.asarray(h1)
+    a1 = np.asarray(a1)
+
+    if all(arr.ndim == 1 for arr in (a0, h0, h1, a1)):
+        num_curves, dim = 1, a0.shape[0]
+    elif all(arr.ndim == 2 for arr in (a0, h0, h1, a1)):
+        num_curves, dim = a0.shape
+    else:
+        raise ValueError("All arguments must be Point3D or Point3D_Array.")
+
+    m0 = 0.25 * (3 * h0 + a0)
+    m1 = 0.25 * (3 * h1 + a1)
+    k = 0.5 * (m0 + m1)
+
+    result = np.empty((6 * num_curves, dim))
     result[0::6] = a0
-    result[1::6] = i0
-    result[2::6] = mid
-    result[3::6] = mid
-    result[4::6] = i1
+    result[1::6] = m0
+    result[2::6] = k
+    result[3::6] = k
+    result[4::6] = m1
     result[5::6] = a1
     return result
 
@@ -1752,9 +1938,7 @@ def is_closed(points: Point3D_Array) -> bool:
         return False
     if abs(end[1] - start[1]) > tolerance[1]:
         return False
-    if abs(end[2] - start[2]) > tolerance[2]:
-        return False
-    return True
+    return abs(end[2] - start[2]) <= tolerance[2]
 
 
 def proportions_along_bezier_curve_for_point(
@@ -1830,7 +2014,7 @@ def proportions_along_bezier_curve_for_point(
             # Roots will be none, but in this specific instance, we don't need to consider that.
             continue
         bezier_polynom = np.polynomial.Polynomial(terms[::-1])
-        polynom_roots = bezier_polynom.roots()  # type: ignore
+        polynom_roots = bezier_polynom.roots()
         if len(polynom_roots) > 0:
             polynom_roots = np.around(polynom_roots, int(np.log10(1 / round_to)))
         roots.append(polynom_roots)
@@ -1838,7 +2022,7 @@ def proportions_along_bezier_curve_for_point(
     roots = [[root for root in rootlist if root.imag == 0] for rootlist in roots]
     # Get common roots
     # arg-type: ignore
-    roots = reduce(np.intersect1d, roots)  # type: ignore
+    roots = reduce(np.intersect1d, roots)
     result = np.asarray([r.real for r in roots if 0 <= r.real <= 1])
     return result
 
@@ -1870,7 +2054,6 @@ def point_lies_on_bezier(
     bool
         Whether the point lies on the curve.
     """
-
     roots = proportions_along_bezier_curve_for_point(point, control_points, round_to)
 
     return len(roots) > 0

@@ -249,7 +249,7 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
         self.brace = Brace(obj, brace_direction, buff, **brace_config)
 
         if isinstance(text, (tuple, list)):
-            self.label = self.label_constructor(font_size=font_size, *text, **kwargs)
+            self.label = self.label_constructor(*text, font_size=font_size, **kwargs)
         else:
             self.label = self.label_constructor(str(text), font_size=font_size)
 

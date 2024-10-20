@@ -21,7 +21,7 @@ ALIAS_LIST = [
     alias_name
     for module_dict in ALIAS_DOCS_DICT.values()
     for category_dict in module_dict.values()
-    for alias_name in category_dict.keys()
+    for alias_name in category_dict
 ]
 
 
@@ -44,7 +44,6 @@ def smart_replace(base: str, alias: str, substitution: str) -> str:
     str
         The new string after the alias substitution.
     """
-
     occurrences = []
     len_alias = len(alias)
     len_base = len(base)

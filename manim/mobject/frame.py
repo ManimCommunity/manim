@@ -24,7 +24,6 @@ class ScreenRectangle(Rectangle):
         When set, the width is stretched to accommodate
         the new aspect ratio.
         """
-
         return self.width / self.height
 
     @aspect_ratio.setter
