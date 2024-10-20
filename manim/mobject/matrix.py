@@ -15,8 +15,8 @@ Examples
             m2 = DecimalMatrix(
                 [[3.456, 2.122], [33.2244, 12.33]],
                 element_to_mobject_config={"num_decimal_places": 2},
-                left_bracket="\\{",
-                right_bracket="\\}")
+                left_bracket=r"\{",
+                right_bracket=r"\}")
             m3 = MobjectMatrix(
                 [[Circle().scale(0.3), Square().scale(0.3)],
                 [MathTex("\\pi").scale(2), Star().scale(0.3)]],
@@ -294,7 +294,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
 
             class GetColumnsExample(Scene):
                 def construct(self):
-                    m0 = Matrix([["\\pi", 3], [1, 5]])
+                    m0 = Matrix([[r"\pi", 3], [1, 5]])
                     m0.add(SurroundingRectangle(m0.get_columns()[1]))
                     self.add(m0)
         """
