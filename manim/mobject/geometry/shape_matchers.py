@@ -44,29 +44,24 @@ class SurroundingRectangle(RoundedRectangle):
 
     def __init__(
         self,
-        mobject: Mobject,
+        mobject: Mobject | Sequence[Mobject],
         color: ParsableManimColor = YELLOW,
         buff: float = SMALL_BUFF,
         corner_radius: float = 0.0,
         **kwargs,
     ) -> None:
+        target = mobject 
+        if not isinstance(target, Mobject):
+            target = VGroup(*mobject)
         super().__init__(
             color=color,
-            width=mobject.width + 2 * buff,
-            height=mobject.height + 2 * buff,
+            width=target.width + 2 * buff,
+            height=target.height + 2 * buff,
             corner_radius=corner_radius,
             **kwargs,
         )
         self.buff = buff
-        self.move_to(mobject)
-
-    @classmethod
-    def multiple(
-        self,
-        mobjects: Sequence[Mobject],
-        **kwargs,
-    ) -> SurroundingRectangle:
-        return SurroundingRectangle(VGroup(*mobjects), **kwargs)
+        self.move_to(target)
 
 
 class BackgroundRectangle(SurroundingRectangle):
@@ -96,7 +91,7 @@ class BackgroundRectangle(SurroundingRectangle):
 
     def __init__(
         self,
-        mobject: Mobject,
+        mobject: Mobject | Sequence[Mobject],
         color: ParsableManimColor | None = None,
         stroke_width: float = 0,
         stroke_opacity: float = 0,
@@ -106,9 +101,11 @@ class BackgroundRectangle(SurroundingRectangle):
     ):
         if color is None:
             color = config.background_color
-
+        target = mobject
+        if not isinstance(target, Mobject):
+            target = VGroup(*mobject)
         super().__init__(
-            mobject,
+            target,
             color=color,
             stroke_width=stroke_width,
             stroke_opacity=stroke_opacity,
@@ -118,13 +115,6 @@ class BackgroundRectangle(SurroundingRectangle):
         )
         self.original_fill_opacity: float = self.fill_opacity
 
-    @classmethod
-    def multiple(
-        self,
-        mobjects: Sequence[Mobject],
-        **kwargs,
-    ) -> BackgroundRectangle:
-        return BackgroundRectangle(VGroup(*mobjects), **kwargs)
 
     def pointwise_become_partial(self, mobject: Mobject, a: Any, b: float) -> Self:
         self.set_fill(opacity=b * self.original_fill_opacity)
