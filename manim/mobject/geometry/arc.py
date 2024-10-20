@@ -63,6 +63,7 @@ from manim.utils.space_ops import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
     from typing import Any
 
     import manim.mobject.geometry.tips as tips
@@ -650,8 +651,8 @@ class Circle(Arc):
                     self.add(NumberPlane(), circle, dots)
         """
         center = line_intersection(
-            perpendicular_bisector(np.array([p1, p2])),
-            perpendicular_bisector(np.array([p2, p3])),
+            perpendicular_bisector([np.array(p1), np.array(p2)]),
+            perpendicular_bisector([np.array(p2), np.array(p3)]),
         )
         radius: float = np.linalg.norm(p1 - center)  # type: ignore[assignment]
         return Circle(radius=radius, **kwargs).shift(center)
@@ -946,8 +947,8 @@ class Annulus(Circle):
 
     def __init__(
         self,
-        inner_radius: float | None = 1,
-        outer_radius: float | None = 2,
+        inner_radius: float = 1,
+        outer_radius: float = 2,
         fill_opacity: float = 1,
         stroke_width: float = 0,
         color: ParsableManimColor = WHITE,
@@ -1100,7 +1101,9 @@ class ArcPolygon(VMobject, metaclass=ConvertToOpenGL):
 
         if not arc_config:
             if radius:
-                all_arc_configs = itertools.repeat({"radius": radius}, len(point_pairs))
+                all_arc_configs: Iterable[dict] = itertools.repeat(
+                    {"radius": radius}, len(point_pairs)
+                )
             else:
                 all_arc_configs = itertools.repeat({"angle": angle}, len(point_pairs))
         elif isinstance(arc_config, dict):
