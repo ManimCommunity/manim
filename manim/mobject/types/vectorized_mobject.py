@@ -47,6 +47,8 @@ from manim.utils.iterables import (
 from manim.utils.space_ops import rotate_vector, shoelace_direction
 
 if TYPE_CHECKING:
+    from types import GeneratorType
+
     import numpy.typing as npt
     from typing_extensions import Self
 
@@ -2056,7 +2058,11 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
 
     """
 
-    def __init__(self, *vmobjects, **kwargs):
+    def __init__(
+        self,
+        *vmobjects: VMobject | Iterable[VMobject] | GeneratorType[VMobject],
+        **kwargs,
+    ):
         super().__init__(**kwargs)
         self.add(*vmobjects)
 
@@ -2069,7 +2075,9 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
             f"submobject{'s' if len(self.submobjects) > 0 else ''}"
         )
 
-    def add(self, *vmobjects: VMobject) -> Self:
+    def add(
+        self, *vmobjects: VMobject | Iterable[VMobject] | GeneratorType[VMobject]
+    ) -> Self:
         """Checks if all passed elements are an instance of VMobject and then add them to submobjects
 
         Parameters
@@ -2117,7 +2125,37 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
                         (gr-circle_red).animate.shift(RIGHT)
                     )
         """
-        return super().add(*vmobjects)
+
+        def get_type_error_message(invalid_obj, invalid_i):
+            return TypeError(
+                f"Only values of type VMobject can be added "
+                f"as submobjects of VGroup, but the value "
+                f"{repr(invalid_obj)} (at index {invalid_i}) is of type "
+                f"{type(invalid_obj).__name__}."
+            )
+
+        valid_vmobjects = []
+
+        for vmobject_i, vmobject in enumerate(vmobjects):
+            if isinstance(vmobject, VMobject):
+                valid_vmobjects.append(vmobject)
+            elif isinstance(vmobject, Iterable) and type(vmobject) is not Mobject:
+                for subvmobject_i, subvmobject in enumerate(vmobject):
+                    if not isinstance(subvmobject, VMobject):
+                        raise TypeError(
+                            get_type_error_message(subvmobject, subvmobject_i)
+                        )
+                    valid_vmobjects.append(subvmobject)
+            elif isinstance(vmobject, Iterable) and type(vmobject) is Mobject:
+                # This is if vmobject is an empty Mobject
+                raise TypeError(
+                    f"{get_type_error_message(vmobject, vmobject_i)} "
+                    "You can try adding this value into a Group instead."
+                )
+            else:
+                raise TypeError(get_type_error_message(vmobject, vmobject_i))
+
+        return super().add(*valid_vmobjects)
 
     def __add__(self, vmobject: VMobject) -> Self:
         return VGroup(*self.submobjects, vmobject)
