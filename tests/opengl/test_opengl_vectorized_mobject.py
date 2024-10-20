@@ -128,6 +128,13 @@ def test_vgroup_init_with_iterable(using_opengl_renderer):
     obj = VGroup(type_generator(OpenGLVMobject, 38))
     assert len(obj.submobjects) == 38
 
+    obj = VGroup(
+        OpenGLVMobject(),
+        [OpenGLVMobject(), OpenGLVMobject()],
+        type_generator(OpenGLVMobject, 38),
+    )
+    assert len(obj.submobjects) == 41
+
     # A VGroup cannot be initialised with an iterable containing a OpenGLMobject
     with pytest.raises(TypeError) as init_with_mob_iterable:
         VGroup(type_generator(OpenGLMobject, 5))

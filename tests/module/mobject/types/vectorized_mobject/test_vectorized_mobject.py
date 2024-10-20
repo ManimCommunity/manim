@@ -170,6 +170,9 @@ def test_vgroup_init_with_iterable():
     obj = VGroup(type_generator(VMobject, 38))
     assert len(obj.submobjects) == 38
 
+    obj = VGroup(VMobject(), [VMobject(), VMobject()], type_generator(VMobject, 38))
+    assert len(obj.submobjects) == 41
+
     # A VGroup cannot be initialised with an iterable containing a Mobject
     with pytest.raises(TypeError) as init_with_mob_iterable:
         VGroup(type_generator(Mobject, 5))
