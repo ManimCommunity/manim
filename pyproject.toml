@@ -48,7 +48,12 @@ pycairo = ">=1.13,<2.0.0"
 pydub = ">=0.20.0"
 Pygments = ">=2.0.0"
 rich = ">=12.0.0"
-scipy = ">=1.6.0"
+scipy = [
+  # scipy 1.14.0 is the first version with prebuilt wheels for 3.13
+  # TODO: remove when python 3.10 is the minimum supported version
+  {version = ">=1.13.0", python = "<3.13"},
+  {version = ">=1.14.0", python = ">=3.13"},
+]
 screeninfo = ">=0.7"
 skia-pathops = ">=0.7.0"
 srt = ">=3.0.0"
