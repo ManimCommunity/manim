@@ -311,14 +311,14 @@ class Arc(TipableVMobject):
         start_angle: float = 0,
         angle: float = TAU / 4,
         num_components: int = 9,
-        arc_center: Point3D = ORIGIN,
+        arc_center: InternalPoint3D = ORIGIN,
         **kwargs: Any,
     ):
         if radius is None:  # apparently None is passed by ArcBetweenPoints
             radius = 1.0
         self.radius = radius
         self.num_components: int = num_components
-        self.arc_center: Point3D = arc_center
+        self.arc_center: InternalPoint3D = arc_center
         self.start_angle: float = start_angle
         self.angle: float = angle
         self._failed_to_get_center: bool = False
@@ -770,7 +770,7 @@ class LabeledDot(Dot):
         if isinstance(label, str):
             from manim import MathTex
 
-            rendered_label = MathTex(label, color=BLACK)
+            rendered_label: VMobject = MathTex(label, color=BLACK)
         else:
             rendered_label = label
 
