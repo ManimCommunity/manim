@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from manim import Circle, Line, Square, VDict, VGroup
+from manim import Circle, Line, Square, VDict, VGroup, VMobject
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 
@@ -107,6 +107,57 @@ def test_vgroup_init(using_opengl_renderer):
         "Only values of type OpenGLVMobject can be added as submobjects of "
         "VGroup, but the value OpenGLMobject (at index 1) is of type "
         "OpenGLMobject. You can try adding this value into a Group instead."
+    )
+
+
+def test_vgroup_init_with_iterable(using_opengl_renderer):
+    """Test VGroup instantiation with an iterable type."""
+
+    def type_generator(type_to_generate, n):
+        return (type_to_generate() for _ in range(n))
+
+    def mixed_type_generator(major_type, minor_type, minor_type_positions, n):
+        return (
+            minor_type() if i in minor_type_positions else major_type()
+            for i in range(n)
+        )
+
+    obj = VGroup(OpenGLVMobject())
+    assert len(obj.submobjects) == 1
+
+    obj = VGroup(type_generator(OpenGLVMobject, 38))
+    assert len(obj.submobjects) == 38
+
+    # A VGroup cannot be initialised with an iterable containing a OpenGLMobject
+    with pytest.raises(TypeError) as init_with_mob_iterable:
+        VGroup(type_generator(OpenGLMobject, 5))
+    assert str(init_with_mob_iterable.value) == (
+        "Only values of type OpenGLVMobject can be added as submobjects of VGroup, "
+        "but the value OpenGLMobject (at index 0) is of type OpenGLMobject."
+    )
+
+    # A VGroup cannot be initialised with an iterable containing a OpenGLMobject in any position
+    with pytest.raises(TypeError) as init_with_mobs_and_vmobs_iterable:
+        VGroup(mixed_type_generator(OpenGLVMobject, OpenGLMobject, [3, 5], 7))
+    assert str(init_with_mobs_and_vmobs_iterable.value) == (
+        "Only values of type OpenGLVMobject can be added as submobjects of VGroup, "
+        "but the value OpenGLMobject (at index 3) is of type OpenGLMobject."
+    )
+
+    # A VGroup cannot be initialised with an iterable containing non OpenGLVMobject's in any position
+    with pytest.raises(TypeError) as init_with_float_and_vmobs_iterable:
+        VGroup(mixed_type_generator(OpenGLVMobject, float, [6, 7], 9))
+    assert str(init_with_float_and_vmobs_iterable.value) == (
+        "Only values of type OpenGLVMobject can be added as submobjects of VGroup, "
+        "but the value 0.0 (at index 6) is of type float."
+    )
+
+    # A VGroup cannot be initialised with an iterable containing both OpenGLVMobject's and VMobject's
+    with pytest.raises(TypeError) as init_with_mobs_and_vmobs_iterable:
+        VGroup(mixed_type_generator(OpenGLVMobject, VMobject, [3, 5], 7))
+    assert str(init_with_mobs_and_vmobs_iterable.value) == (
+        "Only values of type OpenGLVMobject can be added as submobjects of VGroup, "
+        "but the value VMobject (at index 3) is of type VMobject."
     )
 
 
