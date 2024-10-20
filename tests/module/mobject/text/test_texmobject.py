@@ -19,7 +19,7 @@ def test_SingleStringMathTex(config):
 
 
 @pytest.mark.parametrize(  # : PT006
-    "text_input,length_sub",
+    ("text_input", "length_sub"),
     [("{{ a }} + {{ b }} = {{ c }}", 5), (r"\frac{1}{a+b\sqrt{2}}", 1)],
 )
 def test_double_braces_testing(text_input, length_sub):
@@ -123,7 +123,8 @@ def test_tex_size():
 
 def test_font_size():
     """Test that tex_mobject classes return
-    the correct font_size value after being scaled."""
+    the correct font_size value after being scaled.
+    """
     string = MathTex(0).scale(0.3)
 
     assert round(string.font_size, 5) == 14.4

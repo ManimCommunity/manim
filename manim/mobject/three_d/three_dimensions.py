@@ -667,10 +667,7 @@ class Cone(Surface):
         x, y, z = self.direction
 
         r = np.sqrt(x**2 + y**2 + z**2)
-        if r > 0:
-            theta = np.arccos(z / r)
-        else:
-            theta = 0
+        theta = np.arccos(z / r) if r > 0 else 0
 
         if x == 0:
             if y == 0:  # along the z axis
@@ -835,10 +832,7 @@ class Cylinder(Surface):
         x, y, z = self.direction
 
         r = np.sqrt(x**2 + y**2 + z**2)
-        if r > 0:
-            theta = np.arccos(z / r)
-        else:
-            theta = 0
+        theta = np.arccos(z / r) if r > 0 else 0
 
         if x == 0:
             if y == 0:  # along the z axis

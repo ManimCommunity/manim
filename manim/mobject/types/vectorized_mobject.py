@@ -586,7 +586,6 @@ class VMobject(Mobject):
         :meth:`~.VMobject.set_sheen`
         :meth:`~.VMobject.rotate_sheen_direction`
         """
-
         direction = np.array(direction)
         if family:
             for submob in self.get_family():
@@ -652,7 +651,6 @@ class VMobject(Mobject):
                     circle = Circle(fill_opacity=1).set_sheen(-0.3, DR)
                     self.add(circle)
         """
-
         if family:
             for submob in self.submobjects:
                 submob.set_sheen(factor, direction, family)
@@ -1200,9 +1198,7 @@ class VMobject(Mobject):
         atol = self.tolerance_for_point_equality
         if abs(p0[0] - p1[0]) > atol + rtol * abs(p1[0]):
             return False
-        if abs(p0[1] - p1[1]) > atol + rtol * abs(p1[1]):
-            return False
-        return True
+        return abs(p0[1] - p1[1]) <= atol + rtol * abs(p1[1])
 
     # Information about line
     def get_cubic_bezier_tuples_from_points(
@@ -1380,7 +1376,6 @@ class VMobject(Mobject):
         length : :class:`float`
             The length of the nth curve.
         """
-
         _, length = self.get_nth_curve_function_with_length(n, sample_points)
 
         return length
@@ -1406,7 +1401,6 @@ class VMobject(Mobject):
         length : :class:`float`
             The length of the nth curve.
         """
-
         curve = self.get_nth_curve_function(n)
         norms = self.get_nth_curve_length_pieces(n, sample_points=sample_points)
         length = np.sum(norms)
@@ -1434,7 +1428,6 @@ class VMobject(Mobject):
         Generator[Callable[[float], Point3D]]
             The functions for the curves.
         """
-
         num_curves = self.get_num_curves()
 
         for n in range(num_curves):
@@ -1455,7 +1448,6 @@ class VMobject(Mobject):
         Generator[tuple[Callable[[float], Point3D], float]]
             The functions and lengths of the curves.
         """
-
         num_curves = self.get_num_curves()
 
         for n in range(num_curves):
@@ -1497,7 +1489,6 @@ class VMobject(Mobject):
                                 line.point_from_proportion(proportion)
                         ))
         """
-
         if alpha < 0 or alpha > 1:
             raise ValueError(f"Alpha {alpha} not between 0 and 1.")
 
@@ -1649,7 +1640,6 @@ class VMobject(Mobject):
         float
             The length of the :class:`VMobject`.
         """
-
         return sum(
             length
             for _, length in self.get_curve_functions_with_lengths(
@@ -1769,7 +1759,6 @@ class VMobject(Mobject):
         -------
             Points generated.
         """
-
         if len(points) == 1:
             nppcc = self.n_points_per_cubic_curve
             return np.repeat(points, nppcc * n, 0)
@@ -2709,15 +2698,12 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
             if vmobject.is_closed():
                 void_len = (1 - r) / n
             else:
-                if n == 1:
-                    void_len = 1 - r
-                else:
-                    void_len = (1 - r) / (n - 1)
+                void_len = 1 - r if n == 1 else (1 - r) / (n - 1)
 
             period = dash_len + void_len
             phase_shift = (dash_offset % 1) * period
 
-            if vmobject.is_closed():
+            if vmobject.is_closed():  # noqa: SIM108
                 # closed curves have equal amount of dashes and voids
                 pattern_len = 1
             else:

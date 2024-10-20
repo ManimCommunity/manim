@@ -12,13 +12,8 @@ repos:
       - id: end-of-file-fixer
       - id: check-toml
         name: Validate Poetry
-  - repo: https://github.com/pre-commit/pygrep-hooks
-    rev: v1.10.0
-    hooks:
-      - id: python-check-blanket-noqa
-        name: Precision flake ignores
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.5.2
+    rev: v0.6.2
     hooks:
       - id: ruff
         name: ruff lint
@@ -26,22 +21,8 @@ repos:
         args: [--exit-non-zero-on-fix]
       - id: ruff-format
         types: [python]
-  - repo: https://github.com/PyCQA/flake8
-    rev: 7.1.0
-    hooks:
-      - id: flake8
-        additional_dependencies:
-          [
-            flake8-bugbear==21.4.3,
-            flake8-builtins==1.5.3,
-            flake8-comprehensions>=3.6.1,
-            flake8-docstrings==1.6.0,
-            flake8-pytest-style==1.5.0,
-            flake8-rst-docstrings==0.2.3,
-            flake8-simplify==0.14.1,
-          ]
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.10.1
+    rev: v1.11.2
     hooks:
       - id: mypy
         additional_dependencies:

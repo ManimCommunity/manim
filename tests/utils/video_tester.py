@@ -90,7 +90,6 @@ def video_comparison(
     --------
     tests/helpers/video_utils.py : create control data
     """
-
     control_data_file = Path(control_data_file)
     scene_path_from_media_dir = Path(scene_path_from_media_dir)
 
