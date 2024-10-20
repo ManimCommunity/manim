@@ -2080,12 +2080,12 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
         self,
         *vmobjects: VMobject | Iterable[VMobject] | GeneratorType[VMobject],
     ) -> Self:
-        """Checks if all passed elements are an instance of VMobject and then add them to submobjects
+        """Checks if all passed elements are an instance, or iterables of VMobject and then adds them to submobjects
 
         Parameters
         ----------
         vmobjects
-            List of VMobject to add
+            List or iterable of VMobjects to add
 
         Returns
         -------
@@ -2094,7 +2094,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
         Raises
         ------
         TypeError
-            If one element of the list is not an instance of VMobject
+            If one element of the list, or iterable is not an instance of VMobject
 
         Examples
         --------
