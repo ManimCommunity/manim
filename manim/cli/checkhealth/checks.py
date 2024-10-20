@@ -1,5 +1,6 @@
 """Auxiliary module for the checkhealth subcommand, contains
-the actual check implementations."""
+the actual check implementations.
+"""
 
 from __future__ import annotations
 

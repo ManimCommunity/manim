@@ -8,7 +8,8 @@ from manim.mobject.text.numbers import Integer
 
 def test_unit_vector():
     """Check if the magnitude of unit vector along
-    the NumberLine is equal to its unit_size."""
+    the NumberLine is equal to its unit_size.
+    """
     axis1 = NumberLine(unit_size=0.4)
     axis2 = NumberLine(x_range=[-2, 5], length=12)
     for axis in (axis1, axis2):
@@ -17,7 +18,8 @@ def test_unit_vector():
 
 def test_decimal_determined_by_step():
     """Checks that step size is considered when determining the number of decimal
-    places."""
+    places.
+    """
     axis = NumberLine(x_range=[-2, 2, 0.5])
     expected_decimal_places = 1
     actual_decimal_places = axis.decimal_number_config["num_decimal_places"]

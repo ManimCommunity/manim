@@ -283,7 +283,7 @@ class DrawBorderThenFill(Animation):
         alpha: float,
     ) -> None:  # Fixme: not matching the parent class? What is outline doing here?
         index: int
-        subalpha: int
+        subalpha: float
         index, subalpha = integer_interpolate(0, 2, alpha)
         if index == 0:
             submobject.pointwise_become_partial(outline, 0, subalpha)

@@ -52,7 +52,7 @@ from ..utils.file_ops import open_media_file
 from ..utils.iterables import list_difference_update, list_update
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
+    from collections.abc import Iterable, Sequence
     from typing import Callable
 
 
@@ -620,7 +620,7 @@ class Scene:
 
     def restructure_mobjects(
         self,
-        to_remove: Mobject,
+        to_remove: Sequence[Mobject],
         mobject_list_name: str = "mobjects",
         extract_families: bool = True,
     ):
@@ -680,7 +680,6 @@ class Scene:
         list
             The list of mobjects with the mobjects to remove removed.
         """
-
         new_mobjects = []
 
         def add_safe_mobjects_from_list(list_to_examine, set_to_remove):
@@ -1315,9 +1314,7 @@ class Scene:
         return True
 
     def interactive_embed(self):
-        """
-        Like embed(), but allows for screen interaction.
-        """
+        """Like embed(), but allows for screen interaction."""
         if not self.check_interactive_embed_is_valid():
             return
         self.interactive_mode = True

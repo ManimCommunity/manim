@@ -666,7 +666,6 @@ class Mobject:
             >>> mob.foo
             0
         """
-
         for attr, value in kwargs.items():
             setattr(self, attr, value)
 
@@ -748,7 +747,6 @@ class Mobject:
         :meth:`length_over_dim`
 
         """
-
         # Get the length across the X dimension
         return self.length_over_dim(0)
 
@@ -785,7 +783,6 @@ class Mobject:
         :meth:`length_over_dim`
 
         """
-
         # Get the length across the Y dimension
         return self.length_over_dim(1)
 
@@ -806,7 +803,6 @@ class Mobject:
         :meth:`length_over_dim`
 
         """
-
         # Get the length across the Z dimension
         return self.length_over_dim(2)
 
@@ -838,7 +834,8 @@ class Mobject:
 
     def save_image(self, name: str | None = None) -> None:
         """Saves an image of only this :class:`Mobject` at its position to a png
-        file."""
+        file.
+        """
         self.get_image().save(
             Path(config.get_dir("video_dir")).joinpath((name or str(self)) + ".png"),
         )
@@ -1029,7 +1026,6 @@ class Mobject:
         :meth:`remove_updater`
         :class:`~.UpdateFromFunc`
         """
-
         if index is None:
             self.updaters.append(update_function)
         else:
@@ -1119,7 +1115,6 @@ class Mobject:
         :meth:`clear_updaters`
 
         """
-
         self.clear_updaters()
         for updater in mobject.get_updaters():
             self.add_updater(updater)
@@ -1145,7 +1140,6 @@ class Mobject:
         :meth:`add_updater`
 
         """
-
         self.updating_suspended = True
         if recursive:
             for submob in self.submobjects:
@@ -1220,7 +1214,6 @@ class Mobject:
         --------
         :meth:`move_to`
         """
-
         total_vector = reduce(op.add, vectors)
         for mob in self.family_members_with_points():
             mob.points = mob.points.astype("float")
@@ -1505,7 +1498,7 @@ class Mobject:
                     tex_top.to_edge(UP)
                     tex_side = Tex("I am moving to the side!")
                     c = Circle().shift(2*DOWN)
-                    self.add(tex_top, tex_side)
+                    self.add(tex_top, tex_side, c)
                     tex_side.to_edge(LEFT)
                     c.to_edge(RIGHT, buff=0)
 
@@ -1619,7 +1612,6 @@ class Mobject:
             >>> sq.height
             5.0
         """
-
         return self.rescale_to_fit(width, 0, stretch=False, **kwargs)
 
     def stretch_to_fit_width(self, width: float, **kwargs) -> Self:
@@ -1645,7 +1637,6 @@ class Mobject:
             >>> sq.height
             2.0
         """
-
         return self.rescale_to_fit(width, 0, stretch=True, **kwargs)
 
     def scale_to_fit_height(self, height: float, **kwargs) -> Self:
@@ -1671,7 +1662,6 @@ class Mobject:
             >>> sq.width
             5.0
         """
-
         return self.rescale_to_fit(height, 1, stretch=False, **kwargs)
 
     def stretch_to_fit_height(self, height: float, **kwargs) -> Self:
@@ -1697,17 +1687,14 @@ class Mobject:
             >>> sq.width
             2.0
         """
-
         return self.rescale_to_fit(height, 1, stretch=True, **kwargs)
 
     def scale_to_fit_depth(self, depth: float, **kwargs) -> Self:
         """Scales the :class:`~.Mobject` to fit a depth while keeping width/height proportional."""
-
         return self.rescale_to_fit(depth, 2, stretch=False, **kwargs)
 
     def stretch_to_fit_depth(self, depth: float, **kwargs) -> Self:
         """Stretches the :class:`~.Mobject` to fit a depth, not keeping width/height proportional."""
-
         return self.rescale_to_fit(depth, 2, stretch=True, **kwargs)
 
     def set_coord(self, value, dim: int, direction: Vector3D = ORIGIN) -> Self:
@@ -1834,7 +1821,6 @@ class Mobject:
         :class:`~.BackgroundRectangle`
 
         """
-
         # TODO, this does not behave well when the mobject has points,
         # since it gets displayed on top
         from manim.mobject.geometry.shape_matchers import BackgroundRectangle

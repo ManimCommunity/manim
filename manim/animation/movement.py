@@ -90,9 +90,7 @@ class ComplexHomotopy(Homotopy):
     def __init__(
         self, complex_homotopy: Callable[[complex], float], mobject: Mobject, **kwargs
     ) -> None:
-        """
-        Complex Homotopy a function Cx[0, 1] to C
-        """
+        """Complex Homotopy a function Cx[0, 1] to C"""
 
         def homotopy(
             x: float,
