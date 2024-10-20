@@ -65,8 +65,8 @@ class Mobject:
     """Mathematical Object: base class for objects that can be displayed on screen.
 
     There is a compatibility layer that allows for
-    getting and setting generic attributes with ``get_*``
-    and ``set_*`` methods. See :meth:`set` for more details.
+    setting generic attributes with ``set_*`` methods.
+    See :meth:`set` for more details.
 
     Attributes
     ----------
@@ -624,19 +624,21 @@ class Mobject:
         animate setting attributes.
 
         In addition to this method, there is a compatibility
-        layer that allows ``get_*`` and ``set_*`` methods to
-        get and set generic attributes. For instance::
+        layer that allows ``set_*`` methods to
+        set generic attributes. For instance::
 
             >>> mob = Mobject()
             >>> mob.set_foo(0)
             Mobject
-            >>> mob.get_foo()
-            0
             >>> mob.foo
             0
+            >>> mob.set(foo=3)
+            Mobject
+            >>> mob.foo
+            3
 
         This compatibility layer does not interfere with any
-        ``get_*`` or ``set_*`` methods that are explicitly
+        set_*`` methods that are explicitly
         defined.
 
         .. warning::
@@ -673,32 +675,10 @@ class Mobject:
 
     def __getattr__(self, attr: str) -> types.MethodType:
         # Add automatic compatibility layer
-        # between properties and get_* and set_*
-        # methods.
-        #
-        # In python 3.9+ we could change this
-        # logic to use str.remove_prefix instead.
-
-        if attr.startswith("get_"):
-            # Remove the "get_" prefix
-            to_get = attr[4:]
-
-            def getter(self):
-                warnings.warn(
-                    "This method is not guaranteed to stay around. Please prefer "
-                    "getting the attribute normally.",
-                    DeprecationWarning,
-                    stacklevel=2,
-                )
-
-                return getattr(self, to_get)
-
-            # Return a bound method
-            return types.MethodType(getter, self)
-
+        # between properties and and set_*
+        # methods. This is needed for .animate syntax
         if attr.startswith("set_"):
-            # Remove the "set_" prefix
-            to_set = attr[4:]
+            to_set = attr.removeprefix("set_")
 
             def setter(self, value):
                 warnings.warn(
