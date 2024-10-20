@@ -1221,11 +1221,7 @@ class Mobject:
 
         return self
 
-    def scale(
-            self,
-            scale_factor: float,
-            scale_stroke: bool = False,
-            **kwargs) -> Self:
+    def scale(self, scale_factor: float, scale_stroke: bool = False, **kwargs) -> Self:
         r"""Scale the size by a factor.
 
         Default behavior is to scale about the center of the mobject.
@@ -1274,7 +1270,10 @@ class Mobject:
         )
         if scale_stroke and self.get_stroke_width and self.set_stroke:
             self.set_stroke(width=abs(scale_factor) * self.get_stroke_width())
-            self.set_stroke(width=abs(scale_factor) * self.get_stroke_width(background=True), background=True)
+            self.set_stroke(
+                width=abs(scale_factor) * self.get_stroke_width(background=True),
+                background=True,
+            )
         return self
 
     def rotate_about_origin(self, angle: float, axis: Vector3D = OUT, axes=[]) -> Self:
