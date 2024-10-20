@@ -4,6 +4,7 @@ from __future__ import annotations
 
 __all__ = ["SurroundingRectangle", "BackgroundRectangle", "Cross", "Underline"]
 
+from collections.abc import Sequence
 from typing import Any
 
 from typing_extensions import Self
@@ -43,21 +44,24 @@ class SurroundingRectangle(RoundedRectangle):
 
     def __init__(
         self,
-        mobject: Mobject,
+        mobject: Mobject | Sequence[Mobject],
         color: ParsableManimColor = YELLOW,
         buff: float = SMALL_BUFF,
         corner_radius: float = 0.0,
         **kwargs,
     ) -> None:
+        target = mobject
+        if not isinstance(target, Mobject):
+            target = VGroup(*mobject)
         super().__init__(
             color=color,
-            width=mobject.width + 2 * buff,
-            height=mobject.height + 2 * buff,
+            width=target.width + 2 * buff,
+            height=target.height + 2 * buff,
             corner_radius=corner_radius,
             **kwargs,
         )
         self.buff = buff
-        self.move_to(mobject)
+        self.move_to(target)
 
 
 class BackgroundRectangle(SurroundingRectangle):
@@ -87,7 +91,7 @@ class BackgroundRectangle(SurroundingRectangle):
 
     def __init__(
         self,
-        mobject: Mobject,
+        mobject: Mobject | Sequence[Mobject],
         color: ParsableManimColor | None = None,
         stroke_width: float = 0,
         stroke_opacity: float = 0,
@@ -97,9 +101,11 @@ class BackgroundRectangle(SurroundingRectangle):
     ):
         if color is None:
             color = config.background_color
-
+        target = mobject
+        if not isinstance(target, Mobject):
+            target = VGroup(*mobject)
         super().__init__(
-            mobject,
+            target,
             color=color,
             stroke_width=stroke_width,
             stroke_opacity=stroke_opacity,
