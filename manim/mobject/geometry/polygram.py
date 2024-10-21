@@ -321,7 +321,7 @@ class Polygon(Polygram):
     """
 
     def __init__(self, *vertices: InternalPoint3D, **kwargs: Any) -> None:
-        super().__init__(vertices, **kwargs)
+        super().__init__(vertices, **kwargs)  # type: ignore[arg-type]
 
 
 class RegularPolygram(Polygram):
@@ -412,7 +412,7 @@ class RegularPolygram(Polygram):
 
             vertex_groups.append(group)
 
-        super().__init__(*vertex_groups, **kwargs)
+        super().__init__(*vertex_groups, **kwargs)  # type: ignore[arg-type]
 
 
 class RegularPolygon(RegularPolygram):

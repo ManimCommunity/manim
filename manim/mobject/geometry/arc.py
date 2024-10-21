@@ -184,7 +184,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         else:
             handle = self.get_last_handle()
             anchor = self.get_end()
-        angles = cartesian_to_spherical(handle - anchor)
+        angles = cartesian_to_spherical((handle - anchor).tolist())
         tip.rotate(
             angles[1] - PI - tip.tip_angle,
         )  # Rotates the tip along the azimuthal
@@ -263,16 +263,20 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         if len(tips) == 0:
             raise Exception("tip not found")
         else:
-            return tips[0]
+            tip: VMobject = tips[0]
+            return tip
 
     def get_default_tip_length(self) -> float:
         return self.tip_length
 
-    def get_first_handle(self) -> Point3D:
-        return self.points[1]
+    def get_first_handle(self) -> InternalPoint3D:
+        # Type inference of extracting an element from a list, is not
+        # supported by numpy, see this numpy issue
+        # https://github.com/numpy/numpy/issues/16544
+        return self.points[1]  # type: ignore[no-any-return]
 
-    def get_last_handle(self) -> Point3D:
-        return self.points[-2]
+    def get_last_handle(self) -> InternalPoint3D:
+        return self.points[-2]  # type: ignore[no-any-return]
 
     def get_end(self) -> InternalPoint3D:
         if self.has_tip():
@@ -288,7 +292,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
 
     def get_length(self) -> float:
         start, end = self.get_start_and_end()
-        return np.linalg.norm(start - end)
+        return float(np.linalg.norm(start - end))
 
 
 class Arc(TipableVMobject):

@@ -206,10 +206,10 @@ class Line(TipableVMobject):
         start = self.get_start()
         end = self.get_end()
         unit_vect = normalize(end - start)
-        return start + np.dot(point - start, unit_vect) * unit_vect
+        return start + float(np.dot(point - start, unit_vect)) * unit_vect
 
     def get_slope(self) -> float:
-        return np.tan(self.get_angle())
+        return float(np.tan(self.get_angle()))
 
     def set_angle(self, angle: float, about_point: Point3D | None = None) -> Self:
         if about_point is None:
@@ -335,7 +335,10 @@ class DashedLine(Line):
             >>> DashedLine().get_first_handle()
             array([-0.98333333,  0.        ,  0.        ])
         """
-        return self.submobjects[0].points[1]
+        # Type inference of extracting an element from a list, is not
+        # supported by numpy, see this numpy issue
+        # https://github.com/numpy/numpy/issues/16544
+        return self.submobjects[0].points[1]  # type: ignore[no-any-return]
 
     def get_last_handle(self) -> InternalPoint3D:
         """Returns the point of the last handle.
@@ -347,7 +350,10 @@ class DashedLine(Line):
             >>> DashedLine().get_last_handle()
             array([0.98333333, 0.        , 0.        ])
         """
-        return self.submobjects[-1].points[-2]
+        # Type inference of extracting an element from a list, is not
+        # supported by numpy, see this numpy issue
+        # https://github.com/numpy/numpy/issues/16544
+        return self.submobjects[-1].points[-2]  # type: ignore[no-any-return]
 
 
 class TangentLine(Line):
