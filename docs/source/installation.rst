@@ -55,55 +55,13 @@ The following pages show how to install Manim in a conda environment:
    installation/conda
 
 
-
 .. _local-installation:
 
 Installing Manim locally
 ************************
 
-Manim is a Python library, and it can be
-installed via `pip <https://pypi.org/project/manim/>`__
-or `conda <https://anaconda.org/conda-forge/manim/>`__. However,
-in order for Manim to work properly, some additional system
-dependencies need to be installed first.
 
-Manim requires Python version ``3.9`` or above to run.
-
-.. hint::
-
-   Depending on your particular setup, the installation process
-   might be slightly different. Make sure that you have tried to
-   follow the steps on the following pages carefully, but in case
-   you hit a wall we are happy to help: either `join our Discord
-   <https://www.manim.community/discord/>`__, or start a new
-   Discussion `directly on GitHub
-   <https://github.com/ManimCommunity/manim/discussions>`__.
-
-
-To install Manim locally, check out the following pages. Note
-that the process for Linux is slightly different - if you're
-on Linux please follow the instructions in the `Linux section <installation/linux>`_.
-
-.. toctree::
-   :maxdepth: 1
-
-   installation/locally
-
-
-Once you've installed the core dependencies, you can proceed to
-install the optional dependencies, depending on your system.
-
-- :doc:`installation/windows`
-- :doc:`installation/macos`
-- :doc:`installation/linux`
-
-Once Manim is installed locally, you can proceed to our
-:doc:`quickstart guide <tutorials/quickstart>` which walks you
-through rendering a first simple scene.
-
-As mentioned above, do not worry if there are errors or other
-problems: consult our :doc:`FAQ section </faq/index>` for help
-(including instructions for how to ask Manim's community for help).
+.. include:: installation/local.rst
 
 
 
@@ -149,6 +107,11 @@ If you're using Visual Studio Code you can install an extension called
 *Manim Sideview* which provides automated rendering and an integrated preview
 of the animation inside the editor. The extension can be installed through the
 `marketplace of VS Code <https://marketplace.visualstudio.com/items?itemName=Rickaym.manim-sideview>`__.
+
+.. caution::
+
+   This extension is not officially maintained by the Manim Community.
+   If you run into issues, please report them to the extension's author.
 
 
 Installation for developers
