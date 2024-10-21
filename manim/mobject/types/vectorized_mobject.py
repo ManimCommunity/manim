@@ -2096,8 +2096,8 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
 
         Examples
         --------
-        The following example shows how to add individual or multiple VMobject instances through the VGroup constructor
-        and its .add() method.
+        The following example shows how to add individual or multiple `VMobject` instances through the `VGroup`
+        constructor and its `.add()` method.
 
         .. manim:: AddToVGroup
 
@@ -2128,13 +2128,13 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
                         (gr-circle_red).animate.shift(RIGHT)
                     )
 
-        A VGroup can be created using iterables as well. Keep in mind that all generated values from an
-        iterable must be an instance of VMobject. This is demonstrated below.
+        A `VGroup` can be created using iterables as well. Keep in mind that all generated values from an
+        iterable must be an instance of `VMobject`. This is demonstrated below:
 
-        .. manim:: VGroupParseIterablesExample
+        .. manim:: AddIterableToVGroupExample
             :save_last_frame:
 
-            class VGroupParseIterablesExample(Scene):
+            class AddIterableToVGroupExample(Scene):
                 def construct(self):
                     v = VGroup(
                         Square(),               # Singular VMobject instance
