@@ -149,7 +149,10 @@ class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
             array([2., 0., 0.])
 
         """
-        return self.points[0]
+        # Type inference of extracting an element from a list, is not
+        # supported by numpy, see this numpy issue
+        # https://github.com/numpy/numpy/issues/16544
+        return self.points[0]  # type: ignore[no-any-return]
 
     @property
     def vector(self) -> Vector3D:
@@ -184,7 +187,7 @@ class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
         return angle_of_vector(self.vector)
 
     @property
-    def length(self) -> np.floating:
+    def length(self) -> float:
         r"""The length of the arrow tip.
 
         Examples
@@ -197,7 +200,7 @@ class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
             0.35
 
         """
-        return np.linalg.norm(self.vector)
+        return float(np.linalg.norm(self.vector))
 
 
 class StealthTip(ArrowTip):
@@ -233,14 +236,14 @@ class StealthTip(ArrowTip):
         self.scale(length / self.length)
 
     @property
-    def length(self) -> np.floating:
+    def length(self) -> float:
         """The length of the arrow tip.
 
         In this case, the length is computed as the height of
         the triangle encompassing the stealth tip (otherwise,
         the tip is scaled too large).
         """
-        return np.linalg.norm(self.vector) * 1.6
+        return float(np.linalg.norm(self.vector) * 1.6)
 
 
 class ArrowTriangleTip(ArrowTip, Triangle):

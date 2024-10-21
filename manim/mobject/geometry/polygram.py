@@ -30,7 +30,7 @@ from manim.utils.iterables import adjacent_n_tuples, adjacent_pairs
 from manim.utils.space_ops import angle_between_vectors, normalize, regular_vertices
 
 if TYPE_CHECKING:
-    from typing import Any
+    from typing import Any, Literal
 
     import numpy.typing as npt
     from typing_extensions import Self
@@ -38,7 +38,6 @@ if TYPE_CHECKING:
     from manim.typing import (
         InternalPoint3D,
         InternalPoint3D_Array,
-        Point3D_Array,
     )
     from manim.utils.color import ParsableManimColor
 
@@ -87,7 +86,9 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
         super().__init__(color=color, **kwargs)
 
         for vertices in vertex_groups:
-            first_vertex, *vertices = vertices
+            # The inferred type for *vertices is Any, but it should be
+            # InternalPoint3D_Array
+            first_vertex, *vertices = vertices  # type: ignore[assignment]
             first_vertex = np.array(first_vertex)
 
             self.start_new_path(first_vertex)
@@ -116,7 +117,7 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
         """
         return self.get_start_anchors()
 
-    def get_vertex_groups(self) -> np.ndarray[Point3D_Array]:
+    def get_vertex_groups(self) -> InternalPoint3D_Array:
         """Gets the vertex groups of the :class:`Polygram`.
 
         Returns
@@ -320,7 +321,7 @@ class Polygon(Polygram):
     """
 
     def __init__(self, *vertices: InternalPoint3D, **kwargs: Any) -> None:
-        super().__init__(vertices, **kwargs)
+        super().__init__(np.array(vertices), **kwargs)
 
 
 class RegularPolygram(Polygram):
@@ -411,7 +412,7 @@ class RegularPolygram(Polygram):
 
             vertex_groups.append(group)
 
-        super().__init__(*vertex_groups, **kwargs)
+        super().__init__(np.array(*vertex_groups), **kwargs)
 
 
 class RegularPolygon(RegularPolygram):
@@ -696,7 +697,7 @@ class Square(Rectangle):
 
     @property
     def side_length(self) -> float:
-        return np.linalg.norm(self.get_vertices()[0] - self.get_vertices()[1])
+        return float(np.linalg.norm(self.get_vertices()[0] - self.get_vertices()[1]))
 
     @side_length.setter
     def side_length(self, value: float) -> None:
@@ -773,6 +774,8 @@ class Cutout(VMobject, metaclass=ConvertToOpenGL):
     ) -> None:
         super().__init__(**kwargs)
         self.append_points(main_shape.points)
-        sub_direction = "CCW" if main_shape.get_direction() == "CW" else "CW"
+        sub_direction: Literal["CCW", "CW"] = (
+            "CCW" if main_shape.get_direction() == "CW" else "CW"
+        )
         for mobject in mobjects:
             self.append_points(mobject.force_direction(sub_direction).points)
