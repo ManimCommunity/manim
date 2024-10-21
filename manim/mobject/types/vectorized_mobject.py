@@ -2124,6 +2124,19 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
                     self.play( # Animate group without component
                         (gr-circle_red).animate.shift(RIGHT)
                     )
+
+        .. manim:: VGroupParseIterables
+
+            class VGroupParseIterables(Scene):
+                def construct(self):
+                    v = VGroup(
+                        Square(),
+                        [Circle(), Triangle()],
+                        Dot(),
+                        (Dot() for _ in range(2)),
+                    )
+                    v.arrange()
+                    self.add(v)
         """
 
         def get_type_error_message(invalid_obj, invalid_i):
