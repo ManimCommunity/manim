@@ -53,7 +53,7 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
         >>> a = _BooleanOps()
         >>> p = [(1, 2), (3, 4)]
         >>> a._convert_2d_to_3d_array(p)
-        [array([1., 2., 0.]), array([3., 4., 0.])]
+        array([[1., 2., 0.], [3., 4., 0.]])
         """
         list_of_points = list(points)
         for i, point in enumerate(list_of_points):
