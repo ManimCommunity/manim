@@ -145,9 +145,9 @@ class Line(TipableVMobject):
         if isinstance(mob_or_point, (Mobject, OpenGLMobject)):
             mob = mob_or_point
             if direction is None:
-                return mob.get_center()  # type: ignore[return-value]
+                return mob.get_center()
             else:
-                return mob.get_boundary_point(direction)  # type: ignore[return-value]
+                return mob.get_boundary_point(direction)
         return np.array(mob_or_point)
 
     def set_path_arc(self, new_value: float) -> None:
@@ -309,7 +309,7 @@ class DashedLine(Line):
             array([-1.,  0.,  0.])
         """
         if len(self.submobjects) > 0:
-            return self.submobjects[0].get_start()  # type: ignore[return-value]
+            return self.submobjects[0].get_start()
         else:
             return super().get_start()
 
@@ -324,7 +324,7 @@ class DashedLine(Line):
             array([1., 0., 0.])
         """
         if len(self.submobjects) > 0:
-            return self.submobjects[-1].get_end()  # type: ignore[return-value]
+            return self.submobjects[-1].get_end()
         else:
             return super().get_end()
 
@@ -549,7 +549,7 @@ class Arrow(Line):
         self.max_tip_length_to_length_ratio = max_tip_length_to_length_ratio
         self.max_stroke_width_to_length_ratio = max_stroke_width_to_length_ratio
         tip_shape = kwargs.pop("tip_shape", ArrowTriangleFilledTip)
-        super().__init__(*args, buff=buff, stroke_width=stroke_width, **kwargs)
+        super().__init__(*args, buff=buff, stroke_width=stroke_width, **kwargs)  # type: ignore[misc]
         # TODO, should this be affected when
         # Arrow.set_stroke is called?
         self.initial_stroke_width = self.stroke_width
@@ -1073,7 +1073,8 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
 
                     self.add(line1, line2, angle, value)
         """
-        return self.angle_value / DEGREES if degrees else self.angle_value
+        temp_angle: float = self.angle_value / DEGREES if degrees else self.angle_value
+        return temp_angle
 
     @staticmethod
     def from_three_points(A: Point3D, B: Point3D, C: Point3D, **kwargs: Any) -> Angle:
