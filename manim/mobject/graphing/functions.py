@@ -17,7 +17,9 @@ from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VMobject
 
 if TYPE_CHECKING:
-    from manim.typing import Point2D, Point3D
+    from typing_extensions import Self
+
+    from manim.typing import Point3D
 
 from manim.utils.color import YELLOW
 
@@ -103,7 +105,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
     def __init__(
         self,
         function: Callable[[float], Point3D],
-        t_range: Point2D | Point3D = (0, 1),
+        t_range: tuple[float, float] | tuple[float, float, float] = (0, 1),
         scaling: _ScaleBase = LinearBase(),
         dt: float = 1e-8,
         discontinuities: Iterable[float] | None = None,
@@ -112,9 +114,8 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
         **kwargs,
     ):
         self.function = function
-        t_range = (0, 1, 0.01) if t_range is None else t_range
         if len(t_range) == 2:
-            t_range = np.array([*t_range, 0.01])
+            t_range = (*t_range, 0.01)
 
         self.scaling = scaling
 
@@ -126,13 +127,13 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
 
         super().__init__(**kwargs)
 
-    def get_function(self):
+    def get_function(self) -> Callable[[float], Point3D]:
         return self.function
 
-    def get_point_from_function(self, t):
+    def get_point_from_function(self, t: float) -> Point3D:
         return self.function(t)
 
-    def generate_points(self):
+    def generate_points(self) -> Self:
         if self.discontinuities is not None:
             discontinuities = filter(
                 lambda t: self.t_min <= t <= self.t_max,
