@@ -2146,11 +2146,12 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
                     self.add(v)
         """
 
-        def get_type_error_message(invalid_obj, invalid_i):
+        def get_type_error_message(invalid_obj, invalid_indices):
             return (
                 f"Only values of type {vmobject_render_type.__name__} can be added "
                 "as submobjects of VGroup, but the value "
-                f"{repr(invalid_obj)} (at index {invalid_i}) is of type "
+                f"{repr(invalid_obj)} (at index {invalid_indices[1]} of "
+                f"parameter {invalid_indices[0]}) is of type "
                 f"{type(invalid_obj).__name__}."
             )
 
@@ -2167,17 +2168,17 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
             ):
                 for j, subvmobject in enumerate(vmobject):
                     if not isinstance(subvmobject, vmobject_render_type):
-                        raise TypeError(get_type_error_message(subvmobject, j))
+                        raise TypeError(get_type_error_message(subvmobject, (i, j)))
                     valid_vmobjects.append(subvmobject)
             elif isinstance(vmobject, Iterable) and isinstance(
                 vmobject, (Mobject, OpenGLMobject)
             ):
                 raise TypeError(
-                    f"{get_type_error_message(vmobject, i)} "
+                    f"{get_type_error_message(vmobject, (i, 0))} "
                     "You can try adding this value into a Group instead."
                 )
             else:
-                raise TypeError(get_type_error_message(vmobject, i))
+                raise TypeError(get_type_error_message(vmobject, (i, 0)))
 
         return super().add(*valid_vmobjects)
 
