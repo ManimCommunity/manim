@@ -549,10 +549,7 @@ class Arrow(Line):
         self.max_tip_length_to_length_ratio = max_tip_length_to_length_ratio
         self.max_stroke_width_to_length_ratio = max_stroke_width_to_length_ratio
         tip_shape = kwargs.pop("tip_shape", ArrowTriangleFilledTip)
-        # The args argument have not been forwarded to the super() object,
-        # as that object do not accept any positional arguments.
-        # mobject/geometry/line.py#L44
-        super().__init__(buff=buff, stroke_width=stroke_width, **kwargs)
+        super().__init__(*args, buff=buff, stroke_width=stroke_width, **kwargs)
         # TODO, should this be affected when
         # Arrow.set_stroke is called?
         self.initial_stroke_width = self.stroke_width
