@@ -273,22 +273,22 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         # Type inference of extracting an element from a list, is not
         # supported by numpy, see this numpy issue
         # https://github.com/numpy/numpy/issues/16544
-        return self.points[1]
+        return self.points[1]  # type: ignore[no-any-return]
 
     def get_last_handle(self) -> InternalPoint3D:
-        return self.points[-2]
+        return self.points[-2]  # type: ignore[no-any-return]
 
     def get_end(self) -> InternalPoint3D:
         if self.has_tip():
-            return self.tip.get_start()
+            return self.tip.get_start()  # type: ignore[return-value]
         else:
-            return super().get_end()
+            return super().get_end()  # type: ignore[return-value]
 
     def get_start(self) -> InternalPoint3D:
         if self.has_start_tip():
-            return self.start_tip.get_start()
+            return self.start_tip.get_start()  # type: ignore[return-value]
         else:
-            return super().get_start()
+            return super().get_start()  # type: ignore[return-value]
 
     def get_length(self) -> float:
         start, end = self.get_start_and_end()
@@ -484,7 +484,7 @@ class ArcBetweenPoints(Arc):
         if radius is None:
             center = self.get_arc_center(warning=False)
             if not self._failed_to_get_center:
-                temp_radius: float = np.linalg.norm(np.array(start) - np.array(center))
+                temp_radius: float = np.linalg.norm(np.array(start) - np.array(center))  # type: ignore[assignment]
                 self.radius = temp_radius
             else:
                 self.radius = np.inf
@@ -661,7 +661,7 @@ class Circle(Arc):
             perpendicular_bisector([np.asarray(p1), np.asarray(p2)]),
             perpendicular_bisector([np.asarray(p2), np.asarray(p3)]),
         )
-        radius: float = np.linalg.norm(p1 - center)
+        radius: float = np.linalg.norm(p1 - center)  # type: ignore[assignment]
         return Circle(radius=radius, **kwargs).shift(center)
 
 

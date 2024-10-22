@@ -145,9 +145,9 @@ class Line(TipableVMobject):
         if isinstance(mob_or_point, (Mobject, OpenGLMobject)):
             mob = mob_or_point
             if direction is None:
-                return mob.get_center()
+                return mob.get_center()  # type: ignore[return-value]
             else:
-                return mob.get_boundary_point(direction)
+                return mob.get_boundary_point(direction)  # type: ignore[return-value]
         return np.array(mob_or_point)
 
     def set_path_arc(self, new_value: float) -> None:
@@ -156,8 +156,8 @@ class Line(TipableVMobject):
 
     def put_start_and_end_on(
         self,
-        start: InternalPoint3D,
-        end: InternalPoint3D,
+        start: InternalPoint3D,  # type: ignore[override]
+        end: InternalPoint3D,  # type: ignore[override]
     ) -> Self:
         """Sets starts and end coordinates of a line.
 
@@ -309,7 +309,7 @@ class DashedLine(Line):
             array([-1.,  0.,  0.])
         """
         if len(self.submobjects) > 0:
-            return self.submobjects[0].get_start()
+            return self.submobjects[0].get_start()  # type: ignore[return-value]
         else:
             return super().get_start()
 
@@ -324,7 +324,7 @@ class DashedLine(Line):
             array([1., 0., 0.])
         """
         if len(self.submobjects) > 0:
-            return self.submobjects[-1].get_end()
+            return self.submobjects[-1].get_end()  # type: ignore[return-value]
         else:
             return super().get_end()
 
@@ -1073,8 +1073,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
 
                     self.add(line1, line2, angle, value)
         """
-        temp_angle: float = self.angle_value / DEGREES if degrees else self.angle_value
-        return temp_angle
+        return self.angle_value / DEGREES if degrees else self.angle_value
 
     @staticmethod
     def from_three_points(A: Point3D, B: Point3D, C: Point3D, **kwargs: Any) -> Angle:
