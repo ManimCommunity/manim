@@ -88,7 +88,9 @@ class Line(TipableVMobject):
         """
         self._set_start_and_end_attrs(start, end)
         if path_arc:
-            arc = ArcBetweenPoints(self.start, self.end, angle=self.path_arc)
+            # self.path_arc could potentially be None, which is not accepted
+            # as parameter.
+            arc = ArcBetweenPoints(self.start, self.end, angle=self.path_arc)  # type: ignore[arg-type]
             self.set_points(arc.points)
         else:
             self.set_points_as_corners(np.array([self.start, self.end]))
@@ -639,7 +641,11 @@ class Arrow(Line):
         """Sets stroke width based on length."""
         max_ratio = self.max_stroke_width_to_length_ratio
         if config.renderer == RendererType.OPENGL:
-            self.set_stroke(
+            # Mypy does not recognize that the self object in this case
+            # is a OpenGLVMobject and that the set_stroke method is
+            # defined here:
+            # mobject/opengl/opengl_vectorized_mobject.py#L248
+            self.set_stroke(  # type: ignore[call-arg]
                 width=min(self.initial_stroke_width, max_ratio * self.get_length()),
                 recurse=False,
             )
