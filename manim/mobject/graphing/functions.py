@@ -127,10 +127,10 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
 
         super().__init__(**kwargs)
 
-    def get_function(self):
+    def get_function(self) -> Callable[[float], Point3D]:
         return self.function
 
-    def get_point_from_function(self, t):
+    def get_point_from_function(self, t: float) -> Point3D:
         return self.function(t)
 
     def generate_points(self) -> Self:
