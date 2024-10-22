@@ -4,6 +4,8 @@ from __future__ import annotations
 
 __all__ = ["LabeledLine", "LabeledArrow"]
 
+from typing import TYPE_CHECKING, Union  # noqa: F401
+
 from manim.constants import *
 from manim.mobject.geometry.line import Arrow, Line
 from manim.mobject.geometry.shape_matchers import (
@@ -13,6 +15,9 @@ from manim.mobject.geometry.shape_matchers import (
 from manim.mobject.text.tex_mobject import MathTex, Tex
 from manim.mobject.text.text_mobject import Text
 from manim.utils.color import WHITE, ManimColor, ParsableManimColor
+
+if TYPE_CHECKING:
+    from typing import Any
 
 
 class LabeledLine(Line):
@@ -67,17 +72,17 @@ class LabeledLine(Line):
         font_size: float = DEFAULT_FONT_SIZE,
         label_color: ParsableManimColor = WHITE,
         label_frame: bool = True,
-        frame_fill_color: ParsableManimColor = None,
+        frame_fill_color: ParsableManimColor | None = None,
         frame_fill_opacity: float = 1,
-        *args,
-        **kwargs,
+        *args: Any,
+        **kwargs: Any,
     ) -> None:
         label_color = ManimColor(label_color)
         frame_fill_color = ManimColor(frame_fill_color)
         if isinstance(label, str):
             from manim import MathTex
 
-            rendered_label = MathTex(label, color=label_color, font_size=font_size)
+            rendered_label = MathTex(label, color=label_color, font_size=font_size)  # type: Union[Tex, MathTex, Text]
         else:
             rendered_label = label
 
@@ -149,7 +154,7 @@ class LabeledArrow(LabeledLine, Arrow):
 
     def __init__(
         self,
-        *args,
-        **kwargs,
+        *args: Any,
+        **kwargs: Any,
     ) -> None:
         super().__init__(*args, **kwargs)

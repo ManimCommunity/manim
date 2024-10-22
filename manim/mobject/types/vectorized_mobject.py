@@ -47,12 +47,15 @@ from manim.utils.iterables import (
 from manim.utils.space_ops import rotate_vector, shoelace_direction
 
 if TYPE_CHECKING:
+    from typing import Any
+
     import numpy.typing as npt
     from typing_extensions import Self
 
     from manim.typing import (
         BezierPoints,
         CubicBezierPoints,
+        InternalPoint3D_Array,
         ManimFloat,
         MappingFunction,
         Point2D,
@@ -132,7 +135,7 @@ class VMobject(Mobject):
         tolerance_for_point_equality: float = 1e-6,
         n_points_per_cubic_curve: int = 4,
         cap_style: CapStyleType = CapStyleType.AUTO,
-        **kwargs,
+        **kwargs: Any,
     ):
         self.fill_opacity = fill_opacity
         self.stroke_opacity = stroke_opacity
@@ -707,7 +710,7 @@ class VMobject(Mobject):
         return self
 
     def set_points(self, points: Point3D_Array) -> Self:
-        self.points: Point3D_Array = np.array(points)
+        self.points: InternalPoint3D_Array = np.array(points)
         return self
 
     def resize_points(
@@ -1585,7 +1588,7 @@ class VMobject(Mobject):
         nppcc = self.n_points_per_cubic_curve
         return [self.points[i::nppcc] for i in range(nppcc)]
 
-    def get_start_anchors(self) -> Point3D_Array:
+    def get_start_anchors(self) -> InternalPoint3D_Array:
         """Returns the start anchors of the bezier curves.
 
         Returns
@@ -2056,7 +2059,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
 
     """
 
-    def __init__(self, *vmobjects, **kwargs):
+    def __init__(self, *vmobjects: Any, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.add(*vmobjects)
 
