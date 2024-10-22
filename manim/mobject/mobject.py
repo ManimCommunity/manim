@@ -420,7 +420,7 @@ class Mobject:
                         self.play(sq.animate.to_edge(RIGHT))
         """
         # can't use typing.cast because Self is under TYPE_CHECKING
-        return _UpdaterBuilder(self)  # type: ignore
+        return _UpdaterBuilder(self)  # type: ignore[misc]
 
     def __deepcopy__(self, clone_from_id) -> Self:
         cls = self.__class__
