@@ -273,22 +273,22 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         # Type inference of extracting an element from a list, is not
         # supported by numpy, see this numpy issue
         # https://github.com/numpy/numpy/issues/16544
-        return self.points[1]  # type: ignore[no-any-return]
+        return self.points[1]
 
     def get_last_handle(self) -> InternalPoint3D:
-        return self.points[-2]  # type: ignore[no-any-return]
+        return self.points[-2]
 
     def get_end(self) -> InternalPoint3D:
         if self.has_tip():
-            return self.tip.get_start()  # type: ignore[return-value]
+            return self.tip.get_start()
         else:
-            return super().get_end()  # type: ignore[return-value]
+            return super().get_end()
 
     def get_start(self) -> InternalPoint3D:
         if self.has_start_tip():
-            return self.start_tip.get_start()  # type: ignore[return-value]
+            return self.start_tip.get_start()
         else:
-            return super().get_start()  # type: ignore[return-value]
+            return super().get_start()
 
     def get_length(self) -> float:
         start, end = self.get_start_and_end()
@@ -427,7 +427,10 @@ class Arc(TipableVMobject):
         return self
 
     def stop_angle(self) -> float:
-        return angle_of_vector(self.points[-1] - self.get_arc_center()) % TAU
+        temp_angle: float = (
+            angle_of_vector(self.points[-1] - self.get_arc_center()) % TAU
+        )
+        return temp_angle
 
 
 class ArcBetweenPoints(Arc):
@@ -481,7 +484,7 @@ class ArcBetweenPoints(Arc):
         if radius is None:
             center = self.get_arc_center(warning=False)
             if not self._failed_to_get_center:
-                temp_radius: float = np.linalg.norm(np.array(start) - np.array(center))  # type: ignore[assignment]
+                temp_radius: float = np.linalg.norm(np.array(start) - np.array(center))
                 self.radius = temp_radius
             else:
                 self.radius = np.inf
@@ -658,7 +661,7 @@ class Circle(Arc):
             perpendicular_bisector([np.array(p1), np.array(p2)]),
             perpendicular_bisector([np.array(p2), np.array(p3)]),
         )
-        radius: float = np.linalg.norm(p1 - center)  # type: ignore[assignment]
+        radius: float = np.linalg.norm(p1 - center)
         return Circle(radius=radius, **kwargs).shift(center)
 
 

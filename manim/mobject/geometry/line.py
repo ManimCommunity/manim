@@ -90,7 +90,8 @@ class Line(TipableVMobject):
         if path_arc:
             # self.path_arc could potentially be None, which is not accepted
             # as parameter.
-            arc = ArcBetweenPoints(self.start, self.end, angle=self.path_arc)  # type: ignore[arg-type]
+            assert self.path_arc is not None
+            arc = ArcBetweenPoints(self.start, self.end, angle=self.path_arc)
             self.set_points(arc.points)
         else:
             self.set_points_as_corners(np.array([self.start, self.end]))
@@ -144,9 +145,9 @@ class Line(TipableVMobject):
         if isinstance(mob_or_point, (Mobject, OpenGLMobject)):
             mob = mob_or_point
             if direction is None:
-                return mob.get_center()  # type: ignore[return-value]
+                return mob.get_center()
             else:
-                return mob.get_boundary_point(direction)  # type: ignore[return-value]
+                return mob.get_boundary_point(direction)
         return np.array(mob_or_point)
 
     def set_path_arc(self, new_value: float) -> None:
@@ -155,8 +156,8 @@ class Line(TipableVMobject):
 
     def put_start_and_end_on(
         self,
-        start: InternalPoint3D,  # type: ignore[override]
-        end: InternalPoint3D,  # type: ignore[override]
+        start: InternalPoint3D,
+        end: InternalPoint3D,
     ) -> Self:
         """Sets starts and end coordinates of a line.
 
@@ -308,7 +309,7 @@ class DashedLine(Line):
             array([-1.,  0.,  0.])
         """
         if len(self.submobjects) > 0:
-            return self.submobjects[0].get_start()  # type: ignore[return-value]
+            return self.submobjects[0].get_start()
         else:
             return super().get_start()
 
@@ -323,7 +324,7 @@ class DashedLine(Line):
             array([1., 0., 0.])
         """
         if len(self.submobjects) > 0:
-            return self.submobjects[-1].get_end()  # type: ignore[return-value]
+            return self.submobjects[-1].get_end()
         else:
             return super().get_end()
 
@@ -337,10 +338,7 @@ class DashedLine(Line):
             >>> DashedLine().get_first_handle()
             array([-0.98333333,  0.        ,  0.        ])
         """
-        # Type inference of extracting an element from a list, is not
-        # supported by numpy, see this numpy issue
-        # https://github.com/numpy/numpy/issues/16544
-        return self.submobjects[0].points[1]  # type: ignore[no-any-return]
+        return self.submobjects[0].points[1]
 
     def get_last_handle(self) -> InternalPoint3D:
         """Returns the point of the last handle.
@@ -352,10 +350,7 @@ class DashedLine(Line):
             >>> DashedLine().get_last_handle()
             array([0.98333333, 0.        , 0.        ])
         """
-        # Type inference of extracting an element from a list, is not
-        # supported by numpy, see this numpy issue
-        # https://github.com/numpy/numpy/issues/16544
-        return self.submobjects[-1].points[-2]  # type: ignore[no-any-return]
+        return self.submobjects[-1].points[-2]
 
 
 class TangentLine(Line):
@@ -548,7 +543,7 @@ class Arrow(Line):
         self.max_tip_length_to_length_ratio = max_tip_length_to_length_ratio
         self.max_stroke_width_to_length_ratio = max_stroke_width_to_length_ratio
         tip_shape = kwargs.pop("tip_shape", ArrowTriangleFilledTip)
-        super().__init__(*args, buff=buff, stroke_width=stroke_width, **kwargs)
+        super().__init__(*args, buff=buff, stroke_width=stroke_width, **kwargs)  # type: ignore[misc]
         # TODO, should this be affected when
         # Arrow.set_stroke is called?
         self.initial_stroke_width = self.stroke_width
@@ -1072,7 +1067,8 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
 
                     self.add(line1, line2, angle, value)
         """
-        return self.angle_value / DEGREES if degrees else self.angle_value
+        temp_angle: float = self.angle_value / DEGREES if degrees else self.angle_value
+        return temp_angle
 
     @staticmethod
     def from_three_points(A: Point3D, B: Point3D, C: Point3D, **kwargs: Any) -> Angle:
