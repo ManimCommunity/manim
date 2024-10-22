@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 
 
-T_co = TypeVar("T_co", covariant=True, bound="Mobject | OpenGLMobject")
+T = TypeVar("T", bound="Mobject | OpenGLMobject")
 
 __all__ = [
     "_AnimationBuilder",
@@ -18,8 +18,8 @@ __all__ = [
 ]
 
 
-class _AnimationBuilder(Generic[T_co]):
-    def __init__(self, mobject: T_co):
+class _AnimationBuilder(Generic[T]):
+    def __init__(self, mobject: T):
         self.mobject = mobject
         self.mobject.generate_target()
 
@@ -84,10 +84,10 @@ class _AnimationBuilder(Generic[T_co]):
         return anim
 
 
-class _UpdaterBuilder(Generic[T_co]):
+class _UpdaterBuilder(Generic[T]):
     """Syntactic sugar for adding updaters to mobjects."""
 
-    def __init__(self, mobject: T_co):
+    def __init__(self, mobject: T):
         self._mobject = mobject
 
     def __getattr__(self, name: str, /):
