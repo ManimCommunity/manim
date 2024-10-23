@@ -2144,6 +2144,11 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
                     )
                     v.arrange()
                     self.add(v)
+
+        To facilitate this, the iterable is unpacked before its individual instances are added to the `VGroup`.
+        As a result, when you index a `VGroup`, you will never get back an iterable.
+        Instead, you will always receive `VMobject` instances, including those
+        that were part of the iterable/s that you originally added to the `VGroup`.
         """
 
         def get_type_error_message(invalid_obj, invalid_indices):
