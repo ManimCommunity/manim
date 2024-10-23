@@ -369,6 +369,41 @@ class Sphere(Surface):
                 sphere3 = Sphere(center=(-1, 2, 0), radius=2, resolution=(16, 16))
                 sphere3.set_color(BLUE)
                 self.add(sphere3)
+
+    This example shows that overlapping spheres can intersect with rough transitions.
+    .. manim:: ExampleSphereOverlap
+        :save_last_frame:
+
+        class ExampleSphereOverlap(ThreeDScene):
+            def construct(self):
+                self.set_camera_orientation(phi=PI / 4, theta=PI / 4)
+                sphere1 = Sphere(
+                    center=(0, 0, 0),
+                    radius=1,
+                    resolution=(20, 20),
+                    u_range=[0, TAU],
+                    v_range=[0, PI]
+                )
+                sphere1.set_color(RED)
+                self.add(sphere1)
+                sphere2 = Sphere(
+                    center=(-0.5, -1, 0.5),
+                    radius=1.2,
+                    resolution=(20, 20),
+                    u_range=[0, TAU],
+                    v_range=[0, PI]
+                )
+                sphere2.set_color(GREEN)
+                self.add(sphere2)
+                sphere3 = Sphere(
+                    center=(1, -1, 0),
+                    radius=1.1,
+                    resolution=(20, 20),
+                    u_range=[0, TAU],
+                    v_range=[0, PI]
+                )
+                sphere3.set_color(BLUE)
+                self.add(sphere3)
     """
 
     def __init__(
