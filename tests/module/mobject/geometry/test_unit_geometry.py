@@ -4,7 +4,7 @@ import logging
 
 import numpy as np
 
-from manim import BackgroundRectangle, Circle, Sector, Square
+from manim import SurroundingRectangle, BackgroundRectangle, Circle, Sector, Square
 
 logger = logging.getLogger(__name__)
 
@@ -15,9 +15,18 @@ def test_get_arc_center():
     )
 
 
+def test_SurroundingRectangle(manim_caplog):
+    circle = Circle()
+    square = Square()
+    sr = SurroundingRectangle(circle, square)
+    sr.set_style(fill_opacity=0.42)
+    assert sr.get_fill_opacity() == 0.42
+
+
 def test_BackgroundRectangle(manim_caplog):
-    c = Circle()
-    bg = BackgroundRectangle(c)
+    circle = Circle()
+    square = Square()
+    bg = BackgroundRectangle(circle, square)
     bg.set_style(fill_opacity=0.42)
     assert bg.get_fill_opacity() == 0.42
     bg.set_style(fill_opacity=1, hello="world")
