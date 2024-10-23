@@ -358,8 +358,8 @@ class Sphere(Surface):
                     center=(3, 0, 0),
                     radius=1,
                     resolution=(20, 20),
-                    u_range=[0.001, PI - 0.001],
-                    v_range=[0, TAU]
+                    u_range=[0, TAU],
+                    v_range=[0, PI]
                 )
                 sphere1.set_color(RED)
                 self.add(sphere1)
