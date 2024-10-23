@@ -81,7 +81,7 @@ Examples
             for scene in group:
                 self.play(self.camera.auto_zoom(scene))
                 self.wait()
-            
+
             self.play(self.camera.auto_zoom(group, margin=2))
 """
 
@@ -103,7 +103,7 @@ class MovingCameraScene(Scene):
     make it suitable for cases where the camera must be moved around.
 
     Note: Examples are included in the moving_camera_scene module
-    documentation, see below in the 'see also' section. 
+    documentation, see below in the 'see also' section.
     .. SEEALSO::
         :mod:`.moving_camera_scene`
         :class:`.MovingCamera`
@@ -131,4 +131,3 @@ class MovingCameraScene(Scene):
                 # consider all mobjects to be moving
                 return list_update(self.mobjects, moving_mobjects)
         return moving_mobjects
-
