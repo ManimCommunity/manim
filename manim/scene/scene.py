@@ -55,6 +55,8 @@ if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
     from typing import Callable
 
+    from typing_extensions import Self
+
 
 class RerunSceneHandler(FileSystemEventHandler):
     """A class to handle rerunning a Scene after the input file is modified."""
@@ -100,12 +102,12 @@ class Scene:
 
     def __init__(
         self,
-        renderer=None,
-        camera_class=Camera,
-        always_update_mobjects=False,
-        random_seed=None,
-        skip_animations=False,
-    ):
+        renderer: bool = None,
+        camera_class: type[Camera] = Camera,
+        always_update_mobjects: bool = False,
+        random_seed: bool = None,
+        skip_animations: bool = False,
+    ) -> None:
         self.camera_class = camera_class
         self.always_update_mobjects = always_update_mobjects
         self.random_seed = random_seed
@@ -806,7 +808,7 @@ class Scene:
         self.mobjects = list(mobjects) + self.mobjects
         return self
 
-    def clear(self):
+    def clear(self) -> Self:
         """
         Removes all mobjects present in self.mobjects
         and self.foreground_mobjects from the scene.

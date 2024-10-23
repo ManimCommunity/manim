@@ -34,7 +34,7 @@ def merge_dicts_recursively(*dicts):
     return result
 
 
-def update_dict_recursively(current_dict, *others):
+def update_dict_recursively(current_dict, *others: dict) -> None:
     updated_dict = merge_dicts_recursively(current_dict, *others)
     current_dict.update(updated_dict)
 
