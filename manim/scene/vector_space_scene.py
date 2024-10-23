@@ -18,13 +18,14 @@ from manim.utils.config_ops import update_dict_recursively
 
 from .. import config
 from ..animation.animation import Animation
-from ..animation.creation import Create, Write
+from ..animation.creation import Create, DrawBorderThenFill, Write
 from ..animation.fading import FadeOut
 from ..animation.growing import GrowArrow
 from ..animation.transform import ApplyFunction, ApplyPointwiseFunction, Transform
+from ..camera.camera import Camera
 from ..constants import *
 from ..mobject.matrix import Matrix
-from ..mobject.mobject import Mobject
+from ..mobject.mobject import Group, Mobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..scene.scene import Scene
 from ..utils.color import (
@@ -419,7 +420,7 @@ class VectorScene(Scene):
             this method did after it's done.
 
         """
-        starting_mobjects: list[Mobject] = list(self.mobjects)
+        starting_mobjects = list(self.mobjects)
         array = Matrix(vector)
         array.shift(coords_start)
         arrow = Vector(vector)
@@ -480,7 +481,7 @@ class VectorScene(Scene):
             this method did after it's done.
 
         """
-        starting_mobjects: list[Mobject] = list(self.mobjects)
+        starting_mobjects = list(self.mobjects)
         show_creation = False
         if isinstance(vector, Arrow):
             arrow = vector
