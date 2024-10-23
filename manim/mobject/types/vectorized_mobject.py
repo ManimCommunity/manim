@@ -477,6 +477,67 @@ class VMobject(Mobject):
         self.set_stroke(opacity=opacity, family=family, background=True)
         return self
 
+
+    def scale(
+            self,
+            scale_factor: float,
+            scale_stroke: bool = False,
+            **kwargs
+        ) -> Self:
+        r"""Scale the size by a factor.
+
+        Default behavior is to scale about the center of the vmobject.
+
+        Parameters
+        ----------
+        scale_factor
+            The scaling factor :math:`\alpha`. If :math:`0 < |\alpha| < 1`, the mobject
+            will shrink, and for :math:`|\alpha| > 1` it will grow. Furthermore,
+            if :math:`\alpha < 0`, the mobject is also flipped.
+        scale_stroke
+            Boolean determining if the object's outline is scaled when the object is scaled.
+            If enabled, and object with 2px outline is scaled by a factor of .5, it will have an outline of 1px.
+        kwargs
+            Additional keyword arguments passed to
+            :meth:`apply_points_function_about_point`.
+
+        Returns
+        -------
+        :class:`VMobject`
+            ``self``
+
+        Examples
+        --------
+
+        .. manim:: MobjectScaleExample
+            :save_last_frame:
+
+            class MobjectScaleExample(Scene):
+                def construct(self):
+                    c1 = Circle(1, RED).set_x(-1)
+                    c2 = Circle(1, GREEN).set_x(1)
+
+                    vg = VGroup(c1, c2)
+                    vg.set_stroke(width=50)
+                    self.add(vg)
+
+                    self.play(
+                        c1.animate.scale(.25),
+                        c2.animate.scale(.25,
+                            scale_stroke=True)
+                    ) 
+
+        See also
+        --------
+        :meth:`move_to`
+
+        """
+        if scale_stroke and self.get_stroke_width and self.set_stroke:
+            self.set_stroke(width=abs(scale_factor) * self.get_stroke_width())
+            self.set_stroke(width=abs(scale_factor) * self.get_stroke_width(background=True), background=True)
+        super().scale(scale_factor, **kwargs)
+        return self
+
     def fade(self, darkness: float = 0.5, family: bool = True) -> Self:
         factor = 1.0 - darkness
         self.set_fill(opacity=factor * self.get_fill_opacity(), family=False)

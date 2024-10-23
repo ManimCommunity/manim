@@ -1224,7 +1224,6 @@ class Mobject:
     def scale(
             self,
             scale_factor: float,
-            scale_stroke: bool = False,
             **kwargs) -> Self:
         r"""Scale the size by a factor.
 
@@ -1236,9 +1235,6 @@ class Mobject:
             The scaling factor :math:`\alpha`. If :math:`0 < |\alpha| < 1`, the mobject
             will shrink, and for :math:`|\alpha| > 1` it will grow. Furthermore,
             if :math:`\alpha < 0`, the mobject is also flipped.
-        scale_stroke
-            Boolean determining if the object's outline is scaled when the object is scaled.
-            If enabled, and object with 2px outline sclaed by a factor of .5 will have an outline of 1px.
         kwargs
             Additional keyword arguments passed to
             :meth:`apply_points_function_about_point`.
@@ -1272,9 +1268,6 @@ class Mobject:
         self.apply_points_function_about_point(
             lambda points: scale_factor * points, **kwargs
         )
-        if scale_stroke and self.get_stroke_width and self.set_stroke:
-            self.set_stroke(width=abs(scale_factor) * self.get_stroke_width())
-            self.set_stroke(width=abs(scale_factor) * self.get_stroke_width(background=True), background=True)
         return self
 
     def rotate_about_origin(self, angle: float, axis: Vector3D = OUT, axes=[]) -> Self:
