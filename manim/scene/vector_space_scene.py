@@ -657,13 +657,13 @@ class LinearTransformationScene(VectorScene):
         # The has_already_setup attr is to not break all the old Scenes
         if hasattr(self, "has_already_setup"):
             return
-        self.has_already_setup = True
-        self.background_mobjects = []
-        self.foreground_mobjects = []
-        self.transformable_mobjects = []
+        self.has_already_setup: bool = True
+        self.background_mobjects: list[Mobject] = []
+        self.foreground_mobjects: list[Mobject] = []
+        self.transformable_mobjects: list[Mobject] = []
         self.moving_vectors = []
-        self.transformable_labels = []
-        self.moving_mobjects = []
+        self.transformable_labels: list[Mobject] = []
+        self.moving_mobjects: list[Mobject] = []
 
         self.background_plane = NumberPlane(**self.background_plane_kwargs)
 
