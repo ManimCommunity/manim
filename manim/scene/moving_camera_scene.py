@@ -105,7 +105,7 @@ class MovingCameraScene(Scene):
     Note: Examples are included in the moving_camera_scene module
     documentation, see below in the 'see also' section.
     .. SEEALSO::
-    
+
         :mod:`.moving_camera_scene`
         :class:`.MovingCamera`
     """
