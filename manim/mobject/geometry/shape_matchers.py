@@ -13,7 +13,7 @@ from manim import config, logger
 from manim.constants import *
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import RoundedRectangle
-from manim.mobject.mobject import Mobject
+from manim.mobject.mobject import Mobject, Group
 from manim.mobject.types.vectorized_mobject import VGroup
 from manim.utils.color import BLACK, RED, YELLOW, ManimColor, ParsableManimColor
 
@@ -44,15 +44,15 @@ class SurroundingRectangle(RoundedRectangle):
 
     def __init__(
         self,
-        mobject: Mobject | Sequence[Mobject],
+        *mobjects,
         color: ParsableManimColor = YELLOW,
         buff: float = SMALL_BUFF,
         corner_radius: float = 0.0,
         **kwargs,
     ) -> None:
-        target = mobject
-        if not isinstance(target, Mobject):
-            target = VGroup(*mobject)
+        if not all(isinstance(mob, Mobject) for mob in mobjects):
+            raise TypeError("Positional arguments can only have type Mobject")
+        target = Group(*mobjects)
         super().__init__(
             color=color,
             width=target.width + 2 * buff,
@@ -91,7 +91,7 @@ class BackgroundRectangle(SurroundingRectangle):
 
     def __init__(
         self,
-        mobject: Mobject | Sequence[Mobject],
+        *mobjects,
         color: ParsableManimColor | None = None,
         stroke_width: float = 0,
         stroke_opacity: float = 0,
@@ -99,11 +99,11 @@ class BackgroundRectangle(SurroundingRectangle):
         buff: float = 0,
         **kwargs,
     ):
+        if not all(isinstance(mob, Mobject) for mob in mobjects):
+            raise TypeError("Positional arguments can only have type Mobject")
         if color is None:
             color = config.background_color
-        target = mobject
-        if not isinstance(target, Mobject):
-            target = VGroup(*mobject)
+        target = Group(*mobjects)
         super().__init__(
             target,
             color=color,
