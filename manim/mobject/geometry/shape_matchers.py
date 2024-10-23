@@ -98,13 +98,8 @@ class BackgroundRectangle(SurroundingRectangle):
         buff: float = 0,
         **kwargs,
     ):
-        if not all(isinstance(mob, Mobject) for mob in mobjects):
-            raise TypeError("Positional arguments can only have type Mobject")
-        if color is None:
-            color = config.background_color
-        target = Group(*mobjects)
         super().__init__(
-            target,
+            *mobjects,
             color=color,
             stroke_width=stroke_width,
             stroke_opacity=stroke_opacity,
