@@ -4,7 +4,7 @@ import logging
 
 import numpy as np
 
-from manim import SurroundingRectangle, BackgroundRectangle, Circle, Sector, Square
+from manim import BackgroundRectangle, Circle, Sector, Square, SurroundingRectangle
 
 logger = logging.getLogger(__name__)
 
