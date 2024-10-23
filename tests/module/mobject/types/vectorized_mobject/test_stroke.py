@@ -46,17 +46,18 @@ def test_stroke_scale():
     b = VMobject()
     a.set_stroke(width=50)
     b.set_stroke(width=50)
-    a.scale(.5)
-    b.scale(.5, scale_stroke=True)
+    a.scale(0.5)
+    b.scale(0.5, scale_stroke=True)
     assert a.get_stroke_width() == 50
     assert b.get_stroke_width() == 25
+
 
 def test_background_stroke_scale():
     a = VMobject()
     b = VMobject()
     a.set_stroke(width=50, background=True)
     b.set_stroke(width=50, background=True)
-    a.scale(.5)
-    b.scale(.5, scale_stroke=True)
+    a.scale(0.5)
+    b.scale(0.5, scale_stroke=True)
     assert a.get_stroke_width(background=True) == 50
     assert b.get_stroke_width(background=True) == 25

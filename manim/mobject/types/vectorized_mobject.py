@@ -477,13 +477,7 @@ class VMobject(Mobject):
         self.set_stroke(opacity=opacity, family=family, background=True)
         return self
 
-
-    def scale(
-            self,
-            scale_factor: float,
-            scale_stroke: bool = False,
-            **kwargs
-        ) -> Self:
+    def scale(self, scale_factor: float, scale_stroke: bool = False, **kwargs) -> Self:
         r"""Scale the size by a factor.
 
         Default behavior is to scale about the center of the vmobject.
@@ -525,7 +519,7 @@ class VMobject(Mobject):
                         c1.animate.scale(.25),
                         c2.animate.scale(.25,
                             scale_stroke=True)
-                    ) 
+                    )
 
         See also
         --------
@@ -534,7 +528,10 @@ class VMobject(Mobject):
         """
         if scale_stroke and self.get_stroke_width and self.set_stroke:
             self.set_stroke(width=abs(scale_factor) * self.get_stroke_width())
-            self.set_stroke(width=abs(scale_factor) * self.get_stroke_width(background=True), background=True)
+            self.set_stroke(
+                width=abs(scale_factor) * self.get_stroke_width(background=True),
+                background=True,
+            )
         super().scale(scale_factor, **kwargs)
         return self
 

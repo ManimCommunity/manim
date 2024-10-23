@@ -1221,10 +1221,7 @@ class Mobject:
 
         return self
 
-    def scale(
-            self,
-            scale_factor: float,
-            **kwargs) -> Self:
+    def scale(self, scale_factor: float, **kwargs) -> Self:
         r"""Scale the size by a factor.
 
         Default behavior is to scale about the center of the mobject.
