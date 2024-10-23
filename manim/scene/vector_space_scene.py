@@ -419,7 +419,7 @@ class VectorScene(Scene):
             this method did after it's done.
 
         """
-        starting_mobjects = list(self.mobjects)
+        starting_mobjects: list[Mobject] = list(self.mobjects)
         array = Matrix(vector)
         array.shift(coords_start)
         arrow = Vector(vector)
@@ -480,7 +480,7 @@ class VectorScene(Scene):
             this method did after it's done.
 
         """
-        starting_mobjects = list(self.mobjects)
+        starting_mobjects: list[Mobject] = list(self.mobjects)
         show_creation = False
         if isinstance(vector, Arrow):
             arrow = vector

@@ -141,7 +141,7 @@ class Scene:
                 renderer = OpenGLRenderer()
 
         if renderer is None:
-            self.renderer = CairoRenderer(
+            self.renderer: CairoRenderer | OpenGLRenderer = CairoRenderer(
                 camera_class=self.camera_class,
                 skip_animations=self.skip_animations,
             )
@@ -149,9 +149,9 @@ class Scene:
             self.renderer = renderer
         self.renderer.init_scene(self)
 
-        self.mobjects = []
+        self.mobjects: list[Mobject] = []
         # TODO, remove need for foreground mobjects
-        self.foreground_mobjects = []
+        self.foreground_mobjects: list[Mobject] = []
         if self.random_seed is not None:
             random.seed(self.random_seed)
             np.random.seed(self.random_seed)
