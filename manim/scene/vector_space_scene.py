@@ -88,7 +88,7 @@ class VectorScene(Scene):
         return plane
 
     def add_axes(
-        self, animate: bool = False, color: bool = WHITE, **kwargs: Any
+        self, animate: bool = False, color: ParsableManimColor = WHITE, **kwargs: Any
     ) -> Axes:
         """
         Adds a pair of Axes to the Scene.
@@ -160,7 +160,7 @@ class VectorScene(Scene):
     def add_vector(
         self,
         vector: Arrow | list | tuple | np.ndarray,
-        color: str = YELLOW,
+        color: ParsableManimColor = YELLOW,
         animate: bool = True,
         **kwargs: Any,
     ) -> Vector:
@@ -222,7 +222,9 @@ class VectorScene(Scene):
         return coords
 
     def get_basis_vectors(
-        self, i_hat_color: str = X_COLOR, j_hat_color: str = Y_COLOR
+        self,
+        i_hat_color: ParsableManimColor = X_COLOR,
+        j_hat_color: ParsableManimColor = Y_COLOR,
     ) -> VGroup:
         """
         Returns a VGroup of the Basis Vectors (1,0) and (0,1)
@@ -283,7 +285,7 @@ class VectorScene(Scene):
         at_tip: bool = False,
         direction: str = "left",
         rotate: bool = False,
-        color: str | None = None,
+        color: ParsableManimColor | None = None,
         label_scale_factor: float = LARGE_BUFF - 0.2,
     ) -> MathTex:
         """
@@ -767,7 +769,10 @@ class LinearTransformationScene(VectorScene):
         return self.ghost_vectors
 
     def get_unit_square(
-        self, color: str = YELLOW, opacity: float = 0.3, stroke_width: float = 3
+        self,
+        color: ParsableManimColor = YELLOW,
+        opacity: float = 0.3,
+        stroke_width: float = 3,
     ) -> Rectangle:
         """
         Returns a unit square for the current NumberPlane.
@@ -832,7 +837,7 @@ class LinearTransformationScene(VectorScene):
     def add_vector(
         self,
         vector: Arrow | list | tuple | np.ndarray,
-        color: str = YELLOW,
+        color: ParsableManimColor = YELLOW,
         **kwargs: Any,
     ) -> Vector:
         """
