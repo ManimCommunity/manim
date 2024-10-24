@@ -1,4 +1,4 @@
-"""Utility functions for continuous animation of mobjects."""
+"""Utility functions for continuous animation of Mobjects."""
 
 from __future__ import annotations
 
