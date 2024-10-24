@@ -126,12 +126,15 @@ def always(method: Callable[[MobjectT], None], *args: Any, **kwargs) -> MobjectT
 
 def f_always(
     method: Callable[[MobjectT], None],
-    *arg_generators: Callable[[Any], Any],
+    *arg_generators: Callable[[], Any],
     **kwargs: Any,
 ) -> MobjectT:
     r"""More functional version of :meth:`always`, where instead
     of taking in ``args``, it takes in functions which output
     the relevant arguments.
+
+    Calling ``f_always(mob.method, generate_arg)`` is equivalent to calling
+    ``mob.add_updater(lambda mob: mob.method(generate_arg()))``.
 
     Parameters
     ----------
@@ -139,7 +142,8 @@ def f_always(
         A Mobject method to call on each frame.
     arg_generators
         Functions which, when called, return positional arguments to be passed
-        to ``method``.
+        to ``method``. These functions should have no parameters, or at least
+        no parameters without default values.
     kwargs
         Keyword arguments to be passed to ``method``.
 
