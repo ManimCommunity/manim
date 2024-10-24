@@ -17,7 +17,7 @@ from collections.abc import Iterable, Sequence
 from typing import TYPE_CHECKING, Any, Callable, TypeVar, overload
 
 import numpy as np
-from typing_extensions import Self
+from typing_extensions import NotRequired, Self, TypedDict
 
 from manim import config
 from manim.constants import *
@@ -60,6 +60,19 @@ if TYPE_CHECKING:
     from manim.typing import ManimFloat, Point2D, Point3D, Vector3D
 
     LineType = TypeVar("LineType", bound=Line)
+
+
+class _MatmulConfig(TypedDict):
+    """A dictionary for configuring the __matmul__/__rmatmul__ operation.
+
+    Parameters
+    ----------
+        method: The method to call
+        unpack: whether to unpack the parameter given to __matmul__/__rmatmul__
+    """
+
+    method: str
+    unpack: NotRequired[bool]
 
 
 class CoordinateSystem:
@@ -1836,13 +1849,36 @@ class CoordinateSystem:
 
         return T_label_group
 
-    def __matmul__(self, coord: Point3D | Mobject):
+    _matmul_config: _MatmulConfig = {
+        "method": "coords_to_point",
+        "unpack": True,
+    }
+    _rmatmul_config: _MatmulConfig = {"method": "point_to_coords", "unpack": False}
+
+    def __matmul__(self, coord):
         if isinstance(coord, Mobject):
             coord = coord.get_center()
-        return self.coords_to_point(*coord)
+        method = getattr(self, self._matmul_config["method"])
+        assert callable(method)
+        return (
+            method(*coord) if self._matmul_config.get("unpack", True) else method(coord)
+        )
 
-    def __rmatmul__(self, point: Point3D):
-        return self.point_to_coords(point)
+    def __rmatmul__(self, point):
+        """Perform a point-to-coords action for a coordinate scene.
+
+        .. warning::
+
+            This will not work with NumPy arrays or other objects that
+            implement ``__matmul__``.
+        """
+        method = getattr(self, self._rmatmul_config["method"])
+        assert callable(method)
+        return (
+            method(*point)
+            if self._rmatmul_config.get("unpack", False)
+            else method(point)
+        )
 
 
 class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
@@ -2984,6 +3020,11 @@ class PolarPlane(Axes):
                 self.add(polarplane_pi)
     """
 
+    _matmul_config = {
+        "method": "polar_to_point",
+    }
+    _rmatmul_config = {"method": "point_to_polar"}
+
     def __init__(
         self,
         radius_max: float = config["frame_y_radius"],
@@ -3353,6 +3394,10 @@ class ComplexPlane(NumberPlane):
                 )
 
     """
+
+    _matmul_config = {"method": "number_to_point", "unpack": False}
+
+    _rmatmul_config = {"method": "point_to_number"}
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(
