@@ -18,6 +18,8 @@ if typing.TYPE_CHECKING:
     from collections.abc import Iterable
     from typing import Any
 
+    import numpy.typing as npt
+
     from manim.animation.animation import Animation
     from manim.scene.scene import Scene
 
@@ -119,12 +121,12 @@ class CairoRenderer:
 
     def update_frame(  # TODO Description in Docstring
         self,
-        scene,
+        scene: Scene,
         mobjects: typing.Iterable[Mobject] | None = None,
         include_submobjects: bool = True,
         ignore_skipping: bool = True,
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> None:
         """Update the frame.
 
         Parameters
@@ -160,7 +162,7 @@ class CairoRenderer:
         self.update_frame(scene, moving_mobjects)
         self.add_frame(self.get_frame())
 
-    def get_frame(self):
+    def get_frame(self) -> npt.NDArray:
         """
         Gets the current frame as NumPy array.
 
