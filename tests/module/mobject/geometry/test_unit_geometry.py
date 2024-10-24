@@ -15,7 +15,7 @@ def test_get_arc_center():
     )
 
 
-def test_SurroundingRectangle(manim_caplog):
+def test_SurroundingRectangle():
     circle = Circle()
     square = Square()
     sr = SurroundingRectangle(circle, square)

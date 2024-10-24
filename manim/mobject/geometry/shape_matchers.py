@@ -8,7 +8,7 @@ from typing import Any
 
 from typing_extensions import Self
 
-from manim import config, logger
+from manim import logger
 from manim.constants import *
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import RoundedRectangle
@@ -43,7 +43,7 @@ class SurroundingRectangle(RoundedRectangle):
 
     def __init__(
         self,
-        *mobjects,
+        *mobjects: Mobject,
         color: ParsableManimColor = YELLOW,
         buff: float = SMALL_BUFF,
         corner_radius: float = 0.0,
