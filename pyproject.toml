@@ -18,6 +18,7 @@ classifiers= [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Natural Language :: English",
     ]
 exclude = ["scripts/","logo/","readme-assets/"]
@@ -26,7 +27,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.13"
+python = ">=3.9"
 av = ">=9.0.0"
 click = ">=8.0"
 cloup = ">=2.0.0"
@@ -45,9 +46,15 @@ numpy = ">=1.26"
 Pillow = ">=9.1"
 pycairo = ">=1.13,<2.0.0"
 pydub = ">=0.20.0"
+audioop-lts = { version = ">=0.2.0", python = ">=3.13" }  # for pydub
 Pygments = ">=2.0.0"
 rich = ">=12.0.0"
-scipy = ">=1.6.0"
+scipy = [
+  # scipy 1.14.0 is the first version with prebuilt wheels for 3.13
+  # TODO: remove when python 3.10 is the minimum supported version
+  {version = ">=1.13.0", python = "<3.13"},
+  {version = ">=1.14.0", python = ">=3.13"},
+]
 screeninfo = ">=0.7"
 skia-pathops = ">=0.7.0"
 srt = ">=3.0.0"
