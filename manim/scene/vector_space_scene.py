@@ -62,7 +62,7 @@ Z_COLOR = BLUE_D
 # Also, methods I would have thought of as getters, like coords_to_vector, are
 # actually doing a lot of animating.
 class VectorScene(Scene):
-    def __init__(self, basis_vector_stroke_width: int = 6, **kwargs: Any) -> None:
+    def __init__(self, basis_vector_stroke_width: float = 6, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.basis_vector_stroke_width = basis_vector_stroke_width
 
