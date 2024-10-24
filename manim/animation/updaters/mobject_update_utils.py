@@ -133,8 +133,8 @@ def f_always(
     of taking in ``args``, it takes in functions which output
     the relevant arguments.
 
-    Calling ``f_always(mob.method, generate_arg)`` is equivalent to calling
-    ``mob.add_updater(lambda mob: mob.method(generate_arg()))``.
+    Calling ``f_always(mob.method, get_arg_1, get_arg_2)`` is equivalent to calling
+    ``mob.add_updater(lambda mob: mob.method(get_arg_1(), get_arg_2()))``.
 
     Parameters
     ----------
