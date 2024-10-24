@@ -526,7 +526,7 @@ class VMobject(Mobject):
         :meth:`move_to`
 
         """
-        if scale_stroke and self.get_stroke_width and self.set_stroke:
+        if scale_stroke:
             self.set_stroke(width=abs(scale_factor) * self.get_stroke_width())
             self.set_stroke(
                 width=abs(scale_factor) * self.get_stroke_width(background=True),
