@@ -416,6 +416,7 @@ def cycle_animation(animation: Animation) -> Mobject:
         was converted into an updater for this Mobject.
 
     Examples
+    --------
 
     .. manim:: IndicateForeverScene
 
