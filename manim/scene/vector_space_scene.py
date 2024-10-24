@@ -164,7 +164,7 @@ class VectorScene(Scene):
         color: ParsableManimColor = YELLOW,
         animate: bool = True,
         **kwargs: Any,
-    ) -> Vector:
+    ) -> Arrow:
         """
         Returns the Vector after adding it to the Plane.
 
@@ -218,7 +218,7 @@ class VectorScene(Scene):
         :class:`.Matrix`
             The column matrix representing the vector.
         """
-        coords = vector.coordinate_label(**kwargs)
+        coords: Matrix = vector.coordinate_label(**kwargs)
         self.play(Write(coords))
         return coords
 
@@ -282,7 +282,7 @@ class VectorScene(Scene):
     def get_vector_label(
         self,
         vector: Vector,
-        label: Any,
+        label: MathTex | str,
         at_tip: bool = False,
         direction: str = "left",
         rotate: bool = False,
@@ -333,9 +333,11 @@ class VectorScene(Scene):
             if not rotate:
                 label.rotate(-angle, about_point=ORIGIN)
             if direction == "left":
-                label.shift(-label.get_bottom() + 0.1 * UP)
+                temp_shift_1: InternalPoint3D = label.get_bottom()
+                label.shift(-temp_shift_1 + 0.1 * UP)
             else:
-                label.shift(-label.get_top() + 0.1 * DOWN)
+                temp_shift_2: InternalPoint3D = label.get_top()
+                label.shift(-temp_shift_2 + 0.1 * DOWN)
             label.rotate(angle, about_point=ORIGIN)
             label.shift((vector.get_end() - vector.get_start()) / 2)
         return label
@@ -394,8 +396,8 @@ class VectorScene(Scene):
 
     def coords_to_vector(
         self,
-        vector: np.ndarray | list | tuple,
-        coords_start: np.ndarray | list | tuple = 2 * RIGHT + 2 * UP,
+        vector: InternalPoint3D,
+        coords_start: InternalPoint3D = 2 * RIGHT + 2 * UP,
         clean_up: bool = True,
     ) -> None:
         """
@@ -457,7 +459,7 @@ class VectorScene(Scene):
 
     def vector_to_coords(
         self,
-        vector: np.ndarray | list | tuple,
+        vector: InternalPoint3D,
         integer_labels: bool = True,
         clean_up: bool = True,
     ) -> tuple[Matrix, Line, Line]:
@@ -518,7 +520,7 @@ class VectorScene(Scene):
             self.add(*starting_mobjects)
         return array, x_line, y_line
 
-    def show_ghost_movement(self, vector: Arrow | list | tuple | np.ndarray) -> None:
+    def show_ghost_movement(self, vector: InternalPoint3D | Arrow) -> None:
         """
         This method plays an animation that partially shows the entire plane moving
         in the direction of a particular vector. This is useful when you wish to
@@ -663,7 +665,7 @@ class LinearTransformationScene(VectorScene):
         self.foreground_mobjects: list[Mobject] = []
         self.transformable_mobjects: list[Mobject] = []
         self.moving_vectors = []
-        self.transformable_labels: list[Mobject] = []
+        self.transformable_labels: list[MathTex] = []
         self.moving_mobjects: list[Mobject] = []
 
         self.background_plane = NumberPlane(**self.background_plane_kwargs)
@@ -839,8 +841,9 @@ class LinearTransformationScene(VectorScene):
         self,
         vector: Arrow | list | tuple | np.ndarray,
         color: ParsableManimColor = YELLOW,
+        animate: bool = True,
         **kwargs: Any,
-    ) -> Vector:
+    ) -> Arrow:
         """
         Adds a vector to the scene, and puts it in the special
         list self.moving_vectors.
@@ -864,7 +867,7 @@ class LinearTransformationScene(VectorScene):
         Arrow
             The arrow representing the vector.
         """
-        vector = super().add_vector(vector, color=color, **kwargs)
+        vector = super().add_vector(vector, color=color, animate=animate, **kwargs)
         self.moving_vectors.append(vector)
         return vector
 
@@ -1061,7 +1064,8 @@ class LinearTransformationScene(VectorScene):
         for m in self.moving_mobjects:
             if m.target is None:
                 m.target = m.copy()
-            target_point = func(m.get_center())
+            temp: InternalPoint3D = m.get_center()  # type: ignore[assignment]
+            target_point = func(temp)
             m.target.move_to(target_point)
         return self.get_piece_movement(self.moving_mobjects)
 
@@ -1087,7 +1091,7 @@ class LinearTransformationScene(VectorScene):
         """
         for v in self.moving_vectors:
             v.target = Vector(func(v.get_end()), color=v.get_color())
-            norm = np.linalg.norm(v.target.get_end())
+            norm = float(np.linalg.norm(v.target.get_end()))
             if norm < 0.1:
                 v.target.get_tip().scale(norm)
         return self.get_piece_movement(self.moving_vectors)
@@ -1103,8 +1107,9 @@ class LinearTransformationScene(VectorScene):
             The animation of the movement.
         """
         for label in self.transformable_labels:
+            target_text: MathTex | str = label.target_text
             label.target = self.get_vector_label(
-                label.vector.target, label.target_text, **label.kwargs
+                label.vector.target, target_text, **label.kwargs
             )
         return self.get_piece_movement(self.transformable_labels)
 
