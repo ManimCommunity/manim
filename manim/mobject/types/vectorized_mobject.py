@@ -493,7 +493,7 @@ class VMobject(Mobject):
             If enabled, and object with 2px outline is scaled by a factor of .5, it will have an outline of 1px.
         kwargs
             Additional keyword arguments passed to
-            :meth:`apply_points_function_about_point`.
+            :meth:`~.Mobject.scale`.
 
         Returns
         -------
