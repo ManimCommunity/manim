@@ -33,7 +33,7 @@ if TYPE_CHECKING:
 
 
 def assert_is_mobject_method(method: Callable[[MobjectT], None]) -> None:
-    """Verify that the given `method` is actually a method and belongs to a
+    """Verify that the given ``method`` is actually a method and belongs to a
     :class:`Mobject` or an :class:`OpenGLMobject`.
 
     Parameters
@@ -44,7 +44,7 @@ def assert_is_mobject_method(method: Callable[[MobjectT], None]) -> None:
     Raises
     ------
     AssertionError
-        If `method` is not a method or it doesn't belong to :class:`Mobject`
+        If ``method`` is not a method or it doesn't belong to :class:`Mobject`
         or :class:`OpenGLMobject`.
     """
     assert inspect.ismethod(method)
@@ -53,33 +53,33 @@ def assert_is_mobject_method(method: Callable[[MobjectT], None]) -> None:
 
 
 def always(method: Callable[[MobjectT], None], *args: Any, **kwargs) -> MobjectT:
-    r"""Given the `method` of an existing :class:`Mobject`, apply an updater to
+    r"""Given the ``method`` of an existing :class:`Mobject`, apply an updater to
     this Mobject which modifies it on every frame by repeatedly calling the method.
-    Additional arguments, both positional (`args`) and keyword arguments (`kwargs`),
-    may be passed as arguments to `always`.
+    Additional arguments, both positional (``args``) and keyword arguments
+    (``kwargs``), may be passed as arguments to ``always``.
 
-    Calling `always(mob.method, ...)` is equivalent to calling
-    `mob.add_updater(lambda mob: mob.method(...))`.
+    Calling ``always(mob.method, ...)`` is equivalent to calling
+    ``mob.add_updater(lambda mob: mob.method(...))``.
 
     Parameters
     ----------
     method
         A Mobject method to call on each frame.
     args
-        Positional arguments to be passed to `method`.
+        Positional arguments to be passed to ``method``.
     kwargs
-        Keyword arguments to be passed to `method`.
+        Keyword arguments to be passed to ``method``.
 
     Returns
     -------
     :class:`Mobject`
-        The same Mobject whose `method` was passed to `always`, after adding an updater
-        which repeatedly calls that method.
+        The same Mobject whose ``method`` was passed to ``always``, after adding
+        an updater which repeatedly calls that method.
 
     Raises
     ------
     AssertionError
-        If `method` is not a method or it doesn't belong to :class:`Mobject`
+        If ``method`` is not a method or it doesn't belong to :class:`Mobject`
         or :class:`OpenGLMobject`.
 
     Examples
@@ -130,7 +130,7 @@ def f_always(
     **kwargs: Any,
 ) -> MobjectT:
     r"""More functional version of :meth:`always`, where instead
-    of taking in `args`, it takes in functions which output
+    of taking in ``args``, it takes in functions which output
     the relevant arguments.
 
     Parameters
@@ -138,20 +138,21 @@ def f_always(
     method
         A Mobject method to call on each frame.
     arg_generators
-        Functions which, when called, return positional arguments to be passed to `method`.
+        Functions which, when called, return positional arguments to be passed
+        to ``method``.
     kwargs
-        Keyword arguments to be passed to `method`.
+        Keyword arguments to be passed to ``method``.
 
     Returns
     -------
     :class:`Mobject`
-        The same Mobject whose `method` was passed to `f_always`, after adding an updater
-        which repeatedly calls that method.
+        The same Mobject whose ``method`` was passed to ``f_always``, after adding
+        an updater which repeatedly calls that method.
 
     Raises
     ------
     AssertionError
-        If `method` is not a method or it doesn't belong to :class:`Mobject`
+        If ``method`` is not a method or it doesn't belong to :class:`Mobject`
         or :class:`OpenGLMobject`.
 
     Examples
@@ -206,7 +207,7 @@ def always_redraw(func: Callable[[], MobjectT]) -> MobjectT:
     """Redraw the Mobject constructed by a function every frame.
 
     This function returns a Mobject with an attached updater that
-    continuously regenerates the mobject according to the
+    continuously regenerates the Mobject according to the
     specified function.
 
     Parameters
@@ -219,7 +220,7 @@ def always_redraw(func: Callable[[], MobjectT]) -> MobjectT:
     -------
     :class:`Mobject`
         The Mobject returned by the function, after adding an updater to it
-        which constantly transforms it, according to the given `func`.
+        which constantly transforms it, according to the given ``func``.
 
     Examples
     --------
@@ -256,19 +257,19 @@ def always_redraw(func: Callable[[], MobjectT]) -> MobjectT:
 def always_shift(
     mobject: MobjectT, direction: np.ndarray[np.float64] = RIGHT, rate: float = 0.1
 ) -> MobjectT:
-    """A mobject which is continuously shifted along some direction
+    """A Mobject which is continuously shifted along some direction
     at a certain rate.
 
     Parameters
     ----------
     mobject
-        The mobject to shift.
+        The Mobject to shift.
     direction
         The direction to shift. The vector is normalized, the specified magnitude
         is not relevant.
     rate
-        Length in Manim units which the mobject travels in one
-        second along the specified direction.
+        Speed (MUnits per second) in which the Mobject travels along the
+        specified direction.
 
     Returns
     -------
@@ -298,15 +299,14 @@ def always_shift(
 
 
 def always_rotate(mobject: MobjectT, rate: float = 20 * DEGREES, **kwargs) -> MobjectT:
-    """A mobject which is continuously rotated at a certain rate.
+    """A Mobject which is continuously rotated at a certain rate.
 
     Parameters
     ----------
     mobject
-        The mobject to be rotated.
+        The Mobject to be rotated.
     rate
-        The angle which the mobject is rotated by
-        over one second.
+        The angular speed (angle units per second) in which the Mobject is rotated.
     kwags
         Further arguments to be passed to :meth:`.Mobject.rotate`.
 
@@ -339,7 +339,7 @@ def turn_animation_into_updater(animation: Animation, cycle: bool = False) -> Mo
     """Add an updater to the animation's Mobject, which applies
     the interpolation and update functions of the animation.
 
-    If `cycle` is `True`, this repeats over and over. Otherwise,
+    If ``cycle`` is ``True``, this repeats over and over. Otherwise,
     the updater will be popped upon completion.
 
     Parameters
@@ -353,8 +353,8 @@ def turn_animation_into_updater(animation: Animation, cycle: bool = False) -> Mo
     Returns
     -------
     :class:`Mobject`
-        The Mobject being modified by the original `animation` which
-        was converted into an updater for this Mobject.
+        The Mobject being modified by the original ``animation`` which was
+        converted into an updater for this Mobject.
 
     Examples
     --------
@@ -397,7 +397,7 @@ def turn_animation_into_updater(animation: Animation, cycle: bool = False) -> Mo
 
 
 def cycle_animation(animation: Animation) -> Mobject:
-    """Same as `turn_animation_into_updater`, but with `cycle=True`.
+    """Same as :meth:`turn_animation_into_updater`, but with ``cycle=True``.
 
     Parameters
     ----------
@@ -408,7 +408,7 @@ def cycle_animation(animation: Animation) -> Mobject:
     Returns
     -------
     :class:`Mobject`
-        The Mobject being modified by the original `animation` which
+        The Mobject being modified by the original ``animation`` which
         was converted into an updater for this Mobject.
     """
     return turn_animation_into_updater(animation, cycle=True)
