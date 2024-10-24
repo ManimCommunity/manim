@@ -414,5 +414,20 @@ def cycle_animation(animation: Animation) -> Mobject:
     :class:`Mobject`
         The Mobject being modified by the original ``animation`` which
         was converted into an updater for this Mobject.
+
+    Examples
+
+    .. manim:: IndicateForeverScene
+
+        class IndicateForeverScene(Scene):
+            def construct(self):
+                circle = Circle()
+                self.add(circle)
+                cycle_animation(Indicate(circle))
+
+                text = Text("This circle is Indicated forever!").shift(2.5*UP)
+
+                self.play(Write(text))
+                self.wait(3)
     """
     return turn_animation_into_updater(animation, cycle=True)
