@@ -43,7 +43,7 @@ class SurroundingRectangle(RoundedRectangle):
 
     def __init__(
         self,
-        *mobjects,
+        *mobjects: Mobject,
         color: ParsableManimColor = YELLOW,
         buff: float = SMALL_BUFF,
         corner_radius: float = 0.0,
