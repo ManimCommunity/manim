@@ -6,7 +6,7 @@ import contextlib
 import platform
 import time
 import warnings
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable, Iterator, Sequence
 from typing import TYPE_CHECKING, Callable, Generic, TypeVar
 
 import numpy as np
@@ -174,19 +174,17 @@ class Manager(Generic[Scene_co]):
         self.tear_down()
 
     def construct(self) -> None:
-        if not self.scene.sections_api:
+        if not self.scene.groups_api:
+            print("h")
             self.scene.construct()
             return
-        for section in self.scene.find_sections():
-            self.file_writer.next_section(
-                section.name,
-                section.type_,
-                section.skip,
-            )
-            if section.skip:
-                self._skipping = True
-            section()
-            self._skipping = False
+
+        for group in self.scene.find_groups():
+            if not config.groups or group.name in config.groups:
+                group()
+            elif group.name not in config.groups:
+                with self.no_render():
+                    group()
 
     def _render_second_pass(self) -> None:
         """
@@ -231,6 +229,22 @@ class Manager(Generic[Scene_co]):
         dt = 1 / config.frame_rate
         while not self.window.is_closing:
             self._update_frame(dt)
+
+    @contextlib.contextmanager
+    def no_render(self) -> Iterator[None]:
+        """Context manager to temporarily disable rendering.
+
+        Usage
+        -----
+
+            .. code-block:: python
+
+                with manager.no_render():
+                    manager._play(FadeIn(Circle()))
+        """
+        self._skipping = True
+        yield
+        self._skipping = False
 
     # ----------------------------------#
     #         Animation Pipeline        #

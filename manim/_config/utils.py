@@ -20,7 +20,7 @@ import logging
 import os
 import re
 import sys
-from collections.abc import Iterable, Iterator, Mapping, MutableMapping
+from collections.abc import Iterable, Iterator, Mapping, MutableMapping, Sequence
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, ClassVar, NoReturn
 
@@ -273,6 +273,7 @@ class ManimConfig(MutableMapping):
         "frame_x_radius",
         "frame_y_radius",
         "from_animation_number",
+        "groups",
         "images_dir",
         "input_file",
         "media_embed",
@@ -1187,6 +1188,24 @@ class ManimConfig(MutableMapping):
     @upto_animation_number.setter
     def upto_animation_number(self, value: int) -> None:
         self._set_pos_number("upto_animation_number", value, True)
+
+    @property
+    def groups(self) -> tuple[str, ...]:
+        """The name of the groups to play.
+
+        If not passed, it will play all groups. Otherwise,
+        it will play only the groups passed in.
+        """
+        return self._d["groups"]  # type: ignore[misc]
+
+    @groups.setter
+    def groups(self, value: str | Sequence[str]) -> None:
+        if isinstance(value, str):
+            self._set_str("groups", value.replace(" ", "").split(","))
+        else:
+            if not all(isinstance(v, str) for v in value):
+                raise ValueError("groups must be a string or a sequence of strings")
+            self._d["groups"] = tuple(value)
 
     @property
     def max_files_cached(self) -> int:

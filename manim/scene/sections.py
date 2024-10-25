@@ -2,45 +2,49 @@ from __future__ import annotations
 
 import types
 from collections.abc import Callable
-from typing import TYPE_CHECKING, ClassVar, Generic, ParamSpec, TypeVar, final, overload
+from typing import TYPE_CHECKING, ClassVar, Generic, ParamSpec, TypeVar, final
 
-from typing_extensions import Self, TypedDict, Unpack
-
-from manim.file_writer.sections import DefaultSectionType
+from typing_extensions import Self
 
 if TYPE_CHECKING:
     from .scene import Scene
 
-__all__ = ["section"]
+__all__ = ["group"]
 
 
 P = ParamSpec("P")
 T = TypeVar("T")
 
 
-class SceneSectionData(TypedDict, total=False):
-    """(Public) data for a :class:`.SceneSection` in a :class:`.Scene`."""
-
-    skip: bool
-    type_: str
-    name: str
-    order: int
-
-
 # mark as final because _cls_instance_count doesn't
 # work with inheritance
 @final
-class SceneSection(Generic[P, T]):
-    """A section in a :class:`.Scene`.
+class group(Generic[P, T]):
+    """A group in a :class:`.Scene`.
 
     It holds data about each subsection, and keeps track of the order
-    of the sections via :attr:`~SceneSection.order`.
+    of the sections via :attr:`order`.
 
-    .. warning::
+    Example
+    -------
 
-        :attr:`~SceneSection.func` is effectively a function - it is not
-        bound to the scene, and thus must be called with the first argument
-        as an instance of :class:`.Scene`.
+        .. code-block:: python
+
+            class MyScene(Scene):
+                groups_api = True
+
+                @group
+                def my_section(self):
+                    pass
+
+                @my_section
+                def my_subsection(self):
+                    pass
+
+                @my_section
+                def my_subsection2(self):
+                    pass
+
     """
 
     _cls_instance_count: ClassVar[int] = 0
@@ -50,103 +54,35 @@ class SceneSection(Generic[P, T]):
     decorators are called in a class.
     """
 
-    def __init__(
-        self, func: Callable[P, T], **kwargs: Unpack[SceneSectionData]
-    ) -> None:
-        self.func = func
+    def __init__(self, func: Callable[P, T]) -> None:
+        self._func = func
+        self._order = self.__class__._cls_instance_count
 
-        self.skip = False
-        self.type_ = DefaultSectionType.NORMAL
-        self.name = func.__name__
-
-        # update the order counter
-        self.order = self._cls_instance_count
         self.__class__._cls_instance_count += 1
 
-        # we assume that users have a typechecker on
-        # and aren't doing any weird stuff
-        self.__dict__.update(kwargs)
+    @property
+    def name(self) -> str:
+        return self._func.__name__
 
     def __str__(self) -> str:
         name = self.name
-        skip = self.skip
-        section_type = self.type_
-        order = self.order
-        return f"{self.__class__.__name__}({name=}, {order=}, {skip=}, {section_type=})"
+        return f"{self.__class__.__name__}({name=})"
 
     def __repr__(self) -> str:
-        # return a slightly more verbose repr
-        s = str(self).removesuffix(")")
-        func = self.func
-        return f"{s}, {func=})"
+        return f"{self.__class__.__name__}({self._func!r})"
+
+    def __lt__(self, other: object) -> bool:
+        if not isinstance(other, group):
+            return NotImplemented
+        return self._order < other._order
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> T:
-        return self.func(*args, **kwargs)
-
-    def bind(self, instance: Scene) -> Self:
-        """Binds :attr:`func` to the scene instance, making :attr:`func` a method.
-
-        This allows the section to be called without the scene being passed explicitly.
-        """
-        self.func = types.MethodType(self.func, instance)
-        return self
+        return self._func(*args, **kwargs)
 
     def __get__(self, instance: Scene, _owner: type[Scene]) -> Self:
-        """Descriptor to bind the section to the scene instance.
+        """Descriptor to bind the group to the scene instance.
 
         This is called implicitly by python when methods are being bound.
         """
-        return self.bind(instance)
-
-
-@overload
-def section(
-    func: Callable[P, T],
-    **kwargs: Unpack[SceneSectionData],
-) -> SceneSection[P, T]: ...
-
-
-@overload
-def section(
-    func: None = None,
-    **kwargs: Unpack[SceneSectionData],
-) -> Callable[[Callable[P, T]], SceneSection[P, T]]: ...
-
-
-def section(
-    func: Callable[P, T] | None = None, **kwargs: Unpack[SceneSectionData]
-) -> SceneSection[P, T] | Callable[[Callable[P, T]], SceneSection[P, T]]:
-    r"""Decorator to create a section in the scene.
-
-    Example
-    -------
-
-        .. code-block:: python
-
-            class MyScene(Scene):
-                sections_api = True
-
-                @section
-                def first_section(self):
-                    pass
-
-                @section(skip=True, name="Introduce Bob")
-                def second_section(self):
-                    pass
-
-    Parameters
-    ----------
-        func : Callable
-            The subsection.
-        skip : bool, optional
-            Whether to skip the section, by default False
-        type\_ : str, optional
-            The type of the section, by default :attr:`.DefaultSectionType.NORMAL`
-        name : str, optional
-            The name of the section, by default the name of the method.
-    """
-
-    def wrapper(func: Callable[P, T]) -> SceneSection[P, T]:
-        return SceneSection(func, **kwargs)
-
-    return wrapper(func) if func is not None else wrapper
+        self._func = types.MethodType(self._func, instance)
+        return self

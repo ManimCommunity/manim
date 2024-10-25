@@ -51,6 +51,13 @@ render_options = option_group(
         default=None,
     ),
     option(
+        "-g",
+        "--groups",
+        callback=lambda ctx, param, value: value.split(","),
+        help="Render only the specified groups.",
+        default=[],
+    ),
+    option(
         "-a",
         "--write_all",
         is_flag=True,

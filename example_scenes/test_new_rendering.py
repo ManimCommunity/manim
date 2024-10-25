@@ -2,10 +2,11 @@ from manim import *
 
 
 class Test(Scene):
-    sections_api = True
+    groups_api = True
 
-    @section(name="spinning_math")
+    @group
     def first_section(self) -> None:
+        print("hello")
         line = Line()
         line.add_updater(lambda m, dt: m.rotate(PI * dt))
         t = Tex(r"Math! $\sum e^{i\theta}$").add_updater(lambda m: m.next_to(line, UP))
@@ -20,7 +21,7 @@ class Test(Scene):
         self.wait(1)
         self.play(FadeOut(s))
 
-    @section
+    @group
     def three_mobjects(self) -> None:
         sq = RegularPolygon(6)
         c = Circle()
@@ -35,7 +36,7 @@ class Test(Scene):
         )
         self.play(FadeOut(VGroup(sq, c, st)))
 
-    @section(skip=True)
+    @group
     def never_run(self) -> None:
         self.play(Write(Text("This should never be run")))
 
@@ -50,4 +51,5 @@ if __name__ == "__main__":
             "disable_caching_warning": True,
         }
     ):
+        print(config.groups)
         Manager(Test).render()
