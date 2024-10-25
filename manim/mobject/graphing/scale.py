@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
-__all__ = ["LogBase", "LinearBase"]
+__all__ = ["LogBase", "LinearBase", "UnitLinearBase"]
 
 from manim.mobject.text.numbers import Integer
 
@@ -112,6 +112,32 @@ class LinearBase(_ScaleBase):
             value to be divided by the scale factor.
         """
         return value / self.scale_factor
+
+
+class UnitLinearBase(LinearBase):
+    def __init__(self):
+        """The default scaling class."""
+        super().__init__(scale_factor=1.0)
+
+    def function(self, value: float) -> float:
+        """Multiplies the value by 1.0, i.e. returns the value as is.
+
+        Parameters
+        ----------
+        value
+            Value to be multiplied by the scale factor.
+        """
+        return value
+
+    def inverse_function(self, value: float) -> float:
+        """Inverse of function. Divides the value by 1.0, i.e. returns the value as is.
+
+        Parameters
+        ----------
+        value
+            value to be divided by the scale factor.
+        """
+        return value
 
 
 class LogBase(_ScaleBase):
