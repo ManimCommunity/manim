@@ -49,9 +49,6 @@ class SurroundingRectangle(RoundedRectangle):
         corner_radius: float = 0.0,
         **kwargs,
     ) -> None:
-        if not all(isinstance(mob, Mobject) for mob in mobjects):
-            raise TypeError("Positional arguments can only have type Mobject")
-        target = Group(*mobjects)
         super().__init__(
             color=color,
             width=target.width + 2 * buff,
@@ -90,7 +87,7 @@ class BackgroundRectangle(SurroundingRectangle):
 
     def __init__(
         self,
-        *mobjects,
+        *mobjects: Mobject,
         color: ParsableManimColor | None = None,
         stroke_width: float = 0,
         stroke_opacity: float = 0,
