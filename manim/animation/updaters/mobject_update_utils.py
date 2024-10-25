@@ -25,14 +25,22 @@ from manim.opengl import OpenGLMobject
 from manim.utils.space_ops import normalize
 
 if TYPE_CHECKING:
-    from typing_extensions import Any, TypeVar
+    from typing_extensions import Any, ParamSpec, Protocol, TypeVar
 
     from manim.animation.animation import Animation
 
     MobjectT = TypeVar("MobjectT", bound=Mobject)
+    MethodArgs = ParamSpec("MethodParams")
+
+    class MobjectMethod(Protocol[MobjectT, MethodArgs]):
+        __self__: MobjectT
+
+        def __call__(
+            self, mobject: MobjectT, *args: MethodArgs.args, **kwargs: MethodArgs.kwargs
+        ) -> Any: ...
 
 
-def assert_is_mobject_method(method: Callable[[MobjectT], None]) -> None:
+def assert_is_mobject_method(method: MobjectMethod[MobjectT, MethodArgs]) -> None:
     """Verify that the given ``method`` is actually a method and belongs to a
     :class:`Mobject` or an :class:`OpenGLMobject`.
 
@@ -52,7 +60,11 @@ def assert_is_mobject_method(method: Callable[[MobjectT], None]) -> None:
     assert isinstance(mobject, (Mobject, OpenGLMobject))
 
 
-def always(method: Callable[[MobjectT], None], *args: Any, **kwargs) -> MobjectT:
+def always(
+    method: MobjectMethod[MobjectT, MethodArgs],
+    *args: MethodArgs.args,
+    **kwargs: MethodArgs.kwargs,
+) -> MobjectT:
     r"""Given the ``method`` of an existing :class:`Mobject`, apply an updater to
     this Mobject which modifies it on every frame by repeatedly calling the method.
     Additional arguments, both positional (``args``) and keyword arguments
@@ -125,7 +137,7 @@ def always(method: Callable[[MobjectT], None], *args: Any, **kwargs) -> MobjectT
 
 
 def f_always(
-    method: Callable[[MobjectT], None],
+    method: MobjectMethod[MobjectT, Any],
     *arg_generators: Callable[[], Any],
     **kwargs: Any,
 ) -> MobjectT:
