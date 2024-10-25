@@ -60,7 +60,7 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
         for i, point in enumerate(list_of_points):
             if len(point) == 2:
                 list_of_points[i] = np.array(list(point) + [z_dim])
-        return np.array(list_of_points)
+        return np.asarray(list_of_points)
 
     def _convert_vmobject_to_skia_path(self, vmobject: VMobject) -> SkiaPath:
         """Converts a :class:`~.VMobject` to SkiaPath. This method only works for
