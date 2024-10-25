@@ -49,16 +49,16 @@ class SurroundingRectangle(RoundedRectangle):
         corner_radius: float = 0.0,
         **kwargs,
     ) -> None:
-        target = Group(*mobjects)
+        group = Group(*mobjects)
         super().__init__(
             color=color,
-            width=target.width + 2 * buff,
-            height=target.height + 2 * buff,
+            width=group.width + 2 * buff,
+            height=group.height + 2 * buff,
             corner_radius=corner_radius,
             **kwargs,
         )
         self.buff = buff
-        self.move_to(target)
+        self.move_to(group)
 
 
 class BackgroundRectangle(SurroundingRectangle):
