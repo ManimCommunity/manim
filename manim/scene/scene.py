@@ -42,7 +42,7 @@ from ..camera.camera import Camera
 from ..constants import *
 from ..gui.gui import configure_pygui
 from ..renderer.cairo_renderer import CairoRenderer
-from ..renderer.opengl_renderer import OpenGLRenderer
+from ..renderer.opengl_renderer import OpenGLCamera, OpenGLRenderer
 from ..renderer.shader import Object3D
 from ..utils import opengl, space_ops
 from ..utils.exceptions import EndSceneEarlyException, RerunSceneException
@@ -1327,6 +1327,7 @@ class Scene:
 
     def interactive_embed(self) -> None:
         """Like embed(), but allows for screen interaction."""
+        assert isinstance(self.camera, OpenGLCamera)
         if not self.check_interactive_embed_is_valid():
             return
         self.interactive_mode = True
@@ -1630,6 +1631,7 @@ class Scene:
         self.renderer.file_writer.add_sound(sound_file, time, gain, **kwargs)
 
     def on_mouse_motion(self, point: InternalPoint3D, d_point: InternalPoint3D) -> None:
+        assert isinstance(self.camera, OpenGLCamera)
         self.mouse_point.move_to(point)
         if SHIFT_VALUE in self.renderer.pressed_keys:
             shift = -d_point
@@ -1640,12 +1642,14 @@ class Scene:
             self.camera.shift(shift)
 
     def on_mouse_scroll(self, point: InternalPoint3D, offset: InternalPoint3D) -> None:
+        assert isinstance(self.camera, OpenGLCamera)
         if not config.use_projection_stroke_shaders:
             factor = 1 + np.arctan(-2.1 * offset[1])
             self.camera.scale(factor, about_point=self.camera_target)
         self.mouse_scroll_orbit_controls(point, offset)
 
     def on_key_press(self, symbol: int, modifiers: Any) -> None:
+        assert isinstance(self.camera, OpenGLCamera)
         try:
             char = chr(symbol)
         except OverflowError:
@@ -1671,6 +1675,7 @@ class Scene:
         buttons: int,
         modifiers: Any,
     ):
+        assert isinstance(self.camera, OpenGLCamera)
         self.mouse_drag_point.move_to(point)
         if buttons == 1:
             self.camera.increment_theta(-d_point[0])
@@ -1687,6 +1692,7 @@ class Scene:
     def mouse_scroll_orbit_controls(
         self, point: InternalPoint3D, offset: InternalPoint3D
     ) -> None:
+        assert isinstance(self.camera, OpenGLCamera)
         camera_to_target = self.camera_target - self.camera.get_position()
         camera_to_target *= np.sign(offset[1])
         shift_vector = 0.01 * camera_to_target
@@ -1701,6 +1707,7 @@ class Scene:
         buttons: int,
         modifiers: Any,
     ) -> None:
+        assert isinstance(self.camera, OpenGLCamera)
         # Left click drag.
         if buttons == 1:
             # Translate to target the origin and rotate around the z axis.
