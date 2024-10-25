@@ -138,7 +138,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         tip_length: float | None = None,
         tip_width: float | None = None,
         at_start: bool = False,
-    ) -> tips.ArrowTip | tips.ArrowTriangleFilledTip:
+    ) -> tips.ArrowTip:
         """Stylises the tip, positions it spatially, and returns
         the newly instantiated tip to the caller.
         """
