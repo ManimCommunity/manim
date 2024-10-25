@@ -8,7 +8,7 @@ from typing import Any
 
 from typing_extensions import Self
 
-from manim import config, logger
+from manim import logger
 from manim.constants import *
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import RoundedRectangle
@@ -43,21 +43,29 @@ class SurroundingRectangle(RoundedRectangle):
 
     def __init__(
         self,
-        mobject: Mobject,
+        *mobjects: Mobject,
         color: ParsableManimColor = YELLOW,
         buff: float = SMALL_BUFF,
         corner_radius: float = 0.0,
         **kwargs,
     ) -> None:
+        from manim.mobject.mobject import Group
+
+        if not all(isinstance(mob, Mobject) for mob in mobjects):
+            raise TypeError(
+                "SurroundingRectangle positional arguments can only be of type Mobject"
+            )
+
+        group = Group(*mobjects)
         super().__init__(
             color=color,
-            width=mobject.width + 2 * buff,
-            height=mobject.height + 2 * buff,
+            width=group.width + 2 * buff,
+            height=group.height + 2 * buff,
             corner_radius=corner_radius,
             **kwargs,
         )
         self.buff = buff
-        self.move_to(mobject)
+        self.move_to(group)
 
 
 class BackgroundRectangle(SurroundingRectangle):
@@ -87,7 +95,7 @@ class BackgroundRectangle(SurroundingRectangle):
 
     def __init__(
         self,
-        mobject: Mobject,
+        *mobjects: Mobject,
         color: ParsableManimColor | None = None,
         stroke_width: float = 0,
         stroke_opacity: float = 0,
@@ -95,11 +103,8 @@ class BackgroundRectangle(SurroundingRectangle):
         buff: float = 0,
         **kwargs,
     ):
-        if color is None:
-            color = config.background_color
-
         super().__init__(
-            mobject,
+            *mobjects,
             color=color,
             stroke_width=stroke_width,
             stroke_opacity=stroke_opacity,
