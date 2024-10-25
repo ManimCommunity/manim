@@ -115,11 +115,11 @@ class Scene:
         self.random_seed = random_seed
         self.skip_animations = skip_animations
 
-        self.animations = None
+        self.animations: list[Animation] = None
         self.stop_condition = None
         self.moving_mobjects: list[Mobject] = []
         self.static_mobjects: list[Mobject] = []
-        self.time_progression = None
+        self.time_progression: tqdm[float] = None
         self.duration = None
         self.last_t = None
         self.queue: Queue = Queue()
@@ -885,7 +885,7 @@ class Scene:
         self,
         *args: Animation | Iterable[Animation] | types.GeneratorType[Animation],
         **kwargs: Any,
-    ) -> tuple[Animation]:
+    ) -> list[Animation]:
         """
         Creates _MethodAnimations from any _AnimationBuilders and updates animation
         kwargs with kwargs passed to play().
