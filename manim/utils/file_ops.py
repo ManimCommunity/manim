@@ -28,6 +28,8 @@ from shutil import copyfile
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from manim.typing import StrPath
+
     from ..scene.scene_file_writer import SceneFileWriter
 
 from manim import __version__, config, logger
@@ -159,7 +161,7 @@ def guarantee_empty_existence(path: Path) -> Path:
 
 
 def seek_full_path_from_defaults(
-    file_name: str | Path, default_dir: Path, extensions: list[str]
+    file_name: StrPath, default_dir: Path, extensions: list[str]
 ) -> Path:
     possible_paths = [Path(file_name).expanduser()]
     possible_paths += [

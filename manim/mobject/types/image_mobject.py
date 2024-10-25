@@ -28,6 +28,8 @@ if TYPE_CHECKING:
     import numpy.typing as npt
     from typing_extensions import Self
 
+    from manim.typing import StrPath
+
 
 class AbstractImageMobject(Mobject):
     """
@@ -178,7 +180,7 @@ class ImageMobject(AbstractImageMobject):
 
     def __init__(
         self,
-        filename_or_array: str | pathlib.PurePath | npt.NDArray,
+        filename_or_array: StrPath | npt.NDArray,
         scale_to_resolution: int = QUALITIES[DEFAULT_QUALITY]["pixel_height"],
         invert: bool = False,
         image_mode: str = "RGBA",
