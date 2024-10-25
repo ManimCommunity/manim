@@ -11,6 +11,8 @@ except ImportError:
 
 
 from .. import __version__, config
+from ..renderer.cairo_renderer import CairoRenderer
+from ..renderer.opengl_renderer import OpenGLRenderer
 from ..utils.module_ops import scene_classes_from_file
 
 __all__ = ["configure_pygui"]
@@ -20,7 +22,9 @@ if dearpygui_imported:
     window = dpg.generate_uuid()
 
 
-def configure_pygui(renderer, widgets, update=True):
+def configure_pygui(
+    renderer: CairoRenderer | OpenGLRenderer, widgets, update: bool = True
+) -> None:
     if not dearpygui_imported:
         raise RuntimeError("Attempted to use DearPyGUI when it isn't imported.")
     if update:

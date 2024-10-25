@@ -35,11 +35,11 @@ class CairoRenderer:
 
     def __init__(
         self,
-        file_writer_class=SceneFileWriter,
-        camera_class=None,
-        skip_animations=False,
-        **kwargs,
-    ):
+        file_writer_class: type[SceneFileWriter] = SceneFileWriter,
+        camera_class: Camera | None = None,
+        skip_animations: bool = False,
+        **kwargs: Any,
+    ) -> None:
         # All of the following are set to EITHER the value passed via kwargs,
         # OR the value stored in the global config dict at the time of
         # _instance construction_.
@@ -265,7 +265,7 @@ class CairoRenderer:
             self.skip_animations = True
             raise EndSceneEarlyException()
 
-    def scene_finished(self, scene):
+    def scene_finished(self, scene: Scene) -> None:
         # If no animations in scene, render an image instead
         if self.num_plays:
             self.file_writer.finish()

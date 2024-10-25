@@ -216,7 +216,9 @@ class OpenGLCamera(OpenGLMobject):
 
 
 class OpenGLRenderer:
-    def __init__(self, file_writer_class=SceneFileWriter, skip_animations=False):
+    def __init__(
+        self, file_writer_class=SceneFileWriter, skip_animations=False
+    ) -> None:
         # Measured in pixel widths, used for vector graphics
         self.anti_alias_width = 1.5
         self._file_writer_class = file_writer_class
