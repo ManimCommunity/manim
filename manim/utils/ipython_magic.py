@@ -164,7 +164,7 @@ else:
 
                 file_type = mimetypes.guess_type(config["output_file"])[0]
                 embed = config["media_embed"]
-                if embed is None:
+                if not embed:
                     # videos need to be embedded when running in google colab.
                     # do this automatically in case config.media_embed has not been
                     # set explicitly.

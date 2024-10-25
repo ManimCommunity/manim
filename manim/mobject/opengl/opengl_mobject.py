@@ -264,7 +264,7 @@ class OpenGLMobject:
         """
         self.set_color(self.color, self.opacity)
 
-    def init_points(self):
+    def init_points(self) -> object:
         """Initializes :attr:`points` and therefore the shape.
 
         Gets called upon creation. This is an empty method that can be implemented by
