@@ -699,6 +699,8 @@ class ManimConfig(MutableMapping):
         if val:
             self.quality = _determine_quality(val)
 
+        self.groups = parser["CLI"].get("groups", fallback="", raw=True) or []
+
         return self
 
     def digest_args(self, args: argparse.Namespace) -> Self:
