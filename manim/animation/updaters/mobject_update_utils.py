@@ -30,7 +30,7 @@ if TYPE_CHECKING:
     from manim.animation.animation import Animation
 
     MobjectT = TypeVar("MobjectT", bound=Mobject)
-    MethodArgs = ParamSpec("MethodParams")
+    MethodArgs = ParamSpec("MethodArgs")
 
     class MobjectMethod(Protocol[MobjectT, MethodArgs]):
         __self__: MobjectT
