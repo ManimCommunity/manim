@@ -6,7 +6,6 @@ class Test(Scene):
 
     @group
     def first_section(self) -> None:
-        print("hello")
         line = Line()
         line.add_updater(lambda m, dt: m.rotate(PI * dt))
         t = Tex(r"Math! $\sum e^{i\theta}$").add_updater(lambda m: m.next_to(line, UP))
@@ -51,5 +50,4 @@ if __name__ == "__main__":
             "disable_caching_warning": True,
         }
     ):
-        print(config.groups)
         Manager(Test).render()

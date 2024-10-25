@@ -175,7 +175,6 @@ class Manager(Generic[Scene_co]):
 
     def construct(self) -> None:
         if not self.scene.groups_api:
-            print("h")
             self.scene.construct()
             return
 
