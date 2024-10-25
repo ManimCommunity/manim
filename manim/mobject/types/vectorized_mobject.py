@@ -2059,7 +2059,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
 
     """
 
-    def __init__(self, *vmobjects: Any, **kwargs: Any) -> None:
+    def __init__(self, *vmobjects: VMobject, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.add(*vmobjects)
 

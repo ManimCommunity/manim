@@ -35,7 +35,7 @@ if TYPE_CHECKING:
     import numpy.typing as npt
     from typing_extensions import Self
 
-    from manim.typing import Point3D, Vector3D
+    from manim.typing import ManimFloat, Point3D, Vector3D
 
 
 class PMobject(Mobject, metaclass=ConvertToOpenGL):
@@ -76,7 +76,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         self.points = np.zeros((0, 3))
         return self
 
-    def get_array_attrs(self) -> list[Any]:
+    def get_array_attrs(self) -> list[str]:
         return super().get_array_attrs() + ["rgbas"]
 
     def add_points(
@@ -170,7 +170,9 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
             )
         return self
 
-    def sort_points(self, function: Callable[[Any], float] = lambda p: p[0]) -> Self:
+    def sort_points(
+        self, function: Callable[[npt.NDArray[ManimFloat]], float] = lambda p: p[0]
+    ) -> Self:
         """Function is any map from R^3 to R"""
         for mob in self.family_members_with_points():
             indices = np.argsort(np.apply_along_axis(function, 1, mob.points))
@@ -232,7 +234,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         )
         return self
 
-    def pointwise_become_partial(self, mobject: Mobject, a: Any, b: Any) -> None:
+    def pointwise_become_partial(self, mobject: Mobject, a: float, b: float) -> None:
         lower_index, upper_index = (int(x * mobject.get_num_points()) for x in (a, b))
         for attr in self.get_array_attrs():
             full_array = getattr(mobject, attr)
