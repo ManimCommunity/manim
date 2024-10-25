@@ -94,7 +94,7 @@ class Line(TipableVMobject):
             arc = ArcBetweenPoints(self.start, self.end, angle=self.path_arc)
             self.set_points(arc.points)
         else:
-            self.set_points_as_corners(np.array([self.start, self.end]))
+            self.set_points_as_corners(np.asarray([self.start, self.end]))
 
         self._account_for_buff(buff)
 

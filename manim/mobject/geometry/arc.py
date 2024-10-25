@@ -655,8 +655,8 @@ class Circle(Arc):
                     self.add(NumberPlane(), circle, dots)
         """
         center = line_intersection(
-            perpendicular_bisector([np.array(p1), np.array(p2)]),
-            perpendicular_bisector([np.array(p2), np.array(p3)]),
+            perpendicular_bisector([np.asarray(p1), np.asarray(p2)]),
+            perpendicular_bisector([np.asarray(p2), np.asarray(p3)]),
         )
         radius: float = np.linalg.norm(p1 - center)  # type: ignore[assignment]
         return Circle(radius=radius, **kwargs).shift(center)
