@@ -1301,6 +1301,7 @@ class Scene:
         self.time_progression.close()
 
     def check_interactive_embed_is_valid(self) -> bool:
+        assert isinstance(self.renderer, OpenGLRenderer)
         if config["force_window"]:
             return True
         if self.skip_animation_preview:
@@ -1404,6 +1405,7 @@ class Scene:
     def interact(
         self, shell: InteractiveShellEmbed, keyboard_thread: threading.Thread
     ) -> None:
+        assert isinstance(self.renderer, OpenGLRenderer)
         event_handler = RerunSceneHandler(self.queue)
         file_observer = Observer()
         file_observer.schedule(event_handler, config["input_file"], recursive=True)
@@ -1481,6 +1483,7 @@ class Scene:
             self.renderer.window.destroy()
 
     def embed(self) -> None:
+        assert isinstance(self.renderer, OpenGLRenderer)
         if not config["preview"]:
             logger.warning("Called embed() while no preview window is available.")
             return

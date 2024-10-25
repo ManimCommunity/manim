@@ -91,6 +91,7 @@ class ThreeDScene(Scene):
             The new center of the camera frame in cartesian coordinates.
 
         """
+        assert isinstance(self.renderer.camera, ThreeDCamera)
         if phi is not None:
             self.renderer.camera.set_phi(phi)
         if theta is not None:
@@ -187,6 +188,7 @@ class ThreeDScene(Scene):
             The azimutal angle the camera should move around. Defaults
             to the current theta angle.
         """
+        assert isinstance(self.renderer.camera, ThreeDCamera)
         if origin_theta is None:
             origin_theta = self.renderer.camera.theta_tracker.get_value()
         if origin_phi is None:
@@ -214,6 +216,7 @@ class ThreeDScene(Scene):
 
     def stop_3dillusion_camera_rotation(self) -> None:
         """This method stops all illusion camera rotations."""
+        assert isinstance(self.renderer.camera, ThreeDCamera)
         self.renderer.camera.theta_tracker.clear_updaters()
         self.remove(self.renderer.camera.theta_tracker)
         self.renderer.camera.phi_tracker.clear_updaters()
@@ -330,6 +333,7 @@ class ThreeDScene(Scene):
         *animations
             The animations whose mobjects will be checked.
         """
+        assert isinstance(self.renderer.camera, ThreeDCamera)
         moving_mobjects = super().get_moving_mobjects(*animations)
         camera_mobjects = self.renderer.camera.get_value_trackers() + [
             self.renderer.camera._frame_center,
@@ -356,6 +360,7 @@ class ThreeDScene(Scene):
                 use_static_center_func : bool
                 center_func : function
         """
+        assert isinstance(self.renderer.camera, ThreeDCamera)
         if config.renderer == RendererType.CAIRO:
             self.add(*mobjects)
             self.renderer.camera.add_fixed_orientation_mobjects(*mobjects, **kwargs)
@@ -399,6 +404,7 @@ class ThreeDScene(Scene):
         *mobjects
             The Mobjects whose orientation must be unfixed.
         """
+        assert isinstance(self.renderer.camera, ThreeDCamera)
         if config.renderer == RendererType.CAIRO:
             self.renderer.camera.remove_fixed_orientation_mobjects(*mobjects)
         elif config.renderer == RendererType.OPENGL:
@@ -418,6 +424,7 @@ class ThreeDScene(Scene):
         *mobjects
             The Mobjects whose position and orientation must be unfixed.
         """
+        assert isinstance(self.renderer.camera, ThreeDCamera)
         if config.renderer == RendererType.CAIRO:
             self.renderer.camera.remove_fixed_in_frame_mobjects(*mobjects)
         elif config.renderer == RendererType.OPENGL:
@@ -488,6 +495,7 @@ class SpecialThreeDScene(ThreeDScene):
         },
         **kwargs: Any,
     ) -> None:
+        assert isinstance(self.renderer.camera, ThreeDCamera)
         self.cut_axes_at_radius = cut_axes_at_radius
         self.camera_config = camera_config
         self.three_d_axes_config = three_d_axes_config
