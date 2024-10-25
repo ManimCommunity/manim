@@ -82,7 +82,9 @@ class LabeledLine(Line):
         if isinstance(label, str):
             from manim import MathTex
 
-            rendered_label = MathTex(label, color=label_color, font_size=font_size)  # type: Union[Tex, MathTex, Text]
+            rendered_label: Tex | MathTex | Text = MathTex(
+                label, color=label_color, font_size=font_size
+            )
         else:
             rendered_label = label
 
