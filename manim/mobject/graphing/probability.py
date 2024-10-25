@@ -309,7 +309,8 @@ class BarChart(Axes):
         if self.bar_names is not None:
             self._add_x_axis_labels()
 
-        self.y_axis.add_numbers()
+        if self.y_axis.include_numbers:
+            self.y_axis.add_numbers()
 
     def _update_colors(self):
         """Initialize the colors of the bars of the chart.
