@@ -724,7 +724,8 @@ class LinearTransformationScene(VectorScene):
         """
         self.add_special_mobjects(self.background_mobjects, *mobjects)
 
-    # TODO, this conflicts with Scene.add_fore
+    # TODO, this conflicts with Scene.add_foreground_mobject
+    # Please be aware that there is also the method Scene.add_foreground_mobjects.
     def add_foreground_mobject(self, *mobjects: Mobject) -> None:
         """
         Adds the mobjects to the special list

@@ -15,7 +15,7 @@ from typing import TYPE_CHECKING, Any
 
 import av
 import numpy as np
-import srt
+import srt  # type: ignore[import-untyped]
 from PIL import Image
 from pydub import AudioSegment
 

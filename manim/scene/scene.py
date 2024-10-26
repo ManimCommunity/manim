@@ -1814,7 +1814,7 @@ class Scene:
             )
             self.camera_target += total_shift_vector
 
-    def set_key_function(self, char: int, func: Callable[[None], Any]) -> None:
+    def set_key_function(self, char: str, func: Callable[[None], Any]) -> None:
         self.key_to_function_map[char] = func
 
     def on_mouse_press(

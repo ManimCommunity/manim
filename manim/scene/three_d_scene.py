@@ -31,6 +31,8 @@ from ..utils.config_ops import merge_dicts_recursively
 if TYPE_CHECKING:
     from typing_extensions import Any
 
+    from ..renderer.opengl_renderer import OpenGLCamera
+
 
 class ThreeDScene(Scene):
     """
@@ -133,7 +135,7 @@ class ThreeDScene(Scene):
                 x.add_updater(lambda m, dt: x.increment_value(rate * dt))
                 self.add(x)
             elif config.renderer == RendererType.OPENGL:
-                cam: ThreeDCamera = self.camera
+                cam: OpenGLCamera = self.camera
                 methods = {
                     "theta": cam.increment_theta,
                     "phi": cam.increment_phi,
@@ -263,7 +265,6 @@ class ThreeDScene(Scene):
         anims = []
 
         if config.renderer == RendererType.CAIRO:
-            self.camera: ThreeDCamera
             value_tracker_pairs = [
                 (phi, self.camera.phi_tracker),
                 (theta, self.camera.theta_tracker),

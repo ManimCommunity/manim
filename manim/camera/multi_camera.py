@@ -5,7 +5,7 @@ from __future__ import annotations
 __all__ = ["MultiCamera"]
 
 
-from manim.mobject.types.image_mobject import ImageMobject
+from manim.mobject.types.image_mobject import ImageMobject, ImageMobjectFromCamera
 
 from ..camera.moving_camera import MovingCamera
 from ..utils.iterables import list_difference_update
@@ -38,7 +38,9 @@ class MultiCamera(MovingCamera):
         )
         super().__init__(**kwargs)
 
-    def add_image_mobject_from_camera(self, image_mobject_from_camera: ImageMobject):
+    def add_image_mobject_from_camera(
+        self, image_mobject_from_camera: ImageMobjectFromCamera
+    ):
         """Adds an ImageMobject that's been obtained from the camera
         into the list ``self.image_mobject_from_cameras``
 
