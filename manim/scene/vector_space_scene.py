@@ -333,10 +333,10 @@ class VectorScene(Scene):
             if not rotate:
                 label.rotate(-angle, about_point=ORIGIN)
             if direction == "left":
-                temp_shift_1: InternalPoint3D = label.get_bottom()
+                temp_shift_1: InternalPoint3D = np.asarray(label.get_bottom())
                 label.shift(-temp_shift_1 + 0.1 * UP)
             else:
-                temp_shift_2: InternalPoint3D = label.get_top()
+                temp_shift_2: InternalPoint3D = np.asarray(label.get_top())
                 label.shift(-temp_shift_2 + 0.1 * DOWN)
             label.rotate(angle, about_point=ORIGIN)
             label.shift((vector.get_end() - vector.get_start()) / 2)
@@ -1107,6 +1107,8 @@ class LinearTransformationScene(VectorScene):
             The animation of the movement.
         """
         for label in self.transformable_labels:
+            # TODO: This location and lines 933 and 335 are the only locations in
+            # the code where the target_text property is referenced.
             target_text: MathTex | str = label.target_text
             label.target = self.get_vector_label(
                 label.vector.target, target_text, **label.kwargs

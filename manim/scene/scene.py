@@ -105,7 +105,7 @@ class Scene:
     def __init__(
         self,
         renderer: CairoRenderer | OpenGLRenderer | None = None,
-        camera_class: Camera = Camera,
+        camera_class: type[Camera] = Camera,
         always_update_mobjects: bool = False,
         random_seed: int | None = None,
         skip_animations: bool = False,
@@ -115,13 +115,14 @@ class Scene:
         self.random_seed = random_seed
         self.skip_animations = skip_animations
 
-        self.animations: list[Animation] = None
-        self.stop_condition = None
+        # TODO: We should probably change the default value to the empty list.
+        self.animations: list[Animation] | None = None
+        self.stop_condition: Callable[[], bool] | None = None
         self.moving_mobjects: list[Mobject] = []
         self.static_mobjects: list[Mobject] = []
         self.time_progression: tqdm[float] = None
-        self.duration = None
-        self.last_t = None
+        self.duration: float | None = None
+        self.last_t: float | None = None
         self.queue: Queue = Queue()
         self.skip_animation_preview = False
         self.meshes: list[Object3D] = []
@@ -474,7 +475,7 @@ class Scene:
             self.remove(*new_meshes)
             self.meshes += new_meshes
         elif config.renderer == RendererType.CAIRO:
-            mobjects = [*mobjects, *self.foreground_mobjects]
+            mobjects: list[Mobject] = [*mobjects, *self.foreground_mobjects]
             self.restructure_mobjects(to_remove=mobjects)
             self.mobjects += mobjects
             if self.moving_mobjects:

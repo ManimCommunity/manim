@@ -119,7 +119,7 @@ class MovingCameraScene(Scene):
     """
 
     def __init__(
-        self, camera_class: MovingCamera = MovingCamera, **kwargs: Any
+        self, camera_class: type[MovingCamera] = MovingCamera, **kwargs: Any
     ) -> None:
         super().__init__(camera_class=camera_class, **kwargs)
 

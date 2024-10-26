@@ -25,7 +25,6 @@ from ..camera.three_d_camera import ThreeDCamera
 from ..constants import DEGREES, RendererType
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VectorizedPoint, VGroup
-from ..renderer.opengl_renderer import OpenGLCamera
 from ..scene.scene import Scene
 from ..utils.config_ops import merge_dicts_recursively
 
@@ -134,7 +133,7 @@ class ThreeDScene(Scene):
                 x.add_updater(lambda m, dt: x.increment_value(rate * dt))
                 self.add(x)
             elif config.renderer == RendererType.OPENGL:
-                cam: OpenGLCamera = self.camera
+                cam: ThreeDCamera = self.camera
                 methods = {
                     "theta": cam.increment_theta,
                     "phi": cam.increment_phi,
@@ -278,7 +277,7 @@ class ThreeDScene(Scene):
             if frame_center is not None:
                 anims.append(self.camera._frame_center.animate.move_to(frame_center))
         elif config.renderer == RendererType.OPENGL:
-            cam: OpenGLCamera = self.camera
+            cam: ThreeDCamera = self.camera
             cam2 = cam.copy()
             methods = {
                 "theta": cam2.set_theta,
@@ -365,7 +364,7 @@ class ThreeDScene(Scene):
             self.add(*mobjects)
             self.renderer.camera.add_fixed_orientation_mobjects(*mobjects, **kwargs)
         elif config.renderer == RendererType.OPENGL:
-            mob: OpenGLMobject
+            mob: Mobject
             for mob in mobjects:
                 mob.fix_orientation()
                 self.add(mob)
@@ -387,7 +386,7 @@ class ThreeDScene(Scene):
             self.camera: ThreeDCamera
             self.camera.add_fixed_in_frame_mobjects(*mobjects)
         elif config.renderer == RendererType.OPENGL:
-            mob: OpenGLMobject
+            mob: Mobject
             for mob in mobjects:
                 mob.fix_in_frame()
                 self.add(mob)
@@ -408,7 +407,7 @@ class ThreeDScene(Scene):
         if config.renderer == RendererType.CAIRO:
             self.renderer.camera.remove_fixed_orientation_mobjects(*mobjects)
         elif config.renderer == RendererType.OPENGL:
-            mob: OpenGLMobject
+            mob: Mobject
             for mob in mobjects:
                 mob.unfix_orientation()
                 self.remove(mob)
@@ -428,7 +427,7 @@ class ThreeDScene(Scene):
         if config.renderer == RendererType.CAIRO:
             self.renderer.camera.remove_fixed_in_frame_mobjects(*mobjects)
         elif config.renderer == RendererType.OPENGL:
-            mob: OpenGLMobject
+            mob: Mobject
             for mob in mobjects:
                 mob.unfix_from_frame()
                 self.remove(mob)
