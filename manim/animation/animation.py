@@ -12,7 +12,7 @@ from typing_extensions import Self, TypeVar, assert_never
 
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 
-from .. import logger
+from .. import config, logger
 from ..mobject import mobject
 from ..mobject.mobject import Mobject
 from ..mobject.opengl import opengl_mobject
@@ -148,7 +148,6 @@ class Animation(AnimationProtocol):
         **kwargs,
     ) -> None:
         self._typecheck_input(mobject)
-        self.run_time: float = run_time
         self.rate_func: Callable[[float], float] = rate_func
         self.reverse_rate_function: bool = reverse_rate_function
         self.name: str = name
@@ -175,6 +174,32 @@ class Animation(AnimationProtocol):
                     "Please use keyword arguments instead.",
                 ),
             )
+
+        self.run_time: float = run_time
+
+    @property
+    def run_time(self) -> float:
+        return self._run_time
+
+    @run_time.setter
+    def run_time(self, new_run_time: float) -> None:
+        if new_run_time <= 0:
+            raise ValueError(
+                f"{self} has a run_time of <= 0 seconds which Manim cannot render. "
+                "Please set the run_time to be positive."
+            )
+
+        # config.frame_rate holds the number of frames per second
+        frame_rate = 1 / config.frame_rate
+        if new_run_time < frame_rate:
+            logger.warning(
+                f"Original run time of {self} is shorter than current frame "
+                f"rate (1 frame every {frame_rate:.2f} sec.) which cannot be rendered. "
+                "Rendering with the shortest possible duration instead."
+            )
+            self._run_time = frame_rate
+        else:
+            self._run_time = new_run_time
 
     def _typecheck_input(self, mobject: Mobject | OpenGLMobject | None) -> None:
         if mobject is None:

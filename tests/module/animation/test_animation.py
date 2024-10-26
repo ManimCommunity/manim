@@ -10,18 +10,14 @@ from manim import FadeIn, Manager, Scene
     [0, -1],
 )
 def test_animation_forbidden_run_time(run_time):
-    manager = Manager(Scene)
-    test_scene = manager.scene
     with pytest.raises(ValueError, match="Please set the run_time to be positive"):
-        test_scene.play(FadeIn(None, run_time=run_time))
+        FadeIn(None, run_time=run_time)
 
 
 def test_animation_run_time_shorter_than_frame_rate(manim_caplog, config):
-    manager = Manager(Scene)
-    test_scene = manager.scene
-    test_scene.play(FadeIn(None, run_time=1 / (config.frame_rate + 1)))
+    FadeIn(None, run_time=1 / (config.frame_rate + 1))
     assert (
-        "Original run time of FadeIn(Mobject) is shorter than current frame rate"
+        "Original run time of FadeIn(OpenGLMobject) is shorter than current frame rate"
         in manim_caplog.text
     )
 
