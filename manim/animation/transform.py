@@ -49,6 +49,8 @@ from ..utils.paths import path_along_arc, path_along_circles
 from ..utils.rate_functions import smooth, squish_rate_func
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ..scene.scene import Scene
 
 
@@ -615,7 +617,9 @@ class Restore(ApplyMethod):
 
 
 class ApplyFunction(Transform):
-    def __init__(self, function: types.MethodType, mobject: Mobject, **kwargs) -> None:
+    def __init__(
+        self, function: Callable[[Any], Any], mobject: Mobject, **kwargs: Any
+    ) -> None:
         self.function = function
         super().__init__(mobject, **kwargs)
 

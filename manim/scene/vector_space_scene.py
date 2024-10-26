@@ -130,7 +130,9 @@ class VectorScene(Scene):
         self.add(axes)
 
         self.renderer.update_frame()
-        self.renderer.camera = Camera(self.renderer.get_frame())
+        # TODO: To fix a type error, the output from get_frame() is
+        # sent to the background parameter of the Camera constructor.
+        self.renderer.camera = Camera(background=self.renderer.get_frame())
         self.clear()
 
     def get_vector(
@@ -194,7 +196,7 @@ class VectorScene(Scene):
             The arrow representing the vector.
         """
         if not isinstance(vector, Arrow):
-            vector = Vector(vector, color=color, **kwargs)
+            vector = Vector(np.asarray(vector), color=color, **kwargs)
         if animate:
             self.play(GrowArrow(vector))
         self.add(vector)
@@ -245,7 +247,11 @@ class VectorScene(Scene):
         """
         return VGroup(
             *(
-                Vector(vect, color=color, stroke_width=self.basis_vector_stroke_width)
+                Vector(
+                    np.asarray(vect),
+                    color=color,
+                    stroke_width=self.basis_vector_stroke_width,
+                )
                 for vect, color in [([1, 0], i_hat_color), ([0, 1], j_hat_color)]
             )
         )
