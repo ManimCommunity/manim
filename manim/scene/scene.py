@@ -352,7 +352,7 @@ class Scene:
         for mobject in self.mobjects:
             mobject.update(dt)
 
-    def update_meshes(self, dt) -> None:
+    def update_meshes(self, dt: float) -> None:
         for obj in self.meshes:
             for mesh in obj.get_family():
                 mesh.update(dt)

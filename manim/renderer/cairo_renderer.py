@@ -53,7 +53,7 @@ class CairoRenderer:
         self.time = 0
         self.static_image = None
 
-    def init_scene(self, scene):
+    def init_scene(self, scene: Scene) -> None:
         self.file_writer: Any = self._file_writer_class(
             self,
             scene.__class__.__name__,
