@@ -2,14 +2,13 @@
 
 from __future__ import annotations
 
+from manim._config import config, logger
+from manim.constants import RendererType
+from manim.mobject import mobject
+from manim.mobject.mobject import Mobject
+from manim.mobject.opengl import opengl_mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-
-from .. import config, logger
-from ..constants import RendererType
-from ..mobject import mobject
-from ..mobject.mobject import Mobject
-from ..mobject.opengl import opengl_mobject
-from ..utils.rate_functions import linear, smooth
+from manim.utils.rate_functions import linear, smooth
 
 __all__ = ["Animation", "Wait", "override_animation"]
 
@@ -194,6 +193,7 @@ class Animation:
         method.
 
         """
+        self.run_time = validate_animation_run_time(self.run_time, str(self))
         self.starting_mobject = self.create_starting_mobject()
         if self.suspend_mobject_updating:
             # All calls to self.mobject's internal updaters
@@ -568,6 +568,28 @@ def prepare_animation(
     raise TypeError(f"Object {anim} cannot be converted to an animation")
 
 
+def validate_animation_run_time(run_time: float, caller_name: str) -> float:
+    if run_time <= 0:
+        raise ValueError(
+            f"{caller_name} has a run_time of <= 0 seconds which Manim cannot render. "
+            "Please set the run_time to be positive."
+        )
+
+    # config.frame_rate holds the number of frames per second
+    frame_rate = 1 / config.frame_rate
+    if run_time < frame_rate:
+        logger.warning(
+            f"Original run time of {caller_name} is shorter than current frame "
+            f"rate (1 frame every {frame_rate:.2f} sec.) which cannot be rendered. "
+            "Rendering with the shortest possible duration instead."
+        )
+        new_run_time = frame_rate
+    else:
+        new_run_time = run_time
+
+    return new_run_time
+
+
 class Wait(Animation):
     """A "no operation" animation.
 
@@ -610,7 +632,7 @@ class Wait(Animation):
         self.mobject.shader_wrapper_list = []
 
     def begin(self) -> None:
-        pass
+        self.run_time = validate_animation_run_time(self.run_time, str(self))
 
     def finish(self) -> None:
         pass
