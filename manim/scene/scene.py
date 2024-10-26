@@ -53,6 +53,7 @@ from ..utils.iterables import list_difference_update, list_update
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
+    from types import FrameType
     from typing import Any, Callable
 
     from typing_extensions import Self
@@ -124,6 +125,9 @@ class Scene:
         self.static_mobjects: list[Mobject] = []
         self.time_progression: tqdm[float] = None
         self.duration: float | None = None
+        # TODO: We should probably change the default value to 0, to avoid
+        # handling the case where the value is None.
+        # This change triggers no errors in the unittests (pytest).
         self.last_t: float | None = None
         self.queue: Queue = Queue()
         self.skip_animation_preview = False
@@ -1221,9 +1225,11 @@ class Scene:
 
     def compile_animation_data(
         self,
-        *animations: Animation | Iterable[Animation] | types.GeneratorType[Animation],
+        *animations: Animation
+        | Iterable[Animation]
+        | types.GeneratorType[Animation, None, None],
         **play_kwargs: Any,
-    ) -> Self:
+    ) -> Self | None:
         """Given a list of animations, compile the corresponding
         static and moving mobjects, and gather the animation durations.
 
@@ -1318,6 +1324,7 @@ class Scene:
             animation.clean_up_from_scene(self)
         if not self.renderer.skip_animations:
             self.update_mobjects(0)
+        # TODO: The OpenGLRenderer does not have the property static.image.
         self.renderer.static_image = None
         # Closing the progress bar at the end of the play.
         self.time_progression.close()
@@ -1387,7 +1394,7 @@ class Scene:
 
         from IPython.core.getipython import get_ipython
         from IPython.terminal.embed import InteractiveShellEmbed
-        from traitlets.config import Config
+        from traitlets.config import Config  # type: ignore[import-untyped]
 
         cfg = Config()
         cfg.TerminalInteractiveShell.confirm_exit = False
@@ -1529,7 +1536,9 @@ class Scene:
 
         # Use the locals of the caller as the local namespace
         # once embedded, and add a few custom shortcuts.
-        local_ns = inspect.currentframe().f_back.f_locals
+        current_frame = inspect.currentframe()
+        assert isinstance(current_frame, FrameType)
+        local_ns = current_frame.f_back.f_locals
         # local_ns["touch"] = self.interact
         for method in (
             "play",
