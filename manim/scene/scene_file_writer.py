@@ -25,8 +25,6 @@ from manim.typing import PixelArray
 from .. import config, logger
 from .._config.logger_utils import set_file_logger
 from ..constants import RendererType
-from ..renderer.cairo_renderer import CairoRenderer
-from ..renderer.opengl_renderer import OpenGLRenderer
 from ..utils.file_ops import (
     add_extension_if_not_present,
     add_version_before_extension,
@@ -40,6 +38,7 @@ from ..utils.sounds import get_full_sound_file_path
 from .section import DefaultSectionType, Section
 
 if TYPE_CHECKING:
+    from manim.renderer.cairo_renderer import CairoRenderer
     from manim.renderer.opengl_renderer import OpenGLRenderer
 
 
