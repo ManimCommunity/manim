@@ -241,6 +241,7 @@ class Scene:
             pass
         except RerunSceneException:
             self.remove(*self.mobjects)
+            # TODO: The CairoRenderer does not have the method clear_screen()
             self.renderer.clear_screen()
             self.renderer.num_plays = 0
             return True
@@ -264,6 +265,8 @@ class Scene:
 
         if config["preview"] or config["show_in_file_browser"]:
             open_media_file(self.renderer.file_writer)
+
+        # TODO: What value should the function return when it reaches this point?
 
     def setup(self) -> None:
         """
@@ -394,7 +397,9 @@ class Scene:
 
         This is only called when a single Wait animation is played.
         """
+        assert isinstance(self.animations, list)
         wait_animation = self.animations[0]
+        assert isinstance(wait_animation, Wait)
         if wait_animation.is_static_wait is None:
             should_update = (
                 self.always_update_mobjects
@@ -468,7 +473,7 @@ class Scene:
         """
         if config.renderer == RendererType.OPENGL:
             new_mobjects = []
-            new_meshes = []
+            new_meshes: list[Object3D] = []
             for mobject_or_mesh in mobjects:
                 if isinstance(mobject_or_mesh, Object3D):
                     new_meshes.append(mobject_or_mesh)
@@ -479,15 +484,18 @@ class Scene:
             self.remove(*new_meshes)
             self.meshes += new_meshes
         elif config.renderer == RendererType.CAIRO:
-            mobjects: list[Mobject] = [*mobjects, *self.foreground_mobjects]
-            self.restructure_mobjects(to_remove=mobjects)
-            self.mobjects += mobjects
+            new_and_foreground_mobjects: list[Mobject] = [
+                *mobjects,
+                *self.foreground_mobjects,
+            ]
+            self.restructure_mobjects(to_remove=new_and_foreground_mobjects)
+            self.mobjects += new_and_foreground_mobjects
             if self.moving_mobjects:
                 self.restructure_mobjects(
-                    to_remove=mobjects,
+                    to_remove=new_and_foreground_mobjects,
                     mobject_list_name="moving_mobjects",
                 )
-                self.moving_mobjects += mobjects
+                self.moving_mobjects += new_and_foreground_mobjects
         return self
 
     def add_mobjects_from_animations(self, animations: list[Animation]) -> None:
@@ -515,7 +523,7 @@ class Scene:
         """
         if config.renderer == RendererType.OPENGL:
             mobjects_to_remove = []
-            meshes_to_remove = set()
+            meshes_to_remove: set[Object3D] = set()
             for mobject_or_mesh in mobjects:
                 if isinstance(mobject_or_mesh, Object3D):
                     meshes_to_remove.add(mobject_or_mesh)
@@ -892,7 +900,10 @@ class Scene:
 
     def compile_animations(
         self,
-        *args: Animation | Iterable[Animation] | types.GeneratorType[Animation],
+        # TODO: Consider to remove the part with the types.GeneratorType
+        *args: Animation
+        | Iterable[Animation]
+        | types.GeneratorType[Animation, None, None],
         **kwargs: Any,
     ) -> list[Animation]:
         """
@@ -1074,7 +1085,9 @@ class Scene:
 
     def play(
         self,
-        *args: Animation | Iterable[Animation] | types.GeneratorType[Animation],
+        *args: Animation
+        | Iterable[Animation]
+        | types.GeneratorType[Animation, None, None],
         subcaption: str | None = None,
         subcaption_duration: float | None = None,
         subcaption_offset: float = 0,
@@ -1686,7 +1699,7 @@ class Scene:
         d_point: InternalPoint3D,
         buttons: int,
         modifiers: Any,
-    ):
+    ) -> None:
         assert isinstance(self.camera, OpenGLCamera)
         self.mouse_drag_point.move_to(point)
         if buttons == 1:
