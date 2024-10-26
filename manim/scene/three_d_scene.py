@@ -310,8 +310,8 @@ class ThreeDScene(Scene):
                     "focal distance of OpenGLCamera can not be adjusted.",
                     stacklevel=2,
                 )
-
-            anims += [Transform(cam, cam2)]
+            # TODO: Clarify if the mapping below is correct (mobject = cam and taget_mobject = cam2)
+            anims += [Transform(mobject=cam, target_mobject=cam2)]
 
         self.play(chain(*anims, added_anims), **kwargs)
 

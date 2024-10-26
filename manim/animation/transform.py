@@ -518,7 +518,7 @@ class ApplyPointwiseFunction(ApplyMethod):
 
     def __init__(
         self,
-        function: types.MethodType,
+        function: Callable,
         mobject: Mobject,
         run_time: float = DEFAULT_POINTWISE_FUNCTION_RUN_TIME,
         **kwargs,

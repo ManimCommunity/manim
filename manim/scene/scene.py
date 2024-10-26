@@ -116,6 +116,8 @@ class Scene:
         self.skip_animations = skip_animations
 
         # TODO: We should probably change the default value to the empty list.
+        # This would remove several type issues, but it also triggers a lot of
+        # errors in the unittests (pytest)
         self.animations: list[Animation] | None = None
         self.stop_condition: Callable[[], bool] | None = None
         self.moving_mobjects: list[Mobject] = []
@@ -145,6 +147,8 @@ class Scene:
 
         if renderer is None:
             self.renderer: CairoRenderer | OpenGLRenderer = CairoRenderer(
+                # TODO: Is it a suitable approach to make an instance of
+                # the self.camera_class here?
                 camera_class=self.camera_class,
                 skip_animations=self.skip_animations,
             )
@@ -521,8 +525,12 @@ class Scene:
                 self.mobjects,
                 mobjects_to_remove,
             )
+
+            def lambda_function(mesh: Object3D) -> bool:
+                return mesh not in set(meshes_to_remove)
+
             self.meshes = list(
-                filter(lambda mesh: mesh not in set(meshes_to_remove), self.meshes),
+                filter(lambda_function, self.meshes),
             )
             return self
         elif config.renderer == RendererType.CAIRO:
@@ -667,7 +675,7 @@ class Scene:
         return self
 
     def get_restructured_mobject_list(
-        self, mobjects: list[Mobject], to_remove: list[Mobject]
+        self, mobjects: list[Mobject], to_remove: Sequence[Mobject]
     ) -> list[Mobject]:
         """
         Given a list of mobjects and a list of mobjects to be removed, this
