@@ -55,14 +55,19 @@ The following pages show how to install Manim in a conda environment:
    installation/conda
 
 
+
 .. _local-installation:
 
 Installing Manim locally
 ************************
 
+Check out :doc:`this page <installation/local>` if you want to install Manim
+on your local machine.
 
-.. include:: installation/local.rst
+.. toctree::
+   :hidden:
 
+   installation/local
 
 
 .. _docker-installation:

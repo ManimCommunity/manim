@@ -1,24 +1,57 @@
+Installing Manim on all Operating Systems
+*****************************************
+
+
 Manim is a Python library, and it can be
 installed via `pip <https://pypi.org/project/manim/>`__
 or `conda <https://anaconda.org/conda-forge/manim/>`__. However,
 in order for Manim to work properly, some additional system
 dependencies need to be installed first.
 
-Manim requires Python version ``3.9`` or above to run.
+If you are new to programming or to Python, we recommend installing
+a tool called `uv <https://docs.astral.sh/uv/#getting-started>`__ for using Manim.
 
-.. hint::
+.. tip::
 
-   Depending on your particular setup, the installation process
-   might be slightly different. Make sure that you have tried to
-   follow the steps on the following pages carefully, but in case
-   you hit a wall we are happy to help: either `join our Discord
-   <https://www.manim.community/discord/>`__, or start a new
-   Discussion `directly on GitHub
-   <https://github.com/ManimCommunity/manim/discussions>`__.
+   If you're on Windows and you get an error about running an untrusted script, you
+   can run the following command to allow the script to run::
+
+     Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+The instructions given below assume that you have ``uv`` installed.
+
+.. tip::
+
+   On some Linux distributions, you can install ``uv`` via the package manager.
+
+   .. tab-set::
+       :sync-group: linux-package-manager
+
+       .. tab-item:: dnf
+           :sync: dnf
+
+           .. code-block::
+
+              sudo dnf install uv
+
+       .. tab-item:: pacman
+           :sync: pacman
+
+           .. code-block::
+
+              sudo pacman -S uv
 
 
-The installation of Manim is OS dependent, so please follow
-the instructions for your operating system.
+
+Depending on your particular setup, the installation process
+might be slightly different. Make sure that you have tried to
+follow the steps on the following page carefully, but in case
+you hit a wall, we are happy to help: either `join our Discord
+<https://www.manim.community/discord/>`__ and ask in ``#help-forum``, or start a new
+Discussion `directly on GitHub
+<https://github.com/ManimCommunity/manim/discussions>`__.
+
+
 
 .. tab-set::
     :sync-group: operating-system
@@ -26,53 +59,24 @@ the instructions for your operating system.
     .. tab-item:: Windows
         :sync: windows
 
-        Manim requires a Python version of at least ``3.9`` to run.
-        If you're not sure if you have python installed, or want to check
-        what version of Python you have, try running::
+        Manim requires at least python ``3.9``. To check if a python satisfies this requirement, run::
 
-          python --version
+            uv python find ">=3.9"
 
-        If it errors out, you most likely don't have Python installed. Otherwise, if your
-        python version is ``3.9`` or higher, you can skip the next step and proceed to pip installing Manim.
+        If ``uv`` does not find a python installation that satisfies the requirement, you can run::
 
-        If you don't have Python installed, head over to https://www.python.org, download an installer
-        for a recent (preferably the latest) version of Python, and follow its instructions to get Python
-        installed on your system.
-
-        .. note::
-
-          We have received reports of problems caused by using the version of
-          Python that can be installed from the Windows Store. At this point,
-          we recommend staying away from the Windows Store version. Instead,
-          install Python directly from the `official website <https://www.python.org>`__.
-
-        After installing Python, running the command::
-
-          python --version
-
-        Should be successful. If it is not, try checking out :ref:`this FAQ entry<not-on-path>`.
-
-        At this point, installing manim should be as easy as running::
-
-          python -m pip install manim
-
-        To confirm Manim is working, you can run::
-
-          manim --version
-
-
+            uv python install
 
     .. tab-item:: macOS
         :sync: macos
 
-        The easiest way to install Manim on macOS is via the popular `package manager Homebrew <https://brew.sh>`__.
-        If you want to use Homebrew but do not have it installed yet, please
-        follow `Homebrew's installation instructions <https://docs.brew.sh/Installation>`__.
+        Manim requires at least python ``3.9``. To check if a python satisfies this requirement, run::
 
-        After that, you can run ``brew install manim`` and you should be all set! To confirm that your
-        Manim is working, run::
+            uv python find ">=3.9"
 
-            manim checkhealth
+        If ``uv`` does not find a python installation that satisfies the requirement, you can run::
+
+            uv python install
 
 
     .. tab-item:: Linux
@@ -86,12 +90,6 @@ the instructions for your operating system.
         - with working Cairo bindings in the form of
           `pycairo <https://cairographics.org/pycairo/>`__,
         - and `Pango <https://pango.gnome.org>`__ headers.
-
-        Then, installing Manim is just a matter of running:
-
-        .. code-block:: bash
-
-          pip3 install manim
 
         .. note::
 
@@ -116,32 +114,20 @@ the instructions for your operating system.
             .. tab-item:: apt
                 :sync: apt
 
-                First update your sources, and then install Cairo and Pango.
-
-                .. code-block:: bash
+                You will have to update your sources, and then install Cairo and Pango::
 
                   sudo apt update
-                  sudo apt install build-essential python3-dev libcairo2-dev libpango1.0-dev
-
-                If you don't have python3-pip installed, install it via:
-
-                .. code-block:: bash
-
-                  sudo apt install python3-pip
+                  sudo apt install build-essential libcairo2-dev libpango1.0-dev
 
             .. tab-item:: dnf
                 :sync: dnf
 
-                To install Cairo and Pango:
-
-                .. code-block:: bash
+                To install Cairo and Pango::
 
                   sudo dnf install cairo-devel pango-devel
 
                 In order to successfully build the ``pycairo`` wheel, you will also
-                need the Python development headers:
-
-                .. code-block:: bash
+                need the Python development headers (and a C++ compiler)::
 
                   sudo dnf install python3-devel
 
@@ -151,43 +137,41 @@ the instructions for your operating system.
                 .. tip::
 
                   Thanks to *groctel*, there is a `dedicated Manim package
-                  on the AUR! <https://aur.archlinux.org/packages/manim/>`_
+                  on the AUR! <https://aur.archlinux.org/packages/manim/>`_.
+                  If you use this, you can skip to the Optional Dependencies section.
 
                 If you don't want to use the packaged version from AUR, here is what
                 you need to do manually: Update your package sources, then install
-                Cairo and Pango:
+                Cairo and Pango::
 
-                .. code-block:: bash
+                  sudo pacman -Syu cairo pango uv
 
-                  sudo pacman -Syu cairo pango
+After that, you can install Manim with uv::
 
-                If you don't have python3-pip installed, install it via:
+  uv tool install manim
 
-                .. code-block:: bash
+You can check if Manim is installed correctly by running::
 
-                  sudo pacman -Syu python-pip
-
-        Installing python packages globally is disallowed on Linux systems. As
-        a result, you will have to create a virtual environment to install Manim::
-
-            python3 -m venv .venv
-            source .venv/bin/activate
-            manim checkhealth
-
-        You will have to activate the venv every time you want to use Manim.
-
-        .. tip::
-
-            If you use an IDE (such as VS Code or Pycharm), they will autoactivate
-            the virtual environment if you open that folder in the IDE.
+  uvx manim checkhealth
 
 After installing Manim, you may be interested in installing the optional dependencies.
 
-.. note::
+.. important::
 
-   Although these dependencies are strictly optional, we highly
-   recommend installing them as they greatly increase the capabilities of Manim.
+    In the rest of the documentation, we will use ``manim`` as a shorthand for ``uvx manim``.
 
+
+.. tip::
+
+   If you don't want to have to type ``uvx``, you can add the directory given by
+   ``uv tool dir --bin`` to your ``PATH`` environment variable::
+
+      uv tool update-shell
+
+
+
+Optional Dependencies
+~~~~~~~~~~~~~~~~~~~~~
 
 In order to make use of Manim's interface to LaTeX for, e.g., rendering
 equations, LaTeX has to be installed as well. Note that this is an optional
@@ -281,6 +265,30 @@ dependency: if you don't intend to use LaTeX, you don't have to install it.
           mathastext microtype multitoc physics preview prelim2e ragged2e relsize rsfs
           setspace standalone tipa wasy wasysym xcolor xetex xkeyval
 
+
+Basic Editor Support
+********************
+In order to get code editors like VS Code or Pycharm to find the Manim library, you will
+need to point them to the virtual environment where Manim is installed. You can find
+this directory by running::
+
+  echo $(uv tool dir)/manim
+
+For example, in VS Code, you can set the Python interpreter by hitting Ctrl+P (Windows/Linux)
+or Cmd+P (macOS) and typing ``Python: Select Interpreter``. Then you can paste the path given
+by the above command.
+
+Alternatively, if you're going to work on a project in a single directory, you can run::
+
+  uv venv
+  uv pip install manim
+
+After that, if you open your IDE in that directory, it should automatically find and use the virtual
+environment created by ``uv venv``.
+
+
+Next Steps
+**********
 
 Once Manim is installed locally, you can proceed to our
 :doc:`quickstart guide </tutorials/quickstart>` which walks you
