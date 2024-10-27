@@ -152,7 +152,7 @@ class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
         # Type inference of extracting an element from a list, is not
         # supported by numpy, see this numpy issue
         # https://github.com/numpy/numpy/issues/16544
-        return self.points[0]  # type: ignore[no-any-return]
+        return self.points[0]
 
     @property
     def vector(self) -> Vector3D:

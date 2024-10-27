@@ -145,9 +145,9 @@ class Line(TipableVMobject):
         if isinstance(mob_or_point, (Mobject, OpenGLMobject)):
             mob = mob_or_point
             if direction is None:
-                return mob.get_center()  # type: ignore[return-value]
+                return mob.get_center()
             else:
-                return mob.get_boundary_point(direction)  # type: ignore[return-value]
+                return mob.get_boundary_point(direction)
         return np.array(mob_or_point)
 
     def set_path_arc(self, new_value: float) -> None:
@@ -156,8 +156,8 @@ class Line(TipableVMobject):
 
     def put_start_and_end_on(
         self,
-        start: InternalPoint3D,  # type: ignore[override]
-        end: InternalPoint3D,  # type: ignore[override]
+        start: InternalPoint3D,
+        end: InternalPoint3D,
     ) -> Self:
         """Sets starts and end coordinates of a line.
 
@@ -309,7 +309,7 @@ class DashedLine(Line):
             array([-1.,  0.,  0.])
         """
         if len(self.submobjects) > 0:
-            return self.submobjects[0].get_start()  # type: ignore[return-value]
+            return self.submobjects[0].get_start()
         else:
             return super().get_start()
 
@@ -324,7 +324,7 @@ class DashedLine(Line):
             array([1., 0., 0.])
         """
         if len(self.submobjects) > 0:
-            return self.submobjects[-1].get_end()  # type: ignore[return-value]
+            return self.submobjects[-1].get_end()
         else:
             return super().get_end()
 
@@ -341,7 +341,7 @@ class DashedLine(Line):
         # Type inference of extracting an element from a list, is not
         # supported by numpy, see this numpy issue
         # https://github.com/numpy/numpy/issues/16544
-        return self.submobjects[0].points[1]  # type: ignore[no-any-return]
+        return self.submobjects[0].points[1]
 
     def get_last_handle(self) -> InternalPoint3D:
         """Returns the point of the last handle.
@@ -356,7 +356,7 @@ class DashedLine(Line):
         # Type inference of extracting an element from a list, is not
         # supported by numpy, see this numpy issue
         # https://github.com/numpy/numpy/issues/16544
-        return self.submobjects[-1].points[-2]  # type: ignore[no-any-return]
+        return self.submobjects[-1].points[-2]
 
 
 class TangentLine(Line):

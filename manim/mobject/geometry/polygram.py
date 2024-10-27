@@ -89,7 +89,7 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
         for vertices in vertex_groups:
             # The inferred type for *vertices is Any, but it should be
             # InternalPoint3D_Array
-            first_vertex, *vertices = vertices  # type: ignore[assignment]
+            first_vertex, *vertices = vertices
             first_vertex = np.array(first_vertex)
 
             self.start_new_path(first_vertex)
@@ -322,7 +322,7 @@ class Polygon(Polygram):
     """
 
     def __init__(self, *vertices: InternalPoint3D, **kwargs: Any) -> None:
-        super().__init__(vertices, **kwargs)  # type: ignore[arg-type]
+        super().__init__(vertices, **kwargs)
 
 
 class RegularPolygram(Polygram):
@@ -413,7 +413,7 @@ class RegularPolygram(Polygram):
 
             vertex_groups.append(group)
 
-        super().__init__(*vertex_groups, **kwargs)  # type: ignore[arg-type]
+        super().__init__(*vertex_groups, **kwargs)
 
 
 class RegularPolygon(RegularPolygram):
