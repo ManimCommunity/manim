@@ -46,7 +46,6 @@ numpy = ">=1.26"
 Pillow = ">=9.1"
 pycairo = ">=1.13,<2.0.0"
 pydub = ">=0.20.0"
-audioop-lts = { version = ">=0.2.0", python = ">=3.13" }  # for pydub
 Pygments = ">=2.0.0"
 rich = ">=12.0.0"
 scipy = [
