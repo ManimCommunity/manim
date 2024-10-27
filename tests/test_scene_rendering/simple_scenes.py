@@ -4,6 +4,21 @@ from enum import Enum
 
 from manim import *
 
+__all__ = [
+    "SquareToCircle",
+    "SceneWithMultipleCalls",
+    "SceneWithMultipleWaitCalls",
+    "NoAnimations",
+    "SceneWithStaticWait",
+    "SceneWithSceneUpdater",
+    "SceneForFrozenFrameTests",
+    "SceneWithNonStaticWait",
+    "StaticScene",
+    "InteractiveStaticScene",
+    "SceneWithSections",
+    "ElaborateSceneWithSections",
+]
+
 
 class SquareToCircle(Scene):
     def construct(self):
@@ -120,7 +135,7 @@ class SceneWithSections(Scene):
         )
         self.wait(2)
 
-        self.next_section(type=PresentationSectionType.SKIP)
+        self.next_section(section_type=PresentationSectionType.SKIP)
         self.wait()
 
         self.next_section(

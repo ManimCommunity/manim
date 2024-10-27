@@ -193,7 +193,6 @@ def rotate_vector(
     ValueError
         If vector is not of dimension 2 or 3.
     """
-
     if len(vector) > 3:
         raise ValueError("Vector must have the correct dimensions.")
     if len(vector) == 2:
@@ -249,9 +248,7 @@ def rotation_matrix(
     axis: np.ndarray,
     homogeneous: bool = False,
 ) -> np.ndarray:
-    """
-    Rotation in R^3 about a specified axis of rotation.
-    """
+    """Rotation in R^3 about a specified axis of rotation."""
     inhomogeneous_rotation_matrix = Rotation.from_rotvec(
         angle * normalize(np.array(axis))
     ).as_matrix()
@@ -341,7 +338,6 @@ def angle_between_vectors(v1: np.ndarray, v2: np.ndarray) -> float:
     float
         The angle between the vectors.
     """
-
     return 2 * np.arctan2(
         np.linalg.norm(normalize(v1) - normalize(v2)),
         np.linalg.norm(normalize(v1) + normalize(v2)),
@@ -474,12 +470,8 @@ def regular_vertices(
     start_angle : :class:`float`
         The angle the vertices start at.
     """
-
     if start_angle is None:
-        if n % 2 == 0:
-            start_angle = 0
-        else:
-            start_angle = TAU / 4
+        start_angle = 0 if n % 2 == 0 else TAU / 4
 
     start_vector = rotate_vector(RIGHT * radius, start_angle)
     vertices = compass_directions(n, start_vector)

@@ -318,22 +318,25 @@ class OpenGLMobject:
 
     def init_data(self) -> None:
         """Initializes the ``points``, ``bounding_box`` and ``rgbas`` attributes and groups them into self.data.
-        Subclasses can inherit and overwrite this method to extend `self.data`."""
+        Subclasses can inherit and overwrite this method to extend `self.data`.
+        """
         self.points = np.zeros((0, 3))
         self.bounding_box = np.zeros((3, 3))
         self.rgbas = np.zeros((1, 4))
 
-    def init_colors(self) -> None:
+    def init_colors(self) -> object:
         """Initializes the colors.
 
-        Gets called upon creation"""
+        Gets called upon creation
+        """
         self.set_color(self.color, self.opacity)
 
-    def init_points(self):
+    def init_points(self) -> object:
         """Initializes :attr:`points` and therefore the shape.
 
         Gets called upon creation. This is an empty method that can be implemented by
-        subclasses."""
+        subclasses.
+        """
         # Typically implemented in subclass, unless purposefully left blank
         pass
 
@@ -365,7 +368,6 @@ class OpenGLMobject:
 
 
         """
-
         for attr, value in kwargs.items():
             setattr(self, attr, value)
 
@@ -498,7 +500,6 @@ class OpenGLMobject:
         :meth:`length_over_dim`
 
         """
-
         # Get the length across the X dimension
         return self.length_over_dim(0)
 
@@ -536,7 +537,6 @@ class OpenGLMobject:
         :meth:`length_over_dim`
 
         """
-
         # Get the length across the Y dimension
         return self.length_over_dim(1)
 
@@ -557,7 +557,6 @@ class OpenGLMobject:
         :meth:`length_over_dim`
 
         """
-
         # Get the length across the Z dimension
         return self.length_over_dim(2)
 
@@ -872,7 +871,6 @@ class OpenGLMobject:
         update_parent
             Whether or not to set ``mobject.parent`` to ``self``.
         """
-
         if update_parent:
             mobject.parent = self
 
@@ -1348,7 +1346,8 @@ class OpenGLMobject:
             for submob in self.submobjects:
                 submob.invert(recursive=True)
         self.submobjects.reverse()
-        # Is there supposed to be an assemble_family here?
+        self.assemble_family()
+        return self
 
     # Copying
 
@@ -1869,9 +1868,7 @@ class OpenGLMobject:
             return True
         if self.get_bottom()[1] > config.frame_y_radius:
             return True
-        if self.get_top()[1] < -config.frame_y_radius:
-            return True
-        return False
+        return self.get_top()[1] < -config.frame_y_radius
 
     def stretch_about_point(self, factor: float, dim: int, point: Point3D) -> Self:
         return self.stretch(factor, dim, about_point=point)
@@ -2570,10 +2567,7 @@ class OpenGLMobject:
             if key not in mobject1.data or key not in mobject2.data:
                 continue
 
-            if key in ("points", "bounding_box"):
-                func = path_func
-            else:
-                func = interpolate
+            func = path_func if key in ("points", "bounding_box") else interpolate
 
             self.data[key][:] = func(mobject1.data[key], mobject2.data[key], alpha)
 
@@ -2648,7 +2642,6 @@ class OpenGLMobject:
                     circ.become(square)
                     self.wait(0.5)
         """
-
         if stretch:
             mobject.stretch_to_fit_height(self.height)
             mobject.stretch_to_fit_width(self.width)

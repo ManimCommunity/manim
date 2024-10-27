@@ -32,7 +32,7 @@ from manim.mobject.geometry.polygram import Square
 from manim.mobject.mobject import *
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-from manim.mobject.types.vectorized_mobject import VGroup, VMobject
+from manim.mobject.types.vectorized_mobject import VectorizedPoint, VGroup, VMobject
 from manim.utils.color import (
     ManimColor,
     ParsableManimColor,
@@ -616,17 +616,18 @@ class Cone(Surface):
             **kwargs,
         )
         # used for rotations
+        self.new_height = height
         self._current_theta = 0
         self._current_phi = 0
-
+        self.base_circle = Circle(
+            radius=base_radius,
+            color=self.fill_color,
+            fill_opacity=self.fill_opacity,
+            stroke_width=0,
+        )
+        self.base_circle.shift(height * IN)
+        self._set_start_and_end_attributes(direction)
         if show_base:
-            self.base_circle = Circle(
-                radius=base_radius,
-                color=self.fill_color,
-                fill_opacity=self.fill_opacity,
-                stroke_width=0,
-            )
-            self.base_circle.shift(height * IN)
             self.add(self.base_circle)
 
         self._rotate_to_direction()
@@ -656,14 +657,17 @@ class Cone(Surface):
             ],
         )
 
+    def get_start(self) -> np.ndarray:
+        return self.start_point.get_center()
+
+    def get_end(self) -> np.ndarray:
+        return self.end_point.get_center()
+
     def _rotate_to_direction(self) -> None:
         x, y, z = self.direction
 
         r = np.sqrt(x**2 + y**2 + z**2)
-        if r > 0:
-            theta = np.arccos(z / r)
-        else:
-            theta = 0
+        theta = np.arccos(z / r) if r > 0 else 0
 
         if x == 0:
             if y == 0:  # along the z axis
@@ -709,6 +713,15 @@ class Cone(Surface):
             The direction of the apex.
         """
         return self.direction
+
+    def _set_start_and_end_attributes(self, direction):
+        normalized_direction = direction * np.linalg.norm(direction)
+
+        start = self.base_circle.get_center()
+        end = start + normalized_direction * self.new_height
+        self.start_point = VectorizedPoint(start)
+        self.end_point = VectorizedPoint(end)
+        self.add(self.start_point, self.end_point)
 
 
 class Cylinder(Surface):
@@ -819,10 +832,7 @@ class Cylinder(Surface):
         x, y, z = self.direction
 
         r = np.sqrt(x**2 + y**2 + z**2)
-        if r > 0:
-            theta = np.arccos(z / r)
-        else:
-            theta = 0
+        theta = np.arccos(z / r) if r > 0 else 0
 
         if x == 0:
             if y == 0:  # along the z axis
@@ -885,6 +895,12 @@ class Line3D(Cylinder):
         The thickness of the line.
     color
         The color of the line.
+    resolution
+        The resolution of the line.
+        By default this value is the number of points the line will sampled at.
+        If you want the line to also come out checkered, use a tuple.
+        For example, for a line made of 24 points with 4 checker points on each
+        cylinder, pass the tuple (4, 24).
 
     Examples
     --------
@@ -905,9 +921,11 @@ class Line3D(Cylinder):
         end: np.ndarray = RIGHT,
         thickness: float = 0.02,
         color: ParsableManimColor | None = None,
+        resolution: int | Sequence[int] = 24,
         **kwargs,
     ):
         self.thickness = thickness
+        self.resolution = (2, resolution) if isinstance(resolution, int) else resolution
         self.set_start_and_end_attrs(start, end, **kwargs)
         if color is not None:
             self.set_color(color)
@@ -941,6 +959,7 @@ class Line3D(Cylinder):
             height=np.linalg.norm(self.vect),
             radius=self.thickness,
             direction=self.direction,
+            resolution=self.resolution,
             **kwargs,
         )
         self.shift((self.start + self.end) / 2)
@@ -1112,6 +1131,8 @@ class Arrow3D(Line3D):
         The base radius of the conical tip.
     color
         The color of the arrow.
+    resolution
+        The resolution of the arrow line.
 
     Examples
     --------
@@ -1138,10 +1159,16 @@ class Arrow3D(Line3D):
         height: float = 0.3,
         base_radius: float = 0.08,
         color: ParsableManimColor = WHITE,
+        resolution: int | Sequence[int] = 24,
         **kwargs,
     ) -> None:
         super().__init__(
-            start=start, end=end, thickness=thickness, color=color, **kwargs
+            start=start,
+            end=end,
+            thickness=thickness,
+            color=color,
+            resolution=resolution,
+            **kwargs,
         )
 
         self.length = np.linalg.norm(self.vect)
@@ -1150,13 +1177,19 @@ class Arrow3D(Line3D):
             self.end - height * self.direction,
             **kwargs,
         )
-
         self.cone = Cone(
-            direction=self.direction, base_radius=base_radius, height=height, **kwargs
+            direction=self.direction,
+            base_radius=base_radius,
+            height=height,
+            **kwargs,
         )
         self.cone.shift(end)
-        self.add(self.cone)
+        self.end_point = VectorizedPoint(end)
+        self.add(self.end_point, self.cone)
         self.set_color(color)
+
+    def get_end(self) -> np.ndarray:
+        return self.end_point.get_center()
 
 
 class Torus(Surface):

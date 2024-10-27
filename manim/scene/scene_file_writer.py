@@ -6,7 +6,11 @@ __all__ = ["SceneFileWriter"]
 
 import json
 import shutil
+from fractions import Fraction
 from pathlib import Path
+from queue import Queue
+from tempfile import NamedTemporaryFile
+from threading import Thread
 from typing import TYPE_CHECKING, Any
 
 import av
@@ -16,6 +20,7 @@ from PIL import Image
 from pydub import AudioSegment
 
 from manim import __version__
+from manim.typing import PixelArray
 
 from .. import config, logger
 from .._config.logger_utils import set_file_logger
@@ -34,6 +39,38 @@ from .section import DefaultSectionType, Section
 
 if TYPE_CHECKING:
     from manim.renderer.opengl_renderer import OpenGLRenderer
+
+
+def to_av_frame_rate(fps):
+    epsilon1 = 1e-4
+    epsilon2 = 0.02
+
+    if isinstance(fps, int):
+        (num, denom) = (fps, 1)
+    elif abs(fps - round(fps)) < epsilon1:
+        (num, denom) = (round(fps), 1)
+    else:
+        denom = 1001
+        num = round(fps * denom / 1000) * 1000
+        if abs(fps - num / denom) >= epsilon2:
+            raise ValueError("invalid frame rate")
+
+    return Fraction(num, denom)
+
+
+def convert_audio(input_path: Path, output_path: Path, codec_name: str):
+    with (
+        av.open(input_path) as input_audio,
+        av.open(output_path, "w") as output_audio,
+    ):
+        input_audio_stream = input_audio.streams.audio[0]
+        output_audio_stream = output_audio.add_stream(codec_name)
+        for frame in input_audio.decode(input_audio_stream):
+            for packet in output_audio_stream.encode(frame):
+                output_audio.mux(packet)
+
+        for packet in output_audio_stream.encode():
+            output_audio.mux(packet)
 
 
 class SceneFileWriter:
@@ -78,7 +115,7 @@ class SceneFileWriter:
         # first section gets automatically created for convenience
         # if you need the first section to be skipped, add a first section by hand, it will replace this one
         self.next_section(
-            name="autocreated", type=DefaultSectionType.NORMAL, skip_animations=False
+            name="autocreated", type_=DefaultSectionType.NORMAL, skip_animations=False
         )
 
     def init_output_directories(self, scene_name):
@@ -94,10 +131,7 @@ class SceneFileWriter:
         if config["dry_run"]:  # in dry-run mode there is no output
             return
 
-        if config["input_file"]:
-            module_name = config.get_dir("input_file").stem
-        else:
-            module_name = ""
+        module_name = config.get_dir("input_file").stem if config["input_file"] else ""
 
         if SceneFileWriter.force_output_as_scene_name:
             self.output_name = Path(scene_name)
@@ -166,7 +200,7 @@ class SceneFileWriter:
         if len(self.sections) and self.sections[-1].is_empty():
             self.sections.pop()
 
-    def next_section(self, name: str, type: str, skip_animations: bool) -> None:
+    def next_section(self, name: str, type_: str, skip_animations: bool) -> None:
         """Create segmentation cut here."""
         self.finish_last_section()
 
@@ -184,7 +218,7 @@ class SceneFileWriter:
 
         self.sections.append(
             Section(
-                type,
+                type_,
                 section_video,
                 name,
                 skip_animations,
@@ -247,15 +281,11 @@ class SceneFileWriter:
 
     # Sound
     def init_audio(self):
-        """
-        Preps the writer for adding audio to the movie.
-        """
+        """Preps the writer for adding audio to the movie."""
         self.includes_sound = False
 
     def create_audio_segment(self):
-        """
-        Creates an empty, silent, Audio Segment.
-        """
+        """Creates an empty, silent, Audio Segment."""
         self.audio_segment = AudioSegment.silent()
 
     def add_audio_segment(
@@ -330,7 +360,19 @@ class SceneFileWriter:
 
         """
         file_path = get_full_sound_file_path(sound_file)
-        new_segment = AudioSegment.from_file(file_path)
+        # we assume files with .wav / .raw suffix are actually
+        # .wav and .raw files, respectively.
+        if file_path.suffix not in (".wav", ".raw"):
+            # we need to pass delete=False to work on Windows
+            # TODO: figure out a way to cache the wav file generated (benchmark needed)
+            with NamedTemporaryFile(suffix=".wav", delete=False) as wav_file_path:
+                convert_audio(file_path, wav_file_path, "pcm_s16le")
+                new_segment = AudioSegment.from_file(wav_file_path.name)
+                logger.info(f"Automatically converted {file_path} to .wav")
+            Path(wav_file_path.name).unlink()
+        else:
+            new_segment = AudioSegment.from_file(file_path)
+
         if gain:
             new_segment = new_segment.apply_gain(gain)
         self.add_audio_segment(new_segment, time, **kwargs)
@@ -362,6 +404,31 @@ class SceneFileWriter:
         if write_to_movie() and allow_write:
             self.close_partial_movie_stream()
 
+    def listen_and_write(self):
+        """For internal use only: blocks until new frame is available on the queue."""
+        while True:
+            num_frames, frame_data = self.queue.get()
+            if frame_data is None:
+                break
+
+            self.encode_and_write_frame(frame_data, num_frames)
+
+    def encode_and_write_frame(self, frame: PixelArray, num_frames: int) -> None:
+        """
+        For internal use only: takes a given frame in ``np.ndarray`` format and
+        write it to the stream
+        """
+        for _ in range(num_frames):
+            # Notes: precomputing reusing packets does not work!
+            # I.e., you cannot do `packets = encode(...)`
+            # and reuse it, as it seems that `mux(...)`
+            # consumes the packet.
+            # The same issue applies for `av_frame`,
+            # reusing it renders weird-looking frames.
+            av_frame = av.VideoFrame.from_ndarray(frame, format="rgba")
+            for packet in self.video_stream.encode(av_frame):
+                self.video_container.mux(packet)
+
     def write_frame(
         self, frame_or_renderer: np.ndarray | OpenGLRenderer, num_frames: int = 1
     ):
@@ -382,16 +449,9 @@ class SceneFileWriter:
                 if config.renderer == RendererType.OPENGL
                 else frame_or_renderer
             )
-            for _ in range(num_frames):
-                # Notes: precomputing reusing packets does not work!
-                # I.e., you cannot do `packets = encode(...)`
-                # and reuse it, as it seems that `mux(...)`
-                # consumes the packet.
-                # The same issue applies for `av_frame`,
-                # reusing it renders weird-looking frames.
-                av_frame = av.VideoFrame.from_ndarray(frame, format="rgba")
-                for packet in self.video_stream.encode(av_frame):
-                    self.video_container.mux(packet)
+
+            msg = (num_frames, frame)
+            self.queue.put(msg)
 
         if is_png_format() and not config["dry_run"]:
             image: Image = (
@@ -433,7 +493,7 @@ class SceneFileWriter:
         image.save(self.image_file_path)
         self.print_file_ready_message(self.image_file_path)
 
-    def finish(self):
+    def finish(self) -> None:
         """
         Finishes writing to the FFMPEG buffer or writing images
         to output directory.
@@ -443,8 +503,6 @@ class SceneFileWriter:
         frame in the default image directory.
         """
         if write_to_movie():
-            if hasattr(self, "writing_process"):
-                self.writing_process.terminate()
             self.combine_to_movie()
             if config.save_sections:
                 self.combine_to_section_videos()
@@ -458,7 +516,7 @@ class SceneFileWriter:
         if self.subcaptions:
             self.write_subcaption_file()
 
-    def open_partial_movie_stream(self, file_path=None):
+    def open_partial_movie_stream(self, file_path=None) -> None:
         """Open a container holding a video stream.
 
         This is used internally by Manim initialize the container holding
@@ -468,9 +526,7 @@ class SceneFileWriter:
             file_path = self.partial_movie_files[self.renderer.num_plays]
         self.partial_movie_file_path = file_path
 
-        fps = config["frame_rate"]
-        if fps == int(fps):  # fps is integer
-            fps = int(fps)
+        fps = to_av_frame_rate(config.frame_rate)
 
         partial_movie_file_codec = "libx264"
         partial_movie_file_pix_fmt = "yuv420p"
@@ -479,7 +535,7 @@ class SceneFileWriter:
             "crf": "23",  # ffmpeg: -crf, constant rate factor (improved bitrate)
         }
 
-        if config.format == "webm":
+        if config.movie_file_extension == ".webm":
             partial_movie_file_codec = "libvpx-vp9"
             av_options["-auto-alt-ref"] = "1"
             if config.transparent:
@@ -492,7 +548,7 @@ class SceneFileWriter:
         with av.open(file_path, mode="w") as video_container:
             stream = video_container.add_stream(
                 partial_movie_file_codec,
-                rate=config.frame_rate,
+                rate=fps,
                 options=av_options,
             )
             stream.pix_fmt = partial_movie_file_pix_fmt
@@ -502,13 +558,20 @@ class SceneFileWriter:
             self.video_container = video_container
             self.video_stream = stream
 
-    def close_partial_movie_stream(self):
+            self.queue: Queue[tuple[int, PixelArray | None]] = Queue()
+            self.writer_thread = Thread(target=self.listen_and_write, args=())
+            self.writer_thread.start()
+
+    def close_partial_movie_stream(self) -> None:
         """Close the currently opened video container.
 
         Used internally by Manim to first flush the remaining packages
         in the video stream holding a partial file, and then close
         the corresponding container.
         """
+        self.queue.put((-1, None))
+        self.writer_thread.join()
+
         for packet in self.video_stream.encode():
             self.video_container.mux(packet)
 
@@ -577,7 +640,7 @@ class SceneFileWriter:
             codec_name="gif" if create_gif else None,
             template=partial_movies_stream if not create_gif else None,
         )
-        if config.transparent and config.format == "webm":
+        if config.transparent and config.movie_file_extension == ".webm":
             output_stream.pix_fmt = "yuva420p"
         if create_gif:
             """
@@ -591,7 +654,7 @@ class SceneFileWriter:
                 output_stream.pix_fmt = "pal8"
             output_stream.width = config.pixel_width
             output_stream.height = config.pixel_height
-            output_stream.rate = config.frame_rate
+            output_stream.rate = to_av_frame_rate(config.frame_rate)
             graph = av.filter.Graph()
             input_buffer = graph.add_buffer(template=partial_movies_stream)
             split = graph.add("split")
@@ -618,7 +681,8 @@ class SceneFileWriter:
             while True:
                 try:
                     frame = graph.pull()
-                    frame.time_base = output_stream.codec_context.time_base
+                    if output_stream.codec_context.time_base is not None:
+                        frame.time_base = output_stream.codec_context.time_base
                     frame.pts = frames_written
                     frames_written += 1
                     output_container.mux(output_stream.encode(frame))
@@ -659,6 +723,7 @@ class SceneFileWriter:
         movie_file_path = self.movie_file_path
         if is_gif_format():
             movie_file_path = self.gif_file_path
+
         if len(partial_movie_files) == 0:  # Prevent calling concat on empty list
             logger.info("No animations are contained in this scene.")
             return
@@ -687,21 +752,16 @@ class SceneFileWriter:
             # but tries to call ffmpeg via its CLI -- which we want
             # to avoid. This is why we need to do the conversion
             # manually.
-            if config.format == "webm":
-                with (
-                    av.open(sound_file_path) as wav_audio,
-                    av.open(sound_file_path.with_suffix(".ogg"), "w") as opus_audio,
-                ):
-                    wav_audio_stream = wav_audio.streams.audio[0]
-                    opus_audio_stream = opus_audio.add_stream("libvorbis")
-                    for frame in wav_audio.decode(wav_audio_stream):
-                        for packet in opus_audio_stream.encode(frame):
-                            opus_audio.mux(packet)
-
-                    for packet in opus_audio_stream.encode():
-                        opus_audio.mux(packet)
-
-                sound_file_path = sound_file_path.with_suffix(".ogg")
+            if config.movie_file_extension == ".webm":
+                ogg_sound_file_path = sound_file_path.with_suffix(".ogg")
+                convert_audio(sound_file_path, ogg_sound_file_path, "libvorbis")
+                sound_file_path = ogg_sound_file_path
+            elif config.movie_file_extension == ".mp4":
+                # Similarly, pyav may reject wav audio in an .mp4 file;
+                # convert to AAC.
+                aac_sound_file_path = sound_file_path.with_suffix(".aac")
+                convert_audio(sound_file_path, aac_sound_file_path, "aac")
+                sound_file_path = aac_sound_file_path
 
             temp_file_path = movie_file_path.with_name(
                 f"{movie_file_path.stem}_temp{movie_file_path.suffix}"
@@ -754,7 +814,6 @@ class SceneFileWriter:
 
     def combine_to_section_videos(self) -> None:
         """Concatenate partial movie files for each section."""
-
         self.finish_last_section()
         sections_index: list[dict[str, Any]] = []
         for section in self.sections:

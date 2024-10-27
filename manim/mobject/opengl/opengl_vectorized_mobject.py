@@ -324,6 +324,7 @@ class OpenGLVMobject(OpenGLMobject):
         vmobject_style = vmobject.get_style()
         if config.renderer == RendererType.OPENGL:
             vmobject_style["stroke_width"] = vmobject_style["stroke_width"][0][0]
+            vmobject_style["fill_opacity"] = self.get_fill_opacity()
         self.set_style(**vmobject_style, recurse=False)
         if recurse:
             # Does its best to match up submobject lists, and
@@ -405,7 +406,7 @@ class OpenGLVMobject(OpenGLMobject):
         return self.get_stroke_opacities()[0]
 
     def get_color(self):
-        if self.has_stroke():
+        if not self.has_fill():
             return self.get_stroke_color()
         return self.get_fill_color()
 
@@ -471,9 +472,7 @@ class OpenGLVMobject(OpenGLMobject):
         self.append_points(new_points)
 
     def add_cubic_bezier_curve_to(self, handle1, handle2, anchor):
-        """
-        Add cubic bezier curve to the path.
-        """
+        """Add cubic bezier curve to the path."""
         self.throw_error_if_no_points()
         quadratic_approx = get_quadratic_approximation_of_cubic(
             self.get_last_point(),
@@ -816,7 +815,6 @@ class OpenGLVMobject(OpenGLMobject):
         length : :class:`float`
             The length of the nth curve.
         """
-
         if sample_points is None:
             sample_points = 10
 
@@ -856,7 +854,6 @@ class OpenGLVMobject(OpenGLMobject):
         length : :class:`float`
             The length of the nth curve.
         """
-
         _, length = self.get_nth_curve_function_with_length(n, sample_points)
 
         return length
@@ -871,7 +868,6 @@ class OpenGLVMobject(OpenGLMobject):
         Iterable[Callable[[float], np.ndarray]]
             The functions for the curves.
         """
-
         num_curves = self.get_num_curves()
 
         for n in range(num_curves):
@@ -921,7 +917,6 @@ class OpenGLVMobject(OpenGLMobject):
         Iterable[Tuple[Callable[[float], np.ndarray], float]]
             The functions and lengths of the curves.
         """
-
         num_curves = self.get_num_curves()
 
         for n in range(num_curves):
@@ -947,7 +942,6 @@ class OpenGLVMobject(OpenGLMobject):
         :exc:`Exception`
             If the :class:`OpenGLVMobject` has no points.
         """
-
         if alpha < 0 or alpha > 1:
             raise ValueError(f"Alpha {alpha} not between 0 and 1.")
 
@@ -1102,7 +1096,6 @@ class OpenGLVMobject(OpenGLMobject):
         float
             The length of the :class:`OpenGLVMobject`.
         """
-
         return np.sum(
             length
             for _, length in self.get_curve_functions_with_lengths(
@@ -1873,10 +1866,7 @@ class OpenGLDashedVMobject(OpenGLVMobject):
         if num_dashes > 0:
             # Assuming total length is 1
             dash_len = r / n
-            if vmobject.is_closed():
-                void_len = (1 - r) / n
-            else:
-                void_len = (1 - r) / (n - 1)
+            void_len = (1 - r) / n if vmobject.is_closed() else (1 - r) / (n - 1)
 
             self.add(
                 *(

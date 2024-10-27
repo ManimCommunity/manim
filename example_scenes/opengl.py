@@ -2,7 +2,7 @@ from pathlib import Path
 
 import manim.utils.opengl as opengl
 from manim import *
-from manim.opengl import *  # type: ignore
+from manim.opengl import *
 
 # Copied from https://3b1b.github.io/manim/getting_started/example_scenes.html#surfaceexample.
 # Lines that do not yet work with the Community Version are commented.

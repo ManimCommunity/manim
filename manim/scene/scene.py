@@ -314,14 +314,14 @@ class Scene:
     def next_section(
         self,
         name: str = "unnamed",
-        type: str = DefaultSectionType.NORMAL,
+        section_type: str = DefaultSectionType.NORMAL,
         skip_animations: bool = False,
     ) -> None:
         """Create separation here; the last section gets finished and a new one gets created.
         ``skip_animations`` skips the rendering of all animations in this section.
         Refer to :doc:`the documentation</tutorials/output_and_config>` on how to use sections.
         """
-        self.renderer.file_writer.next_section(name, type, skip_animations)
+        self.renderer.file_writer.next_section(name, section_type, skip_animations)
 
     def __str__(self):
         return self.__class__.__name__
@@ -626,7 +626,7 @@ class Scene:
 
     def restructure_mobjects(
         self,
-        to_remove: Mobject,
+        to_remove: Sequence[Mobject],
         mobject_list_name: str = "mobjects",
         extract_families: bool = True,
     ):
@@ -686,7 +686,6 @@ class Scene:
         list
             The list of mobjects with the mobjects to remove removed.
         """
-
         new_mobjects = []
 
         def add_safe_mobjects_from_list(list_to_examine, set_to_remove):
@@ -905,16 +904,16 @@ class Scene:
         for arg in arg_anims:
             try:
                 animations.append(prepare_animation(arg))
-            except TypeError:
+            except TypeError as e:
                 if inspect.ismethod(arg):
                     raise TypeError(
                         "Passing Mobject methods to Scene.play is no longer"
                         " supported. Use Mobject.animate instead.",
-                    )
+                    ) from e
                 else:
                     raise TypeError(
                         f"Unexpected argument {arg} passed to Scene.play().",
-                    )
+                    ) from e
 
         for animation in animations:
             for k, v in kwargs.items():
@@ -1321,9 +1320,7 @@ class Scene:
         return True
 
     def interactive_embed(self):
-        """
-        Like embed(), but allows for screen interaction.
-        """
+        """Like embed(), but allows for screen interaction."""
         if not self.check_interactive_embed_is_valid():
             return
         self.interactive_mode = True
