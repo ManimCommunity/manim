@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import contextlib
-import inspect
 import re
 import textwrap
 from collections.abc import Sequence
