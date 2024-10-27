@@ -36,7 +36,7 @@ def pytest_report_header(config):
         ctx.release()
     except Exception as e:
         raise Exception("Error while creating moderngl context") from e
-    
+
     return (
         f"\nCairo Version: {cairo.cairo_version()}",
         "\nOpenGL information",
