@@ -46,6 +46,7 @@ numpy = ">=1.26"
 Pillow = ">=9.1"
 pycairo = ">=1.13,<2.0.0"
 pydub = ">=0.20.0"
+audioop-lts = { version = ">=0.2.0", python = ">=3.13" }  # for pydub
 Pygments = ">=2.0.0"
 rich = ">=12.0.0"
 scipy = [
@@ -61,6 +62,7 @@ svgelements = ">=1.8.0"
 tqdm = ">=4.0.0"
 typing-extensions = ">=4.0.0"
 watchdog = ">=2.0.0"
+wrapt = "1.17.0rc1"  # temporarily, for build speed
 
 [tool.poetry.extras]
 jupyterlab = ["jupyterlab", "notebook"]
