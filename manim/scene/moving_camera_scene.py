@@ -64,6 +64,25 @@ Examples
             self.play(Restore(self.camera.frame))
             self.wait()
 
+.. manim:: SlidingMultipleScenes
+
+    class SlidingMultipleScenes(MovingCameraScene):
+        def construct(self):
+            def create_scene(number):
+                frame = Rectangle(width=16,height=9)
+                circ = Circle().shift(LEFT)
+                text = Tex(f"This is Scene {str(number)}").next_to(circ, RIGHT)
+                frame.add(circ,text)
+                return frame
+
+            group = VGroup(*(create_scene(i) for i in range(4))).arrange_in_grid(buff=4)
+            self.add(group)
+            self.camera.auto_zoom(group[0], animate=False)
+            for scene in group:
+                self.play(self.camera.auto_zoom(scene))
+                self.wait()
+
+            self.play(self.camera.auto_zoom(group, margin=2))
 """
 
 from __future__ import annotations
@@ -83,8 +102,12 @@ class MovingCameraScene(Scene):
     This is a Scene, with special configurations and properties that
     make it suitable for cases where the camera must be moved around.
 
+    Note: Examples are included in the moving_camera_scene module
+    documentation, see below in the 'see also' section.
+
     .. SEEALSO::
 
+        :mod:`.moving_camera_scene`
         :class:`.MovingCamera`
     """
 

@@ -24,6 +24,7 @@ from manim import config
 from manim.constants import *
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.three_d.three_d_utils import (
     get_3d_vmob_gradient_start_and_end_points,
@@ -2059,7 +2060,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
 
     """
 
-    def __init__(self, *vmobjects: VMobject, **kwargs: Any) -> None:
+    def __init__(self, *vmobjects: VMobject | Iterable[VMobject], **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.add(*vmobjects)
 
@@ -2072,13 +2073,16 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
             f"submobject{'s' if len(self.submobjects) > 0 else ''}"
         )
 
-    def add(self, *vmobjects: VMobject) -> Self:
-        """Checks if all passed elements are an instance of VMobject and then add them to submobjects
+    def add(
+        self,
+        *vmobjects: VMobject | Iterable[VMobject],
+    ) -> Self:
+        """Checks if all passed elements are an instance, or iterables of VMobject and then adds them to submobjects
 
         Parameters
         ----------
         vmobjects
-            List of VMobject to add
+            List or iterable of VMobjects to add
 
         Returns
         -------
@@ -2087,10 +2091,13 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
         Raises
         ------
         TypeError
-            If one element of the list is not an instance of VMobject
+            If one element of the list, or iterable is not an instance of VMobject
 
         Examples
         --------
+        The following example shows how to add individual or multiple `VMobject` instances through the `VGroup`
+        constructor and its `.add()` method.
+
         .. manim:: AddToVGroup
 
             class AddToVGroup(Scene):
@@ -2119,8 +2126,65 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
                     self.play( # Animate group without component
                         (gr-circle_red).animate.shift(RIGHT)
                     )
+
+        A `VGroup` can be created using iterables as well. Keep in mind that all generated values from an
+        iterable must be an instance of `VMobject`. This is demonstrated below:
+
+        .. manim:: AddIterableToVGroupExample
+            :save_last_frame:
+
+            class AddIterableToVGroupExample(Scene):
+                def construct(self):
+                    v = VGroup(
+                        Square(),               # Singular VMobject instance
+                        [Circle(), Triangle()], # List of VMobject instances
+                        Dot(),
+                        (Dot() for _ in range(2)), # Iterable that generates VMobjects
+                    )
+                    v.arrange()
+                    self.add(v)
+
+        To facilitate this, the iterable is unpacked before its individual instances are added to the `VGroup`.
+        As a result, when you index a `VGroup`, you will never get back an iterable.
+        Instead, you will always receive `VMobject` instances, including those
+        that were part of the iterable/s that you originally added to the `VGroup`.
         """
-        return super().add(*vmobjects)
+
+        def get_type_error_message(invalid_obj, invalid_indices):
+            return (
+                f"Only values of type {vmobject_render_type.__name__} can be added "
+                "as submobjects of VGroup, but the value "
+                f"{repr(invalid_obj)} (at index {invalid_indices[1]} of "
+                f"parameter {invalid_indices[0]}) is of type "
+                f"{type(invalid_obj).__name__}."
+            )
+
+        vmobject_render_type = (
+            OpenGLVMobject if config.renderer == RendererType.OPENGL else VMobject
+        )
+        valid_vmobjects = []
+
+        for i, vmobject in enumerate(vmobjects):
+            if isinstance(vmobject, vmobject_render_type):
+                valid_vmobjects.append(vmobject)
+            elif isinstance(vmobject, Iterable) and not isinstance(
+                vmobject, (Mobject, OpenGLMobject)
+            ):
+                for j, subvmobject in enumerate(vmobject):
+                    if not isinstance(subvmobject, vmobject_render_type):
+                        raise TypeError(get_type_error_message(subvmobject, (i, j)))
+                    valid_vmobjects.append(subvmobject)
+            elif isinstance(vmobject, Iterable) and isinstance(
+                vmobject, (Mobject, OpenGLMobject)
+            ):
+                raise TypeError(
+                    f"{get_type_error_message(vmobject, (i, 0))} "
+                    "You can try adding this value into a Group instead."
+                )
+            else:
+                raise TypeError(get_type_error_message(vmobject, (i, 0)))
+
+        return super().add(*valid_vmobjects)
 
     def __add__(self, vmobject: VMobject) -> Self:
         return VGroup(*self.submobjects, vmobject)

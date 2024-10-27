@@ -407,14 +407,14 @@ class Mobject:
         """Sets :attr:`points` to be an empty array."""
         self.points = np.zeros((0, self.dim))
 
-    def init_colors(self) -> None:
+    def init_colors(self) -> object:
         """Initializes the colors.
 
         Gets called upon creation. This is an empty method that can be implemented by
         subclasses.
         """
 
-    def generate_points(self) -> None:
+    def generate_points(self) -> object:
         """Initializes :attr:`points` and therefore the shape.
 
         Gets called upon creation. This is an empty method that can be implemented by
@@ -1499,7 +1499,7 @@ class Mobject:
                     tex_top.to_edge(UP)
                     tex_side = Tex("I am moving to the side!")
                     c = Circle().shift(2*DOWN)
-                    self.add(tex_top, tex_side)
+                    self.add(tex_top, tex_side, c)
                     tex_side.to_edge(LEFT)
                     c.to_edge(RIGHT, buff=0)
 
