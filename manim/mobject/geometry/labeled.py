@@ -4,7 +4,7 @@ from __future__ import annotations
 
 __all__ = ["LabeledLine", "LabeledArrow"]
 
-from typing import TYPE_CHECKING, Union  # noqa: F401
+from typing import TYPE_CHECKING
 
 from manim.constants import *
 from manim.mobject.geometry.line import Arrow, Line
