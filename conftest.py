@@ -30,9 +30,13 @@ def temp_media_dir(tmpdir, monkeypatch, request):
 
 
 def pytest_report_header(config):
-    ctx = moderngl.create_standalone_context()
-    info = ctx.info
-    ctx.release()
+    try:
+        ctx = moderngl.create_standalone_context()
+        info = ctx.info
+        ctx.release()
+    except Exception as e:
+        raise Exception("Error while creating moderngl context") from e
+    
     return (
         f"\nCairo Version: {cairo.cairo_version()}",
         "\nOpenGL information",
