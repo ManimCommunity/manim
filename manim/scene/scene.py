@@ -34,7 +34,12 @@ from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
 from manim._config import config, logger
-from manim.animation.animation import Animation, Wait, prepare_animation
+from manim.animation.animation import (
+    Animation,
+    Wait,
+    prepare_animation,
+    validate_run_time,
+)
 from manim.camera.camera import Camera
 from manim.constants import *
 from manim.gui.gui import configure_pygui
@@ -1125,6 +1130,7 @@ class Scene:
         --------
         :class:`.Wait`, :meth:`.should_mobjects_update`
         """
+        duration = validate_run_time(duration, str(self) + ".wait()", "duration")
         self.play(
             Wait(
                 run_time=duration,
@@ -1148,6 +1154,7 @@ class Scene:
         --------
         :meth:`.wait`, :class:`.Wait`
         """
+        duration = validate_run_time(duration, str(self) + ".pause()", "duration")
         self.wait(duration=duration, frozen_frame=True)
 
     def wait_until(self, stop_condition: Callable[[], bool], max_time: float = 60):
@@ -1161,6 +1168,7 @@ class Scene:
         max_time
             The maximum wait time in seconds.
         """
+        max_time = validate_run_time(max_time, str(self) + ".wait_until()", "max_time")
         self.wait(max_time, stop_condition=stop_condition)
 
     def compile_animation_data(
