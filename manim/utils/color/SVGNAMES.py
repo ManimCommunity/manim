@@ -1,7 +1,7 @@
-"""SVGNAMES Colors
+r"""SVG 1.1 Colors
 
-This module contains colors defined in the SVG 1.1 specification and are commonly
-accessed as named colors in LaTeX via the `\\usepackage[svgnames]{xcolor}` package.
+This module contains the colors defined in the SVG 1.1 specification, which are commonly
+accessed as named colors in LaTeX via the ``\usepackage[svgnames]{xcolor}`` package.
 
 To use the colors from this list, access them directly from the module (which
 is exposed to Manim's global name space):

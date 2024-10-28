@@ -1,7 +1,7 @@
-"""DVIPSNAMES Colors
+r"""dvips Colors
 
-This module contains colors defined in the DVIPS driver and are commonly accessed
-as named colors in LaTeX via the `\\usepackage[dvipsnames]{xcolor}` package.
+This module contains the colors defined in the dvips driver, which are commonly accessed
+as named colors in LaTeX via the ``\usepackage[dvipsnames]{xcolor}`` package.
 
 To use the colors from this list, access them directly from the module (which
 is exposed to Manim's global name space):
