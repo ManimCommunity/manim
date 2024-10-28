@@ -3,7 +3,8 @@ from __future__ import annotations
 import logging
 import re
 
-from cloup import Choice, Context, Parameter, option, option_group
+from click import Parameter
+from cloup import Choice, Context, option, option_group
 
 __all__ = ["global_options"]
 
@@ -21,7 +22,7 @@ def validate_gui_location(
     ctx
         The Cloup context.
     param
-        A Cloup parameter.
+        A Click parameter.
     value
         The string which will be parsed.
 

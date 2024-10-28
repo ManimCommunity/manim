@@ -3,7 +3,8 @@ from __future__ import annotations
 import logging
 import re
 
-from cloup import Choice, Context, Parameter, option, option_group
+from click import Parameter
+from cloup import Choice, Context, option, option_group
 
 from manim.constants import QUALITIES, RendererType
 
@@ -23,7 +24,7 @@ def validate_scene_range(
     ctx
         The Cloup context.
     param
-        A Cloup parameter.
+        A Click parameter.
     value
         The string which will be parsed.
 
@@ -62,7 +63,7 @@ def validate_resolution(ctx: Context, param: Parameter, value: str) -> tuple[int
     ctx
         The Cloup context.
     param
-        A Cloup parameter.
+        A Click parameter.
     value
         The string which will be parsed.
 
