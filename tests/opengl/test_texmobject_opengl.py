@@ -87,7 +87,8 @@ def test_tex_size(using_opengl_renderer):
 
 def test_font_size(using_opengl_renderer):
     """Test that tex_mobject classes return
-    the correct font_size value after being scaled."""
+    the correct font_size value after being scaled.
+    """
     string = MathTex(0).scale(0.3)
 
     assert round(string.font_size, 5) == 14.4

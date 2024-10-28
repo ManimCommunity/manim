@@ -277,7 +277,8 @@ class NumberLine(Line):
 
     def add_ticks(self):
         """Adds ticks to the number line. Ticks can be accessed after creation
-        via ``self.ticks``."""
+        via ``self.ticks``.
+        """
         ticks = VGroup()
         elongated_tick_size = self.tick_size * self.longer_tick_multiple
         elongated_tick_offsets = self.numbers_with_elongated_ticks - self.x_min
@@ -580,7 +581,6 @@ class NumberLine(Line):
         AttributeError
             If the label does not have a ``font_size`` attribute, an ``AttributeError`` is raised.
         """
-
         direction = self.label_direction if direction is None else direction
         buff = self.line_to_number_buff if buff is None else buff
         font_size = self.font_size if font_size is None else font_size

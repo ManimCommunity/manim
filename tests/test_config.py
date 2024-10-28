@@ -58,7 +58,6 @@ class MyScene(Scene):
 
 def test_transparent(config):
     """Test the 'transparent' config option."""
-
     config.verbosity = "ERROR"
     config.dry_run = True
 
@@ -89,7 +88,6 @@ def test_transparent_by_background_opacity(config, dry_run):
 
 def test_background_color(config):
     """Test the 'background_color' config option."""
-
     config.background_color = WHITE
     config.verbosity = "ERROR"
     config.dry_run = True
@@ -102,17 +100,16 @@ def test_background_color(config):
 
 def test_digest_file(tmp_path, config):
     """Test that a config file can be digested programmatically."""
-    tmp_cfg = tempfile.NamedTemporaryFile("w", dir=tmp_path, delete=False)
-    tmp_cfg.write(
-        """
-        [CLI]
-        media_dir = this_is_my_favorite_path
-        video_dir = {media_dir}/videos
-        sections_dir = {media_dir}/{scene_name}/prepare_for_unforeseen_consequences
-        frame_height = 10
-        """,
-    )
-    tmp_cfg.close()
+    with tempfile.NamedTemporaryFile("w", dir=tmp_path, delete=False) as tmp_cfg:
+        tmp_cfg.write(
+            """
+            [CLI]
+            media_dir = this_is_my_favorite_path
+            video_dir = {media_dir}/videos
+            sections_dir = {media_dir}/{scene_name}/prepare_for_unforeseen_consequences
+            frame_height = 10
+            """,
+        )
     config.digest_file(tmp_cfg.name)
 
     assert config.get_dir("media_dir") == Path("this_is_my_favorite_path")
@@ -158,15 +155,14 @@ def test_custom_dirs(tmp_path, config):
 
 
 def test_pixel_dimensions(tmp_path, config):
-    tmp_cfg = tempfile.NamedTemporaryFile("w", dir=tmp_path, delete=False)
-    tmp_cfg.write(
-        """
-        [CLI]
-        pixel_height = 10
-        pixel_width = 10
-        """,
-    )
-    tmp_cfg.close()
+    with tempfile.NamedTemporaryFile("w", dir=tmp_path, delete=False) as tmp_cfg:
+        tmp_cfg.write(
+            """
+            [CLI]
+            pixel_height = 10
+            pixel_width = 10
+            """,
+        )
     config.digest_file(tmp_cfg.name)
 
     # aspect ratio is set using pixel measurements
@@ -183,17 +179,16 @@ def test_frame_size(tmp_path, config):
     )
     np.testing.assert_allclose(config.frame_height, 8.0)
 
-    tmp_cfg = tempfile.NamedTemporaryFile("w", dir=tmp_path, delete=False)
-    tmp_cfg.write(
-        """
-        [CLI]
-        pixel_height = 10
-        pixel_width = 10
-        frame_height = 10
-        frame_width = 10
-        """,
-    )
-    tmp_cfg.close()
+    with tempfile.NamedTemporaryFile("w", dir=tmp_path, delete=False) as tmp_cfg:
+        tmp_cfg.write(
+            """
+            [CLI]
+            pixel_height = 10
+            pixel_width = 10
+            frame_height = 10
+            frame_width = 10
+            """,
+        )
     config.digest_file(tmp_cfg.name)
 
     np.testing.assert_allclose(config.aspect_ratio, 1.0)
@@ -217,7 +212,6 @@ def test_temporary_dry_run(config):
 
 def test_dry_run_with_png_format(config, dry_run):
     """Test that there are no exceptions when running a png without output"""
-
     config.write_to_movie = False
     config.disable_caching = True
     assert config.dry_run is True
@@ -238,14 +232,13 @@ def test_tex_template_file(tmp_path):
     """Test that a custom tex template file can be set from a config file."""
     tex_file = Path(tmp_path / "my_template.tex")
     tex_file.write_text("Hello World!")
-    tmp_cfg = tempfile.NamedTemporaryFile("w", dir=tmp_path, delete=False)
-    tmp_cfg.write(
-        f"""
-        [CLI]
-        tex_template_file = {tex_file}
-        """,
-    )
-    tmp_cfg.close()
+    with tempfile.NamedTemporaryFile("w", dir=tmp_path, delete=False) as tmp_cfg:
+        tmp_cfg.write(
+            f"""
+            [CLI]
+            tex_template_file = {tex_file}
+            """,
+        )
 
     custom_config = ManimConfig().digest_file(tmp_cfg.name)
 

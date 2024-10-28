@@ -39,7 +39,7 @@ __all__ = ["render"]
 @cloup.argument("scene_names", required=False, nargs=-1)
 @global_options
 @output_options
-@render_options  # type: ignore
+@render_options
 @ease_of_access_options
 def render(
     **args,
@@ -50,7 +50,6 @@ def render(
 
     SCENES is an optional list of scenes in the file.
     """
-
     if args["save_as_gif"]:
         logger.warning("--save_as_gif is deprecated, please use --format=gif instead!")
         args["format"] = "gif"

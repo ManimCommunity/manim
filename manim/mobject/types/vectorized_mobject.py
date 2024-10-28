@@ -24,6 +24,7 @@ from manim import config
 from manim.constants import *
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.three_d.three_d_utils import (
     get_3d_vmob_gradient_start_and_end_points,
@@ -47,12 +48,15 @@ from manim.utils.iterables import (
 from manim.utils.space_ops import rotate_vector, shoelace_direction
 
 if TYPE_CHECKING:
+    from typing import Any
+
     import numpy.typing as npt
     from typing_extensions import Self
 
     from manim.typing import (
         BezierPoints,
         CubicBezierPoints,
+        InternalPoint3D_Array,
         ManimFloat,
         MappingFunction,
         Point2D,
@@ -132,7 +136,7 @@ class VMobject(Mobject):
         tolerance_for_point_equality: float = 1e-6,
         n_points_per_cubic_curve: int = 4,
         cap_style: CapStyleType = CapStyleType.AUTO,
-        **kwargs,
+        **kwargs: Any,
     ):
         self.fill_opacity = fill_opacity
         self.stroke_opacity = stroke_opacity
@@ -477,6 +481,64 @@ class VMobject(Mobject):
         self.set_stroke(opacity=opacity, family=family, background=True)
         return self
 
+    def scale(self, scale_factor: float, scale_stroke: bool = False, **kwargs) -> Self:
+        r"""Scale the size by a factor.
+
+        Default behavior is to scale about the center of the vmobject.
+
+        Parameters
+        ----------
+        scale_factor
+            The scaling factor :math:`\alpha`. If :math:`0 < |\alpha| < 1`, the mobject
+            will shrink, and for :math:`|\alpha| > 1` it will grow. Furthermore,
+            if :math:`\alpha < 0`, the mobject is also flipped.
+        scale_stroke
+            Boolean determining if the object's outline is scaled when the object is scaled.
+            If enabled, and object with 2px outline is scaled by a factor of .5, it will have an outline of 1px.
+        kwargs
+            Additional keyword arguments passed to
+            :meth:`~.Mobject.scale`.
+
+        Returns
+        -------
+        :class:`VMobject`
+            ``self``
+
+        Examples
+        --------
+
+        .. manim:: MobjectScaleExample
+            :save_last_frame:
+
+            class MobjectScaleExample(Scene):
+                def construct(self):
+                    c1 = Circle(1, RED).set_x(-1)
+                    c2 = Circle(1, GREEN).set_x(1)
+
+                    vg = VGroup(c1, c2)
+                    vg.set_stroke(width=50)
+                    self.add(vg)
+
+                    self.play(
+                        c1.animate.scale(.25),
+                        c2.animate.scale(.25,
+                            scale_stroke=True)
+                    )
+
+        See also
+        --------
+        :meth:`move_to`
+
+        """
+        if scale_stroke:
+            self.set_stroke(width=abs(scale_factor) * self.get_stroke_width())
+            self.set_stroke(
+                width=abs(scale_factor) * self.get_stroke_width(background=True),
+                background=True,
+            )
+        super().scale(scale_factor, **kwargs)
+        return self
+
     def fade(self, darkness: float = 0.5, family: bool = True) -> Self:
         factor = 1.0 - darkness
         self.set_fill(opacity=factor * self.get_fill_opacity(), family=False)
@@ -586,7 +648,6 @@ class VMobject(Mobject):
         :meth:`~.VMobject.set_sheen`
         :meth:`~.VMobject.rotate_sheen_direction`
         """
-
         direction = np.array(direction)
         if family:
             for submob in self.get_family():
@@ -652,7 +713,6 @@ class VMobject(Mobject):
                     circle = Circle(fill_opacity=1).set_sheen(-0.3, DR)
                     self.add(circle)
         """
-
         if family:
             for submob in self.submobjects:
                 submob.set_sheen(factor, direction, family)
@@ -709,7 +769,7 @@ class VMobject(Mobject):
         return self
 
     def set_points(self, points: Point3D_Array) -> Self:
-        self.points: Point3D_Array = np.array(points)
+        self.points: InternalPoint3D_Array = np.array(points)
         return self
 
     def resize_points(
@@ -1378,7 +1438,6 @@ class VMobject(Mobject):
         length : :class:`float`
             The length of the nth curve.
         """
-
         _, length = self.get_nth_curve_function_with_length(n, sample_points)
 
         return length
@@ -1404,7 +1463,6 @@ class VMobject(Mobject):
         length : :class:`float`
             The length of the nth curve.
         """
-
         curve = self.get_nth_curve_function(n)
         norms = self.get_nth_curve_length_pieces(n, sample_points=sample_points)
         length = np.sum(norms)
@@ -1432,7 +1490,6 @@ class VMobject(Mobject):
         Generator[Callable[[float], Point3D]]
             The functions for the curves.
         """
-
         num_curves = self.get_num_curves()
 
         for n in range(num_curves):
@@ -1453,7 +1510,6 @@ class VMobject(Mobject):
         Generator[tuple[Callable[[float], Point3D], float]]
             The functions and lengths of the curves.
         """
-
         num_curves = self.get_num_curves()
 
         for n in range(num_curves):
@@ -1495,7 +1551,6 @@ class VMobject(Mobject):
                                 line.point_from_proportion(proportion)
                         ))
         """
-
         if alpha < 0 or alpha > 1:
             raise ValueError(f"Alpha {alpha} not between 0 and 1.")
 
@@ -1592,7 +1647,7 @@ class VMobject(Mobject):
         nppcc = self.n_points_per_cubic_curve
         return [self.points[i::nppcc] for i in range(nppcc)]
 
-    def get_start_anchors(self) -> Point3D_Array:
+    def get_start_anchors(self) -> InternalPoint3D_Array:
         """Returns the start anchors of the bezier curves.
 
         Returns
@@ -1647,7 +1702,6 @@ class VMobject(Mobject):
         float
             The length of the :class:`VMobject`.
         """
-
         return sum(
             length
             for _, length in self.get_curve_functions_with_lengths(
@@ -1767,7 +1821,6 @@ class VMobject(Mobject):
         -------
             Points generated.
         """
-
         if len(points) == 1:
             nppcc = self.n_points_per_cubic_curve
             return np.repeat(points, nppcc * n, 0)
@@ -2065,7 +2118,9 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
 
     """
 
-    def __init__(self, *vmobjects, **kwargs):
+    def __init__(
+        self, *vmobjects: VMobject | Iterable[VMobject], **kwargs: Any
+    ) -> None:
         super().__init__(**kwargs)
         self.add(*vmobjects)
 
@@ -2078,13 +2133,16 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
             f"submobject{'s' if len(self.submobjects) > 0 else ''}"
         )
 
-    def add(self, *vmobjects: VMobject) -> Self:
-        """Checks if all passed elements are an instance of VMobject and then add them to submobjects
+    def add(
+        self,
+        *vmobjects: VMobject | Iterable[VMobject],
+    ) -> Self:
+        """Checks if all passed elements are an instance, or iterables of VMobject and then adds them to submobjects
 
         Parameters
         ----------
         vmobjects
-            List of VMobject to add
+            List or iterable of VMobjects to add
 
         Returns
         -------
@@ -2093,10 +2151,13 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
         Raises
         ------
         TypeError
-            If one element of the list is not an instance of VMobject
+            If one element of the list, or iterable is not an instance of VMobject
 
         Examples
         --------
+        The following example shows how to add individual or multiple `VMobject` instances through the `VGroup`
+        constructor and its `.add()` method.
+
         .. manim:: AddToVGroup
 
             class AddToVGroup(Scene):
@@ -2125,8 +2186,65 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
                     self.play( # Animate group without component
                         (gr-circle_red).animate.shift(RIGHT)
                     )
+
+        A `VGroup` can be created using iterables as well. Keep in mind that all generated values from an
+        iterable must be an instance of `VMobject`. This is demonstrated below:
+
+        .. manim:: AddIterableToVGroupExample
+            :save_last_frame:
+
+            class AddIterableToVGroupExample(Scene):
+                def construct(self):
+                    v = VGroup(
+                        Square(),               # Singular VMobject instance
+                        [Circle(), Triangle()], # List of VMobject instances
+                        Dot(),
+                        (Dot() for _ in range(2)), # Iterable that generates VMobjects
+                    )
+                    v.arrange()
+                    self.add(v)
+
+        To facilitate this, the iterable is unpacked before its individual instances are added to the `VGroup`.
+        As a result, when you index a `VGroup`, you will never get back an iterable.
+        Instead, you will always receive `VMobject` instances, including those
+        that were part of the iterable/s that you originally added to the `VGroup`.
         """
-        return super().add(*vmobjects)
+
+        def get_type_error_message(invalid_obj, invalid_indices):
+            return (
+                f"Only values of type {vmobject_render_type.__name__} can be added "
+                "as submobjects of VGroup, but the value "
+                f"{repr(invalid_obj)} (at index {invalid_indices[1]} of "
+                f"parameter {invalid_indices[0]}) is of type "
+                f"{type(invalid_obj).__name__}."
+            )
+
+        vmobject_render_type = (
+            OpenGLVMobject if config.renderer == RendererType.OPENGL else VMobject
+        )
+        valid_vmobjects = []
+
+        for i, vmobject in enumerate(vmobjects):
+            if isinstance(vmobject, vmobject_render_type):
+                valid_vmobjects.append(vmobject)
+            elif isinstance(vmobject, Iterable) and not isinstance(
+                vmobject, (Mobject, OpenGLMobject)
+            ):
+                for j, subvmobject in enumerate(vmobject):
+                    if not isinstance(subvmobject, vmobject_render_type):
+                        raise TypeError(get_type_error_message(subvmobject, (i, j)))
+                    valid_vmobjects.append(subvmobject)
+            elif isinstance(vmobject, Iterable) and isinstance(
+                vmobject, (Mobject, OpenGLMobject)
+            ):
+                raise TypeError(
+                    f"{get_type_error_message(vmobject, (i, 0))} "
+                    "You can try adding this value into a Group instead."
+                )
+            else:
+                raise TypeError(get_type_error_message(vmobject, (i, 0)))
+
+        return super().add(*valid_vmobjects)
 
     def __add__(self, vmobject: VMobject) -> Self:
         return VGroup(*self.submobjects, vmobject)
