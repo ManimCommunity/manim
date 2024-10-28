@@ -39,3 +39,25 @@ def test_streamline_attributes_for_single_color():
     )
     assert vector_field[0].stroke_width == 1.0
     assert vector_field[0].stroke_opacity == 0.2
+
+
+def test_stroke_scale():
+    a = VMobject()
+    b = VMobject()
+    a.set_stroke(width=50)
+    b.set_stroke(width=50)
+    a.scale(0.5)
+    b.scale(0.5, scale_stroke=True)
+    assert a.get_stroke_width() == 50
+    assert b.get_stroke_width() == 25
+
+
+def test_background_stroke_scale():
+    a = VMobject()
+    b = VMobject()
+    a.set_stroke(width=50, background=True)
+    b.set_stroke(width=50, background=True)
+    a.scale(0.5)
+    b.scale(0.5, scale_stroke=True)
+    assert a.get_stroke_width(background=True) == 50
+    assert b.get_stroke_width(background=True) == 25
