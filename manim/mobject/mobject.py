@@ -44,6 +44,7 @@ if TYPE_CHECKING:
 
     from manim.typing import (
         FunctionOverride,
+        InternalPoint3D,
         ManimFloat,
         ManimInt,
         MappingFunction,
@@ -2158,17 +2159,17 @@ class Mobject:
         """Returns z Point3D of the center of the :class:`~.Mobject` as ``float``"""
         return self.get_coord(2, direction)
 
-    def get_start(self) -> Point3D:
+    def get_start(self) -> InternalPoint3D:
         """Returns the point, where the stroke that surrounds the :class:`~.Mobject` starts."""
         self.throw_error_if_no_points()
         return np.array(self.points[0])
 
-    def get_end(self) -> Point3D:
+    def get_end(self) -> InternalPoint3D:
         """Returns the point, where the stroke that surrounds the :class:`~.Mobject` ends."""
         self.throw_error_if_no_points()
         return np.array(self.points[-1])
 
-    def get_start_and_end(self) -> tuple[Point3D, Point3D]:
+    def get_start_and_end(self) -> tuple[InternalPoint3D, InternalPoint3D]:
         """Returns starting and ending point of a stroke as a ``tuple``."""
         return self.get_start(), self.get_end()
 

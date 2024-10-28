@@ -194,6 +194,7 @@ class Animation:
         method.
 
         """
+        self.run_time = validate_run_time(self.run_time, str(self))
         self.starting_mobject = self.create_starting_mobject()
         if self.suspend_mobject_updating:
             # All calls to self.mobject's internal updaters
@@ -568,6 +569,33 @@ def prepare_animation(
     raise TypeError(f"Object {anim} cannot be converted to an animation")
 
 
+def validate_run_time(
+    run_time: float, caller_name: str, parameter_name: str = "run_time"
+) -> float:
+    if run_time <= 0:
+        raise ValueError(
+            f"{caller_name} has a {parameter_name} of {run_time:g} <= 0 "
+            f"seconds which Manim cannot render. Please set the "
+            f"{parameter_name} to a positive number."
+        )
+
+    # config.frame_rate holds the number of frames per second
+    fps = config.frame_rate
+    seconds_per_frame = 1 / fps
+    if run_time < seconds_per_frame:
+        logger.warning(
+            f"The original {parameter_name} of {caller_name}, {run_time:g} "
+            f"seconds, is too short for the current frame rate of {fps:g} "
+            f"FPS. Rendering with the shortest possible {parameter_name} of "
+            f"{seconds_per_frame:g} seconds instead."
+        )
+        new_run_time = seconds_per_frame
+    else:
+        new_run_time = run_time
+
+    return new_run_time
+
+
 class Wait(Animation):
     """A "no operation" animation.
 
@@ -610,7 +638,7 @@ class Wait(Animation):
         self.mobject.shader_wrapper_list = []
 
     def begin(self) -> None:
-        pass
+        self.run_time = validate_run_time(self.run_time, str(self))
 
     def finish(self) -> None:
         pass
