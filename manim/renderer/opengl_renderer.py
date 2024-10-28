@@ -4,7 +4,7 @@ import contextlib
 import itertools as it
 import time
 from functools import cached_property
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import moderngl
 import numpy as np
@@ -34,6 +34,13 @@ from .vectorized_mobject_rendering import (
     render_opengl_vectorized_mobject_fill,
     render_opengl_vectorized_mobject_stroke,
 )
+
+if TYPE_CHECKING:
+    from typing_extensions import Self
+
+    from manim.mobject.mobject import Mobject
+    from manim.scene.scene import Scene
+
 
 __all__ = ["OpenGLCamera", "OpenGLRenderer"]
 
@@ -166,28 +173,28 @@ class OpenGLCamera(OpenGLMobject):
         self.refresh_rotation_matrix()
         return self
 
-    def set_theta(self, theta):
+    def set_theta(self, theta: float) -> Self:
         return self.set_euler_angles(theta=theta)
 
-    def set_phi(self, phi):
+    def set_phi(self, phi: float) -> Self:
         return self.set_euler_angles(phi=phi)
 
-    def set_gamma(self, gamma):
+    def set_gamma(self, gamma: float) -> Self:
         return self.set_euler_angles(gamma=gamma)
 
-    def increment_theta(self, dtheta):
+    def increment_theta(self, dtheta: float) -> Self:
         self.euler_angles[0] += dtheta
         self.refresh_rotation_matrix()
         return self
 
-    def increment_phi(self, dphi):
+    def increment_phi(self, dphi: float) -> Self:
         phi = self.euler_angles[1]
         new_phi = clip(phi + dphi, -PI / 2, PI / 2)
         self.euler_angles[1] = new_phi
         self.refresh_rotation_matrix()
         return self
 
-    def increment_gamma(self, dgamma):
+    def increment_gamma(self, dgamma: float) -> Self:
         self.euler_angles[2] += dgamma
         self.refresh_rotation_matrix()
         return self
@@ -216,7 +223,9 @@ class OpenGLCamera(OpenGLMobject):
 
 
 class OpenGLRenderer:
-    def __init__(self, file_writer_class=SceneFileWriter, skip_animations=False):
+    def __init__(
+        self, file_writer_class=SceneFileWriter, skip_animations=False
+    ) -> None:
         # Measured in pixel widths, used for vector graphics
         self.anti_alias_width = 1.5
         self._file_writer_class = file_writer_class
@@ -440,7 +449,9 @@ class OpenGLRenderer:
         self.frame_buffer_object.clear(*self.background_color)
         self.window.swap_buffers()
 
-    def render(self, scene, frame_offset, moving_mobjects):
+    def render(
+        self, scene: Scene, frame_offset, moving_mobjects: list[Mobject]
+    ) -> None:
         self.update_frame(scene)
 
         if self.skip_animations:

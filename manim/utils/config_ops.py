@@ -10,11 +10,15 @@ __all__ = [
 
 
 import itertools as it
+from typing import TYPE_CHECKING
 
 import numpy as np
 
+if TYPE_CHECKING:
+    from typing_extensions import Any
 
-def merge_dicts_recursively(*dicts):
+
+def merge_dicts_recursively(*dicts: dict[str, Any]) -> dict[str, Any]:
     """
     Creates a dict whose keyset is the union of all the
     input dictionaries.  The value for each key is based
@@ -34,7 +38,7 @@ def merge_dicts_recursively(*dicts):
     return result
 
 
-def update_dict_recursively(current_dict, *others):
+def update_dict_recursively(current_dict, *others: dict) -> None:
     updated_dict = merge_dicts_recursively(current_dict, *others)
     current_dict.update(updated_dict)
 

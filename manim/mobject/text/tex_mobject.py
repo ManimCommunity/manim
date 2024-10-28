@@ -29,6 +29,7 @@ import re
 from collections.abc import Iterable
 from functools import reduce
 from textwrap import dedent
+from typing import TYPE_CHECKING
 
 from manim import config, logger
 from manim.constants import *
@@ -37,6 +38,9 @@ from manim.mobject.svg.svg_mobject import SVGMobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.tex import TexTemplate
 from manim.utils.tex_file_writing import tex_to_svg_file
+
+if TYPE_CHECKING:
+    from typing_extensions import Any
 
 tex_string_to_mob_map = {}
 
@@ -206,7 +210,7 @@ class SingleStringMathTex(SVGMobject):
         self.sort(lambda p: p[0])
         return self
 
-    def get_tex_string(self):
+    def get_tex_string(self) -> str:
         return self.tex_string
 
     def init_colors(self, propagate_colors=True):
@@ -255,13 +259,13 @@ class MathTex(SingleStringMathTex):
 
     def __init__(
         self,
-        *tex_strings,
+        *tex_strings: str,
         arg_separator: str = " ",
         substrings_to_isolate: Iterable[str] | None = None,
         tex_to_color_map: dict[str, ManimColor] = None,
         tex_environment: str = "align*",
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> None:
         self.tex_template = kwargs.pop("tex_template", config["tex_template"])
         self.arg_separator = arg_separator
         self.substrings_to_isolate = (
@@ -447,8 +451,12 @@ class Tex(MathTex):
     """
 
     def __init__(
-        self, *tex_strings, arg_separator="", tex_environment="center", **kwargs
-    ):
+        self,
+        *tex_strings: str,
+        arg_separator: str = "",
+        tex_environment: str = "center",
+        **kwargs: Any,
+    ) -> None:
         super().__init__(
             *tex_strings,
             arg_separator=arg_separator,
