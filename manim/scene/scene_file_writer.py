@@ -553,7 +553,7 @@ class SceneFileWriter:
             partial_movie_file_pix_fmt = "argb"
 
         with av.open(file_path, mode="w") as video_container:
-            stream = video_container.add_stream(
+            stream: Any = video_container.add_stream(
                 partial_movie_file_codec,
                 rate=fps,
                 options=av_options,
@@ -643,7 +643,7 @@ class SceneFileWriter:
         output_container.metadata["comment"] = (
             f"Rendered with Manim Community v{__version__}"
         )
-        output_stream = output_container.add_stream(
+        output_stream: Any = output_container.add_stream(
             codec_name="gif" if create_gif else None,
             template=partial_movies_stream if not create_gif else None,
         )

@@ -119,7 +119,7 @@ class Scene:
         # TODO: We should probably change the default value to the empty list.
         # This would remove several type issues, but it also triggers a lot of
         # errors in the unittests (pytest)
-        self.animations: list[Animation] | None = None
+        self.animations: list[Animation] = []
         self.stop_condition: Callable[[], bool] | None = None
         self.moving_mobjects: list[Mobject] = []
         self.static_mobjects: list[Mobject] = []
@@ -128,7 +128,7 @@ class Scene:
         # TODO: We should probably change the default value to 0, to avoid
         # handling the case where the value is None.
         # This change triggers no errors in the unittests (pytest).
-        self.last_t: float | None = None
+        self.last_t: float = 0
         self.queue: Queue = Queue()
         self.skip_animation_preview = False
         self.meshes: list[Object3D] = []
