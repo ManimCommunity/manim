@@ -15,7 +15,7 @@ is exposed to Manim's global name space):
 List of Color Constants
 -----------------------
 
-These hex values are derived from those specified in the `xcolor` package
+These hex values are derived from those specified in the ``xcolor`` package
 documentation (see https://ctan.org/pkg/xcolor):
 
 .. automanimcolormodule:: manim.utils.color.DVIPSNAMES
