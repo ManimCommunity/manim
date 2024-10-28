@@ -14,20 +14,46 @@ import sys
 import urllib.error
 import urllib.request
 from pathlib import Path
-from typing import cast
+from typing import Any, cast
 
 import cloup
 
-from ... import __version__, config, console, error_console, logger
-from ..._config import tempconfig
-from ...constants import EPILOG, RendererType
-from ...utils.module_ops import scene_classes_from_file
-from .ease_of_access_options import ease_of_access_options
-from .global_options import global_options
-from .output_options import output_options
-from .render_options import render_options
+from manim import __version__
+from manim._config import (
+    config,
+    console,
+    error_console,
+    logger,
+    tempconfig,
+)
+from manim.cli.render.ease_of_access_options import ease_of_access_options
+from manim.cli.render.global_options import global_options
+from manim.cli.render.output_options import output_options
+from manim.cli.render.render_options import render_options
+from manim.constants import EPILOG, RendererType
+from manim.utils.module_ops import scene_classes_from_file
 
 __all__ = ["render"]
+
+
+class ClickArgs:
+    def __init__(self, args: dict[str, Any]) -> None:
+        for name in args:
+            setattr(self, name, args[name])
+
+    def _get_kwargs(self) -> list[tuple[str, Any]]:
+        return list(self.__dict__.items())
+
+    def __eq__(self, other: ClickArgs) -> bool:
+        if not isinstance(other, ClickArgs):
+            return NotImplemented
+        return vars(self) == vars(other)
+
+    def __contains__(self, key: str) -> bool:
+        return key in self.__dict__
+
+    def __repr__(self) -> str:
+        return str(self.__dict__)
 
 
 @cloup.command(
@@ -41,9 +67,7 @@ __all__ = ["render"]
 @output_options
 @render_options
 @ease_of_access_options
-def render(
-    **args,
-):
+def render(**args: Any) -> ClickArgs:
     """Render SCENE(S) from the input FILE.
 
     FILE is the file path of the script or a config file.
@@ -62,25 +86,6 @@ def render(
         logger.warning(
             "The short form of show_in_file_browser is deprecated and will be moved to support --format.",
         )
-
-    class ClickArgs:
-        def __init__(self, args):
-            for name in args:
-                setattr(self, name, args[name])
-
-        def _get_kwargs(self):
-            return list(self.__dict__.items())
-
-        def __eq__(self, other):
-            if not isinstance(other, ClickArgs):
-                return NotImplemented
-            return vars(self) == vars(other)
-
-        def __contains__(self, key):
-            return key in self.__dict__
-
-        def __repr__(self):
-            return str(self.__dict__)
 
     click_args = ClickArgs(args)
     if args["jupyter"]:

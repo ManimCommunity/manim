@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 import re
 
-from cloup import Choice, option, option_group
+from cloup import Choice, Context, Parameter, option, option_group
 
 from manim.constants import QUALITIES, RendererType
 
@@ -12,7 +12,32 @@ __all__ = ["render_options"]
 logger = logging.getLogger("manim")
 
 
-def validate_scene_range(ctx, param, value):
+def validate_scene_range(
+    ctx: Context, param: Parameter, value: str
+) -> tuple[int] | tuple[int, int]:
+    """Extract the scene range from the ``value`` string, which should be
+    in any of these formats: 'start', 'start;end', 'start,end' or 'start-end'.
+
+    Parameters
+    ----------
+    ctx
+        The Cloup context.
+    param
+        A Cloup parameter.
+    value
+        The string which will be parsed.
+
+    Returns
+    -------
+    tuple[int] | tuple[int, int]
+        The scene range, given by a tuple which may contain a single value
+        ``start`` or two values ``start`` and ``end``.
+
+    Raises
+    ------
+    ValueError
+        If ``value`` has an invalid format.
+    """
     try:
         start = int(value)
         return (start,)
@@ -28,11 +53,33 @@ def validate_scene_range(ctx, param, value):
             exit()
 
 
-def validate_resolution(ctx, param, value):
+def validate_resolution(ctx: Context, param: Parameter, value: str) -> tuple[int, int]:
+    """Extract the resolution from the ``value`` string, which should be
+    in any of these formats: 'W;H', 'W,H' or 'W-H'.
+
+    Parameters
+    ----------
+    ctx
+        The Cloup context.
+    param
+        A Cloup parameter.
+    value
+        The string which will be parsed.
+
+    Returns
+    -------
+    tuple[int, int]
+        The resolution as a ``(W, H)`` tuple.
+
+    Raises
+    ------
+    ValueError
+        If ``value`` has an invalid format.
+    """
     if value:
         try:
-            start, end = map(int, re.split(r"[;,\-]", value))
-            return (start, end)
+            width, height = map(int, re.split(r"[;,\-]", value))
+            return (width, height)
         except Exception:
             logger.error("Resolution option is invalid.")
             exit()

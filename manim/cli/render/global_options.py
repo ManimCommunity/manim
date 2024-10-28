@@ -3,14 +3,38 @@ from __future__ import annotations
 import logging
 import re
 
-from cloup import Choice, option, option_group
+from cloup import Choice, Context, Parameter, option, option_group
 
 __all__ = ["global_options"]
 
 logger = logging.getLogger("manim")
 
 
-def validate_gui_location(ctx, param, value):
+def validate_gui_location(
+    ctx: Context, param: Parameter, value: str
+) -> tuple[int, int]:
+    """Extract the GUI location from the ``value`` string, which should be
+    in any of these formats: 'x;y', 'x,y' or 'x-y'.
+
+    Parameters
+    ----------
+    ctx
+        The Cloup context.
+    param
+        A Cloup parameter.
+    value
+        The string which will be parsed.
+
+    Returns
+    -------
+    tuple[int, int]
+        The ``(x, y)`` location for the GUI.
+
+    Raises
+    ------
+    ValueError
+        If ``value`` has an invalid format.
+    """
     if value:
         try:
             x_offset, y_offset = map(int, re.split(r"[;,\-]", value))

@@ -11,7 +11,7 @@ import timeit
 import click
 import cloup
 
-from manim.cli.checkhealth.checks import HEALTH_CHECKS
+from manim.cli.checkhealth.checks import HEALTH_CHECKS, HealthCheckFunction
 
 __all__ = ["checkhealth"]
 
@@ -19,13 +19,13 @@ __all__ = ["checkhealth"]
 @cloup.command(
     context_settings=None,
 )
-def checkhealth():
+def checkhealth() -> None:
     """This subcommand checks whether Manim is installed correctly
     and has access to its required (and optional) system dependencies.
     """
     click.echo(f"Python executable: {sys.executable}\n")
     click.echo("Checking whether your installation of Manim Community is healthy...")
-    failed_checks = []
+    failed_checks: list[HealthCheckFunction] = []
 
     for check in HEALTH_CHECKS:
         click.echo(f"- {check.description} ... ", nl=False)
