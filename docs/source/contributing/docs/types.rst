@@ -57,7 +57,8 @@ consider this slightly contrived function:
 
 .. code-block:: python
 
-   def shift_mobject(mob: Mobject, direction: Vector3D, scale_factor: float = 1) -> mob:
+   M = TypeVar("M", bound=Mobject)  # allow any mobject
+   def shift_mobject(mob: M, direction: Vector3D, scale_factor: float = 1) -> M:
        return mob.shift(direction * scale_factor)
 
 Here we see an important example of the difference. ``direction`` can not, and
@@ -129,6 +130,6 @@ There are several representations of images in Manim. The most common is
 the representation as a NumPy array of floats representing the pixels of an image.
 This is especially common when it comes to the OpenGL renderer.
 
-This is the use case of the :class:`~.typing.Image` type hint. Sometimes, Manim may use ``PIL.Image``,
-in which case one should use that type hint instead.
+This is the use case of the :class:`~.typing.PixelArray` type hint. Sometimes, Manim may use ``PIL.Image.Image``,
+which is not the same as :class:`~.typing.PixelArray`. In this case, use the ``PIL.Image.Image`` typehint.
 Of course, if a more specific type of image is needed, it can be annotated as such.
