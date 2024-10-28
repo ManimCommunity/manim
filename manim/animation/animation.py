@@ -148,6 +148,7 @@ class Animation(AnimationProtocol):
         **kwargs,
     ) -> None:
         self._typecheck_input(mobject)
+        self.run_time: float = run_time
         self.rate_func: Callable[[float], float] = rate_func
         self.reverse_rate_function: bool = reverse_rate_function
         self.name: str = name
@@ -174,32 +175,6 @@ class Animation(AnimationProtocol):
                     "Please use keyword arguments instead.",
                 ),
             )
-
-        self.run_time: float = run_time
-
-    @property
-    def run_time(self) -> float:
-        return self._run_time
-
-    @run_time.setter
-    def run_time(self, new_run_time: float) -> None:
-        if new_run_time <= 0:
-            raise ValueError(
-                f"{self} has a run_time of <= 0 seconds which Manim cannot render. "
-                "Please set the run_time to be positive."
-            )
-
-        # config.frame_rate holds the number of frames per second
-        frame_rate = 1 / config.frame_rate
-        if new_run_time < frame_rate:
-            logger.warning(
-                f"Original run time of {self} is shorter than current frame "
-                f"rate (1 frame every {frame_rate:.2f} sec.) which cannot be rendered. "
-                "Rendering with the shortest possible duration instead."
-            )
-            self._run_time = frame_rate
-        else:
-            self._run_time = new_run_time
 
     def _typecheck_input(self, mobject: Mobject | OpenGLMobject | None) -> None:
         if mobject is None:
@@ -234,6 +209,7 @@ class Animation(AnimationProtocol):
         method.
 
         """
+        self.run_time = validate_run_time(self.run_time, str(self))
         self.starting_mobject = self.create_starting_mobject()
         if self.suspend_mobject_updating:
             # All calls to self.mobject's internal updaters
@@ -576,6 +552,33 @@ def prepare_animation(
         raise TypeError(f"Object {anim} cannot be converted to an animation") from None
 
 
+def validate_run_time(
+    run_time: float, caller_name: str, parameter_name: str = "run_time"
+) -> float:
+    if run_time <= 0:
+        raise ValueError(
+            f"{caller_name} has a {parameter_name} of {run_time:g} <= 0 "
+            f"seconds which Manim cannot render. Please set the "
+            f"{parameter_name} to a positive number."
+        )
+
+    # config.frame_rate holds the number of frames per second
+    fps = config.frame_rate
+    seconds_per_frame = 1 / fps
+    if run_time < seconds_per_frame:
+        logger.warning(
+            f"The original {parameter_name} of {caller_name}, {run_time:g} "
+            f"seconds, is too short for the current frame rate of {fps:g} "
+            f"FPS. Rendering with the shortest possible {parameter_name} of "
+            f"{seconds_per_frame:g} seconds instead."
+        )
+        new_run_time = seconds_per_frame
+    else:
+        new_run_time = run_time
+
+    return new_run_time
+
+
 class Wait(Animation):
     """A "no operation" animation.
 
@@ -615,7 +618,7 @@ class Wait(Animation):
         super().__init__(None, run_time=run_time, rate_func=rate_func, **kwargs)
 
     def begin(self) -> None:
-        pass
+        self.run_time = validate_run_time(self.run_time, str(self))
 
     def finish(self) -> None:
         pass
