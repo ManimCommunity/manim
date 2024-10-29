@@ -58,6 +58,7 @@ if TYPE_CHECKING:
 
     from typing_extensions import Self
 
+    from manim.mobject.opengl.opengl_mobject import OpenGLCamera, OpenGLMobject
     from manim.typing import InternalPoint3D
 
 
@@ -168,10 +169,10 @@ class Scene:
             np.random.seed(self.random_seed)
 
     @property
-    def camera(self) -> Camera:
+    def camera(self) -> Camera | OpenGLCamera:
         return self.renderer.camera
 
-    def __deepcopy__(self, clone_from_id: Any) -> Scene:
+    def __deepcopy__(self, clone_from_id: list[Any]) -> Scene:
         cls = self.__class__
         result = cls.__new__(cls)
         clone_from_id[id(self)] = result
@@ -459,7 +460,7 @@ class Scene:
                 use_z_index=self.renderer.camera.use_z_index,
             )
 
-    def add(self, *mobjects: Mobject) -> Self:
+    def add(self, *mobjects: Mobject | OpenGLMobject) -> Self:
         """
         Mobjects will be displayed, from background to
         foreground in the order with which they are added.
@@ -1431,7 +1432,7 @@ class Scene:
 
         self.interact(shell, keyboard_thread)
 
-    # from IPython.terminal.embed import InteractiveShellEmbed
+    from IPython.terminal.embed import InteractiveShellEmbed
 
     def interact(
         self, shell: InteractiveShellEmbed, keyboard_thread: threading.Thread
