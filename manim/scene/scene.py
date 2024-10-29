@@ -16,7 +16,7 @@ import time
 import types
 from queue import Queue
 
-import srt
+import srt  # type: ignore[import-untyped]
 
 from manim.scene.section import DefaultSectionType
 
@@ -139,7 +139,7 @@ class Scene:
         self.point_lights: list[Any] = []
         self.ambient_light = None
         self.key_to_function_map: dict[str, Callable[[None], None]] = {}
-        self.mouse_press_callbacks: list[Callable[[None], None]] = []
+        self.mouse_press_callbacks: list[Callable[[], None]] = []
         self.interactive_mode = False
 
         if config.renderer == RendererType.OPENGL:
@@ -1365,14 +1365,16 @@ class Scene:
         def ipython(shell: InteractiveShellEmbed, namespace: dict[str, Any]) -> None:
             import manim.opengl
 
-            def load_module_into_namespace(module, namespace):
+            def load_module_into_namespace(
+                module: Any, namespace: dict[str, Any]
+            ) -> None:
                 for name in dir(module):
                     namespace[name] = getattr(module, name)
 
             load_module_into_namespace(manim, namespace)
             load_module_into_namespace(manim.opengl, namespace)
 
-            def embedded_rerun(*args, **kwargs):
+            def embedded_rerun(*args: Any, **kwargs: Any) -> None:
                 self.queue.put(("rerun_keyboard", args, kwargs))
                 shell.exiter()
 
@@ -1381,7 +1383,7 @@ class Scene:
             shell(local_ns=namespace)
             self.queue.put(("exit_keyboard", [], {}))
 
-        def get_embedded_method(method_name: str):
+        def get_embedded_method(method_name: str) -> Callable:
             return lambda *args, **kwargs: self.queue.put((method_name, args, kwargs))
 
         local_namespace = inspect.currentframe().f_back.f_locals

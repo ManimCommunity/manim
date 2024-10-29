@@ -36,6 +36,7 @@ from .vectorized_mobject_rendering import (
 )
 
 if TYPE_CHECKING:
+    import numpy.typing as npt
     from typing_extensions import Self
 
     from manim.mobject.mobject import Mobject
@@ -109,7 +110,7 @@ class OpenGLCamera(OpenGLMobject):
         self.euler_angles = euler_angles
         self.refresh_rotation_matrix()
 
-    def get_position(self):
+    def get_position(self) -> npt.NDArray:
         return self.model_matrix[:, 3][:3]
 
     def set_position(self, position):
@@ -130,7 +131,7 @@ class OpenGLCamera(OpenGLMobject):
         self.set_height(self.frame_shape[1], stretch=True)
         self.move_to(self.center_point)
 
-    def to_default_state(self):
+    def to_default_state(self) -> Self:
         self.center()
         self.set_height(config["frame_height"])
         self.set_width(config["frame_width"])
@@ -206,15 +207,15 @@ class OpenGLCamera(OpenGLMobject):
         # Assumes first point is at the center
         return self.points[0]
 
-    def get_width(self):
+    def get_width(self) -> float:
         points = self.points
         return points[2, 0] - points[1, 0]
 
-    def get_height(self):
+    def get_height(self) -> float:
         points = self.points
         return points[4, 1] - points[3, 1]
 
-    def get_focal_distance(self):
+    def get_focal_distance(self) -> float:
         return self.focal_distance * self.get_height()
 
     def interpolate(self, *args, **kwargs):
@@ -445,7 +446,7 @@ class OpenGLRenderer:
         self.time += scene.duration
         self.num_plays += 1
 
-    def clear_screen(self):
+    def clear_screen(self) -> None:
         self.frame_buffer_object.clear(*self.background_color)
         self.window.swap_buffers()
 
