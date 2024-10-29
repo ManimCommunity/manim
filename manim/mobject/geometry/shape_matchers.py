@@ -52,9 +52,7 @@ class SurroundingRectangle(RoundedRectangle):
         from manim.mobject.mobject import Group
 
         if not all(isinstance(mob, Mobject) for mob in mobjects):
-            raise TypeError(
-                "SurroundingRectangle positional arguments can only be of type Mobject"
-            )
+            raise TypeError("Expected all inputs for parameter mobjects to be a Mobjects")
 
         group = Group(*mobjects)
         super().__init__(
