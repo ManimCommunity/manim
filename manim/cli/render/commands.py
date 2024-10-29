@@ -13,6 +13,7 @@ import json
 import sys
 import urllib.error
 import urllib.request
+from argparse import Namespace
 from pathlib import Path
 from typing import Any, cast
 
@@ -36,7 +37,7 @@ from manim.utils.module_ops import scene_classes_from_file
 __all__ = ["render"]
 
 
-class ClickArgs:
+class ClickArgs(Namespace):
     def __init__(self, args: dict[str, Any]) -> None:
         for name in args:
             setattr(self, name, args[name])
@@ -44,7 +45,7 @@ class ClickArgs:
     def _get_kwargs(self) -> list[tuple[str, Any]]:
         return list(self.__dict__.items())
 
-    def __eq__(self, other: ClickArgs) -> bool:
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, ClickArgs):
             return NotImplemented
         return vars(self) == vars(other)
@@ -61,13 +62,13 @@ class ClickArgs:
     no_args_is_help=True,
     epilog=EPILOG,
 )
-@cloup.argument("file", type=Path, required=True)
+@cloup.argument("file", type=cloup.Path(path_type=Path), required=True)
 @cloup.argument("scene_names", required=False, nargs=-1)
 @global_options
 @output_options
 @render_options
 @ease_of_access_options
-def render(**args: Any) -> ClickArgs:
+def render(**args: Any) -> ClickArgs | dict[str, Any]:
     """Render SCENE(S) from the input FILE.
 
     FILE is the file path of the script or a config file.

@@ -89,7 +89,7 @@ def update_cfg(cfg_dict: dict[str, Any], project_cfg_path: Path) -> None:
     context_settings=CONTEXT_SETTINGS,
     epilog=EPILOG,
 )
-@cloup.argument("project_name", type=Path, required=False)
+@cloup.argument("project_name", type=cloup.Path(path_type=Path), required=False)
 @cloup.option(
     "-d",
     "--default",

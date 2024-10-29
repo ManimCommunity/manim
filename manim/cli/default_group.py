@@ -13,17 +13,19 @@ In particular, this class is what allows ``manim`` to act as ``manim render``.
 from __future__ import annotations
 
 import warnings
-from collections.abc import Iterable
 from typing import TYPE_CHECKING, Any, Callable
 
 import cloup
 
+from manim.utils.deprecation import deprecated
+
 __all__ = ["DefaultGroup"]
 
 if TYPE_CHECKING:
+    from click import Command, Context
     from typing_extensions import TypeVar
 
-    C = TypeVar("C", bound=cloup.Command)
+    C = TypeVar("C", bound=Command)
 
 
 class DefaultGroup(cloup.Group):
@@ -58,7 +60,7 @@ class DefaultGroup(cloup.Group):
         self.default_if_no_args: bool = kwargs.pop("default_if_no_args", False)
         super().__init__(*args, **kwargs)
 
-    def set_default_command(self, command: cloup.Command) -> None:
+    def set_default_command(self, command: Command) -> None:
         """Sets a command function as the default command.
 
         Parameters
@@ -70,7 +72,7 @@ class DefaultGroup(cloup.Group):
         self.add_command(command)
         self.default_cmd_name = cmd_name
 
-    def parse_args(self, ctx: cloup.Context, args: list[str]) -> list[str]:
+    def parse_args(self, ctx: Context, args: list[str]) -> list[str]:
         """Parses the list of ``args`` by forwarding it to
         :meth:`cloup.Group.parse_args`. Before doing so, if
         :attr:`default_if_no_args` is set to ``True`` and ``args`` is empty,
@@ -80,7 +82,7 @@ class DefaultGroup(cloup.Group):
         Parameters
         ----------
         ctx
-            The Cloup context.
+            The Click context.
         args
             A list of arguments. If it's empty and :attr:`default_if_no_args`
             is ``True``, append the name of the default command to it.
@@ -90,11 +92,12 @@ class DefaultGroup(cloup.Group):
         list[str]
             The parsed arguments.
         """
-        if not args and self.default_if_no_args:
+        if not args and self.default_if_no_args and self.default_cmd_name:
             args.insert(0, self.default_cmd_name)
-        return super().parse_args(ctx, args)
+        parsed_args: list[str] = super().parse_args(ctx, args)
+        return parsed_args
 
-    def get_command(self, ctx: cloup.Context, cmd_name: str) -> cloup.Command | None:
+    def get_command(self, ctx: Context, cmd_name: str) -> Command | None:
         """Get a command function by its name, by forwarding the arguments to
         :meth:`cloup.Group.get_command`. If ``cmd_name`` does not match any of
         the command names in :attr:`commands`, attempt to get the default command
@@ -103,38 +106,39 @@ class DefaultGroup(cloup.Group):
         Parameters
         ----------
         ctx
-            The Cloup context.
+            The Click context.
         cmd_name
             The name of the command to get.
 
         Returns
         -------
-        :class:`cloup.Command` | None
+        :class:`click.Command` | None
             The command, if found. Otherwise, ``None``.
         """
-        if cmd_name not in self.commands:
+        if cmd_name not in self.commands and self.default_cmd_name:
             # No command name matched.
-            ctx.arg0 = cmd_name
+            ctx.meta["arg0"] = cmd_name
             cmd_name = self.default_cmd_name
         return super().get_command(ctx, cmd_name)
 
     def resolve_command(
-        self, ctx: cloup.Context, args: list[str]
-    ) -> tuple[str | None, cloup.Command | None, list[str]]:
+        self, ctx: Context, args: list[str]
+    ) -> tuple[str | None, Command | None, list[str]]:
         """Given a list of ``args`` given by a CLI, find a command which
         matches the first element, and return its name (``cmd_name``), the
         command function itself (``cmd``) and the rest of the arguments which
         shall be passed to the function (``cmd_args``). If not found, return
         ``None``, ``None`` and the rest of the arguments.
 
-        After resolving the command, if the Cloup context given by ``ctx``
-        contains an ``arg0`` attribute, insert it as the first element of
-        the returned ``cmd_args``.
+        After resolving the command, if the Click context given by ``ctx``
+        contains an ``arg0`` attribute in its :attr:`click.Context.meta`
+        dictionary, insert it as the first element of the returned
+        ``cmd_args``.
 
         Parameters
         ----------
         ctx
-            The Cloup context.
+            The Click context.
         cmd_name
             The name of the command to get.
 
@@ -142,27 +146,20 @@ class DefaultGroup(cloup.Group):
         -------
         cmd_name : str | None
             The command name, if found. Otherwise, ``None``.
-        cmd : :class:`cloup.Command` | None
+        cmd : :class:`click.Command` | None
             The command, if found. Otherwise, ``None``.
         cmd_args : list[str]
             The rest of the arguments to be passed to ``cmd``.
         """
-        base = super()
-        cmd_name, cmd, args = base.resolve_command(ctx, args)
-        if hasattr(ctx, "arg0"):
-            args.insert(0, ctx.arg0)
-            cmd_name = cmd.name
+        cmd_name, cmd, args = super().resolve_command(ctx, args)
+        if "arg0" in ctx.meta:
+            args.insert(0, ctx.meta["arg0"])
+            if cmd is not None:
+                cmd_name = cmd.name
         return cmd_name, cmd, args
 
-    def command(
-        self,
-        name: str | None = None,
-        *,
-        aliases: Iterable[str] | None = None,
-        cls: type[C] | None = None,
-        section: cloup.Section | None = None,
-        **kwargs: Any,
-    ) -> Callable[[Callable], C | cloup.Command]:
+    @deprecated
+    def command(self, *args: Any, **kwargs: Any) -> Callable[[Callable], Command]:
         """Return a decorator which converts any function into the default
         subcommand for this :class:`DefaultGroup`.
 
@@ -178,24 +175,22 @@ class DefaultGroup(cloup.Group):
             An optional list of aliases for the command.
         cls
             The class of the final default subcommand, which must be a subclass
-            of :class:`cloup.Command`. If it's not specified, the subcommand
-            will have a default :class:`cloup.Command` type.
+            of :class:`click.Command`. If it's not specified, the subcommand
+            will have a default :class:`click.Command` type.
         **kwargs
             Additional keyword arguments to pass to
-            :meth:`cloup.Command.command`.
+            :meth:`click.Command.command`.
 
         Returns
         -------
-        Callable[[Callable], C | cloup.Command]
+        Callable[[Callable], C | click.Command]
             A decorator which transforms its input into this
             :class:`DefaultGroup`'s default subcommand, a
-            :class:`cloup.Command` whose type may be further specified by
+            :class:`click.Command` whose type may be further specified by
             ``cls``.
         """
         default = kwargs.pop("default", False)
-        decorator = super().command(
-            name, aliases=aliases, cls=cls, section=section, **kwargs
-        )
+        decorator: Callable[[Callable], Command] = super().command(*args, **kwargs)
         if not default:
             return decorator
         warnings.warn(
@@ -204,7 +199,7 @@ class DefaultGroup(cloup.Group):
             stacklevel=1,
         )
 
-        def _decorator(f: Callable) -> C | cloup.Command:
+        def _decorator(f: Callable) -> Command:
             cmd = decorator(f)
             self.set_default_command(cmd)
             return cmd

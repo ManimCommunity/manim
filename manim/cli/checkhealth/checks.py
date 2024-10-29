@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import os
 import shutil
-from typing import Callable, Protocol
+from typing import Callable, Protocol, cast
 
 __all__ = ["HEALTH_CHECKS"]
 
@@ -16,6 +16,7 @@ class HealthCheckFunction(Protocol):
     recommendation: str
     skip_on_failed: list[str]
     post_fail_fix_hook: Callable | None
+    __name__: str
 
     def __call__(self) -> bool: ...
 
@@ -28,7 +29,7 @@ def healthcheck(
     recommendation: str,
     skip_on_failed: list[HealthCheckFunction | str] | None = None,
     post_fail_fix_hook: Callable | None = None,
-) -> Callable[Callable, HealthCheckFunction]:
+) -> Callable[[Callable], HealthCheckFunction]:
     """Decorator used for declaring health checks.
 
     This decorator attaches some data to a function, which is then added to a
@@ -55,19 +56,22 @@ def healthcheck(
         A decorator which converts a function into a health check function, as
         required by the ``checkhealth`` subcommand.
     """
+    new_skip_on_failed: list[str]
     if skip_on_failed is None:
-        skip_on_failed = []
-    skip_on_failed: list[str] = [
-        skip.__name__ if callable(skip) else skip for skip in skip_on_failed
-    ]
+        new_skip_on_failed = []
+    else:
+        new_skip_on_failed = [
+            skip.__name__ if callable(skip) else skip for skip in skip_on_failed
+        ]
 
     def wrapper(func: Callable) -> HealthCheckFunction:
-        func.description: str = description
-        func.recommendation: str = recommendation
-        func.skip_on_failed: list[str] = skip_on_failed
-        func.post_fail_fix_hook: Callable | None = post_fail_fix_hook
-        HEALTH_CHECKS.append(func)
-        return func
+        health_func = cast(HealthCheckFunction, func)
+        health_func.description = description
+        health_func.recommendation = recommendation
+        health_func.skip_on_failed = new_skip_on_failed
+        health_func.post_fail_fix_hook = post_fail_fix_hook
+        HEALTH_CHECKS.append(health_func)
+        return health_func
 
     return wrapper
 
@@ -95,7 +99,7 @@ def is_manim_on_path() -> bool:
     :class:`bool`
         Whether ``manim`` is in ``PATH`` or not.
     """
-    path_to_manim: str | None = shutil.which("manim")
+    path_to_manim = shutil.which("manim")
     return path_to_manim is not None
 
 
@@ -130,7 +134,8 @@ def is_manim_executable_associated_to_this_library() -> bool:
         Whether the ``manim`` executable in ``PATH`` is associated to this
         library or not.
     """
-    path_to_manim: str = shutil.which("manim")
+    path_to_manim = shutil.which("manim")
+    assert path_to_manim is not None
     with open(path_to_manim, "rb") as manim_binary:
         manim_exec = manim_binary.read()
 

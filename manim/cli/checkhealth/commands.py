@@ -63,7 +63,7 @@ def checkhealth() -> None:
             import manim as mn
 
             class CheckHealthDemo(mn.Scene):
-                def _inner_construct(self):
+                def _inner_construct(self) -> None:
                     banner = mn.ManimBanner().shift(mn.UP * 0.5)
                     self.play(banner.create())
                     self.wait(0.5)
@@ -80,7 +80,7 @@ def checkhealth() -> None:
                         mn.FadeOut(text_tex_group, shift=mn.DOWN),
                     )
 
-                def construct(self):
+                def construct(self) -> None:
                     self.execution_time = timeit.timeit(self._inner_construct, number=1)
 
             with mn.tempconfig({"preview": True, "disable_caching": True}):

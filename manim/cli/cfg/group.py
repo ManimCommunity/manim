@@ -11,7 +11,7 @@ from __future__ import annotations
 import contextlib
 from ast import literal_eval
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any, cast
 
 import cloup
 from rich.errors import StyleSyntaxError
@@ -22,12 +22,16 @@ from manim._config.utils import config_file_paths, make_config_parser
 from manim.constants import EPILOG
 from manim.utils.file_ops import guarantee_existence, open_file
 
+if TYPE_CHECKING:
+    pass
+
+
 RICH_COLOUR_INSTRUCTIONS: str = """
 [red]The default colour is used by the input statement.
 If left empty, the default colour will be used.[/red]
 [magenta] For a full list of styles, visit[/magenta] [green]https://rich.readthedocs.io/en/latest/style.html[/green]
 """
-RICH_NON_STYLE_ENTRIES: str = ["log.width", "log.height", "log.timestamps"]
+RICH_NON_STYLE_ENTRIES: list[str] = ["log.width", "log.height", "log.timestamps"]
 
 __all__ = [
     "value_from_string",
@@ -83,11 +87,13 @@ def _is_expected_datatype(
         Whether or not the literal from ``value`` matches the datatype of the
         literal from ``expected``.
     """
-    value = value_from_string(value)
-    expected = type(value_from_string(expected))
+    value_literal = value_from_string(value)
+    ExpectedLiteralType = type(value_from_string(expected))
 
-    return isinstance(value, expected) and (
-        is_valid_style(value) if validate_style else True
+    return isinstance(value_literal, ExpectedLiteralType) and (
+        (type(value_literal) is str and is_valid_style(value_literal))
+        if validate_style
+        else True
     )
 
 
@@ -148,7 +154,7 @@ def replace_keys(default: dict[str, Any]) -> dict[str, Any]:
     help="Manages Manim configuration files.",
 )
 @cloup.pass_context
-def cfg(ctx: cloup.Context):
+def cfg(ctx: cloup.Context) -> None:
     """Responsible for the cfg subcommand."""
     pass
 
@@ -162,7 +168,7 @@ def cfg(ctx: cloup.Context):
     help="Specify if this config is for user or the working directory.",
 )
 @cloup.option("-o", "--open", "openfile", is_flag=True)
-def write(level: str = None, openfile: bool = False) -> None:
+def write(level: str | None = None, openfile: bool = False) -> None:
     config_paths = config_file_paths()
     console.print(
         "[yellow bold]Manim Configuration File Writer[/yellow bold]",
@@ -181,7 +187,7 @@ To save your config please save that file and place it in your current working d
         action = "save this as"
         for category in parser:
             console.print(f"{category}", style="bold green underline")
-            default = parser[category]
+            default = cast(dict[str, Any], parser[category])
             if category == "logger":
                 console.print(RICH_COLOUR_INSTRUCTIONS)
                 default = replace_keys(default)
@@ -260,11 +266,11 @@ modify write_cfg_subcmd_input to account for it.""",
     with cfg_file_path.open("w") as fp:
         parser.write(fp)
     if openfile:
-        open_file(cfg_file_path)
+        open_file(str(cfg_file_path))
 
 
 @cfg.command(context_settings=cli_ctx_settings)
-def show():
+def show() -> None:
     parser = make_config_parser()
     rich_non_style_entries = [a.replace(".", "_") for a in RICH_NON_STYLE_ENTRIES]
     for category in parser:
