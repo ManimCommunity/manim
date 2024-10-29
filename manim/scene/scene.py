@@ -181,7 +181,6 @@ class Scene:
             if k == "camera_class":
                 setattr(result, k, v)
             setattr(result, k, copy.deepcopy(v, clone_from_id))
-        result.mobject_updater_lists = []
 
         # Update updaters
         for mobject in self.mobjects:
@@ -225,8 +224,6 @@ class Scene:
                 cloned_updaters.append(cloned_updater)
             mobject_clone = clone_from_id[id(mobject)]
             mobject_clone.updaters = cloned_updaters
-            if len(cloned_updaters) > 0:
-                result.mobject_updater_lists.append((mobject_clone, cloned_updaters))
         return result
 
     def render(self, preview: bool = False) -> bool:
