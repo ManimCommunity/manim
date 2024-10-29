@@ -167,9 +167,9 @@ class DefaultGroup(cloup.Group):
         Parameters
         ----------
         *args
-            Positional arguments to pass to :meth:`click.Command.command`.
+            Positional arguments to pass to :meth:`click.Group.command`.
         **kwargs
-            Keyword arguments to pass to :meth:`click.Command.command`.
+            Keyword arguments to pass to :meth:`click.Group.command`.
 
         Returns
         -------
