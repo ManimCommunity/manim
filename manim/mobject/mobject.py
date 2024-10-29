@@ -406,6 +406,12 @@ class Mobject:
             as its own updater. If you are chaining methods, make sure they
             do not interfere with each other or you may get unexpected results.
 
+        .. warning::
+
+            :attr:`always` is not compatible with :meth:`.ValueTracker.get_value`, because
+            the value will be computed once and then never updated again. Use :meth:`add_updater`
+            if you would like to use a :class:`~.ValueTracker` to update the value.
+
         Example
         -------
 
