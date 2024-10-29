@@ -23,9 +23,6 @@ __all__ = ["DefaultGroup"]
 
 if TYPE_CHECKING:
     from click import Command, Context
-    from typing_extensions import TypeVar
-
-    C = TypeVar("C", bound=Command)
 
 
 class DefaultGroup(cloup.Group):
@@ -169,25 +166,16 @@ class DefaultGroup(cloup.Group):
 
         Parameters
         ----------
-        name
-            The optional name for the command.
-        aliases
-            An optional list of aliases for the command.
-        cls
-            The class of the final default subcommand, which must be a subclass
-            of :class:`click.Command`. If it's not specified, the subcommand
-            will have a default :class:`click.Command` type.
+        *args
+            Positional arguments to pass to :meth:`click.Command.command`.
         **kwargs
-            Additional keyword arguments to pass to
-            :meth:`click.Command.command`.
+            Keyword arguments to pass to :meth:`click.Command.command`.
 
         Returns
         -------
-        Callable[[Callable], C | click.Command]
+        Callable[[Callable], click.Command]
             A decorator which transforms its input into this
-            :class:`DefaultGroup`'s default subcommand, a
-            :class:`click.Command` whose type may be further specified by
-            ``cls``.
+            :class:`DefaultGroup`'s default subcommand.
         """
         default = kwargs.pop("default", False)
         decorator: Callable[[Callable], Command] = super().command(*args, **kwargs)
