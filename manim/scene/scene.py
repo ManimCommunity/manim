@@ -58,7 +58,6 @@ if TYPE_CHECKING:
 
     from typing_extensions import Self
 
-    from manim.mobject.opengl.opengl_mobject import OpenGLCamera, OpenGLMobject
     from manim.typing import InternalPoint3D
 
 
