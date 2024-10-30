@@ -68,28 +68,28 @@ class ClickArgs(Namespace):
 @output_options
 @render_options
 @ease_of_access_options
-def render(**args: Any) -> ClickArgs | dict[str, Any]:
+def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
     """Render SCENE(S) from the input FILE.
 
     FILE is the file path of the script or a config file.
 
     SCENES is an optional list of scenes in the file.
     """
-    if args["save_as_gif"]:
+    if kwargs["save_as_gif"]:
         logger.warning("--save_as_gif is deprecated, please use --format=gif instead!")
-        args["format"] = "gif"
+        kwargs["format"] = "gif"
 
-    if args["save_pngs"]:
+    if kwargs["save_pngs"]:
         logger.warning("--save_pngs is deprecated, please use --format=png instead!")
-        args["format"] = "png"
+        kwargs["format"] = "png"
 
-    if args["show_in_file_browser"]:
+    if kwargs["show_in_file_browser"]:
         logger.warning(
             "The short form of show_in_file_browser is deprecated and will be moved to support --format.",
         )
 
-    click_args = ClickArgs(args)
-    if args["jupyter"]:
+    click_args = ClickArgs(kwargs)
+    if kwargs["jupyter"]:
         return click_args
 
     config.digest_args(click_args)
@@ -158,4 +158,4 @@ def render(**args: Any) -> ClickArgs | dict[str, Any]:
                     "You should consider upgrading via [yellow]pip install -U manim[/yellow]",
                 )
 
-    return args
+    return kwargs

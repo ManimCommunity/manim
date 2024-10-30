@@ -98,14 +98,14 @@ def update_cfg(cfg_dict: dict[str, Any], project_cfg_path: Path) -> None:
     help="Default settings for project creation.",
     nargs=1,
 )
-def project(default_settings: bool, **args: Any) -> None:
+def project(default_settings: bool, **kwargs: Any) -> None:
     """Creates a new project.
 
     PROJECT_NAME is the name of the folder in which the new project will be initialized.
     """
     project_name: Path
-    if args["project_name"]:
-        project_name = args["project_name"]
+    if kwargs["project_name"]:
+        project_name = kwargs["project_name"]
     else:
         project_name = click.prompt("Project Name", type=Path)
 
@@ -150,7 +150,7 @@ def project(default_settings: bool, **args: Any) -> None:
 )
 @cloup.argument("scene_name", type=str, required=True)
 @cloup.argument("file_name", type=str, required=False)
-def scene(**args: Any) -> None:
+def scene(**kwargs: Any) -> None:
     """Inserts a SCENE to an existing FILE or creates a new FILE.
 
     SCENE is the name of the scene that will be inserted.
@@ -163,10 +163,10 @@ def scene(**args: Any) -> None:
         default="Default",
     )
     scene = (get_template_path() / f"{template_name}.mtp").resolve().read_text()
-    scene = scene.replace(template_name + "Template", args["scene_name"], 1)
+    scene = scene.replace(template_name + "Template", kwargs["scene_name"], 1)
 
-    if args["file_name"]:
-        file_name = Path(args["file_name"])
+    if kwargs["file_name"]:
+        file_name = Path(kwargs["file_name"])
 
         if file_name.suffix != ".py":
             file_name = file_name.with_suffix(file_name.suffix + ".py")

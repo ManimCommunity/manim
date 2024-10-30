@@ -156,7 +156,9 @@ class DefaultGroup(cloup.Group):
         return cmd_name, cmd, args
 
     @deprecated
-    def command(self, *args: Any, **kwargs: Any) -> Callable[[Callable], Command]:
+    def command(
+        self, *args: Any, **kwargs: Any
+    ) -> Callable[[Callable[..., object]], Command]:
         """Return a decorator which converts any function into the default
         subcommand for this :class:`DefaultGroup`.
 
@@ -167,18 +169,20 @@ class DefaultGroup(cloup.Group):
         Parameters
         ----------
         *args
-            Positional arguments to pass to :meth:`click.Group.command`.
+            Positional arguments to pass to :meth:`cloup.Group.command`.
         **kwargs
-            Keyword arguments to pass to :meth:`click.Group.command`.
+            Keyword arguments to pass to :meth:`cloup.Group.command`.
 
         Returns
         -------
-        Callable[[Callable], click.Command]
+        Callable[[Callable[..., object]], click.Command]
             A decorator which transforms its input into this
             :class:`DefaultGroup`'s default subcommand.
         """
         default = kwargs.pop("default", False)
-        decorator: Callable[[Callable], Command] = super().command(*args, **kwargs)
+        decorator: Callable[[Callable[..., object]], Command] = super().command(
+            *args, **kwargs
+        )
         if not default:
             return decorator
         warnings.warn(

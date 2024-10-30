@@ -188,7 +188,7 @@ def modify_atime(file_path: str) -> None:
     os.utime(file_path, times=(time.time(), Path(file_path).stat().st_mtime))
 
 
-def open_file(file_path: str, in_browser: bool = False) -> None:
+def open_file(file_path: Path, in_browser: bool = False) -> None:
     current_os = platform.system()
     if current_os == "Windows":
         os.startfile(file_path if not in_browser else file_path.parent)

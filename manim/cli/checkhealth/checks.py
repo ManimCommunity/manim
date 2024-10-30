@@ -15,7 +15,7 @@ class HealthCheckFunction(Protocol):
     description: str
     recommendation: str
     skip_on_failed: list[str]
-    post_fail_fix_hook: Callable | None
+    post_fail_fix_hook: Callable[..., object] | None
     __name__: str
 
     def __call__(self) -> bool: ...
@@ -28,8 +28,8 @@ def healthcheck(
     description: str,
     recommendation: str,
     skip_on_failed: list[HealthCheckFunction | str] | None = None,
-    post_fail_fix_hook: Callable | None = None,
-) -> Callable[[Callable], HealthCheckFunction]:
+    post_fail_fix_hook: Callable[..., object] | None = None,
+) -> Callable[[Callable[[], bool]], HealthCheckFunction]:
     """Decorator used for declaring health checks.
 
     This decorator attaches some data to a function, which is then added to a
@@ -52,7 +52,7 @@ def healthcheck(
 
     Returns
     -------
-    Callable[Callable, :class:`HealthCheckFunction`]
+    Callable[Callable[[], bool], :class:`HealthCheckFunction`]
         A decorator which converts a function into a health check function, as
         required by the ``checkhealth`` subcommand.
     """
@@ -64,7 +64,7 @@ def healthcheck(
             skip.__name__ if callable(skip) else skip for skip in skip_on_failed
         ]
 
-    def wrapper(func: Callable) -> HealthCheckFunction:
+    def wrapper(func: Callable[[], bool]) -> HealthCheckFunction:
         health_func = cast(HealthCheckFunction, func)
         health_func.description = description
         health_func.recommendation = recommendation
@@ -165,7 +165,7 @@ def is_latex_available() -> bool:
     :class:`bool`
         Whether ``latex`` is in ``PATH`` and can be executed or not.
     """
-    path_to_latex: str | None = shutil.which("latex")
+    path_to_latex = shutil.which("latex")
     return path_to_latex is not None and os.access(path_to_latex, os.X_OK)
 
 
@@ -187,5 +187,5 @@ def is_dvisvgm_available() -> bool:
     :class:`bool`
         Whether ``dvisvgm`` is in ``PATH`` and can be executed or not.
     """
-    path_to_dvisvgm: str | None = shutil.which("dvisvgm")
+    path_to_dvisvgm = shutil.which("dvisvgm")
     return path_to_dvisvgm is not None and os.access(path_to_dvisvgm, os.X_OK)

@@ -11,7 +11,7 @@ from __future__ import annotations
 import contextlib
 from ast import literal_eval
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, cast
+from typing import Any, cast
 
 import cloup
 from rich.errors import StyleSyntaxError
@@ -21,10 +21,6 @@ from manim._config import cli_ctx_settings, console
 from manim._config.utils import config_file_paths, make_config_parser
 from manim.constants import EPILOG
 from manim.utils.file_ops import guarantee_existence, open_file
-
-if TYPE_CHECKING:
-    pass
-
 
 RICH_COLOUR_INSTRUCTIONS: str = """
 [red]The default colour is used by the input statement.
@@ -91,7 +87,7 @@ def _is_expected_datatype(
     ExpectedLiteralType = type(value_from_string(expected))
 
     return isinstance(value_literal, ExpectedLiteralType) and (
-        (type(value_literal) is str and is_valid_style(value_literal))
+        (isinstance(value_literal, str) and is_valid_style(value_literal))
         if validate_style
         else True
     )
@@ -266,7 +262,7 @@ modify write_cfg_subcmd_input to account for it.""",
     with cfg_file_path.open("w") as fp:
         parser.write(fp)
     if openfile:
-        open_file(str(cfg_file_path))
+        open_file(cfg_file_path)
 
 
 @cfg.command(context_settings=cli_ctx_settings)
