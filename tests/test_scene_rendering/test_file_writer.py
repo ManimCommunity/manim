@@ -146,7 +146,7 @@ def test_scene_with_non_raw_or_wav_audio(manim_caplog):
             self.add_sound(file_path)
             self.wait()
 
-    SceneWithMP3().render()
+    Manager(SceneWithMP3).render()
     assert "click.mp3 to .wav" in manim_caplog.text
 
 

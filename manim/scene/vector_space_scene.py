@@ -13,6 +13,7 @@ from manim.mobject.geometry.line import Arrow, Line, Vector
 from manim.mobject.geometry.polygram import Rectangle
 from manim.mobject.graphing.coordinate_systems import Axes, NumberPlane
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.text.tex_mobject import MathTex, Tex
 from manim.utils.config_ops import update_dict_recursively
 
@@ -1002,7 +1003,7 @@ class LinearTransformationScene(VectorScene):
         Animation
             The animation of the movement.
         """
-        v_pieces = [piece for piece in pieces if isinstance(piece, VMobject)]
+        v_pieces = [piece for piece in pieces if isinstance(piece, OpenGLVMobject)]
         start = VGroup(*v_pieces)
         target = VGroup(*(mob.target for mob in v_pieces))
 

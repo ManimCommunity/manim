@@ -1236,7 +1236,7 @@ class MarkupText(SVGMobject):
         else:
             self.line_spacing = self._font_size + self._font_size * self.line_spacing
 
-        color: ManimColor = ManimColor(color) if color else VMobject().color
+        color: ManimColor = ManimColor(color) if color else OpenGLVMobject().color
         file_name = self._text2svg(color)
 
         PangoUtils.remove_last_M(file_name)

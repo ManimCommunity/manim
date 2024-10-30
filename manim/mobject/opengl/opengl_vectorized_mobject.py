@@ -142,13 +142,13 @@ class OpenGLVMobject(OpenGLMobject):
     def __getitem__(self, value: int | slice) -> Self:  # type: ignore
         return super().__getitem__(value)  # type: ignore
 
-    def add(self, *vmobjects: OpenGLVMobject):  # type: ignore
+    def add(self, *vmobjects: OpenGLVMobject) -> Self:  # type: ignore
         if not all(isinstance(m, OpenGLVMobject) for m in vmobjects):
             raise Exception("All submobjects must be of type OpenGLVMobject")
-        super().add(*vmobjects)
+        return super().add(*vmobjects)
 
     # Colors
-    def init_colors(self):
+    def init_colors(self) -> Self:
         # self.set_fill(
         #     color=self.fill_color or self.color,
         #     opacity=self.fill_opacity,

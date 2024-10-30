@@ -144,13 +144,15 @@ def test_mobject_dimensions_mobjects_with_no_points_are_at_origin():
     assert outer_group.width == 2
     assert outer_group.height == 3
 
-    # Adding a mobject with no points has a quirk of adding a "point"
-    # to [0, 0, 0] (the origin). This changes the size of the outer
-    # group because now the bottom left corner is at [-5, -6.5, 0]
-    # but the upper right corner is [0, 0, 0] instead of [-3, -3.5, 0]
+    # TODO: remove the following 8 lines?
+    # Originally, adding a mobject with no points had a quirk of adding a
+    # "point" to [0, 0, 0] (the origin). This changed the size of the outer
+    # group, because the bottom was corner is at [-5, -6.5, 0], but the
+    # upper right corner became [0, 0, 0] instead of [-3, -3.5, 0].
+    # However, this no longer happens.
     outer_group.add(VGroup())
-    assert outer_group.width == 5
-    assert outer_group.height == 6.5
+    assert outer_group.width == 2
+    assert outer_group.height == 3
 
 
 def test_mobject_dimensions_has_points_and_children():

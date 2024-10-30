@@ -10,7 +10,7 @@ from pyglet.window import key
 from typing_extensions import assert_never
 
 from manim import config, logger
-from manim.animation.animation import prepare_animation
+from manim.animation.animation import prepare_animation, validate_run_time
 from manim.animation.scene_buffer import SceneBuffer, SceneOperation
 from manim.camera.camera import Camera
 from manim.constants import DEFAULT_WAIT_TIME
@@ -380,6 +380,7 @@ class Scene:
         note: str | None = None,
         ignore_presenter_mode: bool = False,
     ):
+        duration = validate_run_time(duration, str(self) + ".wait()", "duration")
         self.manager._wait(duration, stop_condition=stop_condition)
         # if (
         #     self.presenter_mode
@@ -391,6 +392,7 @@ class Scene:
         #     self.hold_loop()
 
     def wait_until(self, stop_condition: Callable[[], bool], max_time: float = 60):
+        max_time = validate_run_time(max_time, str(self) + ".wait_until()", "max_time")
         self.wait(max_time, stop_condition=stop_condition)
 
     def add_sound(
