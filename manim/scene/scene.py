@@ -37,7 +37,7 @@ from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLPoint
 
 from .. import config, logger
-from ..animation.animation import Animation, Wait, prepare_animation
+from ..animation.animation import Animation, Wait, prepare_animation, validate_run_time
 from ..camera.camera import Camera
 from ..constants import *
 from ..gui.gui import configure_pygui
@@ -1030,28 +1030,7 @@ class Scene:
         float
             The total ``run_time`` of all of the animations in the list.
         """
-        max_run_time = 0
-        frame_rate = (
-            1 / config.frame_rate
-        )  # config.frame_rate holds the number of frames per second
-        for animation in animations:
-            if animation.run_time <= 0:
-                raise ValueError(
-                    f"{animation} has a run_time of <= 0 seconds which Manim cannot render. "
-                    "Please set the run_time to be positive."
-                )
-            elif animation.run_time < frame_rate:
-                logger.warning(
-                    f"Original run time of {animation} is shorter than current frame "
-                    f"rate (1 frame every {frame_rate:.2f} sec.) which cannot be rendered. "
-                    "Rendering with the shortest possible duration instead."
-                )
-                animation.run_time = frame_rate
-
-            if animation.run_time > max_run_time:
-                max_run_time = animation.run_time
-
-        return max_run_time
+        return max(animation.run_time for animation in animations)
 
     def play(
         self,
@@ -1147,6 +1126,7 @@ class Scene:
         --------
         :class:`.Wait`, :meth:`.should_mobjects_update`
         """
+        duration = validate_run_time(duration, str(self) + ".wait()", "duration")
         self.play(
             Wait(
                 run_time=duration,
@@ -1170,6 +1150,7 @@ class Scene:
         --------
         :meth:`.wait`, :class:`.Wait`
         """
+        duration = validate_run_time(duration, str(self) + ".pause()", "duration")
         self.wait(duration=duration, frozen_frame=True)
 
     def wait_until(self, stop_condition: Callable[[], bool], max_time: float = 60):
@@ -1183,6 +1164,7 @@ class Scene:
         max_time
             The maximum wait time in seconds.
         """
+        max_time = validate_run_time(max_time, str(self) + ".wait_until()", "max_time")
         self.wait(max_time, stop_condition=stop_condition)
 
     def compile_animation_data(

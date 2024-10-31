@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Callable
 import numpy as np
 
 from manim._config import config
-from manim.animation.animation import Animation, prepare_animation
+from manim.animation.animation import Animation, prepare_animation, validate_run_time
 from manim.constants import RendererType
 from manim.mobject.mobject import Group, Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLGroup
@@ -87,7 +87,7 @@ class AnimationGroup(Animation):
                 f"Trying to play {self} without animations, this is not supported. "
                 "Please add at least one subanimation."
             )
-
+        self.run_time = validate_run_time(self.run_time, str(self))
         self.anim_group_time = 0.0
         if self.suspend_mobject_updating:
             self.group.suspend_updating()
@@ -237,6 +237,7 @@ class Succession(AnimationGroup):
                 f"Trying to play {self} without animations, this is not supported. "
                 "Please add at least one subanimation."
             )
+        self.run_time = validate_run_time(self.run_time, str(self))
         self.update_active_animation(0)
 
     def finish(self) -> None:
