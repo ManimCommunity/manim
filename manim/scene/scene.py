@@ -50,6 +50,7 @@ from ..utils.family import extract_mobject_family_members
 from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
 from ..utils.file_ops import open_media_file
 from ..utils.iterables import list_difference_update, list_update
+from .groups import SectionGroup
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
@@ -98,6 +99,11 @@ class Scene:
 
     """
 
+    groups_api = False
+    section_groups = []
+    """ Internal attributes to allow group decorator in the class.
+    TODO Document groups """
+
     def __init__(
         self,
         renderer=None,
@@ -110,6 +116,7 @@ class Scene:
         self.always_update_mobjects = always_update_mobjects
         self.random_seed = random_seed
         self.skip_animations = skip_animations
+        self.group_skip_animations = False  # group animation are played by default
 
         self.animations = None
         self.stop_condition = None
@@ -153,6 +160,13 @@ class Scene:
         if self.random_seed is not None:
             random.seed(self.random_seed)
             np.random.seed(self.random_seed)
+
+        self.section_groups = self.build_section_groups()
+        for group in self.section_groups:
+            if not isinstance(group, SectionGroup):
+                raise AttributeError(
+                    f"The method {group} doesn't look like it is decorated with the @group decorator."
+                )
 
     @property
     def camera(self):
@@ -303,7 +317,18 @@ class Scene:
         :meth:`Scene.tear_down`
 
         """
-        pass  # To be implemented in subclasses
+        for (
+            group
+        ) in self.section_groups:  # this is empty if section groups are disabled
+            self.group_skip_animations = group.skip
+
+            self.next_section(
+                group.skip
+            )  # create a default section at the start of each group
+            group(self)  # launch the group # HELPME make a clean call
+
+            self.group_skip_animations = False
+        # To be implemented in subclasses if groups API is disabled
 
     def next_section(
         self,
@@ -315,7 +340,42 @@ class Scene:
         ``skip_animations`` skips the rendering of all animations in this section.
         Refer to :doc:`the documentation</tutorials/output_and_config>` on how to use sections.
         """
+        # if group is disabled, all sections in it are also disabled
+        skip_animations = skip_animations or self.group_skip_animations
         self.renderer.file_writer.next_section(name, section_type, skip_animations)
+
+    def build_section_groups(self) -> List[SectionGroup]:
+        """Builds the group list depending on the API used (method list, enabled, disabled)."""
+        if self.section_groups:
+            # if a group list is provided we use it by default
+            def get_group_object(group):
+                if hasattr(self, group):
+                    return getattr(self, group)
+                else:
+                    raise AttributeError(
+                        f"Couldn't find method {group} in class {__cls__}. Did you spell it correctly?"
+                    )
+
+            return [get_group_object(group) for group in self.section_groups]
+        elif self.groups_api:
+            # groups api enabled, but no list provided so we have to look at the decorated groups in order
+            return self.find_groups()
+        else:
+            # groups api disabled
+            return []
+
+    def find_groups(self) -> list[SectionGroup]:
+        """Find all groups in a :class:`.Scene` if groups api is turned on."""
+        groups: list[SectionGroup] = [
+            bound
+            for _, bound in inspect.getmembers(
+                self, predicate=lambda x: isinstance(x, SectionGroup)
+            )
+        ]
+        # we can't care about the actual value of the order
+        # because that would break files with multiple scenes that have sections
+        groups.sort(key=lambda x: x.order)
+        return groups
 
     def __str__(self):
         return self.__class__.__name__

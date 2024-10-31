@@ -17,6 +17,8 @@ __all__ = [
     "InteractiveStaticScene",
     "SceneWithSections",
     "ElaborateSceneWithSections",
+    "SceneWithGroupAPI",
+    "SceneWithGroupList",
 ]
 
 
@@ -165,3 +167,39 @@ class ElaborateSceneWithSections(Scene):
         self.next_section("fade out")
         self.play(FadeOut(square))
         self.wait()
+
+
+class SceneWithGroupAPI(Scene):
+    groups_api = True
+
+    def __init__(self):
+        super().__init__()
+
+        self.square = Square()
+        self.circle = Circle()
+
+    @group
+    def transform(self):
+        self.play(TransformFromCopy(self.square, self.circle))
+
+    @group
+    def back_transform(self):
+        self.play(Transform(self.circle, self.square))
+
+
+class SceneWithGroupList(Scene):
+    section_groups = ["transform", "back_transform"]
+
+    def __init__(self):
+        super().__init__()
+
+        self.square = Square()
+        self.circle = Circle()
+
+    @group
+    def back_transform(self):
+        self.play(Transform(self.circle, self.square))
+
+    @group
+    def transform(self):
+        self.play(TransformFromCopy(self.square, self.circle))
