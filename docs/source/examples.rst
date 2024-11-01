@@ -90,7 +90,7 @@ Basic Concepts
                 [[i * 256 / n for i in range(0, n)] for _ in range(0, n)]
             )
             image = ImageMobject(imageArray).scale(2)
-            image.background_rectangle = SurroundingRectangle(image, GREEN)
+            image.background_rectangle = SurroundingRectangle(image, color=GREEN)
             self.add(image, image.background_rectangle)
 
 .. manim:: BooleanOperations
