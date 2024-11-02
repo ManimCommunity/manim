@@ -606,6 +606,92 @@ class ManimColor:
             self._internal_space * (1 - alpha) + other._internal_space * alpha
         )
 
+    def darker(self, factor: float = 0.2) -> Self:
+        """Returns a new color that is darker than the current color, i.e.
+        interpolated with black. The opacity is unchanged.
+
+        Parameters
+        ----------
+        factor : float, optional
+            The factor by which the color should be darker, by default 0.2,
+            which results in a slightly darker color
+
+        Returns
+        -------
+        ManimColor
+            The darker ManimColor
+
+        See Also
+        --------
+        :meth:`lighter`
+        """
+        alpha = self._internal_space[3]
+        black = self.from_rgb((0.0, 0.0, 0.0))
+        return self.interpolate(black, factor).opacity(alpha)
+
+    def lighter(self, factor: float = 0.2) -> Self:
+        """Returns a new color that is lighter than the current color, i.e.
+        interpolated with white. The opacity is unchanged.
+
+        Parameters
+        ----------
+        factor : float, optional
+            The factor by which the color should be lighter, by default 0.2,
+            which results in a slightly lighter color
+
+        Returns
+        -------
+        ManimColor
+            The lighter ManimColor
+
+        See Also
+        --------
+        :meth:`darker`
+        """
+        alpha = self._internal_space[3]
+        white = self.from_rgb((1.0, 1.0, 1.0))
+        return self.interpolate(white, factor).opacity(alpha)
+
+    def contrasting(
+        self,
+        threshold: float = 0.5,
+        light: Self | None = None,
+        dark: Self | None = None,
+    ) -> Self:
+        """Returns one of two colors, light or dark (by default white or black),
+        that contrasts with the current color (depending on its luminance).
+        This is typically used to set text in a contrasting color that ensures
+        it is readable against a background of the current color.
+
+        Parameters
+        ----------
+        threshold : float, optional
+            The luminance threshold that dictates whether the current color is
+            considered light or dark (and thus whether to return the dark or
+            light color, respectively), by default 0.5
+        light : ManimColor, optional
+            The light color to return if the current color is considered dark,
+            by default pure white
+        dark : ManimColor, optional
+            The dark color to return if the current color is considered light,
+            by default pure black
+
+        Returns
+        -------
+        ManimColor
+            The contrasting ManimColor
+        """
+        r, g, b = self.to_rgb()
+        luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b
+        if luminance < threshold:
+            if light is not None:
+                return light
+            return self.from_rgb((1.0, 1.0, 1.0), 1.0)
+        else:
+            if dark is not None:
+                return dark
+            return self.from_rgb((0.0, 0.0, 0.0), 1.0)
+
     def opacity(self, opacity: float) -> Self:
         """Creates a new ManimColor with the given opacity and the same color value as before
 
