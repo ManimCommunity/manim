@@ -1393,15 +1393,15 @@ class Scene:
 
         from IPython.core.getipython import get_ipython
         from IPython.terminal.embed import InteractiveShellEmbed
-        from traitlets.config import Config  # type: ignore[import-untyped]
+        from traitlets.config import Config
 
         cfg = Config()
         cfg.TerminalInteractiveShell.confirm_exit = False
-        if get_ipython() is None:
+        if get_ipython() is None:  # type: ignore[no-untyped-call]
             shell = InteractiveShellEmbed.instance(config=cfg)
         else:
-            shell = InteractiveShellEmbed(config=cfg)
-        hist = get_ipython().history_manager
+            shell = InteractiveShellEmbed(config=cfg)  # type: ignore[no-untyped-call]
+        hist = get_ipython().history_manager  # type: ignore[no-untyped-call]
         hist.db = connect(hist.hist_file, check_same_thread=False)
 
         keyboard_thread = threading.Thread(
@@ -1525,7 +1525,7 @@ class Scene:
         # Configure IPython shell.
         from IPython.terminal.embed import InteractiveShellEmbed
 
-        shell = InteractiveShellEmbed()
+        shell = InteractiveShellEmbed()  # type: ignore[no-untyped-call]
 
         # Have the frame update after each command
         shell.events.register(
