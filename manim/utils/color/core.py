@@ -74,7 +74,6 @@ from manim.typing import (
     RGBA_Tuple_Float,
     RGBA_Tuple_Int,
 )
-from manim.utils.color.manim_colors import WHITE
 
 from ...utils.space_ops import normalize
 
@@ -902,7 +901,7 @@ class ManimColor:
         elif is_parsable(color):
             return cls._from_internal(ManimColor(color, alpha)._internal_value)
         else:
-            return cls._from_internal(ManimColor(WHITE, alpha)._internal_value)
+            return cls._from_internal(ManimColor("WHITE", alpha)._internal_value)
 
     @staticmethod
     def gradient(colors: list[ManimColor], length: int) -> None:
