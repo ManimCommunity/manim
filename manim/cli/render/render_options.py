@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import re
+import sys
 from typing import TYPE_CHECKING
 
 from cloup import Choice, option, option_group
@@ -57,7 +58,7 @@ def validate_scene_range(
         start, end = map(int, re.split(r"[;,\-]", value))
     except Exception:
         logger.error("Couldn't determine a range for -n option.")
-        exit()
+        sys.exit()
 
     return start, end
 
@@ -96,7 +97,7 @@ def validate_resolution(
         width, height = map(int, re.split(r"[;,\-]", value))
     except Exception:
         logger.error("Resolution option is invalid.")
-        exit()
+        sys.exit()
 
     return width, height
 

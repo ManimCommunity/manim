@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import re
+import sys
 from typing import TYPE_CHECKING
 
 from cloup import Choice, option, option_group
@@ -47,7 +48,7 @@ def validate_gui_location(
         x_offset, y_offset = map(int, re.split(r"[;,\-]", value))
     except Exception:
         logger.error("GUI location option is invalid.")
-        exit()
+        sys.exit()
 
     return (x_offset, y_offset)
 
