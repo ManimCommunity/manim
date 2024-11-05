@@ -11,7 +11,7 @@ __all__ = [
 
 
 from functools import lru_cache
-from typing import Callable
+from typing import Callable, overload
 
 import numpy as np
 from scipy import special
@@ -54,7 +54,7 @@ def binary_search(
     """
     lh = lower_bound
     rh = upper_bound
-    mh = np.mean(np.array([lh, rh]))
+    mh: float = np.mean(np.array([lh, rh]))
     while abs(rh - lh) > tolerance:
         mh = np.mean(np.array([lh, rh]))
         lx, mx, rx = (function(h) for h in (lh, mh, rh))
@@ -88,10 +88,19 @@ def choose(n: int, k: int) -> int:
     - https://en.wikipedia.org/wiki/Combination
     - https://docs.scipy.org/doc/scipy/reference/generated/scipy.special.comb.html
     """
-    return special.comb(n, k, exact=True)
+    value: int = special.comb(n, k, exact=True)
+    return value
 
 
-def clip(a, min_a, max_a):
+@overload
+def clip(a: float, min_a: float, max_a: float) -> float: ...
+
+
+@overload
+def clip(a: str, min_a: str, max_a: str) -> str: ...
+
+
+def clip(a, min_a, max_a):  # type: ignore[no-untyped-def]
     """Clips ``a`` to the interval [``min_a``, ``max_a``].
 
     Accepts any comparable objects (i.e. those that support <, >).
@@ -125,4 +134,5 @@ def sigmoid(x: float) -> float:
     - https://en.wikipedia.org/wiki/Sigmoid_function
     - https://en.wikipedia.org/wiki/Logistic_function
     """
-    return 1.0 / (1 + np.exp(-x))
+    value: float = 1.0 / (1 + np.exp(-x))
+    return value
