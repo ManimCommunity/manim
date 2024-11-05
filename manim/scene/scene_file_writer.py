@@ -20,8 +20,6 @@ from PIL import Image
 from pydub import AudioSegment
 
 from manim import __version__
-from manim.renderer.cairo_renderer import CairoRenderer
-from manim.renderer.opengl_renderer import OpenGLRenderer
 from manim.typing import PixelArray, StrPath
 
 from .. import config, logger
@@ -108,7 +106,7 @@ class SceneFileWriter:
 
     def __init__(
         self,
-        renderer: CairoRenderer | OpenGLRenderer,
+        renderer: Any,
         scene_name: StrPath,
         **kwargs: Any,
     ) -> None:
