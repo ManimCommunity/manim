@@ -23,7 +23,7 @@ def flatten_iterable_parameters(
     :class:`list`
         The flattened list of parameters.
     """
-    flattened_parameters = []
+    flattened_parameters: list[T] = []
     for arg in args:
         if isinstance(arg, (Iterable, GeneratorType)):
             flattened_parameters.extend(arg)
