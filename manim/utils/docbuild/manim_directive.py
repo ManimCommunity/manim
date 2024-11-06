@@ -118,12 +118,14 @@ class SkipManimNode(nodes.Admonition, nodes.Element):
 
 
 def visit(self: SkipManimNode, node: nodes.Element, name: str = "") -> None:
+    # TODO: The SkipManimNode class have no method named visit_admonition.
     self.visit_admonition(node, name)
     if not isinstance(node[0], nodes.title):
         node.insert(0, nodes.title("skip-manim", "Example Placeholder"))
 
 
 def depart(self: SkipManimNode, node: nodes.Element) -> None:
+    # TODO: The SkipManimNode class have no method named depart_admonition.
     self.depart_admonition(node)
 
 
@@ -245,7 +247,7 @@ class ManimDirective(Directive):
         if not dest_dir.exists():
             dest_dir.mkdir(parents=True, exist_ok=True)
 
-        source_block = [
+        source_block_in = [
             ".. code-block:: python",
             "",
             "    from manim import *\n",
@@ -258,7 +260,7 @@ class ManimDirective(Directive):
             "",
             "    </pre>",
         ]
-        source_block = "\n".join(source_block)
+        source_block = "\n".join(source_block_in)
 
         config.media_dir = (Path(setup.confdir) / "media").absolute()
         config.images_dir = "{media_dir}/images"
@@ -345,7 +347,7 @@ class ManimDirective(Directive):
 rendering_times_file_path = Path("../rendering_times.csv")
 
 
-def _write_rendering_stats(scene_name: str, run_time: str, file_name: str) -> None:
+def _write_rendering_stats(scene_name: str, run_time: float, file_name: str) -> None:
     with rendering_times_file_path.open("a") as file:
         csv.writer(file).writerow(
             [
@@ -369,9 +371,9 @@ def _log_rendering_times(*args: tuple[Any]) -> None:
         data = [row for row in data if row]
 
         max_file_length = max(len(row[0]) for row in data)
-        for key, group in it.groupby(data, key=lambda row: row[0]):
+        for key, group_iter in it.groupby(data, key=lambda row: row[0]):
             key = key.ljust(max_file_length + 1, ".")
-            group = list(group)
+            group = list(group_iter)
             if len(group) == 1:
                 row = group[0]
                 print(f"{key}{row[2].rjust(7, '.')}s {row[1]}")
