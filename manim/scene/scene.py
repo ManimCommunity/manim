@@ -159,7 +159,7 @@ class Scene:
         return self.renderer.camera
 
     @property
-    def time(self):
+    def time(self) -> float:
         """The time since the start of the scene."""
         return self.renderer.time
 
