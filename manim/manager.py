@@ -158,6 +158,7 @@ class Manager(Generic[Scene_co]):
         config._warn_about_config_options()
         self._render_first_pass()
         self._render_second_pass()
+        self.release()
 
     def _render_first_pass(self) -> None:
         """
@@ -191,6 +192,9 @@ class Manager(Generic[Scene_co]):
         for two pass rendering
         """
         ...
+
+    def release(self) -> None:
+        self.renderer.release()
 
     def post_contruct(self) -> None:
         """Run post-construct hooks, and clean up the file writer."""

@@ -78,6 +78,10 @@ class RendererProtocol(Protocol):
         """Get the pixels that should be written to a file."""
         ...
 
+    def release(self) -> None:
+        """Release any resources the renderer is holding."""
+        ...
+
 
 # NOTE: The user should expect depth between renderers not to be handled discussed at 03.09.2023 Between jsonv and MrDiver
 # NOTE: Cairo_camera overlay_PIL_image for MultiRenderer

@@ -524,6 +524,10 @@ class OpenGLRenderer(Renderer, RendererProtocol):
         # numpy typing being bad, we have to type: ignore it
         return buf[::-1]  # type: ignore
 
+    def release(self) -> None:
+        self.ctx.release()
+        self.output_fbo.release()
+
 
 class GLVMobjectManager:
     @staticmethod
