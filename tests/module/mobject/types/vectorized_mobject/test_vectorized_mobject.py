@@ -132,14 +132,14 @@ def test_vgroup_init():
         VGroup(3.0)
     assert str(init_with_float_info.value) == (
         "Only values of type VMobject can be added as submobjects of VGroup, "
-        "but the value 3.0 (at index 0) is of type float."
+        "but the value 3.0 (at index 0 of parameter 0) is of type float."
     )
 
     with pytest.raises(TypeError) as init_with_mob_info:
         VGroup(Mobject())
     assert str(init_with_mob_info.value) == (
         "Only values of type VMobject can be added as submobjects of VGroup, "
-        "but the value Mobject (at index 0) is of type Mobject. You can try "
+        "but the value Mobject (at index 0 of parameter 0) is of type Mobject. You can try "
         "adding this value into a Group instead."
     )
 
@@ -147,8 +147,54 @@ def test_vgroup_init():
         VGroup(VMobject(), Mobject())
     assert str(init_with_vmob_and_mob_info.value) == (
         "Only values of type VMobject can be added as submobjects of VGroup, "
-        "but the value Mobject (at index 1) is of type Mobject. You can try "
+        "but the value Mobject (at index 0 of parameter 1) is of type Mobject. You can try "
         "adding this value into a Group instead."
+    )
+
+
+def test_vgroup_init_with_iterable():
+    """Test VGroup instantiation with an iterable type."""
+
+    def type_generator(type_to_generate, n):
+        return (type_to_generate() for _ in range(n))
+
+    def mixed_type_generator(major_type, minor_type, minor_type_positions, n):
+        return (
+            minor_type() if i in minor_type_positions else major_type()
+            for i in range(n)
+        )
+
+    obj = VGroup(VMobject())
+    assert len(obj.submobjects) == 1
+
+    obj = VGroup(type_generator(VMobject, 38))
+    assert len(obj.submobjects) == 38
+
+    obj = VGroup(VMobject(), [VMobject(), VMobject()], type_generator(VMobject, 38))
+    assert len(obj.submobjects) == 41
+
+    # A VGroup cannot be initialised with an iterable containing a Mobject
+    with pytest.raises(TypeError) as init_with_mob_iterable:
+        VGroup(type_generator(Mobject, 5))
+    assert str(init_with_mob_iterable.value) == (
+        "Only values of type VMobject can be added as submobjects of VGroup, "
+        "but the value Mobject (at index 0 of parameter 0) is of type Mobject."
+    )
+
+    # A VGroup cannot be initialised with an iterable containing a Mobject in any position
+    with pytest.raises(TypeError) as init_with_mobs_and_vmobs_iterable:
+        VGroup(mixed_type_generator(VMobject, Mobject, [3, 5], 7))
+    assert str(init_with_mobs_and_vmobs_iterable.value) == (
+        "Only values of type VMobject can be added as submobjects of VGroup, "
+        "but the value Mobject (at index 3 of parameter 0) is of type Mobject."
+    )
+
+    # A VGroup cannot be initialised with an iterable containing non VMobject's in any position
+    with pytest.raises(TypeError) as init_with_float_and_vmobs_iterable:
+        VGroup(mixed_type_generator(VMobject, float, [6, 7], 9))
+    assert str(init_with_float_and_vmobs_iterable.value) == (
+        "Only values of type VMobject can be added as submobjects of VGroup, "
+        "but the value 0.0 (at index 6 of parameter 0) is of type float."
     )
 
 
@@ -165,7 +211,7 @@ def test_vgroup_add():
         obj.add(3)
     assert str(add_int_info.value) == (
         "Only values of type VMobject can be added as submobjects of VGroup, "
-        "but the value 3 (at index 0) is of type int."
+        "but the value 3 (at index 0 of parameter 0) is of type int."
     )
     assert len(obj.submobjects) == 1
 
@@ -175,7 +221,7 @@ def test_vgroup_add():
         obj.add(Mobject())
     assert str(add_mob_info.value) == (
         "Only values of type VMobject can be added as submobjects of VGroup, "
-        "but the value Mobject (at index 0) is of type Mobject. You can try "
+        "but the value Mobject (at index 0 of parameter 0) is of type Mobject. You can try "
         "adding this value into a Group instead."
     )
     assert len(obj.submobjects) == 1
@@ -185,7 +231,7 @@ def test_vgroup_add():
         obj.add(VMobject(), Mobject())
     assert str(add_vmob_and_mob_info.value) == (
         "Only values of type VMobject can be added as submobjects of VGroup, "
-        "but the value Mobject (at index 1) is of type Mobject. You can try "
+        "but the value Mobject (at index 0 of parameter 1) is of type Mobject. You can try "
         "adding this value into a Group instead."
     )
     assert len(obj.submobjects) == 1
