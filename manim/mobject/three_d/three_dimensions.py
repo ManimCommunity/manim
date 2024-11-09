@@ -555,7 +555,8 @@ class Prism(Cube):
         for dim, value in enumerate(self.dimensions):
             self.rescale_to_fit(value, dim, stretch=True)
 
-    init_points = generate_points    
+    init_points = generate_points
+
 
 class Cone(Surface):
     """A circular cone.
