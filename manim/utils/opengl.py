@@ -1,7 +1,12 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import numpy as np
 import numpy.linalg as linalg
+
+if TYPE_CHECKING:
+    import numpy.typing as npt
 
 from .. import config
 
@@ -22,17 +27,17 @@ __all__ = [
 ]
 
 
-def matrix_to_shader_input(matrix):
+def matrix_to_shader_input(matrix: npt.NDArray) -> tuple:
     return tuple(matrix.T.ravel())
 
 
 def orthographic_projection_matrix(
-    width=None,
-    height=None,
-    near=1,
-    far=depth + 1,
-    format_=True,
-):
+    width: float | None = None,
+    height: float | None = None,
+    near: float = 1,
+    far: float = depth + 1,
+    format_: bool = True,
+) -> npt.NDArray | tuple:
     if width is None:
         width = config["frame_width"]
     if height is None:
@@ -52,8 +57,12 @@ def orthographic_projection_matrix(
 
 
 def perspective_projection_matrix(
-    width=None, height=None, near=2, far=50, format_=True
-):
+    width: float | None = None,
+    height: float | None = None,
+    near: float = 2,
+    far: float = 50,
+    format_: bool = True,
+) -> npt.NDArray | tuple:
     if width is None:
         width = config["frame_width"] / 6
     if height is None:
@@ -66,13 +75,13 @@ def perspective_projection_matrix(
             [0, 0, -1, 0],
         ],
     )
-    if format:
+    if format_:
         return matrix_to_shader_input(projection_matrix)
     else:
         return projection_matrix
 
 
-def translation_matrix(x=0, y=0, z=0):
+def translation_matrix(x: float = 0, y: float = 0, z: float = 0) -> npt.NDArray:
     return np.array(
         [
             [1, 0, 0, x],
@@ -83,7 +92,7 @@ def translation_matrix(x=0, y=0, z=0):
     )
 
 
-def x_rotation_matrix(x=0):
+def x_rotation_matrix(x: float = 0) -> npt.NDArray:
     return np.array(
         [
             [1, 0, 0, 0],
@@ -94,7 +103,7 @@ def x_rotation_matrix(x=0):
     )
 
 
-def y_rotation_matrix(y=0):
+def y_rotation_matrix(y: float = 0) -> npt.NDArray:
     return np.array(
         [
             [np.cos(y), 0, np.sin(y), 0],
@@ -105,7 +114,7 @@ def y_rotation_matrix(y=0):
     )
 
 
-def z_rotation_matrix(z=0):
+def z_rotation_matrix(z: float = 0) -> npt.NDArray:
     return np.array(
         [
             [np.cos(z), -np.sin(z), 0, 0],
@@ -117,7 +126,9 @@ def z_rotation_matrix(z=0):
 
 
 # TODO: When rotating around the x axis, rotation eventually stops.
-def rotate_in_place_matrix(initial_position, x=0, y=0, z=0):
+def rotate_in_place_matrix(
+    initial_position: npt.NDArray, x: float = 0, y: float = 0, z: float = 0
+) -> npt.NDArray:
     return np.matmul(
         translation_matrix(*-initial_position),
         np.matmul(
@@ -127,14 +138,14 @@ def rotate_in_place_matrix(initial_position, x=0, y=0, z=0):
     )
 
 
-def rotation_matrix(x=0, y=0, z=0):
+def rotation_matrix(x: float = 0, y: float = 0, z: float = 0) -> npt.NDArray:
     return np.matmul(
         np.matmul(x_rotation_matrix(x), y_rotation_matrix(y)),
         z_rotation_matrix(z),
     )
 
 
-def scale_matrix(scale_factor=1):
+def scale_matrix(scale_factor: float = 1) -> npt.NDArray:
     return np.array(
         [
             [scale_factor, 0, 0, 0],
@@ -146,11 +157,11 @@ def scale_matrix(scale_factor=1):
 
 
 def view_matrix(
-    translation=None,
-    x_rotation=0,
-    y_rotation=0,
-    z_rotation=0,
-):
+    translation: npt.NDArray | None = None,
+    x_rotation: float = 0,
+    y_rotation: float = 0,
+    z_rotation: float = 0,
+) -> npt.NDArray:
     if translation is None:
         translation = np.array([0, 0, depth / 2 + 1])
     model_matrix = np.matmul(
