@@ -692,7 +692,7 @@ class ManimConfig(MutableMapping):
 
         return self
 
-    def digest_args(self, args: argparse.Namespace) -> Self:
+    def digest_args(self, args: argparse.Namespace | list[str]) -> Self:
         """Process the config options present in CLI arguments.
 
         Parameters
