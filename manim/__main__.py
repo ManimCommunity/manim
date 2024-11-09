@@ -3,22 +3,49 @@ from __future__ import annotations
 import click
 import cloup
 
-from . import __version__, cli_ctx_settings, console
-from .cli.cfg.group import cfg
-from .cli.checkhealth.commands import checkhealth
-from .cli.default_group import DefaultGroup
-from .cli.init.commands import init
-from .cli.plugins.commands import plugins
-from .cli.render.commands import render
-from .constants import EPILOG
+from manim import __version__
+from manim._config import cli_ctx_settings, console
+from manim.cli.cfg.group import cfg
+from manim.cli.checkhealth.commands import checkhealth
+from manim.cli.default_group import DefaultGroup
+from manim.cli.init.commands import init
+from manim.cli.plugins.commands import plugins
+from manim.cli.render.commands import render
+from manim.constants import EPILOG
 
 
-def show_splash(ctx, param, value):
+def show_splash(ctx: click.Context, param: click.Option, value: str | None) -> None:
+    """When giving a value by console, show an initial message with the Manim
+    version before executing any other command: ``Manim Community vA.B.C``.
+
+    Parameters
+    ----------
+    ctx
+        The Click context. Unused parameter.
+    param
+        A Click option. Unused parameter.
+    value
+        A string value given by console, or None. Unused parameter.
+    """
     if value:
         console.print(f"Manim Community [green]v{__version__}[/green]\n")
 
 
-def print_version_and_exit(ctx, param, value):
+def print_version_and_exit(
+    ctx: click.Context, param: click.Option, value: str | None
+) -> None:
+    """Same as :func:`show_splash`, but also exit when giving a value by
+    console.
+
+    Parameters
+    ----------
+    ctx
+        The Click context. Unused parameter.
+    param
+        A Click option. Unused parameter.
+    value
+        A string value given by console, or None. Unused parameter.
+    """
     show_splash(ctx, param, value)
     if value:
         ctx.exit()
@@ -53,8 +80,14 @@ def print_version_and_exit(ctx, param, value):
     expose_value=False,
 )
 @cloup.pass_context
-def main(ctx):
-    """The entry point for manim."""
+def main(ctx: click.Context) -> None:
+    """The entry point for Manim.
+
+    Parameters
+    ----------
+    ctx
+        The Click context.
+    """
     pass
 
 
