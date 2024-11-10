@@ -1771,7 +1771,7 @@ class Mobject:
         curr_start, curr_end = self.get_start_and_end()
         curr_vect = curr_end - curr_start
         if np.all(curr_vect == 0):
-            self.points = start
+            self.points = np.array([start])
             return self
         target_vect = np.array(end) - np.array(start)
         axis = (
