@@ -142,10 +142,7 @@ jobs:
           Expand-Archive -LiteralPath "$($env:TMP)\TinyTex.zip" -DestinationPath "$($PWD)\ManimCache\LatexWindows"
           $env:Path = "$($PWD)\ManimCache\LatexWindows\TinyTeX\bin\windows;$($env:PATH)"
           tlmgr update --self
-          foreach ($c in $tinyTexPackages){
-            $c=$c.Trim()
-            tlmgr install $c
-          }
+          tlmgr install $tinyTexPackages
           $env:PATH=$OriPath
           echo "Completed Latex"
 
