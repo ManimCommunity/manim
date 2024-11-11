@@ -155,7 +155,6 @@ jobs:
 
       - name: Install manim
         run: |
-          poetry config installer.modern-installation false
           poetry install
 
       - name: Run tests
