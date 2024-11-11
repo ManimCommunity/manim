@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from pathlib import Path
 
 import logging
@@ -68,24 +66,16 @@ def pytest_collection_modifyitems(config, items):
                 item.add_marker(slow_skip)
 """
 
-@pytest.fixture(autouse=True)
-def temp_media_dir(tmpdir, monkeypatch, request):
-    if isinstance(request.node, pytest.DoctestItem):
-        monkeypatch.chdir(tmpdir)
-        yield tmpdir
-    else:
-        with manim.tempconfig({"media_dir": str(tmpdir)}):
-            assert manim.config.media_dir == str(tmpdir)
-            yield tmpdir
+# @pytest.fixture(autouse=True)
+# def temp_media_dir(tmpdir, monkeypatch, request):
+#     if isinstance(request.node, pytest.DoctestItem):
+#         monkeypatch.chdir(tmpdir)
+#         yield tmpdir
+#     else:
+#         with manim.tempconfig({"media_dir": str(tmpdir)}):
+#             assert manim.config.media_dir == str(tmpdir)
+#             yield tmpdir
 
-
-@pytest.fixture
-def manim_caplog(caplog):
-    logger = logging.getLogger("manim")
-    logger.propagate = True
-    caplog.set_level(logging.INFO, logger="manim")
-    yield caplog
-    logger.propagate = False
 
 
 @pytest.fixture
@@ -100,14 +90,7 @@ def config():
 @pytest.fixture
 def dry_run(config):
     config.dry_run = True
-
-
-@pytest.fixture(scope="session")
-def python_version():
-    # use the same python executable as it is running currently
-    # rather than randomly calling using python or python3, which
-    # may create problems.
-    return sys.executable
+    yield
 
 
 @pytest.fixture
