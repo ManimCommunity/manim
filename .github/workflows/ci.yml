@@ -153,18 +153,25 @@ jobs:
           $env:Path = "$env:USERPROFILE\.poetry\bin;$($env:PATH)"
           echo "$env:Path" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
-      - name: Install manim
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: 0.5.1
+      
+      - name: Install dependencies and manim
         run: |
-          poetry install
+          uv venv
+          uv pip install .
+          uv pip install -r dev_dependencies.txt
 
       - name: Run tests
         run: |
-          poetry run python -m pytest -vvv -n 0 --dist no
+          uv run python -m pytest -vvv -n 0 --dist no
 
       - name: Run module doctests
         run: |
-          poetry run python -m pytest -v --cov-append --ignore-glob="*opengl*" --doctest-modules manim
+          uv run python -m pytest -v --cov-append --ignore-glob="*opengl*" --doctest-modules manim
 
       - name: Run doctests in rst files
         run: |
-          cd docs && poetry run make doctest O=-tskip-manim
+          cd docs && uv run make doctest O=-tskip-manim
