@@ -166,12 +166,12 @@ jobs:
 
       - name: Run tests
         run: |
-          uv run python -m pytest -vvv -n 0 --dist no
+          uv run --no-project python -m pytest -vvv -n 0 --dist no
 
       - name: Run module doctests
         run: |
-          uv run python -m pytest -v --cov-append --ignore-glob="*opengl*" --doctest-modules manim
+          uv run --no-project python -m pytest -v --cov-append --ignore-glob="*opengl*" --doctest-modules manim
 
       - name: Run doctests in rst files
         run: |
-          cd docs && uv run make doctest O=-tskip-manim
+          cd docs && uv run --no-project make doctest O=-tskip-manim
