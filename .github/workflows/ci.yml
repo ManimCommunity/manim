@@ -163,7 +163,7 @@ jobs:
       
       - name: Run tests
         run: |
-          poetry run pytest -vv --full-trace
+          poetry run pytest tests
 
       - name: Run module doctests
         run: |
