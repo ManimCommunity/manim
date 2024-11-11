@@ -74,7 +74,7 @@ def temp_media_dir(tmpdir, monkeypatch, request):
         yield tmpdir
     else:
         with manim.tempconfig({"media_dir": str(tmpdir)}):
-            assert config.media_dir == str(tmpdir)
+            assert manim.config.media_dir == str(tmpdir)
             yield tmpdir
 
 
