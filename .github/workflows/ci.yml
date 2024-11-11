@@ -166,8 +166,7 @@ jobs:
 
       - name: Run tests
         run: |
-          echo "Running tests ..."
-          uv run --no-project python -m pytest -vv --full-trace
+          uv run --no-project python -v -m pytest -vv --full-trace
 
       - name: Run module doctests
         run: |
