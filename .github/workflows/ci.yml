@@ -160,7 +160,7 @@ jobs:
 
       - name: Run tests
         run: |
-          poetry run python -m pytest -vvv
+          poetry run python -m pytest -vvv -n 0
 
       - name: Run module doctests
         run: |
