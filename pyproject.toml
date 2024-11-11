@@ -79,8 +79,8 @@ psutil = {version = "^5.8.0", python = "<3.10"}
 psutil-wheels = {version = "5.8.0", python = ">=3.10"}
 pytest = "^7.4.3"
 pygithub = "^2.1.1"
-pytest-cov = "^4.1.0"
-pytest-xdist = "^2.2"  # Using latest gives flaky tests
+# pytest-cov = "^4.1.0"
+# pytest-xdist = "^2.2"  # Using latest gives flaky tests
 ruff = "*"
 Sphinx = "^7.2.6"
 sphinx-copybutton = "^0.5.2"
@@ -98,7 +98,7 @@ types-Pygments = "^2.17.0.0"
 
 [tool.pytest.ini_options]
 markers = "slow: Mark the test as slow. Can be skipped with --skip_slow"
-addopts = "--no-cov-on-fail --cov=manim --cov-report xml --cov-report term -n auto --dist=loadfile --durations=0"
+# addopts = "--no-cov-on-fail --cov=manim --cov-report xml --cov-report term -n auto --dist=loadfile --durations=0"
 
 [tool.isort]
 profile = "black"
