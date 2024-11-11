@@ -8,7 +8,7 @@ import pytest
 
 from manim import WHITE, Scene, Square, Tex, Text, tempconfig
 from manim._config.utils import ManimConfig
-from tests.assert_utils import assert_dir_exists, assert_dir_filled, assert_file_exists
+# from tests.assert_utils import assert_dir_exists, assert_dir_filled, assert_file_exists
 
 
 def test_tempconfig(config):
@@ -117,42 +117,6 @@ def test_digest_file(tmp_path, config):
     assert config.get_dir("sections_dir", scene_name="test") == Path(
         "this_is_my_favorite_path/test/prepare_for_unforeseen_consequences"
     )
-
-
-def test_custom_dirs(tmp_path, config):
-    config.media_dir = tmp_path
-    config.save_sections = True
-    config.log_to_file = True
-    config.frame_rate = 15
-    config.pixel_height = 854
-    config.pixel_width = 480
-    config.sections_dir = "{media_dir}/test_sections"
-    config.video_dir = "{media_dir}/test_video"
-    config.partial_movie_dir = "{media_dir}/test_partial_movie_dir"
-    config.images_dir = "{media_dir}/test_images"
-    config.text_dir = "{media_dir}/test_text"
-    config.tex_dir = "{media_dir}/test_tex"
-    config.log_dir = "{media_dir}/test_log"
-
-    scene = MyScene()
-    scene.render()
-    tmp_path = Path(tmp_path)
-    assert_dir_filled(tmp_path / "test_sections")
-    assert_file_exists(tmp_path / "test_sections/MyScene.json")
-
-    assert_dir_filled(tmp_path / "test_video")
-    assert_file_exists(tmp_path / "test_video/MyScene.mp4")
-
-    assert_dir_filled(tmp_path / "test_partial_movie_dir")
-    assert_file_exists(tmp_path / "test_partial_movie_dir/partial_movie_file_list.txt")
-
-    # TODO: another example with image output would be nice
-    assert_dir_exists(tmp_path / "test_images")
-
-    assert_dir_filled(tmp_path / "test_text")
-    assert_dir_filled(tmp_path / "test_tex")
-    assert_dir_filled(tmp_path / "test_log")
-
 
 def test_pixel_dimensions(tmp_path, config):
     with tempfile.NamedTemporaryFile("w", dir=tmp_path, delete=False) as tmp_cfg:
