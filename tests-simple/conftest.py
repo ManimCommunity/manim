@@ -1,13 +1,15 @@
 from __future__ import annotations
 
-import logging
-import sys
 from pathlib import Path
 
+import logging
+import sys
 import pytest
-
-import cairo
 import manim
+
+
+"""
+import cairo
 import moderngl
 
 def pytest_report_header(config):
@@ -26,8 +28,9 @@ def pytest_report_header(config):
         f"renderer: {info['GL_RENDERER'].strip()}",
         f"version: {info['GL_VERSION'].strip()}\n",
     )
+"""
 
-
+"""
 def pytest_addoption(parser):
     parser.addoption(
         "--skip_slow",
@@ -63,7 +66,7 @@ def pytest_collection_modifyitems(config, items):
         for item in items:
             if "slow" in item.keywords:
                 item.add_marker(slow_skip)
-
+"""
 
 @pytest.fixture(autouse=True)
 def temp_media_dir(tmpdir, monkeypatch, request):
