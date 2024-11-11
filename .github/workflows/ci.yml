@@ -157,9 +157,9 @@ jobs:
         run: |
           poetry install --all-extras
 
-      - name: Test dependency click + cloup
+      - name: Test pytest import
         run: |
-          poetry run python -v -c "import moderngl;"
+          poetry run python -v -c "import pytest"
       
       - name: Run tests
         run: |
