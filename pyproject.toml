@@ -98,7 +98,7 @@ types-Pygments = "^2.17.0.0"
 
 [tool.pytest.ini_options]
 markers = "slow: Mark the test as slow. Can be skipped with --skip_slow"
-addopts = "-n auto --dist=loadfile --durations=0" # --no-cov-on-fail --cov=manim --cov-report xml --cov-report term
+addopts = "-n auto --dist=loadscope --durations=0" # --no-cov-on-fail --cov=manim --cov-report xml --cov-report term
 
 [tool.isort]
 profile = "black"
