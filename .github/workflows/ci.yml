@@ -160,6 +160,10 @@ jobs:
       - name: Test pytest import
         run: |
           poetry run python -v -c "import pytest"
+
+      - name: Run tests
+        run: |
+          poetry run pytest tests-simple
       
       - name: Run tests
         run: |
