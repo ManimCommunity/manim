@@ -77,7 +77,7 @@ myst-parser = "^2.0.0"
 pre-commit = "^3.5.0"
 psutil = {version = "^5.8.0", python = "<3.10"}
 psutil-wheels = {version = "5.8.0", python = ">=3.10"}
-pytest = "^7.4.3"
+pytest = "^8.3"
 pygithub = "^2.1.1"
 # pytest-cov = "^4.1.0"
 # pytest-xdist = "^2.2"  # Using latest gives flaky tests
