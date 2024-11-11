@@ -164,6 +164,14 @@ jobs:
           uv pip install .
           uv pip install -r dev_dependencies.txt
 
+      - name: Test dependency colorama
+        run: |
+          uv run --no-project python -v -c "import colorama"
+          
+      - name: Test dependency pytest_cov
+        run: |
+          uv run --no-project python -v -c "import pytest_cov"
+      
       - name: Run tests
         run: |
           uv run --no-project python -v -m pytest -vv --full-trace
