@@ -1,17 +1,18 @@
 from __future__ import annotations
 
 import contextlib
+import logging
 import warnings
 from pathlib import Path
 
 import numpy as np
 
-from manim import logger
-
 from ._show_diff import show_diff_helper
 
 FRAME_ABSOLUTE_TOLERANCE = 1.01
 FRAME_MISMATCH_RATIO_TOLERANCE = 1e-5
+
+logger = logging.getLogger("manim")
 
 
 class _FramesTester:
@@ -63,7 +64,8 @@ class _FramesTester:
                 warnings.warn(
                     f"Mismatch of {number_of_mismatches} pixel values in frame {frame_number} "
                     f"against control data in {self._file_path}. Below error threshold, "
-                    "continuing..."
+                    "continuing...",
+                    stacklevel=1,
                 )
                 return
 

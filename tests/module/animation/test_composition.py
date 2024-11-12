@@ -128,11 +128,11 @@ def test_animationgroup_with_wait():
     animation_group.begin()
     timings = animation_group.anims_with_timings
 
-    assert timings == [(wait, 0.0, 1.0), (sqr_anim, 1.0, 2.0)]
+    assert timings.tolist() == [(wait, 0.0, 1.0), (sqr_anim, 1.0, 2.0)]
 
 
 @pytest.mark.parametrize(
-    "animation_remover, animation_group_remover",
+    ("animation_remover", "animation_group_remover"),
     [(False, True), (True, False)],
 )
 def test_animationgroup_is_passing_remover_to_animations(
@@ -169,3 +169,13 @@ def test_animationgroup_is_passing_remover_to_nested_animationgroups():
     assert sqr_animation.remover
     assert circ_animation.remover
     assert polygon_animation.remover
+
+
+def test_empty_animation_group_fails():
+    with pytest.raises(ValueError, match="Please add at least one subanimation."):
+        AnimationGroup().begin()
+
+
+def test_empty_succession_fails():
+    with pytest.raises(ValueError, match="Please add at least one subanimation."):
+        Succession().begin()

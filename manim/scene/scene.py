@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from manim.utils.parameter_parsing import flatten_iterable_parameters
+
 __all__ = ["Scene"]
 
 import copy
@@ -13,7 +15,6 @@ import threading
 import time
 import types
 from queue import Queue
-from typing import Callable
 
 import srt
 
@@ -25,6 +26,8 @@ try:
     dearpygui_imported = True
 except ImportError:
     dearpygui_imported = False
+from typing import TYPE_CHECKING
+
 import numpy as np
 from tqdm import tqdm
 from watchdog.events import FileSystemEventHandler
@@ -34,7 +37,7 @@ from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLPoint
 
 from .. import config, logger
-from ..animation.animation import Animation, Wait, prepare_animation
+from ..animation.animation import Animation, Wait, prepare_animation, validate_run_time
 from ..camera.camera import Camera
 from ..constants import *
 from ..gui.gui import configure_pygui
@@ -47,6 +50,10 @@ from ..utils.family import extract_mobject_family_members
 from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
 from ..utils.file_ops import open_media_file
 from ..utils.iterables import list_difference_update, list_update
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Sequence
+    from typing import Callable
 
 
 class RerunSceneHandler(FileSystemEventHandler):
@@ -93,12 +100,12 @@ class Scene:
 
     def __init__(
         self,
-        renderer=None,
-        camera_class=Camera,
-        always_update_mobjects=False,
-        random_seed=None,
-        skip_animations=False,
-    ):
+        renderer: CairoRenderer | OpenGLRenderer | None = None,
+        camera_class: type[Camera] = Camera,
+        always_update_mobjects: bool = False,
+        random_seed: int | None = None,
+        skip_animations: bool = False,
+    ) -> None:
         self.camera_class = camera_class
         self.always_update_mobjects = always_update_mobjects
         self.random_seed = random_seed
@@ -150,6 +157,11 @@ class Scene:
     @property
     def camera(self):
         return self.renderer.camera
+
+    @property
+    def time(self) -> float:
+        """The time since the start of the scene."""
+        return self.renderer.time
 
     def __deepcopy__(self, clone_from_id):
         cls = self.__class__
@@ -223,7 +235,7 @@ class Scene:
             self.construct()
         except EndSceneEarlyException:
             pass
-        except RerunSceneException as e:
+        except RerunSceneException:
             self.remove(*self.mobjects)
             self.renderer.clear_screen()
             self.renderer.num_plays = 0
@@ -281,7 +293,7 @@ class Scene:
         Examples
         --------
         A typical manim script includes a class derived from :class:`Scene` with an
-        overridden :meth:`Scene.contruct` method:
+        overridden :meth:`Scene.construct` method:
 
         .. code-block:: python
 
@@ -301,14 +313,14 @@ class Scene:
     def next_section(
         self,
         name: str = "unnamed",
-        type: str = DefaultSectionType.NORMAL,
+        section_type: str = DefaultSectionType.NORMAL,
         skip_animations: bool = False,
     ) -> None:
         """Create separation here; the last section gets finished and a new one gets created.
         ``skip_animations`` skips the rendering of all animations in this section.
         Refer to :doc:`the documentation</tutorials/output_and_config>` on how to use sections.
         """
-        self.renderer.file_writer.next_section(name, type, skip_animations)
+        self.renderer.file_writer.next_section(name, section_type, skip_animations)
 
     def __str__(self):
         return self.__class__.__name__
@@ -613,7 +625,7 @@ class Scene:
 
     def restructure_mobjects(
         self,
-        to_remove: Mobject,
+        to_remove: Sequence[Mobject],
         mobject_list_name: str = "mobjects",
         extract_families: bool = True,
     ):
@@ -673,7 +685,6 @@ class Scene:
         list
             The list of mobjects with the mobjects to remove removed.
         """
-
         new_mobjects = []
 
         def add_safe_mobjects_from_list(list_to_examine, set_to_remove):
@@ -865,7 +876,11 @@ class Scene:
         )
         return all_moving_mobject_families, static_mobjects
 
-    def compile_animations(self, *args: Animation, **kwargs):
+    def compile_animations(
+        self,
+        *args: Animation | Iterable[Animation] | types.GeneratorType[Animation],
+        **kwargs,
+    ):
         """
         Creates _MethodAnimations from any _AnimationBuilders and updates animation
         kwargs with kwargs passed to play().
@@ -883,19 +898,21 @@ class Scene:
             Animations to be played.
         """
         animations = []
-        for arg in args:
+        arg_anims = flatten_iterable_parameters(args)
+        # Allow passing a generator to self.play instead of comma separated arguments
+        for arg in arg_anims:
             try:
                 animations.append(prepare_animation(arg))
-            except TypeError:
+            except TypeError as e:
                 if inspect.ismethod(arg):
                     raise TypeError(
                         "Passing Mobject methods to Scene.play is no longer"
                         " supported. Use Mobject.animate instead.",
-                    )
+                    ) from e
                 else:
                     raise TypeError(
                         f"Unexpected argument {arg} passed to Scene.play().",
-                    )
+                    ) from e
 
         for animation in animations:
             for k, v in kwargs.items():
@@ -1018,16 +1035,11 @@ class Scene:
         float
             The total ``run_time`` of all of the animations in the list.
         """
-
-        if len(animations) == 1 and isinstance(animations[0], Wait):
-            return animations[0].duration
-
-        else:
-            return np.max([animation.run_time for animation in animations])
+        return max(animation.run_time for animation in animations)
 
     def play(
         self,
-        *args,
+        *args: Animation | Iterable[Animation] | types.GeneratorType[Animation],
         subcaption=None,
         subcaption_duration=None,
         subcaption_offset=0,
@@ -1076,15 +1088,15 @@ class Scene:
             )
             return
 
-        start_time = self.renderer.time
+        start_time = self.time
         self.renderer.play(self, *args, **kwargs)
-        run_time = self.renderer.time - start_time
+        run_time = self.time - start_time
         if subcaption:
             if subcaption_duration is None:
                 subcaption_duration = run_time
             # The start of the subcaption needs to be offset by the
             # run_time of the animation because it is added after
-            # the animation has already been played (and Scene.renderer.time
+            # the animation has already been played (and Scene.time
             # has already been updated).
             self.add_subcaption(
                 content=subcaption,
@@ -1119,6 +1131,7 @@ class Scene:
         --------
         :class:`.Wait`, :meth:`.should_mobjects_update`
         """
+        duration = validate_run_time(duration, str(self) + ".wait()", "duration")
         self.play(
             Wait(
                 run_time=duration,
@@ -1142,6 +1155,7 @@ class Scene:
         --------
         :meth:`.wait`, :class:`.Wait`
         """
+        duration = validate_run_time(duration, str(self) + ".pause()", "duration")
         self.wait(duration=duration, frozen_frame=True)
 
     def wait_until(self, stop_condition: Callable[[], bool], max_time: float = 60):
@@ -1155,9 +1169,14 @@ class Scene:
         max_time
             The maximum wait time in seconds.
         """
+        max_time = validate_run_time(max_time, str(self) + ".wait_until()", "max_time")
         self.wait(max_time, stop_condition=stop_condition)
 
-    def compile_animation_data(self, *animations: Animation, **play_kwargs):
+    def compile_animation_data(
+        self,
+        *animations: Animation | Iterable[Animation] | types.GeneratorType[Animation],
+        **play_kwargs,
+    ):
         """Given a list of animations, compile the corresponding
         static and moving mobjects, and gather the animation durations.
 
@@ -1189,16 +1208,16 @@ class Scene:
         self.moving_mobjects = []
         self.static_mobjects = []
 
+        self.duration = self.get_run_time(self.animations)
         if len(self.animations) == 1 and isinstance(self.animations[0], Wait):
             if self.should_update_mobjects():
                 self.update_mobjects(dt=0)  # Any problems with this?
                 self.stop_condition = self.animations[0].stop_condition
             else:
-                self.duration = self.animations[0].duration
                 # Static image logic when the wait is static is done by the renderer, not here.
                 self.animations[0].is_static_wait = True
                 return None
-        self.duration = self.get_run_time(self.animations)
+
         return self
 
     def begin_animations(self) -> None:
@@ -1282,9 +1301,7 @@ class Scene:
         return True
 
     def interactive_embed(self):
-        """
-        Like embed(), but allows for screen interaction.
-        """
+        """Like embed(), but allows for screen interaction."""
         if not self.check_interactive_embed_is_valid():
             return
         self.interactive_mode = True
@@ -1492,7 +1509,7 @@ class Scene:
         r"""Adds an entry in the corresponding subcaption file
         at the current time stamp.
 
-        The current time stamp is obtained from ``Scene.renderer.time``.
+        The current time stamp is obtained from ``Scene.time``.
 
         Parameters
         ----------
@@ -1522,18 +1539,15 @@ class Scene:
 
                     # second option: within the call to Scene.play
                     self.play(
-                        Transform(square, circle),
-                        subcaption="The square transforms."
+                        Transform(square, circle), subcaption="The square transforms."
                     )
 
         """
         subtitle = srt.Subtitle(
             index=len(self.renderer.file_writer.subcaptions),
             content=content,
-            start=datetime.timedelta(seconds=float(self.renderer.time + offset)),
-            end=datetime.timedelta(
-                seconds=float(self.renderer.time + offset + duration)
-            ),
+            start=datetime.timedelta(seconds=float(self.time + offset)),
+            end=datetime.timedelta(seconds=float(self.time + offset + duration)),
         )
         self.renderer.file_writer.subcaptions.append(subtitle)
 
@@ -1581,7 +1595,7 @@ class Scene:
         """
         if self.renderer.skip_animations:
             return
-        time = self.renderer.time + time_offset
+        time = self.time + time_offset
         self.renderer.file_writer.add_sound(sound_file, time, gain, **kwargs)
 
     def on_mouse_motion(self, point, d_point):

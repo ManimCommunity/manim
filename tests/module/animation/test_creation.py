@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from manim import AddTextLetterByLetter, Text, config
+from manim import AddTextLetterByLetter, Text
 
 
 def test_non_empty_text_creation():
@@ -25,7 +25,7 @@ def test_whitespace_text_creation():
         AddTextLetterByLetter(Text("    "))
 
 
-def test_run_time_for_non_empty_text():
+def test_run_time_for_non_empty_text(config):
     """Ensure the run_time is calculated correctly for non-empty text."""
     s = Text("Hello")
     run_time_per_char = 0.1

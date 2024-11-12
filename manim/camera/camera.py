@@ -1,6 +1,5 @@
 """A camera converts the mobjects contained in a Scene into an array of pixels."""
 
-
 from __future__ import annotations
 
 __all__ = ["Camera", "BackgroundColoredVMobjectDisplayer"]
@@ -9,8 +8,9 @@ import copy
 import itertools as it
 import operator as op
 import pathlib
+from collections.abc import Iterable
 from functools import reduce
-from typing import Any, Callable, Iterable
+from typing import Any, Callable
 
 import cairo
 import numpy as np
@@ -34,6 +34,14 @@ LINE_JOIN_MAP = {
     LineJointType.ROUND: cairo.LineJoin.ROUND,
     LineJointType.BEVEL: cairo.LineJoin.BEVEL,
     LineJointType.MITER: cairo.LineJoin.MITER,
+}
+
+
+CAP_STYLE_MAP = {
+    CapStyleType.AUTO: None,  # TODO: this could be improved
+    CapStyleType.ROUND: cairo.LineCap.ROUND,
+    CapStyleType.BUTT: cairo.LineCap.BUTT,
+    CapStyleType.SQUARE: cairo.LineCap.SQUARE,
 }
 
 
@@ -369,7 +377,6 @@ class Camera:
         np.array
             The pixel array which can then be passed to set_background.
         """
-
         logger.info("Starting set_background")
         coords = self.get_coords_of_all_pixels()
         new_background = np.apply_along_axis(coords_to_colors_func, 2, coords)
@@ -778,11 +785,13 @@ class Camera:
         ctx.set_line_width(
             width
             * self.cairo_line_width_multiple
-            # This ensures lines have constant width as you zoom in on them.
             * (self.frame_width / self.frame_width),
+            # This ensures lines have constant width as you zoom in on them.
         )
         if vmobject.joint_type != LineJointType.AUTO:
             ctx.set_line_join(LINE_JOIN_MAP[vmobject.joint_type])
+        if vmobject.cap_style != CapStyleType.AUTO:
+            ctx.set_line_cap(CAP_STYLE_MAP[vmobject.cap_style])
         ctx.stroke_preserve()
         return self
 
@@ -973,8 +982,8 @@ class Camera:
         sub_image = Image.fromarray(image_mobject.get_pixel_array(), mode="RGBA")
 
         # Reshape
-        pixel_width = max(int(pdist([ul_coords, ur_coords])), 1)
-        pixel_height = max(int(pdist([ul_coords, dl_coords])), 1)
+        pixel_width = max(int(pdist([ul_coords, ur_coords]).item()), 1)
+        pixel_height = max(int(pdist([ul_coords, dl_coords]).item()), 1)
         sub_image = sub_image.resize(
             (pixel_width, pixel_height),
             resample=image_mobject.resampling_algorithm,

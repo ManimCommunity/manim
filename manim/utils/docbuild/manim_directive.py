@@ -77,27 +77,34 @@ directive:
         that is rendered in a reference block after the source code.
 
 """
+
 from __future__ import annotations
 
 import csv
 import itertools as it
-import os
 import re
 import shutil
 import sys
 import textwrap
 from pathlib import Path
 from timeit import timeit
+from typing import TYPE_CHECKING, Any
 
 import jinja2
 from docutils import nodes
-from docutils.parsers.rst import Directive, directives  # type: ignore
+from docutils.parsers.rst import Directive, directives
 from docutils.statemachine import StringList
 
 from manim import QUALITIES
 from manim import __version__ as manim_version
 
-classnamedict = {}
+if TYPE_CHECKING:
+    from sphinx.application import Sphinx
+
+__all__ = ["ManimDirective"]
+
+
+classnamedict: dict[str, int] = {}
 
 
 class SkipManimNode(nodes.Admonition, nodes.Element):
@@ -110,13 +117,13 @@ class SkipManimNode(nodes.Admonition, nodes.Element):
     pass
 
 
-def visit(self, node, name=""):
+def visit(self: SkipManimNode, node: nodes.Element, name: str = "") -> None:
     self.visit_admonition(node, name)
     if not isinstance(node[0], nodes.title):
         node.insert(0, nodes.title("skip-manim", "Example Placeholder"))
 
 
-def depart(self, node):
+def depart(self: SkipManimNode, node: nodes.Element) -> None:
     self.depart_admonition(node)
 
 
@@ -143,6 +150,7 @@ class ManimDirective(Directive):
 
     See the module docstring for documentation.
     """
+
     has_content = True
     required_arguments = 1
     optional_arguments = 0
@@ -162,7 +170,7 @@ class ManimDirective(Directive):
     }
     final_argument_whitespace = True
 
-    def run(self):
+    def run(self) -> list[nodes.Element]:
         # Rendering is skipped if the tag skip-manim is present,
         # or if we are making the pot-files
         should_skip = (
@@ -217,11 +225,7 @@ class ManimDirective(Directive):
             + self.options.get("ref_functions", [])
             + self.options.get("ref_methods", [])
         )
-        if ref_content:
-            ref_block = "References: " + " ".join(ref_content)
-
-        else:
-            ref_block = ""
+        ref_block = "References: " + " ".join(ref_content) if ref_content else ""
 
         if "quality" in self.options:
             quality = f'{self.options["quality"]}_quality'
@@ -341,18 +345,18 @@ class ManimDirective(Directive):
 rendering_times_file_path = Path("../rendering_times.csv")
 
 
-def _write_rendering_stats(scene_name, run_time, file_name):
+def _write_rendering_stats(scene_name: str, run_time: str, file_name: str) -> None:
     with rendering_times_file_path.open("a") as file:
         csv.writer(file).writerow(
             [
                 re.sub(r"^(reference\/)|(manim\.)", "", file_name),
                 scene_name,
-                "%.3f" % run_time,
+                f"{run_time:.3f}",
             ],
         )
 
 
-def _log_rendering_times(*args):
+def _log_rendering_times(*args: tuple[Any]) -> None:
     if rendering_times_file_path.exists():
         with rendering_times_file_path.open() as file:
             data = list(csv.reader(file))
@@ -377,16 +381,16 @@ def _log_rendering_times(*args):
                 f"{key}{f'{time_sum:.3f}'.rjust(7, '.')}s  => {len(group)} EXAMPLES",
             )
             for row in group:
-                print(f"{' '*(max_file_length)} {row[2].rjust(7)}s {row[1]}")
+                print(f"{' ' * max_file_length} {row[2].rjust(7)}s {row[1]}")
         print("")
 
 
-def _delete_rendering_times(*args):
+def _delete_rendering_times(*args: tuple[Any]) -> None:
     if rendering_times_file_path.exists():
         rendering_times_file_path.unlink()
 
 
-def setup(app):
+def setup(app: Sphinx) -> dict[str, Any]:
     app.add_node(SkipManimNode, html=(visit, depart))
 
     setup.app = app

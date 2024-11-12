@@ -5,32 +5,45 @@ cfg``. Here you can specify options, subcommands, and subgroups for the cfg
 group.
 
 """
+
 from __future__ import annotations
 
-import os
+import contextlib
 from ast import literal_eval
 from pathlib import Path
+from typing import Any, cast
 
-import click
 import cloup
 from rich.errors import StyleSyntaxError
 from rich.style import Style
 
-from ... import cli_ctx_settings, console
-from ..._config.utils import config_file_paths, make_config_parser
-from ...constants import EPILOG
-from ...utils.file_ops import guarantee_existence, open_file
+from manim._config import cli_ctx_settings, console
+from manim._config.utils import config_file_paths, make_config_parser
+from manim.constants import EPILOG
+from manim.utils.file_ops import guarantee_existence, open_file
 
 RICH_COLOUR_INSTRUCTIONS: str = """
 [red]The default colour is used by the input statement.
 If left empty, the default colour will be used.[/red]
 [magenta] For a full list of styles, visit[/magenta] [green]https://rich.readthedocs.io/en/latest/style.html[/green]
 """
-RICH_NON_STYLE_ENTRIES: str = ["log.width", "log.height", "log.timestamps"]
+RICH_NON_STYLE_ENTRIES: list[str] = ["log.width", "log.height", "log.timestamps"]
+
+__all__ = [
+    "value_from_string",
+    "value_from_string",
+    "is_valid_style",
+    "replace_keys",
+    "cfg",
+    "write",
+    "show",
+    "export",
+]
 
 
 def value_from_string(value: str) -> str | int | bool:
-    """Extracts the literal of proper datatype from a string.
+    """Extract the literal of proper datatype from a ``value`` string.
+
     Parameters
     ----------
     value
@@ -38,51 +51,60 @@ def value_from_string(value: str) -> str | int | bool:
 
     Returns
     -------
-    Union[:class:`str`, :class:`int`, :class:`bool`]
-        Returns the literal of appropriate datatype.
+    :class:`str` | :class:`int` | :class:`bool`
+        The literal of appropriate datatype.
     """
-    try:
+    with contextlib.suppress(SyntaxError, ValueError):
         value = literal_eval(value)
-    except (SyntaxError, ValueError):
-        pass
     return value
 
 
-def _is_expected_datatype(value: str, expected: str, style: bool = False) -> bool:
-    """Checks whether `value` is the same datatype as `expected`,
-    and checks if it is a valid `style` if `style` is true.
+def _is_expected_datatype(
+    value: str, expected: str, validate_style: bool = False
+) -> bool:
+    """Check whether the literal from ``value`` is the same datatype as the
+    literal from ``expected``. If ``validate_style`` is ``True``, also check if
+    the style given by ``value`` is valid, according to ``rich``.
 
     Parameters
     ----------
     value
-        The string of the value to check (obtained from reading the user input).
+        The string of the value to check, obtained from reading the user input.
     expected
-        The string of the literal datatype must be matched by `value`. Obtained from
-        reading the cfg file.
-    style
-        Whether or not to confirm if `value` is a style, by default False
+        The string of the literal datatype which must be matched by ``value``.
+        This is obtained from reading the ``cfg`` file.
+    validate_style
+        Whether or not to confirm if ``value`` is a valid style, according to
+        ``rich``. Default is ``False``.
 
     Returns
     -------
     :class:`bool`
-        Whether or not `value` matches the datatype of `expected`.
+        Whether or not the literal from ``value`` matches the datatype of the
+        literal from ``expected``.
     """
-    value = value_from_string(value)
-    expected = type(value_from_string(expected))
+    value_literal = value_from_string(value)
+    ExpectedLiteralType = type(value_from_string(expected))
 
-    return isinstance(value, expected) and (is_valid_style(value) if style else True)
+    return isinstance(value_literal, ExpectedLiteralType) and (
+        (isinstance(value_literal, str) and is_valid_style(value_literal))
+        if validate_style
+        else True
+    )
 
 
 def is_valid_style(style: str) -> bool:
-    """Checks whether the entered color is a valid color according to rich
+    """Checks whether the entered color style is valid, according to ``rich``.
+
     Parameters
     ----------
     style
         The style to check whether it is valid.
+
     Returns
     -------
-    Boolean
-        Returns whether it is valid style or not according to rich.
+    :class:`bool`
+        Whether the color style is valid or not, according to ``rich``.
     """
     try:
         Style.parse(style)
@@ -91,16 +113,20 @@ def is_valid_style(style: str) -> bool:
         return False
 
 
-def replace_keys(default: dict) -> dict:
-    """Replaces _ to . and vice versa in a dictionary for rich
+def replace_keys(default: dict[str, Any]) -> dict[str, Any]:
+    """Replace ``_`` with ``.`` and vice versa in a dictionary's keys for
+    ``rich``.
+
     Parameters
     ----------
     default
-        The dictionary to check and replace
+        The dictionary whose keys will be checked and replaced.
+
     Returns
     -------
     :class:`dict`
-        The dictionary which is modified by replacing _ with . and vice versa
+        The dictionary whose keys are modified by replacing ``_`` with ``.``
+        and vice versa.
     """
     for key in default:
         if "_" in key:
@@ -123,22 +149,22 @@ def replace_keys(default: dict) -> dict:
     epilog=EPILOG,
     help="Manages Manim configuration files.",
 )
-@click.pass_context
-def cfg(ctx):
+@cloup.pass_context
+def cfg(ctx: cloup.Context) -> None:
     """Responsible for the cfg subcommand."""
     pass
 
 
 @cfg.command(context_settings=cli_ctx_settings, no_args_is_help=True)
-@click.option(
+@cloup.option(
     "-l",
     "--level",
-    type=click.Choice(["user", "cwd"], case_sensitive=False),
+    type=cloup.Choice(["user", "cwd"], case_sensitive=False),
     default="cwd",
     help="Specify if this config is for user or the working directory.",
 )
-@click.option("-o", "--open", "openfile", is_flag=True)
-def write(level: str = None, openfile: bool = False) -> None:
+@cloup.option("-o", "--open", "openfile", is_flag=True)
+def write(level: str | None = None, openfile: bool = False) -> None:
     config_paths = config_file_paths()
     console.print(
         "[yellow bold]Manim Configuration File Writer[/yellow bold]",
@@ -157,7 +183,7 @@ To save your config please save that file and place it in your current working d
         action = "save this as"
         for category in parser:
             console.print(f"{category}", style="bold green underline")
-            default = parser[category]
+            default = cast(dict[str, Any], parser[category])
             if category == "logger":
                 console.print(RICH_COLOUR_INSTRUCTIONS)
                 default = replace_keys(default)
@@ -187,7 +213,7 @@ To save your config please save that file and place it in your current working d
                         """Not enough values in input.
 You may have added a new entry to default.cfg, in which case you will have to
 modify write_cfg_subcmd_input to account for it.""",
-                    )
+                    ) from None
                 if temp:
                     while temp and not _is_expected_datatype(
                         temp,
@@ -240,7 +266,7 @@ modify write_cfg_subcmd_input to account for it.""",
 
 
 @cfg.command(context_settings=cli_ctx_settings)
-def show():
+def show() -> None:
     parser = make_config_parser()
     rich_non_style_entries = [a.replace(".", "_") for a in RICH_NON_STYLE_ENTRIES]
     for category in parser:
@@ -258,9 +284,9 @@ def show():
 
 
 @cfg.command(context_settings=cli_ctx_settings)
-@click.option("-d", "--directory", default=Path.cwd())
-@click.pass_context
-def export(ctx, directory):
+@cloup.option("-d", "--directory", default=Path.cwd())
+@cloup.pass_context
+def export(ctx: cloup.Context, directory: str) -> None:
     directory_path = Path(directory)
     if directory_path.absolute == Path.cwd().absolute:
         console.print(

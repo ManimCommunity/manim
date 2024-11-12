@@ -1,8 +1,8 @@
 {"levelname": "INFO", "module": "logger_utils", "message": "Log file will be saved in <>"}
 {"levelname": "INFO", "module": "tex_file_writing", "message": "Writing <> to <>"}
 {"levelname": "ERROR", "module": "tex_file_writing", "message": "LaTeX compilation error: LaTeX Error: File `notapackage.sty' not found.\n"}
-{"levelname": "ERROR", "module": "tex_file_writing", "message": "Context of error: \n\\documentclass[preview]{standalone}\n-> \\usepackage{notapackage}\n\\begin{document}\n\n\\begin{center}\n"}
+{"levelname": "ERROR", "module": "tex_file_writing", "message": "Context of error: \n\\documentclass[preview]{standalone}\n-> \\usepackage{notapackage}\n\\begin{document}\n\\begin{center}\n\\frac{1}{0}\n"}
 {"levelname": "INFO", "module": "tex_file_writing", "message": "You do not have package notapackage.sty installed."}
 {"levelname": "INFO", "module": "tex_file_writing", "message": "Install notapackage.sty it using your LaTeX package manager, or check for typos."}
 {"levelname": "ERROR", "module": "tex_file_writing", "message": "LaTeX compilation error: Emergency stop.\n"}
-{"levelname": "ERROR", "module": "tex_file_writing", "message": "Context of error: \n\\documentclass[preview]{standalone}\n-> \\usepackage{notapackage}\n\\begin{document}\n\n\\begin{center}\n"}
+{"levelname": "ERROR", "module": "tex_file_writing", "message": "Context of error: \n\\documentclass[preview]{standalone}\n-> \\usepackage{notapackage}\n\\begin{document}\n\\begin{center}\n\\frac{1}{0}\n"}

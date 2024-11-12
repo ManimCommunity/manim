@@ -28,7 +28,8 @@ __all__ = [
 
 import inspect
 import types
-from typing import TYPE_CHECKING, Any, Callable, Iterable, Sequence
+from collections.abc import Iterable, Sequence
+from typing import TYPE_CHECKING, Any, Callable
 
 import numpy as np
 
@@ -297,9 +298,7 @@ class ReplacementTransform(Transform):
 
 
 class TransformFromCopy(Transform):
-    """
-    Performs a reversed Transform
-    """
+    """Performs a reversed Transform"""
 
     def __init__(self, mobject: Mobject, target_mobject: Mobject, **kwargs) -> None:
         super().__init__(target_mobject, mobject, **kwargs)

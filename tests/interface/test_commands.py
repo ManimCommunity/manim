@@ -4,10 +4,11 @@ import shutil
 import sys
 from pathlib import Path
 from textwrap import dedent
+from unittest.mock import patch
 
 from click.testing import CliRunner
 
-from manim import __version__, capture, tempconfig
+from manim import __version__, capture
 from manim.__main__ import main
 from manim.cli.checkhealth.checks import HEALTH_CHECKS
 
@@ -28,7 +29,9 @@ def test_manim_cfg_subcommand():
     command = ["cfg"]
     runner = CliRunner()
     result = runner.invoke(main, command, prog_name="manim")
-    expected_output = """\
+    expected_output = f"""\
+Manim Community v{__version__}
+
 Usage: manim cfg [OPTIONS] COMMAND [ARGS]...
 
   Manages Manim configuration files.
@@ -50,7 +53,9 @@ def test_manim_plugins_subcommand():
     command = ["plugins"]
     runner = CliRunner()
     result = runner.invoke(main, command, prog_name="manim")
-    expected_output = """\
+    expected_output = f"""\
+Manim Community v{__version__}
+
 Usage: manim plugins [OPTIONS]
 
   Manages Manim plugins.
@@ -79,18 +84,29 @@ def test_manim_checkhealth_subcommand():
 def test_manim_checkhealth_failing_subcommand():
     command = ["checkhealth"]
     runner = CliRunner()
-    with tempconfig({"ffmpeg_executable": "/path/to/nowhere"}):
+    true_f = shutil.which
+
+    def mock_f(s):
+        if s == "latex":
+            return None
+
+        return true_f(s)
+
+    with patch.object(shutil, "which", new=mock_f):
         result = runner.invoke(main, command)
+
     output_lines = result.output.split("\n")
-    assert "- Checking whether ffmpeg is available ... FAILED" in output_lines
-    assert "- Checking whether ffmpeg is working ... SKIPPED" in output_lines
+    assert "- Checking whether latex is available ... FAILED" in output_lines
+    assert "- Checking whether dvisvgm is available ... SKIPPED" in output_lines
 
 
 def test_manim_init_subcommand():
     command = ["init"]
     runner = CliRunner()
     result = runner.invoke(main, command, prog_name="manim")
-    expected_output = """\
+    expected_output = f"""\
+Manim Community v{__version__}
+
 Usage: manim init [OPTIONS] COMMAND [ARGS]...
 
   Create a new project or insert a new scene.
@@ -135,24 +151,3 @@ def test_manim_init_scene(tmp_path):
         assert (Path(tmp_dir) / "main.py").exists()
         file_content = (Path(tmp_dir) / "main.py").read_text()
         assert "DefaultFileTestScene(Scene):" in file_content
-
-
-def test_manim_new_command():
-    command = ["new"]
-    runner = CliRunner()
-    result = runner.invoke(main, command, prog_name="manim")
-    expected_output = """\
-Usage: manim new [OPTIONS] COMMAND [ARGS]...
-
-  (Deprecated) Create a new project or insert a new scene.
-
-Options:
-  --help  Show this message and exit.
-
-Commands:
-  project  Creates a new project.
-  scene    Inserts a SCENE to an existing FILE or creates a new FILE.
-
-Made with <3 by Manim Community developers.
-"""
-    assert dedent(expected_output) == result.output

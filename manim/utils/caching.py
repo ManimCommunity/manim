@@ -5,6 +5,8 @@ from typing import Callable
 from .. import config, logger
 from ..utils.hashing import get_hash_from_play_call
 
+__all__ = ["handle_caching_play"]
+
 
 def handle_caching_play(func: Callable[..., None]):
     """Decorator that returns a wrapped version of func that will compute
@@ -20,7 +22,6 @@ def handle_caching_play(func: Callable[..., None]):
         The play like function that has to be written to the video file stream.
         Take the same parameters as `scene.play`.
     """
-
     # NOTE : This is only kept for OpenGL renderer.
     # The play logic of the cairo renderer as been refactored and does not need this function anymore.
     # When OpenGL renderer will have a proper testing system,

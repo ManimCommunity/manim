@@ -1,6 +1,5 @@
 """Debugging utilities."""
 
-
 from __future__ import annotations
 
 __all__ = ["print_family", "index_labels"]
@@ -68,7 +67,6 @@ def index_labels(
 
                 self.add(text, indices)
     """
-
     labels = VGroup()
     for n, submob in enumerate(mobject):
         label = Integer(n, **kwargs)

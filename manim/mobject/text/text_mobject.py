@@ -49,17 +49,18 @@ Examples
 
 from __future__ import annotations
 
+import functools
+
 __all__ = ["Text", "Paragraph", "MarkupText", "register_font"]
 
 
 import copy
 import hashlib
-import os
 import re
+from collections.abc import Iterable, Sequence
 from contextlib import contextmanager
 from itertools import chain
 from pathlib import Path
-from typing import Iterable, Sequence
 
 import manimpango
 import numpy as np
@@ -76,6 +77,8 @@ from manim.utils.deprecation import deprecated
 TEXT_MOB_SCALE_FACTOR = 0.05
 DEFAULT_LINE_SPACING_SCALE = 0.3
 TEXT2SVG_ADJUSTMENT_FACTOR = 4.8
+
+__all__ = ["Text", "Paragraph", "MarkupText", "register_font"]
 
 
 def remove_invisible_chars(mobject: SVGMobject) -> SVGMobject:
@@ -131,10 +134,17 @@ class Paragraph(VGroup):
     --------
     Normal usage::
 
-        paragraph = Paragraph('this is a awesome', 'paragraph',
-                              'With \nNewlines', '\tWith Tabs',
-                              '  With Spaces', 'With Alignments',
-                              'center', 'left', 'right')
+        paragraph = Paragraph(
+            "this is a awesome",
+            "paragraph",
+            "With \nNewlines",
+            "\tWith Tabs",
+            "  With Spaces",
+            "With Alignments",
+            "center",
+            "left",
+            "right",
+        )
 
     Remove unwanted invisible characters::
 
@@ -350,7 +360,7 @@ class Text(SVGMobject):
                )
                 text6.scale(1.3).shift(DOWN)
                 self.add(text1, text2, text3, text4, text5 , text6)
-                Group(*self.mobjects).arrange(DOWN, buff=.8).set_height(config.frame_height-LARGE_BUFF)
+                Group(*self.mobjects).arrange(DOWN, buff=.8).set(height=config.frame_height-LARGE_BUFF)
 
     .. manim:: TextMoreCustomization
             :save_last_frame:
@@ -407,6 +417,11 @@ class Text(SVGMobject):
 
     """
 
+    @staticmethod
+    @functools.cache
+    def font_list() -> list[str]:
+        return manimpango.list_fonts()
+
     def __init__(
         self,
         text: str,
@@ -431,13 +446,25 @@ class Text(SVGMobject):
         width: float = None,
         should_center: bool = True,
         disable_ligatures: bool = False,
+        use_svg_cache: bool = False,
         **kwargs,
     ) -> None:
         self.line_spacing = line_spacing
         if font and warn_missing_font:
-            fonts_list = manimpango.list_fonts()
+            fonts_list = Text.font_list()
+            # handle special case of sans/sans-serif
+            if font.lower() == "sans-serif":
+                font = "sans"
             if font not in fonts_list:
-                logger.warning(f"Font {font} not in {fonts_list}.")
+                # check if the capitalized version is in the supported fonts
+                if font.capitalize() in fonts_list:
+                    font = font.capitalize()
+                elif font.lower() in fonts_list:
+                    font = font.lower()
+                elif font.title() in fonts_list:
+                    font = font.title()
+                else:
+                    logger.warning(f"Font {font} not in {fonts_list}.")
         self.font = font
         self._font_size = float(font_size)
         # needs to be a float or else size is inflated when font_size = 24
@@ -491,7 +518,7 @@ class Text(SVGMobject):
             height=height,
             width=width,
             should_center=should_center,
-            use_svg_cache=False,
+            use_svg_cache=use_svg_cache,
             **kwargs,
         )
         self.text = text
@@ -636,7 +663,8 @@ class Text(SVGMobject):
     )
     def _set_color_by_t2g(self, t2g=None):
         """Sets gradient colors for specified
-        strings. Behaves similarly to ``set_color_by_t2c``."""
+        strings. Behaves similarly to ``set_color_by_t2c``.
+        """
         t2g = t2g if t2g else self.t2g
         for word, gradient in list(t2g.items()):
             for start, end in self._find_indexes(word, self.text):
@@ -886,7 +914,7 @@ class MarkupText(SVGMobject):
     Here is a list of supported tags:
 
     - ``<b>bold</b>``, ``<i>italic</i>`` and ``<b><i>bold+italic</i></b>``
-    - ``<ul>underline</ul>`` and ``<s>strike through</s>``
+    - ``<u>underline</u>`` and ``<s>strike through</s>``
     - ``<tt>typewriter font</tt>``
     - ``<big>bigger font</big>`` and ``<small>smaller font</small>``
     - ``<sup>superscript</sup>`` and ``<sub>subscript</sub>``
@@ -1133,6 +1161,11 @@ class MarkupText(SVGMobject):
 
     """
 
+    @staticmethod
+    @functools.cache
+    def font_list() -> list[str]:
+        return manimpango.list_fonts()
+
     def __init__(
         self,
         text: str,
@@ -1157,9 +1190,20 @@ class MarkupText(SVGMobject):
         self.text = text
         self.line_spacing = line_spacing
         if font and warn_missing_font:
-            fonts_list = manimpango.list_fonts()
+            fonts_list = Text.font_list()
+            # handle special case of sans/sans-serif
+            if font.lower() == "sans-serif":
+                font = "sans"
             if font not in fonts_list:
-                logger.warning(f"Font {font} not in {fonts_list}.")
+                # check if the capitalized version is in the supported fonts
+                if font.capitalize() in fonts_list:
+                    font = font.capitalize()
+                elif font.lower() in fonts_list:
+                    font = font.lower()
+                elif font.title() in fonts_list:
+                    font = font.title()
+                else:
+                    logger.warning(f"Font {font} not in {fonts_list}.")
         self.font = font
         self._font_size = float(font_size)
         self.slant = slant
@@ -1268,15 +1312,13 @@ class MarkupText(SVGMobject):
             self.set_color_by_gradient(*self.gradient)
         for col in colormap:
             self.chars[
-                col["start"]
-                - col["start_offset"] : col["end"]
+                col["start"] - col["start_offset"] : col["end"]
                 - col["start_offset"]
                 - col["end_offset"]
             ].set_color(self._parse_color(col["color"]))
         for grad in gradientmap:
             self.chars[
-                grad["start"]
-                - grad["start_offset"] : grad["end"]
+                grad["start"] - grad["start_offset"] : grad["end"]
                 - grad["start_offset"]
                 - grad["end_offset"]
             ].set_color_by_gradient(
@@ -1369,7 +1411,8 @@ class MarkupText(SVGMobject):
         """Counts characters that will be displayed.
 
         This is needed for partial coloring or gradients, because space
-        counts to the text's `len`, but has no corresponding character."""
+        counts to the text's `len`, but has no corresponding character.
+        """
         count = 0
         level = 0
         # temporarily replace HTML entities by single char
@@ -1412,7 +1455,9 @@ class MarkupText(SVGMobject):
                     "end_offset": end_offset,
                 },
             )
-        self.text = re.sub("<gradient[^>]+>(.+?)</gradient>", r"\1", self.text, 0, re.S)
+        self.text = re.sub(
+            "<gradient[^>]+>(.+?)</gradient>", r"\1", self.text, count=0, flags=re.S
+        )
         return gradientmap
 
     def _parse_color(self, col):
@@ -1454,7 +1499,9 @@ class MarkupText(SVGMobject):
                     "end_offset": end_offset,
                 },
             )
-        self.text = re.sub("<color[^>]+>(.+?)</color>", r"\1", self.text, 0, re.S)
+        self.text = re.sub(
+            "<color[^>]+>(.+?)</color>", r"\1", self.text, count=0, flags=re.S
+        )
         return colormap
 
     def __repr__(self):
@@ -1500,7 +1547,6 @@ def register_font(font_file: str | Path):
         This method is available for macOS for ``ManimPango>=v0.2.3``. Using this
         method with previous releases will raise an :class:`AttributeError` on macOS.
     """
-
     input_folder = Path(config.input_file).parent.resolve()
     possible_paths = [
         Path(font_file),

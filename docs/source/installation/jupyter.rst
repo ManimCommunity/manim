@@ -66,12 +66,12 @@ then execute it.
 .. code-block::
 
    !sudo apt update
-   !sudo apt install libcairo2-dev ffmpeg \
+   !sudo apt install libcairo2-dev \
        texlive texlive-latex-extra texlive-fonts-extra \
        texlive-latex-recommended texlive-science \
        tipa libpango1.0-dev
    !pip install manim
-   !pip install IPython --upgrade
+   !pip install IPython==8.21.0
 
 You should start to see Colab installing all the dependencies specified
 in these commands. After the execution has completed, you will be prompted

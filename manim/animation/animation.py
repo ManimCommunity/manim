@@ -1,6 +1,5 @@
 """Animate mobjects."""
 
-
 from __future__ import annotations
 
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
@@ -15,8 +14,12 @@ from ..utils.rate_functions import linear, smooth
 __all__ = ["Animation", "Wait", "override_animation"]
 
 
+from collections.abc import Iterable, Sequence
 from copy import deepcopy
-from typing import TYPE_CHECKING, Callable, Iterable, Sequence
+from functools import partialmethod
+from typing import TYPE_CHECKING, Callable
+
+from typing_extensions import Self
 
 if TYPE_CHECKING:
     from manim.scene.scene import Scene
@@ -112,7 +115,7 @@ class Animation:
         *args,
         use_override=True,
         **kwargs,
-    ):
+    ) -> Self:
         if isinstance(mobject, Mobject) and use_override:
             func = mobject.animation_override_for(cls)
             if func is not None:
@@ -191,6 +194,7 @@ class Animation:
         method.
 
         """
+        self.run_time = validate_run_time(self.run_time, str(self))
         self.starting_mobject = self.create_starting_mobject()
         if self.suspend_mobject_updating:
             # All calls to self.mobject's internal updaters
@@ -398,6 +402,7 @@ class Animation:
         self.run_time = run_time
         return self
 
+    # TODO: is this getter even necessary?
     def get_run_time(self) -> float:
         """Get the run time of the animation.
 
@@ -476,6 +481,52 @@ class Animation:
         """
         return self.introducer
 
+    @classmethod
+    def __init_subclass__(cls, **kwargs) -> None:
+        super().__init_subclass__(**kwargs)
+
+        cls._original__init__ = cls.__init__
+
+    @classmethod
+    def set_default(cls, **kwargs) -> None:
+        """Sets the default values of keyword arguments.
+
+        If this method is called without any additional keyword
+        arguments, the original default values of the initialization
+        method of this class are restored.
+
+        Parameters
+        ----------
+
+        kwargs
+            Passing any keyword argument will update the default
+            values of the keyword arguments of the initialization
+            function of this class.
+
+        Examples
+        --------
+
+        .. manim:: ChangeDefaultAnimation
+
+            class ChangeDefaultAnimation(Scene):
+                def construct(self):
+                    Rotate.set_default(run_time=2, rate_func=rate_functions.linear)
+                    Indicate.set_default(color=None)
+
+                    S = Square(color=BLUE, fill_color=BLUE, fill_opacity=0.25)
+                    self.add(S)
+                    self.play(Rotate(S, PI))
+                    self.play(Indicate(S))
+
+                    Rotate.set_default()
+                    Indicate.set_default()
+
+        """
+        if kwargs:
+            cls.__init__ = partialmethod(cls.__init__, **kwargs)
+        else:
+            cls.__init__ = cls._original__init__
+
 
 def prepare_animation(
     anim: Animation | mobject._AnimationBuilder,
@@ -516,6 +567,33 @@ def prepare_animation(
         return anim
 
     raise TypeError(f"Object {anim} cannot be converted to an animation")
+
+
+def validate_run_time(
+    run_time: float, caller_name: str, parameter_name: str = "run_time"
+) -> float:
+    if run_time <= 0:
+        raise ValueError(
+            f"{caller_name} has a {parameter_name} of {run_time:g} <= 0 "
+            f"seconds which Manim cannot render. Please set the "
+            f"{parameter_name} to a positive number."
+        )
+
+    # config.frame_rate holds the number of frames per second
+    fps = config.frame_rate
+    seconds_per_frame = 1 / fps
+    if run_time < seconds_per_frame:
+        logger.warning(
+            f"The original {parameter_name} of {caller_name}, {run_time:g} "
+            f"seconds, is too short for the current frame rate of {fps:g} "
+            f"FPS. Rendering with the shortest possible {parameter_name} of "
+            f"{seconds_per_frame:g} seconds instead."
+        )
+        new_run_time = seconds_per_frame
+    else:
+        new_run_time = run_time
+
+    return new_run_time
 
 
 class Wait(Animation):
@@ -560,7 +638,7 @@ class Wait(Animation):
         self.mobject.shader_wrapper_list = []
 
     def begin(self) -> None:
-        pass
+        self.run_time = validate_run_time(self.run_time, str(self))
 
     def finish(self) -> None:
         pass

@@ -3,17 +3,18 @@
 from __future__ import annotations
 
 import mimetypes
-import os
 import shutil
 from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from manim import Group, config, logger, tempconfig
+from manim import config, logger, tempconfig
 from manim.__main__ import main
 from manim.renderer.shader import shader_program_cache
 
 from ..constants import RendererType
+
+__all__ = ["ManimMagic"]
 
 try:
     from IPython import get_ipython
@@ -167,7 +168,7 @@ else:
 
                 file_type = mimetypes.guess_type(config["output_file"])[0]
                 embed = config["media_embed"]
-                if embed is None:
+                if not embed:
                     # videos need to be embedded when running in google colab.
                     # do this automatically in case config.media_embed has not been
                     # set explicitly.

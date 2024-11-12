@@ -12,7 +12,6 @@
 
 """
 
-
 from __future__ import annotations
 
 __all__ = [
@@ -58,10 +57,7 @@ class _Fade(Transform):
     ) -> None:
         if not mobjects:
             raise ValueError("At least one mobject must be passed.")
-        if len(mobjects) == 1:
-            mobject = mobjects[0]
-        else:
-            mobject = Group(*mobjects)
+        mobject = mobjects[0] if len(mobjects) == 1 else Group(*mobjects)
 
         self.point_target = False
         if shift is None:
@@ -98,7 +94,7 @@ class _Fade(Transform):
 
 
 class FadeIn(_Fade):
-    """Fade in :class:`~.Mobject` s.
+    r"""Fade in :class:`~.Mobject` s.
 
     Parameters
     ----------
@@ -123,7 +119,7 @@ class FadeIn(_Fade):
                 dot = Dot(UP * 2 + LEFT)
                 self.add(dot)
                 tex = Tex(
-                    "FadeIn with ", "shift ", " or target\\_position", " and scale"
+                    "FadeIn with ", "shift ", r" or target\_position", " and scale"
                 ).scale(1)
                 animations = [
                     FadeIn(tex[0]),
@@ -146,7 +142,7 @@ class FadeIn(_Fade):
 
 
 class FadeOut(_Fade):
-    """Fade out :class:`~.Mobject` s.
+    r"""Fade out :class:`~.Mobject` s.
 
     Parameters
     ----------

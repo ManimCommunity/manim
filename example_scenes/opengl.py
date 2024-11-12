@@ -2,7 +2,7 @@ from pathlib import Path
 
 import manim.utils.opengl as opengl
 from manim import *
-from manim.opengl import *  # type: ignore
+from manim.opengl import *
 
 # Copied from https://3b1b.github.io/manim/getting_started/example_scenes.html#surfaceexample.
 # Lines that do not yet work with the Community Version are commented.
@@ -406,7 +406,7 @@ class InteractiveDevelopment(Scene):
         self.play(Create(square))
         self.wait()
 
-        # This opens an iPython termnial where you can keep writing
+        # This opens an iPython terminal where you can keep writing
         # lines as if they were part of this construct method.
         # In particular, 'square', 'circle' and 'self' will all be
         # part of the local namespace in that terminal.

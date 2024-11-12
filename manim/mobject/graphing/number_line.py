@@ -2,15 +2,18 @@
 
 from __future__ import annotations
 
+from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 
 __all__ = ["NumberLine", "UnitInterval"]
 
 
-from typing import TYPE_CHECKING, Callable, Iterable, Sequence
+from collections.abc import Iterable, Sequence
+from typing import TYPE_CHECKING, Callable
 
 if TYPE_CHECKING:
     from manim.mobject.geometry.tips import ArrowTip
+    from manim.typing import Point3D
 
 import numpy as np
 
@@ -274,7 +277,8 @@ class NumberLine(Line):
 
     def add_ticks(self):
         """Adds ticks to the number line. Ticks can be accessed after creation
-        via ``self.ticks``."""
+        via ``self.ticks``.
+        """
         ticks = VGroup()
         elongated_tick_size = self.tick_size * self.longer_tick_multiple
         elongated_tick_offsets = self.numbers_with_elongated_ticks - self.x_min
@@ -343,6 +347,7 @@ class NumberLine(Line):
     def number_to_point(self, number: float | np.ndarray) -> np.ndarray:
         """Accepts a value along the number line and returns a point with
         respect to the scene.
+        Equivalent to `NumberLine @ number`
 
         Parameters
         ----------
@@ -363,7 +368,9 @@ class NumberLine(Line):
             array([0., 0., 0.])
             >>> number_line.number_to_point(1)
             array([1., 0., 0.])
-            >>> number_line.number_to_point([1,2,3])
+            >>> number_line @ 1
+            array([1., 0., 0.])
+            >>> number_line.number_to_point([1, 2, 3])
             array([[1., 0., 0.],
                    [2., 0., 0.],
                    [3., 0., 0.]])
@@ -395,11 +402,11 @@ class NumberLine(Line):
 
             >>> from manim import NumberLine
             >>> number_line = NumberLine()
-            >>> number_line.point_to_number((0,0,0))
+            >>> number_line.point_to_number((0, 0, 0))
             0.0
-            >>> number_line.point_to_number((1,0,0))
+            >>> number_line.point_to_number((1, 0, 0))
             1.0
-            >>> number_line.point_to_number([[0.5,0,0],[1,0,0],[1.5,0,0]])
+            >>> number_line.point_to_number([[0.5, 0, 0], [1, 0, 0], [1.5, 0, 0]])
             array([0.5, 1. , 1.5])
 
         """
@@ -475,7 +482,7 @@ class NumberLine(Line):
         num_mob.next_to(self.number_to_point(x), direction=direction, buff=buff)
         if x < 0 and self.label_direction[0] == 0:
             # Align without the minus sign
-            num_mob.shift(num_mob[0].get_width() * LEFT / 2)
+            num_mob.shift(num_mob[0].width * LEFT / 2)
         return num_mob
 
     def get_number_mobjects(self, *numbers, **kwargs) -> VGroup:
@@ -574,7 +581,6 @@ class NumberLine(Line):
         AttributeError
             If the label does not have a ``font_size`` attribute, an ``AttributeError`` is raised.
         """
-
         direction = self.label_direction if direction is None else direction
         buff = self.line_to_number_buff if buff is None else buff
         font_size = self.font_size if font_size is None else font_size
@@ -640,6 +646,14 @@ class NumberLine(Line):
         if "." not in step:
             return 0
         return len(step.split(".")[-1])
+
+    def __matmul__(self, other: float):
+        return self.n2p(other)
+
+    def __rmatmul__(self, other: Point3D | Mobject):
+        if isinstance(other, Mobject):
+            other = other.get_center()
+        return self.p2n(other)
 
 
 class UnitInterval(NumberLine):
