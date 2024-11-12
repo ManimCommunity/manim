@@ -244,3 +244,26 @@ def test_tex_template_file(tmp_path):
 
     assert Path(custom_config.tex_template_file) == tex_file
     assert custom_config.tex_template.body == "Hello World!"
+
+
+def test_from_to_animations_only_first_animation(config):
+    config: ManimConfig
+    config.from_animation_number = 0
+    config.upto_animation_number = 0
+
+    class SceneWithTwoAnimations(Scene):
+        def construct(self):
+            self.after_first_animation = False
+            s = Square()
+            self.add(s)
+            self.play(s.animate.scale(2))
+            self.renderer.update_skipping_status()
+            self.after_first_animation = True
+            self.play(s.animate.scale(2))
+            
+            
+    scene = SceneWithTwoAnimations()
+    scene.render()
+
+    assert scene.after_first_animation is False
+    
