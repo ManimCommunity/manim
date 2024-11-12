@@ -260,10 +260,8 @@ def test_from_to_animations_only_first_animation(config):
             self.renderer.update_skipping_status()
             self.after_first_animation = True
             self.play(s.animate.scale(2))
-            
-            
+
     scene = SceneWithTwoAnimations()
     scene.render()
 
     assert scene.after_first_animation is False
-    
