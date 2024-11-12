@@ -1,5 +1,7 @@
 """Mobjects representing animated raster images."""
 
+from __future__ import annotations
+
 __all__ = ["VideoMobject"]
 
 from ...animation.video import Video
