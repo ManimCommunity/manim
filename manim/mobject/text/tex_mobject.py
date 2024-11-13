@@ -12,8 +12,6 @@ r"""Mobjects representing text rendered using LaTeX.
 
 from __future__ import annotations
 
-from manim.utils.color import BLACK, ManimColor, ParsableManimColor
-
 __all__ = [
     "SingleStringMathTex",
     "MathTex",
@@ -23,22 +21,27 @@ __all__ = [
 ]
 
 
-import itertools as it
 import operator as op
 import re
-from collections.abc import Iterable
 from functools import reduce
 from textwrap import dedent
+from typing import TYPE_CHECKING
 
 from manim import config, logger
 from manim.constants import *
 from manim.mobject.geometry.line import Line
 from manim.mobject.svg.svg_mobject import SVGMobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
-from manim.utils.tex import TexTemplate
+from manim.utils.color import BLACK
 from manim.utils.tex_file_writing import tex_to_svg_file
 
-tex_string_to_mob_map = {}
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Sequence
+
+    from typing_extensions import Any, Self
+
+    from manim.utils.color import ParsableManimColor
+    from manim.utils.tex import TexTemplate
 
 
 class SingleStringMathTex(SVGMobject):
@@ -63,27 +66,28 @@ class SingleStringMathTex(SVGMobject):
         tex_template: TexTemplate | None = None,
         font_size: float = DEFAULT_FONT_SIZE,
         color: ParsableManimColor | None = None,
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> None:
         if color is None:
-            color = VMobject().color
+            # TODO: Why MyPy 'cannot determine type of "color"'?
+            color = VMobject().color  # type: ignore [has-type]
 
-        self._font_size = font_size
-        self.organize_left_to_right = organize_left_to_right
-        self.tex_environment = tex_environment
+        self._font_size: float = font_size
+        self.organize_left_to_right: bool = organize_left_to_right
+        self.tex_environment: str = tex_environment
         if tex_template is None:
             tex_template = config["tex_template"]
-        self.tex_template = tex_template
+        self.tex_template: TexTemplate = tex_template
 
         assert isinstance(tex_string, str)
-        self.tex_string = tex_string
-        file_name = tex_to_svg_file(
+        self.tex_string: str = tex_string
+        file_path = tex_to_svg_file(
             self._get_modified_expression(tex_string),
             environment=self.tex_environment,
             tex_template=self.tex_template,
         )
         super().__init__(
-            file_name=file_name,
+            file_name=file_path,
             should_center=should_center,
             stroke_width=stroke_width,
             height=height,
@@ -97,24 +101,24 @@ class SingleStringMathTex(SVGMobject):
         self.init_colors()
 
         # used for scaling via font_size.setter
-        self.initial_height = self.height
+        self.initial_height: float = self.height
 
         if height is None:
-            self.font_size = self._font_size
+            self.font_size: float = self._font_size
 
         if self.organize_left_to_right:
             self._organize_submobjects_left_to_right()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{type(self).__name__}({repr(self.tex_string)})"
 
     @property
-    def font_size(self):
+    def font_size(self) -> float:
         """The font size of the tex mobject."""
         return self.height / self.initial_height / SCALE_FACTOR_PER_FONT_POINT
 
     @font_size.setter
-    def font_size(self, font_val):
+    def font_size(self, font_val: float) -> None:
         if font_val <= 0:
             raise ValueError("font_size must be greater than 0.")
         elif self.height > 0:
@@ -125,14 +129,14 @@ class SingleStringMathTex(SVGMobject):
             # font_size does not depend on current size.
             self.scale(font_val / self.font_size)
 
-    def _get_modified_expression(self, tex_string):
-        result = tex_string
-        result = result.strip()
-        result = self._modify_special_strings(result)
-        return result
-
-    def _modify_special_strings(self, tex):
+    def _get_modified_expression(self, tex_string: str) -> str:
+        tex = tex_string
         tex = tex.strip()
+        tex = self._modify_special_strings(tex)
+        return tex
+
+    def _modify_special_strings(self, tex_string: str) -> str:
+        tex = tex_string.strip()
         should_add_filler = reduce(
             op.or_,
             [
@@ -184,13 +188,13 @@ class SingleStringMathTex(SVGMobject):
                 tex = ""
         return tex
 
-    def _remove_stray_braces(self, tex):
-        r"""
-        Makes :class:`~.MathTex` resilient to unmatched braces.
+    def _remove_stray_braces(self, tex_string: str) -> str:
+        r"""Makes :class:`~.MathTex` resilient to unmatched braces.
 
         This is important when the braces in the TeX code are spread over
         multiple arguments as in, e.g., ``MathTex(r"e^{i", r"\tau} = 1")``.
         """
+        tex = tex_string
         # "\{" does not count (it's a brace literal), but "\\{" counts (it's a new line and then brace)
         num_lefts = tex.count("{") - tex.count("\\{") + tex.count("\\\\{")
         num_rights = tex.count("}") - tex.count("\\}") + tex.count("\\\\}")
@@ -202,24 +206,26 @@ class SingleStringMathTex(SVGMobject):
             num_rights += 1
         return tex
 
-    def _organize_submobjects_left_to_right(self):
+    def _organize_submobjects_left_to_right(self) -> Self:
         self.sort(lambda p: p[0])
         return self
 
-    def get_tex_string(self):
+    def get_tex_string(self) -> str:
         return self.tex_string
 
-    def init_colors(self, propagate_colors=True):
+    def init_colors(self, propagate_colors: bool = True) -> Self:
         for submobject in self.submobjects:
             # needed to preserve original (non-black)
             # TeX colors of individual submobjects
-            if submobject.color != BLACK:
+            # TODO: Why MyPy 'cannot determine type of "color"'?
+            if submobject.color != BLACK:  # type: ignore [has-type]
                 continue
-            submobject.color = self.color
+            submobject.color = self.color  # type: ignore [has-type]
             if config.renderer == RendererType.OPENGL:
                 submobject.init_colors()
             elif config.renderer == RendererType.CAIRO:
                 submobject.init_colors(propagate_colors=propagate_colors)
+        return self
 
 
 class MathTex(SingleStringMathTex):
@@ -255,24 +261,28 @@ class MathTex(SingleStringMathTex):
 
     def __init__(
         self,
-        *tex_strings,
+        *tex_strings: str,
         arg_separator: str = " ",
         substrings_to_isolate: Iterable[str] | None = None,
-        tex_to_color_map: dict[str, ManimColor] = None,
+        tex_to_color_map: dict[str | Iterable[str], ParsableManimColor] | None = None,
         tex_environment: str = "align*",
-        **kwargs,
-    ):
-        self.tex_template = kwargs.pop("tex_template", config["tex_template"])
-        self.arg_separator = arg_separator
-        self.substrings_to_isolate = (
-            [] if substrings_to_isolate is None else substrings_to_isolate
+        **kwargs: Any,
+    ) -> None:
+        self.tex_template: TexTemplate = kwargs.pop(
+            "tex_template", config["tex_template"]
         )
-        self.tex_to_color_map = tex_to_color_map
-        if self.tex_to_color_map is None:
-            self.tex_to_color_map = {}
-        self.tex_environment = tex_environment
-        self.brace_notation_split_occurred = False
-        self.tex_strings = self._break_up_tex_strings(tex_strings)
+        self.arg_separator: str = arg_separator
+        self.substrings_to_isolate: list[str] = (
+            [] if substrings_to_isolate is None else list(substrings_to_isolate)
+        )
+        if tex_to_color_map is None:
+            tex_to_color_map = {}
+        self.tex_to_color_map: dict[str | Iterable[str], ParsableManimColor] = (
+            tex_to_color_map
+        )
+        self.tex_environment: str = tex_environment
+        self.brace_notation_split_occurred: bool = False
+        self.tex_strings: list[str] = self._break_up_tex_strings(tex_strings)
         try:
             super().__init__(
                 self.arg_separator.join(self.tex_strings),
@@ -301,42 +311,45 @@ class MathTex(SingleStringMathTex):
         if self.organize_left_to_right:
             self._organize_submobjects_left_to_right()
 
-    def _break_up_tex_strings(self, tex_strings):
+    def _break_up_tex_strings(self, tex_strings: Sequence[str]) -> list[str]:
         # Separate out anything surrounded in double braces
         pre_split_length = len(tex_strings)
-        tex_strings = [re.split("{{(.*?)}}", str(t)) for t in tex_strings]
-        tex_strings = sum(tex_strings, [])
-        if len(tex_strings) > pre_split_length:
+        # TODO: do we need that str(t)?
+        pre_pieces_arr = [re.split("{{(.*?)}}", str(t)) for t in tex_strings]
+        pre_pieces = sum(pre_pieces_arr, [])
+        if len(pre_pieces) > pre_split_length:
             self.brace_notation_split_occurred = True
 
         # Separate out any strings specified in the isolate
         # or tex_to_color_map lists.
-        patterns = []
-        patterns.extend(
-            [
-                f"({re.escape(ss)})"
-                for ss in it.chain(
-                    self.substrings_to_isolate,
-                    self.tex_to_color_map.keys(),
-                )
-            ],
-        )
+        patterns: list[str] = self.substrings_to_isolate.copy()
+        for key in self.tex_to_color_map:
+            try:
+                # If the given key behaves like tex_strings
+                key + ""  # type: ignore [operator]
+                patterns.append(key)  # type: ignore [arg-type]
+            except TypeError:
+                # If the given key is a tuple
+                patterns.extend(key)
+
+        patterns = [f"({re.escape(pattern)})" for pattern in patterns]
         pattern = "|".join(patterns)
+
+        pieces: list[str]
         if pattern:
             pieces = []
-            for s in tex_strings:
-                pieces.extend(re.split(pattern, s))
+            for p in pre_pieces:
+                pieces.extend(re.split(pattern, p))
         else:
-            pieces = tex_strings
+            pieces = pre_pieces
         return [p for p in pieces if p]
 
-    def _break_up_by_substrings(self):
-        """
-        Reorganize existing submobjects one layer
+    def _break_up_by_substrings(self) -> Self:
+        """Reorganize existing submobjects one layer
         deeper based on the structure of tex_strings (as a list
         of tex_strings)
         """
-        new_submobjects = []
+        new_submobjects: list[VMobject] = []
         curr_index = 0
         for tex_string in self.tex_strings:
             sub_tex_mob = SingleStringMathTex(
@@ -358,8 +371,10 @@ class MathTex(SingleStringMathTex):
         self.submobjects = new_submobjects
         return self
 
-    def get_parts_by_tex(self, tex, substring=True, case_sensitive=True):
-        def test(tex1, tex2):
+    def get_parts_by_tex(
+        self, tex_string: str, substring: bool = True, case_sensitive: bool = True
+    ) -> VGroup:
+        def test(tex1: str, tex2: str) -> bool:
             if not case_sensitive:
                 tex1 = tex1.lower()
                 tex2 = tex2.lower()
@@ -368,21 +383,31 @@ class MathTex(SingleStringMathTex):
             else:
                 return tex1 == tex2
 
-        return VGroup(*(m for m in self.submobjects if test(tex, m.get_tex_string())))
+        return VGroup(
+            *(m for m in self.submobjects if test(tex_string, m.get_tex_string()))
+        )
 
-    def get_part_by_tex(self, tex, **kwargs):
-        all_parts = self.get_parts_by_tex(tex, **kwargs)
+    def get_part_by_tex(
+        self, tex_string: str, **kwargs: Any
+    ) -> SingleStringMathTex | None:
+        all_parts = self.get_parts_by_tex(tex_string, **kwargs)
         return all_parts[0] if all_parts else None
 
-    def set_color_by_tex(self, tex, color, **kwargs):
-        parts_to_color = self.get_parts_by_tex(tex, **kwargs)
+    def set_color_by_tex(
+        self, tex_string: str, color: ParsableManimColor, **kwargs: Any
+    ) -> Self:
+        parts_to_color = self.get_parts_by_tex(tex_string, **kwargs)
         for part in parts_to_color:
             part.set_color(color)
         return self
 
     def set_opacity_by_tex(
-        self, tex: str, opacity: float = 0.5, remaining_opacity: float = None, **kwargs
-    ):
+        self,
+        tex_string: str,
+        opacity: float = 0.5,
+        remaining_opacity: float | None = None,
+        **kwargs: Any,
+    ) -> Self:
         """
         Sets the opacity of the tex specified. If 'remaining_opacity' is specified,
         then the remaining tex will be set to that opacity.
@@ -399,34 +424,39 @@ class MathTex(SingleStringMathTex):
         """
         if remaining_opacity is not None:
             self.set_opacity(opacity=remaining_opacity)
-        for part in self.get_parts_by_tex(tex):
+        for part in self.get_parts_by_tex(tex_string):
             part.set_opacity(opacity)
         return self
 
-    def set_color_by_tex_to_color_map(self, texs_to_color_map, **kwargs):
-        for texs, color in list(texs_to_color_map.items()):
+    def set_color_by_tex_to_color_map(
+        self,
+        texes_to_color_map: dict[str | Iterable[str], ParsableManimColor],
+        **kwargs: Any,
+    ) -> Self:
+        for texes, color in list(texes_to_color_map.items()):
             try:
                 # If the given key behaves like tex_strings
-                texs + ""
-                self.set_color_by_tex(texs, color, **kwargs)
+                texes + ""  # type: ignore [operator]
+                self.set_color_by_tex(texes, color, **kwargs)  # type: ignore [arg-type]
             except TypeError:
                 # If the given key is a tuple
-                for tex in texs:
+                for tex in texes:
                     self.set_color_by_tex(tex, color, **kwargs)
         return self
 
-    def index_of_part(self, part):
+    def index_of_part(self, part: MathTex | SingleStringMathTex | None) -> int:
         split_self = self.split()
         if part not in split_self:
             raise ValueError("Trying to get index of part not in MathTex")
         return split_self.index(part)
 
-    def index_of_part_by_tex(self, tex, **kwargs):
-        part = self.get_part_by_tex(tex, **kwargs)
+    def index_of_part_by_tex(self, tex_string: str, **kwargs: Any) -> int:
+        part = self.get_part_by_tex(tex_string, **kwargs)
         return self.index_of_part(part)
 
-    def sort_alphabetically(self):
+    def sort_alphabetically(self) -> Self:
         self.submobjects.sort(key=lambda m: m.get_tex_string())
+        return self
 
 
 class Tex(MathTex):
@@ -447,8 +477,12 @@ class Tex(MathTex):
     """
 
     def __init__(
-        self, *tex_strings, arg_separator="", tex_environment="center", **kwargs
-    ):
+        self,
+        *tex_strings: Any,
+        arg_separator: str = "",
+        tex_environment: str = "center",
+        **kwargs: Any,
+    ) -> None:
         super().__init__(
             *tex_strings,
             arg_separator=arg_separator,
@@ -477,27 +511,24 @@ class BulletedList(Tex):
 
     def __init__(
         self,
-        *items,
-        buff=MED_LARGE_BUFF,
-        dot_scale_factor=2,
-        tex_environment=None,
-        **kwargs,
-    ):
-        self.buff = buff
-        self.dot_scale_factor = dot_scale_factor
-        self.tex_environment = tex_environment
-        line_separated_items = [s + "\\\\" for s in items]
-        super().__init__(
-            *line_separated_items, tex_environment=tex_environment, **kwargs
-        )
+        *items: str,
+        buff: float = MED_LARGE_BUFF,
+        dot_scale_factor: float = 2,
+        **kwargs: Any,
+    ) -> None:
+        self.buff: float = buff
+        self.dot_scale_factor: float = dot_scale_factor
+        line_separated_items: list[str] = [s + r"\\" for s in items]
+        super().__init__(*line_separated_items, **kwargs)
         for part in self:
-            dot = MathTex("\\cdot").scale(self.dot_scale_factor)
+            dot = MathTex(r"\cdot").scale(self.dot_scale_factor)
             dot.next_to(part[0], LEFT, SMALL_BUFF)
             part.add_to_back(dot)
         self.arrange(DOWN, aligned_edge=LEFT, buff=self.buff)
 
-    def fade_all_but(self, index_or_string, opacity=0.5):
+    def fade_all_but(self, index_or_string: int | str, opacity: float = 0.5) -> Self:
         arg = index_or_string
+        part: VMobject | None
         if isinstance(arg, str):
             part = self.get_part_by_tex(arg)
         elif isinstance(arg, int):
@@ -509,6 +540,7 @@ class BulletedList(Tex):
                 other_part.set_fill(opacity=1)
             else:
                 other_part.set_fill(opacity=opacity)
+        return self
 
 
 class Title(Tex):
@@ -531,15 +563,15 @@ class Title(Tex):
 
     def __init__(
         self,
-        *text_parts,
-        include_underline=True,
-        match_underline_width_to_text=False,
-        underline_buff=MED_SMALL_BUFF,
-        **kwargs,
-    ):
-        self.include_underline = include_underline
-        self.match_underline_width_to_text = match_underline_width_to_text
-        self.underline_buff = underline_buff
+        *text_parts: str,
+        include_underline: bool = True,
+        match_underline_width_to_text: bool = False,
+        underline_buff: float = MED_SMALL_BUFF,
+        **kwargs: Any,
+    ) -> None:
+        self.include_underline: bool = include_underline
+        self.match_underline_width_to_text: bool = match_underline_width_to_text
+        self.underline_buff: float = underline_buff
         super().__init__(*text_parts, **kwargs)
         self.to_edge(UP)
         if self.include_underline:

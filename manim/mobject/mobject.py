@@ -14,10 +14,9 @@ import random
 import sys
 import types
 import warnings
-from collections.abc import Iterable
 from functools import partialmethod, reduce
 from pathlib import Path
-from typing import TYPE_CHECKING, Callable, Literal
+from typing import TYPE_CHECKING
 
 import numpy as np
 
@@ -40,13 +39,15 @@ from ..utils.paths import straight_path
 from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable, Sequence
+    from typing import Callable, Literal
+
     from typing_extensions import Self, TypeAlias
 
     from manim.typing import (
         FunctionOverride,
         InternalPoint3D,
         ManimFloat,
-        ManimInt,
         MappingFunction,
         PathFuncType,
         PixelArray,
@@ -100,18 +101,18 @@ class Mobject:
         color: ParsableManimColor | list[ParsableManimColor] = WHITE,
         name: str | None = None,
         dim: int = 3,
-        target=None,
+        target: Mobject | None = None,
         z_index: float = 0,
     ) -> None:
-        self.name = self.__class__.__name__ if name is None else name
-        self.dim = dim
-        self.target = target
-        self.z_index = z_index
+        self.name: str = self.__class__.__name__ if name is None else name
+        self.dim: int = dim
+        self.target: Mobject | None = target
+        self.z_index: float = z_index
         self.point_hash = None
-        self.submobjects = []
+        self.submobjects: Sequence[Mobject] = []
         self.updaters: list[Updater] = []
         self.updating_suspended = False
-        self.color = ManimColor.parse(color)
+        self.color: ManimColor | list[ManimColor] = ManimColor.parse(color)
 
         self.reset_points()
         self.generate_points()
@@ -2291,16 +2292,16 @@ class Mobject:
         """Return the base class of this mobject type."""
         return Mobject
 
-    def split(self) -> list[Self]:
+    def split(self) -> Sequence[Self]:
         result = [self] if len(self.points) > 0 else []
         return result + self.submobjects
 
-    def get_family(self, recurse: bool = True) -> list[Self]:
+    def get_family(self, recurse: bool = True) -> Sequence[Self]:
         sub_families = [x.get_family() for x in self.submobjects]
         all_mobjects = [self] + list(it.chain(*sub_families))
         return remove_list_redundancies(all_mobjects)
 
-    def family_members_with_points(self) -> list[Self]:
+    def family_members_with_points(self) -> Sequence[Self]:
         return [m for m in self.get_family() if m.get_num_points() > 0]
 
     def arrange(
@@ -2576,13 +2577,13 @@ class Mobject:
 
     def sort(
         self,
-        point_to_num_func: Callable[[Point3D], ManimInt] = lambda p: p[0],
-        submob_func: Callable[[Mobject], ManimInt] | None = None,
+        point_to_num_func: Callable[[Point3D], float] = lambda p: p[0],
+        submob_func: Callable[[Mobject], float] | None = None,
     ) -> Self:
         """Sorts the list of :attr:`submobjects` by a function defined by ``submob_func``."""
         if submob_func is None:
 
-            def submob_func(m: Mobject):
+            def submob_func(m: Mobject) -> float:
                 return point_to_num_func(m.get_center())
 
         self.submobjects.sort(key=submob_func)

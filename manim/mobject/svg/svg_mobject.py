@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+from typing import TYPE_CHECKING
 from xml.etree import ElementTree as ET
 
 import numpy as np
@@ -20,6 +21,9 @@ from ..geometry.line import Line
 from ..geometry.polygram import Polygon, Rectangle, RoundedRectangle
 from ..opengl.opengl_compatibility import ConvertToOpenGL
 from ..types.vectorized_mobject import VMobject
+
+if TYPE_CHECKING:
+    from manim.utils.color import ParsableManimColor
 
 __all__ = ["SVGMobject", "VMobjectFromSVGPath"]
 
@@ -98,11 +102,11 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         should_center: bool = True,
         height: float | None = 2,
         width: float | None = None,
-        color: str | None = None,
+        color: ParsableManimColor | None = None,
         opacity: float | None = None,
-        fill_color: str | None = None,
+        fill_color: ParsableManimColor | None = None,
         fill_opacity: float | None = None,
-        stroke_color: str | None = None,
+        stroke_color: ParsableManimColor | None = None,
         stroke_opacity: float | None = None,
         stroke_width: float | None = None,
         svg_default: dict | None = None,

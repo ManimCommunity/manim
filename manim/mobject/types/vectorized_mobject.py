@@ -14,8 +14,8 @@ __all__ = [
 
 import itertools as it
 import sys
-from collections.abc import Generator, Hashable, Iterable, Mapping, Sequence
-from typing import TYPE_CHECKING, Callable, Literal
+from collections.abc import Iterable
+from typing import TYPE_CHECKING
 
 import numpy as np
 from PIL.Image import Image
@@ -48,7 +48,8 @@ from manim.utils.iterables import (
 from manim.utils.space_ops import rotate_vector, shoelace_direction
 
 if TYPE_CHECKING:
-    from typing import Any
+    from collections.abc import Generator, Hashable, Mapping, Sequence
+    from typing import Any, Callable, Literal
 
     import numpy.typing as npt
     from typing_extensions import Self
