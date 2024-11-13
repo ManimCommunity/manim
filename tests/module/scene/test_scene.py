@@ -41,14 +41,14 @@ def test_scene_add_remove(dry_run):
 
 def test_scene_time(dry_run):
     scene = Scene()
-    assert scene.renderer.time == 0
+    assert scene.time == 0
     scene.wait(2)
-    assert scene.renderer.time == 2
+    assert scene.time == 2
     scene.play(FadeIn(Circle()), run_time=0.5)
-    assert pytest.approx(scene.renderer.time) == 2.5
+    assert pytest.approx(scene.time) == 2.5
     scene.renderer._original_skipping_status = True
     scene.play(FadeIn(Square()), run_time=5)  # this animation gets skipped.
-    assert pytest.approx(scene.renderer.time) == 7.5
+    assert pytest.approx(scene.time) == 7.5
 
 
 def test_subcaption(dry_run):
