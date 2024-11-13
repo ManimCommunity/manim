@@ -163,7 +163,8 @@ jobs:
 
       - name: Run tests
         run: |
-          poetry run pytest tests-simple
+          $env:PYTEST_DEBUG = "1"
+          poetry run pytest -sv tests-simple
       
       - name: Run tests
         run: |
