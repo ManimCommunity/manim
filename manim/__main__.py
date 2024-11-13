@@ -21,11 +21,11 @@ def show_splash(ctx: click.Context, param: click.Option, value: str | None) -> N
     Parameters
     ----------
     ctx
-        The Click context. Unused parameter.
+        The Click context.
     param
-        A Click option. Unused parameter.
+        A Click option.
     value
-        A string value given by console, or None. Unused parameter.
+        A string value given by console, or None.
     """
     if value:
         console.print(f"Manim Community [green]v{__version__}[/green]\n")
@@ -40,11 +40,11 @@ def print_version_and_exit(
     Parameters
     ----------
     ctx
-        The Click context. Unused parameter.
+        The Click context.
     param
-        A Click option. Unused parameter.
+        A Click option.
     value
-        A string value given by console, or None. Unused parameter.
+        A string value given by console, or None.
     """
     show_splash(ctx, param, value)
     if value:
