@@ -641,22 +641,24 @@ class Wait(Animation):
 
 class Add(Animation):
     """Add Mobjects to a scene, without animating them in any other way. This
-    is similar to the :meth:`~.Scene.add` method, but :class:`Add` is an
+    is similar to the :meth:`.Scene.add` method, but :class:`Add` is an
     animation which can be grouped into other animations.
 
     Parameters
     ----------
     mobjects
-        One or more :class:`Mobject`s to add to a scene.
+        One :class:`Mobject` or more to add to a scene.
     run_time
         The duration of the animation after adding the ``mobjects``. Defaults
         to 0, which means this is an instant animation without extra wait time
         after adding them.
+    **kwargs
+        Additional arguments to pass to the parent :class:`Animation` class.
 
-    Example
-    -------
+    Examples
+    --------
 
-    .. manim :: DefaultAddScene
+    .. manim:: DefaultAddScene
 
         class DefaultAddScene(Scene):
             def construct(self):
@@ -669,7 +671,7 @@ class Add(Animation):
                 self.play(
                     Create(rect, run_time=3.0),
                     Succession(
-                        Wait(1.5),
+                        Wait(1.0),
                         # You can Add a Mobject in the middle of an animation...
                         Add(text_1),
                         Wait(1.0),
@@ -679,7 +681,7 @@ class Add(Animation):
                 )
                 self.wait()
 
-    .. manim :: AddWithRunTimeScene
+    .. manim:: AddWithRunTimeScene
 
         class AddWithRunTimeScene(Scene):
             def construct(self):
