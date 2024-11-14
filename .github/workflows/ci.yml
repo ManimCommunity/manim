@@ -161,7 +161,7 @@ jobs:
         run: |
           poetry run pip install --upgrade numpy
           poetry run python -v -c "import manim; import manim.constants"
-      
+
       - name: Run tests
         run: |
           poetry run python -m pytest
