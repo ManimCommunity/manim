@@ -7,8 +7,8 @@ from pathlib import Path
 import pytest
 
 import manim
-
-"""
+import moderngl
+import cairo
 
 def pytest_report_header(config):
     try:
@@ -26,8 +26,6 @@ def pytest_report_header(config):
         f"renderer: {info['GL_RENDERER'].strip()}",
         f"version: {info['GL_VERSION'].strip()}\n",
     )
-
-"""
 
 
 def pytest_addoption(parser):

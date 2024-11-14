@@ -161,15 +161,10 @@ jobs:
         run: |
           poetry run pip install --upgrade numpy
           poetry run python -v -c "import manim; import manim.constants"
-
-      - name: Run tests
-        run: |
-          $env:PYTEST_DEBUG = "1"
-          poetry run pytest -sv tests-simple
       
       - name: Run tests
         run: |
-          poetry run pytest tests
+          poetry run python -m pytest
 
       - name: Run module doctests
         run: |
