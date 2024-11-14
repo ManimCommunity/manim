@@ -157,9 +157,9 @@ jobs:
         run: |
           poetry install --all-extras
 
-      - name: Test pytest import
+      - name: Test manim import
         run: |
-          poetry run python -v -c "import pytest"
+          poetry run python -v -c "import manim; import manim.constants"
 
       - name: Run tests
         run: |
