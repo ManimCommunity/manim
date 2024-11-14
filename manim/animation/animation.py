@@ -7,17 +7,17 @@ from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from .. import config, logger
 from ..constants import RendererType
 from ..mobject import mobject
-from ..mobject.mobject import Mobject
+from ..mobject.mobject import Group, Mobject
 from ..mobject.opengl import opengl_mobject
 from ..utils.rate_functions import linear, smooth
 
-__all__ = ["Animation", "Wait", "override_animation"]
+__all__ = ["Animation", "Wait", "Add", "override_animation"]
 
 
 from collections.abc import Iterable, Sequence
 from copy import deepcopy
 from functools import partialmethod
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING, Any, Callable
 
 from typing_extensions import Self
 
@@ -144,6 +144,7 @@ class Animation:
         **kwargs,
     ) -> None:
         self._typecheck_input(mobject)
+        self._run_time: float = run_time
         self.run_time: float = run_time
         self.rate_func: Callable[[float], float] = rate_func
         self.reverse_rate_function: bool = reverse_rate_function
@@ -172,6 +173,19 @@ class Animation:
                 ),
             )
 
+    @property
+    def run_time(self) -> float:
+        return self._run_time
+
+    @run_time.setter
+    def run_time(self, value: float) -> None:
+        if value < 0:
+            raise ValueError(
+                f"The run_time of {self.__class__.__name__} cannot be "
+                f"negative. The given value was {value}."
+            )
+        self._run_time = value
+
     def _typecheck_input(self, mobject: Mobject | None) -> None:
         if mobject is None:
             logger.debug("Animation with empty mobject")
@@ -194,7 +208,6 @@ class Animation:
         method.
 
         """
-        self.run_time = validate_run_time(self.run_time, str(self))
         self.starting_mobject = self.create_starting_mobject()
         if self.suspend_mobject_updating:
             # All calls to self.mobject's internal updaters
@@ -569,33 +582,6 @@ def prepare_animation(
     raise TypeError(f"Object {anim} cannot be converted to an animation")
 
 
-def validate_run_time(
-    run_time: float, caller_name: str, parameter_name: str = "run_time"
-) -> float:
-    if run_time <= 0:
-        raise ValueError(
-            f"{caller_name} has a {parameter_name} of {run_time:g} <= 0 "
-            f"seconds which Manim cannot render. Please set the "
-            f"{parameter_name} to a positive number."
-        )
-
-    # config.frame_rate holds the number of frames per second
-    fps = config.frame_rate
-    seconds_per_frame = 1 / fps
-    if run_time < seconds_per_frame:
-        logger.warning(
-            f"The original {parameter_name} of {caller_name}, {run_time:g} "
-            f"seconds, is too short for the current frame rate of {fps:g} "
-            f"FPS. Rendering with the shortest possible {parameter_name} of "
-            f"{seconds_per_frame:g} seconds instead."
-        )
-        new_run_time = seconds_per_frame
-    else:
-        new_run_time = run_time
-
-    return new_run_time
-
-
 class Wait(Animation):
     """A "no operation" animation.
 
@@ -638,7 +624,85 @@ class Wait(Animation):
         self.mobject.shader_wrapper_list = []
 
     def begin(self) -> None:
-        self.run_time = validate_run_time(self.run_time, str(self))
+        pass
+
+    def finish(self) -> None:
+        pass
+
+    def clean_up_from_scene(self, scene: Scene) -> None:
+        pass
+
+    def update_mobjects(self, dt: float) -> None:
+        pass
+
+    def interpolate(self, alpha: float) -> None:
+        pass
+
+
+class Add(Animation):
+    """Add Mobjects to a scene, without animating them in any other way. This
+    is similar to the :meth:`~.Scene.add` method, but :class:`Add` is an
+    animation which can be grouped into other animations.
+
+    Parameters
+    ----------
+    mobjects
+        One or more :class:`Mobject`s to add to a scene.
+    run_time
+        The duration of the animation after adding the ``mobjects``. Defaults
+        to 0, which means this is an instant animation without extra wait time
+        after adding them.
+
+    Example
+    -------
+
+    .. manim :: DefaultAddScene
+
+        class DefaultAddScene(Scene):
+            def construct(self):
+                text_1 = Text("I was added with Add!")
+                text_2 = Text("Me too!")
+                text_3 = Text("And me!")
+                texts = VGroup(text_1, text_2, text_3).arrange(DOWN)
+                rect = SurroundingRectangle(texts, buff=0.5)
+
+                self.play(
+                    Create(rect, run_time=3.0),
+                    Succession(
+                        Wait(1.5),
+                        Add(text_1), # You can Add a single Mobject in the middle of an animation
+                        Wait(1.0),
+                        Add(text_2, text_3), # ...or multiple Mobjects at once!
+                    ),
+                )
+                self.wait()
+
+    .. manim :: AddWithRunTimeScene
+
+        class AddWithRunTimeScene(Scene):
+            def construct(self):
+                # A 5x5 grid of circles
+                circles = VGroup(*[Circle(radius=0.5) for _ in range(25)]).arrange_in_grid(5, 5)
+
+                self.play(
+                    Succession(
+                        # Add a run_time of 0.2 to wait for 0.2 seconds after adding
+                        # the circle, instead of using Wait(0.2) after Add!
+                        *[Add(circle, run_time=0.2) for circle in circles],
+                        rate_func=smooth,
+                    )
+                )
+                self.wait()
+    """
+
+    def __init__(
+        self, *mobjects: Mobject, run_time: float = 0.0, **kwargs: Any
+    ) -> None:
+        mobject = mobjects[0] if len(mobjects) == 1 else Group(*mobjects)
+        super().__init__(mobject, run_time=run_time, introducer=True, **kwargs)
+
+    def begin(self) -> None:
+        pass
 
     def finish(self) -> None:
         pass
