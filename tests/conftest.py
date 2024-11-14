@@ -4,11 +4,12 @@ import logging
 import sys
 from pathlib import Path
 
+import cairo
+import moderngl
 import pytest
 
 import manim
-import moderngl
-import cairo
+
 
 def pytest_report_header(config):
     try:

@@ -152,7 +152,7 @@ jobs:
           $env:Path += ";" + "$($PWD)\ManimCache\LatexWindows\TinyTeX\bin\windows"
           $env:Path = "$env:USERPROFILE\.poetry\bin;$($env:PATH)"
           echo "$env:Path" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-      
+
       - name: Install dependencies and manim
         run: |
           poetry install --all-extras
