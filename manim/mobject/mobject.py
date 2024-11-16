@@ -2883,14 +2883,14 @@ class Mobject:
 
             >>> result = rect.copy().become(circ, match_height=True)
             >>> result.height, result.width
-            (2.0, 2.0)
+            (np.float64(2.0), np.float64(2.0))
             >>> circle_points = np.array(result.get_anchors())
             >>> circle_eq = np.sum(circle_points**2, axis=1)
             >>> np.allclose(circle_eq, 1)
             True
             >>> result = rect.copy().become(circ, match_width=True)
             >>> result.height, result.width
-            (4.0, 4.0)
+            (np.float64(4.0), np.float64(4.0))
             >>> circle_points = np.array(result.get_anchors())
             >>> circle_eq = np.sum(circle_points**2, axis=1)
             >>> np.allclose(circle_eq, 2**2)
