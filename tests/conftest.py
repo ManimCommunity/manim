@@ -89,6 +89,7 @@ def manim_caplog(caplog):
 @pytest.fixture
 def config():
     saved = manim.config.copy()
+    manim.config.renderer = "cairo"
     # we need to return the actual config so that tests
     # using tempconfig pass
     yield manim.config
