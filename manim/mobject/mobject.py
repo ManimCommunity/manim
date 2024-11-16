@@ -1605,13 +1605,13 @@ class Mobject:
             >>> from manim import *
             >>> sq = Square()
             >>> sq.height
-            2.0
+            np.float64(2.0)
             >>> sq.scale_to_fit_width(5)
             Square
             >>> sq.width
-            5.0
+            np.float64(5.0)
             >>> sq.height
-            5.0
+            np.float64(5.0)
         """
         return self.rescale_to_fit(width, 0, stretch=False, **kwargs)
 
@@ -1630,13 +1630,13 @@ class Mobject:
             >>> from manim import *
             >>> sq = Square()
             >>> sq.height
-            2.0
+            np.float64(2.0)
             >>> sq.stretch_to_fit_width(5)
             Square
             >>> sq.width
-            5.0
+            np.float64(5.0)
             >>> sq.height
-            2.0
+            np.float64(2.0)
         """
         return self.rescale_to_fit(width, 0, stretch=True, **kwargs)
 
@@ -1655,13 +1655,13 @@ class Mobject:
             >>> from manim import *
             >>> sq = Square()
             >>> sq.width
-            2.0
+            np.float64(2.0)
             >>> sq.scale_to_fit_height(5)
             Square
             >>> sq.height
-            5.0
+            np.float64(5.0)
             >>> sq.width
-            5.0
+            np.float64(5.0)
         """
         return self.rescale_to_fit(height, 1, stretch=False, **kwargs)
 
@@ -1680,13 +1680,13 @@ class Mobject:
             >>> from manim import *
             >>> sq = Square()
             >>> sq.width
-            2.0
+            np.float64(2.0)
             >>> sq.stretch_to_fit_height(5)
             Square
             >>> sq.height
-            5.0
+            np.float64(5.0)
             >>> sq.width
-            2.0
+            np.float64(2.0)
         """
         return self.rescale_to_fit(height, 1, stretch=True, **kwargs)
 
@@ -2869,7 +2869,7 @@ class Mobject:
 
             >>> result = rect.copy().become(circ, stretch=True)
             >>> result.height, result.width
-            (2.0, 4.0)
+            (np.float64(2.0), np.float64(4.0))
             >>> ellipse_points = np.array(result.get_anchors())
             >>> ellipse_eq = np.sum(ellipse_points**2 * [1/4, 1, 0], axis=1)
             >>> np.allclose(ellipse_eq, 1)
