@@ -68,6 +68,7 @@ on your local machine.
    :hidden:
 
    installation/local
+   installation/pip
 
 
 .. _docker-installation:
