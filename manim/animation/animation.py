@@ -647,7 +647,7 @@ class Add(Animation):
     Parameters
     ----------
     mobjects
-        One :class:`Mobject` or more to add to a scene.
+        One :class:`.Mobject` or more to add to a scene.
     run_time
         The duration of the animation after adding the ``mobjects``. Defaults
         to 0, which means this is an instant animation without extra wait time
