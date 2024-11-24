@@ -517,7 +517,8 @@ class Cube(VGroup):
 
             self.add(face)
 
-    init_points = generate_points
+    def init_points(self) -> None:
+        self.generate_points()
 
 
 class Prism(Cube):
@@ -554,8 +555,6 @@ class Prism(Cube):
         super().generate_points()
         for dim, value in enumerate(self.dimensions):
             self.rescale_to_fit(value, dim, stretch=True)
-
-    init_points = generate_points
 
 
 class Cone(Surface):
