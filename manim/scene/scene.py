@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from manim.utils.parameter_parsing import flatten_iterable_parameters
 
-__all__ = ["Scene"]
+__all__ = ["Scene", "manimation"]
 
 import copy
 import datetime
@@ -15,6 +15,7 @@ import threading
 import time
 import types
 from queue import Queue
+from typing import Callable
 
 import srt
 
@@ -37,6 +38,7 @@ from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLPoint
 
 from .. import config, logger
+from .._config import tempconfig
 from ..animation.animation import Animation, Wait, prepare_animation, validate_run_time
 from ..camera.camera import Camera
 from ..constants import *
@@ -153,6 +155,10 @@ class Scene:
         if self.random_seed is not None:
             random.seed(self.random_seed)
             np.random.seed(self.random_seed)
+
+    def __call__(self, **kwargs):
+        with tempconfig(kwargs):
+            self.render()
 
     @property
     def camera(self):
@@ -1734,3 +1740,102 @@ class Scene:
     def on_mouse_press(self, point, button, modifiers):
         for func in self.mouse_press_callbacks:
             func()
+
+
+REGISTERED_MANIMATIONS: list[Scene] = []
+
+
+def manimation(
+    construct_function: Callable[[Scene], object] | None = None,
+    *,
+    scene_class: type[Scene] = Scene,
+) -> Scene | Callable[[Callable[[Scene], object]], Scene]:
+    """A short-hand decorator for creating an animation from a construct-like function.
+
+        This decorator creates a :class:`.Scene` object whose ``construct`` method
+        is created from the specified function. This allows to write (and render)
+        scenes in a short-hand manner::
+
+        @manimation
+        def hello_world(scene: Scene):
+            t = Text("Hello World!")
+            scene.play(Write(t))
+            scene.play(t.animate.scale(2))
+            scene.wait()
+
+
+        hello_world.render()
+
+    This is equivalent to the following, *classical* way of creating and rendering
+    a scene::
+
+        class HelloWorld(Scene):
+            def construct(self):
+                t = Text("Hello World!")
+                scene.play(Write(t))
+                scene.play(t.animate.scale(2))
+                scene.wait()
+
+
+        scene_object = HelloWorld()
+        scene_object.render()
+
+    Parameters
+    ---------
+        construct_function
+            The (decorated) function that will be used to construct the scene.
+        scene_class
+            The base class that is used to construct the scene.
+
+    Examples
+    -------
+
+        An example for a scene using a different base class for the scene::
+
+        @manimation(scene_class=MovingCameraScene)
+        def moving_around(scene: MovingCameraScene):
+            ...
+
+        Note that the type hint for the scene class is optional and just
+        helps your IDE to suggest the correct auto-completion options.
+    """
+
+    def scene_decorator(construct: Callable[[Scene], object]) -> Scene:
+        scene_name = construct.__name__
+        if scene_name == "<lambda>":
+            scene_name = "anonymous"
+
+        # Create a new class that inherits from the specified scene class.
+        scene_type = type(
+            scene_name,
+            (scene_class,),
+            {
+                "construct": construct,
+                "__name__": scene_name,
+                "__qualname__": scene_name,
+            },
+        )
+        REGISTERED_MANIMATIONS.append(scene_type)  # type: ignore  # noqa: PGH003
+        # Create an instance of the new class. For use after decoration.
+        scene_instance = scene_type()
+        # Add the new class to the list of registered animations. To display in the cli chooser.
+        return scene_instance
+
+    if construct_function is not None and not callable(construct_function):
+        raise TypeError(
+            "The argument passed to manimation must be a callable function."
+        )
+
+    if construct_function is not None:
+        sig = inspect.signature(construct_function)
+
+        if not ("self" in sig.parameters and len(sig.parameters) == 1):
+            raise TypeError(
+                construct_function,
+                "The construct function must have only one parameter named self as first argument",
+            )
+
+    if callable(construct_function):
+        return scene_decorator(construct_function)
+
+    return scene_decorator

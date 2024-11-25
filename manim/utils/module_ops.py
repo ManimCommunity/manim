@@ -9,7 +9,6 @@ import warnings
 from pathlib import Path
 
 from .. import config, console, constants, logger
-from ..scene.scene_file_writer import SceneFileWriter
 
 __all__ = ["scene_classes_from_file"]
 
@@ -99,6 +98,8 @@ def get_scenes_to_render(scene_classes):
 
 def prompt_user_for_choice(scene_classes):
     num_to_class = {}
+    from ..scene.scene_file_writer import SceneFileWriter
+
     SceneFileWriter.force_output_as_scene_name = True
     for count, scene_class in enumerate(scene_classes, 1):
         name = scene_class.__name__
@@ -127,8 +128,13 @@ def prompt_user_for_choice(scene_classes):
 def scene_classes_from_file(
     file_path: Path, require_single_scene=False, full_list=False
 ):
+    import manim.scene.scene as sc
+
     module = get_module(file_path)
     all_scene_classes = get_scene_classes_from_module(module)
+    all_scene_classes += sc.REGISTERED_MANIMATIONS
+    logger.info(all_scene_classes)
+
     if full_list:
         return all_scene_classes
     scene_classes_to_render = get_scenes_to_render(all_scene_classes)
