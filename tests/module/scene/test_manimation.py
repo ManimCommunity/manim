@@ -1,10 +1,7 @@
-import inspect
-
 from manim._config import tempconfig
 from manim.mobject.geometry.arc import Circle
 from manim.scene.moving_camera_scene import MovingCameraScene
 from manim.scene.scene import REGISTERED_MANIMATIONS, Scene, manimation
-from manim.utils import module_ops
 
 
 def test_cli_registry_manimation():

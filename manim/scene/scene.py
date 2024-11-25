@@ -1786,15 +1786,15 @@ def manimation(
             scene_object = HelloWorld()
             scene_object.render()
 
-        Parameters
-        ----------
+    Parameters
+    ---------
         construct_function
             The (decorated) function that will be used to construct the scene.
         scene_class
             The base class that is used to construct the scene.
 
-        Examples
-        --------
+    Examples
+    -------
 
         An example for a scene using a different base class for the scene::
 
