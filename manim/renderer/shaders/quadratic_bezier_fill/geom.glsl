@@ -1,5 +1,12 @@
 #version 330
 
+#include "../include/camera_uniform_declarations.glsl"
+#include "../include/finalize_color.glsl"
+#include "../include/get_gl_Position.glsl"
+#include "../include/get_unit_normal.glsl"
+#include "../include/mobject_uniform_declarations.glsl"
+#include "../include/quadratic_bezier_geometry_functions.glsl"
+
 layout(triangles) in;
 layout(triangle_strip, max_vertices = 5) out;
 
@@ -19,19 +26,12 @@ out float orientation;
 out vec2 uv_coords;
 out float bezier_degree;
 
-// Analog of import for manim only
-#include "../include/camera_uniform_declarations.glsl"
-#include "../include/finalize_color.glsl"
-#include "../include/get_gl_Position.glsl"
-#include "../include/get_unit_normal.glsl"
-#include "../include/mobject_uniform_declarations.glsl"
-#include "../include/quadratic_bezier_geometry_functions.glsl"
-
 const vec2 uv_coords_arr[3] = vec2[3](vec2(0, 0), vec2(0.5, 0), vec2(1, 1));
 
 void emit_vertex_wrapper(vec3 point, int index)
 {
-    color = finalize_color(v_color[index], point, v_global_unit_normal[index], light_source_position, gloss, shadow);
+    color = finalize_color(v_color[index], point, v_global_unit_normal[index], light_source_position, gloss, shadow,
+                           reflectiveness);
     gl_Position = get_gl_Position(point);
     uv_coords = uv_coords_arr[index];
     EmitVertex();

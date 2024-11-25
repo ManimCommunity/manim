@@ -248,7 +248,7 @@ void main()
         // vec3 xyz_coords = vec3(corners[i], controls[index_map[i]].z);
         vec3 xyz_coords = vec3(corners[i], controls[index_map[i]].z);
         color = finalize_color(v_color[index_map[i]], xyz_coords, v_global_unit_normal[index_map[i]],
-                               light_source_position, gloss, shadow);
+                               light_source_position, gloss, shadow, reflectiveness);
         gl_Position = vec4(get_gl_Position(vec3(corners[i], 0.0)).xy, get_gl_Position(controls[index_map[i]]).zw);
         EmitVertex();
     }

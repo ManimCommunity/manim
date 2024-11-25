@@ -8,7 +8,8 @@ vec3 float_to_color(float value, float min_val, float max_val, vec3[9] colormap_
     return mix(colormap_data[disc_alpha], colormap_data[disc_alpha + 1], 8.0 * alpha - disc_alpha);
 }
 
-vec4 add_light(vec4 color, vec3 point, vec3 unit_normal, vec3 light_coords, float gloss, float shadow)
+vec4 add_light(vec4 color, vec3 point, vec3 unit_normal, vec3 light_coords, float gloss, float shadow,
+               float reflectiveness)
 {
     if (gloss == 0.0 && shadow == 0.0 && reflectiveness == 0.0)
         return color;
@@ -32,11 +33,12 @@ vec4 add_light(vec4 color, vec3 point, vec3 unit_normal, vec3 light_coords, floa
     return vec4(darkening * mix(color.rgb, vec3(1.0), shine), color.a);
 }
 
-vec4 finalize_color(vec4 color, vec3 point, vec3 unit_normal, vec3 light_coords, float gloss, float shadow)
+vec4 finalize_color(vec4 color, vec3 point, vec3 unit_normal, vec3 light_coords, float gloss, float shadow,
+                    float reflectiveness)
 {
     ///// INSERT COLOR FUNCTION HERE /////
     // The line above may be replaced by arbitrary code snippets, as per
     // the method Mobject.set_color_by_code
-    return add_light(color, point, unit_normal, light_coords, gloss, shadow);
+    return add_light(color, point, unit_normal, light_coords, gloss, shadow, reflectiveness);
 }
 #endif // FINALIZE_COLOR_GLSL

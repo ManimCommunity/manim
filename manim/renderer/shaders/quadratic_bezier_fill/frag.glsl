@@ -1,6 +1,7 @@
 #version 330
 
 #include "../include/camera_uniform_declarations.glsl"
+
 uniform vec2 pixel_shape;
 uniform float index;
 
