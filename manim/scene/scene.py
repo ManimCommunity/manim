@@ -1731,10 +1731,10 @@ REGISTERED_MANIMATIONS: list[Scene] = []
 
 
 def manimation(
-    construct_function: Callable[[Scene], None] | None = None,
+    construct_function: Callable[[Scene], object] | None = None,
     *,
     scene_class: type[Scene] = Scene,
-) -> Scene | Callable[[Callable[[Scene], None]], Scene]:
+) -> Scene | Callable[[Callable[[Scene], object]], Scene]:
     """A short-hand decorator for creating an animation from a construct-like function.
 
     This decorator creates a :class:`.Scene` object whose ``construct`` method
