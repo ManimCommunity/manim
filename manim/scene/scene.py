@@ -1752,9 +1752,9 @@ def manimation(
 ) -> Scene | Callable[[Callable[[Scene], object]], Scene]:
     """A short-hand decorator for creating an animation from a construct-like function.
 
-    This decorator creates a :class:`.Scene` object whose ``construct`` method
-    is created from the specified function. This allows to write (and render)
-    scenes in a short-hand manner::
+        This decorator creates a :class:`.Scene` object whose ``construct`` method
+        is created from the specified function. This allows to write (and render)
+        scenes in a short-hand manner::
 
         @manimation
         def hello_world(scene: Scene):
@@ -1772,31 +1772,32 @@ def manimation(
         class HelloWorld(Scene):
             def construct(self):
                 t = Text("Hello World!")
-                self.play(Write(t))
-                self.play(t.animate.scale(2))
-                self.wait()
+                scene.play(Write(t))
+                scene.play(t.animate.scale(2))
+                scene.wait()
 
 
         scene_object = HelloWorld()
         scene_object.render()
 
     Parameters
-    ----------
-    construct_function
-        The (decorated) function that will be used to construct the scene.
-    scene_class
-        The base class that is used to construct the scene.
+    ---------
+        construct_function
+            The (decorated) function that will be used to construct the scene.
+        scene_class
+            The base class that is used to construct the scene.
 
     Examples
-    --------
+    -------
 
-    An example for a scene using a different base class for the scene::
+        An example for a scene using a different base class for the scene::
 
         @manimation(scene_class=MovingCameraScene)
-        def moving_around(scene: MovingCameraScene): ...
+        def moving_around(scene: MovingCameraScene):
+            ...
 
-    Note that the type hint for the scene class is optional and just
-    helps your IDE to suggest the correct auto-completion options.
+        Note that the type hint for the scene class is optional and just
+        helps your IDE to suggest the correct auto-completion options.
     """
 
     def scene_decorator(construct: Callable[[Scene], object]) -> Scene:
@@ -1814,7 +1815,7 @@ def manimation(
                 "__qualname__": scene_name,
             },
         )
-        REGISTERED_MANIMATIONS.append(scene_type)  # type: ignore
+        REGISTERED_MANIMATIONS.append(scene_type)  # type: ignore  # noqa: PGH003
         # Create an instance of the new class. For use after decoration.
         scene_instance = scene_type()
         # Add the new class to the list of registered animations. To display in the cli chooser.

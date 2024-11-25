@@ -2,6 +2,6 @@ from manim import *
 
 
 @manimation
-def my_test(abc):
-    abc.add(Circle())
-    abc.wait(2)
+def my_test(self):
+    self.add(Circle())
+    self.wait(2)
