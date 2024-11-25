@@ -5,7 +5,7 @@ uniform vec2 pixel_shape;
 uniform float index;
 
 in vec4 color;
-in float fill_all;  // Either 0 or 1e
+in float fill_all; // Either 0 or 1e
 
 in float orientation;
 in vec2 uv_coords;
@@ -18,8 +18,10 @@ layout(location = 1) out vec4 stencil_value;
 
 #define ANTI_ALIASING
 
-float sdf(){
-    if(bezier_degree < 2){
+float sdf()
+{
+    if (bezier_degree < 2)
+    {
         return abs(uv_coords[1]);
     }
     vec2 p = uv_coords;
@@ -33,10 +35,11 @@ float sdf(){
 #endif
 }
 
-
-void main() {
+void main()
+{
     gl_FragDepth = gl_FragCoord.z;
-    if (color.a == 0) discard;
+    if (color.a == 0)
+        discard;
 
     float previous_index =
         texture2D(stencil_texture, vec2(gl_FragCoord.x / pixel_shape.x, gl_FragCoord.y / pixel_shape.y)).r;
@@ -55,7 +58,8 @@ void main() {
     stencil_value.rgb = vec3(index);
     stencil_value.a = 1.0;
     frag_color = color;
-    if (fill_all == 1.0) return;
+    if (fill_all == 1.0)
+        return;
 #ifdef ANTI_ALIASING
     float fac = max(0.0, min(1.0, 0.5 - sdf()));
     frag_color.a *= fac; // Anti-aliasing

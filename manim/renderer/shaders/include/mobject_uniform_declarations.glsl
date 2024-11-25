@@ -1,7 +1,8 @@
 #ifndef MOBJECT_GLSL
 #define MOBJECT_GLSL
 
-layout (std140) uniform ubo_mobject {
+layout(std140) uniform ubo_mobject
+{
     vec3 light_source_position;
     float gloss;
     float shadow;

@@ -1,7 +1,7 @@
 #version 330
 
-layout (triangles) in;
-layout (triangle_strip, max_vertices = 5) out;
+layout(triangles) in;
+layout(triangle_strip, max_vertices = 5) out;
 
 // Needed for get_gl_Position
 // uniform vec2 frame_shape;
@@ -20,12 +20,12 @@ out vec2 uv_coords;
 out float bezier_degree;
 
 // Analog of import for manim only
-#include "../include/mobject_uniform_declarations.glsl"
 #include "../include/camera_uniform_declarations.glsl"
-#include "../include/quadratic_bezier_geometry_functions.glsl"
+#include "../include/finalize_color.glsl"
 #include "../include/get_gl_Position.glsl"
 #include "../include/get_unit_normal.glsl"
-#include "../include/finalize_color.glsl"
+#include "../include/mobject_uniform_declarations.glsl"
+#include "../include/quadratic_bezier_geometry_functions.glsl"
 
 const vec2 uv_coords_arr[3] = vec2[3](vec2(0, 0), vec2(0.5, 0), vec2(1, 1));
 
@@ -39,21 +39,20 @@ void emit_vertex_wrapper(vec3 point, int index)
 
 void emit_simple_triangle()
 {
-    for(int i = 0; i < 3; i++)
+    for (int i = 0; i < 3; i++)
     {
         emit_vertex_wrapper(bp[i], i);
     }
     EndPrimitive();
 }
 
-void main(){
+void main()
+{
     // If vert indices are sequential, don't fill all
-    fill_all = float(
-        (v_vert_index[1] - v_vert_index[0]) != 1.0 ||
-        (v_vert_index[2] - v_vert_index[1]) != 1.0
-    );
+    fill_all = float((v_vert_index[1] - v_vert_index[0]) != 1.0 || (v_vert_index[2] - v_vert_index[1]) != 1.0);
 
-    if(fill_all == 1.0){
+    if (fill_all == 1.0)
+    {
         emit_simple_triangle();
         return;
     }
@@ -63,7 +62,8 @@ void main(){
     vec3 local_unit_normal = get_unit_normal(new_bp);
     orientation = sign(dot(v_global_unit_normal[0], local_unit_normal));
 
-    if(bezier_degree >= 1){
+    if (bezier_degree >= 1)
+    {
         emit_simple_triangle();
     }
     // Don't emit any vertices for bezier_degree 0
