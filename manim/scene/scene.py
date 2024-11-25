@@ -1752,51 +1752,62 @@ def manimation(
 ) -> Scene | Callable[[Callable[[Scene], object]], Scene]:
     """A short-hand decorator for creating an animation from a construct-like function.
 
-    This decorator creates a :class:`.Scene` object whose ``construct`` method
-    is created from the specified function. This allows to write (and render)
-    scenes in a short-hand manner::
+        This decorator creates a :class:`.Scene` object whose ``construct`` method
+        is created from the specified function. This allows to write (and render)
+        scenes in a short-hand manner::
 
-        @manimation
-        def hello_world(scene: Scene):
-            t = Text("Hello World!")
-            scene.play(Write(t))
-            scene.play(t.animate.scale(2))
-            scene.wait()
-
-
-        hello_world.render()
-
-    This is equivalent to the following, *classical* way of creating and rendering
-    a scene::
-
-        class HelloWorld(Scene):
-            def construct(self):
+            @manimation
+            def hello_world(scene: Scene):
                 t = Text("Hello World!")
-                self.play(Write(t))
-                self.play(t.animate.scale(2))
-                self.wait()
+                scene.play(Write(t))
+                scene.play(t.animate.scale(2))
+                scene.wait()
 
+    <<<<<<< HEAD
 
-        scene_object = HelloWorld()
-        scene_object.render()
+    =======
+    >>>>>>> 7f23849dbf3b4dabccc083e4b37efe9458d3b78d
+            hello_world.render()
 
-    Parameters
-    ----------
-    construct_function
-        The (decorated) function that will be used to construct the scene.
-    scene_class
-        The base class that is used to construct the scene.
+        This is equivalent to the following, *classical* way of creating and rendering
+        a scene::
 
-    Examples
-    --------
+            class HelloWorld(Scene):
+                def construct(self):
+                    t = Text("Hello World!")
+                    self.play(Write(t))
+                    self.play(t.animate.scale(2))
+                    self.wait()
 
-    An example for a scene using a different base class for the scene::
+    <<<<<<< HEAD
 
-        @manimation(scene_class=MovingCameraScene)
-        def moving_around(scene: MovingCameraScene): ...
+    =======
+    >>>>>>> 7f23849dbf3b4dabccc083e4b37efe9458d3b78d
+            scene_object = HelloWorld()
+            scene_object.render()
 
-    Note that the type hint for the scene class is optional and just
-    helps your IDE to suggest the correct auto-completion options.
+        Parameters
+        ----------
+        construct_function
+            The (decorated) function that will be used to construct the scene.
+        scene_class
+            The base class that is used to construct the scene.
+
+        Examples
+        --------
+
+        An example for a scene using a different base class for the scene::
+
+            @manimation(scene_class=MovingCameraScene)
+    <<<<<<< HEAD
+            def moving_around(scene: MovingCameraScene): ...
+    =======
+            def moving_around(scene: MovingCameraScene):
+                ...
+    >>>>>>> 7f23849dbf3b4dabccc083e4b37efe9458d3b78d
+
+        Note that the type hint for the scene class is optional and just
+        helps your IDE to suggest the correct auto-completion options.
     """
 
     def scene_decorator(construct: Callable[[Scene], None]) -> Scene:
