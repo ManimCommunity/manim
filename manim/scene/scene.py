@@ -1810,7 +1810,7 @@ def manimation(
         helps your IDE to suggest the correct auto-completion options.
     """
 
-    def scene_decorator(construct: Callable[[Scene], None]) -> Scene:
+    def scene_decorator(construct: Callable[[Scene], object]) -> Scene:
         scene_name = construct.__name__
         if scene_name == "<lambda>":
             scene_name = "anonymous"
@@ -1825,7 +1825,7 @@ def manimation(
                 "__qualname__": scene_name,
             },
         )
-        REGISTERED_MANIMATIONS.append(scene_type)
+        REGISTERED_MANIMATIONS.append(scene_type)  # type: ignore
         # Create an instance of the new class. For use after decoration.
         scene_instance = scene_type()
         # Add the new class to the list of registered animations. To display in the cli chooser.
@@ -1835,6 +1835,15 @@ def manimation(
         raise TypeError(
             "The argument passed to manimation must be a callable function."
         )
+
+    if construct_function is not None:
+        sig = inspect.signature(construct_function)
+
+        if not ("self" in sig.parameters and len(sig.parameters) == 1):
+            raise TypeError(
+                construct_function,
+                "The construct function must have only one parameter named self as first argument",
+            )
 
     if callable(construct_function):
         return scene_decorator(construct_function)
