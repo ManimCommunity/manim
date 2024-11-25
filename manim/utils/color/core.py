@@ -585,7 +585,7 @@ class ManimColor:
             new[-1] = alpha
             return self._construct_from_space(new)
 
-    def interpolate(self, other: ManimColor, alpha: float) -> Self:
+    def interpolate(self, other: Self, alpha: float) -> Self:
         """Interpolates between the current and the given ManimColor an returns the interpolated color
 
         Parameters
@@ -606,15 +606,16 @@ class ManimColor:
             self._internal_space * (1 - alpha) + other._internal_space * alpha
         )
 
-    def darker(self, factor: float = 0.2) -> Self:
+    def darker(self, blend: float = 0.2) -> Self:
         """Returns a new color that is darker than the current color, i.e.
         interpolated with black. The opacity is unchanged.
 
         Parameters
         ----------
-        factor : float, optional
-            The factor by which the color should be darker, by default 0.2,
-            which results in a slightly darker color
+        blend : float, optional
+            The blend ratio for the interpolation, from 0 (the current color
+            unchanged) to 1 (pure black). By default 0.2 which results in a
+            slightly darker color
 
         Returns
         -------
@@ -625,19 +626,22 @@ class ManimColor:
         --------
         :meth:`lighter`
         """
-        alpha = self._internal_space[3]
-        black = self.from_rgb((0.0, 0.0, 0.0))
-        return self.interpolate(black, factor).opacity(alpha)
+        from manim.utils.color.manim_colors import BLACK
 
-    def lighter(self, factor: float = 0.2) -> Self:
+        alpha = self._internal_space[3]
+        black = self._from_internal(BLACK._internal_value)
+        return self.interpolate(black, blend).opacity(alpha)
+
+    def lighter(self, blend: float = 0.2) -> Self:
         """Returns a new color that is lighter than the current color, i.e.
         interpolated with white. The opacity is unchanged.
 
         Parameters
         ----------
-        factor : float, optional
-            The factor by which the color should be lighter, by default 0.2,
-            which results in a slightly lighter color
+        blend : float, optional
+            The blend ratio for the interpolation, from 0 (the current color
+            unchanged) to 1 (pure white). By default 0.2 which results in a
+            slightly lighter color
 
         Returns
         -------
@@ -648,9 +652,11 @@ class ManimColor:
         --------
         :meth:`darker`
         """
+        from manim.utils.color.manim_colors import WHITE
+
         alpha = self._internal_space[3]
-        white = self.from_rgb((1.0, 1.0, 1.0))
-        return self.interpolate(white, factor).opacity(alpha)
+        white = self._from_internal(WHITE._internal_value)
+        return self.interpolate(white, blend).opacity(alpha)
 
     def contrasting(
         self,
@@ -681,16 +687,17 @@ class ManimColor:
         ManimColor
             The contrasting ManimColor
         """
-        r, g, b = self.to_rgb()
-        luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b
+        from manim.utils.color.manim_colors import BLACK, WHITE
+
+        luminance, _, _ = colorsys.rgb_to_yiq(*self.to_rgb())
         if luminance < threshold:
             if light is not None:
                 return light
-            return self.from_rgb((1.0, 1.0, 1.0), 1.0)
+            return self._from_internal(WHITE._internal_value)
         else:
             if dark is not None:
                 return dark
-            return self.from_rgb((0.0, 0.0, 0.0), 1.0)
+            return self._from_internal(BLACK._internal_value)
 
     def opacity(self, opacity: float) -> Self:
         """Creates a new ManimColor with the given opacity and the same color value as before
@@ -1368,7 +1375,7 @@ def color_gradient(
 
 
 def interpolate_color(
-    color1: ManimColorT, color2: ManimColor, alpha: float
+    color1: ManimColorT, color2: ManimColorT, alpha: float
 ) -> ManimColorT:
     """Standalone function to interpolate two ManimColors and get the result refer to :meth:`interpolate` in :class:`ManimColor`
 
