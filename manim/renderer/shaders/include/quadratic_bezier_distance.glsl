@@ -1,4 +1,8 @@
+#ifndef QUADRATIC_BEZIER_DISTANCE
+#define QUADRATIC_BEZIER_DISTANCE
+
 // Must be inserted in a context with a definition for modify_distance_for_endpoints
+float modify_distance_for_endpoints(vec2 p, float dist, float t);
 
 // All of this is with respect to a curve that's been rotated/scaled
 // so that b0 = (0, 0) and b1 = (1, 0).  That is, b2 entirely
@@ -92,8 +96,8 @@ float min_dist_to_curve(vec2 p, vec2 b2, float degree)
     // Try finding the exact sdf by solving the equation
     // (d/dt) dist^2(t) = 0, which amount to the following
     // cubic.
-    float xm2 = uv_b2.x - 2.0;
-    float y = uv_b2.y;
+    float xm2 = b2.x - 2.0;
+    float y = b2.y;
     float a = xm2 * xm2 + y * y;
     float b = 3 * xm2;
     float c = -(p.x * xm2 + p.y * y) + 2;
@@ -108,3 +112,4 @@ float min_dist_to_curve(vec2 p, vec2 b2, float degree)
     float d1 = dist_to_point_on_curve(p, roots[1], b2);
     return min(d0, d1);
 }
+#endif // QUADRATIC_BEZIER_DISTANCE

@@ -23,10 +23,24 @@ ubo_camera = STD140BufferFormat(
         ("vec3", "camera_center"),
         ("mat3", "camera_rotation"),
         ("float", "focal_distance"),
+    ),
+    binding=0,
+)
+
+ubo_mobject = STD140BufferFormat(
+    "ubo_mobject",
+    (
+        ("vec3", "light_source_position"),
+        ("float", "gloss"),
+        ("float", "shadow"),
+        ("float", "reflectiveness"),
+        ("float", "flat_stroke"),
+        ("float", "joint_type"),
         ("float", "is_fixed_in_frame"),
         ("float", "is_fixed_orientation"),
         ("vec3", "fixed_orientation_center"),
     ),
+    binding=1,
 )
 
 fill_dtype = [
@@ -73,63 +87,6 @@ bounding_box:
         """
 
 
-# TODO: Move into GLVMobjectManager
-def get_triangulation(self: OpenGLVMobject, normal_vector=None):
-    # Figure out how to triangulate the interior to know
-    # how to send the points as to the vertex shader.
-    # First triangles come directly from the points
-    if normal_vector is None:
-        normal_vector = self.get_unit_normal()
-
-    points = self.points
-
-    if len(points) <= 1:
-        self.triangulation = np.zeros(0, dtype="i4")
-        self.needs_new_triangulation = False
-        return self.triangulation
-
-    if not np.isclose(normal_vector, const.OUT).all():
-        # Rotate points such that unit normal vector is OUT
-        points = np.dot(points, z_to_vector(normal_vector))
-    indices = np.arange(len(points), dtype=int)
-
-    b0s = points[0::3]
-    b1s = points[1::3]
-    b2s = points[2::3]
-    v01s = b1s - b0s
-    v12s = b2s - b1s
-
-    crosses = cross2d(v01s, v12s)
-    convexities = np.sign(crosses)
-
-    atol = self.tolerance_for_point_equality
-    end_of_loop = np.zeros(len(b0s), dtype=bool)
-    end_of_loop[:-1] = (np.abs(b2s[:-1] - b0s[1:]) > atol).any(1)
-    end_of_loop[-1] = True
-
-    concave_parts = convexities < 0
-
-    # These are the vertices to which we'll apply a polygon triangulation
-    inner_vert_indices = np.hstack(
-        [
-            indices[0::3],
-            indices[1::3][concave_parts],
-            indices[2::3][end_of_loop],
-        ],
-    )
-    inner_vert_indices.sort()
-    rings = np.arange(1, len(inner_vert_indices) + 1)[inner_vert_indices % 3 == 2]
-
-    # Triangulate
-    inner_verts = points[inner_vert_indices]
-    inner_tri_indices = inner_vert_indices[earclip_triangulation(inner_verts, rings)]  # type: ignore
-
-    tri_indices = np.hstack([indices, inner_tri_indices])
-    self.triangulation = tri_indices
-    self.needs_new_triangulation = False
-    return tri_indices
-
-
 def prepare_array(values: np.ndarray, desired_length: int):
     """Interpolates a given list of colors to match the desired length
 
@@ -164,24 +121,6 @@ def prepare_array(values: np.ndarray, desired_length: int):
     return np.array(rgbas)
 
 
-# TODO: Move into GLVMobjectManager
-def compute_bounding_box(mob):
-    all_points = np.vstack(
-        [
-            mob.points,
-            *(m.get_bounding_box() for m in mob.get_family()[1:] if m.has_points()),
-        ],
-    )
-    if len(all_points) == 0:
-        return np.zeros((3, mob.dim))
-    else:
-        # Lower left and upper right corners
-        mins = all_points.min(0)
-        maxs = all_points.max(0)
-        mids = (mins + maxs) / 2
-        return np.array([mins, mids, maxs])
-
-
 class ProgramManager:
     @staticmethod
     def get_available_uniforms(prog):
@@ -193,14 +132,19 @@ class ProgramManager:
 
     @staticmethod
     def write_uniforms(prog, uniforms):
-        for name in prog:
-            member = prog[name]
-            if isinstance(member, gl.Uniform) and name in uniforms:
+        for name in uniforms:
+            if name in prog and isinstance(prog[name], gl.Uniform):
+                member = prog[name]
                 member.value = uniforms[name]
+            else:
+                logger.debug(f"The uniform {name} is not in the shader {uniforms}")
 
     @staticmethod
-    def bind_to_uniform_block(uniform_buffer_object: gl.Buffer, idx: int = 0):
-        uniform_buffer_object.bind_to_uniform_block(idx)
+    def bind_uniform_block(program: gl.Program, ubo: STD140BufferFormat, index):
+        if ubo.name in program and isinstance(program[ubo.name], gl.UniformBlock):
+            ubo.bind()
+        else:
+            raise ValueError(f"Buffer block {ubo.name} does not exist in program")
 
 
 class OpenGLRenderer(Renderer, RendererProtocol):
@@ -297,6 +241,14 @@ class OpenGLRenderer(Renderer, RendererProtocol):
             self.ctx, "render_texture"
         )
 
+        # Initializing Buffer blocks
+        ubo_camera.init_buffer(self.ctx)
+        ubo_mobject.init_buffer(self.ctx)
+        self.vmobject_fill_program[ubo_camera.name] = ubo_camera.binding
+        self.vmobject_stroke_program[ubo_camera.name] = ubo_camera.binding
+        self.vmobject_fill_program[ubo_mobject.name] = ubo_mobject.binding
+        self.vmobject_stroke_program[ubo_mobject.name] = ubo_mobject.binding
+
     def use_window(self) -> None:
         self.output_fbo.release()
         self.output_fbo = self.ctx.detect_framebuffer()
@@ -308,55 +260,19 @@ class OpenGLRenderer(Renderer, RendererProtocol):
             "camera_center": camera.get_center(),
             "camera_rotation": camera.get_inverse_camera_rotation_matrix().T,
             "focal_distance": camera.get_focal_distance(),
-            "is_fixed_in_frame": 0.0,
-            "is_fixed_orientation": 0.0,
-            "fixed_orientation_center": np.array([0.0, 0.0, 0.0]),
         }
         ubo_camera.write(camera_data)
+        ubo_camera.bind()
 
         uniforms = {}
         uniforms["anti_alias_width"] = 0.01977
         uniforms["light_source_position"] = (-10, 10, 10)
         uniforms["pixel_shape"] = (self.pixel_width, self.pixel_height)
 
-        buffer = self.ctx.buffer(ubo_camera.data)
         # TODO: convert to singular 4x4 matrix after getting *something* to render
         # self.vmobject_fill_program['view'].value = camera.get_view()?
-        ProgramManager.bind_to_uniform_block(buffer)
         ProgramManager.write_uniforms(self.vmobject_fill_program, uniforms)
         ProgramManager.write_uniforms(self.vmobject_stroke_program, uniforms)
-
-    # TODO: Move into GLVMobjectManager
-    def get_stroke_shader_data(self, mob: OpenGLVMobject) -> np.ndarray:
-        if not isinstance(mob.renderer_data, GLRenderData):
-            raise TypeError()
-
-        points = mob.points
-        stroke_data = np.zeros(len(points), dtype=stroke_dtype)
-
-        nppc = mob.n_points_per_curve
-        stroke_data["point"] = points
-        stroke_data["prev_point"][:nppc] = points[-nppc:]
-        stroke_data["prev_point"][nppc:] = points[:-nppc]
-        stroke_data["next_point"][:-nppc] = points[nppc:]
-        stroke_data["next_point"][-nppc:] = points[:nppc]
-        stroke_data["color"] = mob.renderer_data.stroke_rgbas
-        stroke_data["stroke_width"] = mob.renderer_data.stroke_widths.reshape((-1, 1))
-
-        return stroke_data
-
-    # TODO: Move into GLVMobjectManager
-    def get_fill_shader_data(self, mob: OpenGLVMobject) -> np.ndarray:
-        if not isinstance(mob.renderer_data, GLRenderData):
-            raise TypeError()
-
-        fill_data = np.zeros(len(mob.points), dtype=fill_dtype)
-        fill_data["point"] = mob.points
-        fill_data["color"] = mob.renderer_data.fill_rgbas
-        # fill_data["orientation"] = mob.renderer_data.orientation
-        fill_data["unit_normal"] = mob.renderer_data.normals
-        fill_data["vert_index"] = np.reshape(range(len(mob.points)), (-1, 1))
-        return fill_data
 
     def pre_render(self, camera):
         self.init_camera(camera=camera)
@@ -432,7 +348,7 @@ class OpenGLRenderer(Renderer, RendererProtocol):
             gl.ONE,
         )
 
-        def enable_depth(mob):
+        def enable_depth(sub):
             if sub.depth_test:
                 self.ctx.enable(gl.DEPTH_TEST)  # type: ignore
             else:
@@ -463,7 +379,7 @@ class OpenGLRenderer(Renderer, RendererProtocol):
             if not isinstance(sub.renderer_data, GLRenderData):
                 return
             enable_depth(sub)
-            uniforms = GLVMobjectManager.read_uniforms(sub)
+            uniforms = {}
             uniforms["index"] = (counter + 1) / num_mobs / 2
             uniforms["disable_stencil"] = float(True)
             # uniforms['z_shift'] = counter/9 + 1/20
@@ -471,10 +387,12 @@ class OpenGLRenderer(Renderer, RendererProtocol):
             self.stencil_texture.use(0)
             self.vmobject_stroke_program["stencil_texture"] = 0
             if sub.has_stroke():
+                ubo_mobject.write(GLVMobjectManager.read_uniforms(sub))
+                ubo_mobject.bind()
                 ProgramManager.write_uniforms(self.vmobject_stroke_program, uniforms)
                 self.render_program(
                     self.vmobject_stroke_program,
-                    self.get_stroke_shader_data(sub),
+                    GLVMobjectManager.get_stroke_shader_data(sub),
                     np.array(range(len(sub.points))),
                 )
 
@@ -482,18 +400,20 @@ class OpenGLRenderer(Renderer, RendererProtocol):
             if not isinstance(sub.renderer_data, GLRenderData):
                 return
             enable_depth(sub)
-            uniforms = GLVMobjectManager.read_uniforms(sub)
+            uniforms = {}
             # uniforms['z_shift'] = counter/9
             uniforms["index"] = (counter + 1) / num_mobs
-            uniforms["disable_stencil"] = float(False)
+            # uniforms["disable_stencil"] = float(False)
             self.ctx.copy_framebuffer(self.stencil_texture_fbo, self.stencil_buffer_fbo)
             self.stencil_texture.use(0)
             self.vmobject_fill_program["stencil_texture"] = 0
             if sub.has_fill():
+                ubo_mobject.write(GLVMobjectManager.read_uniforms(sub))
+                ubo_mobject.bind()
                 ProgramManager.write_uniforms(self.vmobject_fill_program, uniforms)
                 self.render_program(
                     self.vmobject_fill_program,
-                    self.get_fill_shader_data(sub),
+                    GLVMobjectManager.get_fill_shader_data(sub),
                     sub.renderer_data.vert_indices,
                 )
 
@@ -501,7 +421,7 @@ class OpenGLRenderer(Renderer, RendererProtocol):
             if not isinstance(sub.renderer_data, GLRenderData):
                 return
             enable_depth(sub)
-            uniforms = GLVMobjectManager.read_uniforms(sub)
+            uniforms = {}
             uniforms["index"] = (counter + 1) / num_mobs
             uniforms["disable_stencil"] = float(False)
             # uniforms['z_shift'] = counter/9 + 1/20
@@ -509,10 +429,12 @@ class OpenGLRenderer(Renderer, RendererProtocol):
             self.stencil_texture.use(0)
             self.vmobject_stroke_program["stencil_texture"] = 0
             if sub.has_stroke():
+                ubo_mobject.write(GLVMobjectManager.read_uniforms(sub))
+                ubo_mobject.bind()
                 ProgramManager.write_uniforms(self.vmobject_stroke_program, uniforms)
                 self.render_program(
                     self.vmobject_stroke_program,
-                    self.get_stroke_shader_data(sub),
+                    GLVMobjectManager.get_stroke_shader_data(sub),
                     np.array(range(len(sub.points))),
                 )
 
@@ -531,12 +453,87 @@ class OpenGLRenderer(Renderer, RendererProtocol):
 
 class GLVMobjectManager:
     @staticmethod
+    def get_triangulation(smob: OpenGLVMobject, normal_vector=None):
+        # Figure out how to triangulate the interior to know
+        # how to send the points as to the vertex shader.
+        # First triangles come directly from the points
+        if normal_vector is None:
+            normal_vector = smob.get_unit_normal()
+
+        points = smob.points
+
+        if len(points) <= 1:
+            smob.triangulation = np.zeros(0, dtype="i4")
+            smob.needs_new_triangulation = False
+            return smob.triangulation
+
+        if not np.isclose(normal_vector, const.OUT).all():
+            # Rotate points such that unit normal vector is OUT
+            points = np.dot(points, z_to_vector(normal_vector))
+        indices = np.arange(len(points), dtype=int)
+
+        b0s = points[0::3]
+        b1s = points[1::3]
+        b2s = points[2::3]
+        v01s = b1s - b0s
+        v12s = b2s - b1s
+
+        crosses = cross2d(v01s, v12s)
+        convexities = np.sign(crosses)
+
+        atol = smob.tolerance_for_point_equality
+        end_of_loop = np.zeros(len(b0s), dtype=bool)
+        end_of_loop[:-1] = (np.abs(b2s[:-1] - b0s[1:]) > atol).any(1)
+        end_of_loop[-1] = True
+
+        concave_parts = convexities < 0
+
+        # These are the vertices to which we'll apply a polygon triangulation
+        inner_vert_indices = np.hstack(
+            [
+                indices[0::3],
+                indices[1::3][concave_parts],
+                indices[2::3][end_of_loop],
+            ],
+        )
+        inner_vert_indices.sort()
+        rings = np.arange(1, len(inner_vert_indices) + 1)[inner_vert_indices % 3 == 2]
+
+        # Triangulate
+        inner_verts = points[inner_vert_indices]
+        inner_tri_indices = inner_vert_indices[
+            earclip_triangulation(inner_verts, rings)
+        ]  # type: ignore
+
+        tri_indices = np.hstack([indices, inner_tri_indices])
+        smob.triangulation = tri_indices
+        smob.needs_new_triangulation = False
+        return tri_indices
+
+    @staticmethod
+    def compute_bounding_box(mob):
+        all_points = np.vstack(
+            [
+                mob.points,
+                *(m.get_bounding_box() for m in mob.get_family()[1:] if m.has_points()),
+            ],
+        )
+        if len(all_points) == 0:
+            return np.zeros((3, mob.dim))
+        else:
+            # Lower left and upper right corners
+            mins = all_points.min(0)
+            maxs = all_points.max(0)
+            mids = (mins + maxs) / 2
+            return np.array([mins, mids, maxs])
+
+    @staticmethod
     def init_render_data(mob: OpenGLVMobject):
         logger.debug("Initializing GLRenderData")
         mob.renderer_data = GLRenderData()
 
         # Generate Mesh
-        mob.renderer_data.vert_indices = get_triangulation(mob)
+        mob.renderer_data.vert_indices = GLVMobjectManager.get_triangulation(mob)
         points_length = len(mob.points)
 
         # Generate Fill Color
@@ -550,7 +547,7 @@ class GLVMobjectManager:
         mob.renderer_data.normals = np.repeat(
             [mob.get_unit_normal()], points_length, axis=0
         )
-        mob.renderer_data.bounding_box = compute_bounding_box(mob)
+        mob.renderer_data.bounding_box = GLVMobjectManager.compute_bounding_box(mob)
 
     @staticmethod
     def read_uniforms(mob: OpenGLVMobject):
@@ -558,9 +555,44 @@ class GLVMobjectManager:
         uniforms["reflectiveness"] = mob.reflectiveness
         uniforms["is_fixed_in_frame"] = float(mob.is_fixed_in_frame)
         uniforms["is_fixed_orientation"] = float(mob.is_fixed_orientation)
+        uniforms["fixed_orientation_center"] = tuple(
+            [float(x) for x in mob.fixed_orientation_center]
+        )
         uniforms["gloss"] = mob.gloss
         uniforms["shadow"] = mob.shadow
         uniforms["flat_stroke"] = float(mob.flat_stroke)
         uniforms["joint_type"] = float(mob.joint_type.value)
         uniforms["flat_stroke"] = float(mob.flat_stroke)
         return uniforms
+
+    @staticmethod
+    def get_stroke_shader_data(mob: OpenGLVMobject) -> np.ndarray:
+        if not isinstance(mob.renderer_data, GLRenderData):
+            raise TypeError()
+
+        points = mob.points
+        stroke_data = np.zeros(len(points), dtype=stroke_dtype)
+
+        nppc = mob.n_points_per_curve
+        stroke_data["point"] = points
+        stroke_data["prev_point"][:nppc] = points[-nppc:]
+        stroke_data["prev_point"][nppc:] = points[:-nppc]
+        stroke_data["next_point"][:-nppc] = points[nppc:]
+        stroke_data["next_point"][-nppc:] = points[:nppc]
+        stroke_data["color"] = mob.renderer_data.stroke_rgbas
+        stroke_data["stroke_width"] = mob.renderer_data.stroke_widths.reshape((-1, 1))
+
+        return stroke_data
+
+    @staticmethod
+    def get_fill_shader_data(mob: OpenGLVMobject) -> np.ndarray:
+        if not isinstance(mob.renderer_data, GLRenderData):
+            raise TypeError()
+
+        fill_data = np.zeros(len(mob.points), dtype=fill_dtype)
+        fill_data["point"] = mob.points
+        fill_data["color"] = mob.renderer_data.fill_rgbas
+        # fill_data["orientation"] = mob.renderer_data.orientation
+        fill_data["unit_normal"] = mob.renderer_data.normals
+        fill_data["vert_index"] = np.reshape(range(len(mob.points)), (-1, 1))
+        return fill_data

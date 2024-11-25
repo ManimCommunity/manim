@@ -3,6 +3,7 @@ from __future__ import annotations
 import math
 
 import numpy as np
+import moderngl as gl
 
 
 class STD140BufferFormat:
@@ -44,10 +45,10 @@ class STD140BufferFormat:
     }
 
     def __init__(
-        self,
-        name: str,
-        struct: tuple[tuple[str, str], ...],
+        self, name: str, struct: tuple[tuple[str, str], ...], binding: int
     ) -> None:
+        self.name = name
+        self.binding = binding
         self.dtype = []
         self._paddings = {}  # LUT for future writes
         byte_offset = 0  # Track the offset so we can calculate padding for alignment -- NOTE: use RenderDoc to debug
@@ -76,6 +77,10 @@ class STD140BufferFormat:
                 final_shape + (base_bytesize(0).nbytes,)
             )  # data adds to offset
         self.data = np.zeros(1, dtype=self.dtype)
+        self.ubo: gl.Buffer = None
+
+    def init_buffer(self, ctx: gl.Context):
+        self.ubo = ctx.buffer(self.data)
 
     def _write_padded(self, data: tuple | np.ndarray, var: str) -> np.ndarray:
         """Automatically adds padding to data if necessary. Used internally by write
@@ -106,5 +111,14 @@ class STD140BufferFormat:
         data : dict
             keys/values in the dictionary must match the variable names/data shapes in the constructor
         """
+        if self.ubo is None:
+            raise BufferError("Buffer not initialized please use init_buffer first")
+
         for key, val in data.items():
             self.data[key] = self._write_padded(val, key)
+
+        self.ubo.write(self.data.tobytes())
+
+    def bind(self):
+        """Binds the buffer to the specified index, this can be retrieved with the program"""
+        self.ubo.bind_to_uniform_block(self.binding)

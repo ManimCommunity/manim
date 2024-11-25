@@ -1,9 +1,8 @@
-// Assumes the following uniforms exist in the surrounding context:
-// uniform float is_fixed_in_frame;
-// uniform float is_fixed_orientation;
-// uniform vec3 fixed_orientation_center;
-// uniform vec3 camera_center;
-// uniform mat3 camera_rotation;
+#ifndef POSITION_POINT_INTO_FRAME_GLSL
+#define POSITION_POINT_INTO_FRAME_GLSL
+
+#include "./camera_uniform_declarations.glsl"
+#include "./mobject_uniform_declarations.glsl"
 
 vec3 rotate_point_into_frame(vec3 point){
     if(bool(is_fixed_in_frame)){
@@ -23,3 +22,4 @@ vec3 position_point_into_frame(vec3 point){
     }
     return rotate_point_into_frame(point - camera_center);
 }
+#endif // POSITION_POINT_INTO_FRAME_GLSL

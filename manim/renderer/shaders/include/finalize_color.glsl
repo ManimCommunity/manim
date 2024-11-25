@@ -1,3 +1,6 @@
+#ifndef FINALIZE_COLOR_GLSL
+#define FINALIZE_COLOR_GLSL
+
 vec3 float_to_color(float value, float min_val, float max_val, vec3[9] colormap_data){
     float alpha = clamp((value - min_val) / (max_val - min_val), 0.0, 1.0);
     int disc_alpha = min(int(alpha * 8), 7);
@@ -50,3 +53,4 @@ vec4 finalize_color(vec4 color,
     // the method Mobject.set_color_by_code
     return add_light(color, point, unit_normal, light_coords, gloss, shadow);
 }
+#endif // FINALIZE_COLOR_GLSL

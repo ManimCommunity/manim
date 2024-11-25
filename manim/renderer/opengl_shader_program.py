@@ -48,12 +48,13 @@ def get_shader_code_from_file(filename: Path) -> str | None:
     # To share functionality between shaders, some functions are read in
     # from other files an inserted into the relevant strings before
     # passing to ctx.program for compiling
-    # Replace "#INSERT " lines with relevant code
+    # Replace "#include" lines with relevant code
     insertions = re.findall(
-        r"^#include.*",
+        r"^#include.?\".*\"",
         result,
         flags=re.MULTILINE,
     )
+    print(insertions)
     for line in insertions:
         include_path = line.strip().replace("#include", "")
         include_path = include_path.replace('"', "")

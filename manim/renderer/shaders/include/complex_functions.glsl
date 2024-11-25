@@ -1,3 +1,6 @@
+#ifndef COMPLEX_FUNC_GLSL
+#define COMPLEX_FUNC_GLSL
+
 vec2 complex_mult(vec2 z, vec2 w)
 {
     return vec2(z.x * w.x - z.y * w.y, z.x * w.y + z.y * w.x);
@@ -17,3 +20,4 @@ vec2 complex_pow(vec2 z, int n)
     }
     return result;
 }
+#endif // COMPLEX_FUNC_GLSL

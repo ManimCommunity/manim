@@ -1,12 +1,11 @@
 #version 330
 
-#include ../include/camera_uniform_declarations.glsl
+#include "../include/camera_uniform_declarations.glsl"
 uniform vec2 pixel_shape;
 uniform float index;
 
 in vec4 color;
 in float fill_all;  // Either 0 or 1e
-in float uv_anti_alias_width;
 
 in float orientation;
 in vec2 uv_coords;

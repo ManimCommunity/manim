@@ -1,6 +1,7 @@
-// Assumes the following uniforms exist in the surrounding context:
-// uniform vec3 camera_offset;
-// uniform mat3 camera_rotation;
+#ifndef GET_ROTATED_SURFACE_GLSL
+#define GET_ROTATED_SURFACE_GLSL
+
+#include "./camera_uniform_declarations.glsl"
 
 vec3 get_rotated_surface_unit_normal_vector(vec3 point, vec3 du_point, vec3 dv_point)
 {
@@ -13,3 +14,4 @@ vec3 get_rotated_surface_unit_normal_vector(vec3 point, vec3 du_point, vec3 dv_p
     }
     return normalize(rotate_point_into_frame(cp));
 }
+#endif // GET_ROTATED_SURFACE_GLSL

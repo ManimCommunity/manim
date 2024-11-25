@@ -1,3 +1,6 @@
+#ifndef QUADRATIC_BEZIER_GEOMETRY_GLSL
+#define QUADRATIC_BEZIER_GEOMETRY_GLSL
+
 float cross2d(vec2 v, vec2 w)
 {
     return v.x * w.y - w.x * v.y;
@@ -78,3 +81,4 @@ float get_reduced_control_points(in vec3 points[3], out vec3 new_points[3])
         return 0.0;
     }
 }
+#endif // QUADRATIC_BEZIER_GEOMETRY_GLSL

@@ -1,6 +1,7 @@
 #version 330
 
-#include ../include/camera_uniform_declarations.glsl
+#include "../include/camera_uniform_declarations.glsl"
+#include "../include/mobject_uniform_declarations.glsl"
 
 in vec3 point;
 in vec3 unit_normal;
@@ -13,7 +14,7 @@ out float v_vert_index;
 out vec3 v_global_unit_normal;
 
 // Analog of import for manim only
-#include ../include/position_point_into_frame.glsl
+#include "../include/position_point_into_frame.glsl"
 
 void main(){
     bp = position_point_into_frame(point.xyz);

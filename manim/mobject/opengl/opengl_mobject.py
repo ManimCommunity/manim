@@ -152,6 +152,7 @@ class OpenGLMobject:
         self.gloss = gloss
         self.is_fixed_in_frame = is_fixed_in_frame
         self.is_fixed_orientation = is_fixed_orientation
+        self.fixed_orientation_center = (0.0, 0.0, 0.0)
         self.depth_test = depth_test
         self.name = self.__class__.__name__ if name is None else name
 
@@ -2678,29 +2679,35 @@ class OpenGLMobject:
         return bool(np.isclose(points1, points2).all())
 
     def fix_in_frame(self) -> Self:
-        self.is_fixed_in_frame = True
+        for mob in self.get_family():
+            mob.is_fixed_in_frame = True
         return self
 
     def fix_orientation(self) -> Self:
-        self.is_fixed_orientation = True
-        self.fixed_orientation_center = tuple(self.get_center())
+        for mob in self.get_family():
+            mob.is_fixed_orientation = 1.0
+            mob.fixed_orientation_center = tuple(self.get_center())
         return self
 
     def unfix_from_frame(self) -> Self:
-        self.is_fixed_in_frame = False
+        for mob in self.get_family():
+            mob.is_fixed_in_frame = 0.0
         return self
 
     def unfix_orientation(self):
-        self.is_fixed_orientation = 0.0
-        self.fixed_orientation_center = (0, 0, 0)
+        for mob in self.get_family():
+            mob.is_fixed_orientation = 0.0
+            mob.fixed_orientation_center = (0, 0, 0)
         return self
 
     def apply_depth_test(self):
-        self.depth_test = True
+        for mob in self.get_family():
+            mob.depth_test = True
         return self
 
     def deactivate_depth_test(self):
-        self.depth_test = False
+        for mob in self.get_family():
+            mob.depth_test = False
         return self
 
     # Event Handlers

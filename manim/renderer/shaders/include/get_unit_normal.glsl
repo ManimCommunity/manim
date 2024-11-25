@@ -1,3 +1,6 @@
+#ifndef GET_UNIT_NORMAL_GLSL
+#define GET_UNIT_NORMAL_GLSL
+
 vec3 get_unit_normal(in vec3[3] points)
 {
     float tol = 1e-6;
@@ -23,3 +26,4 @@ vec3 get_unit_normal(in vec3[3] points)
     }
     return cp / cp_norm;
 }
+#endif // GET_UNIT_NORMAL_GLSL

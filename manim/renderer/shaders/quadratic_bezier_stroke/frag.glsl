@@ -1,12 +1,15 @@
 #version 330
 
-#include ../include/camera_uniform_declarations.glsl
+#include "../include/camera_uniform_declarations.glsl"
+#include "../include/quadratic_bezier_distance.glsl"
+
 uniform vec2 pixel_shape;
 uniform float index;
 uniform float disable_stencil;
 
 in vec2 uv_coords;
 in vec2 uv_b2;
+
 
 in float uv_stroke_width;
 in vec4 color;
@@ -22,14 +25,12 @@ in float bezier_degree;
 
 uniform sampler2D stencil_texture;
 
-
 layout(location = 0) out vec4 frag_color;
 layout(location = 1) out vec4 stencil_value;
 
 float cross2d(vec2 v, vec2 w){
     return v.x * w.y - w.x * v.y;
 }
-
 
 float modify_distance_for_endpoints(vec2 p, float dist, float t){
     float buff = 0.5 * uv_stroke_width - uv_anti_alias_width;
@@ -82,9 +83,6 @@ float modify_distance_for_endpoints(vec2 p, float dist, float t){
     }
     return dist;
 }
-
-
-#include ../include/quadratic_bezier_distance.glsl
 
 
 void main() {
