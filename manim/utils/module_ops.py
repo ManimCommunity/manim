@@ -9,8 +9,11 @@ import warnings
 from pathlib import Path
 
 from .. import config, console, constants, logger
+<<<<<<< HEAD
 
 __all__ = ["scene_classes_from_file"]
+=======
+>>>>>>> 7f23849dbf3b4dabccc083e4b37efe9458d3b78d
 
 
 def get_module(file_name: Path):
