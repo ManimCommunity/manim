@@ -10,7 +10,7 @@ if sys.version_info < (3, 10):
 else:
     from importlib.metadata import entry_points
 
-from manim import console
+from manim._config import console
 
 __all__ = ["list_plugins"]
 
@@ -27,5 +27,5 @@ def list_plugins() -> None:
     console.print("[green bold]Plugins:[/green bold]", justify="left")
 
     plugins = get_plugins()
-    for plugin in plugins:
-        console.print(f" • {plugin}")
+    for plugin_name in plugins:
+        console.print(f" • {plugin_name}")
