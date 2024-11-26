@@ -618,8 +618,7 @@ class Cone(Surface):
         self._current_phi = 0
         self.base_circle = Circle(
             radius=base_radius,
-            color=self.fill_color,
-            fill_opacity=self.fill_opacity,
+            color=self.get_fill_colors(),
             stroke_width=0,
         )
         self.base_circle.shift(height * IN)

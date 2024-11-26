@@ -95,6 +95,8 @@ class OpenGLVMobject(OpenGLMobject):
         long_lines: bool = False,
         joint_type: LineJointType = LineJointType.AUTO,
         flat_stroke: bool = False,
+        shade_in_3d=False,  # TODO: Can be ignored for now but we should think about using some sort of shader to introduce lighting after deferred rendering has completed
+        checkerboard_colors=False,  # ignore,
         **kwargs: Unpack[MobjectKwargs],
     ):
         super().__init__(**kwargs)

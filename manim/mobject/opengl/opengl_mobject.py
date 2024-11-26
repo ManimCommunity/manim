@@ -144,6 +144,7 @@ class OpenGLMobject:
         is_fixed_orientation: bool = False,
         depth_test: bool = True,
         name: str | None = None,
+        **kwargs,  # just dump
     ):
         self.color = color
         self.opacity = opacity
