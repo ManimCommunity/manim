@@ -232,7 +232,7 @@ class LabeledPolygram(Polygram):
         The precision used by the PolyLabel algorithm.
     label_config
         A dictionary containing the configuration for the label.
-        This is only applied if `label` is of type `str`.
+        This is only applied if ``label`` is of type ``str``.
     box_config
         A dictionary containing the configuration for the background box.
     frame_config
