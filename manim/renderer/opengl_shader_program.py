@@ -54,7 +54,6 @@ def get_shader_code_from_file(filename: Path) -> str | None:
         result,
         flags=re.MULTILINE,
     )
-    print(insertions)
     for line in insertions:
         include_path = line.strip().replace("#include", "")
         include_path = include_path.replace('"', "")
