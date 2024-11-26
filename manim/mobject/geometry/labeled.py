@@ -6,6 +6,8 @@ __all__ = ["Label", "LabeledLine", "LabeledArrow", "LabeledPolygram"]
 
 import numpy as np
 
+from typing import TYPE_CHECKING
+
 from manim.constants import *
 from manim.mobject.geometry.line import Arrow, Line
 from manim.mobject.geometry.polygram import Polygram
@@ -97,6 +99,9 @@ class Label(VGroup):
 
         # Add components to the VGroup
         self.add(self.background_rect, self.rendered_label, self.frame)
+
+if TYPE_CHECKING:
+    from typing import Any
 
 
 class LabeledLine(Line):
@@ -205,8 +210,8 @@ class LabeledArrow(LabeledLine, Arrow):
 
     def __init__(
         self,
-        *args,
-        **kwargs,
+        *args: Any,
+        **kwargs: Any,
     ) -> None:
         super().__init__(*args, **kwargs)
 

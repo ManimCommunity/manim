@@ -37,7 +37,7 @@ from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLPoint
 
 from .. import config, logger
-from ..animation.animation import Animation, Wait, prepare_animation
+from ..animation.animation import Animation, Wait, prepare_animation, validate_run_time
 from ..camera.camera import Camera
 from ..constants import *
 from ..gui.gui import configure_pygui
@@ -100,12 +100,12 @@ class Scene:
 
     def __init__(
         self,
-        renderer=None,
-        camera_class=Camera,
-        always_update_mobjects=False,
-        random_seed=None,
-        skip_animations=False,
-    ):
+        renderer: CairoRenderer | OpenGLRenderer | None = None,
+        camera_class: type[Camera] = Camera,
+        always_update_mobjects: bool = False,
+        random_seed: int | None = None,
+        skip_animations: bool = False,
+    ) -> None:
         self.camera_class = camera_class
         self.always_update_mobjects = always_update_mobjects
         self.random_seed = random_seed
@@ -157,6 +157,11 @@ class Scene:
     @property
     def camera(self):
         return self.renderer.camera
+
+    @property
+    def time(self) -> float:
+        """The time since the start of the scene."""
+        return self.renderer.time
 
     def __deepcopy__(self, clone_from_id):
         cls = self.__class__
@@ -1030,28 +1035,7 @@ class Scene:
         float
             The total ``run_time`` of all of the animations in the list.
         """
-        max_run_time = 0
-        frame_rate = (
-            1 / config.frame_rate
-        )  # config.frame_rate holds the number of frames per second
-        for animation in animations:
-            if animation.run_time <= 0:
-                raise ValueError(
-                    f"{animation} has a run_time of <= 0 seconds which Manim cannot render. "
-                    "Please set the run_time to be positive."
-                )
-            elif animation.run_time < frame_rate:
-                logger.warning(
-                    f"Original run time of {animation} is shorter than current frame "
-                    f"rate (1 frame every {frame_rate:.2f} sec.) which cannot be rendered. "
-                    "Rendering with the shortest possible duration instead."
-                )
-                animation.run_time = frame_rate
-
-            if animation.run_time > max_run_time:
-                max_run_time = animation.run_time
-
-        return max_run_time
+        return max(animation.run_time for animation in animations)
 
     def play(
         self,
@@ -1104,15 +1088,15 @@ class Scene:
             )
             return
 
-        start_time = self.renderer.time
+        start_time = self.time
         self.renderer.play(self, *args, **kwargs)
-        run_time = self.renderer.time - start_time
+        run_time = self.time - start_time
         if subcaption:
             if subcaption_duration is None:
                 subcaption_duration = run_time
             # The start of the subcaption needs to be offset by the
             # run_time of the animation because it is added after
-            # the animation has already been played (and Scene.renderer.time
+            # the animation has already been played (and Scene.time
             # has already been updated).
             self.add_subcaption(
                 content=subcaption,
@@ -1147,6 +1131,7 @@ class Scene:
         --------
         :class:`.Wait`, :meth:`.should_mobjects_update`
         """
+        duration = validate_run_time(duration, str(self) + ".wait()", "duration")
         self.play(
             Wait(
                 run_time=duration,
@@ -1170,6 +1155,7 @@ class Scene:
         --------
         :meth:`.wait`, :class:`.Wait`
         """
+        duration = validate_run_time(duration, str(self) + ".pause()", "duration")
         self.wait(duration=duration, frozen_frame=True)
 
     def wait_until(self, stop_condition: Callable[[], bool], max_time: float = 60):
@@ -1183,6 +1169,7 @@ class Scene:
         max_time
             The maximum wait time in seconds.
         """
+        max_time = validate_run_time(max_time, str(self) + ".wait_until()", "max_time")
         self.wait(max_time, stop_condition=stop_condition)
 
     def compile_animation_data(
@@ -1522,7 +1509,7 @@ class Scene:
         r"""Adds an entry in the corresponding subcaption file
         at the current time stamp.
 
-        The current time stamp is obtained from ``Scene.renderer.time``.
+        The current time stamp is obtained from ``Scene.time``.
 
         Parameters
         ----------
@@ -1559,10 +1546,8 @@ class Scene:
         subtitle = srt.Subtitle(
             index=len(self.renderer.file_writer.subcaptions),
             content=content,
-            start=datetime.timedelta(seconds=float(self.renderer.time + offset)),
-            end=datetime.timedelta(
-                seconds=float(self.renderer.time + offset + duration)
-            ),
+            start=datetime.timedelta(seconds=float(self.time + offset)),
+            end=datetime.timedelta(seconds=float(self.time + offset + duration)),
         )
         self.renderer.file_writer.subcaptions.append(subtitle)
 
@@ -1610,7 +1595,7 @@ class Scene:
         """
         if self.renderer.skip_animations:
             return
-        time = self.renderer.time + time_offset
+        time = self.time + time_offset
         self.renderer.file_writer.add_sound(sound_file, time, gain, **kwargs)
 
     def on_mouse_motion(self, point, d_point):

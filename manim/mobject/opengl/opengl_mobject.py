@@ -327,14 +327,14 @@ class OpenGLMobject:
         self.bounding_box = np.zeros((3, 3))
         self.rgbas = np.zeros((1, 4))
 
-    def init_colors(self) -> None:
+    def init_colors(self) -> object:
         """Initializes the colors.
 
         Gets called upon creation
         """
         self.set_color(self.color, self.opacity)
 
-    def init_points(self):
+    def init_points(self) -> object:
         """Initializes :attr:`points` and therefore the shape.
 
         Gets called upon creation. This is an empty method that can be implemented by
