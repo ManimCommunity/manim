@@ -822,7 +822,9 @@ class ConvexHull(Polygram):
                 self.add(dots)
     """
 
-    def __init__(self, *points: Point3D, tolerance: float = 1e-5, **kwargs) -> None:
+    def __init__(
+        self, *points: Point3D, tolerance: float = 1e-5, **kwargs: Any
+    ) -> None:
         # Build Convex Hull
         array = np.array(points)[:, :2]
         hull = QuickHull(tolerance)

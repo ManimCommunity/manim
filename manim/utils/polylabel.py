@@ -7,6 +7,8 @@ from typing import TYPE_CHECKING
 import numpy as np
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
+
     from manim.typing import Point3D, Point3D_Array
 
 
@@ -20,7 +22,7 @@ class Polygon:
         A collection of closed polygonal ring.
     """
 
-    def __init__(self, rings: Point3D_Array) -> None:
+    def __init__(self, rings: Sequence[Point3D_Array]) -> None:
         # Flatten Array
         csum = np.cumsum([ring.shape[0] for ring in rings])
         self.array = np.concatenate(rings, axis=0)
@@ -96,7 +98,7 @@ class Cell:
         return self.d >= other.d
 
 
-def polylabel(rings: Point3D_Array, precision: float = 0.01) -> Cell:
+def polylabel(rings: Sequence[Point3D_Array], precision: float = 0.01) -> Cell:
     """
     Finds the pole of inaccessibility (the point that is farthest from the edges of the polygon)
     using an iterative grid-based approach.

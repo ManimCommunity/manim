@@ -122,6 +122,7 @@ class BackgroundRectangle(SurroundingRectangle):
             buff=buff,
             **kwargs,
         )
+        self.color: ManimColor
         self.original_fill_opacity: float = self.fill_opacity
 
     def pointwise_become_partial(self, mobject: Mobject, a: Any, b: float) -> Self:

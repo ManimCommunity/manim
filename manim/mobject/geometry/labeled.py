@@ -21,6 +21,11 @@ from manim.mobject.types.vectorized_mobject import VGroup
 from manim.utils.color import WHITE
 from manim.utils.polylabel import polylabel
 
+if TYPE_CHECKING:
+    from typing import Any
+
+    from manim.typing import Point3D
+
 
 class Label(VGroup):
     """A Label consisting of text surrounded by a frame.
@@ -59,10 +64,10 @@ class Label(VGroup):
     def __init__(
         self,
         label: str | Tex | MathTex | Text,
-        label_config: dict[str, Any] | None = None,
-        box_config: dict[str, Any] | None = None,
-        frame_config: dict[str, Any] | None = None,
-        **kwargs,
+        label_config: dict | None = None,
+        box_config: dict | None = None,
+        frame_config: dict | None = None,
+        **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
 
@@ -84,6 +89,7 @@ class Label(VGroup):
         frame_config = default_frame_config | (frame_config or {})
 
         # Determine the type of label and instantiate the appropriate object
+        self.rendered_label: MathTex | Tex | Text
         if isinstance(label, str):
             self.rendered_label = MathTex(label, **label_config)
         elif isinstance(label, (MathTex, Tex, Text)):
@@ -99,10 +105,6 @@ class Label(VGroup):
 
         # Add components to the VGroup
         self.add(self.background_rect, self.rendered_label, self.frame)
-
-
-if TYPE_CHECKING:
-    from typing import Any
 
 
 class LabeledLine(Line):
@@ -150,11 +152,11 @@ class LabeledLine(Line):
         self,
         label: str | Tex | MathTex | Text,
         label_position: float = 0.5,
-        label_config: dict[str, Any] | None = None,
-        box_config: dict[str, Any] | None = None,
-        frame_config: dict[str, Any] | None = None,
-        *args,
-        **kwargs,
+        label_config: dict | None = None,
+        box_config: dict | None = None,
+        frame_config: dict | None = None,
+        *args: Any,
+        **kwargs: Any,
     ) -> None:
         super().__init__(*args, **kwargs)
 
@@ -338,10 +340,10 @@ class LabeledPolygram(Polygram):
         *vertex_groups: Point3D,
         label: str | Tex | MathTex | Text,
         precision: float = 0.01,
-        label_config: dict[str, Any] | None = None,
-        box_config: dict[str, Any] | None = None,
-        frame_config: dict[str, Any] | None = None,
-        **kwargs,
+        label_config: dict | None = None,
+        box_config: dict | None = None,
+        frame_config: dict | None = None,
+        **kwargs: Any,
     ) -> None:
         # Initialize the Polygram with the vertex groups
         super().__init__(*vertex_groups, **kwargs)
@@ -356,7 +358,7 @@ class LabeledPolygram(Polygram):
 
         # Close Vertex Groups
         rings = [
-            group if np.array_equal(group[0], group[-1]) else group + [group[0]]
+            group if np.array_equal(group[0], group[-1]) else list(group) + [group[0]]
             for group in vertex_groups
         ]
 
