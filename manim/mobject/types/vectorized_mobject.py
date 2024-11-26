@@ -2613,6 +2613,7 @@ class VectorizedPoint(VMobject, metaclass=ConvertToOpenGL):
         self.set_points(np.array([new_loc]))
 
 
+# TODO: Move somewhere to match opengl
 class CurvesAsSubmobjects(VGroup):
     """Convert a curve's elements to submobjects.
 
@@ -2632,9 +2633,9 @@ class CurvesAsSubmobjects(VGroup):
 
     def __init__(self, vmobject: VMobject, **kwargs) -> None:
         super().__init__(**kwargs)
-        tuples = vmobject.get_cubic_bezier_tuples()
+        tuples = vmobject.get_bezier_tuples()
         for tup in tuples:
-            part = VMobject()
+            part = OpenGLVMobject()
             part.set_points(tup)
             part.match_style(vmobject)
             self.add(part)

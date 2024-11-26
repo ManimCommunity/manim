@@ -13,6 +13,7 @@ from manim import (
     Square,
     VDict,
     VGroup,
+    OpenGLMobject,
 )
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.constants import PI
@@ -131,23 +132,23 @@ def test_vgroup_init():
     with pytest.raises(TypeError) as init_with_float_info:
         VGroup(3.0)
     assert str(init_with_float_info.value) == (
-        "Only values of type VMobject can be added as submobjects of VGroup, "
+        "Only values of type OpenGLVMobject can be added as submobjects of VGroup, "
         "but the value 3.0 (at index 0 of parameter 0) is of type float."
     )
 
     with pytest.raises(TypeError) as init_with_mob_info:
-        VGroup(Mobject())
+        VGroup(OpenGLMobject())
     assert str(init_with_mob_info.value) == (
-        "Only values of type VMobject can be added as submobjects of VGroup, "
-        "but the value Mobject (at index 0 of parameter 0) is of type Mobject. You can try "
+        "Only values of type OpenGLVMobject can be added as submobjects of VGroup, "
+        "but the value OpenGLMobject (at index 0 of parameter 0) is of type OpenGLMobject. You can try "
         "adding this value into a Group instead."
     )
 
     with pytest.raises(TypeError) as init_with_vmob_and_mob_info:
-        VGroup(OpenGLVMobject(), Mobject())
+        VGroup(OpenGLVMobject(), OpenGLMobject())
     assert str(init_with_vmob_and_mob_info.value) == (
-        "Only values of type VMobject can be added as submobjects of VGroup, "
-        "but the value Mobject (at index 0 of parameter 1) is of type Mobject. You can try "
+        "Only values of type OpenGLVMobject can be added as submobjects of VGroup, "
+        "but the value OpenGLMobject (at index 0 of parameter 1) is of type OpenGLMobject. You can try "
         "adding this value into a Group instead."
     )
 
@@ -167,37 +168,37 @@ def test_vgroup_init_with_iterable():
     obj = VGroup(OpenGLVMobject())
     assert len(obj.submobjects) == 1
 
-    obj = VGroup(type_generator(VMobject, 38))
+    obj = VGroup(type_generator(OpenGLVMobject, 38))
     assert len(obj.submobjects) == 38
 
     obj = VGroup(
         OpenGLVMobject(),
         [OpenGLVMobject(), OpenGLVMobject()],
-        type_generator(VMobject, 38),
+        type_generator(OpenGLVMobject, 38),
     )
     assert len(obj.submobjects) == 41
 
     # A VGroup cannot be initialised with an iterable containing a Mobject
     with pytest.raises(TypeError) as init_with_mob_iterable:
-        VGroup(type_generator(Mobject, 5))
+        VGroup(type_generator(OpenGLMobject, 5))
     assert str(init_with_mob_iterable.value) == (
-        "Only values of type VMobject can be added as submobjects of VGroup, "
-        "but the value Mobject (at index 0 of parameter 0) is of type Mobject."
+        "Only values of type OpenGLVMobject can be added as submobjects of VGroup, "
+        "but the value OpenGLMobject (at index 0 of parameter 0) is of type OpenGLMobject."
     )
 
     # A VGroup cannot be initialised with an iterable containing a Mobject in any position
     with pytest.raises(TypeError) as init_with_mobs_and_vmobs_iterable:
-        VGroup(mixed_type_generator(VMobject, Mobject, [3, 5], 7))
+        VGroup(mixed_type_generator(OpenGLVMobject, OpenGLMobject, [3, 5], 7))
     assert str(init_with_mobs_and_vmobs_iterable.value) == (
-        "Only values of type VMobject can be added as submobjects of VGroup, "
-        "but the value Mobject (at index 3 of parameter 0) is of type Mobject."
+        "Only values of type OpenGLVMobject can be added as submobjects of VGroup, "
+        "but the value OpenGLMobject (at index 3 of parameter 0) is of type OpenGLMobject."
     )
 
     # A VGroup cannot be initialised with an iterable containing non VMobject's in any position
     with pytest.raises(TypeError) as init_with_float_and_vmobs_iterable:
-        VGroup(mixed_type_generator(VMobject, float, [6, 7], 9))
+        VGroup(mixed_type_generator(OpenGLVMobject, float, [6, 7], 9))
     assert str(init_with_float_and_vmobs_iterable.value) == (
-        "Only values of type VMobject can be added as submobjects of VGroup, "
+        "Only values of type OpenGLVMobject can be added as submobjects of VGroup, "
         "but the value 0.0 (at index 6 of parameter 0) is of type float."
     )
 
@@ -214,7 +215,7 @@ def test_vgroup_add():
     with pytest.raises(TypeError) as add_int_info:
         obj.add(3)
     assert str(add_int_info.value) == (
-        "Only values of type VMobject can be added as submobjects of VGroup, "
+        "Only values of type OpenGLVMobject can be added as submobjects of VGroup, "
         "but the value 3 (at index 0 of parameter 0) is of type int."
     )
     assert len(obj.submobjects) == 1
@@ -222,20 +223,20 @@ def test_vgroup_add():
     # Plain Mobjects can't be added to a VMobject or VGroup if they're not
     # VMobjects. Suggest adding them into a Group instead.
     with pytest.raises(TypeError) as add_mob_info:
-        obj.add(Mobject())
+        obj.add(OpenGLMobject())
     assert str(add_mob_info.value) == (
-        "Only values of type VMobject can be added as submobjects of VGroup, "
-        "but the value Mobject (at index 0 of parameter 0) is of type Mobject. You can try "
+        "Only values of type OpenGLVMobject can be added as submobjects of VGroup, "
+        "but the value OpenGLMobject (at index 0 of parameter 0) is of type OpenGLMobject. You can try "
         "adding this value into a Group instead."
     )
     assert len(obj.submobjects) == 1
 
     with pytest.raises(TypeError) as add_vmob_and_mob_info:
         # If only one of the added objects is not an instance of VMobject, none of them should be added
-        obj.add(OpenGLVMobject(), Mobject())
+        obj.add(OpenGLVMobject(), OpenGLMobject())
     assert str(add_vmob_and_mob_info.value) == (
-        "Only values of type VMobject can be added as submobjects of VGroup, "
-        "but the value Mobject (at index 0 of parameter 1) is of type Mobject. You can try "
+        "Only values of type OpenGLVMobject can be added as submobjects of VGroup, "
+        "but the value OpenGLMobject (at index 0 of parameter 1) is of type OpenGLMobject. You can try "
         "adding this value into a Group instead."
     )
     assert len(obj.submobjects) == 1
@@ -397,7 +398,7 @@ def test_vgroup_item_assignment_only_allows_vmobjects():
     with pytest.raises(TypeError) as assign_str_info:
         vgroup[0] = "invalid object"
     assert str(assign_str_info.value) == (
-        "Only values of type VMobject can be added as submobjects of VGroup, "
+        "Only values of type OpenGLVMobject can be added as submobjects of VGroup, "
         "but the value invalid object (at index 0) is of type str."
     )
 
@@ -419,7 +420,7 @@ def test_trim_dummy():
     o2.add_line_to(np.array([1, 2, 0]))
 
     def path_length(p):
-        return len(p) // o.n_points_per_cubic_curve
+        return len(p) // o.n_points_per_curve
 
     assert tuple(map(path_length, o.get_subpaths())) == (3, 1)
     assert tuple(map(path_length, o2.get_subpaths())) == (1, 2)
@@ -436,7 +437,7 @@ def test_bounded_become():
     """
     o = OpenGLVMobject()
 
-    def draw_circle(m: VMobject, n_points, x=0, y=0, r=1):
+    def draw_circle(m: OpenGLVMobject, n_points, x=0, y=0, r=1):
         center = np.array([x, y, 0])
         m.start_new_path(center + [r, 0, 0])
         for i in range(1, n_points + 1):
