@@ -152,9 +152,9 @@ class LabeledLine(Line):
         self,
         label: str | Tex | MathTex | Text,
         label_position: float = 0.5,
-        label_config: dict | None = None,
-        box_config: dict | None = None,
-        frame_config: dict | None = None,
+        label_config: dict[str, Any] | None = None,
+        box_config: dict[str, Any] | None = None,
+        frame_config: dict[str, Any] | None = None,
         *args: Any,
         **kwargs: Any,
     ) -> None:
