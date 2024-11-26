@@ -716,6 +716,63 @@ class OpenGLMobject:
         # Remove list redundancies while preserving order
         return list(dict.fromkeys(ancestors))
 
+    def _assert_valid_submobjects(self, submobjects: Iterable[OpenGLMobject]) -> Self:
+        """Check that all submobjects are actually instances of
+        :class:`Mobject`, and that none of them is ``self`` (a
+        :class:`Mobject` cannot contain itself).
+
+        This is an auxiliary function called when adding Mobjects to the
+        :attr:`submobjects` list.
+
+        This function is intended to be overridden by subclasses such as
+        :class:`VMobject`, which should assert that only other VMobjects
+        may be added into it.
+
+        Parameters
+        ----------
+        submobjects
+            The list containing values to validate.
+
+        Returns
+        -------
+        :class:`Mobject`
+            The Mobject itself.
+
+        Raises
+        ------
+        TypeError
+            If any of the values in `submobjects` is not a :class:`Mobject`.
+        ValueError
+            If there was an attempt to add a :class:`Mobject` as its own
+            submobject.
+        """
+        return self._assert_valid_submobjects_internal(submobjects, OpenGLMobject)
+
+    def _assert_valid_submobjects_internal(
+        self, submobjects: Iterable[OpenGLMobject], mob_class: type[OpenGLMobject]
+    ) -> Self:
+        for i, submob in enumerate(submobjects):
+            if not isinstance(submob, mob_class):
+                error_message = (
+                    f"Only values of type {mob_class.__name__} can be added "
+                    f"as submobjects of {type(self).__name__}, but the value "
+                    f"{submob} (at index {i}) is of type "
+                    f"{type(submob).__name__}."
+                )
+                # Intended for subclasses such as VMobject, which
+                # cannot have regular Mobjects as submobjects
+                if isinstance(submob, OpenGLMobject):
+                    error_message += (
+                        " You can try adding this value into a Group instead."
+                    )
+                raise TypeError(error_message)
+            if submob is self:
+                raise ValueError(
+                    f"Cannot add {type(self).__name__} as a submobject of "
+                    f"itself (at index {i})."
+                )
+        return self
+
     def add(
         self,
         *mobjects: OpenGLMobject,
@@ -778,9 +835,8 @@ class OpenGLMobject:
             ValueError: OpenGLMobject cannot contain self
 
         """
+        self._assert_valid_submobjects(mobjects)
         for mobject in mobjects:
-            if not isinstance(mobject, OpenGLMobject):
-                raise TypeError("All submobjects must be of type OpenGLMobject")
             if mobject not in self.submobjects:
                 self.submobjects.append(mobject)
             if self not in mobject.parents:
