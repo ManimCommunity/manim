@@ -9,21 +9,21 @@ if TYPE_CHECKING:
     from manim.typing import PointND, PointND_Array
 
 
-class Point:
+class QuickHullPoint:
     def __init__(self, coordinates: PointND_Array) -> None:
         self.coordinates = coordinates
 
     def __hash__(self) -> int:
         return hash(self.coordinates.tobytes())
 
-    def __eq__(self, other: Point) -> bool:
+    def __eq__(self, other: QuickHullPoint) -> bool:
         return np.array_equal(self.coordinates, other.coordinates)
 
 
 class SubFacet:
     def __init__(self, coordinates: PointND_Array) -> None:
         self.coordinates = coordinates
-        self.points = frozenset(Point(c) for c in coordinates)
+        self.points = frozenset(QuickHullPoint(c) for c in coordinates)
 
     def __hash__(self) -> int:
         return hash(self.points)

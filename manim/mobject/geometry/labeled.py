@@ -36,7 +36,7 @@ class Label(VGroup):
         Label that will be displayed.
     label_config
         A dictionary containing the configuration for the label.
-        This is only applied if `label` is of type `str`.
+        This is only applied if ``label`` is of type ``str``.
     box_config
         A dictionary containing the configuration for the background box.
     frame_config
@@ -64,9 +64,9 @@ class Label(VGroup):
     def __init__(
         self,
         label: str | Tex | MathTex | Text,
-        label_config: dict | None = None,
-        box_config: dict | None = None,
-        frame_config: dict | None = None,
+        label_config: dict[str, Any] | None = None,
+        box_config: dict[str, Any] | None = None,
+        frame_config: dict[str, Any] | None = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
@@ -118,7 +118,7 @@ class LabeledLine(Line):
         A ratio in the range [0-1] to indicate the position of the label with respect to the length of the line. Default value is 0.5.
     label_config
         A dictionary containing the configuration for the label.
-        This is only applied if `label` is of type `str`.
+        This is only applied if ``label`` is of type ``str``.
     box_config
         A dictionary containing the configuration for the background box.
     frame_config
@@ -189,7 +189,7 @@ class LabeledArrow(LabeledLine, Arrow):
         A ratio in the range [0-1] to indicate the position of the label with respect to the length of the line. Default value is 0.5.
     label_config
         A dictionary containing the configuration for the label.
-        This is only applied if `label` is of type `str`.
+        This is only applied if ``label`` is of type ``str``.
     box_config
         A dictionary containing the configuration for the background box.
     frame_config
@@ -225,7 +225,7 @@ class LabeledPolygram(Polygram):
     Parameters
     ----------
     vertex_groups
-        Vertices passed to Polygram constructor.
+        Vertices passed to the :class:`~.Polygram` constructor.
     label
         Label that will be displayed on the Polygram.
     precision
@@ -340,9 +340,9 @@ class LabeledPolygram(Polygram):
         *vertex_groups: Point3D,
         label: str | Tex | MathTex | Text,
         precision: float = 0.01,
-        label_config: dict | None = None,
-        box_config: dict | None = None,
-        frame_config: dict | None = None,
+        label_config: dict[str, Any] | None = None,
+        box_config: dict[str, Any] | None = None,
+        frame_config: dict[str, Any] | None = None,
         **kwargs: Any,
     ) -> None:
         # Initialize the Polygram with the vertex groups
