@@ -4,9 +4,9 @@ from __future__ import annotations
 
 __all__ = ["Label", "LabeledLine", "LabeledArrow", "LabeledPolygram"]
 
-import numpy as np
-
 from typing import TYPE_CHECKING
+
+import numpy as np
 
 from manim.constants import *
 from manim.mobject.geometry.line import Arrow, Line
@@ -99,6 +99,7 @@ class Label(VGroup):
 
         # Add components to the VGroup
         self.add(self.background_rect, self.rendered_label, self.frame)
+
 
 if TYPE_CHECKING:
     from typing import Any
