@@ -357,6 +357,44 @@ Please refer to the documentation of the function you are using for
 further type information.
 """
 
+InternalPointND: TypeAlias = npt.NDArray[np.float64]
+"""``shape: (N,)``
+
+An N-dimensional point: ``[float, float, ..., float]``.
+
+.. note::
+    This type alias is mostly made available for internal use, and
+    only includes the NumPy type.
+"""
+
+# Type alias for a flexible N-dimensional point
+PointND: TypeAlias = Union[InternalPointND, tuple[float, ...]]
+"""``shape: (N,)``
+
+An N-dimensional point: ``[float, float, ..., float]``.
+"""
+
+# Type alias for an array of N-dimensional points (internal use)
+InternalPointND_Array: TypeAlias = npt.NDArray[np.float64]
+"""``shape: (M, N)``
+
+An array of N-dimensional points: ``[[float, float, ..., float], ...]``.
+
+.. note::
+    This type alias is mostly made available for internal use, and
+    only includes the NumPy type.
+"""
+
+# Type alias for a flexible array of N-dimensional points
+PointND_Array: TypeAlias = Union[InternalPointND_Array, tuple[PointND, ...]]
+"""``shape: (M, N)``
+
+An array of N-dimensional points: ``[[float, float, ..., float], ...]``.
+
+Please refer to the documentation of the function you are using for
+further type information.
+"""
+
 
 """
 [CATEGORY]

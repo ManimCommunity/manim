@@ -1,11 +1,16 @@
 #!/usr/bin/env python
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import numpy as np
+
+if TYPE_CHECKING:
+    from manim.typing import PointND, PointND_Array
 
 
 class Point:
-    def __init__(self, coordinates: np.ndarray) -> None:
+    def __init__(self, coordinates: PointND_Array) -> None:
         self.coordinates = coordinates
 
     def __hash__(self) -> int:
@@ -16,7 +21,7 @@ class Point:
 
 
 class SubFacet:
-    def __init__(self, coordinates: np.ndarray) -> None:
+    def __init__(self, coordinates: PointND_Array) -> None:
         self.coordinates = coordinates
         self.points = frozenset(Point(c) for c in coordinates)
 
@@ -28,7 +33,7 @@ class SubFacet:
 
 
 class Facet:
-    def __init__(self, coordinates: np.ndarray, internal: np.ndarray) -> None:
+    def __init__(self, coordinates: PointND_Array, internal: PointND) -> None:
         self.coordinates = coordinates
         self.center = np.mean(coordinates, axis=0)
         self.normal = self.compute_normal(internal)
@@ -37,7 +42,7 @@ class Facet:
             for i in range(self.coordinates.shape[0])
         )
 
-    def compute_normal(self, internal: np.ndarray) -> np.ndarray:
+    def compute_normal(self, internal: PointND) -> PointND:
         centered = self.coordinates - self.center
         _, _, vh = np.linalg.svd(centered)
         normal = vh[-1, :]
@@ -68,37 +73,37 @@ class QuickHull:
 
     Parameters
     ----------
-    tolerance: float, optional
+    tolerance
         A tolerance threshold for determining when points lie on the convex hull (default is 1e-5).
 
     Attributes
     ----------
-    facets: list[Facet]
+    facets
         List of facets considered.
-    removed: set[Facet]
+    removed
         Set of internal facets that have been removed from the hull during the construction process.
-    outside: dict[Facet, tuple[np.ndarray, np.ndarray | None]]
+    outside
         Dictionary mapping each facet to its outside points and eye point.
-    neighbors: dict[SubFacet, set[Facet]]
+    neighbors
         Mapping of subfacets to their neighboring facets. Each subfacet links precisely two neighbors.
-    unclaimed: np.ndarray | None
+    unclaimed
         Points that have not yet been classified as inside or outside the current hull.
-    internal: np.ndarray | None
+    internal
         An internal point (i.e., the center of the initial simplex) used as a reference during hull construction.
-    tolerance: float
+    tolerance
         The tolerance used to determine if points are considered outside the current hull.
     """
 
     def __init__(self, tolerance: float = 1e-5) -> None:
         self.facets: list[Facet] = []
         self.removed: set[Facet] = set()
-        self.outside: dict[Facet, tuple[np.ndarray, np.ndarray | None]] = {}
+        self.outside: dict[Facet, tuple[PointND_Array, PointND | None]] = {}
         self.neighbors: dict[SubFacet, set[Facet]] = {}
-        self.unclaimed: np.ndarray | None = None
-        self.internal: np.ndarray | None = None
+        self.unclaimed: PointND_Array | None = None
+        self.internal: PointND | None = None
         self.tolerance = tolerance
 
-    def initialize(self, points: np.ndarray) -> None:
+    def initialize(self, points: PointND_Array) -> None:
         # Sample Points
         simplex = points[
             np.random.choice(points.shape[0], points.shape[1] + 1, replace=False)
@@ -133,14 +138,12 @@ class QuickHull:
         self.outside[facet] = (outside, eye)
         self.unclaimed = self.unclaimed[~mask]
 
-    def compute_horizon(self, eye: np.ndarray, start_facet: Facet) -> Horizon:
+    def compute_horizon(self, eye: PointND, start_facet: Facet) -> Horizon:
         horizon = Horizon()
         self._recursive_horizon(eye, start_facet, horizon)
         return horizon
 
-    def _recursive_horizon(
-        self, eye: np.ndarray, facet: Facet, horizon: Horizon
-    ) -> int:
+    def _recursive_horizon(self, eye: PointND, facet: Facet, horizon: Horizon) -> int:
         visible = np.dot(facet.normal, eye - facet.center) > 0
         if not visible:
             return False
@@ -157,7 +160,7 @@ class QuickHull:
                     horizon.boundary.append(subfacet)
             return True
 
-    def build(self, points: np.ndarray):
+    def build(self, points: PointND_Array):
         num, dim = points.shape
         if (dim == 0) or (num < dim + 1):
             raise ValueError("Not enough points supplied to build Convex Hull!")

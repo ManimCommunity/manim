@@ -16,27 +16,24 @@ from manim.mobject.geometry.shape_matchers import (
 from manim.mobject.text.tex_mobject import MathTex, Tex
 from manim.mobject.text.text_mobject import Text
 from manim.mobject.types.vectorized_mobject import VGroup
-from manim.utils.color import WHITE, ManimColor, ParsableManimColor
-from manim.utils.polylabel import PolyLabel
+from manim.utils.color import WHITE
+from manim.utils.polylabel import polylabel
 
 
 class Label(VGroup):
-    """A Label consisting of text and frame
+    """A Label consisting of text surrounded by a frame.
 
     Parameters
     ----------
-    label : str | Tex | MathTex | Text
-        Label that will be displayed on the line.
-    font_size : float | optional
-        Control font size for the label. This parameter is only used when `label` is of type `str`.
-    label_color: ParsableManimColor | optional
-        The color of the label's text. This parameter is only used when `label` is of type `str`.
-    label_frame : Bool | optional
-        Add a `SurroundingRectangle` frame to the label box.
-    frame_fill_color : ParsableManimColor | optional
-        Background color to fill the label box. If no value is provided, the background color of the canvas will be used.
-    frame_fill_opacity : float | optional
-        Determine the opacity of the label box by passing a value in the range [0-1], where 0 indicates complete transparency and 1 means full opacity.
+    label
+        Label that will be displayed.
+    label_config
+        A dictionary containing the configuration for the label.
+        This is only applied if `label` is of type `str`.
+    box_config
+        A dictionary containing the configuration for the background box.
+    frame_config
+         A dictionary containing the configuration for the frame.
 
     Examples
     --------
@@ -47,9 +44,11 @@ class Label(VGroup):
         class LabelExample(Scene):
             def construct(self):
                 label = Label(
-                    label          = Text('Label Text', font='sans-serif'),
-                    label_color    = WHITE,
-                    label_frame    = True
+                    label=Text('Label Text', font='sans-serif'),
+                    box_config = {
+                        "color" : BLUE,
+                        "fill_opacity" : 0.75
+                    }
                 )
                 label.scale(3)
                 self.add(label)
@@ -58,46 +57,46 @@ class Label(VGroup):
     def __init__(
         self,
         label: str | Tex | MathTex | Text,
-        font_size: float = DEFAULT_FONT_SIZE,
-        label_color: ParsableManimColor = WHITE,
-        label_frame: bool = True,
-        frame_fill_color: ParsableManimColor = None,
-        frame_fill_opacity: float = 1,
+        label_config: dict[str, Any] | None = None,
+        box_config: dict[str, Any] | None = None,
+        frame_config: dict[str, Any] | None = None,
         **kwargs,
     ) -> None:
         super().__init__(**kwargs)
 
-        label_color = ManimColor(label_color)
-        frame_fill_color = ManimColor(frame_fill_color)
+        # Setup Defaults
+        default_label_config = {"color": WHITE, "font_size": DEFAULT_FONT_SIZE}
+
+        default_box_config = {
+            "color": None,
+            "buff": 0.05,
+            "fill_opacity": 1,
+            "stroke_width": 0.5,
+        }
+
+        default_frame_config = {"color": WHITE, "buff": 0.05, "stroke_width": 0.5}
+
+        # Merge Defaults
+        label_config = default_label_config | (label_config or {})
+        box_config = default_box_config | (box_config or {})
+        frame_config = default_frame_config | (frame_config or {})
 
         # Determine the type of label and instantiate the appropriate object
         if isinstance(label, str):
-            self.rendered_label = MathTex(label, color=label_color, font_size=font_size)
+            self.rendered_label = MathTex(label, **label_config)
         elif isinstance(label, (MathTex, Tex, Text)):
             self.rendered_label = label
         else:
-            raise ValueError("Unsupported label type. Must be MathTex, Tex, or Text.")
+            raise TypeError("Unsupported label type. Must be MathTex, Tex, or Text.")
 
-        # Add background box
-        self.background_rect = BackgroundRectangle(
-            self.rendered_label,
-            buff=0.05,
-            color=frame_fill_color,
-            fill_opacity=frame_fill_opacity,
-            stroke_width=0.5,
-        )
+        # Add a background box
+        self.background_rect = BackgroundRectangle(self.rendered_label, **box_config)
 
-        # Optionally add a frame around the label
-        self.frame = None
-        if label_frame:
-            self.frame = SurroundingRectangle(
-                self.rendered_label, buff=0.05, color=label_color, stroke_width=0.5
-            )
+        # Add a frame around the label
+        self.frame = SurroundingRectangle(self.rendered_label, **frame_config)
 
         # Add components to the VGroup
-        self.add(self.background_rect, self.rendered_label)
-        if self.frame:
-            self.add(self.frame)
+        self.add(self.background_rect, self.rendered_label, self.frame)
 
 
 class LabeledLine(Line):
@@ -105,37 +104,35 @@ class LabeledLine(Line):
 
     Parameters
     ----------
-    label : str | Tex | MathTex | Text
+    label
         Label that will be displayed on the line.
-    label_position : float | optional
+    label_position
         A ratio in the range [0-1] to indicate the position of the label with respect to the length of the line. Default value is 0.5.
-    font_size : float | optional
-        Control font size for the label. This parameter is only used when `label` is of type `str`.
-    label_color: ParsableManimColor | optional
-        The color of the label's text. This parameter is only used when `label` is of type `str`.
-    label_frame : Bool | optional
-        Add a `SurroundingRectangle` frame to the label box.
-    frame_fill_color : ParsableManimColor | optional
-        Background color to fill the label box. If no value is provided, the background color of the canvas will be used.
-    frame_fill_opacity : float | optional
-        Determine the opacity of the label box by passing a value in the range [0-1], where 0 indicates complete transparency and 1 means full opacity.
+    label_config
+        A dictionary containing the configuration for the label.
+        This is only applied if `label` is of type `str`.
+    box_config
+        A dictionary containing the configuration for the background box.
+    frame_config
+         A dictionary containing the configuration for the frame.
 
-    .. seealso::
-        :class:`LabeledArrow`
+        .. seealso::
+            :class:`LabeledArrow`
 
     Examples
     --------
     .. manim:: LabeledLineExample
         :save_last_frame:
+        :quality: high
 
         class LabeledLineExample(Scene):
             def construct(self):
                 line = LabeledLine(
                     label          = '0.5',
                     label_position = 0.8,
-                    font_size      = 20,
-                    label_color    = WHITE,
-                    label_frame    = True,
+                    label_config = {
+                        "font_size" : 20
+                    },
                     start=LEFT+DOWN,
                     end=RIGHT+UP)
 
@@ -147,11 +144,9 @@ class LabeledLine(Line):
         self,
         label: str | Tex | MathTex | Text,
         label_position: float = 0.5,
-        font_size: float = DEFAULT_FONT_SIZE,
-        label_color: ParsableManimColor = WHITE,
-        label_frame: bool = True,
-        frame_fill_color: ParsableManimColor = None,
-        frame_fill_opacity: float = 1,
+        label_config: dict[str, Any] | None = None,
+        box_config: dict[str, Any] | None = None,
+        frame_config: dict[str, Any] | None = None,
         *args,
         **kwargs,
     ) -> None:
@@ -160,11 +155,9 @@ class LabeledLine(Line):
         # Create Label
         self.label = Label(
             label=label,
-            font_size=font_size,
-            label_color=label_color,
-            label_frame=label_frame,
-            frame_fill_color=frame_fill_color,
-            frame_fill_opacity=frame_fill_opacity,
+            label_config=label_config,
+            box_config=box_config,
+            frame_config=frame_config,
         )
 
         # Compute Label Position
@@ -182,29 +175,26 @@ class LabeledArrow(LabeledLine, Arrow):
 
     Parameters
     ----------
-    label : str | Tex | MathTex | Text
-        Label that will be displayed on the line.
-    label_position : float | optional
+    label
+        Label that will be displayed on the Arrow.
+    label_position
         A ratio in the range [0-1] to indicate the position of the label with respect to the length of the line. Default value is 0.5.
-    font_size : float | optional
-        Control font size for the label. This parameter is only used when `label` is of type `str`.
-    label_color: ParsableManimColor | optional
-        The color of the label's text. This parameter is only used when `label` is of type `str`.
-    label_frame : Bool | optional
-        Add a `SurroundingRectangle` frame to the label box.
-    frame_fill_color : ParsableManimColor | optional
-        Background color to fill the label box. If no value is provided, the background color of the canvas will be used.
-    frame_fill_opacity : float | optional
-        Determine the opacity of the label box by passing a value in the range [0-1], where 0 indicates complete transparency and 1 means full opacity.
+    label_config
+        A dictionary containing the configuration for the label.
+        This is only applied if `label` is of type `str`.
+    box_config
+        A dictionary containing the configuration for the background box.
+    frame_config
+         A dictionary containing the configuration for the frame.
 
-
-    .. seealso::
-        :class:`LabeledLine`
+        .. seealso::
+            :class:`LabeledLine`
 
     Examples
     --------
     .. manim:: LabeledArrowExample
         :save_last_frame:
+        :quality: high
 
         class LabeledArrowExample(Scene):
             def construct(self):
@@ -226,30 +216,28 @@ class LabeledPolygram(Polygram):
 
     Parameters
     ----------
-    label : str | Tex | MathTex | Text
-        Label that will be displayed on the line.
-    precision : float | optional
+    vertex_groups
+        Vertices passed to Polygram constructor.
+    label
+        Label that will be displayed on the Polygram.
+    precision
         The precision used by the PolyLabel algorithm.
-    font_size : float | optional
-        Control font size for the label. This parameter is only used when `label` is of type `str`.
-    label_color: ParsableManimColor | optional
-        The color of the label's text. This parameter is only used when `label` is of type `str`.
-    label_frame : Bool | optional
-        Add a `SurroundingRectangle` frame to the label box.
-    frame_fill_color : ParsableManimColor | optional
-        Background color to fill the label box. If no value is provided, the background color of the canvas will be used.
-    frame_fill_opacity : float | optional
-        Determine the opacity of the label box by passing a value in the range [0-1], where 0 indicates complete transparency and 1 means full opacity.
+    label_config
+        A dictionary containing the configuration for the label.
+        This is only applied if `label` is of type `str`.
+    box_config
+        A dictionary containing the configuration for the background box.
+    frame_config
+         A dictionary containing the configuration for the frame.
 
+        .. note::
+            The PolyLabel Algorithm expects each vertex group to form a closed ring.
+            If the input is open, :class:`LabeledPolygram` will attempt to close it.
+            This may cause the polygon to intersect itself leading to unexpected results.
 
-    .. note::
-        The PolyLabel Algorithm expects each vertex group to form a closed ring.
-        If the input is open, LabeledPolygram will attempt to close it.
-        This may cause the polygon to intersect itself leading to unexpected results.
-
-    .. tip::
-        Make sure the precision corresponds to the scale of your inputs!
-        For instance, if the bounding box of your polygon stretches from 0 to 10,000, a precision of 1.0 or 10.0 should be sufficient.
+        .. tip::
+            Make sure the precision corresponds to the scale of your inputs!
+            For instance, if the bounding box of your polygon stretches from 0 to 10,000, a precision of 1.0 or 10.0 should be sufficient.
 
     Examples
     --------
@@ -344,11 +332,9 @@ class LabeledPolygram(Polygram):
         *vertex_groups: Point3D,
         label: str | Tex | MathTex | Text,
         precision: float = 0.01,
-        font_size: float = DEFAULT_FONT_SIZE,
-        label_color: ParsableManimColor = WHITE,
-        label_frame: bool = True,
-        frame_fill_color: ParsableManimColor = None,
-        frame_fill_opacity: float = 1,
+        label_config: dict[str, Any] | None = None,
+        box_config: dict[str, Any] | None = None,
+        frame_config: dict[str, Any] | None = None,
         **kwargs,
     ) -> None:
         # Initialize the Polygram with the vertex groups
@@ -357,11 +343,9 @@ class LabeledPolygram(Polygram):
         # Create Label
         self.label = Label(
             label=label,
-            font_size=font_size,
-            label_color=label_color,
-            label_frame=label_frame,
-            frame_fill_color=frame_fill_color,
-            frame_fill_opacity=frame_fill_opacity,
+            label_config=label_config,
+            box_config=box_config,
+            frame_config=frame_config,
         )
 
         # Close Vertex Groups
@@ -371,7 +355,7 @@ class LabeledPolygram(Polygram):
         ]
 
         # Compute the Pole of Inaccessibility
-        cell = PolyLabel(rings, precision=precision)
+        cell = polylabel(rings, precision=precision)
         self.pole, self.radius = np.pad(cell.c, (0, 1), "constant"), cell.d
 
         # Position the label at the pole

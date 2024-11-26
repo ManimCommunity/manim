@@ -7,19 +7,20 @@ from typing import TYPE_CHECKING
 import numpy as np
 
 if TYPE_CHECKING:
-    from manim.typing import Point3D
+    from manim.typing import Point3D, Point3D_Array
 
 
 class Polygon:
-    def __init__(self, rings: list[np.ndarray]) -> None:
-        """
-        Initializes the Polygon with the given rings.
+    """
+    Initializes the Polygon with the given rings.
 
-        Parameters
-        ----------
-        rings : list[np.ndarray]
-            List of arrays, each representing a polygonal ring
-        """
+    Parameters
+    ----------
+    rings
+        A collection of closed polygonal ring.
+    """
+
+    def __init__(self, rings: Point3D_Array) -> None:
         # Flatten Array
         csum = np.cumsum([ring.shape[0] for ring in rings])
         self.array = np.concatenate(rings, axis=0)
@@ -42,14 +43,14 @@ class Polygon:
             cy = np.sum((y + yr) * factor) / (6.0 * self.area)
             self.centroid = np.array([cx, cy])
 
-    def compute_distance(self, point: np.ndarray) -> float:
+    def compute_distance(self, point: Point3D) -> float:
         """Compute the minimum distance from a point to the polygon."""
         scalars = np.einsum("ij,ij->i", self.norm, point - self.start)
         clips = np.clip(scalars, 0, 1).reshape(-1, 1)
         d = np.min(np.linalg.norm(self.start + self.diff * clips - point, axis=1))
         return d if self.inside(point) else -d
 
-    def inside(self, point: np.ndarray) -> bool:
+    def inside(self, point: Point3D) -> bool:
         """Check if a point is inside the polygon."""
         # Views
         px, py = point
@@ -63,19 +64,20 @@ class Polygon:
 
 
 class Cell:
-    def __init__(self, c: np.ndarray, h: float, polygon: Polygon) -> None:
-        """
-        Initializes the Cell, a square in the mesh covering the polygon.
+    """
+    A square in a mesh covering the :class:`~.Polygon` passed as an argument.
 
-        Parameters
-        ----------
-        c : np.ndarray
-            Center coordinates of the Cell.
-        h : float
-            Half-Size of the Cell.
-        polygon : Polygon
-            Polygon object for which the distance is computed.
-        """
+    Parameters
+    ----------
+    c
+        Center coordinates of the Cell.
+    h
+        Half-Size of the Cell.
+    polygon
+        :class:`~.Polygon` object for which the distance is computed.
+    """
+
+    def __init__(self, c: Point3D, h: float, polygon: Polygon) -> None:
         self.c = c
         self.h = h
         self.d = polygon.compute_distance(self.c)
@@ -94,17 +96,17 @@ class Cell:
         return self.d >= other.d
 
 
-def PolyLabel(rings: list[list[Point3D]], precision: float = 0.01) -> Cell:
+def polylabel(rings: Point3D_Array, precision: float = 0.01) -> Cell:
     """
     Finds the pole of inaccessibility (the point that is farthest from the edges of the polygon)
     using an iterative grid-based approach.
 
     Parameters
     ----------
-    rings : list[list[Point3D]]
+    rings
         A list of lists, where each list is a sequence of points representing the rings of the polygon.
         Typically, multiple rings indicate holes in the polygon.
-    precision : float, optional
+    precision
         The precision of the result (default is 0.01).
 
     Returns
