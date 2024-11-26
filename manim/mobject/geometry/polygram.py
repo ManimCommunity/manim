@@ -41,6 +41,7 @@ if TYPE_CHECKING:
         InternalPoint3D,
         InternalPoint3D_Array,
         Point3D,
+        Point3D_Array,
     )
     from manim.utils.color import ParsableManimColor
 
@@ -82,7 +83,7 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
 
     def __init__(
         self,
-        *vertex_groups: Point3D,
+        *vertex_groups: Point3D_Array,
         color: ParsableManimColor = BLUE,
         **kwargs: Any,
     ):

@@ -24,7 +24,7 @@ from manim.utils.polylabel import polylabel
 if TYPE_CHECKING:
     from typing import Any
 
-    from manim.typing import Point3D
+    from manim.typing import Point3D_Array
 
 
 class Label(VGroup):
@@ -72,16 +72,23 @@ class Label(VGroup):
         super().__init__(**kwargs)
 
         # Setup Defaults
-        default_label_config = {"color": WHITE, "font_size": DEFAULT_FONT_SIZE}
+        default_label_config: dict[str, Any] = {
+            "color": WHITE,
+            "font_size": DEFAULT_FONT_SIZE,
+        }
 
-        default_box_config = {
+        default_box_config: dict[str, Any] = {
             "color": None,
             "buff": 0.05,
             "fill_opacity": 1,
             "stroke_width": 0.5,
         }
 
-        default_frame_config = {"color": WHITE, "buff": 0.05, "stroke_width": 0.5}
+        default_frame_config: dict[str, Any] = {
+            "color": WHITE,
+            "buff": 0.05,
+            "stroke_width": 0.5,
+        }
 
         # Merge Defaults
         label_config = default_label_config | (label_config or {})
@@ -337,7 +344,7 @@ class LabeledPolygram(Polygram):
 
     def __init__(
         self,
-        *vertex_groups: Point3D,
+        *vertex_groups: Point3D_Array,
         label: str | Tex | MathTex | Text,
         precision: float = 0.01,
         label_config: dict[str, Any] | None = None,
