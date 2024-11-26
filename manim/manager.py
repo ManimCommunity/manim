@@ -78,7 +78,6 @@ class Manager(Generic[Scene_co]):
 
         # this must be done AFTER instantiating a window
         self.renderer = self.create_renderer()
-        self.renderer.use_window()
 
         self.file_writer: FileWriterProtocol = self.create_file_writer()
         self._write_files = config.write_to_movie
