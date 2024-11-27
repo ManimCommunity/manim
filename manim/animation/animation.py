@@ -144,7 +144,6 @@ class Animation:
         **kwargs,
     ) -> None:
         self._typecheck_input(mobject)
-        self._run_time: float = run_time
         self.run_time: float = run_time
         self.rate_func: Callable[[float], float] = rate_func
         self.reverse_rate_function: bool = reverse_rate_function
@@ -647,7 +646,7 @@ class Add(Animation):
     Parameters
     ----------
     mobjects
-        One :class:`Mobject` or more to add to a scene.
+        One :class:`~.Mobject` or more to add to a scene.
     run_time
         The duration of the animation after adding the ``mobjects``. Defaults
         to 0, which means this is an instant animation without extra wait time
