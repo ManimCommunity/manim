@@ -60,6 +60,7 @@ class AnimationGroup(Animation):
         **kwargs,
     ) -> None:
         arg_anim = flatten_iterable_parameters(animations)
+
         self.animations = [prepare_animation(anim) for anim in arg_anim]
         self.rate_func = rate_func
         self.group = group
@@ -87,6 +88,8 @@ class AnimationGroup(Animation):
             )
 
         for anim in self.animations:
+            if self.introducer:
+                anim.introducer = True
             anim.begin()
             self.process_subanimation_buffer(anim.buffer)
 
@@ -100,6 +103,9 @@ class AnimationGroup(Animation):
         self.anims_begun[:] = True
         self.anims_finished[:] = True
         for anim in self.animations:
+            if self.remover:
+                anim.remover = True
+            anim.finish()
             self.process_subanimation_buffer(anim.buffer)
 
         if self.suspend_mobject_updating:

@@ -62,7 +62,6 @@ def test_succession_in_succession_timing():
     )
     assert nested_succession.get_run_time() == 5.0
     assert succession.get_run_time() == 10.0
-    succession._setup_scene(MagicMock())
     succession.begin()
     succession.interpolate(0.1)
     assert succession.active_index == 0
