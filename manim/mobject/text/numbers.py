@@ -232,10 +232,8 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         if mob_class is None:
             mob_class = self.mob_class
 
-        _mob_class = self.mob_class if mob_class is None else mob_class
-
         if string not in string_to_mob_map:
-            string_to_mob_map[string] = _mob_class(string, **kwargs)
+            string_to_mob_map[string] = mob_class(string, **kwargs)
         mob = string_to_mob_map[string].copy()
         mob.font_size = self._font_size
         return mob
@@ -346,7 +344,7 @@ class Integer(DecimalNumber):
 
     def __init__(
         self,
-        number: float | complex = 0,
+        number: float = 0,
         num_decimal_places: int = 0,
         **kwargs: Any,
     ) -> None:

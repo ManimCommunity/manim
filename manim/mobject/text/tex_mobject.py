@@ -104,7 +104,7 @@ class SingleStringMathTex(SVGMobject):
         self.initial_height: float = self.height
 
         if height is None:
-            self.font_size: float = self._font_size
+            self.font_size = self._font_size
 
         if self.organize_left_to_right:
             self._organize_submobjects_left_to_right()
@@ -323,14 +323,11 @@ class MathTex(SingleStringMathTex):
         # Separate out any strings specified in the isolate
         # or tex_to_color_map lists.
         patterns: list[str] = self.substrings_to_isolate.copy()
-        for key in self.tex_to_color_map:
-            try:
-                # If the given key behaves like tex_strings
-                key + ""  # type: ignore [operator]
-                patterns.append(key)  # type: ignore [arg-type]
-            except TypeError:
-                # If the given key is a tuple
-                patterns.extend(key)
+        for tex_or_texes in self.tex_to_color_map:
+            if isinstance(tex_or_texes, str):
+                patterns.append(tex_or_texes)
+            else:
+                patterns += tex_or_texes
 
         patterns = [f"({re.escape(pattern)})" for pattern in patterns]
         pattern = "|".join(patterns)
@@ -374,7 +371,7 @@ class MathTex(SingleStringMathTex):
     def get_parts_by_tex(
         self, tex_string: str, substring: bool = True, case_sensitive: bool = True
     ) -> VGroup:
-        def test(tex1: str, tex2: str) -> bool:
+        def compare_tex(tex1: str, tex2: str) -> bool:
             if not case_sensitive:
                 tex1 = tex1.lower()
                 tex2 = tex2.lower()
@@ -384,7 +381,11 @@ class MathTex(SingleStringMathTex):
                 return tex1 == tex2
 
         return VGroup(
-            *(m for m in self.submobjects if test(tex_string, m.get_tex_string()))
+            *(
+                m
+                for m in self.submobjects
+                if compare_tex(tex_string, m.get_tex_string())
+            )
         )
 
     def get_part_by_tex(
@@ -430,17 +431,14 @@ class MathTex(SingleStringMathTex):
 
     def set_color_by_tex_to_color_map(
         self,
-        texes_to_color_map: dict[str | Iterable[str], ParsableManimColor],
+        tex_to_color_map: dict[str | Iterable[str], ParsableManimColor],
         **kwargs: Any,
     ) -> Self:
-        for texes, color in list(texes_to_color_map.items()):
-            try:
-                # If the given key behaves like tex_strings
-                texes + ""  # type: ignore [operator]
-                self.set_color_by_tex(texes, color, **kwargs)  # type: ignore [arg-type]
-            except TypeError:
-                # If the given key is a tuple
-                for tex in texes:
+        for tex_or_texes, color in tex_to_color_map.items():
+            if isinstance(tex_or_texes, str):
+                self.set_color_by_tex(tex_or_texes, color, **kwargs)
+            else:
+                for tex in tex_or_texes:
                     self.set_color_by_tex(tex, color, **kwargs)
         return self
 
@@ -478,7 +476,7 @@ class Tex(MathTex):
 
     def __init__(
         self,
-        *tex_strings: Any,
+        *tex_strings: str,
         arg_separator: str = "",
         tex_environment: str = "center",
         **kwargs: Any,
