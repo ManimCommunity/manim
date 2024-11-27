@@ -2710,6 +2710,9 @@ class OpenGLMobject:
         family2 = mobject.get_family()
         for sm1, sm2 in zip(family1, family2):
             sm1.depth_test = sm2.depth_test
+            sm1.points = (
+                sm2.points
+            )  # TODO TS: Just a hack here but it seems to fix updaters
         # Make sure named family members carry over
         for attr, value in mobject.__dict__.items():
             if isinstance(value, OpenGLMobject) and value in family2:
