@@ -71,11 +71,11 @@ def _deprecation_text_component(
 
 
 def deprecated(
-    func: Callable = None,
+    func: Callable | None = None,
     since: str | None = None,
     until: str | None = None,
     replacement: str | None = None,
-    message: str | None = "",
+    message: str = "",
 ) -> Callable:
     """Decorator to mark a callable as deprecated.
 
@@ -187,7 +187,7 @@ def deprecated(
         deprecated = _deprecation_text_component(since, until, msg)
         return f"The {what} {name} has been {deprecated}"
 
-    def deprecate_docs(func: Callable):
+    def deprecate_docs(func: Callable) -> None:
         """Adjust docstring to indicate the deprecation.
 
         Parameters
@@ -199,7 +199,7 @@ def deprecated(
         doc_string = func.__doc__ or ""
         func.__doc__ = f"{doc_string}\n\n.. attention:: Deprecated\n  {warning}"
 
-    def deprecate(func: Callable, *args, **kwargs):
+    def deprecate(func: Callable, *args: Any, **kwargs: Any) -> Any:
         """The actual decorator used to extend the callables behavior.
 
         Logs a warning message.
@@ -224,7 +224,10 @@ def deprecated(
 
     if type(func).__name__ != "function":
         deprecate_docs(func)
-        func.__init__ = decorate(func.__init__, deprecate)
+        # The following line raises this mypy error:
+        # Accessing "__init__" on an instance is unsound, since instance.__init__
+        # could be from an incompatible subclass  [misc]</pre>
+        func.__init__ = decorate(func.__init__, deprecate)  # type: ignore[misc]
         return func
 
     func = decorate(func, deprecate)
@@ -236,7 +239,7 @@ def deprecated_params(
     params: str | Iterable[str] | None = None,
     since: str | None = None,
     until: str | None = None,
-    message: str | None = "",
+    message: str = "",
     redirections: None
     | (Iterable[tuple[str, str] | Callable[..., dict[str, Any]]]) = None,
 ) -> Callable:
@@ -426,7 +429,7 @@ def deprecated_params(
 
     redirections = list(redirections)
 
-    def warning_msg(func: Callable, used: list[str]):
+    def warning_msg(func: Callable, used: list[str]) -> str:
         """Generate the deprecation warning message.
 
         Parameters
@@ -449,7 +452,7 @@ def deprecated_params(
         deprecated = _deprecation_text_component(since, until, message)
         return f"The parameter{parameter_s} {used_} of {what} {name} {has_have_been} {deprecated}"
 
-    def redirect_params(kwargs: dict, used: list[str]):
+    def redirect_params(kwargs: dict, used: list[str]) -> None:
         """Adjust the keyword arguments as defined by the redirections.
 
         Parameters
@@ -473,7 +476,7 @@ def deprecated_params(
                 if len(redirector_args) > 0:
                     kwargs.update(redirector(**redirector_args))
 
-    def deprecate_params(func, *args, **kwargs):
+    def deprecate_params(func: Callable, *args: Any, **kwargs: Any) -> Any:
         """The actual decorator function used to extend the callables behavior.
 
         Logs a warning message when a deprecated parameter is used and redirects it if

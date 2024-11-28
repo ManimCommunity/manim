@@ -26,6 +26,8 @@ class ManimColorModuleDocumenter(Directive):
     has_content = True
 
     def add_directive_header(self, sig: str) -> None:
+        # TODO: The Directive class has no method named
+        # add_directive_header.
         super().add_directive_header(sig)
 
     def run(self) -> list[nodes.Element]:

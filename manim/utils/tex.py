@@ -36,6 +36,9 @@ class TexTemplate:
     tex_compiler: str = "latex"
     """The TeX compiler to be used, e.g. ``latex``, ``pdflatex`` or ``lualatex``."""
 
+    description: str = ""
+    """A description of the template"""
+
     output_format: str = ".dvi"
     """The output format resulting from compilation, e.g. ``.dvi`` or ``.pdf``."""
 

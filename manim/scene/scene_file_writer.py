@@ -20,7 +20,7 @@ from PIL import Image
 from pydub import AudioSegment
 
 from manim import __version__
-from manim.typing import PixelArray
+from manim.typing import PixelArray, StrPath
 
 from .. import config, logger
 from .._config.logger_utils import set_file_logger
@@ -104,7 +104,12 @@ class SceneFileWriter:
 
     force_output_as_scene_name = False
 
-    def __init__(self, renderer, scene_name, **kwargs):
+    def __init__(
+        self,
+        renderer: Any,
+        scene_name: StrPath,
+        **kwargs: Any,
+    ) -> None:
         self.renderer = renderer
         self.init_output_directories(scene_name)
         self.init_audio()
@@ -118,7 +123,7 @@ class SceneFileWriter:
             name="autocreated", type_=DefaultSectionType.NORMAL, skip_animations=False
         )
 
-    def init_output_directories(self, scene_name):
+    def init_output_directories(self, scene_name: StrPath):
         """Initialise output directories.
 
         Notes
@@ -378,7 +383,9 @@ class SceneFileWriter:
         self.add_audio_segment(new_segment, time, **kwargs)
 
     # Writers
-    def begin_animation(self, allow_write: bool = False, file_path=None):
+    def begin_animation(
+        self, allow_write: bool = False, file_path: StrPath | None = None
+    ) -> None:
         """
         Used internally by manim to stream the animation to FFMPEG for
         displaying or writing to a file.
@@ -391,7 +398,7 @@ class SceneFileWriter:
         if write_to_movie() and allow_write:
             self.open_partial_movie_stream(file_path=file_path)
 
-    def end_animation(self, allow_write: bool = False):
+    def end_animation(self, allow_write: bool = False) -> None:
         """
         Internally used by Manim to stop streaming to
         FFMPEG gracefully.

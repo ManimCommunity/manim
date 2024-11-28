@@ -47,7 +47,8 @@ def is_mp4_format() -> bool:
         ``True`` if format is set as mp4
 
     """
-    return config["format"] == "mp4"
+    val: bool = config["format"] == "mp4"
+    return val
 
 
 def is_gif_format() -> bool:
@@ -60,7 +61,8 @@ def is_gif_format() -> bool:
         ``True`` if format is set as gif
 
     """
-    return config["format"] == "gif"
+    val: bool = config["format"] == "gif"
+    return val
 
 
 def is_webm_format() -> bool:
@@ -73,7 +75,8 @@ def is_webm_format() -> bool:
         ``True`` if format is set as webm
 
     """
-    return config["format"] == "webm"
+    val: bool = config["format"] == "webm"
+    return val
 
 
 def is_mov_format() -> bool:
@@ -86,7 +89,8 @@ def is_mov_format() -> bool:
         ``True`` if format is set as mov
 
     """
-    return config["format"] == "mov"
+    val: bool = config["format"] == "mov"
+    return val
 
 
 def is_png_format() -> bool:
@@ -99,7 +103,8 @@ def is_png_format() -> bool:
         ``True`` if format is set as png
 
     """
-    return config["format"] == "png"
+    val: bool = config["format"] == "png"
+    return val
 
 
 def write_to_movie() -> bool:
@@ -126,7 +131,7 @@ def write_to_movie() -> bool:
 
 def ensure_executable(path_to_exe: Path) -> bool:
     if path_to_exe.parent == Path("."):
-        executable = shutil.which(path_to_exe.stem)
+        executable: StrPath | None = shutil.which(path_to_exe.stem)
         if executable is None:
             return False
     else:
@@ -191,7 +196,9 @@ def modify_atime(file_path: str) -> None:
 def open_file(file_path: Path, in_browser: bool = False) -> None:
     current_os = platform.system()
     if current_os == "Windows":
-        os.startfile(file_path if not in_browser else file_path.parent)
+        # The method os.startfile is only available in Windows,
+        # ignoring type error caused by this.
+        os.startfile(file_path if not in_browser else file_path.parent)  # type: ignore[attr-defined]
     else:
         if current_os == "Linux":
             commands = ["xdg-open"]
@@ -207,7 +214,7 @@ def open_file(file_path: Path, in_browser: bool = False) -> None:
         # check after so that file path is set correctly
         if config.preview_command:
             commands = [config.preview_command]
-        commands.append(file_path)
+        commands.append(str(file_path))
         sp.run(commands)
 
 
