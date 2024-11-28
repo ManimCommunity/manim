@@ -490,7 +490,7 @@ class NumberLine(Line):
             self.tick_frequency, np.ceil(self.x_min / self.tick_size)
         )
         numbers = np.arange(
-            np.floor(self.leftmost_tick),
+            np.floor(leftmost_tick),
             np.ceil(self.x_max),
         )
         if self.exclude_zero_from_default_numbers:
