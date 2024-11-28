@@ -320,14 +320,14 @@ class Arc(TipableVMobject):
         start_angle: float = 0,
         angle: float = TAU / 4,
         num_components: int = 9,
-        arc_center: Point3D = ORIGIN,
+        arc_center: Point3DLike = ORIGIN,
         **kwargs: Any,
     ):
         if radius is None:  # apparently None is passed by ArcBetweenPoints
             radius = 1.0
         self.radius = radius
         self.num_components = num_components
-        self.arc_center = arc_center
+        self.arc_center: Point3D = np.asarray(arc_center)
         self.start_angle = start_angle
         self.angle = angle
         self._failed_to_get_center: bool = False
