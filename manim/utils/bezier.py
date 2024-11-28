@@ -32,7 +32,6 @@ if TYPE_CHECKING:
     import numpy.typing as npt
 
     from manim.typing import (
-        BezierPath,
         BezierPoints,
         BezierPoints_Array,
         BezierPointsLike,
@@ -46,6 +45,7 @@ if TYPE_CHECKING:
         Point3DLike_Array,
         QuadraticBezierPath,
         QuadraticSpline,
+        Spline,
     )
 
 # l is a commonly used name in linear algebra
@@ -392,7 +392,7 @@ def partial_bezier_points(points: BezierPointsLike, a: float, b: float) -> Bezie
     return arr
 
 
-def split_bezier(points: BezierPointsLike, t: float) -> BezierPath:
+def split_bezier(points: BezierPointsLike, t: float) -> Spline:
     r"""Split a Bézier curve at argument ``t`` into two curves.
 
     .. note::
@@ -819,7 +819,7 @@ def _get_subdivision_matrix(n_points: int, n_divisions: int) -> MatrixMN:
     return subdivision_matrix
 
 
-def subdivide_bezier(points: BezierPointsLike, n_divisions: int) -> BezierPath:
+def subdivide_bezier(points: BezierPointsLike, n_divisions: int) -> Spline:
     r"""Subdivide a Bézier curve into :math:`n` subcurves which have the same shape.
 
     The points at which the curve is split are located at the
@@ -911,7 +911,7 @@ def subdivide_bezier(points: BezierPointsLike, n_divisions: int) -> BezierPath:
 
     Returns
     -------
-    :class:`~.BezierPath`
+    :class:`~.Spline`
         An array containing the points defining the new :math:`n` subcurves.
     """
     if n_divisions == 1:

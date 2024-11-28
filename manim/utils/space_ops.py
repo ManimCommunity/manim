@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from manim.typing import (
         ManimFloat,
         Point3D,
-        Point3D_Array,
+        Point3DLike_Array,
         Vector2D,
         Vector2D_Array,
         Vector3D,
@@ -575,9 +575,9 @@ def line_intersection(
 
 
 def find_intersection(
-    p0s: Point3D_Array,
+    p0s: Point3DLike_Array,
     v0s: Vector3D_Array,
-    p1s: Point3D_Array,
+    p1s: Point3DLike_Array,
     v1s: Vector3D_Array,
     threshold: float = 1e-5,
 ) -> list[Point3D]:

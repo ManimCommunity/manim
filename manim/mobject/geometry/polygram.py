@@ -38,6 +38,7 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
     from manim.typing import (
+        ManimFloat,
         Point3D,
         Point3D_Array,
         Point3DLike,
@@ -121,7 +122,7 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
         """
         return self.get_start_anchors()
 
-    def get_vertex_groups(self) -> Point3D_Array:
+    def get_vertex_groups(self) -> npt.NDArray[ManimFloat]:
         """Gets the vertex groups of the :class:`Polygram`.
 
         Returns

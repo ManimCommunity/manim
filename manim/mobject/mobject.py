@@ -17,7 +17,7 @@ import warnings
 from collections.abc import Iterable
 from functools import partialmethod, reduce
 from pathlib import Path
-from typing import TYPE_CHECKING, Callable, Literal
+from typing import TYPE_CHECKING
 
 import numpy as np
 
@@ -40,12 +40,12 @@ from ..utils.paths import straight_path
 from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
 
 if TYPE_CHECKING:
+    from typing import Any, Callable, Literal
+
     from typing_extensions import Self, TypeAlias
 
     from manim.typing import (
         FunctionOverride,
-        ManimFloat,
-        ManimInt,
         MappingFunction,
         PathFuncType,
         PixelArray,
@@ -2029,7 +2029,7 @@ class Mobject:
 
     def get_extremum_along_dim(
         self, points: Point3DLike_Array | None = None, dim: int = 0, key: int = 0
-    ) -> np.ndarray | float:
+    ) -> float:
         np_points: Point3D_Array = (
             self.get_points_defining_boundary()
             if points is None
@@ -2150,15 +2150,15 @@ class Mobject:
         """Meant to generalize ``get_x``, ``get_y`` and ``get_z``"""
         return self.get_extremum_along_dim(dim=dim, key=direction[dim])
 
-    def get_x(self, direction: Vector3D = ORIGIN) -> ManimFloat:
+    def get_x(self, direction: Vector3D = ORIGIN) -> float:
         """Returns x Point3D of the center of the :class:`~.Mobject` as ``float``"""
         return self.get_coord(0, direction)
 
-    def get_y(self, direction: Vector3D = ORIGIN) -> ManimFloat:
+    def get_y(self, direction: Vector3D = ORIGIN) -> float:
         """Returns y Point3D of the center of the :class:`~.Mobject` as ``float``"""
         return self.get_coord(1, direction)
 
-    def get_z(self, direction: Vector3D = ORIGIN) -> ManimFloat:
+    def get_z(self, direction: Vector3D = ORIGIN) -> float:
         """Returns z Point3D of the center of the :class:`~.Mobject` as ``float``"""
         return self.get_coord(2, direction)
 
@@ -2579,13 +2579,13 @@ class Mobject:
 
     def sort(
         self,
-        point_to_num_func: Callable[[Point3DLike], ManimInt] = lambda p: p[0],
-        submob_func: Callable[[Mobject], ManimInt] | None = None,
+        point_to_num_func: Callable[[Point3DLike], float] = lambda p: p[0],
+        submob_func: Callable[[Mobject], Any] | None = None,
     ) -> Self:
         """Sorts the list of :attr:`submobjects` by a function defined by ``submob_func``."""
         if submob_func is None:
 
-            def submob_func(m: Mobject) -> ManimInt:
+            def submob_func(m: Mobject) -> float:
                 return point_to_num_func(m.get_center())
 
         self.submobjects.sort(key=submob_func)

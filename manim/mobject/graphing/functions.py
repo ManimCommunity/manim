@@ -19,7 +19,7 @@ from manim.mobject.types.vectorized_mobject import VMobject
 if TYPE_CHECKING:
     from typing_extensions import Self
 
-    from manim.typing import Point3DLike
+    from manim.typing import Point3D, Point3DLike
 
 from manim.utils.color import YELLOW
 
@@ -113,7 +113,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
         use_vectorized: bool = False,
         **kwargs,
     ):
-        self.function = function
+        self.function: Callable[[float], Point3D] = lambda t: np.asarray(function(t))
         if len(t_range) == 2:
             t_range = (*t_range, 0.01)
 
@@ -127,10 +127,10 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
 
         super().__init__(**kwargs)
 
-    def get_function(self) -> Callable[[float], Point3DLike]:
+    def get_function(self) -> Callable[[float], Point3D]:
         return self.function
 
-    def get_point_from_function(self, t: float) -> Point3DLike:
+    def get_point_from_function(self, t: float) -> Point3D:
         return self.function(t)
 
     def generate_points(self) -> Self:

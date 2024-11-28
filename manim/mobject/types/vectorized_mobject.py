@@ -54,7 +54,9 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
     from manim.typing import (
+        CubicBezierPath,
         CubicBezierPointsLike,
+        CubicSpline,
         ManimFloat,
         MappingFunction,
         Point2DLike,
@@ -830,7 +832,7 @@ class VMobject(Mobject):
         # TODO: shouldn't this return self instead of None?
         self.points = np.zeros((0, self.dim))
 
-    def append_points(self, new_points: Point3D_Array) -> Self:
+    def append_points(self, new_points: Point3DLike_Array) -> Self:
         """Append the given ``new_points`` to the end of
         :attr:`VMobject.points`.
 
@@ -1298,9 +1300,9 @@ class VMobject(Mobject):
 
     def _gen_subpaths_from_points(
         self,
-        points: Point3DLike_Array,
+        points: CubicBezierPath,
         filter_func: Callable[[int], bool],
-    ) -> Generator[CubicSplineLike]:
+    ) -> Generator[CubicSpline]:
         """Given an array of points defining the bezier curves of the vmobject, return subpaths formed by these points.
         Here, Two bezier curves form a path if at least two of their anchors are evaluated True by the relation defined by filter_func.
 
@@ -1330,9 +1332,7 @@ class VMobject(Mobject):
             if (i2 - i1) >= nppcc
         )
 
-    def get_subpaths_from_points(
-        self, points: CubicBezierPath
-    ) -> list[CubicSplineLike]:
+    def get_subpaths_from_points(self, points: CubicBezierPath) -> list[CubicSpline]:
         return list(
             self._gen_subpaths_from_points(
                 points,
@@ -1341,14 +1341,14 @@ class VMobject(Mobject):
         )
 
     def gen_subpaths_from_points_2d(
-        self, points: CubicBezierPathLike
-    ) -> Generator[CubicSplineLike]:
+        self, points: CubicBezierPath
+    ) -> Generator[CubicSpline]:
         return self._gen_subpaths_from_points(
             points,
             lambda n: not self.consider_points_equals_2d(points[n - 1], points[n]),
         )
 
-    def get_subpaths(self) -> list[CubicSplineLike]:
+    def get_subpaths(self) -> list[CubicSpline]:
         """Returns subpaths formed by the curves of the VMobject.
 
         Subpaths are ranges of curves with each pair of consecutive curves having their end/start points coincident.

@@ -198,7 +198,7 @@ class Line(TipableVMobject):
     def get_angle(self) -> float:
         return angle_of_vector(self.get_vector())
 
-    def get_projection(self, point: Point3D) -> Vector3D:
+    def get_projection(self, point: Point3DLike) -> Point3D:
         """Returns the projection of a point onto a line.
 
         Parameters

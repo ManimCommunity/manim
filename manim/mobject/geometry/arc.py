@@ -426,7 +426,7 @@ class Arc(TipableVMobject):
             self._failed_to_get_center = True
             return np.array(ORIGIN)
 
-    def move_arc_center_to(self, point: Point3D) -> Self:
+    def move_arc_center_to(self, point: Point3DLike) -> Self:
         self.shift(point - self.get_arc_center())
         return self
 

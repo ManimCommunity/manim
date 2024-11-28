@@ -57,7 +57,14 @@ from manim.utils.space_ops import angle_of_vector
 
 if TYPE_CHECKING:
     from manim.mobject.mobject import Mobject
-    from manim.typing import ManimFloat, Point2D, Point2DLike, Point3DLike, Vector3D
+    from manim.typing import (
+        ManimFloat,
+        Point2D,
+        Point2DLike,
+        Point3D,
+        Point3DLike,
+        Vector3D,
+    )
 
     LineType = TypeVar("LineType", bound=Line)
 
@@ -1003,7 +1010,7 @@ class CoordinateSystem:
         self,
         x: float,
         graph: ParametricFunction | VMobject,
-    ) -> np.ndarray:
+    ) -> Point3D:
         """Returns the coordinates of the point on a ``graph`` corresponding to an ``x`` value.
 
         Parameters
