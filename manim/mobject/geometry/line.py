@@ -32,9 +32,9 @@ from manim.utils.space_ops import angle_of_vector, line_intersection, normalize
 if TYPE_CHECKING:
     from typing import Any
 
-    from typing_extensions import Self
+    from typing_extensions import Literal, Self
 
-    from manim.typing import InternalPoint3D, Point2D, Point3D, Vector3D
+    from manim.typing import Point3D, Point3DLike, Vector2D, Vector3D
     from manim.utils.color import ParsableManimColor
 
     from ..matrix import Matrix  # Avoid circular import
@@ -43,8 +43,8 @@ if TYPE_CHECKING:
 class Line(TipableVMobject):
     def __init__(
         self,
-        start: Point3D | Mobject = LEFT,
-        end: Point3D | Mobject = RIGHT,
+        start: Point3DLike | Mobject = LEFT,
+        end: Point3DLike | Mobject = RIGHT,
         buff: float = 0,
         path_arc: float | None = None,
         **kwargs: Any,
@@ -66,8 +66,8 @@ class Line(TipableVMobject):
 
     def set_points_by_ends(
         self,
-        start: Point3D | Mobject,
-        end: Point3D | Mobject,
+        start: Point3DLike | Mobject,
+        end: Point3DLike | Mobject,
         buff: float = 0,
         path_arc: float = 0,
     ) -> None:
@@ -113,7 +113,7 @@ class Line(TipableVMobject):
         return
 
     def _set_start_and_end_attrs(
-        self, start: Point3D | Mobject, end: Point3D | Mobject
+        self, start: Point3DLike | Mobject, end: Point3DLike | Mobject
     ) -> None:
         # If either start or end are Mobjects, this
         # gives their centers
@@ -128,9 +128,9 @@ class Line(TipableVMobject):
 
     def _pointify(
         self,
-        mob_or_point: Mobject | Point3D,
+        mob_or_point: Mobject | Point3DLike,
         direction: Vector3D | None = None,
-    ) -> InternalPoint3D:
+    ) -> Point3D:
         """Transforms a mobject into its corresponding point. Does nothing if a point is passed.
 
         ``direction`` determines the location of the point along its bounding box in that direction.
@@ -156,8 +156,8 @@ class Line(TipableVMobject):
 
     def put_start_and_end_on(
         self,
-        start: InternalPoint3D,
-        end: InternalPoint3D,
+        start: Point3DLike,
+        end: Point3DLike,
     ) -> Self:
         """Sets starts and end coordinates of a line.
 
@@ -184,8 +184,8 @@ class Line(TipableVMobject):
         if np.all(curr_start == curr_end):
             # TODO, any problems with resetting
             # these attrs?
-            self.start = start
-            self.end = end
+            self.start = np.asarray(start)
+            self.end = np.asarray(end)
             self.generate_points()
         return super().put_start_and_end_on(start, end)
 
@@ -198,7 +198,7 @@ class Line(TipableVMobject):
     def get_angle(self) -> float:
         return angle_of_vector(self.get_vector())
 
-    def get_projection(self, point: InternalPoint3D) -> Vector3D:
+    def get_projection(self, point: Point3D) -> Vector3D:
         """Returns the projection of a point onto a line.
 
         Parameters
@@ -214,7 +214,7 @@ class Line(TipableVMobject):
     def get_slope(self) -> float:
         return float(np.tan(self.get_angle()))
 
-    def set_angle(self, angle: float, about_point: Point3D | None = None) -> Self:
+    def set_angle(self, angle: float, about_point: Point3DLike | None = None) -> Self:
         if about_point is None:
             about_point = self.get_start()
 
@@ -298,7 +298,7 @@ class DashedLine(Line):
             int(np.ceil((self.get_length() / self.dash_length) * self.dashed_ratio)),
         )
 
-    def get_start(self) -> InternalPoint3D:
+    def get_start(self) -> Point3D:
         """Returns the start point of the line.
 
         Examples
@@ -313,7 +313,7 @@ class DashedLine(Line):
         else:
             return super().get_start()
 
-    def get_end(self) -> InternalPoint3D:
+    def get_end(self) -> Point3D:
         """Returns the end point of the line.
 
         Examples
@@ -328,7 +328,7 @@ class DashedLine(Line):
         else:
             return super().get_end()
 
-    def get_first_handle(self) -> InternalPoint3D:
+    def get_first_handle(self) -> Point3D:
         """Returns the point of the first handle.
 
         Examples
@@ -341,9 +341,10 @@ class DashedLine(Line):
         # Type inference of extracting an element from a list, is not
         # supported by numpy, see this numpy issue
         # https://github.com/numpy/numpy/issues/16544
-        return self.submobjects[0].points[1]
+        first_handle: Point3D = self.submobjects[0].points[1]
+        return first_handle
 
-    def get_last_handle(self) -> InternalPoint3D:
+    def get_last_handle(self) -> Point3D:
         """Returns the point of the last handle.
 
         Examples
@@ -356,7 +357,8 @@ class DashedLine(Line):
         # Type inference of extracting an element from a list, is not
         # supported by numpy, see this numpy issue
         # https://github.com/numpy/numpy/issues/16544
-        return self.submobjects[-1].points[-2]
+        last_handle: Point3D = self.submobjects[-1].points[2]
+        return last_handle
 
 
 class TangentLine(Line):
@@ -690,7 +692,7 @@ class Vector(Arrow):
 
     def __init__(
         self,
-        direction: Point2D | Point3D = RIGHT,
+        direction: Vector2D | Vector3D = RIGHT,
         buff: float = 0,
         **kwargs: Any,
     ) -> None:
@@ -930,7 +932,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         line1: Line,
         line2: Line,
         radius: float | None = None,
-        quadrant: Point2D = (1, 1),
+        quadrant: tuple[Literal[-1, 1], Literal[-1, 1]] = (1, 1),
         other_angle: bool = False,
         dot: bool = False,
         dot_radius: float | None = None,
@@ -1076,7 +1078,9 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         return self.angle_value / DEGREES if degrees else self.angle_value
 
     @staticmethod
-    def from_three_points(A: Point3D, B: Point3D, C: Point3D, **kwargs: Any) -> Angle:
+    def from_three_points(
+        A: Point3DLike, B: Point3DLike, C: Point3DLike, **kwargs: Any
+    ) -> Angle:
         r"""The angle between the lines AB and BC.
 
         This constructs the angle :math:`\\angle ABC`.

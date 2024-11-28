@@ -13,9 +13,10 @@ from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VMobject
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
     from typing import Any
 
-    from manim.typing import InternalPoint3D_Array, Point2D_Array
+    from manim.typing import Point2DLike, Point3D_Array, Point3DLike
 
 from ...constants import RendererType
 
@@ -30,17 +31,17 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
 
     def _convert_2d_to_3d_array(
         self,
-        points: Point2D_Array,
+        points: Sequence[Point2DLike | Point3DLike],
         z_dim: float = 0.0,
-    ) -> InternalPoint3D_Array:
+    ) -> Point3D_Array:
         """Converts an iterable with coordinates in 2D to 3D by adding
         :attr:`z_dim` as the Z coordinate.
 
         Parameters
         ----------
-        points:
+        points
             An iterable of points.
-        z_dim:
+        z_dim
             Default value for the Z coordinate.
 
         Returns

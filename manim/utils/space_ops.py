@@ -18,10 +18,12 @@ if TYPE_CHECKING:
 
     from manim.typing import (
         ManimFloat,
+        Point3D,
         Point3D_Array,
         Vector2D,
         Vector2D_Array,
         Vector3D,
+        Vector3D_Array,
     )
 
 __all__ = [
@@ -573,12 +575,12 @@ def line_intersection(
 
 
 def find_intersection(
-    p0s: Sequence[np.ndarray] | Point3D_Array,
-    v0s: Sequence[np.ndarray] | Point3D_Array,
-    p1s: Sequence[np.ndarray] | Point3D_Array,
-    v1s: Sequence[np.ndarray] | Point3D_Array,
+    p0s: Point3D_Array,
+    v0s: Vector3D_Array,
+    p1s: Point3D_Array,
+    v1s: Vector3D_Array,
     threshold: float = 1e-5,
-) -> Sequence[np.ndarray]:
+) -> list[Point3D]:
     """
     Return the intersection of a line passing through p0 in direction v0
     with one passing through p1 in direction v1 (or array of intersections

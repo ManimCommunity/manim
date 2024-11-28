@@ -24,7 +24,7 @@ from manim.utils.polylabel import polylabel
 if TYPE_CHECKING:
     from typing import Any
 
-    from manim.typing import Point3D_Array
+    from manim.typing import Point3DLike_Array
 
 
 class Label(VGroup):
@@ -344,7 +344,7 @@ class LabeledPolygram(Polygram):
 
     def __init__(
         self,
-        *vertex_groups: Point3D_Array,
+        *vertex_groups: Point3DLike_Array,
         label: str | Tex | MathTex | Text,
         precision: float = 0.01,
         label_config: dict[str, Any] | None = None,
@@ -365,7 +365,11 @@ class LabeledPolygram(Polygram):
 
         # Close Vertex Groups
         rings = [
-            group if np.array_equal(group[0], group[-1]) else list(group) + [group[0]]
+            np.asarray(
+                group
+                if np.array_equal(group[0], group[-1])
+                else list(group) + [group[0]]
+            )
             for group in vertex_groups
         ]
 
