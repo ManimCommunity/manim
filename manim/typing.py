@@ -321,10 +321,6 @@ Point2D_Array: TypeAlias = npt.NDArray[PointDType]
 
 A NumPy array representing a sequence of `Point2D` objects:
 ``[[float, float], ...]``.
-
-.. note::
-    This type alias is mostly made available for internal use, and
-    only includes the NumPy type.
 """
 
 Point2DLike_Array: TypeAlias = Union[Point2D_Array, Sequence[Point2DLike]]
@@ -346,10 +342,6 @@ Point3D: TypeAlias = npt.NDArray[PointDType]
 """``shape: (3,)``
 
 A NumPy array representing a 3-dimensional point: ``[float, float, float]``.
-
-.. note::
-    This type alias is mostly made available for internal use, and
-    only includes the NumPy type.
 """
 
 Point3DLike: TypeAlias = Union[Point3D, tuple[float, float, float]]
@@ -366,10 +358,6 @@ Point3D_Array: TypeAlias = npt.NDArray[PointDType]
 
 A NumPy array representing a sequence of `Point3D` objects:
 ``[[float, float, float], ...]``.
-
-.. note::
-    This type alias is mostly made available for internal use, and
-    only includes the NumPy type.
 """
 
 Point3DLike_Array: TypeAlias = Union[Point3D_Array, Sequence[Point3DLike]]
@@ -388,10 +376,6 @@ PointND: TypeAlias = npt.NDArray[PointDType]
 """``shape: (N,)``
 
 A NumPy array representing an N-dimensional point: ``[float, ...]``.
-
-.. note::
-    This type alias is mostly made available for internal use, and
-    only includes the NumPy type.
 """
 
 PointNDLike: TypeAlias = Union[PointND, Sequence[float]]
@@ -408,10 +392,6 @@ PointND_Array: TypeAlias = npt.NDArray[PointDType]
 
 A NumPy array representing a sequence of `PointND` objects:
 ``[[float, ...], ...]``.
-
-.. note::
-    This type alias is mostly made available for internal use, and
-    only includes the NumPy type.
 """
 
 PointNDLike_Array: TypeAlias = Union[PointND_Array, Sequence[PointNDLike]]
