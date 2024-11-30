@@ -58,10 +58,14 @@ same happens with :class:`~.Point2D`, :class:`~.Point2D_Array` and
 
 The rule for typing functions is: **make parameter types as broad as possible,
 and return types as specific as possible.** Therefore, for functions which are
-intended to be called by users, we should always, if possible, accept ``Like``
-types as parameters and return NumPy, non-``Like`` types. The last function,
-``shift_point_up()``, is an example of it. Internal functions which are *not*
-meant to be called by users may accept non-``Like`` parameters if necessary.
+intended to be called by users, **we should always, if possible, accept ``Like``
+types as parameters and return NumPy, non-``Like`` types.** The main reason is to
+be more flexible with users who might want to pass tuples or lists as arguments
+rather than NumPy arrays, because it's more convenient. The last function,
+``shift_point_up()``, is an example of it.
+
+Internal functions which are *not* meant to be called by users may accept
+non-``Like`` parameters if necessary.
 
 Vectors
 ~~~~~~~
