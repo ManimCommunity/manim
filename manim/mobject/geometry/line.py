@@ -34,7 +34,7 @@ if TYPE_CHECKING:
 
     from typing_extensions import Literal, Self
 
-    from manim.typing import Point3D, Point3DLike, Vector2D, Vector3D
+    from manim.typing import Point2DLike, Point3D, Point3DLike, Vector3D
     from manim.utils.color import ParsableManimColor
 
     from ..matrix import Matrix  # Avoid circular import
@@ -692,7 +692,7 @@ class Vector(Arrow):
 
     def __init__(
         self,
-        direction: Vector2D | Vector3D = RIGHT,
+        direction: Point2DLike | Point3DLike = RIGHT,
         buff: float = 0,
         **kwargs: Any,
     ) -> None:

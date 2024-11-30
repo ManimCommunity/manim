@@ -80,11 +80,9 @@ consider this slightly contrived function:
    def shift_mobject(mob: M, direction: Vector3D, scale_factor: float = 1) -> M:
        return mob.shift(direction * scale_factor)
 
-Here we see an important example of the difference. ``direction`` can not, and
-should not, be typed as a :class:`~.typing.Point3D` because the function does not accept tuples/lists,
-like ``direction=(0, 1, 0)``. You could type it as :class:`~.typing.InternalPoint3D` and
-the type checker and linter would be happy; however, this makes the code harder
-to understand.
+Here we see an important example of the difference. ``direction`` should not be
+typed as a :class:`~.Point3D`, because it represents a direction along
+which to shift a :class:`~.Mobject`, not a position in space.
 
 As a general rule, if a parameter is called ``direction`` or ``axis``,
 it should be type hinted as some form of :class:`~.VectorND`.
@@ -92,8 +90,9 @@ it should be type hinted as some form of :class:`~.VectorND`.
 .. warning::
 
    This is not always true. For example, as of Manim 0.18.0, the direction
-   parameter of the :class:`.Vector` Mobject should be ``Point2D | Point3D``,
-   as it can also accept ``tuple[float, float]`` and ``tuple[float, float, float]``.
+   parameter of the :class:`.Vector` Mobject should be
+   ``Point2DLike | Point3DLike``, as it can also accept ``tuple[float, float]``
+   and ``tuple[float, float, float]``.
 
 Colors
 ------
