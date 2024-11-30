@@ -42,7 +42,7 @@ moderngl = ">=5.0.0,<6.0.0"
 moderngl-window = ">=2.0.0"
 networkx = ">=2.6"
 notebook = { version = ">=6.0.0", optional = true }
-numpy = ">=1.26"
+numpy = ">=2.0"
 Pillow = ">=9.1"
 pycairo = ">=1.13,<2.0.0"
 pydub = ">=0.20.0"
