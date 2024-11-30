@@ -769,14 +769,14 @@ class VMobject(Mobject):
                 submob.z_index_group = self
         return self
 
-    def set_points(self, points: Point3D_Array) -> Self:
+    def set_points(self, points: Point3DLike_Array) -> Self:
         self.points: Point3D_Array = np.array(points)
         return self
 
     def resize_points(
         self,
         new_length: int,
-        resize_func: Callable[[Point3DLike, int], Point3DLike] = resize_array,
+        resize_func: Callable[[Point3D_Array, int], Point3D_Array] = resize_array,
     ) -> Self:
         """Resize the array of anchor points and handles to have
         the specified size.
@@ -1320,7 +1320,7 @@ class VMobject(Mobject):
 
         Returns
         -------
-        Generator[Point3D_Array]
+        Generator[CubicSpline]
             subpaths formed by the points.
         """
         nppcc = self.n_points_per_cubic_curve
@@ -1355,7 +1355,7 @@ class VMobject(Mobject):
 
         Returns
         -------
-        list[Point3D_Array]
+        list[CubicSpline]
             subpaths.
         """
         return self.get_subpaths_from_points(self.points)
@@ -1370,7 +1370,7 @@ class VMobject(Mobject):
 
         Returns
         -------
-        Point3D_Array
+        CubicBezierPoints
             points defining the nth bezier curve (anchors, handles)
         """
         assert n < self.get_num_curves()

@@ -365,11 +365,7 @@ class LabeledPolygram(Polygram):
 
         # Close Vertex Groups
         rings = [
-            np.asarray(
-                group
-                if np.array_equal(group[0], group[-1])
-                else list(group) + [group[0]]
-            )
+            group if np.array_equal(group[0], group[-1]) else list(group) + [group[0]]
             for group in vertex_groups
         ]
 
