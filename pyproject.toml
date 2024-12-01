@@ -42,7 +42,13 @@ moderngl = ">=5.0.0,<6.0.0"
 moderngl-window = ">=2.0.0"
 networkx = ">=2.6"
 notebook = { version = ">=6.0.0", optional = true }
-numpy = ">=2.0"
+numpy = [
+  # numpy 2.1 is the first version with prebuilt wheels for 3.13,
+  # while numpy 2.0 is the last version supporting 3.9
+  # TODO: remove when python 3.10 is the minimum supported version
+  {version = ">=2.1", python = ">=3.10"},
+  {version = ">=2.0", python = "<3.10"},
+]
 Pillow = ">=9.1"
 pycairo = ">=1.13,<2.0.0"
 pydub = ">=0.20.0"
