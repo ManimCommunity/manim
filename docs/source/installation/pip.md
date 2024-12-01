@@ -144,13 +144,13 @@ setspace standalone tipa wasy wasysym xcolor xetex xkeyval
 
 ### Step 3: Installing Manim
 
-These steps differ slightly between different operating systems. Make
+These steps again differ slightly between different operating systems. Make
 sure you select the correct one from the tab list below, then follow
 the instructions below.
 
-::::{tab-set}
+::::::{tab-set}
 
-:::{tab-item} MacOS & Windows
+:::::{tab-item} MacOS & Windows
 The following commands will
 
 - create a new directory for a Python project,
@@ -168,13 +168,59 @@ uv add manim
 
 Manim is now installed in your local project environment!
 
+:::::
+
+:::::{tab-item} Linux
+Practically, the instructions given in the *MacOS & Windows* tab
+also apply for Linux -- however, some additional dependencies are
+required as Linux users need to build
+[ManimPango](https://github.com/ManimCommunity/ManimPango)
+(and potentially [pycairo](https://pycairo.readthedocs.io/en/latest/))
+from source. More specifically, this includes:
+
+- A C compiler,
+- Python's development headers,
+- the `pkg-config` tool,
+- Pango and its development headers,
+- and Cairo and its development headers.
+
+Instructions for popular systems / package managers are given below.
+
+::::{tab-set}
+
+:::{tab-item} Debian-based / apt
+```bash
+sudo apt update
+sudo apt install build-essential python3-dev libcairo2-dev libpango1.0-dev
+```
 :::
 
-:::{tab-item} Linux
-installation of headers + build dependencies for ManimPango
+:::{tab-item} Fedora / dnf
+```bash
+sudo dnf install python3-devel pkg-config cairo-devel pango-devel
+```
+:::
+
+:::{tab-item} Arch Linux / pacman
+```bash
+sudo pacman -Syu base-devel cairo pango
+```
 :::
 
 ::::
+
+As soon as the required dependencies are installed, you can create
+a Python project (feel free to change the name *manimations* used below
+to some other name) with a local environment containing Manim by running
+```bash
+uv init manimations
+cd manimations
+uv add manim
+```
+
+:::::
+
+::::::
 
 To verify that your local Python project is setup correctly
 and that Manim is available, simply run
