@@ -608,8 +608,8 @@ class Circumscribe(Succession):
         if shape is Rectangle:
             frame = SurroundingRectangle(
                 mobject,
-                color,
-                buff,
+                color=color,
+                buff=buff,
                 stroke_width=stroke_width,
             )
         elif shape is Circle:

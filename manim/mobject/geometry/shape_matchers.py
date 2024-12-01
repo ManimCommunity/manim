@@ -8,8 +8,15 @@ from typing import Any
 
 from typing_extensions import Self
 
-from manim import config, logger
-from manim.constants import *
+from manim import logger
+from manim._config import config
+from manim.constants import (
+    DOWN,
+    LEFT,
+    RIGHT,
+    SMALL_BUFF,
+    UP,
+)
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import RoundedRectangle
 from manim.mobject.mobject import Mobject
@@ -43,21 +50,29 @@ class SurroundingRectangle(RoundedRectangle):
 
     def __init__(
         self,
-        mobject: Mobject,
+        *mobjects: Mobject,
         color: ParsableManimColor = YELLOW,
         buff: float = SMALL_BUFF,
         corner_radius: float = 0.0,
         **kwargs: Any,
     ) -> None:
+        from manim.mobject.mobject import Group
+
+        if not all(isinstance(mob, Mobject) for mob in mobjects):
+            raise TypeError(
+                "Expected all inputs for parameter mobjects to be a Mobjects"
+            )
+
+        group = Group(*mobjects)
         super().__init__(
             color=color,
-            width=mobject.width + 2 * buff,
-            height=mobject.height + 2 * buff,
+            width=group.width + 2 * buff,
+            height=group.height + 2 * buff,
             corner_radius=corner_radius,
             **kwargs,
         )
         self.buff = buff
-        self.move_to(mobject)
+        self.move_to(group)
 
 
 class BackgroundRectangle(SurroundingRectangle):
@@ -87,7 +102,7 @@ class BackgroundRectangle(SurroundingRectangle):
 
     def __init__(
         self,
-        mobject: Mobject,
+        *mobjects: Mobject,
         color: ParsableManimColor | None = None,
         stroke_width: float = 0,
         stroke_opacity: float = 0,
@@ -99,7 +114,7 @@ class BackgroundRectangle(SurroundingRectangle):
             color = config.background_color
 
         super().__init__(
-            mobject,
+            *mobjects,
             color=color,
             stroke_width=stroke_width,
             stroke_opacity=stroke_opacity,
