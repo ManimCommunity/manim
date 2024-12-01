@@ -400,13 +400,13 @@ class OpenGLRenderer:
         if self.file_writer.sections[-1].skip_animations:
             self.skip_animations = True
         if (
-            config["from_animation_number"]
-            and self.num_plays < config["from_animation_number"]
+            config.from_animation_number > 0
+            and self.num_plays < config.from_animation_number
         ):
             self.skip_animations = True
         if (
-            config["upto_animation_number"]
-            and self.num_plays > config["upto_animation_number"]
+            config.upto_animation_number >= 0
+            and self.num_plays > config.upto_animation_number
         ):
             self.skip_animations = True
             raise EndSceneEarlyException()
