@@ -55,6 +55,10 @@ __all__ = [
     "Point3D",
     "InternalPoint3D_Array",
     "Point3D_Array",
+    "InternalPointND",
+    "PointND",
+    "InternalPointND_Array",
+    "PointND_Array",
     "Vector2D",
     "Vector2D_Array",
     "Vector3D",
@@ -301,7 +305,7 @@ parameter can handle being passed a `Point3D` instead.
 """
 
 InternalPoint2D_Array: TypeAlias = npt.NDArray[PointDType]
-"""``shape: (N, 2)``
+"""``shape: (M, 2)``
 
 An array of `InternalPoint2D` objects: ``[[float, float], ...]``.
 
@@ -311,7 +315,7 @@ An array of `InternalPoint2D` objects: ``[[float, float], ...]``.
 """
 
 Point2D_Array: TypeAlias = Union[InternalPoint2D_Array, tuple[Point2D, ...]]
-"""``shape: (N, 2)``
+"""``shape: (M, 2)``
 
 An array of `Point2D` objects: ``[[float, float], ...]``.
 
@@ -339,7 +343,7 @@ A 3-dimensional point: ``[float, float, float]``.
 """
 
 InternalPoint3D_Array: TypeAlias = npt.NDArray[PointDType]
-"""``shape: (N, 3)``
+"""``shape: (M, 3)``
 
 An array of `Point3D` objects: ``[[float, float, float], ...]``.
 
@@ -349,9 +353,44 @@ An array of `Point3D` objects: ``[[float, float, float], ...]``.
 """
 
 Point3D_Array: TypeAlias = Union[InternalPoint3D_Array, tuple[Point3D, ...]]
-"""``shape: (N, 3)``
+"""``shape: (M, 3)``
 
 An array of `Point3D` objects: ``[[float, float, float], ...]``.
+
+Please refer to the documentation of the function you are using for
+further type information.
+"""
+
+InternalPointND: TypeAlias = npt.NDArray[PointDType]
+"""``shape: (N,)``
+
+An N-dimensional point: ``[float, ...]``.
+
+.. note::
+    This type alias is mostly made available for internal use, and
+    only includes the NumPy type.
+"""
+
+PointND: TypeAlias = Union[InternalPointND, tuple[float, ...]]
+"""``shape: (N,)``
+
+An N-dimensional point: ``[float, ...]``.
+"""
+
+InternalPointND_Array: TypeAlias = npt.NDArray[PointDType]
+"""``shape: (M, N)``
+
+An array of `PointND` objects: ``[[float, ...], ...]``.
+
+.. note::
+    This type alias is mostly made available for internal use, and
+    only includes the NumPy type.
+"""
+
+PointND_Array: TypeAlias = Union[InternalPointND_Array, tuple[PointND, ...]]
+"""``shape: (M, N)``
+
+An array of `PointND` objects: ``[[float, ...], ...]``.
 
 Please refer to the documentation of the function you are using for
 further type information.

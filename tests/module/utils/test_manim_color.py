@@ -173,3 +173,32 @@ def test_hsv_init() -> None:
 
 def test_into_HSV() -> None:
     nt.assert_equal(RED.into(HSV).into(ManimColor), RED)
+
+
+def test_contrasting() -> None:
+    nt.assert_equal(BLACK.contrasting(), WHITE)
+    nt.assert_equal(WHITE.contrasting(), BLACK)
+    nt.assert_equal(RED.contrasting(0.1), BLACK)
+    nt.assert_equal(RED.contrasting(0.9), WHITE)
+    nt.assert_equal(BLACK.contrasting(dark=GREEN, light=RED), RED)
+    nt.assert_equal(WHITE.contrasting(dark=GREEN, light=RED), GREEN)
+
+
+def test_lighter() -> None:
+    c = RED.opacity(0.42)
+    cl = c.lighter(0.2)
+    nt.assert_array_equal(
+        cl._internal_value[:3],
+        0.8 * c._internal_value[:3] + 0.2 * WHITE._internal_value[:3],
+    )
+    nt.assert_equal(cl[-1], c[-1])
+
+
+def test_darker() -> None:
+    c = RED.opacity(0.42)
+    cd = c.darker(0.2)
+    nt.assert_array_equal(
+        cd._internal_value[:3],
+        0.8 * c._internal_value[:3] + 0.2 * BLACK._internal_value[:3],
+    )
+    nt.assert_equal(cd[-1], c[-1])

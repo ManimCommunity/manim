@@ -13,13 +13,20 @@ import json
 import sys
 import urllib.error
 import urllib.request
+from argparse import Namespace
 from pathlib import Path
-from typing import cast
+from typing import Any, cast
 
 import cloup
 
-from manim import __version__, config, console, error_console, logger
-from manim._config import tempconfig
+from manim import __version__
+from manim._config import (
+    config,
+    console,
+    error_console,
+    logger,
+    tempconfig,
+)
 from manim.cli.render.ease_of_access_options import ease_of_access_options
 from manim.cli.render.global_options import global_options
 from manim.cli.render.output_options import output_options
@@ -30,7 +37,25 @@ from manim.utils.module_ops import scene_classes_from_file
 
 __all__ = ["render"]
 
-__all__ = ["render"]
+
+class ClickArgs(Namespace):
+    def __init__(self, args: dict[str, Any]) -> None:
+        for name in args:
+            setattr(self, name, args[name])
+
+    def _get_kwargs(self) -> list[tuple[str, Any]]:
+        return list(self.__dict__.items())
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, ClickArgs):
+            return NotImplemented
+        return vars(self) == vars(other)
+
+    def __contains__(self, key: str) -> bool:
+        return key in self.__dict__
+
+    def __repr__(self) -> str:
+        return str(self.__dict__)
 
 
 @cloup.command(
@@ -38,47 +63,26 @@ __all__ = ["render"]
     no_args_is_help=True,
     epilog=EPILOG,
 )
-@cloup.argument("file", type=Path, required=True)
+@cloup.argument("file", type=cloup.Path(path_type=Path), required=True)
 @cloup.argument("scene_names", required=False, nargs=-1)
 @global_options
 @output_options
 @render_options
 @ease_of_access_options
-def render(
-    **args,
-):
+def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
     """Render SCENE(S) from the input FILE.
 
     FILE is the file path of the script or a config file.
 
     SCENES is an optional list of scenes in the file.
     """
-    if args["show_in_file_browser"]:
+    if kwargs["show_in_file_browser"]:
         logger.warning(
             "The short form of show_in_file_browser is deprecated and will be moved to support --format.",
         )
 
-    class ClickArgs:
-        def __init__(self, args):
-            for name in args:
-                setattr(self, name, args[name])
-
-        def _get_kwargs(self):
-            return list(self.__dict__.items())
-
-        def __eq__(self, other):
-            if not isinstance(other, ClickArgs):
-                return NotImplemented
-            return vars(self) == vars(other)
-
-        def __contains__(self, key):
-            return key in self.__dict__
-
-        def __repr__(self):
-            return str(self.__dict__)
-
-    click_args = ClickArgs(args)
-    if args["jupyter"]:
+    click_args = ClickArgs(kwargs)
+    if kwargs["jupyter"]:
         return click_args
 
     config.digest_args(click_args)
@@ -123,4 +127,4 @@ def render(
                     "You should consider upgrading via [yellow]pip install -U manim[/yellow]",
                 )
 
-    return args
+    return kwargs

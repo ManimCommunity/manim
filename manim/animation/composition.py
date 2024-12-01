@@ -175,11 +175,13 @@ class AnimationGroup(Animation):
         ]
 
         run_times = to_update["end"] - to_update["start"]
+        with_zero_run_time = run_times == 0
+        run_times[with_zero_run_time] = 1
         sub_alphas = (anim_group_time - to_update["start"]) / run_times
         if time_goes_back:
-            sub_alphas[sub_alphas < 0] = 0
+            sub_alphas[(sub_alphas < 0) | with_zero_run_time] = 0
         else:
-            sub_alphas[sub_alphas > 1] = 1
+            sub_alphas[(sub_alphas > 1) | with_zero_run_time] = 1
 
         for anim_to_update, sub_alpha in zip(to_update["anim"], sub_alphas):
             anim_to_update.interpolate(sub_alpha)

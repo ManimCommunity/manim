@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from enum import Enum
+from typing import TypedDict
 
 import numpy as np
 from cloup import Context
@@ -199,8 +200,16 @@ DEGREES = TAU / 360
 RADIANS: float = 1.0
 """Just a default to select for camera."""
 
+
+class QualityDict(TypedDict):
+    flag: str | None
+    pixel_height: int
+    pixel_width: int
+    frame_rate: int
+
+
 # Video qualities
-QUALITIES: dict[str, dict[str, str | int | None]] = {
+QUALITIES: dict[str, QualityDict] = {
     "fourk_quality": {
         "flag": "k",
         "pixel_height": 2160,

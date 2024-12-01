@@ -46,21 +46,22 @@ These colors form Manim's default color space.
             for line, char in zip(color_groups[0], "abcde"):
                 color_groups.add(Text(char).scale(0.6).next_to(line, LEFT, buff=0.2))
 
-            def named_lines_group(length, colors, names, text_colors, align_to_block):
+            def named_lines_group(length, color_names, labels, align_to_block):
+                colors = [getattr(Colors, color.upper()) for color in color_names]
                 lines = VGroup(
                     *[
                         Line(
                             ORIGIN,
                             RIGHT * length,
                             stroke_width=55,
-                            color=getattr(Colors, color.upper()),
+                            color=color,
                         )
                         for color in colors
                     ]
                 ).arrange_submobjects(buff=0.6, direction=DOWN)
 
-                for line, name, color in zip(lines, names, text_colors):
-                    line.add(Text(name, color=color).scale(0.6).move_to(line))
+                for line, name, color in zip(lines, labels, colors):
+                    line.add(Text(name, color=color.contrasting()).scale(0.6).move_to(line))
                 lines.next_to(color_groups, DOWN, buff=0.5).align_to(
                     color_groups[align_to_block], LEFT
                 )
@@ -79,7 +80,6 @@ These colors form Manim's default color space.
                 3.2,
                 other_colors,
                 other_colors,
-                [BLACK] * 4 + [WHITE] * 2,
                 0,
             )
 
@@ -95,7 +95,6 @@ These colors form Manim's default color space.
                     "darker_gray / gray_e",
                     "black",
                 ],
-                [BLACK] * 3 + [WHITE] * 4,
                 2,
             )
 
@@ -109,7 +108,6 @@ These colors form Manim's default color space.
                 3.2,
                 pure_colors,
                 pure_colors,
-                [BLACK, BLACK, WHITE],
                 6,
             )
 
