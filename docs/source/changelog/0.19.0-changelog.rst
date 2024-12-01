@@ -1,0 +1,396 @@
+*******
+v0.19.0
+*******
+
+:Date: November 30, 2024
+
+Contributors
+============
+
+A total of 46 people contributed to this
+release. People with a '+' by their names authored a patch for the first
+time.
+
+* Aarush Deshpande
+* Abulafia
+* Achille Fouilleul +
+* Benjamin Hackl
+* CJ Lee +
+* Cameron Burdgick +
+* Chin Zhe Ning
+* Christopher Hampson +
+* Eddie Ruiz +
+* Francisco Manríquez Novoa
+* Geoo Chi +
+* Henrik Skov Midtiby +
+* Hugo Chargois +
+* Irvanal Haq +
+* Jay Gupta +
+* Larry Skuse +
+* Nemo2510 +
+* Nikhil Iyer
+* Nikhila Gurusinghe +
+* Rehmatpal Singh +
+* Saveliy Yusufov +
+* Sir James Clark Maxwell
+* Tristan Schulz
+* VPC +
+* Victorien
+* Xiuyuan (Jack) Yuan +
+* alembcke
+* anagorko +
+* fogsong233 +
+* jkjkil4 +
+* nitzanbueno +
+* yang-tsao +
+
+
+The patches included in this release have been reviewed by
+the following contributors.
+
+* Aarush Deshpande
+* Achille Fouilleul
+* Benjamin Hackl
+* Christopher Hampson
+* Eddie Ruiz
+* Francisco Manríquez Novoa
+* Henrik Skov Midtiby
+* Hugo Chargois
+* Jay Gupta
+* Jérome Eertmans
+* Nemo2510
+* Nikhila Gurusinghe
+* OliverStrait
+* Saveliy Yusufov
+* Sir James Clark Maxwell
+* Tristan Schulz
+* VPC
+* Victorien
+* Xiuyuan (Jack) Yuan
+* alembcke
+* github-advanced-security[bot]
+
+Pull requests merged
+====================
+
+A total of 96 pull requests were merged for this release.
+
+Highlights
+----------
+
+* :pr:`3501`: Replace external ``ffmpeg`` dependency with ``pyav``.
+
+
+* :pr:`3966`: :class:`.VGroup` can now be initialized with :class:`.VMobject` iterables.
+
+
+* :pr:`3518`: Created a :class:`.HSV` color class.
+
+
+
+Breaking changes
+----------------
+
+* :pr:`3884`: Renamed parameters and variables conflicting with builtin functions.
+
+
+* :pr:`3922`: Removed ``inner_radius`` and ``outer_radius`` from :class:`.Sector` constructor.
+
+
+* :pr:`3797`: Replaced ``Code.styles_list`` with :meth:`.Code.get_styles_list`.
+
+
+New features
+------------
+
+* :pr:`3148`: Added a ``colorscale`` argument to :meth:`.CoordinateSystem.plot`
+
+
+* :pr:`3612`: Add three animations that together simulate a typing animation
+
+
+* :pr:`3754`: Add ``@`` shorthand for :meth:`.Axes.coords_to_point` and :meth:`.Axes.point_to_coords`
+
+
+* :pr:`3876`: Add :meth:`.Animation.set_default` class method.
+
+
+* :pr:`3903`: Preserve colors of LaTeX coloring commands.
+
+
+* :pr:`3913`: Added :mod:`.DVIPSNAMES` and :mod:`.SVGNAMES` color palettes
+
+
+* :pr:`3933`: Added :class:`.ConvexHull`, :class:`.ConvexHull3D`, :class:`.Label` and :class:`.LabeledPolygram`.
+
+
+* :pr:`3992`: Add darker, lighter and contrasting methods to :class:`.ManimColor`
+
+
+* :pr:`3997`: Add a time property to scene (:attr:`.Scene.time`)
+
+
+Enhancements
+------------
+
+* :pr:`3829`: Rewrite :func:`~.bezier.get_quadratic_approximation_of_cubic` to produce smoother animated curves
+
+
+* :pr:`3855`: Log execution time of sample scene in the ``manim checkhealth`` command
+
+
+* :pr:`3888`: Significantly reduce rendering time with a separate thread for writing frames to stream
+
+
+* :pr:`3890`: Better error messages for :class:`.DrawBorderThenFill`.
+
+
+* :pr:`3893`: Improve line rendering performance of :class:`.Cylinder`.
+
+
+* :pr:`3901`: Changed :attr:`.Square.side_length` attribute to a property
+
+
+* :pr:`3964`: Allow :class:`.SurroundingRectangle` to accept multiple Mobjects
+
+
+* :pr:`3965`: Added the ``scale_stroke`` boolean parameter to :meth:`.VMobject.scale`
+
+
+* :pr:`3974`: Made videos embedded in Google Colab by default
+
+
+* :pr:`3982`: Refactored ``run_time`` validation for :class:`.Animation` and :meth:`.Scene.wait`.
+
+
+* :pr:`4017`: Allow animations with ``run_time=0`` and implement convenience :class:`.Add` animation
+
+
+
+Optimizations
+-------------
+
+* :pr:`3760`: Optimize :meth:`.VMobject.pointwise_become_partial`
+
+
+* :pr:`3765`: Optimize :class:`.VMobject` methods which append to ``points``
+
+
+* :pr:`3766`: Created and optimized Bézier splitting functions such as :func:`~.utils.bezier.partial_bezier_points()` in :mod:`manim.utils.bezier`
+
+
+* :pr:`3767`: Optimized :func:`manim.utils.bezier.get_smooth_cubic_bezier_handle_points()`
+
+
+* :pr:`3768`: Optimized :func:`manim.utils.bezier.is_closed`
+
+
+* :pr:`3960`: Optimized :func:`~.bezier.interpolate` and :func:`~.bezier.bezier` in :mod:`manim.utils.bezier`
+
+
+
+Fixed bugs
+----------
+
+* :pr:`3706`: Fixed :meth:`.Line.put_start_and_end_on` to use the actual end of an :class:`.Arrow3D`.
+
+
+* :pr:`3732`: Fixed infinite loop in OpenGL :meth:`.BackgroundRectangle.get_color`
+
+
+* :pr:`3756`: Fix assertions and improve error messages when adding submobjects
+
+
+* :pr:`3778`: Fixed :func:`.there_and_back_with_pause` rate function behaviour with different ``pause_ratio`` values
+
+
+* :pr:`3786`: Fix :class:`.DiGraph` edges not fading correctly on :class:`.FadeIn` and :class:`.FadeOut`
+
+
+* :pr:`3790`: Fixed the :func:`.get_nth_subpath` function expecting a numpy array.
+
+
+* :pr:`3832`: Convert audio files to ``.wav`` before passing to pydub
+
+
+* :pr:`3680`: Fixed behavior of ``config.background_opacity < 1``.
+
+
+* :pr:`3839`: Fixed :attr:`.ManimConfig.format` not updating movie file extension
+
+
+* :pr:`3885`: Fixed :meth:`.OpenGLMobject.invert` not reassembling family
+
+
+* :pr:`4013`: Fixed scene skipping for :attr:`ManimConfig.upto_animation_number` set to 0
+
+
+Documentation-related changes
+-----------------------------
+
+* :pr:`3669`: Added a :mod:`manim.typing` guide
+
+
+* :pr:`3715`: Added docstrings to Brace
+
+
+* :pr:`3745`: Underline tag should be ``<u></u>`` in the documentation.
+
+
+* :pr:`3818`: Automatically document usages of :class:`typing.TypeVar`.
+
+
+* :pr:`3849`: Fix incorrect ``versionadded`` version number in plugin section in docs
+
+
+* :pr:`3851`: Rename ``manim.typing.Image`` type aliases to :class:`.PixelArray` to avoid conflict with ``PIL.Image``
+
+
+* :pr:`3857`: Update installation instructions for MacOS (via dedicated brew formula)
+
+
+* :pr:`3878`: Fixed typehint in ``types.rst`` and replaced outdated reference to ``manim.typing.Image`` with :class:`manim.typing.PixelArray`
+
+
+* :pr:`3958`: Fix: ``.to_edge``'s example demonstration in docs
+
+
+* :pr:`3972`: Refining documentations for :mod:`.moving_camera_scene` module
+
+
+Type Hints
+----------
+
+* :pr:`3751`: Added typehints to :mod:`manim.utils.iterables`
+
+
+* :pr:`3803`: Added typings to :class:`.OpenGLMobject`
+
+
+* :pr:`3902`: fixed a wrong type hint in :meth:`.Scene.restructure_mobjects`
+
+
+* :pr:`3916`: fixed type hint in :meth:`.AnimationGroup.interpolate_submobject`
+
+
+* :pr:`3926`: Fixed some typehints of :class:`.ParametricFunction`
+
+
+* :pr:`3940`: Fixed ``np.float_`` to ``np.float64`` while using numpy >= 2.0
+
+
+* :pr:`3961`: Added typehints to :mod:`manim.mobject.geometry`.
+
+
+* :pr:`3980`: Added new :class:`.PointND` and :class:`.PointND_Array` type aliases
+
+
+* :pr:`3988`: Added type hints to :mod:`manim.cli` module
+
+
+* :pr:`4006`: Stopped ignoring :mod:`manim.plugins` errors in ``mypy.ini``
+
+
+* :pr:`4007`: Added typings to :mod:`manim.__main__`
+
+
+Internal Improvements and Automation
+------------------------------------
+
+* :pr:`3737`: Fixed action for building downloadable documentation
+
+
+* :pr:`3761`: Use ``--py39-plus`` in pre-commit
+
+
+* :pr:`3777`: Add pyproject for ruff formatting
+
+
+* :pr:`3779`: Switch pre-commit to use ``ruff`` for linting.
+
+
+* :pr:`3795`: Replace Pyupgrade with Ruff rule
+
+
+* :pr:`3812`: Fix MacOS LaTeX CI
+
+
+* :pr:`3853`: Change from tempconfig to a config fixture in tests
+
+
+* :pr:`3858`: Update docker to use ENV x=y instead of ENV x y
+
+
+* :pr:`3872`: Use ruff for pytest style
+
+
+* :pr:`3873`: Use ruff instead of flake8-simplify
+
+
+* :pr:`3877`: Fix pre-commit linting
+
+
+* :pr:`3780`: Add Ruff Lint
+
+
+* :pr:`3781`: Ignore Ruff format in git blame
+
+
+* :pr:`3881`: Standardize docstrings with ruff pydocstyle rules
+
+
+* :pr:`3882`: Change flake8-comprehensions and flake8-bugbear to ruff
+
+
+* :pr:`3887`: Fix typo from HSV PR
+
+
+* :pr:`3923`: Use Ruff pygrep rules
+
+
+* :pr:`3925`: Use Github Markdown on README
+
+
+* :pr:`3956`: Set AAC codec for audio in mp4 files, add transcoding utility
+
+
+* :pr:`3955`: Use ``subprocess`` instead of ``os.system``.
+
+
+Dependencies
+------------
+
+* :pr:`3746`: Bump tqdm from 4.66.1 to 4.66.3
+
+
+* :pr:`3750`: Bump jinja2 from 3.1.3 to 3.1.4
+
+
+* :pr:`3776`: Bump requests from 2.31.0 to 2.32.0
+
+
+* :pr:`3796`: Bump tornado from 6.4 to 6.4.1
+
+
+* :pr:`3810`: Bump urllib3 from 2.2.1 to 2.2.2
+
+
+* :pr:`3827`: Fix docker build
+
+
+* :pr:`3835`: Bump docker/build-push-action from 5 to 6
+
+
+* :pr:`3841`: Bump certifi from 2024.2.2 to 2024.7.4
+
+
+* :pr:`3847`: Bump zipp from 3.18.2 to 3.19.1
+
+
+* :pr:`3895`: Lock `poetry.lock`
+
+
+* :pr:`3931`: Bump cryptography from 43.0.0 to 43.0.1
+
+
+* :pr:`4023`: Bump tornado from 6.4.1 to 6.4.2
