@@ -34,7 +34,7 @@ class StarScene(Scene):
     "transparent",
     [False, True],
 )
-def test_gif_writing(tmp_path, config, transparent):
+def test_gif_writing(tmp_path, config, write_to_movie, transparent):
     output_filename = f"gif_{'transparent' if transparent else 'opaque'}"
     config.media_dir = tmp_path
     config.quality = "low_quality"
@@ -88,7 +88,9 @@ def test_gif_writing(tmp_path, config, transparent):
         ("webm", True, "vp9", "yuv420p"),
     ],
 )
-def test_codecs(tmp_path, config, format, transparent, codec, pixel_format):
+def test_codecs(
+    tmp_path, config, write_to_movie, format, transparent, codec, pixel_format
+):
     output_filename = f"codec_{format}_{'transparent' if transparent else 'opaque'}"
     config.media_dir = tmp_path
     config.quality = "low_quality"

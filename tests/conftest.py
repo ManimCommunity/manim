@@ -93,3 +93,8 @@ def using_opengl_renderer():
 
         As of experimental, this fixture is deprecated and should not be using
     """
+
+
+@pytest.fixture
+def write_to_movie(config):
+    config.write_to_movie = True
