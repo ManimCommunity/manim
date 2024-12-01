@@ -8,8 +8,8 @@ require no local installation. Head over to
 https://try.manim.community to give our interactive tutorial a try.
 
 Otherwise, if you intend to use Manim to work on an animation project,
-we recommend installing the library locally (either to a conda environment,
-your system's Python, or via Docker).
+we recommend installing the library locally (preferably to some isolated
+virtual Python environment, or a conda-like environment, or via Docker).
 
 .. warning::
 
@@ -19,12 +19,31 @@ your system's Python, or via Docker).
    versions <different-versions>` if you are unsure which
    version you should install.
 
+#. :ref:`(Recommended) Installing Manim via Python's package manager pip
+   <local-installation>`
 #. :ref:`Installing Manim to a conda environment <conda-installation>`
-#. :ref:`Installing Manim to your system's Python <local-installation>`
 #. :ref:`Using Manim via Docker <docker-installation>`
 #. :ref:`Interactive Jupyter notebooks via Binder / Google Colab
    <interactive-online>`
 
+
+.. _local-installation:
+
+Installing Manim locally via pip
+********************************
+
+The recommended way of installing Manim is by using Python's package manager
+pip. If you already have a Python environment set up, you can simply run
+``pip install manim`` to install the library.
+
+Our :doc:`local installation guide <installation/local>` provides more detailed
+instructions, including best practices for setting up a suitable local environment.
+
+.. toctree::
+   :hidden:
+
+   installation/local
+   installation/pip
 
 .. _conda-installation:
 
@@ -53,22 +72,6 @@ The following pages show how to install Manim in a conda environment:
    :maxdepth: 2
 
    installation/conda
-
-
-
-.. _local-installation:
-
-Installing Manim locally
-************************
-
-Check out :doc:`this page <installation/local>` if you want to install Manim
-on your local machine.
-
-.. toctree::
-   :hidden:
-
-   installation/local
-   installation/pip
 
 
 .. _docker-installation:
