@@ -1,591 +1,598 @@
 from __future__ import annotations
 
-import contextlib
-import itertools as it
-import time
-from functools import cached_property
-from typing import Any
-
-import moderngl
+import moderngl as gl
 import numpy as np
-from PIL import Image
 
+import manim.constants as const
+import manim.utils.color.core as c
+import manim.utils.color.manim_colors as color
 from manim import config, logger
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject, OpenGLPoint
+from manim.camera.camera import Camera
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
-from manim.utils.caching import handle_caching_play
-from manim.utils.color import color_to_rgba
-from manim.utils.exceptions import EndSceneEarlyException
+from manim.renderer.buffers.buffer import STD140BufferFormat
+from manim.renderer.opengl_shader_program import load_shader_program_by_folder
+from manim.renderer.renderer import Renderer, RendererData, RendererProtocol
+from manim.typing import PixelArray
+from manim.utils.iterables import listify
+from manim.utils.space_ops import cross2d, earclip_triangulation, z_to_vector
 
-from ..constants import *
-from ..scene.scene_file_writer import SceneFileWriter
-from ..utils import opengl
-from ..utils.config_ops import _Data
-from ..utils.simple_functions import clip
-from ..utils.space_ops import (
-    angle_of_vector,
-    quaternion_from_angle_axis,
-    quaternion_mult,
-    rotation_matrix_transpose,
-    rotation_matrix_transpose_from_quaternion,
-)
-from .shader import Mesh, Shader
-from .vectorized_mobject_rendering import (
-    render_opengl_vectorized_mobject_fill,
-    render_opengl_vectorized_mobject_stroke,
+ubo_camera = STD140BufferFormat(
+    "ubo_camera",
+    (
+        ("vec2", "frame_shape"),
+        ("vec3", "camera_center"),
+        ("mat3", "camera_rotation"),
+        ("float", "focal_distance"),
+    ),
+    binding=0,
 )
 
-__all__ = ["OpenGLCamera", "OpenGLRenderer"]
+ubo_mobject = STD140BufferFormat(
+    "ubo_mobject",
+    (
+        ("vec3", "light_source_position"),
+        ("float", "gloss"),
+        ("float", "shadow"),
+        ("float", "reflectiveness"),
+        ("float", "flat_stroke"),
+        ("float", "joint_type"),
+        ("float", "is_fixed_in_frame"),
+        ("float", "is_fixed_orientation"),
+        ("vec3", "fixed_orientation_center"),
+    ),
+    binding=1,
+)
+
+fill_dtype = [
+    ("point", np.float32, (3,)),
+    ("unit_normal", np.float32, (3,)),
+    ("color", np.float32, (4,)),
+    ("vert_index", np.float32, (1,)),
+]
+stroke_dtype = [
+    ("point", np.float32, (3,)),
+    ("prev_point", np.float32, (3,)),
+    ("next_point", np.float32, (3,)),
+    ("stroke_width", np.float32, (1,)),
+    ("color", np.float32, (4,)),
+]
+frame_dtype = [("pos", np.float32, (2,)), ("uv", np.float32, (2,))]
 
 
-class OpenGLCamera(OpenGLMobject):
-    euler_angles = _Data()
+class GLRenderData(RendererData):
+    def __init__(self) -> None:
+        super().__init__()
+        self.fill_rgbas = np.zeros((1, 4))
+        self.stroke_rgbas = np.zeros((1, 4))
+        self.stroke_widths = np.zeros((1, 1))
+        self.normals = np.zeros((1, 4))
+        self.orientation = np.zeros((1, 1))
+        self.vert_indices = np.zeros((0, 3))
+        self.bounding_box = np.zeros((3, 3))
 
-    def __init__(
-        self,
-        frame_shape=None,
-        center_point=None,
-        # Theta, phi, gamma
-        euler_angles=[0, 0, 0],
-        focal_distance=2,
-        light_source_position=[-10, 10, 10],
-        orthographic=False,
-        minimum_polar_angle=-PI / 2,
-        maximum_polar_angle=PI / 2,
-        model_matrix=None,
-        **kwargs,
-    ):
-        self.use_z_index = True
-        self.frame_rate = 60
-        self.orthographic = orthographic
-        self.minimum_polar_angle = minimum_polar_angle
-        self.maximum_polar_angle = maximum_polar_angle
-        if self.orthographic:
-            self.projection_matrix = opengl.orthographic_projection_matrix()
-            self.unformatted_projection_matrix = opengl.orthographic_projection_matrix(
-                format_=False,
-            )
-        else:
-            self.projection_matrix = opengl.perspective_projection_matrix()
-            self.unformatted_projection_matrix = opengl.perspective_projection_matrix(
-                format_=False,
-            )
-
-        if frame_shape is None:
-            self.frame_shape = (config["frame_width"], config["frame_height"])
-        else:
-            self.frame_shape = frame_shape
-
-        if center_point is None:
-            self.center_point = ORIGIN
-        else:
-            self.center_point = center_point
-
-        if model_matrix is None:
-            model_matrix = opengl.translation_matrix(0, 0, 11)
-
-        self.focal_distance = focal_distance
-
-        if light_source_position is None:
-            self.light_source_position = [-10, 10, 10]
-        else:
-            self.light_source_position = light_source_position
-        self.light_source = OpenGLPoint(self.light_source_position)
-
-        self.default_model_matrix = model_matrix
-        super().__init__(model_matrix=model_matrix, should_render=False, **kwargs)
-
-        if euler_angles is None:
-            euler_angles = [0, 0, 0]
-        euler_angles = np.array(euler_angles, dtype=float)
-
-        self.euler_angles = euler_angles
-        self.refresh_rotation_matrix()
-
-    def get_position(self):
-        return self.model_matrix[:, 3][:3]
-
-    def set_position(self, position):
-        self.model_matrix[:, 3][:3] = position
-        return self
-
-    @cached_property
-    def formatted_view_matrix(self):
-        return opengl.matrix_to_shader_input(np.linalg.inv(self.model_matrix))
-
-    @cached_property
-    def unformatted_view_matrix(self):
-        return np.linalg.inv(self.model_matrix)
-
-    def init_points(self):
-        self.set_points([ORIGIN, LEFT, RIGHT, DOWN, UP])
-        self.set_width(self.frame_shape[0], stretch=True)
-        self.set_height(self.frame_shape[1], stretch=True)
-        self.move_to(self.center_point)
-
-    def to_default_state(self):
-        self.center()
-        self.set_height(config["frame_height"])
-        self.set_width(config["frame_width"])
-        self.set_euler_angles(0, 0, 0)
-        self.model_matrix = self.default_model_matrix
-        return self
-
-    def refresh_rotation_matrix(self):
-        # Rotate based on camera orientation
-        theta, phi, gamma = self.euler_angles
-        quat = quaternion_mult(
-            quaternion_from_angle_axis(theta, OUT, axis_normalized=True),
-            quaternion_from_angle_axis(phi, RIGHT, axis_normalized=True),
-            quaternion_from_angle_axis(gamma, OUT, axis_normalized=True),
-        )
-        self.inverse_rotation_matrix = rotation_matrix_transpose_from_quaternion(quat)
-
-    def rotate(self, angle, axis=OUT, **kwargs):
-        curr_rot_T = self.inverse_rotation_matrix
-        added_rot_T = rotation_matrix_transpose(angle, axis)
-        new_rot_T = np.dot(curr_rot_T, added_rot_T)
-        Fz = new_rot_T[2]
-        phi = np.arccos(Fz[2])
-        theta = angle_of_vector(Fz[:2]) + PI / 2
-        partial_rot_T = np.dot(
-            rotation_matrix_transpose(phi, RIGHT),
-            rotation_matrix_transpose(theta, OUT),
-        )
-        gamma = angle_of_vector(np.dot(partial_rot_T, new_rot_T.T)[:, 0])
-        self.set_euler_angles(theta, phi, gamma)
-        return self
-
-    def set_euler_angles(self, theta=None, phi=None, gamma=None):
-        if theta is not None:
-            self.euler_angles[0] = theta
-        if phi is not None:
-            self.euler_angles[1] = phi
-        if gamma is not None:
-            self.euler_angles[2] = gamma
-        self.refresh_rotation_matrix()
-        return self
-
-    def set_theta(self, theta):
-        return self.set_euler_angles(theta=theta)
-
-    def set_phi(self, phi):
-        return self.set_euler_angles(phi=phi)
-
-    def set_gamma(self, gamma):
-        return self.set_euler_angles(gamma=gamma)
-
-    def increment_theta(self, dtheta):
-        self.euler_angles[0] += dtheta
-        self.refresh_rotation_matrix()
-        return self
-
-    def increment_phi(self, dphi):
-        phi = self.euler_angles[1]
-        new_phi = clip(phi + dphi, -PI / 2, PI / 2)
-        self.euler_angles[1] = new_phi
-        self.refresh_rotation_matrix()
-        return self
-
-    def increment_gamma(self, dgamma):
-        self.euler_angles[2] += dgamma
-        self.refresh_rotation_matrix()
-        return self
-
-    def get_shape(self):
-        return (self.get_width(), self.get_height())
-
-    def get_center(self):
-        # Assumes first point is at the center
-        return self.points[0]
-
-    def get_width(self):
-        points = self.points
-        return points[2, 0] - points[1, 0]
-
-    def get_height(self):
-        points = self.points
-        return points[4, 1] - points[3, 1]
-
-    def get_focal_distance(self):
-        return self.focal_distance * self.get_height()
-
-    def interpolate(self, *args, **kwargs):
-        super().interpolate(*args, **kwargs)
-        self.refresh_rotation_matrix()
+    def __repr__(self) -> str:
+        return f"""GLRenderData
+fill:
+{self.fill_rgbas}
+stroke:
+{self.stroke_rgbas}
+normals:
+{self.normals}
+orientation:
+{self.orientation}
+mesh:
+{self.vert_indices}
+bounding_box:
+{self.bounding_box}
+        """
 
 
-class OpenGLRenderer:
-    def __init__(
-        self,
-        file_writer_class: type[SceneFileWriter] = SceneFileWriter,
-        skip_animations: bool = False,
-    ) -> None:
-        # Measured in pixel widths, used for vector graphics
-        self.anti_alias_width = 1.5
-        self._file_writer_class = file_writer_class
+def prepare_array(values: np.ndarray, desired_length: int):
+    """Interpolates a given list of colors to match the desired length
 
-        self._original_skipping_status = skip_animations
-        self.skip_animations = skip_animations
-        self.animation_start_time = 0
-        self.animation_elapsed_time = 0
-        self.time = 0
-        self.animations_hashes = []
-        self.num_plays = 0
+    Parameters
+    ----------
+    values : np.ndarray
+        a 2 dimensional numpy array where values are interpolated on the y axis
+    desired_length : int
+        the desired length for the array
 
-        self.camera = OpenGLCamera()
-        self.pressed_keys = set()
+    Returns
+    -------
+    np.ndarray
+        the interpolated array of values
+    """
+    fill_length = len(values)
+    if fill_length == 1:
+        return np.repeat(values, desired_length, axis=0)
+    xm = np.linspace(0, fill_length - 1, desired_length)
+    rgbas = []
+    for x in xm:
+        minimum = int(np.floor(x))
+        maximum = int(np.ceil(x))
+        alpha = x - minimum
+        if alpha == 0:
+            rgbas.append(values[minimum])
+            continue
 
-        # Initialize texture map.
-        self.path_to_texture_id = {}
+        val_a = values[minimum]
+        val_b = values[maximum]
+        rgbas.append(val_a * (1 - alpha) + val_b * alpha)
+    return np.array(rgbas)
 
-        self.background_color = config["background_color"]
 
-    def init_scene(self, scene):
-        self.partial_movie_files = []
-        self.file_writer: Any = self._file_writer_class(
-            self,
-            scene.__class__.__name__,
-        )
-        self.scene = scene
-        self.background_color = config["background_color"]
-        if not hasattr(self, "window"):
-            if self.should_create_window():
-                from .opengl_renderer_window import Window
+class ProgramManager:
+    @staticmethod
+    def get_available_uniforms(prog):
+        names = []
+        for name in prog:
+            member = prog[name]
+            if isinstance(member, gl.Uniform):
+                names.append(name)
 
-                self.window = Window(self)
-                self.context = self.window.ctx
-                self.frame_buffer_object = self.context.detect_framebuffer()
+    @staticmethod
+    def write_uniforms(prog, uniforms):
+        for name in uniforms:
+            if name in prog and isinstance(prog[name], gl.Uniform):
+                member = prog[name]
+                member.value = uniforms[name]
             else:
-                self.window = None
-                try:
-                    self.context = moderngl.create_context(standalone=True)
-                except Exception:
-                    self.context = moderngl.create_context(
-                        standalone=True,
-                        backend="egl",
-                    )
-                self.frame_buffer_object = self.get_frame_buffer_object(self.context, 0)
-                self.frame_buffer_object.use()
-            self.context.enable(moderngl.BLEND)
-            self.context.wireframe = config["enable_wireframe"]
-            self.context.blend_func = (
-                moderngl.SRC_ALPHA,
-                moderngl.ONE_MINUS_SRC_ALPHA,
-                moderngl.ONE,
-                moderngl.ONE,
-            )
+                logger.debug(f"The uniform {name} is not in the shader {uniforms}")
 
-    def should_create_window(self):
-        if config["force_window"]:
-            logger.warning(
-                "'--force_window' is enabled, this is intended for debugging purposes "
-                "and may impact performance if used when outputting files",
-            )
-            return True
-        return (
-            config["preview"]
-            and not config["save_last_frame"]
-            and not config["format"]
-            and not config["write_to_movie"]
-            and not config["dry_run"]
+    @staticmethod
+    def bind_uniform_block(program: gl.Program, ubo: STD140BufferFormat, index):
+        if ubo.name in program and isinstance(program[ubo.name], gl.UniformBlock):
+            ubo.bind()
+        else:
+            raise ValueError(f"Buffer block {ubo.name} does not exist in program")
+
+
+class OpenGLRenderer(Renderer, RendererProtocol):
+    pixel_array_dtype = np.uint8
+
+    def __init__(
+        self,
+        pixel_width: int = config.pixel_width,
+        pixel_height: int = config.pixel_height,
+        samples: int = 4,
+        background_color: c.ManimColor = color.BLACK,
+        background_opacity: float = 1.0,
+        background_image: str | None = None,
+    ) -> None:
+        super().__init__()
+        self.pixel_width = pixel_width
+        self.pixel_height = pixel_height
+        self.samples = samples
+        if background_opacity:
+            background_color = background_color.opacity(background_opacity)
+        self.background_color = background_color.to_rgba()
+        self.background_image = background_image
+        self.rgb_max_val: float = np.iinfo(self.pixel_array_dtype).max
+
+        # Initializing Context
+        logger.debug("Initializing OpenGL context and framebuffers")
+        self.ctx: gl.Context = gl.create_context(standalone=not config.preview)
+
+        # Those are the actual buffers that are used for rendering
+        self.stencil_texture = self.ctx.texture(
+            (self.pixel_width, self.pixel_height), components=1, samples=0, dtype="f1"
+        )
+        self.render_target_texture = self.ctx.texture(
+            (self.pixel_width, self.pixel_height), components=4, samples=0, dtype="f1"
+        )
+        self.stencil_buffer = self.ctx.renderbuffer(
+            (self.pixel_width, self.pixel_height),
+            components=1,
+            samples=samples,
+            dtype="f1",
+        )
+        self.color_buffer = self.ctx.renderbuffer(
+            (self.pixel_width, self.pixel_height),
+            components=4,
+            samples=samples,
+            dtype="f1",
+        )
+        self.depth_buffer = self.ctx.depth_renderbuffer(
+            (self.pixel_width, self.pixel_height), samples=samples
         )
 
-    def get_pixel_shape(self):
-        if hasattr(self, "frame_buffer_object"):
-            return self.frame_buffer_object.viewport[2:4]
-        else:
-            return None
+        # Here we create different fbos that can be reused which are basically just targets to use for rendering and copy
+        # render_target_fbo is used for rendering it can write to color and stencil
+        self.render_target_fbo = self.ctx.framebuffer(
+            color_attachments=[self.color_buffer, self.stencil_buffer],
+            depth_attachment=self.depth_buffer,
+        )
 
-    def refresh_perspective_uniforms(self, camera):
-        pw, ph = self.get_pixel_shape()
-        fw, fh = camera.get_shape()
-        # TODO, this should probably be a mobject uniform, with
-        # the camera taking care of the conversion factor
-        anti_alias_width = self.anti_alias_width / (ph / fh)
-        # Orient light
-        rotation = camera.inverse_rotation_matrix
-        light_pos = camera.light_source.get_location()
-        light_pos = np.dot(rotation, light_pos)
+        # this is used as source for stencil copy
+        self.stencil_buffer_fbo = self.ctx.framebuffer(
+            color_attachments=[self.stencil_buffer]
+        )
+        # this is used as destination for stencil copy
+        self.stencil_texture_fbo = self.ctx.framebuffer(
+            color_attachments=[self.stencil_texture]
+        )
+        # this is used as source for copying color to the output
+        self.color_buffer_fbo = self.ctx.framebuffer(
+            color_attachments=[self.color_buffer]
+        )
 
-        self.perspective_uniforms = {
-            "frame_shape": camera.get_shape(),
-            "anti_alias_width": anti_alias_width,
-            "camera_center": tuple(camera.get_center()),
-            "camera_rotation": tuple(np.array(rotation).T.flatten()),
-            "light_source_position": tuple(light_pos),
+        # this is used as destination for copying the rendered target
+        # and using it as texture on the output_fbo
+        self.render_target_texture_fbo = self.ctx.framebuffer(
+            color_attachments=[self.render_target_texture]
+        )
+        self.output_fbo = self.ctx.framebuffer(
+            color_attachments=[
+                self.ctx.renderbuffer(
+                    (self.pixel_width, self.pixel_height), dtype="f1", components=4
+                ),
+            ]
+        )
+
+        # Preparing vmobject shader
+        logger.debug("Initializing Shader Programs")
+        self.vmobject_fill_program = load_shader_program_by_folder(
+            self.ctx, "quadratic_bezier_fill"
+        )
+        self.vmobject_stroke_program = load_shader_program_by_folder(
+            self.ctx, "quadratic_bezier_stroke"
+        )
+        self.render_texture_program = load_shader_program_by_folder(
+            self.ctx, "render_texture"
+        )
+
+        # Initializing Buffer blocks
+        ubo_camera.init_buffer(self.ctx)
+        ubo_mobject.init_buffer(self.ctx)
+        self.vmobject_fill_program[ubo_camera.name] = ubo_camera.binding
+        self.vmobject_stroke_program[ubo_camera.name] = ubo_camera.binding
+        self.vmobject_fill_program[ubo_mobject.name] = ubo_mobject.binding
+        self.vmobject_stroke_program[ubo_mobject.name] = ubo_mobject.binding
+
+    def use_window(self) -> None:
+        self.output_fbo.release()
+        self.output_fbo = self.ctx.detect_framebuffer()
+
+    # TODO this should also be done with the update decorators because if the camera doesn't change this is pretty rough
+    def init_camera(self, camera: Camera):
+        camera_data = {
+            "frame_shape": (config.frame_width, config.frame_height),
+            "camera_center": camera.get_center(),
+            "camera_rotation": camera.get_inverse_camera_rotation_matrix().T,
             "focal_distance": camera.get_focal_distance(),
         }
+        ubo_camera.write(camera_data)
+        ubo_camera.bind()
 
-    def render_mobject(self, mobject):
-        if isinstance(mobject, OpenGLVMobject):
-            if config["use_projection_fill_shaders"]:
-                render_opengl_vectorized_mobject_fill(self, mobject)
+        uniforms = {}
+        uniforms["anti_alias_width"] = 0.01977
+        uniforms["light_source_position"] = (-10, 10, 10)
+        uniforms["pixel_shape"] = (self.pixel_width, self.pixel_height)
 
-            if config["use_projection_stroke_shaders"]:
-                render_opengl_vectorized_mobject_stroke(self, mobject)
+        # TODO: convert to singular 4x4 matrix after getting *something* to render
+        # self.vmobject_fill_program['view'].value = camera.get_view()?
+        ProgramManager.write_uniforms(self.vmobject_fill_program, uniforms)
+        ProgramManager.write_uniforms(self.vmobject_stroke_program, uniforms)
 
-        shader_wrapper_list = mobject.get_shader_wrapper_list()
+    def pre_render(self, camera):
+        self.init_camera(camera=camera)
+        self.ctx.clear()
+        self.render_target_fbo.use()
+        self.render_target_fbo.clear(*self.background_color)
 
-        # Convert ShaderWrappers to Meshes.
-        for shader_wrapper in shader_wrapper_list:
-            shader = Shader(self.context, shader_wrapper.shader_folder)
+    def post_render(self):
+        frame_data = np.zeros(6, dtype=frame_dtype)
+        frame_data["pos"] = np.array(
+            [[-1, -1], [-1, 1], [1, -1], [1, -1], [-1, 1], [1, 1]]
+        )
+        frame_data["uv"] = np.array([[0, 0], [0, 1], [1, 0], [1, 0], [0, 1], [1, 1]])
+        vbo = self.ctx.buffer(frame_data.tobytes())
+        format_ = gl.detect_format(self.render_texture_program, frame_data.dtype.names)
+        vao = self.ctx.vertex_array(
+            program=self.render_texture_program,
+            content=[(vbo, format_, *frame_data.dtype.names)],  # type: ignore
+        )
+        self.ctx.copy_framebuffer(self.render_target_texture_fbo, self.color_buffer_fbo)
+        self.render_target_texture.use(0)
+        self.output_fbo.use()
+        vao.render(gl.TRIANGLES)
+        vbo.release()
+        vao.release()
+        # self.ctx.copy_framebuffer(self.output_fbo, self.color_buffer_fbo)
 
-            # Set textures.
-            for name, path in shader_wrapper.texture_paths.items():
-                tid = self.get_texture_id(path)
-                shader.shader_program[name].value = tid
+    def render_program(self, prog, data, indices=None):
+        vbo = self.ctx.buffer(data.tobytes())
+        ibo = (
+            self.ctx.buffer(np.asarray(indices).astype("i4").tobytes())
+            if indices is not None
+            else None
+        )
+        # print(prog,vbo,data)
+        vert_format = gl.detect_format(prog, data.dtype.names)
+        # print(vert_format)
+        vao = self.ctx.vertex_array(
+            program=prog,
+            content=[(vbo, vert_format, *data.dtype.names)],
+            index_buffer=ibo,
+        )
 
-            # Set uniforms.
-            for name, value in it.chain(
-                shader_wrapper.uniforms.items(),
-                self.perspective_uniforms.items(),
-            ):
-                with contextlib.suppress(KeyError):
-                    shader.set_uniform(name, value)
-            try:
-                shader.set_uniform(
-                    "u_view_matrix", self.scene.camera.formatted_view_matrix
-                )
-                shader.set_uniform(
-                    "u_projection_matrix",
-                    self.scene.camera.projection_matrix,
-                )
-            except KeyError:
-                pass
+        vao.render(gl.TRIANGLES)
+        # data, data_size = ibo.read(), ibo.size
+        vbo.release()
+        if ibo is not None:
+            ibo.release()
+        vao.release()
+        # return data, data_size
 
-            # Set depth test.
-            if shader_wrapper.depth_test:
-                self.context.enable(moderngl.DEPTH_TEST)
+    def render_image(self, mob):
+        raise NotImplementedError
+
+    def render_previous(self, camera: Camera) -> None:
+        raise NotImplementedError
+
+    def render_mesh(self, mob) -> None:
+        raise NotImplementedError
+
+    def render_vmobject(self, mob: OpenGLVMobject) -> None:
+        self.stencil_buffer_fbo.use()
+        self.stencil_buffer_fbo.clear()
+        self.render_target_fbo.use()
+        # Setting camera uniforms
+
+        self.ctx.enable(gl.BLEND)  # type: ignore
+        # TODO: Because the Triangulation is messing up the normals this won't work
+        self.ctx.blend_func = (  # type: ignore
+            gl.SRC_ALPHA,
+            gl.ONE_MINUS_SRC_ALPHA,
+            gl.ONE,
+            gl.ONE,
+        )
+
+        def enable_depth(sub):
+            if sub.depth_test:
+                self.ctx.enable(gl.DEPTH_TEST)  # type: ignore
             else:
-                self.context.disable(moderngl.DEPTH_TEST)
+                self.ctx.disable(gl.DEPTH_TEST)  # type: ignore
 
-            # Render.
-            mesh = Mesh(
-                shader,
-                shader_wrapper.vert_data,
-                indices=shader_wrapper.vert_indices,
-                use_depth_test=shader_wrapper.depth_test,
-                primitive=mobject.render_primitive,
-            )
-            mesh.set_uniforms(self)
-            mesh.render()
+        for sub in mob.family_members_with_points():
+            # TODO: review this renderer data optimization attempt
+            if True:  # if sub.renderer_data is None:
+                # Initialize
+                GLVMobjectManager.init_render_data(sub)
 
-    def get_texture_id(self, path):
-        if repr(path) not in self.path_to_texture_id:
-            tid = len(self.path_to_texture_id)
-            texture = self.context.texture(
-                size=path.size,
-                components=len(path.getbands()),
-                data=path.tobytes(),
-            )
-            texture.repeat_x = False
-            texture.repeat_y = False
-            texture.filter = (moderngl.NEAREST, moderngl.NEAREST)
-            texture.swizzle = "RRR1" if path.mode == "L" else "RGBA"
-            texture.use(location=tid)
-            self.path_to_texture_id[repr(path)] = tid
+            if not isinstance(sub.renderer_data, GLRenderData):
+                return
 
-        return self.path_to_texture_id[repr(path)]
+            # if mob.colors_changed:
 
-    def update_skipping_status(self):
-        """
-        This method is used internally to check if the current
-        animation needs to be skipped or not. It also checks if
-        the number of animations that were played correspond to
-        the number of animations that need to be played, and
-        raises an EndSceneEarlyException if they don't correspond.
-        """
-        # there is always at least one section -> no out of bounds here
-        if self.file_writer.sections[-1].skip_animations:
-            self.skip_animations = True
-        if (
-            config.from_animation_number > 0
-            and self.num_plays < config.from_animation_number
-        ):
-            self.skip_animations = True
-        if (
-            config.upto_animation_number >= 0
-            and self.num_plays > config.upto_animation_number
-        ):
-            self.skip_animations = True
-            raise EndSceneEarlyException()
+            #     mob.renderer_data.fill_rgbas = np.resize(mob.fill_color, (len(mob.renderer_data.mesh),4))
 
-    @handle_caching_play
-    def play(self, scene, *args, **kwargs):
-        # TODO: Handle data locking / unlocking.
-        self.animation_start_time = time.time()
-        self.file_writer.begin_animation(not self.skip_animations)
+            # if mob.points_changed:3357
+            #     if(mob.has_fill()):
+            #         mob.renderer_data.mesh = ... # Triangulation todo
 
-        scene.compile_animation_data(*args, **kwargs)
-        scene.begin_animations()
-        if scene.is_current_animation_frozen_frame():
-            self.update_frame(scene)
+        family = mob.family_members_with_points()
+        num_mobs = len(family)
 
-            if not self.skip_animations:
-                self.file_writer.write_frame(
-                    self, num_frames=int(config.frame_rate * scene.duration)
+        # Another stroke pass is needed in the beginning to deal with transparency properly
+        for counter, sub in enumerate(family):
+            if not isinstance(sub.renderer_data, GLRenderData):
+                return
+            enable_depth(sub)
+            uniforms = {}
+            uniforms["index"] = (counter + 1) / num_mobs / 2
+            uniforms["disable_stencil"] = float(True)
+            # uniforms['z_shift'] = counter/9 + 1/20
+            self.ctx.copy_framebuffer(self.stencil_texture_fbo, self.stencil_buffer_fbo)
+            self.stencil_texture.use(0)
+            self.vmobject_stroke_program["stencil_texture"] = 0
+            if sub.has_stroke():
+                ubo_mobject.write(GLVMobjectManager.read_uniforms(sub))
+                ubo_mobject.bind()
+                ProgramManager.write_uniforms(self.vmobject_stroke_program, uniforms)
+                self.render_program(
+                    self.vmobject_stroke_program,
+                    GLVMobjectManager.get_stroke_shader_data(sub),
+                    np.array(range(len(sub.points))),
                 )
 
-            if self.window is not None:
-                self.window.swap_buffers()
-                while time.time() - self.animation_start_time < scene.duration:
-                    pass
-            self.animation_elapsed_time = scene.duration
+        for counter, sub in enumerate(family):
+            if not isinstance(sub.renderer_data, GLRenderData):
+                return
+            enable_depth(sub)
+            uniforms = {}
+            # uniforms['z_shift'] = counter/9
+            uniforms["index"] = (counter + 1) / num_mobs
+            # uniforms["disable_stencil"] = float(False)
+            self.ctx.copy_framebuffer(self.stencil_texture_fbo, self.stencil_buffer_fbo)
+            self.stencil_texture.use(0)
+            self.vmobject_fill_program["stencil_texture"] = 0
+            if sub.has_fill():
+                ubo_mobject.write(GLVMobjectManager.read_uniforms(sub))
+                ubo_mobject.bind()
+                ProgramManager.write_uniforms(self.vmobject_fill_program, uniforms)
+                self.render_program(
+                    self.vmobject_fill_program,
+                    GLVMobjectManager.get_fill_shader_data(sub),
+                    sub.renderer_data.vert_indices,
+                )
 
+        for counter, sub in enumerate(family):
+            if not isinstance(sub.renderer_data, GLRenderData):
+                return
+            enable_depth(sub)
+            uniforms = {}
+            uniforms["index"] = (counter + 1) / num_mobs
+            uniforms["disable_stencil"] = float(False)
+            # uniforms['z_shift'] = counter/9 + 1/20
+            self.ctx.copy_framebuffer(self.stencil_texture_fbo, self.stencil_buffer_fbo)
+            self.stencil_texture.use(0)
+            self.vmobject_stroke_program["stencil_texture"] = 0
+            if sub.has_stroke():
+                ubo_mobject.write(GLVMobjectManager.read_uniforms(sub))
+                ubo_mobject.bind()
+                ProgramManager.write_uniforms(self.vmobject_stroke_program, uniforms)
+                self.render_program(
+                    self.vmobject_stroke_program,
+                    GLVMobjectManager.get_stroke_shader_data(sub),
+                    np.array(range(len(sub.points))),
+                )
+
+    def get_pixels(self) -> PixelArray:
+        raw = self.output_fbo.read(components=4, dtype="f1", clamp=True)  # RGBA, floats
+        y, x = self.output_fbo.viewport[2:4]
+        buf = np.frombuffer(raw, dtype=np.uint8).reshape((x, y, 4))
+        # this actually has the right type (uint8) but due to
+        # numpy typing being bad, we have to type: ignore it
+        return buf[::-1]  # type: ignore
+
+    def release(self) -> None:
+        self.ctx.release()
+        self.output_fbo.release()
+
+
+class GLVMobjectManager:
+    @staticmethod
+    def get_triangulation(smob: OpenGLVMobject, normal_vector=None):
+        # Figure out how to triangulate the interior to know
+        # how to send the points as to the vertex shader.
+        # First triangles come directly from the points
+        if normal_vector is None:
+            normal_vector = smob.get_unit_normal()
+
+        points = smob.points
+
+        if len(points) <= 1:
+            smob.triangulation = np.zeros(0, dtype="i4")
+            smob.needs_new_triangulation = False
+            return smob.triangulation
+
+        if not np.isclose(normal_vector, const.OUT).all():
+            # Rotate points such that unit normal vector is OUT
+            points = np.dot(points, z_to_vector(normal_vector))
+        indices = np.arange(len(points), dtype=int)
+
+        b0s = points[0::3]
+        b1s = points[1::3]
+        b2s = points[2::3]
+        v01s = b1s - b0s
+        v12s = b2s - b1s
+
+        crosses = cross2d(v01s, v12s)
+        convexities = np.sign(crosses)
+
+        atol = smob.tolerance_for_point_equality
+        end_of_loop = np.zeros(len(b0s), dtype=bool)
+        end_of_loop[:-1] = (np.abs(b2s[:-1] - b0s[1:]) > atol).any(1)
+        end_of_loop[-1] = True
+
+        concave_parts = convexities < 0
+
+        # These are the vertices to which we'll apply a polygon triangulation
+        inner_vert_indices = np.hstack(
+            [
+                indices[0::3],
+                indices[1::3][concave_parts],
+                indices[2::3][end_of_loop],
+            ],
+        )
+        inner_vert_indices.sort()
+        rings = np.arange(1, len(inner_vert_indices) + 1)[inner_vert_indices % 3 == 2]
+
+        # Triangulate
+        inner_verts = points[inner_vert_indices]
+        inner_tri_indices = inner_vert_indices[
+            earclip_triangulation(inner_verts, rings)
+        ]  # type: ignore
+
+        tri_indices = np.hstack([indices, inner_tri_indices])
+        smob.triangulation = tri_indices
+        smob.needs_new_triangulation = False
+        return tri_indices
+
+    @staticmethod
+    def compute_bounding_box(mob):
+        all_points = np.vstack(
+            [
+                mob.points,
+                *(m.get_bounding_box() for m in mob.get_family()[1:] if m.has_points()),
+            ],
+        )
+        if len(all_points) == 0:
+            return np.zeros((3, mob.dim))
         else:
-            scene.play_internal()
+            # Lower left and upper right corners
+            mins = all_points.min(0)
+            maxs = all_points.max(0)
+            mids = (mins + maxs) / 2
+            return np.array([mins, mids, maxs])
 
-        self.file_writer.end_animation(not self.skip_animations)
-        self.time += scene.duration
-        self.num_plays += 1
+    @staticmethod
+    def init_render_data(mob: OpenGLVMobject):
+        logger.debug("Initializing GLRenderData")
+        mob.renderer_data = GLRenderData()
 
-    def clear_screen(self):
-        self.frame_buffer_object.clear(*self.background_color)
-        self.window.swap_buffers()
+        # Generate Mesh
+        mob.renderer_data.vert_indices = GLVMobjectManager.get_triangulation(mob)
+        points_length = len(mob.points)
 
-    def render(self, scene, frame_offset, moving_mobjects):
-        self.update_frame(scene)
-
-        if self.skip_animations:
-            return
-
-        self.file_writer.write_frame(self)
-
-        if self.window is not None:
-            self.window.swap_buffers()
-            while self.animation_elapsed_time < frame_offset:
-                self.update_frame(scene)
-                self.window.swap_buffers()
-
-    def update_frame(self, scene):
-        self.frame_buffer_object.clear(*self.background_color)
-        self.refresh_perspective_uniforms(scene.camera)
-
-        for mobject in scene.mobjects:
-            if not mobject.should_render:
-                continue
-            self.render_mobject(mobject)
-
-        for obj in scene.meshes:
-            for mesh in obj.get_meshes():
-                mesh.set_uniforms(self)
-                mesh.render()
-
-        self.animation_elapsed_time = time.time() - self.animation_start_time
-
-    def scene_finished(self, scene):
-        # When num_plays is 0, no images have been output, so output a single
-        # image in this case
-        if self.num_plays > 0:
-            self.file_writer.finish()
-        elif self.num_plays == 0 and config.write_to_movie:
-            config.write_to_movie = False
-
-        if self.should_save_last_frame():
-            config.save_last_frame = True
-            self.update_frame(scene)
-            self.file_writer.save_final_image(self.get_image())
-
-    def should_save_last_frame(self):
-        if config["save_last_frame"]:
-            return True
-        if self.scene.interactive_mode:
-            return False
-        return self.num_plays == 0
-
-    def get_image(self) -> Image.Image:
-        """Returns an image from the current frame. The first argument passed to image represents
-        the mode RGB with the alpha channel A. The data we read is from the currently bound frame
-        buffer. We pass in 'raw' as the name of the decoder, 0 and -1 args are specifically
-        used for the decoder tand represent the stride and orientation. 0 means there is no
-        padding expected between bytes and -1 represents the orientation and means the first
-        line of the image is the bottom line on the screen.
-
-        Returns
-        -------
-        PIL.Image
-            The PIL image of the array.
-        """
-        raw_buffer_data = self.get_raw_frame_buffer_object_data()
-        image = Image.frombytes(
-            "RGBA",
-            self.get_pixel_shape(),
-            raw_buffer_data,
-            "raw",
-            "RGBA",
-            0,
-            -1,
+        # Generate Fill Color
+        fill_color = np.array([c._internal_value for c in mob.fill_color])
+        stroke_color = np.array([c._internal_value for c in mob.stroke_color])
+        mob.renderer_data.fill_rgbas = prepare_array(fill_color, points_length)
+        mob.renderer_data.stroke_rgbas = prepare_array(stroke_color, points_length)
+        mob.renderer_data.stroke_widths = prepare_array(
+            np.asarray(listify(mob.stroke_width)), points_length
         )
-        return image
-
-    def save_static_frame_data(self, scene, static_mobjects):
-        pass
-
-    def get_frame_buffer_object(self, context, samples=0):
-        pixel_width = config["pixel_width"]
-        pixel_height = config["pixel_height"]
-        num_channels = 4
-        return context.framebuffer(
-            color_attachments=context.texture(
-                (pixel_width, pixel_height),
-                components=num_channels,
-                samples=samples,
-            ),
-            depth_attachment=context.depth_renderbuffer(
-                (pixel_width, pixel_height),
-                samples=samples,
-            ),
+        mob.renderer_data.normals = np.repeat(
+            [mob.get_unit_normal()], points_length, axis=0
         )
+        mob.renderer_data.bounding_box = GLVMobjectManager.compute_bounding_box(mob)
 
-    def get_raw_frame_buffer_object_data(self, dtype="f1"):
-        # Copy blocks from the fbo_msaa to the drawn fbo using Blit
-        # pw, ph = self.get_pixel_shape()
-        # gl.glBindFramebuffer(gl.GL_READ_FRAMEBUFFER, self.fbo_msaa.glo)
-        # gl.glBindFramebuffer(gl.GL_DRAW_FRAMEBUFFER, self.fbo.glo)
-        # gl.glBlitFramebuffer(
-        #     0, 0, pw, ph, 0, 0, pw, ph, gl.GL_COLOR_BUFFER_BIT, gl.GL_LINEAR
-        # )
-        num_channels = 4
-        ret = self.frame_buffer_object.read(
-            viewport=self.frame_buffer_object.viewport,
-            components=num_channels,
-            dtype=dtype,
+    @staticmethod
+    def read_uniforms(mob: OpenGLVMobject):
+        uniforms = {}
+        uniforms["reflectiveness"] = mob.reflectiveness
+        uniforms["is_fixed_in_frame"] = float(mob.is_fixed_in_frame)
+        uniforms["is_fixed_orientation"] = float(mob.is_fixed_orientation)
+        uniforms["fixed_orientation_center"] = tuple(
+            [float(x) for x in mob.fixed_orientation_center]
         )
-        return ret
+        uniforms["gloss"] = mob.gloss
+        uniforms["shadow"] = mob.shadow
+        uniforms["flat_stroke"] = float(mob.flat_stroke)
+        uniforms["joint_type"] = float(mob.joint_type.value)
+        uniforms["flat_stroke"] = float(mob.flat_stroke)
+        return uniforms
 
-    def get_frame(self):
-        # get current pixel values as numpy data in order to test output
-        raw = self.get_raw_frame_buffer_object_data(dtype="f1")
-        pixel_shape = self.get_pixel_shape()
-        result_dimensions = (pixel_shape[1], pixel_shape[0], 4)
-        np_buf = np.frombuffer(raw, dtype="uint8").reshape(result_dimensions)
-        np_buf = np.flipud(np_buf)
-        return np_buf
+    @staticmethod
+    def get_stroke_shader_data(mob: OpenGLVMobject) -> np.ndarray:
+        if not isinstance(mob.renderer_data, GLRenderData):
+            raise TypeError()
 
-    # Returns offset from the bottom left corner in pixels.
-    # top_left flag should be set to True when using a GUI framework
-    # where the (0,0) is at the top left: e.g. PySide6
-    def pixel_coords_to_space_coords(self, px, py, relative=False, top_left=False):
-        pixel_shape = self.get_pixel_shape()
-        if pixel_shape is None:
-            return np.array([0, 0, 0])
-        pw, ph = pixel_shape
-        fh = config["frame_height"]
-        fc = self.camera.get_center()
-        if relative:
-            return 2 * np.array([px / pw, py / ph, 0])
-        else:
-            # Only scale wrt one axis
-            scale = fh / ph
-            return fc + scale * np.array(
-                [(px - pw / 2), (-1 if top_left else 1) * (py - ph / 2), 0]
-            )
+        points = mob.points
+        stroke_data = np.zeros(len(points), dtype=stroke_dtype)
 
-    @property
-    def background_color(self):
-        return self._background_color
+        nppc = mob.n_points_per_curve
+        stroke_data["point"] = points
+        stroke_data["prev_point"][:nppc] = points[-nppc:]
+        stroke_data["prev_point"][nppc:] = points[:-nppc]
+        stroke_data["next_point"][:-nppc] = points[nppc:]
+        stroke_data["next_point"][-nppc:] = points[:nppc]
+        stroke_data["color"] = mob.renderer_data.stroke_rgbas
+        stroke_data["stroke_width"] = mob.renderer_data.stroke_widths.reshape((-1, 1))
 
-    @background_color.setter
-    def background_color(self, value):
-        self._background_color = color_to_rgba(value, 1.0)
+        return stroke_data
+
+    @staticmethod
+    def get_fill_shader_data(mob: OpenGLVMobject) -> np.ndarray:
+        if not isinstance(mob.renderer_data, GLRenderData):
+            raise TypeError()
+
+        fill_data = np.zeros(len(mob.points), dtype=fill_dtype)
+        fill_data["point"] = mob.points
+        fill_data["color"] = mob.renderer_data.fill_rgbas
+        # fill_data["orientation"] = mob.renderer_data.orientation
+        fill_data["unit_normal"] = mob.renderer_data.normals
+        fill_data["vert_index"] = np.reshape(range(len(mob.points)), (-1, 1))
+        return fill_data

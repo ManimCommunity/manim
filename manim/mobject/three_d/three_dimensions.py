@@ -30,9 +30,9 @@ from manim.constants import *
 from manim.mobject.geometry.arc import Circle
 from manim.mobject.geometry.polygram import Square
 from manim.mobject.mobject import *
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-from manim.mobject.types.vectorized_mobject import VectorizedPoint, VGroup, VMobject
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+from manim.mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from manim.utils.color import (
     ManimColor,
     ParsableManimColor,
@@ -41,12 +41,12 @@ from manim.utils.iterables import tuplify
 from manim.utils.space_ops import normalize, perpendicular_bisector, z_to_vector
 
 
-class ThreeDVMobject(VMobject, metaclass=ConvertToOpenGL):
+class ThreeDVMobject(OpenGLVMobject):
     def __init__(self, shade_in_3d: bool = True, **kwargs):
         super().__init__(shade_in_3d=shade_in_3d, **kwargs)
 
 
-class Surface(VGroup, metaclass=ConvertToOpenGL):
+class Surface(VGroup):
     """Creates a Parametric Surface using a checkerboard pattern.
 
     Parameters
@@ -215,7 +215,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
 
     def set_fill_by_value(
         self,
-        axes: Mobject,
+        axes: OpenGLMobject,
         colorscale: list[ParsableManimColor] | ParsableManimColor | None = None,
         axis: int = 2,
         **kwargs,
@@ -316,10 +316,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
                             new_colors[i],
                             color_index,
                         )
-                        if config.renderer == RendererType.OPENGL:
-                            mob.set_color(mob_color, recurse=False)
-                        elif config.renderer == RendererType.CAIRO:
-                            mob.set_color(mob_color, family=False)
+                        mob.set_color(mob_color, recurse=False)
                         break
 
         return self
@@ -621,8 +618,7 @@ class Cone(Surface):
         self._current_phi = 0
         self.base_circle = Circle(
             radius=base_radius,
-            color=self.fill_color,
-            fill_opacity=self.fill_opacity,
+            color=self.get_fill_colors(),
             stroke_width=0,
         )
         self.base_circle.shift(height * IN)
@@ -803,12 +799,14 @@ class Cylinder(Surface):
 
     def add_bases(self) -> None:
         """Adds the end caps of the cylinder."""
-        if config.renderer == RendererType.OPENGL:
-            color = self.color
-            opacity = self.opacity
-        elif config.renderer == RendererType.CAIRO:
-            color = self.fill_color
-            opacity = self.fill_opacity
+        if config.renderer == RendererType.CAIRO:
+            # TODO: Surface should be made a separate mobject type
+            # (like it is for OpenGL) for the Cairo renderer too,
+            # to make them have the same interface.
+            raise NotImplementedError
+
+        color = self.color
+        opacity = self.opacity
 
         self.base_top = Circle(
             radius=self.radius,
@@ -966,8 +964,8 @@ class Line3D(Cylinder):
 
     def pointify(
         self,
-        mob_or_point: Mobject | Point3D,
-        direction: Vector3D = None,
+        mob_or_point: OpenGLMobject | Point3D,
+        direction: Vector3D | None = None,
     ) -> np.ndarray:
         """Gets a point representing the center of the :class:`Mobjects <.Mobject>`.
 
@@ -983,7 +981,7 @@ class Line3D(Cylinder):
         :class:`numpy.array`
             Center of the :class:`Mobjects <.Mobject>` or point, or edge if direction is given.
         """
-        if isinstance(mob_or_point, (Mobject, OpenGLMobject)):
+        if isinstance(mob_or_point, OpenGLMobject):
             mob = mob_or_point
             if direction is None:
                 return mob.get_center()

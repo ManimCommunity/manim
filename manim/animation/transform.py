@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from manim.typing import PathFuncType
+
 __all__ = [
     "Transform",
     "ReplacementTransform",
@@ -28,28 +30,26 @@ __all__ = [
 
 import inspect
 import types
-from collections.abc import Iterable, Sequence
+from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any, Callable
 
 import numpy as np
 
-from manim.mobject.opengl.opengl_mobject import OpenGLGroup, OpenGLMobject
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 
-from .. import config
 from ..animation.animation import Animation
 from ..constants import (
     DEFAULT_POINTWISE_FUNCTION_RUN_TIME,
     DEGREES,
     ORIGIN,
     OUT,
-    RendererType,
 )
 from ..mobject.mobject import Group, Mobject
 from ..utils.paths import path_along_arc, path_along_circles
 from ..utils.rate_functions import smooth, squish_rate_func
 
 if TYPE_CHECKING:
-    from ..scene.scene import Scene
+    pass
 
 
 class Transform(Animation):
@@ -127,12 +127,12 @@ class Transform(Animation):
 
     def __init__(
         self,
-        mobject: Mobject | None,
-        target_mobject: Mobject | None = None,
+        mobject: OpenGLMobject | None,
+        target_mobject: OpenGLMobject | None = None,
         path_func: Callable | None = None,
         path_arc: float = 0,
         path_arc_axis: np.ndarray = OUT,
-        path_arc_centers: np.ndarray = None,
+        path_arc_centers: np.ndarray | None = None,
         replace_mobject_with_target_in_scene: bool = False,
         **kwargs,
     ) -> None:
@@ -153,8 +153,8 @@ class Transform(Animation):
         self.replace_mobject_with_target_in_scene: bool = (
             replace_mobject_with_target_in_scene
         )
-        self.target_mobject: Mobject = (
-            target_mobject if target_mobject is not None else Mobject()
+        self.target_mobject: OpenGLMobject = (
+            target_mobject if target_mobject is not None else OpenGLMobject()
         )
         super().__init__(mobject, **kwargs)
 
@@ -173,48 +173,42 @@ class Transform(Animation):
     @property
     def path_func(
         self,
-    ) -> Callable[
-        [Iterable[np.ndarray], Iterable[np.ndarray], float],
-        Iterable[np.ndarray],
-    ]:
+    ) -> PathFuncType:
         return self._path_func
 
     @path_func.setter
     def path_func(
         self,
-        path_func: Callable[
-            [Iterable[np.ndarray], Iterable[np.ndarray], float],
-            Iterable[np.ndarray],
-        ],
+        path_func: PathFuncType,
     ) -> None:
         if path_func is not None:
             self._path_func = path_func
 
     def begin(self) -> None:
-        # Use a copy of target_mobject for the align_data
-        # call so that the actual target_mobject stays
-        # preserved.
         self.target_mobject = self.create_target()
-        self.target_copy = self.target_mobject.copy()
-        # Note, this potentially changes the structure
-        # of both mobject and target_mobject
-        if config.renderer == RendererType.OPENGL:
-            self.mobject.align_data_and_family(self.target_copy)
+        if self.mobject.is_aligned_with(self.target_mobject):
+            self.target_copy = self.target_mobject
         else:
-            self.mobject.align_data(self.target_copy)
+            # Use a copy of target_mobject for the align_data_and_family
+            # call so that the actual target_mobject stays
+            # preserved, since calling align_data will potentially
+            # change the structure of both arguments
+            self.target_copy = self.target_mobject.copy()
+        self.mobject.align_data_and_family(self.target_copy)
+
         super().begin()
 
-    def create_target(self) -> Mobject:
+    def create_target(self) -> OpenGLMobject:
         # Has no meaningful effect here, but may be useful
         # in subclasses
         return self.target_mobject
 
-    def clean_up_from_scene(self, scene: Scene) -> None:
-        super().clean_up_from_scene(scene)
+    def finish(self) -> None:
+        super().finish()
         if self.replace_mobject_with_target_in_scene:
-            scene.replace(self.mobject, self.target_mobject)
+            self.buffer.replace(self.mobject, self.target_mobject)
 
-    def get_all_mobjects(self) -> Sequence[Mobject]:
+    def get_all_mobjects(self) -> Sequence[OpenGLMobject]:
         return [
             self.mobject,
             self.starting_mobject,
@@ -222,21 +216,21 @@ class Transform(Animation):
             self.target_copy,
         ]
 
-    def get_all_families_zipped(self) -> Iterable[tuple]:  # more precise typing?
+    def get_all_families_zipped(
+        self,
+    ) -> zip[tuple[OpenGLMobject, OpenGLMobject, OpenGLMobject]]:
         mobs = [
             self.mobject,
             self.starting_mobject,
             self.target_copy,
         ]
-        if config.renderer == RendererType.OPENGL:
-            return zip(*(mob.get_family() for mob in mobs))
-        return zip(*(mob.family_members_with_points() for mob in mobs))
+        return zip(*(mob.get_family() for mob in mobs))
 
     def interpolate_submobject(
         self,
-        submobject: Mobject,
-        starting_submobject: Mobject,
-        target_copy: Mobject,
+        submobject: OpenGLMobject,
+        starting_submobject: OpenGLMobject,
+        target_copy: OpenGLMobject,
         alpha: float,
     ) -> Transform:
         submobject.interpolate(starting_submobject, target_copy, alpha, self.path_func)
@@ -291,7 +285,9 @@ class ReplacementTransform(Transform):
 
     """
 
-    def __init__(self, mobject: Mobject, target_mobject: Mobject, **kwargs) -> None:
+    def __init__(
+        self, mobject: OpenGLMobject, target_mobject: OpenGLMobject, **kwargs
+    ) -> None:
         super().__init__(
             mobject, target_mobject, replace_mobject_with_target_in_scene=True, **kwargs
         )
@@ -300,7 +296,9 @@ class ReplacementTransform(Transform):
 class TransformFromCopy(Transform):
     """Performs a reversed Transform"""
 
-    def __init__(self, mobject: Mobject, target_mobject: Mobject, **kwargs) -> None:
+    def __init__(
+        self, mobject: OpenGLMobject, target_mobject: OpenGLMobject, **kwargs
+    ) -> None:
         super().__init__(target_mobject, mobject, **kwargs)
 
     def interpolate(self, alpha: float) -> None:
@@ -339,8 +337,8 @@ class ClockwiseTransform(Transform):
 
     def __init__(
         self,
-        mobject: Mobject,
-        target_mobject: Mobject,
+        mobject: OpenGLMobject,
+        target_mobject: OpenGLMobject,
         path_arc: float = -np.pi,
         **kwargs,
     ) -> None:
@@ -388,8 +386,8 @@ class CounterclockwiseTransform(Transform):
 
     def __init__(
         self,
-        mobject: Mobject,
-        target_mobject: Mobject,
+        mobject: OpenGLMobject,
+        target_mobject: OpenGLMobject,
         path_arc: float = np.pi,
         **kwargs,
     ) -> None:
@@ -422,11 +420,11 @@ class MoveToTarget(Transform):
 
     """
 
-    def __init__(self, mobject: Mobject, **kwargs) -> None:
+    def __init__(self, mobject: OpenGLMobject, **kwargs) -> None:
         self.check_validity_of_input(mobject)
         super().__init__(mobject, mobject.target, **kwargs)
 
-    def check_validity_of_input(self, mobject: Mobject) -> None:
+    def check_validity_of_input(self, mobject: OpenGLMobject) -> None:
         if not hasattr(mobject, "target"):
             raise ValueError(
                 "MoveToTarget called on mobject" "without attribute 'target'",
@@ -479,7 +477,7 @@ class ApplyMethod(Transform):
             )
         assert isinstance(method.__self__, (Mobject, OpenGLMobject))
 
-    def create_target(self) -> Mobject:
+    def create_target(self) -> OpenGLMobject:
         method = self.method
         # Make sure it's a list so that args.pop() works
         args = list(self.method_args)
@@ -525,7 +523,9 @@ class ApplyPointwiseFunction(ApplyMethod):
 
 
 class ApplyPointwiseFunctionToCenter(ApplyPointwiseFunction):
-    def __init__(self, function: types.MethodType, mobject: Mobject, **kwargs) -> None:
+    def __init__(
+        self, function: types.MethodType, mobject: OpenGLMobject, **kwargs
+    ) -> None:
         self.function = function
         super().__init__(mobject.move_to, **kwargs)
 
@@ -615,7 +615,9 @@ class Restore(ApplyMethod):
 
 
 class ApplyFunction(Transform):
-    def __init__(self, function: types.MethodType, mobject: Mobject, **kwargs) -> None:
+    def __init__(
+        self, function: types.MethodType, mobject: OpenGLMobject, **kwargs
+    ) -> None:
         self.function = function
         super().__init__(mobject, **kwargs)
 
@@ -686,6 +688,7 @@ class ApplyComplexFunction(ApplyMethod):
         super().__init__(method, function, **kwargs)
 
     def _init_path_func(self) -> None:
+        # TODO: this seems broken?
         func1 = self.function(complex(1))
         self.path_arc = np.log(func1).imag
         super()._init_path_func()
@@ -834,10 +837,7 @@ class FadeTransform(Transform):
         self.stretch = stretch
         self.dim_to_match = dim_to_match
         mobject.save_state()
-        if config.renderer == RendererType.OPENGL:
-            group = OpenGLGroup(mobject, target_mobject.copy())
-        else:
-            group = Group(mobject, target_mobject.copy())
+        group = Group(mobject, target_mobject.copy())
         super().__init__(group, **kwargs)
 
     def begin(self):
@@ -878,11 +878,11 @@ class FadeTransform(Transform):
     def get_all_families_zipped(self):
         return Animation.get_all_families_zipped(self)
 
-    def clean_up_from_scene(self, scene):
-        Animation.clean_up_from_scene(self, scene)
-        scene.remove(self.mobject)
+    def finish(self):
+        Animation.finish(self)  # TODO: is this really needed over super()?
+        self.buffer.remove(self.mobject)
         self.mobject[0].restore()
-        scene.add(self.to_add_on_completion)
+        self.buffer.add(self.to_add_on_completion)
 
 
 class FadeTransformPieces(FadeTransform):

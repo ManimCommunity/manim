@@ -18,7 +18,8 @@ from ..animation.animation import Animation
 from ..utils.rate_functions import linear
 
 if TYPE_CHECKING:
-    from ..mobject.mobject import Mobject, VMobject
+    from ..mobject.mobject import Mobject
+    from ..mobject.types.vectorized_mobject import VMobject
 
 
 class Homotopy(Animation):
@@ -55,12 +56,12 @@ class Homotopy(Animation):
         **kwargs,
     ) -> None:
         self.homotopy = homotopy
-        self.apply_function_kwargs = (
-            apply_function_kwargs if apply_function_kwargs is not None else {}
-        )
+        self.apply_function_kwargs = apply_function_kwargs or {}
         super().__init__(mobject, run_time=run_time, **kwargs)
 
-    def function_at_time_t(self, t: float) -> tuple[float, float, float]:
+    def function_at_time_t(
+        self, t: float
+    ) -> Callable[[tuple[float, float, float]], tuple[float, float, float]]:
         return lambda p: self.homotopy(*p, t)
 
     def interpolate_submobject(
@@ -69,7 +70,7 @@ class Homotopy(Animation):
         starting_submobject: Mobject,
         alpha: float,
     ) -> None:
-        submobject.points = starting_submobject.points
+        submobject.match_points(starting_submobject)
         submobject.apply_function(
             self.function_at_time_t(alpha), **self.apply_function_kwargs
         )
@@ -123,7 +124,7 @@ class PhaseFlow(Animation):
             **kwargs,
         )
 
-    def interpolate_mobject(self, alpha: float) -> None:
+    def interpolate(self, alpha: float) -> None:
         if hasattr(self, "last_alpha"):
             dt = self.virtual_time * (
                 self.rate_func(alpha) - self.rate_func(self.last_alpha)
@@ -159,6 +160,6 @@ class MoveAlongPath(Animation):
             mobject, suspend_mobject_updating=suspend_mobject_updating, **kwargs
         )
 
-    def interpolate_mobject(self, alpha: float) -> None:
+    def interpolate(self, alpha: float) -> None:
         point = self.path.point_from_proportion(self.rate_func(alpha))
         self.mobject.move_to(point)
