@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import math
 
-import numpy as np
 import moderngl as gl
+import numpy as np
 
 
 class STD140BufferFormat:

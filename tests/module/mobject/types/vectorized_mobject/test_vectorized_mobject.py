@@ -8,15 +8,15 @@ from manim import (
     CurvesAsSubmobjects,
     Line,
     Mobject,
+    OpenGLMobject,
     Polygon,
     RegularPolygon,
     Square,
     VDict,
     VGroup,
-    OpenGLMobject,
 )
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.constants import PI
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 
 
 def test_vmobject_add():
