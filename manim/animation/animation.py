@@ -16,13 +16,14 @@ from .. import config, logger
 from ..mobject import mobject
 from ..mobject.mobject import Group, Mobject
 from ..mobject.opengl import opengl_mobject
-from ..scene.scene import Scene
 from ..utils.rate_functions import linear, smooth
 from .protocol import AnimationProtocol, MobjectAnimation
 from .scene_buffer import SceneBuffer, SceneOperation
 
 if TYPE_CHECKING:
     from typing_extensions import Self
+
+    from manim.scene.scene import Scene
 
 M = TypeVar("M", bound=OpenGLMobject)
 
