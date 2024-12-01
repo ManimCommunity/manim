@@ -57,7 +57,7 @@ extensions = [
 # Automatically generate stub pages when using the .. autosummary directive
 autosummary_generate = True
 
-myst_enable_extensions = ["colon_fence"]
+myst_enable_extensions = ["colon_fence", "amsmath"]
 
 # generate documentation from type hints
 ALIAS_DOCS_DICT = parse_module_attributes()[0]
