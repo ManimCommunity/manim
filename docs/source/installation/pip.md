@@ -20,7 +20,7 @@ install Manim directly.
 :class: seealso
 
 One way to install `uv` is via the dedicated console installer supporting
-all large operating systems. Simply paste the following snippet into 
+all large operating systems. Simply paste the following snippet into
 your terminal / PowerShell -- or
 [consult `uv`'s documentation](https://docs.astral.sh/uv/#getting-started)
 for alternative ways to install the tool.
@@ -78,7 +78,7 @@ to install Python 3.12.
 and widely used typesetting system allowing you to write formulas like
 
 \begin{equation*}
-\frac{1}{2\pi i} \oint_{\gamma} \frac{f(z)}{(z - z_0)^{n+1}}~dz 
+\frac{1}{2\pi i} \oint_{\gamma} \frac{f(z)}{(z - z_0)^{n+1}}~dz
 = \frac{f^{(n)}(z_0)}{n!}.
 \end{equation*}
 
