@@ -78,7 +78,7 @@ A total of 96 pull requests were merged for this release.
 Highlights
 ----------
 
-* :pr:`3501`: Replace external ``ffmpeg`` dependency with ``pyav``.
+* :pr:`3501`: Replaced external ``ffmpeg`` dependency with ``pyav``.
 
 
 * :pr:`3966`: :class:`.VGroup` can now be initialized with :class:`.VMobject` iterables.
@@ -270,7 +270,7 @@ Type Hints
 * :pr:`3902`: fixed a wrong type hint in :meth:`.Scene.restructure_mobjects`
 
 
-* :pr:`3916`: fixed type hint in :meth:`.AnimationGroup.interpolate_submobject`
+* :pr:`3916`: fixed type hint in :meth:`.DrawBorderThenFill.interpolate_submobject`
 
 
 * :pr:`3926`: Fixed some typehints of :class:`.ParametricFunction`
@@ -351,10 +351,10 @@ Internal Improvements and Automation
 * :pr:`3925`: Use Github Markdown on README
 
 
-* :pr:`3956`: Set AAC codec for audio in mp4 files, add transcoding utility
-
-
 * :pr:`3955`: Use ``subprocess`` instead of ``os.system``.
+
+
+* :pr:`3956`: Set AAC codec for audio in mp4 files, add transcoding utility
 
 
 Dependencies
