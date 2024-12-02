@@ -263,7 +263,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         if len(tips) == 0:
             raise Exception("tip not found")
         else:
-            tip: VMobject = tips[0]
+            tip: VMobject = tips[0]  # type: ignore [assignment]
             return tip
 
     def get_default_tip_length(self) -> float:

@@ -2270,20 +2270,58 @@ class Mobject:
 
     # Family matters
 
-    def __getitem__(self, value):
-        self_list = self.split()
-        GroupClass = self.get_group_class()
-        if isinstance(value, slice):
-            return GroupClass(*self_list[value])
-        if isinstance(value, Iterable):
-            items = []
-            for index in value:
-                if isinstance(index, slice):
-                    items += self_list[index]
+    def __getitem__(self, value: int | slice | tuple | list | np.ndarray) -> Mobject:
+        def get_from_list(
+            mob_list: list[Mobject],
+            value: int | slice | tuple | list | np.ndarray,
+        ) -> Mobject | list[Mobject]:
+            # Basic indexing, 1 dimension
+            if isinstance(value, (int, slice)):
+                return mob_list[value]
+
+            # Basic indexing, N dimensions
+            if isinstance(value, tuple):
+                submob_or_submob_list = get_from_list(mob_list, value[0])
+                # Base case: only 1 value
+                if len(value) == 1:
+                    return submob_or_submob_list
+                # Recursion: iterate over the rest of values
+                if isinstance(value[0], int):
+                    submob = submob_or_submob_list
+                    subgroup = submob[value[1:]]
+                    return subgroup
+                submob_list = submob_or_submob_list
+                subgroups = [sm[value[1:]] for sm in submob_list]
+                return subgroups
+
+            # Fancy indexing
+            if isinstance(value, (list, np.ndarray)):
+                items: list[Mobject]
+                # With array of bools
+                if len(value) == len(mob_list) and all(
+                    isinstance(index, bool) for index in value
+                ):
+                    items = []
+                    for i, include_mob in enumerate(value):
+                        if include_mob:
+                            items.append(mob_list[i])
+                # With array of ints or other arrays
                 else:
-                    items.append(self_list[index])
-            return GroupClass(*items)
-        return self_list[value]
+                    pre_items = [get_from_list(mob_list, index) for index in value]
+                    items = [
+                        VGroup(*item) if isinstance(item, (list, np.ndarray)) else item
+                        for item in pre_items
+                    ]
+                return items
+
+            raise ValueError("Non supported index type")
+
+        self_list = self.split()
+        mob_or_mobs = get_from_list(self_list, value)
+        if isinstance(mob_or_mobs, list):
+            GroupClass = self.get_group_class()
+            return GroupClass(*mob_or_mobs)
+        return mob_or_mobs
 
     def __iter__(self):
         return iter(self.split())

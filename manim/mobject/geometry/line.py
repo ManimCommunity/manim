@@ -601,9 +601,9 @@ class Arrow(Line):
         self._set_stroke_width_from_length()
 
         if has_tip:
-            self.add_tip(tip=old_tips[0])
+            self.add_tip(tip=old_tips[0])  # type: ignore [arg-type]
         if has_start_tip:
-            self.add_tip(tip=old_tips[1], at_start=True)
+            self.add_tip(tip=old_tips[1], at_start=True)  # type: ignore [arg-type]
         return self
 
     def get_normal_vector(self) -> Vector3D:
