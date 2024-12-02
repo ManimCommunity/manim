@@ -73,7 +73,7 @@ the following contributors.
 Pull requests merged
 ====================
 
-A total of 96 pull requests were merged for this release.
+A total of 97 pull requests were merged for this release.
 
 Highlights
 ----------
@@ -155,6 +155,9 @@ Enhancements
 
 
 * :pr:`3965`: Added the ``scale_stroke`` boolean parameter to :meth:`.VMobject.scale`
+
+
+* :pr:`3967`: Add support for Python 3.13
 
 
 * :pr:`3974`: Made videos embedded in Google Colab by default
