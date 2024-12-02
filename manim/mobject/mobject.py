@@ -2272,10 +2272,18 @@ class Mobject:
 
     def __getitem__(self, value):
         self_list = self.split()
+        GroupClass = self.get_group_class()
         if isinstance(value, slice):
-            GroupClass = self.get_group_class()
-            return GroupClass(*self_list.__getitem__(value))
-        return self_list.__getitem__(value)
+            return GroupClass(*self_list[value])
+        if isinstance(value, Iterable):
+            items = []
+            for index in value:
+                if isinstance(index, slice):
+                    items += self_list[index]
+                else:
+                    items.append(self_list[index])
+            return GroupClass(*items)
+        return self_list[value]
 
     def __iter__(self):
         return iter(self.split())
