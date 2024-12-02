@@ -397,3 +397,6 @@ Dependencies
 
 
 * :pr:`4023`: Bump tornado from 6.4.1 to 6.4.2
+
+
+* :pr:`4037`: Cap ``pyav`` version
