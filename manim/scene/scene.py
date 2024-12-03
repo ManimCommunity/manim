@@ -1070,7 +1070,7 @@ class Scene:
 
     def play(
         self,
-        *args: Animation | Iterable[Animation] | types.GeneratorType[Animation],
+        *args: Animation | Iterable[Animation] | Mobject,
         subcaption=None,
         subcaption_duration=None,
         subcaption_offset=0,
