@@ -178,7 +178,7 @@ def always_rotate(mobject: Mobject, rate: float = 20 * DEGREES, **kwargs) -> Mob
 
 
 def turn_animation_into_updater(
-    animation: Animation, cycle: bool = False, **kwargs
+    animation: Animation, cycle: bool = False, delay: float = 0, **kwargs
 ) -> Mobject:
     """
     Add an updater to the animation's mobject which applies
@@ -186,6 +186,8 @@ def turn_animation_into_updater(
 
     If cycle is True, this repeats over and over.  Otherwise,
     the updater will be popped upon completion
+
+    The `delay` parameter allows us to perform more complex timeline control.
 
     Examples
     --------
@@ -206,21 +208,22 @@ def turn_animation_into_updater(
     mobject = animation.mobject
     animation.suspend_mobject_updating = False
     animation.begin()
-    animation.total_time = 0
+    animation.total_time = -delay
 
     def update(m: Mobject, dt: float):
-        run_time = animation.get_run_time()
-        time_ratio = animation.total_time / run_time
-        if cycle:
-            alpha = time_ratio % 1
-        else:
-            alpha = np.clip(time_ratio, 0, 1)
-            if alpha >= 1:
-                animation.finish()
-                m.remove_updater(update)
-                return
-        animation.interpolate(alpha)
-        animation.update_mobjects(dt)
+        if animation.total_time >= 0:
+            run_time = animation.get_run_time()
+            time_ratio = animation.total_time / run_time
+            if cycle:
+                alpha = time_ratio % 1
+            else:
+                alpha = np.clip(time_ratio, 0, 1)
+                if alpha >= 1:
+                    animation.finish()
+                    m.remove_updater(update)
+                    return
+            animation.interpolate(alpha)
+            animation.update_mobjects(dt)
         animation.total_time += dt
 
     mobject.add_updater(update)
