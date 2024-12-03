@@ -1159,7 +1159,7 @@ def inverse_interpolate(
     .. code-block:: pycon
 
         >>> inverse_interpolate(start=2, end=6, value=4)
-        0.5
+        np.float64(0.5)
 
         >>> start = np.array([1, 2, 1])
         >>> end = np.array([7, 8, 11])
@@ -1221,7 +1221,7 @@ def match_interpolate(
     Examples
     --------
     >>> match_interpolate(0, 100, 10, 20, 15)
-    50.0
+    np.float64(50.0)
     """
     old_alpha = inverse_interpolate(old_start, old_end, old_value)
     return interpolate(
@@ -1938,7 +1938,7 @@ def is_closed(points: Point3D_Array) -> bool:
         return False
     if abs(end[1] - start[1]) > tolerance[1]:
         return False
-    return abs(end[2] - start[2]) <= tolerance[2]
+    return bool(abs(end[2] - start[2]) <= tolerance[2])
 
 
 def proportions_along_bezier_curve_for_point(
