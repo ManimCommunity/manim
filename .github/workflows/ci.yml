@@ -23,7 +23,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-22.04, macos-13, windows-latest]
-        python: ["3.9", "3.10", "3.11", "3.12"]
+        python: ["3.9", "3.10", "3.11", "3.12", "3.13"]
 
     steps:
       - name: Checkout the repository
@@ -31,7 +31,7 @@ jobs:
 
       - name: Install Poetry
         run: |
-          pipx install "poetry==1.7.*"
+          pipx install "poetry==1.8.*"
           poetry config virtualenvs.prefer-active-python true
 
       - name: Setup Python ${{ matrix.python }}
@@ -142,10 +142,7 @@ jobs:
           Expand-Archive -LiteralPath "$($env:TMP)\TinyTex.zip" -DestinationPath "$($PWD)\ManimCache\LatexWindows"
           $env:Path = "$($PWD)\ManimCache\LatexWindows\TinyTeX\bin\windows;$($env:PATH)"
           tlmgr update --self
-          foreach ($c in $tinyTexPackages){
-            $c=$c.Trim()
-            tlmgr install $c
-          }
+          tlmgr install $tinyTexPackages
           $env:PATH=$OriPath
           echo "Completed Latex"
 
@@ -156,10 +153,9 @@ jobs:
           $env:Path = "$env:USERPROFILE\.poetry\bin;$($env:PATH)"
           echo "$env:Path" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
-      - name: Install manim
+      - name: Install dependencies and manim
         run: |
-          poetry config installer.modern-installation false
-          poetry install
+          poetry install --all-extras
 
       - name: Run tests
         run: |

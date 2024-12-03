@@ -40,10 +40,10 @@ def binary_search(
     ::
 
         >>> solution = binary_search(lambda x: x**2 + 3*x + 1, 11, 0, 5)
-        >>> abs(solution - 2) < 1e-4
+        >>> bool(abs(solution - 2) < 1e-4)
         True
         >>> solution = binary_search(lambda x: x**2 + 3*x + 1, 11, 0, 5, tolerance=0.01)
-        >>> abs(solution - 2) < 0.01
+        >>> bool(abs(solution - 2) < 0.01)
         True
 
     Searching in the interval :math:`[0, 5]` for a target value of :math:`71`

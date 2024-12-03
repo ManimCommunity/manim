@@ -403,9 +403,9 @@ class NumberLine(Line):
             >>> from manim import NumberLine
             >>> number_line = NumberLine()
             >>> number_line.point_to_number((0, 0, 0))
-            0.0
+            np.float64(0.0)
             >>> number_line.point_to_number((1, 0, 0))
-            1.0
+            np.float64(1.0)
             >>> number_line.point_to_number([[0.5, 0, 0], [1, 0, 0], [1.5, 0, 0]])
             array([0.5, 1. , 1.5])
 
