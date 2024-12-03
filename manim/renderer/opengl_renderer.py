@@ -216,7 +216,11 @@ class OpenGLCamera(OpenGLMobject):
 
 
 class OpenGLRenderer:
-    def __init__(self, file_writer_class=SceneFileWriter, skip_animations=False):
+    def __init__(
+        self,
+        file_writer_class: type[SceneFileWriter] = SceneFileWriter,
+        skip_animations: bool = False,
+    ) -> None:
         # Measured in pixel widths, used for vector graphics
         self.anti_alias_width = 1.5
         self._file_writer_class = file_writer_class
@@ -396,13 +400,13 @@ class OpenGLRenderer:
         if self.file_writer.sections[-1].skip_animations:
             self.skip_animations = True
         if (
-            config["from_animation_number"]
-            and self.num_plays < config["from_animation_number"]
+            config.from_animation_number > 0
+            and self.num_plays < config.from_animation_number
         ):
             self.skip_animations = True
         if (
-            config["upto_animation_number"]
-            and self.num_plays > config["upto_animation_number"]
+            config.upto_animation_number >= 0
+            and self.num_plays > config.upto_animation_number
         ):
             self.skip_animations = True
             raise EndSceneEarlyException()

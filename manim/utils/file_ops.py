@@ -28,6 +28,8 @@ from shutil import copyfile
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from manim.typing import StrPath
+
     from ..scene.scene_file_writer import SceneFileWriter
 
 from manim import __version__, config, logger
@@ -159,7 +161,7 @@ def guarantee_empty_existence(path: Path) -> Path:
 
 
 def seek_full_path_from_defaults(
-    file_name: str, default_dir: Path, extensions: list[str]
+    file_name: StrPath, default_dir: Path, extensions: list[str]
 ) -> Path:
     possible_paths = [Path(file_name).expanduser()]
     possible_paths += [
@@ -186,7 +188,7 @@ def modify_atime(file_path: str) -> None:
     os.utime(file_path, times=(time.time(), Path(file_path).stat().st_mtime))
 
 
-def open_file(file_path, in_browser=False):
+def open_file(file_path: Path, in_browser: bool = False) -> None:
     current_os = platform.system()
     if current_os == "Windows":
         os.startfile(file_path if not in_browser else file_path.parent)
@@ -249,7 +251,7 @@ def get_template_path() -> Path:
     return Path.resolve(Path(__file__).parent.parent / "templates")
 
 
-def add_import_statement(file: Path):
+def add_import_statement(file: Path) -> None:
     """Prepends an import statement in a file
 
     Parameters

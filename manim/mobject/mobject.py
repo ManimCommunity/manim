@@ -44,6 +44,7 @@ if TYPE_CHECKING:
 
     from manim.typing import (
         FunctionOverride,
+        InternalPoint3D,
         ManimFloat,
         ManimInt,
         MappingFunction,
@@ -406,14 +407,14 @@ class Mobject:
         """Sets :attr:`points` to be an empty array."""
         self.points = np.zeros((0, self.dim))
 
-    def init_colors(self) -> None:
+    def init_colors(self) -> object:
         """Initializes the colors.
 
         Gets called upon creation. This is an empty method that can be implemented by
         subclasses.
         """
 
-    def generate_points(self) -> None:
+    def generate_points(self) -> object:
         """Initializes :attr:`points` and therefore the shape.
 
         Gets called upon creation. This is an empty method that can be implemented by
@@ -1604,13 +1605,13 @@ class Mobject:
             >>> from manim import *
             >>> sq = Square()
             >>> sq.height
-            2.0
+            np.float64(2.0)
             >>> sq.scale_to_fit_width(5)
             Square
             >>> sq.width
-            5.0
+            np.float64(5.0)
             >>> sq.height
-            5.0
+            np.float64(5.0)
         """
         return self.rescale_to_fit(width, 0, stretch=False, **kwargs)
 
@@ -1629,13 +1630,13 @@ class Mobject:
             >>> from manim import *
             >>> sq = Square()
             >>> sq.height
-            2.0
+            np.float64(2.0)
             >>> sq.stretch_to_fit_width(5)
             Square
             >>> sq.width
-            5.0
+            np.float64(5.0)
             >>> sq.height
-            2.0
+            np.float64(2.0)
         """
         return self.rescale_to_fit(width, 0, stretch=True, **kwargs)
 
@@ -1654,13 +1655,13 @@ class Mobject:
             >>> from manim import *
             >>> sq = Square()
             >>> sq.width
-            2.0
+            np.float64(2.0)
             >>> sq.scale_to_fit_height(5)
             Square
             >>> sq.height
-            5.0
+            np.float64(5.0)
             >>> sq.width
-            5.0
+            np.float64(5.0)
         """
         return self.rescale_to_fit(height, 1, stretch=False, **kwargs)
 
@@ -1679,13 +1680,13 @@ class Mobject:
             >>> from manim import *
             >>> sq = Square()
             >>> sq.width
-            2.0
+            np.float64(2.0)
             >>> sq.stretch_to_fit_height(5)
             Square
             >>> sq.height
-            5.0
+            np.float64(5.0)
             >>> sq.width
-            2.0
+            np.float64(2.0)
         """
         return self.rescale_to_fit(height, 1, stretch=True, **kwargs)
 
@@ -2158,17 +2159,17 @@ class Mobject:
         """Returns z Point3D of the center of the :class:`~.Mobject` as ``float``"""
         return self.get_coord(2, direction)
 
-    def get_start(self) -> Point3D:
+    def get_start(self) -> InternalPoint3D:
         """Returns the point, where the stroke that surrounds the :class:`~.Mobject` starts."""
         self.throw_error_if_no_points()
         return np.array(self.points[0])
 
-    def get_end(self) -> Point3D:
+    def get_end(self) -> InternalPoint3D:
         """Returns the point, where the stroke that surrounds the :class:`~.Mobject` ends."""
         self.throw_error_if_no_points()
         return np.array(self.points[-1])
 
-    def get_start_and_end(self) -> tuple[Point3D, Point3D]:
+    def get_start_and_end(self) -> tuple[InternalPoint3D, InternalPoint3D]:
         """Returns starting and ending point of a stroke as a ``tuple``."""
         return self.get_start(), self.get_end()
 
@@ -2868,7 +2869,7 @@ class Mobject:
 
             >>> result = rect.copy().become(circ, stretch=True)
             >>> result.height, result.width
-            (2.0, 4.0)
+            (np.float64(2.0), np.float64(4.0))
             >>> ellipse_points = np.array(result.get_anchors())
             >>> ellipse_eq = np.sum(ellipse_points**2 * [1/4, 1, 0], axis=1)
             >>> np.allclose(ellipse_eq, 1)
@@ -2882,14 +2883,14 @@ class Mobject:
 
             >>> result = rect.copy().become(circ, match_height=True)
             >>> result.height, result.width
-            (2.0, 2.0)
+            (np.float64(2.0), np.float64(2.0))
             >>> circle_points = np.array(result.get_anchors())
             >>> circle_eq = np.sum(circle_points**2, axis=1)
             >>> np.allclose(circle_eq, 1)
             True
             >>> result = rect.copy().become(circ, match_width=True)
             >>> result.height, result.width
-            (4.0, 4.0)
+            (np.float64(4.0), np.float64(4.0))
             >>> circle_points = np.array(result.get_anchors())
             >>> circle_eq = np.sum(circle_points**2, axis=1)
             >>> np.allclose(circle_eq, 2**2)
