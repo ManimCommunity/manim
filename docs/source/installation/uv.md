@@ -1,4 +1,4 @@
-# Installing Manim locally using pip
+# Installing Manim locally
 
 The standard way of installing Manim is by using
 Python's package manager `pip` to install the latest

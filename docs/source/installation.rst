@@ -43,7 +43,7 @@ instructions, including best practices for setting up a suitable local environme
    :hidden:
 
    installation/local
-   installation/pip
+   installation/uv
 
 .. _conda-installation:
 
