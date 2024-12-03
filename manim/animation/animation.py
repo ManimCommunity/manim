@@ -7,17 +7,17 @@ from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from .. import config, logger
 from ..constants import RendererType
 from ..mobject import mobject
-from ..mobject.mobject import Mobject
+from ..mobject.mobject import Group, Mobject
 from ..mobject.opengl import opengl_mobject
 from ..utils.rate_functions import linear, smooth
 
-__all__ = ["Animation", "Wait", "override_animation"]
+__all__ = ["Animation", "Wait", "Add", "override_animation"]
 
 
 from collections.abc import Iterable, Sequence
 from copy import deepcopy
 from functools import partialmethod
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING, Any, Callable
 
 from typing_extensions import Self
 
@@ -171,6 +171,19 @@ class Animation:
                     "Please use keyword arguments instead.",
                 ),
             )
+
+    @property
+    def run_time(self) -> float:
+        return self._run_time
+
+    @run_time.setter
+    def run_time(self, value: float) -> None:
+        if value < 0:
+            raise ValueError(
+                f"The run_time of {self.__class__.__name__} cannot be "
+                f"negative. The given value was {value}."
+            )
+        self._run_time = value
 
     def _typecheck_input(self, mobject: Mobject | None) -> None:
         if mobject is None:
@@ -608,6 +621,90 @@ class Wait(Animation):
         super().__init__(None, run_time=run_time, rate_func=rate_func, **kwargs)
         # quick fix to work in opengl setting:
         self.mobject.shader_wrapper_list = []
+
+    def begin(self) -> None:
+        pass
+
+    def finish(self) -> None:
+        pass
+
+    def clean_up_from_scene(self, scene: Scene) -> None:
+        pass
+
+    def update_mobjects(self, dt: float) -> None:
+        pass
+
+    def interpolate(self, alpha: float) -> None:
+        pass
+
+
+class Add(Animation):
+    """Add Mobjects to a scene, without animating them in any other way. This
+    is similar to the :meth:`.Scene.add` method, but :class:`Add` is an
+    animation which can be grouped into other animations.
+
+    Parameters
+    ----------
+    mobjects
+        One :class:`~.Mobject` or more to add to a scene.
+    run_time
+        The duration of the animation after adding the ``mobjects``. Defaults
+        to 0, which means this is an instant animation without extra wait time
+        after adding them.
+    **kwargs
+        Additional arguments to pass to the parent :class:`Animation` class.
+
+    Examples
+    --------
+
+    .. manim:: DefaultAddScene
+
+        class DefaultAddScene(Scene):
+            def construct(self):
+                text_1 = Text("I was added with Add!")
+                text_2 = Text("Me too!")
+                text_3 = Text("And me!")
+                texts = VGroup(text_1, text_2, text_3).arrange(DOWN)
+                rect = SurroundingRectangle(texts, buff=0.5)
+
+                self.play(
+                    Create(rect, run_time=3.0),
+                    Succession(
+                        Wait(1.0),
+                        # You can Add a Mobject in the middle of an animation...
+                        Add(text_1),
+                        Wait(1.0),
+                        # ...or multiple Mobjects at once!
+                        Add(text_2, text_3),
+                    ),
+                )
+                self.wait()
+
+    .. manim:: AddWithRunTimeScene
+
+        class AddWithRunTimeScene(Scene):
+            def construct(self):
+                # A 5x5 grid of circles
+                circles = VGroup(
+                    *[Circle(radius=0.5) for _ in range(25)]
+                ).arrange_in_grid(5, 5)
+
+                self.play(
+                    Succession(
+                        # Add a run_time of 0.2 to wait for 0.2 seconds after
+                        # adding the circle, instead of using Wait(0.2) after Add!
+                        *[Add(circle, run_time=0.2) for circle in circles],
+                        rate_func=smooth,
+                    )
+                )
+                self.wait()
+    """
+
+    def __init__(
+        self, *mobjects: Mobject, run_time: float = 0.0, **kwargs: Any
+    ) -> None:
+        mobject = mobjects[0] if len(mobjects) == 1 else Group(*mobjects)
+        super().__init__(mobject, run_time=run_time, introducer=True, **kwargs)
 
     def begin(self) -> None:
         pass

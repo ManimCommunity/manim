@@ -365,11 +365,10 @@ class SceneFileWriter:
         if file_path.suffix not in (".wav", ".raw"):
             # we need to pass delete=False to work on Windows
             # TODO: figure out a way to cache the wav file generated (benchmark needed)
-            wav_file_path = NamedTemporaryFile(suffix=".wav", delete=False)
-            convert_audio(file_path, wav_file_path, "pcm_s16le")
-            new_segment = AudioSegment.from_file(wav_file_path.name)
-            logger.info(f"Automatically converted {file_path} to .wav")
-            wav_file_path.close()
+            with NamedTemporaryFile(suffix=".wav", delete=False) as wav_file_path:
+                convert_audio(file_path, wav_file_path, "pcm_s16le")
+                new_segment = AudioSegment.from_file(wav_file_path.name)
+                logger.info(f"Automatically converted {file_path} to .wav")
             Path(wav_file_path.name).unlink()
         else:
             new_segment = AudioSegment.from_file(file_path)
