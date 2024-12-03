@@ -73,7 +73,7 @@ the following contributors.
 Pull requests merged
 ====================
 
-A total of 98 pull requests were merged for this release.
+A total of 99 pull requests were merged for this release.
 
 Highlights
 ----------
@@ -128,6 +128,9 @@ New features
 
 
 * :pr:`3997`: Add a time property to scene (:attr:`.Scene.time`)
+
+
+* :pr:`4039`: Added the ``delay`` parameter to :func:`.turn_animation_into_updater`.
 
 
 Enhancements
