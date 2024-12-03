@@ -73,7 +73,7 @@ the following contributors.
 Pull requests merged
 ====================
 
-A total of 97 pull requests were merged for this release.
+A total of 98 pull requests were merged for this release.
 
 Highlights
 ----------
