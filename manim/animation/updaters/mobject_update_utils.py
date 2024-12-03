@@ -187,7 +187,7 @@ def turn_animation_into_updater(
     If cycle is True, this repeats over and over.  Otherwise,
     the updater will be popped upon completion
 
-    The `delay` parameter allows us to perform more complex timeline control.
+    The ``delay`` parameter is the delay (in seconds) before the animation starts..
 
     Examples
     --------
