@@ -4,3 +4,4 @@ sphinx>=7.3
 sphinx-copybutton
 sphinxext-opengraph
 sphinx-design
+sphinx-reredirect
