@@ -10,15 +10,25 @@ namely `conda <https://docs.conda.io/projects/conda/en/latest/user-guide/install
 
 After installing your package manager, you can create a new environment and install ``manim`` inside by running
 
-.. code-block:: bash
 
-   # using conda or mamba
-   conda create -n my-manim-environment
-   conda activate my-manim-environment
-   conda install -c conda-forge manim
-   # using pixi
-   pixi init
-   pixi add manim
+.. tab-set::
+
+   .. tab-item:: conda / mamba
+
+      .. code-block:: bash
+
+         # if you want to use mamba, just replace conda below with mamba
+         conda create -n my-manim-environment
+         conda activate my-manim-environment
+         conda install -c conda-forge manim
+
+   .. tab-item:: pixi
+
+      .. code-block:: bash
+
+         pixi init
+         pixi add manim
+   
 
 Since all dependencies (except LaTeX) are handled by conda, you don't need to worry
 about needing to install additional dependencies.
@@ -32,11 +42,8 @@ In order to make use of Manim's interface to LaTeX to, for example, render
 equations, LaTeX has to be installed as well. Note that this is an optional
 dependency: if you don't intend to use LaTeX, you don't have to install it.
 
-You can install LaTeX by following the optional dependencies steps
-for :ref:`Windows <win-optional-dependencies>`,
-:ref:`Linux <linux-optional-dependencies>` or
-:ref:`macOS <macos-optional-dependencies>`.
-
+Recommendations on how to install LaTeX on different operating systems
+can be found :doc:`in our local installation guide </installation/uv>`.
 
 
 Working with Manim
