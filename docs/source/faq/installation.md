@@ -123,16 +123,20 @@ of [ManimPango's README](https://github.com/ManimCommunity/ManimPango).
 (not-on-path)=
 ## I am using Windows and get the error `X is not recognized as an internal or external command, operable program or batch file`
 
-Regardless of whether `X` says `python` or `manim`, this means that the executable you
-are trying to run is not located in one of the directories your system is looking
-for them (specified by the `PATH` variable). Take a look at the instructions
-{doc}`in the installation guide for Windows </installation/windows>`, or
-[this StackExchange answer](https://superuser.com/questions/143119/how-do-i-add-python-to-the-windows-path/143121#143121)
-to get help with editing the `PATH` variable manually.
+If you have followed {doc}`our local installation instructions </installation/uv>` and
+have not activated the corresponding virtual environment, make sure to use `uv run manim ...`
+instead of just `manim` (or activate the virtual environment by following the instructions
+printed when running `uv venv`).
 
-If `python` is recognized but not `manim` or `pip`, you can try running
+Otherwise there is a problem with the directories where your system is looking for
+executables (the `PATH` variable).
+If `python` is recognized, you can try running
 commands by prepending `python -m`. That is, `manim` becomes `python -m manim`,
 and `pip` becomes `python -m pip`.
+
+Otherwise see
+[this StackExchange answer](https://superuser.com/questions/143119/how-do-i-add-python-to-the-windows-path/143121#143121)
+to get help with editing the `PATH` variable manually.
 
 ---
 
