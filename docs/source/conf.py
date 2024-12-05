@@ -52,12 +52,20 @@ extensions = [
     "sphinxcontrib.programoutput",
     "myst_parser",
     "sphinx_design",
+    "sphinx_reredirects",
 ]
 
 # Automatically generate stub pages when using the .. autosummary directive
 autosummary_generate = True
 
 myst_enable_extensions = ["colon_fence", "amsmath"]
+
+# redirects (for moved / deleted pages)
+redirects = {
+    "installation/linux": "uv.html",
+    "installation/macos": "uv.html",
+    "installation/windows": "uv.html",
+}
 
 # generate documentation from type hints
 ALIAS_DOCS_DICT = parse_module_attributes()[0]
