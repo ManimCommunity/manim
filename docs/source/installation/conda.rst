@@ -28,7 +28,7 @@ After installing your package manager, you can create a new environment and inst
 
          pixi init
          pixi add manim
-   
+
 
 Since all dependencies (except LaTeX) are handled by conda, you don't need to worry
 about needing to install additional dependencies.
