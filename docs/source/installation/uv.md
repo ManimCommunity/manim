@@ -64,13 +64,6 @@ uv python install
 to install the latest version of Python. If this is successful, continue
 to the next step.
 
-If instead you would like to install and use some particular version
-of Python, you can install a different version by running, for example,
-```bash
-uv python install 3.12
-```
-to install Python 3.12.
-
 (installation-optional-latex)=
 ### Step 2 (optional): Installing LaTeX
 
@@ -267,4 +260,26 @@ uv tool dir
 which should now contain a directory `manim` in which the appropriate
 virtual environment is located. Set the Python interpreter of your IDE
 to this environment to make imports properly resolve themselves.
+:::
+
+:::{dropdown} Installing Manim for a different version of Python
+In case you would like to use a different version of Python
+(for example, due to compatibility issues with other packages),
+then `uv` allows you to do so in a fairly straightforward way.
+
+When initializing the local Python project, simply pass the Python
+version you want to use as an argument to the `init` command:
+```
+uv init --python 3.12 manimations
+cd manimations
+uv add manim
+```
+To change the version for an existing package, you will need to
+edit two files contained in the root folder of your project:
+in `.python-version`, change the version number to the one you want
+to use (e.g., `3.12`). And secondly, in `pyproject.toml`, the
+`requires-python` entry needs to be updated such that your chosen
+version satisfies the requirement. Change the line to, for example
+`requires-python = ">=3.12"`. Afterwards, run `uv sync`, and your
+environment is updated!
 :::
