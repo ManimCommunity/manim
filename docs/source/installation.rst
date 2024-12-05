@@ -36,13 +36,12 @@ The recommended way of installing Manim is by using Python's package manager
 pip. If you already have a Python environment set up, you can simply run
 ``pip install manim`` to install the library.
 
-Our :doc:`local installation guide <installation/local>` provides more detailed
+Our :doc:`local installation guide <installation/uv>` provides more detailed
 instructions, including best practices for setting up a suitable local environment.
 
 .. toctree::
    :hidden:
 
-   installation/local
    installation/uv
 
 .. _conda-installation:
