@@ -158,27 +158,36 @@ def parse_module_attributes() -> tuple[AliasDocsDict, DataDict, TypeVarDict]:
                 inner_nodes = [node]
 
             for node in inner_nodes:
-                # If we encounter an assignment annotated as "TypeAlias":
-                if (
+                # Check if this node is a TypeAlias (type <name> = <value>)
+                # or an AnnAssign annotated as TypeAlias (<target>: TypeAlias = <value>).
+                is_annotated_assignment_with_value = (
                     type(node) is ast.AnnAssign
                     and type(node.annotation) is ast.Name
                     and node.annotation.id == "TypeAlias"
                     and type(node.target) is ast.Name
                     and node.value is not None
-                ):
-                    alias_name = node.target.id
-                    def_node = node.value
-                    # If it's an Union, replace it with vertical bar notation
+                )
+                if type(node) is ast.TypeAlias or is_annotated_assignment_with_value:
+                    alias_name = (
+                        node.target.id
+                        if is_annotated_assignment_with_value
+                        else node.name.id
+                    )
+                    definition_node = node.value
+
+                    # If the definition is an Union, replace with vertical bar notation.
+                    # Instead of "Union[Type1, Type2]", we'll have "Type1 | Type2".
                     if (
-                        type(def_node) is ast.Subscript
-                        and type(def_node.value) is ast.Name
-                        and def_node.value.id == "Union"
+                        type(definition_node) is ast.Subscript
+                        and type(definition_node.value) is ast.Name
+                        and definition_node.value.id == "Union"
                     ):
+                        union_elements = definition_node.slice.elts
                         definition = " | ".join(
-                            ast.unparse(elem) for elem in def_node.slice.elts
+                            ast.unparse(elem) for elem in union_elements
                         )
                     else:
-                        definition = ast.unparse(def_node)
+                        definition = ast.unparse(definition_node)
 
                     definition = definition.replace("npt.", "")
                     if category_dict is None:
@@ -188,7 +197,7 @@ def parse_module_attributes() -> tuple[AliasDocsDict, DataDict, TypeVarDict]:
                     alias_info = category_dict[alias_name]
                     continue
 
-                # Check if it is a typing.TypeVar
+                # Check if it is a typing.TypeVar (<target> = TypeVar(...)).
                 elif (
                     type(node) is ast.Assign
                     and type(node.targets[0]) is ast.Name
