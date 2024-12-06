@@ -3,12 +3,22 @@ Quickstart
 ==========
 
 .. note::
- Before proceeding, install Manim and make sure it's running properly by
- following the steps in :doc:`../installation`. For
- information on using Manim with Jupyterlab or Jupyter notebook, go to the
- documentation for the
- :meth:`IPython magic command <manim.utils.ipython_magic.ManimMagic.manim>`,
- ``%%manim``.
+
+  Before proceeding, install Manim and make sure it is running properly by
+  following the steps in :doc:`../installation`. For
+  information on using Manim with Jupyterlab or Jupyter notebook, go to the
+  documentation for the
+  :meth:`IPython magic command <manim.utils.ipython_magic.ManimMagic.manim>`,
+  ``%%manim``.
+
+
+.. important::
+
+  If you installed Manim in the recommended way, using the
+  Python management tool ``uv``, then you either need to make sure the corresponding
+  virtual environment is activated (follow the instructions printed on running ``uv venv``),
+  or you need to remember to prefix the ``manim`` command in the console with ``uv run``;
+  that is, ``uv run manim ...``.
 
 Overview
 ********
@@ -28,45 +38,38 @@ use to modify ``Mobject``\s.
 Starting a new project
 **********************
 
-Start by creating a new folder. For the purposes of this guide, name the folder ``project``:
+Start by creating a new folder::
 
-.. code-block:: bash
+   manim init project my-project --default
 
-   project/
-
-This folder is the root folder for your project. It contains all the files that Manim needs to function,
+The ``my-project`` folder is the root folder for your project. It contains all the files that Manim needs to function,
 as well as any output that your project produces.
 
 
 Animating a circle
 ******************
 
-1. Open a text editor, such as Notepad. Copy the following code snippet into the window:
+1. Open a text editor, such as Notepad. Open the file ``main.py`` in the ``my-project`` folder.
+   It should look something like this:
 
-.. code-block:: python
+   .. code-block:: python
 
-   from manim import *
+     from manim import *
 
 
-   class CreateCircle(Scene):
-       def construct(self):
-           circle = Circle()  # create a circle
-           circle.set_fill(PINK, opacity=0.5)  # set the color and transparency
-           self.play(Create(circle))  # show the circle on screen
+     class CreateCircle(Scene):
+         def construct(self):
+             circle = Circle()  # create a circle
+             circle.set_fill(PINK, opacity=0.5)  # set the color and transparency
+             self.play(Create(circle))  # show the circle on screen
 
-2. Save the code snippet into your project folder with the name ``scene.py``.
 
-.. code-block:: bash
+2. Open the command line, navigate to your project folder, and execute
+   the following command:
 
-   project/
-   └─scene.py
+   .. code-block:: bash
 
-3. Open the command line, navigate to your project folder, and execute
-the following command:
-
-.. code-block:: bash
-
-   manim -pql scene.py CreateCircle
+     manim -pql main.py CreateCircle
 
 Manim will output rendering information, then create an MP4 file.
 Your default movie player will play the MP4 file, displaying the following animation.
