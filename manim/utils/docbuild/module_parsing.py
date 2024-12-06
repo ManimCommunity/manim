@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import ast
+import sys
 from pathlib import Path
 
 from typing_extensions import TypeAlias
@@ -160,6 +161,9 @@ def parse_module_attributes() -> tuple[AliasDocsDict, DataDict, TypeVarDict]:
             for node in inner_nodes:
                 # Check if this node is a TypeAlias (type <name> = <value>)
                 # or an AnnAssign annotated as TypeAlias (<target>: TypeAlias = <value>).
+                is_type_alias = (
+                    sys.version_info >= (3, 12) and type(node) is ast.TypeAlias
+                )
                 is_annotated_assignment_with_value = (
                     type(node) is ast.AnnAssign
                     and type(node.annotation) is ast.Name
@@ -167,12 +171,8 @@ def parse_module_attributes() -> tuple[AliasDocsDict, DataDict, TypeVarDict]:
                     and type(node.target) is ast.Name
                     and node.value is not None
                 )
-                if type(node) is ast.TypeAlias or is_annotated_assignment_with_value:
-                    alias_name = (
-                        node.target.id
-                        if is_annotated_assignment_with_value
-                        else node.name.id
-                    )
+                if is_type_alias or is_annotated_assignment_with_value:
+                    alias_name = node.name.id if is_type_alias else node.target.id
                     definition_node = node.value
 
                     # If the definition is an Union, replace with vertical bar notation.
