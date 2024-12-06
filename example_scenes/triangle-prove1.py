@@ -1,5 +1,5 @@
 from manim import *
-import numpy as np
+
 
 # 定义一个名为TriangleAnglesSum的类，它继承自Scene类，用于构建特定的动画场景
 class TriangleAnglesSum(Scene):
@@ -22,24 +22,32 @@ class TriangleAnglesSum(Scene):
         for i, point in enumerate(vertices):
             # 根据索引创建对应的顶点标签文本，字体大小为36
             # 通过计算使标签位于对应顶点且相对三角形中心有一定偏移的位置
-            label = Text(["A", "B", "C"][i], font_size=36).next_to(point, point - triangle.get_center())
+            label = Text(["A", "B", "C"][i], font_size=36).next_to(
+                point, point - triangle.get_center()
+            )
             labels.append(label)
 
         # 设置角度相关的一些参数（这里角度用扇形来大致表示，设置扇形半径等属性）
         angle_radius = 0.4  # 扇形半径，用于控制表示角的扇形大小
-        angle_arc_angle = PI / 3  # 扇形的圆心角大小，这里设置为60度（PI/3弧度），可根据实际情况调整
+        angle_arc_angle = (
+            PI / 3
+        )  # 扇形的圆心角大小，这里设置为60度（PI/3弧度），可根据实际情况调整
         angle_stroke_width = 8  # 扇形边框宽度
 
         # 创建表示角A的扇形对象，指定扇形的圆心、两条半径对应的点以及相关属性
-        angle_A = Sector(
-            start_angle=0,
-            angle=angle_arc_angle,
-            radius=angle_radius,
-            stroke_color=YELLOW,
-            fill_color=YELLOW,
-            stroke_width=angle_stroke_width,
-            fill_opacity=0.3  # 设置一定透明度，让效果更美观
-        ).move_arc_center_to(A).rotate(4*PI/3,about_point=A)
+        angle_A = (
+            Sector(
+                start_angle=0,
+                angle=angle_arc_angle,
+                radius=angle_radius,
+                stroke_color=YELLOW,
+                fill_color=YELLOW,
+                stroke_width=angle_stroke_width,
+                fill_opacity=0.3,  # 设置一定透明度，让效果更美观
+            )
+            .move_arc_center_to(A)
+            .rotate(4 * PI / 3, about_point=A)
+        )
 
         # 创建表示角B的扇形对象，指定扇形的圆心、两条半径对应的点以及相关属性
         angle_B = Sector(
@@ -49,19 +57,23 @@ class TriangleAnglesSum(Scene):
             stroke_color=RED,
             fill_color=RED,
             stroke_width=angle_stroke_width,
-            fill_opacity=0.3
+            fill_opacity=0.3,
         ).move_arc_center_to(B)
 
         # 创建表示角C的扇形对象，指定扇形的圆心、两条半径对应的点以及相关属性
-        angle_C = Sector(
-            start_angle=0,
-            angle=angle_arc_angle,
-            radius=angle_radius,
-            stroke_color=BLUE,
-            fill_color=BLUE,
-            stroke_width=angle_stroke_width,
-            fill_opacity=0.3
-        ).move_arc_center_to(C).rotate(5*PI/3 + PI,about_point=C)
+        angle_C = (
+            Sector(
+                start_angle=0,
+                angle=angle_arc_angle,
+                radius=angle_radius,
+                stroke_color=BLUE,
+                fill_color=BLUE,
+                stroke_width=angle_stroke_width,
+                fill_opacity=0.3,
+            )
+            .move_arc_center_to(C)
+            .rotate(5 * PI / 3 + PI, about_point=C)
+        )
 
         # 将创建好的三个表示角的扇形对象放入一个列表中，方便后续统一操作
         angles = [angle_A, angle_B, angle_C]
@@ -97,10 +109,7 @@ class TriangleAnglesSum(Scene):
         copy_angle_A = angle_A.copy()
         angle_copies.append(copy_angle_A)
         # 播放动画，将复制的角度A对应的扇形移动到目标位置，动画运行时间为1.5秒
-        self.play(
-            copy_angle_A.animate.move_to(target_point_A),
-            run_time=1.5
-        )
+        self.play(copy_angle_A.animate.move_to(target_point_A), run_time=1.5)
         # 等待0.3秒，让观众看清移动后的效果
         self.wait(0.3)
 
@@ -109,10 +118,7 @@ class TriangleAnglesSum(Scene):
         copy_angle_B = angle_B.copy()
         angle_copies.append(copy_angle_B)
         # 播放动画，将复制的角度B对应的扇形移动到目标位置并旋转PI弧度（即180度），动画运行时间为1.5秒
-        self.play(
-            copy_angle_B.animate.move_to(target_point_B).rotate(PI),
-            run_time=1.5
-        )
+        self.play(copy_angle_B.animate.move_to(target_point_B).rotate(PI), run_time=1.5)
         # 等待0.3秒，让观众看清移动和旋转后的效果
         self.wait(0.3)
 
@@ -121,10 +127,7 @@ class TriangleAnglesSum(Scene):
         copy_angle_C = angle_C.copy()
         angle_copies.append(copy_angle_C)
         # 播放动画，将复制的角度C对应的扇形移动到目标位置并旋转PI弧度（即180度），动画运行时间为1.5秒
-        self.play(
-            copy_angle_C.animate.move_to(target_point_C).rotate(PI),
-            run_time=1.5
-        )
+        self.play(copy_angle_C.animate.move_to(target_point_C).rotate(PI), run_time=1.5)
         # 等待0.3秒，让观众看清移动和旋转后的效果
         self.wait(0.3)
 
@@ -135,7 +138,7 @@ class TriangleAnglesSum(Scene):
         line = Line(
             bottom_line_center + LEFT * (total_width / 2) + UP * 0.52,
             bottom_line_center + RIGHT * (total_width / 2) + UP * 0.52,
-            color=WHITE
+            color=WHITE,
         )
         # 播放创建直线的动画，将直线添加到场景中
         self.play(Create(line))
@@ -149,8 +152,7 @@ class TriangleAnglesSum(Scene):
         # 添加闪烁效果
         # 对每个角度扇形副本添加闪烁指示效果，通过缩放来实现闪烁，动画运行时间为1秒
         self.play(
-            *[Indicate(copy, scale_factor=1.2) for copy in angle_copies],
-            run_time=1
+            *[Indicate(copy, scale_factor=1.2) for copy in angle_copies], run_time=1
         )
 
         # 添加总结文字

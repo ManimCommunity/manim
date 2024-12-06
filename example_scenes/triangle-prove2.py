@@ -1,5 +1,6 @@
-from manim import *
 import numpy as np
+
+from manim import *
 
 
 class TriangleParallelProof(Scene):
@@ -18,30 +19,23 @@ class TriangleParallelProof(Scene):
         # 为顶点添加标签
         labels = []
         for i, point in enumerate(vertices):
-            label = Text(["A", "B", "C"][i], font_size=36).next_to(point, point - triangle.get_center())
+            label = Text(["A", "B", "C"][i], font_size=36).next_to(
+                point, point - triangle.get_center()
+            )
             labels.append(label)
 
         # 创建三个内角
         angle_radius = 0.4
         angle_A = Angle(
-            Line(A, B), Line(A, C),
-            radius=angle_radius,
-            color=YELLOW,
-            stroke_width=8
+            Line(A, B), Line(A, C), radius=angle_radius, color=YELLOW, stroke_width=8
         )
 
         angle_B = Angle(
-            Line(B, C), Line(B, A),
-            radius=angle_radius,
-            color=RED,
-            stroke_width=8
+            Line(B, C), Line(B, A), radius=angle_radius, color=RED, stroke_width=8
         )
 
         angle_C = Angle(
-            Line(C, A), Line(C, B),
-            radius=angle_radius,
-            color=BLUE,
-            stroke_width=8
+            Line(C, A), Line(C, B), radius=angle_radius, color=BLUE, stroke_width=8
         )
 
         # 显示三角形和标签
@@ -63,11 +57,7 @@ class TriangleParallelProof(Scene):
         parallel_end = A + RIGHT * 2
 
         # 创建平行线
-        parallel_line = Line(
-            parallel_start,
-            parallel_end,
-            color=WHITE
-        ).move_to(A)
+        parallel_line = Line(parallel_start, parallel_end, color=WHITE).move_to(A)
 
         # 旋转平行线使其平行于BC
         angle_to_rotate = np.arctan2(bc_vector[1], bc_vector[0])
@@ -77,7 +67,9 @@ class TriangleParallelProof(Scene):
         self.play(Create(parallel_line))
 
         # 调整平行线标注的位置
-        parallel_text = Text("平行于BC", font_size=24).next_to(parallel_line, UP, buff=0.85)  # 增加 buff 值
+        parallel_text = Text("平行于BC", font_size=24).next_to(
+            parallel_line, UP, buff=0.85
+        )  # 增加 buff 值
         self.play(Write(parallel_text))
         self.wait()
 
@@ -88,7 +80,7 @@ class TriangleParallelProof(Scene):
             Line(A, B),
             radius=angle_radius,
             color=RED,
-            stroke_width=8
+            stroke_width=8,
         )
 
         # 与角C对应的内错角
@@ -98,7 +90,7 @@ class TriangleParallelProof(Scene):
             radius=angle_radius,
             color=BLUE,
             stroke_width=8,
-            other_angle=True
+            other_angle=True,
         )
 
         # 显示内错角
@@ -125,7 +117,6 @@ class TriangleParallelProof(Scene):
         conclusion = Text("所以三角形的三个内角和为180°", font_size=36)
         conclusion.to_edge(UP)
         self.play(Write(conclusion))
-
 
         self.wait(2)
 
