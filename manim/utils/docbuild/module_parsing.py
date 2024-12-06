@@ -175,7 +175,7 @@ def parse_module_attributes() -> tuple[AliasDocsDict, DataDict, TypeVarDict]:
                     alias_name = node.name.id if is_type_alias else node.target.id
                     definition_node = node.value
 
-                    # If the definition is an Union, replace with vertical bar notation.
+                    # If the definition is a Union, replace with vertical bar notation.
                     # Instead of "Union[Type1, Type2]", we'll have "Type1 | Type2".
                     if (
                         type(definition_node) is ast.Subscript
