@@ -2,7 +2,7 @@
 v0.19.0
 *******
 
-:Date: November 30, 2024
+:Date: December 6, 2024
 
 Contributors
 ============
@@ -74,7 +74,7 @@ the following contributors.
 Pull requests merged
 ====================
 
-A total of 101 pull requests were merged for this release.
+A total of 102 pull requests were merged for this release.
 
 Highlights
 ----------
@@ -266,6 +266,9 @@ Documentation-related changes
 
 
 * :pr:`3930`: Completely rework the installation instructions
+
+
+* :pr:`4032`: Create 0.19.0-changelog
 
 
 * :pr:`4044`: Added support for autodocumenting type aliases that use the ``type`` syntax.
