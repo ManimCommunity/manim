@@ -7,7 +7,7 @@ v0.19.0
 Contributors
 ============
 
-A total of 46 people contributed to this
+A total of 47 people contributed to this
 release. People with a '+' by their names authored a patch for the first
 time.
 
@@ -19,6 +19,7 @@ time.
 * Cameron Burdgick +
 * Chin Zhe Ning
 * Christopher Hampson +
+* ChungLeeCN +
 * Eddie Ruiz +
 * Francisco Manríquez Novoa
 * Geoo Chi +
@@ -73,7 +74,7 @@ the following contributors.
 Pull requests merged
 ====================
 
-A total of 99 pull requests were merged for this release.
+A total of 101 pull requests were merged for this release.
 
 Highlights
 ----------
@@ -262,6 +263,12 @@ Documentation-related changes
 
 
 * :pr:`3972`: Refining documentations for :mod:`.moving_camera_scene` module
+
+
+* :pr:`3930`: Completely rework the installation instructions
+
+
+* :pr:`4044`: Added support for autodocumenting type aliases that use the ``type`` syntax.
 
 
 Type Hints
