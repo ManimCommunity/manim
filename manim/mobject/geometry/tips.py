@@ -181,7 +181,7 @@ class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
 
             >>> from manim import Arrow
             >>> arrow = Arrow(np.array([0, 0, 0]), np.array([1, 1, 0]), buff=0)
-            >>> round(arrow.tip.tip_angle, 5) == round(PI/4, 5)
+            >>> bool(round(arrow.tip.tip_angle, 5) == round(PI/4, 5))
             True
 
         """
