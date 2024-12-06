@@ -113,7 +113,11 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
         use_vectorized: bool = False,
         **kwargs,
     ):
-        self.function: Callable[[float], Point3D] = lambda t: np.asarray(function(t))
+        def internal_parametric_function(t: float) -> Point3D:
+            """Wrap ``function``'s output inside a NumPy array."""
+            return np.asarray(function(t))
+
+        self.function = internal_parametric_function
         if len(t_range) == 2:
             t_range = (*t_range, 0.01)
 
