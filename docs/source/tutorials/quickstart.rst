@@ -3,18 +3,22 @@ Quickstart
 ==========
 
 .. note::
- Before proceeding, install Manim and make sure it is running properly by
- following the steps in :doc:`../installation`. For
- information on using Manim with Jupyterlab or Jupyter notebook, go to the
- documentation for the
- :meth:`IPython magic command <manim.utils.ipython_magic.ManimMagic.manim>`,
- ``%%manim``.
 
- Also, very important: if you installed Manim in the recommended way, using the
- Python management tool ``uv``, then you either need to make sure the corresponding
- virtual environment is activated (follow the instructions printed on running ``uv venv``),
- or you need to remember to prefix the ``manim`` command in the console with ``uv run``;
- that is ``uv run manim ...``.
+  Before proceeding, install Manim and make sure it is running properly by
+  following the steps in :doc:`../installation`. For
+  information on using Manim with Jupyterlab or Jupyter notebook, go to the
+  documentation for the
+  :meth:`IPython magic command <manim.utils.ipython_magic.ManimMagic.manim>`,
+  ``%%manim``.
+
+
+.. important::
+
+  If you installed Manim in the recommended way, using the
+  Python management tool ``uv``, then you either need to make sure the corresponding
+  virtual environment is activated (follow the instructions printed on running ``uv venv``),
+  or you need to remember to prefix the ``manim`` command in the console with ``uv run``;
+  that is, ``uv run manim ...``.
 
 Overview
 ********

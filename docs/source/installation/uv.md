@@ -275,11 +275,10 @@ cd manimations
 uv add manim
 ```
 To change the version for an existing package, you will need to
-edit two files contained in the root folder of your project:
-in `.python-version`, change the version number to the one you want
-to use (e.g., `3.12`). And secondly, in `pyproject.toml`, the
+edit the `pyproject.toml` file. If you are downgrading the python version, the
 `requires-python` entry needs to be updated such that your chosen
 version satisfies the requirement. Change the line to, for example
-`requires-python = ">=3.12"`. Afterwards, run `uv sync`, and your
+`requires-python = ">=3.12"`. After that, run `uv python pin 3.12`
+to pin the python version to `3.12`. Finally, run `uv sync`, and your
 environment is updated!
 :::
