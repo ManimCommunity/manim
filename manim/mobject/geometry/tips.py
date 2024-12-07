@@ -27,7 +27,7 @@ from manim.utils.space_ops import angle_of_vector
 if TYPE_CHECKING:
     from typing import Any
 
-    from manim.typing import InternalPoint3D, Point3D, Vector3D
+    from manim.typing import Point3D, Vector3D
 
 
 class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
@@ -136,7 +136,7 @@ class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
         return self.point_from_proportion(0.5)
 
     @property
-    def tip_point(self) -> InternalPoint3D:
+    def tip_point(self) -> Point3D:
         r"""The tip point of the arrow tip.
 
         Examples
@@ -152,7 +152,8 @@ class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
         # Type inference of extracting an element from a list, is not
         # supported by numpy, see this numpy issue
         # https://github.com/numpy/numpy/issues/16544
-        return self.points[0]
+        tip_point: Point3D = self.points[0]
+        return tip_point
 
     @property
     def vector(self) -> Vector3D:

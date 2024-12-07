@@ -38,10 +38,11 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
     from manim.typing import (
-        InternalPoint3D,
-        InternalPoint3D_Array,
+        ManimFloat,
         Point3D,
         Point3D_Array,
+        Point3DLike,
+        Point3DLike_Array,
     )
     from manim.utils.color import ParsableManimColor
 
@@ -83,7 +84,7 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
 
     def __init__(
         self,
-        *vertex_groups: Point3D_Array,
+        *vertex_groups: Point3DLike_Array,
         color: ParsableManimColor = BLUE,
         **kwargs: Any,
     ):
@@ -91,7 +92,7 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
 
         for vertices in vertex_groups:
             # The inferred type for *vertices is Any, but it should be
-            # InternalPoint3D_Array
+            # Point3D_Array
             first_vertex, *vertices = vertices
             first_vertex = np.array(first_vertex)
 
@@ -100,7 +101,7 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
                 [*(np.array(vertex) for vertex in vertices), first_vertex],
             )
 
-    def get_vertices(self) -> InternalPoint3D_Array:
+    def get_vertices(self) -> Point3D_Array:
         """Gets the vertices of the :class:`Polygram`.
 
         Returns
@@ -121,7 +122,7 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
         """
         return self.get_start_anchors()
 
-    def get_vertex_groups(self) -> InternalPoint3D_Array:
+    def get_vertex_groups(self) -> npt.NDArray[ManimFloat]:
         """Gets the vertex groups of the :class:`Polygram`.
 
         Returns
@@ -220,7 +221,7 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
         if radius == 0:
             return self
 
-        new_points: list[InternalPoint3D] = []
+        new_points: list[Point3D] = []
 
         for vertices in self.get_vertex_groups():
             arcs = []
@@ -324,7 +325,7 @@ class Polygon(Polygram):
                 self.add(isosceles, square_and_triangles)
     """
 
-    def __init__(self, *vertices: InternalPoint3D, **kwargs: Any) -> None:
+    def __init__(self, *vertices: Point3DLike, **kwargs: Any) -> None:
         super().__init__(vertices, **kwargs)
 
 
@@ -824,7 +825,7 @@ class ConvexHull(Polygram):
     """
 
     def __init__(
-        self, *points: Point3D, tolerance: float = 1e-5, **kwargs: Any
+        self, *points: Point3DLike, tolerance: float = 1e-5, **kwargs: Any
     ) -> None:
         # Build Convex Hull
         array = np.array(points)[:, :2]

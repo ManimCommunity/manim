@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING, Callable
 
 if TYPE_CHECKING:
     from manim.mobject.geometry.tips import ArrowTip
-    from manim.typing import Point3D
+    from manim.typing import Point3DLike
 
 import numpy as np
 
@@ -650,7 +650,7 @@ class NumberLine(Line):
     def __matmul__(self, other: float):
         return self.n2p(other)
 
-    def __rmatmul__(self, other: Point3D | Mobject):
+    def __rmatmul__(self, other: Point3DLike | Mobject):
         if isinstance(other, Mobject):
             other = other.get_center()
         return self.p2n(other)

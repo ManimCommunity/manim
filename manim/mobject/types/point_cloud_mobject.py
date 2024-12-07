@@ -35,7 +35,7 @@ if TYPE_CHECKING:
     import numpy.typing as npt
     from typing_extensions import Self
 
-    from manim.typing import ManimFloat, Point3D, Vector3D
+    from manim.typing import ManimFloat, Point3DLike, Vector3D
 
 
 class PMobject(Mobject, metaclass=ConvertToOpenGL):
@@ -130,7 +130,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
 
     def set_colors_by_radial_gradient(
         self,
-        center: Point3D | None = None,
+        center: Point3DLike | None = None,
         radius: float = 1,
         inner_color: ParsableManimColor = WHITE,
         outer_color: ParsableManimColor = BLACK,
@@ -216,7 +216,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
             lambda a: stretch_array_to_length(a, larger_mobject.get_num_points()),
         )
 
-    def get_point_mobject(self, center: Point3D | None = None) -> Point:
+    def get_point_mobject(self, center: Point3DLike | None = None) -> Point:
         if center is None:
             center = self.get_center()
         return Point(center)

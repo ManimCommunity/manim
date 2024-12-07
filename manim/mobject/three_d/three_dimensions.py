@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from manim.typing import Point3D, Vector3D
+from manim.typing import Point3DLike, Vector3D
 from manim.utils.color import BLUE, BLUE_D, BLUE_E, LIGHT_GREY, WHITE, interpolate_color
 
 __all__ = [
@@ -373,7 +373,7 @@ class Sphere(Surface):
 
     def __init__(
         self,
-        center: Point3D = ORIGIN,
+        center: Point3DLike = ORIGIN,
         radius: float = 1,
         resolution: Sequence[int] | None = None,
         u_range: Sequence[float] = (0, TAU),
@@ -966,7 +966,7 @@ class Line3D(Cylinder):
 
     def pointify(
         self,
-        mob_or_point: Mobject | Point3D,
+        mob_or_point: Mobject | Point3DLike,
         direction: Vector3D = None,
     ) -> np.ndarray:
         """Gets a point representing the center of the :class:`Mobjects <.Mobject>`.

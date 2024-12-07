@@ -17,7 +17,7 @@ import warnings
 from collections.abc import Iterable
 from functools import partialmethod, reduce
 from pathlib import Path
-from typing import TYPE_CHECKING, Callable, Literal
+from typing import TYPE_CHECKING
 
 import numpy as np
 
@@ -40,18 +40,19 @@ from ..utils.paths import straight_path
 from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
 
 if TYPE_CHECKING:
+    from typing import Any, Callable, Literal
+
     from typing_extensions import Self, TypeAlias
 
     from manim.typing import (
         FunctionOverride,
-        InternalPoint3D,
-        ManimFloat,
-        ManimInt,
         MappingFunction,
+        MultiMappingFunction,
         PathFuncType,
         PixelArray,
         Point3D,
-        Point3D_Array,
+        Point3DLike,
+        Point3DLike_Array,
         Vector3D,
     )
 
@@ -815,7 +816,7 @@ class Mobject:
     def get_array_attrs(self) -> list[Literal["points"]]:
         return ["points"]
 
-    def apply_over_attr_arrays(self, func: MappingFunction) -> Self:
+    def apply_over_attr_arrays(self, func: MultiMappingFunction) -> Self:
         for attr in self.get_array_attrs():
             setattr(self, attr, func(getattr(self, attr)))
         return self
@@ -1276,7 +1277,7 @@ class Mobject:
         self,
         angle: float,
         axis: Vector3D = OUT,
-        about_point: Point3D | None = None,
+        about_point: Point3DLike | None = None,
         **kwargs,
     ) -> Self:
         """Rotates the :class:`~.Mobject` about a certain point."""
@@ -1306,7 +1307,7 @@ class Mobject:
         return self.rotate(TAU / 2, axis, **kwargs)
 
     def stretch(self, factor: float, dim: int, **kwargs) -> Self:
-        def func(points):
+        def func(points: Point3D_Array) -> Point3D_Array:
             points[:, dim] *= factor
             return points
 
@@ -1317,9 +1318,12 @@ class Mobject:
         # Default to applying matrix about the origin, not mobjects center
         if len(kwargs) == 0:
             kwargs["about_point"] = ORIGIN
-        self.apply_points_function_about_point(
-            lambda points: np.apply_along_axis(function, 1, points), **kwargs
-        )
+
+        def multi_mapping_function(points: Point3D_Array) -> Point3D_Array:
+            result: Point3D_Array = np.apply_along_axis(function, 1, points)
+            return result
+
+        self.apply_points_function_about_point(multi_mapping_function, **kwargs)
         return self
 
     def apply_function_to_position(self, function: MappingFunction) -> Self:
@@ -1398,11 +1402,12 @@ class Mobject:
     # Note, much of these are now redundant with default behavior of
     # above methods
 
+    # TODO: name is inconsistent with OpenGLMobject.apply_points_function()
     def apply_points_function_about_point(
         self,
-        func: MappingFunction,
-        about_point: Point3D = None,
-        about_edge=None,
+        func: MultiMappingFunction,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3D | None = None,
     ) -> Self:
         if about_point is None:
             if about_edge is None:
@@ -1508,7 +1513,7 @@ class Mobject:
 
     def next_to(
         self,
-        mobject_or_point: Mobject | Point3D,
+        mobject_or_point: Mobject | Point3DLike,
         direction: Vector3D = RIGHT,
         buff: float = DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
         aligned_edge: Vector3D = ORIGIN,
@@ -1575,7 +1580,7 @@ class Mobject:
             return True
         return self.get_top()[1] < -config["frame_y_radius"]
 
-    def stretch_about_point(self, factor: float, dim: int, point: Point3D) -> Self:
+    def stretch_about_point(self, factor: float, dim: int, point: Point3DLike) -> Self:
         return self.stretch(factor, dim, about_point=point)
 
     def rescale_to_fit(
@@ -1725,7 +1730,7 @@ class Mobject:
 
     def move_to(
         self,
-        point_or_mobject: Point3D | Mobject,
+        point_or_mobject: Point3DLike | Mobject,
         aligned_edge: Vector3D = ORIGIN,
         coor_mask: Vector3D = np.array([1, 1, 1]),
     ) -> Self:
@@ -1767,13 +1772,16 @@ class Mobject:
         self.scale((length + buff) / length)
         return self
 
-    def put_start_and_end_on(self, start: Point3D, end: Point3D) -> Self:
+    def put_start_and_end_on(self, start: Point3DLike, end: Point3DLike) -> Self:
         curr_start, curr_end = self.get_start_and_end()
         curr_vect = curr_end - curr_start
         if np.all(curr_vect == 0):
-            self.points = start
+            # TODO: this looks broken. It makes self.points a Point3D instead
+            # of a Point3D_Array. However, modifying this breaks some tests
+            # where this is currently expected.
+            self.points = np.array(start)
             return self
-        target_vect = np.array(end) - np.array(start)
+        target_vect = np.asarray(end) - np.asarray(start)
         axis = (
             normalize(np.cross(curr_vect, target_vect))
             if np.linalg.norm(np.cross(curr_vect, target_vect)) != 0
@@ -1874,7 +1882,7 @@ class Mobject:
 
     def set_colors_by_radial_gradient(
         self,
-        center: Point3D | None = None,
+        center: Point3DLike | None = None,
         radius: float = 1,
         inner_color: ParsableManimColor = WHITE,
         outer_color: ParsableManimColor = BLACK,
@@ -1902,7 +1910,7 @@ class Mobject:
 
     def set_submobject_colors_by_radial_gradient(
         self,
-        center: Point3D | None = None,
+        center: Point3DLike | None = None,
         radius: float = 1,
         inner_color: ParsableManimColor = WHITE,
         outer_color: ParsableManimColor = BLACK,
@@ -2028,11 +2036,14 @@ class Mobject:
         return len(self.points)
 
     def get_extremum_along_dim(
-        self, points: Point3D_Array | None = None, dim: int = 0, key: int = 0
-    ) -> np.ndarray | float:
-        if points is None:
-            points = self.get_points_defining_boundary()
-        values = points[:, dim]
+        self, points: Point3DLike_Array | None = None, dim: int = 0, key: int = 0
+    ) -> float:
+        np_points: Point3D_Array = (
+            self.get_points_defining_boundary()
+            if points is None
+            else np.asarray(points)
+        )
+        values = np_points[:, dim]
         if key < 0:
             return np.min(values)
         elif key == 0:
@@ -2147,36 +2158,36 @@ class Mobject:
         """Meant to generalize ``get_x``, ``get_y`` and ``get_z``"""
         return self.get_extremum_along_dim(dim=dim, key=direction[dim])
 
-    def get_x(self, direction: Vector3D = ORIGIN) -> ManimFloat:
+    def get_x(self, direction: Vector3D = ORIGIN) -> float:
         """Returns x Point3D of the center of the :class:`~.Mobject` as ``float``"""
         return self.get_coord(0, direction)
 
-    def get_y(self, direction: Vector3D = ORIGIN) -> ManimFloat:
+    def get_y(self, direction: Vector3D = ORIGIN) -> float:
         """Returns y Point3D of the center of the :class:`~.Mobject` as ``float``"""
         return self.get_coord(1, direction)
 
-    def get_z(self, direction: Vector3D = ORIGIN) -> ManimFloat:
+    def get_z(self, direction: Vector3D = ORIGIN) -> float:
         """Returns z Point3D of the center of the :class:`~.Mobject` as ``float``"""
         return self.get_coord(2, direction)
 
-    def get_start(self) -> InternalPoint3D:
+    def get_start(self) -> Point3D:
         """Returns the point, where the stroke that surrounds the :class:`~.Mobject` starts."""
         self.throw_error_if_no_points()
         return np.array(self.points[0])
 
-    def get_end(self) -> InternalPoint3D:
+    def get_end(self) -> Point3D:
         """Returns the point, where the stroke that surrounds the :class:`~.Mobject` ends."""
         self.throw_error_if_no_points()
         return np.array(self.points[-1])
 
-    def get_start_and_end(self) -> tuple[InternalPoint3D, InternalPoint3D]:
+    def get_start_and_end(self) -> tuple[Point3D, Point3D]:
         """Returns starting and ending point of a stroke as a ``tuple``."""
         return self.get_start(), self.get_end()
 
     def point_from_proportion(self, alpha: float) -> Point3D:
         raise NotImplementedError("Please override in a child class.")
 
-    def proportion_from_point(self, point: Point3D) -> float:
+    def proportion_from_point(self, point: Point3DLike) -> float:
         raise NotImplementedError("Please override in a child class.")
 
     def get_pieces(self, n_pieces: float) -> Group:
@@ -2249,7 +2260,7 @@ class Mobject:
 
     def align_to(
         self,
-        mobject_or_point: Mobject | Point3D,
+        mobject_or_point: Mobject | Point3DLike,
         direction: Vector3D = ORIGIN,
     ) -> Self:
         """Aligns mobject to another :class:`~.Mobject` in a certain direction.
@@ -2576,13 +2587,13 @@ class Mobject:
 
     def sort(
         self,
-        point_to_num_func: Callable[[Point3D], ManimInt] = lambda p: p[0],
-        submob_func: Callable[[Mobject], ManimInt] | None = None,
+        point_to_num_func: Callable[[Point3DLike], float] = lambda p: p[0],
+        submob_func: Callable[[Mobject], Any] | None = None,
     ) -> Self:
         """Sorts the list of :attr:`submobjects` by a function defined by ``submob_func``."""
         if submob_func is None:
 
-            def submob_func(m: Mobject):
+            def submob_func(m: Mobject) -> float:
                 return point_to_num_func(m.get_center())
 
         self.submobjects.sort(key=submob_func)
