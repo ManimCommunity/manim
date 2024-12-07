@@ -34,7 +34,7 @@ def tex_to_svg_file(
     expression: str,
     environment: str | None = None,
     tex_template: TexTemplate | None = None,
-):
+) -> Path:
     r"""Takes a tex expression and returns the svg version of the compiled tex
 
     Parameters
