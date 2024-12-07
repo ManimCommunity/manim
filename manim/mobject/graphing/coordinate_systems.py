@@ -147,7 +147,7 @@ class CoordinateSystem:
         self.y_length = y_length
         self.num_sampled_graph_points_per_tick = 10
 
-    def coords_to_point(self, *coords: ManimFloat):
+    def coords_to_point(self, *coords: float):
         raise NotImplementedError()
 
     def point_to_coords(self, point: Point3D):
@@ -1836,12 +1836,19 @@ class CoordinateSystem:
 
         return T_label_group
 
-    def __matmul__(self, coord: Point3D | Mobject):
+    def __matmul__(self, coord: Iterable[float] | Mobject):
         if isinstance(coord, Mobject):
             coord = coord.get_center()
         return self.coords_to_point(*coord)
 
     def __rmatmul__(self, point: Point3D):
+        """Perform a point-to-coords action for a coordinate scene.
+
+        .. warning::
+
+            This will not work with NumPy arrays or other objects that
+            implement ``__matmul__``.
+        """
         return self.point_to_coords(point)
 
 
@@ -3327,6 +3334,12 @@ class PolarPlane(Axes):
 
         return MathTex(string, font_size=font_size, **kwargs)
 
+    def __matmul__(self, coord: Point2D):
+        return self.polar_to_point(*coord)
+
+    def __rmatmul__(self, point: Point2D):
+        return self.point_to_polar(point)
+
 
 class ComplexPlane(NumberPlane):
     """A :class:`~.NumberPlane` specialized for use with complex numbers.
@@ -3397,6 +3410,12 @@ class ComplexPlane(NumberPlane):
 
     def p2n(self, point: Point3D) -> complex:
         """Abbreviation for :meth:`point_to_number`."""
+        return self.point_to_number(point)
+
+    def __matmul__(self, coord: float | complex):
+        return self.number_to_point(coord)
+
+    def __rmatmul__(self, point: Point3D):
         return self.point_to_number(point)
 
     def _get_default_coordinate_values(self) -> list[float | complex]:

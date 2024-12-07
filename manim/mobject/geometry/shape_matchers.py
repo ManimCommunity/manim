@@ -147,7 +147,7 @@ class BackgroundRectangle(SurroundingRectangle):
     def get_fill_color(self) -> ManimColor:
         # The type of the color property is set to Any using the property decorator
         # vectorized_mobject.py#L571
-        temp_color: ManimColor = self.color
+        temp_color: ManimColor = self.color  # type: ignore[has-type]
         return temp_color
 
 
