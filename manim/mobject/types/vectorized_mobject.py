@@ -14,7 +14,7 @@ __all__ = [
 
 import itertools as it
 import sys
-from collections.abc import Generator, Hashable, Iterable, Mapping, Sequence
+from collections.abc import Hashable, Iterable, Mapping, Sequence
 from typing import TYPE_CHECKING, Callable, Literal
 
 import numpy as np
@@ -1302,7 +1302,7 @@ class VMobject(Mobject):
         self,
         points: CubicBezierPath,
         filter_func: Callable[[int], bool],
-    ) -> Generator[CubicSpline]:
+    ) -> Iterable[CubicSpline]:
         """Given an array of points defining the bezier curves of the vmobject, return subpaths formed by these points.
         Here, Two bezier curves form a path if at least two of their anchors are evaluated True by the relation defined by filter_func.
 
@@ -1320,7 +1320,7 @@ class VMobject(Mobject):
 
         Returns
         -------
-        Generator[CubicSpline]
+        Iterable[CubicSpline]
             subpaths formed by the points.
         """
         nppcc = self.n_points_per_cubic_curve
@@ -1342,7 +1342,7 @@ class VMobject(Mobject):
 
     def gen_subpaths_from_points_2d(
         self, points: CubicBezierPath
-    ) -> Generator[CubicSpline]:
+    ) -> Iterable[CubicSpline]:
         return self._gen_subpaths_from_points(
             points,
             lambda n: not self.consider_points_equals_2d(points[n - 1], points[n]),
@@ -1483,12 +1483,12 @@ class VMobject(Mobject):
 
     def get_curve_functions(
         self,
-    ) -> Generator[Callable[[float], Point3D]]:
+    ) -> Iterable[Callable[[float], Point3D]]:
         """Gets the functions for the curves of the mobject.
 
         Returns
         -------
-        Generator[Callable[[float], Point3D]]
+        Iterable[Callable[[float], Point3D]]
             The functions for the curves.
         """
         num_curves = self.get_num_curves()
@@ -1498,7 +1498,7 @@ class VMobject(Mobject):
 
     def get_curve_functions_with_lengths(
         self, **kwargs
-    ) -> Generator[tuple[Callable[[float], Point3D], float]]:
+    ) -> Iterable[tuple[Callable[[float], Point3D], float]]:
         """Gets the functions and lengths of the curves for the mobject.
 
         Parameters
@@ -1508,7 +1508,7 @@ class VMobject(Mobject):
 
         Returns
         -------
-        Generator[tuple[Callable[[float], Point3D], float]]
+        Iterable[tuple[Callable[[float], Point3D], float]]
             The functions and lengths of the curves.
         """
         num_curves = self.get_num_curves()
