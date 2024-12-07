@@ -52,7 +52,7 @@ from ..utils.file_ops import open_media_file
 from ..utils.iterables import list_difference_update, list_update
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable, Sequence
+    from collections.abc import Sequence
     from typing import Callable
 
     from manim.mobject.mobject import _AnimationBuilder
@@ -880,7 +880,7 @@ class Scene:
 
     def compile_animations(
         self,
-        *args: Animation | Iterable[Animation] | Mobject | _AnimationBuilder,
+        *args: Animation | Mobject | _AnimationBuilder,
         **kwargs,
     ):
         """
@@ -1072,7 +1072,7 @@ class Scene:
 
     def play(
         self,
-        *args: Animation | Iterable[Animation] | Mobject | _AnimationBuilder,
+        *args: Animation | Mobject | _AnimationBuilder,
         subcaption=None,
         subcaption_duration=None,
         subcaption_offset=0,
@@ -1207,7 +1207,7 @@ class Scene:
 
     def compile_animation_data(
         self,
-        *animations: Animation | Iterable[Animation] | Mobject | _AnimationBuilder,
+        *animations: Animation | Mobject | _AnimationBuilder,
         **play_kwargs,
     ):
         """Given a list of animations, compile the corresponding
