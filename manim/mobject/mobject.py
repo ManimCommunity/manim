@@ -1779,7 +1779,7 @@ class Mobject:
             # TODO: this looks broken. It makes self.points a Point3D instead
             # of a Point3D_Array. However, modifying this breaks some tests
             # where this is currently expected.
-            self.points = np.array(start, ndmin=2)
+            self.points = np.array(start)
             return self
         target_vect = np.asarray(end) - np.asarray(start)
         axis = (
