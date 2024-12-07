@@ -55,6 +55,8 @@ if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
     from typing import Callable
 
+    from manim.mobject.mobject import _AnimationBuilder
+
 
 class RerunSceneHandler(FileSystemEventHandler):
     """A class to handle rerunning a Scene after the input file is modified."""
@@ -878,7 +880,7 @@ class Scene:
 
     def compile_animations(
         self,
-        *args: Animation | Iterable[Animation] | types.GeneratorType[Animation],
+        *args: Animation | Iterable[Animation] | Mobject | _AnimationBuilder,
         **kwargs,
     ):
         """
@@ -1070,7 +1072,7 @@ class Scene:
 
     def play(
         self,
-        *args: Animation | Iterable[Animation] | Mobject,
+        *args: Animation | Iterable[Animation] | Mobject | _AnimationBuilder,
         subcaption=None,
         subcaption_duration=None,
         subcaption_offset=0,
@@ -1205,7 +1207,7 @@ class Scene:
 
     def compile_animation_data(
         self,
-        *animations: Animation | Iterable[Animation] | types.GeneratorType[Animation],
+        *animations: Animation | Iterable[Animation] | Mobject | _AnimationBuilder,
         **play_kwargs,
     ):
         """Given a list of animations, compile the corresponding
