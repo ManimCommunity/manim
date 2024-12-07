@@ -16,6 +16,7 @@ import numpy as np
 
 from manim import config, logger
 from manim.constants import *
+from manim.mobject.builders import _UpdaterBuilder
 from manim.renderer.shader_wrapper import get_colormap_code
 from manim.utils.bezier import integer_interpolate, interpolate
 from manim.utils.color import (
@@ -473,6 +474,42 @@ class OpenGLMobject:
 
         """
         return _AnimationBuilder(self)
+
+    @property
+    def always(self) -> Self:
+        """Call a method on a mobject every frame.
+
+        This is syntactic sugar for ``mob.add_updater(lambda m: m.method(*args, **kwargs), call_updater=True)``.
+        Note that this will call the method immediately. If this behavior is not
+        desired, you should use :meth:`add_updater` directly.
+
+        .. warning::
+
+            Chaining of methods is allowed, but each method will be added
+            as its own updater. If you are chaining methods, make sure they
+            do not interfere with each other or you may get unexpected results.
+
+        .. warning::
+
+            :attr:`always` is not compatible with :meth:`.ValueTracker.get_value`, because
+            the value will be computed once and then never updated again. Use :meth:`add_updater`
+            if you would like to use a :class:`~.ValueTracker` to update the value.
+
+        Example
+        -------
+
+            .. manim:: AlwaysExample
+
+                class AlwaysExample(Scene):
+                    def construct(self):
+                        sq = Square().to_edge(LEFT)
+                        t = Text("Hello World!")
+                        t.always.next_to(sq, UP)
+                        self.add(sq, t)
+                        self.play(sq.animate.to_edge(RIGHT))
+        """
+        # can't use typing.cast because Self is under TYPE_CHECKING
+        return _UpdaterBuilder(self)  # type: ignore[misc]
 
     @property
     def width(self) -> float:
