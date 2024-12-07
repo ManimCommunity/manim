@@ -32,7 +32,12 @@ from manim.mobject.geometry.polygram import Square
 from manim.mobject.mobject import *
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-from manim.mobject.types.vectorized_mobject import VectorizedPoint, VGroup, VMobject
+from manim.mobject.types.vectorized_mobject import (
+    VectorizedPoint,
+    VGroup,
+    VMobject,
+    VMobjectT,
+)
 from manim.utils.color import (
     ManimColor,
     ParsableManimColor,
@@ -458,7 +463,7 @@ class Dot3D(Sphere):
         self.set_color(color)
 
 
-class Cube(VGroup):
+class Cube(VGroup[VMobjectT]):
     """A three-dimensional cube.
 
     Parameters

@@ -70,7 +70,7 @@ from manim import config, logger
 from manim.constants import *
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.svg.svg_mobject import SVGMobject
-from manim.mobject.types.vectorized_mobject import VGroup, VMobject
+from manim.mobject.types.vectorized_mobject import VGroup, VMobject, VMobjectT
 from manim.utils.color import ManimColor, ParsableManimColor, color_gradient
 from manim.utils.deprecation import deprecated
 
@@ -115,7 +115,7 @@ def remove_invisible_chars(mobject: SVGMobject) -> SVGMobject:
     return mobject_without_dots
 
 
-class Paragraph(VGroup):
+class Paragraph(VGroup[VMobjectT]):
     r"""Display a paragraph of text.
 
     For a given :class:`.Paragraph` ``par``, the attribute ``par.chars`` is a

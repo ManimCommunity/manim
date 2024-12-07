@@ -12,7 +12,7 @@ import itertools as it
 import random
 from collections.abc import Iterable, Sequence
 from math import ceil, floor
-from typing import Callable
+from typing import TYPE_CHECKING, Callable
 
 import numpy as np
 from PIL import Image
@@ -27,7 +27,7 @@ from ..animation.creation import Create
 from ..animation.indication import ShowPassingFlash
 from ..constants import OUT, RIGHT, UP, RendererType
 from ..mobject.mobject import Mobject
-from ..mobject.types.vectorized_mobject import VGroup
+from ..mobject.types.vectorized_mobject import VGroup, VMobjectT
 from ..mobject.utils import get_vectorized_mobject_class
 from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import (
@@ -43,10 +43,16 @@ from ..utils.color import (
 from ..utils.rate_functions import ease_out_sine, linear
 from ..utils.simple_functions import sigmoid
 
+if TYPE_CHECKING:
+    import numpy.typing as npt
+    from typing_extensions import Self
+
+    from manim.typing import MappingFunction, Point3D, Vector3D
+
 DEFAULT_SCALAR_FIELD_COLORS: list = [BLUE_E, GREEN, YELLOW, RED]
 
 
-class VectorField(VGroup):
+class VectorField(VGroup[VMobjectT]):
     """A vector field.
 
     Vector fields are based on a function defining a vector at every position.
@@ -74,14 +80,14 @@ class VectorField(VGroup):
 
     def __init__(
         self,
-        func: Callable[[np.ndarray], np.ndarray],
+        func: MappingFunction,
         color: ParsableManimColor | None = None,
-        color_scheme: Callable[[np.ndarray], float] | None = None,
+        color_scheme: Callable[[Vector3D], float] | None = None,
         min_color_scheme_value: float = 0,
         max_color_scheme_value: float = 2,
         colors: Sequence[ParsableManimColor] = DEFAULT_SCALAR_FIELD_COLORS,
         **kwargs,
-    ):
+    ) -> None:
         super().__init__(**kwargs)
         self.func = func
         if color is None:
@@ -121,9 +127,9 @@ class VectorField(VGroup):
 
     @staticmethod
     def shift_func(
-        func: Callable[[np.ndarray], np.ndarray],
-        shift_vector: np.ndarray,
-    ) -> Callable[[np.ndarray], np.ndarray]:
+        func: MappingFunction,
+        shift_vector: Vector3D,
+    ) -> MappingFunction:
         """Shift a vector field function.
 
         Parameters
@@ -143,9 +149,9 @@ class VectorField(VGroup):
 
     @staticmethod
     def scale_func(
-        func: Callable[[np.ndarray], np.ndarray],
+        func: MappingFunction,
         scalar: float,
-    ) -> Callable[[np.ndarray], np.ndarray]:
+    ) -> MappingFunction:
         """Scale a vector field function.
 
         Parameters
@@ -178,7 +184,7 @@ class VectorField(VGroup):
         """
         return lambda p: func(p * scalar)
 
-    def fit_to_coordinate_system(self, coordinate_system: CoordinateSystem):
+    def fit_to_coordinate_system(self, coordinate_system: CoordinateSystem) -> None:
         """Scale the vector field to fit a coordinate system.
 
         This method is useful when the vector field is defined in a coordinate system
@@ -200,7 +206,7 @@ class VectorField(VGroup):
         dt: float = 1,
         substeps: int = 1,
         pointwise: bool = False,
-    ) -> VectorField:
+    ) -> Self:
         """Nudge a :class:`~.Mobject` along the vector field.
 
         Parameters
@@ -284,7 +290,7 @@ class VectorField(VGroup):
         dt: float = 1,
         substeps: int = 1,
         pointwise: bool = False,
-    ) -> VectorField:
+    ) -> Self:
         """Apply a nudge along the vector field to all submobjects.
 
         Parameters
@@ -335,7 +341,7 @@ class VectorField(VGroup):
         self,
         speed: float = 1,
         pointwise: bool = False,
-    ) -> VectorField:
+    ) -> Self:
         """Start continuously moving all submobjects along the vector field.
 
         Calling this method multiple times will result in removing the previous updater created by this method.
@@ -361,7 +367,7 @@ class VectorField(VGroup):
         self.add_updater(self.submob_movement_updater)
         return self
 
-    def stop_submobject_movement(self) -> VectorField:
+    def stop_submobject_movement(self) -> Self:
         """Stops the continuous movement started using :meth:`start_submobject_movement`.
 
         Returns
@@ -455,7 +461,7 @@ class VectorField(VGroup):
         return func
 
 
-class ArrowVectorField(VectorField):
+class ArrowVectorField(VectorField[Vector]):
     """A :class:`VectorField` represented by a set of change vectors.
 
     Vector fields are always based on a function defining the :class:`~.Vector` at every position.
@@ -540,9 +546,9 @@ class ArrowVectorField(VectorField):
 
     def __init__(
         self,
-        func: Callable[[np.ndarray], np.ndarray],
+        func: MappingFunction,
         color: ParsableManimColor | None = None,
-        color_scheme: Callable[[np.ndarray], float] | None = None,
+        color_scheme: Callable[[npt.NDArray], float] | None = None,
         min_color_scheme_value: float = 0,
         max_color_scheme_value: float = 2,
         colors: Sequence[ParsableManimColor] = DEFAULT_SCALAR_FIELD_COLORS,
@@ -608,7 +614,7 @@ class ArrowVectorField(VectorField):
         )
         self.set_opacity(self.opacity)
 
-    def get_vector(self, point: np.ndarray):
+    def get_vector(self, point: Point3D) -> Vector:
         """Creates a vector in the vector field.
 
         The created vector is based on the function of the vector field and is
@@ -634,7 +640,7 @@ class ArrowVectorField(VectorField):
         return vect
 
 
-class StreamLines(VectorField):
+class StreamLines(VectorField[VMobjectT]):
     """StreamLines represent the flow of a :class:`VectorField` using the trace of moving agents.
 
     Vector fields are always based on a function defining the vector at every position.
@@ -714,9 +720,9 @@ class StreamLines(VectorField):
 
     def __init__(
         self,
-        func: Callable[[np.ndarray], np.ndarray],
+        func: MappingFunction,
         color: ParsableManimColor | None = None,
-        color_scheme: Callable[[np.ndarray], float] | None = None,
+        color_scheme: Callable[[npt.NDArray], float] | None = None,
         min_color_scheme_value: float = 0,
         max_color_scheme_value: float = 2,
         colors: Sequence[ParsableManimColor] = DEFAULT_SCALAR_FIELD_COLORS,
