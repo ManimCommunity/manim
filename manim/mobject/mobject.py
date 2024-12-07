@@ -44,11 +44,12 @@ if TYPE_CHECKING:
 
     from manim.typing import (
         FunctionOverride,
-        Image,
+        InternalPoint3D,
         ManimFloat,
         ManimInt,
         MappingFunction,
         PathFuncType,
+        PixelArray,
         Point3D,
         Point3D_Array,
         Vector3D,
@@ -406,14 +407,14 @@ class Mobject:
         """Sets :attr:`points` to be an empty array."""
         self.points = np.zeros((0, self.dim))
 
-    def init_colors(self) -> None:
+    def init_colors(self) -> object:
         """Initializes the colors.
 
         Gets called upon creation. This is an empty method that can be implemented by
         subclasses.
         """
 
-    def generate_points(self) -> None:
+    def generate_points(self) -> object:
         """Initializes :attr:`points` and therefore the shape.
 
         Gets called upon creation. This is an empty method that can be implemented by
@@ -666,7 +667,6 @@ class Mobject:
             >>> mob.foo
             0
         """
-
         for attr, value in kwargs.items():
             setattr(self, attr, value)
 
@@ -748,7 +748,6 @@ class Mobject:
         :meth:`length_over_dim`
 
         """
-
         # Get the length across the X dimension
         return self.length_over_dim(0)
 
@@ -785,7 +784,6 @@ class Mobject:
         :meth:`length_over_dim`
 
         """
-
         # Get the length across the Y dimension
         return self.length_over_dim(1)
 
@@ -806,7 +804,6 @@ class Mobject:
         :meth:`length_over_dim`
 
         """
-
         # Get the length across the Z dimension
         return self.length_over_dim(2)
 
@@ -825,7 +822,7 @@ class Mobject:
 
     # Displaying
 
-    def get_image(self, camera=None) -> Image:
+    def get_image(self, camera=None) -> PixelArray:
         if camera is None:
             from ..camera.camera import Camera
 
@@ -838,7 +835,8 @@ class Mobject:
 
     def save_image(self, name: str | None = None) -> None:
         """Saves an image of only this :class:`Mobject` at its position to a png
-        file."""
+        file.
+        """
         self.get_image().save(
             Path(config.get_dir("video_dir")).joinpath((name or str(self)) + ".png"),
         )
@@ -1029,7 +1027,6 @@ class Mobject:
         :meth:`remove_updater`
         :class:`~.UpdateFromFunc`
         """
-
         if index is None:
             self.updaters.append(update_function)
         else:
@@ -1119,7 +1116,6 @@ class Mobject:
         :meth:`clear_updaters`
 
         """
-
         self.clear_updaters()
         for updater in mobject.get_updaters():
             self.add_updater(updater)
@@ -1145,7 +1141,6 @@ class Mobject:
         :meth:`add_updater`
 
         """
-
         self.updating_suspended = True
         if recursive:
             for submob in self.submobjects:
@@ -1220,7 +1215,6 @@ class Mobject:
         --------
         :meth:`move_to`
         """
-
         total_vector = reduce(op.add, vectors)
         for mob in self.family_members_with_points():
             mob.points = mob.points.astype("float")
@@ -1505,7 +1499,7 @@ class Mobject:
                     tex_top.to_edge(UP)
                     tex_side = Tex("I am moving to the side!")
                     c = Circle().shift(2*DOWN)
-                    self.add(tex_top, tex_side)
+                    self.add(tex_top, tex_side, c)
                     tex_side.to_edge(LEFT)
                     c.to_edge(RIGHT, buff=0)
 
@@ -1579,9 +1573,7 @@ class Mobject:
             return True
         if self.get_bottom()[1] > config["frame_y_radius"]:
             return True
-        if self.get_top()[1] < -config["frame_y_radius"]:
-            return True
-        return False
+        return self.get_top()[1] < -config["frame_y_radius"]
 
     def stretch_about_point(self, factor: float, dim: int, point: Point3D) -> Self:
         return self.stretch(factor, dim, about_point=point)
@@ -1613,15 +1605,14 @@ class Mobject:
             >>> from manim import *
             >>> sq = Square()
             >>> sq.height
-            2.0
+            np.float64(2.0)
             >>> sq.scale_to_fit_width(5)
             Square
             >>> sq.width
-            5.0
+            np.float64(5.0)
             >>> sq.height
-            5.0
+            np.float64(5.0)
         """
-
         return self.rescale_to_fit(width, 0, stretch=False, **kwargs)
 
     def stretch_to_fit_width(self, width: float, **kwargs) -> Self:
@@ -1639,15 +1630,14 @@ class Mobject:
             >>> from manim import *
             >>> sq = Square()
             >>> sq.height
-            2.0
+            np.float64(2.0)
             >>> sq.stretch_to_fit_width(5)
             Square
             >>> sq.width
-            5.0
+            np.float64(5.0)
             >>> sq.height
-            2.0
+            np.float64(2.0)
         """
-
         return self.rescale_to_fit(width, 0, stretch=True, **kwargs)
 
     def scale_to_fit_height(self, height: float, **kwargs) -> Self:
@@ -1665,15 +1655,14 @@ class Mobject:
             >>> from manim import *
             >>> sq = Square()
             >>> sq.width
-            2.0
+            np.float64(2.0)
             >>> sq.scale_to_fit_height(5)
             Square
             >>> sq.height
-            5.0
+            np.float64(5.0)
             >>> sq.width
-            5.0
+            np.float64(5.0)
         """
-
         return self.rescale_to_fit(height, 1, stretch=False, **kwargs)
 
     def stretch_to_fit_height(self, height: float, **kwargs) -> Self:
@@ -1691,25 +1680,22 @@ class Mobject:
             >>> from manim import *
             >>> sq = Square()
             >>> sq.width
-            2.0
+            np.float64(2.0)
             >>> sq.stretch_to_fit_height(5)
             Square
             >>> sq.height
-            5.0
+            np.float64(5.0)
             >>> sq.width
-            2.0
+            np.float64(2.0)
         """
-
         return self.rescale_to_fit(height, 1, stretch=True, **kwargs)
 
     def scale_to_fit_depth(self, depth: float, **kwargs) -> Self:
         """Scales the :class:`~.Mobject` to fit a depth while keeping width/height proportional."""
-
         return self.rescale_to_fit(depth, 2, stretch=False, **kwargs)
 
     def stretch_to_fit_depth(self, depth: float, **kwargs) -> Self:
         """Stretches the :class:`~.Mobject` to fit a depth, not keeping width/height proportional."""
-
         return self.rescale_to_fit(depth, 2, stretch=True, **kwargs)
 
     def set_coord(self, value, dim: int, direction: Vector3D = ORIGIN) -> Self:
@@ -1836,7 +1822,6 @@ class Mobject:
         :class:`~.BackgroundRectangle`
 
         """
-
         # TODO, this does not behave well when the mobject has points,
         # since it gets displayed on top
         from manim.mobject.geometry.shape_matchers import BackgroundRectangle
@@ -1988,14 +1973,15 @@ class Mobject:
 
     def reduce_across_dimension(self, reduce_func: Callable, dim: int):
         """Find the min or max value from a dimension across all points in this and submobjects."""
-        assert dim >= 0 and dim <= 2
+        assert dim >= 0
+        assert dim <= 2
         if len(self.submobjects) == 0 and len(self.points) == 0:
             # If we have no points and no submobjects, return 0 (e.g. center)
             return 0
 
         # If we do not have points (but do have submobjects)
         # use only the points from those.
-        if len(self.points) == 0:
+        if len(self.points) == 0:  # noqa: SIM108
             rv = None
         else:
             # Otherwise, be sure to include our own points
@@ -2004,10 +1990,7 @@ class Mobject:
         # smallest dimension they have and compare it to the return value.
         for mobj in self.submobjects:
             value = mobj.reduce_across_dimension(reduce_func, dim)
-            if rv is None:
-                rv = value
-            else:
-                rv = reduce_func([value, rv])
+            rv = value if rv is None else reduce_func([value, rv])
         return rv
 
     def nonempty_submobjects(self) -> list[Self]:
@@ -2176,17 +2159,17 @@ class Mobject:
         """Returns z Point3D of the center of the :class:`~.Mobject` as ``float``"""
         return self.get_coord(2, direction)
 
-    def get_start(self) -> Point3D:
+    def get_start(self) -> InternalPoint3D:
         """Returns the point, where the stroke that surrounds the :class:`~.Mobject` starts."""
         self.throw_error_if_no_points()
         return np.array(self.points[0])
 
-    def get_end(self) -> Point3D:
+    def get_end(self) -> InternalPoint3D:
         """Returns the point, where the stroke that surrounds the :class:`~.Mobject` ends."""
         self.throw_error_if_no_points()
         return np.array(self.points[-1])
 
-    def get_start_and_end(self) -> tuple[Point3D, Point3D]:
+    def get_start_and_end(self) -> tuple[InternalPoint3D, InternalPoint3D]:
         """Returns starting and ending point of a stroke as a ``tuple``."""
         return self.get_start(), self.get_end()
 
@@ -2488,10 +2471,10 @@ class Mobject:
             buff_x = buff_y = buff
 
         # Initialize alignments correctly
-        def init_alignments(alignments, num, mapping, name, dir):
+        def init_alignments(alignments, num, mapping, name, dir_):
             if alignments is None:
                 # Use cell_alignment as fallback
-                return [cell_alignment * dir] * num
+                return [cell_alignment * dir_] * num
             if len(alignments) != num:
                 raise ValueError(f"{name}_alignments has a mismatching size.")
             alignments = list(alignments)
@@ -2886,7 +2869,7 @@ class Mobject:
 
             >>> result = rect.copy().become(circ, stretch=True)
             >>> result.height, result.width
-            (2.0, 4.0)
+            (np.float64(2.0), np.float64(4.0))
             >>> ellipse_points = np.array(result.get_anchors())
             >>> ellipse_eq = np.sum(ellipse_points**2 * [1/4, 1, 0], axis=1)
             >>> np.allclose(ellipse_eq, 1)
@@ -2900,14 +2883,14 @@ class Mobject:
 
             >>> result = rect.copy().become(circ, match_height=True)
             >>> result.height, result.width
-            (2.0, 2.0)
+            (np.float64(2.0), np.float64(2.0))
             >>> circle_points = np.array(result.get_anchors())
             >>> circle_eq = np.sum(circle_points**2, axis=1)
             >>> np.allclose(circle_eq, 1)
             True
             >>> result = rect.copy().become(circ, match_width=True)
             >>> result.height, result.width
-            (4.0, 4.0)
+            (np.float64(4.0), np.float64(4.0))
             >>> circle_points = np.array(result.get_anchors())
             >>> circle_eq = np.sum(circle_points**2, axis=1)
             >>> np.allclose(circle_eq, 2**2)

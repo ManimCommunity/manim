@@ -72,7 +72,7 @@ def matrix_to_mobject(matrix):
 
 
 class Matrix(VMobject, metaclass=ConvertToOpenGL):
-    """A mobject that displays a matrix on the screen.
+    r"""A mobject that displays a matrix on the screen.
 
     Parameters
     ----------
@@ -118,22 +118,22 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
 
         class MatrixExamples(Scene):
             def construct(self):
-                m0 = Matrix([[2, "\\pi"], [-1, 1]])
+                m0 = Matrix([[2, r"\pi"], [-1, 1]])
                 m1 = Matrix([[2, 0, 4], [-1, 1, 5]],
                     v_buff=1.3,
                     h_buff=0.8,
                     bracket_h_buff=SMALL_BUFF,
                     bracket_v_buff=SMALL_BUFF,
-                    left_bracket="\\{",
-                    right_bracket="\\}")
+                    left_bracket=r"\{",
+                    right_bracket=r"\}")
                 m1.add(SurroundingRectangle(m1.get_columns()[1]))
                 m2 = Matrix([[2, 1], [-1, 3]],
                     element_alignment_corner=UL,
                     left_bracket="(",
                     right_bracket=")")
                 m3 = Matrix([[2, 1], [-1, 3]],
-                    left_bracket="\\\\langle",
-                    right_bracket="\\\\rangle")
+                    left_bracket=r"\langle",
+                    right_bracket=r"\rangle")
                 m4 = Matrix([[2, 1], [-1, 3]],
                 ).set_column_colors(RED, GREEN)
                 m5 = Matrix([[2, 1], [-1, 3]],
@@ -241,7 +241,6 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         :class:`Matrix`
             The current matrix object (self).
         """
-
         # Height per row of LaTeX array with default settings
         BRACKET_HEIGHT = 0.5977
 
@@ -280,7 +279,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         return self
 
     def get_columns(self):
-        """Return columns of the matrix as VGroups.
+        r"""Return columns of the matrix as VGroups.
 
         Returns
         --------
@@ -299,7 +298,6 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
                     m0.add(SurroundingRectangle(m0.get_columns()[1]))
                     self.add(m0)
         """
-
         return VGroup(
             *(
                 VGroup(*(row[i] for row in self.mob_matrix))
@@ -308,7 +306,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         )
 
     def set_column_colors(self, *colors: str):
-        """Set individual colors for each columns of the matrix.
+        r"""Set individual colors for each columns of the matrix.
 
         Parameters
         ----------
@@ -338,7 +336,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         return self
 
     def get_rows(self):
-        """Return rows of the matrix as VGroups.
+        r"""Return rows of the matrix as VGroups.
 
         Returns
         --------
@@ -360,7 +358,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         return VGroup(*(VGroup(*row) for row in self.mob_matrix))
 
     def set_row_colors(self, *colors: str):
-        """Set individual colors for each row of the matrix.
+        r"""Set individual colors for each row of the matrix.
 
         Parameters
         ----------
@@ -438,7 +436,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         return self.elements
 
     def get_brackets(self):
-        """Return the bracket mobjects.
+        r"""Return the bracket mobjects.
 
         Returns
         --------
@@ -464,7 +462,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
 
 
 class DecimalMatrix(Matrix):
-    """A mobject that displays a matrix with decimal entries on the screen.
+    r"""A mobject that displays a matrix with decimal entries on the screen.
 
     Examples
     --------
@@ -544,7 +542,7 @@ class IntegerMatrix(Matrix):
 
 
 class MobjectMatrix(Matrix):
-    """A mobject that displays a matrix of mobject entries on the screen.
+    r"""A mobject that displays a matrix of mobject entries on the screen.
 
     Examples
     --------

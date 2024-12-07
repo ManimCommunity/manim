@@ -6,8 +6,15 @@ __all__ = ["SurroundingRectangle", "BackgroundRectangle", "Cross", "Underline"]
 
 from typing import TYPE_CHECKING, Any
 
-from manim import config, logger
-from manim.constants import *
+from manim import logger
+from manim._config import config
+from manim.constants import (
+    DOWN,
+    LEFT,
+    RIGHT,
+    SMALL_BUFF,
+    UP,
+)
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import RoundedRectangle
 from manim.mobject.mobject import Mobject
@@ -44,21 +51,29 @@ class SurroundingRectangle(RoundedRectangle):
 
     def __init__(
         self,
-        mobject: Mobject,
+        *mobjects: Mobject,
         color: ParsableManimColor = YELLOW,
         buff: float = SMALL_BUFF,
         corner_radius: float = 0.0,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
+        from manim.mobject.mobject import Group
+
+        if not all(isinstance(mob, Mobject) for mob in mobjects):
+            raise TypeError(
+                "Expected all inputs for parameter mobjects to be a Mobjects"
+            )
+
+        group = Group(*mobjects)
         super().__init__(
             color=color,
-            width=mobject.width + 2 * buff,
-            height=mobject.height + 2 * buff,
+            width=group.width + 2 * buff,
+            height=group.height + 2 * buff,
             corner_radius=corner_radius,
             **kwargs,
         )
         self.buff = buff
-        self.move_to(mobject)
+        self.move_to(group)
 
 
 class BackgroundRectangle(SurroundingRectangle):
@@ -88,19 +103,19 @@ class BackgroundRectangle(SurroundingRectangle):
 
     def __init__(
         self,
-        mobject: Mobject,
+        *mobjects: Mobject,
         color: ParsableManimColor | None = None,
         stroke_width: float = 0,
         stroke_opacity: float = 0,
         fill_opacity: float = 0.75,
         buff: float = 0,
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> None:
         if color is None:
             color = config.background_color
 
         super().__init__(
-            mobject,
+            *mobjects,
             color=color,
             stroke_width=stroke_width,
             stroke_opacity=stroke_opacity,
@@ -114,7 +129,7 @@ class BackgroundRectangle(SurroundingRectangle):
         self.set_fill(opacity=b * self.original_fill_opacity)
         return self
 
-    def set_style(self, fill_opacity: float, **kwargs) -> Self:
+    def set_style(self, fill_opacity: float, **kwargs: Any) -> Self:  # type: ignore[override]
         # Unchangeable style, except for fill_opacity
         # All other style arguments are ignored
         super().set_style(
@@ -131,7 +146,10 @@ class BackgroundRectangle(SurroundingRectangle):
         return self
 
     def get_fill_color(self) -> ManimColor:
-        return self.color
+        # The type of the color property is set to Any using the property decorator
+        # vectorized_mobject.py#L571
+        temp_color: ManimColor = self.color
+        return temp_color
 
 
 class Cross(VGroup[Line]):
@@ -165,7 +183,7 @@ class Cross(VGroup[Line]):
         stroke_color: ParsableManimColor = RED,
         stroke_width: float = 6.0,
         scale_factor: float = 1.0,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         super().__init__(Line(UL, DR), Line(UR, DL), **kwargs)
         if mobject is not None:
@@ -189,7 +207,9 @@ class Underline(Line):
                 self.add(man, ul)
     """
 
-    def __init__(self, mobject: Mobject, buff: float = SMALL_BUFF, **kwargs) -> None:
+    def __init__(
+        self, mobject: Mobject, buff: float = SMALL_BUFF, **kwargs: Any
+    ) -> None:
         super().__init__(LEFT, RIGHT, buff=buff, **kwargs)
         self.match_width(mobject)
         self.next_to(mobject, DOWN, buff=self.buff)

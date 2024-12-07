@@ -26,7 +26,7 @@ sys.path.insert(0, os.path.abspath("."))
 # -- Project information -----------------------------------------------------
 
 project = "Manim"
-copyright = f"2020-{datetime.now().year}, The Manim Community Dev Team"
+copyright = f"2020-{datetime.now().year}, The Manim Community Dev Team"  # noqa: A001
 author = "The Manim Community Dev Team"
 
 
@@ -51,10 +51,21 @@ extensions = [
     "sphinx.ext.inheritance_diagram",
     "sphinxcontrib.programoutput",
     "myst_parser",
+    "sphinx_design",
+    "sphinx_reredirects",
 ]
 
 # Automatically generate stub pages when using the .. autosummary directive
 autosummary_generate = True
+
+myst_enable_extensions = ["colon_fence", "amsmath"]
+
+# redirects (for moved / deleted pages)
+redirects = {
+    "installation/linux": "uv.html",
+    "installation/macos": "uv.html",
+    "installation/windows": "uv.html",
+}
 
 # generate documentation from type hints
 ALIAS_DOCS_DICT = parse_module_attributes()[0]
@@ -63,7 +74,7 @@ autodoc_type_aliases = {
     alias_name: f"~manim.{module}.{alias_name}"
     for module, module_dict in ALIAS_DOCS_DICT.items()
     for category_dict in module_dict.values()
-    for alias_name in category_dict.keys()
+    for alias_name in category_dict
 }
 autoclass_content = "both"
 

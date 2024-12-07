@@ -187,7 +187,8 @@ class OpenGLTipableVMobject(OpenGLVMobject):
 
     def get_tip(self):
         """Returns the TipableVMobject instance's (first) tip,
-        otherwise throws an exception."""
+        otherwise throws an exception.
+        """
         tips = self.get_tips()
         if len(tips) == 0:
             raise Exception("tip not found")
@@ -463,10 +464,7 @@ class OpenGLLine(OpenGLTipableVMobject):
         if buff == 0:
             return
         #
-        if self.path_arc == 0:
-            length = self.get_length()
-        else:
-            length = self.get_arc_length()
+        length = self.get_length() if self.path_arc == 0 else self.get_arc_length()
         #
         if length < 2 * buff:
             return
@@ -519,9 +517,7 @@ class OpenGLLine(OpenGLTipableVMobject):
         return angle_of_vector(self.get_vector())
 
     def get_projection(self, point):
-        """
-        Return projection of a point onto the line
-        """
+        """Return projection of a point onto the line"""
         unit_vect = self.get_unit_vector()
         start = self.get_start()
         return start + np.dot(point - start, unit_vect) * unit_vect

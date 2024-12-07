@@ -13,7 +13,9 @@ from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VMobject
 
 if TYPE_CHECKING:
-    from manim.typing import Point2D_Array, Point3D_Array
+    from typing import Any
+
+    from manim.typing import InternalPoint3D_Array, Point2D_Array
 
 from ...constants import RendererType
 
@@ -30,7 +32,7 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
         self,
         points: Point2D_Array,
         z_dim: float = 0.0,
-    ) -> Point3D_Array:
+    ) -> InternalPoint3D_Array:
         """Converts an iterable with coordinates in 2D to 3D by adding
         :attr:`z_dim` as the Z coordinate.
 
@@ -51,13 +53,14 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
         >>> a = _BooleanOps()
         >>> p = [(1, 2), (3, 4)]
         >>> a._convert_2d_to_3d_array(p)
-        [array([1., 2., 0.]), array([3., 4., 0.])]
+        array([[1., 2., 0.],
+               [3., 4., 0.]])
         """
-        points = list(points)
-        for i, point in enumerate(points):
+        list_of_points = list(points)
+        for i, point in enumerate(list_of_points):
             if len(point) == 2:
-                points[i] = np.array(list(point) + [z_dim])
-        return points
+                list_of_points[i] = np.array(list(point) + [z_dim])
+        return np.asarray(list_of_points)
 
     def _convert_vmobject_to_skia_path(self, vmobject: VMobject) -> SkiaPath:
         """Converts a :class:`~.VMobject` to SkiaPath. This method only works for
@@ -90,17 +93,17 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
                 quads = vmobject.get_bezier_tuples_from_points(subpath)
                 start = subpath[0]
                 path.moveTo(*start[:2])
-                for p0, p1, p2 in quads:
+                for _p0, p1, p2 in quads:
                     path.quadTo(*p1[:2], *p2[:2])
                 if vmobject.consider_points_equals(subpath[0], subpath[-1]):
                     path.close()
         elif config.renderer == RendererType.CAIRO:
-            subpaths = vmobject.gen_subpaths_from_points_2d(points)
+            subpaths = vmobject.gen_subpaths_from_points_2d(points)  # type: ignore[assignment]
             for subpath in subpaths:
                 quads = vmobject.gen_cubic_bezier_tuples_from_points(subpath)
                 start = subpath[0]
                 path.moveTo(*start[:2])
-                for p0, p1, p2, p3 in quads:
+                for _p0, p1, p2, p3 in quads:
                     path.cubicTo(*p1[:2], *p2[:2], *p3[:2])
 
                 if vmobject.consider_points_equals_2d(subpath[0], subpath[-1]):
@@ -177,7 +180,7 @@ class Union(_BooleanOps):
 
     """
 
-    def __init__(self, *vmobjects: VMobject, **kwargs) -> None:
+    def __init__(self, *vmobjects: VMobject, **kwargs: Any) -> None:
         if len(vmobjects) < 2:
             raise ValueError("At least 2 mobjects needed for Union.")
         super().__init__(**kwargs)
@@ -216,7 +219,7 @@ class Difference(_BooleanOps):
 
     """
 
-    def __init__(self, subject: VMobject, clip: VMobject, **kwargs) -> None:
+    def __init__(self, subject: VMobject, clip: VMobject, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         outpen = SkiaPath()
         difference(
@@ -258,7 +261,7 @@ class Intersection(_BooleanOps):
 
     """
 
-    def __init__(self, *vmobjects: VMobject, **kwargs) -> None:
+    def __init__(self, *vmobjects: VMobject, **kwargs: Any) -> None:
         if len(vmobjects) < 2:
             raise ValueError("At least 2 mobjects needed for Intersection.")
 
@@ -311,7 +314,7 @@ class Exclusion(_BooleanOps):
 
     """
 
-    def __init__(self, subject: VMobject, clip: VMobject, **kwargs) -> None:
+    def __init__(self, subject: VMobject, clip: VMobject, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         outpen = SkiaPath()
         xor(

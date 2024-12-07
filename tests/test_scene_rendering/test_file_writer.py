@@ -1,4 +1,5 @@
 import sys
+from fractions import Fraction
 from pathlib import Path
 
 import av
@@ -6,6 +7,7 @@ import numpy as np
 import pytest
 
 from manim import DR, Circle, Create, Scene, Star, tempconfig
+from manim.scene.scene_file_writer import to_av_frame_rate
 from manim.utils.commands import capture, get_video_metadata
 
 
@@ -32,7 +34,7 @@ class StarScene(Scene):
     "transparent",
     [False, True],
 )
-def test_gif_writing(tmp_path, transparent):
+def test_gif_writing(config, tmp_path, transparent):
     output_filename = f"gif_{'transparent' if transparent else 'opaque'}"
     with tempconfig(
         {
@@ -81,7 +83,7 @@ def test_gif_writing(tmp_path, transparent):
 
 @pytest.mark.slow
 @pytest.mark.parametrize(
-    "format, transparent, codec, pixel_format",
+    ("format", "transparent", "codec", "pixel_format"),
     [
         ("mp4", False, "h264", "yuv420p"),
         ("mov", False, "h264", "yuv420p"),
@@ -90,7 +92,7 @@ def test_gif_writing(tmp_path, transparent):
         ("webm", True, "vp9", "yuv420p"),
     ],
 )
-def test_codecs(tmp_path, format, transparent, codec, pixel_format):
+def test_codecs(config, tmp_path, format, transparent, codec, pixel_format):
     output_filename = f"codec_{format}_{'transparent' if transparent else 'opaque'}"
     with tempconfig(
         {
@@ -145,8 +147,19 @@ def test_codecs(tmp_path, format, transparent, codec, pixel_format):
     np.testing.assert_allclose(first_frame[-1, -1], target_rgba_center, atol=5)
 
 
+def test_scene_with_non_raw_or_wav_audio(config, manim_caplog):
+    class SceneWithMP3(Scene):
+        def construct(self):
+            file_path = Path(__file__).parent / "click.mp3"
+            self.add_sound(file_path)
+            self.wait()
+
+    SceneWithMP3().render()
+    assert "click.mp3 to .wav" in manim_caplog.text
+
+
 @pytest.mark.slow
-def test_unicode_partial_movie(tmpdir, simple_scenes_path):
+def test_unicode_partial_movie(config, tmpdir, simple_scenes_path):
     # Characters that failed for a user on Windows
     # due to its weird default encoding.
     unicode_str = "三角函数"
@@ -164,3 +177,11 @@ def test_unicode_partial_movie(tmpdir, simple_scenes_path):
 
     _, err, exit_code = capture(command)
     assert exit_code == 0, err
+
+
+def test_frame_rates():
+    assert to_av_frame_rate(25) == Fraction(25, 1)
+    assert to_av_frame_rate(24.0) == Fraction(24, 1)
+    assert to_av_frame_rate(23.976) == Fraction(24 * 1000, 1001)
+    assert to_av_frame_rate(23.98) == Fraction(24 * 1000, 1001)
+    assert to_av_frame_rate(59.94) == Fraction(60 * 1000, 1001)

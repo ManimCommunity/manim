@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 import itertools as it
 import time
 from functools import cached_property
@@ -62,12 +63,12 @@ class OpenGLCamera(OpenGLMobject):
         if self.orthographic:
             self.projection_matrix = opengl.orthographic_projection_matrix()
             self.unformatted_projection_matrix = opengl.orthographic_projection_matrix(
-                format=False,
+                format_=False,
             )
         else:
             self.projection_matrix = opengl.perspective_projection_matrix()
             self.unformatted_projection_matrix = opengl.perspective_projection_matrix(
-                format=False,
+                format_=False,
             )
 
         if frame_shape is None:
@@ -215,7 +216,11 @@ class OpenGLCamera(OpenGLMobject):
 
 
 class OpenGLRenderer:
-    def __init__(self, file_writer_class=SceneFileWriter, skip_animations=False):
+    def __init__(
+        self,
+        file_writer_class: type[SceneFileWriter] = SceneFileWriter,
+        skip_animations: bool = False,
+    ) -> None:
         # Measured in pixel widths, used for vector graphics
         self.anti_alias_width = 1.5
         self._file_writer_class = file_writer_class
@@ -336,10 +341,8 @@ class OpenGLRenderer:
                 shader_wrapper.uniforms.items(),
                 self.perspective_uniforms.items(),
             ):
-                try:
+                with contextlib.suppress(KeyError):
                     shader.set_uniform(name, value)
-                except KeyError:
-                    pass
             try:
                 shader.set_uniform(
                     "u_view_matrix", self.scene.camera.formatted_view_matrix
@@ -397,13 +400,13 @@ class OpenGLRenderer:
         if self.file_writer.sections[-1].skip_animations:
             self.skip_animations = True
         if (
-            config["from_animation_number"]
-            and self.num_plays < config["from_animation_number"]
+            config.from_animation_number > 0
+            and self.num_plays < config.from_animation_number
         ):
             self.skip_animations = True
         if (
-            config["upto_animation_number"]
-            and self.num_plays > config["upto_animation_number"]
+            config.upto_animation_number >= 0
+            and self.num_plays > config.upto_animation_number
         ):
             self.skip_animations = True
             raise EndSceneEarlyException()

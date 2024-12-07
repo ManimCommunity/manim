@@ -15,7 +15,7 @@ def _make_test_scene_class(
 ) -> type[Scene]:
     class _TestedScene(base_scene):
         def __init__(self, *args, **kwargs):
-            super().__init__(renderer=test_renderer, *args, **kwargs)
+            super().__init__(*args, renderer=test_renderer, **kwargs)
 
         def construct(self):
             construct_test(self)
