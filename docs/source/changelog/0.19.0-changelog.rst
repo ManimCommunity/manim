@@ -4,6 +4,26 @@ v0.19.0
 
 :Date: December 6, 2024
 
+Major Changes
+=============
+
+With the release of Manim v0.19.0, we've made lots of progress with making
+Manim easier to install!
+
+One of the biggest changes in this release is the replacement of the external
+``ffmpeg`` dependency with the ``pyav`` library. This means that users no longer
+have to install ``ffmpeg`` in order to use Manim - they can just ``pip install manim``
+and it will work!
+
+In light of this change, we also rewrote our :ref:`installation docs <local-installation>`
+to recommend using a new tool called `uv <https://docs.astral.sh/uv/>`_ to install Manim.
+
+.. note::
+
+   Do not worry if you installed Manim with any previous methods, like homebrew, pip,
+   choco, or scoop. Those methods will still work, and are not deprecated. However,
+   the recommended way to install Manim is now with `uv <https://docs.astral.sh/uv/>`_.
+
 Contributors
 ============
 
