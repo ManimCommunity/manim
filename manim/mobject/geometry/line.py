@@ -40,7 +40,7 @@ if TYPE_CHECKING:
     from ..matrix import Matrix  # Avoid circular import
 
     AngleQuadrant: TypeAlias = tuple[Literal[-1, 1], Literal[-1, 1]]
-    """A tuple of 2 integers which can be either +1 or -1, allowing to select
+    r"""A tuple of 2 integers which can be either +1 or -1, allowing to select
     one of the 4 quadrants of the Cartesian plane.
 
     Let :math:`L_1,\ L_2` be two lines defined by start points
