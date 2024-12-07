@@ -98,6 +98,7 @@ __all__ = [
     "FunctionOverride",
     "PathFuncType",
     "MappingFunction",
+    "MultiMappingFunction",
     "PixelArray",
     "GrayscalePixelArray",
     "RGBPixelArray",
@@ -824,13 +825,17 @@ FunctionOverride: TypeAlias = Callable
 """
 
 PathFuncType: TypeAlias = Callable[[Point3DLike, Point3DLike, float], Point3DLike]
-"""Function mapping two `Point3D` objects and an alpha value to a new
-`Point3D`.
+"""Function mapping two :class:`Point3D` objects and an alpha value to a new
+:class:`Point3D`.
 """
 
-MappingFunction: TypeAlias = Callable[[Point3DLike], Point3DLike]
-"""A function mapping a `Point3D` to another `Point3D`."""
+MappingFunction: TypeAlias = Callable[[Point3D], Point3D]
+"""A function mapping a :class:`Point3D` to another :class:`Point3D`."""
 
+MultiMappingFunction: TypeAlias = Callable[[Point3D_Array], Point3D_Array]
+"""A function mapping a :class:`Point3D_Array` to another
+:class:`Point3D_Array`.
+"""
 
 """
 [CATEGORY]

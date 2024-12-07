@@ -446,7 +446,7 @@ def _determine_graph_layout(
     layout: LayoutName | dict[Hashable, Point3DLike] | LayoutFunction = "spring",
     layout_scale: float | tuple[float, float, float] = 2,
     layout_config: dict[str, Any] | None = None,
-) -> dict[Hashable, Point3D]:
+) -> dict[Hashable, Point3DLike]:
     if layout_config is None:
         layout_config = {}
 

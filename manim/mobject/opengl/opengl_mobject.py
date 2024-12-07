@@ -55,6 +55,7 @@ if TYPE_CHECKING:
         ManimFloat,
         MappingFunction,
         MatrixMN,
+        MultiMappingFunction,
         PathFuncType,
         Point3D,
         Point3D_Array,
@@ -627,9 +628,10 @@ class OpenGLMobject:
         """
         return self.point_from_proportion(0.5)
 
+    # TODO: name is inconsistent with Mobject.apply_points_function_about_point()
     def apply_points_function(
         self,
-        func: MappingFunction,
+        func: MultiMappingFunction,
         about_point: Point3DLike | None = None,
         about_edge: Vector3D | None = ORIGIN,
         works_on_bounding_box: bool = False,
@@ -1581,7 +1583,7 @@ class OpenGLMobject:
             if :math:`\alpha < 0`, the mobject is also flipped.
         kwargs
             Additional keyword arguments passed to
-            :meth:`apply_points_function_about_point`.
+            :meth:`apply_points_function`.
 
         Returns
         -------
@@ -1619,7 +1621,7 @@ class OpenGLMobject:
         return self
 
     def stretch(self, factor: float, dim: int, **kwargs) -> Self:
-        def func(points):
+        def func(points: Point3D_Array) -> Point3D_Array:
             points[:, dim] *= factor
             return points
 
@@ -1668,9 +1670,12 @@ class OpenGLMobject:
         # Default to applying matrix about the origin, not mobjects center
         if len(kwargs) == 0:
             kwargs["about_point"] = ORIGIN
-        self.apply_points_function(
-            lambda points: np.array([function(p) for p in points]), **kwargs
-        )
+
+        def multi_mapping_function(points: Point3D_Array) -> Point3D_Array:
+            result: Point3D_Array = np.apply_along_axis(function, 1, points)
+            return result
+
+        self.apply_points_function(multi_mapping_function, **kwargs)
         return self
 
     def apply_function_to_position(self, function: MappingFunction) -> Self:

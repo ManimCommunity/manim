@@ -47,6 +47,7 @@ if TYPE_CHECKING:
     from manim.typing import (
         FunctionOverride,
         MappingFunction,
+        MultiMappingFunction,
         PathFuncType,
         PixelArray,
         Point3D,
@@ -815,7 +816,7 @@ class Mobject:
     def get_array_attrs(self) -> list[Literal["points"]]:
         return ["points"]
 
-    def apply_over_attr_arrays(self, func: MappingFunction) -> Self:
+    def apply_over_attr_arrays(self, func: MultiMappingFunction) -> Self:
         for attr in self.get_array_attrs():
             setattr(self, attr, func(getattr(self, attr)))
         return self
@@ -1306,7 +1307,7 @@ class Mobject:
         return self.rotate(TAU / 2, axis, **kwargs)
 
     def stretch(self, factor: float, dim: int, **kwargs) -> Self:
-        def func(points):
+        def func(points: Point3D_Array) -> Point3D_Array:
             points[:, dim] *= factor
             return points
 
@@ -1317,9 +1318,12 @@ class Mobject:
         # Default to applying matrix about the origin, not mobjects center
         if len(kwargs) == 0:
             kwargs["about_point"] = ORIGIN
-        self.apply_points_function_about_point(
-            lambda points: np.apply_along_axis(function, 1, points), **kwargs
-        )
+
+        def multi_mapping_function(points: Point3D_Array) -> Point3D_Array:
+            result: Point3D_Array = np.apply_along_axis(function, 1, points)
+            return result
+
+        self.apply_points_function_about_point(multi_mapping_function, **kwargs)
         return self
 
     def apply_function_to_position(self, function: MappingFunction) -> Self:
@@ -1398,11 +1402,12 @@ class Mobject:
     # Note, much of these are now redundant with default behavior of
     # above methods
 
+    # TODO: name is inconsistent with OpenGLMobject.apply_points_function()
     def apply_points_function_about_point(
         self,
-        func: MappingFunction,
-        about_point: Point3DLike = None,
-        about_edge=None,
+        func: MultiMappingFunction,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3D | None = None,
     ) -> Self:
         if about_point is None:
             if about_edge is None:
@@ -1771,9 +1776,10 @@ class Mobject:
         curr_start, curr_end = self.get_start_and_end()
         curr_vect = curr_end - curr_start
         if np.all(curr_vect == 0):
-            self.points = start
+            # TODO: this makes self.points contain a single point
+            self.points = np.array(start, ndmin=2)
             return self
-        target_vect = np.array(end) - np.array(start)
+        target_vect = np.asarray(end) - np.asarray(start)
         axis = (
             normalize(np.cross(curr_vect, target_vect))
             if np.linalg.norm(np.cross(curr_vect, target_vect)) != 0

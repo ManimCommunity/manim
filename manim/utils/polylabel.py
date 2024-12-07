@@ -35,17 +35,19 @@ class Polygon:
         self.array: Point2D_Array = np.concatenate(np_rings, axis=0)
 
         # Compute Boundary
-        self.start = np.delete(self.array, csum - 1, axis=0)
-        self.stop = np.delete(self.array, csum % csum[-1], axis=0)
-        self.diff = np.delete(np.diff(self.array, axis=0), csum[:-1] - 1, axis=0)
-        self.norm = self.diff / np.einsum("ij,ij->i", self.diff, self.diff).reshape(
-            -1, 1
+        self.start: Point2D_Array = np.delete(self.array, csum - 1, axis=0)
+        self.stop: Point2D_Array = np.delete(self.array, csum % csum[-1], axis=0)
+        self.diff: Point2D_Array = np.delete(
+            np.diff(self.array, axis=0), csum[:-1] - 1, axis=0
         )
+        self.norm: Point2D_Array = self.diff / np.einsum(
+            "ij,ij->i", self.diff, self.diff
+        ).reshape(-1, 1)
 
         # Compute Centroid
         x, y = self.start[:, 0], self.start[:, 1]
         xr, yr = self.stop[:, 0], self.stop[:, 1]
-        self.area = 0.5 * (np.dot(x, yr) - np.dot(xr, y))
+        self.area: float = 0.5 * (np.dot(x, yr) - np.dot(xr, y))
         if self.area:
             factor = x * yr - xr * y
             cx = np.sum((x + xr) * factor) / (6.0 * self.area)

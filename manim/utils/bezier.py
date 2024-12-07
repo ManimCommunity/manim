@@ -1019,13 +1019,11 @@ def interpolate(start: float, end: float, alpha: ColVector) -> ColVector: ...
 
 
 @overload
-def interpolate(start: Point3DLike, end: Point3DLike, alpha: float) -> Point3D: ...
+def interpolate(start: Point3D, end: Point3D, alpha: float) -> Point3D: ...
 
 
 @overload
-def interpolate(
-    start: Point3DLike, end: Point3DLike, alpha: ColVector
-) -> Point3D_Array: ...
+def interpolate(start: Point3D, end: Point3D, alpha: ColVector) -> Point3D_Array: ...
 
 
 def interpolate(start, end, alpha):
@@ -1108,10 +1106,10 @@ def mid(start: float, end: float) -> float: ...
 
 
 @overload
-def mid(start: Point3DLike, end: Point3DLike) -> Point3D: ...
+def mid(start: Point3D, end: Point3D) -> Point3D: ...
 
 
-def mid(start: float | Point3DLike, end: float | Point3DLike) -> float | Point3D:
+def mid(start: float | Point3D, end: float | Point3D) -> float | Point3D:
     """Returns the midpoint between two values.
 
     Parameters
@@ -1133,17 +1131,15 @@ def inverse_interpolate(start: float, end: float, value: float) -> float: ...
 
 
 @overload
-def inverse_interpolate(start: float, end: float, value: Point3DLike) -> Point3D: ...
+def inverse_interpolate(start: float, end: float, value: Point3D) -> Point3D: ...
 
 
 @overload
-def inverse_interpolate(
-    start: Point3DLike, end: Point3DLike, value: Point3DLike
-) -> Point3D: ...
+def inverse_interpolate(start: Point3D, end: Point3D, value: Point3D) -> Point3D: ...
 
 
 def inverse_interpolate(
-    start: float | Point3DLike, end: float | Point3DLike, value: float | Point3DLike
+    start: float | Point3D, end: float | Point3D, value: float | Point3D
 ) -> float | Point3D:
     """Perform inverse interpolation to determine the alpha
     values that would produce the specified ``value``
@@ -1197,7 +1193,7 @@ def match_interpolate(
     new_end: float,
     old_start: float,
     old_end: float,
-    old_value: Point3DLike,
+    old_value: Point3D,
 ) -> Point3D: ...
 
 
@@ -1206,7 +1202,7 @@ def match_interpolate(
     new_end: float,
     old_start: float,
     old_end: float,
-    old_value: float | Point3DLike,
+    old_value: float | Point3D,
 ) -> float | Point3D:
     """Interpolate a value from an old range to a new range.
 

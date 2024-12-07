@@ -32,12 +32,36 @@ from manim.utils.space_ops import angle_of_vector, line_intersection, normalize
 if TYPE_CHECKING:
     from typing import Any
 
-    from typing_extensions import Literal, Self
+    from typing_extensions import Literal, Self, TypeAlias
 
     from manim.typing import Point2DLike, Point3D, Point3DLike, Vector3D
     from manim.utils.color import ParsableManimColor
 
     from ..matrix import Matrix  # Avoid circular import
+
+    AngleQuadrant: TypeAlias = tuple[Literal[-1, 1], Literal[-1, 1]]
+    """A tuple of 2 integers which can be either +1 or -1, allowing to select
+    one of the 4 quadrants of the Cartesian plane.
+
+    Let :math:`L_1,\ L_2` be two lines defined by start points
+    :math:`S_1,\ S_2` and end points :math:`E_1,\ E_2`. We define the "positive
+    direction" of :math:`L_1` as the direction from :math:`S_1` to :math:`E_1`,
+    and its "negative direction" as the opposite one. We do the same with
+    :math:`L_2`.
+
+    If :math:`L_1` and :math:`L_2` intersect, they divide the plane into 4
+    quadrants. To pick one quadrant, choose the integers in this tuple in the
+    following way:
+
+    -   If the 1st integer is +1, select one of the 2 quadrants towards the
+        positive direction of :math:`L_1`, i.e. closest to `E_1`. Otherwise, if
+        the 1st integer is -1, select one of the 2 quadrants towards the
+        negative direction of :math:`L_1`, i.e. closest to `S_1`.
+
+    -   Similarly, the sign of the 2nd integer picks the positive or negative
+        direction of :math:`L_2` and, thus, selects one of the 2 quadrants
+        which  are closest to :math:`E_2` or :math:`S_2` respectively.
+    """
 
 
 class Line(TipableVMobject):
@@ -932,7 +956,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         line1: Line,
         line2: Line,
         radius: float | None = None,
-        quadrant: tuple[Literal[-1, 1], Literal[-1, 1]] = (1, 1),
+        quadrant: AngleQuadrant = (1, 1),
         other_angle: bool = False,
         dot: bool = False,
         dot_radius: float | None = None,
