@@ -2365,7 +2365,7 @@ class Mobject:
                 subgroups = [sm[value[1:]] for sm in submob_list]
                 return subgroups
 
-            # Fancy indexing
+            # Simple fancy indexing
             if isinstance(value, (list, np.ndarray)):
                 items: list[Mobject]
                 # With array of bools
@@ -2376,16 +2376,19 @@ class Mobject:
                     for i, include_mob in enumerate(value):
                         if include_mob:
                             items.append(mob_list[i])
-                # With array of ints or other arrays
-                else:
-                    pre_items = [get_from_list(mob_list, index) for index in value]
-                    items = [
-                        VGroup(*item) if isinstance(item, (list, np.ndarray)) else item
-                        for item in pre_items
-                    ]
+                    return items
+
+                if any(not isinstance(index, int) for index in value):
+                    raise ValueError(
+                        "The given array must contain either only bools or "
+                        "only ints."
+                    )
+
+                # With array of ints
+                items = [mob_list[index] for index in value]
                 return items
 
-            raise ValueError("Non supported index type")
+            raise ValueError(f"Index type {value.__class__.__name__} is not supported.")
 
         self_list = self.split()
         mob_or_mobs = get_from_list(self_list, value)
