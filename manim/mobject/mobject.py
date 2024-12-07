@@ -6,7 +6,6 @@ __all__ = ["Mobject", "Group", "override_animate"]
 
 
 import copy
-import inspect
 import itertools as it
 import math
 import operator as op
@@ -14,18 +13,17 @@ import random
 import sys
 import types
 import warnings
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 from functools import partialmethod, reduce
 from pathlib import Path
 from typing import TYPE_CHECKING, Callable, Literal
 
 import numpy as np
 
+from manim import config, logger
+from manim.constants import *
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-
-from .. import config, logger
-from ..constants import *
-from ..utils.color import (
+from manim.utils.color import (
     BLACK,
     WHITE,
     YELLOW_C,
@@ -34,14 +32,16 @@ from ..utils.color import (
     color_gradient,
     interpolate_color,
 )
-from ..utils.exceptions import MultiAnimationOverrideException
-from ..utils.iterables import list_update, remove_list_redundancies
-from ..utils.paths import straight_path
-from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
+from manim.utils.exceptions import MultiAnimationOverrideException
+from manim.utils.iterables import list_update, remove_list_redundancies
+from manim.utils.paths import straight_path
+from manim.utils.space_ops import angle_between_vectors, normalize, rotation_matrix
+from manim.utils.updaters import MobjectUpdaterWrapper
 
 if TYPE_CHECKING:
-    from typing_extensions import Self, TypeAlias
+    from typing_extensions import Self
 
+    from manim.animation.animation import Animation
     from manim.typing import (
         FunctionOverride,
         InternalPoint3D,
@@ -54,12 +54,7 @@ if TYPE_CHECKING:
         Point3D_Array,
         Vector3D,
     )
-
-    from ..animation.animation import Animation
-
-    TimeBasedUpdater: TypeAlias = Callable[["Mobject", float], object]
-    NonTimeBasedUpdater: TypeAlias = Callable[["Mobject"], object]
-    Updater: TypeAlias = NonTimeBasedUpdater | TimeBasedUpdater
+    from manim.utils.updaters import MobjectDtUpdater, MobjectUpdater
 
 
 class Mobject:
@@ -72,6 +67,7 @@ class Mobject:
     Attributes
     ----------
     submobjects : List[:class:`Mobject`]
+
         The contained objects.
     points : :class:`numpy.ndarray`
         The points of the objects.
@@ -97,7 +93,7 @@ class Mobject:
 
     def __init__(
         self,
-        color: ParsableManimColor | list[ParsableManimColor] = WHITE,
+        color: ParsableManimColor | Sequence[ParsableManimColor] = WHITE,
         name: str | None = None,
         dim: int = 3,
         target=None,
@@ -109,7 +105,7 @@ class Mobject:
         self.z_index = z_index
         self.point_hash = None
         self.submobjects = []
-        self.updaters: list[Updater] = []
+        self.updater_wrappers: Sequence[MobjectUpdaterWrapper] = []
         self.updating_suspended = False
         self.color = ManimColor.parse(color)
 
@@ -866,6 +862,10 @@ class Mobject:
 
     # Updating
 
+    @property
+    def updaters(self) -> Sequence[MobjectUpdater]:
+        return self.get_updaters()
+
     def update(self, dt: float = 0, recursive: bool = True) -> Self:
         """Apply all updaters.
 
@@ -892,17 +892,17 @@ class Mobject:
         """
         if self.updating_suspended:
             return self
-        for updater in self.updaters:
-            if "dt" in inspect.signature(updater).parameters:
-                updater(self, dt)
+        for wrapper in self.updater_wrappers:
+            if wrapper.is_time_based:
+                wrapper.updater(self, dt)
             else:
-                updater(self)
+                wrapper.updater(self)
         if recursive:
             for submob in self.submobjects:
                 submob.update(dt, recursive)
         return self
 
-    def get_time_based_updaters(self) -> list[TimeBasedUpdater]:
+    def get_time_based_updaters(self) -> Sequence[MobjectDtUpdater]:
         """Return all updaters using the ``dt`` parameter.
 
         The updaters use this parameter as the input for difference in time.
@@ -919,9 +919,9 @@ class Mobject:
 
         """
         return [
-            updater
-            for updater in self.updaters
-            if "dt" in inspect.signature(updater).parameters
+            wrapper.updater
+            for wrapper in self.updater_wrappers
+            if wrapper.is_time_based
         ]
 
     def has_time_based_updater(self) -> bool:
@@ -938,11 +938,9 @@ class Mobject:
         :meth:`get_time_based_updaters`
 
         """
-        return any(
-            "dt" in inspect.signature(updater).parameters for updater in self.updaters
-        )
+        return any(wrapper.is_time_based for wrapper in self.updater_wrappers)
 
-    def get_updaters(self) -> list[Updater]:
+    def get_updaters(self) -> Sequence[MobjectUpdater]:
         """Return all updaters.
 
         Returns
@@ -956,14 +954,14 @@ class Mobject:
         :meth:`get_time_based_updaters`
 
         """
-        return self.updaters
+        return [wrapper.updater for wrapper in self.updater_wrappers]
 
-    def get_family_updaters(self) -> list[Updater]:
+    def get_family_updaters(self) -> Sequence[MobjectUpdater]:
         return list(it.chain(*(sm.get_updaters() for sm in self.get_family())))
 
     def add_updater(
         self,
-        update_function: Updater,
+        update_function: MobjectUpdater,
         index: int | None = None,
         call_updater: bool = False,
     ) -> Self:
@@ -1027,19 +1025,19 @@ class Mobject:
         :meth:`remove_updater`
         :class:`~.UpdateFromFunc`
         """
+        wrapper = MobjectUpdaterWrapper(update_function)
         if index is None:
-            self.updaters.append(update_function)
+            self.updater_wrappers.append(wrapper)
         else:
-            self.updaters.insert(index, update_function)
+            self.updater_wrappers.insert(index, wrapper)
         if call_updater:
-            parameters = inspect.signature(update_function).parameters
-            if "dt" in parameters:
-                update_function(self, 0)
+            if wrapper.is_time_based:
+                wrapper.updater(self, 0)
             else:
-                update_function(self)
+                wrapper.updater(self)
         return self
 
-    def remove_updater(self, update_function: Updater) -> Self:
+    def remove_updater(self, update_function: MobjectUpdater) -> Self:
         """Remove an updater.
 
         If the same updater is applied multiple times, every instance gets removed.
@@ -1062,8 +1060,11 @@ class Mobject:
         :meth:`get_updaters`
 
         """
-        while update_function in self.updaters:
-            self.updaters.remove(update_function)
+        self.updater_wrappers = [
+            wrapper
+            for wrapper in self.updater_wrappers
+            if wrapper.updater != update_function
+        ]
         return self
 
     def clear_updaters(self, recursive: bool = True) -> Self:
@@ -1086,7 +1087,7 @@ class Mobject:
         :meth:`get_updaters`
 
         """
-        self.updaters = []
+        self.updater_wrappers = []
         if recursive:
             for submob in self.submobjects:
                 submob.clear_updaters()
@@ -1117,8 +1118,7 @@ class Mobject:
 
         """
         self.clear_updaters()
-        for updater in mobject.get_updaters():
-            self.add_updater(updater)
+        self.updater_wrappers = mobject.updater_wrappers.copy()
         return self
 
     def suspend_updating(self, recursive: bool = True) -> Self:

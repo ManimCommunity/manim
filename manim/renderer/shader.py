@@ -1,16 +1,23 @@
 from __future__ import annotations
 
 import contextlib
-import inspect
 import re
 import textwrap
+from collections.abc import Sequence
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import moderngl
 import numpy as np
 
-from .. import config
-from ..utils import opengl
+from manim import config
+from manim.utils import opengl
+from manim.utils.updaters import MeshUpdaterWrapper
+
+if TYPE_CHECKING:
+    from typing_extensions import Self
+
+    from manim.utils.updaters import MeshDtUpdater, MeshUpdater
 
 SHADER_FOLDER = Path(__file__).parent / "shaders"
 shader_program_cache: dict = {}
@@ -175,76 +182,90 @@ class Object3D:
             current_object = current_object.parent
         return np.linalg.multi_dot(list(reversed(normal_matrices)))[:3, :3]
 
-    def init_updaters(self):
-        self.time_based_updaters = []
-        self.non_time_updaters = []
+    # Updating
+
+    @property
+    def updaters(self) -> Sequence[MeshUpdater]:
+        return self.get_updaters()
+
+    def init_updaters(self) -> None:
+        self.updater_wrappers: Sequence[MeshUpdaterWrapper] = []
         self.has_updaters = False
         self.updating_suspended = False
 
-    def update(self, dt=0):
+    def update(self, dt: float = 0) -> Self:
         if not self.has_updaters or self.updating_suspended:
             return self
-        for updater in self.time_based_updaters:
-            updater(self, dt)
-        for updater in self.non_time_updaters:
-            updater(self)
+        for wrapper in self.updater_wrappers:
+            if wrapper.is_time_based:
+                wrapper.updater(self, dt)
+            else:
+                wrapper.updater(self)
         return self
 
-    def get_time_based_updaters(self):
-        return self.time_based_updaters
+    def get_time_based_updaters(self) -> Sequence[MeshDtUpdater]:
+        return [
+            wrapper.updater
+            for wrapper in self.updater_wrappers
+            if wrapper.is_time_based
+        ]
 
-    def has_time_based_updater(self):
-        return len(self.time_based_updaters) > 0
+    def has_time_based_updater(self) -> bool:
+        return any(wrapper.is_time_based for wrapper in self.updater_wrappers)
 
-    def get_updaters(self):
-        return self.time_based_updaters + self.non_time_updaters
+    def get_updaters(self) -> Sequence[MeshUpdater]:
+        return [wrapper.updater for wrapper in self.updater_wrappers]
 
-    def add_updater(self, update_function, index=None, call_updater=True):
-        if "dt" in inspect.signature(update_function).parameters:
-            updater_list = self.time_based_updaters
-        else:
-            updater_list = self.non_time_updaters
-
+    def add_updater(
+        self,
+        update_function: MeshUpdater,
+        index: int | None = None,
+        call_updater: bool = False,
+    ) -> Self:
+        wrapper = MeshUpdaterWrapper(update_function)
         if index is None:
-            updater_list.append(update_function)
+            self.updater_wrappers.append(wrapper)
         else:
-            updater_list.insert(index, update_function)
+            self.updater_wrappers.insert(index, wrapper)
 
         self.refresh_has_updater_status()
         if call_updater:
             self.update()
         return self
 
-    def remove_updater(self, update_function):
-        for updater_list in [self.time_based_updaters, self.non_time_updaters]:
-            while update_function in updater_list:
-                updater_list.remove(update_function)
+    def remove_updater(self, update_function: MeshUpdater) -> Self:
+        self.updater_wrappers = [
+            wrapper
+            for wrapper in self.updater_wrappers
+            if wrapper.updater != update_function
+        ]
         self.refresh_has_updater_status()
         return self
 
-    def clear_updaters(self):
-        self.time_based_updaters = []
-        self.non_time_updaters = []
+    def clear_updaters(self, recurse: bool = True) -> Self:
+        self.updater_wrappers = []
         self.refresh_has_updater_status()
+        if recurse:
+            for submob in self.submobjects:
+                submob.clear_updaters()
         return self
 
-    def match_updaters(self, mobject):
+    def match_updaters(self, obj: Object3D) -> Self:
         self.clear_updaters()
-        for updater in mobject.get_updaters():
-            self.add_updater(updater)
+        self.updater_wrappers = obj.updater_wrappers.copy()
         return self
 
-    def suspend_updating(self):
+    def suspend_updating(self) -> Self:
         self.updating_suspended = True
         return self
 
-    def resume_updating(self, call_updater=True):
+    def resume_updating(self, call_updater: bool = True) -> Self:
         self.updating_suspended = False
         if call_updater:
             self.update(dt=0)
         return self
 
-    def refresh_has_updater_status(self):
+    def refresh_has_updater_status(self) -> Self:
         self.has_updaters = len(self.get_updaters()) > 0
         return self
 

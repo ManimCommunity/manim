@@ -33,27 +33,29 @@ from tqdm import tqdm
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
+from manim import config, logger
+from manim.animation.animation import Animation, Wait, prepare_animation
+from manim.camera.camera import Camera
+from manim.constants import *
+from manim.gui.gui import configure_pygui
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLPoint
-
-from .. import config, logger
-from ..animation.animation import Animation, Wait, prepare_animation
-from ..camera.camera import Camera
-from ..constants import *
-from ..gui.gui import configure_pygui
-from ..renderer.cairo_renderer import CairoRenderer
-from ..renderer.opengl_renderer import OpenGLRenderer
-from ..renderer.shader import Object3D
-from ..utils import opengl, space_ops
-from ..utils.exceptions import EndSceneEarlyException, RerunSceneException
-from ..utils.family import extract_mobject_family_members
-from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
-from ..utils.file_ops import open_media_file
-from ..utils.iterables import list_difference_update, list_update
+from manim.renderer.cairo_renderer import CairoRenderer
+from manim.renderer.opengl_renderer import OpenGLRenderer
+from manim.renderer.shader import Object3D
+from manim.utils import opengl, space_ops
+from manim.utils.exceptions import EndSceneEarlyException, RerunSceneException
+from manim.utils.family import extract_mobject_family_members
+from manim.utils.family_ops import restructure_list_to_exclude_certain_family_members
+from manim.utils.file_ops import open_media_file
+from manim.utils.iterables import list_difference_update, list_update
+from manim.utils.updaters import MobjectUpdaterWrapper
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
     from typing import Callable
+
+    from manim.utils.updaters import SceneUpdater
 
 
 class RerunSceneHandler(FileSystemEventHandler):
@@ -124,7 +126,7 @@ class Scene:
         self.camera_target = ORIGIN
         self.widgets = []
         self.dearpygui_imported = dearpygui_imported
-        self.updaters = []
+        self.updaters: Sequence[SceneUpdater] = []
         self.point_lights = []
         self.ambient_light = None
         self.key_to_function_map = {}
@@ -173,12 +175,14 @@ class Scene:
             if k == "camera_class":
                 setattr(result, k, v)
             setattr(result, k, copy.deepcopy(v, clone_from_id))
+        # TODO: where is this attribute even defined?
         result.mobject_updater_lists = []
 
         # Update updaters
         for mobject in self.mobjects:
-            cloned_updaters = []
-            for updater in mobject.updaters:
+            cloned_updater_wrappers = []
+            for wrapper in mobject.updater_wrappers:
+                updater = wrapper.updater
                 # Make the cloned updater use the cloned Mobjects as free variables
                 # rather than the original ones. Analyzing function bytecode with the
                 # dis module will help in understanding this.
@@ -214,11 +218,13 @@ class Scene:
                     updater.__defaults__,
                     tuple(cloned_closure),
                 )
-                cloned_updaters.append(cloned_updater)
+                cloned_updater_wrappers.append(MobjectUpdaterWrapper(cloned_updater))
             mobject_clone = clone_from_id[id(mobject)]
-            mobject_clone.updaters = cloned_updaters
-            if len(cloned_updaters) > 0:
-                result.mobject_updater_lists.append((mobject_clone, cloned_updaters))
+            mobject_clone.updater_wrappers = cloned_updater_wrappers
+            if len(cloned_updater_wrappers) > 0:
+                result.mobject_updater_lists.append(
+                    (mobject_clone, cloned_updater_wrappers)
+                )
         return result
 
     def render(self, preview: bool = False):
@@ -577,7 +583,7 @@ class Scene:
         if not replaced:
             raise ValueError(f"Could not find {old_mobject} in scene")
 
-    def add_updater(self, func: Callable[[float], None]) -> None:
+    def add_updater(self, func: SceneUpdater) -> None:
         """Add an update function to the scene.
 
         The scene updater functions are run every frame,
@@ -608,7 +614,7 @@ class Scene:
         """
         self.updaters.append(func)
 
-    def remove_updater(self, func: Callable[[float], None]) -> None:
+    def remove_updater(self, func: SceneUpdater) -> None:
         """Remove an update function from the scene.
 
         Parameters

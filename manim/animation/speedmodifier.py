@@ -2,19 +2,19 @@
 
 from __future__ import annotations
 
-import inspect
 import types
 from typing import TYPE_CHECKING, Callable
 
 from numpy import piecewise
 
-from ..animation.animation import Animation, Wait, prepare_animation
-from ..animation.composition import AnimationGroup
-from ..mobject.mobject import Mobject, _AnimationBuilder
-from ..scene.scene import Scene
+from manim.animation.animation import Animation, Wait, prepare_animation
+from manim.animation.composition import AnimationGroup
+from manim.mobject.mobject import Mobject, _AnimationBuilder
+from manim.scene.scene import Scene
+from manim.utils.updaters import MobjectUpdaterWrapper
 
 if TYPE_CHECKING:
-    from ..mobject.mobject import Updater
+    from manim.utils.updaters import MobjectUpdater
 
 __all__ = ["ChangeSpeed"]
 
@@ -235,7 +235,7 @@ class ChangeSpeed(Animation):
     def add_updater(
         cls,
         mobject: Mobject,
-        update_function: Updater,
+        update_function: MobjectUpdater,
         index: int | None = None,
         call_updater: bool = False,
     ):
@@ -264,7 +264,8 @@ class ChangeSpeed(Animation):
         :class:`.ChangeSpeed`
         :meth:`.Mobject.add_updater`
         """
-        if "dt" in inspect.signature(update_function).parameters:
+        wrapper = MobjectUpdaterWrapper(update_function)
+        if wrapper.is_time_based:
             mobject.add_updater(
                 lambda mob, dt: update_function(
                     mob, ChangeSpeed.dt if ChangeSpeed.is_changing_dt else dt

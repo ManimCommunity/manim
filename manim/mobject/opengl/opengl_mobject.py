@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import copy
-import inspect
 import itertools as it
 import random
 import sys
@@ -45,10 +44,11 @@ from manim.utils.space_ops import (
     normalize,
     rotation_matrix_transpose,
 )
+from manim.utils.updaters import MobjectUpdaterWrapper
 
 if TYPE_CHECKING:
     import numpy.typing as npt
-    from typing_extensions import Self, TypeAlias
+    from typing_extensions import Self
 
     from manim.renderer.shader_wrapper import ShaderWrapper
     from manim.typing import (
@@ -60,10 +60,7 @@ if TYPE_CHECKING:
         Point3D_Array,
         Vector3D,
     )
-
-    TimeBasedUpdater: TypeAlias = Callable[["Mobject", float], object]
-    NonTimeBasedUpdater: TypeAlias = Callable[["Mobject"], object]
-    Updater: TypeAlias = NonTimeBasedUpdater | TimeBasedUpdater
+    from manim.utils.updaters import MobjectDtUpdater, MobjectUpdater
 
     T = TypeVar("T")
 
@@ -1448,66 +1445,71 @@ class OpenGLMobject:
     # Updating
 
     def init_updaters(self) -> None:
-        self.time_based_updaters = []
-        self.non_time_updaters = []
+        self.updater_wrappers: Sequence[MobjectUpdaterWrapper] = []
         self.has_updaters = False
         self.updating_suspended = False
+
+    @property
+    def updaters(self) -> Sequence[MobjectUpdater]:
+        return self.get_updaters()
 
     def update(self, dt: float = 0, recurse: bool = True) -> Self:
         if not self.has_updaters or self.updating_suspended:
             return self
-        for updater in self.time_based_updaters:
-            updater(self, dt)
-        for updater in self.non_time_updaters:
-            updater(self)
+        for wrapper in self.updater_wrappers:
+            if wrapper.is_time_based:
+                wrapper.updater(self, dt)
+            else:
+                wrapper.updater(self)
         if recurse:
             for submob in self.submobjects:
                 submob.update(dt, recurse)
         return self
 
-    def get_time_based_updaters(self) -> Sequence[TimeBasedUpdater]:
-        return self.time_based_updaters
+    def get_time_based_updaters(self) -> Sequence[MobjectDtUpdater]:
+        return [
+            wrapper.updater
+            for wrapper in self.updater_wrappers
+            if wrapper.is_time_based
+        ]
 
     def has_time_based_updater(self) -> bool:
-        return len(self.time_based_updaters) > 0
+        return any(wrapper.is_time_based for wrapper in self.updater_wrappers)
 
-    def get_updaters(self) -> Sequence[Updater]:
-        return self.time_based_updaters + self.non_time_updaters
+    def get_updaters(self) -> Sequence[MobjectUpdater]:
+        return [wrapper.updater for wrapper in self.updater_wrappers]
 
-    def get_family_updaters(self) -> Sequence[Updater]:
+    def get_family_updaters(self) -> Sequence[MobjectUpdater]:
         return list(it.chain(*(sm.get_updaters() for sm in self.get_family())))
 
     def add_updater(
         self,
-        update_function: Updater,
+        update_function: MobjectUpdater,
         index: int | None = None,
         call_updater: bool = False,
     ) -> Self:
-        if "dt" in inspect.signature(update_function).parameters:
-            updater_list = self.time_based_updaters
-        else:
-            updater_list = self.non_time_updaters
-
+        wrapper = MobjectUpdaterWrapper(update_function)
         if index is None:
-            updater_list.append(update_function)
+            self.updater_wrappers.append(wrapper)
         else:
-            updater_list.insert(index, update_function)
+            self.updater_wrappers.insert(index, wrapper)
 
         self.refresh_has_updater_status()
         if call_updater:
             self.update()
         return self
 
-    def remove_updater(self, update_function: Updater) -> Self:
-        for updater_list in [self.time_based_updaters, self.non_time_updaters]:
-            while update_function in updater_list:
-                updater_list.remove(update_function)
+    def remove_updater(self, update_function: MobjectUpdater) -> Self:
+        self.updater_wrappers = [
+            wrapper
+            for wrapper in self.updater_wrappers
+            if wrapper.updater != update_function
+        ]
         self.refresh_has_updater_status()
         return self
 
     def clear_updaters(self, recurse: bool = True) -> Self:
-        self.time_based_updaters = []
-        self.non_time_updaters = []
+        self.updater_wrappers = []
         self.refresh_has_updater_status()
         if recurse:
             for submob in self.submobjects:
@@ -1516,8 +1518,7 @@ class OpenGLMobject:
 
     def match_updaters(self, mobject: OpenGLMobject) -> Self:
         self.clear_updaters()
-        for updater in mobject.get_updaters():
-            self.add_updater(updater)
+        self.updater_wrappers = mobject.updater_wrappers.copy()
         return self
 
     def suspend_updating(self, recurse: bool = True) -> Self:
