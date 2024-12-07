@@ -166,7 +166,7 @@ class FadeOut(_Fade):
                 dot = Dot(UP * 2 + LEFT)
                 self.add(dot)
                 tex = Tex(
-                    "FadeOut with ", "shift ", " or target\\_position", " and scale"
+                    "FadeOut with ", "shift ", r" or target\_position", " and scale"
                 ).scale(1)
                 animations = [
                     FadeOut(tex[0]),
