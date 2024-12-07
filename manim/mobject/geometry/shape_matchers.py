@@ -13,7 +13,6 @@ from manim.constants import (
     LEFT,
     RIGHT,
     SMALL_BUFF,
-    UP,
 )
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import RoundedRectangle
