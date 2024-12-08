@@ -1020,7 +1020,7 @@ class ManimColor:
         return self._construct_from_space(
             self._internal_from_integer(self.to_integer() ^ int(other), 1.0)
         )
-    
+
     def __hash__(self) -> str:
         return self.to_hex(with_alpha=True)
 
