@@ -1297,67 +1297,166 @@ class VMobject(Mobject):
     def get_cubic_bezier_tuples(self) -> npt.NDArray[Point3D_Array]:
         return self.get_cubic_bezier_tuples_from_points(self.points)
 
-    def _gen_subpaths_from_points(
-        self,
-        points: Point3D_Array,
-        filter_func: Callable[[int], bool],
-    ) -> Generator[Point3D_Array]:
-        """Given an array of points defining the bezier curves of the vmobject, return subpaths formed by these points.
-        Here, Two bezier curves form a path if at least two of their anchors are evaluated True by the relation defined by filter_func.
-
-        The algorithm every bezier tuple (anchors and handles) in ``self.points`` (by regrouping each n elements, where
-        n is the number of points per cubic curve)), and evaluate the relation between two anchors with filter_func.
-        NOTE : The filter_func takes an int n as parameter, and will evaluate the relation between points[n] and points[n - 1]. This should probably be changed so
-        the function takes two points as parameters.
+    def get_subpaths_from_points(self, points: Point3D_Array) -> list[Point3D_Array]:
+        """Returns the given ``points`` split into subpaths: groups of
+        consecutive curves where one curve's end anchor matches the next
+        curve's start anchor.
 
         Parameters
         ----------
         points
-            points defining the bezier curve.
-        filter_func
-            Filter-func defining the relation.
-
-        Returns
-        -------
-        Generator[Point3D_Array]
-            subpaths formed by the points.
-        """
-        nppcc = self.n_points_per_cubic_curve
-        filtered = filter(filter_func, range(nppcc, len(points), nppcc))
-        split_indices = [0] + list(filtered) + [len(points)]
-        return (
-            points[i1:i2]
-            for i1, i2 in zip(split_indices, split_indices[1:])
-            if (i2 - i1) >= nppcc
-        )
-
-    def get_subpaths_from_points(self, points: Point3D_Array) -> list[Point3D_Array]:
-        return list(
-            self._gen_subpaths_from_points(
-                points,
-                lambda n: not self.consider_points_equals(points[n - 1], points[n]),
-            ),
-        )
-
-    def gen_subpaths_from_points_2d(
-        self, points: Point3D_Array
-    ) -> Generator[Point3D_Array]:
-        return self._gen_subpaths_from_points(
-            points,
-            lambda n: not self.consider_points_equals_2d(points[n - 1], points[n]),
-        )
-
-    def get_subpaths(self) -> list[Point3D_Array]:
-        """Returns subpaths formed by the curves of the VMobject.
-
-        Subpaths are ranges of curves with each pair of consecutive curves having their end/start points coincident.
+            The points to split into subpaths.
 
         Returns
         -------
         list[Point3D_Array]
-            subpaths.
+            The subpaths obtained from ``points``.
+        """
+        return [
+            points[i:j] for i, j in self.get_subpath_split_indices_from_points(points)
+        ]
+
+    def gen_subpaths_from_points_2d(self, points: Point3D_Array) -> list[Point3D_Array]:
+        return [
+            points[i:j]
+            for i, j in self.get_subpath_split_indices_from_points(points, n_dims=2)
+        ]
+
+    def get_subpaths(self) -> list[Point3D_Array]:
+        """Returns the :attr:`.VMobject.points` split into subpaths: groups of
+        consecutive curves where one curve's end anchor matches the next
+        curve's start anchor.
+
+        Returns
+        -------
+        list[Point3D_Array]
+            The subpaths obtained from :attr:`.VMobject.points`.
         """
         return self.get_subpaths_from_points(self.points)
+
+    def get_subpath_split_indices_from_points(
+        self,
+        points: CubicBezierPath,
+        n_dims: int = 3,
+        strip_null_end_curves: bool = False,
+    ) -> npt.NDArray[ManimInt]:
+        """Returns the necessary indices to split ``points`` into subpaths:
+        groups of consecutive curves where one curve's end anchor matches the
+        next curve's start anchor.
+
+        Parameters
+        ----------
+        points
+            The array of points to split into subpaths.
+        n_dims
+            The amount of dimensions to analyze for ``points``: 3 for fully
+            analyzing the 3D points, 2 for considering only their first 2
+            dimensions (x and y). Default is 3.
+        strip_null_end_curves
+            If True, for every subpath, if it ends with null curves (curves
+            whose control points are all considered equal), they're removed
+            from the subpath: the end indices for the subpaths are decreased
+            to ignore the null curves. If False, consider them anyways. Default
+            is False.
+
+        Returns
+        -------
+        np.ndarray
+            A ``(n_subpaths, 2)``-shaped array, where the first and second
+            columns indicate respectively the start and end indices for each
+            subpath.
+        """
+        points = np.asarray(points)
+
+        nppc = self.n_points_per_curve
+        starts = points[::nppc]
+        ends = points[nppc - 1 :: nppc]
+        # This ensures that there are no more starts than ends (which happens
+        # when a VMobject contains a single point).
+        n_curves = ends.shape[0]
+        starts = starts[:n_curves]
+
+        # Zero curves case: if nothing was done to handle this, the statement
+        # split_indices = np.empty((diff_indices.shape[0] + 1, 2), dtype=int)
+        # and later statements would incorrectly generate the ndarray [[0 0]],
+        # which WILL break other methods.
+        # Instead, an empty (0, 2)-shaped ndarray must be returned immediately.
+        if n_curves == 0:
+            return np.empty((0, 2), dtype=int)
+        # Single curve case: points_are_equal(starts[1:], ends[:-1]) will fail,
+        # so return immediately. The split indices are just [[0 nppc]].
+        if n_curves == 1:
+            return np.array([[0, nppc]])
+
+        if n_dims == 2:
+            points_are_equal = self.consider_points_equals_2d
+        else:
+            points_are_equal = self.consider_points_equals
+
+        diff_bools = [
+            not points_are_equal(start, end)
+            for start, end in zip(starts[1:], ends[:-1])
+        ]
+        diff_indices = np.arange(1, ends.shape[0])[diff_bools]
+
+        # Initially split_indices refer to CURVE split indices, rather than
+        # POINT split indices
+        split_indices = np.empty((diff_indices.shape[0] + 1, 2), dtype=int)
+        split_indices[0, 0] = 0
+        split_indices[1:, 0] = diff_indices
+        split_indices[:-1, 1] = diff_indices
+        split_indices[-1, 1] = n_curves
+
+        # Remove null end curves (curves whose control points are all
+        # considered equal), by repeatedly decrementing the end curve index
+        if strip_null_end_curves:
+            for i in range(split_indices.shape[0]):
+                start_i, end_i = split_indices[i]
+                while end_i > start_i + 1 and all(
+                    points_are_equal(ends[end_i - 2], cp)
+                    for cp in points[nppc * (end_i - 1) : nppc * end_i]
+                ):
+                    end_i -= 1
+                split_indices[i, 1] = end_i
+
+        # After multiplying, split_indices will actually contain POINT split
+        # indices
+        split_indices *= self.n_points_per_curve
+
+        return split_indices
+
+    def get_subpath_split_indices(
+        self,
+        n_dims: int = 3,
+        strip_null_end_curves: bool = False,
+    ) -> npt.NDArray[ManimInt]:
+        """Returns the necessary indices to split :attr:`.VMobject.points` into
+        subpaths: groups of consecutive curves where one curve's end anchor
+        matches the next curve's start anchor.
+
+        Parameters
+        ----------
+        n_dims
+            The amount of dimensions to analyze for :attr:`.VMobject.points`:
+            3 for fully analyzing the 3D points, 2 for considering only their
+            first 2 dimensions (x and y). Default is 3.
+        strip_null_end_curves
+            If True, for every subpath, if it ends with null curves (curves
+            whose start and end anchors are considered equal), they're removed
+            from the subpath: the end indices for the subpaths are decreased
+            to ignore the null curves. If False, consider them anyways. Default
+            is False.
+
+        Returns
+        -------
+        np.ndarray
+            A ``(n_subpaths, 2)``-shaped array, where the first and second
+            columns indicate respectively the start and end indices for each
+            subpath.
+        """
+        return self.get_subpath_split_indices_from_points(
+            self.points, n_dims, strip_null_end_curves
+        )
 
     def get_nth_curve_points(self, n: int) -> Point3D_Array:
         """Returns the points defining the nth curve of the vmobject.
