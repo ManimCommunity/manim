@@ -1022,7 +1022,7 @@ class ManimColor:
         )
 
     def __hash__(self) -> str:
-        return self.to_hex(with_alpha=True)
+        return hash(self.to_hex(with_alpha=True))
 
 
 RGBA = ManimColor
