@@ -68,8 +68,8 @@ class Line(TipableVMobject):
         self,
         start: Point3D | Mobject,
         end: Point3D | Mobject,
-        buff: float = 0,
-        path_arc: float = 0,
+        buff: float = None,  # 0   #?Why default value to 0? Shouldn't be `self.buff` instead?
+        path_arc: float = None,  # 0   #?Why default value to 0? Shouldn't be `self.buff` instead?
     ) -> None:
         """Sets the points of the line based on its start and end points.
         Unlike :meth:`put_start_and_end_on`, this method respects `self.buff` and
@@ -86,6 +86,11 @@ class Line(TipableVMobject):
         path_arc
             The angle of a circle spanned by this arc, by default 0 which is a straight line.
         """
+        if buff is None:
+            buff = self.buff
+        if path_arc is None:
+            path_arc = self.path_arc
+
         self._set_start_and_end_attrs(start, end)
         if path_arc:
             # self.path_arc could potentially be None, which is not accepted
