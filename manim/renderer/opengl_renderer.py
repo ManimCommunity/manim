@@ -474,13 +474,9 @@ class OpenGLRenderer:
 
         self.animation_elapsed_time = time.time() - self.animation_start_time
 
-
     def sort_mobjects_by_depth(mobjects):
         # Sort based on z-coordinate to ensure proper layering
-        sorted_mobjects = sorted(
-            mobjects, 
-            key=lambda m: getattr(m, "z_index", 0)
-        )
+        sorted_mobjects = sorted(mobjects, key=lambda m: getattr(m, "z_index", 0))
 
         print(f"Rendering {len(mobjects)} mobjects after sorting by z_index.")
         for m in sorted_mobjects:
@@ -493,7 +489,6 @@ class OpenGLRenderer:
         sorted_mobjects = self.sort_mobjects_by_depth(scene.mobjects)
         for mobject in sorted_mobjects:
             self.render_mobject(mobject)
-
 
     def scene_finished(self, scene):
         # When num_plays is 0, no images have been output, so output a single

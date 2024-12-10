@@ -1,5 +1,6 @@
 from manim import *
 
+
 class TestZCoordinateSorting(Scene):
     def construct(self):
         # Test 1: Basic z-sorting with static Mobjects
@@ -27,7 +28,12 @@ class TestZCoordinateSorting(Scene):
 
         # Test 5: Stress test with 10 overlapping Mobjects
         for i in range(10):
-            mobject = Circle(radius=0.2).shift(OUT * i * 0.2).set_z_index(i).set_color_by_gradient(RED, YELLOW)
+            mobject = (
+                Circle(radius=0.2)
+                .shift(OUT * i * 0.2)
+                .set_z_index(i)
+                .set_color_by_gradient(RED, YELLOW)
+            )
             self.add(mobject)
         self.wait(2)
 
