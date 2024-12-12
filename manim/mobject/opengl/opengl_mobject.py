@@ -12,7 +12,7 @@ import sys
 from dataclasses import dataclass
 from functools import partialmethod, wraps
 from math import ceil
-from typing import TYPE_CHECKING, Generic
+from typing import TYPE_CHECKING, Any, Generic
 
 import numpy as np
 from typing_extensions import TypedDict, TypeVar
@@ -145,7 +145,7 @@ class OpenGLMobject:
         is_fixed_orientation: bool = False,
         depth_test: bool = True,
         name: str | None = None,
-        **kwargs,  # just dump
+        **kwargs: Any,  # just dump
     ):
         self.color = color
         self.opacity = opacity
