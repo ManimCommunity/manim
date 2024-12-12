@@ -62,12 +62,12 @@ DEFAULT_FILL_COLOR = GREY_C
 class VMobjectKwargs(MobjectKwargs, total=False):
     color: ParsableManimColor | Sequence[ParsableManimColor] | None
     fill_color: ParsableManimColor | Sequence[ParsableManimColor] | None
-    fill_opacity: float
+    fill_opacity: float | None
     stroke_color: ParsableManimColor | Sequence[ParsableManimColor] | None
-    stroke_opacity: float
+    stroke_opacity: float | None
     stroke_width: float
     draw_stroke_behind_fill: bool
-    background_image_file: str
+    background_image_file: str | None
     long_lines: bool
     joint_type: LineJointType
     flat_stroke: bool
