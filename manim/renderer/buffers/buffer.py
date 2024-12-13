@@ -103,9 +103,9 @@ class STD140BufferFormat:
 
         # Make a new array with extra columns of 0s
         new_shape = list(data.shape)
-        new_shape[-1] += self._paddings[var] 
+        new_shape[-1] += self._paddings[var]
         padded_data = np.zeros(new_shape)
-        padded_data[..., :data.shape[-1]] = data
+        padded_data[..., : data.shape[-1]] = data
         return padded_data
 
     def write(self, data: dict) -> None:
