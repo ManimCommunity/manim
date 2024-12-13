@@ -60,10 +60,6 @@ class Manager(Generic[Scene_co]):
             Manager(Manimation).render()
     """
 
-    window_class: type[WindowProtocol] = Window  # type: ignore[type-abstract]
-    file_writer_class: type[FileWriterProtocol] = FileWriter
-    renderer_class: type[RendererProtocol] = OpenGLRenderer
-
     def __init__(self, scene_cls: type[Scene_co]) -> None:
         # scene
         self.scene: Scene_co = scene_cls(manager=self)
@@ -79,7 +75,7 @@ class Manager(Generic[Scene_co]):
         # this must be done AFTER instantiating a window
         self.renderer = self.create_renderer()
 
-        self.file_writer: FileWriterProtocol = self.create_file_writer()
+        self.file_writer = self.create_file_writer()
         self._write_files = config.write_to_movie
 
         # internal state
@@ -97,7 +93,7 @@ class Manager(Generic[Scene_co]):
         -------
             An instance of a renderer
         """
-        renderer = self.renderer_class()
+        renderer = OpenGLRenderer()
         if config.preview:
             renderer.use_window()
         return renderer
@@ -112,7 +108,7 @@ class Manager(Generic[Scene_co]):
         -------
             A window if previewing, else None
         """
-        return self.window_class() if config.preview else None
+        return Window() if config.preview else None  # type: ignore[abstract]
 
     def create_file_writer(self) -> FileWriterProtocol:
         """Create and returna file writer instance.
@@ -124,7 +120,7 @@ class Manager(Generic[Scene_co]):
         -------
             A file writer satisfying :class:`.FileWriterProtocol`
         """
-        return self.file_writer_class(scene_name=self.scene.get_default_scene_name())
+        return FileWriter(scene_name=self.scene.get_default_scene_name())
 
     def setup(self) -> None:
         """Set up processes and manager"""
