@@ -12,7 +12,7 @@ import sys
 from dataclasses import dataclass
 from functools import partialmethod, wraps
 from math import ceil
-from typing import TYPE_CHECKING, Generic
+from typing import TYPE_CHECKING, Any, Generic
 
 import numpy as np
 from typing_extensions import TypedDict, TypeVar
@@ -103,6 +103,7 @@ class MobjectStatus:
 
 # TODO: add this to the **kwargs of all mobjects that use OpenGLMobject
 class MobjectKwargs(TypedDict, total=False):
+    color: ParsableManimColor | Sequence[ParsableManimColor] | None
     opacity: float
     reflectiveness: float
     shadow: float
@@ -110,7 +111,7 @@ class MobjectKwargs(TypedDict, total=False):
     is_fixed_in_frame: bool
     is_fixed_orientation: bool
     depth_test: bool
-    name: str
+    name: str | None
 
 
 class OpenGLMobject:
@@ -135,7 +136,7 @@ class OpenGLMobject:
     # TypedDict above so that autocomplete works for users
     def __init__(
         self,
-        color=WHITE,
+        color: ParsableManimColor | Sequence[ParsableManimColor] | None = WHITE,
         opacity: float = 1.0,
         reflectiveness: float = 0.0,
         shadow: float = 0.0,
@@ -144,7 +145,7 @@ class OpenGLMobject:
         is_fixed_orientation: bool = False,
         depth_test: bool = True,
         name: str | None = None,
-        **kwargs,  # just dump
+        **kwargs: Any,  # just dump
     ):
         self.color = color
         self.opacity = opacity

@@ -60,17 +60,19 @@ DEFAULT_FILL_COLOR = GREY_C
 
 # TODO: add this to the **kwargs of all mobjects that use OpenGLVMobject
 class VMobjectKwargs(MobjectKwargs, total=False):
-    color: ParsableManimColor | list[ParsableManimColor]
-    fill_color: ParsableManimColor | list[ParsableManimColor]
-    fill_opacity: float
-    stroke_color: ParsableManimColor | list[ParsableManimColor]
-    stroke_opacity: float
+    color: ParsableManimColor | Sequence[ParsableManimColor] | None
+    fill_color: ParsableManimColor | Sequence[ParsableManimColor] | None
+    fill_opacity: float | None
+    stroke_color: ParsableManimColor | Sequence[ParsableManimColor] | None
+    stroke_opacity: float | None
     stroke_width: float
     draw_stroke_behind_fill: bool
-    background_image_file: str
+    background_image_file: str | None
     long_lines: bool
     joint_type: LineJointType
     flat_stroke: bool
+    shade_in_3d: bool
+    checkerboard_colors: bool  # TODO: remove
 
 
 class OpenGLVMobject(OpenGLMobject):
@@ -95,17 +97,10 @@ class OpenGLVMobject(OpenGLMobject):
         long_lines: bool = False,
         joint_type: LineJointType = LineJointType.AUTO,
         flat_stroke: bool = False,
-        shade_in_3d=False,  # TODO: Can be ignored for now but we should think about using some sort of shader to introduce lighting after deferred rendering has completed
-        checkerboard_colors=False,  # ignore,
+        shade_in_3d: bool = False,  # TODO: Can be ignored for now but we should think about using some sort of shader to introduce lighting after deferred rendering has completed
+        checkerboard_colors: bool = False,  # ignore,
         **kwargs: Unpack[MobjectKwargs],
     ):
-        super().__init__(**kwargs)
-        if fill_color is None:
-            fill_color = self.color
-        if stroke_color is None:
-            stroke_color = self.color
-        self.set_fill(color=fill_color, opacity=fill_opacity)
-        self.set_stroke(color=stroke_color, opacity=stroke_opacity)
         self.stroke_width = listify(stroke_width)
         self.draw_stroke_behind_fill = draw_stroke_behind_fill
         self.background_image_file = background_image_file
@@ -115,6 +110,14 @@ class OpenGLVMobject(OpenGLMobject):
 
         self.needs_new_triangulation = True
         self.triangulation = np.zeros(0, dtype="i4")
+
+        super().__init__(**kwargs)
+        if fill_color is None:
+            fill_color = self.color
+        if stroke_color is None:
+            stroke_color = self.color
+        self.set_fill(color=fill_color, opacity=fill_opacity)
+        self.set_stroke(color=stroke_color, width=stroke_width, opacity=stroke_opacity)
 
         # self.refresh_unit_normal()
 
