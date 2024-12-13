@@ -50,7 +50,7 @@ class STD140BufferFormat:
         self.name = name
         self.binding = binding
         self.dtype = []
-        self._paddings = {}  # LUT for future writes
+        self._paddings: dict[str, int] = {}  # LUT for future writes
         byte_offset = 0  # Track the offset so we can calculate padding for alignment -- NOTE: use RenderDoc to debug
         for data_type, var_name in struct:
             _base_char, base_bytesize, shape = self._GL_DTYPES[data_type]
@@ -97,11 +97,16 @@ class STD140BufferFormat:
         np.ndarray
             the same data with 0 or 1 columns of 0s appended
         """
-        try:
-            # This fails for 1D data (python or np.array)
-            return np.pad(data, ((0, 0), (0, self._paddings[var])), mode="constant")
-        except Exception:
-            return np.pad(data, ((0, self._paddings[var])), mode="constant")
+        data = np.asarray(data)
+        if self._paddings[var] or data.ndim == 0:
+            return data
+
+        # Make a new array with extra columns of 0s
+        new_shape = list(data.shape)
+        new_shape[-1] += self._paddings[var] 
+        padded_data = np.zeros(new_shape)
+        padded_data[..., :data.shape[-1]] = data
+        return padded_data
 
     def write(self, data: dict) -> None:
         """Write a dictionary of key value pairs to the STD140BufferFormat's data attribute
