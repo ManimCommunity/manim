@@ -6,17 +6,19 @@ import math
 from typing import TYPE_CHECKING, Any, TypedDict
 
 import numpy as np
+import numpy.typing as npt
 
-from manim._config import config
+from manim._config import config, logger
 from manim.constants import *
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.utils.deprecation import deprecated
 from manim.utils.paths import straight_path
 from manim.utils.space_ops import rotation_matrix
 
 if TYPE_CHECKING:
     from typing_extensions import Self
 
-    from manim.typing import MatrixMN, Point3D, Vector3D
+    from manim.typing import ManimFloat, MatrixMN, Point3D, Vector3D
 
 
 class CameraOrientationConfig(TypedDict, total=False):
@@ -123,7 +125,7 @@ class Camera(OpenGLMobject):
             self.move_to(frame_center)
         return self
 
-    def get_euler_angles(self) -> np.ndarray:
+    def get_euler_angles(self) -> npt.NDArray[ManimFloat]:
         return np.array([self._theta, self._phi, self._gamma])
 
     def set_euler_angles(
@@ -141,9 +143,30 @@ class Camera(OpenGLMobject):
         return self
 
     def get_theta(self) -> float:
+        """Get the angle theta along which the camera is rotated about the Z
+        axis.
+
+        Returns
+        -------
+        float
+            The theta angle.
+        """
         return self._theta
 
     def set_theta(self, theta: float) -> Self:
+        """Set the angle theta by which the camera is rotated about the Z
+        axis.
+
+        Parameters
+        ----------
+        theta
+            The new theta angle.
+
+        Returns
+        -------
+        :class:`Camera`
+            The camera after setting its theta angle.
+        """
         self._theta = theta
         self._rotation_matrix = None
         # If we don't add TAU/4 (90°) to theta, the camera will be positioned
@@ -160,12 +183,44 @@ class Camera(OpenGLMobject):
         return self
 
     def increment_theta(self, dtheta: float) -> Self:
+        """Incremeet the angle theta by which the camera is rotated about the Z
+        axis, by a given ``dtheta``.
+
+        Parameters
+        ----------
+        dtheta
+            The increment in the angle theta.
+
+        Returns
+        -------
+        :class:`Camera`
+            The camera after incrementing its theta angle.
+        """
         return self.set_theta(self._theta + dtheta)
 
     def get_phi(self) -> float:
+        """Get the angle phi between the camera and the Z axis.
+
+        Returns
+        -------
+        float
+            The phi angle.
+        """
         return self._phi
 
     def set_phi(self, phi: float) -> Self:
+        """Set the angle phi between the camera and the Z axis.
+
+        Parameters
+        ----------
+        phi
+            The new phi angle.
+
+        Returns
+        -------
+        :class:`Camera`
+            The camera after setting its phi angle.
+        """
         self._phi = phi
         self._rotation_matrix = None
         cos = np.cos(phi)
@@ -180,12 +235,46 @@ class Camera(OpenGLMobject):
         return self
 
     def increment_phi(self, dphi: float) -> Self:
+        """Increment the angle phi between the camera and the Z axis by a given
+        ``dphi``.
+
+        Parameters
+        ----------
+        dphi
+            The increment in the angle phi.
+
+        Returns
+        -------
+        :class:`Camera`
+            The camera after incrementing its phi angle.
+        """
         return self.set_phi(self._phi + dgamma)
 
     def get_gamma(self) -> float:
+        """Get the angle gamma by which the camera is rotated while standing on
+        its current position.
+
+        Returns
+        -------
+        float
+            The gamma angle.
+        """
         return self._gamma
 
     def set_gamma(self, gamma: float) -> Self:
+        """Set the angle gamma by which the camera is rotated while standing on
+        its current position.
+
+        Parameters
+        ----------
+        gamma
+            The new gamma angle.
+
+        Returns
+        -------
+        :class:`Camera`
+            The camera after setting its gamma angle.
+        """
         self._gamma = gamma
         self._rotation_matrix = None
         cos = np.cos(gamma)
@@ -200,6 +289,19 @@ class Camera(OpenGLMobject):
         return self
 
     def increment_gamma(self, dgamma: float) -> Self:
+        """Increment the angle gamma by which the camera is rotated while
+        standing on its current position, by an angle ``dgamma``.
+
+        Parameters
+        ----------
+        dgamma
+            The increment in the angle gamma.
+
+        Returns
+        -------
+        :class:`Camera`
+            The camera after incrementing its gamma angle.
+        """
         return self.set_gamma(self._gamma + dgamma)
 
     def get_rotation_matrix(self) -> MatrixMN:
@@ -323,6 +425,15 @@ class Camera(OpenGLMobject):
         :class:`Camera`
             The camera after the rotation.
         """
+        logger.warning(
+            "Using this method automatically standardizes the Euler angles "
+            "theta, phi and gamma, which might result in unexpected behavior "
+            "when animating the camera. If phi is 0° or 180°, this method "
+            "is not able to determine exactly theta and gamma, because their "
+            "axes are aligned. Therefore, in that case, gamma will be set to "
+            "0°."
+        )
+
         new_rot = rotation_matrix(angle, axis) @ self.get_rotation_matrix()
 
         # Recalculate theta, phi and gamma.
@@ -383,10 +494,32 @@ class Camera(OpenGLMobject):
         points = self.points
         return points[4, 1] - points[3, 1]
 
+    def get_implied_camera_direction(self) -> Vector3D:
+        """Use the rotation matrix given by the Euler angles theta, phi and
+        gamma to calculate the direction along which the camera would be
+        positioned if it had a physical position.
+
+        Returns
+        -------
+        :class:`Vector3D`
+            The direction along which the camera would be positioned if it had
+            a physical position.
+        """
+        return self.get_rotation_matrix()[:, 2]
+
     def get_implied_camera_location(self) -> Point3D:
-        to_camera = self.get_rotation_matrix()[:, 2]
-        dist = self.get_focal_distance()
-        return self.get_center() + dist * to_camera
+        """Use the Euler angles theta, phi and gamma, as well as the frame
+        center and the focal distance, to calculate the point in which the
+        camera would be positioned if it had a physical position.
+
+        Returns
+        -------
+        :class:`Point3D`
+            The point in which the camera would be positioned if it had a
+            physical position.
+        """
+        to_camera = self.get_implied_camera_direction()
+        return self.get_center() + self.focal_distance * to_camera
 
     # Movement methods
 
@@ -521,6 +654,10 @@ class Camera(OpenGLMobject):
             self.precession_updater = None
         return self
 
+    @deprecated(
+        replacement="Camera.begin_precession",
+        message="Use Camera.begin_precession() instead.",
+    )
     def begin_3dillusion_rotation(
         self,
         rate: float = 1.0,
@@ -531,6 +668,10 @@ class Camera(OpenGLMobject):
         """Alias for :meth:`begin_precession`, which is preferred."""
         return self.begin_precession(rate, radius, origin_theta, origin_phi)
 
+    @deprecated(
+        replacement="Camera.stop_precession",
+        message="Use Camera.stop_precession() instead.",
+    )
     def stop_3dillusion_rotation(self) -> Self:
         """Alias for :meth:`stop_precession`, which is preferred."""
         return self.stop_precession()
