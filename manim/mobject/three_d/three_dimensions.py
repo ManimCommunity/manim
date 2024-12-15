@@ -29,7 +29,6 @@ from manim import config, logger
 from manim.constants import *
 from manim.mobject.geometry.arc import Circle
 from manim.mobject.geometry.polygram import Square
-from manim.mobject.mobject import *
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.types.vectorized_mobject import VectorizedPoint, VGroup
@@ -110,6 +109,7 @@ class Surface(VGroup):
         checkerboard_colors: Sequence[ParsableManimColor] | bool = [BLUE_D, BLUE_E],
         stroke_color: ParsableManimColor = LIGHT_GREY,
         stroke_width: float = 0.5,
+        stroke_opacity: float = 1.0,  # TODO: placed temporarily to have a stroke_opacity
         should_make_jagged: bool = False,
         pre_function_handle_to_anchor_scale_factor: float = 0.00001,
         **kwargs: Any,
@@ -120,7 +120,7 @@ class Surface(VGroup):
         self.resolution = resolution
         self.surface_piece_config = surface_piece_config
         self.fill_color: ManimColor = ManimColor(fill_color)
-        self.fill_opacity = fill_opacity
+        self.fill_opacity = fill_opacity  # TODO: remove
         if checkerboard_colors:
             self.checkerboard_colors: list[ManimColor] = [
                 ManimColor(x) for x in checkerboard_colors
@@ -129,6 +129,7 @@ class Surface(VGroup):
             self.checkerboard_colors = checkerboard_colors
         self.stroke_color: ManimColor = ManimColor(stroke_color)
         self.stroke_width = stroke_width
+        self.stroke_opacity = stroke_opacity  # TODO: remove
         self.should_make_jagged = should_make_jagged
         self.pre_function_handle_to_anchor_scale_factor = (
             pre_function_handle_to_anchor_scale_factor

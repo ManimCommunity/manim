@@ -5,311 +5,206 @@ from __future__ import annotations
 __all__ = ["ThreeDScene", "SpecialThreeDScene"]
 
 
-import warnings
 from collections.abc import Iterable, Sequence
+from typing import TYPE_CHECKING, Any
 
-import numpy as np
-
+from manim._config import config
+from manim.animation.animation import Animation
 from manim.mobject.geometry.line import Line
 from manim.mobject.graphing.coordinate_systems import ThreeDAxes
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVectorizedPoint,
+    OpenGLVGroup,
+)
 from manim.mobject.three_d.three_dimensions import Sphere
-from manim.mobject.value_tracker import ValueTracker
+from manim.scene.scene import Scene
+from manim.utils.config_ops import merge_dicts_recursively
+from manim.utils.deprecation import deprecated
 
-from .. import config
-from ..animation.animation import Animation
-from ..animation.transform import Transform
-from ..camera.three_d_camera import ThreeDCamera
-from ..constants import DEGREES, RendererType
-from ..mobject.mobject import Mobject
-from ..mobject.types.vectorized_mobject import VectorizedPoint, VGroup
-from ..renderer.opengl_renderer import OpenGLCamera
-from ..scene.scene import Scene
-from ..utils.config_ops import merge_dicts_recursively
+if TYPE_CHECKING:
+    pass
 
 
 class ThreeDScene(Scene):
-    """
-    This is a Scene, with special configurations and properties that
-    make it suitable for Three Dimensional Scenes.
+    """A :class:`Scene` with special configurations and properties that make it
+    suitable for 3D scenes.
     """
 
-    def __init__(
-        self,
-        camera_class=ThreeDCamera,
-        ambient_camera_rotation=None,
-        default_angled_camera_orientation_kwargs=None,
-        **kwargs,
-    ):
-        self.ambient_camera_rotation = ambient_camera_rotation
-        if default_angled_camera_orientation_kwargs is None:
-            default_angled_camera_orientation_kwargs = {
-                "phi": 70 * DEGREES,
-                "theta": -135 * DEGREES,
-            }
-        self.default_angled_camera_orientation_kwargs = (
-            default_angled_camera_orientation_kwargs
-        )
-        super().__init__(camera_class=camera_class, **kwargs)
-
+    @deprecated(
+        replacement="Camera.set_orientation",
+        message="Use self.camera.set_orientation() instead.",
+    )
     def set_camera_orientation(
         self,
-        phi: float | None = None,
         theta: float | None = None,
+        phi: float | None = None,
         gamma: float | None = None,
         zoom: float | None = None,
         focal_distance: float | None = None,
-        frame_center: Mobject | Sequence[float] | None = None,
-        **kwargs,
-    ):
-        """
-        This method sets the orientation of the camera in the scene.
+        frame_center: OpenGLMobject | Sequence[float] | None = None,
+    ) -> None:
+        """This method sets the orientation of the camera in the scene.
 
         Parameters
         ----------
-        phi
-            The polar angle i.e the angle between Z_AXIS and Camera through ORIGIN in radians.
-
         theta
             The azimuthal angle i.e the angle that spins the camera around the Z_AXIS.
-
-        focal_distance
-            The focal_distance of the Camera.
-
+        phi
+            The polar angle i.e the angle between Z_AXIS and Camera through ORIGIN in radians.
         gamma
             The rotation of the camera about the vector from the ORIGIN to the Camera.
-
         zoom
             The zoom factor of the scene.
-
+        focal_distance
+            The focal_distance of the Camera.
         frame_center
             The new center of the camera frame in cartesian coordinates.
-
         """
-        if phi is not None:
-            self.renderer.camera.set_phi(phi)
-        if theta is not None:
-            self.renderer.camera.set_theta(theta)
-        if focal_distance is not None:
-            self.renderer.camera.set_focal_distance(focal_distance)
-        if gamma is not None:
-            self.renderer.camera.set_gamma(gamma)
-        if zoom is not None:
-            self.renderer.camera.set_zoom(zoom)
-        if frame_center is not None:
-            self.renderer.camera._frame_center.move_to(frame_center)
+        self.camera.set_orientation(
+            theta, phi, gamma, zoom, focal_distance, frame_center
+        )
 
-    def begin_ambient_camera_rotation(self, rate: float = 0.02, about: str = "theta"):
-        """
-        This method begins an ambient rotation of the camera about the Z_AXIS,
-        in the anticlockwise direction
+    @deprecated(
+        replacement="Camera.begin_ambient_rotation",
+        message="Use self.camera.begin_ambient_rotation() followed by self.add(self.camera) instead.",
+    )
+    def begin_ambient_camera_rotation(
+        self, rate: float = 0.02, about: str = "theta"
+    ) -> None:
+        """Apply an updater to rotate the camera on every frame by modifying
+        one of three Euler angles: "theta" (rotate about the Z axis), "phi"
+        (modify the angle between the camera and the Z axis) or "gamma" (rotate
+        the camera in its position while it's looking at the same point).
 
         Parameters
         ----------
         rate
-            The rate at which the camera should rotate about the Z_AXIS.
-            Negative rate means clockwise rotation.
+            The rate at which the camera should rotate for the specified
+            angle. A positive rate means counterclockwise rotation, and a
+            negative rate means clockwise rotation.
         about
-            one of 3 options: ["theta", "phi", "gamma"]. defaults to theta.
+            The Euler angle to modify, which can be "theta", "phi" or "gamma".
+            Defaults to "theta".
         """
-        # TODO, use a ValueTracker for rate, so that it
-        # can begin and end smoothly
-        about: str = about.lower()
-        try:
-            if config.renderer == RendererType.CAIRO:
-                trackers = {
-                    "theta": self.camera.theta_tracker,
-                    "phi": self.camera.phi_tracker,
-                    "gamma": self.camera.gamma_tracker,
-                }
-                x: ValueTracker = trackers[about]
-                x.add_updater(lambda m, dt: x.increment_value(rate * dt))
-                self.add(x)
-            elif config.renderer == RendererType.OPENGL:
-                cam: OpenGLCamera = self.camera
-                methods = {
-                    "theta": cam.increment_theta,
-                    "phi": cam.increment_phi,
-                    "gamma": cam.increment_gamma,
-                }
-                cam.add_updater(lambda m, dt: methods[about](rate * dt))
-                self.add(self.camera)
-        except Exception as e:
-            raise ValueError("Invalid ambient rotation angle.") from e
+        self.camera.begin_ambient_rotation(rate, about)
+        self.add(self.camera)
 
-    def stop_ambient_camera_rotation(self, about="theta"):
-        """This method stops all ambient camera rotation."""
-        about: str = about.lower()
-        try:
-            if config.renderer == RendererType.CAIRO:
-                trackers = {
-                    "theta": self.camera.theta_tracker,
-                    "phi": self.camera.phi_tracker,
-                    "gamma": self.camera.gamma_tracker,
-                }
-                x: ValueTracker = trackers[about]
-                x.clear_updaters()
-                self.remove(x)
-            elif config.renderer == RendererType.OPENGL:
-                self.camera.clear_updaters()
-        except Exception as e:
-            raise ValueError("Invalid ambient rotation angle.") from e
+    @deprecated(
+        replacement="Camera.stop_ambient_rotation",
+        message="Use self.camera.stop_ambient_rotation() instead.",
+    )
+    def stop_ambient_camera_rotation(self, about: str = "theta") -> None:
+        """Stop ambient camera rotation on the specified angle. If there's a
+        corresponding ambient rotation updater applied on the camera, remove
+        it.
 
-    def begin_3dillusion_camera_rotation(
+        Parameters
+        ----------
+        about
+            The Euler angle for which the rotation should stop. This angle can
+            be "theta", "phi" or "gamma". Defaults to "theta".
+        """
+        self.camera.stop_ambient_rotation(about)
+
+    @deprecated(
+        replacement="Camera.begin_precession",
+        message="Use self.camera.begin_precession() followed by self.add(self.camera) instead.",
+    )
+    def begin_camera_precession(
         self,
-        rate: float = 1,
+        rate: float = 1.0,
+        radius: float = 0.2,
         origin_phi: float | None = None,
         origin_theta: float | None = None,
-    ):
-        """
-        This method creates a 3D camera rotation illusion around
-        the current camera orientation.
+    ) -> None:
+        """Begin a camera precession by adding an updater. This precession
+        consists of moving around the point given by ``origin_phi`` and
+        ``origin_theta``, keeping the ``gamma`` Euler angle constant.
 
         Parameters
         ----------
         rate
-            The rate at which the camera rotation illusion should operate.
+            The rate at which the camera precession should operate.
+        radius
+            The precession radius.
         origin_phi
-            The polar angle the camera should move around. Defaults
-            to the current phi angle.
+            The polar angle the camera should move around. If ``None``,
+            defaults to the current ``phi`` angle.
         origin_theta
-            The azimutal angle the camera should move around. Defaults
-            to the current theta angle.
+            The azimutal angle the camera should move around. If ``None``,
+            defaults to the current ``theta`` angle.
         """
-        if origin_theta is None:
-            origin_theta = self.renderer.camera.theta_tracker.get_value()
-        if origin_phi is None:
-            origin_phi = self.renderer.camera.phi_tracker.get_value()
+        self.camera.begin_precession(rate, radius, origin_phi, origin_theta)
+        self.add(self.camera)
 
-        val_tracker_theta = ValueTracker(0)
+    @deprecated(
+        replacement="Camera.stop_precession",
+        message="Use self.camera.stop_precession() instead.",
+    )
+    def stop_camera_precession(self):
+        """Remove the precession camera updater, if any."""
+        self.camera.stop_precession()
 
-        def update_theta(m, dt):
-            val_tracker_theta.increment_value(dt * rate)
-            val_for_left_right = 0.2 * np.sin(val_tracker_theta.get_value())
-            return m.set_value(origin_theta + val_for_left_right)
+    @deprecated(
+        replacement="Camera.begin_precession",
+        message="Use self.camera.begin_precession() followed by self.add(self.camera) instead.",
+    )
+    def begin_3dillusion_camera_rotation(
+        self,
+        rate: float = 1.0,
+        radius: float = 0.2,
+        origin_phi: float | None = None,
+        origin_theta: float | None = None,
+    ) -> None:
+        """Alias of :meth:`begin_camera_precession`."""
+        self.begin_camera_precession(rate, radius, origin_phi, origin_theta)
 
-        self.renderer.camera.theta_tracker.add_updater(update_theta)
-        self.add(self.renderer.camera.theta_tracker)
-
-        val_tracker_phi = ValueTracker(0)
-
-        def update_phi(m, dt):
-            val_tracker_phi.increment_value(dt * rate)
-            val_for_up_down = 0.1 * np.cos(val_tracker_phi.get_value()) - 0.1
-            return m.set_value(origin_phi + val_for_up_down)
-
-        self.renderer.camera.phi_tracker.add_updater(update_phi)
-        self.add(self.renderer.camera.phi_tracker)
-
+    @deprecated(
+        replacement="Camera.stop_precession",
+        message="Use self.camera.stop_precession() instead.",
+    )
     def stop_3dillusion_camera_rotation(self):
-        """This method stops all illusion camera rotations."""
-        self.renderer.camera.theta_tracker.clear_updaters()
-        self.remove(self.renderer.camera.theta_tracker)
-        self.renderer.camera.phi_tracker.clear_updaters()
-        self.remove(self.renderer.camera.phi_tracker)
+        """Alias of :meth:`stop_camera_precession`."""
+        self.stop_camera_precession()
 
     def move_camera(
         self,
-        phi: float | None = None,
         theta: float | None = None,
+        phi: float | None = None,
         gamma: float | None = None,
         zoom: float | None = None,
         focal_distance: float | None = None,
-        frame_center: Mobject | Sequence[float] | None = None,
+        frame_center: OpenGLMobject | Sequence[float] | None = None,
         added_anims: Iterable[Animation] = [],
-        **kwargs,
-    ):
-        """
-        This method animates the movement of the camera
-        to the given spherical coordinates.
+        **kwargs: Any,
+    ) -> None:
+        """Animate the movement of the camera to the given spherical coordinates.
 
         Parameters
         ----------
-        phi
-            The polar angle i.e the angle between Z_AXIS and Camera through ORIGIN in radians.
-
         theta
             The azimuthal angle i.e the angle that spins the camera around the Z_AXIS.
-
-        focal_distance
-            The radial focal_distance between ORIGIN and Camera.
-
+        phi
+            The polar angle i.e the angle between Z_AXIS and Camera through ORIGIN in radians.
         gamma
             The rotation of the camera about the vector from the ORIGIN to the Camera.
-
+        focal_distance
+            The radial focal_distance between ORIGIN and Camera.
         zoom
             The zoom factor of the camera.
-
         frame_center
             The new center of the camera frame in cartesian coordinates.
-
         added_anims
             Any other animations to be played at the same time.
-
         """
-        anims = []
+        animation = self.camera.animate.set_orientation(
+            theta, phi, gamma, zoom, focal_distance, frame_center
+        )
 
-        if config.renderer == RendererType.CAIRO:
-            self.camera: ThreeDCamera
-            value_tracker_pairs = [
-                (phi, self.camera.phi_tracker),
-                (theta, self.camera.theta_tracker),
-                (focal_distance, self.camera.focal_distance_tracker),
-                (gamma, self.camera.gamma_tracker),
-                (zoom, self.camera.zoom_tracker),
-            ]
-            for value, tracker in value_tracker_pairs:
-                if value is not None:
-                    anims.append(tracker.animate.set_value(value))
-            if frame_center is not None:
-                anims.append(self.camera._frame_center.animate.move_to(frame_center))
-        elif config.renderer == RendererType.OPENGL:
-            cam: OpenGLCamera = self.camera
-            cam2 = cam.copy()
-            methods = {
-                "theta": cam2.set_theta,
-                "phi": cam2.set_phi,
-                "gamma": cam2.set_gamma,
-                "zoom": cam2.scale,
-                "frame_center": cam2.move_to,
-            }
-            if frame_center is not None:
-                if isinstance(frame_center, OpenGLMobject):
-                    frame_center = frame_center.get_center()
-                frame_center = list(frame_center)
+        self.play(animation, *added_anims, **kwargs)
 
-            zoom_value = None
-            if zoom is not None:
-                zoom_value = config.frame_height / (zoom * cam.height)
-
-            for value, method in [
-                [theta, "theta"],
-                [phi, "phi"],
-                [gamma, "gamma"],
-                [zoom_value, "zoom"],
-                [frame_center, "frame_center"],
-            ]:
-                if value is not None:
-                    methods[method](value)
-
-            if focal_distance is not None:
-                warnings.warn(
-                    "focal distance of OpenGLCamera can not be adjusted.",
-                    stacklevel=2,
-                )
-
-            anims += [Transform(cam, cam2)]
-
-        self.play(*anims + added_anims, **kwargs)
-
-        # These lines are added to improve performance. If manim thinks that frame_center is moving,
-        # it is required to redraw every object. These lines remove frame_center from the Scene once
-        # its animation is done, ensuring that manim does not think that it is moving. Since the
-        # frame_center is never actually drawn, this shouldn't break anything.
-        if frame_center is not None and config.renderer == RendererType.CAIRO:
-            self.remove(self.camera._frame_center)
-
-    def get_moving_mobjects(self, *animations: Animation):
+    def get_moving_mobjects(self, *animations: Animation) -> list[OpenGLMobject]:
         """
         This method returns a list of all of the Mobjects in the Scene that
         are moving, that are also in the animations passed.
@@ -320,14 +215,12 @@ class ThreeDScene(Scene):
             The animations whose mobjects will be checked.
         """
         moving_mobjects = super().get_moving_mobjects(*animations)
-        camera_mobjects = self.renderer.camera.get_value_trackers() + [
-            self.renderer.camera._frame_center,
-        ]
+        camera_mobjects = self.camera.get_value_trackers()
         if any(cm in moving_mobjects for cm in camera_mobjects):
             return self.mobjects
         return moving_mobjects
 
-    def add_fixed_orientation_mobjects(self, *mobjects: Mobject, **kwargs):
+    def add_fixed_orientation_mobjects(self, *mobjects: OpenGLMobject) -> None:
         """
         This method is used to prevent the rotation and tilting
         of mobjects as the camera moves around. The mobject can
@@ -345,16 +238,11 @@ class ThreeDScene(Scene):
                 use_static_center_func : bool
                 center_func : function
         """
-        if config.renderer == RendererType.CAIRO:
-            self.add(*mobjects)
-            self.renderer.camera.add_fixed_orientation_mobjects(*mobjects, **kwargs)
-        elif config.renderer == RendererType.OPENGL:
-            for mob in mobjects:
-                mob: OpenGLMobject
-                mob.fix_orientation()
-                self.add(mob)
+        for mob in mobjects:
+            mob.fix_orientation()
+            self.add(mob)
 
-    def add_fixed_in_frame_mobjects(self, *mobjects: Mobject):
+    def add_fixed_in_frame_mobjects(self, *mobjects: OpenGLMobject) -> None:
         """
         This method is used to prevent the rotation and movement
         of mobjects as the camera moves around. The mobject is
@@ -366,17 +254,11 @@ class ThreeDScene(Scene):
         *mobjects
             The Mobjects whose orientation must be fixed.
         """
-        if config.renderer == RendererType.CAIRO:
-            self.add(*mobjects)
-            self.camera: ThreeDCamera
-            self.camera.add_fixed_in_frame_mobjects(*mobjects)
-        elif config.renderer == RendererType.OPENGL:
-            for mob in mobjects:
-                mob: OpenGLMobject
-                mob.fix_in_frame()
-                self.add(mob)
+        for mob in mobjects:
+            mob.fix_in_frame()
+            self.add(mob)
 
-    def remove_fixed_orientation_mobjects(self, *mobjects: Mobject):
+    def remove_fixed_orientation_mobjects(self, *mobjects: OpenGLMobject) -> None:
         """
         This method "unfixes" the orientation of the mobjects
         passed, meaning they will no longer be at the same angle
@@ -388,15 +270,11 @@ class ThreeDScene(Scene):
         *mobjects
             The Mobjects whose orientation must be unfixed.
         """
-        if config.renderer == RendererType.CAIRO:
-            self.renderer.camera.remove_fixed_orientation_mobjects(*mobjects)
-        elif config.renderer == RendererType.OPENGL:
-            for mob in mobjects:
-                mob: OpenGLMobject
-                mob.unfix_orientation()
-                self.remove(mob)
+        for mob in mobjects:
+            mob.unfix_orientation()
+            self.remove(mob)
 
-    def remove_fixed_in_frame_mobjects(self, *mobjects: Mobject):
+    def remove_fixed_in_frame_mobjects(self, *mobjects: OpenGLMobject) -> None:
         """
          This method undoes what add_fixed_in_frame_mobjects does.
          It allows the mobject to be affected by the movement of
@@ -407,31 +285,9 @@ class ThreeDScene(Scene):
         *mobjects
             The Mobjects whose position and orientation must be unfixed.
         """
-        if config.renderer == RendererType.CAIRO:
-            self.renderer.camera.remove_fixed_in_frame_mobjects(*mobjects)
-        elif config.renderer == RendererType.OPENGL:
-            for mob in mobjects:
-                mob: OpenGLMobject
-                mob.unfix_from_frame()
-                self.remove(mob)
-
-    ##
-    def set_to_default_angled_camera_orientation(self, **kwargs):
-        """
-        This method sets the default_angled_camera_orientation to the
-        keyword arguments passed, and sets the camera to that orientation.
-
-        Parameters
-        ----------
-        **kwargs
-            Some recognised kwargs are phi, theta, focal_distance, gamma,
-            which have the same meaning as the parameters in set_camera_orientation.
-        """
-        config = dict(
-            self.default_camera_orientation_kwargs,
-        )  # Where doe this come from?
-        config.update(kwargs)
-        self.set_camera_orientation(**config)
+        for mob in mobjects:
+            mob.unfix_from_frame()
+            self.remove(mob)
 
 
 class SpecialThreeDScene(ThreeDScene):
@@ -449,9 +305,12 @@ class SpecialThreeDScene(ThreeDScene):
 
     def __init__(
         self,
-        cut_axes_at_radius=True,
-        camera_config={"should_apply_shading": True, "exponential_projection": True},
-        three_d_axes_config={
+        cut_axes_at_radius: bool = True,
+        camera_config: dict = {
+            "should_apply_shading": True,
+            "exponential_projection": True,
+        },
+        three_d_axes_config: dict = {
             "num_axis_pieces": 1,
             "axis_config": {
                 "unit_size": 2,
@@ -460,34 +319,29 @@ class SpecialThreeDScene(ThreeDScene):
                 "stroke_width": 2,
             },
         },
-        sphere_config={"radius": 2, "resolution": (24, 48)},
-        default_angled_camera_position={
-            "phi": 70 * DEGREES,
-            "theta": -110 * DEGREES,
-        },
+        sphere_config: dict = {"radius": 2, "resolution": (24, 48)},
         # When scene is extracted with -l flag, this
         # configuration will override the above configuration.
-        low_quality_config={
+        low_quality_config: dict = {
             "camera_config": {"should_apply_shading": False},
             "three_d_axes_config": {"num_axis_pieces": 1},
             "sphere_config": {"resolution": (12, 24)},
         },
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> None:
         self.cut_axes_at_radius = cut_axes_at_radius
         self.camera_config = camera_config
         self.three_d_axes_config = three_d_axes_config
         self.sphere_config = sphere_config
-        self.default_angled_camera_position = default_angled_camera_position
         self.low_quality_config = low_quality_config
-        if self.renderer.camera_config["pixel_width"] == config["pixel_width"]:
+        if self.manager.renderer.camera_config["pixel_width"] == config["pixel_width"]:
             _config = {}
         else:
             _config = self.low_quality_config
         _config = merge_dicts_recursively(_config, kwargs)
         super().__init__(**_config)
 
-    def get_axes(self):
+    def get_axes(self) -> ThreeDAxes:
         """Return a set of 3D axes.
 
         Returns
@@ -502,17 +356,17 @@ class SpecialThreeDScene(ThreeDScene):
                 p1 = axis.number_to_point(-1)
                 p2 = axis.number_to_point(1)
                 p3 = axis.get_end()
-                new_pieces = VGroup(Line(p0, p1), Line(p1, p2), Line(p2, p3))
+                new_pieces = OpenGLVGroup(Line(p0, p1), Line(p1, p2), Line(p2, p3))
                 for piece in new_pieces:
                     piece.shade_in_3d = True
                 new_pieces.match_style(axis.pieces)
                 axis.pieces.submobjects = new_pieces.submobjects
                 axis.pieces.note_changed_family()
             for tick in axis.tick_marks:
-                tick.add(VectorizedPoint(1.5 * tick.get_center()))
+                tick.add(OpenGLVectorizedPoint(1.5 * tick.get_center()))
         return axes
 
-    def get_sphere(self, **kwargs):
+    def get_sphere(self, **kwargs: Any) -> Sphere:
         """
         Returns a sphere with the passed keyword arguments as properties.
 
@@ -528,18 +382,3 @@ class SpecialThreeDScene(ThreeDScene):
         """
         config = merge_dicts_recursively(self.sphere_config, kwargs)
         return Sphere(**config)
-
-    def get_default_camera_position(self):
-        """
-        Returns the default_angled_camera position.
-
-        Returns
-        -------
-        dict
-            Dictionary of phi, theta, focal_distance, and gamma.
-        """
-        return self.default_angled_camera_position
-
-    def set_camera_to_default_position(self):
-        """Sets the camera to its default position."""
-        self.set_camera_orientation(**self.default_angled_camera_position)

@@ -56,6 +56,7 @@ from manim.mobject.matrix import *
 from manim.mobject.mobject import *
 from manim.mobject.opengl.dot_cloud import *
 from manim.mobject.opengl.opengl_point_cloud_mobject import *
+from manim.mobject.opengl.opengl_vectorized_mobject import *
 from manim.mobject.svg.brace import *
 from manim.mobject.svg.svg_mobject import *
 from manim.mobject.table import *
@@ -73,6 +74,7 @@ from manim.mobject.value_tracker import *
 from manim.mobject.vector_field import *
 from manim.scene.scene import *
 from manim.scene.sections import *
+from manim.scene.three_d_scene import *
 from manim.scene.vector_space_scene import *
 from manim.utils import color, rate_functions, unit
 from manim.utils.bezier import *

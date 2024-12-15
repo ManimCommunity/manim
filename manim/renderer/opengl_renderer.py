@@ -256,10 +256,10 @@ class OpenGLRenderer(Renderer, RendererProtocol):
     # TODO this should also be done with the update decorators because if the camera doesn't change this is pretty rough
     def init_camera(self, camera: Camera):
         camera_data = {
-            "frame_shape": (config.frame_width, config.frame_height),
+            "frame_shape": camera.get_frame_shape(),
             "camera_center": camera.get_center(),
-            "camera_rotation": camera.get_inverse_camera_rotation_matrix().T,
-            "focal_distance": camera.get_focal_distance(),
+            "camera_rotation": camera.get_rotation_matrix(),
+            "focal_distance": camera.focal_distance,
         }
         ubo_camera.write(camera_data)
         ubo_camera.bind()

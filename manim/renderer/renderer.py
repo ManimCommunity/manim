@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 from manim._config import logger
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.types.image_mobject import ImageMobject
 
@@ -28,6 +29,7 @@ class Renderer(ABC):
         self.capabilities = [
             (OpenGLVMobject, self.render_vmobject),
             (ImageMobject, self.render_image),
+            (OpenGLMobject, lambda mob: None),
         ]
 
     def render(self, state: SceneState) -> None:
