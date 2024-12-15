@@ -329,6 +329,10 @@ class Camera(OpenGLMobject):
     def get_inverse_rotation_matrix(self) -> MatrixMN:
         return self.get_rotation_matrix().T
 
+    def set_focal_distance(self, focal_distance: float) -> Self:
+        self.focal_distance = focal_distance
+        return self
+
     # TODO: rotate is still unreliable. The Euler angles are automatically
     # standardized to (-TAU/2, TAU/2), leading to potentially unwanted behavior
     # when animating. Plus, if the camera is on the Z axis, which occurs when
