@@ -73,7 +73,9 @@ logger = logging.getLogger("manim")
 
 
 class InvisibleMobject:
-    """By default, if an :class:`OpenGLMobject` can't be rendered, the
+    """Marker class for rendering a mobject's submobjects, and not the mobject itself.
+    
+    By default, if an :class:`OpenGLMobject` can't be rendered, the
     :class:`Renderer` raises a warning before attempting to render its
     submobjects. However, any subclass of :class:`OpenGLMobject` which is also
     marked as a subclass of :class:`InvisibleMobject` raises no warning,
