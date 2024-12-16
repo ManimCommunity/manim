@@ -1,6 +1,20 @@
 from __future__ import annotations
 
-from manim import *
+from manim import (
+    BLUE,
+    GREEN,
+    ORANGE,
+    RED,
+    UL,
+    YELLOW,
+    Axes,
+    LogBase,
+    NumberPlane,
+    ThreeDAxes,
+    ThreeDScene,
+    VGroup,
+    np,
+)
 from manim.utils.testing.frames_comparison import frames_comparison
 
 __module_test__ = "coordinate_system"
