@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 from manim._config import logger
+from manim.mobject.mobject import InvisibleMobject
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.types.image_mobject import ImageMobject
@@ -29,36 +30,47 @@ class Renderer(ABC):
         self.capabilities = [
             (OpenGLVMobject, self.render_vmobject),
             (ImageMobject, self.render_image),
-            (OpenGLMobject, lambda mob: None),
         ]
+        self._unsupported_mob_warnings: set[str] = set()
 
     def render(self, state: SceneState) -> None:
         self.pre_render(state.camera)
         for mob in state.mobjects:
-            for type_, render_func in self.capabilities:
-                if isinstance(mob, type_):
-                    render_func(mob)
-                    break
-            else:
-                logger.warn(
-                    f"The type{type(mob)} is not supported in Renderer: {self.__class__}"
-                )
+            self.render_mobject(mob)
         self.post_render()
 
+    def render_mobject(self, mob: OpenGLMobject) -> None:
+        for MobClass, render_func in self.capabilities:
+            if isinstance(mob, MobClass):
+                render_func(mob)
+                break
+        else:
+            if not isinstance(mob, InvisibleMobject):
+                warning_message = (
+                    f"{type(mob).__name__} cannot be rendered by {type(self).__name__}. "
+                    "Attempting to render its submobjects..."
+                )
+                # This prevents spamming the console.
+                if warning_message not in self._unsupported_mob_warnings:
+                    logger.warning(warning_message)
+                    self._unsupported_mob_warnings.add(warning_message)
+            for submob in mob.submobjects:
+                self.render_mobject(submob)
+
     @abstractmethod
-    def pre_render(self, camera: Camera):
+    def pre_render(self, camera: Camera) -> None:
         """Actions before rendering any :class:`.OpenGLMobject`"""
 
     @abstractmethod
-    def post_render(self):
+    def post_render(self) -> None:
         """Actions before rendering any :class:`.OpenGLMobject`"""
 
     @abstractmethod
-    def render_vmobject(self, mob: OpenGLVMobject):
+    def render_vmobject(self, mob: OpenGLVMobject) -> None:
         raise NotImplementedError
 
     @abstractmethod
-    def render_image(self, mob: ImageMobject):
+    def render_image(self, mob: ImageMobject) -> None:
         raise NotImplementedError
 
 

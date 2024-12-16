@@ -10,7 +10,7 @@ import numpy.typing as npt
 
 from manim._config import config, logger
 from manim.constants import *
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.mobject.opengl.opengl_mobject import InvisibleMobject, OpenGLMobject
 from manim.utils.paths import straight_path
 from manim.utils.space_ops import rotation_matrix
 
@@ -29,7 +29,7 @@ class CameraOrientationConfig(TypedDict, total=False):
     frame_center: OpenGLMobject | Sequence[float] | None
 
 
-class Camera(OpenGLMobject):
+class Camera(OpenGLMobject, InvisibleMobject):
     def __init__(
         self,
         frame_shape: tuple[float, float] = (config.frame_width, config.frame_height),
