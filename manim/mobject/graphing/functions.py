@@ -65,7 +65,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
     .. manim:: ThreeDParametricSpring
         :save_last_frame:
 
-        class ThreeDParametricSpring(ThreeDScene):
+        class ThreeDParametricSpring(Scene):
             def construct(self):
                 curve1 = ParametricFunction(
                     lambda u: (
@@ -76,7 +76,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
                 ).set_shade_in_3d(True)
                 axes = ThreeDAxes()
                 self.add(axes, curve1)
-                self.set_camera_orientation(phi=80 * DEGREES, theta=-60 * DEGREES)
+                self.camera.set_orientation(phi=80 * DEGREES, theta=-60 * DEGREES)
                 self.wait()
 
     .. attention::

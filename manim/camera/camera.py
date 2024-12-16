@@ -11,7 +11,6 @@ import numpy.typing as npt
 from manim._config import config, logger
 from manim.constants import *
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-from manim.utils.deprecation import deprecated
 from manim.utils.paths import straight_path
 from manim.utils.space_ops import rotation_matrix
 
@@ -657,25 +656,3 @@ class Camera(OpenGLMobject):
             self.remove_updater(updater)
             self.precession_updater = None
         return self
-
-    @deprecated(
-        replacement="Camera.begin_precession",
-        message="Use Camera.begin_precession() instead.",
-    )
-    def begin_3dillusion_rotation(
-        self,
-        rate: float = 1.0,
-        radius: float = 0.2,
-        origin_theta: float | None = None,
-        origin_phi: float | None = None,
-    ) -> Self:
-        """Alias for :meth:`begin_precession`, which is preferred."""
-        return self.begin_precession(rate, radius, origin_theta, origin_phi)
-
-    @deprecated(
-        replacement="Camera.stop_precession",
-        message="Use Camera.stop_precession() instead.",
-    )
-    def stop_3dillusion_rotation(self) -> Self:
-        """Alias for :meth:`stop_precession`, which is preferred."""
-        return self.stop_precession()

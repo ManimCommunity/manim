@@ -282,7 +282,7 @@ def test_get_riemann_rectangles(scene, use_vectorized):
     scene.add(ax, bounding_line, quadratic, rects_right, rects_left, bounded_rects)
 
 
-@frames_comparison(base_scene=ThreeDScene)
+@frames_comparison
 def test_get_z_axis_label(scene):
     ax = ThreeDAxes()
     lab = ax.get_z_axis_label(Tex("$z$-label"))
