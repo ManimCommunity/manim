@@ -67,6 +67,12 @@ class AnimationProtocol(Protocol):
         the animation's corresponding attribute.
         """
 
+    def update_mobjects(self, dt: float) -> object:
+        """Update the mobjects during the animation.
+
+        This method is called every frame of the animation
+        """
+
 
 class MobjectAnimation(AnimationProtocol, Protocol[M]):
     mobject: M
