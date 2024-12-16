@@ -4,13 +4,20 @@ This constitutes a list of all the changes needed to migrate your code
 to work with the latest version of Manim
 
 ## Manager
-If you ever used `Scene.render`, you must replace it with {class}`.Manager`:
+If you ever used `Scene.render`, you must replace it with {class}`.Manager`.
+
+Original code:
+```py
+scene = SceneClass()
+scene.render()
+```
+should be changed to:
 ```py
 manager = Manager(SceneClass)
 manager.render()
 ```
 
-If you are a plugin author that overrode `Scene.render`, you should migrate
+If you are a plugin author that subclasses `Scene` and changed `Scene.render`, you should migrate
 your code to use the specific public methods on {class}`.Manager` instead.
 
 ## ThreeDScene and Camera
@@ -26,19 +33,19 @@ class MyScene(ThreeDScene):
         self.begin_ambient_camera_rotation()
         self.wait(3)
 ```
-Should be changed to
+should be changed to
 ```py
 # change ThreeDScene -> Scene
 class MyScene(Scene):
     def construct(self):
         t = Text("Hello")
-        # add_fixed_in_frame_mobjects no longer exists,
-        # have to do it manually
-        t.fix_in_frame()
+        # add_fixed_in_frame_mobjects() no longer exists.
+        # Now you must use Mobject.fix_in_frame() manually for each Mobject.        t.fix_in_frame()
         self.add(t)
 
         # access the method on the camera
         self.camera.begin_ambient_rotation()
+        self.add(self.camera)
         self.wait(3)
 ```
 
@@ -70,7 +77,7 @@ class MyAnimation(Animation):
         scene.remove(self._sqrs)
 ```
 
-Should be changed to
+should be changed to
 ```py
 class MyAnimation(Animation):
     def begin(self) -> None:
