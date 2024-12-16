@@ -41,6 +41,7 @@ class MyScene(Scene):
         t = Text("Hello")
         # add_fixed_in_frame_mobjects() no longer exists.
         # Now you must use Mobject.fix_in_frame() manually for each Mobject.        t.fix_in_frame()
+        t.fix_in_frame()
         self.add(t)
 
         # access the method on the camera
