@@ -40,8 +40,8 @@ class Renderer(ABC):
         self.post_render()
 
     def render_mobject(self, mob: OpenGLMobject) -> None:
-        for MobClass, render_func in self.capabilities:
-            if isinstance(mob, MobClass):
+        for mob_cls, render_func in self.capabilities:
+            if isinstance(mob, mob_cls):
                 render_func(mob)
                 break
         else:
