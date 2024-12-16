@@ -9,7 +9,7 @@ import numpy as np
 from manim.mobject.geometry.polygram import Polygon
 from manim.mobject.graph import Graph
 from manim.mobject.three_d.three_dimensions import Dot3D
-from manim.mobject.types.vectorized_mobject import VGroup
+from manim.mobject.types.vectorized_mobject import VGroup, VMobjectT
 from manim.utils.qhull import QuickHull
 
 if TYPE_CHECKING:
@@ -26,7 +26,7 @@ __all__ = [
 ]
 
 
-class Polyhedron(VGroup):
+class Polyhedron(VGroup[VMobjectT]):
     """An abstract polyhedra class.
 
     In this implementation, polyhedra are defined with a list of vertex coordinates in space, and a list
