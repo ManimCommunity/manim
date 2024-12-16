@@ -37,7 +37,7 @@ from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLPoint
 
 from .. import config, logger
-from ..animation.animation import Animation, Wait, prepare_animation, validate_run_time
+from ..animation.animation import Animation, Wait, prepare_animation
 from ..camera.camera import Camera
 from ..constants import *
 from ..gui.gui import configure_pygui
@@ -52,8 +52,10 @@ from ..utils.file_ops import open_media_file
 from ..utils.iterables import list_difference_update, list_update
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable, Sequence
+    from collections.abc import Sequence
     from typing import Callable
+
+    from manim.mobject.mobject import _AnimationBuilder
 
 
 class RerunSceneHandler(FileSystemEventHandler):
@@ -878,7 +880,7 @@ class Scene:
 
     def compile_animations(
         self,
-        *args: Animation | Iterable[Animation] | types.GeneratorType[Animation],
+        *args: Animation | Mobject | _AnimationBuilder,
         **kwargs,
     ):
         """
@@ -1020,6 +1022,35 @@ class Scene:
         )
         return time_progression
 
+    @classmethod
+    def validate_run_time(
+        cls,
+        run_time: float,
+        method: Callable[[Any, ...], Any],
+        parameter_name: str = "run_time",
+    ) -> float:
+        method_name = f"{cls.__name__}.{method.__name__}()"
+        if run_time <= 0:
+            raise ValueError(
+                f"{method_name} has a {parameter_name} of "
+                f"{run_time:g} <= 0 seconds which Manim cannot render. "
+                f"The {parameter_name} must be a positive number."
+            )
+
+        # config.frame_rate holds the number of frames per second
+        fps = config.frame_rate
+        seconds_per_frame = 1 / fps
+        if run_time < seconds_per_frame:
+            logger.warning(
+                f"The original {parameter_name} of {method_name}, "
+                f"{run_time:g} seconds, is too short for the current frame "
+                f"rate of {fps:g} FPS. Rendering with the shortest possible "
+                f"{parameter_name} of {seconds_per_frame:g} seconds instead."
+            )
+            run_time = seconds_per_frame
+
+        return run_time
+
     def get_run_time(self, animations: list[Animation]):
         """
         Gets the total run time for a list of animations.
@@ -1035,11 +1066,13 @@ class Scene:
         float
             The total ``run_time`` of all of the animations in the list.
         """
-        return max(animation.run_time for animation in animations)
+        run_time = max(animation.run_time for animation in animations)
+        run_time = self.validate_run_time(run_time, self.play, "total run_time")
+        return run_time
 
     def play(
         self,
-        *args: Animation | Iterable[Animation] | types.GeneratorType[Animation],
+        *args: Animation | Mobject | _AnimationBuilder,
         subcaption=None,
         subcaption_duration=None,
         subcaption_offset=0,
@@ -1131,7 +1164,7 @@ class Scene:
         --------
         :class:`.Wait`, :meth:`.should_mobjects_update`
         """
-        duration = validate_run_time(duration, str(self) + ".wait()", "duration")
+        duration = self.validate_run_time(duration, self.wait, "duration")
         self.play(
             Wait(
                 run_time=duration,
@@ -1155,7 +1188,7 @@ class Scene:
         --------
         :meth:`.wait`, :class:`.Wait`
         """
-        duration = validate_run_time(duration, str(self) + ".pause()", "duration")
+        duration = self.validate_run_time(duration, self.pause, "duration")
         self.wait(duration=duration, frozen_frame=True)
 
     def wait_until(self, stop_condition: Callable[[], bool], max_time: float = 60):
@@ -1169,12 +1202,12 @@ class Scene:
         max_time
             The maximum wait time in seconds.
         """
-        max_time = validate_run_time(max_time, str(self) + ".wait_until()", "max_time")
+        max_time = self.validate_run_time(max_time, self.wait_until, "max_time")
         self.wait(max_time, stop_condition=stop_condition)
 
     def compile_animation_data(
         self,
-        *animations: Animation | Iterable[Animation] | types.GeneratorType[Animation],
+        *animations: Animation | Mobject | _AnimationBuilder,
         **play_kwargs,
     ):
         """Given a list of animations, compile the corresponding

@@ -8,14 +8,12 @@ from manim.utils.hashing import get_hash_from_play_call
 
 from .. import config, logger
 from ..camera.camera import Camera
-from ..mobject.mobject import Mobject
+from ..mobject.mobject import Mobject, _AnimationBuilder
 from ..scene.scene_file_writer import SceneFileWriter
 from ..utils.exceptions import EndSceneEarlyException
 from ..utils.iterables import list_update
 
 if typing.TYPE_CHECKING:
-    import types
-    from collections.abc import Iterable
     from typing import Any
 
     from manim.animation.animation import Animation
@@ -60,7 +58,7 @@ class CairoRenderer:
     def play(
         self,
         scene: Scene,
-        *args: Animation | Iterable[Animation] | types.GeneratorType[Animation],
+        *args: Animation | Mobject | _AnimationBuilder,
         **kwargs,
     ):
         # Reset skip_animations to the original state.
@@ -252,13 +250,13 @@ class CairoRenderer:
         if config["save_last_frame"]:
             self.skip_animations = True
         if (
-            config["from_animation_number"]
-            and self.num_plays < config["from_animation_number"]
+            config.from_animation_number > 0
+            and self.num_plays < config.from_animation_number
         ):
             self.skip_animations = True
         if (
-            config["upto_animation_number"]
-            and self.num_plays > config["upto_animation_number"]
+            config.upto_animation_number >= 0
+            and self.num_plays > config.upto_animation_number
         ):
             self.skip_animations = True
             raise EndSceneEarlyException()
