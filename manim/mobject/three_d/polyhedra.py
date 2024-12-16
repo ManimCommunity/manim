@@ -53,7 +53,7 @@ class Polyhedron(VGroup):
 
         class SquarePyramidScene(Scene):
             def construct(self):
-                self.camera.set_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+                self.camera.set_orientation(theta=30 * DEGREES, phi=75 * DEGREES)
                 vertex_coords = [
                     [1, 1, 0],
                     [1, -1, 0],
@@ -87,7 +87,7 @@ class Polyhedron(VGroup):
 
         class PolyhedronSubMobjects(Scene):
             def construct(self):
-                self.camera.set_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+                self.camera.set_orientation(theta=30 * DEGREES, phi=75 * DEGREES)
                 octahedron = Octahedron(edge_length = 3)
                 octahedron.graph[0].set_color(RED)
                 octahedron.faces[2].set_color(YELLOW)
@@ -176,7 +176,7 @@ class Tetrahedron(Polyhedron):
 
         class TetrahedronScene(Scene):
             def construct(self):
-                self.camera.set_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+                self.camera.set_orientation(theta=30 * DEGREES, phi=75 * DEGREES)
                 obj = Tetrahedron()
                 self.add(obj)
     """
@@ -211,7 +211,7 @@ class Octahedron(Polyhedron):
 
         class OctahedronScene(Scene):
             def construct(self):
-                self.camera.set_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+                self.camera.set_orientation(theta=30 * DEGREES, phi=75 * DEGREES)
                 obj = Octahedron()
                 self.add(obj)
     """
@@ -257,7 +257,7 @@ class Icosahedron(Polyhedron):
 
         class IcosahedronScene(Scene):
             def construct(self):
-                self.camera.set_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+                self.camera.set_orientation(theta=30 * DEGREES, phi=75 * DEGREES)
                 obj = Icosahedron()
                 self.add(obj)
     """
@@ -322,7 +322,7 @@ class Dodecahedron(Polyhedron):
 
         class DodecahedronScene(Scene):
             def construct(self):
-                self.camera.set_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+                self.camera.set_orientation(theta=30 * DEGREES, phi=75 * DEGREES)
                 obj = Dodecahedron()
                 self.add(obj)
     """
@@ -392,7 +392,7 @@ class ConvexHull3D(Polyhedron):
 
         class ConvexHull3DExample(Scene):
             def construct(self):
-                self.camera.set_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+                self.camera.set_orientation(theta=30 * DEGREES, phi=75 * DEGREES)
                 points = [
                     [ 1.93192757,  0.44134585, -1.52407061],
                     [-0.93302521,  1.23206983,  0.64117067],

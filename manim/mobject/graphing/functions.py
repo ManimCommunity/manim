@@ -76,7 +76,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
                 ).set_shade_in_3d(True)
                 axes = ThreeDAxes()
                 self.add(axes, curve1)
-                self.camera.set_orientation(phi=80 * DEGREES, theta=-60 * DEGREES)
+                self.camera.set_orientation(theta=-60 * DEGREES, phi=80 * DEGREES)
                 self.wait()
 
     .. attention::

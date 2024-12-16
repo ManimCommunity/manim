@@ -957,7 +957,7 @@ class CoordinateSystem:
             class PlotSurfaceExample(Scene):
                 def construct(self):
                     resolution_fa = 16
-                    self.camera.set_orientation(phi=75 * DEGREES, theta=-60 * DEGREES)
+                    self.camera.set_orientation(theta=-60 * DEGREES, phi=75 * DEGREES)
                     axes = ThreeDAxes(x_range=(-3, 3, 1), y_range=(-3, 3, 1), z_range=(-5, 5, 1))
                     def param_trig(u, v):
                         x = u
@@ -2523,7 +2523,7 @@ class ThreeDAxes(Axes):
                 def construct(self):
                     ax = ThreeDAxes()
                     lab = ax.get_y_axis_label(Tex("$y$-label"))
-                    self.camera.set_orientation(phi=2*PI/5, theta=PI/5)
+                    self.camera.set_orientation(theta=PI/5, phi=2*PI/5)
                     self.add(ax, lab)
         """
         positioned_label = self._get_axis_label(
@@ -2573,7 +2573,7 @@ class ThreeDAxes(Axes):
                 def construct(self):
                     ax = ThreeDAxes()
                     lab = ax.get_z_axis_label(Tex("$z$-label"))
-                    self.camera.set_orientation(phi=2*PI/5, theta=PI/5)
+                    self.camera.set_orientation(theta=PI/5, phi=2*PI/5)
                     self.add(ax, lab)
         """
         positioned_label = self._get_axis_label(
@@ -2622,7 +2622,7 @@ class ThreeDAxes(Axes):
 
             class GetAxisLabelsExample(Scene):
                 def construct(self):
-                    self.camera.set_orientation(phi=2*PI/5, theta=PI/5)
+                    self.camera.set_orientation(theta=PI/5, phi=2*PI/5)
                     axes = ThreeDAxes()
                     labels = axes.get_axis_labels(
                         Text("x-axis").scale(0.7), Text("y-axis").scale(0.45), Text("z-axis").scale(0.45)

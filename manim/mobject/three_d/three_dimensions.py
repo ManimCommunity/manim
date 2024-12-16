@@ -249,7 +249,7 @@ class Surface(VGroup):
             class FillByValueExample(Scene):
                 def construct(self):
                     resolution_fa = 8
-                    self.camera.set_orientation(phi=75 * DEGREES, theta=-160 * DEGREES)
+                    self.camera.set_orientation(theta=-160 * DEGREES, phi=75 * DEGREES)
                     axes = ThreeDAxes(x_range=(0, 5, 1), y_range=(0, 5, 1), z_range=(-1, 1, 0.5))
 
                     def param_surface(u, v):
@@ -353,7 +353,7 @@ class Sphere(Surface):
 
         class ExampleSphere(Scene):
             def construct(self):
-                self.camera.set_orientation(phi=PI / 6, theta=PI / 6)
+                self.camera.set_orientation(theta=PI / 6, phi=PI / 6)
                 sphere1 = Sphere(
                     center=(3, 0, 0),
                     radius=1,
@@ -437,7 +437,7 @@ class Dot3D(Sphere):
 
         class Dot3DExample(Scene):
             def construct(self):
-                self.camera.set_orientation(phi=75*DEGREES, theta=-45*DEGREES)
+                self.camera.set_orientation(theta=-45*DEGREES, phi=75*DEGREES)
 
                 axes = ThreeDAxes()
                 dot_1 = Dot3D(point=axes.coords_to_point(0, 0, 1), color=RED)
@@ -481,7 +481,7 @@ class Cube(VGroup):
 
         class CubeExample(Scene):
             def construct(self):
-                self.camera.set_orientation(phi=75*DEGREES, theta=-45*DEGREES)
+                self.camera.set_orientation(theta=-45*DEGREES, phi=75*DEGREES)
 
                 axes = ThreeDAxes()
                 cube = Cube(side_length=3, fill_opacity=0.7, fill_color=BLUE)
@@ -537,7 +537,7 @@ class Prism(Cube):
 
         class ExamplePrism(Scene):
             def construct(self):
-                self.camera.set_orientation(phi=60 * DEGREES, theta=150 * DEGREES)
+                self.camera.set_orientation(theta=150 * DEGREES, phi=60 * DEGREES)
                 prismSmall = Prism(dimensions=[1, 2, 3]).rotate(PI / 2)
                 prismLarge = Prism(dimensions=[1.5, 3, 4.5]).move_to([2, 0, 0])
                 self.add(prismSmall, prismLarge)
@@ -590,7 +590,7 @@ class Cone(Surface):
             def construct(self):
                 axes = ThreeDAxes()
                 cone = Cone(direction=X_AXIS+Y_AXIS+2*Z_AXIS, resolution=8)
-                self.camera.set_orientation(phi=5*PI/11, theta=PI/9)
+                self.camera.set_orientation(theta=PI/9, phi=5*PI/11)
                 self.add(axes, cone)
     """
 
@@ -751,7 +751,7 @@ class Cylinder(Surface):
             def construct(self):
                 axes = ThreeDAxes()
                 cylinder = Cylinder(radius=2, height=3)
-                self.camera.set_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+                self.camera.set_orientation(theta=30 * DEGREES, phi=75 * DEGREES)
                 self.add(axes, cylinder)
     """
 
@@ -912,7 +912,7 @@ class Line3D(Cylinder):
             def construct(self):
                 axes = ThreeDAxes()
                 line = Line3D(start=np.array([0, 0, 0]), end=np.array([2, 2, 2]))
-                self.camera.set_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+                self.camera.set_orientation(theta=30 * DEGREES, phi=75 * DEGREES)
                 self.add(axes, line)
     """
 
@@ -1046,7 +1046,7 @@ class Line3D(Cylinder):
 
             class ParallelLineExample(Scene):
                 def construct(self):
-                    self.camera.set_orientation(PI / 3, -PI / 4)
+                    self.camera.set_orientation(theta=-PI / 4, phi=PI / 3)
                     ax = ThreeDAxes((-5, 5), (-5, 5), (-5, 5), 10, 10, 10)
                     line1 = Line3D(RIGHT * 2, UP + OUT, color=RED)
                     line2 = Line3D.parallel_to(line1, color=YELLOW)
@@ -1094,7 +1094,7 @@ class Line3D(Cylinder):
 
             class PerpLineExample(Scene):
                 def construct(self):
-                    self.camera.set_orientation(PI / 3, -PI / 4)
+                    self.camera.set_orientation(theta=-PI / 4, phi=PI / 3)
                     ax = ThreeDAxes((-5, 5), (-5, 5), (-5, 5), 10, 10, 10)
                     line1 = Line3D(RIGHT * 2, UP + OUT, color=RED)
                     line2 = Line3D.perpendicular_to(line1, color=BLUE)
@@ -1148,7 +1148,7 @@ class Arrow3D(Line3D):
                     end=np.array([2, 2, 2]),
                     resolution=8
                 )
-                self.camera.set_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+                self.camera.set_orientation(theta=30 * DEGREES, phi=75 * DEGREES)
                 self.add(axes, arrow)
     """
 
@@ -1219,7 +1219,7 @@ class Torus(Surface):
             def construct(self):
                 axes = ThreeDAxes()
                 torus = Torus()
-                self.camera.set_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+                self.camera.set_orientation(theta=30 * DEGREES, phi=75 * DEGREES)
                 self.add(axes, torus)
     """
 
