@@ -632,11 +632,11 @@ def get_winding_number(points: Sequence[np.ndarray]) -> float:
     >>> from manim import Square, get_winding_number
     >>> polygon = Square()
     >>> get_winding_number(polygon.get_vertices())
-    1.0
+    np.float64(1.0)
     >>> polygon.shift(2 * UP)
     Square
     >>> get_winding_number(polygon.get_vertices())
-    0.0
+    np.float64(0.0)
     """
     total_angle = 0
     for p1, p2 in adjacent_pairs(points):
@@ -699,7 +699,7 @@ def cross2d(
     .. code-block:: pycon
 
         >>> cross2d(np.array([1, 2]), np.array([3, 4]))
-        -2
+        np.int64(-2)
         >>> cross2d(
         ...     np.array([[1, 2, 0], [1, 0, 0]]),
         ...     np.array([[3, 4, 0], [0, 1, 0]]),

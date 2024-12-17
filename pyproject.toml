@@ -17,6 +17,7 @@ classifiers= [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Natural Language :: English",
     ]
 exclude = ["scripts/","logo/","readme-assets/"]
@@ -25,8 +26,8 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.13"
-av = ">=9.0.0"
+python = ">=3.10"
+av = ">=9.0.0,<14.0.0"  # v14.0.0 contains breaking changes, remove after dropping python 3.9
 click = ">=8.0"
 cloup = ">=2.0.0"
 dearpygui = { version = ">=1.0.0", optional = true }
@@ -41,14 +42,26 @@ moderngl = ">=5.0.0,<6.0.0"
 moderngl-window = ">=2.0.0"
 networkx = ">=2.6"
 notebook = { version = ">=6.0.0", optional = true }
-numpy = ">=1.26"
+numpy = [
+  # numpy 2.1 is the first version with prebuilt wheels for 3.13,
+  # while numpy 2.0 is the last version supporting 3.9
+  # TODO: remove when python 3.10 is the minimum supported version
+  {version = ">=2.1", python = ">=3.10"},
+  {version = ">=2.0", python = "<3.10"},
+]
 Pillow = ">=9.1"
 pyopengl = "^3.1.6"
 pydub = ">=0.20.0"
+audioop-lts = { version = ">=0.2.0", python = ">=3.13" }  # for pydub
 Pygments = ">=2.0.0"
 rich = ">=12.0.0"
-screeninfo = "^0.8"
-scipy = ">=1.6.0"
+scipy = [
+  # scipy 1.14.0 is the first version with prebuilt wheels for 3.13
+  # TODO: remove when python 3.10 is the minimum supported version
+  {version = ">=1.13.0", python = "<3.13"},
+  {version = ">=1.14.0", python = ">=3.13"},
+]
+screeninfo = ">=0.7"
 skia-pathops = ">=0.7.0"
 srt = ">=3.0.0"
 svgelements = ">=1.8.0"
@@ -70,7 +83,7 @@ myst-parser = "^2.0.0"
 pre-commit = "^3.5.0"
 psutil = {version = "^5.8.0", python = "<3.10"}
 psutil-wheels = {version = "5.8.0", python = ">=3.10"}
-pytest = "^7.4.3"
+pytest = "^8.3"
 pygithub = "^2.1.1"
 pytest-cov = "^4.1.0"
 pytest-xdist = "^2.2"  # Using latest gives flaky tests
@@ -82,6 +95,8 @@ sphinxext-opengraph = "^0.9.1"
 types-decorator = "^0.1.7"
 types-Pillow = "^10.1.0.2"
 types-Pygments = "^2.17.0.0"
+sphinx-design = "^0.6.1"
+sphinx-reredirects = "^0.1.5"
 
 [tool.poetry.urls]
 "Bug Tracker" = "https://github.com/ManimCommunity/manim/issues"

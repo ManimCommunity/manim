@@ -116,7 +116,9 @@ def always_redraw(func: Callable[[], M]) -> M:
 
 
 def turn_animation_into_updater(
-    animation: MobjectAnimation[M], cycle: bool = False
+    animation: MobjectAnimation[M],
+    cycle: bool = False,
+    delay: float = 0,
 ) -> M:
     """
     Add an updater to the animation's mobject which applies
@@ -124,6 +126,8 @@ def turn_animation_into_updater(
 
     If cycle is True, this repeats over and over.  Otherwise,
     the updater will be popped upon completion
+
+    The ``delay`` parameter is the delay (in seconds) before the animation starts..
 
     Examples
     --------
@@ -144,25 +148,27 @@ def turn_animation_into_updater(
     mobject = animation.mobject
     animation.suspend_mobject_updating = False
     animation.begin()
-    total_time = 0
 
-    def update(m: OpenGLMobject, dt: float):
+    total_time = -delay
+
+    def update(m: M, dt: float):
         nonlocal total_time
-        run_time = animation.get_run_time()
-        time_ratio = total_time / run_time
-        if cycle:
-            alpha = time_ratio % 1
-        else:
-            alpha = np.clip(time_ratio, 0, 1)
-            if alpha >= 1:
-                animation.finish()
-                m.remove_updater(update)
-                return
-        animation.interpolate(alpha)
-        animation.update_mobjects(dt)
+        if total_time >= 0:
+            run_time = animation.get_run_time()
+            time_ratio = total_time / run_time
+            if cycle:
+                alpha = time_ratio % 1
+            else:
+                alpha = np.clip(time_ratio, 0, 1)
+                if alpha >= 1:
+                    animation.finish()
+                    m.remove_updater(update)  # type: ignore
+                    return
+            animation.interpolate(alpha)
+            animation.update_mobjects(dt)
         total_time += dt
 
-    mobject.add_updater(update)
+    mobject.add_updater(update)  # type: ignore
     return mobject
 
 

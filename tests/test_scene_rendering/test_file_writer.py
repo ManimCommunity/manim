@@ -89,7 +89,13 @@ def test_gif_writing(tmp_path, config, write_to_movie, transparent):
     ],
 )
 def test_codecs(
-    tmp_path, config, write_to_movie, format, transparent, codec, pixel_format
+    tmp_path,
+    config,
+    write_to_movie,
+    format,
+    transparent,
+    codec,
+    pixel_format,
 ):
     output_filename = f"codec_{format}_{'transparent' if transparent else 'opaque'}"
     config.media_dir = tmp_path
@@ -141,7 +147,7 @@ def test_codecs(
     np.testing.assert_allclose(first_frame[-1, -1], target_rgba_center, atol=5)
 
 
-def test_scene_with_non_raw_or_wav_audio(manim_caplog):
+def test_scene_with_non_raw_or_wav_audio(config, manim_caplog):
     class SceneWithMP3(Scene):
         def construct(self):
             file_path = Path(__file__).parent / "click.mp3"
@@ -153,7 +159,7 @@ def test_scene_with_non_raw_or_wav_audio(manim_caplog):
 
 
 @pytest.mark.slow
-def test_unicode_partial_movie(tmpdir, simple_scenes_path):
+def test_unicode_partial_movie(config, tmpdir, simple_scenes_path):
     # Characters that failed for a user on Windows
     # due to its weird default encoding.
     unicode_str = "三角函数"
