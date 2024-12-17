@@ -89,7 +89,6 @@ the following contributors.
 * Victorien
 * Xiuyuan (Jack) Yuan
 * alembcke
-* github-advanced-security[bot]
 
 Pull requests merged
 ====================
