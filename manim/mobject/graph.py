@@ -23,16 +23,19 @@ if TYPE_CHECKING:
 
     NxGraph: TypeAlias = nx.classes.graph.Graph | nx.classes.digraph.DiGraph
 
+from manim import config
 from manim.animation.composition import AnimationGroup
 from manim.animation.creation import Create, Uncreate
+from manim.constants import PI
 from manim.mobject.geometry.arc import Dot, LabeledDot
 from manim.mobject.geometry.line import Line
 from manim.mobject.mobject import Mobject, override_animate
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-from manim.mobject.text.tex_mobject import MathTex
+from manim.mobject.text.tex_mobject import MathTex, SingleStringMathTex, Tex
+from manim.mobject.text.text_mobject import Text
 from manim.mobject.types.vectorized_mobject import VMobject
-from manim.utils.color import BLACK
+from manim.utils.color import BLACK, ManimColor
 
 
 class LayoutFunction(Protocol):
@@ -512,6 +515,11 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         custom labels can be specified by passing a dictionary whose keys are
         the vertices, and whose values are the corresponding vertex labels
         (rendered via, e.g., :class:`~.Text` or :class:`~.Tex`).
+    weights
+        Controls whether or not edges are labeled. If ``None`` (the default),
+        edges are not labeled. Labels can be specified by passing a dictionary
+        whose keys are the edges, and whose values are the corresponding edges labels
+        (rendered via, e.g., :class:`~.Text` or :class:`~.Tex`).
     label_fill_color
         Sets the fill color of the default labels generated when ``labels``
         is set to ``True``. Has no effect for other values of ``labels``.
@@ -565,6 +573,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         vertices: list[Hashable],
         edges: list[tuple[Hashable, Hashable]],
         labels: bool | dict = False,
+        weights: dict = None,
         label_fill_color: str = BLACK,
         layout: LayoutName | dict[Hashable, Point3D] | LayoutFunction = "spring",
         layout_scale: float | tuple[float, float, float] = 2,
@@ -578,7 +587,6 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         edge_config: dict | None = None,
     ) -> None:
         super().__init__()
-
         nx_graph = self._empty_networkx_graph()
         nx_graph.add_nodes_from(vertices)
         nx_graph.add_edges_from(edges)
@@ -588,9 +596,12 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
             self._labels = labels
         elif isinstance(labels, bool):
             if labels:
-                self._labels = {
-                    v: MathTex(v, fill_color=label_fill_color) for v in vertices
-                }
+                self._labels = {v: MathTex(v, color=label_fill_color) for v in vertices}
+                # Using `color=` instead of `fill_color=` fixes the `labels=True` issue
+                # blending with the background as `stroke_color` is missing.
+                # We could initialize it there, but setting color applies it for both
+                # stroke and fill, so that the label is visible in the right color in the end.
+
             else:
                 self._labels = {}
 
@@ -630,9 +641,33 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         if edge_config is None:
             edge_config = {}
         default_tip_config = {}
+
+        # is defined in the concrete classes
+        if hasattr(self, "_default_loop_config"):
+            default_loop_config = self._default_loop_config
+        else:
+            default_loop_config = {}
+
+        default_weight_config = {
+            "label": None,
+            "weight_type": LabeledDot,
+            "position_ratio": 0.5,
+            "min_size_ratio": 1 / 6,
+            "max_size_ratio": 1 / 4,
+            "text_color": None,
+            "background_color": None,
+        }
+
         default_edge_config = {}
         if edge_config:
             default_tip_config = edge_config.pop("tip_config", {})
+
+            l_config = edge_config.pop("loop_config", {})
+            default_loop_config.update(l_config)
+
+            w_config = edge_config.pop("weight_config", {})
+            default_weight_config.update(w_config)
+
             default_edge_config = {
                 k: v
                 for k, v in edge_config.items()
@@ -642,17 +677,43 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
             }
         self._edge_config = {}
         self._tip_config = {}
+        self._loop_config = {}
+        self._weight_config = {}
         for e in edges:
             if e in edge_config:
                 self._tip_config[e] = edge_config[e].pop(
                     "tip_config", copy(default_tip_config)
                 )
+
+                # update instead of replacing
+                loop_config = copy(default_loop_config)
+                loop_config.update(edge_config[e].pop("loop_config", {}))
+                self._loop_config[e] = loop_config
+
+                # update instead of replacing
+                weight_config = copy(default_weight_config)
+                weight_config.update(edge_config[e].pop("weight_config", {}))
+                self._weight_config[e] = weight_config
+
                 self._edge_config[e] = edge_config[e]
             else:
                 self._tip_config[e] = copy(default_tip_config)
+                self._loop_config[e] = copy(default_loop_config)
+                self._weight_config[e] = copy(default_weight_config)
                 self._edge_config[e] = copy(default_edge_config)
 
+        # add weights to edges
+        if weights is not None:
+            for e, w in weights.items():
+                if w is None:
+                    continue
+                elif not isinstance(w, (str, SingleStringMathTex, Text, Tex, MathTex)):
+                    w = str(w)
+                self._weight_config[e]["label"] = w
+
         self.default_edge_config = default_edge_config
+        self.default_loop_config = default_loop_config
+        self.default_weight_config = default_weight_config
         self._populate_edge_dict(edges, edge_type)
 
         self.add(*self.vertices.values())
@@ -664,6 +725,143 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
     def _empty_networkx_graph() -> nx.classes.graph.Graph:
         """Return an empty networkx graph for the given graph type."""
         raise NotImplementedError("To be implemented in concrete subclasses")
+
+    def _get_self_loop_parameters(
+        self, vertex: Hashable, angle_between_points: float = PI / 2
+    ) -> tuple[Point3D, Point3D]:
+        """Compute the required parameters for self loops edges to draw an arc.
+
+        Parameters
+        ----------
+
+        vertex
+            The vertex identifier.
+        angle_between_points
+            The angle between the two points of the arc, relative to the vertex
+            center.
+
+        Returns
+        -------
+
+        tuple[Point3D, Point3D]
+            The tuple composed of the starting point of the arc and its ending point.
+
+        """
+        vertex_obj = self.vertices[vertex]
+        vertex_center, graph_center = vertex_obj.get_center(), self.get_center()
+
+        vec = (vertex_center - graph_center) / np.linalg.norm(
+            vertex_center - graph_center
+        )
+        ort = np.array([vec[1], -vec[0], 0])
+
+        # get vertex 'radius' for any type of VMobject
+        r = min(vertex_obj.get_width(), vertex_obj.get_height()) / 2
+        angle = angle_between_points / 2
+
+        p1 = vertex_center + r * (vec * np.cos(angle) + ort * np.sin(angle))
+        p2 = vertex_center + r * (vec * np.cos(-angle) + ort * np.sin(-angle))
+
+        return p1, p2
+
+    def _add_edge_label(
+        self,
+        edge: tuple[Hashable, Hashable],
+        weight_config: dict | None = None,
+    ) -> None:
+        """Add the label corresponding to the given weight_config to the given edge,
+        or `self._weight_config` if ``None`` and if it has any.
+
+        Parameters
+        ----------
+
+        edge
+            A tuple of two hashable vertex identifiers.
+
+        weight_config
+            The configuration for the weight label. If ``None``, the configuration
+            stored in `self._weight_config` is used.
+
+        """
+        edge_obj = self.edges[edge]
+
+        if weight_config is None:
+            weight_config = self._weight_config.get(edge, {})
+        else:
+            w_config = copy(self.default_weight_config)
+            w_config.update(weight_config)
+            weight_config = w_config
+
+        label = weight_config.get("label", None)
+
+        if label is None:
+            return
+
+        edge_weight_type = weight_config.get("weight_type", LabeledDot)
+        label_text_color = weight_config.get("text_color", None)
+        label_background_color = weight_config.get("background_color", None)
+
+        # create the MathTex object if the label is a string
+        if isinstance(label, str):
+            if label_text_color is not None:
+                label_color = label_text_color
+            else:
+                label_color = edge_obj.get_color()
+            label = MathTex(label, color=label_color)
+
+        if label_background_color is not None:
+            background_color = label_background_color
+        else:
+            background_color = ManimColor.parse(config["background_color"])
+        rendered_label = edge_weight_type(label=label, color=background_color)
+
+        # scale the label if it is too large compared to the edge length
+        min_ratio = weight_config.get("min_size_ratio", 1 / 6)
+        max_ratio = weight_config.get("max_size_ratio", 1 / 4)
+        min_size = edge_obj.get_arc_length() * min_ratio
+        max_size = edge_obj.get_arc_length() * max_ratio
+        final_size = np.clip(min_size, rendered_label.get_width(), max_size)
+        rendered_label.scale_to_fit_width(final_size)
+
+        # move the label to the right position on the edge
+        pos = weight_config.get("position_ratio", 0.5)
+        rendered_label.move_to(edge_obj.point_from_proportion(pos))
+
+        edge_obj.weight_label = rendered_label
+        edge_obj.add(rendered_label)
+
+    def _update_edge_label(
+        self,
+        edge: tuple[Hashable, Hashable],
+    ) -> None:
+        """Update the given edge's weight label if it has any.
+
+        Parameters
+        ----------
+
+        edge
+            A tuple of two hashable vertex identifiers.
+
+        """
+        edge_obj = self.edges[edge]
+        weight_label = None
+        if hasattr(edge_obj, "weight_label"):
+            weight_label = edge_obj.weight_label
+
+        if weight_label is not None:
+            weight_config = self._weight_config.get(edge, {})
+
+            # scale the label if it is too large compared to the edge length
+            min_ratio = weight_config.get("min_size_ratio", 1 / 6)
+            max_ratio = weight_config.get("max_size_ratio", 1 / 4)
+            min_size = edge_obj.get_arc_length() * min_ratio
+            max_size = edge_obj.get_arc_length() * max_ratio
+            final_size = np.clip(min_size, weight_label.get_width(), max_size)
+            weight_label.scale_to_fit_width(final_size)
+
+            # move the label to the right position on the edge
+            pos = weight_config.get("position_ratio", 0.5)
+            weight_label.move_to(edge_obj.point_from_proportion(pos))
 
     def _populate_edge_dict(
         self, edges: list[tuple[Hashable, Hashable]], edge_type: type[Mobject]
@@ -1028,13 +1226,37 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
 
         self._graph.add_edge(u, v)
 
+        # configuration
+        loop_config = self.default_loop_config.copy()
+        loop_config.update(edge_config.pop("loop_config", {}))
+        self._loop_config[(u, v)] = loop_config
+
+        weight_config = self.default_weight_config.copy()
+        weight_config.update(edge_config.pop("weight_config", {}))
+        self._weight_config[(u, v)] = weight_config
+
         base_edge_config = self.default_edge_config.copy()
         base_edge_config.update(edge_config)
+
         edge_config = base_edge_config
         self._edge_config[(u, v)] = edge_config
 
+        # mobject creation
+        if u == v:
+            # create self-loop
+            arc_angle = self._loop_config[(u, u)].get("path_arc")
+            points_angle = self._loop_config[(u, u)].get("angle_between_points")
+            p1, p2 = self._get_self_loop_parameters(u, points_angle)
+        else:
+            # create regular edges
+            p1, p2, arc_angle = self[u].get_center(), self[v].get_center(), 0
+
         edge_mobject = edge_type(
-            self[u].get_center(), self[v].get_center(), z_index=-1, **edge_config
+            p1,
+            p2,
+            path_arc=edge_config.pop("path_arc", arc_angle),
+            z_index=edge_config.pop("z_index", -1),
+            **edge_config,
         )
         self.edges[(u, v)] = edge_mobject
 
@@ -1277,6 +1499,11 @@ class Graph(GenericGraph):
         custom labels can be specified by passing a dictionary whose keys are
         the vertices, and whose values are the corresponding vertex labels
         (rendered via, e.g., :class:`~.Text` or :class:`~.Tex`).
+    weights
+        Controls whether or not edges are labeled. If ``None`` (the default),
+        edges are not labeled. Labels can be specified by passing a dictionary
+        whose keys are the edges, and whose values are the corresponding edges labels
+        (rendered via, e.g., :class:`~.Text` or :class:`~.Tex`).
     label_fill_color
         Sets the fill color of the default labels generated when ``labels``
         is set to ``True``. Has no effect for other values of ``labels``.
@@ -1405,6 +1632,84 @@ class Graph(GenericGraph):
                                        (4, 7): {"stroke_color": RED}})
                 self.add(g)
 
+    The edges in graphs can also be labeled, by associating weights to them.
+    They can be configured for each edge individually.
+
+    .. note::
+
+        In ``edge_config``, edges can be passed in both directions: if
+        ``(u, v)`` is an edge in the graph, both ``(u, v)`` as well
+        as ``(v, u)`` can be used as keys in the dictionary.
+
+    .. manim:: WeightedGraph
+        :save_last_frame:
+
+        class WeightedGraph(Scene):
+            def construct(self):
+                vertices = [1, 2, 3, 4, 5]
+                edges = [(1, 5), (2, 3), (2, 4), (2, 5),
+                         (3, 4), (4, 4), (5, 3)]
+                weights = {(1, 5): 1, (2, 3): 2, (2, 4): 3, (2, 5): 1,
+                           (3, 4): 4, (4, 4): 5, (5, 3): 6}
+                g = Graph(vertices, edges, layout="circular", weights=weights,
+                          labels=True)
+                self.add(g)
+
+    Similarly, self-loop edges and weights can be configured globally or individually.
+
+    .. note::
+
+        In the weight configuration, possible parameters are ``weight_type``, ``position_ratio``,
+        ``min_size_ratio``, ``max_size_ratio``, ``text_color`` and ``background_color``.
+        In the loop configuration, possible parameters are ``angle_between_points`` and ``path_arc``.
+
+    .. manim:: LoopsAndWeightsConfig
+        :save_last_frame:
+
+        class LoopsAndWeightsConfig(Scene):
+            def construct(self):
+                vertices = [1, 2, 3, 4, 5]
+
+                edges = [(1, 5), (2, 2), (2, 3), (2, 4),
+                            (2, 5), (3, 4), (4, 4), (5, 3), (5, 5)]
+
+                weights = {(1, 5): 1, (2, 2): 4, (2, 3): 2, (2, 4): 3,
+                            (2, 5): 1, (3, 4): 4, (4, 4): 5, (5, 3): 6,
+                            (5, 5): 3}
+
+                edge_config = {
+                    # global configuration
+                    "loop_config": {
+                        "angle_between_points": PI,
+                        "path_arc": 3 * PI / 2,
+                    },
+                    "weight_config": {
+                        "position_ratio": 0.3,
+                        "min_size_ratio": 1 / 6,
+                        "max_size_ratio": 1 / 4,
+                        "text_color": BLUE,
+                    },
+
+                    # individual configuration
+                    (2, 2): {
+                        "loop_config": {
+                            "path_arc": 12/7 * PI,
+                        }
+                    },
+                    (3, 4): {
+                        "weight_config": {
+                            "position_ratio": 0.5,
+                            "min_size_ratio": 1 / 3,
+                            "max_size_ratio": 1 / 3,
+                            "text_color": RED,
+                        }
+                    }
+                }
+
+                g = Graph(vertices, edges, layout="circular", weights=weights,
+                            labels=True, edge_config=edge_config)
+                self.add(g)
+
     You can also lay out a partite graph on columns by specifying
     a list of the vertices on each side and choosing the partite layout.
 
@@ -1531,6 +1836,47 @@ class Graph(GenericGraph):
                 self.play(self.camera.auto_zoom(g, margin=1), run_time=0.5)
     """
 
+    def __init__(
+        self,
+        vertices: list[Hashable],
+        edges: list[tuple[Hashable, Hashable]],
+        labels: bool | dict = False,
+        weights: dict = None,
+        label_fill_color: str = BLACK,
+        layout: LayoutName | dict[Hashable, Point3D] | LayoutFunction = "spring",
+        layout_scale: float | tuple[float, float, float] = 2,
+        layout_config: dict | None = None,
+        vertex_type: type[Mobject] = Dot,
+        vertex_config: dict | None = None,
+        vertex_mobjects: dict | None = None,
+        edge_type: type[Mobject] = Line,
+        partitions: list[list[Hashable]] | None = None,
+        root_vertex: Hashable | None = None,
+        edge_config: dict | None = None,
+    ) -> None:
+        self._default_loop_config = {
+            "angle_between_points": 3 / 4 * PI,
+            "path_arc": 7 / 4 * PI,
+        }
+
+        super().__init__(
+            vertices=vertices,
+            edges=edges,
+            labels=labels,
+            weights=weights,
+            label_fill_color=label_fill_color,
+            layout=layout,
+            layout_scale=layout_scale,
+            layout_config=layout_config,
+            vertex_type=vertex_type,
+            vertex_config=vertex_config,
+            vertex_mobjects=vertex_mobjects,
+            edge_type=edge_type,
+            partitions=partitions,
+            root_vertex=root_vertex,
+            edge_config=edge_config,
+        )
+
     @staticmethod
     def _empty_networkx_graph() -> nx.Graph:
         return nx.Graph()
@@ -1538,25 +1884,53 @@ class Graph(GenericGraph):
     def _populate_edge_dict(
         self, edges: list[tuple[Hashable, Hashable]], edge_type: type[Mobject]
     ):
-        self.edges = {
-            (u, v): edge_type(
-                self[u].get_center(),
-                self[v].get_center(),
-                z_index=-1,
+        self.edges = {}
+        for u, v in edges:
+            if u == v:
+                # create self-loop
+                arc_angle = self._loop_config[(u, u)].get("path_arc")
+                points_angle = self._loop_config[(u, u)].get("angle_between_points")
+                p1, p2 = self._get_self_loop_parameters(u, points_angle)
+            else:
+                # create regular edges
+                p1, p2, arc_angle = self[u].get_center(), self[v].get_center(), 0
+
+            self.edges[(u, v)] = edge_type(
+                p1,
+                p2,
+                path_arc=self._edge_config[(u, v)].pop("path_arc", arc_angle),
+                z_index=self._edge_config[(u, v)].pop("z_index", -1),
                 **self._edge_config[(u, v)],
             )
-            for (u, v) in edges
-        }
+
+            # add label if there is one
+            self._add_edge_label((u, v))
 
     def update_edges(self, graph):
         for (u, v), edge in graph.edges.items():
             # Undirected graph has a Line edge
+
+            if u == v:
+                # update self-loop
+                arc_angle = self._loop_config[(u, u)].get("path_arc")
+                points_angle = self._loop_config[(u, u)].get("angle_between_points")
+                p1, p2 = self._get_self_loop_parameters(u, points_angle)
+            else:
+                # update regular edges
+                p1, p2, arc_angle = (
+                    graph[u].get_center(),
+                    graph[v].get_center(),
+                    edge.path_arc,
+                )
+
             edge.set_points_by_ends(
-                graph[u].get_center(),
-                graph[v].get_center(),
-                buff=self._edge_config.get("buff", 0),
-                path_arc=self._edge_config.get("path_arc", 0),
+                p1,
+                p2,
+                buff=self._edge_config.get("buff", edge.buff),
+                path_arc=self._edge_config[(u, v)].get("path_arc", arc_angle),
             )
+
+            self._update_edge_label((u, v))
 
     def __repr__(self: Graph) -> str:
         return f"Undirected graph on {len(self.vertices)} vertices and {len(self.edges)} edges"
@@ -1589,6 +1963,11 @@ class DiGraph(GenericGraph):
         names (as specified in ``vertices``) via :class:`~.MathTex`. Alternatively,
         custom labels can be specified by passing a dictionary whose keys are
         the vertices, and whose values are the corresponding vertex labels
+        (rendered via, e.g., :class:`~.Text` or :class:`~.Tex`).
+    weights
+        Controls whether or not edges are labeled. If ``None`` (the default),
+        edges are not labeled. Labels can be specified by passing a dictionary
+        whose keys are the edges, and whose values are the corresponding edges labels
         (rendered via, e.g., :class:`~.Text` or :class:`~.Tex`).
     label_fill_color
         Sets the fill color of the default labels generated when ``labels``
@@ -1659,6 +2038,22 @@ class DiGraph(GenericGraph):
                 )
                 self.wait()
 
+    The edges of the DiGraph can be labeled, by associating weights to them.
+
+    .. manim:: WeightedEdgeDiGraph
+        :save_last_frame:
+
+        class WeightedEdgeDiGraph(Scene):
+            def construct(self):
+                vertices = [1, 2, 3, 4, 5]
+                edges = [(1, 5), (2, 3), (2, 4), (2, 5),
+                         (3, 4), (4, 4), (5, 3)]
+                weights = {(1, 5): 1, (2, 3): 2, (2, 4): 3, (2, 5): 1,
+                           (3, 4): 4, (4, 4): 5, (5, 3): 6}
+                g = DiGraph(vertices, edges, layout="circular", weights=weights,
+                          labels=True)
+                self.add(g)
+
     You can customize the edges and arrow tips globally or locally.
 
     .. manim:: CustomDiGraph
@@ -1669,6 +2064,7 @@ class DiGraph(GenericGraph):
                 edges = [
                     (0, 1),
                     (1, 2),
+                    (2, 2),
                     (3, 2),
                     (3, 4),
                 ]
@@ -1707,6 +2103,7 @@ class DiGraph(GenericGraph):
                 edges = [
                     (0, 1),
                     (1, 2),
+                    (2, 2),
                     (3, 2),
                     (3, 4),
                 ]
@@ -1738,6 +2135,47 @@ class DiGraph(GenericGraph):
 
     """
 
+    def __init__(
+        self,
+        vertices: list[Hashable],
+        edges: list[tuple[Hashable, Hashable]],
+        labels: bool | dict = False,
+        weights: dict = None,
+        label_fill_color: str = BLACK,
+        layout: LayoutName | dict[Hashable, Point3D] | LayoutFunction = "spring",
+        layout_scale: float | tuple[float, float, float] = 2,
+        layout_config: dict | None = None,
+        vertex_type: type[Mobject] = Dot,
+        vertex_config: dict | None = None,
+        vertex_mobjects: dict | None = None,
+        edge_type: type[Mobject] = Line,
+        partitions: list[list[Hashable]] | None = None,
+        root_vertex: Hashable | None = None,
+        edge_config: dict | None = None,
+    ) -> None:
+        self._default_loop_config = {
+            "angle_between_points": PI / 2,
+            "path_arc": 3 / 2 * PI,
+        }
+
+        super().__init__(
+            vertices=vertices,
+            edges=edges,
+            labels=labels,
+            weights=weights,
+            label_fill_color=label_fill_color,
+            layout=layout,
+            layout_scale=layout_scale,
+            layout_config=layout_config,
+            vertex_type=vertex_type,
+            vertex_config=vertex_config,
+            vertex_mobjects=vertex_mobjects,
+            edge_type=edge_type,
+            partitions=partitions,
+            root_vertex=root_vertex,
+            edge_config=edge_config,
+        )
+
     @staticmethod
     def _empty_networkx_graph() -> nx.DiGraph:
         return nx.DiGraph()
@@ -1745,18 +2183,31 @@ class DiGraph(GenericGraph):
     def _populate_edge_dict(
         self, edges: list[tuple[Hashable, Hashable]], edge_type: type[Mobject]
     ):
-        self.edges = {
-            (u, v): edge_type(
-                self[u],
-                self[v],
-                z_index=-1,
+        self.edges = {}
+        for u, v in edges:
+            if u == v:
+                # create self-loop
+                arc_angle = self._loop_config[(u, u)].get("path_arc")
+                points_angle = self._loop_config[(u, u)].get("angle_between_points")
+                p1, p2 = self._get_self_loop_parameters(u, points_angle)
+            else:
+                # create regular edges
+                p1, p2, arc_angle = self[u].get_center(), self[v], 0
+
+            self.edges[(u, v)] = edge_type(
+                p1,
+                p2,
+                path_arc=self._edge_config[(u, v)].pop("path_arc", arc_angle),
+                z_index=self._edge_config[(u, v)].pop("z_index", -1),
                 **self._edge_config[(u, v)],
             )
-            for (u, v) in edges
-        }
 
-        for (u, v), edge in self.edges.items():
+            # add tip
+            edge = self.edges[(u, v)]
             edge.add_tip(**self._tip_config[(u, v)])
+
+            # add label if there is one
+            self._add_edge_label((u, v))
 
     def update_edges(self, graph):
         """Updates the edges to stick at their corresponding vertices.
@@ -1765,16 +2216,37 @@ class DiGraph(GenericGraph):
         deformed.
         """
         for (u, v), edge in graph.edges.items():
+            weight_label = None
+            if hasattr(edge, "weight_label"):
+                weight_label = edge.weight_label
+                edge.remove(weight_label)
+                edge.weight_label = None
+
             tip = edge.pop_tips()[0]
             # Passing the Mobject instead of the vertex makes the tip
             # stop on the bounding box of the vertex.
+
+            if u == v:
+                # update self-loop
+                arc_angle = self._loop_config[(u, u)].get("path_arc")
+                points_angle = self._loop_config[(u, u)].get("angle_between_points")
+                p1, p2 = self._get_self_loop_parameters(u, points_angle)
+            else:
+                # update regular edges
+                p1, p2, arc_angle = graph[u].get_center(), graph[v], edge.path_arc
+
             edge.set_points_by_ends(
-                graph[u],
-                graph[v],
-                buff=self._edge_config.get("buff", 0),
-                path_arc=self._edge_config.get("path_arc", 0),
+                p1,
+                p2,
+                buff=self._edge_config.get("buff", edge.buff),
+                path_arc=self._edge_config[(u, v)].get("path_arc", arc_angle),
             )
+
             edge.add_tip(tip)
+            if weight_label is not None:
+                edge.add(weight_label)
+                edge.weight_label = weight_label
+                self._update_edge_label((u, v))
 
     def __repr__(self: DiGraph) -> str:
         return f"Directed graph on {len(self.vertices)} vertices and {len(self.edges)} edges"
