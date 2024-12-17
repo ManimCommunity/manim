@@ -213,11 +213,11 @@ The decorator can be used with or without parentheses. **By default, the test on
       circle = Circle()
       scene.play(Animation(circle))
 
-You can also specify, when needed, which base scene you need (VectorSpaceScene, for example) :
+You can also specify, when needed, which base scene you need (VectorScene, for example) :
 
 .. code:: python
 
-  @frames_comparison(last_frame=False, base_scene=VectorSpaceScene)
+  @frames_comparison(last_frame=False, base_scene=VectorScene)
   def test_circle(scene):
       circle = Circle()
       scene.play(Animation(circle))
