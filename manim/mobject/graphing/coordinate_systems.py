@@ -57,7 +57,14 @@ from manim.utils.space_ops import angle_of_vector
 
 if TYPE_CHECKING:
     from manim.mobject.mobject import Mobject
-    from manim.typing import ManimFloat, Point2D, Point3D, Vector3D
+    from manim.typing import (
+        ManimFloat,
+        Point2D,
+        Point2DLike,
+        Point3D,
+        Point3DLike,
+        Vector3D,
+    )
 
     LineType = TypeVar("LineType", bound=Line)
 
@@ -150,7 +157,7 @@ class CoordinateSystem:
     def coords_to_point(self, *coords: ManimFloat):
         raise NotImplementedError()
 
-    def point_to_coords(self, point: Point3D):
+    def point_to_coords(self, point: Point3DLike):
         raise NotImplementedError()
 
     def polar_to_point(self, radius: float, azimuth: float) -> Point2D:
@@ -184,7 +191,7 @@ class CoordinateSystem:
         """
         return self.coords_to_point(radius * np.cos(azimuth), radius * np.sin(azimuth))
 
-    def point_to_polar(self, point: np.ndarray) -> Point2D:
+    def point_to_polar(self, point: Point2DLike) -> Point2D:
         r"""Gets polar coordinates from a point.
 
         Parameters
@@ -206,7 +213,7 @@ class CoordinateSystem:
         """Abbreviation for :meth:`coords_to_point`"""
         return self.coords_to_point(*coords)
 
-    def p2c(self, point: Point3D):
+    def p2c(self, point: Point3DLike):
         """Abbreviation for :meth:`point_to_coords`"""
         return self.point_to_coords(point)
 
@@ -1003,7 +1010,7 @@ class CoordinateSystem:
         self,
         x: float,
         graph: ParametricFunction | VMobject,
-    ) -> np.ndarray:
+    ) -> Point3D:
         """Returns the coordinates of the point on a ``graph`` corresponding to an ``x`` value.
 
         Parameters
@@ -1836,12 +1843,12 @@ class CoordinateSystem:
 
         return T_label_group
 
-    def __matmul__(self, coord: Point3D | Mobject):
+    def __matmul__(self, coord: Point3DLike | Mobject):
         if isinstance(coord, Mobject):
             coord = coord.get_center()
         return self.coords_to_point(*coord)
 
-    def __rmatmul__(self, point: Point3D):
+    def __rmatmul__(self, point: Point3DLike):
         return self.point_to_coords(point)
 
 
@@ -3379,7 +3386,7 @@ class ComplexPlane(NumberPlane):
         """Abbreviation for :meth:`number_to_point`."""
         return self.number_to_point(number)
 
-    def point_to_number(self, point: Point3D) -> complex:
+    def point_to_number(self, point: Point3DLike) -> complex:
         """Accepts a point and returns a complex number equivalent to that point on the plane.
 
         Parameters
@@ -3395,7 +3402,7 @@ class ComplexPlane(NumberPlane):
         x, y = self.point_to_coords(point)
         return complex(x, y)
 
-    def p2n(self, point: Point3D) -> complex:
+    def p2n(self, point: Point3DLike) -> complex:
         """Abbreviation for :meth:`point_to_number`."""
         return self.point_to_number(point)
 
