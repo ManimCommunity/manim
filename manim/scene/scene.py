@@ -10,7 +10,7 @@ from pyglet.window import key
 from typing_extensions import assert_never
 
 from manim import config, logger
-from manim.animation.animation import prepare_animation, validate_run_time
+from manim.animation.animation import prepare_animation
 from manim.animation.scene_buffer import SceneBuffer, SceneOperation
 from manim.camera.camera import Camera
 from manim.constants import DEFAULT_WAIT_TIME
@@ -353,6 +353,35 @@ class Scene:
             animation.finish()
             self.process_buffer(animation.buffer)
 
+    @classmethod
+    def validate_run_time(
+        cls,
+        run_time: float,
+        method: Callable[[Any, ...], Any],
+        parameter_name: str = "run_time",
+    ) -> float:
+        method_name = f"{cls.__name__}.{method.__name__}()"
+        if run_time <= 0:
+            raise ValueError(
+                f"{method_name} has a {parameter_name} of "
+                f"{run_time:g} <= 0 seconds which Manim cannot render. "
+                f"The {parameter_name} must be a positive number."
+            )
+
+        # config.frame_rate holds the number of frames per second
+        fps = config.frame_rate
+        seconds_per_frame = 1 / fps
+        if run_time < seconds_per_frame:
+            logger.warning(
+                f"The original {parameter_name} of {method_name}, "
+                f"{run_time:g} seconds, is too short for the current frame "
+                f"rate of {fps:g} FPS. Rendering with the shortest possible "
+                f"{parameter_name} of {seconds_per_frame:g} seconds instead."
+            )
+            run_time = seconds_per_frame
+
+        return run_time
+
     def play(
         self,
         # the OpenGLMobject is a side-effect of the return type of animate, it will
@@ -367,10 +396,20 @@ class Scene:
         if len(proto_animations) == 0:
             logger.warning("Called Scene.play with no animations")
             return
-        # build animationbuilders
+
+        # Build _AnimationBuilders.
         animations = [prepare_animation(x) for x in proto_animations]
         for anim in animations:
             anim.update_rate_info(run_time, rate_func, lag_ratio)
+
+        # Validate the final run_time.
+        total_run_time = max(anim.get_run_time() for anim in animations)
+        new_total_run_time = self.validate_run_time(
+            total_run_time, self.play, "total run_time"
+        )
+        if new_total_run_time != total_run_time:
+            for anim in animations:
+                anim.update_rate_info(new_total_run_time)
 
         # NOTE: Should be changed at some point with the 2 pass rendering system 21.06.2024
         self.manager._play(*animations)
@@ -382,7 +421,7 @@ class Scene:
         note: str | None = None,
         ignore_presenter_mode: bool = False,
     ):
-        duration = validate_run_time(duration, str(self) + ".wait()", "duration")
+        duration = self.validate_run_time(duration, self.wait, "duration")
         self.manager._wait(duration, stop_condition=stop_condition)
         # if (
         #     self.presenter_mode
@@ -394,7 +433,7 @@ class Scene:
         #     self.hold_loop()
 
     def wait_until(self, stop_condition: Callable[[], bool], max_time: float = 60):
-        max_time = validate_run_time(max_time, str(self) + ".wait_until()", "max_time")
+        max_time = self.validate_run_time(max_time, self.wait_until, "max_time")
         self.wait(max_time, stop_condition=stop_condition)
 
     def add_sound(

@@ -58,6 +58,7 @@ def test_pause_invalid_duration(duration):
 
 @pytest.mark.parametrize("max_time", [0, -1])
 def test_wait_until_invalid_max_time(max_time):
-    test_scene = Manager(Scene)
+    manager = Manager(Scene)
+    test_scene = manager.scene
     with pytest.raises(ValueError, match="The max_time must be a positive number."):
         test_scene.wait_until(lambda: True, max_time)
