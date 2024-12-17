@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 
 from cloup import Choice, option, option_group
 
-from manim.constants import QUALITIES, RendererType
+from manim.constants import QUALITIES
 
 if TYPE_CHECKING:
     from click import Context, Option
@@ -15,6 +15,8 @@ if TYPE_CHECKING:
 __all__ = ["render_options"]
 
 logger = logging.getLogger("manim")
+
+__all__ = ["render_options"]
 
 
 def validate_scene_range(
@@ -113,6 +115,13 @@ render_options = option_group(
         default=None,
     ),
     option(
+        "-g",
+        "--groups",
+        callback=lambda ctx, param, value: value.split(","),
+        help="Render only the specified groups.",
+        default=[],
+    ),
+    option(
         "-a",
         "--write_all",
         is_flag=True,
@@ -166,29 +175,6 @@ render_options = option_group(
         help="Render at this frame rate.",
     ),
     option(
-        "--renderer",
-        type=Choice(
-            [renderer_type.value for renderer_type in RendererType],
-            case_sensitive=False,
-        ),
-        help="Select a renderer for your Scene.",
-        default="cairo",
-    ),
-    option(
-        "-g",
-        "--save_pngs",
-        is_flag=True,
-        default=None,
-        help="Save each frame as png (Deprecated).",
-    ),
-    option(
-        "-i",
-        "--save_as_gif",
-        default=None,
-        is_flag=True,
-        help="Save as a gif (Deprecated).",
-    ),
-    option(
         "--save_sections",
         default=None,
         is_flag=True,
@@ -199,17 +185,5 @@ render_options = option_group(
         "--transparent",
         is_flag=True,
         help="Render scenes with alpha channel.",
-    ),
-    option(
-        "--use_projection_fill_shaders",
-        is_flag=True,
-        help="Use shaders for OpenGLVMobject fill which are compatible with transformation matrices.",
-        default=None,
-    ),
-    option(
-        "--use_projection_stroke_shaders",
-        is_flag=True,
-        help="Use shaders for OpenGLVMobject stroke which are compatible with transformation matrices.",
-        default=None,
     ),
 )

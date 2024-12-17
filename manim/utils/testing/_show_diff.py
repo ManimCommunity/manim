@@ -5,6 +5,8 @@ import warnings
 
 import numpy as np
 
+__all__ = ["show_diff_helper"]
+
 
 def show_diff_helper(
     frame_number: int,

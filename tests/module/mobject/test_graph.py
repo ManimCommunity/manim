@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from manim import DiGraph, Graph, Scene, Text, tempconfig
+from manim import DiGraph, Graph, Manager, Scene, Text, tempconfig
 from manim.mobject.graph import _layouts
 
 
@@ -93,7 +93,8 @@ def test_graph_remove_edges():
 
 def test_custom_animation_mobject_list():
     G = Graph([1, 2, 3], [(1, 2), (2, 3)])
-    scene = Scene()
+    manager = Manager(Scene)
+    scene = manager.scene
     scene.add(G)
     assert scene.mobjects == [G]
     with tempconfig({"dry_run": True, "quality": "low_quality"}):

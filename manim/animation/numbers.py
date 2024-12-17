@@ -31,7 +31,7 @@ class ChangingDecimal(Animation):
         if not isinstance(decimal_mob, DecimalNumber):
             raise TypeError("ChangingDecimal can only take in a DecimalNumber")
 
-    def interpolate_mobject(self, alpha: float) -> None:
+    def interpolate(self, alpha: float) -> None:
         self.mobject.set_value(self.number_update_func(self.rate_func(alpha)))
 
 

@@ -35,7 +35,7 @@ msgid "A spherical dot."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_d.three_dimensions.rst:40:<autosummary>:1
-msgid "A cylindrical line, for use in ThreeDScene."
+msgid "A cylindrical line."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_d.three_dimensions.rst:40:<autosummary>:1

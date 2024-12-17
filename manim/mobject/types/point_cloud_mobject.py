@@ -26,7 +26,7 @@ from ...utils.color import (
 )
 from ...utils.iterables import stretch_array_to_length
 
-__all__ = ["PMobject", "Mobject1D", "Mobject2D", "PGroup", "PointCloudDot", "Point"]
+__all__ = ["PMobject", "Mobject1D", "Mobject2D", "PGroup", "PointCloudDot"]
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -196,6 +196,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         for attr, array in zip(attrs, arrays):
             setattr(self, attr, array)
         self.submobjects = []
+        self.note_changed_family()
         return self
 
     def get_color(self) -> ManimColor:
@@ -219,7 +220,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
     def get_point_mobject(self, center: Point3D | None = None) -> Point:
         if center is None:
             center = self.get_center()
-        return Point(center)
+        return PMobject().set_points([center])
 
     def interpolate_color(
         self, mobject1: Mobject, mobject2: Mobject, alpha: float
@@ -382,39 +383,3 @@ class PointCloudDot(Mobject1D):
                 ]
             ),
         )
-
-
-class Point(PMobject):
-    """A mobject representing a point.
-
-    Examples
-    --------
-
-    .. manim:: ExamplePoint
-        :save_last_frame:
-
-        class ExamplePoint(Scene):
-            def construct(self):
-                colorList = [RED, GREEN, BLUE, YELLOW]
-                for i in range(200):
-                    point = Point(location=[0.63 * np.random.randint(-4, 4), 0.37 * np.random.randint(-4, 4), 0], color=np.random.choice(colorList))
-                    self.add(point)
-                for i in range(200):
-                    point = Point(location=[0.37 * np.random.randint(-4, 4), 0.63 * np.random.randint(-4, 4), 0], color=np.random.choice(colorList))
-                    self.add(point)
-                self.add(point)
-    """
-
-    def __init__(
-        self, location: Vector3D = ORIGIN, color: ManimColor = BLACK, **kwargs: Any
-    ) -> None:
-        self.location = location
-        super().__init__(color=color, **kwargs)
-
-    def init_points(self) -> None:
-        self.reset_points()
-        self.generate_points()
-        self.set_points([self.location])
-
-    def generate_points(self) -> None:
-        self.add_points(np.array([self.location]))
