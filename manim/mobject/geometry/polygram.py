@@ -226,18 +226,18 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
 
         new_points: list[Point3D] = []
 
-        for vertices in self.get_vertex_groups():
+        for vertex_group in self.get_vertex_groups():
             arcs = []
 
             # Repeat the radius list as necessary in order to provide a radius
             # for each vertex.
             if isinstance(radius, (int, float)):
-                radius_list = [radius] * len(vertices)
+                radius_list = [radius] * len(vertex_group)
             else:
-                radius_list = radius * ceil(len(vertices) / len(radius))
+                radius_list = radius * ceil(len(vertex_group) / len(radius))
 
-            for currentRadius, (v1, v2, v3) in zip(
-                radius_list, adjacent_n_tuples(vertices, 3)
+            for current_radius, (v1, v2, v3) in zip(
+                radius_list, adjacent_n_tuples(vertex_group, 3)
             ):
                 vect1 = v2 - v1
                 vect2 = v3 - v2
@@ -246,10 +246,10 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
 
                 angle = angle_between_vectors(vect1, vect2)
                 # Negative radius gives concave curves
-                angle *= np.sign(currentRadius)
+                angle *= np.sign(current_radius)
 
                 # Distance between vertex and start of the arc
-                cut_off_length = currentRadius * np.tan(angle / 2)
+                cut_off_length = current_radius * np.tan(angle / 2)
 
                 # Determines counterclockwise vs. clockwise
                 sign = np.sign(np.cross(vect1, vect2)[2])
@@ -264,17 +264,17 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
 
             if evenly_distribute_anchors:
                 # Determine the average length of each curve
-                nonZeroLengthArcs = [arc for arc in arcs if len(arc.points) > 4]
-                if len(nonZeroLengthArcs):
-                    totalArcLength = sum(
-                        [arc.get_arc_length() for arc in nonZeroLengthArcs]
+                nonzero_length_arcs = [arc for arc in arcs if len(arc.points) > 4]
+                if len(nonzero_length_arcs) > 0:
+                    total_arc_length = sum(
+                        [arc.get_arc_length() for arc in nonzero_length_arcs]
                     )
-                    totalCurveCount = (
-                        sum([len(arc.points) for arc in nonZeroLengthArcs]) / 4
+                    num_curves = (
+                        sum([len(arc.points) for arc in nonzero_length_arcs]) / 4
                     )
-                    averageLengthPerCurve = totalArcLength / totalCurveCount
+                    average_arc_length = total_arc_length / num_curves
                 else:
-                    averageLengthPerCurve = 1
+                    average_arc_length = 1.0
 
             # To ensure that we loop through starting with last
             arcs = [arcs[-1], *arcs[:-1]]
@@ -287,9 +287,7 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
 
                 # Make sure anchors are evenly distributed, if necessary
                 if evenly_distribute_anchors:
-                    line.insert_n_curves(
-                        ceil(line.get_length() / averageLengthPerCurve)
-                    )
+                    line.insert_n_curves(ceil(line.get_length() / average_arc_length))
 
                 new_points.extend(line.points)
 
