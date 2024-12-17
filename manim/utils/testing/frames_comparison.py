@@ -53,7 +53,7 @@ def frames_comparison(
     last_frame
         whether the test should test the last frame, by default True.
     base_scene
-        The base class for the scene (ThreeDScene, etc.), by default Scene
+        The base class for the scene (VectorScene, etc.), by default Scene
 
     .. warning::
         By default, last_frame is True, which means that only the last frame is tested.

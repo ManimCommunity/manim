@@ -56,6 +56,7 @@ from manim.mobject.matrix import *
 from manim.mobject.mobject import *
 from manim.mobject.opengl.dot_cloud import *
 from manim.mobject.opengl.opengl_point_cloud_mobject import *
+from manim.mobject.opengl.opengl_vectorized_mobject import *
 from manim.mobject.svg.brace import *
 from manim.mobject.svg.svg_mobject import *
 from manim.mobject.table import *

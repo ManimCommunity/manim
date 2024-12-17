@@ -24,6 +24,7 @@ import numpy as np
 from manim import config, logger
 from manim.constants import *
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
+from manim.mobject.opengl.opengl_mobject import InvisibleMobject
 from manim.utils.color import (
     BLACK,
     WHITE,
@@ -3012,7 +3013,7 @@ class Mobject:
         return self
 
 
-class Group(Mobject, metaclass=ConvertToOpenGL):
+class Group(Mobject, InvisibleMobject, metaclass=ConvertToOpenGL):
     """Groups together multiple :class:`Mobjects <.Mobject>`.
 
     Notes
@@ -3027,7 +3028,7 @@ class Group(Mobject, metaclass=ConvertToOpenGL):
         self.add(*mobjects)
 
 
-class Point(Mobject, metaclass=ConvertToOpenGL):
+class Point(Mobject, InvisibleMobject, metaclass=ConvertToOpenGL):
     def __init__(
         self,
         location: np.ndarray = ORIGIN,

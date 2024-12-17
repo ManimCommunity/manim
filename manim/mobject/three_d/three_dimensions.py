@@ -29,7 +29,6 @@ from manim import config, logger
 from manim.constants import *
 from manim.mobject.geometry.arc import Circle
 from manim.mobject.geometry.polygram import Square
-from manim.mobject.mobject import *
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.types.vectorized_mobject import VectorizedPoint, VGroup
@@ -82,7 +81,7 @@ class Surface(VGroup):
     .. manim:: ParaSurface
         :save_last_frame:
 
-        class ParaSurface(ThreeDScene):
+        class ParaSurface(Scene):
             def func(self, u, v):
                 return np.array([np.cos(u) * np.cos(v), np.cos(u) * np.sin(v), u])
 
@@ -94,7 +93,7 @@ class Surface(VGroup):
                     v_range=[0, TAU],
                     resolution=8,
                 )
-                self.set_camera_orientation(theta=70 * DEGREES, phi=75 * DEGREES)
+                self.camera.set_orientation(theta=70 * DEGREES, phi=75 * DEGREES)
                 self.add(axes, surface)
     """
 
@@ -110,6 +109,7 @@ class Surface(VGroup):
         checkerboard_colors: Sequence[ParsableManimColor] | bool = [BLUE_D, BLUE_E],
         stroke_color: ParsableManimColor = LIGHT_GREY,
         stroke_width: float = 0.5,
+        stroke_opacity: float = 1.0,  # TODO: placed temporarily to have a stroke_opacity
         should_make_jagged: bool = False,
         pre_function_handle_to_anchor_scale_factor: float = 0.00001,
         **kwargs: Any,
@@ -120,7 +120,7 @@ class Surface(VGroup):
         self.resolution = resolution
         self.surface_piece_config = surface_piece_config
         self.fill_color: ManimColor = ManimColor(fill_color)
-        self.fill_opacity = fill_opacity
+        self.fill_opacity = fill_opacity  # TODO: remove
         if checkerboard_colors:
             self.checkerboard_colors: list[ManimColor] = [
                 ManimColor(x) for x in checkerboard_colors
@@ -129,6 +129,7 @@ class Surface(VGroup):
             self.checkerboard_colors = checkerboard_colors
         self.stroke_color: ManimColor = ManimColor(stroke_color)
         self.stroke_width = stroke_width
+        self.stroke_opacity = stroke_opacity  # TODO: remove
         self.should_make_jagged = should_make_jagged
         self.pre_function_handle_to_anchor_scale_factor = (
             pre_function_handle_to_anchor_scale_factor
@@ -245,16 +246,18 @@ class Surface(VGroup):
         .. manim:: FillByValueExample
             :save_last_frame:
 
-            class FillByValueExample(ThreeDScene):
+            class FillByValueExample(Scene):
                 def construct(self):
                     resolution_fa = 8
-                    self.set_camera_orientation(phi=75 * DEGREES, theta=-160 * DEGREES)
+                    self.camera.set_orientation(theta=-160 * DEGREES, phi=75 * DEGREES)
                     axes = ThreeDAxes(x_range=(0, 5, 1), y_range=(0, 5, 1), z_range=(-1, 1, 0.5))
+
                     def param_surface(u, v):
                         x = u
                         y = v
                         z = np.sin(x) * np.cos(y)
                         return z
+
                     surface_plane = Surface(
                         lambda u, v: axes.c2p(u, v, param_surface(u, v)),
                         resolution=(resolution_fa, resolution_fa),
@@ -348,9 +351,9 @@ class Sphere(Surface):
     .. manim:: ExampleSphere
         :save_last_frame:
 
-        class ExampleSphere(ThreeDScene):
+        class ExampleSphere(Scene):
             def construct(self):
-                self.set_camera_orientation(phi=PI / 6, theta=PI / 6)
+                self.camera.set_orientation(theta=PI / 6, phi=PI / 6)
                 sphere1 = Sphere(
                     center=(3, 0, 0),
                     radius=1,
@@ -432,9 +435,9 @@ class Dot3D(Sphere):
     .. manim:: Dot3DExample
         :save_last_frame:
 
-        class Dot3DExample(ThreeDScene):
+        class Dot3DExample(Scene):
             def construct(self):
-                self.set_camera_orientation(phi=75*DEGREES, theta=-45*DEGREES)
+                self.camera.set_orientation(theta=-45*DEGREES, phi=75*DEGREES)
 
                 axes = ThreeDAxes()
                 dot_1 = Dot3D(point=axes.coords_to_point(0, 0, 1), color=RED)
@@ -476,9 +479,9 @@ class Cube(VGroup):
     .. manim:: CubeExample
         :save_last_frame:
 
-        class CubeExample(ThreeDScene):
+        class CubeExample(Scene):
             def construct(self):
-                self.set_camera_orientation(phi=75*DEGREES, theta=-45*DEGREES)
+                self.camera.set_orientation(theta=-45*DEGREES, phi=75*DEGREES)
 
                 axes = ThreeDAxes()
                 cube = Cube(side_length=3, fill_opacity=0.7, fill_color=BLUE)
@@ -532,9 +535,9 @@ class Prism(Cube):
     .. manim:: ExamplePrism
         :save_last_frame:
 
-        class ExamplePrism(ThreeDScene):
+        class ExamplePrism(Scene):
             def construct(self):
-                self.set_camera_orientation(phi=60 * DEGREES, theta=150 * DEGREES)
+                self.camera.set_orientation(theta=150 * DEGREES, phi=60 * DEGREES)
                 prismSmall = Prism(dimensions=[1, 2, 3]).rotate(PI / 2)
                 prismLarge = Prism(dimensions=[1.5, 3, 4.5]).move_to([2, 0, 0])
                 self.add(prismSmall, prismLarge)
@@ -583,11 +586,11 @@ class Cone(Surface):
     .. manim:: ExampleCone
         :save_last_frame:
 
-        class ExampleCone(ThreeDScene):
+        class ExampleCone(Scene):
             def construct(self):
                 axes = ThreeDAxes()
                 cone = Cone(direction=X_AXIS+Y_AXIS+2*Z_AXIS, resolution=8)
-                self.set_camera_orientation(phi=5*PI/11, theta=PI/9)
+                self.camera.set_orientation(theta=PI/9, phi=5*PI/11)
                 self.add(axes, cone)
     """
 
@@ -744,11 +747,11 @@ class Cylinder(Surface):
     .. manim:: ExampleCylinder
         :save_last_frame:
 
-        class ExampleCylinder(ThreeDScene):
+        class ExampleCylinder(Scene):
             def construct(self):
                 axes = ThreeDAxes()
                 cylinder = Cylinder(radius=2, height=3)
-                self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+                self.camera.set_orientation(theta=30 * DEGREES, phi=75 * DEGREES)
                 self.add(axes, cylinder)
     """
 
@@ -881,7 +884,7 @@ class Cylinder(Surface):
 
 
 class Line3D(Cylinder):
-    """A cylindrical line, for use in ThreeDScene.
+    """A cylindrical line.
 
     Parameters
     ----------
@@ -905,11 +908,11 @@ class Line3D(Cylinder):
     .. manim:: ExampleLine3D
         :save_last_frame:
 
-        class ExampleLine3D(ThreeDScene):
+        class ExampleLine3D(Scene):
             def construct(self):
                 axes = ThreeDAxes()
                 line = Line3D(start=np.array([0, 0, 0]), end=np.array([2, 2, 2]))
-                self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+                self.camera.set_orientation(theta=30 * DEGREES, phi=75 * DEGREES)
                 self.add(axes, line)
     """
 
@@ -1041,9 +1044,9 @@ class Line3D(Cylinder):
         .. manim:: ParallelLineExample
             :save_last_frame:
 
-            class ParallelLineExample(ThreeDScene):
+            class ParallelLineExample(Scene):
                 def construct(self):
-                    self.set_camera_orientation(PI / 3, -PI / 4)
+                    self.camera.set_orientation(theta=-PI / 4, phi=PI / 3)
                     ax = ThreeDAxes((-5, 5), (-5, 5), (-5, 5), 10, 10, 10)
                     line1 = Line3D(RIGHT * 2, UP + OUT, color=RED)
                     line2 = Line3D.parallel_to(line1, color=YELLOW)
@@ -1089,9 +1092,9 @@ class Line3D(Cylinder):
         .. manim:: PerpLineExample
             :save_last_frame:
 
-            class PerpLineExample(ThreeDScene):
+            class PerpLineExample(Scene):
                 def construct(self):
-                    self.set_camera_orientation(PI / 3, -PI / 4)
+                    self.camera.set_orientation(theta=-PI / 4, phi=PI / 3)
                     ax = ThreeDAxes((-5, 5), (-5, 5), (-5, 5), 10, 10, 10)
                     line1 = Line3D(RIGHT * 2, UP + OUT, color=RED)
                     line2 = Line3D.perpendicular_to(line1, color=BLUE)
@@ -1137,7 +1140,7 @@ class Arrow3D(Line3D):
     .. manim:: ExampleArrow3D
         :save_last_frame:
 
-        class ExampleArrow3D(ThreeDScene):
+        class ExampleArrow3D(Scene):
             def construct(self):
                 axes = ThreeDAxes()
                 arrow = Arrow3D(
@@ -1145,7 +1148,7 @@ class Arrow3D(Line3D):
                     end=np.array([2, 2, 2]),
                     resolution=8
                 )
-                self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+                self.camera.set_orientation(theta=30 * DEGREES, phi=75 * DEGREES)
                 self.add(axes, arrow)
     """
 
@@ -1212,11 +1215,11 @@ class Torus(Surface):
     .. manim :: ExampleTorus
         :save_last_frame:
 
-        class ExampleTorus(ThreeDScene):
+        class ExampleTorus(Scene):
             def construct(self):
                 axes = ThreeDAxes()
                 torus = Torus()
-                self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+                self.camera.set_orientation(theta=30 * DEGREES, phi=75 * DEGREES)
                 self.add(axes, torus)
     """
 

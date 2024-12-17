@@ -7,33 +7,33 @@ __module_test__ = "threed"
 
 
 @frames_comparison
-def test_AddFixedInFrameMobjects(scene: Scene):
-    scene.camera.set_euler_angles(phi=75 * DEGREES, theta=-45 * DEGREES)
+def test_AddFixedInFrameMobjects(scene: Scene) -> None:
+    scene.camera.set_orientation(theta=-45 * DEGREES, phi=75 * DEGREES)
     text = Tex("This is a 3D tex")
     scene.add(text)
 
 
 @frames_comparison
-def test_Cube(scene):
+def test_Cube(scene: Scene) -> None:
     scene.add(Cube())
 
 
 @frames_comparison
-def test_Sphere(scene):
+def test_Sphere(scene: Scene) -> None:
     scene.add(Sphere())
 
 
 @frames_comparison
-def test_Dot3D(scene):
+def test_Dot3D(scene: Scene) -> None:
     scene.add(Dot3D())
 
 
 @frames_comparison
-def test_Cone(scene):
+def test_Cone(scene: Scene) -> None:
     scene.add(Cone(resolution=16))
 
 
-def test_Cone_get_start_and_get_end():
+def test_Cone_get_start_and_get_end() -> None:
     cone = Cone().shift(RIGHT).rotate(PI / 4, about_point=ORIGIN, about_edge=OUT)
     start = [0.70710678, 0.70710678, -1.0]
     end = [0.70710678, 0.70710678, 0.0]
@@ -46,12 +46,12 @@ def test_Cone_get_start_and_get_end():
 
 
 @frames_comparison
-def test_Cylinder(scene):
+def test_Cylinder(scene: Scene) -> None:
     scene.add(Cylinder())
 
 
 @frames_comparison
-def test_Line3D(scene):
+def test_Line3D(scene: Scene) -> None:
     line1 = Line3D(resolution=16).shift(LEFT * 2)
     line2 = Line3D(resolution=16).shift(RIGHT * 2)
     perp_line = Line3D.perpendicular_to(line1, UP + OUT, resolution=16)
@@ -60,47 +60,55 @@ def test_Line3D(scene):
 
 
 @frames_comparison
-def test_Arrow3D(scene):
+def test_Arrow3D(scene: Scene) -> None:
     scene.add(Arrow3D(resolution=16))
 
 
 @frames_comparison
-def test_Torus(scene):
+def test_Torus(scene: Scene) -> None:
     scene.add(Torus())
 
 
 @frames_comparison
-def test_Axes(scene):
+def test_Axes(scene: Scene) -> None:
     scene.add(ThreeDAxes())
 
 
 @frames_comparison
-def test_CameraMoveAxes(scene):
+def test_CameraMoveAxes(scene: Scene) -> None:
     """Tests camera movement to explore varied views of a static scene."""
     axes = ThreeDAxes()
     scene.add(axes)
     scene.add(Dot([1, 2, 3]))
-    scene.move_camera(phi=PI / 8, theta=-PI / 8, frame_center=[1, 2, 3], zoom=2)
+    scene.play(
+        scene.camera.animate.set_orientation(
+            theta=-PI / 8, phi=PI / 8, frame_center=[1, 2, 3], zoom=2
+        )
+    )
 
 
 @frames_comparison
-def test_CameraMove(scene):
+def test_CameraMove(scene: Scene) -> None:
     cube = Cube()
     scene.add(cube)
-    scene.move_camera(phi=PI / 4, theta=PI / 4, frame_center=[0, 0, -1], zoom=0.5)
+    scene.play(
+        scene.camera.animate.set_orientation(
+            theta=PI / 4, phi=PI / 4, frame_center=[0, 0, -1], zoom=0.5
+        )
+    )
 
 
 @frames_comparison
-def test_AmbientCameraMove(scene):
+def test_AmbientCameraMove(scene: Scene) -> None:
     cube = Cube()
-    scene.begin_ambient_camera_rotation(rate=0.5)
-    scene.add(cube)
+    scene.camera.begin_ambient_rotation(rate=0.5)
+    scene.add(cube, scene.camera)
     scene.wait()
 
 
 @frames_comparison
-def test_MovingVertices(scene):
-    scene.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+def test_MovingVertices(scene: Scene) -> None:
+    scene.camera.set_orientation(theta=30 * DEGREES, phi=75 * DEGREES)
     vertices = [1, 2, 3, 4]
     edges = [(1, 2), (2, 3), (3, 4), (1, 3), (1, 4)]
     g = Graph(vertices, edges)
@@ -115,9 +123,9 @@ def test_MovingVertices(scene):
 
 
 @frames_comparison
-def test_SurfaceColorscale(scene):
+def test_SurfaceColorscale(scene: Scene) -> None:
     resolution_fa = 16
-    scene.set_camera_orientation(phi=75 * DEGREES, theta=-30 * DEGREES)
+    scene.camera.set_orientation(theta=-30 * DEGREES, phi=75 * DEGREES)
     axes = ThreeDAxes(x_range=(-3, 3, 1), y_range=(-3, 3, 1), z_range=(-4, 4, 1))
 
     def param_trig(u, v):
@@ -139,9 +147,9 @@ def test_SurfaceColorscale(scene):
 
 
 @frames_comparison
-def test_Y_Direction(scene):
+def test_Y_Direction(scene: Scene) -> None:
     resolution_fa = 16
-    scene.set_camera_orientation(phi=75 * DEGREES, theta=-120 * DEGREES)
+    scene.camera.set_orientation(theta=-120 * DEGREES, phi=75 * DEGREES)
     axes = ThreeDAxes(x_range=(0, 5, 1), y_range=(0, 5, 1), z_range=(-1, 1, 0.5))
 
     def param_surface(u, v):
@@ -163,7 +171,7 @@ def test_Y_Direction(scene):
     scene.add(axes, surface_plane)
 
 
-def test_get_start_and_end_Arrow3d():
+def test_get_start_and_end_Arrow3d() -> None:
     start, end = ORIGIN, np.array([2, 1, 0])
     arrow = Arrow3D(start, end)
     assert np.allclose(

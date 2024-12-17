@@ -954,10 +954,10 @@ class CoordinateSystem:
         .. manim:: PlotSurfaceExample
             :save_last_frame:
 
-            class PlotSurfaceExample(ThreeDScene):
+            class PlotSurfaceExample(Scene):
                 def construct(self):
                     resolution_fa = 16
-                    self.set_camera_orientation(phi=75 * DEGREES, theta=-60 * DEGREES)
+                    self.camera.set_orientation(theta=-60 * DEGREES, phi=75 * DEGREES)
                     axes = ThreeDAxes(x_range=(-3, 3, 1), y_range=(-3, 3, 1), z_range=(-5, 5, 1))
                     def param_trig(u, v):
                         x = u
@@ -2519,11 +2519,11 @@ class ThreeDAxes(Axes):
         .. manim:: GetYAxisLabelExample
             :save_last_frame:
 
-            class GetYAxisLabelExample(ThreeDScene):
+            class GetYAxisLabelExample(Scene):
                 def construct(self):
                     ax = ThreeDAxes()
                     lab = ax.get_y_axis_label(Tex("$y$-label"))
-                    self.set_camera_orientation(phi=2*PI/5, theta=PI/5)
+                    self.camera.set_orientation(theta=PI/5, phi=2*PI/5)
                     self.add(ax, lab)
         """
         positioned_label = self._get_axis_label(
@@ -2569,11 +2569,11 @@ class ThreeDAxes(Axes):
         .. manim:: GetZAxisLabelExample
             :save_last_frame:
 
-            class GetZAxisLabelExample(ThreeDScene):
+            class GetZAxisLabelExample(Scene):
                 def construct(self):
                     ax = ThreeDAxes()
                     lab = ax.get_z_axis_label(Tex("$z$-label"))
-                    self.set_camera_orientation(phi=2*PI/5, theta=PI/5)
+                    self.camera.set_orientation(theta=PI/5, phi=2*PI/5)
                     self.add(ax, lab)
         """
         positioned_label = self._get_axis_label(
@@ -2620,9 +2620,9 @@ class ThreeDAxes(Axes):
         .. manim:: GetAxisLabelsExample
             :save_last_frame:
 
-            class GetAxisLabelsExample(ThreeDScene):
+            class GetAxisLabelsExample(Scene):
                 def construct(self):
-                    self.set_camera_orientation(phi=2*PI/5, theta=PI/5)
+                    self.camera.set_orientation(theta=PI/5, phi=2*PI/5)
                     axes = ThreeDAxes()
                     labels = axes.get_axis_labels(
                         Text("x-axis").scale(0.7), Text("y-axis").scale(0.45), Text("z-axis").scale(0.45)

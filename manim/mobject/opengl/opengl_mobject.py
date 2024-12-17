@@ -41,7 +41,7 @@ from manim.utils.space_ops import (
     rotation_matrix_transpose,
 )
 
-__all__ = ["OpenGLMobject", "MobjectKwargs"]
+__all__ = ["InvisibleMobject", "OpenGLMobject", "MobjectKwargs"]
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
@@ -70,6 +70,19 @@ R = TypeVar("R", bound="RendererData")
 T_co = TypeVar("T_co", covariant=True, bound="OpenGLMobject")
 
 logger = logging.getLogger("manim")
+
+
+class InvisibleMobject:
+    """Marker class for rendering a mobject's submobjects, and not the mobject itself.
+
+    By default, if an :class:`OpenGLMobject` can't be rendered, the
+    :class:`Renderer` raises a warning before attempting to render its
+    submobjects. However, any subclass of :class:`OpenGLMobject` which is also
+    marked as a subclass of :class:`InvisibleMobject` raises no warning,
+    because it's explicitly marked as not intended to be rendered.
+    """
+
+    pass
 
 
 def stash_mobject_pointers(
@@ -2908,7 +2921,7 @@ class OpenGLMobject:
         return self
 
 
-class OpenGLGroup(OpenGLMobject):
+class OpenGLGroup(OpenGLMobject, InvisibleMobject):
     def __init__(self, *mobjects, **kwargs):
         if not all(isinstance(m, OpenGLMobject) for m in mobjects):
             raise Exception("All submobjects must be of type OpenGLMobject")
