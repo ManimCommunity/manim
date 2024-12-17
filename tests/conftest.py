@@ -4,7 +4,6 @@ import logging
 import sys
 from pathlib import Path
 
-import cairo
 import moderngl
 import pytest
 
@@ -20,7 +19,6 @@ def pytest_report_header(config):
         raise Exception("Error while creating moderngl context") from e
 
     return (
-        f"\nCairo Version: {cairo.cairo_version()}",
         "\nOpenGL information",
         "------------------",
         f"vendor: {info['GL_VENDOR'].strip()}",
