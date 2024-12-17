@@ -16,8 +16,8 @@ from manim.camera.camera import Camera
 from manim.constants import DEFAULT_WAIT_TIME
 from manim.event_handler import EVENT_DISPATCHER
 from manim.event_handler.event_type import EventType
-from manim.mobject.mobject import Group, Point, _AnimationBuilder
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.mobject.mobject import Group, Point
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject, _AnimationBuilder
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.scene.sections import group as SceneGroup
 from manim.utils.iterables import list_difference_update
@@ -357,7 +357,9 @@ class Scene:
         self,
         # the OpenGLMobject is a side-effect of the return type of animate, it will
         # raise a ValueError
-        *proto_animations: AnimationProtocol | _AnimationBuilder | OpenGLMobject,
+        *proto_animations: AnimationProtocol
+        | _AnimationBuilder[OpenGLMobject]
+        | OpenGLMobject,
         run_time: float | None = None,
         rate_func: Callable[[float], float] | None = None,
         lag_ratio: float | None = None,

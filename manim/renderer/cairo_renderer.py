@@ -6,14 +6,12 @@ import numpy as np
 
 from manim import config, logger
 from manim.camera.camera import Camera
-from manim.mobject.mobject import Mobject
+from manim.mobject.mobject import Mobject, _AnimationBuilder
 from manim.utils.exceptions import EndSceneEarlyException
 from manim.utils.hashing import get_hash_from_play_call
 from manim.utils.iterables import list_update
 
 if typing.TYPE_CHECKING:
-    import types
-    from collections.abc import Iterable
     from typing import Any
 
     from manim.animation.animation import Animation
@@ -58,7 +56,7 @@ class CairoRenderer:
     def play(
         self,
         scene: Scene,
-        *args: Animation | Iterable[Animation] | types.GeneratorType[Animation],
+        *args: Animation | Mobject | _AnimationBuilder,
         **kwargs,
     ):
         # Reset skip_animations to the original state.

@@ -99,7 +99,8 @@ class AnimationGroup(Animation):
             self.group.suspend_updating()
 
     def finish(self) -> None:
-        self.interpolate(1)
+        for anim in self.animations:
+            anim.finish()
         self.anims_begun[:] = True
         self.anims_finished[:] = True
         for anim in self.animations:
