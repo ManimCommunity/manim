@@ -38,7 +38,6 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
     from manim.typing import (
-        ManimFloat,
         Point3D,
         Point3D_Array,
         Point3DLike,
@@ -122,27 +121,31 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
         """
         return self.get_start_anchors()
 
-    def get_vertex_groups(self) -> npt.NDArray[ManimFloat]:
+    def get_vertex_groups(self) -> list[Point3D_Array]:
         """Gets the vertex groups of the :class:`Polygram`.
 
         Returns
         -------
-        :class:`numpy.ndarray`
-            The vertex groups of the :class:`Polygram`.
+        list[Point3D_Array]
+            The list of vertex groups of the :class:`Polygram`.
 
         Examples
         --------
         ::
 
-            >>> poly = Polygram([ORIGIN, RIGHT, UP], [LEFT, LEFT + UP, 2 * LEFT])
-            >>> poly.get_vertex_groups()
-            array([[[ 0.,  0.,  0.],
-                    [ 1.,  0.,  0.],
-                    [ 0.,  1.,  0.]],
-            <BLANKLINE>
-                   [[-1.,  0.,  0.],
-                    [-1.,  1.,  0.],
-                    [-2.,  0.,  0.]]])
+            >>> poly = Polygram([ORIGIN, RIGHT, UP, LEFT + UP], [LEFT, LEFT + UP, 2 * LEFT])
+            >>> groups = poly.get_vertex_groups()
+            >>> len(groups)
+            2
+            >>> groups[0]
+            array([[ 0.,  0.,  0.],
+                   [ 1.,  0.,  0.],
+                   [ 0.,  1.,  0.],
+                   [-1.,  1.,  0.]])
+            >>> groups[1]
+            array([[-1.,  0.,  0.],
+                   [-1.,  1.,  0.],
+                   [-2.,  0.,  0.]])
         """
         vertex_groups = []
 
@@ -151,10 +154,10 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
             group.append(start)
 
             if self.consider_points_equals(end, group[0]):
-                vertex_groups.append(group)
+                vertex_groups.append(np.array(group))
                 group = []
 
-        return np.array(vertex_groups)
+        return vertex_groups
 
     def round_corners(
         self,
