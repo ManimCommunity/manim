@@ -904,7 +904,7 @@ class ManimColor:
 
     @overload
     @classmethod
-    def parse(  # type: ignore [overload-overlap]
+    def parse(
         cls,
         color: ParsableManimColor | None,
         alpha: float = ...,
@@ -912,7 +912,7 @@ class ManimColor:
 
     @overload
     @classmethod
-    def parse(  # type: ignore [overload-overlap]
+    def parse(
         cls,
         color: Sequence[ParsableManimColor],
         alpha: float = ...,
@@ -975,7 +975,8 @@ class ManimColor:
             raise TypeError(
                 f"Cannot compare {self.__class__.__name__} with {other.__class__.__name__}"
             )
-        return np.allclose(self._internal_value, other._internal_value)
+        are_equal: bool = np.allclose(self._internal_value, other._internal_value)
+        return are_equal
 
     def __add__(self, other: int | float | Self) -> Self:
         if isinstance(other, (int, float)):
