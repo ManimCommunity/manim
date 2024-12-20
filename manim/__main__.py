@@ -15,6 +15,7 @@ from manim.constants import EPILOG
 
 # lucas was here
 
+
 def show_splash(ctx: click.Context, param: click.Option, value: str | None) -> None:
     """When giving a value by console, show an initial message with the Manim
     version before executing any other command: ``Manim Community vA.B.C``.
