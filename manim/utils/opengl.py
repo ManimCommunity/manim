@@ -1,9 +1,16 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
 import numpy as np
 import numpy.linalg as linalg
 
 from .. import config
+
+if TYPE_CHECKING:
+    from typing_extensions import TypeAlias
+
+    from manim.typing import MatrixMN
+
 
 depth = 20
 
@@ -21,8 +28,15 @@ __all__ = [
     "view_matrix",
 ]
 
+FlattenedMatrix4x4: TypeAlias = tuple[
+    float, float, float, float,
+    float, float, float, float,
+    float, float, float, float,
+    float, float, float, float,
+]
 
-def matrix_to_shader_input(matrix):
+
+def matrix_to_shader_input(matrix: MatrixMN) -> FlattenedMatrix4x4:
     return tuple(matrix.T.ravel())
 
 
