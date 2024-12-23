@@ -264,7 +264,10 @@ class ManimColor:
         self.__value: ManimColorInternal = value
 
     @classmethod
-    def _construct_from_space(cls, _space: ManimColorInternal) -> Self:
+    def _construct_from_space(
+        cls,
+        _space: npt.NDArray[ManimFloat] | tuple[float, float, float] | tuple[float, float, float, float],
+    ) -> Self:
         """This function is used as a proxy for constructing a color with an internal
         value. This can be used by subclasses to hook into the construction of new
         objects using the internal value format.
