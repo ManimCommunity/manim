@@ -16,10 +16,10 @@ import numpy as np
 
 from ..constants import OUT
 from ..utils.bezier import interpolate
-from ..utils.space_ops import rotation_matrix
+from ..utils.space_ops import normalize, rotation_matrix
 
 if TYPE_CHECKING:
-    from manim.typing import PathFuncType, Vector3D
+    from manim.typing import PathFuncType, Point3DLike_Array, Vector3DLike
 
 
 STRAIGHT_PATH_THRESHOLD = 0.01
@@ -72,7 +72,7 @@ def straight_path():
 
 
 def path_along_circles(
-    arc_angle: float, circles_centers: np.ndarray, axis: Vector3D = OUT
+    arc_angle: float, circles_centers: Point3DLike_Array, axis: Vector3DLike = OUT
 ) -> PathFuncType:
     """This function transforms each point by moving it roughly along a circle, each with its own specified center.
 
@@ -132,9 +132,7 @@ def path_along_circles(
                 self.wait()
 
     """
-    if np.linalg.norm(axis) == 0:
-        axis = OUT
-    unit_axis = axis / np.linalg.norm(axis)
+    unit_axis = normalize(axis, fall_back=OUT)
 
     def path(start_points: np.ndarray, end_points: np.ndarray, alpha: float):
         detransformed_end_points = circles_centers + np.dot(
@@ -150,7 +148,7 @@ def path_along_circles(
     return path
 
 
-def path_along_arc(arc_angle: float, axis: Vector3D = OUT) -> PathFuncType:
+def path_along_arc(arc_angle: float, axis: Vector3DLike = OUT) -> PathFuncType:
     """This function transforms each point by moving it along a circular arc.
 
     Parameters
@@ -202,9 +200,7 @@ def path_along_arc(arc_angle: float, axis: Vector3D = OUT) -> PathFuncType:
     """
     if abs(arc_angle) < STRAIGHT_PATH_THRESHOLD:
         return straight_path()
-    if np.linalg.norm(axis) == 0:
-        axis = OUT
-    unit_axis = axis / np.linalg.norm(axis)
+    unit_axis = normalize(axis, fall_back=OUT)
 
     def path(start_points: np.ndarray, end_points: np.ndarray, alpha: float):
         vects = end_points - start_points
@@ -309,7 +305,7 @@ def counterclockwise_path() -> PathFuncType:
     return path_along_arc(np.pi)
 
 
-def spiral_path(angle: float, axis: Vector3D = OUT) -> PathFuncType:
+def spiral_path(angle: float, axis: Vector3DLike = OUT) -> PathFuncType:
     """This function transforms each point by moving along a spiral to its destination.
 
     Parameters
@@ -361,9 +357,7 @@ def spiral_path(angle: float, axis: Vector3D = OUT) -> PathFuncType:
     """
     if abs(angle) < STRAIGHT_PATH_THRESHOLD:
         return straight_path()
-    if np.linalg.norm(axis) == 0:
-        axis = OUT
-    unit_axis = axis / np.linalg.norm(axis)
+    unit_axis = normalize(axis, fall_back=OUT)
 
     def path(start_points: np.ndarray, end_points: np.ndarray, alpha: float):
         rot_matrix = rotation_matrix((alpha - 1) * angle, unit_axis)
