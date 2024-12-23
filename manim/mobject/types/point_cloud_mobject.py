@@ -35,7 +35,7 @@ if TYPE_CHECKING:
     import numpy.typing as npt
     from typing_extensions import Self
 
-    from manim.typing import ManimFloat, Point3D, Point3DLike, Vector3DLike
+    from manim.typing import ManimFloat, Point3D, Point3DLike
 
 
 class PMobject(Mobject, metaclass=ConvertToOpenGL):
@@ -349,7 +349,7 @@ class PointCloudDot(Mobject1D):
 
     def __init__(
         self,
-        center: Vector3DLike = ORIGIN,
+        center: Point3DLike = ORIGIN,
         radius: float = 2.0,
         stroke_width: int = 2,
         density: int = DEFAULT_POINT_DENSITY_1D,
