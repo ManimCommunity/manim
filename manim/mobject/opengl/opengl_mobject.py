@@ -1747,6 +1747,26 @@ class OpenGLMobject:
             current_object = current_object.parent
         return np.linalg.multi_dot(list(reversed(model_matrices)))
 
+    def wag(
+        self,
+        direction: Vector3DLike = RIGHT,
+        axis: Vector3DLike = DOWN,
+        wag_factor: float = 1.0,
+    ) -> Self:
+        for mob in self.family_members_with_points():
+            alphas = np.dot(mob.points, np.transpose(axis))
+            alphas -= min(alphas)
+            alphas /= max(alphas)
+            alphas = alphas**wag_factor
+            mob.set_points(
+                mob.points
+                + np.dot(
+                    alphas.reshape((len(alphas), 1)),
+                    np.array(direction).reshape((1, mob.dim)),
+                ),
+            )
+        return self
+
     # Positioning methods
 
     def center(self) -> Self:
