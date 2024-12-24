@@ -14,6 +14,10 @@ RUN apt-get update -qq \
         wget \
         ghostscript
 
+# adding fonts
+RUN apt-get install --no-install-recommends -y fonts-noto
+RUN fc-cache -fv
+
 # setup a minimal texlive installation
 COPY docker/texlive-profile.txt /tmp/
 ENV PATH=/usr/local/texlive/bin/armhf-linux:/usr/local/texlive/bin/aarch64-linux:/usr/local/texlive/bin/x86_64-linux:$PATH
