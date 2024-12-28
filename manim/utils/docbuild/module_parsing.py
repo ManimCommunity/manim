@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import ast
 import sys
+from ast import Attribute, Name, Subscript
 from pathlib import Path
+from typing import Any
 
 from typing_extensions import TypeAlias
 
@@ -87,10 +89,10 @@ def parse_module_attributes() -> tuple[AliasDocsDict, DataDict, TypeVarDict]:
         return ALIAS_DOCS_DICT, DATA_DICT, TYPEVAR_DICT
 
     for module_path in MANIM_ROOT.rglob("*.py"):
-        module_name = module_path.resolve().relative_to(MANIM_ROOT)
-        module_name = list(module_name.parts)
-        module_name[-1] = module_name[-1].removesuffix(".py")
-        module_name = ".".join(module_name)
+        module_name_t1 = module_path.resolve().relative_to(MANIM_ROOT)
+        module_name_t2 = list(module_name_t1.parts)
+        module_name_t2[-1] = module_name_t2[-1].removesuffix(".py")
+        module_name = ".".join(module_name_t2)
 
         module_content = module_path.read_text(encoding="utf-8")
 
@@ -154,7 +156,7 @@ def parse_module_attributes() -> tuple[AliasDocsDict, DataDict, TypeVarDict]:
                     )
                 )
             ):
-                inner_nodes = node.body
+                inner_nodes: list[Any] = node.body
             else:
                 inner_nodes = [node]
 
@@ -217,7 +219,7 @@ def parse_module_attributes() -> tuple[AliasDocsDict, DataDict, TypeVarDict]:
                 # Does the assignment have a target of type Name? Then
                 # it could be considered a definition of a module attribute.
                 if type(node) is ast.AnnAssign:
-                    target = node.target
+                    target: Name | Attribute | Subscript | ast.expr | None = node.target
                 elif type(node) is ast.Assign and len(node.targets) == 1:
                     target = node.targets[0]
                 else:
