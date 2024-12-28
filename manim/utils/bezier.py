@@ -29,22 +29,18 @@ import numpy as np
 from manim.utils.simple_functions import choose
 
 if TYPE_CHECKING:
-    import numpy.typing as npt
-
     from manim.typing import (
         BezierPoints,
         BezierPoints_Array,
         BezierPointsLike,
         BezierPointsLike_Array,
         ColVector,
-        ManimFloat,
         MatrixMN,
         Point3D,
         Point3D_Array,
         Point3DLike,
         Point3DLike_Array,
         QuadraticBezierPath,
-        QuadraticBezierPoints_Array,
         QuadraticSpline,
         Spline,
     )
@@ -67,7 +63,7 @@ def bezier(
 
 def bezier(
     points: Point3D_Array | Sequence[Point3D_Array],
-) -> Callable[[float | ColVector], Point3D | Point3D_Array]:
+) -> Callable[[float | ColVector], Point3D_Array]:
     """Classic implementation of a Bézier curve.
 
     Parameters
@@ -1762,7 +1758,7 @@ def get_quadratic_approximation_of_cubic(
     h0: Point3D | Point3D_Array,
     h1: Point3D | Point3D_Array,
     a1: Point3D | Point3D_Array,
-) -> QuadraticBezierPoints_Array:
+) -> QuadraticSpline | QuadraticBezierPath:
     r"""If ``a0``, ``h0``, ``h1`` and ``a1`` are the control points of a cubic
     Bézier curve, approximate the curve with two quadratic Bézier curves and
     return an array of 6 points, where the first 3 points represent the first
@@ -1892,7 +1888,7 @@ def get_quadratic_approximation_of_cubic(
     return result
 
 
-def is_closed(points: Point3DLike_Array) -> bool:
+def is_closed(points: Point3D_Array) -> bool:
     """Returns ``True`` if the spline given by ``points`` is closed, by
     checking if its first and last points are close to each other, or``False``
     otherwise.
@@ -1957,7 +1953,7 @@ def is_closed(points: Point3DLike_Array) -> bool:
     start, end = points[0], points[-1]
     rtol = 1e-5
     atol = 1e-8
-    tolerance = atol + rtol * start  # type: ignore[operator]
+    tolerance = atol + rtol * start
     if abs(end[0] - start[0]) > tolerance[0]:
         return False
     if abs(end[1] - start[1]) > tolerance[1]:
@@ -1969,7 +1965,7 @@ def proportions_along_bezier_curve_for_point(
     point: Point3DLike,
     control_points: BezierPointsLike,
     round_to: float = 1e-6,
-) -> npt.NDArray[ManimFloat]:
+) -> MatrixMN:
     """Obtains the proportion along the bezier curve corresponding to a given point
     given the bezier curve's control points.
 
