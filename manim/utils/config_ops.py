@@ -12,10 +12,10 @@ __all__ = [
 import itertools as it
 from typing import Any
 
-import numpy as np
+import numpy.typing as npt
 
 
-def merge_dicts_recursively(*dicts: dict) -> dict:
+def merge_dicts_recursively(*dicts: dict[Any, Any]) -> dict[Any, Any]:
     """
     Creates a dict whose keyset is the union of all the
     input dictionaries.  The value for each key is based
@@ -35,7 +35,9 @@ def merge_dicts_recursively(*dicts: dict) -> dict:
     return result
 
 
-def update_dict_recursively(current_dict: dict, *others: dict) -> None:
+def update_dict_recursively(
+    current_dict: dict[Any, Any], *others: dict[Any, Any]
+) -> None:
     updated_dict = merge_dicts_recursively(current_dict, *others)
     current_dict.update(updated_dict)
 
@@ -45,7 +47,7 @@ def update_dict_recursively(current_dict: dict, *others: dict) -> None:
 
 
 class DictAsObject:
-    def __init__(self, dictin: dict):
+    def __init__(self, dictin: dict[str, Any]):
         self.__dict__ = dictin
 
 
@@ -60,7 +62,7 @@ class _Data:
     def __get__(self, obj: Any, owner: Any) -> Any:
         return obj.data[self.name]
 
-    def __set__(self, obj: Any, array: np.ndarray) -> None:
+    def __set__(self, obj: Any, array: npt.NDArray[Any]) -> None:
         obj.data[self.name] = array
 
 
@@ -72,8 +74,9 @@ class _Uniforms:
     def __set_name__(self, obj: Any, name: str) -> None:
         self.name = name
 
-    def __get__(self, obj: Any, owner: Any) -> Any:
-        return obj.__dict__["uniforms"][self.name]
+    def __get__(self, obj: Any, owner: Any) -> float:
+        val: float = obj.__dict__["uniforms"][self.name]
+        return val
 
     def __set__(self, obj: Any, num: float) -> None:
         obj.__dict__["uniforms"][self.name] = num
