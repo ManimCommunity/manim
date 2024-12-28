@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     import numpy.typing as npt
     from typing_extensions import TypeAlias
 
-    from ..typing import MatrixMN
+    from ..typing import ManimFloat, MatrixMN, Point3D
 
 from .. import config
 
@@ -112,6 +112,7 @@ def translation_matrix(x: float = 0, y: float = 0, z: float = 0) -> MatrixMN:
             [0, 0, 1, z],
             [0, 0, 0, 1],
         ],
+        dtype=ManimFloat,
     )
 
 
@@ -150,8 +151,8 @@ def z_rotation_matrix(z: float = 0) -> MatrixMN:
 
 # TODO: When rotating around the x axis, rotation eventually stops.
 def rotate_in_place_matrix(
-    initial_position: npt.NDArray, x: float = 0, y: float = 0, z: float = 0
-) -> npt.NDArray:
+    initial_position: Point3D, x: float = 0, y: float = 0, z: float = 0
+) -> MatrixMN:
     return np.matmul(
         translation_matrix(*-initial_position),
         np.matmul(
@@ -161,7 +162,7 @@ def rotate_in_place_matrix(
     )
 
 
-def rotation_matrix(x: float = 0, y: float = 0, z: float = 0) -> npt.NDArray:
+def rotation_matrix(x: float = 0, y: float = 0, z: float = 0) -> MatrixMN:
     return np.matmul(
         np.matmul(x_rotation_matrix(x), y_rotation_matrix(y)),
         z_rotation_matrix(z),
@@ -176,15 +177,16 @@ def scale_matrix(scale_factor: float = 1) -> npt.NDArray:
             [0, 0, scale_factor, 0],
             [0, 0, 0, 1],
         ],
+        dtype=ManimFloat,
     )
 
 
 def view_matrix(
-    translation: npt.NDArray | None = None,
+    translation: Point3D | None = None,
     x_rotation: float = 0,
     y_rotation: float = 0,
     z_rotation: float = 0,
-) -> npt.NDArray:
+) -> MatrixMN:
     if translation is None:
         translation = np.array([0, 0, depth / 2 + 1])
     model_matrix = np.matmul(
