@@ -7,6 +7,9 @@ import numpy.linalg as linalg
 
 if TYPE_CHECKING:
     import numpy.typing as npt
+    from typing_extensions import TypeAlias
+
+    from ..typing import MatrixMN
 
 from .. import config
 
@@ -27,7 +30,27 @@ __all__ = [
 ]
 
 
-def matrix_to_shader_input(matrix: npt.NDArray) -> tuple:
+FlattenedMatrix4x4: TypeAlias = tuple[
+    float,
+    float,
+    float,
+    float,
+    float,
+    float,
+    float,
+    float,
+    float,
+    float,
+    float,
+    float,
+    float,
+    float,
+    float,
+    float,
+]
+
+
+def matrix_to_shader_input(matrix: MatrixMN) -> FlattenedMatrix4x4:
     return tuple(matrix.T.ravel())
 
 
@@ -37,7 +60,7 @@ def orthographic_projection_matrix(
     near: float = 1,
     far: float = depth + 1,
     format_: bool = True,
-) -> npt.NDArray | tuple:
+) -> MatrixMN | FlattenedMatrix4x4:
     if width is None:
         width = config["frame_width"]
     if height is None:
@@ -62,7 +85,7 @@ def perspective_projection_matrix(
     near: float = 2,
     far: float = 50,
     format_: bool = True,
-) -> npt.NDArray | tuple:
+) -> MatrixMN | FlattenedMatrix4x4:
     if width is None:
         width = config["frame_width"] / 6
     if height is None:
@@ -81,7 +104,7 @@ def perspective_projection_matrix(
         return projection_matrix
 
 
-def translation_matrix(x: float = 0, y: float = 0, z: float = 0) -> npt.NDArray:
+def translation_matrix(x: float = 0, y: float = 0, z: float = 0) -> MatrixMN:
     return np.array(
         [
             [1, 0, 0, x],
@@ -92,7 +115,7 @@ def translation_matrix(x: float = 0, y: float = 0, z: float = 0) -> npt.NDArray:
     )
 
 
-def x_rotation_matrix(x: float = 0) -> npt.NDArray:
+def x_rotation_matrix(x: float = 0) -> MatrixMN:
     return np.array(
         [
             [1, 0, 0, 0],
@@ -103,7 +126,7 @@ def x_rotation_matrix(x: float = 0) -> npt.NDArray:
     )
 
 
-def y_rotation_matrix(y: float = 0) -> npt.NDArray:
+def y_rotation_matrix(y: float = 0) -> MatrixMN:
     return np.array(
         [
             [np.cos(y), 0, np.sin(y), 0],
@@ -114,7 +137,7 @@ def y_rotation_matrix(y: float = 0) -> npt.NDArray:
     )
 
 
-def z_rotation_matrix(z: float = 0) -> npt.NDArray:
+def z_rotation_matrix(z: float = 0) -> MatrixMN:
     return np.array(
         [
             [np.cos(z), -np.sin(z), 0, 0],
