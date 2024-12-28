@@ -118,7 +118,6 @@ class SkipManimNode(nodes.Admonition, nodes.Element):
 
 
 def visit(self: SkipManimNode, node: nodes.Element, name: str = "") -> None:
-    # TODO: The SkipManimNode class have no method named visit_admonition.
     self.visit_admonition(node, name)
     if not isinstance(node[0], nodes.title):
         node.insert(0, nodes.title("skip-manim", "Example Placeholder"))
