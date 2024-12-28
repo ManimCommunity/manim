@@ -236,7 +236,7 @@ def running_start(
     t: float,
     pull_factor: float = -0.5,
 ) -> typing.Iterable:  # what is func return type?
-    return bezier([0, 0, pull_factor, pull_factor, 1, 1, 1])(t)
+    return bezier([0, 0, pull_factor, pull_factor, 1, 1, 1])(t)  # type: ignore[no-any-return]
 
 
 def not_quite_there(

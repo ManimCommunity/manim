@@ -10,6 +10,7 @@ __all__ = ["handle_caching_play"]
 if TYPE_CHECKING:
     from typing import Any
 
+    from manim.renderer.opengl_renderer import OpenGLRenderer
     from manim.scene.scene import Scene
 
 
@@ -33,7 +34,7 @@ def handle_caching_play(func: Callable[..., None]) -> Callable[..., None]:
     # the play logic of the latter has to be refactored in the same way the cairo renderer has been, and thus this
     # method has to be deleted.
 
-    def wrapper(self: Any, scene: Scene, *args: Any, **kwargs: Any) -> None:
+    def wrapper(self: OpenGLRenderer, scene: Scene, *args: Any, **kwargs: Any) -> None:
         self.skip_animations = self._original_skipping_status
         self.update_skipping_status()
         animations = scene.compile_animations(*args, **kwargs)
