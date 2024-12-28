@@ -40,7 +40,7 @@ class _FramesTester:
                 f"when there are {self._number_frames} control frames for this test."
             )
 
-    def check_frame(self, frame_number: int, frame: np.ndarray) -> None:
+    def check_frame(self, frame_number: int, frame: PixelArray) -> None:
         assert frame_number < self._number_frames, (
             f"The tested scene is at frame number {frame_number} "
             f"when there are {self._number_frames} control frames."
