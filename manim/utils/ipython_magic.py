@@ -34,7 +34,7 @@ else:
     class ManimMagic(Magics):
         def __init__(self, shell: InteractiveShell) -> None:
             super().__init__(shell)
-            self.rendered_files: dict = {}
+            self.rendered_files: dict[Path, Path] = {}
 
         @needs_local_scope
         @line_cell_magic

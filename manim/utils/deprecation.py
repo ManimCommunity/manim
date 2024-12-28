@@ -453,7 +453,7 @@ def deprecated_params(
 
     redirections = list(redirections)
 
-    def warning_msg(func: Callable, used: list[str]) -> str:
+    def warning_msg(func: Callable[P, T], used: list[str]) -> str:
         """Generate the deprecation warning message.
 
         Parameters

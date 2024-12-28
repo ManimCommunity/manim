@@ -15,11 +15,13 @@ from typing import TYPE_CHECKING
 import numpy as np
 from PIL import Image
 
+from manim.typing import RGBPixelArray
+
 from .. import config
 from ..utils.file_ops import seek_full_path_from_defaults
 
 if TYPE_CHECKING:
-    import numpy.typing as npt
+    pass
 
 
 def get_full_raster_image_path(image_file_name: str | PurePath) -> Path:
@@ -53,7 +55,7 @@ def invert_image(image: np.array) -> Image:
     return Image.fromarray(arr)
 
 
-def change_to_rgba_array(image: npt.NDArray, dtype: str = "uint8") -> npt.NDArray:
+def change_to_rgba_array(image: RGBPixelArray, dtype: str = "uint8") -> RGBPixelArray:
     """Converts an RGB array into RGBA with the alpha value opacity maxed."""
     pa = image
     if len(pa.shape) == 2:

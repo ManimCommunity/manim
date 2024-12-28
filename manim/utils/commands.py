@@ -4,7 +4,7 @@ import os
 from collections.abc import Generator
 from pathlib import Path
 from subprocess import run
-from typing import Any
+from typing import TypedDict
 
 import av
 
@@ -32,7 +32,17 @@ def capture(
     return out, err, p.returncode
 
 
-def get_video_metadata(path_to_video: str | os.PathLike) -> dict[str, Any]:
+class VideoMetadata(TypedDict):
+    width: int
+    height: int
+    nb_frames: str
+    duration: str
+    avg_frame_rate: str
+    codec_name: str
+    pix_fmt: str
+
+
+def get_video_metadata(path_to_video: str | os.PathLike) -> VideoMetadata:
     with av.open(str(path_to_video)) as container:
         stream = container.streams.video[0]
         ctxt = stream.codec_context
