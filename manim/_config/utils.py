@@ -692,7 +692,7 @@ class ManimConfig(MutableMapping):
 
         return self
 
-    def digest_args(self, args: argparse.Namespace | list[str]) -> Self:
+    def digest_args(self, args: argparse.Namespace) -> Self:
         """Process the config options present in CLI arguments.
 
         Parameters
@@ -1395,7 +1395,7 @@ class ManimConfig(MutableMapping):
         self._set_from_enum("renderer", renderer, RendererType)
 
     @property
-    def media_dir(self) -> str | Path:
+    def media_dir(self) -> Path:
         """Main output directory.  See :meth:`ManimConfig.get_dir`."""
         return self._d["media_dir"]
 

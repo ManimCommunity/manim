@@ -129,7 +129,7 @@ else:
             args = main(modified_args, standalone_mode=False, prog_name="manim")
             assert isinstance(local_ns, dict)
             with tempconfig(local_ns.get("config", {})):
-                config.digest_args(args)
+                config.digest_args(args)  # type: ignore[arg-type]
 
                 renderer = None
                 if config.renderer == RendererType.OPENGL:
