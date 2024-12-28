@@ -3,7 +3,6 @@ from __future__ import annotations
 import typing
 
 import numpy as np
-import numpy.typing as npt
 
 from manim.utils.hashing import get_hash_from_play_call
 
@@ -19,6 +18,8 @@ if typing.TYPE_CHECKING:
 
     from manim.animation.animation import Animation
     from manim.scene.scene import Scene
+
+    from ..typing import PixelArray
 
 __all__ = ["CairoRenderer"]
 
@@ -159,7 +160,7 @@ class CairoRenderer:
         self.update_frame(scene, moving_mobjects)
         self.add_frame(self.get_frame())
 
-    def get_frame(self) -> npt.NDArray:
+    def get_frame(self) -> PixelArray:
         """
         Gets the current frame as NumPy array.
 

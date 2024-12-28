@@ -38,6 +38,7 @@ from ..utils.sounds import get_full_sound_file_path
 from .section import DefaultSectionType, Section
 
 if TYPE_CHECKING:
+    from manim.renderer.cairo_renderer import CairoRenderer
     from manim.renderer.opengl_renderer import OpenGLRenderer
 
 
@@ -106,7 +107,7 @@ class SceneFileWriter:
 
     def __init__(
         self,
-        renderer: Any,
+        renderer: CairoRenderer | OpenGLRenderer,
         scene_name: StrPath,
         **kwargs: Any,
     ) -> None:
@@ -123,7 +124,7 @@ class SceneFileWriter:
             name="autocreated", type_=DefaultSectionType.NORMAL, skip_animations=False
         )
 
-    def init_output_directories(self, scene_name: StrPath):
+    def init_output_directories(self, scene_name: StrPath) -> None:
         """Initialise output directories.
 
         Notes
