@@ -232,6 +232,11 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
     # Getters
 
     def pop_tips(self) -> VGroup:
+        """Removes the tips of the arrow, 
+        if there are no tips to return, does nothing
+        """
+        if not self.has_tip() and not self.has_start_tip():
+            return self.get_group_class()() 
         start, end = self.get_start_and_end()
         result = self.get_group_class()()
         if self.has_tip():
