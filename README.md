@@ -22,7 +22,7 @@
 Manim is an animation engine for explanatory math videos. It's used to create precise animations programmatically, as demonstrated in the videos of [3Blue1Brown](https://www.3blue1brown.com/).
 
 > [!NOTE]
-> This repository is maintained by the Manim Community and is not associated with Grant Sanderson or 3Blue1Brown in any way (although we are definitely indebted to him for providing his work to the world). If you would like to study how Grant makes his videos, head over to his repository ([3b1b/manim](https://github.com/3b1b/manim)). This fork is updated more frequently than his, and it's recommended to use this fork if you'd like to use Manim for your own projects.
+> This repository is maintained by the Manim Community. We are indebted to the original author, Grant Sanderson, creator of the Manim tool and the acclaimed 3Blue1Brown educational videos. This fork is heavily based on his original work. While Grant Sanderson’s repository continues to be maintained separately, we recommend this version for its continued development, improved features, enhanced documentation, and more active community-driven maintenance. If you would like to study how Grant makes his videos, head over to his repository ([3b1b/manim](https://github.com/3b1b/manim)). This fork is updated more frequently than his, and it's recommended to use this fork if you'd like to use Manim for your own projects.
 
 ## Table of Contents:
 
