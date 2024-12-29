@@ -1966,8 +1966,6 @@ class VMobject(Mobject):
                 0,
                 upper_residue,
             )
-        if self.has_tip() and a != 0:
-            self.remove(self.tip)
         return self
 
     def get_subcurve(self, a: float, b: float) -> Self:
