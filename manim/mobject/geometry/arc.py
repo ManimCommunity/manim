@@ -61,6 +61,10 @@ from manim.utils.space_ops import (
     perpendicular_bisector,
     rotate_vector,
 )
+from manim.utils.bezier import (
+    integer_interpolate,
+    partial_bezier_points
+)
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -302,6 +306,17 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
     def get_length(self) -> float:
         start, end = self.get_start_and_end()
         return float(np.linalg.norm(start - end))
+
+    def pointwise_become_partial(
+        self,
+        vmobject: VMobject,
+        a: float,
+        b: float,
+    ) -> Self:
+        super().pointwise_become_partial(vmobject , a , b)
+        if isinstance(self, TipableVMobject) and self.has_tip() and a != 0:
+            self.remove(self.tip)
+        return self
 
 
 class Arc(TipableVMobject):
