@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from manim import *
 
 
@@ -12,7 +14,6 @@ class Example(Scene):
 
 class Intro(ThreeDScene):
     def construct(self):
-
         v1 = Arrow3D([0, 0, 0], [1, 1, 0])
 
         a = Tex("hi").move_to(v1.get_end())
@@ -20,6 +21,7 @@ class Intro(ThreeDScene):
 
         self.add(a, v1)
         self.play(Rotate(v1))
+
 
 with tempconfig({"quality": "low_quality", "preview": True}):
     Intro().render()
