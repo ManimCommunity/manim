@@ -1187,8 +1187,9 @@ class Arrow3D(Line3D):
             height=height,
             **kwargs,
         )
-        self.cone.shift(np.array(end, np.float64))
-        self.end_point = VectorizedPoint(np.array(end, np.float64))
+        np_end = np.asarray(end, dtype=np.float64)
+        self.cone.shift(np_end)
+        self.end_point = VectorizedPoint(np_end)
         self.add(self.end_point, self.cone)
         self.set_color(color)
 
