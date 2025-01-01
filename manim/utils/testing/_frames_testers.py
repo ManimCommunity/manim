@@ -9,6 +9,8 @@ from typing import Any
 
 import numpy as np
 
+from manim.typing import PixelArray
+
 from ._show_diff import show_diff_helper
 
 FRAME_ABSOLUTE_TOLERANCE = 1.01
@@ -26,7 +28,7 @@ class _FramesTester:
         self._frames_compared = 0
 
     @contextlib.contextmanager
-    def testing(self) -> Generator[Any, Any, Any]:
+    def testing(self) -> Generator[None, None, None]:
         with np.load(self._file_path) as data:
             self._frames = data["frame_data"]
             # For backward compatibility, when the control data contains only one frame (<= v0.8.0)
