@@ -261,11 +261,15 @@ def convert_to_svg(dvi_file: Path, extension: str, page: int = 1):
 def delete_nonsvg_files(additional_endings: Iterable[str] = (),
                         jobname = None ) -> None:
     """Deletes every file that does not have a suffix in ``(".svg", ".tex", *additional_endings)``
+    If the optional parameter jobname is specified, only files with stem `jobname`  will be deleted,
+    preserving any nonrelated files.
 
     Parameters
     ----------
     additional_endings
         Additional endings to whitelist
+    jobname
+        Jobname of the latex job for which the nonsvg files need to be deleted
     """
     tex_dir = config.get_dir("tex_dir")
     file_suffix_whitelist = {".svg", ".tex", *additional_endings}
