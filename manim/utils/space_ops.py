@@ -18,6 +18,8 @@ if TYPE_CHECKING:
 
     from manim.typing import (
         ManimFloat,
+        MatrixMN,
+        Point2D_Array,
         Point3D,
         Point3DLike_Array,
         Vector2D,
@@ -203,7 +205,7 @@ def rotate_vector(
     return rotation_matrix(angle, axis) @ vector
 
 
-def thick_diagonal(dim: int, thickness: float = 2) -> np.ndarray:
+def thick_diagonal(dim: int, thickness: int = 2) -> MatrixMN:
     row_indices = np.arange(dim).repeat(dim).reshape((dim, dim))
     col_indices = np.transpose(row_indices)
     return (np.abs(row_indices - col_indices) < thickness).astype("uint8")
@@ -637,7 +639,7 @@ def get_winding_number(points: Sequence[np.ndarray]) -> float:
     return val
 
 
-def shoelace(x_y: np.ndarray) -> float:
+def shoelace(x_y: Point2D_Array) -> float:
     """2D implementation of the shoelace formula.
 
     Returns
@@ -651,7 +653,7 @@ def shoelace(x_y: np.ndarray) -> float:
     return val
 
 
-def shoelace_direction(x_y: np.ndarray) -> str:
+def shoelace_direction(x_y: Point2D_Array) -> str:
     """
     Uses the area determined by the shoelace method to determine whether
     the input set of points is directed clockwise or counterclockwise.
@@ -769,7 +771,7 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
             raise Exception("Could not find a ring to attach")
 
     # Setup linked list
-    after: list = []
+    after: list[int] = []
     end0 = 0
     for end1 in ring_ends:
         after.extend(range(end0 + 1, end1))
