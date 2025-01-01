@@ -22,6 +22,8 @@ if TYPE_CHECKING:
         Point2D_Array,
         Point3D,
         Point3DLike_Array,
+        PointND,
+        PointNDLike_Array,
         Vector2D,
         Vector2D_Array,
         Vector3D,
@@ -502,7 +504,7 @@ def complex_func_to_R3_func(complex_func: Callable) -> Callable:
     return lambda p: complex_to_R3(complex_func(R3_to_complex(p)))
 
 
-def center_of_mass(points: list[Sequence[float]]) -> np.ndarray:
+def center_of_mass(points: PointNDLike_Array) -> PointND:
     """Gets the center of mass of the points in space.
 
     Parameters
