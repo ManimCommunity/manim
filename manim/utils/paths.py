@@ -19,17 +19,13 @@ from ..utils.bezier import interpolate
 from ..utils.space_ops import rotation_matrix
 
 if TYPE_CHECKING:
-    from typing import Callable
-
-    import numpy.typing as npt
-
-    from manim.typing import PathFuncType, Vector3D
+    from manim.typing import PathFuncType, Point3D_Array, Vector3D
 
 
 STRAIGHT_PATH_THRESHOLD = 0.01
 
 
-def straight_path() -> Callable:
+def straight_path() -> PathFuncType:
     """Simplest path function. Each point in a set goes in a straight path toward its destination.
 
     Examples
@@ -141,8 +137,8 @@ def path_along_circles(
     unit_axis = axis / np.linalg.norm(axis)
 
     def path(
-        start_points: np.ndarray, end_points: np.ndarray, alpha: float
-    ) -> npt.NDArray:
+        start_points: Point3D_Array, end_points: Point3D_Array, alpha: float
+    ) -> Point3D_Array:
         detransformed_end_points = circles_centers + np.dot(
             end_points - circles_centers, rotation_matrix(-arc_angle, unit_axis).T
         )
@@ -213,8 +209,8 @@ def path_along_arc(arc_angle: float, axis: Vector3D = OUT) -> PathFuncType:
     unit_axis = axis / np.linalg.norm(axis)
 
     def path(
-        start_points: np.ndarray, end_points: np.ndarray, alpha: float
-    ) -> npt.NDArray:
+        start_points: Point3D_Array, end_points: Point3D_Array, alpha: float
+    ) -> Point3D_Array:
         vects = end_points - start_points
         centers = start_points + 0.5 * vects
         if arc_angle != np.pi:
@@ -374,8 +370,8 @@ def spiral_path(angle: float, axis: Vector3D = OUT) -> PathFuncType:
     unit_axis = axis / np.linalg.norm(axis)
 
     def path(
-        start_points: np.ndarray, end_points: np.ndarray, alpha: float
-    ) -> npt.NDArray:
+        start_points: Point3D_Array, end_points: Point3D_Array, alpha: float
+    ) -> Point3D_Array:
         rot_matrix = rotation_matrix((alpha - 1) * angle, unit_axis)
         return start_points + alpha * np.dot(end_points - start_points, rot_matrix.T)
 
