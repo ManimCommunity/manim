@@ -5,7 +5,6 @@ import logging
 import warnings
 from collections.abc import Generator
 from pathlib import Path
-from typing import Any
 
 import numpy as np
 
@@ -90,13 +89,13 @@ class _ControlDataWriter(_FramesTester):
         self._number_frames_written: int = 0
 
     # Actually write a frame.
-    def check_frame(self, index: int, frame: np.ndarray) -> None:
+    def check_frame(self, index: int, frame: PixelArray) -> None:
         frame = frame[np.newaxis, ...]
         self.frames = np.concatenate((self.frames, frame))
         self._number_frames_written += 1
 
     @contextlib.contextmanager
-    def testing(self) -> Generator[Any, Any, Any]:
+    def testing(self) -> Generator[None, None, None]:
         yield
         self.save_contol_data()
 

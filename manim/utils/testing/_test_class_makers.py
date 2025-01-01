@@ -2,13 +2,11 @@ from __future__ import annotations
 
 from typing import Any, Callable
 
-import numpy.typing as npt
-
 from manim.renderer.cairo_renderer import CairoRenderer
 from manim.renderer.opengl_renderer import OpenGLRenderer
 from manim.scene.scene import Scene
 from manim.scene.scene_file_writer import SceneFileWriter
-from manim.typing import StrPath
+from manim.typing import PixelArray, StrPath
 
 from ._frames_testers import _FramesTester
 
@@ -78,7 +76,7 @@ class DummySceneFileWriter(SceneFileWriter):
         pass
 
     def write_frame(
-        self, frame_or_renderer: npt.NDArray | OpenGLRenderer, num_frames: int = 1
+        self, frame_or_renderer: PixelArray | OpenGLRenderer, num_frames: int = 1
     ) -> None:
         self.i += 1
 
@@ -86,7 +84,7 @@ class DummySceneFileWriter(SceneFileWriter):
 def _make_scene_file_writer_class(tester: _FramesTester) -> type[SceneFileWriter]:
     class TestSceneFileWriter(DummySceneFileWriter):
         def write_frame(
-            self, frame_or_renderer: npt.NDArray | OpenGLRenderer, num_frames: int = 1
+            self, frame_or_renderer: PixelArray | OpenGLRenderer, num_frames: int = 1
         ) -> None:
             tester.check_frame(self.i, frame_or_renderer)
             super().write_frame(frame_or_renderer, num_frames=num_frames)
