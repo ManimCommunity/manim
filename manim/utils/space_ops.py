@@ -21,6 +21,7 @@ if TYPE_CHECKING:
         MatrixMN,
         Point2D_Array,
         Point3D,
+        Point3DLike,
         Point3DLike_Array,
         PointND,
         PointNDLike_Array,
@@ -500,7 +501,9 @@ def R3_to_complex(point: Sequence[float]) -> np.ndarray:
     return complex(*point[:2])
 
 
-def complex_func_to_R3_func(complex_func: Callable) -> Callable:
+def complex_func_to_R3_func(
+    complex_func: Callable[[complex], complex],
+) -> Callable[[Point3DLike], Point3D]:
     return lambda p: complex_to_R3(complex_func(R3_to_complex(p)))
 
 
