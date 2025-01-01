@@ -12,7 +12,7 @@ import hashlib
 import re
 import subprocess
 import unicodedata
-from collections.abc import Generator, Iterable
+from collections.abc import Generator, Iterable, Sequence
 from pathlib import Path
 from re import Match
 from typing import Any
@@ -307,7 +307,9 @@ LATEX_ERROR_INSIGHTS = [
 
 
 def print_tex_error(
-    tex_compilation_log: list[str], error_start_index: int, tex_source: list[str]
+    tex_compilation_log: Sequence[str],
+    error_start_index: int,
+    tex_source: Sequence[str],
 ) -> None:
     logger.error(
         f"LaTeX compilation error: {tex_compilation_log[error_start_index][2:]}",
