@@ -67,7 +67,7 @@ def tex_to_svg_file(
     )
     svg_file = convert_to_svg(dvi_file, tex_template.output_format)
     if not config["no_latex_cleanup"]:
-        delete_nonsvg_files()
+        delete_nonsvg_files( jobname = dvi_file.stem )
     return svg_file
 
 
@@ -258,7 +258,8 @@ def convert_to_svg(dvi_file: Path, extension: str, page: int = 1):
     return result
 
 
-def delete_nonsvg_files(additional_endings: Iterable[str] = ()) -> None:
+def delete_nonsvg_files(additional_endings: Iterable[str] = (),
+                        jobname = None ) -> None:
     """Deletes every file that does not have a suffix in ``(".svg", ".tex", *additional_endings)``
 
     Parameters
@@ -269,10 +270,14 @@ def delete_nonsvg_files(additional_endings: Iterable[str] = ()) -> None:
     tex_dir = config.get_dir("tex_dir")
     file_suffix_whitelist = {".svg", ".tex", *additional_endings}
 
-    for f in tex_dir.iterdir():
-        if f.suffix not in file_suffix_whitelist:
-            f.unlink()
-
+    if not jobname:
+        for f in tex_dir.iterdir():
+            if f.suffix not in file_suffix_whitelist:
+                f.unlink()
+    else:
+        for f in tex_dir.iterdir():
+            if f.stem == jobname and f.suffix not in file_suffix_whitelist:
+                f.unlink()
 
 def print_all_tex_errors(log_file: Path, tex_compiler: str, tex_file: Path) -> None:
     if not log_file.exists():
