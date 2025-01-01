@@ -11,19 +11,19 @@ __all__ = [
 
 
 from functools import lru_cache
-from typing import Callable, overload
+from typing import Any, Callable, Protocol, TypeVar
 
 import numpy as np
 from scipy import special
 
 
 def binary_search(
-    function: Callable[[int | float], int | float],
-    target: int | float,
-    lower_bound: int | float,
-    upper_bound: int | float,
-    tolerance: int | float = 1e-4,
-) -> int | float | None:
+    function: Callable[[float], float],
+    target: float,
+    lower_bound: float,
+    upper_bound: float,
+    tolerance: float = 1e-4,
+) -> float | None:
     """Searches for a value in a range by repeatedly dividing the range in half.
 
     To be more precise, performs numerical binary search to determine the
@@ -92,15 +92,16 @@ def choose(n: int, k: int) -> int:
     return value
 
 
-@overload
-def clip(a: float, min_a: float, max_a: float) -> float: ...
+class Comparable(Protocol):
+    def __lt__(self, other: Any) -> bool: ...
+
+    def __gt__(self, other: Any) -> bool: ...
 
 
-@overload
-def clip(a: str, min_a: str, max_a: str) -> str: ...
+ComparableT = TypeVar("ComparableT", bound=Comparable)  # noqa: Y001
 
 
-def clip(a, min_a, max_a):  # type: ignore[no-untyped-def]
+def clip(a: ComparableT, min_a: ComparableT, max_a: ComparableT) -> ComparableT:
     """Clips ``a`` to the interval [``min_a``, ``max_a``].
 
     Accepts any comparable objects (i.e. those that support <, >).
