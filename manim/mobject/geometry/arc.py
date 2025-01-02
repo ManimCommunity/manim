@@ -312,7 +312,8 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         super().pointwise_become_partial(vmobject, a, b)
         """In case of a dashed object, removes all the excess tips created by each individual dash."""
         if self.has_tip() and a != 0:
-            self.remove(self.tip) """Does the removal of the tip for a particular TipableVMobject"""
+            """Does the removal of the tip for a particular TipableVMobject"""
+            self.remove(self.tip)
         return self
 
 
