@@ -107,14 +107,16 @@ __all__ = [
 
 from functools import wraps
 from math import sqrt
-from typing import Any, Callable, Concatenate, TypeAlias
+from typing import Any, Protocol
 
 import numpy as np
 
 from manim.utils.simple_functions import sigmoid
 
-# TODO: rewrite this as a Protocol with ParamSpec when Python 3.9 is out of life
-RateFunction: TypeAlias = Callable[Concatenate[float, ...], float]
+
+# TODO: rewrite this to use ParamSpec when Python 3.9 is out of life
+class RateFunction(Protocol):
+    def __call__(self, t: float, *args: Any, **kwargs: Any) -> float: ...
 
 
 # This is a decorator that makes sure any function it's used on will
