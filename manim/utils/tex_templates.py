@@ -12,7 +12,7 @@ from .tex import *
 # This file makes TexTemplateLibrary and TexFontTemplates available for use in manim Tex and MathTex objects.
 
 
-def _new_ams_template():
+def _new_ams_template() -> TexTemplate:
     """Returns a simple Tex Template with only basic AMS packages"""
     preamble = r"""
 \usepackage[english]{babel}

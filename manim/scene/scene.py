@@ -488,7 +488,7 @@ class Scene:
                 self.moving_mobjects += mobjects
         return self
 
-    def add_mobjects_from_animations(self, animations):
+    def add_mobjects_from_animations(self, animations: list[Animation]) -> None:
         curr_mobjects = self.get_mobject_family_members()
         for animation in animations:
             if animation.is_introducer():
