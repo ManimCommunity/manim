@@ -1979,12 +1979,12 @@ class Mobject:
         self.become(self.saved_state)
         return self
 
-    def reduce_across_dimension(self, reduce_func: Callable, dim: int):
+    def reduce_across_dimension(self, reduce_func: Callable, dim: int) -> float | None:
         """Find the min or max value from a dimension across all points in this and submobjects."""
         assert dim >= 0
         assert dim <= 2
         if len(self.submobjects) == 0 and len(self.points) == 0:
-            # If we have no points and no submobjects, return 0 (e.g. center)
+            # If we have no points and no submobjects, return None
             return None
 
         # If we do not have points (but do have submobjects)
