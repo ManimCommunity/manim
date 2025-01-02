@@ -239,21 +239,21 @@ def running_start(
     t2 = t * t
     t3 = t2 * t
     t4 = t3 * t
+    t5 = t4 * t
+    t6 = t5 * t
     mt = 1 - t
     mt2 = mt * mt
     mt3 = mt2 * mt
     mt4 = mt3 * mt
-    mt5 = mt4 * mt
-    mt6 = mt5 * mt
 
     # This is equivalent to creating a Bézier with [0, 0, pull_factor, pull_factor, 1, 1, 1]
     # and evaluating it at t.
     return (
-        15 * t4 * mt2 * pull_factor
+        15 * t2 * mt4 * pull_factor
         + 20 * t3 * mt3 * pull_factor
-        + 15 * t2 * mt4
-        + 6 * t * mt5
-        + mt6
+        + 15 * t4 * mt2
+        + 6 * t5 * mt
+        + t6
     )
 
 
