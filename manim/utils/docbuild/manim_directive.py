@@ -288,15 +288,15 @@ class ManimDirective(Directive):
         if save_as_gif:
             example_config["format"] = "gif"
 
-        user_code = self.content  # StringList
+        user_code = list(self.content)
         if user_code[0].startswith(">>> "):  # check whether block comes from doctest
-            user_code_list = [  # list[str]
+            user_code = [
                 line[4:] for line in user_code if line.startswith((">>> ", "... "))
             ]
 
         code = [
             "from manim import *",
-            *user_code_list,
+            *user_code,
             f"{clsname}().render()",
         ]
 
