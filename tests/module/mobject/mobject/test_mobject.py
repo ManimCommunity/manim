@@ -149,8 +149,8 @@ def test_mobject_dimensions_mobjects_with_no_points_are_at_origin():
     # group because now the bottom left corner is at [-5, -6.5, 0]
     # but the upper right corner is [0, 0, 0] instead of [-3, -3.5, 0]
     outer_group.add(VGroup())
-    assert outer_group.width == 5
-    assert outer_group.height == 6.5
+    assert outer_group.width == 2
+    assert outer_group.height == 3
 
 
 def test_mobject_dimensions_has_points_and_children():
@@ -168,3 +168,25 @@ def test_mobject_dimensions_has_points_and_children():
     assert inner_rect.width == 2
     assert inner_rect.height == 1
     assert inner_rect.depth == 0
+
+
+def test_mobject_width_height():
+    for flow_order in ["ur", "dl"]:
+        for is_reversed in [False, True]:
+            # create a vgroup with some sub-elements
+            vgroup = VGroup()
+            sub_vgroup = VGroup()
+            square = Square(side_length=2.0)
+            sub_elements = [sub_vgroup, square]
+            if is_reversed:
+                sub_elements.reverse()
+            vgroup.add(sub_elements)
+            # arrange them to move sub-objects all above or below zero
+            direction = UR if flow_order == "ur" else DL
+            vgroup.shift(direction * 10)
+            vgroup.arrange_in_grid(rows=2, cols=2, flow_order=flow_order)
+            # These measures should be 2.
+            assert vgroup.length_over_dim(0) == pytest.approx(2.0)
+            assert vgroup.length_over_dim(1) == pytest.approx(2.0)
+            assert vgroup.height == pytest.approx(2.0)
+            assert vgroup.width == pytest.approx(2.0)
