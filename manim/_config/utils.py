@@ -1395,7 +1395,7 @@ class ManimConfig(MutableMapping):
         self._set_from_enum("renderer", renderer, RendererType)
 
     @property
-    def media_dir(self) -> Path:
+    def media_dir(self) -> str:
         """Main output directory.  See :meth:`ManimConfig.get_dir`."""
         return self._d["media_dir"]
 

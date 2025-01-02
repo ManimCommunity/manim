@@ -88,7 +88,7 @@ import sys
 import textwrap
 from pathlib import Path
 from timeit import timeit
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, TypedDict
 
 import jinja2
 from docutils import nodes
@@ -101,10 +101,16 @@ from manim import __version__ as manim_version
 if TYPE_CHECKING:
     from sphinx.application import Sphinx
 
+
 __all__ = ["ManimDirective"]
 
 
 classnamedict: dict[str, int] = {}
+
+
+class SetupMetadata(TypedDict):
+    parallel_read_safe: bool
+    parallel_write_safe: bool
 
 
 class SkipManimNode(nodes.Admonition, nodes.Element):
@@ -118,14 +124,13 @@ class SkipManimNode(nodes.Admonition, nodes.Element):
 
 
 def visit(self: SkipManimNode, node: nodes.Element, name: str = "") -> None:
-    self.visit_admonition(node, name)
+    self.visit_admonition(node, name)  # type: ignore[attr-defined]
     if not isinstance(node[0], nodes.title):
         node.insert(0, nodes.title("skip-manim", "Example Placeholder"))
 
 
 def depart(self: SkipManimNode, node: nodes.Element) -> None:
-    # TODO: The SkipManimNode class have no method named depart_admonition.
-    self.depart_admonition(node)
+    self.depart_admonition(node)  # type: ignore[attr-defined]
 
 
 def process_name_list(option_input: str, reference_type: str) -> list[str]:
@@ -240,9 +245,9 @@ class ManimDirective(Directive):
         document = state_machine.document
 
         source_file_name = Path(document.attributes["source"])
-        source_rel_name = source_file_name.relative_to(setup.confdir)
+        source_rel_name = source_file_name.relative_to(setup.confdir)  # type: ignore[attr-defined]
         source_rel_dir = source_rel_name.parents[0]
-        dest_dir = Path(setup.app.builder.outdir, source_rel_dir).absolute()
+        dest_dir = Path(setup.app.builder.outdir, source_rel_dir).absolute()  # type: ignore[attr-defined]
         if not dest_dir.exists():
             dest_dir.mkdir(parents=True, exist_ok=True)
 
@@ -261,11 +266,11 @@ class ManimDirective(Directive):
         ]
         source_block = "\n".join(source_block_in)
 
-        config.media_dir = (Path(setup.confdir) / "media").absolute()
+        config.media_dir = (Path(setup.confdir) / "media").absolute()  # type: ignore[attr-defined,assignment]
         config.images_dir = "{media_dir}/images"
         config.video_dir = "{media_dir}/videos/{quality}"
         output_file = f"{clsname}-{classnamedict[clsname]}"
-        config.assets_dir = Path("_static")
+        config.assets_dir = Path("_static")  # type: ignore[assignment]
         config.progress_bar = "none"
         config.verbosity = "WARNING"
 
@@ -283,15 +288,15 @@ class ManimDirective(Directive):
         if save_as_gif:
             example_config["format"] = "gif"
 
-        user_code = self.content
+        user_code = self.content  # StringList
         if user_code[0].startswith(">>> "):  # check whether block comes from doctest
-            user_code = [
+            user_code_list = [  # list[str]
                 line[4:] for line in user_code if line.startswith((">>> ", "... "))
             ]
 
         code = [
             "from manim import *",
-            *user_code,
+            *user_code_list,
             f"{clsname}().render()",
         ]
 
@@ -327,7 +332,7 @@ class ManimDirective(Directive):
             clsname=clsname,
             clsname_lowercase=clsname.lower(),
             hide_source=hide_source,
-            filesrc_rel=Path(filesrc).relative_to(setup.confdir).as_posix(),
+            filesrc_rel=Path(filesrc).relative_to(setup.confdir).as_posix(),  # type: ignore[attr-defined]
             no_autoplay=no_autoplay,
             output_file=output_file,
             save_last_frame=save_last_frame,
@@ -391,12 +396,12 @@ def _delete_rendering_times(*args: tuple[Any]) -> None:
         rendering_times_file_path.unlink()
 
 
-def setup(app: Sphinx) -> dict[str, Any]:
+def setup(app: Sphinx) -> SetupMetadata:
     app.add_node(SkipManimNode, html=(visit, depart))
 
-    setup.app = app
-    setup.config = app.config
-    setup.confdir = app.confdir
+    setup.app = app  # type: ignore[attr-defined]
+    setup.config = app.config  # type: ignore[attr-defined]
+    setup.confdir = app.confdir  # type: ignore[attr-defined]
 
     app.add_directive("manim", ManimDirective)
 
@@ -413,7 +418,10 @@ def setup(app: Sphinx) -> dict[str, Any]:
         ).strip(),
     )
 
-    metadata = {"parallel_read_safe": False, "parallel_write_safe": True}
+    metadata: SetupMetadata = {
+        "parallel_read_safe": False,
+        "parallel_write_safe": True,
+    }
     return metadata
 
 
