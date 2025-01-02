@@ -105,25 +105,27 @@ __all__ = [
     "exponential_decay",
 ]
 
-import typing
 from functools import wraps
 from math import sqrt
-from typing import Callable
+from typing import ParamSpec, Protocol
 
 import numpy as np
-from typing_extensions import Any
 
-from ..utils.bezier import bezier
-from ..utils.simple_functions import sigmoid
+from manim.utils.bezier import bezier
+from manim.utils.simple_functions import sigmoid
+
+P = ParamSpec("P")
+
+
+class RateFunction(Protocol[P]):
+    def __call__(self, t: float, *args: P.args, **kwargs: P.kwargs) -> float: ...
 
 
 # This is a decorator that makes sure any function it's used on will
 # return 0 if t<0 and 1 if t>1.
-def unit_interval(
-    function: Callable[[float, float], float] | Callable[[float], float],
-) -> Callable[..., float]:
+def unit_interval(function: RateFunction[P]) -> RateFunction[P]:
     @wraps(function)
-    def wrapper(t: Any, *args: Any, **kwargs: Any) -> float:
+    def wrapper(t: float, *args: P.args, **kwargs: P.kwargs) -> float:
         if 0 <= t <= 1:
             return function(t, *args, **kwargs)
         elif t < 0:
@@ -136,9 +138,9 @@ def unit_interval(
 
 # This is a decorator that makes sure any function it's used on will
 # return 0 if t<0 or t>1.
-def zero(function: Callable[..., float]) -> Callable[..., float]:
+def zero(function: RateFunction[P]) -> RateFunction[P]:
     @wraps(function)
-    def wrapper(t: Any, *args: Any, **kwargs: Any) -> float:
+    def wrapper(t: float, *args: P.args, **kwargs: P.kwargs) -> float:
         if 0 <= t <= 1:
             return function(t, *args, **kwargs)
         else:
@@ -231,20 +233,21 @@ def there_and_back_with_pause(t: float, pause_ratio: float = 1.0 / 3) -> float:
         return smooth(a - a * t)
 
 
-@unit_interval  # type: ignore[arg-type]
+@unit_interval
 def running_start(
     t: float,
     pull_factor: float = -0.5,
-) -> typing.Iterable:  # what is func return type?
-    return bezier([0, 0, pull_factor, pull_factor, 1, 1, 1])(t)  # type: ignore[no-any-return]
+) -> float:
+    value: float = bezier([0, 0, pull_factor, pull_factor, 1, 1, 1])(t)  # type: ignore[list-item]
+    return value  # type: ignore[return-value]
 
 
 def not_quite_there(
-    func: typing.Callable[[float], float] = smooth,
+    func: RateFunction[P] = smooth,  # type: ignore[assignment]
     proportion: float = 0.7,
-) -> typing.Callable[[float], float]:
-    def result(t: float) -> float:
-        return proportion * func(t)
+) -> RateFunction[P]:
+    def result(t: float, *args: P.args, **kwargs: P.kwargs) -> float:
+        return proportion * func(t, *args, **kwargs)
 
     return result
 
@@ -256,20 +259,21 @@ def wiggle(t: float, wiggles: float = 2) -> float:
 
 
 def squish_rate_func(
-    func: typing.Callable[[float], float],
+    func: RateFunction[P],
     a: float = 0.4,
     b: float = 0.6,
-) -> typing.Callable[[float], float]:
-    def result(t: float) -> float:
+) -> RateFunction[P]:
+    def result(t: float, *args: P.args, **kwargs: P.kwargs) -> float:
         if a == b:
             return a
 
         if t < a:
-            return func(0)
+            new_t = 0.0
         elif t > b:
-            return func(1)
+            new_t = 1.0
         else:
-            return func((t - a) / (b - a))
+            new_t = (t - a) / (b - a)
+        return func(new_t, *args, **kwargs)
 
     return result
 

@@ -49,8 +49,9 @@ def handle_caching_play(func: Callable[..., None]) -> Callable[..., None]:
             return
         if not config["disable_caching"]:
             mobjects_on_scene = scene.mobjects
+            # TODO: the first argument seems wrong. Shouldn't it be scene instead?
             hash_play = get_hash_from_play_call(
-                self,
+                self,  # type: ignore[arg-type]
                 self.camera,
                 animations,
                 mobjects_on_scene,

@@ -14,13 +14,13 @@ from typing import Any
 
 import numpy as np
 
-from manim.animation.animation import Animation
-from manim.camera.camera import Camera
-from manim.mobject.mobject import Mobject
-
-from .. import config, logger
+from manim._config import config, logger
 
 if typing.TYPE_CHECKING:
+    from manim.animation.animation import Animation
+    from manim.camera.camera import Camera
+    from manim.mobject.mobject import Mobject
+    from manim.opengl.opengl_renderer import OpenGLCamera
     from manim.scene.scene import Scene
 
 __all__ = ["KEYS_TO_FILTER_OUT", "get_hash_from_play_call", "get_json"]
@@ -324,7 +324,7 @@ def get_json(obj: dict):
 
 def get_hash_from_play_call(
     scene_object: Scene,
-    camera_object: Camera,
+    camera_object: Camera | OpenGLCamera,
     animations_list: typing.Iterable[Animation],
     current_mobjects_list: typing.Iterable[Mobject],
 ) -> str:

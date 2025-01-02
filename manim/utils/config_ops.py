@@ -59,8 +59,9 @@ class _Data:
     def __set_name__(self, obj: Any, name: str) -> None:
         self.name = name
 
-    def __get__(self, obj: Any, owner: Any) -> Any:
-        return obj.data[self.name]
+    def __get__(self, obj: Any, owner: Any) -> npt.NDArray[Any]:
+        value: npt.NDArray[Any] = obj.data[self.name]
+        return value
 
     def __set__(self, obj: Any, array: npt.NDArray[Any]) -> None:
         obj.data[self.name] = array
