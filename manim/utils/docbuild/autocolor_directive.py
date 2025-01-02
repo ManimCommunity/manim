@@ -28,7 +28,7 @@ class ManimColorModuleDocumenter(Directive):
     def add_directive_header(self, sig: str) -> None:
         # TODO: The Directive class has no method named
         # add_directive_header.
-        super().add_directive_header(sig)
+        super().add_directive_header(sig)  # type: ignore[misc]
 
     def run(self) -> list[nodes.Element]:
         module_name = self.arguments[0]
@@ -39,7 +39,7 @@ class ManimColorModuleDocumenter(Directive):
         except ImportError:
             return [
                 nodes.error(
-                    None,
+                    None,  # type: ignore[arg-type]
                     nodes.paragraph(text=f"Failed to import module '{module_name}'"),
                 )
             ]
@@ -55,13 +55,13 @@ class ManimColorModuleDocumenter(Directive):
 
         # Create header rows for the table
         thead = nodes.thead()
-        row = nodes.row()
+        header_row = nodes.row()
         for _ in range(num_color_cols):
-            col1 = nodes.paragraph(text="Color Name")
-            col2 = nodes.paragraph(text="RGB Hex Code")
-            row += nodes.entry("", col1)
-            row += nodes.entry("", col2)
-        thead += row
+            header_col1 = nodes.paragraph(text="Color Name")
+            header_col2 = nodes.paragraph(text="RGB Hex Code")
+            header_row += nodes.entry("", header_col1)
+            header_row += nodes.entry("", header_col2)
+        thead += header_row
         tgroup += thead
 
         color_elements = []

@@ -174,8 +174,11 @@ def parse_module_attributes() -> tuple[AliasDocsDict, DataDict, TypeVarDict]:
                     and node.value is not None
                 )
                 if is_type_alias or is_annotated_assignment_with_value:
-                    alias_name = node.name.id if is_type_alias else node.target.id
-                    definition_node = node.value
+                    # TODO: ast.TypeAlias does not exist before Python 3.12, and that
+                    # could be the reason why MyPy does not recognize these as
+                    # attributes of node.
+                    alias_name = node.name.id if is_type_alias else node.target.id  # type: ignore[attr-defined]
+                    definition_node = node.value  # type: ignore[attr-defined]
 
                     # If the definition is a Union, replace with vertical bar notation.
                     # Instead of "Union[Type1, Type2]", we'll have "Type1 | Type2".
@@ -184,7 +187,7 @@ def parse_module_attributes() -> tuple[AliasDocsDict, DataDict, TypeVarDict]:
                         and type(definition_node.value) is ast.Name
                         and definition_node.value.id == "Union"
                     ):
-                        union_elements = definition_node.slice.elts
+                        union_elements = definition_node.slice.elts  # type: ignore[attr-defined]
                         definition = " | ".join(
                             ast.unparse(elem) for elem in union_elements
                         )

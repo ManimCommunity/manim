@@ -124,12 +124,14 @@ class SkipManimNode(nodes.Admonition, nodes.Element):
 
 
 def visit(self: SkipManimNode, node: nodes.Element, name: str = "") -> None:
+    # TODO: Parent classes don't have a visit_admonition() method.
     self.visit_admonition(node, name)  # type: ignore[attr-defined]
     if not isinstance(node[0], nodes.title):
         node.insert(0, nodes.title("skip-manim", "Example Placeholder"))
 
 
 def depart(self: SkipManimNode, node: nodes.Element) -> None:
+    # TODO: Parent classes don't have a depart_admonition() method.
     self.depart_admonition(node)  # type: ignore[attr-defined]
 
 
