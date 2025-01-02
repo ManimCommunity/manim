@@ -1059,7 +1059,7 @@ def interpolate(
             * ``alpha`` is a :class:`float`, the return is another :class:`~.Point3D`.
             * ``alpha`` is a :class:`~.ColVector`, the return is a :class:`~.Point3D_Array`.
     """
-    return start + alpha * (end - start)
+    return (1 - alpha) * start + alpha * end
 
 
 def integer_interpolate(
