@@ -9,7 +9,7 @@ import inspect
 import logging
 import re
 from collections.abc import Iterable
-from typing import Any, Callable, ParamSpec, TypeVar, overload
+from typing import Any, Callable, TypeVar, overload
 
 from decorator import decorate, decorator
 
@@ -70,18 +70,18 @@ def _deprecation_text_component(
     return f"deprecated {since}and {until}.{msg}"
 
 
-P = ParamSpec("P")
+# TODO: Use ParamSpec to type decorated functions when Python 3.9 is out of life
 T = TypeVar("T")
 
 
 @overload
 def deprecated(
-    func: Callable[P, T],
+    func: Callable[..., T],
     since: str | None = None,
     until: str | None = None,
     replacement: str | None = None,
     message: str | None = "",
-) -> Callable[P, T]: ...
+) -> Callable[..., T]: ...
 
 
 @overload
@@ -91,16 +91,16 @@ def deprecated(
     until: str | None = None,
     replacement: str | None = None,
     message: str | None = "",
-) -> Callable[[Callable[P, T]], Callable[P, T]]: ...
+) -> Callable[[Callable[..., T]], Callable[..., T]]: ...
 
 
 def deprecated(
-    func: Callable[P, T] | None = None,
+    func: Callable[..., T] | None = None,
     since: str | None = None,
     until: str | None = None,
     replacement: str | None = None,
     message: str | None = "",
-) -> Callable[P, T] | Callable[[Callable[P, T]], Callable[P, T]]:
+) -> Callable[..., T] | Callable[[Callable[..., T]], Callable[..., T]]:
     """Decorator to mark a callable as deprecated.
 
     The decorated callable will cause a warning when used. The docstring of the
@@ -223,7 +223,7 @@ def deprecated(
         doc_string = func.__doc__ or ""
         func.__doc__ = f"{doc_string}\n\n.. attention:: Deprecated\n  {warning}"
 
-    def deprecate(func: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> T:
+    def deprecate(func: Callable[..., T], *args: Any, **kwargs: Any) -> T:
         """The actual decorator used to extend the callables behavior.
 
         Logs a warning message.
@@ -266,7 +266,7 @@ def deprecated_params(
     message: str = "",
     redirections: None
     | (Iterable[tuple[str, str] | Callable[..., dict[str, Any]]]) = None,
-) -> Callable[P, T]:
+) -> Callable[..., T]:
     """Decorator to mark parameters of a callable as deprecated.
 
     It can also be used to automatically redirect deprecated parameter values to their
@@ -453,7 +453,7 @@ def deprecated_params(
 
     redirections = list(redirections)
 
-    def warning_msg(func: Callable[P, T], used: list[str]) -> str:
+    def warning_msg(func: Callable[..., T], used: list[str]) -> str:
         """Generate the deprecation warning message.
 
         Parameters
@@ -500,7 +500,7 @@ def deprecated_params(
                 if len(redirector_args) > 0:
                     kwargs.update(redirector(**redirector_args))
 
-    def deprecate_params(func: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> T:
+    def deprecate_params(func: Callable[..., T], *args: Any, **kwargs: Any) -> T:
         """The actual decorator function used to extend the callables behavior.
 
         Logs a warning message when a deprecated parameter is used and redirects it if

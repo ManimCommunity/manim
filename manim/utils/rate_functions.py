@@ -107,25 +107,21 @@ __all__ = [
 
 from functools import wraps
 from math import sqrt
-from typing import ParamSpec, Protocol
+from typing import Any, Callable, Concatenate, TypeAlias
 
 import numpy as np
 
-from manim.utils.bezier import bezier
 from manim.utils.simple_functions import sigmoid
 
-P = ParamSpec("P")
-
-
-class RateFunction(Protocol[P]):
-    def __call__(self, t: float, *args: P.args, **kwargs: P.kwargs) -> float: ...
+# TODO: rewrite this as a Protocol with ParamSpec when Python 3.9 is out of life
+RateFunction: TypeAlias = Callable[Concatenate[float, ...], float]
 
 
 # This is a decorator that makes sure any function it's used on will
 # return 0 if t<0 and 1 if t>1.
-def unit_interval(function: RateFunction[P]) -> RateFunction[P]:
+def unit_interval(function: RateFunction) -> RateFunction:
     @wraps(function)
-    def wrapper(t: float, *args: P.args, **kwargs: P.kwargs) -> float:
+    def wrapper(t: float, *args: Any, **kwargs: Any) -> float:
         if 0 <= t <= 1:
             return function(t, *args, **kwargs)
         elif t < 0:
@@ -138,9 +134,9 @@ def unit_interval(function: RateFunction[P]) -> RateFunction[P]:
 
 # This is a decorator that makes sure any function it's used on will
 # return 0 if t<0 or t>1.
-def zero(function: RateFunction[P]) -> RateFunction[P]:
+def zero(function: RateFunction) -> RateFunction:
     @wraps(function)
-    def wrapper(t: float, *args: P.args, **kwargs: P.kwargs) -> float:
+    def wrapper(t: float, *args: Any, **kwargs: Any) -> float:
         if 0 <= t <= 1:
             return function(t, *args, **kwargs)
         else:
@@ -238,15 +234,32 @@ def running_start(
     t: float,
     pull_factor: float = -0.5,
 ) -> float:
-    value: float = bezier([0, 0, pull_factor, pull_factor, 1, 1, 1])(t)  # type: ignore[list-item]
-    return value  # type: ignore[return-value]
+    t2 = t * t
+    t3 = t2 * t
+    t4 = t3 * t
+    mt = 1 - t
+    mt2 = mt * mt
+    mt3 = mt2 * mt
+    mt4 = mt3 * mt
+    mt5 = mt4 * mt
+    mt6 = mt5 * mt
+
+    # This is equivalent to creating a Bézier with [0, 0, pull_factor, pull_factor, 1, 1, 1]
+    # and evaluating it at t.
+    return (
+        15 * t4 * mt2 * pull_factor
+        + 20 * t3 * mt3 * pull_factor
+        + 15 * t2 * mt4
+        + 6 * t * mt5
+        + mt6
+    )
 
 
 def not_quite_there(
-    func: RateFunction[P] = smooth,  # type: ignore[assignment]
+    func: RateFunction = smooth,
     proportion: float = 0.7,
-) -> RateFunction[P]:
-    def result(t: float, *args: P.args, **kwargs: P.kwargs) -> float:
+) -> RateFunction:
+    def result(t: float, *args: Any, **kwargs: Any) -> float:
         return proportion * func(t, *args, **kwargs)
 
     return result
@@ -259,11 +272,11 @@ def wiggle(t: float, wiggles: float = 2) -> float:
 
 
 def squish_rate_func(
-    func: RateFunction[P],
+    func: RateFunction,
     a: float = 0.4,
     b: float = 0.6,
-) -> RateFunction[P]:
-    def result(t: float, *args: P.args, **kwargs: P.kwargs) -> float:
+) -> RateFunction:
+    def result(t: float, *args: Any, **kwargs: Any) -> float:
         if a == b:
             return a
 
@@ -286,7 +299,11 @@ def squish_rate_func(
 
 @unit_interval
 def lingering(t: float) -> float:
-    return squish_rate_func(lambda t: t, 0, 0.8)(t)
+    def identity(t: float) -> float:
+        return t
+
+    # TODO: Isn't this just 0.8 * t?
+    return squish_rate_func(identity, 0, 0.8)(t)
 
 
 @unit_interval
