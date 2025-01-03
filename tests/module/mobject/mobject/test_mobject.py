@@ -144,10 +144,7 @@ def test_mobject_dimensions_mobjects_with_no_points_are_at_origin():
     assert outer_group.width == 2
     assert outer_group.height == 3
 
-    # Adding a mobject with no points has a quirk of adding a "point"
-    # to [0, 0, 0] (the origin). This changes the size of the outer
-    # group because now the bottom left corner is at [-5, -6.5, 0]
-    # but the upper right corner is [0, 0, 0] instead of [-3, -3.5, 0]
+    # Adding a mobject with no points does not change its size
     outer_group.add(VGroup())
     assert outer_group.width == 2
     assert outer_group.height == 3
