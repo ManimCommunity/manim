@@ -2291,7 +2291,7 @@ class Mobject:
     def __iter__(self):
         return iter(self.split())
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.split())
 
     def get_group_class(self) -> type[Group]:

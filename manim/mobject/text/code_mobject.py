@@ -10,6 +10,7 @@ import html
 import os
 import re
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import numpy as np
 from pygments import highlight, styles
@@ -24,6 +25,12 @@ from manim.mobject.geometry.shape_matchers import SurroundingRectangle
 from manim.mobject.text.text_mobject import Paragraph
 from manim.mobject.types.vectorized_mobject import VGroup
 from manim.utils.color import WHITE
+
+if TYPE_CHECKING:
+    from typing import Any
+
+    from manim.mobject.mobject import Mobject
+    from manim.utils.color import ManimColor, ParsableManimColor
 
 
 class Code(VGroup):
@@ -172,7 +179,7 @@ class Code(VGroup):
         indentation_chars: str = "    ",
         background: str = "rectangle",  # or window
         background_stroke_width: float = 1,
-        background_stroke_color: str = WHITE,
+        background_stroke_color: str | ParsableManimColor = WHITE,
         corner_radius: float = 0.2,
         insert_line_no: bool = True,
         line_no_from: int = 1,
@@ -181,13 +188,13 @@ class Code(VGroup):
         language: str | None = None,
         generate_html_file: bool = False,
         warn_missing_font: bool = True,
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> None:
         super().__init__(
             stroke_width=stroke_width,
             **kwargs,
         )
-        self.background_stroke_color = background_stroke_color
+        self.background_stroke_color = ManimColor(background_stroke_color)
         self.background_stroke_width = background_stroke_width
         self.tab_width = tab_width
         self.line_spacing = line_spacing
@@ -209,7 +216,8 @@ class Code(VGroup):
         self.file_name = file_name
         if self.file_name:
             self._ensure_valid_file()
-            self.code_string = self.file_path.read_text(encoding="utf-8")
+            assert isinstance(self.file_path, Path)
+            self.code_string: str = self.file_path.read_text(encoding="utf-8")
         elif code:
             self.code_string = code
         else:
@@ -242,7 +250,7 @@ class Code(VGroup):
                 fill_opacity=1,
             )
             rect.round_corners(self.corner_radius)
-            self.background_mobject = rect
+            self.background_mobject: Mobject = rect
         else:
             if self.insert_line_no:
                 foreground = VGroup(self.code, self.line_numbers)
@@ -251,7 +259,7 @@ class Code(VGroup):
             height = foreground.height + 0.1 * 3 + 2 * self.margin
             width = foreground.width + 0.1 * 3 + 2 * self.margin
 
-            rect = RoundedRectangle(
+            background_rect = RoundedRectangle(
                 corner_radius=self.corner_radius,
                 height=height,
                 width=width,
@@ -271,7 +279,7 @@ class Code(VGroup):
                 + LEFT * (width / 2 - 0.1 * 5 - self.corner_radius / 2 - 0.05),
             )
 
-            self.background_mobject = VGroup(rect, buttons)
+            self.background_mobject = VGroup(background_rect, buttons)
             x = (height - foreground.height) / 2 - 0.1 * 3
             self.background_mobject.shift(foreground.get_center())
             self.background_mobject.shift(UP * x)
@@ -289,7 +297,7 @@ class Code(VGroup):
         self.move_to(np.array([0, 0, 0]))
 
     @classmethod
-    def get_styles_list(cls):
+    def get_styles_list(cls) -> list[str]:
         """Get list of available code styles.
 
         Returns
@@ -302,7 +310,7 @@ class Code(VGroup):
             cls._styles_list_cache = list(styles.get_all_styles())
         return cls._styles_list_cache
 
-    def _ensure_valid_file(self):
+    def _ensure_valid_file(self) -> None:
         """Function to validate file."""
         if self.file_name is None:
             raise Exception("Must specify file for Code")
@@ -320,7 +328,7 @@ class Code(VGroup):
         )
         raise OSError(error)
 
-    def _gen_line_numbers(self):
+    def _gen_line_numbers(self) -> Paragraph:
         """Function to generate line_numbers.
 
         Returns
@@ -346,7 +354,7 @@ class Code(VGroup):
             i.set_color(self.default_color)
         return line_numbers
 
-    def _gen_colored_lines(self):
+    def _gen_colored_lines(self) -> Paragraph:
         """Function to generate code.
 
         Returns
@@ -381,7 +389,7 @@ class Code(VGroup):
                 line_char_index += self.code_json[line_no][word_index][0].__len__()
         return code
 
-    def _gen_html_string(self):
+    def _gen_html_string(self) -> None:
         """Function to generate html string with code highlighted and stores in variable html_string."""
         self.html_string = _hilite_me(
             self.code_string,
@@ -398,7 +406,7 @@ class Code(VGroup):
             output_folder.mkdir(parents=True, exist_ok=True)
             (output_folder / f"{self.file_name}.html").write_text(self.html_string)
 
-    def _gen_code_json(self):
+    def _gen_code_json(self) -> None:
         """Function to background_color, generate code_json and tab_spaces from html_string.
         background_color is just background color of displayed code.
         code_json is 2d array with rows as line numbers
@@ -412,7 +420,7 @@ class Code(VGroup):
             or self.background_color == "#202020"
             or self.background_color == "#000000"
         ):
-            self.default_color = "#ffffff"
+            self.default_color: str = "#ffffff"
         else:
             self.default_color = "#000000"
         # print(self.default_color,self.background_color)
@@ -442,12 +450,13 @@ class Code(VGroup):
         start_point = lines[0].find(">")
         lines[0] = lines[0][start_point + 1 :]
         # print(lines)
-        self.code_json = []
-        self.tab_spaces = []
+        self.code_json: list[list[str]] = []
+        self.tab_spaces: list[int] = []
         code_json_line_index = -1
         for line_index in range(0, lines.__len__()):
             # print(lines[line_index])
-            self.code_json.append([])
+            empty_list_of_strings: list[str] = []
+            self.code_json.append(empty_list_of_strings)
             code_json_line_index = code_json_line_index + 1
             if lines[line_index].startswith(self.indentation_chars):
                 start_point = lines[line_index].find("<")
@@ -498,7 +507,7 @@ class Code(VGroup):
                     self.code_json[code_json_line_index].append([text, color])
         # print(self.code_json)
 
-    def _correct_non_span(self, line_str: str):
+    def _correct_non_span(self, line_str: str) -> str:
         """Function put text color to those strings that don't have one according to background_color of displayed code.
 
         Parameters
@@ -552,13 +561,13 @@ class Code(VGroup):
 
 def _hilite_me(
     code: str,
-    language: str,
+    language: str | None,
     style: str,
     insert_line_no: bool,
     divstyles: str,
-    file_path: Path,
+    file_path: Path | None,
     line_no_from: int,
-):
+) -> str:
     """Function to highlight code from string to html.
 
     Parameters
@@ -591,7 +600,7 @@ def _hilite_me(
     )
     if language is None and file_path:
         lexer = guess_lexer_for_filename(file_path, code)
-        html = highlight(code, lexer, formatter)
+        html: str = highlight(code, lexer, formatter)
     elif language is None:
         raise ValueError(
             "The code language has to be specified when rendering a code string",
@@ -604,7 +613,7 @@ def _hilite_me(
     return html
 
 
-def _insert_line_numbers_in_html(html: str, line_no_from: int):
+def _insert_line_numbers_in_html(html: str, line_no_from: int) -> str:
     """Function that inserts line numbers in the highlighted HTML code.
 
     Parameters
