@@ -84,16 +84,16 @@ def test_vmobject_add_points_as_corners():
     obj2 = VMobject().start_new_path(points[0])
     for point in points[1:]:
         obj2.add_line_to(point)
-    assert np.allclose(obj1.points, obj2.points)
+    np.testing.assert_allclose(obj1.points, obj2.points)
 
     # Test that passing an array with no points does nothing.
     obj3 = VMobject().start_new_path(points[0])
     points3_old = obj3.points.copy()
     obj3.add_points_as_corners([])
-    assert np.allclose(points3_old, obj3.points)
+    np.testing.assert_allclose(points3_old, obj3.points)
 
     obj3.add_points_as_corners(points[1:]).add_points_as_corners([])
-    assert np.allclose(obj1.points, obj3.points)
+    np.testing.assert_allclose(obj1.points, obj3.points)
 
 
 def test_vmobject_point_from_proportion():
