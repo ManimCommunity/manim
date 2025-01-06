@@ -272,7 +272,7 @@ class MathTex(SingleStringMathTex):
             [] if substrings_to_isolate is None else substrings_to_isolate
         )
 
-        if self.tex_to_color_map is None:
+        if tex_to_color_map is None:
             self.tex_to_color_map: dict[str, ParsableManimColor] = {}
         else:
             assert isinstance(tex_to_color_map, dict)
