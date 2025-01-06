@@ -504,7 +504,10 @@ class Code(VGroup):
                 text = html.unescape(text)
                 if text != "":
                     # print(text, "'" + color + "'")
-                    self.code_json[code_json_line_index].append([text, color])
+                    # TODO
+                    # Fix the mypy error from the next line of code.
+                    # "Argument 1 to "append" of "list" has incompatible type "list[str]"; expected "str"  [arg-type]"
+                    self.code_json[code_json_line_index].append([text, color])  # type: ignore[arg-type]
         # print(self.code_json)
 
     def _correct_non_span(self, line_str: str) -> str:
