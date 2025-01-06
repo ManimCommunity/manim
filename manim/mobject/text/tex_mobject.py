@@ -212,12 +212,7 @@ class SingleStringMathTex(SVGMobject):
     def get_tex_string(self) -> str:
         return self.tex_string
 
-    def init_colors(self, propagate_colors: bool = True) -> None:  # type: ignore[override]
-        # TODO:
-        # The base class implementation of init_colors return "Self"
-        # this does not match well with the current implementation that
-        # return nothing.
-        # I see no reason for init_colors to return anything.
+    def init_colors(self, propagate_colors: bool = True) -> Self:
         for submobject in self.submobjects:
             # needed to preserve original (non-black)
             # TeX colors of individual submobjects
@@ -228,6 +223,7 @@ class SingleStringMathTex(SVGMobject):
                 submobject.init_colors()
             elif config.renderer == RendererType.CAIRO:
                 submobject.init_colors(propagate_colors=propagate_colors)
+        return self
 
 
 class MathTex(SingleStringMathTex):
