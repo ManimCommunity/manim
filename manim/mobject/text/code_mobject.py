@@ -24,13 +24,13 @@ from manim.mobject.geometry.polygram import RoundedRectangle
 from manim.mobject.geometry.shape_matchers import SurroundingRectangle
 from manim.mobject.text.text_mobject import Paragraph
 from manim.mobject.types.vectorized_mobject import VGroup
-from manim.utils.color import WHITE
+from manim.utils.color import WHITE, ManimColor
 
 if TYPE_CHECKING:
     from typing import Any
 
     from manim.mobject.mobject import Mobject
-    from manim.utils.color import ManimColor, ParsableManimColor
+    from manim.utils.color import ParsableManimColor
 
 
 class Code(VGroup):
