@@ -28,7 +28,7 @@ if TYPE_CHECKING:
     import numpy.typing as npt
     from typing_extensions import Self
 
-    from manim.typing import StrPath
+    from manim.typing import PixelArray, StrPath
 
 
 class AbstractImageMobject(Mobject):
@@ -57,7 +57,7 @@ class AbstractImageMobject(Mobject):
         self.set_resampling_algorithm(resampling_algorithm)
         super().__init__(**kwargs)
 
-    def get_pixel_array(self) -> None:
+    def get_pixel_array(self) -> PixelArray:
         raise NotImplementedError()
 
     def set_color(self, color, alpha=None, family=True):
