@@ -105,21 +105,25 @@ __all__ = [
     "exponential_decay",
 ]
 
-import typing
 from functools import wraps
 from math import sqrt
+from typing import Any, Protocol
 
 import numpy as np
 
-from ..utils.bezier import bezier
-from ..utils.simple_functions import sigmoid
+from manim.utils.simple_functions import sigmoid
+
+
+# TODO: rewrite this to use ParamSpec when Python 3.9 is out of life
+class RateFunction(Protocol):
+    def __call__(self, t: float, *args: Any, **kwargs: Any) -> float: ...
 
 
 # This is a decorator that makes sure any function it's used on will
 # return 0 if t<0 and 1 if t>1.
-def unit_interval(function):
+def unit_interval(function: RateFunction) -> RateFunction:
     @wraps(function)
-    def wrapper(t, *args, **kwargs):
+    def wrapper(t: float, *args: Any, **kwargs: Any) -> float:
         if 0 <= t <= 1:
             return function(t, *args, **kwargs)
         elif t < 0:
@@ -132,9 +136,9 @@ def unit_interval(function):
 
 # This is a decorator that makes sure any function it's used on will
 # return 0 if t<0 or t>1.
-def zero(function):
+def zero(function: RateFunction) -> RateFunction:
     @wraps(function)
-    def wrapper(t, *args, **kwargs):
+    def wrapper(t: float, *args: Any, **kwargs: Any) -> float:
         if 0 <= t <= 1:
             return function(t, *args, **kwargs)
         else:
@@ -178,7 +182,7 @@ def smoothererstep(t: float) -> float:
     The 1st, 2nd and 3rd derivatives (speed, acceleration and jerk) are zero at the endpoints.
     https://en.wikipedia.org/wiki/Smoothstep
     """
-    alpha = 0
+    alpha: float = 0
     if 0 < t < 1:
         alpha = 35 * t**4 - 84 * t**5 + 70 * t**6 - 20 * t**7
     elif t >= 1:
@@ -198,7 +202,8 @@ def rush_from(t: float, inflection: float = 10.0) -> float:
 
 @unit_interval
 def slow_into(t: float) -> float:
-    return np.sqrt(1 - (1 - t) * (1 - t))
+    val: float = np.sqrt(1 - (1 - t) * (1 - t))
+    return val
 
 
 @unit_interval
@@ -230,40 +235,60 @@ def there_and_back_with_pause(t: float, pause_ratio: float = 1.0 / 3) -> float:
 def running_start(
     t: float,
     pull_factor: float = -0.5,
-) -> typing.Iterable:  # what is func return type?
-    return bezier([0, 0, pull_factor, pull_factor, 1, 1, 1])(t)
+) -> float:
+    t2 = t * t
+    t3 = t2 * t
+    t4 = t3 * t
+    t5 = t4 * t
+    t6 = t5 * t
+    mt = 1 - t
+    mt2 = mt * mt
+    mt3 = mt2 * mt
+    mt4 = mt3 * mt
+
+    # This is equivalent to creating a Bézier with [0, 0, pull_factor, pull_factor, 1, 1, 1]
+    # and evaluating it at t.
+    return (
+        15 * t2 * mt4 * pull_factor
+        + 20 * t3 * mt3 * pull_factor
+        + 15 * t4 * mt2
+        + 6 * t5 * mt
+        + t6
+    )
 
 
 def not_quite_there(
-    func: typing.Callable[[float], float] = smooth,
+    func: RateFunction = smooth,
     proportion: float = 0.7,
-) -> typing.Callable[[float], float]:
-    def result(t):
-        return proportion * func(t)
+) -> RateFunction:
+    def result(t: float, *args: Any, **kwargs: Any) -> float:
+        return proportion * func(t, *args, **kwargs)
 
     return result
 
 
 @zero
 def wiggle(t: float, wiggles: float = 2) -> float:
-    return there_and_back(t) * np.sin(wiggles * np.pi * t)
+    val: float = np.sin(wiggles * np.pi * t)
+    return there_and_back(t) * val
 
 
 def squish_rate_func(
-    func: typing.Callable[[float], float],
+    func: RateFunction,
     a: float = 0.4,
     b: float = 0.6,
-) -> typing.Callable[[float], float]:
-    def result(t):
+) -> RateFunction:
+    def result(t: float, *args: Any, **kwargs: Any) -> float:
         if a == b:
             return a
 
         if t < a:
-            return func(0)
+            new_t = 0.0
         elif t > b:
-            return func(1)
+            new_t = 1.0
         else:
-            return func((t - a) / (b - a))
+            new_t = (t - a) / (b - a)
+        return func(new_t, *args, **kwargs)
 
     return result
 
@@ -276,29 +301,37 @@ def squish_rate_func(
 
 @unit_interval
 def lingering(t: float) -> float:
-    return squish_rate_func(lambda t: t, 0, 0.8)(t)
+    def identity(t: float) -> float:
+        return t
+
+    # TODO: Isn't this just 0.8 * t?
+    return squish_rate_func(identity, 0, 0.8)(t)
 
 
 @unit_interval
 def exponential_decay(t: float, half_life: float = 0.1) -> float:
     # The half-life should be rather small to minimize
     # the cut-off error at the end
-    return 1 - np.exp(-t / half_life)
+    val: float = 1 - np.exp(-t / half_life)
+    return val
 
 
 @unit_interval
 def ease_in_sine(t: float) -> float:
-    return 1 - np.cos((t * np.pi) / 2)
+    val: float = 1 - np.cos((t * np.pi) / 2)
+    return val
 
 
 @unit_interval
 def ease_out_sine(t: float) -> float:
-    return np.sin((t * np.pi) / 2)
+    val: float = np.sin((t * np.pi) / 2)
+    return val
 
 
 @unit_interval
 def ease_in_out_sine(t: float) -> float:
-    return -(np.cos(np.pi * t) - 1) / 2
+    val: float = -(np.cos(np.pi * t) - 1) / 2
+    return val
 
 
 @unit_interval
@@ -435,7 +468,8 @@ def ease_in_elastic(t: float) -> float:
     elif t == 1:
         return 1
     else:
-        return -pow(2, 10 * t - 10) * np.sin((t * 10 - 10.75) * c4)
+        val: float = -pow(2, 10 * t - 10) * np.sin((t * 10 - 10.75) * c4)
+        return val
 
 
 @unit_interval
@@ -446,7 +480,8 @@ def ease_out_elastic(t: float) -> float:
     elif t == 1:
         return 1
     else:
-        return pow(2, -10 * t) * np.sin((t * 10 - 0.75) * c4) + 1
+        val: float = pow(2, -10 * t) * np.sin((t * 10 - 0.75) * c4) + 1
+        return val
 
 
 @unit_interval
@@ -457,9 +492,11 @@ def ease_in_out_elastic(t: float) -> float:
     elif t == 1:
         return 1
     elif t < 0.5:
-        return -(pow(2, 20 * t - 10) * np.sin((20 * t - 11.125) * c5)) / 2
+        val: float = -(pow(2, 20 * t - 10) * np.sin((20 * t - 11.125) * c5)) / 2
+        return val
     else:
-        return (pow(2, -20 * t + 10) * np.sin((20 * t - 11.125) * c5)) / 2 + 1
+        val = (pow(2, -20 * t + 10) * np.sin((20 * t - 11.125) * c5)) / 2 + 1
+        return val
 
 
 @unit_interval
