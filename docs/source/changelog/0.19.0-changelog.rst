@@ -104,8 +104,13 @@ Highlights
 * :pr:`3966`: :class:`.VGroup` can now be initialized with :class:`.VMobject` iterables.
 
 
-* :pr:`3518`: Created a :class:`.HSV` color class.
+* :pr:`3518`: Created a :class:`.HSV` color class, and added support for custom color spaces.
 
+
+* :pr:`3967`: Added support for Python 3.13
+
+
+* :pr:`3930`: Completely reworked the installation instructions
 
 
 Breaking changes
@@ -180,9 +185,6 @@ Enhancements
 * :pr:`3965`: Added the ``scale_stroke`` boolean parameter to :meth:`.VMobject.scale`
 
 
-* :pr:`3967`: Add support for Python 3.13
-
-
 * :pr:`3974`: Made videos embedded in Google Colab by default
 
 
@@ -254,6 +256,9 @@ Fixed bugs
 * :pr:`4013`: Fixed scene skipping for :attr:`ManimConfig.upto_animation_number` set to 0
 
 
+* :pr:`4091`: Fixed :meth:`.VMobject.add_points_as_corners` to safely handle empty ``points`` parameter.
+
+
 Documentation-related changes
 -----------------------------
 
@@ -282,9 +287,6 @@ Documentation-related changes
 
 
 * :pr:`3924`: Fix ``SyntaxWarning`` when building docs + use Python 3.13 for readthedocs build.
-
-
-* :pr:`3930`: Completely rework the installation instructions
 
 
 * :pr:`3958`: Fix: ``.to_edge``'s example demonstration in docs
@@ -329,10 +331,16 @@ Type Hints
 * :pr:`3988`: Added type hints to :mod:`manim.cli` module
 
 
+* :pr:`3999`: Add type annotations to :mod:`manim.utils`
+
+
 * :pr:`4006`: Stopped ignoring :mod:`manim.plugins` errors in ``mypy.ini``
 
 
 * :pr:`4007`: Added typings to :mod:`manim.__main__`
+
+
+* :pr:`4027`: Rename ``InternalPoint3D`` to :class:`~.typing.Point3D`, ``Point3D`` to :class:`~.Point3DLike` and other point-related type aliases
 
 
 * :pr:`4038`: Fixed type hint of :meth:`.Scene.play` to allow :attr:`.Mobject.animate`
