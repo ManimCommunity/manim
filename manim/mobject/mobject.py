@@ -14,8 +14,7 @@ import random
 import sys
 import types
 import warnings
-from collections.abc import Iterable, Iterator
-from contextlib import contextmanager
+from collections.abc import Iterable
 from functools import partialmethod, reduce
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -1123,8 +1122,10 @@ class Mobject:
             self.add_updater(updater)
         return self
 
-    def suspend_updating(self, recursive: bool = True) -> Self:
+    def suspend_updating(self, recursive: bool = True):
         """Disable updating from updaters and animations.
+
+        This can also be used as a context manager. If so, :meth:`resume_updating` is called when leaving the context.
 
 
         Parameters
@@ -1132,25 +1133,43 @@ class Mobject:
         recursive
             Whether to recursively suspend updating on all submobjects.
 
-        Returns
-        -------
-        :class:`Mobject`
-            ``self``
+
+        Examples
+        --------
+
+        .. manim:: SuspendContext
+
+            class SuspendContext(Scene):
+                def construct(self):
+                    s = Square().shift(DL)
+                    c = Circle().add_updater(lambda m: m.next_to(s, UP, buff=1.0))
+                    self.add(c)
+
+                    self.play(s.animate.shift(2*RIGHT))
+                    c.suspend_updating() # used a function call
+                    self.play(Indicate(s))
+                    c.resume_updating() # updating must be resumed manually
+                    self.play(s.animate.shift(2*LEFT))
+
+                    with c.suspend_updating(): # used as a context manager, updating is resumed automatically
+                        self.play(Indicate(s))
+                    self.play(Indicate(s))
+
 
         See also
         --------
         :meth:`resume_updating`
         :meth:`add_updater`
-        :meth:`suspended_updating`
 
         """
         self.updating_suspended = True
         if recursive:
             for submob in self.submobjects:
                 submob.suspend_updating(recursive)
-        return self
 
-    def resume_updating(self, recursive: bool = True) -> Self:
+        return _UpdateManager(self)
+
+    def resume_updating(self, recursive: bool = True):
         """Enable updating from updaters and animations.
 
         Parameters
@@ -1158,16 +1177,11 @@ class Mobject:
         recursive
             Whether to recursively enable updating on all submobjects.
 
-        Returns
-        -------
-        :class:`Mobject`
-            ``self``
 
         See also
         --------
         :meth:`suspend_updating`
         :meth:`add_updater`
-        :meth:`suspended_updating`
 
         """
         self.updating_suspended = False
@@ -1175,51 +1189,6 @@ class Mobject:
             for submob in self.submobjects:
                 submob.resume_updating(recursive)
         self.update(dt=0, recursive=recursive)
-        return self
-
-    @contextmanager
-    def suspended_updating(self, recursive: bool = True) -> Iterator[Self]:
-        """Disable and enable updating in a context manager fashion.
-
-        .. warning::
-
-            This cannot be called as a regular function. It must be called like a context manager.
-
-        Parameters
-        ----------
-        recursive
-            Whether to recursively enable and disable updating on all submobjects.
-
-        See also
-        --------
-        :meth:`suspend_updating`
-        :meth:`resume_updating`
-
-        Examples
-        --------
-
-        .. manim:: ContextSuspend
-
-            class ContextSuspend(Scene):
-                def construct(self):
-                    s = Square().shift(DL)
-                    c = Circle().add_updater(lambda m: m.next_to(s, UP, buff=1.0))
-
-                    self.add(c)
-
-                    self.play(s.animate.shift(2*RIGHT))
-                    self.play(Indicate(s))
-                    self.play(s.animate.shift(2*LEFT))
-                    with c.suspended_updating():
-                        self.play(Indicate(s))
-                    self.play(Indicate(s))
-
-        """
-        try:
-            self.suspend_updating(recursive)
-            yield self
-        finally:
-            self.resume_updating(recursive)
 
     # Transforming operations
 
@@ -3153,6 +3122,17 @@ class _AnimationBuilder:
             setattr(anim, attr, value)
 
         return anim
+
+
+class _UpdateManager:
+    def __init__(self, parent: Mobject):
+        self.parent: Mobject = parent
+
+    def __enter__(self) -> Mobject:
+        return self.parent
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.parent.resume_updating()
 
 
 def override_animate(method) -> types.FunctionType:
