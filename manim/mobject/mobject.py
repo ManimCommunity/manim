@@ -15,6 +15,7 @@ import sys
 import types
 import warnings
 from collections.abc import Iterable
+from contextlib import ContextDecorator, contextmanager
 from functools import partialmethod, reduce
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -1140,6 +1141,7 @@ class Mobject:
         --------
         :meth:`resume_updating`
         :meth:`add_updater`
+        :meth:`suspended_updating`
 
         """
         self.updating_suspended = True
@@ -1165,6 +1167,7 @@ class Mobject:
         --------
         :meth:`suspend_updating`
         :meth:`add_updater`
+        :meth:`suspended_updating`
 
         """
         self.updating_suspended = False
@@ -1173,6 +1176,55 @@ class Mobject:
                 submob.resume_updating(recursive)
         self.update(dt=0, recursive=recursive)
         return self
+
+    @contextmanager
+    def suspended_updating(self, recursive: bool = True) -> ContextDecorator:
+        """Disable and enable updating in a context manager fashion.
+
+        .. warning::
+
+            This cannot be called as a regular function. It must be called like a context manager.
+
+        Parameters
+        ----------
+        recursive
+            Whether to recursively enable and disable updating on all submobjects.
+
+        Returns
+        -------
+        :class:`ContextDecorator`
+            A context manager where updating is suspended inside the context block.
+
+        See also
+        --------
+        :meth:`suspend_updating`
+        :meth:`resume_updating`
+
+        Examples
+        --------
+
+        .. manim:: ContextSuspend
+
+            class ContextSuspend(Scene):
+                def construct(self):
+                    s = Square().shift(DL)
+                    c = Circle().add_updater(lambda m: m.next_to(s, UP, buff=1.0))
+
+                    self.add(c)
+
+                    self.play(s.animate.shift(2*RIGHT))
+                    self.play(Indicate(s))
+                    self.play(s.animate.shift(2*LEFT))
+                    with c.suspended_updating():
+                        self.play(Indicate(s))
+                    self.play(Indicate(s))
+
+        """
+        try:
+            self.suspend_updating(recursive)
+            yield self
+        finally:
+            self.resume_updating(recursive)
 
     # Transforming operations
 
