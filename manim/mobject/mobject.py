@@ -14,8 +14,8 @@ import random
 import sys
 import types
 import warnings
-from collections.abc import Iterable
-from contextlib import ContextDecorator, contextmanager
+from collections.abc import Iterable, Iterator
+from contextlib import contextmanager
 from functools import partialmethod, reduce
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -1178,7 +1178,7 @@ class Mobject:
         return self
 
     @contextmanager
-    def suspended_updating(self, recursive: bool = True) -> ContextDecorator:
+    def suspended_updating(self, recursive: bool = True) -> Iterator[Self]:
         """Disable and enable updating in a context manager fashion.
 
         .. warning::
@@ -1189,11 +1189,6 @@ class Mobject:
         ----------
         recursive
             Whether to recursively enable and disable updating on all submobjects.
-
-        Returns
-        -------
-        :class:`ContextDecorator`
-            A context manager where updating is suspended inside the context block.
 
         See also
         --------
