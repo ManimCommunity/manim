@@ -133,9 +133,9 @@ class QuickHull:
                 self.neighbors.setdefault(sf, set()).add(f)
 
     def classify(self, facet: Facet) -> None:
-        assert (
-            self.unclaimed is not None
-        ), "Call .initialize() before using .classify()."
+        assert self.unclaimed is not None, (
+            "Call .initialize() before using .classify()."
+        )
 
         if not self.unclaimed.size:
             self.outside[facet] = (None, None)
