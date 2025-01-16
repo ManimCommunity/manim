@@ -2306,7 +2306,7 @@ class Mobject:
         result = [self] if len(self.points) > 0 else []
         return result + self.submobjects
 
-    def get_family(self, recurse: bool = True) -> list[Self]:
+    def get_family(self) -> list[Self]:
         sub_families = [x.get_family() for x in self.submobjects]
         all_mobjects = [self] + list(it.chain(*sub_families))
         return remove_list_redundancies(all_mobjects)
