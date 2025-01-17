@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 from manim import *
+
 
 class Test(Scene):
     def construct(self):
