@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from manim import *
+from manim import AnimationGroup, Code, FadeIn, FadeOut, LaggedStart, Transform, linear
 
 
 def find_line_matches(before: Code, after: Code):
