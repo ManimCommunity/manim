@@ -10,7 +10,7 @@ import operator as op
 import pathlib
 from collections.abc import Iterable
 from functools import reduce
-from typing import Any, Callable
+from typing import TYPE_CHECKING, Any, Callable
 
 import cairo
 import numpy as np
@@ -23,7 +23,6 @@ from manim.typing import PixelArray
 from .. import config, logger
 from ..constants import *
 from ..mobject.mobject import Mobject
-from ..mobject.types.image_mobject import AbstractImageMobject
 from ..mobject.types.point_cloud_mobject import PMobject
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.color import ManimColor, ParsableManimColor, color_to_int_rgba
@@ -31,6 +30,10 @@ from ..utils.family import extract_mobject_family_members
 from ..utils.images import get_full_raster_image_path
 from ..utils.iterables import list_difference_update
 from ..utils.space_ops import angle_of_vector
+
+if TYPE_CHECKING:
+    from ..mobject.types.image_mobject import AbstractImageMobject
+
 
 LINE_JOIN_MAP = {
     LineJointType.AUTO: None,  # TODO: this could be improved
@@ -199,6 +202,8 @@ class Camera:
         :exc:`TypeError`
             When mobject is not an instance of a class that can be rendered.
         """
+        from ..mobject.types.image_mobject import AbstractImageMobject
+
         self.display_funcs = {
             VMobject: self.display_multiple_vectorized_mobjects,
             PMobject: self.display_multiple_point_cloud_mobjects,
