@@ -11,7 +11,7 @@ __all__ = ["LogBase", "LinearBase"]
 from manim.mobject.text.numbers import Integer
 
 if TYPE_CHECKING:
-    from typing import Callable
+    from typing import Callable, overload
 
     from manim.mobject.mobject import Mobject
 
@@ -27,6 +27,12 @@ class _ScaleBase:
 
     def __init__(self, custom_labels: bool = False):
         self.custom_labels = custom_labels
+
+    @overload
+    def function(self, value: float) -> float: ...
+
+    @overload
+    def function(self, value: np.array) -> np.array: ...
 
     def function(self, value: float) -> float:
         """The function that will be used to scale the values.
@@ -61,6 +67,7 @@ class _ScaleBase:
     def get_custom_labels(
         self,
         val_range: Iterable[float],
+        **kw_args: Any,
     ) -> Iterable[Mobject]:
         """Custom instructions for generating labels along an axis.
 
