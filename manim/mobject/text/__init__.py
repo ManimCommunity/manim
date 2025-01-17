@@ -7,6 +7,7 @@ Modules
     :toctree: ../reference
 
     ~code_mobject
+    ~code_transform
     ~numbers
     ~tex_mobject
     ~text_mobject
