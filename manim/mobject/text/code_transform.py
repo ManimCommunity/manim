@@ -39,6 +39,17 @@ def find_line_matches(before: Code, after: Code):
 
 
 class CodeTransform(AnimationGroup):
+    """
+    An animation that smoothly transitions between two Code objects.
+
+    PARAMETERS
+    ----------
+    before : Code
+        The initial Code object.
+    after : Code
+        The target Code object after the transition.
+    """
+
     def __init__(self, before: Code, after: Code, **kwargs):
         matches, deletions, additions = find_line_matches(before, after)
 
