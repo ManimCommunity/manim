@@ -158,7 +158,7 @@ class NumberLine(Line):
         include_numbers: bool = False,
         font_size: float = 36,
         label_direction: Sequence[float] = DOWN,
-        label_constructor: VMobject = MathTex,
+        label_constructor: type[MathTex] = MathTex,
         scaling: _ScaleBase = LinearBase(),
         line_to_number_buff: float = MED_SMALL_BUFF,
         decimal_number_config: dict | None = None,
