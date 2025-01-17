@@ -196,3 +196,5 @@ inheritance_edge_attrs = {
 html_js_files = ["responsiveSvg.js"]
 
 graphviz_output_format = "svg"
+
+latex_engine = "lualatex"
