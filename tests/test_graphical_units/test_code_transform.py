@@ -42,7 +42,6 @@ class Animation(Scene):
     after = Code(
         code=after_code,
         language="Python",
-        line_spacing=1,
     ).scale(0.8)
 
     scene.add(before)
