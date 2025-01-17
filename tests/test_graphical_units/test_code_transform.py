@@ -36,21 +36,12 @@ class Animation(Scene):
 
     before = Code(
         code=before_code,
-        tab_width=4,
-        background="window",
         language="Python",
-        font="Monospace",
-        style="one-dark",
-        line_spacing=1,
     ).scale(0.8)
 
     after = Code(
         code=after_code,
-        tab_width=4,
-        background="window",
         language="Python",
-        font="Monospace",
-        style="one-dark",
         line_spacing=1,
     ).scale(0.8)
 
