@@ -79,7 +79,8 @@ from ...utils.space_ops import normalize
 
 # import manim._config as _config
 
-re_hex = re.compile("((?<=#)|(?<=0x))[A-F0-9]{3,8}", re.IGNORECASE) # 6~8 → 3~8
+re_hex = re.compile("((?<=#)|(?<=0x))[A-F0-9]{6,8}", re.IGNORECASE)
+
 
 class ManimColor:
     """Internal representation of a color.
@@ -150,13 +151,8 @@ class ManimColor:
         elif isinstance(value, str):
             result = re_hex.search(value)
             if result is not None:
-                hex_color = result.group()
-                
-                # 3 length HEX(#RGB) → 6 length HEX(#RRGGBB) convert
-                if len(hex_color) == 3:
-                    hex_color = ''.join([c * 2 for c in hex_color])  # ex) C93 → CC9933
                 self._internal_value = ManimColor._internal_from_hex_string(
-                    hex_color, alpha
+                    result.group(), alpha
                 )
             else:
                 # This is not expected to be called on module initialization time
@@ -287,11 +283,6 @@ class ManimColor:
         ManimColorInternal
             Internal color representation
         """
-        
-        # added about 3 length hex
-        if len(hex_) == 3:
-            hex_ = ''.join([c * 2 for c in hex_])
-        
         if len(hex_) == 6:
             hex_ += "FF"
         elif len(hex_) == 8:
