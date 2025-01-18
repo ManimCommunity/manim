@@ -7,13 +7,12 @@ __all__ = [
 ]
 
 import os
-
 from pathlib import Path
-from bs4 import BeautifulSoup
 
+from bs4 import BeautifulSoup
 from pygments import highlight
 from pygments.formatters.html import HtmlFormatter
-from pygments.lexers import get_lexer_by_name, guess_lexer_for_filename, guess_lexer
+from pygments.lexers import get_lexer_by_name, guess_lexer, guess_lexer_for_filename
 
 from manim.constants import *
 from manim.mobject.geometry.arc import Dot
