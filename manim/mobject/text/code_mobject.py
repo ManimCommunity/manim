@@ -191,8 +191,8 @@ class Code(VMobject):
             *code_lines,
             **paragraph_kwargs,
         )
-        for line, color_ranges in zip(self.code_lines, color_ranges):
-            for start, end, color in color_ranges:
+        for line, color_range in zip(self.code_lines, color_ranges):
+            for start, end, color in color_range:
                 line[start:end].set_color(color)
 
         if line_numbers:
