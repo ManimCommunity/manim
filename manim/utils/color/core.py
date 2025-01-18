@@ -79,7 +79,7 @@ from ...utils.space_ops import normalize
 
 # import manim._config as _config
 
-re_hex = re.compile("((?<=#)|(?<=0x))[A-F0-9]{6,8}", re.IGNORECASE)
+re_hex = re.compile("((?<=#)|(?<=0x))[A-F0-9]{3,8}", re.IGNORECASE)
 
 
 class ManimColor:
@@ -283,6 +283,8 @@ class ManimColor:
         ManimColorInternal
             Internal color representation
         """
+        if len(hex_) in (3, 4):
+            hex_ = "".join([x * 2 for x in hex_])
         if len(hex_) == 6:
             hex_ += "FF"
         elif len(hex_) == 8:
