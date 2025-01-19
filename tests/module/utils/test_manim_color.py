@@ -45,6 +45,18 @@ def test_init_with_hex() -> None:
     nt.assert_array_equal(color._internal_value, np.array([1, 0, 0, 0]))
 
 
+def test_init_with_hex_short() -> None:
+    color = ManimColor("#F00")
+    nt.assert_array_equal(color._internal_value, np.array([1, 0, 0, 1]))
+    color = ManimColor("0xF00")
+    nt.assert_array_equal(color._internal_value, np.array([1, 0, 0, 1]))
+
+    color = ManimColor("#F000")
+    nt.assert_array_equal(color._internal_value, np.array([1, 0, 0, 0]))
+    color = ManimColor("0xF000")
+    nt.assert_array_equal(color._internal_value, np.array([1, 0, 0, 0]))
+
+
 def test_init_with_string() -> None:
     color = ManimColor("BLACK")
     nt.assert_array_equal(color._internal_value, BLACK._internal_value)
