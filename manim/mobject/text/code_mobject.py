@@ -21,7 +21,7 @@ from manim.mobject.geometry.shape_matchers import SurroundingRectangle
 from manim.mobject.text.text_mobject import Paragraph
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.typing import StrPath
-from manim.utils.color import WHITE, ManimColor, ParsableManimColor
+from manim.utils.color import WHITE, ManimColor
 
 
 class Code(VMobject):
@@ -65,6 +65,7 @@ class Code(VMobject):
                     code_string=code,
                     language="python",
                     background="window",
+                    background_config={"stroke_color": "maroon"},
                 )
                 self.add(rendered_code)
 
@@ -90,15 +91,11 @@ class Code(VMobject):
     background
         The type of background to use. Can be either ``"rectangle"`` (the
         default) or ``"window"``.
-    background_margin
-        The margin between the code and the background in Manim units.
-        Defaults to 0.3.
-    background_stroke_color
-        The color of the border of the background. Defaults to ``WHITE``.
-    background_fill_color
-        The color of the background. Defaults to ``ManimColor("#222")``.
-    background_corner_radius
-        The corner radius of the background. Defaults to 0.2.
+    background_config
+        Keyword arguments passed to the background constructor. Default
+        settings are stored in the class attribute
+        :attr:`.default_background_config` (which can also be modified
+        directly).
     font
         The font to use for the code. Defaults to ``"Monospace"``.
     font_size
@@ -111,6 +108,14 @@ class Code(VMobject):
     """
 
     _styles_list_cache: list[str] | None = None
+    default_background_config = {
+        "buff": 0.3,
+        "fill_color": ManimColor("#222"),
+        "stroke_color": WHITE,
+        "corner_radius": 0.2,
+        "stroke_width": 1,
+        "fill_opacity": 1,
+    }
 
     def __init__(
         self,
@@ -122,10 +127,7 @@ class Code(VMobject):
         add_line_numbers: bool = True,
         line_numbers_from: int = 1,
         background: Literal["rectangle", "window"] = "rectangle",
-        background_margin: float = 0.3,
-        background_stroke_color: ParsableManimColor = WHITE,
-        background_fill_color: ParsableManimColor = ManimColor("#222"),
-        background_corner_radius: float = 0.2,
+        background_config: dict[str, Any] | None = None,
         font: str = "Monospace",
         font_size: float = 24.0,
         line_spacing: float = 0.5,
@@ -229,15 +231,15 @@ class Code(VMobject):
 
         self.add(self.code_lines)
 
+        if background_config is None:
+            background_config = {}
+        background_config_base = self.default_background_config.copy()
+        background_config_base.update(background_config)
+
         if background == "rectangle":
             self.background = SurroundingRectangle(
                 self,
-                buff=background_margin,
-                fill_color=background_fill_color,
-                stroke_color=background_stroke_color,
-                corner_radius=background_corner_radius,
-                stroke_width=1,
-                fill_opacity=1,
+                **background_config_base,
             )
         elif background == "window":
             buttons = VGroup(
@@ -247,12 +249,7 @@ class Code(VMobject):
             buttons.next_to(self, UP, buff=0.1).align_to(self, LEFT).shift(LEFT * 0.1)
             self.background = SurroundingRectangle(
                 VGroup(self, buttons),
-                buff=background_margin,
-                fill_color=background_fill_color,
-                stroke_color=background_stroke_color,
-                corner_radius=background_corner_radius,
-                stroke_width=1,
-                fill_opacity=1,
+                **background_config_base,
             )
             buttons.shift(UP * 0.1 + LEFT * 0.1)
             self.background.add(buttons)
