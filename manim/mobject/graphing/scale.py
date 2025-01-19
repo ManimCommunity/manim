@@ -23,7 +23,7 @@ class _ScaleBase:
         Whether to create custom labels when plotted on a :class:`~.NumberLine`.
     """
 
-    def __init__(self, custom_labels: bool = False):
+    def __init__(self, custom_labels: bool = False) -> None:
         self.custom_labels = custom_labels
 
     def function(self, value: float) -> float:
@@ -82,7 +82,7 @@ class _ScaleBase:
 
 
 class LinearBase(_ScaleBase):
-    def __init__(self, scale_factor: float = 1.0):
+    def __init__(self, scale_factor: float = 1.0) -> None:
         """The default scaling class.
 
         Parameters
@@ -115,7 +115,7 @@ class LinearBase(_ScaleBase):
 
 
 class LogBase(_ScaleBase):
-    def __init__(self, base: float = 10, custom_labels: bool = True):
+    def __init__(self, base: float = 10, custom_labels: bool = True) -> None:
         """Scale for logarithmic graphs/functions.
 
         Parameters
@@ -139,22 +139,33 @@ class LogBase(_ScaleBase):
 
     def function(self, value: float) -> float:
         """Scales the value to fit it to a logarithmic scale.``self.function(5)==10**5``"""
-        return self.base**value
+        if not isinstance(value, (float, int, np.number)):
+            raise ValueError(
+                f"Expected float type for scaled value, got {type(value)}."
+            )
+        return float(self.base**value)
 
     def inverse_function(self, value: float) -> float:
-        """Inverse of ``function``. The value must be greater than 0"""
+        """Inverse of ``function``. The value must be greater than 0."""
         if isinstance(value, np.ndarray):
             condition = value.any() <= 0
 
-            def func(value, base):
-                return np.log(value) / np.log(base)
+            def func(value: float, base: float) -> float:
+                result = np.log(value) / np.log(base)
+                if not isinstance(result, float):
+                    raise ValueError(
+                        f"Expected a float type result, got {type(result)}."
+                    )
+                return result
         else:
             condition = value <= 0
-            func = math.log
+
+            def func(value: float, base: float) -> float:
+                return math.log(value) / math.log(base)
 
         if condition:
             raise ValueError(
-                "log(0) is undefined. Make sure the value is in the domain of the function"
+                "log is undefined. Make sure the value is in the domain of the function."
             )
         value = func(value, self.base)
         return value
@@ -164,7 +175,7 @@ class LogBase(_ScaleBase):
         val_range: Iterable[float],
         unit_decimal_places: int = 0,
         **base_config: dict[str, Any],
-    ) -> list[Mobject]:
+    ) -> list[Integer]:
         """Produces custom :class:`~.Integer` labels in the form of ``10^2``.
 
         Parameters
@@ -179,7 +190,8 @@ class LogBase(_ScaleBase):
         # uses `format` syntax to control the number of decimal places.
         tex_labels = [
             Integer(
-                self.base,
+                number=self.base,
+                num_decimal_places=0,
                 unit="^{%s}" % (f"{self.inverse_function(i):.{unit_decimal_places}f}"),  # noqa: UP031
                 **base_config,
             )
