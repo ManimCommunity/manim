@@ -79,7 +79,7 @@ from ...utils.space_ops import normalize
 
 # import manim._config as _config
 
-re_hex = re.compile("((?<=#)|(?<=0x))[A-F0-9]{6,8}", re.IGNORECASE)
+re_hex = re.compile("((?<=#)|(?<=0x))[A-F0-9]{3,8}", re.IGNORECASE)
 
 
 class ManimColor:
@@ -237,7 +237,12 @@ class ManimColor:
         self.__value: ManimColorInternal = value
 
     @classmethod
-    def _construct_from_space(cls, _space) -> Self:
+    def _construct_from_space(
+        cls,
+        _space: npt.NDArray[ManimFloat]
+        | tuple[float, float, float]
+        | tuple[float, float, float, float],
+    ) -> Self:
         """
         This function is used as a proxy for constructing a color with an internal value,
         this can be used by subclasses to hook into the construction of new objects using the internal value format
@@ -278,6 +283,8 @@ class ManimColor:
         ManimColorInternal
             Internal color representation
         """
+        if len(hex_) in (3, 4):
+            hex_ = "".join([x * 2 for x in hex_])
         if len(hex_) == 6:
             hex_ += "FF"
         elif len(hex_) == 8:
@@ -560,7 +567,7 @@ class ManimColor:
         """
         return np.array(colorsys.rgb_to_hls(*self.to_rgb()))
 
-    def invert(self, with_alpha=False) -> Self:
+    def invert(self, with_alpha: bool = False) -> Self:
         """Returns an linearly inverted version of the color (no inplace changes)
 
         Parameters
@@ -888,10 +895,10 @@ class ManimColor:
             Either a list of colors or a singular color depending on the input
         """
 
-        def is_sequence(colors) -> TypeGuard[Sequence[ParsableManimColor]]:
+        def is_sequence(colors: Any) -> TypeGuard[Sequence[ParsableManimColor]]:
             return isinstance(colors, (list, tuple))
 
-        def is_parsable(color) -> TypeGuard[ParsableManimColor]:
+        def is_parsable(color: Any) -> TypeGuard[ParsableManimColor]:
             return not isinstance(color, (list, tuple))
 
         if is_sequence(color):
@@ -900,9 +907,11 @@ class ManimColor:
             ]
         elif is_parsable(color):
             return cls._from_internal(ManimColor(color, alpha)._internal_value)
+        else:
+            return cls._from_internal(ManimColor("WHITE", alpha)._internal_value)
 
     @staticmethod
-    def gradient(colors: list[ManimColor], length: int):
+    def gradient(colors: list[ManimColor], length: int) -> None:
         """This is not implemented by now refer to :func:`color_gradient` for a working implementation for now"""
         # TODO: implement proper gradient, research good implementation for this or look at 3b1b implementation
         raise NotImplementedError
@@ -918,7 +927,8 @@ class ManimColor:
             raise TypeError(
                 f"Cannot compare {self.__class__.__name__} with {other.__class__.__name__}"
             )
-        return np.allclose(self._internal_value, other._internal_value)
+        value: bool = np.allclose(self._internal_value, other._internal_value)
+        return value
 
     def __add__(self, other: int | float | Self) -> Self:
         if isinstance(other, (int, float)):
@@ -1004,7 +1014,8 @@ class ManimColor:
         return self.to_integer()
 
     def __getitem__(self, index: int) -> float:
-        return self._internal_space[index]
+        value: float = self._internal_space[index]
+        return value
 
     def __and__(self, other: Self) -> Self:
         return self._construct_from_space(
@@ -1020,6 +1031,9 @@ class ManimColor:
         return self._construct_from_space(
             self._internal_from_integer(self.to_integer() ^ int(other), 1.0)
         )
+
+    def __hash__(self) -> int:
+        return hash(self.to_hex(with_alpha=True))
 
 
 RGBA = ManimColor
@@ -1038,7 +1052,7 @@ class HSV(ManimColor):
         if len(hsv) == 3:
             self.__hsv: HSVA_Array_Float = np.asarray((*hsv, alpha))
         elif len(hsv) == 4:
-            self.__hsv: HSVA_Array_Float = np.asarray(hsv)
+            self.__hsv = np.asarray(hsv)
         else:
             raise ValueError("HSV Color must be an array of 3 values")
 
@@ -1051,23 +1065,26 @@ class HSV(ManimColor):
 
     @property
     def hue(self) -> float:
-        return self.__hsv[0]
-
-    @property
-    def saturation(self) -> float:
-        return self.__hsv[1]
-
-    @property
-    def value(self) -> float:
-        return self.__hsv[2]
+        value: float = self.__hsv[0]
+        return value
 
     @hue.setter
     def hue(self, value: float) -> None:
         self.__hsv[0] = value
 
+    @property
+    def saturation(self) -> float:
+        value: float = self.__hsv[1]
+        return value
+
     @saturation.setter
     def saturation(self, value: float) -> None:
         self.__hsv[1] = value
+
+    @property
+    def value(self) -> float:
+        value: float = self.__hsv[2]
+        return value
 
     @value.setter
     def value(self, value: float) -> None:
@@ -1075,23 +1092,26 @@ class HSV(ManimColor):
 
     @property
     def h(self) -> float:
-        return self.__hsv[0]
-
-    @property
-    def s(self) -> float:
-        return self.__hsv[1]
-
-    @property
-    def v(self) -> float:
-        return self.__hsv[2]
+        value: float = self.__hsv[0]
+        return value
 
     @h.setter
     def h(self, value: float) -> None:
         self.__hsv[0] = value
 
+    @property
+    def s(self) -> float:
+        value: float = self.__hsv[1]
+        return value
+
     @s.setter
     def s(self, value: float) -> None:
         self.__hsv[1] = value
+
+    @property
+    def v(self) -> float:
+        value: float = self.__hsv[2]
+        return value
 
     @v.setter
     def v(self, value: float) -> None:

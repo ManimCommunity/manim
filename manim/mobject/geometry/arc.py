@@ -71,10 +71,9 @@ if TYPE_CHECKING:
     from manim.mobject.text.tex_mobject import SingleStringMathTex, Tex
     from manim.mobject.text.text_mobject import Text
     from manim.typing import (
-        CubicBezierPoints,
-        InternalPoint3D,
         Point3D,
-        QuadraticBezierPoints,
+        Point3DLike,
+        QuadraticSpline,
         Vector3D,
     )
 
@@ -269,22 +268,27 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
     def get_default_tip_length(self) -> float:
         return self.tip_length
 
-    def get_first_handle(self) -> InternalPoint3D:
+    def get_first_handle(self) -> Point3D:
         # Type inference of extracting an element from a list, is not
         # supported by numpy, see this numpy issue
         # https://github.com/numpy/numpy/issues/16544
-        return self.points[1]
+        first_handle: Point3D = self.points[1]
+        return first_handle
 
-    def get_last_handle(self) -> InternalPoint3D:
-        return self.points[-2]
+    def get_last_handle(self) -> Point3D:
+        # Type inference of extracting an element from a list, is not
+        # supported by numpy, see this numpy issue
+        # https://github.com/numpy/numpy/issues/16544
+        last_handle: Point3D = self.points[-2]
+        return last_handle
 
-    def get_end(self) -> InternalPoint3D:
+    def get_end(self) -> Point3D:
         if self.has_tip():
             return self.tip.get_start()
         else:
             return super().get_end()
 
-    def get_start(self) -> InternalPoint3D:
+    def get_start(self) -> Point3D:
         if self.has_start_tip():
             return self.start_tip.get_start()
         else:
@@ -316,14 +320,14 @@ class Arc(TipableVMobject):
         start_angle: float = 0,
         angle: float = TAU / 4,
         num_components: int = 9,
-        arc_center: InternalPoint3D = ORIGIN,
+        arc_center: Point3DLike = ORIGIN,
         **kwargs: Any,
     ):
         if radius is None:  # apparently None is passed by ArcBetweenPoints
             radius = 1.0
         self.radius = radius
         self.num_components = num_components
-        self.arc_center = arc_center
+        self.arc_center: Point3D = np.asarray(arc_center)
         self.start_angle = start_angle
         self.angle = angle
         self._failed_to_get_center: bool = False
@@ -351,7 +355,7 @@ class Arc(TipableVMobject):
     @staticmethod
     def _create_quadratic_bezier_points(
         angle: float, start_angle: float = 0, n_components: int = 8
-    ) -> QuadraticBezierPoints:
+    ) -> QuadraticSpline:
         samples = np.array(
             [
                 [np.cos(a), np.sin(a), 0]
@@ -395,7 +399,7 @@ class Arc(TipableVMobject):
         handles2 = anchors[1:] - factor * tangent_vectors[1:]
         self.set_anchors_and_handles(anchors[:-1], handles1, handles2, anchors[1:])
 
-    def get_arc_center(self, warning: bool = True) -> InternalPoint3D:
+    def get_arc_center(self, warning: bool = True) -> Point3D:
         """Looks at the normals to the first two
         anchors, and finds their intersection points
         """
@@ -423,7 +427,7 @@ class Arc(TipableVMobject):
             self._failed_to_get_center = True
             return np.array(ORIGIN)
 
-    def move_arc_center_to(self, point: InternalPoint3D) -> Self:
+    def move_arc_center_to(self, point: Point3DLike) -> Self:
         self.shift(point - self.get_arc_center())
         return self
 
@@ -455,8 +459,8 @@ class ArcBetweenPoints(Arc):
 
     def __init__(
         self,
-        start: Point3D,
-        end: Point3D,
+        start: Point3DLike,
+        end: Point3DLike,
         angle: float = TAU / 4,
         radius: float | None = None,
         **kwargs: Any,
@@ -485,14 +489,18 @@ class ArcBetweenPoints(Arc):
         if radius is None:
             center = self.get_arc_center(warning=False)
             if not self._failed_to_get_center:
-                temp_radius: float = np.linalg.norm(np.array(start) - np.array(center))
-                self.radius = temp_radius
+                # np.linalg.norm returns floating[Any] which is not compatible with float
+                self.radius = cast(
+                    float, np.linalg.norm(np.array(start) - np.array(center))
+                )
             else:
                 self.radius = np.inf
 
 
 class CurvedArrow(ArcBetweenPoints):
-    def __init__(self, start_point: Point3D, end_point: Point3D, **kwargs: Any) -> None:
+    def __init__(
+        self, start_point: Point3DLike, end_point: Point3DLike, **kwargs: Any
+    ) -> None:
         from manim.mobject.geometry.tips import ArrowTriangleFilledTip
 
         tip_shape = kwargs.pop("tip_shape", ArrowTriangleFilledTip)
@@ -501,7 +509,9 @@ class CurvedArrow(ArcBetweenPoints):
 
 
 class CurvedDoubleArrow(CurvedArrow):
-    def __init__(self, start_point: Point3D, end_point: Point3D, **kwargs: Any) -> None:
+    def __init__(
+        self, start_point: Point3DLike, end_point: Point3DLike, **kwargs: Any
+    ) -> None:
         if "tip_shape_end" in kwargs:
             kwargs["tip_shape"] = kwargs.pop("tip_shape_end")
         from manim.mobject.geometry.tips import ArrowTriangleFilledTip
@@ -638,7 +648,7 @@ class Circle(Arc):
 
     @staticmethod
     def from_three_points(
-        p1: Point3D, p2: Point3D, p3: Point3D, **kwargs: Any
+        p1: Point3DLike, p2: Point3DLike, p3: Point3DLike, **kwargs: Any
     ) -> Circle:
         """Returns a circle passing through the specified
         three points.
@@ -662,7 +672,8 @@ class Circle(Arc):
             perpendicular_bisector([np.asarray(p1), np.asarray(p2)]),
             perpendicular_bisector([np.asarray(p2), np.asarray(p3)]),
         )
-        radius: float = np.linalg.norm(p1 - center)
+        # np.linalg.norm returns floating[Any] which is not compatible with float
+        radius = cast(float, np.linalg.norm(p1 - center))
         return Circle(radius=radius, **kwargs).shift(center)
 
 
@@ -699,7 +710,7 @@ class Dot(Circle):
 
     def __init__(
         self,
-        point: Point3D = ORIGIN,
+        point: Point3DLike = ORIGIN,
         radius: float = DEFAULT_DOT_RADIUS,
         stroke_width: float = 0,
         fill_opacity: float = 1.0,
@@ -1007,10 +1018,10 @@ class CubicBezier(VMobject, metaclass=ConvertToOpenGL):
 
     def __init__(
         self,
-        start_anchor: CubicBezierPoints,
-        start_handle: CubicBezierPoints,
-        end_handle: CubicBezierPoints,
-        end_anchor: CubicBezierPoints,
+        start_anchor: Point3DLike,
+        start_handle: Point3DLike,
+        end_handle: Point3DLike,
+        end_anchor: Point3DLike,
         **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
@@ -1098,7 +1109,7 @@ class ArcPolygon(VMobject, metaclass=ConvertToOpenGL):
 
     def __init__(
         self,
-        *vertices: Point3D,
+        *vertices: Point3DLike,
         angle: float = PI / 4,
         radius: float | None = None,
         arc_config: list[dict] | None = None,

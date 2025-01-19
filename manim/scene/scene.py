@@ -52,8 +52,10 @@ from ..utils.file_ops import open_media_file
 from ..utils.iterables import list_difference_update, list_update
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable, Sequence
+    from collections.abc import Sequence
     from typing import Callable
+
+    from manim.mobject.mobject import _AnimationBuilder
 
 
 class RerunSceneHandler(FileSystemEventHandler):
@@ -486,7 +488,7 @@ class Scene:
                 self.moving_mobjects += mobjects
         return self
 
-    def add_mobjects_from_animations(self, animations):
+    def add_mobjects_from_animations(self, animations: list[Animation]) -> None:
         curr_mobjects = self.get_mobject_family_members()
         for animation in animations:
             if animation.is_introducer():
@@ -878,7 +880,7 @@ class Scene:
 
     def compile_animations(
         self,
-        *args: Animation | Iterable[Animation] | types.GeneratorType[Animation],
+        *args: Animation | Mobject | _AnimationBuilder,
         **kwargs,
     ):
         """
@@ -1070,7 +1072,7 @@ class Scene:
 
     def play(
         self,
-        *args: Animation | Iterable[Animation] | types.GeneratorType[Animation],
+        *args: Animation | Mobject | _AnimationBuilder,
         subcaption=None,
         subcaption_duration=None,
         subcaption_offset=0,
@@ -1205,7 +1207,7 @@ class Scene:
 
     def compile_animation_data(
         self,
-        *animations: Animation | Iterable[Animation] | types.GeneratorType[Animation],
+        *animations: Animation | Mobject | _AnimationBuilder,
         **play_kwargs,
     ):
         """Given a list of animations, compile the corresponding
