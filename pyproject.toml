@@ -68,6 +68,7 @@ svgelements = ">=1.8.0"
 tqdm = ">=4.0.0"
 typing-extensions = ">=4.0.0"
 watchdog = ">=2.0.0"
+beautifulsoup4 = ">=4.12"
 
 [tool.poetry.extras]
 jupyterlab = ["jupyterlab", "notebook"]
@@ -155,6 +156,8 @@ select = [
 ]
 
 ignore = [
+  # (sub)module shadows standard library module
+  "A005",
   # mutable argument defaults (too many changes)
   "B006",
   # No function calls in defaults
@@ -169,8 +172,6 @@ ignore = [
   # due to the import * used in manim
   "F403",
   "F405",
-  # fixtures not returning anything should have leading underscore
-  "PT004",
   # Exception too broad (this would require lots of changes + re.escape) for little benefit
   "PT011",
   # as recommended by https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules

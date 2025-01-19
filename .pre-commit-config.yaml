@@ -13,7 +13,7 @@ repos:
       - id: check-toml
         name: Validate Poetry
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.8.0
+    rev: v0.9.1
     hooks:
       - id: ruff
         name: ruff lint
@@ -22,7 +22,7 @@ repos:
       - id: ruff-format
         types: [python]
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.13.0
+    rev: v1.14.1
     hooks:
       - id: mypy
         additional_dependencies:

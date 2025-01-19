@@ -58,7 +58,9 @@ class Polygon:
         """Compute the minimum distance from a point to the polygon."""
         scalars = np.einsum("ij,ij->i", self.norm, point - self.start)
         clips = np.clip(scalars, 0, 1).reshape(-1, 1)
-        d = np.min(np.linalg.norm(self.start + self.diff * clips - point, axis=1))
+        d: float = np.min(
+            np.linalg.norm(self.start + self.diff * clips - point, axis=1)
+        )
         return d if self.inside(point) else -d
 
     def inside(self, point: Point2DLike) -> bool:
@@ -71,7 +73,8 @@ class Polygon:
         # Count Crossings (enforce short-circuit)
         c = (y > py) != (yr > py)
         c = px < x[c] + (py - y[c]) * (xr[c] - x[c]) / (yr[c] - y[c])
-        return np.sum(c) % 2 == 1
+        c_sum: int = np.sum(c)
+        return c_sum % 2 == 1
 
 
 class Cell:
@@ -137,7 +140,7 @@ def polylabel(rings: Sequence[Point3DLike_Array], precision: float = 0.01) -> Ce
     h = s / 2.0
 
     # Initial Grid
-    queue = PriorityQueue()
+    queue: PriorityQueue[Cell] = PriorityQueue()
     xv, yv = np.meshgrid(np.arange(mins[0], maxs[0], s), np.arange(mins[1], maxs[1], s))
     for corner in np.vstack([xv.ravel(), yv.ravel()]).T:
         queue.put(Cell(corner + h, h, polygon))
