@@ -23,6 +23,7 @@ from manim.utils.color import ParsableManimColor, ManimColor, WHITE
 
 from manim.typing import StrPath
 
+
 class Code(VMobject):
     """A highlighted source code listing.
 
@@ -200,11 +201,7 @@ class Code(VMobject):
                 line[start:end].set_color(color)
 
         if line_numbers:
-            paragraph_kwargs.update(
-                {
-                    "alignment": "right",
-                }
-            )
+            paragraph_kwargs.update({"alignment": "right"})
             self.line_numbers = Paragraph(
                 *[
                     str(i)
