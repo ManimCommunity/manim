@@ -21,8 +21,9 @@ in the right place!
 
 .. note::
 
-   Please be aware that there are different, incompatible versions
-   of Manim available. Check our :ref:`installation FAQ <different-versions>`
+   Please be aware that there are different, incompatible versions of Manim available.
+   ManimCE was forked from 3b1b/manim, originally created and open-sourced by Grant Sanderson, creator of [3Blue1Brown](https://www.youtube.com/channel/UCYO_jab_esuFRV4b17AJtAw) educational math videos.
+   Check our :ref:`installation FAQ <different-versions>`
    to learn more!
 
 - The :doc:`Installation <installation>` section has the latest and
