@@ -7,7 +7,7 @@ __all__ = [
 ]
 
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 from bs4 import BeautifulSoup, Tag
 from pygments import highlight
@@ -129,7 +129,7 @@ class Code(VMobject):
         font: str = "Monospace",
         font_size: float = 24.0,
         line_spacing: float = 0.5,
-        **paragraph_kwargs,
+        **paragraph_kwargs: Any,
     ):
         super().__init__()
 
@@ -143,18 +143,17 @@ class Code(VMobject):
             }
         )
 
-        if code_file is None and code_string is None:
-            raise ValueError("Either a code file or a code string must be specified.")
-
         if code_file is not None:
             code_file = Path(code_file)
             code_string = code_file.read_text(encoding="utf-8")
             lexer = guess_lexer_for_filename(code_file.name, code_string)
-        else:
+        elif code_string is not None:
             if language is not None:
                 lexer = get_lexer_by_name(language)
             else:
                 lexer = guess_lexer(code_string)
+        else:
+            raise ValueError("Either a code file or a code string must be specified.")
 
         code_string = code_string.expandtabs(tabsize=tab_width)
 
