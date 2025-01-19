@@ -62,7 +62,7 @@ For first-time contributors
      managing virtual environments.
 
      If you choose to use Poetry as well, follow `Poetry's installation
-     guidelines <https://python-poetry.org/docs/master/#installing-with-pipx>`__
+     guidelines <https://python-poetry.org/docs/#installing-with-pipx>`__
      to install it on your system, then run ``poetry install`` from
      your cloned repository. Poetry will then install Manim, as well
      as create and enter a virtual environment. You can always re-enter
