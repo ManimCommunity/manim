@@ -184,8 +184,8 @@ def test_type_conversion_in_Line3D():
 
 def test_type_conversion_in_Arrow3D():
     start, end = [0, 0, 0], [1, 1, 1]
-    line = Arrow3D(start, end)
-    type_table = [type(item) for item in [*line.get_start(), *line.get_end()]]
+    arrow = Arrow3D(start, end)
+    type_table = [type(item) for item in [*arrow.get_start(), *arrow.get_end()]]
     bool_table = [t == np.float64 for t in type_table]
     assert all(bool_table), "Types of start and end points are not np.float64"
 
