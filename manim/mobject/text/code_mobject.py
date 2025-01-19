@@ -12,6 +12,7 @@ from bs4 import BeautifulSoup
 from pygments import highlight
 from pygments.formatters.html import HtmlFormatter
 from pygments.lexers import get_lexer_by_name, guess_lexer, guess_lexer_for_filename
+from typing import Literal
 
 from manim.constants import *
 from manim.mobject.geometry.arc import Dot
@@ -114,7 +115,7 @@ class Code(VMobject):
         formatter_style: str = "vim",
         line_numbers: bool = True,
         line_numbers_from: int = 1,
-        background: str = "rectangle",
+        background: Literal["rectangle", "window"] = "rectangle",
         background_margin: float = 0.3,
         background_stroke_color: ParsableManimColor = WHITE,
         background_fill_color: ParsableManimColor = ManimColor("#222"),
