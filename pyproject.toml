@@ -68,6 +68,7 @@ svgelements = ">=1.8.0"
 tqdm = ">=4.0.0"
 typing-extensions = ">=4.0.0"
 watchdog = ">=2.0.0"
+beautifulsoup4 = ">=4.12"
 
 [tool.poetry.extras]
 jupyterlab = ["jupyterlab", "notebook"]
