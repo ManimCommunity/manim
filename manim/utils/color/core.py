@@ -1021,7 +1021,7 @@ class ManimColor:
             self._internal_from_integer(self.to_integer() ^ int(other), 1.0)
         )
 
-    def __hash__(self) -> str:
+    def __hash__(self) -> int:
         return hash(self.to_hex(with_alpha=True))
 
 
