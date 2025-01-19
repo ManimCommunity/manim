@@ -257,7 +257,6 @@ class Code(VMobject):
 
         self.add_to_back(self.background)
 
-
     @classmethod
     def get_styles_list(cls) -> list[str]:
         """Get the list of all available formatter styles."""
