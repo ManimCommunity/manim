@@ -7,21 +7,20 @@ __all__ = [
 ]
 
 from pathlib import Path
+from typing import Literal
 
 from bs4 import BeautifulSoup
 from pygments import highlight
 from pygments.formatters.html import HtmlFormatter
 from pygments.lexers import get_lexer_by_name, guess_lexer, guess_lexer_for_filename
-from typing import Literal
 
 from manim.constants import *
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.geometry.shape_matchers import SurroundingRectangle
 from manim.mobject.text.text_mobject import Paragraph
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
-from manim.utils.color import ParsableManimColor, ManimColor, WHITE
-
 from manim.typing import StrPath
+from manim.utils.color import WHITE, ManimColor, ParsableManimColor
 
 
 class Code(VMobject):
