@@ -1501,7 +1501,9 @@ class Graph(GenericGraph):
             VERTEX_CONF = {"radius": 0.25, "color": BLUE_B, "fill_opacity": 1}
 
             def expand_vertex(self, g, vertex_id: str, depth: int):
-                new_vertices = [f"{vertex_id}/{i}" for i in range(self.CHILDREN_PER_VERTEX)]
+                new_vertices = [
+                    f"{vertex_id}/{i}" for i in range(self.CHILDREN_PER_VERTEX)
+                ]
                 new_edges = [(vertex_id, child_id) for child_id in new_vertices]
                 g.add_edges(
                     *new_edges,

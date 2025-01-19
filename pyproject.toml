@@ -156,6 +156,8 @@ select = [
 ]
 
 ignore = [
+  # (sub)module shadows standard library module
+  "A005",
   # mutable argument defaults (too many changes)
   "B006",
   # No function calls in defaults
