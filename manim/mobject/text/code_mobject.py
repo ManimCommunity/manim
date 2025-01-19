@@ -6,7 +6,6 @@ __all__ = [
     "Code",
 ]
 
-import os
 from pathlib import Path
 
 from bs4 import BeautifulSoup
@@ -21,6 +20,7 @@ from manim.mobject.text.text_mobject import Paragraph
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import ParsableManimColor, ManimColor, WHITE
 
+from manim.typing import StrPath
 
 class Code(VMobject):
     """A highlighted source code listing.
@@ -108,7 +108,7 @@ class Code(VMobject):
 
     def __init__(
         self,
-        code_file: os.PathLike | str | None = None,
+        code_file: StrPath | None = None,
         code_string: str | None = None,
         language: str | None = None,
         formatter_style: str = "vim",
