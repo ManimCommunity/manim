@@ -81,6 +81,8 @@ class Code(VMobject):
         The style to use for the code highlighting. Defaults to ``"vim"``.
         A list of all available styles can be obtained by calling
         :meth:`.Code.get_styles_list`.
+    tab_width
+        The width of a tab character in spaces. Defaults to 4.
     line_numbers
         Whether to display line numbers. Defaults to ``True``.
     line_numbers_from
@@ -116,6 +118,7 @@ class Code(VMobject):
         code_string: str | None = None,
         language: str | None = None,
         formatter_style: str = "vim",
+        tab_width: int = 4,
         line_numbers: bool = True,
         line_numbers_from: int = 1,
         background: Literal["rectangle", "window"] = "rectangle",
@@ -152,6 +155,8 @@ class Code(VMobject):
                 lexer = get_lexer_by_name(language)
             else:
                 lexer = guess_lexer(code_string)
+        
+        code_string = code_string.expandtabs(tabsize=tab_width)
 
         formatter = HtmlFormatter(
             style=formatter_style,
