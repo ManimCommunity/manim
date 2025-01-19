@@ -12,10 +12,9 @@ RUN apt-get update -qq \
         pkg-config \
         make \
         wget \
-        ghostscript
+        ghostscript \
+        fonts-noto
 
-# adding fonts
-RUN apt-get install --no-install-recommends -y fonts-noto
 RUN fc-cache -fv
 
 # setup a minimal texlive installation
