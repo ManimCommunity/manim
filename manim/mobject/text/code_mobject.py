@@ -13,6 +13,7 @@ from bs4 import BeautifulSoup
 from pygments import highlight
 from pygments.formatters.html import HtmlFormatter
 from pygments.lexers import get_lexer_by_name, guess_lexer, guess_lexer_for_filename
+from pygments.styles import get_all_styles
 
 from manim.constants import *
 from manim.mobject.geometry.arc import Dot
@@ -79,7 +80,7 @@ class Code(VMobject):
     formatter_style
         The style to use for the code highlighting. Defaults to ``"vim"``.
         A list of all available styles can be obtained by calling
-        :func:`pygments.styles.get_all_styles`.
+        :meth:`.Code.get_styles_list`.
     line_numbers
         Whether to display line numbers. Defaults to ``True``.
     line_numbers_from
@@ -106,6 +107,8 @@ class Code(VMobject):
     **paragraph_kwargs
         Additional keyword arguments passed to :class:`.Paragraph`.
     """
+
+    _styles_list_cache: list[str] | None = None
 
     def __init__(
         self,
@@ -248,3 +251,11 @@ class Code(VMobject):
             raise ValueError(f"Unknown background type: {background}")
 
         self.add_to_back(self.background)
+
+
+    @classmethod
+    def get_styles_list(cls) -> list[str]:
+        """Get the list of all available formatter styles."""
+        if cls._styes_list_cache is None:
+            cls._styes_list_cache = list(get_all_styles())
+        return cls._styes_list_cache
