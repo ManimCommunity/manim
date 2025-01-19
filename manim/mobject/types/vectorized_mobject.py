@@ -77,16 +77,6 @@ if TYPE_CHECKING:
 # - Think about length of self.points.  Always 0 or 1 mod 4?
 #   That's kind of weird.
 
-__all__ = [
-    "VMobject",
-    "VGroup",
-    "VDict",
-    "VectorizedPoint",
-    "CurvesAsSubmobjects",
-    "VectorizedPoint",
-    "DashedVMobject",
-]
-
 
 class VMobject(Mobject):
     """A vectorized mobject.
