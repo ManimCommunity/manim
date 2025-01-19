@@ -56,10 +56,13 @@ class Code(VMobject):
                 s = Square()
                 self.play(FadeIn(s))
                 self.play(s.animate.scale(2))
-                self.wait()
-        '''
-                rendered_code = Code(code=code, tab_width=4, background="window",
-                                    language="Python", font="Monospace")
+                self.wait()'''
+
+                rendered_code = Code(
+                    code_string=code,
+                    language="python",
+                    background="window",
+                )
                 self.add(rendered_code)
 
     Parameters
