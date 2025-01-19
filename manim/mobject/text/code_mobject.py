@@ -19,6 +19,7 @@ from manim.mobject.geometry.arc import Dot
 from manim.mobject.geometry.shape_matchers import SurroundingRectangle
 from manim.mobject.text.text_mobject import Paragraph
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
+from manim.utils.color import ParsableManimColor, ManimColor, WHITE
 
 
 class Code(VMobject):
@@ -89,9 +90,9 @@ class Code(VMobject):
         The margin between the code and the background in Manim units.
         Defaults to 0.3.
     background_stroke_color
-        The color of the border of the background. Defaults to ``"#fff"``.
+        The color of the border of the background. Defaults to ``WHITE``.
     background_fill_color
-        The color of the background. Defaults to ``"#222"``.
+        The color of the background. Defaults to ``ManimColor("#222")``.
     background_corner_radius
         The corner radius of the background. Defaults to 0.2.
     font
@@ -115,8 +116,8 @@ class Code(VMobject):
         line_numbers_from: int = 1,
         background: str = "rectangle",
         background_margin: float = 0.3,
-        background_stroke_color: str = "#fff",
-        background_fill_color: str = "#222",
+        background_stroke_color: ParsableManimColor = WHITE,
+        background_fill_color: ParsableManimColor = ManimColor("#222"),
         background_corner_radius: float = 0.2,
         font: str = "Monospace",
         font_size: float = 24.0,
