@@ -261,6 +261,6 @@ class Code(VMobject):
     @classmethod
     def get_styles_list(cls) -> list[str]:
         """Get the list of all available formatter styles."""
-        if cls._styes_list_cache is None:
-            cls._styes_list_cache = list(get_all_styles())
-        return cls._styes_list_cache
+        if cls._styles_list_cache is None:
+            cls._styles_list_cache = list(get_all_styles())
+        return cls._styles_list_cache
