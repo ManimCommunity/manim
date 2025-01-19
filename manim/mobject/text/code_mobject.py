@@ -9,7 +9,7 @@ __all__ = [
 from pathlib import Path
 from typing import Literal
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 from pygments import highlight
 from pygments.formatters.html import HtmlFormatter
 from pygments.lexers import get_lexer_by_name, guess_lexer, guess_lexer_for_filename
