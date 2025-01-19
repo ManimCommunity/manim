@@ -104,7 +104,7 @@ class Code(VMobject):
     """
 
     _styles_list_cache: list[str] | None = None
-    default_background_config = {
+    default_background_config: dict[str, Any] = {
         "buff": 0.3,
         "fill_color": ManimColor("#222"),
         "stroke_color": WHITE,
@@ -112,7 +112,7 @@ class Code(VMobject):
         "stroke_width": 1,
         "fill_opacity": 1,
     }
-    default_paragraph_config = {
+    default_paragraph_config: dict[str, Any] = {
         "font": "Monospace",
         "font_size": 24,
         "line_spacing": 0.5,
