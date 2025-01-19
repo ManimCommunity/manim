@@ -98,7 +98,8 @@ class AnimationGroup(Animation):
             anim._setup_scene(scene)
 
     def finish(self) -> None:
-        self.interpolate(1)
+        for anim in self.animations:
+            anim.finish()
         self.anims_begun[:] = True
         self.anims_finished[:] = True
         if self.suspend_mobject_updating:

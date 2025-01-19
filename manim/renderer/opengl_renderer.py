@@ -388,7 +388,7 @@ class OpenGLRenderer:
 
         return self.path_to_texture_id[repr(path)]
 
-    def update_skipping_status(self):
+    def update_skipping_status(self) -> None:
         """
         This method is used internally to check if the current
         animation needs to be skipped or not. It also checks if

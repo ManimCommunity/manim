@@ -171,6 +171,24 @@ def test_animationgroup_is_passing_remover_to_nested_animationgroups():
     assert polygon_animation.remover
 
 
+def test_animationgroup_calls_finish():
+    class MyAnimation(Animation):
+        def __init__(self, mobject):
+            super().__init__(mobject)
+            self.finished = False
+
+        def finish(self):
+            self.finished = True
+
+    scene = Scene()
+    sqr_animation = MyAnimation(Square())
+    circ_animation = MyAnimation(Circle())
+    animation_group = AnimationGroup(sqr_animation, circ_animation)
+    scene.play(animation_group)
+    assert sqr_animation.finished
+    assert circ_animation.finished
+
+
 def test_empty_animation_group_fails():
     with pytest.raises(ValueError, match="Please add at least one subanimation."):
         AnimationGroup().begin()
