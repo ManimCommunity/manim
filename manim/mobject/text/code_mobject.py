@@ -155,7 +155,7 @@ class Code(VMobject):
                 lexer = get_lexer_by_name(language)
             else:
                 lexer = guess_lexer(code_string)
-        
+
         code_string = code_string.expandtabs(tabsize=tab_width)
 
         formatter = HtmlFormatter(
