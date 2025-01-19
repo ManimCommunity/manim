@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from manim import BLACK, RED, WHITE, Mobject, Scene, VMobject
+from manim import BLACK, RED, WHITE, ManimColor, Mobject, Scene, VMobject
 
 
 def test_import_color():
@@ -52,5 +52,6 @@ def test_set_color():
 
 
 def test_color_hash():
-    assert hash(WHITE) == hash(WHITE.copy())
+    assert hash(WHITE) == hash(ManimColor([1.0, 1.0, 1.0, 1.0]))
+    assert hash(WHITE) == hash("#FFFFFFFF")
     assert hash(WHITE) != hash(RED)
