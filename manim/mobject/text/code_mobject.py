@@ -35,12 +35,11 @@ class Code(VMobject):
         listing = Code(
             "helloworldcpp.cpp",
             tab_width=4,
-            background_stroke_width=1,
-            background_stroke_color=WHITE,
-            insert_line_no=True,
-            style="emacs",
+            formatter_style="emacs",
             background="window",
             language="cpp",
+            background_config={"stroke_color": WHITE},
+            paragraph_config={"font": "Noto Sans Mono"},
         )
 
     We can also render code passed as a string. As the automatic language
@@ -96,15 +95,12 @@ class Code(VMobject):
         settings are stored in the class attribute
         :attr:`.default_background_config` (which can also be modified
         directly).
-    font
-        The font to use for the code. Defaults to ``"Monospace"``.
-    font_size
-        The font size to use for the code. Defaults to 24.
-    line_spacing
-        The amount of space between lines in relation to the font size.
-        Defaults to 0.5.
-    **paragraph_kwargs
-        Additional keyword arguments passed to :class:`.Paragraph`.
+    paragraph_config
+        Keyword arguments passed to the constructor of the
+        :class:`.Paragraph` objects holding the code, and the line
+        numbers. Default settings are stored in the class attribute
+        :attr:`.default_paragraph_config` (which can also be modified
+        directly).
     """
 
     _styles_list_cache: list[str] | None = None
@@ -115,6 +111,12 @@ class Code(VMobject):
         "corner_radius": 0.2,
         "stroke_width": 1,
         "fill_opacity": 1,
+    }
+    default_paragraph_config = {
+        "font": "Monospace",
+        "font_size": 24,
+        "line_spacing": 0.5,
+        "disable_ligatures": True,
     }
 
     def __init__(
@@ -128,22 +130,9 @@ class Code(VMobject):
         line_numbers_from: int = 1,
         background: Literal["rectangle", "window"] = "rectangle",
         background_config: dict[str, Any] | None = None,
-        font: str = "Monospace",
-        font_size: float = 24.0,
-        line_spacing: float = 0.5,
-        **paragraph_kwargs: Any,
+        paragraph_config: dict[str, Any] | None = None,
     ):
         super().__init__()
-
-        # collect all arguments for Paragraph initialization in one dict
-        paragraph_kwargs.update(
-            {
-                "font": font,
-                "font_size": font_size,
-                "line_spacing": line_spacing,
-                "disable_ligatures": True,
-            }
-        )
 
         if code_file is not None:
             code_file = Path(code_file)
@@ -203,18 +192,23 @@ class Code(VMobject):
                         current_line_char_index += 1
 
         color_ranges.append(current_line_color_ranges)
-
         code_lines = self._code_html.get_text().removesuffix("\n").split("\n")
+
+        if paragraph_config is None:
+            paragraph_config = {}
+        base_paragraph_config = self.default_paragraph_config.copy()
+        base_paragraph_config.update(paragraph_config)
+
         self.code_lines = Paragraph(
             *code_lines,
-            **paragraph_kwargs,
+            **base_paragraph_config,
         )
         for line, color_range in zip(self.code_lines, color_ranges):
             for start, end, color in color_range:
                 line[start:end].set_color(color)
 
         if add_line_numbers:
-            paragraph_kwargs.update({"alignment": "right"})
+            base_paragraph_config.update({"alignment": "right"})
             self.line_numbers = Paragraph(
                 *[
                     str(i)
@@ -222,7 +216,7 @@ class Code(VMobject):
                         line_numbers_from, line_numbers_from + len(self.code_lines)
                     )
                 ],
-                **paragraph_kwargs,
+                **base_paragraph_config,
             )
             self.line_numbers.next_to(self.code_lines, direction=LEFT).align_to(
                 self.code_lines, UP
