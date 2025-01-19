@@ -167,6 +167,7 @@ class Code(VMobject):
             highlight(code_string, lexer, formatter), features="html.parser"
         )
         self._code_html = soup.find("pre")
+        assert isinstance(self._code_html, Tag)
 
         # as we are using Paragraph to render the text, we need to find the character indices
         # of the segments of changed color in the HTML code
