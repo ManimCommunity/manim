@@ -106,34 +106,62 @@ A total of 138 pull requests were merged for this release.
 Highlights
 ----------
 
-* :pr:`3501`: Replaced external ``ffmpeg`` dependency with ``pyav``.
+* :pr:`3501`: Replaced external ``ffmpeg`` dependency with ``pyav``
+   This change removes the need to have ``ffmpeg`` available as a command line tool
+   when using Manim. While ``pyav`` technically also uses ``ffmpeg`` internally,
+   the maintainers of ``pyav`` distribute it in their binary wheels.
 
 
-* :pr:`3966`: :class:`.VGroup` can now be initialized with :class:`.VMobject` iterables.
+* :pr:`3966`: :class:`.VGroup` can now be initialized with :class:`.VMobject` iterables
+   Groups of Mobjects can now be created by passing an iterable to the :class:`.VGroup`
+   constructors::
+
+      my_group = VGroup(Dot() for _ in range(10))
 
 
-* :pr:`3518`: Created a :class:`.HSV` color class, and added support for custom color spaces.
+* :pr:`3518`: Created a :class:`.HSV` color class, and added support for custom color spaces
+   This extends the color system of Manim and adds support to implement custom color spaces.
+   See the implementation of :class:`.HSV` for a practical example.
 
 
-* :pr:`3967`: Added support for Python 3.13.
+* :pr:`3967`: Added support for Python 3.13
+   This adds support for Python 3.13, which brings the range of currently supported
+   Python versions to 3.9 to 3.13.
 
 
-* :pr:`3930`: Completely reworked the installation instructions.
+* :pr:`3930`: Completely reworked the installation instructions
+   As a consequence of removing the need for the external ``ffmpeg`` dependency,
+   we have reworked and massively simplified the installation instructions. Given
+   that practically, user-written scenes are effectively small self-contained Python
+   projects, the new instructions strongly recommend using the
+   `project and dependency management tool uv <https://docs.astral.sh/uv/>`__ to ensure
+   a consistent and reproducible environment.
 
 
 Breaking changes
 ----------------
 
-* :pr:`3884`: Renamed parameters and variables conflicting with builtin functions.
+* :pr:`3884`: Renamed parameters and variables conflicting with builtin functions
+   To avoid having keyword arguments named after builtin functions, the following
+   two changes were made to user-facing functions:
+
+   - ``ManimColor.from_hex(hex=...)`` is now  ``ManimColor.from_hex(hex_str=...)``
+   - ``Scene.next_section(type=...)`` is now ``Scene.next_section(section_type=...)``
 
 
-* :pr:`3922`: Removed ``inner_radius`` and ``outer_radius`` from :class:`.Sector` constructor.
+* :pr:`3922`: Removed ``inner_radius`` and ``outer_radius`` from :class:`.Sector` constructor
+   To construct a :class:`.Sector`, you now need to specify a ``radius`` (and an ``angle``).
+   In particular, :class:`.AnnularSector` still accepts both ``inner_radius`` and ``outer_radius``
+   arguments.
 
 
-* :pr:`3797`: Replaced ``Code.styles_list`` with :meth:`.Code.get_styles_list`.
+* :pr:`3797`: Replaced ``Code.styles_list`` with :meth:`.Code.get_styles_list`
+   The ``styles_list`` attribute of the :class:`.Code` class has been replaced with
+   a class method :meth:`.Code.get_styles_list`. This method returns a list of all
+   available values for the ``formatter_style`` argument of :class:`.Code`.
 
 
-* :pr:`4115`: Completely rewrite the implementation of the :class:`.Code` mobject.
+* :pr:`4115`: Completely rewrite the implementation of the :class:`.Code` mobject
    This includes several breaking changes to the interface of the class to make it
    more consistent. See the documentation of :class:`.Code` for a detailed description
    of the new interface, and the description of the pull request :pr:`4115` for
