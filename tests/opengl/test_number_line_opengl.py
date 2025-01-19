@@ -65,6 +65,6 @@ def test_add_labels():
         dict(zip(list(range(-3, 3)), [Integer(m) for m in range(-1, 5)])),
     )
     actual_label_length = len(num_line.labels)
-    assert (
-        actual_label_length == expected_label_length
-    ), f"Expected a VGroup with {expected_label_length} integers but got {actual_label_length}."
+    assert actual_label_length == expected_label_length, (
+        f"Expected a VGroup with {expected_label_length} integers but got {actual_label_length}."
+    )

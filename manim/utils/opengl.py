@@ -5,7 +5,15 @@ from typing import TYPE_CHECKING
 import numpy as np
 import numpy.linalg as linalg
 
-from .. import config
+from manim._config import config
+from manim.typing import ManimFloat
+
+if TYPE_CHECKING:
+    import numpy.typing as npt
+    from typing_extensions import TypeAlias
+
+    from manim.typing import MatrixMN, Point3D
+
 
 if TYPE_CHECKING:
     from typing_extensions import TypeAlias
@@ -54,12 +62,12 @@ def matrix_to_shader_input(matrix: MatrixMN) -> FlattenedMatrix4x4:
 
 
 def orthographic_projection_matrix(
-    width=None,
-    height=None,
-    near=1,
-    far=depth + 1,
-    format_=True,
-):
+    width: float | None = None,
+    height: float | None = None,
+    near: float = 1,
+    far: float = depth + 1,
+    format_: bool = True,
+) -> MatrixMN | FlattenedMatrix4x4:
     if width is None:
         width = config["frame_width"]
     if height is None:
@@ -79,8 +87,12 @@ def orthographic_projection_matrix(
 
 
 def perspective_projection_matrix(
-    width=None, height=None, near=2, far=50, format_=True
-):
+    width: float | None = None,
+    height: float | None = None,
+    near: float = 2,
+    far: float = 50,
+    format_: bool = True,
+) -> MatrixMN | FlattenedMatrix4x4:
     if width is None:
         width = config["frame_width"] / 6
     if height is None:
@@ -93,13 +105,13 @@ def perspective_projection_matrix(
             [0, 0, -1, 0],
         ],
     )
-    if format:
+    if format_:
         return matrix_to_shader_input(projection_matrix)
     else:
         return projection_matrix
 
 
-def translation_matrix(x=0, y=0, z=0):
+def translation_matrix(x: float = 0, y: float = 0, z: float = 0) -> MatrixMN:
     return np.array(
         [
             [1, 0, 0, x],
@@ -107,10 +119,11 @@ def translation_matrix(x=0, y=0, z=0):
             [0, 0, 1, z],
             [0, 0, 0, 1],
         ],
+        dtype=ManimFloat,
     )
 
 
-def x_rotation_matrix(x=0):
+def x_rotation_matrix(x: float = 0) -> MatrixMN:
     return np.array(
         [
             [1, 0, 0, 0],
@@ -121,7 +134,7 @@ def x_rotation_matrix(x=0):
     )
 
 
-def y_rotation_matrix(y=0):
+def y_rotation_matrix(y: float = 0) -> MatrixMN:
     return np.array(
         [
             [np.cos(y), 0, np.sin(y), 0],
@@ -132,7 +145,7 @@ def y_rotation_matrix(y=0):
     )
 
 
-def z_rotation_matrix(z=0):
+def z_rotation_matrix(z: float = 0) -> MatrixMN:
     return np.array(
         [
             [np.cos(z), -np.sin(z), 0, 0],
@@ -144,7 +157,9 @@ def z_rotation_matrix(z=0):
 
 
 # TODO: When rotating around the x axis, rotation eventually stops.
-def rotate_in_place_matrix(initial_position, x=0, y=0, z=0):
+def rotate_in_place_matrix(
+    initial_position: Point3D, x: float = 0, y: float = 0, z: float = 0
+) -> MatrixMN:
     return np.matmul(
         translation_matrix(*-initial_position),
         np.matmul(
@@ -154,14 +169,14 @@ def rotate_in_place_matrix(initial_position, x=0, y=0, z=0):
     )
 
 
-def rotation_matrix(x=0, y=0, z=0):
+def rotation_matrix(x: float = 0, y: float = 0, z: float = 0) -> MatrixMN:
     return np.matmul(
         np.matmul(x_rotation_matrix(x), y_rotation_matrix(y)),
         z_rotation_matrix(z),
     )
 
 
-def scale_matrix(scale_factor=1):
+def scale_matrix(scale_factor: float = 1) -> npt.NDArray:
     return np.array(
         [
             [scale_factor, 0, 0, 0],
@@ -169,15 +184,16 @@ def scale_matrix(scale_factor=1):
             [0, 0, scale_factor, 0],
             [0, 0, 0, 1],
         ],
+        dtype=ManimFloat,
     )
 
 
 def view_matrix(
-    translation=None,
-    x_rotation=0,
-    y_rotation=0,
-    z_rotation=0,
-):
+    translation: Point3D | None = None,
+    x_rotation: float = 0,
+    y_rotation: float = 0,
+    z_rotation: float = 0,
+) -> MatrixMN:
     if translation is None:
         translation = np.array([0, 0, depth / 2 + 1])
     model_matrix = np.matmul(

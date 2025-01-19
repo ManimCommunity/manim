@@ -1085,6 +1085,9 @@ class ManimColor:
             self._internal_from_integer(self.to_integer() ^ int(other), 1.0)
         )
 
+    def __hash__(self) -> int:
+        return hash(self.to_hex(with_alpha=True))
+
 
 RGBA = ManimColor
 """RGBA Color Space"""
@@ -1137,6 +1140,11 @@ class HSV(ManimColor):
         value: float = self.__hsv[2]
         return value
 
+    @property
+    def value(self) -> float:
+        value: float = self.__hsv[2]
+        return value
+
     @value.setter
     def value(self, value: float) -> None:
         self.__hsv[2] = value
@@ -1158,6 +1166,11 @@ class HSV(ManimColor):
     @s.setter
     def s(self, saturation: float) -> None:
         self.__hsv[1] = saturation
+
+    @property
+    def v(self) -> float:
+        value: float = self.__hsv[2]
+        return value
 
     @property
     def v(self) -> float:

@@ -77,16 +77,6 @@ if TYPE_CHECKING:
 # - Think about length of self.points.  Always 0 or 1 mod 4?
 #   That's kind of weird.
 
-__all__ = [
-    "VMobject",
-    "VGroup",
-    "VDict",
-    "VectorizedPoint",
-    "CurvesAsSubmobjects",
-    "VectorizedPoint",
-    "DashedVMobject",
-]
-
 
 class VMobject(Mobject):
     """A vectorized mobject.
@@ -1039,7 +1029,7 @@ class VMobject(Mobject):
         if not self.is_closed():
             self.add_line_to(self.get_subpaths()[-1][0])
 
-    def add_points_as_corners(self, points: Point3DLike_Array) -> Point3D_Array:
+    def add_points_as_corners(self, points: Point3DLike_Array) -> Self:
         """Append multiple straight lines at the end of
         :attr:`VMobject.points`, which connect the given ``points`` in order
         starting from the end of the current path. These ``points`` would be
@@ -1058,10 +1048,14 @@ class VMobject(Mobject):
             path.
         """
         points = np.asarray(points).reshape(-1, self.dim)
+        num_points = points.shape[0]
+        if num_points == 0:
+            return self
+
         if self.has_new_path_started():
             # Pop the last point from self.points and
             # add it to start_corners
-            start_corners = np.empty((len(points), self.dim))
+            start_corners = np.empty((num_points, self.dim))
             start_corners[0] = self.points[-1]
             start_corners[1:] = points[:-1]
             end_corners = points
@@ -1078,8 +1072,7 @@ class VMobject(Mobject):
             new_points[i::nppcc] = interpolate(start_corners, end_corners, t)
 
         self.append_points(new_points)
-        # TODO: shouldn't this method return self instead of points?
-        return points
+        return self
 
     def set_points_as_corners(self, points: Point3DLike_Array) -> Self:
         """Given an array of points, set them as corners of the
@@ -2126,7 +2119,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
         self.add(*vmobjects)
 
     def __repr__(self) -> str:
-        return f'{self.__class__.__name__}({", ".join(str(mob) for mob in self.submobjects)})'
+        return f"{self.__class__.__name__}({', '.join(str(mob) for mob in self.submobjects)})"
 
     def __str__(self) -> str:
         return (
