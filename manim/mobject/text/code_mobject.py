@@ -176,7 +176,11 @@ class Code(VMobject):
         for child in self._code_html.children:
             if child.name == "span":
                 try:
-                    color = child["style"].removeprefix("color: ")
+                    child_style = child["style"]
+                    if isinstance(child_style, str):
+                        color = child_style.removeprefix("color: ")
+                    else:
+                        color = None
                 except KeyError:
                     color = None
                 current_line_color_ranges.append(
