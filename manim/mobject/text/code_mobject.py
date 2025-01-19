@@ -83,7 +83,7 @@ class Code(VMobject):
         :meth:`.Code.get_styles_list`.
     tab_width
         The width of a tab character in spaces. Defaults to 4.
-    line_numbers
+    add_line_numbers
         Whether to display line numbers. Defaults to ``True``.
     line_numbers_from
         The first line number to display. Defaults to 1.
@@ -119,7 +119,7 @@ class Code(VMobject):
         language: str | None = None,
         formatter_style: str = "vim",
         tab_width: int = 4,
-        line_numbers: bool = True,
+        add_line_numbers: bool = True,
         line_numbers_from: int = 1,
         background: Literal["rectangle", "window"] = "rectangle",
         background_margin: float = 0.3,
@@ -208,7 +208,7 @@ class Code(VMobject):
             for start, end, color in color_range:
                 line[start:end].set_color(color)
 
-        if line_numbers:
+        if add_line_numbers:
             paragraph_kwargs.update({"alignment": "right"})
             self.line_numbers = Paragraph(
                 *[
