@@ -44,7 +44,7 @@ __all__ = [
 
 import itertools
 import warnings
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 import numpy as np
 from typing_extensions import Self
@@ -63,11 +63,19 @@ from manim.utils.space_ops import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
+    from typing import Any
+
     import manim.mobject.geometry.tips as tips
     from manim.mobject.mobject import Mobject
     from manim.mobject.text.tex_mobject import SingleStringMathTex, Tex
     from manim.mobject.text.text_mobject import Text
-    from manim.typing import CubicBezierPoints, Point3D, QuadraticBezierPoints, Vector3D
+    from manim.typing import (
+        Point3D,
+        Point3DLike,
+        QuadraticSpline,
+        Vector3D,
+    )
 
 
 class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
@@ -93,7 +101,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         tip_length: float = DEFAULT_ARROW_TIP_LENGTH,
         normal_vector: Vector3D = OUT,
         tip_style: dict = {},
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         self.tip_length: float = tip_length
         self.normal_vector: Vector3D = normal_vector
@@ -126,10 +134,10 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
     def create_tip(
         self,
         tip_shape: type[tips.ArrowTip] | None = None,
-        tip_length: float = None,
-        tip_width: float = None,
+        tip_length: float | None = None,
+        tip_width: float | None = None,
         at_start: bool = False,
-    ):
+    ) -> tips.ArrowTip:
         """Stylises the tip, positions it spatially, and returns
         the newly instantiated tip to the caller.
         """
@@ -142,13 +150,13 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         tip_shape: type[tips.ArrowTip] | None = None,
         tip_length: float | None = None,
         tip_width: float | None = None,
-    ):
+    ) -> tips.ArrowTip | tips.ArrowTriangleFilledTip:
         """Returns a tip that has been stylistically configured,
         but has not yet been given a position in space.
         """
         from manim.mobject.geometry.tips import ArrowTriangleFilledTip
 
-        style = {}
+        style: dict[str, Any] = {}
 
         if tip_shape is None:
             tip_shape = ArrowTriangleFilledTip
@@ -166,7 +174,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         tip = tip_shape(length=tip_length, **style)
         return tip
 
-    def position_tip(self, tip: tips.ArrowTip, at_start: bool = False):
+    def position_tip(self, tip: tips.ArrowTip, at_start: bool = False) -> tips.ArrowTip:
         # Last two control points, defining both
         # the end, and the tangency direction
         if at_start:
@@ -175,16 +183,18 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         else:
             handle = self.get_last_handle()
             anchor = self.get_end()
-        angles = cartesian_to_spherical(handle - anchor)
+        angles = cartesian_to_spherical((handle - anchor).tolist())
         tip.rotate(
             angles[1] - PI - tip.tip_angle,
         )  # Rotates the tip along the azimuthal
         if not hasattr(self, "_init_positioning_axis"):
-            axis = [
-                np.sin(angles[1]),
-                -np.cos(angles[1]),
-                0,
-            ]  # Obtains the perpendicular of the tip
+            axis = np.array(
+                [
+                    np.sin(angles[1]),
+                    -np.cos(angles[1]),
+                    0,
+                ]
+            )  # Obtains the perpendicular of the tip
             tip.rotate(
                 -angles[2] + PI / 2,
                 axis=axis,
@@ -244,23 +254,33 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
             result.add(self.start_tip)
         return result
 
-    def get_tip(self):
+    def get_tip(self) -> VMobject:
         """Returns the TipableVMobject instance's (first) tip,
-        otherwise throws an exception."""
+        otherwise throws an exception.
+        """
         tips = self.get_tips()
         if len(tips) == 0:
             raise Exception("tip not found")
         else:
-            return tips[0]
+            tip: VMobject = tips[0]
+            return tip
 
     def get_default_tip_length(self) -> float:
         return self.tip_length
 
     def get_first_handle(self) -> Point3D:
-        return self.points[1]
+        # Type inference of extracting an element from a list, is not
+        # supported by numpy, see this numpy issue
+        # https://github.com/numpy/numpy/issues/16544
+        first_handle: Point3D = self.points[1]
+        return first_handle
 
     def get_last_handle(self) -> Point3D:
-        return self.points[-2]
+        # Type inference of extracting an element from a list, is not
+        # supported by numpy, see this numpy issue
+        # https://github.com/numpy/numpy/issues/16544
+        last_handle: Point3D = self.points[-2]
+        return last_handle
 
     def get_end(self) -> Point3D:
         if self.has_tip():
@@ -274,9 +294,9 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         else:
             return super().get_start()
 
-    def get_length(self) -> np.floating:
+    def get_length(self) -> float:
         start, end = self.get_start_and_end()
-        return np.linalg.norm(start - end)
+        return float(np.linalg.norm(start - end))
 
 
 class Arc(TipableVMobject):
@@ -296,20 +316,20 @@ class Arc(TipableVMobject):
 
     def __init__(
         self,
-        radius: float = 1.0,
+        radius: float | None = 1.0,
         start_angle: float = 0,
         angle: float = TAU / 4,
         num_components: int = 9,
-        arc_center: Point3D = ORIGIN,
-        **kwargs,
+        arc_center: Point3DLike = ORIGIN,
+        **kwargs: Any,
     ):
         if radius is None:  # apparently None is passed by ArcBetweenPoints
             radius = 1.0
         self.radius = radius
-        self.num_components: int = num_components
-        self.arc_center: Point3D = arc_center
-        self.start_angle: float = start_angle
-        self.angle: float = angle
+        self.num_components = num_components
+        self.arc_center: Point3D = np.asarray(arc_center)
+        self.start_angle = start_angle
+        self.angle = angle
         self._failed_to_get_center: bool = False
         super().__init__(**kwargs)
 
@@ -335,7 +355,7 @@ class Arc(TipableVMobject):
     @staticmethod
     def _create_quadratic_bezier_points(
         angle: float, start_angle: float = 0, n_components: int = 8
-    ) -> QuadraticBezierPoints:
+    ) -> QuadraticSpline:
         samples = np.array(
             [
                 [np.cos(a), np.sin(a), 0]
@@ -374,8 +394,9 @@ class Arc(TipableVMobject):
         tangent_vectors[:, 1] = anchors[:, 0]
         tangent_vectors[:, 0] = -anchors[:, 1]
         # Use tangent vectors to deduce anchors
-        handles1 = anchors[:-1] + (d_theta / 3) * tangent_vectors[:-1]
-        handles2 = anchors[1:] - (d_theta / 3) * tangent_vectors[1:]
+        factor = 4 / 3 * np.tan(d_theta / 4)
+        handles1 = anchors[:-1] + factor * tangent_vectors[:-1]
+        handles2 = anchors[1:] - factor * tangent_vectors[1:]
         self.set_anchors_and_handles(anchors[:-1], handles1, handles2, anchors[1:])
 
     def get_arc_center(self, warning: bool = True) -> Point3D:
@@ -406,12 +427,15 @@ class Arc(TipableVMobject):
             self._failed_to_get_center = True
             return np.array(ORIGIN)
 
-    def move_arc_center_to(self, point: Point3D) -> Self:
+    def move_arc_center_to(self, point: Point3DLike) -> Self:
         self.shift(point - self.get_arc_center())
         return self
 
     def stop_angle(self) -> float:
-        return angle_of_vector(self.points[-1] - self.get_arc_center()) % TAU
+        return cast(
+            float,
+            angle_of_vector(self.points[-1] - self.get_arc_center()) % TAU,
+        )
 
 
 class ArcBetweenPoints(Arc):
@@ -435,11 +459,11 @@ class ArcBetweenPoints(Arc):
 
     def __init__(
         self,
-        start: Point3D,
-        end: Point3D,
+        start: Point3DLike,
+        end: Point3DLike,
         angle: float = TAU / 4,
-        radius: float = None,
-        **kwargs,
+        radius: float | None = None,
+        **kwargs: Any,
     ) -> None:
         if radius is not None:
             self.radius = radius
@@ -459,19 +483,24 @@ class ArcBetweenPoints(Arc):
 
         super().__init__(radius=radius, angle=angle, **kwargs)
         if angle == 0:
-            self.set_points_as_corners([LEFT, RIGHT])
+            self.set_points_as_corners(np.array([LEFT, RIGHT]))
         self.put_start_and_end_on(start, end)
 
         if radius is None:
             center = self.get_arc_center(warning=False)
             if not self._failed_to_get_center:
-                self.radius = np.linalg.norm(np.array(start) - np.array(center))
+                # np.linalg.norm returns floating[Any] which is not compatible with float
+                self.radius = cast(
+                    float, np.linalg.norm(np.array(start) - np.array(center))
+                )
             else:
                 self.radius = np.inf
 
 
 class CurvedArrow(ArcBetweenPoints):
-    def __init__(self, start_point: Point3D, end_point: Point3D, **kwargs) -> None:
+    def __init__(
+        self, start_point: Point3DLike, end_point: Point3DLike, **kwargs: Any
+    ) -> None:
         from manim.mobject.geometry.tips import ArrowTriangleFilledTip
 
         tip_shape = kwargs.pop("tip_shape", ArrowTriangleFilledTip)
@@ -480,7 +509,9 @@ class CurvedArrow(ArcBetweenPoints):
 
 
 class CurvedDoubleArrow(CurvedArrow):
-    def __init__(self, start_point: Point3D, end_point: Point3D, **kwargs) -> None:
+    def __init__(
+        self, start_point: Point3DLike, end_point: Point3DLike, **kwargs: Any
+    ) -> None:
         if "tip_shape_end" in kwargs:
             kwargs["tip_shape"] = kwargs.pop("tip_shape_end")
         from manim.mobject.geometry.tips import ArrowTriangleFilledTip
@@ -519,7 +550,7 @@ class Circle(Arc):
         self,
         radius: float | None = None,
         color: ParsableManimColor = RED,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         super().__init__(
             radius=radius,
@@ -571,7 +602,6 @@ class Circle(Arc):
                     group = Group(group1, group2, group3).arrange(buff=1)
                     self.add(group)
         """
-
         # Ignores dim_to_match and stretch; result will always be a circle
         # TODO: Perhaps create an ellipse class to handle single-dimension stretching
 
@@ -611,14 +641,15 @@ class Circle(Arc):
                     self.add(circle, s1, s2)
 
         """
-
         start_angle = angle_of_vector(self.points[0] - self.get_center())
         proportion = (angle - start_angle) / TAU
         proportion -= np.floor(proportion)
         return self.point_from_proportion(proportion)
 
     @staticmethod
-    def from_three_points(p1: Point3D, p2: Point3D, p3: Point3D, **kwargs) -> Self:
+    def from_three_points(
+        p1: Point3DLike, p2: Point3DLike, p3: Point3DLike, **kwargs: Any
+    ) -> Circle:
         """Returns a circle passing through the specified
         three points.
 
@@ -638,10 +669,11 @@ class Circle(Arc):
                     self.add(NumberPlane(), circle, dots)
         """
         center = line_intersection(
-            perpendicular_bisector([p1, p2]),
-            perpendicular_bisector([p2, p3]),
+            perpendicular_bisector([np.asarray(p1), np.asarray(p2)]),
+            perpendicular_bisector([np.asarray(p2), np.asarray(p3)]),
         )
-        radius = np.linalg.norm(p1 - center)
+        # np.linalg.norm returns floating[Any] which is not compatible with float
+        radius = cast(float, np.linalg.norm(p1 - center))
         return Circle(radius=radius, **kwargs).shift(center)
 
 
@@ -678,12 +710,12 @@ class Dot(Circle):
 
     def __init__(
         self,
-        point: Point3D = ORIGIN,
+        point: Point3DLike = ORIGIN,
         radius: float = DEFAULT_DOT_RADIUS,
         stroke_width: float = 0,
         fill_opacity: float = 1.0,
         color: ParsableManimColor = WHITE,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         super().__init__(
             arc_center=point,
@@ -704,7 +736,7 @@ class AnnotationDot(Dot):
         stroke_width: float = 5,
         stroke_color: ParsableManimColor = WHITE,
         fill_color: ParsableManimColor = BLUE,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         super().__init__(
             radius=radius,
@@ -753,12 +785,12 @@ class LabeledDot(Dot):
         self,
         label: str | SingleStringMathTex | Text | Tex,
         radius: float | None = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         if isinstance(label, str):
             from manim import MathTex
 
-            rendered_label = MathTex(label, color=BLACK)
+            rendered_label: VMobject = MathTex(label, color=BLACK)
         else:
             rendered_label = label
 
@@ -794,7 +826,7 @@ class Ellipse(Circle):
                 self.add(ellipse_group)
     """
 
-    def __init__(self, width: float = 2, height: float = 1, **kwargs) -> None:
+    def __init__(self, width: float = 2, height: float = 1, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.stretch_to_fit_width(width)
         self.stretch_to_fit_height(height)
@@ -855,7 +887,7 @@ class AnnularSector(Arc):
         fill_opacity: float = 1,
         stroke_width: float = 0,
         color: ParsableManimColor = WHITE,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         self.inner_radius = inner_radius
         self.outer_radius = outer_radius
@@ -897,17 +929,15 @@ class Sector(AnnularSector):
 
         class ExampleSector(Scene):
             def construct(self):
-                sector = Sector(outer_radius=2, inner_radius=1)
-                sector2 = Sector(outer_radius=2.5, inner_radius=0.8).move_to([-3, 0, 0])
+                sector = Sector(radius=2)
+                sector2 = Sector(radius=2.5, angle=60*DEGREES).move_to([-3, 0, 0])
                 sector.set_color(RED)
                 sector2.set_color(PINK)
                 self.add(sector, sector2)
     """
 
-    def __init__(
-        self, outer_radius: float = 1, inner_radius: float = 0, **kwargs
-    ) -> None:
-        super().__init__(inner_radius=inner_radius, outer_radius=outer_radius, **kwargs)
+    def __init__(self, radius: float = 1, **kwargs: Any) -> None:
+        super().__init__(inner_radius=0, outer_radius=radius, **kwargs)
 
 
 class Annulus(Circle):
@@ -936,13 +966,13 @@ class Annulus(Circle):
 
     def __init__(
         self,
-        inner_radius: float | None = 1,
-        outer_radius: float | None = 2,
+        inner_radius: float = 1,
+        outer_radius: float = 2,
         fill_opacity: float = 1,
         stroke_width: float = 0,
         color: ParsableManimColor = WHITE,
         mark_paths_closed: bool = False,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         self.mark_paths_closed = mark_paths_closed  # is this even used?
         self.inner_radius = inner_radius
@@ -988,11 +1018,11 @@ class CubicBezier(VMobject, metaclass=ConvertToOpenGL):
 
     def __init__(
         self,
-        start_anchor: CubicBezierPoints,
-        start_handle: CubicBezierPoints,
-        end_handle: CubicBezierPoints,
-        end_anchor: CubicBezierPoints,
-        **kwargs,
+        start_anchor: Point3DLike,
+        start_handle: Point3DLike,
+        end_handle: Point3DLike,
+        end_anchor: Point3DLike,
+        **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
         self.add_cubic_bezier_curve(start_anchor, start_handle, end_handle, end_anchor)
@@ -1079,18 +1109,20 @@ class ArcPolygon(VMobject, metaclass=ConvertToOpenGL):
 
     def __init__(
         self,
-        *vertices: Point3D,
+        *vertices: Point3DLike,
         angle: float = PI / 4,
         radius: float | None = None,
         arc_config: list[dict] | None = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         n = len(vertices)
         point_pairs = [(vertices[k], vertices[(k + 1) % n]) for k in range(n)]
 
         if not arc_config:
             if radius:
-                all_arc_configs = itertools.repeat({"radius": radius}, len(point_pairs))
+                all_arc_configs: Iterable[dict] = itertools.repeat(
+                    {"radius": radius}, len(point_pairs)
+                )
             else:
                 all_arc_configs = itertools.repeat({"angle": angle}, len(point_pairs))
         elif isinstance(arc_config, dict):
@@ -1222,7 +1254,7 @@ class ArcPolygonFromArcs(VMobject, metaclass=ConvertToOpenGL):
                 self.wait(2)
     """
 
-    def __init__(self, *arcs: Arc | ArcBetweenPoints, **kwargs) -> None:
+    def __init__(self, *arcs: Arc | ArcBetweenPoints, **kwargs: Any) -> None:
         if not all(isinstance(m, (Arc, ArcBetweenPoints)) for m in arcs):
             raise ValueError(
                 "All ArcPolygon submobjects must be of type Arc/ArcBetweenPoints",

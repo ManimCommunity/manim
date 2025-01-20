@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING, Callable
 
 if TYPE_CHECKING:
     from manim.mobject.geometry.tips import ArrowTip
-    from manim.typing import Point3D
+    from manim.typing import Point3DLike
 
 import numpy as np
 
@@ -277,7 +277,8 @@ class NumberLine(Line):
 
     def add_ticks(self):
         """Adds ticks to the number line. Ticks can be accessed after creation
-        via ``self.ticks``."""
+        via ``self.ticks``.
+        """
         ticks = VGroup()
         elongated_tick_size = self.tick_size * self.longer_tick_multiple
         elongated_tick_offsets = self.numbers_with_elongated_ticks - self.x_min
@@ -402,9 +403,9 @@ class NumberLine(Line):
             >>> from manim import NumberLine
             >>> number_line = NumberLine()
             >>> number_line.point_to_number((0, 0, 0))
-            0.0
+            np.float64(0.0)
             >>> number_line.point_to_number((1, 0, 0))
-            1.0
+            np.float64(1.0)
             >>> number_line.point_to_number([[0.5, 0, 0], [1, 0, 0], [1.5, 0, 0]])
             array([0.5, 1. , 1.5])
 
@@ -580,7 +581,6 @@ class NumberLine(Line):
         AttributeError
             If the label does not have a ``font_size`` attribute, an ``AttributeError`` is raised.
         """
-
         direction = self.label_direction if direction is None else direction
         buff = self.line_to_number_buff if buff is None else buff
         font_size = self.font_size if font_size is None else font_size
@@ -650,7 +650,7 @@ class NumberLine(Line):
     def __matmul__(self, other: float):
         return self.n2p(other)
 
-    def __rmatmul__(self, other: Point3D | Mobject):
+    def __rmatmul__(self, other: Point3DLike | Mobject):
         if isinstance(other, Mobject):
             other = other.get_center()
         return self.p2n(other)

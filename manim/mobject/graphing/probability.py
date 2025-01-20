@@ -319,7 +319,6 @@ class BarChart(Axes):
         Primarily used when the bars are initialized with ``self._add_bars``
         or updated via ``self.change_bar_values``.
         """
-
         self.bars.set_color_by_gradient(*self.bar_colors)
 
     def _add_x_axis_labels(self):
@@ -329,7 +328,6 @@ class BarChart(Axes):
 
         UP for negative values and DOWN for positive values.
         """
-
         val_range = np.arange(
             0.5, len(self.bar_names), 1
         )  # 0.5 shifted so that labels are centered, not on ticks
@@ -369,7 +367,6 @@ class BarChart(Axes):
         Rectangle
             A positioned rectangle representing a bar on the chart.
         """
-
         # bar measurements relative to the axis
 
         # distance from between the y-axis and the top of the bar
@@ -432,7 +429,6 @@ class BarChart(Axes):
 
                     self.add(chart, c_bar_lbls)
         """
-
         bar_labels = VGroup()
         for bar, value in zip(self.bars, self.values):
             bar_lbl = label_constructor(str(value))
@@ -480,7 +476,6 @@ class BarChart(Axes):
                     chart.change_bar_values(list(reversed(values)))
                     self.add(chart.get_bar_labels(font_size=24))
         """
-
         for i, (bar, value) in enumerate(zip(self.bars, values)):
             chart_val = self.values[i]
 

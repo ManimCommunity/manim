@@ -36,6 +36,9 @@ class TexTemplate:
     tex_compiler: str = "latex"
     """The TeX compiler to be used, e.g. ``latex``, ``pdflatex`` or ``lualatex``."""
 
+    description: str = ""
+    """A description of the template"""
+
     output_format: str = ".dvi"
     """The output format resulting from compilation, e.g. ``.dvi`` or ``.pdf``."""
 
@@ -181,7 +184,6 @@ def _texcode_for_environment(environment: str) -> tuple[str, str]:
         A pair of strings representing the opening and closing of the tex environment, e.g.
         ``\begin{tabular}{cccl}`` and ``\end{tabular}``
     """
-
     environment.removeprefix(r"\begin").removeprefix("{")
 
     # The \begin command takes everything and closes with a brace

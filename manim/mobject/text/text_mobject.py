@@ -663,7 +663,8 @@ class Text(SVGMobject):
     )
     def _set_color_by_t2g(self, t2g=None):
         """Sets gradient colors for specified
-        strings. Behaves similarly to ``set_color_by_t2c``."""
+        strings. Behaves similarly to ``set_color_by_t2c``.
+        """
         t2g = t2g if t2g else self.t2g
         for word, gradient in list(t2g.items()):
             for start, end in self._find_indexes(word, self.text):
@@ -702,7 +703,7 @@ class Text(SVGMobject):
             default = default_args[arg]
             if left != default and getattr(right_setting, arg) != default:
                 raise ValueError(
-                    f"Ambiguous style for text '{self.text[right_setting.start:right_setting.end]}':"
+                    f"Ambiguous style for text '{self.text[right_setting.start : right_setting.end]}':"
                     + f"'{arg}' cannot be both '{left}' and '{right}'."
                 )
             setattr(right_setting, arg, left if left != default else right)
@@ -1410,7 +1411,8 @@ class MarkupText(SVGMobject):
         """Counts characters that will be displayed.
 
         This is needed for partial coloring or gradients, because space
-        counts to the text's `len`, but has no corresponding character."""
+        counts to the text's `len`, but has no corresponding character.
+        """
         count = 0
         level = 0
         # temporarily replace HTML entities by single char
@@ -1545,7 +1547,6 @@ def register_font(font_file: str | Path):
         This method is available for macOS for ``ManimPango>=v0.2.3``. Using this
         method with previous releases will raise an :class:`AttributeError` on macOS.
     """
-
     input_folder = Path(config.input_file).parent.resolve()
     possible_paths = [
         Path(font_file),
@@ -1560,7 +1561,7 @@ def register_font(font_file: str | Path):
             logger.debug("Found file at %s", file_path.absolute())
             break
     else:
-        error = f"Can't find {font_file}." f"Tried these : {possible_paths}"
+        error = f"Can't find {font_file}.Tried these : {possible_paths}"
         raise FileNotFoundError(error)
 
     try:

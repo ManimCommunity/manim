@@ -90,7 +90,7 @@ Basic Concepts
                 [[i * 256 / n for i in range(0, n)] for _ in range(0, n)]
             )
             image = ImageMobject(imageArray).scale(2)
-            image.background_rectangle = SurroundingRectangle(image, GREEN)
+            image.background_rectangle = SurroundingRectangle(image, color=GREEN)
             self.add(image, image.background_rectangle)
 
 .. manim:: BooleanOperations
@@ -341,7 +341,7 @@ Plotting with Manim
                 axes.i2gp(TAU, cos_graph), color=YELLOW, line_func=Line
             )
             line_label = axes.get_graph_label(
-                cos_graph, "x=2\pi", x_val=TAU, direction=UR, color=WHITE
+                cos_graph, r"x=2\pi", x_val=TAU, direction=UR, color=WHITE
             )
 
             plot = VGroup(axes, sin_graph, cos_graph, vert_line)
@@ -482,7 +482,7 @@ Plotting with Manim
                 tips=False,
             )
             labels = ax.get_axis_labels(
-                x_label=Tex("$\Delta Q$"), y_label=Tex("T[$^\circ C$]")
+                x_label=Tex(r"$\Delta Q$"), y_label=Tex(r"T[$^\circ C$]")
             )
 
             x_vals = [0, 8, 38, 39]
@@ -785,8 +785,8 @@ Advanced Projects
 
         def add_x_labels(self):
             x_labels = [
-                MathTex("\pi"), MathTex("2 \pi"),
-                MathTex("3 \pi"), MathTex("4 \pi"),
+                MathTex(r"\pi"), MathTex(r"2 \pi"),
+                MathTex(r"3 \pi"), MathTex(r"4 \pi"),
             ]
 
             for i in range(len(x_labels)):

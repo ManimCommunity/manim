@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import itertools as it
 from collections.abc import Sequence
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable
 
 import numpy as np
 from mapbox_earcut import triangulate_float32 as earcut
@@ -18,10 +18,17 @@ if TYPE_CHECKING:
 
     from manim.typing import (
         ManimFloat,
-        Point3D_Array,
+        MatrixMN,
+        Point2D_Array,
+        Point3D,
+        Point3DLike,
+        Point3DLike_Array,
+        PointND,
+        PointNDLike_Array,
         Vector2D,
         Vector2D_Array,
         Vector3D,
+        Vector3D_Array,
     )
 
 __all__ = [
@@ -59,7 +66,8 @@ __all__ = [
 
 
 def norm_squared(v: float) -> float:
-    return np.dot(v, v)
+    val: float = np.dot(v, v)
+    return val
 
 
 def cross(v1: Vector3D, v2: Vector3D) -> Vector3D:
@@ -193,7 +201,6 @@ def rotate_vector(
     ValueError
         If vector is not of dimension 2 or 3.
     """
-
     if len(vector) > 3:
         raise ValueError("Vector must have the correct dimensions.")
     if len(vector) == 2:
@@ -201,7 +208,7 @@ def rotate_vector(
     return rotation_matrix(angle, axis) @ vector
 
 
-def thick_diagonal(dim: int, thickness=2) -> np.ndarray:
+def thick_diagonal(dim: int, thickness: int = 2) -> MatrixMN:
     row_indices = np.arange(dim).repeat(dim).reshape((dim, dim))
     col_indices = np.transpose(row_indices)
     return (np.abs(row_indices - col_indices) < thickness).astype("uint8")
@@ -249,9 +256,7 @@ def rotation_matrix(
     axis: np.ndarray,
     homogeneous: bool = False,
 ) -> np.ndarray:
-    """
-    Rotation in R^3 about a specified axis of rotation.
-    """
+    """Rotation in R^3 about a specified axis of rotation."""
     inhomogeneous_rotation_matrix = Rotation.from_rotvec(
         angle * normalize(np.array(axis))
     ).as_matrix()
@@ -321,8 +326,10 @@ def angle_of_vector(vector: Sequence[float] | np.ndarray) -> float:
         c_vec = np.empty(vector.shape[1], dtype=np.complex128)
         c_vec.real = vector[0]
         c_vec.imag = vector[1]
-        return np.angle(c_vec)
-    return np.angle(complex(*vector[:2]))
+        val1: float = np.angle(c_vec)
+        return val1
+    val: float = np.angle(complex(*vector[:2]))
+    return val
 
 
 def angle_between_vectors(v1: np.ndarray, v2: np.ndarray) -> float:
@@ -341,14 +348,17 @@ def angle_between_vectors(v1: np.ndarray, v2: np.ndarray) -> float:
     float
         The angle between the vectors.
     """
-
-    return 2 * np.arctan2(
+    val: float = 2 * np.arctan2(
         np.linalg.norm(normalize(v1) - normalize(v2)),
         np.linalg.norm(normalize(v1) + normalize(v2)),
     )
 
+    return val
 
-def normalize(vect: np.ndarray | tuple[float], fall_back=None) -> np.ndarray:
+
+def normalize(
+    vect: np.ndarray | tuple[float], fall_back: np.ndarray | None = None
+) -> np.ndarray:
     norm = np.linalg.norm(vect)
     if norm > 0:
         return np.array(vect) / norm
@@ -474,7 +484,6 @@ def regular_vertices(
     start_angle : :class:`float`
         The angle the vertices start at.
     """
-
     if start_angle is None:
         start_angle = 0 if n % 2 == 0 else TAU / 4
 
@@ -492,11 +501,13 @@ def R3_to_complex(point: Sequence[float]) -> np.ndarray:
     return complex(*point[:2])
 
 
-def complex_func_to_R3_func(complex_func):
+def complex_func_to_R3_func(
+    complex_func: Callable[[complex], complex],
+) -> Callable[[Point3DLike], Point3D]:
     return lambda p: complex_to_R3(complex_func(R3_to_complex(p)))
 
 
-def center_of_mass(points: Sequence[float]) -> np.ndarray:
+def center_of_mass(points: PointNDLike_Array) -> PointND:
     """Gets the center of mass of the points in space.
 
     Parameters
@@ -578,12 +589,12 @@ def line_intersection(
 
 
 def find_intersection(
-    p0s: Sequence[np.ndarray] | Point3D_Array,
-    v0s: Sequence[np.ndarray] | Point3D_Array,
-    p1s: Sequence[np.ndarray] | Point3D_Array,
-    v1s: Sequence[np.ndarray] | Point3D_Array,
+    p0s: Point3DLike_Array,
+    v0s: Vector3D_Array,
+    p1s: Point3DLike_Array,
+    v1s: Vector3D_Array,
     threshold: float = 1e-5,
-) -> Sequence[np.ndarray]:
+) -> list[Point3D]:
     """
     Return the intersection of a line passing through p0 in direction v0
     with one passing through p1 in direction v1 (or array of intersections
@@ -618,21 +629,22 @@ def get_winding_number(points: Sequence[np.ndarray]) -> float:
     >>> from manim import Square, get_winding_number
     >>> polygon = Square()
     >>> get_winding_number(polygon.get_vertices())
-    1.0
+    np.float64(1.0)
     >>> polygon.shift(2 * UP)
     Square
     >>> get_winding_number(polygon.get_vertices())
-    0.0
+    np.float64(0.0)
     """
-    total_angle = 0
+    total_angle: float = 0
     for p1, p2 in adjacent_pairs(points):
         d_angle = angle_of_vector(p2) - angle_of_vector(p1)
         d_angle = ((d_angle + PI) % TAU) - PI
         total_angle += d_angle
-    return total_angle / TAU
+    val: float = total_angle / TAU
+    return val
 
 
-def shoelace(x_y: np.ndarray) -> float:
+def shoelace(x_y: Point2D_Array) -> float:
     """2D implementation of the shoelace formula.
 
     Returns
@@ -642,10 +654,11 @@ def shoelace(x_y: np.ndarray) -> float:
     """
     x = x_y[:, 0]
     y = x_y[:, 1]
-    return np.trapz(y, x)
+    val: float = np.trapz(y, x)
+    return val
 
 
-def shoelace_direction(x_y: np.ndarray) -> str:
+def shoelace_direction(x_y: Point2D_Array) -> str:
     """
     Uses the area determined by the shoelace method to determine whether
     the input set of points is directed clockwise or counterclockwise.
@@ -685,7 +698,7 @@ def cross2d(
     .. code-block:: pycon
 
         >>> cross2d(np.array([1, 2]), np.array([3, 4]))
-        -2
+        np.int64(-2)
         >>> cross2d(
         ...     np.array([[1, 2, 0], [1, 0, 0]]),
         ...     np.array([[3, 4, 0], [0, 1, 0]]),
@@ -763,7 +776,7 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
             raise Exception("Could not find a ring to attach")
 
     # Setup linked list
-    after = []
+    after: list[int] = []
     end0 = 0
     for end1 in ring_ends:
         after.extend(range(end0 + 1, end1))
@@ -834,7 +847,7 @@ def spherical_to_cartesian(spherical: Sequence[float]) -> np.ndarray:
 
 def perpendicular_bisector(
     line: Sequence[np.ndarray],
-    norm_vector=OUT,
+    norm_vector: Vector3D = OUT,
 ) -> Sequence[np.ndarray]:
     """Returns a list of two points that correspond
     to the ends of the perpendicular bisector of the
