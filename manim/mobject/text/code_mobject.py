@@ -7,7 +7,7 @@ __all__ = [
 ]
 
 from pathlib import Path
-from typing import Any, Literal
+from typing import TYPE_CHECKING, Any, Literal
 
 from bs4 import BeautifulSoup, Tag
 from pygments import highlight
@@ -23,6 +23,11 @@ from manim.mobject.text.text_mobject import Paragraph
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.typing import StrPath
 from manim.utils.color import WHITE, ManimColor
+
+if TYPE_CHECKING:
+    from typing import Any
+
+    from manim.utils.color import ManimColor
 
 
 class Code(VMobject, metaclass=ConvertToOpenGL):
