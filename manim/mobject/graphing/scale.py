@@ -134,15 +134,13 @@ class LogBase(_ScaleBase):
 
         """
         super().__init__()
+        if base <= 0:
+            raise ValueError(f"base must be non-negative, got {base}.")
         self.base = base
         self.custom_labels = custom_labels
 
     def function(self, value: float) -> float:
         """Scales the value to fit it to a logarithmic scale.``self.function(5)==10**5``"""
-        if not isinstance(value, (float, int, np.number)):
-            raise ValueError(
-                f"Expected float type for scaled value, got {type(value)}."
-            )
         return float(self.base**value)
 
     def inverse_function(self, value: float) -> float:
