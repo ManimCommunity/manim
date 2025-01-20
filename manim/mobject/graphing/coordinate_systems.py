@@ -153,11 +153,12 @@ class CoordinateSystem:
         self.x_length = x_length
         self.y_length = y_length
         self.num_sampled_graph_points_per_tick = 10
+        self.x_axis: NumberLine
 
-    def coords_to_point(self, *coords: ManimFloat):
+    def coords_to_point(self, *coords: ManimFloat) -> Point3DLike:
         raise NotImplementedError()
 
-    def point_to_coords(self, point: Point3DLike):
+    def point_to_coords(self, point: Point3DLike) -> list[ManimFloat]:
         raise NotImplementedError()
 
     def polar_to_point(self, radius: float, azimuth: float) -> Point2D:
@@ -213,7 +214,7 @@ class CoordinateSystem:
         """Abbreviation for :meth:`coords_to_point`"""
         return self.coords_to_point(*coords)
 
-    def p2c(self, point: Point3DLike):
+    def p2c(self, point: Point3DLike) -> list[ManimFloat]:
         """Abbreviation for :meth:`point_to_coords`"""
         return self.point_to_coords(point)
 
@@ -221,17 +222,18 @@ class CoordinateSystem:
         """Abbreviation for :meth:`polar_to_point`"""
         return self.polar_to_point(radius, azimuth)
 
-    def pt2pr(self, point: np.ndarray) -> tuple[float, float]:
+    def pt2pr(self, point: np.ndarray) -> Point2D:
         """Abbreviation for :meth:`point_to_polar`"""
         return self.point_to_polar(point)
 
-    def get_axes(self):
+    def get_axes(self) -> VGroup:
         raise NotImplementedError()
 
-    def get_axis(self, index: int) -> Mobject:
-        return self.get_axes()[index]
+    def get_axis(self, index: int) -> NumberLine:
+        val: NumberLine = self.get_axes()[index]
+        return val
 
-    def get_origin(self) -> np.ndarray:
+    def get_origin(self) -> Point3DLike:
         """Gets the origin of :class:`~.Axes`.
 
         Returns
@@ -241,13 +243,13 @@ class CoordinateSystem:
         """
         return self.coords_to_point(0, 0)
 
-    def get_x_axis(self) -> Mobject:
+    def get_x_axis(self) -> NumberLine:
         return self.get_axis(0)
 
-    def get_y_axis(self) -> Mobject:
+    def get_y_axis(self) -> NumberLine:
         return self.get_axis(1)
 
-    def get_z_axis(self) -> Mobject:
+    def get_z_axis(self) -> NumberLine:
         return self.get_axis(2)
 
     def get_x_unit_size(self) -> float:
@@ -258,11 +260,11 @@ class CoordinateSystem:
 
     def get_x_axis_label(
         self,
-        label: float | str | Mobject,
+        label: float | str | VMobject,
         edge: Sequence[float] = UR,
         direction: Sequence[float] = UR,
         buff: float = SMALL_BUFF,
-        **kwargs,
+        **kwargs: Any,
     ) -> Mobject:
         """Generate an x-axis label.
 
@@ -301,11 +303,11 @@ class CoordinateSystem:
 
     def get_y_axis_label(
         self,
-        label: float | str | Mobject,
+        label: float | str | VMobject,
         edge: Sequence[float] = UR,
         direction: Sequence[float] = UP * 0.5 + RIGHT,
         buff: float = SMALL_BUFF,
-        **kwargs,
+        **kwargs: Any,
     ) -> Mobject:
         """Generate a y-axis label.
 
