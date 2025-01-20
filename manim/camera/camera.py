@@ -299,9 +299,7 @@ class Camera:
             The PIL image of the array.
         """
         if pixel_array is None:
-            # TODO:
-            # error: Cannot determine type of "pixel_array"  [has-type]
-            pixel_array = self.pixel_array  # type: ignore[has-type]
+            pixel_array = self.pixel_array
         return Image.fromarray(pixel_array, mode=self.image_mode)
 
     def convert_pixel_array(
@@ -343,14 +341,14 @@ class Camera:
         convert_from_floats
             Whether or not to convert float values to proper RGB values, by default False
         """
-        converted_array = self.convert_pixel_array(pixel_array, convert_from_floats)
+        converted_array: PixelArray = self.convert_pixel_array(
+            pixel_array, convert_from_floats
+        )
         if not (
             hasattr(self, "pixel_array")
-            # TODO:
-            # error: Cannot determine type of "pixel_array"  [has-type]
-            and self.pixel_array.shape == converted_array.shape  # type: ignore[has-type]
+            and self.pixel_array.shape == converted_array.shape
         ):
-            self.pixel_array = converted_array
+            self.pixel_array: PixelArray = converted_array
         else:
             # Set in place
             self.pixel_array[:, :, :] = converted_array[:, :, :]
