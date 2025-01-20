@@ -112,21 +112,9 @@ Highlights
    the maintainers of ``pyav`` distribute it in their binary wheels.
 
 
-* :pr:`3966`: :class:`.VGroup` can now be initialized with :class:`.VMobject` iterables
-   Groups of Mobjects can now be created by passing an iterable to the :class:`.VGroup`
-   constructors::
-
-      my_group = VGroup(Dot() for _ in range(10))
-
-
 * :pr:`3518`: Created a :class:`.HSV` color class, and added support for custom color spaces
    This extends the color system of Manim and adds support to implement custom color spaces.
    See the implementation of :class:`.HSV` for a practical example.
-
-
-* :pr:`3967`: Added support for Python 3.13
-   This adds support for Python 3.13, which brings the range of currently supported
-   Python versions to 3.9 to 3.13.
 
 
 * :pr:`3930`: Completely reworked the installation instructions
@@ -136,6 +124,18 @@ Highlights
    projects, the new instructions strongly recommend using the
    `project and dependency management tool uv <https://docs.astral.sh/uv/>`__ to ensure
    a consistent and reproducible environment.
+
+
+* :pr:`3967`: Added support for Python 3.13
+   This adds support for Python 3.13, which brings the range of currently supported
+   Python versions to 3.9 to 3.13.
+
+
+* :pr:`3966`: :class:`.VGroup` can now be initialized with :class:`.VMobject` iterables
+   Groups of Mobjects can now be created by passing an iterable to the :class:`.VGroup`
+   constructors::
+
+      my_group = VGroup(Dot() for _ in range(10))
 
 
 Breaking changes
