@@ -51,7 +51,7 @@ extensions = [
     "sphinx.ext.inheritance_diagram",
     "sphinxcontrib.programoutput",
     "myst_parser",
-    "sphinx_togglebutton"
+    "sphinx_togglebutton",
     "sphinx_design",
     "sphinx_reredirects",
 ]
