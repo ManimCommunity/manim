@@ -236,7 +236,7 @@ class ManimDirective(Directive):
         ref_block = "References: " + " ".join(ref_content) if ref_content else ""
 
         if "quality" in self.options:
-            quality = f'{self.options["quality"]}_quality'
+            quality = f"{self.options['quality']}_quality"
         else:
             quality = "example_quality"
         frame_rate = QUALITIES[quality]["frame_rate"]
