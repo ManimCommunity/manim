@@ -14,26 +14,23 @@ classifiers= [
     "Topic :: Scientific/Engineering",
     "Topic :: Multimedia :: Video",
     "Topic :: Multimedia :: Graphics",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Natural Language :: English",
-    ]
+]
 exclude = ["scripts/","logo/","readme-assets/"]
 packages = [
     { include = "manim" },
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.9"
-av = ">=9.0.0,<14.0.0"  # v14.0.0 contains breaking changes, remove after dropping python 3.9
+python = ">=3.11"
+av = ">=14.0.0"
 click = ">=8.0"
 cloup = ">=2.0.0"
 dearpygui = { version = ">=1.0.0", optional = true }
 decorator = ">=4.3.2"
-importlib-metadata = {version = ">=3.6", python = "<=3.9"}  # Required to discover plugins
 isosurfaces = ">=0.1.0"
 jupyterlab = { version = ">=3.0.0", optional = true }
 manimpango = ">=0.5.0,<1.0.0"  # Complete API change in 1.0.0
@@ -42,25 +39,14 @@ moderngl = ">=5.0.0,<6.0.0"
 moderngl-window = ">=2.0.0"
 networkx = ">=2.6"
 notebook = { version = ">=6.0.0", optional = true }
-numpy = [
-  # numpy 2.1 is the first version with prebuilt wheels for 3.13,
-  # while numpy 2.0 is the last version supporting 3.9
-  # TODO: remove when python 3.10 is the minimum supported version
-  {version = ">=2.1", python = ">=3.10"},
-  {version = ">=2.0", python = "<3.10"},
-]
+numpy = ">=2.1"
 Pillow = ">=9.1"
 pycairo = ">=1.13,<2.0.0"
 pydub = ">=0.20.0"
 audioop-lts = { version = ">=0.2.0", python = ">=3.13" }  # for pydub
 Pygments = ">=2.0.0"
 rich = ">=12.0.0"
-scipy = [
-  # scipy 1.14.0 is the first version with prebuilt wheels for 3.13
-  # TODO: remove when python 3.10 is the minimum supported version
-  {version = ">=1.13.0", python = "<3.13"},
-  {version = ">=1.14.0", python = ">=3.13"},
-]
+scipy = ">=1.14.0"
 screeninfo = ">=0.7"
 skia-pathops = ">=0.7.0"
 srt = ">=3.0.0"
@@ -75,19 +61,16 @@ jupyterlab = ["jupyterlab", "notebook"]
 gui = ["dearpygui"]
 
 [tool.poetry.group.dev.dependencies]
-furo = "^2023.09.10"
+furo = ">=2023.09.10"
 gitpython = "^3"
-isort = "^5.12.0"
 matplotlib = "^3.8.2"
 myst-parser = "^2.0.0"
 pre-commit = "^3.5.0"
-psutil = {version = "^5.8.0", python = "<3.10"}
-psutil-wheels = {version = "5.8.0", python = ">=3.10"}
+psutil-wheels = "5.8.0"
 pytest = "^8.3"
 pygithub = "^2.1.1"
 pytest-cov = "^4.1.0"
 pytest-xdist = "^2.2"  # Using latest gives flaky tests
-ruff = "*"
 Sphinx = "^7.2.6"
 sphinx-copybutton = "^0.5.2"
 sphinxcontrib-programoutput = "^0.17"
@@ -107,9 +90,6 @@ sphinx-reredirects = "^0.1.5"
 [tool.pytest.ini_options]
 markers = "slow: Mark the test as slow. Can be skipped with --skip_slow"
 addopts = "--no-cov-on-fail --cov=manim --cov-report xml --cov-report term -n auto --dist=loadfile --durations=0"
-
-[tool.isort]
-profile = "black"
 
 [tool.coverage.run]
 omit = ["*tests*"]
