@@ -88,7 +88,7 @@ stick with a simple text-based intro. Try to recreate the following:
 
 .. admonition:: Authors solution
     :class: dropdown
-        
+
     .. code-block:: python
 
         class AdventureIntro(Scene):
@@ -117,7 +117,7 @@ Once again, try to recreate the following:
 .. manim:: AlgebraicAddition
     :hide_source:
     :ref_classes: Title MathTex Paragraph Tex Text Write Unwrite Create FadeIn
-    
+
     class AlgebraicAddition(Scene):
 
         def construct(self):
@@ -177,7 +177,7 @@ Use :class:`.MathTex` to represent the matrices, and try not to hardcode the val
 
 .. admonition:: Authors solution
     :class: dropdown
-        
+
     .. code-block:: python
 
         class AlgebraicAddition(Scene):
@@ -225,7 +225,7 @@ Lastly, let's show the vector addition geometrically. Try your best to reconstru
 .. manim:: GeometricAddition
     :hide_source:
     :ref_classes: Title MathTex Paragraph Tex Text Write Unwrite Create FadeIn NumberPlane Arrow AnimationGroup ReplacementTransform VGroup
-    
+
     class VectorGroup(VGroup):
         def __init__(
             self, start, end, labelname: str,
@@ -382,7 +382,7 @@ Take a look at the decorator :func:`.override_animation` to override the :class:
 
 .. admonition:: Authors solution
     :class: dropdown
-        
+
     .. code-block:: python
 
         class VectorGroup(VGroup):
