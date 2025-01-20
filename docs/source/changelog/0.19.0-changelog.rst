@@ -141,6 +141,12 @@ Highlights
 Breaking changes
 ----------------
 
+* :pr:`3797`: Replaced ``Code.styles_list`` with :meth:`.Code.get_styles_list`
+   The ``styles_list`` attribute of the :class:`.Code` class has been replaced with
+   a class method :meth:`.Code.get_styles_list`. This method returns a list of all
+   available values for the ``formatter_style`` argument of :class:`.Code`.
+
+
 * :pr:`3884`: Renamed parameters and variables conflicting with builtin functions
    To avoid having keyword arguments named after builtin functions, the following
    two changes were made to user-facing functions:
@@ -155,10 +161,14 @@ Breaking changes
    arguments.
 
 
-* :pr:`3797`: Replaced ``Code.styles_list`` with :meth:`.Code.get_styles_list`
-   The ``styles_list`` attribute of the :class:`.Code` class has been replaced with
-   a class method :meth:`.Code.get_styles_list`. This method returns a list of all
-   available values for the ``formatter_style`` argument of :class:`.Code`.
+* :pr:`3964`: Allow :class:`.SurroundingRectangle` to accept multiple Mobjects
+   This changes the signature of :class:`.SurroundingRectangle` to accept
+   a sequence of Mobjects instead of a single Mobject. As a consequence, other
+   arguments that could be specified as positional ones before now need to be
+   specified as keyword arguments::
+
+      SurroundingRectangle(some_mobject, RED, 0.3)  # raises error now
+      SurroundingRectangle(some_mobject, color=RED, buff=0.3)  # correct usage
 
 
 * :pr:`4115`: Completely rewrite the implementation of the :class:`.Code` mobject
@@ -220,9 +230,6 @@ Enhancements
 
 
 * :pr:`3901`: Changed :attr:`.Square.side_length` attribute to a property
-
-
-* :pr:`3964`: Allow :class:`.SurroundingRectangle` to accept multiple Mobjects
 
 
 * :pr:`3965`: Added the ``scale_stroke`` boolean parameter to :meth:`.VMobject.scale`
