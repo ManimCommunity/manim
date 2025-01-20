@@ -6,6 +6,7 @@ __all__ = ["SampleSpace", "BarChart"]
 
 
 from collections.abc import Iterable, MutableSequence, Sequence
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
@@ -16,8 +17,9 @@ from manim.mobject.graphing.coordinate_systems import Axes
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.svg.brace import Brace
-from manim.mobject.text.tex_mobject import MathTex, Tex
-from manim.mobject.types.vectorized_mobject import VGroup, VMobject
+from manim.mobject.text.tex_mobject import MathTex, SingleStringMathTex, Tex
+from manim.mobject.text.text_mobject import MarkupText, Text
+from manim.mobject.types.vectorized_mobject import VGroup
 from manim.utils.color import (
     BLUE_E,
     DARK_GREY,
@@ -25,10 +27,18 @@ from manim.utils.color import (
     LIGHT_GREY,
     MAROON_B,
     YELLOW,
+    ManimColor,
     ParsableManimColor,
     color_gradient,
 )
 from manim.utils.iterables import tuplify
+
+if TYPE_CHECKING:
+    from typing_extensions import TypeAlias
+
+    from manim.typing import Vector3D
+
+TextLike: TypeAlias = SingleStringMathTex | Text | MathTex | MarkupText
 
 EPSILON = 0.0001
 
@@ -54,13 +64,13 @@ class SampleSpace(Rectangle):
 
     def __init__(
         self,
-        height=3,
-        width=3,
-        fill_color=DARK_GREY,
-        fill_opacity=1,
-        stroke_width=0.5,
-        stroke_color=LIGHT_GREY,
-        default_label_scale_val=1,
+        height: float = 3,
+        width: float = 3,
+        fill_color: ParsableManimColor = DARK_GREY,
+        fill_opacity: float = 1,
+        stroke_width: float = 0.5,
+        stroke_color: ParsableManimColor = LIGHT_GREY,
+        default_label_scale_val: float = 1,
     ):
         super().__init__(
             height=height,
@@ -72,7 +82,9 @@ class SampleSpace(Rectangle):
         )
         self.default_label_scale_val = default_label_scale_val
 
-    def add_title(self, title="Sample space", buff=MED_SMALL_BUFF):
+    def add_title(
+        self, title: str = "Sample space", buff: float = MED_SMALL_BUFF
+    ) -> None:
         # TODO, should this really exist in SampleSpaceScene
         title_mob = Tex(title)
         if title_mob.width > self.width:
@@ -81,23 +93,31 @@ class SampleSpace(Rectangle):
         self.title = title_mob
         self.add(title_mob)
 
-    def add_label(self, label):
+    def add_label(self, label: str) -> None:
         self.label = label
 
-    def complete_p_list(self, p_list):
+    def complete_p_list(self, p_list: list) -> list:
         new_p_list = list(tuplify(p_list))
         remainder = 1.0 - sum(new_p_list)
         if abs(remainder) > EPSILON:
             new_p_list.append(remainder)
         return new_p_list
 
-    def get_division_along_dimension(self, p_list, dim, colors, vect):
+    def get_division_along_dimension(
+        self,
+        p_list: list,
+        dim: int,
+        reference_colors: Sequence[ParsableManimColor],
+        vect: Vector3D,
+    ) -> VGroup:
         p_list = self.complete_p_list(p_list)
-        colors = color_gradient(colors, len(p_list))
+        colors = color_gradient(reference_colors, len(p_list))
 
         last_point = self.get_edge_center(-vect)
         parts = VGroup()
-        for factor, color in zip(p_list, colors):
+        for factor, color in zip(
+            p_list, colors if isinstance(colors, list) else [colors]
+        ):
             part = SampleSpace()
             part.set_fill(color, 1)
             part.replace(self, stretch=True)
@@ -107,28 +127,38 @@ class SampleSpace(Rectangle):
             parts.add(part)
         return parts
 
-    def get_horizontal_division(self, p_list, colors=[GREEN_E, BLUE_E], vect=DOWN):
+    def get_horizontal_division(
+        self,
+        p_list: list,
+        colors: list[ManimColor] = [GREEN_E, BLUE_E],
+        vect: Vector3D = DOWN,
+    ) -> VGroup:
         return self.get_division_along_dimension(p_list, 1, colors, vect)
 
-    def get_vertical_division(self, p_list, colors=[MAROON_B, YELLOW], vect=RIGHT):
+    def get_vertical_division(
+        self,
+        p_list: list,
+        colors: list[ManimColor] = [MAROON_B, YELLOW],
+        vect: Vector3D = RIGHT,
+    ) -> VGroup:
         return self.get_division_along_dimension(p_list, 0, colors, vect)
 
-    def divide_horizontally(self, *args, **kwargs):
+    def divide_horizontally(self, *args: Any, **kwargs: Any) -> None:
         self.horizontal_parts = self.get_horizontal_division(*args, **kwargs)
         self.add(self.horizontal_parts)
 
-    def divide_vertically(self, *args, **kwargs):
+    def divide_vertically(self, *args: Any, **kwargs: Any) -> None:
         self.vertical_parts = self.get_vertical_division(*args, **kwargs)
         self.add(self.vertical_parts)
 
     def get_subdivision_braces_and_labels(
         self,
-        parts,
-        labels,
-        direction,
-        buff=SMALL_BUFF,
-        min_num_quads=1,
-    ):
+        parts: VGroup,
+        labels: list[str],
+        direction: Vector3D,
+        buff: float = SMALL_BUFF,
+        min_num_quads: int = 1,
+    ) -> VGroup:
         label_mobs = VGroup()
         braces = VGroup()
         for label, part in zip(labels, parts):
@@ -151,24 +181,26 @@ class SampleSpace(Rectangle):
         }
         return VGroup(parts.braces, parts.labels)
 
-    def get_side_braces_and_labels(self, labels, direction=LEFT, **kwargs):
+    def get_side_braces_and_labels(
+        self, labels: list[str], direction: Vector3D = LEFT, **kwargs: Any
+    ) -> VGroup:
         assert hasattr(self, "horizontal_parts")
         parts = self.horizontal_parts
         return self.get_subdivision_braces_and_labels(
             parts, labels, direction, **kwargs
         )
 
-    def get_top_braces_and_labels(self, labels, **kwargs):
+    def get_top_braces_and_labels(self, labels: list[str], **kwargs: Any) -> VGroup:
         assert hasattr(self, "vertical_parts")
         parts = self.vertical_parts
         return self.get_subdivision_braces_and_labels(parts, labels, UP, **kwargs)
 
-    def get_bottom_braces_and_labels(self, labels, **kwargs):
+    def get_bottom_braces_and_labels(self, labels: list[str], **kwargs: Any) -> VGroup:
         assert hasattr(self, "vertical_parts")
         parts = self.vertical_parts
         return self.get_subdivision_braces_and_labels(parts, labels, DOWN, **kwargs)
 
-    def add_braces_and_labels(self):
+    def add_braces_and_labels(self) -> None:
         for attr in "horizontal_parts", "vertical_parts":
             if not hasattr(self, attr):
                 continue
@@ -177,11 +209,11 @@ class SampleSpace(Rectangle):
                 if hasattr(parts, subattr):
                     self.add(getattr(parts, subattr))
 
-    def __getitem__(self, index):
+    def __getitem__(self, index: int) -> Mobject:
         if hasattr(self, "horizontal_parts"):
-            return self.horizontal_parts[index]
+            return self.horizontal_parts[index]  # type: ignore [no-any-return]
         elif hasattr(self, "vertical_parts"):
-            return self.vertical_parts[index]
+            return self.vertical_parts[index]  # type: ignore [no-any-return]
         return self.split()[index]
 
 
@@ -243,7 +275,7 @@ class BarChart(Axes):
         y_range: Sequence[float] | None = None,
         x_length: float | None = None,
         y_length: float | None = None,
-        bar_colors: Iterable[str] = [
+        bar_colors: Iterable[ParsableManimColor] = [
             "#003f5c",
             "#58508d",
             "#bc5090",
@@ -253,8 +285,8 @@ class BarChart(Axes):
         bar_width: float = 0.6,
         bar_fill_opacity: float = 0.7,
         bar_stroke_width: float = 3,
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> None:
         if isinstance(bar_colors, str):
             logger.warning(
                 "Passing a string to `bar_colors` has been deprecated since v0.15.2 and will be removed after v0.17.0, the parameter must be a list.  "
@@ -311,7 +343,7 @@ class BarChart(Axes):
 
         self.y_axis.add_numbers()
 
-    def _update_colors(self):
+    def _update_colors(self) -> None:
         """Initialize the colors of the bars of the chart.
 
         Sets the color of ``self.bars`` via ``self.bar_colors``.
@@ -321,13 +353,16 @@ class BarChart(Axes):
         """
         self.bars.set_color_by_gradient(*self.bar_colors)
 
-    def _add_x_axis_labels(self):
+    def _add_x_axis_labels(self) -> None:
         """Essentially :meth`:~.NumberLine.add_labels`, but differs in that
         the direction of the label with respect to the x_axis changes to UP or DOWN
         depending on the value.
 
         UP for negative values and DOWN for positive values.
         """
+        if self.bar_names is None:
+            return
+
         val_range = np.arange(
             0.5, len(self.bar_names), 1
         )  # 0.5 shifted so that labels are centered, not on ticks
@@ -398,8 +433,8 @@ class BarChart(Axes):
         color: ParsableManimColor | None = None,
         font_size: float = 24,
         buff: float = MED_SMALL_BUFF,
-        label_constructor: type[VMobject] = Tex,
-    ):
+        label_constructor: type[TextLike] = Tex,
+    ) -> VGroup:
         """Annotates each bar with its corresponding value. Use ``self.bar_labels`` to access the
         labels after creation.
 
@@ -408,9 +443,9 @@ class BarChart(Axes):
         color
             The color of each label. By default ``None`` and is based on the parent's bar color.
         font_size
-            The font size of each label.
+            The font size of each label. By default 24.
         buff
-            The distance from each label to its bar. By default 0.4.
+            The distance from each label to its bar. By default 0.25.
         label_constructor
             The Mobject class to construct the labels, by default :class:`~.Tex`.
 
@@ -446,7 +481,9 @@ class BarChart(Axes):
 
         return bar_labels
 
-    def change_bar_values(self, values: Iterable[float], update_colors: bool = True):
+    def change_bar_values(
+        self, values: MutableSequence[float], update_colors: bool = True
+    ) -> None:
         """Updates the height of the bars of the chart.
 
         Parameters
