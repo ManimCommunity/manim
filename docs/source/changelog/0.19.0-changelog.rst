@@ -128,7 +128,7 @@ Highlights
 
 * :pr:`3967`: Added support for Python 3.13
    This adds support for Python 3.13, which brings the range of currently supported
-   Python versions to 3.9 to 3.13.
+   Python versions to 3.9 -- 3.13.
 
 
 * :pr:`3966`: :class:`.VGroup` can now be initialized with :class:`.VMobject` iterables
