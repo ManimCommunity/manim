@@ -318,7 +318,9 @@ class Mobject:
 
             ::
 
-                self.play(my_mobject.animate.shift(RIGHT), my_mobject.animate.rotate(PI))
+                self.play(
+                    my_mobject.animate.shift(RIGHT), my_mobject.animate.rotate(PI)
+                )
 
             make use of method chaining.
 
@@ -3070,8 +3072,7 @@ class _AnimationBuilder:
 
         if (self.is_chaining and has_overridden_animation) or self.overridden_animation:
             raise NotImplementedError(
-                "Method chaining is currently not supported for "
-                "overridden animations",
+                "Method chaining is currently not supported for overridden animations",
             )
 
         def update_target(*method_args, **method_kwargs):
