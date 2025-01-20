@@ -149,12 +149,7 @@ class LogBase(_ScaleBase):
             condition = value.any() <= 0
 
             def func(value: float, base: float) -> float:
-                result = np.log(value) / np.log(base)
-                if not isinstance(result, float):
-                    raise ValueError(
-                        f"Expected a float type result, got {type(result)}."
-                    )
-                return result
+                return np.log(value) / np.log(base)  # type: ignore [no-any-return]
         else:
             condition = value <= 0
 
