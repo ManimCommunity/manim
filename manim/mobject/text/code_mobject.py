@@ -7,7 +7,7 @@ __all__ = [
 ]
 
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Callable, Literal
 
 from bs4 import BeautifulSoup, Tag
 from pygments import highlight
@@ -108,6 +108,8 @@ class Code(VMobject):
         directly).
     """
 
+    line_numbers: Paragraph | None = None
+    background: VMobject | None = None
     _styles_list_cache: list[str] | None = None
     default_background_config: dict[str, Any] = {
         "buff": 0.3,
@@ -265,7 +267,7 @@ class Code(VMobject):
             cls._styles_list_cache = list(get_all_styles())
         return cls._styles_list_cache
 
-    def _set_current_code_string(self, new_str: str):
+    def _set_current_code_string(self, new_str: str) -> None:
         self._current_code_string = new_str
 
     def update_code(
@@ -293,10 +295,10 @@ class Code(VMobject):
         background_config: dict[str, Any] | None = None,
         paragraph_config: dict[str, Any] | None = None,
         run_time: float | None = None,
-        rate_func=linear,
+        rate_func: Callable[..., float] = linear,
         lag_ratio: float = 0.0,
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> AnimationGroup:
         old_code_string = self._current_code_string
         old_lines = list(self.code_lines) if hasattr(self, "code_lines") else []
         old_background = getattr(self, "background", None)
@@ -306,7 +308,7 @@ class Code(VMobject):
             p = Path(code_file)
             new_code_str = p.read_text(encoding="utf-8")
         else:
-            new_code_str = code_string
+            new_code_str = "" if code_string is None else code_string
 
         if not new_code_str:
             raise ValueError("No new code_string or code_file found for update_code.")
@@ -376,7 +378,9 @@ class Code(VMobject):
         return final_group
 
 
-def find_line_matches(old_code_str: str, new_code_str: str):
+def find_line_matches(
+    old_code_str: str, new_code_str: str
+) -> tuple[list[tuple[int, int]], list[int], list[int]]:
     """line matching algorithm with bruteforce"""
     old_lines = [
         line.lstrip() if line.strip() != "" else None
