@@ -5,11 +5,16 @@ from __future__ import annotations
 __all__ = ["ValueTracker", "ComplexValueTracker"]
 
 
+from typing import TYPE_CHECKING
+
 import numpy as np
 
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.utils.paths import straight_path
+
+if TYPE_CHECKING:
+    from typing_extensions import Any, Self
 
 
 class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
@@ -69,7 +74,7 @@ class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
 
     """
 
-    def __init__(self, value=0, **kwargs):
+    def __init__(self, value: float = 0, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.set(points=np.zeros((1, 3)))
         self.set_value(value)
@@ -78,7 +83,7 @@ class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
         """Get the current value of this ValueTracker."""
         return self.points[0, 0]
 
-    def set_value(self, value: float):
+    def set_value(self, value: float) -> Self:
         """Sets a new scalar value to the ValueTracker"""
         self.points[0, 0] = value
         return self

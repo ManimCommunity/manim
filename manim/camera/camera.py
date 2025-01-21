@@ -274,7 +274,9 @@ class Camera:
             )
             self.background[:, :] = background_rgba
 
-    def get_image(self, pixel_array: np.ndarray | list | tuple | None = None):
+    def get_image(
+        self, pixel_array: np.ndarray | list | tuple | None = None
+    ) -> Image.Image:
         """Returns an image from the passed
         pixel array, or from the current frame
         if the passed pixel array is none.

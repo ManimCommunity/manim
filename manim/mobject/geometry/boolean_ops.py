@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import numpy as np
-from pathops import Path as SkiaPath  # type: ignore[import-untyped]
+from pathops import Path as SkiaPath
 from pathops import PathVerb, difference, intersection, union, xor
 
 from manim import config
@@ -106,7 +106,7 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
                 for _p0, p1, p2, p3 in quads:
                     path.cubicTo(*p1[:2], *p2[:2], *p3[:2])
 
-                if vmobject.consider_points_equals_2d(subpath[0], subpath[-1]):  # type: ignore[arg-type]
+                if vmobject.consider_points_equals_2d(subpath[0], subpath[-1]):
                     path.close()
 
         return path

@@ -10,6 +10,8 @@ from __future__ import annotations
 
 __all__ = ["MovingCamera"]
 
+from typing import TYPE_CHECKING
+
 import numpy as np
 
 from .. import config
@@ -18,6 +20,11 @@ from ..constants import DOWN, LEFT, RIGHT, UP
 from ..mobject.frame import ScreenRectangle
 from ..mobject.mobject import Mobject
 from ..utils.color import WHITE
+
+if TYPE_CHECKING:
+    from typing import Any
+
+    from manim.utils.color import ParsableManimColor
 
 
 class MovingCamera(Camera):
@@ -32,12 +39,12 @@ class MovingCamera(Camera):
 
     def __init__(
         self,
-        frame=None,
-        fixed_dimension=0,  # width
-        default_frame_stroke_color=WHITE,
-        default_frame_stroke_width=0,
-        **kwargs,
-    ):
+        frame: ScreenRectangle | None = None,
+        fixed_dimension: Any = 0,  # width
+        default_frame_stroke_color: ParsableManimColor = WHITE,
+        default_frame_stroke_width: float = 0,
+        **kwargs: Any,
+    ) -> None:
         """
         Frame is a Mobject, (should almost certainly be a rectangle)
         determining which region of space the camera displays
@@ -158,7 +165,7 @@ class MovingCamera(Camera):
     #         self.frame_shape = (self.frame.height, width)
     #     self.resize_frame_shape(fixed_dimension=self.fixed_dimension)
 
-    def get_mobjects_indicating_movement(self):
+    def get_mobjects_indicating_movement(self) -> list[ScreenRectangle]:
         """
         Returns all mobjects whose movement implies that the camera
         should think of all other mobjects on the screen as moving
