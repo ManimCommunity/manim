@@ -14,6 +14,7 @@ from PIL.Image import Resampling
 from manim.mobject.geometry.shape_matchers import SurroundingRectangle
 
 from ... import config
+from ...camera.moving_camera import MovingCamera
 from ...constants import *
 from ...mobject.mobject import Mobject
 from ...utils.bezier import interpolate
