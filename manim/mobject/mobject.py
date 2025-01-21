@@ -2309,6 +2309,31 @@ class Mobject:
         return result + self.submobjects
 
     def get_family(self, recurse: bool = True) -> list[Self]:
+        """Lists all mobjects in the hierarchy (family) of the given mobject, 
+        including the mobject itself and all its submobjects recursively. 
+        
+        Parameters
+        ----------
+        recurse
+            Just for consistency with get_family method in OpenGLMobject.
+
+        Returns
+        -------
+        list
+            A list of mobjects in the family of the given mobject. 
+
+        Examples
+        --------
+        ::
+
+            >>> from manim import Square, Rectangle, VGroup, Group, Mobject, VMobject
+            >>> s, r, m, v = Square(), Rectangle(), Mobject(), VMobject()
+            >>> vg = VGroup(s, r)
+            >>> gr = Group(vg, m, v) 
+            >>> gr.get_family()
+            [Group, VGroup(Square, Rectangle), Square, Rectangle, Mobject, VMobject]
+            
+        """
         sub_families = [x.get_family() for x in self.submobjects]
         all_mobjects = [self] + list(it.chain(*sub_families))
         return remove_list_redundancies(all_mobjects)
