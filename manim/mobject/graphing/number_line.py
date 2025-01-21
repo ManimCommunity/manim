@@ -496,7 +496,9 @@ class NumberLine(Line):
             # error: Argument 4 to "DecimalNumber" has incompatible type "**dict[str, dict[str, Any]]"; expected "int"  [arg-type]
             x,
             font_size=font_size,
-            mob_class=label_constructor,
+            # TODO
+            # error: Argument "mob_class" to "DecimalNumber" has incompatible type "type[MathTex]"; expected "VMobject"  [arg-type]
+            mob_class=label_constructor,  # type: ignore[arg-type]
             **number_config,  # type: ignore[arg-type]
         )
 
@@ -614,13 +616,17 @@ class NumberLine(Line):
             # this method via CoordinateSystem.add_coordinates()
             # must be explicitly called
             if isinstance(label, str) and label_constructor is MathTex:
-                label = Tex(label)
+                # TODO
+                # error: Call to untyped function "Tex" in typed context  [no-untyped-call]
+                label = Tex(label)  # type: ignore[no-untyped-call]
             else:
                 label = self._create_label_tex(label, label_constructor)
 
             if hasattr(label, "font_size"):
-                assert isinstance(label, MathTex)
-                label.font_size = font_size
+                # assert isinstance(label, MathTex)
+                # TODO
+                # error: "VMobject" has no attribute "font_size"  [attr-defined]
+                label.font_size = font_size  # type: ignore[attr-defined]
             else:
                 raise AttributeError(f"{label} is not compatible with add_labels.")
             label.next_to(self.number_to_point(x), direction=direction, buff=buff)

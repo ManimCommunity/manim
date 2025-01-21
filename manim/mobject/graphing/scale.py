@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import math
 from collections.abc import Iterable
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, overload
 
 import numpy as np
 
@@ -11,7 +11,7 @@ __all__ = ["LogBase", "LinearBase"]
 from manim.mobject.text.numbers import Integer
 
 if TYPE_CHECKING:
-    from typing import Callable, overload
+    from typing import Callable
 
     from manim.mobject.mobject import Mobject
 
