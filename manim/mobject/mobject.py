@@ -2320,7 +2320,7 @@ class Mobject:
         Returns
         -------
         list
-            A list of mobjects that have points in the family of the given mobject. 
+            A list of mobjects that have points in the family of the given mobject.
 
         Examples
         --------
@@ -2329,10 +2329,10 @@ class Mobject:
             >>> from manim import Square, Rectangle, VGroup, Group, Mobject, VMobject
             >>> s, r, m, v = Square(), Rectangle(), Mobject(), VMobject()
             >>> vg = VGroup(s, r)
-            >>> gr = Group(vg, m, v) 
+            >>> gr = Group(vg, m, v)
             >>> gr.family_members_with_points()
             [Square, Rectangle]
-            
+
         """
         return [m for m in self.get_family() if m.get_num_points() > 0]
 
