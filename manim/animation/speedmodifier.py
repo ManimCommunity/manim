@@ -113,9 +113,9 @@ class ChangeSpeed(Animation):
             self.anim = self.setup(anim)
 
         if affects_speed_updaters:
-            assert (
-                ChangeSpeed.is_changing_dt is False
-            ), "Only one animation at a time can play that changes speed (dt) for ChangeSpeed updaters"
+            assert ChangeSpeed.is_changing_dt is False, (
+                "Only one animation at a time can play that changes speed (dt) for ChangeSpeed updaters"
+            )
             ChangeSpeed.is_changing_dt = True
             self.t = 0
         self.affects_speed_updaters = affects_speed_updaters

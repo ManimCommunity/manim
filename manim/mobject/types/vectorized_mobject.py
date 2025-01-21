@@ -77,16 +77,6 @@ if TYPE_CHECKING:
 # - Think about length of self.points.  Always 0 or 1 mod 4?
 #   That's kind of weird.
 
-__all__ = [
-    "VMobject",
-    "VGroup",
-    "VDict",
-    "VectorizedPoint",
-    "CurvesAsSubmobjects",
-    "VectorizedPoint",
-    "DashedVMobject",
-]
-
 
 class VMobject(Mobject):
     """A vectorized mobject.
@@ -2128,7 +2118,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
         self.add(*vmobjects)
 
     def __repr__(self) -> str:
-        return f'{self.__class__.__name__}({", ".join(str(mob) for mob in self.submobjects)})'
+        return f"{self.__class__.__name__}({', '.join(str(mob) for mob in self.submobjects)})"
 
     def __str__(self) -> str:
         return (
