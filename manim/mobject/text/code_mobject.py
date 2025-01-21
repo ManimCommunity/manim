@@ -15,13 +15,18 @@ from pygments.formatters.html import HtmlFormatter
 from pygments.lexers import get_lexer_by_name, guess_lexer, guess_lexer_for_filename
 from pygments.styles import get_all_styles
 
+from manim.animation.composition import AnimationGroup, LaggedStart
+from manim.animation.fading import FadeIn, FadeOut
+from manim.animation.transform import Transform
 from manim.constants import *
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.geometry.shape_matchers import SurroundingRectangle
+from manim.mobject.mobject import override_animate
 from manim.mobject.text.text_mobject import Paragraph
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.typing import StrPath
 from manim.utils.color import WHITE, ManimColor
+from manim.utils.rate_functions import linear
 
 
 class Code(VMobject):
@@ -147,6 +152,7 @@ class Code(VMobject):
             raise ValueError("Either a code file or a code string must be specified.")
 
         code_string = code_string.expandtabs(tabsize=tab_width)
+        self._current_code_string = code_string
 
         formatter = HtmlFormatter(
             style=formatter_style,
@@ -258,3 +264,141 @@ class Code(VMobject):
         if cls._styles_list_cache is None:
             cls._styles_list_cache = list(get_all_styles())
         return cls._styles_list_cache
+
+    def _set_current_code_string(self, new_str: str):
+        self._current_code_string = new_str
+
+    def update_code(
+        self,
+        code_file: StrPath | None = None,
+        code_string: str | None = None,
+        language: str | None = None,
+    ) -> Code:
+        self._target_code_file = code_file
+        self._target_code_string = code_string
+        self._target_code_language = language
+        return self
+
+    @override_animate(update_code)
+    def _animate_update_code(
+        self,
+        code_file: StrPath | None = None,
+        code_string: str | None = None,
+        language: str | None = None,
+        formatter_style: str = "vim",
+        tab_width: int = 4,
+        add_line_numbers: bool = True,
+        line_numbers_from: int = 1,
+        background: Literal["rectangle", "window"] = "rectangle",
+        background_config: dict[str, Any] | None = None,
+        paragraph_config: dict[str, Any] | None = None,
+        run_time: float | None = None,
+        rate_func=linear,
+        lag_ratio: float = 0.0,
+        **kwargs,
+    ):
+        old_code_string = self._current_code_string
+        old_lines = list(self.code_lines) if hasattr(self, "code_lines") else []
+        old_background = getattr(self, "background", None)
+        old_line_numbers = getattr(self, "line_numbers", None)
+
+        if code_file is not None:
+            p = Path(code_file)
+            new_code_str = p.read_text(encoding="utf-8")
+        else:
+            new_code_str = code_string
+
+        if not new_code_str:
+            raise ValueError("No new code_string or code_file found for update_code.")
+
+        if language is None:
+            language = self._target_code_language
+
+        tmp_new_code = type(self)(
+            code_file=None,
+            code_string=new_code_str,
+            language=language,
+            formatter_style=formatter_style,
+            tab_width=tab_width,
+            add_line_numbers=add_line_numbers,
+            line_numbers_from=line_numbers_from,
+            background=background,
+            background_config=background_config,
+            paragraph_config=paragraph_config,
+        )
+        new_lines = list(tmp_new_code.code_lines)
+        new_background = tmp_new_code.background
+        new_line_numbers = getattr(tmp_new_code, "line_numbers", None)
+
+        matches, deletions, additions = find_line_matches(old_code_string, new_code_str)
+
+        transform_anims = []
+        for i, j in matches:
+            transform_anims.append(Transform(old_lines[i], new_lines[j]))
+
+        fadeout_anims = []
+        for i in deletions:
+            fadeout_anims.append(FadeOut(old_lines[i], remover=True))
+
+        fadein_anims = []
+        for j in additions:
+            fadein_anims.append(FadeIn(new_lines[j]))
+
+        extra_anims = []
+        if old_background and new_background:
+            extra_anims.append(Transform(old_background, new_background))
+        if old_line_numbers and new_line_numbers:
+            extra_anims.append(Transform(old_line_numbers, new_line_numbers))
+
+        # if animate codes first, codes covered by background. so background first
+        all_anims = []
+        if extra_anims:
+            all_anims.append(AnimationGroup(*extra_anims))
+        if fadeout_anims:
+            all_anims.append(AnimationGroup(*fadeout_anims))
+        if transform_anims:
+            all_anims.append(LaggedStart(*transform_anims, lag_ratio=0.0))
+        if fadein_anims:
+            all_anims.append(AnimationGroup(*fadein_anims))
+
+        final_group = AnimationGroup(
+            *all_anims,
+            run_time=run_time,
+            rate_func=rate_func,
+            lag_ratio=lag_ratio,
+        )
+
+        self.code_lines = tmp_new_code.code_lines
+        self.line_numbers = new_line_numbers
+        self.background = tmp_new_code.background
+        self._set_current_code_string(new_code_str)
+
+        return final_group
+
+
+def find_line_matches(old_code_str: str, new_code_str: str):
+    """line matching algorithm with bruteforce"""
+    old_lines = [
+        line.lstrip() if line.strip() != "" else None
+        for line in old_code_str.splitlines()
+    ]
+    new_lines = [
+        line.lstrip() if line.strip() != "" else None
+        for line in new_code_str.splitlines()
+    ]
+
+    matches = []
+    for i, o_line in enumerate(old_lines):
+        if o_line is None:
+            continue
+        for j, n_line in enumerate(new_lines):
+            if n_line is not None and o_line == n_line:
+                matches.append((i, j))
+                old_lines[i] = None
+                new_lines[j] = None
+                break
+
+    deletions = [i for i, val in enumerate(old_lines) if val is not None]
+    additions = [j for j, val in enumerate(new_lines) if val is not None]
+
+    return matches, deletions, additions
