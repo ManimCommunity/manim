@@ -325,8 +325,8 @@ class Polygon(Polygram):
                 self.add(isosceles, square_and_triangles)
     """
 
-    def __init__(self, *vertices: Point3DLike, **kwargs: Any) -> None:
-        super().__init__(vertices, **kwargs)
+    def __init__(self, *vertices: Point3D, **kwargs: Any) -> None:
+        super().__init__(np.array(vertices), **kwargs)
 
 
 class RegularPolygram(Polygram):
@@ -417,7 +417,7 @@ class RegularPolygram(Polygram):
 
             vertex_groups.append(group)
 
-        super().__init__(*vertex_groups, **kwargs)
+        super().__init__(np.array(*vertex_groups), **kwargs)
 
 
 class RegularPolygon(RegularPolygram):
