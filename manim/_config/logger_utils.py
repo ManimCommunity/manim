@@ -26,6 +26,7 @@ from rich.theme import Theme
 
 if TYPE_CHECKING:
     from pathlib import Path
+    from typing import Any
 
 __all__ = ["make_logger", "parse_theme", "set_file_logger", "JSONFormatter"]
 
@@ -126,7 +127,7 @@ def parse_theme(parser: configparser.SectionProxy) -> Theme:
     :func:`make_logger`.
 
     """
-    theme = {key.replace("_", "."): parser[key] for key in parser}
+    theme: dict[str, Any] = {key.replace("_", "."): parser[key] for key in parser}
 
     theme["log.width"] = None if theme["log.width"] == "-1" else int(theme["log.width"])
     theme["log.height"] = (

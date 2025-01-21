@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import configparser
-from typing import Any
+from typing import Any, cast
 
 from cloup import Context, HelpFormatter, HelpTheme, Style
 
@@ -15,6 +15,9 @@ def parse_cli_ctx(parser: configparser.SectionProxy) -> dict[str, Any]:
         "col1_max_width": int(parser["col1_max_width"]),
         "col2_min_width": int(parser["col2_min_width"]),
         "col_spacing": int(parser["col_spacing"]),
+        # TODO
+        # What should the default value of "row_sep" be?
+        # I cannot be None according to the typing in line 12.
         "row_sep": parser["row_sep"] if parser["row_sep"] else None,
     }
     theme_settings = {}
@@ -37,22 +40,25 @@ def parse_cli_ctx(parser: configparser.SectionProxy) -> dict[str, Any]:
     if theme is None:
         formatter = HelpFormatter.settings(
             theme=HelpTheme(**theme_settings),
-            **formatter_settings,  # type: ignore[arg-type]
+            **formatter_settings,
         )
     elif theme.lower() == "dark":
         formatter = HelpFormatter.settings(
             theme=HelpTheme.dark().with_(**theme_settings),
-            **formatter_settings,  # type: ignore[arg-type]
+            **formatter_settings,
         )
     elif theme.lower() == "light":
         formatter = HelpFormatter.settings(
             theme=HelpTheme.light().with_(**theme_settings),
-            **formatter_settings,  # type: ignore[arg-type]
+            **formatter_settings,
         )
 
-    return Context.settings(
-        align_option_groups=parser["align_option_groups"].lower() == "true",
-        align_sections=parser["align_sections"].lower() == "true",
-        show_constraints=True,
-        formatter_settings=formatter,
+    return cast(
+        dict[str, Any],
+        Context.settings(
+            align_option_groups=parser["align_option_groups"].lower() == "true",
+            align_sections=parser["align_sections"].lower() == "true",
+            show_constraints=True,
+            formatter_settings=formatter,
+        ),
     )
