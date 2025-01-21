@@ -410,7 +410,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         """
         return self.mob_matrix
 
-    def get_entries(self):
+    def get_entries(self) -> VGroup:
         """Return the individual entries of the matrix.
 
         Returns
@@ -435,7 +435,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         """
         return self.elements
 
-    def get_brackets(self):
+    def get_brackets(self) -> VGroup:
         r"""Return the bracket mobjects.
 
         Returns

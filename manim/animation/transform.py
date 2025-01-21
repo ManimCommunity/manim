@@ -519,7 +519,7 @@ class ApplyPointwiseFunction(ApplyMethod):
         function: types.MethodType,
         mobject: Mobject,
         run_time: float = DEFAULT_POINTWISE_FUNCTION_RUN_TIME,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         super().__init__(mobject.apply_function, function, run_time=run_time, **kwargs)
 

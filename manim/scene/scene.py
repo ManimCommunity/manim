@@ -55,6 +55,8 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
     from typing import Callable
 
+    from typing_extensions import Self
+
     from manim.mobject.mobject import _AnimationBuilder
 
 
@@ -813,7 +815,7 @@ class Scene:
         self.mobjects = list(mobjects) + self.mobjects
         return self
 
-    def clear(self):
+    def clear(self) -> Self:
         """
         Removes all mobjects present in self.mobjects
         and self.foreground_mobjects from the scene.
