@@ -22,7 +22,7 @@ import re
 import sys
 from collections.abc import Iterable, Iterator, Mapping, MutableMapping
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, ClassVar, NoReturn
+from typing import TYPE_CHECKING, Any, ClassVar, NoReturn, cast
 
 import numpy as np
 
@@ -332,7 +332,7 @@ class ManimConfig(MutableMapping):
     def __len__(self) -> int:
         return len(self._d)
 
-    def __contains__(self, key: object) -> bool:
+    def __contains__(self, key: str) -> bool:
         try:
             self.__getitem__(key)
             return True
@@ -652,8 +652,8 @@ class ManimConfig(MutableMapping):
         self.window_size = window_size
 
         # plugins
-        plugins = parser["CLI"].get("plugins", fallback="", raw=True)
-        plugins = [] if plugins == "" else plugins.split(",")
+        plugins_raw: str = parser["CLI"].get("plugins", fallback="", raw=True)
+        plugins: list[str] = [] if plugins_raw == "" else plugins_raw.split(",")
         self.plugins = plugins
         # the next two must be set AFTER digesting pixel_width and pixel_height
         self["frame_height"] = parser["CLI"].getfloat("frame_height", 8.0)
@@ -1630,7 +1630,7 @@ class ManimConfig(MutableMapping):
         all_args.update(kwargs)
         all_args["quality"] = f"{self.pixel_height}p{self.frame_rate:g}"
 
-        path = self._d[key]
+        path = cast(str, self._d[key])
         while "{" in path:
             try:
                 path = path.format(**all_args)
