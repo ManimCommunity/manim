@@ -89,7 +89,10 @@ from __future__ import annotations
 
 __all__ = ["MovingCameraScene"]
 
+from typing import Any
+
 from manim.animation.animation import Animation
+from manim.mobject.mobject import Mobject
 
 from ..camera.moving_camera import MovingCamera
 from ..scene.scene import Scene
@@ -111,10 +114,12 @@ class MovingCameraScene(Scene):
         :class:`.MovingCamera`
     """
 
-    def __init__(self, camera_class=MovingCamera, **kwargs):
+    def __init__(
+        self, camera_class: type[MovingCamera] = MovingCamera, **kwargs: Any
+    ) -> None:
         super().__init__(camera_class=camera_class, **kwargs)
 
-    def get_moving_mobjects(self, *animations: Animation):
+    def get_moving_mobjects(self, *animations: Animation) -> list[Mobject]:
         """
         This method returns a list of all of the Mobjects in the Scene that
         are moving, that are also in the animations passed.
