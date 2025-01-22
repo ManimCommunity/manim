@@ -400,7 +400,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
             mob.add_background_rectangle()
         return self
 
-    def get_mob_matrix(self):
+    def get_mob_matrix(self) -> list[VGroup]:
         """Return the underlying mob matrix mobjects.
 
         Returns

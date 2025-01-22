@@ -32,7 +32,7 @@ from textwrap import dedent
 
 from manim import config, logger
 from manim.constants import *
-from manim.mobject.geometry.line import Line
+from manim.mobject.geometry.line import Line, Vector
 from manim.mobject.svg.svg_mobject import SVGMobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.tex import TexTemplate
@@ -271,6 +271,9 @@ class MathTex(SingleStringMathTex):
         if self.tex_to_color_map is None:
             self.tex_to_color_map = {}
         self.tex_environment = tex_environment
+        self.target_text: MathTex | str = ""
+        self.kwargs = {}
+        self.vector: Vector = Vector()
         self.brace_notation_split_occurred = False
         self.tex_strings = self._break_up_tex_strings(tex_strings)
         try:

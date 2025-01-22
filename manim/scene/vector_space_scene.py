@@ -548,7 +548,7 @@ class VectorScene(Scene):
         # TODO:
         # I think that this should be a VGroup instead of a VMobject.
         dots = VMobject(
-            *(
+            *(  # type: ignore[arg-type]
                 Dot(x * RIGHT + y * UP)
                 for x in range(-x_max, x_max)
                 for y in range(-y_max, y_max)
@@ -676,7 +676,7 @@ class LinearTransformationScene(VectorScene):
         self.background_mobjects: list[Mobject] = []
         self.foreground_mobjects: list[Mobject] = []
         self.transformable_mobjects: list[Mobject] = []
-        self.moving_vectors: list[VGroup] = []
+        self.moving_vectors: list[Mobject] = []
         self.transformable_labels: list[MathTex] = []
         self.moving_mobjects: list[Mobject] = []
 
@@ -854,6 +854,7 @@ class LinearTransformationScene(VectorScene):
         self,
         vector: Arrow | list | tuple | np.ndarray,
         color: ParsableManimColor = YELLOW,
+        animate: bool = False,
         **kwargs: Any,
     ) -> Arrow:
         """
@@ -879,11 +880,11 @@ class LinearTransformationScene(VectorScene):
         Arrow
             The arrow representing the vector.
         """
-        vector = super().add_vector(vector, color=color, **kwargs)
+        vector = super().add_vector(vector, color=color, animate=animate, **kwargs)
         self.moving_vectors.append(vector)
         return vector
 
-    def write_vector_coordinates(self, vector: Arrow, **kwargs: Any) -> Matrix:
+    def write_vector_coordinates(self, vector: Vector, **kwargs: Any) -> Matrix:
         """
         Returns a column matrix indicating the vector coordinates,
         after writing them to the screen, and adding them to the
@@ -941,11 +942,18 @@ class LinearTransformationScene(VectorScene):
             The MathTex of the label.
         """
         label_mob = self.label_vector(vector, label, **kwargs)
+        # TODO
+        # In the following the label_mob is assumed to have these properties
+        # target_text, vector and kwargs.
+        # But the MathTex class do not have these properties and mypy complains
+        # about that.
+        # As a workaround I have added the properties to the MathTex class, but
+        # I do not like that solution...
         if new_label:
             label_mob.target_text = new_label
         else:
             label_mob.target_text = (
-                f"{transformation_name}({label_mob.get_tex_string()})"
+                f"{transformation_name}({label_mob.get_tex_string()})"  # type: ignore[no-untyped-call]
             )
         label_mob.vector = vector
         label_mob.kwargs = kwargs
@@ -982,7 +990,7 @@ class LinearTransformationScene(VectorScene):
             The scene with the title added to it.
         """
         if not isinstance(title, (Mobject, OpenGLMobject)):
-            title = Tex(title).scale(scale_factor)
+            title = Tex(title).scale(scale_factor)  # type: ignore[no-untyped-call]
         title.to_edge(UP)
         title.add_background_rectangle()
         if animate:
@@ -1242,7 +1250,7 @@ class LinearTransformationScene(VectorScene):
             kwargs["run_time"] = 3
         anims = (
             [
-                ApplyPointwiseFunction(function, t_mob)
+                ApplyPointwiseFunction(function, t_mob)  # type: ignore[arg-type]
                 for t_mob in self.transformable_mobjects
             ]
             + [
