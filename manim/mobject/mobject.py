@@ -2314,8 +2314,7 @@ class Mobject:
         return remove_list_redundancies(all_mobjects)
 
     def family_members_with_points(self) -> list[Self]:
-        """Lists all mobjects that have points in the hierarchy (family) of the given mobject
-        recursively.
+        """Lists all mobjects that have points in the hierarchy (family) of the given mobject recursively.
         
         Returns
         -------
