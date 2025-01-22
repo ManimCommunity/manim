@@ -22,7 +22,9 @@ in the right place!
 .. note::
 
    Please be aware that there are different, incompatible versions of Manim available.
-   ManimCE was forked from 3b1b/manim, originally created and open-sourced by Grant Sanderson, creator of [3Blue1Brown](https://www.youtube.com/channel/UCYO_jab_esuFRV4b17AJtAw) educational math videos.
+   This version, the Community Edition of Manim (`ManimCE <https://github.com/ManimCommunity/manim>`_), 
+   is a separate project maintained by the community, but it was forked from `3b1b/manim <https://github.com/3b1b/manim>`_, 
+   the original Manim created and open-sourced by Grant Sanderson, creator of `3Blue1Brown <https://www.youtube.com/channel/UCYO_jab_esuFRV4b17AJtAw>`_ educational math videos.
    Check our :ref:`installation FAQ <different-versions>`
    to learn more!
 
