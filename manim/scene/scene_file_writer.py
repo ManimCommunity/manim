@@ -9,7 +9,7 @@ import shutil
 from fractions import Fraction
 from pathlib import Path
 from queue import Queue
-from tempfile import NamedTemporaryFile
+from tempfile import NamedTemporaryFile, _TemporaryFileWrapper
 from threading import Thread
 from typing import TYPE_CHECKING, Any
 
@@ -37,6 +37,9 @@ from ..utils.sounds import get_full_sound_file_path
 from .section import DefaultSectionType, Section
 
 if TYPE_CHECKING:
+    from av.container.output import OutputContainer
+    from av.stream import Stream
+
     from manim.renderer.cairo_renderer import CairoRenderer
     from manim.renderer.opengl_renderer import OpenGLRenderer
     from manim.typing import PixelArray, StrPath
@@ -59,7 +62,9 @@ def to_av_frame_rate(fps: float) -> Fraction:
     return Fraction(num, denom)
 
 
-def convert_audio(input_path: Path, output_path: Path, codec_name: str) -> None:
+def convert_audio(
+    input_path: Path, output_path: Path | _TemporaryFileWrapper[bytes], codec_name: str
+) -> None:
     with (
         av.open(input_path) as input_audio,
         av.open(output_path, "w") as output_audio,
@@ -561,8 +566,8 @@ class SceneFileWriter:
             stream.width = config.pixel_width
             stream.height = config.pixel_height
 
-            self.video_container = video_container
-            self.video_stream = stream
+            self.video_container: OutputContainer = video_container
+            self.video_stream: Stream = stream
 
             self.queue: Queue[tuple[int, PixelArray | None]] = Queue()
             self.writer_thread = Thread(target=self.listen_and_write, args=())
