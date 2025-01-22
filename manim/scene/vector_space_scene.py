@@ -1250,6 +1250,8 @@ class LinearTransformationScene(VectorScene):
             kwargs["run_time"] = 3
         anims = (
             [
+                # TODO
+                # error: Argument 1 to "ApplyPointwiseFunction" has incompatible type "Callable[[Any], Any]"; expected "MethodType"  [arg-type]
                 ApplyPointwiseFunction(function, t_mob)  # type: ignore[arg-type]
                 for t_mob in self.transformable_mobjects
             ]
