@@ -2315,7 +2315,7 @@ class Mobject:
 
     def family_members_with_points(self) -> list[Self]:
         """Lists all mobjects that have points in the hierarchy (family) of the given mobject recursively.
-        
+
         Returns
         -------
         list
