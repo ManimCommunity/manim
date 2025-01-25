@@ -26,7 +26,7 @@ class _ScaleBase:
     def __init__(self, custom_labels: bool = False):
         self.custom_labels = custom_labels
 
-    def function(self, value: float) -> float:
+    def function(self, value: float | np.ndarray) -> float:
         """The function that will be used to scale the values.
 
         Parameters

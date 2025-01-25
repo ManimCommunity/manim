@@ -143,29 +143,29 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
                 lambda t: self.t_min <= t <= self.t_max,
                 self.discontinuities,
             )
-            discontinuities = np.array(list(discontinuities))
+            discontinuities_array = np.array(list(discontinuities))
             boundary_times = np.array(
                 [
                     self.t_min,
                     self.t_max,
-                    *(discontinuities - self.dt),
-                    *(discontinuities + self.dt),
+                    *(discontinuities_array - self.dt),
+                    *(discontinuities_array + self.dt),
                 ],
             )
             boundary_times.sort()
         else:
-            boundary_times = [self.t_min, self.t_max]
+            boundary_times = np.array([self.t_min, self.t_max])
 
         for t1, t2 in zip(boundary_times[0::2], boundary_times[1::2]):
             t_range = np.array(
                 [
-                    *self.scaling.function(np.arange(t1, t2, self.t_step)),
+                    self.scaling.function(np.arange(t1, t2, self.t_step)),
                     self.scaling.function(t2),
                 ],
             )
 
             if self.use_vectorized:
-                x, y, z = self.function(t_range)
+                x, y, z = self.function(*t_range)
                 if not isinstance(z, np.ndarray):
                     z = np.zeros_like(x)
                 points = np.stack([x, y, z], axis=1)
