@@ -174,14 +174,16 @@ class VMobject(Mobject):
         #     fill_color = kwargs["color"]
         #     stroke_color = kwargs["color"]
         if fill_color is not None:
-            self.fill_color = ManimColor.parse(fill_color)
+            self.fill_rgbas = ManimColor.parse(fill_color).to_rgba()
         if stroke_color is not None:
             self.stroke_color = ManimColor.parse(stroke_color)
 
-        if fill_opacity is not None:
+        if fill_opacity and self.fill_color:
             self.fill_color = self.fill_color.set_opacity(fill_opacity)
-        if stroke_opacity is not None:
-            self.stroke_color = self.stroke_color.set_opacity(stroke_opacity)
+        if stroke_opacity:
+            # TODO: Activate this line again.
+            # self.stroke_color = self.set_opacity(stroke_opacity)
+            pass
 
     def _assert_valid_submobjects(self, submobjects: Iterable[VMobject]) -> Self:
         return self._assert_valid_submobjects_internal(submobjects, VMobject)
@@ -327,7 +329,7 @@ class VMobject(Mobject):
                 submobject.set_fill(color, opacity, family)
 
         if color is not None:
-            self.fill_color = ManimColor.parse(color)
+            self.fill_rgbas = [ManimColor.parse(color).to_rgba()]
         if opacity is not None:
             self.fill_color = [c.opacity(opacity) for c in self.fill_color]
         return self
