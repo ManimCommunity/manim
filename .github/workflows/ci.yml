@@ -147,7 +147,7 @@ jobs:
 
       - name: Install dependencies and manim
         run: |
-          uv sync --all-extras
+          uv sync --all-extras --locked
 
       - name: Run tests
         run: |
