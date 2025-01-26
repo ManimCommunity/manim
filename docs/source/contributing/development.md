@@ -45,51 +45,29 @@
    - `origin`, your forked repository
    - `upstream` the ManimCommunity repository
 
-7. Install Manim:
+7. Install the Python project management tool `uv`, as recommended
+   in our {doc}`installation guide for users </installation/uv>`.
 
-   - Follow the steps in our {doc}`installation instructions
-     <../installation>` to install **Manim's system dependencies**.
-     We also recommend installing a LaTeX distribution.
-
-   - We recommend using [Poetry](https://python-poetry.org) to manage your
-     developer installation of Manim. Poetry is a tool for dependency
-     management and packaging in Python. It allows you to declare the libraries
-     your project depends on, and it will manage (install / update) them
-     for you. In addition, Poetry provides a simple interface for
-     managing virtual environments.
-
-     If you choose to use Poetry as well, follow [Poetry's installation
-     guidelines](https://python-poetry.org/docs/#installing-with-pipx)
-     to install it on your system, then run `poetry install` from
-     your cloned repository. Poetry will then install Manim, as well
-     as create and enter a virtual environment. You can always re-enter
-     that environment by running `poetry shell`.
-
-   - In case you want to install extra dependencies that are defined in
-     the `[tool.poetry.extras]` section of `pyproject.toml`, this can be done by passing
-     the `-E` flag, for example `poetry install -E jupyterlab -E gui`.
-
-   - In case you decided against Poetry, you can install Manim via pip
-     by running `python3 -m pip install .`. Note that due to our
-     development infrastructure being based on Poetry, we currently
-     do not support editable installs via `pip`, so you will have
-     to re-run this command every time you make changes to the source
-     code.
-
-   :::{note}
-   The following steps assume that you chose to install and work with
-   Poetry.
-   :::
-
-8. Install Pre-Commit:
+8. Let `uv` create a virtual environment for your development
+   installation by running
 
    ```shell
-   poetry run pre-commit install
+   uv sync
+   ```
+
+   In case you need (or want) to install some of the optional dependency
+   groups defined in our [`pyproject.toml`](https://github.com/ManimCommunity/manim/blob/main/pyproject.toml),
+   run `uv sync --all-extras`, or pass the `--extra` flag with the
+   name of a group, for example `uv sync --extra jupyterhub`.
+
+9. Install Pre-Commit:
+
+   ```shell
+   uv run pre-commit install
    ```
 
    This will ensure during development that each of your commits is properly
-   formatted against our linter and formatters, `black`, `flake8`,
-   `isort` and `codespell`.
+   formatted against our linter and formatters.
 
 You are now ready to work on Manim!
 
@@ -99,7 +77,7 @@ You are now ready to work on Manim!
    changes from ManimCommunity, `upstream`, into your local repository:
 
    ```shell
-   git checkout main
+   git switch main
    git pull --rebase upstream main
    ```
 
@@ -107,7 +85,7 @@ You are now ready to work on Manim!
    off of your local main branch:
 
    ```shell
-   git checkout -b <new branch name> upstream/main
+   git switch -c <new branch name> upstream/main
    ```
 
    This ensures you can easily update your local repository's main with the
@@ -228,8 +206,8 @@ sticks to our coding conventions.
 - **Tests**: The pipeline runs Manim's test suite on different operating systems
   (the latest versions of Ubuntu, macOS, and Windows) for different versions of Python.
   The test suite consists of two different kinds of tests: integration tests
-  and doctests. You can run them locally by executing `poetry run pytest`
-  and `poetry run pytest --doctest-modules manim`, respectively, from the
+  and doctests. You can run them locally by executing `uv run pytest`
+  and `uv run pytest --doctest-modules manim`, respectively, from the
   root directory of your cloned fork.
 - **Documentation**: We also build a version of the documentation corresponding
   to your pull request. Make sure not to introduce any Sphinx errors, and have
