@@ -98,7 +98,7 @@ available in the user's environment. Everything regarding the plugin's
 directory structure, build system, and naming are completely up to your
 discretion as an author.
 
-The standard way to specify an entry point (see 
+The standard way to specify an entry point (see
 `the Python packaging guide <https://packaging.python.org/specifications/entry-points/>`__
 for details) is to include the following in your ``pyproject.toml``:
 
