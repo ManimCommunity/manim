@@ -112,11 +112,11 @@ class SceneFileWriter:
     def __init__(
         self,
         renderer: CairoRenderer | OpenGLRenderer,
-        scene_name: str,
+        scene_name: StrPath,
         **kwargs: Any,
     ) -> None:
         self.renderer = renderer
-        self.init_output_directories(scene_name)
+        self.init_output_directories(str(scene_name))
         self.init_audio()
         self.frame_count = 0
         self.partial_movie_files: list[str] = []
