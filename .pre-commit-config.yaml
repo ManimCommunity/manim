@@ -11,7 +11,7 @@ repos:
       - id: mixed-line-ending
       - id: end-of-file-fixer
       - id: check-toml
-        name: Validate Poetry
+        name: Validate pyproject.toml
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.9.3
     hooks:
