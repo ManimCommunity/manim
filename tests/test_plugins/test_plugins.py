@@ -11,21 +11,19 @@ from manim import capture
 
 plugin_pyproject_template = textwrap.dedent(
     """\
-    [tool.poetry]
+    [project]
     name = "{plugin_name}"
-    authors = ["ManimCE Test Suite"]
+    authors = [{name = "ManimCE Test Suite"},]
     version = "0.1.0"
-    description = ""
+    description = "A fantastic Manim plugin"
+    requires-python = ">=3.9"
 
-    [tool.poetry.dependencies]
-    python = "^3.7"
-
-    [tool.poetry.plugins."manim.plugins"]
+    [project.entry-points."manim.plugins"]
     "{plugin_name}" = "{plugin_entrypoint}"
 
     [build-system]
-    requires = ["poetry-core>=1.0.0"]
-    build-backend = "poetry.core.masonry.api"
+    requires = ["hatchling"]
+    build-backend = "hatchling.build"
     """,
 )
 
