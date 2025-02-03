@@ -59,6 +59,10 @@ class Rotating(Animation):
                 anim_kwargs = {"rate_func": linear, "run_time": 1}
                 self.play(Rotating(arrow, radians=PI, about_point=arrow.get_start()), **anim_kwargs)
                 self.play(Rotating(arrow, radians=180 * DEGREES, about_point=arrow.get_start()), **anim_kwargs)
+                
+    See also
+    --------
+    :class:`~.Rotate`, :meth:`rotate`
 
     """
 
@@ -122,6 +126,10 @@ class Rotate(Transform):
                     ),
                     Rotate(Square(side_length=0.5), angle=2*PI, rate_func=linear),
                     )
+
+    See also
+    --------
+    :class:`~.Rotating`, :meth:`rotate`
 
     """
 
