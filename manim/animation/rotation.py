@@ -19,6 +19,49 @@ if TYPE_CHECKING:
 
 
 class Rotating(Animation):
+    """Animation that rotates a Mobject.
+
+    Parameters
+    ----------
+    mobject
+        The mobject to be rotated.
+    axis
+        The rotation axis as a numpy vector.
+    radians
+        The rotation angle in radians. Predefined constants such as ``DEGREES``
+        can also be used to specify the angle in degrees.  
+        For example, ``PI`` (180 degrees) or ``120 * DEGREES`` (120 degrees).
+    about_point
+        The rotation center.
+    about_edge
+        If ``about_point`` is ``None``, this argument specifies
+        the direction of the bounding box point to be taken as
+        the rotation center.
+    run_time
+        The duration of the animation in seconds.
+    rate_func
+        The function defining the animation progress based on the relative
+        runtime (see :mod:`~.rate_functions`) .
+    **kwargs
+        Additional keyword arguments passed to :class:`~.Animation`.
+
+    Examples
+    --------
+    .. manim:: RotatingExample
+
+        class RotatingExample(Scene):
+            def construct(self):
+                circle = Circle(radius=1, color=BLUE)
+                line = Line(start=ORIGIN, end=RIGHT)
+                arrow = Arrow(start=ORIGIN, end=RIGHT, buff=0, color=GOLD)
+                self.add(circle, line, arrow)
+                
+                anim_kwargs = {"rate_func": linear, "run_time": 1}
+                self.play(Rotating(arrow, radians=PI, about_point=arrow.get_start()), **anim_kwargs)
+                self.play(Rotating(arrow, radians=180 * DEGREES, about_point=arrow.get_start()), **anim_kwargs)
+
+    """
+    
     def __init__(
         self,
         mobject: Mobject,
