@@ -1282,7 +1282,67 @@ class Mobject:
         about_point: Point3DLike | None = None,
         **kwargs,
     ) -> Self:
-        """Rotates the :class:`~.Mobject` about a certain point."""
+        """Rotates the :class:`~.Mobject` around a specified axis and point.
+
+        The rotation is counterclockwise by the given ``angle`` (following the right-hand rule).
+
+        .. note::  
+            To animate a rotation, use :class:`~.Rotating` or :class:`~.Rotate`
+            instead of ``.animate.rotate(...)``.
+            The ``.animate.rotate(...)`` method only applies a transformation
+            from the initial state to the final rotated state
+            (interpolation between the two states), without showing proper rotational motion
+            based on the angle (from 0 to the given angle).
+
+        Parameters
+        ----------
+        angle
+            The angle of rotation in radians. Predefined constants such as ``DEGREES``
+            can also be used to specify the angle in degrees.
+            For example, ``PI`` (180 degrees) or ``120 * DEGREES`` (120 degrees).
+        axis
+            Rotation axis (3D vector). Defaults to ``OUT`` (z-axis), producing 2D rotations
+            perpendicular to the screen. Use other axes (e.g., ``UP``) for 3D rotations.
+        about_point
+            The point about which the mobject rotates. If ``None``, rotation occurs around
+            the center of the mobject.
+        **kwargs
+            Additional keyword arguments passed to :meth:`apply_points_function_about_point`,
+            such as ``about_edge``.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self`` (for method chaining)
+
+        Examples
+        --------
+
+        .. manim:: RotateMethodExample
+            :save_last_frame:
+
+            class RotateMethodExample(Scene):
+                def construct(self):
+                    circle = Circle(radius=1, color=BLUE)
+                    line = Line(start=ORIGIN, end=RIGHT)
+                    arrow1 = Arrow(start=ORIGIN, end=RIGHT, buff=0, color=GOLD)
+                    group1 = VGroup(circle, line, arrow1)
+
+                    group2 = group1.copy()
+                    arrow2 = group2[2]
+                    arrow2.rotate(angle=PI / 4, about_point=arrow2.get_start())
+
+                    group3 = group1.copy()
+                    arrow3 = group3[2]
+                    arrow3.rotate(angle=111 * DEGREES, about_point=arrow3.get_start())
+
+                    self.add(VGroup(group1, group2, group3).arrange(RIGHT, buff=1))
+
+        See also
+        --------
+        :class:`~.Rotating`, :class:`~.Rotate`, :meth:`apply_matrix`, :meth:`apply_points_function_about_point`
+        
+        """
         rot_matrix = rotation_matrix(angle, axis)
         self.apply_points_function_about_point(
             lambda points: np.dot(points, rot_matrix.T), about_point, **kwargs
