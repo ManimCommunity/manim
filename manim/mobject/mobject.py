@@ -387,7 +387,7 @@ class Mobject:
              will interpolate the :class:`~.Mobject` between its points prior to
              ``.animate`` and its points after applying ``.animate`` to it. This may
              result in unexpected behavior when attempting to interpolate along paths,
-             or rotations.
+             or rotations (see :meth:`.rotate`).
              If you want animations to consider the points between, consider using
              :class:`~.ValueTracker` with updaters instead.
 
