@@ -1289,7 +1289,7 @@ class Mobject:
         .. note::
             To animate a rotation, use :class:`~.Rotating` or :class:`~.Rotate`
             instead of ``.animate.rotate(...)``.
-            The ``.animate.rotate(...)`` method only applies a transformation
+            The ``.animate.rotate(...)`` syntax only applies a transformation
             from the initial state to the final rotated state
             (interpolation between the two states), without showing proper rotational motion
             based on the angle (from 0 to the given angle).
@@ -1340,7 +1340,7 @@ class Mobject:
 
         See also
         --------
-        :class:`~.Rotating`, :class:`~.Rotate`, :meth:`apply_matrix`, :meth:`apply_points_function_about_point`
+        :class:`~.Rotating`, :class:`~.Rotate`, :attr:`~.Mobject.animate`, :meth:`apply_points_function_about_point`
 
         """
         rot_matrix = rotation_matrix(angle, axis)
