@@ -62,7 +62,7 @@ class Rotating(Animation):
 
     See also
     --------
-    :class:`~.Rotate`, :meth:`rotate`
+    :class:`~.Rotate`, :meth:`Mobject.rotate`
 
     """
 
@@ -129,7 +129,7 @@ class Rotate(Transform):
 
     See also
     --------
-    :class:`~.Rotating`, :meth:`rotate`
+    :class:`~.Rotating`, :meth:`Mobject.rotate`
 
     """
 
