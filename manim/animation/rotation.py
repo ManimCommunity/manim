@@ -29,7 +29,7 @@ class Rotating(Animation):
         The rotation axis as a numpy vector.
     radians
         The rotation angle in radians. Predefined constants such as ``DEGREES``
-        can also be used to specify the angle in degrees.  
+        can also be used to specify the angle in degrees.
         For example, ``PI`` (180 degrees) or ``120 * DEGREES`` (120 degrees).
     about_point
         The rotation center.
@@ -55,13 +55,13 @@ class Rotating(Animation):
                 line = Line(start=ORIGIN, end=RIGHT)
                 arrow = Arrow(start=ORIGIN, end=RIGHT, buff=0, color=GOLD)
                 self.add(circle, line, arrow)
-                
+
                 anim_kwargs = {"rate_func": linear, "run_time": 1}
                 self.play(Rotating(arrow, radians=PI, about_point=arrow.get_start()), **anim_kwargs)
                 self.play(Rotating(arrow, radians=180 * DEGREES, about_point=arrow.get_start()), **anim_kwargs)
 
     """
-    
+
     def __init__(
         self,
         mobject: Mobject,
