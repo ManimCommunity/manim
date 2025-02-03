@@ -3203,7 +3203,7 @@ def override_animate(method) -> types.FunctionType:
 
     .. seealso::
 
-        :attr:`Mobject.animate`
+        :attr:`~.Mobject.animate`
 
     .. note::
 
