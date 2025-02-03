@@ -2813,7 +2813,7 @@ class Mobject:
         path_func: PathFuncType = straight_path(),
     ) -> Self:
         """Turns this :class:`~.Mobject` into an interpolation between two mobjects.
-        
+
         Parameters
         ----------
         mobject1
@@ -2824,17 +2824,17 @@ class Mobject:
             Interpolation factor between 0 (at mobject1) and 1 (at mobject2)
         path_func
             The function defining the interpolation path. Defaults to a straight path.
-            
+
         Returns
         -------
         Self
             This Mobject after interpolation
-            
+
         Notes
         -----
         - Both mobjects must have the same number of points. If not, this will raise an error.
           Use :meth:`~.Mobject.align_points` to match point counts beforehand if needed.
-        - This method is used internally by the :class:`~.Transform` animation 
+        - This method is used internally by the :class:`~.Transform` animation
           to interpolate between two mobjects during a transformation.
 
         Examples
@@ -2845,7 +2845,7 @@ class Mobject:
 
             class InterpolateExample(Scene):
                 def construct(self):
-                
+
                     # No need for point alignment:
                     dotL = Dot(color=DARK_GREY).to_edge(LEFT)
                     dotR = Dot(color=YELLOW).scale(10).to_edge(RIGHT)
@@ -2854,7 +2854,7 @@ class Mobject:
                     dotMid3 = VMobject().interpolate(dotL, dotR, alpha=0.5)
                     dotMid4 = VMobject().interpolate(dotL, dotR, alpha=0.75)
                     dots = VGroup(dotL, dotR, dotMid1,dotMid2,dotMid3,dotMid4)
-                    
+
                     # Need for point alignment:
                     line = Line(ORIGIN,UP).to_edge(LEFT)
                     sq = Square(color= RED, fill_opacity=1, stroke_color=BLUE).to_edge(RIGHT)
@@ -2864,9 +2864,9 @@ class Mobject:
                     mid3 = VMobject().interpolate(line, sq, alpha=0.5)
                     mid4 = VMobject().interpolate(line, sq, alpha=0.75)
                     linesquares = VGroup(line,sq,mid1,mid2,mid3,mid4)
-                    
+
                     self.add(VGroup(dots, linesquares).arrange(DOWN, buff=1))
-                    
+
         """
         self.points = path_func(mobject1.points, mobject2.points, alpha)
         self.interpolate_color(mobject1, mobject2, alpha)
