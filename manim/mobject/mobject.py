@@ -1286,7 +1286,7 @@ class Mobject:
 
         The rotation is counterclockwise by the given ``angle`` (following the right-hand rule).
 
-        .. note::  
+        .. note::
             To animate a rotation, use :class:`~.Rotating` or :class:`~.Rotate`
             instead of ``.animate.rotate(...)``.
             The ``.animate.rotate(...)`` method only applies a transformation
@@ -1341,7 +1341,7 @@ class Mobject:
         See also
         --------
         :class:`~.Rotating`, :class:`~.Rotate`, :meth:`apply_matrix`, :meth:`apply_points_function_about_point`
-        
+
         """
         rot_matrix = rotation_matrix(angle, axis)
         self.apply_points_function_about_point(
