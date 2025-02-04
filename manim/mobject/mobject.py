@@ -2818,7 +2818,7 @@ class Mobject:
         .. note::
 
             - Both mobjects must have the same number of points. If not, this will raise an error.
-              Use :meth:`~.Mobject.align_points` to match point counts beforehand if needed.
+              Use :meth:`~.VMobject.align_points` to match point counts beforehand if needed.
             - This method is used internally by the :class:`~.Transform` animation
               to interpolate between two mobjects during a transformation.
 
@@ -2852,7 +2852,7 @@ class Mobject:
                     self.add(VGroup(dots, linesquares).arrange(DOWN, buff=1))
         See also
         --------
-        :class:`~.Transform`, :meth:`~.Mobject.align_points`
+        :class:`~.Transform`, :meth:`~.VMobject.align_points`
 
         """
         self.points = path_func(mobject1.points, mobject2.points, alpha)
