@@ -2814,7 +2814,7 @@ class Mobject:
     ) -> Self:
         """Turns this :class:`~.Mobject` into an interpolation between ``mobject1``
         and ``mobject2``.
-        
+
         .. note::
 
             - Both mobjects must have the same number of points. If not, this will raise an error.
