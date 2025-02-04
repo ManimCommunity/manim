@@ -1720,7 +1720,7 @@ class VMobject(Mobject):
         -------
         :class:`VMobject`
            ``self``
-           
+
         See also
         --------
         :meth:`~.Mobject.interpolate`, :meth:`~.Mobject.align_data`
