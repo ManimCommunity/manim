@@ -59,6 +59,18 @@ class Rotating(Animation):
                 anim_kwargs = {"rate_func": linear, "run_time": 1}
                 self.play(Rotating(arrow, radians=PI, about_point=arrow.get_start()), **anim_kwargs)
                 self.play(Rotating(arrow, radians=180 * DEGREES, about_point=arrow.get_start()), **anim_kwargs)
+                
+    .. manim:: Rotating3D
+
+        class Rotating3D(ThreeDScene):
+            def construct(self):
+                axes = ThreeDAxes()
+                cube = Cube()
+                line2d = Arrow(start=[0, -1.2, 1], end=[0, 1.2, 1], color=YELLOW_E)
+                cube_group = VGroup(cube,line2d)
+                self.set_camera_orientation(gamma=0*DEGREES, phi=40*DEGREES, theta=40*DEGREES)
+                self.add(axes, cube_group)
+                self.play(Rotating(cube_group, radians=2*PI, axis=UP), run_time=3, rate_func=linear)
 
     See also
     --------
