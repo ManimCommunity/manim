@@ -2852,7 +2852,7 @@ class Mobject:
                     self.add(VGroup(dots, linesquares).arrange(DOWN, buff=1))
         See also
         --------
-        :class:`~.Transform`, :meth:`~.VMobject.align_points`
+        :class:`~.Transform`, :meth:`~.VMobject.align_points`, :meth:`~.VMobject.interpolate_color`
 
         """
         self.points = path_func(mobject1.points, mobject2.points, alpha)
