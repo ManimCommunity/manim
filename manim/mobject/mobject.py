@@ -2711,7 +2711,7 @@ class Mobject:
         (see :meth:`.align_submobjects`), the same parent structure (see
         :meth:`.null_point_align`). If ``skip_point_alignment`` is false,
         they will also have the same number of points (see :meth:`.align_points`).
-        
+
         This method is primarily used internally by :meth:`.become` and the
         :class:`~.Transform` animation to ensure that mobjects are structurally
         compatible before transformation.
@@ -2723,7 +2723,7 @@ class Mobject:
         skip_point_alignment
             Controls whether or not the computationally expensive
             point alignment is skipped (default: False).
-        
+
         See also
         --------
         :class:`~.Transform`, :meth:`~.Mobject.become`, :meth:`~.VMobject.align_points`, :meth:`~.Mobject.get_family`
