@@ -389,7 +389,7 @@ class Mobject:
              result in unexpected behavior when attempting to interpolate along paths,
              or rotations (see :meth:`.rotate`).
              If you want animations to consider the points between, consider using
-             :class:`~.ValueTracker` with updaters instead.
+             :class:`~.ValueTracker` with updaters instead (see :meth:`.add_updater`).
 
         """
         return _AnimationBuilder(self)
@@ -1029,6 +1029,9 @@ class Mobject:
         :meth:`get_updaters`
         :meth:`remove_updater`
         :class:`~.UpdateFromFunc`
+        :class:`~.Rotating`
+        :meth:`rotate`
+        :attr:`~.Mobject.animate`
         """
         if index is None:
             self.updaters.append(update_function)
