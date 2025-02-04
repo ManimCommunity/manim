@@ -126,7 +126,7 @@ class Transform(Animation):
 
     See also
     --------
-    :class:`~.ReplacementTransform`, :meth:`~.Mobject.interpolate`
+    :class:`~.ReplacementTransform`, :meth:`~.Mobject.interpolate`, :meth:`~.Mobject.align_data`
 
     """
 
