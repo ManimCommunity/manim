@@ -2814,13 +2814,13 @@ class Mobject:
     ) -> Self:
         """Turns this :class:`~.Mobject` into an interpolation between ``mobject1``
         and ``mobject2``.
+        
+        .. note::
 
-        Notes
-        -----
-        - Both mobjects must have the same number of points. If not, this will raise an error.
-          Use :meth:`~.Mobject.align_points` to match point counts beforehand if needed.
-        - This method is used internally by the :class:`~.Transform` animation
-          to interpolate between two mobjects during a transformation.
+            - Both mobjects must have the same number of points. If not, this will raise an error.
+              Use :meth:`~.Mobject.align_points` to match point counts beforehand if needed.
+            - This method is used internally by the :class:`~.Transform` animation
+              to interpolate between two mobjects during a transformation.
 
         Examples
         --------
