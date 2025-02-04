@@ -2839,7 +2839,7 @@ class Mobject:
                     dotMid4 = VMobject().interpolate(dotL, dotR, alpha=0.75)
                     dots = VGroup(dotL, dotR, dotMid1, dotMid2, dotMid3, dotMid4)
 
-                    # Need for point alignment:
+                    # Needs point alignment:
                     line = Line(ORIGIN, UP).to_edge(LEFT)
                     sq = Square(color=RED, fill_opacity=1, stroke_color=BLUE).to_edge(RIGHT)
                     line.align_points(sq)
