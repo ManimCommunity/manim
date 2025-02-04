@@ -123,7 +123,7 @@ class Transform(Animation):
 
                 self.play(*anims, run_time=2)
                 self.wait()
-                
+
     See also
     --------
     :class:`~.ReplacementTransform`, :meth:`~.Mobject.interpolate`
