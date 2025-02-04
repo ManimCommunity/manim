@@ -2952,6 +2952,11 @@ class Mobject:
             >>> result = rect.copy().become(circ, match_center=True)
             >>> np.allclose(rect.get_center(), result.get_center())
             True
+            
+        See also
+        --------
+        :meth:`~.Mobject.align_data`, :meth:`~.VMobject.interpolate_color`
+
         """
         mobject = mobject.copy()
         if stretch:
