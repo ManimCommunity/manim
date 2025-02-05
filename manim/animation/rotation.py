@@ -19,6 +19,66 @@ if TYPE_CHECKING:
 
 
 class Rotating(Animation):
+    """Animation that rotates a Mobject.
+
+    Parameters
+    ----------
+    mobject
+        The mobject to be rotated.
+    axis
+        The rotation axis (3D vector). Defaults to ``OUT`` (z-axis), producing 2D rotations
+        perpendicular to the screen. Use other axes (e.g., ``UP``) for 3D rotations.
+    radians
+        The rotation angle in radians. Predefined constants such as ``DEGREES``
+        can also be used to specify the angle in degrees.
+        For example, ``PI`` (180 degrees) or ``120 * DEGREES`` (120 degrees).
+    about_point
+        The rotation center.
+    about_edge
+        If ``about_point`` is ``None``, this argument specifies
+        the direction of the bounding box point to be taken as
+        the rotation center.
+    run_time
+        The duration of the animation in seconds.
+    rate_func
+        The function defining the animation progress based on the relative
+        runtime (see :mod:`~.rate_functions`) .
+    **kwargs
+        Additional keyword arguments passed to :class:`~.Animation`.
+
+    Examples
+    --------
+    .. manim:: RotatingExample
+
+        class RotatingExample(Scene):
+            def construct(self):
+                circle = Circle(radius=1, color=BLUE)
+                line = Line(start=ORIGIN, end=RIGHT)
+                arrow = Arrow(start=ORIGIN, end=RIGHT, buff=0, color=GOLD)
+                self.add(circle, line, arrow)
+
+                anim_kwargs = {"rate_func": linear, "run_time": 1}
+                self.play(Rotating(arrow, radians=PI, about_point=arrow.get_start()), **anim_kwargs)
+                self.play(Rotating(arrow, radians=180 * DEGREES, about_point=arrow.get_start()), **anim_kwargs)
+
+    .. manim:: Rotating3D
+
+        class Rotating3D(ThreeDScene):
+            def construct(self):
+                axes = ThreeDAxes()
+                cube = Cube()
+                arrow2d = Arrow(start=[0, -1.2, 1], end=[0, 1.2, 1], color=YELLOW_E)
+                cube_group = VGroup(cube,arrow2d)
+                self.set_camera_orientation(gamma=0*DEGREES, phi=40*DEGREES, theta=40*DEGREES)
+                self.add(axes, cube_group)
+                self.play(Rotating(cube_group, radians=2*PI, axis=UP), run_time=3, rate_func=linear)
+
+    See also
+    --------
+    :class:`~.Rotate`, :meth:`~.Mobject.rotate`
+
+    """
+
     def __init__(
         self,
         mobject: Mobject,
@@ -79,6 +139,10 @@ class Rotate(Transform):
                     ),
                     Rotate(Square(side_length=0.5), angle=2*PI, rate_func=linear),
                     )
+
+    See also
+    --------
+    :class:`~.Rotating`, :meth:`~.Mobject.rotate`
 
     """
 
