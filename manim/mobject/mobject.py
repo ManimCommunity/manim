@@ -1305,7 +1305,7 @@ class Mobject:
             For example, ``PI`` (180 degrees) or ``120 * DEGREES`` (120 degrees).
         axis
             Rotation axis (3D vector). Defaults to ``OUT`` (z-axis), producing 2D rotations
-            perpendicular to the screen. Use other axes (e.g., ``UP``) for 3D rotations.
+            perpendicular to the screen. Use other axes (e.g., ``UP``) for 3D rotations (see :class:`~.Rotating`).
         about_point
             The point about which the mobject rotates. If ``None``, rotation occurs around
             the center of the mobject.
