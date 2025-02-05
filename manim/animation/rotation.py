@@ -26,7 +26,8 @@ class Rotating(Animation):
     mobject
         The mobject to be rotated.
     axis
-        The rotation axis as a numpy vector.
+        The rotation axis (3D vector). Defaults to ``OUT`` (z-axis), producing 2D rotations
+        perpendicular to the screen. Use other axes (e.g., ``UP``) for 3D rotations.
     radians
         The rotation angle in radians. Predefined constants such as ``DEGREES``
         can also be used to specify the angle in degrees.
