@@ -2726,19 +2726,6 @@ class Mobject:
             Controls whether or not the computationally expensive
             point alignment is skipped (default: False).
 
-        Examples
-        --------
-        ::
-
-            >>> from manim import Square, Star, VGroup, Line
-            >>> sq = Square()
-            >>> sq.add(VGroup(Star()))
-            >>> line = Line(start=ORIGIN,end=RIGHT)
-            >>> line.align_data(sq)
-            >>> len(line.get_family()) == len(sq.get_family())
-            True
-
-
         See also
         --------
         :class:`~.Transform`, :meth:`~.Mobject.become`, :meth:`~.VMobject.align_points`, :meth:`~.Mobject.get_family`
