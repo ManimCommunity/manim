@@ -2705,12 +2705,18 @@ class Mobject:
 
     # Alignment
     def align_data(self, mobject: Mobject, skip_point_alignment: bool = False) -> None:
-        """Aligns the data of this mobject with another mobject.
+        """Aligns the family structure and data of this mobject with another mobject.
 
         Afterwards, the two mobjects will have the same number of submobjects
         (see :meth:`.align_submobjects`), the same parent structure (see
         :meth:`.null_point_align`). If ``skip_point_alignment`` is false,
         they will also have the same number of points (see :meth:`.align_points`).
+
+        .. note::
+
+            This method is primarily used internally by :meth:`.become` and the
+            :class:`~.Transform` animation to ensure that mobjects are structurally
+            compatible before transformation.
 
         Parameters
         ----------
@@ -2719,6 +2725,11 @@ class Mobject:
         skip_point_alignment
             Controls whether or not the computationally expensive
             point alignment is skipped (default: False).
+
+        See also
+        --------
+        :class:`~.Transform`, :meth:`~.Mobject.become`, :meth:`~.VMobject.align_points`, :meth:`~.Mobject.get_family`
+
         """
         self.null_point_align(mobject)
         self.align_submobjects(mobject)
@@ -2943,6 +2954,11 @@ class Mobject:
             >>> result = rect.copy().become(circ, match_center=True)
             >>> np.allclose(rect.get_center(), result.get_center())
             True
+
+        See also
+        --------
+        :meth:`~.Mobject.align_data`, :meth:`~.VMobject.interpolate_color`
+
         """
         mobject = mobject.copy()
         if stretch:
