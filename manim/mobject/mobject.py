@@ -2725,7 +2725,7 @@ class Mobject:
         skip_point_alignment
             Controls whether or not the computationally expensive
             point alignment is skipped (default: False).
-            
+
         Examples
         --------
         ::
