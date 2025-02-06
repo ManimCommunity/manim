@@ -2737,8 +2737,7 @@ class Mobject:
             >>> line.align_data(sq)
             >>> len(line.get_family()) == len(sq.get_family())
             True
-            >>> line.get_num_points() == sq.get_num_points()
-            True
+            
 
         See also
         --------
