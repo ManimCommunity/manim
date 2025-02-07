@@ -2814,9 +2814,9 @@ class Mobject:
     ) -> Self:
         """Turns this :class:`~.Mobject` into an interpolation between ``mobject1``
         and ``mobject2``.
-        
+
         The interpolation is applied to the points and color of the mobject.
-        
+
         Parameters
         ----------
         mobject1
@@ -2827,7 +2827,7 @@ class Mobject:
             Interpolation factor between 0 (at mobject1) and 1 (at mobject2)
         path_func
             The function defining the interpolation path. Defaults to a straight path.
-            
+
         Returns
         -------
         Self
