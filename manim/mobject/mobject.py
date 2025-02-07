@@ -2816,7 +2816,7 @@ class Mobject:
         and ``mobject2``.
 
         The interpolation is applied to the points and color of the mobject.
-        
+
         .. note::
 
             - Both mobjects must have the same number of points. If not, this will raise an error.
