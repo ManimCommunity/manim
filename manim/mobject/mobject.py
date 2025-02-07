@@ -2720,6 +2720,7 @@ class Mobject:
             Controls whether or not the computationally expensive
             point alignment is skipped (default: False).
 
+
         .. note::
 
             This method is primarily used internally by :meth:`.become` and the
@@ -2728,8 +2729,8 @@ class Mobject:
 
         Examples
         --------
-
         ::
+
             >>> from manim import Square, Star, VGroup, Line
             >>> sq = Square()
             >>> sq.add(VGroup(Star()))
