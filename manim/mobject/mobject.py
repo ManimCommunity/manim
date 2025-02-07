@@ -2816,6 +2816,13 @@ class Mobject:
         and ``mobject2``.
 
         The interpolation is applied to the points and color of the mobject.
+        
+        .. note::
+
+            - Both mobjects must have the same number of points. If not, this will raise an error.
+              Use :meth:`~.VMobject.align_points` to match point counts beforehand if needed.
+            - This method is used internally by the :class:`~.Transform` animation
+              to interpolate between two mobjects during a transformation.
 
         Parameters
         ----------
@@ -2830,15 +2837,8 @@ class Mobject:
 
         Returns
         -------
-        Self
-            This Mobject after interpolation
-
-        .. note::
-
-            - Both mobjects must have the same number of points. If not, this will raise an error.
-              Use :meth:`~.VMobject.align_points` to match point counts beforehand if needed.
-            - This method is used internally by the :class:`~.Transform` animation
-              to interpolate between two mobjects during a transformation.
+        :class:`Mobject`
+            ``self`
 
         Examples
         --------
