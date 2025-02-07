@@ -2833,6 +2833,7 @@ class Mobject:
         :class:`Mobject`
             ``self``
 
+
         .. note::
 
             - Both mobjects must have the same number of points. If not, this will raise an error.
