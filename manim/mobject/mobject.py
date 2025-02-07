@@ -2731,7 +2731,7 @@ class Mobject:
         --------
         ::
 
-            >>> from manim import Square, Star, VGroup, Line
+            >>> from manim import Square, Star, VGroup, Line, ORIGIN, RIGHT
             >>> sq = Square()
             >>> sq.add(VGroup(Star()))
             >>> line = Line(start=ORIGIN,end=RIGHT)
@@ -2740,7 +2740,6 @@ class Mobject:
             True
             >>> line.get_num_points() == sq.get_num_points()
             True
-
 
         See also
         --------
