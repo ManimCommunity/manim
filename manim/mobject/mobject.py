@@ -2731,14 +2731,13 @@ class Mobject:
         --------
         ::
 
-            >>> from manim import Square, Star, VGroup, Line, ORIGIN, RIGHT
-            >>> sq = Square()
-            >>> sq.add(VGroup(Star()))
+            >>> from manim import Rectangle, Line, ORIGIN, RIGHT
+            >>> rect = Rectangle(width=4.0, height=2.0, grid_xstep=1.0, grid_ystep=0.5)
             >>> line = Line(start=ORIGIN,end=RIGHT)
-            >>> line.align_data(sq)
-            >>> len(line.get_family()) == len(sq.get_family())
+            >>> line.align_data(rect)
+            >>> len(line.get_family()) == len(rect.get_family())
             True
-            >>> line.get_num_points() == sq.get_num_points()
+            >>> line.get_num_points() == rect.get_num_points()
             True
 
         See also
