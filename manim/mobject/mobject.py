@@ -2838,7 +2838,7 @@ class Mobject:
         Returns
         -------
         :class:`Mobject`
-            ``self`
+            ``self``
 
         Examples
         --------
