@@ -2712,12 +2712,6 @@ class Mobject:
         :meth:`.null_point_align`). If ``skip_point_alignment`` is false,
         they will also have the same number of points (see :meth:`.align_points`).
 
-        .. note::
-
-            This method is primarily used internally by :meth:`.become` and the
-            :class:`~.Transform` animation to ensure that mobjects are structurally
-            compatible before transformation.
-
         Parameters
         ----------
         mobject
@@ -2725,6 +2719,27 @@ class Mobject:
         skip_point_alignment
             Controls whether or not the computationally expensive
             point alignment is skipped (default: False).
+
+        .. note::
+
+            This method is primarily used internally by :meth:`.become` and the
+            :class:`~.Transform` animation to ensure that mobjects are structurally
+            compatible before transformation.
+
+        Examples
+        --------
+
+        ::
+            >>> from manim import Square, Star, VGroup, Line
+            >>> sq = Square()
+            >>> sq.add(VGroup(Star()))
+            >>> line = Line(start=ORIGIN,end=RIGHT)
+            >>> line.align_data(sq)
+            >>> len(line.get_family()) == len(sq.get_family())
+            True
+            >>> line.get_num_points() == sq.get_num_points()
+            True
+
 
         See also
         --------
