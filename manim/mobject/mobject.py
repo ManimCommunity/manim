@@ -1289,14 +1289,6 @@ class Mobject:
 
         The rotation is counterclockwise by the given ``angle`` (following the right-hand rule).
 
-        .. note::
-            To animate a rotation, use :class:`~.Rotating` or :class:`~.Rotate`
-            instead of ``.animate.rotate(...)``.
-            The ``.animate.rotate(...)`` syntax only applies a transformation
-            from the initial state to the final rotated state
-            (interpolation between the two states), without showing proper rotational motion
-            based on the angle (from 0 to the given angle).
-
         Parameters
         ----------
         angle
@@ -1317,6 +1309,15 @@ class Mobject:
         -------
         :class:`Mobject`
             ``self`` (for method chaining)
+
+
+        .. note::
+            To animate a rotation, use :class:`~.Rotating` or :class:`~.Rotate`
+            instead of ``.animate.rotate(...)``.
+            The ``.animate.rotate(...)`` syntax only applies a transformation
+            from the initial state to the final rotated state
+            (interpolation between the two states), without showing proper rotational motion
+            based on the angle (from 0 to the given angle).
 
         Examples
         --------
