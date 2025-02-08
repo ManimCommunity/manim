@@ -2333,6 +2333,10 @@ class Mobject:
             >>> gr.get_family()
             [Group, VGroup(Square, Rectangle), Square, Rectangle, Mobject, VMobject]
 
+        See also
+        --------
+        :meth:`~.Mobject.family_members_with_points`, :meth:`~.Mobject.align_data`
+
         """
         sub_families = [x.get_family() for x in self.submobjects]
         all_mobjects = [self] + list(it.chain(*sub_families))
@@ -2356,6 +2360,10 @@ class Mobject:
             >>> gr = Group(vg, m, v)
             >>> gr.family_members_with_points()
             [Square, Rectangle]
+
+        See also
+        --------
+        :meth:`~.Mobject.get_family`
 
         """
         return [m for m in self.get_family() if m.get_num_points() > 0]
