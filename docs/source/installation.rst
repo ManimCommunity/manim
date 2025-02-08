@@ -22,6 +22,7 @@ virtual Python environment, or a conda-like environment, or via Docker).
 #. :ref:`(Recommended) Installing Manim via Python's package manager pip
    <local-installation>`
 #. :ref:`Installing Manim to a conda environment <conda-installation>`
+#. :ref:`Installing Manim via pipx <pipx-installation>`
 #. :ref:`Using Manim via Docker <docker-installation>`
 #. :ref:`Interactive Jupyter notebooks via Binder / Google Colab
    <interactive-online>`
@@ -71,6 +72,24 @@ The following pages show how to install Manim in a conda environment:
    :maxdepth: 2
 
    installation/conda
+
+
+.. _pipx-installation:
+
+Installing Manim via pipx
+*************************
+
+Like Conda, pipx, is a package manager for Python that allows creating
+environments where all your dependencies are stored. For some Linux
+distributions, such as Arch, is a recommended way to avoid breaking the
+system/OS-level environment.
+
+The following pages show how to install Manim in a pipx environment:
+
+.. toctree::
+   :maxdepth: 2
+
+   installation/pipx
 
 
 .. _docker-installation:
