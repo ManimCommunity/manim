@@ -171,4 +171,3 @@ def Settings( **kwargs ):
         'interpreter_path': '~/.local/share/pipx/venvs/manim/bin/python'
     }
 ```
-
