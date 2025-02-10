@@ -1,6 +1,6 @@
 import pytest
 
-from manim.utils.tex import TexTemplate
+from manim.utils.tex import TexTemplate, _texcode_for_environment
 
 DEFAULT_BODY = r"""\documentclass[preview]{standalone}
 \usepackage[english]{babel}
@@ -116,3 +116,27 @@ def test_tex_template_fixed_body():
         match="This TeX template was created with a fixed body, trying to add text the document will have no effect.",
     ):
         template.add_to_document("dummy")
+
+
+def test_texcode_for_environment():
+    """Test that the environment is correctly extracted from the input"""
+    # environment without arguments
+    assert _texcode_for_environment("align*") == (r"\begin{align*}", r"\end{align*}")
+    assert _texcode_for_environment("{align*}") == (r"\begin{align*}", r"\end{align*}")
+    assert _texcode_for_environment(r"\begin{align*}") == (
+        r"\begin{align*}",
+        r"\end{align*}",
+    )
+    # environment with arguments
+    assert _texcode_for_environment("{tabular}[t]{cccl}") == (
+        r"\begin{tabular}[t]{cccl}",
+        r"\end{tabular}",
+    )
+    assert _texcode_for_environment("tabular}{cccl") == (
+        r"\begin{tabular}{cccl}",
+        r"\end{tabular}",
+    )
+    assert _texcode_for_environment(r"\begin{tabular}[t]{cccl}") == (
+        r"\begin{tabular}[t]{cccl}",
+        r"\end{tabular}",
+    )
