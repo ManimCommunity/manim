@@ -20,6 +20,7 @@ from manim.constants import (
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import RoundedRectangle
 from manim.mobject.mobject import Mobject
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.types.vectorized_mobject import VGroup
 from manim.utils.color import BLACK, RED, YELLOW, ManimColor, ParsableManimColor
 
@@ -58,7 +59,7 @@ class SurroundingRectangle(RoundedRectangle):
     ) -> None:
         from manim.mobject.mobject import Group
 
-        if not all(isinstance(mob, Mobject) for mob in mobjects):
+        if not all(isinstance(mob, (Mobject, OpenGLMobject)) for mob in mobjects):
             raise TypeError(
                 "Expected all inputs for parameter mobjects to be a Mobjects"
             )
