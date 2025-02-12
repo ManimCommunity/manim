@@ -161,33 +161,31 @@ def smooth(t: float, inflection: float = 10.0) -> float:
     )
 
 
+@unit_interval
 def smoothstep(t: float) -> float:
     """Implementation of the 1st order SmoothStep sigmoid function.
     The 1st derivative (speed) is zero at the endpoints.
     https://en.wikipedia.org/wiki/Smoothstep
     """
-    return 0 if t <= 0 else 3 * t**2 - 2 * t**3 if t < 1 else 1
+    return 3 * t**2 - 2 * t**3
 
 
+@unit_interval
 def smootherstep(t: float) -> float:
     """Implementation of the 2nd order SmoothStep sigmoid function.
     The 1st and 2nd derivatives (speed and acceleration) are zero at the endpoints.
     https://en.wikipedia.org/wiki/Smoothstep
     """
-    return 0 if t <= 0 else 6 * t**5 - 15 * t**4 + 10 * t**3 if t < 1 else 1
+    return 6 * t**5 - 15 * t**4 + 10 * t**3
 
 
+@unit_interval
 def smoothererstep(t: float) -> float:
     """Implementation of the 3rd order SmoothStep sigmoid function.
     The 1st, 2nd and 3rd derivatives (speed, acceleration and jerk) are zero at the endpoints.
     https://en.wikipedia.org/wiki/Smoothstep
     """
-    alpha: float = 0
-    if 0 < t < 1:
-        alpha = 35 * t**4 - 84 * t**5 + 70 * t**6 - 20 * t**7
-    elif t >= 1:
-        alpha = 1
-    return alpha
+    return 35 * t**4 - 84 * t**5 + 70 * t**6 - 20 * t**7
 
 
 @unit_interval
