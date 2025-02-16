@@ -1390,8 +1390,8 @@ class CoordinateSystem:
                     self.add(ax, curve, area)
         """
         if x_range is None:
-            a = graph.t_min
-            b = graph.t_max
+            a = graph.t_range[0]
+            b = graph.t_range[1]
         else:
             a, b = x_range
         if bounded_graph is not None:
