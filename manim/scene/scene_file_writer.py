@@ -536,12 +536,20 @@ class SceneFileWriter:
 
         fps = to_av_frame_rate(config.frame_rate)
 
-        partial_movie_file_codec = "libx264"
         partial_movie_file_pix_fmt = "yuv420p"
         av_options = {
             "an": "1",  # ffmpeg: -an, no audio
-            "crf": "23",  # ffmpeg: -crf, constant rate factor (improved bitrate)
         }
+        if config.lossless:
+            partial_movie_file_codec = "libx265"
+            av_options["x265-params"] = (
+                "lossless=1"  # ffmpeg: set lossless mode for x265
+            )
+        else:
+            partial_movie_file_codec = "libx264"
+            av_options["crf"] = (
+                "23"  # ffmpeg: -crf, constant rate factor (improved bitrate)
+            )
 
         if config.movie_file_extension == ".webm":
             partial_movie_file_codec = "libvpx-vp9"
