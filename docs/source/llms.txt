@@ -1,0 +1,81 @@
+```markdown
+# Manim Community Edition
+
+> Manim is an animation engine for explanatory math videos, based on Python. It is used to create precise animations programmatically, making it convenient to specify exactly how each one should run. This documentation provides a comprehensive guide to installing, using, and contributing to Manim Community Edition.
+
+Manim is designed for creating mathematical animations for teaching and explanation. It is a powerful tool for educators, researchers, and anyone who wants to visually communicate mathematical concepts.
+
+Key features include:
+
+- **Programmatic Animation**: Create animations using Python code, allowing for precise control and complex logic.
+- **Mathematical Objects (Mobjects)**: A rich library of mathematical shapes, graphs, text, and more.
+- **Animation Framework**: A flexible system for creating and combining animations.
+- **Scene Management**: Tools for organizing and rendering animations within scenes.
+- **Extensive Documentation**: Comprehensive tutorials, guides, and a reference manual to help users of all levels.
+- **Extensibility**: Plugins can be developed to extend Manim's functionality.
+- **OpenGL Renderer**: Support for hardware-accelerated rendering for improved performance.
+
+To get started:
+
+- **Installation**: Follow the installation instructions for your operating system to set up Manim on your local machine.
+- **Tutorials**: Work through the tutorials to learn the basics of creating scenes and animations.
+- **Examples**: Explore the example gallery to see demonstrations of various Manim features.
+- **Reference Manual**: Consult the reference manual for detailed information on all modules, classes, and functions.
+- **Community Support**: Join the community Discord server for help and discussions.
+
+## Examples
+
+- [Example Gallery](https://docs.manim.community/examples.html): A collection of code snippets and corresponding video/image outputs showcasing different Manim functionalities.
+
+## Installation
+
+- [Installation Instructions](https://docs.manim.community/installation.html): Detailed guides for installing Manim on Windows, macOS, and Linux using various methods.
+- [Local Installation via pip](https://docs.manim.community/installation/uv.html): Recommended method for installing Manim using Python's package manager pip and uv for environment management.
+- [Conda Installation](https://docs.manim.community/installation/conda.html): Instructions for installing Manim within a conda environment.
+- [Docker Installation](https://docs.manim.community/installation/docker.html): Information on using Manim via Docker containers.
+- [Jupyter Notebooks](https://docs.manim.community/installation/jupyter.html): Setting up interactive Jupyter notebook environments for Manim.
+
+## Tutorials & Guides
+
+- [Tutorials Index](https://docs.manim.community/tutorials_guides.html): Overview of available tutorials and guides.
+- [Quickstart Tutorial](https://docs.manim.community/tutorials/quickstart.html): A beginner-friendly tutorial to create a first Manim animation.
+- [Output and Configuration Tutorial](https://docs.manim.community/tutorials/output_and_config.html): Understanding Manim's output settings and command-line flags.
+- [Building Blocks Tutorial](https://docs.manim.community/tutorials/building_blocks.html): Explaining the core concepts of Mobjects, Animations, and Scenes.
+- [Guides Index](https://docs.manim.community/guides/index.html): Index page for thematic guides.
+- [Configuration Guide](https://docs.manim.community/guides/configuration.html): In-depth guide to Manim's configuration system.
+- [Deep Dive Guide](https://docs.manim.community/guides/deep_dive.html): A comprehensive walkthrough describing Manim's rendering process.
+- [Using Text Guide](https://docs.manim.community/guides/using_text.html): Guide on rendering text and formulas in Manim.
+- [Adding Voiceovers Guide](https://docs.manim.community/guides/add_voiceovers.html): Guide on using the manim-voiceover plugin.
+- [FAQ Index](https://docs.manim.community/faq/index.html): Collection of frequently asked questions and their answers.
+
+## Reference Manual
+
+- [Reference Manual Index](https://docs.manim.community/reference.html): Comprehensive list of Manim's modules, classes, and functions.
+- [Animations Reference](https://docs.manim.community/reference_index/animations.html): Documentation for animation-related modules and classes.
+- [Cameras Reference](https://docs.manim.community/reference_index/cameras.html): Documentation for camera-related modules and classes.
+- [Configuration Reference](https://docs.manim.community/reference_index/configuration.html): Documentation for configuration-related modules and classes.
+- [Mobjects Reference](https://docs.manim.community/reference_index/mobjects.html): Documentation for mobject-related modules and classes.
+- [Scenes Reference](https://docs.manim.community/reference_index/scenes.html): Documentation for scene-related modules and classes.
+- [Utilities and other modules Reference](https://docs.manim.community/reference_index/utilities_misc.html): Documentation for utility and miscellaneous modules.
+
+## Plugins
+
+- [Plugins Documentation](https://docs.manim.community/plugins.html): Information on installing, using, and creating Manim plugins to extend functionality.
+
+## Changelog
+
+- [Changelog](https://docs.manim.community/changelog.html): Detailed list of changes between Manim versions.
+
+## Contributing
+
+- [Contributing Guide](https://docs.manim.community/contributing.html): Information on how to contribute to the development of Manim.
+- [Development Process](https://docs.manim.community/contributing/development.html): Guide to the Manim development workflow.
+- [Documentation Guide](https://docs.manim.community/contributing/docs.html): Guidelines for contributing to Manim's documentation.
+- [Testing Guide](https://docs.manim.community/contributing/testing.html): Information on Manim's testing system and how to add tests.
+- [Performance Guide](https://docs.manim.community/contributing/performance.html): Tips for profiling and improving Manim's performance.
+- [Internationalization Guide](https://docs.manim.community/contributing/internationalization.html): Guide to contributing translations to Manim.
+
+## Code of Conduct
+
+- [Code of Conduct](https://docs.manim.community/conduct.html): Formal description of the rules and guidelines for interacting within the Manim community.
+```
