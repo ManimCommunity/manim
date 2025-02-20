@@ -299,6 +299,9 @@ Even though Manim has many built-in animations, you will find times when you nee
 If you find yourself in that situation, then you can define your own custom animation.
 You start by extending the :class:`~.Animation` class and overriding its :meth:`~.Animation.interpolate_mobject`.
 The :meth:`~.Animation.interpolate_mobject` method receives alpha as a parameter that starts at 0 and changes throughout the animation.
+
+.. note:: But if you want to use rate functions i.e. :meth:`~.rate_func` in :meth:`play`, we have to use :meth:`self.rate_func(alpha)` instead of using just :meth:`alpha` in :meth:`~.Animation.interpolate_mobject`.
+
 So, you just have to manipulate self.mobject inside Animation according to the alpha value in its interpolate_mobject method.
 Then you get all the benefits of :class:`~.Animation` such as playing it for different run times or using different rate functions.
 
@@ -334,7 +337,7 @@ Once you have defined your ``Count`` animation, you can play it in your :class:`
     :ref_methods: Animation.interpolate_mobject Scene.play
 
     class Count(Animation):
-        def __init__(self, number: DecimalNumber, start: float, end: float, **kwargs) -> None:
+        def __init__(self, number: DecimalNumber, start: float, end: float, **kwargs) -> None: 
             # Pass number as the mobject of the animation
             super().__init__(number,  **kwargs)
             # Set start and end
@@ -343,6 +346,10 @@ Once you have defined your ``Count`` animation, you can play it in your :class:`
 
         def interpolate_mobject(self, alpha: float) -> None:
             # Set value of DecimalNumber according to alpha
+            # if we want to run different rate functions, then
+            # Replace alpha with self.rate_func(alpha), something like
+            # value = self.start + (self.rate_func(alpha) * (self.end - self.start))
+            # if your not using different rate functions, follow 
             value = self.start + (alpha * (self.end - self.start))
             self.mobject.set_value(value)
 
