@@ -337,7 +337,7 @@ Once you have defined your ``Count`` animation, you can play it in your :class:`
     :ref_methods: Animation.interpolate_mobject Scene.play
 
     class Count(Animation):
-        def __init__(self, number: DecimalNumber, start: float, end: float, **kwargs) -> None: 
+        def __init__(self, number: DecimalNumber, start: float, end: float, **kwargs) -> None:
             # Pass number as the mobject of the animation
             super().__init__(number,  **kwargs)
             # Set start and end
@@ -349,7 +349,7 @@ Once you have defined your ``Count`` animation, you can play it in your :class:`
             # if we want to run different rate functions, then
             # Replace alpha with self.rate_func(alpha), something like
             # value = self.start + (self.rate_func(alpha) * (self.end - self.start))
-            # if your not using different rate functions, follow 
+            # if your not using different rate functions, follow
             value = self.start + (alpha * (self.end - self.start))
             self.mobject.set_value(value)
 
