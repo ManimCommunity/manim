@@ -269,7 +269,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         if width is not None:
             for mob in self.get_family(recurse):
-                mob.stroke_width = np.array([[width] for width in tuplify(width)])
+                mob.stroke_width = np.array(tuplify(width))
 
         if background is not None:
             for mob in self.get_family(recurse):
@@ -323,7 +323,7 @@ class OpenGLVMobject(OpenGLMobject):
     def match_style(self, vmobject, recurse=True):
         vmobject_style = vmobject.get_style()
         if config.renderer == RendererType.OPENGL:
-            vmobject_style["stroke_width"] = vmobject_style["stroke_width"][0][0]
+            vmobject_style["stroke_width"] = vmobject_style["stroke_width"][0]
             vmobject_style["fill_opacity"] = self.get_fill_opacity()
         self.set_style(**vmobject_style, recurse=False)
         if recurse:
