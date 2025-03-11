@@ -17,9 +17,12 @@ from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VMobject
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from typing_extensions import Self
 
     from manim.typing import Point3D, Point3DLike
+    from manim.utils.color import ParsableManimColor
 
 from manim.utils.color import YELLOW
 
@@ -111,7 +114,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
         discontinuities: Iterable[float] | None = None,
         use_smoothing: bool = True,
         use_vectorized: bool = False,
-        **kwargs,
+        **kwargs: Any,
     ):
         def internal_parametric_function(t: float) -> Point3D:
             """Wrap ``function``'s output inside a NumPy array."""
@@ -143,13 +146,13 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
                 lambda t: self.t_min <= t <= self.t_max,
                 self.discontinuities,
             )
-            discontinuities = np.array(list(discontinuities))
+            discontinuities_array = np.array(list(discontinuities))
             boundary_times = np.array(
                 [
                     self.t_min,
                     self.t_max,
-                    *(discontinuities - self.dt),
-                    *(discontinuities + self.dt),
+                    *(discontinuities_array - self.dt),
+                    *(discontinuities_array + self.dt),
                 ],
             )
             boundary_times.sort()
@@ -211,19 +214,29 @@ class FunctionGraph(ParametricFunction):
                 self.add(cos_func, sin_func_1, sin_func_2)
     """
 
-    def __init__(self, function, x_range=None, color=YELLOW, **kwargs):
+    def __init__(
+        self,
+        function: Callable[[float], Any],
+        x_range: np.array | None = None,
+        color: ParsableManimColor = YELLOW,
+        **kwargs: Any,
+    ) -> None:
         if x_range is None:
             x_range = np.array([-config["frame_x_radius"], config["frame_x_radius"]])
 
         self.x_range = x_range
-        self.parametric_function = lambda t: np.array([t, function(t), 0])
-        self.function = function
+        self.parametric_function: Callable[[float], np.array] = lambda t: np.array(
+            [t, function(t), 0]
+        )
+        # TODO:
+        # error: Incompatible types in assignment (expression has type "Callable[[float], Any]", variable has type "Callable[[Arg(float, 't')], Any]")  [assignment]
+        self.function = function  # type: ignore[assignment]
         super().__init__(self.parametric_function, self.x_range, color=color, **kwargs)
 
-    def get_function(self):
+    def get_function(self) -> Callable[[float], Any]:
         return self.function
 
-    def get_point_from_function(self, x):
+    def get_point_from_function(self, x: float) -> np.array:
         return self.parametric_function(x)
 
 
@@ -236,8 +249,8 @@ class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
         min_depth: int = 5,
         max_quads: int = 1500,
         use_smoothing: bool = True,
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> None:
         """An implicit function.
 
         Parameters
@@ -295,7 +308,7 @@ class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
 
         super().__init__(**kwargs)
 
-    def generate_points(self):
+    def generate_points(self) -> Self:
         p_min, p_max = (
             np.array([self.x_range[0], self.y_range[0]]),
             np.array([self.x_range[1], self.y_range[1]]),
