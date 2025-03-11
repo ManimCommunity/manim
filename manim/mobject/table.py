@@ -254,7 +254,7 @@ class Table(VGroup):
         self,
         table: Iterable[Iterable[float | str | VMobject]],
     ) -> list:
-        """Initilaizes the entries of ``table`` as :class:`~.VMobject`.
+        """Initializes the entries of ``table`` as :class:`~.VMobject`.
 
         Parameters
         ----------
