@@ -160,8 +160,12 @@ class OpenGLRenderer(Renderer, RendererProtocol):
         background_image: str | None = None,
     ) -> None:
         super().__init__()
-        self.pixel_width = pixel_width if pixel_width is not None else config.pixel_width
-        self.pixel_height = pixel_height if pixel_height is not None else config.pixel_height
+        self.pixel_width = (
+            pixel_width if pixel_width is not None else config.pixel_width
+        )
+        self.pixel_height = (
+            pixel_height if pixel_height is not None else config.pixel_height
+        )
         self.samples = samples
         if background_opacity:
             background_color = background_color.opacity(background_opacity)
