@@ -8,6 +8,7 @@ from ..mobject.mobject import Mobject
 
 T = TypeVar("T")
 
+__all__ = ["flatten_iterable_parameters"]
 
 def flatten_iterable_parameters(
     args: Iterable[T | Iterable[T] | GeneratorType],
