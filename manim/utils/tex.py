@@ -184,7 +184,7 @@ def _texcode_for_environment(environment: str) -> tuple[str, str]:
         A pair of strings representing the opening and closing of the tex environment, e.g.
         ``\begin{tabular}{cccl}`` and ``\end{tabular}``
     """
-    environment.removeprefix(r"\begin").removeprefix("{")
+    environment = environment.removeprefix(r"\begin").removeprefix("{")
 
     # The \begin command takes everything and closes with a brace
     begin = r"\begin{" + environment
