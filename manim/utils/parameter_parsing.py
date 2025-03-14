@@ -38,5 +38,5 @@ def flatten_iterable_parameters(
         ):
             flattened_parameters.extend(arg)
         else:
-            flattened_parameters.append(arg) # type: ignore[arg-type]
+            flattened_parameters.append(arg)  # type: ignore[arg-type]
     return flattened_parameters
