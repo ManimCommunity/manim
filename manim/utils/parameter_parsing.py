@@ -32,7 +32,7 @@ def flatten_iterable_parameters(
     """
     # avoiding cyclic import
     from ..mobject.mobject import Mobject
-    
+
     flattened_parameters: list[T] = []
     for arg in args:
         # Only extend if arg is iterable and NOT an instance of Mobject
