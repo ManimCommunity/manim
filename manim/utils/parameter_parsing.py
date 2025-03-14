@@ -4,6 +4,8 @@ from collections.abc import Iterable
 from types import GeneratorType
 from typing import TypeVar
 
+from ..mobject.mobject import Mobject
+
 T = TypeVar("T")
 
 
@@ -22,10 +24,18 @@ def flatten_iterable_parameters(
     -------
     :class:`list`
         The flattened list of parameters.
+        
+    Notes
+    -----
+    Instances of :class:`Mobject` are technically iterable because they define
+    `__iter__()`, but they should be treated as single objects rather than
+    being expanded. To prevent unintended behavior, we explicitly check
+    `not isinstance(arg, Mobject)` before extending the list.
     """
     flattened_parameters: list[T] = []
     for arg in args:
-        if isinstance(arg, (Iterable, GeneratorType)):
+        # Only extend if arg is iterable and NOT an instance of Mobject
+        if isinstance(arg, (Iterable, GeneratorType)) and not isinstance(arg, Mobject):
             flattened_parameters.extend(arg)
         else:
             flattened_parameters.append(arg)
