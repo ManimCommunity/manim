@@ -24,7 +24,7 @@ def flatten_iterable_parameters(
     -------
     :class:`list`
         The flattened list of parameters.
-        
+
     Notes
     -----
     Instances of :class:`Mobject` are technically iterable because they define
