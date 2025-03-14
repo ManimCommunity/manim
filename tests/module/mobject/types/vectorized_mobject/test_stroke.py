@@ -37,8 +37,8 @@ def test_streamline_attributes_for_single_color():
         opacity=0.2,
         color=C.BLUE_D,
     )
-    assert vector_field[0].stroke_width == 1.0
-    assert vector_field[0].stroke_opacity == 0.2
+    assert vector_field[0].get_stroke_width() == 1.0
+    assert vector_field[0].get_stroke_opacity() == 0.2
 
 
 def test_stroke_scale():
