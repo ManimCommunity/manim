@@ -6,8 +6,6 @@ from typing import TypeVar
 
 T = TypeVar("T")
 
-__all__ = ["flatten_iterable_parameters"]
-
 
 def flatten_iterable_parameters(
     args: Iterable[T | Iterable[T] | GeneratorType],
@@ -29,8 +27,8 @@ def flatten_iterable_parameters(
     -----
     Instances of :class:`Mobject` are technically iterable because they define
     `__iter__()`, but they should be treated as single objects rather than
-    being expanded. To prevent unintended behavior, we explicitly check
-    `not isinstance(arg, Mobject)` before extending the list.
+    being expanded. To prevent unintended behavior, we explicitly check if it's not instance of Mobject,
+    by checking its sumbmobjects attribute: `not hasattr(arg, "submobjects")` before extending the list.
     """
     flattened_parameters: list[T] = []
     for arg in args:
