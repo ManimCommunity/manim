@@ -466,7 +466,7 @@ class Scene:
         """
         # Allows passing an iterable of mobjects without unpacking it first
         mobjects = flatten_iterable_parameters(mobjects)
-        
+
         if config.renderer == RendererType.OPENGL:
             new_mobjects = []
             new_meshes = []
