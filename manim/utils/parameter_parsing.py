@@ -32,7 +32,6 @@ def flatten_iterable_parameters(
     being expanded. To prevent unintended behavior, we explicitly check
     `not isinstance(arg, Mobject)` before extending the list.
     """
-
     flattened_parameters: list[T] = []
     for arg in args:
         # Only extend if arg is iterable and NOT an instance of Mobject
