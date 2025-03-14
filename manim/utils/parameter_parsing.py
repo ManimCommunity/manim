@@ -37,7 +37,7 @@ def flatten_iterable_parameters(
     flattened_parameters: list[T] = []
     for arg in args:
         # Only extend if arg is iterable and NOT an instance of Mobject
-        if isinstance(arg, (Iterable, GeneratorType)) and not isinstance(arg, Mobject):
+        if isinstance(arg, (Iterable, GeneratorType)) and not hasattr(arg, "submobjects"):
             flattened_parameters.extend(arg)
         else:
             flattened_parameters.append(arg)
