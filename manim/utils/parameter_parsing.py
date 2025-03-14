@@ -4,8 +4,6 @@ from collections.abc import Iterable
 from types import GeneratorType
 from typing import TypeVar
 
-from ..mobject.mobject import Mobject
-
 T = TypeVar("T")
 
 __all__ = ["flatten_iterable_parameters"]
@@ -37,7 +35,9 @@ def flatten_iterable_parameters(
     flattened_parameters: list[T] = []
     for arg in args:
         # Only extend if arg is iterable and NOT an instance of Mobject
-        if isinstance(arg, (Iterable, GeneratorType)) and not hasattr(arg, "submobjects"):
+        if isinstance(arg, (Iterable, GeneratorType)) and not hasattr(
+            arg, "submobjects"
+        ):
             flattened_parameters.extend(arg)
         else:
             flattened_parameters.append(arg)
