@@ -4,6 +4,8 @@ from collections.abc import Iterable
 from types import GeneratorType
 from typing import TypeVar
 
+from ..mobject.mobject import Mobject
+
 T = TypeVar("T")
 
 
