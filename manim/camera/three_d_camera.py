@@ -84,7 +84,7 @@ class ThreeDCamera(Camera):
         self.reset_rotation_matrix()
         super().capture_mobjects(mobjects, **kwargs)
 
-    def get_value_trackers(self):
+    def get_value_trackers(self) -> list[ValueTracker]:
         """A list of :class:`ValueTrackers <.ValueTracker>` of phi, theta, focal_distance,
         gamma and zoom.
 
