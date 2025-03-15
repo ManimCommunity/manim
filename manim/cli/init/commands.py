@@ -16,6 +16,7 @@ import click
 import cloup
 
 from manim._config import console
+from manim._config.utils import make_config_parser
 from manim.constants import CONTEXT_SETTINGS, EPILOG, QUALITIES
 from manim.utils.file_ops import (
     add_import_statement,
@@ -122,25 +123,11 @@ def project(default_settings: bool, **kwargs: Any) -> None:
         )
     else:
         project_name.mkdir()
-        new_cfg: dict[str, Any] = {}
         new_cfg_path = Path.resolve(project_name / "manim.cfg")
-
-        if not default_settings:
-            for key, value in CFG_DEFAULTS.items():
-                if key == "scene_names":
-                    new_cfg[key] = template_name + "Template"
-                elif key == "resolution":
-                    new_cfg[key] = select_resolution()
-                else:
-                    new_cfg[key] = click.prompt(f"\n{key}", default=value)
-
-            console.print("\n", new_cfg)
-            if click.confirm("Do you want to continue?", default=True, abort=True):
-                copy_template_files(project_name, template_name)
-                update_cfg(new_cfg, new_cfg_path)
-        else:
-            copy_template_files(project_name, template_name)
-            update_cfg(CFG_DEFAULTS, new_cfg_path)
+        parser = make_config_parser()
+        copy_template_files(project_name, template_name)
+        with new_cfg_path.open("w") as fp:
+            parser.write(fp)
 
 
 @cloup.command(
