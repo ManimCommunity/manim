@@ -1938,7 +1938,8 @@ class VMobject(Mobject):
                 upper_residue,
             )
         else:
-            # Copy points if self.points is vmobject.points before setting np.empty(...) to avoid in-place modification
+            # Copy points if self.points is vmobject.points before setting 
+            # self.points = np.empty(...) to avoid in-place modification
             vmobject_points = (
                 vmobject.points.copy()
                 if self.points is vmobject.points
