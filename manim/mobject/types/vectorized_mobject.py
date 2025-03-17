@@ -1939,7 +1939,11 @@ class VMobject(Mobject):
             )
         else:
             # make a copy of points before setting self.points = np.empty(...)
-            vmobject_points = vmobject.points.copy() if self.points is vmobject.points else vmobject.points
+            vmobject_points = (
+                vmobject.points.copy()
+                if self.points is vmobject.points
+                else vmobject.points
+            )
 
             # Allocate space for (upper_index-lower_index+1) Bézier curves.
             self.points = np.empty((nppc * (upper_index - lower_index + 1), self.dim))
