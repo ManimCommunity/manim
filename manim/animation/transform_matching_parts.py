@@ -20,6 +20,8 @@ from .fading import FadeIn, FadeOut
 from .transform import FadeTransformPieces, Transform
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ..scene.scene import Scene
 
 
@@ -74,7 +76,7 @@ class TransformMatchingAbstractBase(AnimationGroup):
         transform_mismatches: bool = False,
         fade_transform_mismatches: bool = False,
         key_map: dict | None = None,
-        **kwargs,
+        **kwargs: Any,
     ):
         if isinstance(mobject, OpenGLVMobject):
             group_type = OpenGLVGroup
@@ -162,11 +164,11 @@ class TransformMatchingAbstractBase(AnimationGroup):
         scene.add(self.to_add)
 
     @staticmethod
-    def get_mobject_parts(mobject: Mobject):
+    def get_mobject_parts(mobject: Mobject) -> None:
         raise NotImplementedError("To be implemented in subclass.")
 
     @staticmethod
-    def get_mobject_key(mobject: Mobject):
+    def get_mobject_key(mobject: Mobject) -> None:
         raise NotImplementedError("To be implemented in subclass.")
 
 
@@ -206,7 +208,7 @@ class TransformMatchingShapes(TransformMatchingAbstractBase):
         transform_mismatches: bool = False,
         fade_transform_mismatches: bool = False,
         key_map: dict | None = None,
-        **kwargs,
+        **kwargs: Any,
     ):
         super().__init__(
             mobject,
@@ -269,7 +271,7 @@ class TransformMatchingTex(TransformMatchingAbstractBase):
         transform_mismatches: bool = False,
         fade_transform_mismatches: bool = False,
         key_map: dict | None = None,
-        **kwargs,
+        **kwargs: Any,
     ):
         super().__init__(
             mobject,
