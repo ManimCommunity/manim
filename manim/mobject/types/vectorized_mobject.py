@@ -1959,7 +1959,6 @@ class VMobject(Mobject):
                 0,
                 upper_residue,
             )
-
         return self
 
     def get_subcurve(self, a: float, b: float) -> Self:
