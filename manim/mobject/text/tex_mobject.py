@@ -447,8 +447,12 @@ class Tex(MathTex):
     """
 
     def __init__(
-        self, *tex_strings, arg_separator="", tex_environment="center", **kwargs
-    ):
+        self,
+        *tex_strings: str,
+        arg_separator: str = "",
+        tex_environment: str = "center",
+        **kwargs: Any,
+    ) -> None:
         super().__init__(
             *tex_strings,
             arg_separator=arg_separator,
