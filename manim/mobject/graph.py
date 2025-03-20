@@ -335,7 +335,7 @@ def _tree_layout(
     # Always make a copy of the children because they get eaten
     stack = [list(children[root_vertex]).copy()]
     stick = [root_vertex]
-    parent = {u: root_vertex for u in children[root_vertex]}
+    parent = dict.fromkeys(children[root_vertex], root_vertex)
     pos = {}
     obstruction = [0.0] * len(T)
     o = -1 if orientation == "down" else 1
@@ -810,12 +810,12 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
             vertex_mobjects = {}
 
         graph_center = self.get_center()
-        base_positions = {v: graph_center for v in vertices}
+        base_positions = dict.fromkeys(vertices, graph_center)
         base_positions.update(positions)
         positions = base_positions
 
         if isinstance(labels, bool):
-            labels = {v: labels for v in vertices}
+            labels = dict.fromkeys(vertices, labels)
         else:
             assert isinstance(labels, dict)
             base_labels = dict.fromkeys(vertices, False)
