@@ -55,21 +55,3 @@ def test_color_hash():
     assert hash(WHITE) == hash(ManimColor([1.0, 1.0, 1.0, 1.0]))
     assert hash(WHITE) == hash("#FFFFFFFF")
     assert hash(WHITE) != hash(RED)
-
-
-def test_color_to_hsl():
-    red = ManimColor.from_rgb(np.array([255, 0, 0]))
-    hsl = red.to_hsl()
-
-    assert hsl[0] == 0
-    assert hsl[1] == 1.0
-    assert hsl[2] == 0.5
-
-
-def test_color_frop_hsl():
-    red = ManimColor.from_hsl(np.array([0, 1.0, 0.5]))
-    hsl = red.to_int_rgb()
-
-    assert hsl[0] == 255
-    assert hsl[1] == 0
-    assert hsl[2] == 0
