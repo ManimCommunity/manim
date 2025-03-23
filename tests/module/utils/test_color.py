@@ -73,5 +73,3 @@ def test_color_frop_hsl():
     assert hsl[0] == 255
     assert hsl[1] == 0
     assert hsl[2] == 0
-    
-
