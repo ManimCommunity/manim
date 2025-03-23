@@ -117,10 +117,8 @@ def test_to_hsv() -> None:
 def test_to_hsl() -> None:
     color = ManimColor((0x1, 0x2, 0x3, 0x4))
     hls = colorsys.rgb_to_hls(0x1 / 255, 0x2 / 255, 0x3 / 255)
-    
-    nt.assert_array_equal(
-        color.to_hsl(), np.array([hls[0], hls[2], hls[1]])
-    )
+
+    nt.assert_array_equal(color.to_hsl(), np.array([hls[0], hls[2], hls[1]]))
 
 
 def test_from_hsl() -> None:
@@ -130,9 +128,7 @@ def test_from_hsl() -> None:
     color = ManimColor.from_hsl(hsl)
     rgb = np.array([0x1 / 255, 0x2 / 255, 0x3 / 255])
 
-    nt.assert_allclose(
-        color.to_rgb(), rgb
-    )
+    nt.assert_allclose(color.to_rgb(), rgb)
 
 
 def test_invert() -> None:
