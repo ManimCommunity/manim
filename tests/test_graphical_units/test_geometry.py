@@ -286,6 +286,30 @@ def test_LabeledArrow(scene):
     )
     scene.add(l_arrow)
 
+@frames_comparison
+def test_Axes(scene):
+    axes = Axes(
+        x_range=[-3, 3],
+        y_range=[-3, 3],
+        axis_config={"include_tip": True}
+    )
+    scene.add(axes)
+
+
+@frames_comparison
+def test_Graph(scene):
+    vertices = [1, 2, 3, 4]
+    edges = [(1, 2), (2, 3), (3, 4), (4, 1), (1, 3)]
+    g = Graph(vertices, edges)
+    scene.add(g)
+
+
+@frames_comparison
+def test_FunctionGraph(scene):
+    axes = Axes(x_range=[-3, 3], y_range=[-3, 3])
+    graph = axes.plot(lambda x: x**2, color=BLUE)
+    scene.add(axes, graph)
+
 
 @frames_comparison
 def test_LabeledPolygram(scene):
