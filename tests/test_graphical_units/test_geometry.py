@@ -286,13 +286,10 @@ def test_LabeledArrow(scene):
     )
     scene.add(l_arrow)
 
+
 @frames_comparison
 def test_Axes(scene):
-    axes = Axes(
-        x_range=[-3, 3],
-        y_range=[-3, 3],
-        axis_config={"include_tip": True}
-    )
+    axes = Axes(x_range=[-3, 3], y_range=[-3, 3], axis_config={"include_tip": True})
     scene.add(axes)
 
 
