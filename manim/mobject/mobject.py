@@ -1011,7 +1011,7 @@ class Mobject:
                     label.add_updater(dot_position)
                     self.add(dot, label)
 
-                    self.play(Rotating(dot, about_point=ORIGIN, angle=TAU, run_time=TAU, rate_func=linear))
+                    self.play(Rotating(dot, about_point=ORIGIN, run_time=TAU, rate_func=linear))
 
         .. manim:: DtUpdater
 

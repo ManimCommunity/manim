@@ -141,7 +141,7 @@ class Animation:
         introducer: bool = False,
         *,
         _on_finish: Callable[[], None] = lambda _: None,
-        **kwargs,
+        use_override: bool = True,  # included here to avoid TypeError if passed from a subclass's constructor
     ) -> None:
         self._typecheck_input(mobject)
         self.run_time: float = run_time
@@ -161,8 +161,6 @@ class Animation:
         else:
             self.starting_mobject: Mobject = Mobject()
             self.mobject: Mobject = mobject if mobject is not None else Mobject()
-        if kwargs:
-            logger.debug("Animation received extra kwargs: %s", kwargs)
 
         if hasattr(self, "CONFIG"):
             logger.error(
