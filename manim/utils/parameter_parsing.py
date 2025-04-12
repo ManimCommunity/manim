@@ -27,7 +27,7 @@ def flatten_iterable_parameters(
     for arg in args:
         # Mobject is iterable as it has `__iter__()`, but it should be appended.
         # To avoid cyclic import, we check for the `submobjects` attribute.
-        if hasattr(arg, 'submobjects'):
+        if hasattr(arg, "submobjects"):
             flattened_parameters.append(arg)
         elif isinstance(arg, (Iterable, GeneratorType)):
             flattened_parameters.extend(arg)
