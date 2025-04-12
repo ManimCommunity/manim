@@ -464,7 +464,7 @@ class Scene:
             The same scene after adding the Mobjects in.
 
         """
-        # Allows passing an iterable of mobjects without unpacking it first
+        # Allow passing a generator or any iterable to self.add instead of comma separated arguments
         mobjects = flatten_iterable_parameters(mobjects)
 
         if config.renderer == RendererType.OPENGL:
@@ -902,10 +902,9 @@ class Scene:
         Tuple[:class:`Animation`]
             Animations to be played.
         """
-        # Allow passing a generator or any iterable to self.play instead of comma separated arguments
-        # and also without needing to unpack it first
-        arg_anims = flatten_iterable_parameters(args)
         animations = []
+        arg_anims = flatten_iterable_parameters(args)
+        # Allow passing a generator to self.play instead of comma separated arguments
         for arg in arg_anims:
             try:
                 animations.append(prepare_animation(arg))

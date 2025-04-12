@@ -36,6 +36,7 @@ from ..utils.color import (
 )
 from ..utils.exceptions import MultiAnimationOverrideException
 from ..utils.iterables import list_update, remove_list_redundancies
+from ..utils.parameter_parsing import flatten_iterable_parameters
 from ..utils.paths import straight_path
 from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
 
@@ -501,6 +502,8 @@ class Mobject:
             [child]
 
         """
+        # Allow passing a generator or any iterable to self.add and Group instead of comma separated arguments
+        mobjects = flatten_iterable_parameters(mobjects)
         self._assert_valid_submobjects(mobjects)
         unique_mobjects = remove_list_redundancies(mobjects)
         if len(mobjects) != len(unique_mobjects):

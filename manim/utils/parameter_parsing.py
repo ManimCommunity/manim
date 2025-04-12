@@ -25,14 +25,12 @@ def flatten_iterable_parameters(
     """
     flattened_parameters: list[T] = []
     for arg in args:
-        # If we want to pass a Mobject, we must consider that it is technically iterable
-        # because it defines `__iter__()`. However, Mobject and its subclasses should be
-        # treated as single objects rather than being expanded. To identify them,
-        # we check for the `submobjects` attribute.
-        if isinstance(arg, (Iterable, GeneratorType)) and not hasattr(
-            arg, "submobjects"
-        ):
+        # Mobject is iterable as it has `__iter__()`, but it should be appended.
+        # To avoid cyclic import, we check for the `submobjects` attribute.
+        if hasattr(arg, 'submobjects'):
+            flattened_parameters.append(arg)
+        elif isinstance(arg, (Iterable, GeneratorType)):
             flattened_parameters.extend(arg)
         else:
-            flattened_parameters.append(arg)  # type: ignore[arg-type]
+            flattened_parameters.append(arg)
     return flattened_parameters
