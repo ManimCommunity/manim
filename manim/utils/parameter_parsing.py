@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 from types import GeneratorType
-from typing import TypeVar
+from typing import TypeVar, cast
 
 T = TypeVar("T")
 
@@ -28,7 +28,7 @@ def flatten_iterable_parameters(
         # Mobject is iterable as it has `__iter__()`, but it should be appended.
         # To avoid cyclic import, we check for the `submobjects` attribute.
         if hasattr(arg, "submobjects"):
-            flattened_parameters.append(arg)
+            flattened_parameters.append(cast(T, arg))
         elif isinstance(arg, (Iterable, GeneratorType)):
             flattened_parameters.extend(arg)
         else:
