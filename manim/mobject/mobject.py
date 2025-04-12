@@ -502,8 +502,6 @@ class Mobject:
             [child]
 
         """
-        # Allow passing a generator or any iterable to self.add and Group instead of comma separated arguments
-        mobjects = flatten_iterable_parameters(mobjects)
         self._assert_valid_submobjects(mobjects)
         unique_mobjects = remove_list_redundancies(mobjects)
         if len(mobjects) != len(unique_mobjects):
@@ -3067,6 +3065,8 @@ class Group(Mobject, metaclass=ConvertToOpenGL):
 
     def __init__(self, *mobjects, **kwargs) -> None:
         super().__init__(**kwargs)
+        # Allow passing a generator or any iterable to Group instead of comma separated arguments
+        mobjects = flatten_iterable_parameters(mobjects)
         self.add(*mobjects)
 
 
