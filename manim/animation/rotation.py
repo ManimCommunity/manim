@@ -19,19 +19,85 @@ if TYPE_CHECKING:
 
 
 class Rotating(Animation):
+    """Animation that rotates a Mobject.
+
+    Parameters
+    ----------
+    mobject
+        The mobject to be rotated.
+    angle
+        The rotation angle in radians. Predefined constants such as ``DEGREES``
+        can also be used to specify the angle in degrees.
+    axis
+        The rotation axis as a numpy vector.
+    about_point
+        The rotation center.
+    about_edge
+        If ``about_point`` is ``None``, this argument specifies
+        the direction of the bounding box point to be taken as
+        the rotation center.
+    run_time
+        The duration of the animation in seconds.
+    rate_func
+        The function defining the animation progress based on the relative
+        runtime (see :mod:`~.rate_functions`) .
+    **kwargs
+        Additional keyword arguments passed to :class:`~.Animation`.
+
+    Examples
+    --------
+    .. manim:: RotatingDemo
+
+        class RotatingDemo(Scene):
+            def construct(self):
+                circle = Circle(radius=1, color=BLUE)
+                line = Line(start=ORIGIN, end=RIGHT)
+                arrow = Arrow(start=ORIGIN, end=RIGHT, buff=0, color=GOLD)
+                vg = VGroup(circle,line,arrow)
+                self.add(vg)
+                anim_kw = {"about_point": arrow.get_start(), "run_time": 1}
+                self.play(Rotating(arrow, 180*DEGREES, **anim_kw))
+                self.play(Rotating(arrow, PI, **anim_kw))
+                self.play(Rotating(vg, PI, about_point=RIGHT))
+                self.play(Rotating(vg, PI, axis=UP, about_point=ORIGIN))
+                self.play(Rotating(vg, PI, axis=RIGHT, about_edge=UP))
+                self.play(vg.animate.move_to(ORIGIN))
+
+    .. manim:: RotatingDifferentAxis
+
+        class RotatingDifferentAxis(ThreeDScene):
+            def construct(self):
+                axes = ThreeDAxes()
+                cube = Cube()
+                arrow2d = Arrow(start=[0, -1.2, 1], end=[0, 1.2, 1], color=YELLOW_E)
+                cube_group = VGroup(cube,arrow2d)
+                self.set_camera_orientation(gamma=0, phi=40*DEGREES, theta=40*DEGREES)
+                self.add(axes, cube_group)
+                play_kw = {"run_time": 1.5}
+                self.play(Rotating(cube_group, PI), **play_kw)
+                self.play(Rotating(cube_group, PI, axis=UP), **play_kw)
+                self.play(Rotating(cube_group, 180*DEGREES, axis=RIGHT), **play_kw)
+                self.wait(0.5)
+
+    See also
+    --------
+    :class:`~.Rotate`, :meth:`~.Mobject.rotate`
+
+    """
+
     def __init__(
         self,
         mobject: Mobject,
+        angle: np.ndarray = TAU,
         axis: np.ndarray = OUT,
-        radians: np.ndarray = TAU,
         about_point: np.ndarray | None = None,
         about_edge: np.ndarray | None = None,
-        run_time: float = 5,
+        run_time: float = 2,
         rate_func: Callable[[float], float] = linear,
         **kwargs,
     ) -> None:
+        self.angle = angle
         self.axis = axis
-        self.radians = radians
         self.about_point = about_point
         self.about_edge = about_edge
         super().__init__(mobject, run_time=run_time, rate_func=rate_func, **kwargs)
@@ -39,7 +105,7 @@ class Rotating(Animation):
     def interpolate_mobject(self, alpha: float) -> None:
         self.mobject.become(self.starting_mobject)
         self.mobject.rotate(
-            self.rate_func(alpha) * self.radians,
+            self.rate_func(alpha) * self.angle,
             axis=self.axis,
             about_point=self.about_point,
             about_edge=self.about_edge,
@@ -79,6 +145,10 @@ class Rotate(Transform):
                     ),
                     Rotate(Square(side_length=0.5), angle=2*PI, rate_func=linear),
                     )
+
+    See also
+    --------
+    :class:`~.Rotating`, :meth:`~.Mobject.rotate`
 
     """
 
