@@ -9,6 +9,7 @@ RUN apt-get update -qq \
         libffi-dev \
         libpango1.0-dev \
         freeglut3-dev \
+        ffmpeg \
         pkg-config \
         make \
         wget \
