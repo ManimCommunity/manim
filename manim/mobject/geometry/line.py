@@ -65,6 +65,35 @@ if TYPE_CHECKING:
 
 
 class Line(TipableVMobject):
+    """A straight or curved line segment between two points or mobjects.
+
+    Parameters
+    ----------
+    start
+        The starting point or Mobject of the line.
+    end
+        The ending point or Mobject of the line.
+    buff
+        The distance to shorten the line from both ends.
+    path_arc
+        If nonzero, the line will be curved into an arc with this angle (in radians).
+    kwargs
+        Additional arguments to be passed to :class:`TipableVMobject`
+
+    Examples
+    --------
+    .. manim:: LineExample
+        :save_last_frame:
+
+        class LineExample(Scene):
+            def construct(self):
+                line1 = Line(LEFT*2, RIGHT*2)
+                line2 = Line(LEFT*2, RIGHT*2, buff=0.5)
+                line3 = Line(LEFT*2, RIGHT*2, path_arc=PI/2)
+                grp = VGroup(line1,line2,line3).arrange(DOWN, buff=2)
+                self.add(grp)
+    """
+
     def __init__(
         self,
         start: Point3DLike | Mobject = LEFT,
