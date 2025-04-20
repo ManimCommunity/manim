@@ -294,7 +294,23 @@ class DrawBorderThenFill(Animation):
 
 
 class Write(DrawBorderThenFill):
-    """Simulate hand-writing a :class:`~.Text` or hand-drawing a :class:`~.VMobject`.
+    """Simulate hand-writing a text-based mobject, such as :class:`~.Text`,
+    :class:`~.MarkupText`, :class:`~.Tex`, :class:`~.MathTex`,
+    or :class:`~.VMobject` in general.
+
+    Parameters
+    ----------
+    vmobject
+        The VMobject to animate.
+    stroke_width
+        Stroke width for drawing. If not given, for SVG-based mobjects (such as :class:`Text`, :class:`MarkupText`, or :class:`MathTex`)
+        the stroke width is scaled relative to the font size. Others use 2.0.
+    rate_func
+        The function defining the animation progress.
+    reverse
+        If ``True``, plays the animation in reverse.
+    **kwargs
+        Additional arguments passed to the parent class :class:`~.DrawBorderThenFill`.
 
     Examples
     --------
