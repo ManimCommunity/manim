@@ -149,6 +149,8 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
         """
         vertex_groups = []
 
+        # TODO: If any of the original vertex groups contained the starting vertex N
+        # times, then .get_vertex_groups() splits it into N vertex groups.
         group = []
         for start, end in zip(self.get_start_anchors(), self.get_end_anchors()):
             group.append(start)
