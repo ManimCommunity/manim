@@ -16,8 +16,13 @@ class QuickHullPoint:
     def __hash__(self) -> int:
         return hash(self.coordinates.tobytes())
 
-    def __eq__(self, other: QuickHullPoint) -> bool:
-        return np.array_equal(self.coordinates, other.coordinates)
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, QuickHullPoint):
+            raise ValueError
+        are_coordinates_equal: bool = np.array_equal(
+            self.coordinates, other.coordinates
+        )
+        return are_coordinates_equal
 
 
 class SubFacet:
@@ -28,14 +33,16 @@ class SubFacet:
     def __hash__(self) -> int:
         return hash(self.points)
 
-    def __eq__(self, other: SubFacet) -> bool:
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, SubFacet):
+            raise ValueError
         return self.points == other.points
 
 
 class Facet:
     def __init__(self, coordinates: PointND_Array, internal: PointND) -> None:
         self.coordinates = coordinates
-        self.center = np.mean(coordinates, axis=0)
+        self.center: PointND = np.mean(coordinates, axis=0)
         self.normal = self.compute_normal(internal)
         self.subfacets = frozenset(
             SubFacet(np.delete(self.coordinates, i, axis=0))
@@ -45,7 +52,7 @@ class Facet:
     def compute_normal(self, internal: PointND) -> PointND:
         centered = self.coordinates - self.center
         _, _, vh = np.linalg.svd(centered)
-        normal = vh[-1, :]
+        normal: PointND = vh[-1, :]
         normal /= np.linalg.norm(normal)
 
         # If the normal points towards the internal point, flip it!
@@ -57,7 +64,9 @@ class Facet:
     def __hash__(self) -> int:
         return hash(self.subfacets)
 
-    def __eq__(self, other: Facet) -> bool:
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Facet):
+            raise ValueError
         return self.subfacets == other.subfacets
 
 
@@ -97,7 +106,7 @@ class QuickHull:
     def __init__(self, tolerance: float = 1e-5) -> None:
         self.facets: list[Facet] = []
         self.removed: set[Facet] = set()
-        self.outside: dict[Facet, tuple[PointND_Array, PointND | None]] = {}
+        self.outside: dict[Facet, tuple[PointND_Array | None, PointND | None]] = {}
         self.neighbors: dict[SubFacet, set[Facet]] = {}
         self.unclaimed: PointND_Array | None = None
         self.internal: PointND | None = None
@@ -109,11 +118,12 @@ class QuickHull:
             np.random.choice(points.shape[0], points.shape[1] + 1, replace=False)
         ]
         self.unclaimed = points
-        self.internal = np.mean(simplex, axis=0)
+        new_internal: PointND = np.mean(simplex, axis=0)
+        self.internal = new_internal
 
         # Build Simplex
         for c in range(simplex.shape[0]):
-            facet = Facet(np.delete(simplex, c, axis=0), internal=self.internal)
+            facet = Facet(np.delete(simplex, c, axis=0), internal=new_internal)
             self.classify(facet)
             self.facets.append(facet)
 
@@ -123,6 +133,10 @@ class QuickHull:
                 self.neighbors.setdefault(sf, set()).add(f)
 
     def classify(self, facet: Facet) -> None:
+        assert self.unclaimed is not None, (
+            "Call .initialize() before using .classify()."
+        )
+
         if not self.unclaimed.size:
             self.outside[facet] = (None, None)
             return
@@ -143,24 +157,24 @@ class QuickHull:
         self._recursive_horizon(eye, start_facet, horizon)
         return horizon
 
-    def _recursive_horizon(self, eye: PointND, facet: Facet, horizon: Horizon) -> int:
+    def _recursive_horizon(self, eye: PointND, facet: Facet, horizon: Horizon) -> bool:
         visible = np.dot(facet.normal, eye - facet.center) > 0
         if not visible:
             return False
-        # If the eye is visible from the facet...
-        else:
-            # Label the facet as visible and cross each edge
-            horizon.facets.add(facet)
-            for subfacet in facet.subfacets:
-                neighbor = (self.neighbors[subfacet] - {facet}).pop()
-                # If the neighbor is not visible, then the edge shared must be on the boundary
-                if neighbor not in horizon.facets and not self._recursive_horizon(
-                    eye, neighbor, horizon
-                ):
-                    horizon.boundary.append(subfacet)
-            return True
 
-    def build(self, points: PointND_Array):
+        # If the eye is visible from the facet:
+        # Label the facet as visible and cross each edge
+        horizon.facets.add(facet)
+        for subfacet in facet.subfacets:
+            neighbor = (self.neighbors[subfacet] - {facet}).pop()
+            # If the neighbor is not visible, then the edge shared must be on the boundary
+            if neighbor not in horizon.facets and not self._recursive_horizon(
+                eye, neighbor, horizon
+            ):
+                horizon.boundary.append(subfacet)
+        return True
+
+    def build(self, points: PointND_Array) -> None:
         num, dim = points.shape
         if (dim == 0) or (num < dim + 1):
             raise ValueError("Not enough points supplied to build Convex Hull!")
@@ -168,6 +182,11 @@ class QuickHull:
             raise ValueError("The Convex Hull of 1D data is its min-max!")
 
         self.initialize(points)
+
+        # This helps the type checker.
+        assert self.unclaimed is not None
+        assert self.internal is not None
+
         while True:
             updated = False
             for facet in self.facets:
@@ -178,7 +197,10 @@ class QuickHull:
                     updated = True
                     horizon = self.compute_horizon(eye, facet)
                     for f in horizon.facets:
-                        self.unclaimed = np.vstack((self.unclaimed, self.outside[f][0]))
+                        points_to_append = self.outside[f][0]
+                        # TODO: is this always true?
+                        assert points_to_append is not None
+                        self.unclaimed = np.vstack((self.unclaimed, points_to_append))
                         self.removed.add(f)
                         for sf in f.subfacets:
                             self.neighbors[sf].discard(f)

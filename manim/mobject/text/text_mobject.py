@@ -301,7 +301,7 @@ class Paragraph(VGroup):
 
 
 class Text(SVGMobject):
-    r"""Display (non-LaTeX) text rendered using `Pango <https://pango.gnome.org/>`_.
+    r"""Display (non-LaTeX) text rendered using `Pango <https://pango.org/>`_.
 
     Text objects behave like a :class:`.VGroup`-like iterable of all characters
     in the given text. In particular, slicing is possible.
@@ -703,7 +703,7 @@ class Text(SVGMobject):
             default = default_args[arg]
             if left != default and getattr(right_setting, arg) != default:
                 raise ValueError(
-                    f"Ambiguous style for text '{self.text[right_setting.start:right_setting.end]}':"
+                    f"Ambiguous style for text '{self.text[right_setting.start : right_setting.end]}':"
                     + f"'{arg}' cannot be both '{left}' and '{right}'."
                 )
             setattr(right_setting, arg, left if left != default else right)
@@ -864,7 +864,7 @@ class Text(SVGMobject):
 
 
 class MarkupText(SVGMobject):
-    r"""Display (non-LaTeX) text rendered using `Pango <https://pango.gnome.org/>`_.
+    r"""Display (non-LaTeX) text rendered using `Pango <https://pango.org/>`_.
 
     Text objects behave like a :class:`.VGroup`-like iterable of all characters
     in the given text. In particular, slicing is possible.
@@ -1561,7 +1561,7 @@ def register_font(font_file: str | Path):
             logger.debug("Found file at %s", file_path.absolute())
             break
     else:
-        error = f"Can't find {font_file}." f"Tried these : {possible_paths}"
+        error = f"Can't find {font_file}.Tried these : {possible_paths}"
         raise FileNotFoundError(error)
 
     try:
