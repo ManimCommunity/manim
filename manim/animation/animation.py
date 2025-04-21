@@ -497,6 +497,8 @@ class Animation:
 
         cls._original__init__ = cls.__init__
 
+    _original__init__ = __init__  # needed if set_default() is called with no kwargs directly from Animation
+
     @classmethod
     def set_default(cls, **kwargs) -> None:
         """Sets the default values of keyword arguments.
