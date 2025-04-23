@@ -247,35 +247,47 @@ class VMobject(Mobject):
     def update_rgbas_array(
         self,
         array_name: str,
-        color: ManimColor | None = None,
-        opacity: float | None = None,
+        color: ManimColor | list[ParsableManimColor] | None = None,
+        opacity: float | Iterable[float] | None = None,
     ) -> Self:
-        rgbas = self.generate_rgbas_array(color, opacity)
+        if isinstance(color, (list, tuple)) and len(color) > 1:
+            if opacity is None:
+                opacities = it.repeat(1.0)                      
+            elif isinstance(opacity, (int, float)):
+                opacities = it.repeat(float(opacity))            
+            else: 
+                if len(opacity) != len(color):
+                    raise ValueError(
+                        "When passing multiple colours, 'opacity' must be a "
+                        "scalar or have the same length as 'color' "
+                        f"(got {len(opacity)} vs {len(color)})"
+                    )
+                opacities = opacity
+
+            rgba_list = [
+                ManimColor(c).to_rgba_with_alpha(a)
+                for c, a in zip(color, opacities)
+            ]
+            rgbas = np.asarray(rgba_list, dtype=float)
+        else:
+            rgbas = self.generate_rgbas_array(color, opacity)
+
         if not hasattr(self, array_name):
             setattr(self, array_name, rgbas)
             return self
-        # Match up current rgbas array with the newly calculated
-        # one. 99% of the time they'll be the same.
+
         curr_rgbas = getattr(self, array_name)
-        if isinstance(color, (list, tuple)) and len(color) > 1:
-            rgba_list = [
-                ManimColor(c).to_rgba_with_alpha(
-                    opacity if opacity is not None else curr_rgbas[0, 3]
-                )
-                for c in color
-            ]
-            rgbas = np.array(rgba_list)
         if len(curr_rgbas) < len(rgbas):
             curr_rgbas = stretch_array_to_length(curr_rgbas, len(rgbas))
             setattr(self, array_name, curr_rgbas)
         elif len(rgbas) < len(curr_rgbas):
             rgbas = stretch_array_to_length(rgbas, len(curr_rgbas))
-        # Only update rgb if color was not None, and only
-        # update alpha channel if opacity was passed in
-        if color is not None:
+
+        if color is not None:      
             curr_rgbas[:, :3] = rgbas[:, :3]
-        if opacity is not None:
+        if opacity is not None:   
             curr_rgbas[:, 3] = rgbas[:, 3]
+
         return self
 
     def set_fill(
