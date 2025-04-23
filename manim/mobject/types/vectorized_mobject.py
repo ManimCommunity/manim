@@ -258,15 +258,13 @@ class VMobject(Mobject):
         # one. 99% of the time they'll be the same.
         curr_rgbas = getattr(self, array_name)
         if isinstance(color, (list, tuple)) and len(color) > 1:
-            start_rgba = ManimColor.parse(color[0]).to_rgba_with_alpha(
-                tuplify(opacity)[0] if opacity is not None else curr_rgbas[0, 3]
-            )
-            end_rgba = ManimColor.parse(color[-1]).to_rgba_with_alpha(
-                tuplify(opacity)[-1] if opacity is not None else curr_rgbas[-1, 3]
-            )
-            # Interpolate from first → last colour so that every vertex receives
-            # the correct value (length is fixed by the existing array)
-            rgbas = np.linspace(start_rgba, end_rgba, len(curr_rgbas))
+            rgba_list = [
+                ManimColor(c).to_rgba_with_alpha(
+                    opacity if opacity is not None else curr_rgbas[0, 3]
+                )
+                for c in color
+            ]
+            rgbas = np.array(rgba_list)
         if len(curr_rgbas) < len(rgbas):
             curr_rgbas = stretch_array_to_length(curr_rgbas, len(rgbas))
             setattr(self, array_name, curr_rgbas)
