@@ -294,17 +294,17 @@ class DrawBorderThenFill(Animation):
 
 
 class Write(DrawBorderThenFill):
-    """Simulate hand-writing a text-based mobject, such as :class:`~.Text`,
-    :class:`~.MarkupText`, :class:`~.Tex`, :class:`~.MathTex`,
-    or :class:`~.VMobject` in general.
+    """Simulate hand-writing a text-based mobject, such as :class:`~.Text`
+    and :class:`~.Tex`, or simulate hand-drawing a :class:`~.VMobject`.
 
     Parameters
     ----------
     vmobject
         The VMobject to animate.
     stroke_width
-        Stroke width for drawing. If not given, for SVG-based mobjects (such as :class:`Text`, :class:`MarkupText`, or :class:`MathTex`)
-        the stroke width is scaled relative to the font size. Others use 2.0.
+        Stroke width for drawing. If not provided, it is scaled based on font size
+        for text-based mobjects when the font is very small or very large;
+        otherwise defaults to 2.0.
     rate_func
         The function defining the animation progress.
     reverse
@@ -386,10 +386,14 @@ class Write(DrawBorderThenFill):
     ) -> float:
         if stroke_width is not None:
             return stroke_width
-        if not isinstance(vmobject, SVGMobject):
-            return 2.0  # default in DrawBorderThenFill
+        if not isinstance(vmobject, SVGMobject) or vmobject.height == 0:
+            return 2
         font_size = getattr(vmobject, "font_size", DEFAULT_FONT_SIZE)
-        return (font_size / DEFAULT_FONT_SIZE) * DEFAULT_STROKE_WIDTH * scale_factor
+        if font_size < 20 or font_size > 6 * DEFAULT_FONT_SIZE:
+            # adjust stroke_width if font_size is too small or too big
+            return (font_size / DEFAULT_FONT_SIZE) * DEFAULT_STROKE_WIDTH * scale_factor
+        else:
+            return 2
 
     def reverse_submobjects(self) -> None:
         self.mobject.invert(recursive=True)
