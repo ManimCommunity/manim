@@ -4,7 +4,7 @@ is oriented.  The test is intentionally **numeric only** (no rendering), so it
 runs quickly under pytest-xdist.
 """
 
-from manim import BLUE, RED, LEFT, RIGHT, Line
+from manim import BLUE, LEFT, RED, RIGHT, Line
 
 
 def _first_last_stroke_colors(vmob):

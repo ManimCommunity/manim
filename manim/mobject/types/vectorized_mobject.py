@@ -252,10 +252,10 @@ class VMobject(Mobject):
     ) -> Self:
         if isinstance(color, (list, tuple)) and len(color) > 1:
             if opacity is None:
-                opacities = it.repeat(1.0)                      
+                opacities = it.repeat(1.0)
             elif isinstance(opacity, (int, float)):
-                opacities = it.repeat(float(opacity))            
-            else: 
+                opacities = it.repeat(float(opacity))
+            else:
                 if len(opacity) != len(color):
                     raise ValueError(
                         "When passing multiple colours, 'opacity' must be a "
@@ -265,8 +265,7 @@ class VMobject(Mobject):
                 opacities = opacity
 
             rgba_list = [
-                ManimColor(c).to_rgba_with_alpha(a)
-                for c, a in zip(color, opacities)
+                ManimColor(c).to_rgba_with_alpha(a) for c, a in zip(color, opacities)
             ]
             rgbas = np.asarray(rgba_list, dtype=float)
         else:
@@ -283,9 +282,9 @@ class VMobject(Mobject):
         elif len(rgbas) < len(curr_rgbas):
             rgbas = stretch_array_to_length(rgbas, len(curr_rgbas))
 
-        if color is not None:      
+        if color is not None:
             curr_rgbas[:, :3] = rgbas[:, :3]
-        if opacity is not None:   
+        if opacity is not None:
             curr_rgbas[:, 3] = rgbas[:, 3]
 
         return self
