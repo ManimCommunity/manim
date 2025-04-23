@@ -1,6 +1,6 @@
 import numpy as np
 
-from manim import Line, BLUE, RED
+from manim import BLUE, RED, Line
 from manim.constants import LEFT, RIGHT
 
 
