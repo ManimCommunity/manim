@@ -1229,6 +1229,7 @@ class Mobject:
     def scale(
         self,
         scale_factor: float,
+        *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3D | None = None,
     ) -> Self:
@@ -1287,6 +1288,7 @@ class Mobject:
         angle: float,
         axis: Vector3D = OUT,
         about_point: Point3DLike | None = None,
+        *,
         about_edge: Vector3D | None = None,
     ) -> Self:
         """Rotates the :class:`~.Mobject` about a certain point."""
@@ -1299,6 +1301,7 @@ class Mobject:
     def flip(
         self,
         axis: Vector3D = UP,
+        *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3D | None = None,
     ) -> Self:
@@ -1318,12 +1321,13 @@ class Mobject:
                     self.add(s2)
 
         """
-        return self.rotate(TAU / 2, axis, about_point, about_edge)
+        return self.rotate(TAU / 2, axis, about_point=about_point, about_edge=about_edge)
 
     def stretch(
         self,
         factor: float,
         dim: int,
+        *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3D | None = None,
     ) -> Self:
@@ -1337,6 +1341,7 @@ class Mobject:
     def apply_function(
         self,
         function: MappingFunction,
+        *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3D | None = None,
     ) -> Self:
@@ -1365,6 +1370,7 @@ class Mobject:
     def apply_matrix(
         self,
         matrix,
+        *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3D | None = None,
     ) -> Self:
@@ -1382,6 +1388,7 @@ class Mobject:
     def apply_complex_function(
         self,
         function: Callable[[complex], complex],
+        *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3D | None = None,
     ) -> Self:
@@ -1416,7 +1423,7 @@ class Mobject:
             xy_complex = function(complex(x, y))
             return [xy_complex.real, xy_complex.imag, z]
 
-        return self.apply_function(R3_func, about_point, about_edge)
+        return self.apply_function(R3_func, about_point=about_point, about_edge=about_edge)
 
     def reverse_points(self) -> Self:
         for mob in self.family_members_with_points():
