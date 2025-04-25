@@ -1192,10 +1192,10 @@ class VMobject(Mobject):
         angle: float,
         axis: Vector3D = OUT,
         about_point: Point3DLike | None = None,
-        **kwargs,
+        about_edge: Vector3D | None = None,
     ) -> Self:
         self.rotate_sheen_direction(angle, axis)
-        super().rotate(angle, axis, about_point, **kwargs)
+        super().rotate(angle, axis, about_point, about_edge)
         return self
 
     def scale_handle_to_anchor_distances(self, factor: float) -> Self:

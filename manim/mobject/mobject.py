@@ -1341,7 +1341,7 @@ class Mobject:
         about_edge: Vector3D | None = None,
     ) -> Self:
         # Default to applying matrix about the origin, not mobjects center
-        if about_point == None and about_edge == None:
+        if about_point is None and about_edge is None:
             about_point = ORIGIN
 
         def multi_mapping_function(points: Point3D_Array) -> Point3D_Array:
@@ -1369,7 +1369,7 @@ class Mobject:
         about_edge: Vector3D | None = None,
     ) -> Self:
         # Default to applying matrix about the origin, not mobjects center
-        if about_point == None and about_edge == None:
+        if about_point is None and about_edge is None:
             about_point = ORIGIN
         full_matrix = np.identity(self.dim)
         matrix = np.array(matrix)
