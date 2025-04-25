@@ -163,7 +163,7 @@ class LogBase(_ScaleBase):
         self,
         val_range: Iterable[float],
         unit_decimal_places: int = 0,
-        **base_config: dict[str, Any],
+        **base_config: Any,
     ) -> list[Mobject]:
         """Produces custom :class:`~.Integer` labels in the form of ``10^2``.
 

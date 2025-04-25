@@ -64,6 +64,8 @@ def get_video_metadata(path_to_video: str | os.PathLike) -> VideoMetadata:
             "pix_fmt": stream.codec_context.pix_fmt,
         }
 
+    raise Exception("Unreachable")
+
 
 def get_dir_layout(dirpath: Path) -> Generator[str, None, None]:
     """Get list of paths relative to dirpath of all files in dir and subdirs recursively."""

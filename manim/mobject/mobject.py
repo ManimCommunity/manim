@@ -51,6 +51,7 @@ if TYPE_CHECKING:
         PathFuncType,
         PixelArray,
         Point3D,
+        Point3D_Array,
         Point3DLike,
         Point3DLike_Array,
         Vector3D,
@@ -1225,7 +1226,12 @@ class Mobject:
 
         return self
 
-    def scale(self, scale_factor: float, **kwargs) -> Self:
+    def scale(
+        self,
+        scale_factor: float,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3D | None = None,
+    ) -> Self:
         r"""Scale the size by a factor.
 
         Default behavior is to scale about the center of the mobject.
@@ -1236,9 +1242,10 @@ class Mobject:
             The scaling factor :math:`\alpha`. If :math:`0 < |\alpha| < 1`, the mobject
             will shrink, and for :math:`|\alpha| > 1` it will grow. Furthermore,
             if :math:`\alpha < 0`, the mobject is also flipped.
-        kwargs
-            Additional keyword arguments passed to
-            :meth:`apply_points_function_about_point`.
+        about_point
+            The point about which to apply the scaling.
+        about_edge
+            The edge about which to apply the scaling.
 
         Returns
         -------
@@ -1267,7 +1274,7 @@ class Mobject:
 
         """
         self.apply_points_function_about_point(
-            lambda points: scale_factor * points, **kwargs
+            lambda points: scale_factor * points, about_point, about_edge
         )
         return self
 
@@ -1280,16 +1287,21 @@ class Mobject:
         angle: float,
         axis: Vector3D = OUT,
         about_point: Point3DLike | None = None,
-        **kwargs,
+        about_edge: Vector3D | None = None,
     ) -> Self:
         """Rotates the :class:`~.Mobject` about a certain point."""
         rot_matrix = rotation_matrix(angle, axis)
         self.apply_points_function_about_point(
-            lambda points: np.dot(points, rot_matrix.T), about_point, **kwargs
+            lambda points: np.dot(points, rot_matrix.T), about_point, about_edge
         )
         return self
 
-    def flip(self, axis: Vector3D = UP, **kwargs) -> Self:
+    def flip(
+        self,
+        axis: Vector3D = UP,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3D | None = None,
+    ) -> Self:
         """Flips/Mirrors an mobject about its center.
 
         Examples
@@ -1306,26 +1318,37 @@ class Mobject:
                     self.add(s2)
 
         """
-        return self.rotate(TAU / 2, axis, **kwargs)
+        return self.rotate(TAU / 2, axis, about_point, about_edge)
 
-    def stretch(self, factor: float, dim: int, **kwargs) -> Self:
+    def stretch(
+        self,
+        factor: float,
+        dim: int,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3D | None = None,
+    ) -> Self:
         def func(points: Point3D_Array) -> Point3D_Array:
             points[:, dim] *= factor
             return points
 
-        self.apply_points_function_about_point(func, **kwargs)
+        self.apply_points_function_about_point(func, about_point, about_edge)
         return self
 
-    def apply_function(self, function: MappingFunction, **kwargs) -> Self:
+    def apply_function(
+        self,
+        function: MappingFunction,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3D | None = None,
+    ) -> Self:
         # Default to applying matrix about the origin, not mobjects center
-        if len(kwargs) == 0:
-            kwargs["about_point"] = ORIGIN
+        if about_point == None and about_edge == None:
+            about_point = ORIGIN
 
         def multi_mapping_function(points: Point3D_Array) -> Point3D_Array:
             result: Point3D_Array = np.apply_along_axis(function, 1, points)
             return result
 
-        self.apply_points_function_about_point(multi_mapping_function, **kwargs)
+        self.apply_points_function_about_point(multi_mapping_function, about_point, about_edge)
         return self
 
     def apply_function_to_position(self, function: MappingFunction) -> Self:
@@ -1337,20 +1360,28 @@ class Mobject:
             submob.apply_function_to_position(function)
         return self
 
-    def apply_matrix(self, matrix, **kwargs) -> Self:
+    def apply_matrix(
+        self,
+        matrix,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3D | None = None,
+    ) -> Self:
         # Default to applying matrix about the origin, not mobjects center
-        if ("about_point" not in kwargs) and ("about_edge" not in kwargs):
-            kwargs["about_point"] = ORIGIN
+        if about_point == None and about_edge == None:
+            about_point = ORIGIN
         full_matrix = np.identity(self.dim)
         matrix = np.array(matrix)
         full_matrix[: matrix.shape[0], : matrix.shape[1]] = matrix
         self.apply_points_function_about_point(
-            lambda points: np.dot(points, full_matrix.T), **kwargs
+            lambda points: np.dot(points, full_matrix.T), about_point, about_edge
         )
         return self
 
     def apply_complex_function(
-        self, function: Callable[[complex], complex], **kwargs
+        self,
+        function: Callable[[complex], complex],
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3D | None = None,
     ) -> Self:
         """Applies a complex function to a :class:`Mobject`.
         The x and y Point3Ds correspond to the real and imaginary parts respectively.
@@ -1383,7 +1414,7 @@ class Mobject:
             xy_complex = function(complex(x, y))
             return [xy_complex.real, xy_complex.imag, z]
 
-        return self.apply_function(R3_func)
+        return self.apply_function(R3_func, about_point, about_edge)
 
     def reverse_points(self) -> Self:
         for mob in self.family_members_with_points():
