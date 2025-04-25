@@ -802,7 +802,9 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
     return [indices[mi] for mi in meta_indices]
 
 
-def cartesian_to_spherical(vec: np.ndarray | Sequence[float]) -> np.ndarray | Sequence[float]:
+def cartesian_to_spherical(
+    vec: np.ndarray | Sequence[float],
+) -> np.ndarray | Sequence[float]:
     """Returns an array of numbers corresponding to each
     polar coordinate value (distance, phi, theta).
 

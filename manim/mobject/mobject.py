@@ -1348,7 +1348,9 @@ class Mobject:
             result: Point3D_Array = np.apply_along_axis(function, 1, points)
             return result
 
-        self.apply_points_function_about_point(multi_mapping_function, about_point, about_edge)
+        self.apply_points_function_about_point(
+            multi_mapping_function, about_point, about_edge
+        )
         return self
 
     def apply_function_to_position(self, function: MappingFunction) -> Self:
