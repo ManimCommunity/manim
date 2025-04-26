@@ -1110,7 +1110,7 @@ class ManimConfig(MutableMapping):
         self._set_pos_number("pixel_height", value, False)
 
     @property
-    def aspect_ratio(self) -> int:
+    def aspect_ratio(self) -> float:
         """Aspect ratio (width / height) in pixels (--resolution, -r)."""
         return self._d["pixel_width"] / self._d["pixel_height"]
 
