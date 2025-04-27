@@ -1061,8 +1061,8 @@ class VMobject(Mobject):
             end_corners = points
             self.points = self.points[:-1]
         else:
-            start_corners = points[:-1]
-            end_corners = points[1:]
+            start_corners = np.vstack([self.points[-1], points[:-1]])
+            end_corners = points
 
         nppcc = self.n_points_per_cubic_curve
         new_points = np.empty((nppcc * start_corners.shape[0], self.dim))
