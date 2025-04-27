@@ -802,14 +802,16 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
     return [indices[mi] for mi in meta_indices]
 
 
-def cartesian_to_spherical(vec: Sequence[float]) -> np.ndarray:
+def cartesian_to_spherical(
+    vec: np.ndarray | Sequence[float],
+) -> np.ndarray | Sequence[float]:
     """Returns an array of numbers corresponding to each
     polar coordinate value (distance, phi, theta).
 
     Parameters
     ----------
     vec
-        A numpy array ``[x, y, z]``.
+        A numpy array or a sequence of floats ``[x, y, z]``.
     """
     norm = np.linalg.norm(vec)
     if norm == 0:
