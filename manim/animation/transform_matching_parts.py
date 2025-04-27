@@ -96,7 +96,6 @@ class TransformMatchingAbstractBase(AnimationGroup):
         # target_map
         transform_source = group_type()
         transform_target = group_type()
-        kwargs["final_alpha_value"] = 0
         for key in set(source_map).intersection(target_map):
             transform_source.add(source_map[key])
             transform_target.add(target_map[key])
