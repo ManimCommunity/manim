@@ -1134,8 +1134,7 @@ class ManimConfig(MutableMapping):
     @property
     def frame_y_radius(self) -> float:
         """Half the frame height (no flag)."""
-        assert isinstance(self._d["frame_height"], float)
-        return self._d["frame_height"] / 2
+        return self._d["frame_height"] / 2  # type: ignore[operator]
 
     @frame_y_radius.setter
     def frame_y_radius(self, value: float) -> None:
@@ -1146,8 +1145,7 @@ class ManimConfig(MutableMapping):
     @property
     def frame_x_radius(self) -> float:
         """Half the frame width (no flag)."""
-        assert isinstance(self._d["frame_width"], float)
-        return self._d["frame_width"] / 2
+        return self._d["frame_width"] / 2  # type: ignore[operator]
 
     @frame_x_radius.setter
     def frame_x_radius(self, value: float) -> None:
