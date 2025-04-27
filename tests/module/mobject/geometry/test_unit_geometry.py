@@ -4,7 +4,14 @@ import logging
 
 import numpy as np
 
-from manim import BackgroundRectangle, Circle, Sector, Square, SurroundingRectangle
+from manim import (
+    BackgroundRectangle,
+    Circle,
+    Polygram,
+    Sector,
+    Square,
+    SurroundingRectangle,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -13,6 +20,88 @@ def test_get_arc_center():
     np.testing.assert_array_equal(
         Sector(arc_center=[1, 2, 0]).get_arc_center(), [1, 2, 0]
     )
+
+
+def test_Polygram_get_vertex_groups():
+    # Test that, once a Polygram polygram is created with some vertex groups,
+    # polygram.get_vertex_groups() (usually) returns the same vertex groups.
+    vertex_groups_arr = [
+        # 2 vertex groups for polygram 1
+        [
+            # Group 1: Triangle
+            np.array(
+                [
+                    [2, 1, 0],
+                    [0, 2, 0],
+                    [-2, 1, 0],
+                ]
+            ),
+            # Group 2: Square
+            np.array(
+                [
+                    [1, 0, 0],
+                    [0, 1, 0],
+                    [-1, 0, 0],
+                    [0, -1, 0],
+                ]
+            ),
+        ],
+        # 3 vertex groups for polygram 1
+        [
+            # Group 1: Quadrilateral
+            np.array(
+                [
+                    [2, 0, 0],
+                    [0, -1, 0],
+                    [0, 0, -2],
+                    [0, 1, 0],
+                ]
+            ),
+            # Group 2: Triangle
+            np.array(
+                [
+                    [3, 1, 0],
+                    [0, 0, 2],
+                    [2, 0, 0],
+                ]
+            ),
+            # Group 3: Pentagon
+            np.array(
+                [
+                    [1, -1, 0],
+                    [1, 1, 0],
+                    [0, 2, 0],
+                    [-1, 1, 0],
+                    [-1, -1, 0],
+                ]
+            ),
+        ],
+    ]
+
+    for vertex_groups in vertex_groups_arr:
+        polygram = Polygram(*vertex_groups)
+        poly_vertex_groups = polygram.get_vertex_groups()
+        for poly_group, group in zip(poly_vertex_groups, vertex_groups):
+            np.testing.assert_array_equal(poly_group, group)
+
+    # If polygram is a Polygram of a vertex group containing the start vertex N times,
+    # then polygram.get_vertex_groups() splits it into N vertex groups.
+    splittable_vertex_group = np.array(
+        [
+            [0, 1, 0],
+            [1, -2, 0],
+            [1, 2, 0],
+            [0, 1, 0],  # same vertex as start
+            [-1, 2, 0],
+            [-1, -2, 0],
+            [0, 1, 0],  # same vertex as start
+            [0.5, 2, 0],
+            [-0.5, 2, 0],
+        ]
+    )
+
+    polygram = Polygram(splittable_vertex_group)
+    assert len(polygram.get_vertex_groups()) == 3
 
 
 def test_SurroundingRectangle():
