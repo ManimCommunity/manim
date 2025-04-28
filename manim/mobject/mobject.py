@@ -96,7 +96,6 @@ class Mobject:
 
     def __init__(
         self,
-        color: ParsableManimColor | list[ParsableManimColor] = WHITE,
         name: str | None = None,
         dim: int = 3,
         target=None,
@@ -110,11 +109,9 @@ class Mobject:
         self.submobjects = []
         self.updaters: list[Updater] = []
         self.updating_suspended = False
-        self.color = ManimColor.parse(color)
 
         self.reset_points()
         self.generate_points()
-        self.init_colors()
 
     def _assert_valid_submobjects(self, submobjects: Iterable[Mobject]) -> Self:
         """Check that all submobjects are actually instances of
@@ -407,13 +404,6 @@ class Mobject:
     def reset_points(self) -> None:
         """Sets :attr:`points` to be an empty array."""
         self.points = np.zeros((0, self.dim))
-
-    def init_colors(self) -> object:
-        """Initializes the colors.
-
-        Gets called upon creation. This is an empty method that can be implemented by
-        subclasses.
-        """
 
     def generate_points(self) -> object:
         """Initializes :attr:`points` and therefore the shape.

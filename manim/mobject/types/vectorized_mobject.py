@@ -117,9 +117,9 @@ class VMobject(Mobject):
 
     def __init__(
         self,
-        fill_color: ParsableManimColor | None = None,
+        fill_color: ParsableManimColor = BLACK,
         fill_opacity: float = 0.0,
-        stroke_color: ParsableManimColor | None = None,
+        stroke_color: ParsableManimColor = WHITE,
         stroke_opacity: float = 1.0,
         stroke_width: float = DEFAULT_STROKE_WIDTH,
         background_stroke_color: ParsableManimColor | None = BLACK,
@@ -142,9 +142,9 @@ class VMobject(Mobject):
         self.stroke_width = stroke_width
         if background_stroke_color is not None:
             self.background_stroke_color: ManimColor = ManimColor(
-                background_stroke_color
+                background_stroke_color,
+                alpha=background_stroke_opacity
             )
-        self.background_stroke_opacity: float = background_stroke_opacity
         self.background_stroke_width: float = background_stroke_width
         self.sheen_factor: float = sheen_factor
         self.joint_type: LineJointType = (
@@ -169,19 +169,9 @@ class VMobject(Mobject):
         super().__init__(**kwargs)
         self.submobjects: list[VMobject]
 
-        # TODO: Find where color overwrites are happening and remove the color doubling
-        # if "color" in kwargs:
-        #     fill_color = kwargs["color"]
-        #     stroke_color = kwargs["color"]
-        if fill_color is not None:
-            self.fill_color = ManimColor.parse(fill_color)
-        if stroke_color is not None:
-            self.stroke_color = ManimColor.parse(stroke_color)
-
-        if fill_opacity is not None:
-            self.fill_color = self.fill_color.set_opacity(fill_opacity)
-        if stroke_opacity is not None:
-            self.stroke_color = self.stroke_color.set_opacity(stroke_opacity)
+        self.fill_color = ManimColor.parse(fill_color, alpha=fill_opacity)
+        self.stroke_color = ManimColor.parse(stroke_color, alpha=stroke_opacity)
+        self.init_colors()
 
     def _assert_valid_submobjects(self, submobjects: Iterable[VMobject]) -> Self:
         return self._assert_valid_submobjects_internal(submobjects, VMobject)
