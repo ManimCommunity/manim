@@ -464,8 +464,6 @@ class VMobject(Mobject):
         """
         return self.get_fill_colors()[0]
 
-    fill_color = property(get_fill_color, set_fill)
-
     def get_fill_opacity(self) -> ManimFloat:
         """
         If there are multiple opacities, this returns the
@@ -489,8 +487,6 @@ class VMobject(Mobject):
 
     def get_stroke_color(self, background: bool = False) -> ManimColor | None:
         return self.get_stroke_colors(background)[0]
-
-    stroke_color = property(get_stroke_color, set_stroke)
 
     def get_stroke_width(self, background: bool = False) -> float:
         if background:
@@ -518,8 +514,6 @@ class VMobject(Mobject):
         if np.all(self.get_fill_opacities() == 0):
             return self.get_stroke_color()
         return self.get_fill_color()
-
-    color = property(get_color, set_color)
 
     def set_sheen_direction(self, direction: Vector3D, family: bool = True) -> Self:
         """Sets the direction of the applied sheen.
