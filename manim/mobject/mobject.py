@@ -28,10 +28,7 @@ from manim.mobject.opengl.opengl_mobject import InvisibleMobject
 from manim.utils.color import (
     BLACK,
     WHITE,
-    YELLOW_C,
-    ManimColor,
     ParsableManimColor,
-    color_gradient,
     interpolate_color,
 )
 from manim.utils.exceptions import MultiAnimationOverrideException
@@ -1833,34 +1830,6 @@ class Mobject:
 
     # Color functions
 
-    def set_color(
-        self, color: ParsableManimColor = YELLOW_C, family: bool = True
-    ) -> Self:
-        """Condition is function which takes in one arguments, (x, y, z).
-        Here it just recurses to submobjects, but in subclasses this
-        should be further implemented based on the the inner workings
-        of color
-        """
-        if family:
-            for submob in self.submobjects:
-                submob.set_color(color, family=family)
-
-        self.color = ManimColor.parse(color)
-        return self
-
-    def set_color_by_gradient(self, *colors: ParsableManimColor) -> Self:
-        """
-        Parameters
-        ----------
-        colors
-            The colors to use for the gradient. Use like `set_color_by_gradient(RED, BLUE, GREEN)`.
-
-        self.color = ManimColor.parse(color)
-        return self
-        """
-        self.set_submobject_colors_by_gradient(*colors)
-        return self
-
     def set_colors_by_radial_gradient(
         self,
         center: Point3D | None = None,
@@ -1874,19 +1843,6 @@ class Mobject:
             inner_color,
             outer_color,
         )
-        return self
-
-    def set_submobject_colors_by_gradient(self, *colors: Iterable[ParsableManimColor]):
-        if len(colors) == 0:
-            raise ValueError("Need at least one color")
-        elif len(colors) == 1:
-            return self.set_color(*colors)
-
-        mobs = self.family_members_with_points()
-        new_colors = color_gradient(colors, len(mobs))
-
-        for mob, color in zip(mobs, new_colors):
-            mob.set_color(color, family=False)
         return self
 
     def set_submobject_colors_by_radial_gradient(
@@ -1906,41 +1862,6 @@ class Mobject:
             mob.set_color(mob_color, family=False)
 
         return self
-
-    def to_original_color(self) -> Self:
-        self.set_color(self.color)
-        return self
-
-    def fade_to(
-        self, color: ParsableManimColor, alpha: float, family: bool = True
-    ) -> Self:
-        if self.get_num_points() > 0:
-            new_color = interpolate_color(self.get_color(), color, alpha)
-            self.set_color(new_color, family=False)
-        if family:
-            for submob in self.submobjects:
-                submob.fade_to(color, alpha)
-        return self
-
-    def fade(self, darkness: float = 0.5, family: bool = True) -> Self:
-        if family:
-            for submob in self.submobjects:
-                submob.fade(darkness, family)
-        return self
-
-    def get_color(self) -> ManimColor:
-        """Returns the color of the :class:`~.Mobject`
-
-        Examples
-        --------
-        ::
-
-            >>> from manim import Square, RED
-            >>> Square(color=RED).get_color() == RED
-            True
-
-        """
-        return self.color
 
     ##
 
