@@ -522,11 +522,12 @@ class VMobject(Mobject):
 
         """
         if scale_stroke:
-            self.set_stroke(width=abs(scale_factor) * self.get_stroke_width())
-            self.set_stroke(
-                width=abs(scale_factor) * self.get_stroke_width(background=True),
-                background=True,
-            )
+            for mob in self.family_members_with_points():
+                mob.set_stroke(width=abs(scale_factor) * mob.get_stroke_width())
+                mob.set_stroke(
+                    width=abs(scale_factor) * mob.get_stroke_width(background=True),
+                    background=True,
+                )
         super().scale(scale_factor, **kwargs)
         return self
 
