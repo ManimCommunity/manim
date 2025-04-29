@@ -47,30 +47,23 @@ def test_scale_with_scale_stroke_true_and_false():
     square = Square()
     square.set_stroke(width=40)
     square.set_stroke(width=60, background=True)
-    original_height = square.get_height()
-    original_stroke = square.get_stroke_width()
-    original_background = square.get_stroke_width(background=True)
 
     vg = VGroup(square)
 
     # Scale 1.0 (scale_stroke=True): No changes expected
     vg.scale(1.0, scale_stroke=True)
-    assert np.isclose(square.get_height(), original_height)
-    assert square.get_stroke_width() == original_stroke
-    assert square.get_stroke_width(background=True) == original_background
+    assert np.isclose(square.side_length, 2)
+    assert square.get_stroke_width() == 40
+    assert square.get_stroke_width(background=True) == 60
 
     # Scale 0.5 (scale_stroke=True): Size and stroke width halved
     vg.scale(0.5, scale_stroke=True)
-    assert np.isclose(square.get_height(), original_height * 0.5)
-    assert np.isclose(square.get_stroke_width(), original_stroke * 0.5)
-    assert np.isclose(
-        square.get_stroke_width(background=True), original_background * 0.5
-    )
+    assert np.isclose(square.side_length, 1)
+    assert np.isclose(square.get_stroke_width(), 20)
+    assert np.isclose(square.get_stroke_width(background=True), 30)
 
     # Scale 2.0 (scale_stroke=False): Size doubled, stroke width unchanged
     vg.scale(2.0, scale_stroke=False)
-    assert np.isclose(square.get_height(), original_height)
-    assert np.isclose(square.get_stroke_width(), original_stroke * 0.5)
-    assert np.isclose(
-        square.get_stroke_width(background=True), original_background * 0.5
-    )
+    assert np.isclose(square.get_height(), 2)
+    assert np.isclose(square.get_stroke_width(), 20)
+    assert np.isclose(square.get_stroke_width(background=True), 30)
