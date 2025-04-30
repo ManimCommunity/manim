@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-import numpy as np
-
 import manim.utils.color as C
-from manim import Square, VGroup, VMobject
+from manim import Rectangle, Square, VGroup, VMobject
 from manim.mobject.vector_field import StreamLines
 
 
@@ -44,26 +42,38 @@ def test_streamline_attributes_for_single_color():
 
 
 def test_scale_with_scale_stroke_true_and_false():
-    square = Square()
-    square.set_stroke(width=40)
-    square.set_stroke(width=60, background=True)
-
-    vg = VGroup(square)
+    sq = Square()
+    sq.set_stroke(width=40)
+    sq.set_stroke(width=120, background=True)
+    rec = Rectangle(height=4, width=5)
+    rec.set_stroke(width=10)
+    rec.set_stroke(width=20, background=True)
+    vg = VGroup(sq)
+    rec.add(vg)
 
     # Scale 1.0 (scale_stroke=True): No changes expected
-    vg.scale(1.0, scale_stroke=True)
-    assert np.isclose(square.side_length, 2)
-    assert square.get_stroke_width() == 40
-    assert square.get_stroke_width(background=True) == 60
+    rec.scale(1.0, scale_stroke=True)
+    assert sq.side_length == 2
+    assert rec.height == 4
+    assert sq.get_stroke_width() == 40
+    assert sq.get_stroke_width(background=True) == 120
+    assert rec.get_stroke_width() == 10
+    assert rec.get_stroke_width(background=True) == 20
 
     # Scale 0.5 (scale_stroke=True): Size and stroke width halved
-    vg.scale(0.5, scale_stroke=True)
-    assert np.isclose(square.side_length, 1)
-    assert np.isclose(square.get_stroke_width(), 20)
-    assert np.isclose(square.get_stroke_width(background=True), 30)
+    rec.scale(0.5, scale_stroke=True)
+    assert sq.side_length == 1
+    assert rec.height == 2
+    assert sq.get_stroke_width() == 20
+    assert sq.get_stroke_width(background=True) == 60
+    assert rec.get_stroke_width() == 5
+    assert rec.get_stroke_width(background=True) == 10
 
     # Scale 2.0 (scale_stroke=False): Size doubled, stroke width unchanged
-    vg.scale(2.0, scale_stroke=False)
-    assert np.isclose(square.get_height(), 2)
-    assert np.isclose(square.get_stroke_width(), 20)
-    assert np.isclose(square.get_stroke_width(background=True), 30)
+    rec.scale(2.0, scale_stroke=False)
+    assert sq.side_length == 2
+    assert rec.height == 4
+    assert sq.get_stroke_width() == 20
+    assert sq.get_stroke_width(background=True) == 60
+    assert rec.get_stroke_width() == 5
+    assert rec.get_stroke_width(background=True) == 10
