@@ -117,14 +117,14 @@ class VMobject(Mobject):
 
     def __init__(
         self,
-        fill_color: ParsableManimColor | Iterable[ParsableManimColor] = BLACK,
-        fill_opacity: float | Iterable[float] = 0.0,
-        stroke_color: ParsableManimColor | Iterable[ParsableManimColor] = WHITE,
-        stroke_opacity: float | Iterable[float] = 1.0,
+        fill_color: ParsableManimColor | Sequence[ParsableManimColor] = BLACK,
+        fill_opacity: float | Sequence[float] = 0.0,
+        stroke_color: ParsableManimColor | Sequence[ParsableManimColor] = WHITE,
+        stroke_opacity: float | Sequence[float] = 1.0,
         stroke_width: float = DEFAULT_STROKE_WIDTH,
         background_stroke_color: ParsableManimColor
-        | Iterable[ParsableManimColor] = BLACK,
-        background_stroke_opacity: float | Iterable[float] = 1.0,
+        | Sequence[ParsableManimColor] = BLACK,
+        background_stroke_opacity: float | Sequence[float] = 1.0,
         background_stroke_width: float = 0,
         sheen_factor: float = 0.0,
         joint_type: LineJointType | None = None,
@@ -193,8 +193,8 @@ class VMobject(Mobject):
 
     def set_fill(
         self,
-        color: ParsableManimColor | Iterable[ParsableManimColor] | None = None,
-        opacity: float | Iterable[float] | None = None,
+        color: ParsableManimColor | Sequence[ParsableManimColor] | None = None,
+        opacity: float | Sequence[float] | None = None,
         family: bool = True,
     ) -> Self:
         """Set the fill color and fill opacity of a :class:`VMobject`.
@@ -241,9 +241,9 @@ class VMobject(Mobject):
 
     def set_stroke(
         self,
-        color: ParsableManimColor | Iterable[ParsableManimColor] = None,
+        color: ParsableManimColor | Sequence[ParsableManimColor] = None,
         width: float | None = None,
-        opacity: float | Iterable[float] | None = None,
+        opacity: float | Sequence[float] | None = None,
         background=False,
         family: bool = True,
     ) -> Self:

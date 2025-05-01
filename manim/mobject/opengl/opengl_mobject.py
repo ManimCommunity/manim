@@ -116,11 +116,6 @@ class MobjectStatus:
 
 # TODO: add this to the **kwargs of all mobjects that use OpenGLMobject
 class MobjectKwargs(TypedDict, total=False):
-    color: ParsableManimColor | Sequence[ParsableManimColor] | None
-    opacity: float
-    reflectiveness: float
-    shadow: float
-    gloss: float
     is_fixed_in_frame: bool
     is_fixed_orientation: bool
     depth_test: bool
@@ -149,22 +144,12 @@ class OpenGLMobject:
     # TypedDict above so that autocomplete works for users
     def __init__(
         self,
-        color: ParsableManimColor | Sequence[ParsableManimColor] | None = WHITE,
-        opacity: float = 1.0,
-        reflectiveness: float = 0.0,
-        shadow: float = 0.0,
-        gloss: float = 0.0,
         is_fixed_in_frame: bool = False,
         is_fixed_orientation: bool = False,
         depth_test: bool = True,
         name: str | None = None,
         **kwargs: Any,  # just dump
     ):
-        self.color = color
-        self.opacity = opacity
-        self.reflectiveness = reflectiveness
-        self.shadow = shadow
-        self.gloss = gloss
         self.is_fixed_in_frame = is_fixed_in_frame
         self.is_fixed_orientation = is_fixed_orientation
         self.fixed_orientation_center = (0.0, 0.0, 0.0)
@@ -191,7 +176,6 @@ class OpenGLMobject:
         self.init_updaters()
         self.init_event_listeners()
         self.init_points()
-        self.color = ManimColor.parse(color)
         self.init_colors()
 
     @classmethod
@@ -272,13 +256,6 @@ class OpenGLMobject:
             cls.__init__ = partialmethod(cls.__init__, **kwargs)
         else:
             cls.__init__ = cls._original__init__
-
-    def init_colors(self):
-        """Initializes the colors.
-
-        Gets called upon creation
-        """
-        self.set_color(self.color, self.opacity)
 
     def init_points(self) -> object:
         """Initializes :attr:`points` and therefore the shape.
@@ -2222,54 +2199,6 @@ class OpenGLMobject:
         )
         self.shift(start - self.get_start())
         return self
-
-    # Color functions
-
-    def set_color(self, color: ParsableManimColor | None, opacity=None, recurse=True):
-        # Recurse to submobjects differently from how set_rgba_array
-        # in case they implement set_color differently
-        if color is not None:
-            self.color: ManimColor = ManimColor.parse(color)
-        if opacity is not None:
-            self.color.opacity(opacity)
-        if recurse:
-            for submob in self.submobjects:
-                submob.set_color(color, recurse=True)
-        return self
-
-    def set_opacity(self, opacity, recurse=True):
-        # self.set_rgba_array(color=None, opacity=opacity, recurse=False)
-        if recurse:
-            for submob in self.submobjects:
-                submob.set_opacity(opacity, recurse=True)
-        return self
-
-    def get_color(self) -> ManimColor:
-        return self.color
-
-    def get_opacity(self):
-        return self.color.opacity()
-
-    def set_color_by_gradient(self, *colors: ParsableManimColor):
-        self.set_submobject_colors_by_gradient(*colors)
-        return self
-
-    def set_submobject_colors_by_gradient(self, *colors):
-        if len(colors) == 0:
-            raise Exception("Need at least one color")
-        elif len(colors) == 1:
-            return self.set_color(*colors)
-
-        # mobs = self.family_members_with_points()
-        mobs = self.submobjects
-        new_colors = color_gradient(colors, len(mobs))
-
-        for mob, color in zip(mobs, new_colors):
-            mob.set_color(color)
-        return self
-
-    def fade(self, darkness=0.5, recurse=True):
-        self.set_opacity(1.0 - darkness, recurse=recurse)
 
     # Background rectangle
 
