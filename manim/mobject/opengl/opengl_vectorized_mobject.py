@@ -26,7 +26,7 @@ from manim.utils.bezier import (
     proportions_along_bezier_curve_for_point,
 )
 from manim.utils.color import *
-from manim.utils.color.core import ParsableManimColor
+from manim.utils.color.core import ManimColorArray, ParsableManimColor
 from manim.utils.deprecation import deprecated
 from manim.utils.iterables import (
     listify,

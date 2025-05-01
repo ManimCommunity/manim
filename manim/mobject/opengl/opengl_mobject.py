@@ -176,7 +176,6 @@ class OpenGLMobject:
         self.init_updaters()
         self.init_event_listeners()
         self.init_points()
-        self.init_colors()
 
     @classmethod
     def __init_subclass__(cls, **kwargs):
