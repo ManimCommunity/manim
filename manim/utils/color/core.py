@@ -48,7 +48,7 @@ import colorsys
 # logger = _config.logger
 import random
 import re
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 from typing import Any, TypeVar, Union, overload
 
 import numpy as np
@@ -73,6 +73,11 @@ from manim.typing import (
     RGBA_Array_Int,
     RGBA_Tuple_Float,
     RGBA_Tuple_Int,
+)
+from manim.utils.iterables import (
+    make_even,
+    stretch_array_to_length,
+    tuplify,
 )
 
 from ...utils.space_ops import normalize
@@ -1031,6 +1036,62 @@ class ManimColor:
         return self._construct_from_space(
             self._internal_from_integer(self.to_integer() ^ int(other), 1.0)
         )
+
+
+class ManimColorArray:
+    """
+    First arg can be either a color, or a tuple/list of colors.
+    Likewise, opacity can either be a float, or a tuple of floats.
+    If sheen_factor is not zero, and only
+    one color was passed in, a second slightly light color
+    will automatically be added for the gradient
+    """
+
+    def __init__(
+        self,
+        color: ParsableManimColor | Iterable[ParsableManimColor],
+        opacity: float | Iterable[float],
+        sheen_factor: float = 0.0,
+    ):
+        from manim.utils.color.manim_colors import BLACK
+
+        colors: list[ManimColor] = [
+            ManimColor(c) if (c is not None) else BLACK for c in tuplify(color)
+        ]
+        opacities: list[float] = [
+            o if (o is not None) else 0.0 for o in tuplify(opacity)
+        ]
+        self.rgbas: npt.NDArray[RGBA_Array_Float] = np.array(
+            [c.to_rgba_with_alpha(o) for c, o in zip(*make_even(colors, opacities))],
+        )
+
+        if sheen_factor != 0 and len(self.rgbas) == 1:
+            light_rgbas = np.array(self.rgbas)
+            light_rgbas[:, :3] += sheen_factor
+            np.clip(light_rgbas, 0, 1, out=light_rgbas)
+            self.rgbas = np.append(self.rgbas, light_rgbas, axis=0)
+
+    def update(
+        self,
+        color: ManimColor | Iterable[ManimColor] | None = None,
+        opacity: float | Iterable[float] | None = None,
+        sheen_factor: float = 0.0,
+    ):
+        rgbas = ManimColorArray(color, opacity, sheen_factor).rgbas
+        # Match up current rgbas array with the newly calculated
+        # one. 99% of the time they'll be the same.
+        curr_rgbas = self.rgbas
+        if len(curr_rgbas) < len(rgbas):
+            curr_rgbas = stretch_array_to_length(curr_rgbas, len(rgbas))
+            self.rgbas = curr_rgbas
+        elif len(rgbas) < len(curr_rgbas):
+            rgbas = stretch_array_to_length(rgbas, len(curr_rgbas))
+        # Only update rgb if color was not None, and only
+        # update alpha channel if opacity was passed in
+        if color is not None:
+            curr_rgbas[:, :3] = rgbas[:, :3]
+        if opacity is not None:
+            curr_rgbas[:, 3] = rgbas[:, 3]
 
 
 RGBA = ManimColor
