@@ -74,7 +74,6 @@ from manim.typing import (
     RGBA_Tuple_Float,
     RGBA_Tuple_Int,
 )
-from manim.utils.color.manim_colors import BLACK
 from manim.utils.iterables import (
     make_even,
     stretch_array_to_length,
@@ -632,6 +631,8 @@ class ManimColor:
         --------
         :meth:`lighter`
         """
+        from manim.utils.color.manim_colors import BLACK
+
         alpha = self._internal_space[3]
         black = self._from_internal(BLACK._internal_value)
         return self.interpolate(black, blend).opacity(alpha)
@@ -691,7 +692,7 @@ class ManimColor:
         ManimColor
             The contrasting ManimColor
         """
-        from manim.utils.color.manim_colors import WHITE
+        from manim.utils.color.manim_colors import BLACK, WHITE
 
         luminance, _, _ = colorsys.rgb_to_yiq(*self.to_rgb())
         if luminance < threshold:
@@ -1048,10 +1049,12 @@ class ManimColorArray:
 
     def __init__(
         self,
-        color: ManimColor | Iterable[ManimColor],
+        color: ParsableManimColor | Iterable[ParsableManimColor],
         opacity: float | Iterable[float],
         sheen_factor: float = 0.0,
     ):
+        from manim.utils.color.manim_colors import BLACK
+
         colors: list[ManimColor] = [
             ManimColor(c) if (c is not None) else BLACK for c in tuplify(color)
         ]
@@ -1070,12 +1073,11 @@ class ManimColorArray:
 
     def update(
         self,
-        array_name: str,
         color: ManimColor | Iterable[ManimColor] | None = None,
         opacity: float | Iterable[float] | None = None,
         sheen_factor: float = 0.0,
     ):
-        rgbas = ManimColorArray(color, opacity, sheen_factor)
+        rgbas = ManimColorArray(color, opacity, sheen_factor).rgbas
         # Match up current rgbas array with the newly calculated
         # one. 99% of the time they'll be the same.
         curr_rgbas = self.rgbas

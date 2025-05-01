@@ -39,6 +39,7 @@ from manim.utils.bezier import (
     proportions_along_bezier_curve_for_point,
 )
 from manim.utils.color import BLACK, WHITE, ManimColor, ParsableManimColor
+from manim.utils.color.core import ManimColorArray
 from manim.utils.deprecation import deprecated
 from manim.utils.iterables import (
     make_even,
@@ -166,6 +167,9 @@ class VMobject(Mobject):
             0, 1, n_points_per_cubic_curve
         )
         self.cap_style: CapStyleType = cap_style
+        if "color" in kwargs:
+            stroke_color = kwargs["color"]
+            del kwargs["color"]
         super().__init__(**kwargs)
         self.submobjects: list[VMobject]
 
@@ -251,7 +255,7 @@ class VMobject(Mobject):
             if width is not None:
                 self.background_stroke_width = width
         else:
-            self.strokess.update(color, opacity, self.sheen_factor)
+            self.strokes.update(color, opacity, self.sheen_factor)
             if width is not None:
                 self.stroke_width = width
         return self
