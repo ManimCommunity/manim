@@ -12,6 +12,8 @@ from collections.abc import Iterable, Sequence
 from typing import TYPE_CHECKING, Callable
 
 if TYPE_CHECKING:
+    from typing_extensions import Self
+
     from manim.mobject.geometry.tips import ArrowTip
     from manim.typing import Point3DLike
 
@@ -485,22 +487,49 @@ class NumberLine(Line):
             num_mob.shift(num_mob[0].width * LEFT / 2)
         return num_mob
 
-    def get_number_mobjects(self, *numbers, **kwargs) -> VGroup:
-        if len(numbers) == 0:
-            numbers = self.default_numbers_to_display()
+    def get_number_mobjects(
+        self, numbers: Iterable[float] | None = None, **kwargs
+    ) -> VGroup:
+        if numbers is None:
+            numbers = self.get_numbers_to_display()
         return VGroup([self.get_number_mobject(number, **kwargs) for number in numbers])
 
     def get_labels(self) -> VGroup:
         return self.get_number_mobjects()
 
+    def get_numbers_to_display(
+        self,
+        x_values: Iterable[float] | None = None,
+        excluding: Iterable[float] | None = None,
+    ) -> Iterable[float]:
+        """Returns an iterable of numbers to be labeled on the number line.
+
+        Parameters
+        ----------
+        x_values
+            An iterable of the values used to position and create the labels.
+        excluding
+            Iterable of values to exclude from labeling.
+
+        Returns
+        -------
+        Iterable[float]
+            The list of numeric values to be labeled and displayed on the number line.
+        """
+        if x_values is None:
+            x_values = self.get_tick_range()
+
+        if excluding is None:
+            excluding = self.numbers_to_exclude
+
+        return [x for x in x_values if x not in excluding]
+
     def add_numbers(
         self,
         x_values: Iterable[float] | None = None,
         excluding: Iterable[float] | None = None,
-        font_size: float | None = None,
-        label_constructor: VMobject | None = None,
         **kwargs,
-    ):
+    ) -> Self:
         """Adds :class:`~.DecimalNumber` mobjects representing their position
         at each tick of the number line. The numbers can be accessed after creation
         via ``self.numbers``.
@@ -512,38 +541,9 @@ class NumberLine(Line):
             Defaults to the output produced by :meth:`~.NumberLine.get_tick_range`
         excluding
             A list of values to exclude from :attr:`x_values`.
-        font_size
-            The font size of the labels. Defaults to the ``font_size`` attribute
-            of the number line.
-        label_constructor
-            The :class:`~.VMobject` class that will be used to construct the label.
-            Defaults to the ``label_constructor`` attribute of the number line
-            if not specified.
         """
-        if x_values is None:
-            x_values = self.get_tick_range()
-
-        if excluding is None:
-            excluding = self.numbers_to_exclude
-
-        if font_size is None:
-            font_size = self.font_size
-
-        if label_constructor is None:
-            label_constructor = self.label_constructor
-
-        numbers = VGroup()
-        for x in x_values:
-            if x in excluding:
-                continue
-            numbers.add(
-                self.get_number_mobject(
-                    x,
-                    font_size=font_size,
-                    label_constructor=label_constructor,
-                    **kwargs,
-                )
-            )
+        numbers_to_display = self.get_numbers_to_display(x_values, excluding)
+        numbers = self.get_number_mobjects(numbers_to_display, **kwargs)
         self.add(numbers)
         self.numbers = numbers
         return self
@@ -555,7 +555,7 @@ class NumberLine(Line):
         buff: float | None = None,
         font_size: float | None = None,
         label_constructor: VMobject | None = None,
-    ):
+    ) -> Self:
         """Adds specifically positioned labels to the :class:`~.NumberLine` using a ``dict``.
         The labels can be accessed after creation via ``self.labels``.
 
