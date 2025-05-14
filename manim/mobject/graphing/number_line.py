@@ -501,19 +501,22 @@ class NumberLine(Line):
         self,
         x_values: Iterable[float] | None = None,
         excluding: Iterable[float] | None = None,
-    ) -> Iterable[float]:
-        """Returns an iterable of numbers to be labeled on the number line.
+    ) -> list[float]:
+        """Returns an list of numbers to be labeled on the number line.
 
         Parameters
         ----------
         x_values
             An iterable of the values used to position and create the labels.
+            Defaults to the output produced by :meth:`~.NumberLine.get_tick_range`
         excluding
-            Iterable of values to exclude from labeling.
+            A list of values to exclude from :attr:`x_values`.
+        **kwargs
+            The keyword arguments passed to :meth:`get_number_mobject`
 
         Returns
         -------
-        Iterable[float]
+        list[float]
             The list of numeric values to be labeled and displayed on the number line.
         """
         if x_values is None:
