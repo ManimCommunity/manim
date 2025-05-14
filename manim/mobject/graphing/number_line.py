@@ -502,7 +502,7 @@ class NumberLine(Line):
         x_values: Iterable[float] | None = None,
         excluding: Iterable[float] | None = None,
     ) -> list[float]:
-        """Returns an list of numbers to be labeled on the number line.
+        """Returns a list of numbers to be labeled on the number line.
 
         Parameters
         ----------
@@ -517,7 +517,7 @@ class NumberLine(Line):
         Returns
         -------
         list[float]
-            The list of numeric values to be labeled and displayed on the number line.
+            The list of numbers to be labeled on the number line.
         """
         if x_values is None:
             x_values = self.get_tick_range()
