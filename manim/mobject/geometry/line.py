@@ -98,8 +98,8 @@ class Line(TipableVMobject):
         self,
         start: Point3DLike | Mobject = LEFT,
         end: Point3DLike | Mobject = RIGHT,
-        buff: float = 0.0,
-        path_arc: float = 0.0,
+        buff: float = 0,
+        path_arc: float = 0,
         **kwargs: Any,
     ) -> None:
         self.dim = 3
@@ -120,8 +120,8 @@ class Line(TipableVMobject):
         self,
         start: Point3DLike | Mobject,
         end: Point3DLike | Mobject,
-        buff: float = 0.0,
-        path_arc: float = 0.0,
+        buff: float = 0,
+        path_arc: float = 0,
     ) -> None:
         """Sets the points of the line based on its start and end points.
         Unlike :meth:`put_start_and_end_on`, this method respects `self.buff` and
