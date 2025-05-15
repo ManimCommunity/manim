@@ -511,8 +511,6 @@ class NumberLine(Line):
             Defaults to the output produced by :meth:`~.NumberLine.get_tick_range`
         excluding
             A list of values to exclude from :attr:`x_values`.
-        **kwargs
-            The keyword arguments passed to :meth:`get_number_mobject`
 
         Returns
         -------
@@ -544,6 +542,8 @@ class NumberLine(Line):
             Defaults to the output produced by :meth:`~.NumberLine.get_tick_range`
         excluding
             A list of values to exclude from :attr:`x_values`.
+        **kwargs
+            The keyword arguments passed to :meth:`get_number_mobject`
         """
         numbers_to_display = self.get_numbers_to_display(x_values, excluding)
         numbers = self.get_number_mobjects(numbers_to_display, **kwargs)
@@ -558,7 +558,7 @@ class NumberLine(Line):
         buff: float | None = None,
         font_size: float | None = None,
         label_constructor: VMobject | None = None,
-    ) -> Self:
+    ):
         """Adds specifically positioned labels to the :class:`~.NumberLine` using a ``dict``.
         The labels can be accessed after creation via ``self.labels``.
 
