@@ -2820,11 +2820,11 @@ class Mobject:
         Parameters
         ----------
         mobject1
-            The starting Mobject
+            The starting Mobject.
         mobject2
-            The target Mobject
+            The target Mobject.
         alpha
-            Interpolation factor between 0 (at mobject1) and 1 (at mobject2)
+            Interpolation factor between 0 (at ``mobject1``) and 1 (at ``mobject2``).
         path_func
             The function defining the interpolation path. Defaults to a straight path.
 
