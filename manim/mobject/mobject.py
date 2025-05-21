@@ -2708,8 +2708,8 @@ class Mobject:
         """Aligns the family structure and data of this mobject with another mobject.
 
         Afterwards, the two mobjects will have the same number of submobjects
-        (see :meth:`.align_submobjects`), the same parent structure (see
-        :meth:`.null_point_align`). If ``skip_point_alignment`` is false,
+        (see :meth:`.align_submobjects`) and the same parent structure (see
+        :meth:`.null_point_align`). If ``skip_point_alignment`` is ``False``,
         they will also have the same number of points (see :meth:`.align_points`).
 
         Parameters
@@ -2718,7 +2718,7 @@ class Mobject:
             The other mobject this mobject should be aligned to.
         skip_point_alignment
             Controls whether or not the computationally expensive
-            point alignment is skipped (default: False).
+            point alignment is skipped (default: ``False``).
 
 
         .. note::
