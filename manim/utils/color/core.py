@@ -601,7 +601,8 @@ class ManimColor:
         HSL_Array_Float
             An HSL array of 3 floats from 0.0 to 1.0.
         """
-        return np.array(colorsys.rgb_to_hls(*self.to_rgb()))
+        hls = colorsys.rgb_to_hls(*self.to_rgb())
+        return np.array([hls[0], hls[2], hls[1]])
 
     def invert(self, with_alpha: bool = False) -> Self:
         """Return a new, linearly inverted version of this :class:`ManimColor` (no
@@ -906,7 +907,7 @@ class ManimColor:
             The :class:`ManimColor` with the corresponding RGB values to the given HSL
             array.
         """
-        rgb = colorsys.hls_to_rgb(*hsl)
+        rgb = colorsys.hls_to_rgb(hsl[0], hsl[2], hsl[1])
         return cls._from_internal(ManimColor(rgb, alpha)._internal_value)
 
     @overload
