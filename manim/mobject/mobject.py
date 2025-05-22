@@ -2347,7 +2347,7 @@ class Mobject:
 
         Returns
         -------
-        list
+        list[Mobject]
             A list of mobjects that have points.
 
         Examples
