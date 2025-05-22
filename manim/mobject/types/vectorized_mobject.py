@@ -1047,22 +1047,21 @@ class VMobject(Mobject):
             The VMobject itself, after appending the straight lines to its
             path.
         """
+        self.throw_error_if_no_points()
+
         points = np.asarray(points).reshape(-1, self.dim)
         num_points = points.shape[0]
         if num_points == 0:
             return self
 
+        start_corners = np.empty((num_points, self.dim))
+        start_corners[0] = self.points[-1]
+        start_corners[1:] = points[:-1]
+        end_corners = points
+
         if self.has_new_path_started():
-            # Pop the last point from self.points and
-            # add it to start_corners
-            start_corners = np.empty((num_points, self.dim))
-            start_corners[0] = self.points[-1]
-            start_corners[1:] = points[:-1]
-            end_corners = points
+            # Remove the last point from the new path
             self.points = self.points[:-1]
-        else:
-            start_corners = np.vstack([self.points[-1], points[:-1]])
-            end_corners = points
 
         nppcc = self.n_points_per_cubic_curve
         new_points = np.empty((nppcc * start_corners.shape[0], self.dim))
