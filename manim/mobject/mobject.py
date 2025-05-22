@@ -2319,7 +2319,7 @@ class Mobject:
 
         Returns
         -------
-        list
+        list[Mobject]
             A list of mobjects in the family of the given mobject.
 
         Examples
