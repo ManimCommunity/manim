@@ -133,7 +133,7 @@ class Line(TipableVMobject):
         if length < 2 * buff:
             return
         buff_proportion = buff / length
-        self.pointwise_become_partial(self.copy(), buff_proportion, 1 - buff_proportion)
+        self.pointwise_become_partial(self, buff_proportion, 1 - buff_proportion)
         return
 
     def _set_start_and_end_attrs(
