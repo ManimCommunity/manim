@@ -4,7 +4,17 @@ import logging
 
 import numpy as np
 
-from manim import BackgroundRectangle, Circle, Sector, Square, SurroundingRectangle
+from manim import (
+    DEGREES,
+    LEFT,
+    RIGHT,
+    BackgroundRectangle,
+    Circle,
+    Line,
+    Sector,
+    Square,
+    SurroundingRectangle,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -53,3 +63,36 @@ def test_changing_Square_side_length_updates_the_square_appropriately():
 def test_Square_side_length_consistent_after_scale_and_rotation():
     sq = Square(side_length=1).scale(3).rotate(np.pi / 4)
     assert np.isclose(sq.side_length, 3)
+
+
+def test_line_with_buff_and_path_arc():
+    line = Line(LEFT, RIGHT, path_arc=60 * DEGREES, buff=0.3)
+    expected_points = np.array(
+        [
+            [-0.7299265, -0.12999304, 0.0],
+            [-0.6605293, -0.15719695, 0.0],
+            [-0.58965623, -0.18050364, 0.0],
+            [-0.51763809, -0.19980085, 0.0],
+            [-0.51763809, -0.19980085, 0.0],
+            [-0.43331506, -0.22239513, 0.0],
+            [-0.34760317, -0.23944429, 0.0],
+            [-0.26105238, -0.25083892, 0.0],
+            [-0.26105238, -0.25083892, 0.0],
+            [-0.1745016, -0.26223354, 0.0],
+            [-0.08729763, -0.26794919, 0.0],
+            [0.0, -0.26794919, 0.0],
+            [0.0, -0.26794919, 0.0],
+            [0.08729763, -0.26794919, 0.0],
+            [0.1745016, -0.26223354, 0.0],
+            [0.26105238, -0.25083892, 0.0],
+            [0.26105238, -0.25083892, 0.0],
+            [0.34760317, -0.23944429, 0.0],
+            [0.43331506, -0.22239513, 0.0],
+            [0.51763809, -0.19980085, 0.0],
+            [0.51763809, -0.19980085, 0.0],
+            [0.58965623, -0.18050364, 0.0],
+            [0.6605293, -0.15719695, 0.0],
+            [0.7299265, -0.12999304, 0.0],
+        ]
+    )
+    np.testing.assert_allclose(line.points, expected_points)
