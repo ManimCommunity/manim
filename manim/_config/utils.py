@@ -429,7 +429,7 @@ class ManimConfig(MutableMapping):
         # Deepcopying the underlying dict is enough because all properties
         # either read directly from it or compute their value on the fly from
         # values read directly from it.
-        c._d = copy.deepcopy(self._d, memo)
+        c._d = copy.deepcopy(self._d, memo)  # type: ignore[arg-type]
         return c
 
     # helper type-checking methods
@@ -655,8 +655,10 @@ class ManimConfig(MutableMapping):
             "window_size"
         ]  # if not "default", get a tuple of the position
         if window_size != "default":
-            window_size = tuple(map(int, re.split(r"[;,\-]", window_size)))
-        self.window_size = window_size
+            window_size_numbers = tuple(map(int, re.split(r"[;,\-]", window_size)))
+            self.window_size = window_size_numbers
+        else:
+            self.window_size = window_size
 
         # plugins
         plugins = parser["CLI"].get("plugins", fallback="", raw=True)
@@ -1143,7 +1145,7 @@ class ManimConfig(MutableMapping):
 
     @frame_y_radius.setter
     def frame_y_radius(self, value: float) -> None:
-        self._d.__setitem__("frame_y_radius", value) or self._d.__setitem__(
+        self._d.__setitem__("frame_y_radius", value) or self._d.__setitem__(  # type: ignore[func-returns-value]
             "frame_height", 2 * value
         )
 
@@ -1155,7 +1157,7 @@ class ManimConfig(MutableMapping):
 
     @frame_x_radius.setter
     def frame_x_radius(self, value: float) -> None:
-        self._d.__setitem__("frame_x_radius", value) or self._d.__setitem__(
+        self._d.__setitem__("frame_x_radius", value) or self._d.__setitem__(  # type: ignore[func-returns-value]
             "frame_width", 2 * value
         )
 
@@ -1288,7 +1290,7 @@ class ManimConfig(MutableMapping):
 
     @frame_size.setter
     def frame_size(self, value: tuple[int, int]) -> None:
-        self._d.__setitem__("pixel_width", value[0]) or self._d.__setitem__(
+        self._d.__setitem__("pixel_width", value[0]) or self._d.__setitem__(  # type: ignore[func-returns-value]
             "pixel_height", value[1]
         )
 
@@ -1298,7 +1300,7 @@ class ManimConfig(MutableMapping):
         keys = ["pixel_width", "pixel_height", "frame_rate"]
         q = {k: self[k] for k in keys}
         for qual in constants.QUALITIES:
-            if all(q[k] == constants.QUALITIES[qual][k] for k in keys):
+            if all(q[k] == constants.QUALITIES[qual][k] for k in keys):  # type: ignore[literal-required]
                 return qual
         return None
 
@@ -1425,12 +1427,12 @@ class ManimConfig(MutableMapping):
         self._d.__setitem__("window_position", value)
 
     @property
-    def window_size(self) -> str:
-        """The size of the opengl window as 'width,height' or 'default' to automatically scale the window based on the display monitor."""
+    def window_size(self) -> str | tuple[int, ...]:
+        """The size of the opengl window. 'default' to automatically scale the window based on the display monitor."""
         return self._d["window_size"]
 
     @window_size.setter
-    def window_size(self, value: str) -> None:
+    def window_size(self, value: str | tuple[int, ...]) -> None:
         self._d.__setitem__("window_size", value)
 
     def resolve_movie_file_extension(self, is_transparent: bool) -> None:
@@ -1881,4 +1883,4 @@ class ManimFrame(Mapping):
 
 
 for opt in list(ManimFrame._OPTS) + list(ManimFrame._CONSTANTS):
-    setattr(ManimFrame, opt, property(lambda self, o=opt: self[o]))
+    setattr(ManimFrame, opt, property(lambda self, o=opt: self[o]))  # type: ignore[misc]
