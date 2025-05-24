@@ -26,6 +26,7 @@ from rich.theme import Theme
 
 if TYPE_CHECKING:
     from pathlib import Path
+    from typing import Any
 
 __all__ = ["make_logger", "parse_theme", "set_file_logger", "JSONFormatter"]
 
