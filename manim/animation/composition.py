@@ -78,8 +78,8 @@ class AnimationGroup(Animation):
 
     def _get_unintroduced_mobjects(self) -> Sequence[Mobject]:
         return remove_list_redundancies(
-                [anim.mobject for anim in self.animations if not anim.is_introducer()],
-            )
+            [anim.mobject for anim in self.animations if not anim.is_introducer()],
+        )
 
     def get_all_mobjects(self) -> Sequence[Mobject]:
         return list(self.group)
