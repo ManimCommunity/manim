@@ -236,13 +236,13 @@ class Succession(AnimationGroup):
 
     def _get_unintroduced_mobjects(self) -> Sequence[Mobject]:
         introduced_mobjects = set()
-        relevant_objects = []
+        unintroduced_mobjects = []
         for anim in self.animations:
             if anim.is_introducer():
                 introduced_mobjects.add(anim.mobject)
             elif anim.mobject not in introduced_mobjects:
-                relevant_objects.append(anim.mobject)
-        return remove_list_redundancies(relevant_objects)
+                unintroduced_mobjects.append(anim.mobject)
+        return remove_list_redundancies(unintroduced_mobjects)
 
     def begin(self) -> None:
         if not self.animations:
