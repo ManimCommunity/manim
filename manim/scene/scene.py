@@ -115,7 +115,7 @@ class Scene:
         self.random_seed = random_seed
         self.skip_animations = skip_animations
 
-        self.animations = None
+        self.animations: list[Animation] | None = None
         self.stop_condition: Callable[[], bool] | None = None
         self.moving_mobjects: list[Mobject] = []
         self.static_mobjects: list[Mobject] = []
@@ -397,6 +397,7 @@ class Scene:
 
         This is only called when a single Wait animation is played.
         """
+        assert self.animations is not None
         wait_animation = self.animations[0]
         assert isinstance(wait_animation, Wait)
         if wait_animation.is_static_wait is None:
@@ -1284,6 +1285,7 @@ class Scene:
 
     def begin_animations(self) -> None:
         """Start the animations of the scene."""
+        assert self.animations is not None
         for animation in self.animations:
             animation._setup_scene(self)
             animation.begin()
@@ -1298,6 +1300,7 @@ class Scene:
 
     def is_current_animation_frozen_frame(self) -> bool:
         """Returns whether the current animation produces a static frame (generally a Wait)."""
+        assert self.animations is not None
         return (
             isinstance(self.animations[0], Wait)
             and len(self.animations) == 1
@@ -1315,6 +1318,7 @@ class Scene:
         skip_rendering
             Whether the rendering should be skipped, by default False
         """
+        assert self.animations is not None
         self.duration = self.get_run_time(self.animations)
         self.time_progression = self._get_animation_time_progression(
             self.animations,
@@ -1442,10 +1446,8 @@ class Scene:
 
         self.interact(shell, keyboard_thread)
 
-    #from IPython.terminal.embed import InteractiveShellEmbed
-
     def interact(
-        self, shell: InteractiveShellEmbed, keyboard_thread: threading.Thread
+        self, shell: Any, keyboard_thread: threading.Thread
     ) -> None:
         assert isinstance(self.renderer, OpenGLRenderer)
         event_handler = RerunSceneHandler(self.queue)
@@ -1572,6 +1574,7 @@ class Scene:
     def update_to_time(self, t: float) -> None:
         dt = t - self.last_t
         self.last_t = t
+        assert self.animations is not None
         for animation in self.animations:
             animation.update_mobjects(dt)
             alpha = t / animation.run_time
