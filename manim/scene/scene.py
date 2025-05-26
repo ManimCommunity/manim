@@ -520,7 +520,7 @@ class Scene:
         """
         if config.renderer == RendererType.OPENGL:
             mobjects_to_remove = []
-            meshes_to_remove = set()
+            meshes_to_remove: set[Object3D] = set()
             for mobject_or_mesh in mobjects:
                 if isinstance(mobject_or_mesh, Object3D):
                     meshes_to_remove.add(mobject_or_mesh)
@@ -530,8 +530,12 @@ class Scene:
                 self.mobjects,
                 mobjects_to_remove,
             )
+
+            def lambda_function(mesh: Object3D) -> bool:
+                return mesh not in set(meshes_to_remove)
+
             self.meshes = list(
-                filter(lambda mesh: mesh not in set(meshes_to_remove), self.meshes),
+                filter(lambda_function, self.meshes),
             )
             return self
         elif config.renderer == RendererType.CAIRO:
@@ -637,7 +641,7 @@ class Scene:
         to_remove: Sequence[Mobject],
         mobject_list_name: str = "mobjects",
         extract_families: bool = True,
-    ):
+    ) -> Scene:
         """
         tl:wr
             If your scene has a Group(), and you removed a mobject from the Group,
@@ -675,7 +679,9 @@ class Scene:
         setattr(self, mobject_list_name, new_list)
         return self
 
-    def get_restructured_mobject_list(self, mobjects: list, to_remove: list):
+    def get_restructured_mobject_list(
+        self, mobjects: list[Mobject], to_remove: Sequence[Mobject]
+    ) -> list[Mobject]:
         """
         Given a list of mobjects and a list of mobjects to be removed, this
         filters out the removable mobjects from the list of mobjects.
@@ -694,9 +700,11 @@ class Scene:
         list
             The list of mobjects with the mobjects to remove removed.
         """
-        new_mobjects = []
+        new_mobjects: list[Mobject] = []
 
-        def add_safe_mobjects_from_list(list_to_examine, set_to_remove):
+        def add_safe_mobjects_from_list(
+            list_to_examine: list[Mobject], set_to_remove: set[Mobject]
+        ) -> None:
             for mob in list_to_examine:
                 if mob in set_to_remove:
                     continue
@@ -710,7 +718,7 @@ class Scene:
         return new_mobjects
 
     # TODO, remove this, and calls to this
-    def add_foreground_mobjects(self, *mobjects: Mobject):
+    def add_foreground_mobjects(self, *mobjects: Mobject) -> Scene:
         """
         Adds mobjects to the foreground, and internally to the list
         foreground_mobjects, and mobjects.
@@ -729,7 +737,7 @@ class Scene:
         self.add(*mobjects)
         return self
 
-    def add_foreground_mobject(self, mobject: Mobject):
+    def add_foreground_mobject(self, mobject: Mobject) -> Scene:
         """
         Adds a single mobject to the foreground, and internally to the list
         foreground_mobjects, and mobjects.
@@ -746,7 +754,7 @@ class Scene:
         """
         return self.add_foreground_mobjects(mobject)
 
-    def remove_foreground_mobjects(self, *to_remove: Mobject):
+    def remove_foreground_mobjects(self, *to_remove: Mobject) -> Scene:
         """
         Removes mobjects from the foreground, and internally from the list
         foreground_mobjects.
@@ -764,7 +772,7 @@ class Scene:
         self.restructure_mobjects(to_remove, "foreground_mobjects")
         return self
 
-    def remove_foreground_mobject(self, mobject: Mobject):
+    def remove_foreground_mobject(self, mobject: Mobject) -> Scene:
         """
         Removes a single mobject from the foreground, and internally from the list
         foreground_mobjects.
