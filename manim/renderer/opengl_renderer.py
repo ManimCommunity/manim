@@ -11,7 +11,11 @@ import numpy as np
 from PIL import Image
 
 from manim import config, logger
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject, OpenGLPoint
+from manim.mobject.opengl.opengl_mobject import (
+    OpenGLMobject,
+    OpenGLPoint,
+    _AnimationBuilder,
+)
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.utils.caching import handle_caching_play
 from manim.utils.color import color_to_rgba
@@ -39,6 +43,7 @@ if TYPE_CHECKING:
     import numpy.typing as npt
     from typing_extensions import Self
 
+    from manim.animation.animation import Animation
     from manim.mobject.mobject import Mobject
     from manim.scene.scene import Scene
 
@@ -420,7 +425,9 @@ class OpenGLRenderer:
             raise EndSceneEarlyException()
 
     @handle_caching_play
-    def play(self, scene, *args, **kwargs):
+    def play(
+        self, scene: Scene, *args: Animation | Mobject | _AnimationBuilder, **kwargs
+    ):
         # TODO: Handle data locking / unlocking.
         self.animation_start_time = time.time()
         self.file_writer.begin_animation(not self.skip_animations)

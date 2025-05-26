@@ -43,7 +43,7 @@ from ..camera.camera import Camera
 from ..constants import *
 from ..gui.gui import configure_pygui
 from ..renderer.cairo_renderer import CairoRenderer
-from ..renderer.opengl_renderer import OpenGLCamera, OpenGLRenderer
+from ..renderer.opengl_renderer import OpenGLCamera, OpenGLMobject, OpenGLRenderer
 from ..renderer.shader import Object3D
 from ..utils import opengl, space_ops
 from ..utils.exceptions import EndSceneEarlyException, RerunSceneException
@@ -131,7 +131,7 @@ class Scene:
         self.updaters: list[Callable[[float], None]] = []
         self.point_lights: list[Any] = []
         self.ambient_light = None
-        self.key_to_function_map: dict[str, Callable[[None], None]] = {}
+        self.key_to_function_map: dict[str, Callable[[], None]] = {}
         self.mouse_press_callbacks: list[Callable[[], None]] = []
         self.interactive_mode = False
 
@@ -241,7 +241,7 @@ class Scene:
         except RerunSceneException:
             self.remove(*self.mobjects)
             # TODO: The CairoRenderer does not have the method clear_screen()
-            self.renderer.clear_screen()
+            self.renderer.clear_screen()  # type: ignore[union-attr]
             self.renderer.num_plays = 0
             return True
         self.tear_down()
@@ -266,6 +266,7 @@ class Scene:
             open_media_file(self.renderer.file_writer)
 
         # TODO: What value should the function return when it reaches this point?
+        return False
 
     def setup(self) -> None:
         """
@@ -361,7 +362,7 @@ class Scene:
 
     def update_meshes(self, dt: float) -> None:
         for obj in self.meshes:
-            for mesh in obj.get_family():
+            for mesh in obj.get_family():  # type: ignore[no-untyped-call]
                 mesh.update(dt)
 
     def update_self(self, dt: float) -> None:
@@ -397,6 +398,7 @@ class Scene:
         This is only called when a single Wait animation is played.
         """
         wait_animation = self.animations[0]
+        assert isinstance(wait_animation, Wait)
         if wait_animation.is_static_wait is None:
             should_update = (
                 self.always_update_mobjects
@@ -476,13 +478,13 @@ class Scene:
                     new_meshes.append(mobject_or_mesh)
                 else:
                     new_mobjects.append(mobject_or_mesh)
-            self.remove(*new_mobjects)
-            self.mobjects += new_mobjects
-            self.remove(*new_meshes)
+            self.remove(*new_mobjects)  # type: ignore[arg-type]
+            self.mobjects += new_mobjects  # type: ignore[arg-type]
+            self.remove(*new_meshes)  # type: ignore[arg-type]
             self.meshes += new_meshes
         elif config.renderer == RendererType.CAIRO:
             new_and_foreground_mobjects: list[Mobject] = [
-                *mobjects,
+                *mobjects,  # type: ignore[list-item]
                 *self.foreground_mobjects,
             ]
             self.restructure_mobjects(to_remove=new_and_foreground_mobjects)
@@ -505,7 +507,7 @@ class Scene:
             mob = animation.mobject
             if mob is not None and mob not in curr_mobjects:
                 self.add(mob)
-                curr_mobjects += mob.get_family()
+                curr_mobjects += mob.get_family()  # type: ignore[arg-type]
 
     def remove(self, *mobjects: Mobject) -> Self:
         """
@@ -521,6 +523,7 @@ class Scene:
         if config.renderer == RendererType.OPENGL:
             mobjects_to_remove = []
             meshes_to_remove: set[Object3D] = set()
+            mobject_or_mesh: Mobject
             for mobject_or_mesh in mobjects:
                 if isinstance(mobject_or_mesh, Object3D):
                     meshes_to_remove.add(mobject_or_mesh)
@@ -1046,7 +1049,7 @@ class Scene:
     def validate_run_time(
         cls,
         run_time: float,
-        method: Callable[[Any, ...], Any],
+        method: Callable[[Any], Any],
         parameter_name: str = "run_time",
     ) -> float:
         method_name = f"{cls.__name__}.{method.__name__}()"
@@ -1144,7 +1147,7 @@ class Scene:
             return
 
         start_time = self.time
-        self.renderer.play(self, *args, **kwargs)
+        self.renderer.play(self, *args, **kwargs)  # type: ignore[arg-type]
         run_time = self.time - start_time
         if subcaption:
             if subcaption_duration is None:
@@ -1331,7 +1334,7 @@ class Scene:
         if not self.renderer.skip_animations:
             self.update_mobjects(0)
         # TODO: The OpenGLRenderer does not have the property static.image.
-        self.renderer.static_image = None
+        self.renderer.static_image = None  # type: ignore[union-attr]
         # Closing the progress bar at the end of the play.
         self.time_progression.close()
 
@@ -1364,6 +1367,7 @@ class Scene:
     def interactive_embed(self) -> None:
         """Like embed(), but allows for screen interaction."""
         assert isinstance(self.camera, OpenGLCamera)
+        assert isinstance(self.renderer, OpenGLRenderer)
         if not self.check_interactive_embed_is_valid():
             return
         self.interactive_mode = True
@@ -1392,7 +1396,8 @@ class Scene:
         def get_embedded_method(method_name: str) -> Callable:
             return lambda *args, **kwargs: self.queue.put((method_name, args, kwargs))
 
-        local_namespace = inspect.currentframe().f_back.f_locals
+        currentframe: FrameType = inspect.currentframe()  # type: ignore[assignment]
+        local_namespace = currentframe.f_back.f_locals  # type: ignore[union-attr]
         for method in ("play", "wait", "add", "remove"):
             embedded_method = get_embedded_method(method)
             # Allow for calling scene methods without prepending 'self.'.
@@ -1546,7 +1551,7 @@ class Scene:
         # once embedded, and add a few custom shortcuts.
         current_frame = inspect.currentframe()
         assert isinstance(current_frame, FrameType)
-        local_ns = current_frame.f_back.f_locals
+        local_ns = current_frame.f_back.f_locals  # type: ignore[union-attr]
         # local_ns["touch"] = self.interact
         for method in (
             "play",
@@ -1672,6 +1677,7 @@ class Scene:
 
     def on_mouse_motion(self, point: Point3D, d_point: Point3D) -> None:
         assert isinstance(self.camera, OpenGLCamera)
+        assert isinstance(self.renderer, OpenGLRenderer)
         self.mouse_point.move_to(point)
         if SHIFT_VALUE in self.renderer.pressed_keys:
             shift = -d_point
@@ -1818,7 +1824,7 @@ class Scene:
             )
             self.camera_target += total_shift_vector
 
-    def set_key_function(self, char: str, func: Callable[[None], Any]) -> None:
+    def set_key_function(self, char: str, func: Callable[[], Any]) -> None:
         self.key_to_function_map[char] = func
 
     def on_mouse_press(self, point: Point3D, button: str, modifiers: Any) -> None:

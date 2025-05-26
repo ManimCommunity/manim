@@ -34,7 +34,7 @@ class CairoRenderer:
     def __init__(
         self,
         file_writer_class: type[SceneFileWriter] = SceneFileWriter,
-        camera_class: Camera | None = None,
+        camera_class: type[Camera] | None = None,
         skip_animations: bool = False,
         **kwargs: Any,
     ) -> None:
