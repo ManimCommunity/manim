@@ -347,7 +347,7 @@ class Scene:
         """
         return [getattr(self, key) for key in keys]
 
-    def update_mobjects(self, dt: float):
+    def update_mobjects(self, dt: float) -> None:
         """
         Begins updating all mobjects in the Scene.
 
@@ -359,12 +359,12 @@ class Scene:
         for mobject in self.mobjects:
             mobject.update(dt)
 
-    def update_meshes(self, dt):
+    def update_meshes(self, dt: float) -> None:
         for obj in self.meshes:
             for mesh in obj.get_family():
                 mesh.update(dt)
 
-    def update_self(self, dt: float):
+    def update_self(self, dt: float) -> None:
         """Run all scene updater functions.
 
         Among all types of update functions (mobject updaters, mesh updaters,
@@ -410,7 +410,7 @@ class Scene:
             wait_animation.is_static_wait = not should_update
         return not wait_animation.is_static_wait
 
-    def get_top_level_mobjects(self):
+    def get_top_level_mobjects(self) -> list[Mobject]:
         """
         Returns all mobjects which are not submobjects.
 
@@ -423,13 +423,13 @@ class Scene:
         # of another mobject from the scene
         families = [m.get_family() for m in self.mobjects]
 
-        def is_top_level(mobject):
+        def is_top_level(mobject: Mobject) -> bool:
             num_families = sum((mobject in family) for family in families)
             return num_families == 1
 
         return list(filter(is_top_level, self.mobjects))
 
-    def get_mobject_family_members(self):
+    def get_mobject_family_members(self) -> list[Mobject]:
         """
         Returns list of family-members of all mobjects in scene.
         If a Circle() and a VGroup(Rectangle(),Triangle()) were added,
@@ -452,7 +452,7 @@ class Scene:
                 use_z_index=self.renderer.camera.use_z_index,
             )
 
-    def add(self, *mobjects: Mobject):
+    def add(self, *mobjects: Mobject | OpenGLMobject) -> Self:
         """
         Mobjects will be displayed, from background to
         foreground in the order with which they are added.
@@ -470,7 +470,7 @@ class Scene:
         """
         if config.renderer == RendererType.OPENGL:
             new_mobjects = []
-            new_meshes = []
+            new_meshes: list[Object3D] = []
             for mobject_or_mesh in mobjects:
                 if isinstance(mobject_or_mesh, Object3D):
                     new_meshes.append(mobject_or_mesh)
@@ -481,15 +481,18 @@ class Scene:
             self.remove(*new_meshes)
             self.meshes += new_meshes
         elif config.renderer == RendererType.CAIRO:
-            mobjects = [*mobjects, *self.foreground_mobjects]
-            self.restructure_mobjects(to_remove=mobjects)
-            self.mobjects += mobjects
+            new_and_foreground_mobjects: list[Mobject] = [
+                *mobjects,
+                *self.foreground_mobjects,
+            ]
+            self.restructure_mobjects(to_remove=new_and_foreground_mobjects)
+            self.mobjects += new_and_foreground_mobjects
             if self.moving_mobjects:
                 self.restructure_mobjects(
-                    to_remove=mobjects,
+                    to_remove=new_and_foreground_mobjects,
                     mobject_list_name="moving_mobjects",
                 )
-                self.moving_mobjects += mobjects
+                self.moving_mobjects += new_and_foreground_mobjects
         return self
 
     def add_mobjects_from_animations(self, animations: list[Animation]) -> None:
@@ -504,7 +507,7 @@ class Scene:
                 self.add(mob)
                 curr_mobjects += mob.get_family()
 
-    def remove(self, *mobjects: Mobject):
+    def remove(self, *mobjects: Mobject) -> Self:
         """
         Removes mobjects in the passed list of mobjects
         from the scene and the foreground, by removing them
