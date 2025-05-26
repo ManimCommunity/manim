@@ -1,0 +1,7 @@
+from manim import *
+
+class Intro(Scene):
+    def construct(self):
+        text = Text("TotoMeelon", font_size=96, color=BLUE)
+        self.play(Write(text))
+        self.wait(2)
