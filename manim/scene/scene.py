@@ -789,7 +789,7 @@ class Scene:
         """
         return self.remove_foreground_mobjects(mobject)
 
-    def bring_to_front(self, *mobjects: Mobject):
+    def bring_to_front(self, *mobjects: Mobject) -> Scene:
         """
         Adds the passed mobjects to the scene again,
         pushing them to he front of the scene.
@@ -808,7 +808,7 @@ class Scene:
         self.add(*mobjects)
         return self
 
-    def bring_to_back(self, *mobjects: Mobject):
+    def bring_to_back(self, *mobjects: Mobject) -> Scene:
         """
         Removes the mobject from the scene and
         adds them to the back of the scene.
@@ -828,7 +828,7 @@ class Scene:
         self.mobjects = list(mobjects) + self.mobjects
         return self
 
-    def clear(self):
+    def clear(self) -> Self:
         """
         Removes all mobjects present in self.mobjects
         and self.foreground_mobjects from the scene.
@@ -844,7 +844,7 @@ class Scene:
         self.foreground_mobjects = []
         return self
 
-    def get_moving_mobjects(self, *animations: Animation):
+    def get_moving_mobjects(self, *animations: Animation) -> list[Mobject]:
         """
         Gets all moving mobjects in the passed animation(s).
 
@@ -875,7 +875,9 @@ class Scene:
                 return mobjects[i:]
         return []
 
-    def get_moving_and_static_mobjects(self, animations):
+    def get_moving_and_static_mobjects(
+        self, animations: list[Animation]
+    ) -> tuple[list[Mobject], list[Mobject]]:
         all_mobjects = list_update(self.mobjects, self.foreground_mobjects)
         all_mobject_families = extract_mobject_family_members(
             all_mobjects,
@@ -895,9 +897,12 @@ class Scene:
 
     def compile_animations(
         self,
-        *args: Animation | Mobject | _AnimationBuilder,
-        **kwargs,
-    ):
+        # TODO: Consider to remove the part with the types.GeneratorType
+        *args: Animation
+        | Iterable[Animation]
+        | types.GeneratorType[Animation, None, None],
+        **kwargs: Any,
+    ) -> list[Animation]:
         """
         Creates _MethodAnimations from any _AnimationBuilders and updates animation
         kwargs with kwargs passed to play().
@@ -939,7 +944,7 @@ class Scene:
 
     def _get_animation_time_progression(
         self, animations: list[Animation], duration: float
-    ):
+    ) -> tqdm[float]:
         """
         You will hardly use this when making your own animations.
         This method is for Manim's internal use.
@@ -992,10 +997,10 @@ class Scene:
     def get_time_progression(
         self,
         run_time: float,
-        description,
+        description: str,
         n_iterations: int | None = None,
         override_skip_animations: bool = False,
-    ):
+    ) -> tqdm[float]:
         """
         You will hardly use this when making your own animations.
         This method is for Manim's internal use.
@@ -1023,7 +1028,7 @@ class Scene:
             The CommandLine Progress Bar.
         """
         if self.renderer.skip_animations and not override_skip_animations:
-            times = [run_time]
+            times: Iterable[float] = [run_time]
         else:
             step = 1 / config["frame_rate"]
             times = np.arange(0, run_time, step)
@@ -1066,7 +1071,7 @@ class Scene:
 
         return run_time
 
-    def get_run_time(self, animations: list[Animation]):
+    def get_run_time(self, animations: list[Animation]) -> float:
         """
         Gets the total run time for a list of animations.
 
@@ -1087,12 +1092,14 @@ class Scene:
 
     def play(
         self,
-        *args: Animation | Mobject | _AnimationBuilder,
-        subcaption=None,
-        subcaption_duration=None,
-        subcaption_offset=0,
-        **kwargs,
-    ):
+        *args: Animation
+        | Iterable[Animation]
+        | types.GeneratorType[Animation, None, None],
+        subcaption: str | None = None,
+        subcaption_duration: float | None = None,
+        subcaption_offset: float = 0,
+        **kwargs: Any,
+    ) -> None:
         r"""Plays an animation in this scene.
 
         Parameters
@@ -1157,7 +1164,7 @@ class Scene:
         duration: float = DEFAULT_WAIT_TIME,
         stop_condition: Callable[[], bool] | None = None,
         frozen_frame: bool | None = None,
-    ):
+    ) -> None:
         """Plays a "no operation" animation.
 
         Parameters
@@ -1188,7 +1195,7 @@ class Scene:
             )
         )
 
-    def pause(self, duration: float = DEFAULT_WAIT_TIME):
+    def pause(self, duration: float = DEFAULT_WAIT_TIME) -> None:
         """Pauses the scene (i.e., displays a frozen frame).
 
         This is an alias for :meth:`.wait` with ``frozen_frame``
@@ -1206,7 +1213,9 @@ class Scene:
         duration = self.validate_run_time(duration, self.pause, "duration")
         self.wait(duration=duration, frozen_frame=True)
 
-    def wait_until(self, stop_condition: Callable[[], bool], max_time: float = 60):
+    def wait_until(
+        self, stop_condition: Callable[[], bool], max_time: float = 60
+    ) -> None:
         """Wait until a condition is satisfied, up to a given maximum duration.
 
         Parameters
@@ -1222,9 +1231,11 @@ class Scene:
 
     def compile_animation_data(
         self,
-        *animations: Animation | Mobject | _AnimationBuilder,
-        **play_kwargs,
-    ):
+        *animations: Animation
+        | Iterable[Animation]
+        | types.GeneratorType[Animation, None, None],
+        **play_kwargs: Any,
+    ) -> Self | None:
         """Given a list of animations, compile the corresponding
         static and moving mobjects, and gather the animation durations.
 
@@ -1290,7 +1301,7 @@ class Scene:
             and self.animations[0].is_static_wait
         )
 
-    def play_internal(self, skip_rendering: bool = False):
+    def play_internal(self, skip_rendering: bool = False) -> None:
         """
         This method is used to prep the animations for rendering,
         apply the arguments and parameters required to them,
