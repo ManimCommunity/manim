@@ -50,10 +50,6 @@ from __future__ import annotations
 __all__ = ["ZoomedScene"]
 
 
-# Note, any scenes from old videos using ZoomedScene will almost certainly
-# break, as it was restructured.
-from typing import TYPE_CHECKING
-
 from ..animation.transform import ApplyMethod
 from ..camera.moving_camera import MovingCamera
 from ..camera.multi_camera import MultiCamera
@@ -61,10 +57,8 @@ from ..constants import *
 from ..mobject.types.image_mobject import ImageMobjectFromCamera
 from ..scene.moving_camera_scene import MovingCameraScene
 
-if TYPE_CHECKING:
-    from typing import Any
-
-    from manim.typing import Vector3D
+# Note, any scenes from old videos using ZoomedScene will almost certainly
+# break, as it was restructured.
 
 
 class ZoomedScene(MovingCameraScene):
@@ -76,23 +70,23 @@ class ZoomedScene(MovingCameraScene):
 
     def __init__(
         self,
-        camera_class: type[MultiCamera] = MultiCamera,
-        zoomed_display_height: float = 3,
-        zoomed_display_width: float = 3,
-        zoomed_display_center: Any = None,
-        zoomed_display_corner: Vector3D = UP + RIGHT,
-        zoomed_display_corner_buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER,
-        zoomed_camera_config: dict[str, Any] = {
+        camera_class=MultiCamera,
+        zoomed_display_height=3,
+        zoomed_display_width=3,
+        zoomed_display_center=None,
+        zoomed_display_corner=UP + RIGHT,
+        zoomed_display_corner_buff=DEFAULT_MOBJECT_TO_EDGE_BUFFER,
+        zoomed_camera_config={
             "default_frame_stroke_width": 2,
             "background_opacity": 1,
         },
-        zoomed_camera_image_mobject_config: dict = {},
-        zoomed_camera_frame_starting_position: Vector3D = ORIGIN,
-        zoom_factor: float = 0.15,
-        image_frame_stroke_width: int = 3,
-        zoom_activated: bool = False,
-        **kwargs: Any,
-    ) -> None:
+        zoomed_camera_image_mobject_config={},
+        zoomed_camera_frame_starting_position=ORIGIN,
+        zoom_factor=0.15,
+        image_frame_stroke_width=3,
+        zoom_activated=False,
+        **kwargs,
+    ):
         self.zoomed_display_height = zoomed_display_height
         self.zoomed_display_width = zoomed_display_width
         self.zoomed_display_center = zoomed_display_center
@@ -108,7 +102,7 @@ class ZoomedScene(MovingCameraScene):
         self.zoom_activated = zoom_activated
         super().__init__(camera_class=camera_class, **kwargs)
 
-    def setup(self) -> None:
+    def setup(self):
         """
         This method is used internally by Manim to
         setup the scene for proper use.
@@ -138,7 +132,7 @@ class ZoomedScene(MovingCameraScene):
         self.zoomed_camera = zoomed_camera
         self.zoomed_display = zoomed_display
 
-    def activate_zooming(self, animate: bool = False) -> None:
+    def activate_zooming(self, animate: bool = False):
         """
         This method is used to activate the zooming for
         the zoomed_camera.
@@ -150,7 +144,6 @@ class ZoomedScene(MovingCameraScene):
             of the zoomed camera.
         """
         self.zoom_activated = True
-        assert isinstance(self.renderer.camera, MultiCamera)
         self.renderer.camera.add_image_mobject_from_camera(self.zoomed_display)
         if animate:
             self.play(self.get_zoom_in_animation())
@@ -160,7 +153,7 @@ class ZoomedScene(MovingCameraScene):
             self.zoomed_display,
         )
 
-    def get_zoom_in_animation(self, run_time: float = 2, **kwargs: Any) -> Any:
+    def get_zoom_in_animation(self, run_time: float = 2, **kwargs):
         """
         Returns the animation of camera zooming in.
 
@@ -186,7 +179,7 @@ class ZoomedScene(MovingCameraScene):
         frame.set_stroke(width=0)
         return ApplyMethod(frame.restore, run_time=run_time, **kwargs)
 
-    def get_zoomed_display_pop_out_animation(self, **kwargs: Any) -> Any:
+    def get_zoomed_display_pop_out_animation(self, **kwargs):
         """
         This is the animation of the popping out of the
         mini-display that shows the content of the zoomed
@@ -202,7 +195,7 @@ class ZoomedScene(MovingCameraScene):
         display.replace(self.zoomed_camera.frame, stretch=True)
         return ApplyMethod(display.restore)
 
-    def get_zoom_factor(self) -> float:
+    def get_zoom_factor(self):
         """
         Returns the Zoom factor of the Zoomed camera.
         Defined as the ratio between the height of the

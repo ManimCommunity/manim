@@ -49,8 +49,6 @@ from ..utils.paths import path_along_arc, path_along_circles
 from ..utils.rate_functions import smooth, squish_rate_func
 
 if TYPE_CHECKING:
-    from typing import Any
-
     from ..scene.scene import Scene
 
 
@@ -522,10 +520,10 @@ class ApplyPointwiseFunction(ApplyMethod):
 
     def __init__(
         self,
-        function: Callable,
+        function: types.MethodType,
         mobject: Mobject,
         run_time: float = DEFAULT_POINTWISE_FUNCTION_RUN_TIME,
-        **kwargs: Any,
+        **kwargs,
     ) -> None:
         super().__init__(mobject.apply_function, function, run_time=run_time, **kwargs)
 
@@ -621,9 +619,7 @@ class Restore(ApplyMethod):
 
 
 class ApplyFunction(Transform):
-    def __init__(
-        self, function: Callable[[Any], Any], mobject: Mobject, **kwargs: Any
-    ) -> None:
+    def __init__(self, function: types.MethodType, mobject: Mobject, **kwargs) -> None:
         self.function = function
         super().__init__(mobject, **kwargs)
 

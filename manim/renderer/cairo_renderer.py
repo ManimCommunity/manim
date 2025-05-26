@@ -33,11 +33,11 @@ class CairoRenderer:
 
     def __init__(
         self,
-        file_writer_class: type[SceneFileWriter] = SceneFileWriter,
-        camera_class: Camera | None = None,
-        skip_animations: bool = False,
-        **kwargs: Any,
-    ) -> None:
+        file_writer_class=SceneFileWriter,
+        camera_class=None,
+        skip_animations=False,
+        **kwargs,
+    ):
         # All of the following are set to EITHER the value passed via kwargs,
         # OR the value stored in the global config dict at the time of
         # _instance construction_.
@@ -51,7 +51,7 @@ class CairoRenderer:
         self.time = 0
         self.static_image = None
 
-    def init_scene(self, scene: Scene) -> None:
+    def init_scene(self, scene):
         self.file_writer: Any = self._file_writer_class(
             self,
             scene.__class__.__name__,
@@ -119,12 +119,12 @@ class CairoRenderer:
 
     def update_frame(  # TODO Description in Docstring
         self,
-        scene: Scene,
+        scene,
         mobjects: typing.Iterable[Mobject] | None = None,
         include_submobjects: bool = True,
         ignore_skipping: bool = True,
-        **kwargs: Any,
-    ) -> None:
+        **kwargs,
+    ):
         """Update the frame.
 
         Parameters
@@ -263,7 +263,7 @@ class CairoRenderer:
             self.skip_animations = True
             raise EndSceneEarlyException()
 
-    def scene_finished(self, scene: Scene) -> None:
+    def scene_finished(self, scene):
         # If no animations in scene, render an image instead
         if self.num_plays:
             self.file_writer.finish()

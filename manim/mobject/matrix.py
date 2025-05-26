@@ -400,7 +400,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
             mob.add_background_rectangle()
         return self
 
-    def get_mob_matrix(self) -> list[VGroup]:
+    def get_mob_matrix(self):
         """Return the underlying mob matrix mobjects.
 
         Returns
@@ -410,7 +410,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         """
         return self.mob_matrix
 
-    def get_entries(self) -> VGroup:
+    def get_entries(self):
         """Return the individual entries of the matrix.
 
         Returns
@@ -435,7 +435,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         """
         return self.elements
 
-    def get_brackets(self) -> VGroup:
+    def get_brackets(self):
         r"""Return the bracket mobjects.
 
         Returns

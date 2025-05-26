@@ -10,15 +10,12 @@ __all__ = [
 
 
 import itertools as it
-from typing import TYPE_CHECKING
+from typing import Any
 
 import numpy.typing as npt
 
-if TYPE_CHECKING:
-    from typing_extensions import Any
 
-
-def merge_dicts_recursively(*dicts: dict[str, Any]) -> dict[str, Any]:
+def merge_dicts_recursively(*dicts: dict[Any, Any]) -> dict[Any, Any]:
     """
     Creates a dict whose keyset is the union of all the
     input dictionaries.  The value for each key is based

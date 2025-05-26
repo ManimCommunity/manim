@@ -4,7 +4,7 @@ import contextlib
 import itertools as it
 import time
 from functools import cached_property
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 import moderngl
 import numpy as np
@@ -34,14 +34,6 @@ from .vectorized_mobject_rendering import (
     render_opengl_vectorized_mobject_fill,
     render_opengl_vectorized_mobject_stroke,
 )
-
-if TYPE_CHECKING:
-    import numpy.typing as npt
-    from typing_extensions import Self
-
-    from manim.mobject.mobject import Mobject
-    from manim.scene.scene import Scene
-
 
 __all__ = ["OpenGLCamera", "OpenGLRenderer"]
 
@@ -110,7 +102,7 @@ class OpenGLCamera(OpenGLMobject):
         self.euler_angles = euler_angles
         self.refresh_rotation_matrix()
 
-    def get_position(self) -> npt.NDArray:
+    def get_position(self):
         return self.model_matrix[:, 3][:3]
 
     def set_position(self, position):
@@ -131,7 +123,7 @@ class OpenGLCamera(OpenGLMobject):
         self.set_height(self.frame_shape[1], stretch=True)
         self.move_to(self.center_point)
 
-    def to_default_state(self) -> Self:
+    def to_default_state(self):
         self.center()
         self.set_height(config["frame_height"])
         self.set_width(config["frame_width"])
@@ -174,28 +166,28 @@ class OpenGLCamera(OpenGLMobject):
         self.refresh_rotation_matrix()
         return self
 
-    def set_theta(self, theta: float) -> Self:
+    def set_theta(self, theta):
         return self.set_euler_angles(theta=theta)
 
-    def set_phi(self, phi: float) -> Self:
+    def set_phi(self, phi):
         return self.set_euler_angles(phi=phi)
 
-    def set_gamma(self, gamma: float) -> Self:
+    def set_gamma(self, gamma):
         return self.set_euler_angles(gamma=gamma)
 
-    def increment_theta(self, dtheta: float) -> Self:
+    def increment_theta(self, dtheta):
         self.euler_angles[0] += dtheta
         self.refresh_rotation_matrix()
         return self
 
-    def increment_phi(self, dphi: float) -> Self:
+    def increment_phi(self, dphi):
         phi = self.euler_angles[1]
         new_phi = clip(phi + dphi, -PI / 2, PI / 2)
         self.euler_angles[1] = new_phi
         self.refresh_rotation_matrix()
         return self
 
-    def increment_gamma(self, dgamma: float) -> Self:
+    def increment_gamma(self, dgamma):
         self.euler_angles[2] += dgamma
         self.refresh_rotation_matrix()
         return self
@@ -207,15 +199,15 @@ class OpenGLCamera(OpenGLMobject):
         # Assumes first point is at the center
         return self.points[0]
 
-    def get_width(self) -> float:
+    def get_width(self):
         points = self.points
         return points[2, 0] - points[1, 0]
 
-    def get_height(self) -> float:
+    def get_height(self):
         points = self.points
         return points[4, 1] - points[3, 1]
 
-    def get_focal_distance(self) -> float:
+    def get_focal_distance(self):
         return self.focal_distance * self.get_height()
 
     def interpolate(self, *args, **kwargs):
@@ -448,13 +440,11 @@ class OpenGLRenderer:
         self.time += scene.duration
         self.num_plays += 1
 
-    def clear_screen(self) -> None:
+    def clear_screen(self):
         self.frame_buffer_object.clear(*self.background_color)
         self.window.swap_buffers()
 
-    def render(
-        self, scene: Scene, frame_offset, moving_mobjects: list[Mobject]
-    ) -> None:
+    def render(self, scene, frame_offset, moving_mobjects):
         self.update_frame(scene)
 
         if self.skip_animations:
