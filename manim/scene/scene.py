@@ -1330,11 +1330,13 @@ class Scene:
             animation.clean_up_from_scene(self)
         if not self.renderer.skip_animations:
             self.update_mobjects(0)
+        # TODO: The OpenGLRenderer does not have the property static.image.
         self.renderer.static_image = None
         # Closing the progress bar at the end of the play.
         self.time_progression.close()
 
-    def check_interactive_embed_is_valid(self):
+    def check_interactive_embed_is_valid(self) -> bool:
+        assert isinstance(self.renderer, OpenGLRenderer)
         if config["force_window"]:
             return True
         if self.skip_animation_preview:
@@ -1359,23 +1361,26 @@ class Scene:
             return False
         return True
 
-    def interactive_embed(self):
+    def interactive_embed(self) -> None:
         """Like embed(), but allows for screen interaction."""
+        assert isinstance(self.camera, OpenGLCamera)
         if not self.check_interactive_embed_is_valid():
             return
         self.interactive_mode = True
 
-        def ipython(shell, namespace):
+        def ipython(shell: InteractiveShellEmbed, namespace: dict[str, Any]) -> None:
             import manim.opengl
 
-            def load_module_into_namespace(module, namespace):
+            def load_module_into_namespace(
+                module: Any, namespace: dict[str, Any]
+            ) -> None:
                 for name in dir(module):
                     namespace[name] = getattr(module, name)
 
             load_module_into_namespace(manim, namespace)
             load_module_into_namespace(manim.opengl, namespace)
 
-            def embedded_rerun(*args, **kwargs):
+            def embedded_rerun(*args: Any, **kwargs: Any) -> None:
                 self.queue.put(("rerun_keyboard", args, kwargs))
                 shell.exiter()
 
@@ -1384,7 +1389,7 @@ class Scene:
             shell(local_ns=namespace)
             self.queue.put(("exit_keyboard", [], {}))
 
-        def get_embedded_method(method_name):
+        def get_embedded_method(method_name: str) -> Callable:
             return lambda *args, **kwargs: self.queue.put((method_name, args, kwargs))
 
         local_namespace = inspect.currentframe().f_back.f_locals
@@ -1432,7 +1437,12 @@ class Scene:
 
         self.interact(shell, keyboard_thread)
 
-    def interact(self, shell, keyboard_thread):
+    from IPython.terminal.embed import InteractiveShellEmbed
+
+    def interact(
+        self, shell: InteractiveShellEmbed, keyboard_thread: threading.Thread
+    ) -> None:
+        assert isinstance(self.renderer, OpenGLRenderer)
         event_handler = RerunSceneHandler(self.queue)
         file_observer = Observer()
         file_observer.schedule(event_handler, config["input_file"], recursive=True)
@@ -1509,7 +1519,8 @@ class Scene:
         if self.renderer.window.is_closing:
             self.renderer.window.destroy()
 
-    def embed(self):
+    def embed(self) -> None:
+        assert isinstance(self.renderer, OpenGLRenderer)
         if not config["preview"]:
             logger.warning("Called embed() while no preview window is available.")
             return
@@ -1533,7 +1544,9 @@ class Scene:
 
         # Use the locals of the caller as the local namespace
         # once embedded, and add a few custom shortcuts.
-        local_ns = inspect.currentframe().f_back.f_locals
+        current_frame = inspect.currentframe()
+        assert isinstance(current_frame, FrameType)
+        local_ns = current_frame.f_back.f_locals
         # local_ns["touch"] = self.interact
         for method in (
             "play",
@@ -1551,7 +1564,7 @@ class Scene:
         # End scene when exiting an embed.
         raise Exception("Exiting scene.")
 
-    def update_to_time(self, t):
+    def update_to_time(self, t: float) -> None:
         dt = t - self.last_t
         self.last_t = t
         for animation in self.animations:
@@ -1615,8 +1628,8 @@ class Scene:
         sound_file: str,
         time_offset: float = 0,
         gain: float | None = None,
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> None:
         """
         This method is used to add a sound to the animation.
 
@@ -1657,7 +1670,8 @@ class Scene:
         time = self.time + time_offset
         self.renderer.file_writer.add_sound(sound_file, time, gain, **kwargs)
 
-    def on_mouse_motion(self, point, d_point):
+    def on_mouse_motion(self, point: Point3D, d_point: Point3D) -> None:
+        assert isinstance(self.camera, OpenGLCamera)
         self.mouse_point.move_to(point)
         if SHIFT_VALUE in self.renderer.pressed_keys:
             shift = -d_point
@@ -1667,13 +1681,15 @@ class Scene:
             shift = np.dot(np.transpose(transform), shift)
             self.camera.shift(shift)
 
-    def on_mouse_scroll(self, point, offset):
+    def on_mouse_scroll(self, point: Point3D, offset: Point3D) -> None:
+        assert isinstance(self.camera, OpenGLCamera)
         if not config.use_projection_stroke_shaders:
             factor = 1 + np.arctan(-2.1 * offset[1])
             self.camera.scale(factor, about_point=self.camera_target)
         self.mouse_scroll_orbit_controls(point, offset)
 
-    def on_key_press(self, symbol, modifiers):
+    def on_key_press(self, symbol: int, modifiers: Any) -> None:
+        assert isinstance(self.camera, OpenGLCamera)
         try:
             char = chr(symbol)
         except OverflowError:
@@ -1689,10 +1705,17 @@ class Scene:
             if char in self.key_to_function_map:
                 self.key_to_function_map[char]()
 
-    def on_key_release(self, symbol, modifiers):
+    def on_key_release(self, symbol: int, modifiers: Any) -> None:
         pass
 
-    def on_mouse_drag(self, point, d_point, buttons, modifiers):
+    def on_mouse_drag(
+        self,
+        point: Point3D,
+        d_point: Point3D,
+        buttons: int,
+        modifiers: Any,
+    ) -> None:
+        assert isinstance(self.camera, OpenGLCamera)
         self.mouse_drag_point.move_to(point)
         if buttons == 1:
             self.camera.increment_theta(-d_point[0])
@@ -1706,7 +1729,8 @@ class Scene:
 
         self.mouse_drag_orbit_controls(point, d_point, buttons, modifiers)
 
-    def mouse_scroll_orbit_controls(self, point, offset):
+    def mouse_scroll_orbit_controls(self, point: Point3D, offset: Point3D) -> None:
+        assert isinstance(self.camera, OpenGLCamera)
         camera_to_target = self.camera_target - self.camera.get_position()
         camera_to_target *= np.sign(offset[1])
         shift_vector = 0.01 * camera_to_target
@@ -1714,7 +1738,14 @@ class Scene:
             opengl.translation_matrix(*shift_vector) @ self.camera.model_matrix
         )
 
-    def mouse_drag_orbit_controls(self, point, d_point, buttons, modifiers):
+    def mouse_drag_orbit_controls(
+        self,
+        point: Point3D,
+        d_point: Point3D,
+        buttons: int,
+        modifiers: Any,
+    ) -> None:
+        assert isinstance(self.camera, OpenGLCamera)
         # Left click drag.
         if buttons == 1:
             # Translate to target the origin and rotate around the z axis.
@@ -1787,9 +1818,9 @@ class Scene:
             )
             self.camera_target += total_shift_vector
 
-    def set_key_function(self, char, func):
+    def set_key_function(self, char: str, func: Callable[[None], Any]) -> None:
         self.key_to_function_map[char] = func
 
-    def on_mouse_press(self, point, button, modifiers):
+    def on_mouse_press(self, point: Point3D, button: str, modifiers: Any) -> None:
         for func in self.mouse_press_callbacks:
             func()
