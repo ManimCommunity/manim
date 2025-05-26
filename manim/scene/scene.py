@@ -116,13 +116,13 @@ class Scene:
         self.skip_animations = skip_animations
 
         self.animations = None
-        self.stop_condition = None
-        self.moving_mobjects = []
-        self.static_mobjects = []
-        self.time_progression = None
-        self.duration = None
-        self.last_t = None
-        self.queue = Queue()
+        self.stop_condition: Callable[[], bool] | None = None
+        self.moving_mobjects: list[Mobject] = []
+        self.static_mobjects: list[Mobject] = []
+        self.time_progression: tqdm[float] = None
+        self.duration: float | None = None
+        self.last_t: float = 0
+        self.queue: Queue = Queue()
         self.skip_animation_preview = False
         self.meshes: list[Object3D] = []
         self.camera_target = ORIGIN
