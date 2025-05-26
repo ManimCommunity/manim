@@ -1446,9 +1446,7 @@ class Scene:
 
         self.interact(shell, keyboard_thread)
 
-    def interact(
-        self, shell: Any, keyboard_thread: threading.Thread
-    ) -> None:
+    def interact(self, shell: Any, keyboard_thread: threading.Thread) -> None:
         assert isinstance(self.renderer, OpenGLRenderer)
         event_handler = RerunSceneHandler(self.queue)
         file_observer = Observer()
