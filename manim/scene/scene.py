@@ -143,7 +143,9 @@ class Scene:
                 renderer = OpenGLRenderer()
 
         if renderer is None:
-            self.renderer = CairoRenderer(
+            self.renderer: CairoRenderer | OpenGLRenderer = CairoRenderer(
+                # TODO: Is it a suitable approach to make an instance of
+                # the self.camera_class here?
                 camera_class=self.camera_class,
                 skip_animations=self.skip_animations,
             )
@@ -151,15 +153,15 @@ class Scene:
             self.renderer = renderer
         self.renderer.init_scene(self)
 
-        self.mobjects = []
+        self.mobjects: list[Mobject] = []
         # TODO, remove need for foreground mobjects
-        self.foreground_mobjects = []
+        self.foreground_mobjects: list[Mobject] = []
         if self.random_seed is not None:
             random.seed(self.random_seed)
             np.random.seed(self.random_seed)
 
     @property
-    def camera(self):
+    def camera(self) -> Camera | OpenGLCamera:
         return self.renderer.camera
 
     @property
@@ -167,7 +169,7 @@ class Scene:
         """The time since the start of the scene."""
         return self.renderer.time
 
-    def __deepcopy__(self, clone_from_id):
+    def __deepcopy__(self, clone_from_id: Any) -> Scene:
         cls = self.__class__
         result = cls.__new__(cls)
         clone_from_id[id(self)] = result
@@ -177,7 +179,6 @@ class Scene:
             if k == "camera_class":
                 setattr(result, k, v)
             setattr(result, k, copy.deepcopy(v, clone_from_id))
-        result.mobject_updater_lists = []
 
         # Update updaters
         for mobject in self.mobjects:
