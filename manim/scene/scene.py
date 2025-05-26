@@ -1437,7 +1437,7 @@ class Scene:
 
         self.interact(shell, keyboard_thread)
 
-    from IPython.terminal.embed import InteractiveShellEmbed
+    #from IPython.terminal.embed import InteractiveShellEmbed
 
     def interact(
         self, shell: InteractiveShellEmbed, keyboard_thread: threading.Thread
