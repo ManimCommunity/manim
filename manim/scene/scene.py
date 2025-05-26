@@ -222,11 +222,9 @@ class Scene:
                 cloned_updaters.append(cloned_updater)
             mobject_clone = clone_from_id[id(mobject)]
             mobject_clone.updaters = cloned_updaters
-            if len(cloned_updaters) > 0:
-                result.mobject_updater_lists.append((mobject_clone, cloned_updaters))
         return result
 
-    def render(self, preview: bool = False):
+    def render(self, preview: bool = False) -> bool:
         """
         Renders this Scene.
 
@@ -242,6 +240,7 @@ class Scene:
             pass
         except RerunSceneException:
             self.remove(*self.mobjects)
+            # TODO: The CairoRenderer does not have the method clear_screen()
             self.renderer.clear_screen()
             self.renderer.num_plays = 0
             return True
@@ -266,7 +265,9 @@ class Scene:
         if config["preview"] or config["show_in_file_browser"]:
             open_media_file(self.renderer.file_writer)
 
-    def setup(self):
+        # TODO: What value should the function return when it reaches this point?
+
+    def setup(self) -> None:
         """
         This is meant to be implemented by any scenes which
         are commonly subclassed, and have some common setup
@@ -274,7 +275,7 @@ class Scene:
         """
         pass
 
-    def tear_down(self):
+    def tear_down(self) -> None:
         """
         This is meant to be implemented by any scenes which
         are commonly subclassed, and have some common method
@@ -282,7 +283,7 @@ class Scene:
         """
         pass
 
-    def construct(self):
+    def construct(self) -> None:
         """Add content to the Scene.
 
         From within :meth:`Scene.construct`, display mobjects on screen by calling
@@ -327,10 +328,10 @@ class Scene:
         """
         self.renderer.file_writer.next_section(name, section_type, skip_animations)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.__class__.__name__
 
-    def get_attrs(self, *keys: str):
+    def get_attrs(self, *keys: str) -> list[Any]:
         """
         Gets attributes of a scene given the attribute's identifier/name.
 
