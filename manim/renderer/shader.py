@@ -4,13 +4,18 @@ import contextlib
 import inspect
 import re
 import textwrap
+from collections.abc import Generator
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import moderngl
 import numpy as np
 
 from .. import config
 from ..utils import opengl
+
+if TYPE_CHECKING:
+    from typing_extensions import Self
 
 SHADER_FOLDER = Path(__file__).parent / "shaders"
 shader_program_cache: dict = {}
@@ -143,7 +148,7 @@ class Object3D:
                 yield parent
             dfs.extend(parent.children)
 
-    def get_family(self):
+    def get_family(self) -> Generator[Object3D]:
         dfs = [self]
         while dfs:
             parent = dfs.pop()
@@ -181,7 +186,7 @@ class Object3D:
         self.has_updaters = False
         self.updating_suspended = False
 
-    def update(self, dt=0):
+    def update(self, dt: float = 0) -> Self:
         if not self.has_updaters or self.updating_suspended:
             return self
         for updater in self.time_based_updaters:

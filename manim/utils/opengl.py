@@ -21,6 +21,9 @@ if TYPE_CHECKING:
     from manim.typing import MatrixMN
 
 
+if TYPE_CHECKING:
+    import numpy.typing as npt
+
 depth = 20
 
 __all__ = [
