@@ -124,15 +124,15 @@ class Scene:
         self.last_t = None
         self.queue = Queue()
         self.skip_animation_preview = False
-        self.meshes = []
+        self.meshes: list[Object3D] = []
         self.camera_target = ORIGIN
-        self.widgets = []
+        self.widgets: list[Any] = []
         self.dearpygui_imported = dearpygui_imported
-        self.updaters = []
-        self.point_lights = []
+        self.updaters: list[Callable[[float], None]] = []
+        self.point_lights: list[Any] = []
         self.ambient_light = None
-        self.key_to_function_map = {}
-        self.mouse_press_callbacks = []
+        self.key_to_function_map: dict[str, Callable[[None], None]] = {}
+        self.mouse_press_callbacks: list[Callable[[], None]] = []
         self.interactive_mode = False
 
         if config.renderer == RendererType.OPENGL:
