@@ -445,22 +445,22 @@ class VectorScene(Scene):
         y_line = Line(x_line.get_end(), arrow.get_end())
         x_line.set_color(X_COLOR)
         y_line.set_color(Y_COLOR)
-        # TODO
-        # error: "list[list[MathTex]]" has no attribute "flatten"  [attr-defined]
+        # TODO: Write a unit test that tests the coords_to_vector method.
+        # I suspect that it will fail in the next file.
         x_coord, y_coord = array.get_mob_matrix().flatten()  # type: ignore[attr-defined]
 
         self.play(Write(array, run_time=1))
         self.wait()
         self.play(
             ApplyFunction(
-                lambda x: self.position_x_coordinate(x, x_line, vector),
+                lambda x: self.position_x_coordinate(x, x_line, vector),  # type: ignore[arg-type]
                 x_coord,
             ),
         )
         self.play(Create(x_line))
         animations = [
             ApplyFunction(
-                lambda y: self.position_y_coordinate(y, y_line, vector),
+                lambda y: self.position_y_coordinate(y, y_line, vector),  # type: ignore[arg-type]
                 y_coord,
             ),
             FadeOut(array.get_brackets()),
@@ -742,7 +742,7 @@ class LinearTransformationScene(VectorScene):
 
     # TODO, this conflicts with Scene.add_foreground_mobject
     # Please be aware that there is also the method Scene.add_foreground_mobjects.
-    def add_foreground_mobject(self, *mobjects: Mobject) -> None:
+    def add_foreground_mobject(self, *mobjects: Mobject) -> None:  # type: ignore[override]
         """
         Adds the mobjects to the special list
         self.foreground_mobjects.
@@ -951,17 +951,18 @@ class LinearTransformationScene(VectorScene):
         :class:`~.MathTex`
             The MathTex of the label.
         """
+        # TODO: Clear up types in this function. This is currently a mess.
         label_mob = self.label_vector(vector, label, **kwargs)
         if new_label:
-            label_mob.target_text = new_label
+            label_mob.target_text = new_label  # type: ignore[attr-defined]
         else:
-            label_mob.target_text = (
-                f"{transformation_name}({label_mob.get_tex_string()})"
+            label_mob.target_text = (  # type: ignore[attr-defined]
+                f"{transformation_name}({label_mob.get_tex_string()})"  # type: ignore[no-untyped-call]
             )
-        label_mob.vector = vector
-        label_mob.kwargs = kwargs
-        if "animate" in label_mob.kwargs:
-            label_mob.kwargs.pop("animate")
+        label_mob.vector = vector  # type: ignore[attr-defined]
+        label_mob.kwargs = kwargs  # type: ignore[attr-defined]
+        if "animate" in label_mob.kwargs:  # type: ignore[attr-defined]
+            label_mob.kwargs.pop("animate")  # type: ignore[attr-defined]
         self.transformable_labels.append(label_mob)
         return cast(MathTex, label_mob)
 
@@ -1134,9 +1135,11 @@ class LinearTransformationScene(VectorScene):
         for label in self.transformable_labels:
             # TODO: This location and lines 933 and 335 are the only locations in
             # the code where the target_text property is referenced.
-            target_text: MathTex | str = label.target_text
+            target_text: MathTex | str = label.target_text  # type: ignore[assignment]
             label.target = self.get_vector_label(
-                label.vector.target, target_text, **label.kwargs
+                label.vector.target,  # type: ignore[attr-defined]
+                target_text,
+                **label.kwargs,  # type: ignore[arg-type]
             )
         return self.get_piece_movement(self.transformable_labels)
 
@@ -1257,7 +1260,7 @@ class LinearTransformationScene(VectorScene):
             kwargs["run_time"] = 3
         anims = (
             [
-                ApplyPointwiseFunction(function, t_mob)
+                ApplyPointwiseFunction(function, t_mob)  # type: ignore[arg-type]
                 for t_mob in self.transformable_mobjects
             ]
             + [
