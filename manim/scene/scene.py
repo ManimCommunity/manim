@@ -35,6 +35,7 @@ from watchdog.observers import Observer
 
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLPoint
+from manim.typing import Point3D
 
 from .. import config, logger
 from ..animation.animation import Animation, Wait, prepare_animation
@@ -42,7 +43,7 @@ from ..camera.camera import Camera
 from ..constants import *
 from ..gui.gui import configure_pygui
 from ..renderer.cairo_renderer import CairoRenderer
-from ..renderer.opengl_renderer import OpenGLRenderer
+from ..renderer.opengl_renderer import OpenGLCamera, OpenGLRenderer
 from ..renderer.shader import Object3D
 from ..utils import opengl, space_ops
 from ..utils.exceptions import EndSceneEarlyException, RerunSceneException
@@ -52,20 +53,21 @@ from ..utils.file_ops import open_media_file
 from ..utils.iterables import list_difference_update, list_update
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
-    from typing import Callable
+    from collections.abc import Iterable, Sequence
+    from types import FrameType
+    from typing import Any, Callable
 
-    from manim.mobject.mobject import _AnimationBuilder
+    from typing_extensions import Self
 
 
 class RerunSceneHandler(FileSystemEventHandler):
     """A class to handle rerunning a Scene after the input file is modified."""
 
-    def __init__(self, queue):
+    def __init__(self, queue: Queue) -> None:
         super().__init__()
         self.queue = queue
 
-    def on_modified(self, event):
+    def on_modified(self, event: Any) -> None:
         self.queue.put(("rerun_file", [], {}))
 
 
