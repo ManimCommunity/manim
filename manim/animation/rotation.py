@@ -6,9 +6,9 @@ __all__ = ["Rotating", "Rotate"]
 
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, Callable
-from typing_extensions import Any
 
 import numpy as np
+from typing_extensions import Any
 
 from ..animation.animation import Animation
 from ..animation.transform import Transform
