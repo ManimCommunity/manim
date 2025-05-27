@@ -8,7 +8,6 @@ from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any, Callable, cast
 
 import numpy as np
-from typing_extensions import Self
 
 from manim.animation.creation import DrawBorderThenFill, Group
 from manim.camera.camera import Camera
@@ -18,7 +17,6 @@ from manim.mobject.geometry.polygram import Rectangle
 from manim.mobject.graphing.coordinate_systems import Axes, NumberPlane
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.text.tex_mobject import MathTex, Tex
-from manim.typing import Point3D
 from manim.utils.config_ops import update_dict_recursively
 
 from .. import config

@@ -35,7 +35,6 @@ from watchdog.observers import Observer
 
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLPoint
-from manim.typing import Point3D
 
 from .. import config, logger
 from ..animation.animation import Animation, Wait, prepare_animation
@@ -58,6 +57,8 @@ if TYPE_CHECKING:
     from typing import Any, Callable
 
     from typing_extensions import Self
+
+    from manim.typing import Point3D
 
 
 class RerunSceneHandler(FileSystemEventHandler):
@@ -1445,6 +1446,8 @@ class Scene:
         self.camera.model_matrix = self.camera.default_model_matrix
 
         self.interact(shell, keyboard_thread)
+
+    # from IPython.terminal.embed import InteractiveShellEmbed
 
     def interact(self, shell: Any, keyboard_thread: threading.Thread) -> None:
         assert isinstance(self.renderer, OpenGLRenderer)

@@ -10,11 +10,14 @@ except ImportError:
     dearpygui_imported = False
 
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from .. import __version__, config
-from ..renderer.opengl_renderer import OpenGLRenderer
 from ..utils.module_ops import scene_classes_from_file
+
+if TYPE_CHECKING:
+    from ..renderer.opengl_renderer import OpenGLRenderer
+
 
 __all__ = ["configure_pygui"]
 
