@@ -186,6 +186,6 @@ class FadeOut(_Fade):
     def create_target(self) -> Mobject:
         return self._create_faded_mobject(fadeIn=False)
 
-    def clean_up_from_scene(self, scene: Scene = None) -> None:
+    def clean_up_from_scene(self, scene: Scene) -> None:
         super().clean_up_from_scene(scene)
         self.interpolate(0)
