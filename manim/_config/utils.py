@@ -1448,7 +1448,7 @@ class ManimConfig(MutableMapping):
 
     @property
     def gui_location(self) -> tuple[Any]:
-        """Enable GUI interaction."""
+        """Location parameters for the GUI window (e.g., screen coordinates or layout settings)."""
         return self._d["gui_location"]
 
     @gui_location.setter
