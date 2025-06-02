@@ -4,14 +4,19 @@ from __future__ import annotations
 
 import inspect
 import types
-from typing import Callable
+from typing import TYPE_CHECKING, Callable
 
 from numpy import piecewise
 
 from ..animation.animation import Animation, Wait, prepare_animation
 from ..animation.composition import AnimationGroup
-from ..mobject.mobject import Mobject, Updater, _AnimationBuilder
+from ..mobject.mobject import Mobject, _AnimationBuilder
 from ..scene.scene import Scene
+
+if TYPE_CHECKING:
+    from ..mobject.mobject import Updater
+
+__all__ = ["ChangeSpeed"]
 
 
 class ChangeSpeed(Animation):
@@ -108,9 +113,9 @@ class ChangeSpeed(Animation):
             self.anim = self.setup(anim)
 
         if affects_speed_updaters:
-            assert (
-                ChangeSpeed.is_changing_dt is False
-            ), "Only one animation at a time can play that changes speed (dt) for ChangeSpeed updaters"
+            assert ChangeSpeed.is_changing_dt is False, (
+                "Only one animation at a time can play that changes speed (dt) for ChangeSpeed updaters"
+            )
             ChangeSpeed.is_changing_dt = True
             self.t = 0
         self.affects_speed_updaters = affects_speed_updaters

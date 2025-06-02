@@ -14,14 +14,16 @@ from typing import Any
 
 import numpy as np
 
-from manim.animation.animation import Animation
-from manim.camera.camera import Camera
-from manim.mobject.mobject import Mobject
-
-from .. import config, logger
+from manim._config import config, logger
 
 if typing.TYPE_CHECKING:
+    from manim.animation.animation import Animation
+    from manim.camera.camera import Camera
+    from manim.mobject.mobject import Mobject
+    from manim.opengl.opengl_renderer import OpenGLCamera
     from manim.scene.scene import Scene
+
+__all__ = ["KEYS_TO_FILTER_OUT", "get_hash_from_play_call", "get_json"]
 
 # Sometimes there are elements that are not suitable for hashing (too long or
 # run-dependent).  This is used to filter them out.
@@ -221,7 +223,7 @@ class _CustomEncoder(json.JSONEncoder):
             # We return the repr and not a list to avoid the JsonEncoder to iterate over it.
             return repr(obj)
         elif hasattr(obj, "__dict__"):
-            temp = getattr(obj, "__dict__")
+            temp = obj.__dict__
             # MappingProxy is scene-caching nightmare. It contains all of the object methods and attributes. We skip it as the mechanism will at some point process the object, but instantiated.
             # Indeed, there is certainly no case where scene-caching will receive only a non instancied object, as this is never used in the library or encouraged to be used user-side.
             if isinstance(temp, MappingProxyType):
@@ -322,7 +324,7 @@ def get_json(obj: dict):
 
 def get_hash_from_play_call(
     scene_object: Scene,
-    camera_object: Camera,
+    camera_object: Camera | OpenGLCamera,
     animations_list: typing.Iterable[Animation],
     current_mobjects_list: typing.Iterable[Mobject],
 ) -> str:

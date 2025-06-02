@@ -77,27 +77,40 @@ directive:
         that is rendered in a reference block after the source code.
 
 """
+
 from __future__ import annotations
 
 import csv
 import itertools as it
-import os
 import re
 import shutil
 import sys
 import textwrap
 from pathlib import Path
 from timeit import timeit
+from typing import TYPE_CHECKING, Any, TypedDict
 
 import jinja2
 from docutils import nodes
-from docutils.parsers.rst import Directive, directives  # type: ignore
+from docutils.parsers.rst import Directive, directives
 from docutils.statemachine import StringList
 
 from manim import QUALITIES
 from manim import __version__ as manim_version
 
-classnamedict = {}
+if TYPE_CHECKING:
+    from sphinx.application import Sphinx
+
+
+__all__ = ["ManimDirective"]
+
+
+classnamedict: dict[str, int] = {}
+
+
+class SetupMetadata(TypedDict):
+    parallel_read_safe: bool
+    parallel_write_safe: bool
 
 
 class SkipManimNode(nodes.Admonition, nodes.Element):
@@ -110,14 +123,16 @@ class SkipManimNode(nodes.Admonition, nodes.Element):
     pass
 
 
-def visit(self, node, name=""):
-    self.visit_admonition(node, name)
+def visit(self: SkipManimNode, node: nodes.Element, name: str = "") -> None:
+    # TODO: Parent classes don't have a visit_admonition() method.
+    self.visit_admonition(node, name)  # type: ignore[attr-defined]
     if not isinstance(node[0], nodes.title):
         node.insert(0, nodes.title("skip-manim", "Example Placeholder"))
 
 
-def depart(self, node):
-    self.depart_admonition(node)
+def depart(self: SkipManimNode, node: nodes.Element) -> None:
+    # TODO: Parent classes don't have a depart_admonition() method.
+    self.depart_admonition(node)  # type: ignore[attr-defined]
 
 
 def process_name_list(option_input: str, reference_type: str) -> list[str]:
@@ -143,6 +158,7 @@ class ManimDirective(Directive):
 
     See the module docstring for documentation.
     """
+
     has_content = True
     required_arguments = 1
     optional_arguments = 0
@@ -162,11 +178,11 @@ class ManimDirective(Directive):
     }
     final_argument_whitespace = True
 
-    def run(self):
+    def run(self) -> list[nodes.Element]:
         # Rendering is skipped if the tag skip-manim is present,
         # or if we are making the pot-files
         should_skip = (
-            "skip-manim" in self.state.document.settings.env.app.builder.tags.tags
+            "skip-manim" in self.state.document.settings.env.app.builder.tags
             or self.state.document.settings.env.app.builder.name == "gettext"
         )
         if should_skip:
@@ -217,14 +233,10 @@ class ManimDirective(Directive):
             + self.options.get("ref_functions", [])
             + self.options.get("ref_methods", [])
         )
-        if ref_content:
-            ref_block = "References: " + " ".join(ref_content)
-
-        else:
-            ref_block = ""
+        ref_block = "References: " + " ".join(ref_content) if ref_content else ""
 
         if "quality" in self.options:
-            quality = f'{self.options["quality"]}_quality'
+            quality = f"{self.options['quality']}_quality"
         else:
             quality = "example_quality"
         frame_rate = QUALITIES[quality]["frame_rate"]
@@ -235,13 +247,13 @@ class ManimDirective(Directive):
         document = state_machine.document
 
         source_file_name = Path(document.attributes["source"])
-        source_rel_name = source_file_name.relative_to(setup.confdir)
+        source_rel_name = source_file_name.relative_to(setup.confdir)  # type: ignore[attr-defined]
         source_rel_dir = source_rel_name.parents[0]
-        dest_dir = Path(setup.app.builder.outdir, source_rel_dir).absolute()
+        dest_dir = Path(setup.app.builder.outdir, source_rel_dir).absolute()  # type: ignore[attr-defined]
         if not dest_dir.exists():
             dest_dir.mkdir(parents=True, exist_ok=True)
 
-        source_block = [
+        source_block_in = [
             ".. code-block:: python",
             "",
             "    from manim import *\n",
@@ -254,13 +266,13 @@ class ManimDirective(Directive):
             "",
             "    </pre>",
         ]
-        source_block = "\n".join(source_block)
+        source_block = "\n".join(source_block_in)
 
-        config.media_dir = (Path(setup.confdir) / "media").absolute()
+        config.media_dir = (Path(setup.confdir) / "media").absolute()  # type: ignore[attr-defined,assignment]
         config.images_dir = "{media_dir}/images"
         config.video_dir = "{media_dir}/videos/{quality}"
         output_file = f"{clsname}-{classnamedict[clsname]}"
-        config.assets_dir = Path("_static")
+        config.assets_dir = Path("_static")  # type: ignore[assignment]
         config.progress_bar = "none"
         config.verbosity = "WARNING"
 
@@ -278,7 +290,7 @@ class ManimDirective(Directive):
         if save_as_gif:
             example_config["format"] = "gif"
 
-        user_code = self.content
+        user_code = list(self.content)
         if user_code[0].startswith(">>> "):  # check whether block comes from doctest
             user_code = [
                 line[4:] for line in user_code if line.startswith((">>> ", "... "))
@@ -322,7 +334,7 @@ class ManimDirective(Directive):
             clsname=clsname,
             clsname_lowercase=clsname.lower(),
             hide_source=hide_source,
-            filesrc_rel=Path(filesrc).relative_to(setup.confdir).as_posix(),
+            filesrc_rel=Path(filesrc).relative_to(setup.confdir).as_posix(),  # type: ignore[attr-defined]
             no_autoplay=no_autoplay,
             output_file=output_file,
             save_last_frame=save_last_frame,
@@ -341,18 +353,18 @@ class ManimDirective(Directive):
 rendering_times_file_path = Path("../rendering_times.csv")
 
 
-def _write_rendering_stats(scene_name, run_time, file_name):
+def _write_rendering_stats(scene_name: str, run_time: float, file_name: str) -> None:
     with rendering_times_file_path.open("a") as file:
         csv.writer(file).writerow(
             [
                 re.sub(r"^(reference\/)|(manim\.)", "", file_name),
                 scene_name,
-                "%.3f" % run_time,
+                f"{run_time:.3f}",
             ],
         )
 
 
-def _log_rendering_times(*args):
+def _log_rendering_times(*args: tuple[Any]) -> None:
     if rendering_times_file_path.exists():
         with rendering_times_file_path.open() as file:
             data = list(csv.reader(file))
@@ -365,9 +377,9 @@ def _log_rendering_times(*args):
         data = [row for row in data if row]
 
         max_file_length = max(len(row[0]) for row in data)
-        for key, group in it.groupby(data, key=lambda row: row[0]):
+        for key, group_iter in it.groupby(data, key=lambda row: row[0]):
             key = key.ljust(max_file_length + 1, ".")
-            group = list(group)
+            group = list(group_iter)
             if len(group) == 1:
                 row = group[0]
                 print(f"{key}{row[2].rjust(7, '.')}s {row[1]}")
@@ -377,21 +389,21 @@ def _log_rendering_times(*args):
                 f"{key}{f'{time_sum:.3f}'.rjust(7, '.')}s  => {len(group)} EXAMPLES",
             )
             for row in group:
-                print(f"{' '*(max_file_length)} {row[2].rjust(7)}s {row[1]}")
+                print(f"{' ' * max_file_length} {row[2].rjust(7)}s {row[1]}")
         print("")
 
 
-def _delete_rendering_times(*args):
+def _delete_rendering_times(*args: tuple[Any]) -> None:
     if rendering_times_file_path.exists():
         rendering_times_file_path.unlink()
 
 
-def setup(app):
+def setup(app: Sphinx) -> SetupMetadata:
     app.add_node(SkipManimNode, html=(visit, depart))
 
-    setup.app = app
-    setup.config = app.config
-    setup.confdir = app.confdir
+    setup.app = app  # type: ignore[attr-defined]
+    setup.config = app.config  # type: ignore[attr-defined]
+    setup.confdir = app.confdir  # type: ignore[attr-defined]
 
     app.add_directive("manim", ManimDirective)
 
@@ -408,7 +420,10 @@ def setup(app):
         ).strip(),
     )
 
-    metadata = {"parallel_read_safe": False, "parallel_write_safe": True}
+    metadata: SetupMetadata = {
+        "parallel_read_safe": False,
+        "parallel_write_safe": True,
+    }
     return metadata
 
 

@@ -1,19 +1,21 @@
 """Debugging utilities."""
 
-
 from __future__ import annotations
 
 __all__ = ["print_family", "index_labels"]
 
 
+from typing import Any
+
 from manim.mobject.mobject import Mobject
 from manim.mobject.text.numbers import Integer
+from manim.utils.color import ManimColor
 
 from ..mobject.types.vectorized_mobject import VGroup
 from .color import BLACK
 
 
-def print_family(mobject, n_tabs=0):
+def print_family(mobject: Mobject, n_tabs: int = 0) -> None:
     """For debugging purposes"""
     print("\t" * n_tabs, mobject, id(mobject))
     for submob in mobject.submobjects:
@@ -23,10 +25,10 @@ def print_family(mobject, n_tabs=0):
 def index_labels(
     mobject: Mobject,
     label_height: float = 0.15,
-    background_stroke_width=5,
-    background_stroke_color=BLACK,
-    **kwargs,
-):
+    background_stroke_width: float = 5,
+    background_stroke_color: ManimColor = BLACK,
+    **kwargs: Any,
+) -> VGroup:
     r"""Returns a :class:`~.VGroup` of :class:`~.Integer` mobjects
     that shows the index of each submobject.
 
@@ -68,7 +70,6 @@ def index_labels(
 
                 self.add(text, indices)
     """
-
     labels = VGroup()
     for n, submob in enumerate(mobject):
         label = Integer(n, **kwargs)

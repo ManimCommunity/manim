@@ -13,6 +13,7 @@ __all__ = [
     "Square",
     "RoundedRectangle",
     "Cutout",
+    "ConvexHull",
 ]
 
 
@@ -27,12 +28,21 @@ from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import BLUE, WHITE, ParsableManimColor
 from manim.utils.iterables import adjacent_n_tuples, adjacent_pairs
+from manim.utils.qhull import QuickHull
 from manim.utils.space_ops import angle_between_vectors, normalize, regular_vertices
 
 if TYPE_CHECKING:
+    from typing import Any, Literal
+
+    import numpy.typing as npt
     from typing_extensions import Self
 
-    from manim.typing import Point3D, Point3D_Array
+    from manim.typing import (
+        Point3D,
+        Point3D_Array,
+        Point3DLike,
+        Point3DLike_Array,
+    )
     from manim.utils.color import ParsableManimColor
 
 
@@ -72,11 +82,16 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
     """
 
     def __init__(
-        self, *vertex_groups: Point3D, color: ParsableManimColor = BLUE, **kwargs
+        self,
+        *vertex_groups: Point3DLike_Array,
+        color: ParsableManimColor = BLUE,
+        **kwargs: Any,
     ):
         super().__init__(color=color, **kwargs)
 
         for vertices in vertex_groups:
+            # The inferred type for *vertices is Any, but it should be
+            # Point3D_Array
             first_vertex, *vertices = vertices
             first_vertex = np.array(first_vertex)
 
@@ -104,43 +119,47 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
                    [-1., -1.,  0.],
                    [ 1., -1.,  0.]])
         """
-
         return self.get_start_anchors()
 
-    def get_vertex_groups(self) -> np.ndarray[Point3D_Array]:
+    def get_vertex_groups(self) -> list[Point3D_Array]:
         """Gets the vertex groups of the :class:`Polygram`.
 
         Returns
         -------
-        :class:`numpy.ndarray`
-            The vertex groups of the :class:`Polygram`.
+        list[Point3D_Array]
+            The list of vertex groups of the :class:`Polygram`.
 
         Examples
         --------
         ::
 
-            >>> poly = Polygram([ORIGIN, RIGHT, UP], [LEFT, LEFT + UP, 2 * LEFT])
-            >>> poly.get_vertex_groups()
-            array([[[ 0.,  0.,  0.],
-                    [ 1.,  0.,  0.],
-                    [ 0.,  1.,  0.]],
-            <BLANKLINE>
-                   [[-1.,  0.,  0.],
-                    [-1.,  1.,  0.],
-                    [-2.,  0.,  0.]]])
+            >>> poly = Polygram([ORIGIN, RIGHT, UP, LEFT + UP], [LEFT, LEFT + UP, 2 * LEFT])
+            >>> groups = poly.get_vertex_groups()
+            >>> len(groups)
+            2
+            >>> groups[0]
+            array([[ 0.,  0.,  0.],
+                   [ 1.,  0.,  0.],
+                   [ 0.,  1.,  0.],
+                   [-1.,  1.,  0.]])
+            >>> groups[1]
+            array([[-1.,  0.,  0.],
+                   [-1.,  1.,  0.],
+                   [-2.,  0.,  0.]])
         """
-
         vertex_groups = []
 
+        # TODO: If any of the original vertex groups contained the starting vertex N
+        # times, then .get_vertex_groups() splits it into N vertex groups.
         group = []
         for start, end in zip(self.get_start_anchors(), self.get_end_anchors()):
             group.append(start)
 
             if self.consider_points_equals(end, group[0]):
-                vertex_groups.append(group)
+                vertex_groups.append(np.array(group))
                 group = []
 
-        return np.array(vertex_groups)
+        return vertex_groups
 
     def round_corners(
         self,
@@ -204,24 +223,23 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
                     shapes.arrange(RIGHT)
                     self.add(shapes)
         """
-
         if radius == 0:
             return self
 
-        new_points = []
+        new_points: list[Point3D] = []
 
-        for vertices in self.get_vertex_groups():
+        for vertex_group in self.get_vertex_groups():
             arcs = []
 
             # Repeat the radius list as necessary in order to provide a radius
             # for each vertex.
             if isinstance(radius, (int, float)):
-                radius_list = [radius] * len(vertices)
+                radius_list = [radius] * len(vertex_group)
             else:
-                radius_list = radius * ceil(len(vertices) / len(radius))
+                radius_list = radius * ceil(len(vertex_group) / len(radius))
 
-            for currentRadius, (v1, v2, v3) in zip(
-                radius_list, adjacent_n_tuples(vertices, 3)
+            for current_radius, (v1, v2, v3) in zip(
+                radius_list, adjacent_n_tuples(vertex_group, 3)
             ):
                 vect1 = v2 - v1
                 vect2 = v3 - v2
@@ -230,10 +248,10 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
 
                 angle = angle_between_vectors(vect1, vect2)
                 # Negative radius gives concave curves
-                angle *= np.sign(currentRadius)
+                angle *= np.sign(current_radius)
 
                 # Distance between vertex and start of the arc
-                cut_off_length = currentRadius * np.tan(angle / 2)
+                cut_off_length = current_radius * np.tan(angle / 2)
 
                 # Determines counterclockwise vs. clockwise
                 sign = np.sign(np.cross(vect1, vect2)[2])
@@ -248,17 +266,17 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
 
             if evenly_distribute_anchors:
                 # Determine the average length of each curve
-                nonZeroLengthArcs = [arc for arc in arcs if len(arc.points) > 4]
-                if len(nonZeroLengthArcs):
-                    totalArcLength = sum(
-                        [arc.get_arc_length() for arc in nonZeroLengthArcs]
+                nonzero_length_arcs = [arc for arc in arcs if len(arc.points) > 4]
+                if len(nonzero_length_arcs) > 0:
+                    total_arc_length = sum(
+                        [arc.get_arc_length() for arc in nonzero_length_arcs]
                     )
-                    totalCurveCount = (
-                        sum([len(arc.points) for arc in nonZeroLengthArcs]) / 4
+                    num_curves = (
+                        sum([len(arc.points) for arc in nonzero_length_arcs]) / 4
                     )
-                    averageLengthPerCurve = totalArcLength / totalCurveCount
+                    average_arc_length = total_arc_length / num_curves
                 else:
-                    averageLengthPerCurve = 1
+                    average_arc_length = 1.0
 
             # To ensure that we loop through starting with last
             arcs = [arcs[-1], *arcs[:-1]]
@@ -271,13 +289,11 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
 
                 # Make sure anchors are evenly distributed, if necessary
                 if evenly_distribute_anchors:
-                    line.insert_n_curves(
-                        ceil(line.get_length() / averageLengthPerCurve)
-                    )
+                    line.insert_n_curves(ceil(line.get_length() / average_arc_length))
 
                 new_points.extend(line.points)
 
-        self.set_points(new_points)
+        self.set_points(np.array(new_points))
 
         return self
 
@@ -312,7 +328,7 @@ class Polygon(Polygram):
                 self.add(isosceles, square_and_triangles)
     """
 
-    def __init__(self, *vertices: Point3D, **kwargs) -> None:
+    def __init__(self, *vertices: Point3DLike, **kwargs: Any) -> None:
         super().__init__(vertices, **kwargs)
 
 
@@ -355,7 +371,7 @@ class RegularPolygram(Polygram):
         density: int = 2,
         radius: float = 1,
         start_angle: float | None = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         # Regular polygrams can be expressed by the number of their vertices
         # and their density. This relation can be expressed as its Schläfli
@@ -376,7 +392,7 @@ class RegularPolygram(Polygram):
 
         # Utility function for generating the individual
         # polygon vertices.
-        def gen_polygon_vertices(start_angle):
+        def gen_polygon_vertices(start_angle: float | None) -> tuple[list[Any], float]:
             reg_vertices, start_angle = regular_vertices(
                 num_vertices,
                 radius=radius,
@@ -432,7 +448,7 @@ class RegularPolygon(RegularPolygram):
                 self.add(poly_group)
     """
 
-    def __init__(self, n: int = 6, **kwargs) -> None:
+    def __init__(self, n: int = 6, **kwargs: Any) -> None:
         super().__init__(n, density=1, **kwargs)
 
 
@@ -472,7 +488,6 @@ class Star(Polygon):
     Examples
     --------
     .. manim:: StarExample
-        :save_as_gif:
 
         class StarExample(Scene):
             def construct(self):
@@ -503,7 +518,7 @@ class Star(Polygon):
         inner_radius: float | None = None,
         density: int = 2,
         start_angle: float | None = TAU / 4,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         inner_angle = TAU / (2 * n)
 
@@ -535,7 +550,7 @@ class Star(Polygon):
             start_angle=self.start_angle + inner_angle,
         )
 
-        vertices = []
+        vertices: list[npt.NDArray] = []
         for pair in zip(outer_vertices, inner_vertices):
             vertices.extend(pair)
 
@@ -563,7 +578,7 @@ class Triangle(RegularPolygon):
                 self.add(tri_group)
     """
 
-    def __init__(self, **kwargs) -> None:
+    def __init__(self, **kwargs: Any) -> None:
         super().__init__(n=3, **kwargs)
 
 
@@ -614,7 +629,7 @@ class Rectangle(Polygon):
         grid_ystep: float | None = None,
         mark_paths_closed: bool = True,
         close_new_points: bool = True,
-        **kwargs,
+        **kwargs: Any,
     ):
         super().__init__(UR, UL, DL, DR, color=color, **kwargs)
         self.stretch_to_fit_width(width)
@@ -685,9 +700,16 @@ class Square(Rectangle):
                 self.add(square_1, square_2, square_3)
     """
 
-    def __init__(self, side_length: float = 2.0, **kwargs) -> None:
-        self.side_length = side_length
+    def __init__(self, side_length: float = 2.0, **kwargs: Any) -> None:
         super().__init__(height=side_length, width=side_length, **kwargs)
+
+    @property
+    def side_length(self) -> float:
+        return float(np.linalg.norm(self.get_vertices()[0] - self.get_vertices()[1]))
+
+    @side_length.setter
+    def side_length(self, value: float) -> None:
+        self.scale(value / self.side_length)
 
 
 class RoundedRectangle(Rectangle):
@@ -714,7 +736,7 @@ class RoundedRectangle(Rectangle):
                 self.add(rect_group)
     """
 
-    def __init__(self, corner_radius: float | list[float] = 0.5, **kwargs):
+    def __init__(self, corner_radius: float | list[float] = 0.5, **kwargs: Any):
         super().__init__(**kwargs)
         self.corner_radius = corner_radius
         self.round_corners(self.corner_radius)
@@ -755,12 +777,77 @@ class Cutout(VMobject, metaclass=ConvertToOpenGL):
                 self.wait()
     """
 
-    def __init__(self, main_shape: VMobject, *mobjects: VMobject, **kwargs) -> None:
+    def __init__(
+        self, main_shape: VMobject, *mobjects: VMobject, **kwargs: Any
+    ) -> None:
         super().__init__(**kwargs)
         self.append_points(main_shape.points)
-        if main_shape.get_direction() == "CW":
-            sub_direction = "CCW"
-        else:
-            sub_direction = "CW"
+        sub_direction: Literal["CCW", "CW"] = (
+            "CCW" if main_shape.get_direction() == "CW" else "CW"
+        )
         for mobject in mobjects:
             self.append_points(mobject.force_direction(sub_direction).points)
+
+
+class ConvexHull(Polygram):
+    """Constructs a convex hull for a set of points in no particular order.
+
+    Parameters
+    ----------
+    points
+        The points to consider.
+    tolerance
+        The tolerance used by quickhull.
+    kwargs
+        Forwarded to the parent constructor.
+
+    Examples
+    --------
+    .. manim:: ConvexHullExample
+        :save_last_frame:
+        :quality: high
+
+        class ConvexHullExample(Scene):
+            def construct(self):
+                points = [
+                    [-2.35, -2.25, 0],
+                    [1.65, -2.25, 0],
+                    [2.65, -0.25, 0],
+                    [1.65, 1.75, 0],
+                    [-0.35, 2.75, 0],
+                    [-2.35, 0.75, 0],
+                    [-0.35, -1.25, 0],
+                    [0.65, -0.25, 0],
+                    [-1.35, 0.25, 0],
+                    [0.15, 0.75, 0]
+                ]
+                hull = ConvexHull(*points, color=BLUE)
+                dots = VGroup(*[Dot(point) for point in points])
+                self.add(hull)
+                self.add(dots)
+    """
+
+    def __init__(
+        self, *points: Point3DLike, tolerance: float = 1e-5, **kwargs: Any
+    ) -> None:
+        # Build Convex Hull
+        array = np.array(points)[:, :2]
+        hull = QuickHull(tolerance)
+        hull.build(array)
+
+        # Extract Vertices
+        facets = set(hull.facets) - hull.removed
+        facet = facets.pop()
+        subfacets = list(facet.subfacets)
+        while len(subfacets) <= len(facets):
+            sf = subfacets[-1]
+            (facet,) = hull.neighbors[sf] - {facet}
+            (sf,) = facet.subfacets - {sf}
+            subfacets.append(sf)
+
+        # Setup Vertices as Point3D
+        coordinates = np.vstack([sf.coordinates for sf in subfacets])
+        vertices = np.hstack((coordinates, np.zeros((len(coordinates), 1))))
+
+        # Call Polygram
+        super().__init__(vertices, **kwargs)

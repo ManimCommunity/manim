@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import configparser
+from typing import Any
 
 from cloup import Context, HelpFormatter, HelpTheme, Style
 
+__all__ = ["parse_cli_ctx"]
 
-def parse_cli_ctx(parser: configparser.SectionProxy) -> Context:
+
+def parse_cli_ctx(parser: configparser.SectionProxy) -> dict[str, Any]:
     formatter_settings: dict[str, str | int] = {
         "indent_increment": int(parser["indent_increment"]),
         "width": int(parser["width"]),
@@ -33,15 +36,18 @@ def parse_cli_ctx(parser: configparser.SectionProxy) -> Context:
     theme = parser["theme"] if parser["theme"] else None
     if theme is None:
         formatter = HelpFormatter.settings(
-            theme=HelpTheme(**theme_settings), **formatter_settings  # type: ignore[arg-type]
+            theme=HelpTheme(**theme_settings),
+            **formatter_settings,  # type: ignore[arg-type]
         )
     elif theme.lower() == "dark":
         formatter = HelpFormatter.settings(
-            theme=HelpTheme.dark().with_(**theme_settings), **formatter_settings  # type: ignore[arg-type]
+            theme=HelpTheme.dark().with_(**theme_settings),
+            **formatter_settings,  # type: ignore[arg-type]
         )
     elif theme.lower() == "light":
         formatter = HelpFormatter.settings(
-            theme=HelpTheme.light().with_(**theme_settings), **formatter_settings  # type: ignore[arg-type]
+            theme=HelpTheme.light().with_(**theme_settings),
+            **formatter_settings,  # type: ignore[arg-type]
         )
 
     return Context.settings(

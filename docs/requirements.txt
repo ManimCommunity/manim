@@ -1,5 +1,7 @@
 furo
 myst-parser
-sphinx<5.1
+sphinx>=7.3
 sphinx-copybutton
 sphinxext-opengraph
+sphinx-design
+sphinx-reredirects

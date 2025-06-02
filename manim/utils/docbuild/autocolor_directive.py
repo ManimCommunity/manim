@@ -1,12 +1,19 @@
+"""A directive for documenting colors in Manim."""
+
 from __future__ import annotations
 
 import inspect
+from typing import TYPE_CHECKING
 
 from docutils import nodes
 from docutils.parsers.rst import Directive
-from sphinx.application import Sphinx
 
 from manim import ManimColor
+
+if TYPE_CHECKING:
+    from sphinx.application import Sphinx
+
+__all__ = ["ManimColorModuleDocumenter"]
 
 
 def setup(app: Sphinx) -> None:
@@ -19,11 +26,11 @@ class ManimColorModuleDocumenter(Directive):
     has_content = True
 
     def add_directive_header(self, sig: str) -> None:
-        super().add_directive_header(sig)
+        # TODO: The Directive class has no method named
+        # add_directive_header.
+        super().add_directive_header(sig)  # type: ignore[misc]
 
-    def run(
-        self,
-    ) -> None:
+    def run(self) -> list[nodes.Element]:
         module_name = self.arguments[0]
         try:
             import importlib
@@ -32,8 +39,8 @@ class ManimColorModuleDocumenter(Directive):
         except ImportError:
             return [
                 nodes.error(
-                    None,
-                    nodes.paragraph(text="Failed to import module '%s'" % module_name),
+                    None,  # type: ignore[arg-type]
+                    nodes.paragraph(text=f"Failed to import module '{module_name}'"),
                 )
             ]
 
@@ -48,13 +55,13 @@ class ManimColorModuleDocumenter(Directive):
 
         # Create header rows for the table
         thead = nodes.thead()
-        row = nodes.row()
+        header_row = nodes.row()
         for _ in range(num_color_cols):
-            col1 = nodes.paragraph(text="Color Name")
-            col2 = nodes.paragraph(text="RGB Hex Code")
-            row += nodes.entry("", col1)
-            row += nodes.entry("", col2)
-        thead += row
+            header_col1 = nodes.paragraph(text="Color Name")
+            header_col2 = nodes.paragraph(text="RGB Hex Code")
+            header_row += nodes.entry("", header_col1)
+            header_row += nodes.entry("", header_col2)
+        thead += header_row
         tgroup += thead
 
         color_elements = []
@@ -64,10 +71,7 @@ class ManimColorModuleDocumenter(Directive):
                 luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b
 
                 # Choose the font color based on the background luminance
-                if luminance > 0.5:
-                    font_color = "black"
-                else:
-                    font_color = "white"
+                font_color = "black" if luminance > 0.5 else "white"
 
                 color_elements.append((member_name, member_obj.to_hex(), font_color))
 

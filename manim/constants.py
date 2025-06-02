@@ -1,16 +1,15 @@
-"""
-Constant definitions.
-"""
+"""Constant definitions."""
 
 from __future__ import annotations
 
 from enum import Enum
+from typing import TypedDict
 
 import numpy as np
 from cloup import Context
 from PIL.Image import Resampling
 
-from manim.typing import Vector3
+from manim.typing import Vector3D
 
 __all__ = [
     "SCENE_NOT_FOUND_MESSAGE",
@@ -123,43 +122,43 @@ RESAMPLING_ALGORITHMS = {
 }
 
 # Geometry: directions
-ORIGIN: Vector3 = np.array((0.0, 0.0, 0.0))
+ORIGIN: Vector3D = np.array((0.0, 0.0, 0.0))
 """The center of the coordinate system."""
 
-UP: Vector3 = np.array((0.0, 1.0, 0.0))
+UP: Vector3D = np.array((0.0, 1.0, 0.0))
 """One unit step in the positive Y direction."""
 
-DOWN: Vector3 = np.array((0.0, -1.0, 0.0))
+DOWN: Vector3D = np.array((0.0, -1.0, 0.0))
 """One unit step in the negative Y direction."""
 
-RIGHT: Vector3 = np.array((1.0, 0.0, 0.0))
+RIGHT: Vector3D = np.array((1.0, 0.0, 0.0))
 """One unit step in the positive X direction."""
 
-LEFT: Vector3 = np.array((-1.0, 0.0, 0.0))
+LEFT: Vector3D = np.array((-1.0, 0.0, 0.0))
 """One unit step in the negative X direction."""
 
-IN: Vector3 = np.array((0.0, 0.0, -1.0))
+IN: Vector3D = np.array((0.0, 0.0, -1.0))
 """One unit step in the negative Z direction."""
 
-OUT: Vector3 = np.array((0.0, 0.0, 1.0))
+OUT: Vector3D = np.array((0.0, 0.0, 1.0))
 """One unit step in the positive Z direction."""
 
 # Geometry: axes
-X_AXIS: Vector3 = np.array((1.0, 0.0, 0.0))
-Y_AXIS: Vector3 = np.array((0.0, 1.0, 0.0))
-Z_AXIS: Vector3 = np.array((0.0, 0.0, 1.0))
+X_AXIS: Vector3D = np.array((1.0, 0.0, 0.0))
+Y_AXIS: Vector3D = np.array((0.0, 1.0, 0.0))
+Z_AXIS: Vector3D = np.array((0.0, 0.0, 1.0))
 
 # Geometry: useful abbreviations for diagonals
-UL: Vector3 = UP + LEFT
+UL: Vector3D = UP + LEFT
 """One step up plus one step left."""
 
-UR: Vector3 = UP + RIGHT
+UR: Vector3D = UP + RIGHT
 """One step up plus one step right."""
 
-DL: Vector3 = DOWN + LEFT
+DL: Vector3D = DOWN + LEFT
 """One step down plus one step left."""
 
-DR: Vector3 = DOWN + RIGHT
+DR: Vector3D = DOWN + RIGHT
 """One step down plus one step right."""
 
 # Geometry
@@ -199,8 +198,16 @@ TAU = 2 * PI
 DEGREES = TAU / 360
 """The exchange rate between radians and degrees."""
 
+
+class QualityDict(TypedDict):
+    flag: str | None
+    pixel_height: int
+    pixel_width: int
+    frame_rate: int
+
+
 # Video qualities
-QUALITIES: dict[str, dict[str, str | int | None]] = {
+QUALITIES: dict[str, QualityDict] = {
     "fourk_quality": {
         "flag": "k",
         "pixel_height": 2160,

@@ -4,10 +4,11 @@ import shutil
 import sys
 from pathlib import Path
 from textwrap import dedent
+from unittest.mock import patch
 
 from click.testing import CliRunner
 
-from manim import __version__, capture, tempconfig
+from manim import __version__, capture
 from manim.__main__ import main
 from manim.cli.checkhealth.checks import HEALTH_CHECKS
 
@@ -74,20 +75,29 @@ def test_manim_checkhealth_subcommand():
     result = runner.invoke(main, command)
     output_lines = result.output.split("\n")
     num_passed = len([line for line in output_lines if "PASSED" in line])
-    assert num_passed == len(
-        HEALTH_CHECKS
-    ), f"Some checks failed! Full output:\n{result.output}"
+    assert num_passed == len(HEALTH_CHECKS), (
+        f"Some checks failed! Full output:\n{result.output}"
+    )
     assert "No problems detected, your installation seems healthy!" in output_lines
 
 
 def test_manim_checkhealth_failing_subcommand():
     command = ["checkhealth"]
     runner = CliRunner()
-    with tempconfig({"ffmpeg_executable": "/path/to/nowhere"}):
+    true_f = shutil.which
+
+    def mock_f(s):
+        if s == "latex":
+            return None
+
+        return true_f(s)
+
+    with patch.object(shutil, "which", new=mock_f):
         result = runner.invoke(main, command)
+
     output_lines = result.output.split("\n")
-    assert "- Checking whether ffmpeg is available ... FAILED" in output_lines
-    assert "- Checking whether ffmpeg is working ... SKIPPED" in output_lines
+    assert "- Checking whether latex is available ... FAILED" in output_lines
+    assert "- Checking whether dvisvgm is available ... SKIPPED" in output_lines
 
 
 def test_manim_init_subcommand():

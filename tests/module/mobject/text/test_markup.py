@@ -22,9 +22,9 @@ def test_special_tags_markup():
         success = True
     except ValueError:
         success = False
-    assert (
-        success
-    ), '\'<color col="RED">foo</color>\' and \'<gradient from="RED" to="YELLOW">foo</gradient>\' should not fail validation'
+    assert success, (
+        '\'<color col="RED">foo</color>\' and \'<gradient from="RED" to="YELLOW">foo</gradient>\' should not fail validation'
+    )
 
 
 def test_unbalanced_tag_markup():

@@ -44,6 +44,26 @@ class Homotopy(Animation):
         Keyword arguments propagated to :meth:`.Mobject.apply_function`.
     kwargs
         Further keyword arguments passed to the parent class.
+
+    Examples
+    --------
+
+    .. manim:: HomotopyExample
+
+        class HomotopyExample(Scene):
+            def construct(self):
+                square = Square()
+
+                def homotopy(x, y, z, t):
+                    if t <= 0.25:
+                        progress = t / 0.25
+                        return (x, y + progress * 0.2 * np.sin(x), z)
+                    else:
+                        wave_progress = (t - 0.25) / 0.75
+                        return (x, y + 0.2 * np.sin(x + 10 * wave_progress), z)
+
+                self.play(Homotopy(homotopy, square, rate_func= linear, run_time=2))
+
     """
 
     def __init__(
@@ -90,9 +110,7 @@ class ComplexHomotopy(Homotopy):
     def __init__(
         self, complex_homotopy: Callable[[complex], float], mobject: Mobject, **kwargs
     ) -> None:
-        """
-        Complex Homotopy a function Cx[0, 1] to C
-        """
+        """Complex Homotopy a function Cx[0, 1] to C"""
 
         def homotopy(
             x: float,
@@ -136,8 +154,7 @@ class PhaseFlow(Animation):
 
 class MoveAlongPath(Animation):
     """Make one mobject move along the path of another mobject.
-    Example
-    --------
+
     .. manim:: MoveAlongPathExample
 
         class MoveAlongPathExample(Scene):

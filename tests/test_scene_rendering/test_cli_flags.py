@@ -239,16 +239,16 @@ def test_a_flag(tmp_path, manim_cfg_file, infallible_scenes_path):
     two_is_not_empty = (
         tmp_path / "images" / "infallible_scenes" / f"Wait2_ManimCE_v{__version__}.png"
     ).is_file()
-    assert (
-        two_is_not_empty
-    ), "running manim with -a flag did not render an image, possible leak of the config dictionary."
+    assert two_is_not_empty, (
+        "running manim with -a flag did not render an image, possible leak of the config dictionary."
+    )
 
     three_is_not_empty = (
         tmp_path / "videos" / "infallible_scenes" / "480p15" / "Wait3.mp4"
     ).is_file()
-    assert (
-        three_is_not_empty
-    ), "running manim with -a flag did not render the second scene"
+    assert three_is_not_empty, (
+        "running manim with -a flag did not render the second scene"
+    )
 
 
 @pytest.mark.slow

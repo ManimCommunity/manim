@@ -2,15 +2,26 @@ from __future__ import annotations
 
 import itertools as it
 
+from manim.mobject.mobject import Mobject
 
-def extract_mobject_family_members(mobject_list, only_those_with_points=False):
+__all__ = [
+    "extract_mobject_family_members",
+    "restructure_list_to_exclude_certain_family_members",
+]
+
+
+def extract_mobject_family_members(
+    mobject_list: list[Mobject], only_those_with_points: bool = False
+) -> list[Mobject]:
     result = list(it.chain(*(mob.get_family() for mob in mobject_list)))
     if only_those_with_points:
         result = [mob for mob in result if mob.has_points()]
     return result
 
 
-def restructure_list_to_exclude_certain_family_members(mobject_list, to_remove):
+def restructure_list_to_exclude_certain_family_members(
+    mobject_list: list[Mobject], to_remove: list[Mobject]
+) -> list[Mobject]:
     """
     Removes anything in to_remove from mobject_list, but in the event that one of
     the items to be removed is a member of the family of an item in mobject_list,
@@ -20,10 +31,12 @@ def restructure_list_to_exclude_certain_family_members(mobject_list, to_remove):
     but one of its submobjects is removed, e.g. scene.remove(m1), it's useful
     for the list of mobject_list to be edited to contain other submobjects, but not m1.
     """
-    new_list = []
+    new_list: list[Mobject] = []
     to_remove = extract_mobject_family_members(to_remove)
 
-    def add_safe_mobjects_from_list(list_to_examine, set_to_remove):
+    def add_safe_mobjects_from_list(
+        list_to_examine: list[Mobject], set_to_remove: set[Mobject]
+    ) -> None:
         for mob in list_to_examine:
             if mob in set_to_remove:
                 continue

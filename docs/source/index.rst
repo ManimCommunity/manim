@@ -21,8 +21,11 @@ in the right place!
 
 .. note::
 
-   Please be aware that there are different, incompatible versions
-   of Manim available. Check our :ref:`installation FAQ <different-versions>`
+   Please be aware that there are different, incompatible versions of Manim available.
+   This version, the Community Edition of Manim (`ManimCE <https://github.com/ManimCommunity/manim>`_),
+   is a separate project maintained by the community, but it was forked from `3b1b/manim <https://github.com/3b1b/manim>`_,
+   the original Manim created and open-sourced by Grant Sanderson, creator of `3Blue1Brown <https://www.youtube.com/channel/UCYO_jab_esuFRV4b17AJtAw>`_ educational math videos.
+   Check our :ref:`installation FAQ <different-versions>`
    to learn more!
 
 - The :doc:`Installation <installation>` section has the latest and
@@ -30,7 +33,7 @@ in the right place!
   You can also find information on Manim's docker images and (online)
   notebook environments there.
 - Want to try the library before installing it? Take a look at our
-  interactive online playground at https://try.manim.community in form
+  interactive online playground at https://try.manim.community in the form
   of a Jupyter notebook.
 - In our :doc:`Tutorials <tutorials/index>` section you will find a
   collection of resources that will teach you how to use Manim. In particular,
@@ -71,7 +74,7 @@ Here are some short summaries for all of the sections in this documentation:
   can be found in the :doc:`FAQ </faq/index>` section.
 - The :doc:`Reference Manual </reference>` contains a comprehensive list of all of Manim's
   (documented) modules, classes, and functions. If you are somewhat familiar with Manim's
-  module structure feel free to browse the manual directly. If you are searching for
+  module structure, feel free to browse the manual directly. If you are searching for
   something specific, feel free to use the documentation's search feature in the sidebar.
   Many classes and methods come with their own illustrated examples too!
 - The :doc:`Plugins </plugins>` page documents how to install, write, and distribute

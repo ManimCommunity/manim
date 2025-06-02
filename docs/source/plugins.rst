@@ -96,43 +96,22 @@ The only requirement of manim plugins is that they specify an entry point
 with the group, ``"manim.plugins"``. This allows Manim to discover plugins
 available in the user's environment. Everything regarding the plugin's
 directory structure, build system, and naming are completely up to your
-discretion as an author. The aforementioned template plugin is only a model
-using Poetry since this is the build system Manim uses. The plugin's `entry
-point <https://packaging.python.org/specifications/entry-points/>`_ can be
-specified in poetry as:
+discretion as an author.
+
+The standard way to specify an entry point (see
+`the Python packaging guide <https://packaging.python.org/specifications/entry-points/>`__
+for details) is to include the following in your ``pyproject.toml``:
 
 .. code-block:: toml
 
-    [tool.poetry.plugins."manim.plugins"]
+    [project.entry-points."manim.plugins"]
     "name" = "object_reference"
 
-Here ``name`` is the name of the module of the plugin.
+.. versionremoved:: 0.18.1
 
-Here ``object_reference`` can point to either a function in a module or a module
-itself. For example,
-
-.. code-block:: toml
-
-    [tool.poetry.plugins."manim.plugins"]
-    "manim_plugintemplate" = "manim_plugintemplate"
-
-Here a module is used as ``object_reference``, and when this plugin is enabled,
-Manim will look for ``__all__`` keyword defined in ``manim_plugintemplate`` and
-everything as a global variable one by one.
-
-If ``object_reference`` is a function, Manim calls the function and expects the
-function to return a list of modules or functions that need to be defined globally.
-
-For example,
-
-.. code-block:: toml
-
-    [tool.poetry.plugins."manim.plugins"]
-    "manim_plugintemplate" = "manim_awesomeplugin.imports:setup_things"
-
-Here, Manim will call the function ``setup_things`` defined in
-``manim_awesomeplugin.imports`` and calls that. It returns a list of function or
-modules which will be imported globally.
+    Plugins should be imported explicitly to be usable in user code. The plugin
+    system will probably be refactored in the future to provide a more structured
+    interface.
 
 A note on Renderer Compatibility
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

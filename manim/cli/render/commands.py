@@ -5,6 +5,7 @@ Manim's render subcommand is accessed in the command-line interface via
 can specify options, and arguments for the render command.
 
 """
+
 from __future__ import annotations
 
 import http.client
@@ -12,19 +13,48 @@ import json
 import sys
 import urllib.error
 import urllib.request
+from argparse import Namespace
 from pathlib import Path
-from typing import cast
+from typing import Any, cast
 
 import cloup
 
-from ... import __version__, config, console, error_console, logger
-from ..._config import tempconfig
-from ...constants import EPILOG, RendererType
-from ...utils.module_ops import scene_classes_from_file
-from .ease_of_access_options import ease_of_access_options
-from .global_options import global_options
-from .output_options import output_options
-from .render_options import render_options
+from manim import __version__
+from manim._config import (
+    config,
+    console,
+    error_console,
+    logger,
+    tempconfig,
+)
+from manim.cli.render.ease_of_access_options import ease_of_access_options
+from manim.cli.render.global_options import global_options
+from manim.cli.render.output_options import output_options
+from manim.cli.render.render_options import render_options
+from manim.constants import EPILOG, RendererType
+from manim.utils.module_ops import scene_classes_from_file
+
+__all__ = ["render"]
+
+
+class ClickArgs(Namespace):
+    def __init__(self, args: dict[str, Any]) -> None:
+        for name in args:
+            setattr(self, name, args[name])
+
+    def _get_kwargs(self) -> list[tuple[str, Any]]:
+        return list(self.__dict__.items())
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, ClickArgs):
+            return NotImplemented
+        return vars(self) == vars(other)
+
+    def __contains__(self, key: str) -> bool:
+        return key in self.__dict__
+
+    def __repr__(self) -> str:
+        return str(self.__dict__)
 
 
 @cloup.command(
@@ -32,56 +62,34 @@ from .render_options import render_options
     no_args_is_help=True,
     epilog=EPILOG,
 )
-@cloup.argument("file", type=Path, required=True)
+@cloup.argument("file", type=cloup.Path(path_type=Path), required=True)
 @cloup.argument("scene_names", required=False, nargs=-1)
 @global_options
 @output_options
-@render_options  # type: ignore
+@render_options
 @ease_of_access_options
-def render(
-    **args,
-):
+def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
     """Render SCENE(S) from the input FILE.
 
     FILE is the file path of the script or a config file.
 
     SCENES is an optional list of scenes in the file.
     """
-
-    if args["save_as_gif"]:
+    if kwargs["save_as_gif"]:
         logger.warning("--save_as_gif is deprecated, please use --format=gif instead!")
-        args["format"] = "gif"
+        kwargs["format"] = "gif"
 
-    if args["save_pngs"]:
+    if kwargs["save_pngs"]:
         logger.warning("--save_pngs is deprecated, please use --format=png instead!")
-        args["format"] = "png"
+        kwargs["format"] = "png"
 
-    if args["show_in_file_browser"]:
+    if kwargs["show_in_file_browser"]:
         logger.warning(
             "The short form of show_in_file_browser is deprecated and will be moved to support --format.",
         )
 
-    class ClickArgs:
-        def __init__(self, args):
-            for name in args:
-                setattr(self, name, args[name])
-
-        def _get_kwargs(self):
-            return list(self.__dict__.items())
-
-        def __eq__(self, other):
-            if not isinstance(other, ClickArgs):
-                return NotImplemented
-            return vars(self) == vars(other)
-
-        def __contains__(self, key):
-            return key in self.__dict__
-
-        def __repr__(self):
-            return str(self.__dict__)
-
-    click_args = ClickArgs(args)
-    if args["jupyter"]:
+    click_args = ClickArgs(kwargs)
+    if kwargs["jupyter"]:
         return click_args
 
     config.digest_args(click_args)
@@ -140,14 +148,14 @@ def render(
             )
         except Exception:
             logger.debug("Something went wrong: %s", warn_prompt)
+        else:
+            stable = json_data["info"]["version"]
+            if stable != __version__:
+                console.print(
+                    f"You are using manim version [red]v{__version__}[/red], but version [green]v{stable}[/green] is available.",
+                )
+                console.print(
+                    "You should consider upgrading via [yellow]pip install -U manim[/yellow]",
+                )
 
-        stable = json_data["info"]["version"]
-        if stable != __version__:
-            console.print(
-                f"You are using manim version [red]v{__version__}[/red], but version [green]v{stable}[/green] is available.",
-            )
-            console.print(
-                "You should consider upgrading via [yellow]pip install -U manim[/yellow]",
-            )
-
-    return args
+    return kwargs

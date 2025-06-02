@@ -12,6 +12,8 @@ from manim.utils.color import BLACK, WHITE, YELLOW, color_gradient, color_to_rgb
 from manim.utils.config_ops import _Uniforms
 from manim.utils.iterables import resize_with_interpolation
 
+__all__ = ["OpenGLPMobject", "OpenGLPGroup", "OpenGLPMPoint"]
+
 
 class OpenGLPMobject(OpenGLMobject):
     shader_folder = "true_dot"
@@ -63,13 +65,11 @@ class OpenGLPMobject(OpenGLMobject):
         return self
 
     def thin_out(self, factor=5):
-        """
-        Removes all but every nth point for n = factor
-        """
+        """Removes all but every nth point for n = factor"""
         for mob in self.family_members_with_points():
             num_points = mob.get_num_points()
 
-            def thin_func():
+            def thin_func(num_points=num_points):
                 return np.arange(0, num_points, factor)
 
             if len(mob.points) == len(mob.rgbas):
@@ -124,9 +124,7 @@ class OpenGLPMobject(OpenGLMobject):
         return self
 
     def sort_points(self, function=lambda p: p[0]):
-        """
-        function is any map from R^3 to R
-        """
+        """function is any map from R^3 to R"""
         for mob in self.family_members_with_points():
             indices = np.argsort(np.apply_along_axis(function, 1, mob.points))
             for key in mob.data:

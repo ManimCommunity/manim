@@ -2,7 +2,6 @@ FROM python:3.11-slim
 
 RUN apt-get update -qq \
     && apt-get install --no-install-recommends -y \
-        ffmpeg \
         build-essential \
         gcc \
         cmake \
@@ -10,10 +9,14 @@ RUN apt-get update -qq \
         libffi-dev \
         libpango1.0-dev \
         freeglut3-dev \
+        ffmpeg \
         pkg-config \
         make \
         wget \
-        ghostscript
+        ghostscript \
+        fonts-noto
+
+RUN fc-cache -fv
 
 # setup a minimal texlive installation
 COPY docker/texlive-profile.txt /tmp/
@@ -23,9 +26,9 @@ RUN wget -O /tmp/install-tl-unx.tar.gz http://mirror.ctan.org/systems/texlive/tl
     tar -xzf /tmp/install-tl-unx.tar.gz -C /tmp/install-tl --strip-components=1 && \
     /tmp/install-tl/install-tl --profile=/tmp/texlive-profile.txt \
     && tlmgr install \
-        amsmath babel-english cbfonts-fd cm-super ctex doublestroke dvisvgm everysel \
+        amsmath babel-english cbfonts-fd cm-super count1to ctex doublestroke dvisvgm everysel \
         fontspec frcursive fundus-calligra gnu-freefont jknapltx latex-bin \
-        mathastext microtype ms physics preview ragged2e relsize rsfs \
+        mathastext microtype multitoc physics prelim2e preview ragged2e relsize rsfs \
         setspace standalone tipa wasy wasysym xcolor xetex xkeyval
 
 # clone and build manim
@@ -37,9 +40,9 @@ RUN pip install -r docs/requirements.txt
 
 ARG NB_USER=manimuser
 ARG NB_UID=1000
-ENV USER ${NB_USER}
-ENV NB_UID ${NB_UID}
-ENV HOME /manim
+ENV USER=${NB_USER}
+ENV NB_UID=${NB_UID}
+ENV HOME=/manim
 
 RUN adduser --disabled-password \
     --gecos "Default user" \

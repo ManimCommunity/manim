@@ -8,8 +8,8 @@ require no local installation. Head over to
 https://try.manim.community to give our interactive tutorial a try.
 
 Otherwise, if you intend to use Manim to work on an animation project,
-we recommend installing the library locally (either to a conda environment,
-your system's Python, or via Docker).
+we recommend installing the library locally (preferably to some isolated
+virtual Python environment, or a conda-like environment, or via Docker).
 
 .. warning::
 
@@ -19,25 +19,51 @@ your system's Python, or via Docker).
    versions <different-versions>` if you are unsure which
    version you should install.
 
+#. :ref:`(Recommended) Installing Manim via Python's package manager pip
+   <local-installation>`
 #. :ref:`Installing Manim to a conda environment <conda-installation>`
-#. :ref:`Installing Manim to your system's Python <local-installation>`
 #. :ref:`Using Manim via Docker <docker-installation>`
 #. :ref:`Interactive Jupyter notebooks via Binder / Google Colab
    <interactive-online>`
 
 
+.. _local-installation:
+
+Installing Manim locally via pip
+********************************
+
+The recommended way of installing Manim is by using Python's package manager
+pip. If you already have a Python environment set up, you can simply run
+``pip install manim`` to install the library.
+
+Our :doc:`local installation guide <installation/uv>` provides more detailed
+instructions, including best practices for setting up a suitable local environment.
+
+.. toctree::
+   :hidden:
+
+   installation/uv
+
 .. _conda-installation:
 
-Installing Manim in conda
-*************************
+Installing Manim via Conda and related environment managers
+***********************************************************
 
 Conda is a package manager for Python that allows creating environments
 where all your dependencies are stored. Like this, you don't clutter up your PC with
 unwanted libraries and you can just delete the environment when you don't need it anymore.
-It is a good way to install manim since all dependencies like
-``ffmpeg``, ``pycairo``, etc. come with it.
+It is a good way to install manim since all dependencies like ``pycairo``, etc. come with it.
 Also, the installation steps are the same, no matter if you are
 on Windows, Linux, Intel Macs or on Apple Silicon.
+
+.. NOTE::
+
+   There are various popular alternatives to Conda like
+   `mamba <https://mamba.readthedocs.io/en/latest/>`__ /
+   `micromamba <https://mamba.readthedocs.io/en/latest/user_guide/micromamba.html>`__,
+   or `pixi <https://pixi.sh>`__.
+   They all can be used to setup a suitable, isolated environment
+   for your Manim projects.
 
 The following pages show how to install Manim in a conda environment:
 
@@ -45,47 +71,6 @@ The following pages show how to install Manim in a conda environment:
    :maxdepth: 2
 
    installation/conda
-
-
-
-.. _local-installation:
-
-Installing Manim locally
-************************
-
-Manim is a Python library, and it can be
-`installed via pip <https://pypi.org/project/manim/>`__. However,
-in order for Manim to work properly, some additional system
-dependencies need to be installed first. The following pages have
-operating system specific instructions for you to follow.
-
-Manim requires Python version ``3.8`` or above to run.
-
-.. hint::
-
-   Depending on your particular setup, the installation process
-   might be slightly different. Make sure that you have tried to
-   follow the steps on the following pages carefully, but in case
-   you hit a wall we are happy to help: either `join our Discord
-   <https://www.manim.community/discord/>`__, or start a new
-   Discussion `directly on GitHub
-   <https://github.com/ManimCommunity/manim/discussions>`__.
-
-.. toctree::
-   :maxdepth: 2
-
-   installation/windows
-   installation/macos
-   installation/linux
-
-Once Manim is installed locally, you can proceed to our
-:doc:`quickstart guide <tutorials/quickstart>` which walks you
-through rendering a first simple scene.
-
-As mentioned above, do not worry if there are errors or other
-problems: consult our :doc:`FAQ section </faq/index>` for help
-(including instructions for how to ask Manim's community for help).
-
 
 
 .. _docker-installation:
@@ -130,6 +115,11 @@ If you're using Visual Studio Code you can install an extension called
 *Manim Sideview* which provides automated rendering and an integrated preview
 of the animation inside the editor. The extension can be installed through the
 `marketplace of VS Code <https://marketplace.visualstudio.com/items?itemName=Rickaym.manim-sideview>`__.
+
+.. caution::
+
+   This extension is not officially maintained by the Manim Community.
+   If you run into issues, please report them to the extension's author.
 
 
 Installation for developers

@@ -8,17 +8,20 @@ from manim.utils.hashing import get_hash_from_play_call
 
 from .. import config, logger
 from ..camera.camera import Camera
-from ..mobject.mobject import Mobject
+from ..mobject.mobject import Mobject, _AnimationBuilder
 from ..scene.scene_file_writer import SceneFileWriter
 from ..utils.exceptions import EndSceneEarlyException
 from ..utils.iterables import list_update
 
 if typing.TYPE_CHECKING:
-    import types
-    from typing import Any, Iterable
+    from typing import Any
 
     from manim.animation.animation import Animation
     from manim.scene.scene import Scene
+
+    from ..typing import PixelArray
+
+__all__ = ["CairoRenderer"]
 
 
 class CairoRenderer:
@@ -57,7 +60,7 @@ class CairoRenderer:
     def play(
         self,
         scene: Scene,
-        *args: Animation | Iterable[Animation] | types.GeneratorType[Animation],
+        *args: Animation | Mobject | _AnimationBuilder,
         **kwargs,
     ):
         # Reset skip_animations to the original state.
@@ -157,7 +160,7 @@ class CairoRenderer:
         self.update_frame(scene, moving_mobjects)
         self.add_frame(self.get_frame())
 
-    def get_frame(self):
+    def get_frame(self) -> PixelArray:
         """
         Gets the current frame as NumPy array.
 
@@ -184,8 +187,7 @@ class CairoRenderer:
         if self.skip_animations:
             return
         self.time += num_frames * dt
-        for _ in range(num_frames):
-            self.file_writer.write_frame(frame)
+        self.file_writer.write_frame(frame, num_frames=num_frames)
 
     def freeze_current_frame(self, duration: float):
         """Adds a static frame to the movie for a given duration. The static frame is the current frame.
@@ -250,13 +252,13 @@ class CairoRenderer:
         if config["save_last_frame"]:
             self.skip_animations = True
         if (
-            config["from_animation_number"]
-            and self.num_plays < config["from_animation_number"]
+            config.from_animation_number > 0
+            and self.num_plays < config.from_animation_number
         ):
             self.skip_animations = True
         if (
-            config["upto_animation_number"]
-            and self.num_plays > config["upto_animation_number"]
+            config.upto_animation_number >= 0
+            and self.num_plays > config.upto_animation_number
         ):
             self.skip_animations = True
             raise EndSceneEarlyException()

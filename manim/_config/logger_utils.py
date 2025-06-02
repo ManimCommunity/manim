@@ -9,13 +9,14 @@ Both ``logger`` and ``console`` use the ``rich`` library to produce rich text
 format.
 
 """
+
 from __future__ import annotations
 
 import configparser
 import copy
 import json
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from rich import color, errors
 from rich import print as printf
@@ -25,6 +26,8 @@ from rich.theme import Theme
 
 if TYPE_CHECKING:
     from pathlib import Path
+
+__all__ = ["make_logger", "parse_theme", "set_file_logger", "JSONFormatter"]
 
 HIGHLIGHTED_KEYWORDS = [  # these keywords are highlighted specially
     "Played",
@@ -88,7 +91,7 @@ def make_logger(
     # set the rich handler
     rich_handler = RichHandler(
         console=console,
-        show_time=parser.getboolean("log_timestamps"),
+        show_time=parser.getboolean("log_timestamps", fallback=False),
         keywords=HIGHLIGHTED_KEYWORDS,
     )
 
@@ -96,11 +99,16 @@ def make_logger(
     logger = logging.getLogger("manim")
     logger.addHandler(rich_handler)
     logger.setLevel(verbosity)
+    logger.propagate = False
+
+    if not (libav_logger := logging.getLogger()).hasHandlers():
+        libav_logger.addHandler(rich_handler)
+        libav_logger.setLevel(verbosity)
 
     return logger, console, error_console
 
 
-def parse_theme(parser: configparser.SectionProxy) -> Theme:
+def parse_theme(parser: configparser.SectionProxy) -> Theme | None:
     """Configure the rich style of logger and console output.
 
     Parameters
@@ -118,7 +126,7 @@ def parse_theme(parser: configparser.SectionProxy) -> Theme:
     :func:`make_logger`.
 
     """
-    theme = {key.replace("_", "."): parser[key] for key in parser}
+    theme: dict[str, Any] = {key.replace("_", "."): parser[key] for key in parser}
 
     theme["log.width"] = None if theme["log.width"] == "-1" else int(theme["log.width"])
     theme["log.height"] = (
@@ -180,8 +188,11 @@ class JSONFormatter(logging.Formatter):
         """Format the record in a custom JSON format."""
         record_c = copy.deepcopy(record)
         if record_c.args:
-            for arg in record_c.args:
-                record_c.args[arg] = "<>"
+            if isinstance(record_c.args, dict):
+                for arg in record_c.args:
+                    record_c.args[arg] = "<>"
+            else:
+                record_c.args = ("<>",) * len(record_c.args)
         return json.dumps(
             {
                 "levelname": record_c.levelname,

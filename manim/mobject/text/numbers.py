@@ -4,7 +4,8 @@ from __future__ import annotations
 
 __all__ = ["DecimalNumber", "Integer", "Variable"]
 
-from typing import Sequence
+from collections.abc import Sequence
+from typing import Any
 
 import numpy as np
 
@@ -18,9 +19,11 @@ from manim.mobject.value_tracker import ValueTracker
 
 string_to_mob_map = {}
 
+__all__ = ["DecimalNumber", "Integer", "Variable"]
+
 
 class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
-    """An mobject representing a decimal number.
+    r"""An mobject representing a decimal number.
 
     Parameters
     ----------
@@ -208,10 +211,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
 
         rounded_num = np.round(number, self.num_decimal_places)
         if num_string.startswith("-") and rounded_num == 0:
-            if self.include_sign:
-                num_string = "+" + num_string[1:]
-            else:
-                num_string = num_string[1:]
+            num_string = "+" + num_string[1:] if self.include_sign else num_string[1:]
 
         return num_string
 
@@ -328,7 +328,9 @@ class Integer(DecimalNumber):
                 self.add(Integer(number=6.28).set_x(-1.5).set_y(-2).set_color(YELLOW).scale(1.4))
     """
 
-    def __init__(self, number=0, num_decimal_places=0, **kwargs):
+    def __init__(
+        self, number: float = 0, num_decimal_places: int = 0, **kwargs: Any
+    ) -> None:
         super().__init__(number=number, num_decimal_places=num_decimal_places, **kwargs)
 
     def get_value(self):
