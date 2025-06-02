@@ -94,7 +94,8 @@ class MultiCamera(MovingCamera):
 
     def update_sub_cameras(self):
         """For each one of the subcameras referenced by :attr:`image_mobjects_from_cameras`,
-        update its :attr:`frame_shape` and reset its pixel shape."""
+        update its :attr:`frame_shape` and reset its pixel shape.
+        """
         pixel_height, pixel_width = self.pixel_array.shape[:2]
         for imfc in self.image_mobjects_from_cameras:
             imfc.camera.frame_shape = (
