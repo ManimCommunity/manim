@@ -1508,10 +1508,17 @@ def random_color() -> ManimColor:
     ManimColor
         A random :class:`ManimColor`.
     """
-    import manim.utils.color.manim_colors as manim_colors
+    return RandomColorGenerator().next()
 
-    return random.choice(manim_colors._all_manim_colors)
-
+class RandomColorGenerator:
+    """A class to generate random colors from the Manim color palette in a reproducible manner using a seed value."""
+    def __init__(self, seed: int | None = None) -> None:
+        self.choice = random.choice if seed is None else random.Random(seed).choice
+    
+    def next(self) -> ManimColor:
+        import manim.utils.color.manim_colors as manim_colors
+        
+        return self.choice(manim_colors._all_manim_colors)
 
 def get_shaded_rgb(
     rgb: RGB_Array_Float,
