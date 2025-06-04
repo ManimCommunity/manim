@@ -64,17 +64,38 @@ class Polygon:
         return d if self.inside(point) else -d
 
     def inside(self, point: Point2DLike) -> bool:
-        """Check if a point is inside the polygon."""
-        # Views
-        px, py = point
-        x, y = self.start[:, 0], self.start[:, 1]
-        xr, yr = self.stop[:, 0], self.stop[:, 1]
+        """
+        Check if a point is inside the polygon using ray casting algorithm.
 
-        # Count Crossings (enforce short-circuit)
-        c = (y > py) != (yr > py)
-        c = px < x[c] + (py - y[c]) * (xr[c] - x[c]) / (yr[c] - y[c])
-        c_sum: int = np.sum(c)
-        return c_sum % 2 == 1
+        This version includes boundary points consistently.
+        """
+        px, py = point
+        x0, y0 = self.start[:, 0], self.start[:, 1]
+        x1, y1 = self.stop[:, 0], self.stop[:, 1]
+
+        # Check if the point lies exactly on any edge
+        for i in range(len(x0)):
+            if min(x0[i], x1[i]) <= px <= max(x0[i], x1[i]) and min(
+                y0[i], y1[i]
+            ) <= py <= max(y0[i], y1[i]):
+                # Compute the cross product to determine colinearity
+                dx = x1[i] - x0[i]
+                dy = y1[i] - y0[i]
+                if abs(dx * (py - y0[i]) - dy * (px - x0[i])) < 1e-9:
+                    return True
+
+        # Ray casting
+        count = 0
+        for i in range(len(x0)):
+            xi, yi = x0[i], y0[i]
+            xj, yj = x1[i], y1[i]
+
+            if (yi > py) != (yj > py):
+                x_intersect = (xj - xi) * (py - yi) / (yj - yi + 1e-12) + xi
+                if px < x_intersect:
+                    count += 1
+
+        return count % 2 == 1
 
 
 class Cell:
