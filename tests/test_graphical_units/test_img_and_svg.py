@@ -271,7 +271,7 @@ def test_ImageInterpolation(scene):
     img.height = 3
 
     algorithm_texts = ["nearest", "linear", "cubic"]
-    for i, algorithm_text in enumerate(algorithms):
+    for i, algorithm_text in enumerate(algorithm_texts):
         algorithm = RESAMPLING_ALGORITHMS[algorithm_text]
         img_copy = img.copy().set_resampling_algorithm(algorithm)
         position = img.height * (i - (len(algorithm_texts) - 1) / 2) * RIGHT
