@@ -10,7 +10,8 @@ from __future__ import annotations
 
 __all__ = ["MovingCamera"]
 
-from typing import TYPE_CHECKING, Iterable
+from collections.abc import Iterable
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
@@ -22,7 +23,11 @@ from manim.mobject.mobject import Mobject
 from manim.utils.color import WHITE
 
 if TYPE_CHECKING:
-    from manim.typing import Point3D
+    import cairo
+
+    from manim.mobject.mobject import _AnimationBuilder
+    from manim.typing import Point3D, Point3DLike
+    from manim.utils.color import ParsableManimColor
 
 
 class MovingCamera(Camera):
@@ -98,6 +103,17 @@ class MovingCamera(Camera):
         """
         return self.frame.height
 
+    @frame_height.setter
+    def frame_height(self, frame_height: float) -> None:
+        """Sets the height of :attr:`frame` in MUnits.
+
+        Parameters
+        ----------
+        frame_height
+            The new height for :attr:`frame`.
+        """
+        self.frame.stretch_to_fit_height(frame_height)
+
     @property
     def frame_width(self) -> float:
         """Returns the width of :attr:`frame`.
@@ -108,6 +124,17 @@ class MovingCamera(Camera):
             The width of :attr:`frame`.
         """
         return self.frame.width
+
+    @frame_width.setter
+    def frame_width(self, frame_width: float) -> None:
+        """Sets the width of :attr:`frame` in MUnits.
+
+        Parameters
+        ----------
+        frame_width
+            The new width for :attr:`frame`.
+        """
+        self.frame.stretch_to_fit_width(frame_width)
 
     @property
     def frame_center(self) -> Point3D:
@@ -120,30 +147,8 @@ class MovingCamera(Camera):
         """
         return self.frame.get_center()
 
-    @frame_height.setter
-    def frame_height(self, frame_height: float):
-        """Sets the height of :attr:`frame` in MUnits.
-
-        Parameters
-        ----------
-        frame_height
-            The new height for :attr:`frame`.
-        """
-        self.frame.stretch_to_fit_height(frame_height)
-
-    @frame_width.setter
-    def frame_width(self, frame_width: float):
-        """Sets the width of :attr:`frame` in MUnits.
-
-        Parameters
-        ----------
-        frame_width
-            The new width for :attr:`frame`.
-        """
-        self.frame.stretch_to_fit_width(frame_width)
-
     @frame_center.setter
-    def frame_center(self, frame_center: Point3D | Mobject):
+    def frame_center(self, frame_center: Point3DLike | Mobject) -> None:
         """Sets the centerpoint of :attr:`frame`.
 
         Parameters
@@ -159,7 +164,7 @@ class MovingCamera(Camera):
     def capture_mobjects(
         self,
         mobjects: Iterable[Mobject],
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         # self.reset_frame_center()
         # self.realign_frame_shape()

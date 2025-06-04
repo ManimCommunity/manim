@@ -4,6 +4,8 @@ from __future__ import annotations
 
 __all__ = ["MultiCamera"]
 
+from collections.abc import Iterable
+from typing import Any, Self
 
 from manim.camera.moving_camera import MovingCamera
 from manim.mobject.mobject import Mobject
@@ -57,11 +59,9 @@ class MultiCamera(MovingCamera):
 
     def __init__(
         self,
-        image_mobjects_from_cameras: ImageMobjectFromCamera
-        | Iterable[ImageMobjectFromCamera]
-        | None = None,
+        image_mobjects_from_cameras: Iterable[ImageMobjectFromCamera] | None = None,
         allow_cameras_to_capture_their_own_display: bool = False,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         self.image_mobjects_from_cameras: list[ImageMobjectFromCamera] = []
         if image_mobjects_from_cameras is not None:
@@ -74,7 +74,7 @@ class MultiCamera(MovingCamera):
 
     def add_image_mobject_from_camera(
         self,
-        image_mobject_from_camera: ImgMobFromCam,
+        image_mobject_from_camera: ImageMobjectFromCamera,
     ) -> None:
         """Takes an :class:`~.ImageMobjectFromCamera` created from a preexisting :class:`~.Camera`,
         and adds it into the :attr:`image_mobjects_from_cameras` list. In this way, the
@@ -92,9 +92,10 @@ class MultiCamera(MovingCamera):
         assert isinstance(imfc.camera, MovingCamera)
         self.image_mobjects_from_cameras.append(imfc)
 
-    def update_sub_cameras(self):
+    def update_sub_cameras(self) -> None:
         """For each one of the subcameras referenced by :attr:`image_mobjects_from_cameras`,
-        update its :attr:`frame_shape` and reset its pixel shape."""
+        update its :attr:`frame_shape` and reset its pixel shape.
+        """
         pixel_height, pixel_width = self.pixel_array.shape[:2]
         for imfc in self.image_mobjects_from_cameras:
             imfc.camera.frame_shape = (
@@ -107,13 +108,15 @@ class MultiCamera(MovingCamera):
             )
 
     def reset(self) -> Self:
-        """Resets each of the subcameras referenced by :attr:`image_mobjects_from_cameras`,
-        and then resets the :class:`MultiCamera` itself.
+        """Reset each of the subcameras referenced by
+        :attr:`image_mobjects_from_cameras`, and then resets the
+        :class:`MultiCamera` itself.
 
         Returns
         -------
         Self
-            The :class:`MultiCamera` itself, after resetting itself and all of its subcameras.
+            The :class:`MultiCamera` itself, after resetting itself and all of
+            its subcameras.
         """
         for imfc in self.image_mobjects_from_cameras:
             imfc.camera.reset()
@@ -123,14 +126,15 @@ class MultiCamera(MovingCamera):
     def capture_mobjects(
         self,
         mobjects: Iterable[Mobject],
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
-        """Makes all the subcameras capture the :class:`~.Mobject` s passed.
+        """Make all the subcameras capture the :class:`~.Mobject` s passed.
         If any of the :class:`~.Mobject`s is already in the family of any
         :class:`~.ImageMobjectFromCamera` created from any of the subcameras,
-        the :attr:`allow_cameras_to_capture_their_own_display` attribute decides
-        whether to filter out the :class:`Mobject` for that specific subcamera
-        (if ``False``), or allow that subcamera to capture it as well (if ``True``).
+        the :attr:`allow_cameras_to_capture_their_own_display` attribute
+        decides whether to filter out the :class:`Mobject` for that specific
+        subcamera (if ``False``), or allow that subcamera to capture it as well
+        (if ``True``).
 
         Parameters
         ----------
@@ -146,7 +150,7 @@ class MultiCamera(MovingCamera):
         super().capture_mobjects(mobjects, **kwargs)
 
     def get_mobjects_indicating_movement(self) -> list[Mobject]:
-        """Returns all :class:`~.Mobject` s whose movement implies that
+        """Return all :class:`~.Mobject` s whose movement implies that
         the :class:`MultiCamera` should think of all the other :class:`~.Mobject` s
         on the screen as moving.
 
