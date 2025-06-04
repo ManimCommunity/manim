@@ -1003,18 +1003,19 @@ class Camera:
         # and
         # https://web.archive.org/web/20150222120106/xenia.media.mit.edu/~cwren/interpolator/
 
-        homographic_matrix = []
+        homography_matrix = []
         for (x, y), (X, Y) in zip(target_coords, original_coords):
-            homographic_matrix.append([x, y, 1, 0, 0, 0, -X * x, -X * y])
-            homographic_matrix.append([0, 0, 0, x, y, 1, -Y * x, -Y * y])
+            homography_matrix.append([x, y, 1, 0, 0, 0, -X * x, -X * y])
+            homography_matrix.append([0, 0, 0, x, y, 1, -Y * x, -Y * y])
 
-        A = np.array(homographic_matrix, dtype=ManimFloat)
+        A = np.array(homography_matrix, dtype=ManimFloat)
         b = original_coords.reshape(8).astype(ManimFloat)
 
         try:
             transform_coefficients = np.linalg.solve(A, b)
         except np.linalg.LinAlgError:
-            # The matrix A might be singular
+            # The matrix A might be singular.
+            # In this case, do nothing and return.
             return
 
         sub_image = sub_image.transform(
