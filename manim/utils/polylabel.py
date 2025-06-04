@@ -63,38 +63,82 @@ class Polygon:
         )
         return d if self.inside(point) else -d
 
-    def inside(self, point: Point2DLike) -> bool:
-        """Check if a point is inside the polygon using ray casting algorithm.
-        This version includes boundary points consistently.
+    def _is_point_on_segment(
+        self,
+        x_point: float,
+        y_point: float,
+        x0: float,
+        y0: float,
+        x1: float,
+        y1: float,
+    ) -> bool:
         """
-        import numpy as np
+        Check if a point is on the segment.
 
+        The segment is defined by (x0, y0) to (x1, y1).
+        """
+        if min(x0, x1) <= x_point <= max(x0, x1) and min(y0, y1) <= y_point <= max(
+            y0, y1
+        ):
+            dx = x1 - x0
+            dy = y1 - y0
+            cross = dx * (y_point - y0) - dy * (x_point - x0)
+            return bool(np.isclose(cross, 0.0))
+        return False
+
+    def _ray_crosses_segment(
+        self,
+        x_point: float,
+        y_point: float,
+        x0: float,
+        y0: float,
+        x1: float,
+        y1: float,
+    ) -> bool:
+        """
+        Check if a horizontal ray to the right from point (x_point, y_point) crosses the segment.
+
+        The segment is defined by (x0, y0) to (x1, y1).
+        """
+        if (y0 > y_point) != (y1 > y_point):
+            slope = (x1 - x0) / (y1 - y0)
+            x_intersect = slope * (y_point - y0) + x0
+            return bool(x_point < x_intersect)
+        return False
+
+    def inside(self, point: Point2DLike) -> bool:
+        """
+        Check if a point is inside the polygon.
+
+        Uses ray casting algorithm and checks boundary points consistently.
+        """
         point_x, point_y = point
         start_x, start_y = self.start[:, 0], self.start[:, 1]
         stop_x, stop_y = self.stop[:, 0], self.stop[:, 1]
+        segment_count = len(start_x)
 
-        # Check if the point lies exactly on any edge
-        for i in range(len(start_x)):
-            min_x, max_x = min(start_x[i], stop_x[i]), max(start_x[i], stop_x[i])
-            min_y, max_y = min(start_y[i], stop_y[i]), max(start_y[i], stop_y[i])
-            if min_x <= point_x <= max_x and min_y <= point_y <= max_y:
-                dx = stop_x[i] - start_x[i]
-                dy = stop_y[i] - start_y[i]
-                cross = dx * (point_y - start_y[i]) - dy * (point_x - start_x[i])
-                if np.isclose(cross, 0.0):
-                    return True
+        for i in range(segment_count):
+            if self._is_point_on_segment(
+                point_x,
+                point_y,
+                start_x[i],
+                start_y[i],
+                stop_x[i],
+                stop_y[i],
+            ):
+                return True
 
-        # Ray casting
         crossings = 0
-        for i in range(len(start_x)):
-            y0, y1 = start_y[i], stop_y[i]
-            x0, x1 = start_x[i], stop_x[i]
-
-            if (y0 > point_y) != (y1 > point_y):
-                slope = (x1 - x0) / (y1 - y0)
-                x_intersect = slope * (point_y - y0) + x0
-                if point_x < x_intersect:
-                    crossings += 1
+        for i in range(segment_count):
+            if self._ray_crosses_segment(
+                point_x,
+                point_y,
+                start_x[i],
+                start_y[i],
+                stop_x[i],
+                stop_y[i],
+            ):
+                crossings += 1
 
         return crossings % 2 == 1
 
