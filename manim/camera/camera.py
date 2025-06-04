@@ -962,15 +962,15 @@ class Camera:
 
     def display_image_mobject(
         self, image_mobject: AbstractImageMobject, pixel_array: np.ndarray
-    ):
-        """Displays an ImageMobject by changing the pixel_array suitably.
+    ) -> None:
+        """Displays an :class:`~.ImageMobject` by changing the ``pixel_array`` suitably.
 
         Parameters
         ----------
         image_mobject
-            The imageMobject to display
+            The :class:`~.ImageMobject` to display.
         pixel_array
-            The Pixel array to put the imagemobject in.
+            The pixel array to put the :class:`~.ImageMobject` in.
         """
         sub_image = Image.fromarray(image_mobject.get_pixel_array(), mode="RGBA")
         original_coords = np.array(
@@ -982,6 +982,9 @@ class Camera:
             ]
         )
         target_coords = self.points_to_pixel_coords(image_mobject, image_mobject.points)
+
+        # Temporarily translate target coords to upper left corner to calculate the
+        # smallest possible size for the target image.
         shift_vector = np.array(
             [
                 min(*[x for x, y in target_coords]),
@@ -994,27 +997,29 @@ class Camera:
             max(*[y for x, y in target_coords]),
         )
 
+        # Use PIL.Image.Image.transform() to apply a perspective transform to the image.
+        # The transform coefficients must be calculated. The following is adapted from
+        # https://stackoverflow.com/questions/14177744/how-does-perspective-transformation-work-in-pil
+        # and
+        # https://web.archive.org/web/20150222120106/xenia.media.mit.edu/~cwren/interpolator/
+
         homographic_matrix = []
-        for tc, oc in zip(target_coords, original_coords):
-            homographic_matrix.append(
-                [tc[0], tc[1], 1, 0, 0, 0, -oc[0] * tc[0], -oc[0] * tc[1]]
-            )
-            homographic_matrix.append(
-                [0, 0, 0, tc[0], tc[1], 1, -oc[1] * tc[0], -oc[1] * tc[1]]
-            )
+        for (x, y), (X, Y) in zip(target_coords, original_coords):
+            homographic_matrix.append([x, y, 1, 0, 0, 0, -X * x, -X * y])
+            homographic_matrix.append([0, 0, 0, x, y, 1, -Y * x, -Y * y])
 
         A = np.array(homographic_matrix, dtype=ManimFloat)
         b = original_coords.reshape(8).astype(ManimFloat)
         transform_coefficients = np.linalg.solve(A, b)
 
         sub_image = sub_image.transform(
-            size=target_size,  # Use the smallest possible size for speed
+            size=target_size,  # Use the smallest possible size for speed.
             method=Image.Transform.PERSPECTIVE,
             data=transform_coefficients,
             resample=image_mobject.resampling_algorithm,
         )
 
-        # Paste into an image as large as the camera's pixel array
+        # Paste into an image as large as the camera's pixel array.
         full_image = Image.fromarray(
             np.zeros((self.pixel_height, self.pixel_width)),
             mode="RGBA",
@@ -1028,7 +1033,7 @@ class Camera:
                 shift_vector[1] + target_size[1],
             ),
         )
-        # Paint on top of existing pixel array
+        # Paint on top of existing pixel array.
         self.overlay_PIL_image(pixel_array, full_image)
 
     def overlay_rgba_array(self, pixel_array: np.ndarray, new_array: np.ndarray):

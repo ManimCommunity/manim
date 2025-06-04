@@ -85,15 +85,15 @@ class AbstractImageMobject(Mobject):
             * 'hamming'
             * 'lanczos' or 'antialias'
         """
-        if isinstance(resampling_algorithm, int):
-            self.resampling_algorithm = resampling_algorithm
-        else:
+        if resampling_algorithm not in RESAMPLING_ALGORITHMS.values():
             raise ValueError(
                 "resampling_algorithm has to be an int, one of the values defined in "
                 "RESAMPLING_ALGORITHMS or a Pillow resampling filter constant. "
-                "Available algorithms: 'bicubic', 'nearest', 'box', 'bilinear', "
-                "'hamming', 'lanczos'.",
+                "Available algorithms: 'bicubic' (or 'cubic'), 'nearest' (or 'none'), "
+                "'bilinear' (or 'linear').",
             )
+
+        self.resampling_algorithm = resampling_algorithm
         return self
 
     def reset_points(self) -> None:

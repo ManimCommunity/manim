@@ -269,20 +269,14 @@ def test_ImageInterpolation(scene):
         np.uint8([[63, 0, 0, 0], [0, 127, 0, 0], [0, 0, 191, 0], [0, 0, 0, 255]]),
     )
     img.height = 2
-    img1 = img.copy()
-    img2 = img.copy()
-    img3 = img.copy()
-    img4 = img.copy()
-    img5 = img.copy()
 
-    img1.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
-    img2.set_resampling_algorithm(RESAMPLING_ALGORITHMS["lanczos"])
-    img3.set_resampling_algorithm(RESAMPLING_ALGORITHMS["linear"])
-    img4.set_resampling_algorithm(RESAMPLING_ALGORITHMS["cubic"])
-    img5.set_resampling_algorithm(RESAMPLING_ALGORITHMS["box"])
+    algorithms = ["nearest", "bilinear", "bicubic"]
+    for pos, algorithm in enumerate(algorithms):
+        algorithm = RESAMPLING_ALGORITHMS[algorithm]
+        img_copy = img.copy().set_resampling_algorithm(algorithm)
+        img_copy.shift((2 * pos - len(algorithms) + 1) * RIGHT)
+        scene.add(img_copy)
 
-    scene.add(img1, img2, img3, img4, img5)
-    [s.shift(4 * LEFT + pos * 2 * RIGHT) for pos, s in enumerate(scene.mobjects)]
     scene.wait()
 
 
