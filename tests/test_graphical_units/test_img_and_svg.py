@@ -268,13 +268,14 @@ def test_ImageInterpolation(scene):
     img = ImageMobject(
         np.uint8([[63, 0, 0, 0], [0, 127, 0, 0], [0, 0, 191, 0], [0, 0, 0, 255]]),
     )
-    img.height = 2
+    img.height = 3
 
-    algorithms = ["nearest", "bilinear", "bicubic"]
-    for pos, algorithm in enumerate(algorithms):
-        algorithm = RESAMPLING_ALGORITHMS[algorithm]
+    algorithm_texts = ["nearest", "linear", "cubic"]
+    for i, algorithm_text in enumerate(algorithms):
+        algorithm = RESAMPLING_ALGORITHMS[algorithm_text]
         img_copy = img.copy().set_resampling_algorithm(algorithm)
-        img_copy.shift((2 * pos - len(algorithms) + 1) * RIGHT)
+        position = img.height * (i - (len(algorithm_texts) - 1) / 2) * RIGHT
+        img_copy.move_to(position)
         scene.add(img_copy)
 
     scene.wait()
