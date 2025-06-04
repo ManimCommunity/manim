@@ -64,38 +64,39 @@ class Polygon:
         return d if self.inside(point) else -d
 
     def inside(self, point: Point2DLike) -> bool:
-        """
-        Check if a point is inside the polygon using ray casting algorithm.
-
+        """Check if a point is inside the polygon using ray casting algorithm.
         This version includes boundary points consistently.
         """
-        px, py = point
-        x0, y0 = self.start[:, 0], self.start[:, 1]
-        x1, y1 = self.stop[:, 0], self.stop[:, 1]
+        import numpy as np
+
+        point_x, point_y = point
+        start_x, start_y = self.start[:, 0], self.start[:, 1]
+        stop_x, stop_y = self.stop[:, 0], self.stop[:, 1]
 
         # Check if the point lies exactly on any edge
-        for i in range(len(x0)):
-            if min(x0[i], x1[i]) <= px <= max(x0[i], x1[i]) and min(
-                y0[i], y1[i]
-            ) <= py <= max(y0[i], y1[i]):
-                # Compute the cross product to determine colinearity
-                dx = x1[i] - x0[i]
-                dy = y1[i] - y0[i]
-                if abs(dx * (py - y0[i]) - dy * (px - x0[i])) < 1e-9:
+        for i in range(len(start_x)):
+            min_x, max_x = min(start_x[i], stop_x[i]), max(start_x[i], stop_x[i])
+            min_y, max_y = min(start_y[i], stop_y[i]), max(start_y[i], stop_y[i])
+            if min_x <= point_x <= max_x and min_y <= point_y <= max_y:
+                dx = stop_x[i] - start_x[i]
+                dy = stop_y[i] - start_y[i]
+                cross = dx * (point_y - start_y[i]) - dy * (point_x - start_x[i])
+                if np.isclose(cross, 0.0):
                     return True
 
         # Ray casting
-        count = 0
-        for i in range(len(x0)):
-            xi, yi = x0[i], y0[i]
-            xj, yj = x1[i], y1[i]
+        crossings = 0
+        for i in range(len(start_x)):
+            y0, y1 = start_y[i], stop_y[i]
+            x0, x1 = start_x[i], stop_x[i]
 
-            if (yi > py) != (yj > py):
-                x_intersect = (xj - xi) * (py - yi) / (yj - yi + 1e-12) + xi
-                if px < x_intersect:
-                    count += 1
+            if (y0 > point_y) != (y1 > point_y):
+                slope = (x1 - x0) / (y1 - y0)
+                x_intersect = slope * (point_y - y0) + x0
+                if point_x < x_intersect:
+                    crossings += 1
 
-        return count % 2 == 1
+        return crossings % 2 == 1
 
 
 class Cell:
