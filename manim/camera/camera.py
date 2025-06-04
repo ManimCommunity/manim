@@ -1010,7 +1010,12 @@ class Camera:
 
         A = np.array(homographic_matrix, dtype=ManimFloat)
         b = original_coords.reshape(8).astype(ManimFloat)
-        transform_coefficients = np.linalg.solve(A, b)
+
+        try:
+            transform_coefficients = np.linalg.solve(A, b)
+        except np.linalg.LinAlgError:
+            # The matrix A might be singular
+            return
 
         sub_image = sub_image.transform(
             size=target_size,  # Use the smallest possible size for speed.
