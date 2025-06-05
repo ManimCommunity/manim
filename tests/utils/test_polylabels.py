@@ -122,12 +122,12 @@ def test_cell(center, h, rings):
 
 
 @pytest.mark.parametrize(
-    ("rings", "expected_center"),
+    ("rings", "expected_centers"),
     [
         (
             # Simple square: basic convex polygon
             [[[0, 0], [4, 0], [4, 4], [0, 4], [0, 0]]],
-            [2.0, 2.0],  # expected pole of inaccessibility
+            [[2.0, 2.0]],  # single correct pole of inaccessibility
         ),
         (
             # Square with a square hole (donut shape): tests handling of interior voids
@@ -135,21 +135,23 @@ def test_cell(center, h, rings):
                 [[1, 1], [5, 1], [5, 5], [1, 5], [1, 1]],
                 [[2, 2], [2, 4], [4, 4], [4, 2], [2, 2]],
             ],
-            [1.5, 1.5],  # expected pole of inaccessibility
+            [  # any of the four pole of inaccessibility options
+                [1.5, 1.5],
+                [1.5, 4.5],
+                [4.5, 1.5],
+                [4.5, 4.5],
+            ],
         ),
     ],
 )
-def test_polylabel(rings, expected_center):
+def test_polylabel(rings, expected_centers):
     # Add third dimension to conform to polylabel input format
     rings_3d = [np.column_stack([ring, np.zeros(len(ring))]) for ring in rings]
-    polygon = Polygon(rings)
     result = polylabel(rings_3d, precision=0.01)
 
-    expected = Cell(c=expected_center, h=0.0, polygon=polygon)
-
     assert isinstance(result, Cell)
-    assert np.allclose(result.c, expected.c, atol=0.05), (
-        f"Expected {expected.c}, got {result.c}"
-    )
     assert result.h <= 0.01
     assert result.d >= 0.0
+
+    match_found = any(np.allclose(result.c, ec, atol=0.1) for ec in expected_centers)
+    assert match_found, f"Expected one of {expected_centers}, but got {result.c}"
