@@ -174,6 +174,13 @@ def test_ZIndex(scene):
     scene.play(ApplyMethod(triangle.shift, 2 * UP))
 
 
+@frames_comparison(last_frame=False)
+def test_ZIndex_LaggedStart(scene):
+    circle = Circle(radius=1, color=BLUE)
+    square = Square(side_length=2, color=RED, z_index=-1)
+    scene.play(LaggedStart(FadeIn(circle), FadeIn(square), run_time=2, lag_ratio=0.5))
+
+
 @frames_comparison
 def test_Angle(scene):
     l1 = Line(ORIGIN, RIGHT)
