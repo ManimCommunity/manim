@@ -25,7 +25,8 @@ class Polygon:
     Parameters
     ----------
     rings
-        A collection of closed polygonal ring.
+        A sequence of points, where each sequence represents the rings of the polygon.
+        Typically, multiple rings indicate holes in the polygon.
     """
 
     def __init__(self, rings: Sequence[Point2DLike_Array]) -> None:
