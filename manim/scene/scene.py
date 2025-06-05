@@ -848,7 +848,9 @@ class Scene:
         # as soon as there's one that needs updating of
         # some kind per frame, return the list from that
         # point forward.
-        animation_mobjects = [anim.mobject for anim in animations]
+        animation_mobjects = []
+        for anim in animations:
+            animation_mobjects.extend(extract_mobject_family_members(anim.mobject))
         mobjects = self.get_mobject_family_members()
         for i, mob in enumerate(mobjects):
             update_possibilities = [
@@ -1258,6 +1260,14 @@ class Scene:
         for animation in self.animations:
             animation._setup_scene(self)
             animation.begin()
+
+        if config.renderer == RendererType.CAIRO:
+            # Paint all non-moving objects onto the screen, so they don't
+            # have to be rendered every frame
+            (
+                self.moving_mobjects,
+                self.static_mobjects,
+            ) = self.get_moving_and_static_mobjects(self.animations)
 
     def is_current_animation_frozen_frame(self) -> bool:
         """Returns whether the current animation produces a static frame (generally a Wait)."""
