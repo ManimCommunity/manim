@@ -1555,8 +1555,15 @@ class RandomColorGenerator:
     ManimColor('#BBBBBB')
     """
 
-    def __init__(self, seed: int | None = None) -> None:
+    import manim.utils.color.manim_colors as manim_colors
+
+    def __init__(
+        self,
+        seed: int | None = None,
+        sample_colors: list[ManimColor] = manim_colors._all_manim_colors,
+    ) -> None:
         self.choice = random.choice if seed is None else random.Random(seed).choice
+        self.colors = sample_colors
 
     def next(self) -> ManimColor:
         """
@@ -1575,9 +1582,7 @@ class RandomColorGenerator:
         >>> rnd.next()
         ManimColor('#222222')
         """
-        import manim.utils.color.manim_colors as manim_colors
-
-        return self.choice(manim_colors._all_manim_colors)
+        return self.choice(self.colors)
 
 
 def get_shaded_rgb(
