@@ -22,6 +22,7 @@ class Rotating(Animation):
     """Continuously rotates a mobject over time.
     Useful for animations like orbiting planets or spinning logos.
     """
+
     def __init__(
         self,
         mobject: Mobject,

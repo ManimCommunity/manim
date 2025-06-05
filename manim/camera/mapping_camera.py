@@ -28,6 +28,7 @@ class MappingCamera(Camera):
     kwargs : dict
         Additional arguments passed to Camera base class.
     """
+
     def __init__(
         self,
         mapping_func=lambda p: p,
@@ -86,6 +87,7 @@ class OldMultiCamera(Camera):
         Tuples of (Camera, (start_y, start_x)) indicating camera and
         its pixel offset on the final frame.
     """
+
     def __init__(self, *cameras_with_start_positions, **kwargs):
         self.shifted_cameras = [
             DictAsObject(
@@ -152,6 +154,7 @@ class SplitScreenCamera(OldMultiCamera):
     right_camera : Camera
     kwargs : dict
     """
+
     def __init__(self, left_camera, right_camera, **kwargs):
         Camera.__init__(self, **kwargs)  # to set attributes such as pixel_width
         self.left_camera = left_camera

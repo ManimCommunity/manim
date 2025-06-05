@@ -5,7 +5,6 @@
     :mod:`.moving_camera_scene`
 """
 
-
 from __future__ import annotations
 
 __all__ = ["MovingCamera"]
@@ -29,7 +28,6 @@ class MovingCamera(Camera):
 
         :class:`.MovingCameraScene`
     """
-
 
     def __init__(
         self,

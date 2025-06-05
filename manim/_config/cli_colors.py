@@ -25,8 +25,14 @@ def parse_cli_ctx(parser: configparser.SectionProxy) -> dict[str, Any]:
     }
     theme_settings = {}
     theme_keys = {
-        "command_help", "invoked_command", "heading", "constraint",
-        "section_help", "col1", "col2", "epilog"
+        "command_help",
+        "invoked_command",
+        "heading",
+        "constraint",
+        "section_help",
+        "col1",
+        "col2",
+        "epilog",
     }
     # Extract and apply any style-related keys defined in the config section.
     for k, v in parser.items():
