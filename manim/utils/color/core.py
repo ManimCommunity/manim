@@ -1569,15 +1569,16 @@ class RandomColorGenerator:
     ManimColor('#FC6255')
     """
 
-    import manim.utils.color.manim_colors as manim_colors
-
     def __init__(
         self,
         seed: int | None = None,
-        sample_colors: list[ManimColor] = manim_colors._all_manim_colors,
+        sample_colors: list[ManimColor] | None = None,
     ) -> None:
         self.choice = random.choice if seed is None else random.Random(seed).choice
-        self.colors = sample_colors
+
+        from manim.utils.color.manim_colors import _all_manim_colors
+
+        self.colors = _all_manim_colors if sample_colors is None else sample_colors
 
     def next(self) -> ManimColor:
         """
