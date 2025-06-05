@@ -122,28 +122,34 @@ def test_cell(center, h, rings):
 
 
 @pytest.mark.parametrize(
-    ("rings", "expected_x", "expected_y"),
+    ("rings", "expected_center"),
     [
         (
-            [[[0, 0, 0], [4, 0, 0], [4, 4, 0], [0, 4, 0], [0, 0, 0]]],  # rings
-            # Center of square
-            2.0,  # expected_x
-            2.0,  # expected_y
+            # Simple square: basic convex polygon
+            [[[0, 0], [4, 0], [4, 4], [0, 4], [0, 0]]],
+            [2.0, 2.0],  # expected pole of inaccessibility
         ),
         (
+            # Square with a square hole (donut shape): tests handling of interior voids
             [
-                [[1, 1, 0], [5, 1, 0], [5, 5, 0], [1, 5, 0], [1, 1, 0]],
-                [[2, 2, 0], [2, 4, 0], [4, 4, 0], [4, 2, 0], [2, 2, 0]],
-            ],  # rings
-            # Farthest accessible point from edges inside outer but outside hole
-            1.5,  # expected_x
-            1.5,  # expected_y
+                [[1, 1], [5, 1], [5, 5], [1, 5], [1, 1]],
+                [[2, 2], [2, 4], [4, 4], [4, 2], [2, 2]],
+            ],
+            [1.5, 1.5],  # expected pole of inaccessibility
         ),
     ],
 )
-def test_polylabel(rings, expected_x, expected_y):
-    result = polylabel(rings, precision=0.1)
+def test_polylabel(rings, expected_center):
+    # Add third dimension to conform to polylabel input format
+    rings_3d = [np.column_stack([ring, np.zeros(len(ring))]) for ring in rings]
+    polygon = Polygon(rings)
+    result = polylabel(rings_3d, precision=0.01)
+
+    expected = Cell(c=expected_center, h=0.0, polygon=polygon)
+
     assert isinstance(result, Cell)
-    x, y = result.c
-    assert abs(x - expected_x) <= 0.1
-    assert abs(y - expected_y) <= 0.1
+    assert np.allclose(result.c, expected.c, atol=0.05), (
+        f"Expected {expected.c}, got {result.c}"
+    )
+    assert result.h <= 0.01
+    assert result.d >= 0.0
