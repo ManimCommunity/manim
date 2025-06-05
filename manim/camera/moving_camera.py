@@ -1,10 +1,11 @@
-"""A camera able to move through a scene.
+"""
+Defines the MovingCamera class, a camera that can pan and zoom through a scene.
 
 .. SEEALSO::
 
     :mod:`.moving_camera_scene`
-
 """
+
 
 from __future__ import annotations
 
@@ -22,13 +23,15 @@ from ..utils.color import WHITE
 
 class MovingCamera(Camera):
     """
-    Stays in line with the height, width and position of it's 'frame', which is a Rectangle
+    A camera that follows and matches the size and position of its 'frame', a Rectangle (or similar Mobject).
+
+    The frame defines the region of space the camera displays and can move or resize dynamically.
 
     .. SEEALSO::
 
         :class:`.MovingCameraScene`
-
     """
+
 
     def __init__(
         self,

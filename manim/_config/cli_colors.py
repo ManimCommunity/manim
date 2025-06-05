@@ -1,3 +1,10 @@
+"""
+Parses CLI context settings from the configuration file and returns a Cloup Context settings dictionary.
+
+This module reads configuration values for help formatting, theme styles, and alignment options
+used when rendering command-line interfaces in Manim.
+"""
+
 from __future__ import annotations
 
 import configparser
@@ -19,15 +26,10 @@ def parse_cli_ctx(parser: configparser.SectionProxy) -> dict[str, Any]:
     }
     theme_settings = {}
     theme_keys = {
-        "command_help",
-        "invoked_command",
-        "heading",
-        "constraint",
-        "section_help",
-        "col1",
-        "col2",
-        "epilog",
+        "command_help", "invoked_command", "heading", "constraint",
+        "section_help", "col1", "col2", "epilog"
     }
+    # Extract and apply any style-related keys defined in the config section.
     for k, v in parser.items():
         if k in theme_keys and v:
             theme_settings.update({k: Style(v)})
