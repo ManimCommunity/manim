@@ -1,5 +1,4 @@
-"""
-Parses CLI context settings from the configuration file and returns a Cloup Context settings dictionary.
+"""Parses CLI context settings from the configuration file and returns a Cloup Context settings dictionary.
 
 This module reads configuration values for help formatting, theme styles, and alignment options
 used when rendering command-line interfaces in Manim.

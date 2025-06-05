@@ -17,8 +17,7 @@ from ..utils.config_ops import DictAsObject
 
 
 class MappingCamera(Camera):
-    """
-    Parameters
+    """Parameters
     ----------
     mapping_func : callable
         Function to map 3D points to new 3D points (identity by default).
@@ -49,8 +48,7 @@ class MappingCamera(Camera):
         )
 
     def capture_mobjects(self, mobjects, **kwargs):
-        """
-        Capture mobjects for rendering after applying the spatial mapping.
+        """Capture mobjects for rendering after applying the spatial mapping.
 
         Copies mobjects unless intrusion is allowed, and ensures
         vector objects have enough curves for smooth distortion.
@@ -82,8 +80,7 @@ class MappingCamera(Camera):
 
 # TODO, the classes below should likely be deleted
 class OldMultiCamera(Camera):
-    """
-    Parameters
+    """Parameters
     ----------
     *cameras_with_start_positions : tuple
         Tuples of (Camera, (start_y, start_x)) indicating camera and
@@ -147,8 +144,7 @@ class OldMultiCamera(Camera):
 
 
 class SplitScreenCamera(OldMultiCamera):
-    """
-    Initializes a split screen camera setup with two side-by-side cameras.
+    """Initializes a split screen camera setup with two side-by-side cameras.
 
     Parameters
     ----------
