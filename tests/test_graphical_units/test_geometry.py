@@ -175,10 +175,18 @@ def test_ZIndex(scene):
 
 
 @frames_comparison(last_frame=False)
+def test_ZIndex_AnimationGroup(scene):
+    # https://github.com/ManimCommunity/manim/issues/3334
+    square = Square().set_z_index(-1)
+    scene.play(AnimationGroup(GrowFromCenter(square)))
+
+
+@frames_comparison(last_frame=False)
 def test_ZIndex_LaggedStart(scene):
-    circle = Circle(radius=1, color=BLUE)
-    square = Square(side_length=2, color=RED, z_index=-1)
-    scene.play(LaggedStart(FadeIn(circle), FadeIn(square), run_time=2, lag_ratio=0.5))
+    # https://github.com/ManimCommunity/manim/issues/3914
+    text = Text("Some text", font_size=30)
+    line = Line([-2, 0, 0], [2, 0, 0], color=RED_D, z_index=-1)
+    scene.play(LaggedStart(FadeIn(text), FadeIn(line), lag_ratio=1 / 2))
 
 
 @frames_comparison
