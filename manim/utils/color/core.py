@@ -1512,12 +1512,68 @@ def random_color() -> ManimColor:
 
 
 class RandomColorGenerator:
-    """A class to generate random colors from the Manim color palette in a reproducible manner using a seed value."""
+    """
+    A generator for producing random colors from the Manim color palette,
+    optionally in a reproducible sequence using a seed value.
+
+    When initialized with a specific seed, this class generates a deterministic
+    sequence of Manim colors, which is useful for reproducibility in testing or animations.
+    If no seed is provided, it behaves like Python’s standard `random.choice`, yielding
+    different results on each run.
+
+    Parameters
+    ----------
+    seed : int | None, optional
+        A seed value to initialize the internal random number generator.
+        If None (default), colors are chosen using the global random state.
+
+    Examples
+    --------
+    Without a seed (non-deterministic):
+    >>> from manim.utils.color.core import RandomColorGenerator
+    >>> rnd = RandomColorGenerator()
+    >>> isinstance(rnd.next().hex, str)
+    True
+
+    With a seed (deterministic sequence):
+    >>> rnd = RandomColorGenerator(42)
+    >>> rnd.next()
+    ManimColor('#ECE7E2')
+    >>> rnd.next()
+    ManimColor('#BBBBBB')
+    >>> rnd.next()
+    ManimColor('#BBBBBB')
+
+    Re-initializing with the same seed produces the same sequence:
+    >>> rnd2 = RandomColorGenerator(42)
+    >>> rnd2.next()
+    ManimColor('#ECE7E2')
+    >>> rnd2.next()
+    ManimColor('#BBBBBB')
+    >>> rnd2.next()
+    ManimColor('#BBBBBB')
+    """
 
     def __init__(self, seed: int | None = None) -> None:
         self.choice = random.choice if seed is None else random.Random(seed).choice
 
     def next(self) -> ManimColor:
+        """
+        Returns the next color from the Manim color palette.
+
+        Returns
+        -------
+        ManimColor
+            A color randomly selected from the predefined Manim color palette.
+
+        Examples
+        --------
+        >>> rnd = RandomColorGenerator(23)
+        >>> rnd.next()
+        ManimColor('#A6CF8C')
+        >>> rnd.next()
+        ManimColor('#222222')
+        """
         import manim.utils.color.manim_colors as manim_colors
 
         return self.choice(manim_colors._all_manim_colors)
@@ -1576,6 +1632,7 @@ __all__ = [
     "average_color",
     "random_bright_color",
     "random_color",
+    "RandomColorGenerator",
     "get_shaded_rgb",
     "HSV",
     "RGBA",
