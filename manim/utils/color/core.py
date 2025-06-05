@@ -1530,10 +1530,11 @@ class RandomColorGenerator:
     Examples
     --------
     Without a seed (non-deterministic):
-    >>> from manim.utils.color.core import RandomColorGenerator
+    >>> from manim import RandomColorGenerator, ManimColor
     >>> rnd = RandomColorGenerator()
-    >>> isinstance(rnd.next().hex, str)
+    >>> isinstance(rnd.next(), ManimColor)
     True
+
 
     With a seed (deterministic sequence):
     >>> rnd = RandomColorGenerator(42)
