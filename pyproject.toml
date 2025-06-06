@@ -157,6 +157,7 @@ select = [
   "PT",
   "SIM",
   "UP",
+  "PL"
 ]
 
 ignore = [
@@ -185,6 +186,11 @@ ignore = [
   "E114",
   "E117",
   "E501",
+  # Ignoring (too many arguments), this is an indication that the function may be doing too much,
+  # making it difficult to maintain, test and read.
+  "PLR0913",
+  # Ignoring literal values (numbers, strings) used directly in the code.
+  "PLR2004"
 ]
 
 # Allow unused variables when underscore-prefixed.
