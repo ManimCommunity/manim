@@ -26,8 +26,13 @@ jobs:
         with:
           python-version: 3.13
 
-      - name: Install Ruff
-        run: pip install ruff
+      - name: Install uv
+        uses: astral-sh/setupuv@v5
+        with:
+          enable-cache: true
+
+      - name: Sync dependencies
+        run: uv sync --dev
 
       - name: Run Ruff linting
-        run: ruff check .
+        run: uv run ruff check .
