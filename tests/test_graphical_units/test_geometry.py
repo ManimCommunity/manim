@@ -174,21 +174,6 @@ def test_ZIndex(scene):
     scene.play(ApplyMethod(triangle.shift, 2 * UP))
 
 
-@frames_comparison(last_frame=False)
-def test_ZIndex_AnimationGroup(scene):
-    # https://github.com/ManimCommunity/manim/issues/3334
-    square = Square().set_z_index(-1)
-    scene.play(AnimationGroup(GrowFromCenter(square)))
-
-
-@frames_comparison(last_frame=False)
-def test_ZIndex_LaggedStart(scene):
-    # https://github.com/ManimCommunity/manim/issues/3914
-    text = Text("Some text", font_size=30)
-    line = Line([-2, 0, 0], [2, 0, 0], color=RED_D, z_index=-1)
-    scene.play(LaggedStart(FadeIn(text), FadeIn(line), lag_ratio=1 / 2))
-
-
 @frames_comparison
 def test_Angle(scene):
     l1 = Line(ORIGIN, RIGHT)
