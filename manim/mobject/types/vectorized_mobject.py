@@ -1228,7 +1228,6 @@ class VMobject(Mobject):
             submob.set_anchors_and_handles(a1, new_h1, new_h2, a2)
         return self
 
-    #
     def consider_points_equals(self, p0: Point3DLike, p1: Point3DLike) -> bool:
         return np.allclose(p0, p1, atol=self.tolerance_for_point_equality)
 

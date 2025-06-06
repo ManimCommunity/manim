@@ -196,18 +196,17 @@ class ManimColor:
                     raise ValueError(
                         f"ManimColor only accepts lists/tuples/arrays of length 3 or 4, not {length}"
                     )
+            elif length == 3:
+                self._internal_value = ManimColor._internal_from_int_rgb(
+                    value,  # type: ignore[arg-type]
+                    alpha,
+                )
+            elif length == 4:
+                self._internal_value = ManimColor._internal_from_int_rgba(value)  # type: ignore[arg-type]
             else:
-                if length == 3:
-                    self._internal_value = ManimColor._internal_from_int_rgb(
-                        value,  # type: ignore[arg-type]
-                        alpha,
-                    )
-                elif length == 4:
-                    self._internal_value = ManimColor._internal_from_int_rgba(value)  # type: ignore[arg-type]
-                else:
-                    raise ValueError(
-                        f"ManimColor only accepts lists/tuples/arrays of length 3 or 4, not {length}"
-                    )
+                raise ValueError(
+                    f"ManimColor only accepts lists/tuples/arrays of length 3 or 4, not {length}"
+                )
         elif hasattr(value, "get_hex") and callable(value.get_hex):
             result = re_hex.search(value.get_hex())
             if result is None:
@@ -1508,7 +1507,7 @@ def random_color() -> ManimColor:
     ManimColor
         A random :class:`ManimColor`.
     """
-    import manim.utils.color.manim_colors as manim_colors
+    from manim.utils.color import manim_colors
 
     return random.choice(manim_colors._all_manim_colors)
 

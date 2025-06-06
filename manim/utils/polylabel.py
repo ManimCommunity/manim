@@ -155,8 +155,7 @@ def polylabel(rings: Sequence[Point3DLike_Array], precision: float = 0.01) -> Ce
     directions = np.array([[-1, -1], [1, -1], [-1, 1], [1, 1]])
     while not queue.empty():
         cell = queue.get()
-        if cell > best:
-            best = cell
+        best = max(best, cell)
         # If a cell is promising, subdivide!
         if cell.p - best.d > precision:
             h = cell.h / 2.0

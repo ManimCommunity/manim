@@ -225,17 +225,13 @@ class MovingCamera(Camera):
                 scene_critical_y_down = m.get_critical_point(DOWN)[1]
 
             else:
-                if m.get_critical_point(LEFT)[0] < scene_critical_x_left:
-                    scene_critical_x_left = m.get_critical_point(LEFT)[0]
+                scene_critical_x_left = min(scene_critical_x_left, m.get_critical_point(LEFT)[0])
 
-                if m.get_critical_point(RIGHT)[0] > scene_critical_x_right:
-                    scene_critical_x_right = m.get_critical_point(RIGHT)[0]
+                scene_critical_x_right = max(scene_critical_x_right, m.get_critical_point(RIGHT)[0])
 
-                if m.get_critical_point(UP)[1] > scene_critical_y_up:
-                    scene_critical_y_up = m.get_critical_point(UP)[1]
+                scene_critical_y_up = max(scene_critical_y_up, m.get_critical_point(UP)[1])
 
-                if m.get_critical_point(DOWN)[1] < scene_critical_y_down:
-                    scene_critical_y_down = m.get_critical_point(DOWN)[1]
+                scene_critical_y_down = min(scene_critical_y_down, m.get_critical_point(DOWN)[1])
 
         # calculate center x and y
         x = (scene_critical_x_left + scene_critical_x_right) / 2

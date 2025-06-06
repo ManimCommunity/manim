@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import numpy as np
-import numpy.linalg as linalg
+from numpy import linalg
 
 from manim._config import config
 from manim.typing import ManimFloat

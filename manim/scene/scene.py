@@ -1659,9 +1659,8 @@ class Scene:
             self.camera_target = np.array([0, 0, 0], dtype=np.float32)
         elif char == "q":
             self.quit_interaction = True
-        else:
-            if char in self.key_to_function_map:
-                self.key_to_function_map[char]()
+        elif char in self.key_to_function_map:
+            self.key_to_function_map[char]()
 
     def on_key_release(self, symbol, modifiers):
         pass

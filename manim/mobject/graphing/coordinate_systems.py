@@ -763,7 +763,7 @@ class CoordinateSystem:
                     for i, pivot in enumerate(pivots):
                         if pivot > axis_value:
                             color_index = (axis_value - pivots[i - 1]) / (
-                                pivots[i] - pivots[i - 1]
+                                pivot - pivots[i - 1]
                             )
                             color_index = min(color_index, 1)
                             mob_color = interpolate_color(
@@ -1685,10 +1685,8 @@ class CoordinateSystem:
         if len(labels) > 0:
             max_width = 0.8 * group.dx_line.width
             max_height = 0.8 * group.df_line.height
-            if labels.width > max_width:
-                labels.width = max_width
-            if labels.height > max_height:
-                labels.height = max_height
+            labels.width = min(labels.width, max_width)
+            labels.height = min(labels.height, max_height)
 
         if dx_label is not None:
             group.dx_label.next_to(
@@ -3312,25 +3310,24 @@ class PolarPlane(Axes):
         elif frac.denominator == 1:
             string = str(frac.numerator) + constant_label
 
+        elif self.azimuth_compact_fraction:
+            string = (
+                r"\tfrac{"
+                + str(frac.numerator)
+                + constant_label
+                + r"}{"
+                + str(frac.denominator)
+                + r"}"
+            )
         else:
-            if self.azimuth_compact_fraction:
-                string = (
-                    r"\tfrac{"
-                    + str(frac.numerator)
-                    + constant_label
-                    + r"}{"
-                    + str(frac.denominator)
-                    + r"}"
-                )
-            else:
-                string = (
-                    r"\tfrac{"
-                    + str(frac.numerator)
-                    + r"}{"
-                    + str(frac.denominator)
-                    + r"}"
-                    + constant_label
-                )
+            string = (
+                r"\tfrac{"
+                + str(frac.numerator)
+                + r"}{"
+                + str(frac.denominator)
+                + r"}"
+                + constant_label
+            )
 
         return MathTex(string, font_size=font_size, **kwargs)
 

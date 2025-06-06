@@ -205,7 +205,7 @@ def compile_tex(tex_file: Path, tex_compiler: str, output_format: str) -> Path:
             tex_file,
             tex_dir,
         )
-        cp = subprocess.run(command, stdout=subprocess.DEVNULL)
+        cp = subprocess.run(command, stdout=subprocess.DEVNULL, check=False)
         if cp.returncode != 0:
             log_file = tex_file.with_suffix(".log")
             print_all_tex_errors(log_file, tex_compiler, tex_file)
@@ -245,7 +245,7 @@ def convert_to_svg(dvi_file: Path, extension: str, page: int = 1) -> Path:
             f"--output={result.as_posix()}",
             f"{dvi_file.as_posix()}",
         ]
-        subprocess.run(command, stdout=subprocess.DEVNULL)
+        subprocess.run(command, stdout=subprocess.DEVNULL, check=False)
 
     # if the file does not exist now, this means conversion failed
     if not result.exists():

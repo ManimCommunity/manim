@@ -215,7 +215,7 @@ def open_file(file_path: Path, in_browser: bool = False) -> None:
         if config.preview_command:
             commands = [config.preview_command]
         commands.append(str(file_path))
-        sp.run(commands)
+        sp.run(commands, check=False)
 
 
 def open_media_file(file_writer: SceneFileWriter) -> None:

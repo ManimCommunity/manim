@@ -676,7 +676,6 @@ class OpenGLVMobject(OpenGLMobject):
         self.append_points(new_points)
         return self
 
-    #
     def consider_points_equals(self, p0, p1):
         return np.linalg.norm(p1 - p0) < self.tolerance_for_point_equality
 
@@ -1282,12 +1281,11 @@ class OpenGLVMobject(OpenGLMobject):
         super().interpolate(mobject1, mobject2, alpha, *args, **kwargs)
         if config["use_projection_fill_shaders"]:
             self.refresh_triangulation()
-        else:
-            if self.has_fill():
-                tri1 = mobject1.get_triangulation()
-                tri2 = mobject2.get_triangulation()
-                if len(tri1) != len(tri2) or not np.all(tri1 == tri2):
-                    self.refresh_triangulation()
+        elif self.has_fill():
+            tri1 = mobject1.get_triangulation()
+            tri2 = mobject2.get_triangulation()
+            if len(tri1) != len(tri2) or not np.all(tri1 == tri2):
+                self.refresh_triangulation()
         return self
 
     def pointwise_become_partial(

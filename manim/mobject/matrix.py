@@ -217,7 +217,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
     def _organize_mob_matrix(self, matrix):
         for i, row in enumerate(matrix):
             for j, _ in enumerate(row):
-                mob = matrix[i][j]
+                mob = row[j]
                 mob.move_to(
                     i * self.v_buff * DOWN + j * self.h_buff * RIGHT,
                     self.element_alignment_corner,

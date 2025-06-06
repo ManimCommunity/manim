@@ -328,7 +328,7 @@ class OpenGLSurface(OpenGLMobject):
                 for i, pivot in enumerate(pivots):
                     if pivot > axis_value:
                         color_index = (axis_value - pivots[i - 1]) / (
-                            pivots[i] - pivots[i - 1]
+                            pivot - pivots[i - 1]
                         )
                         color_index = max(min(color_index, 1), 0)
                         temp_color = interpolate_color(

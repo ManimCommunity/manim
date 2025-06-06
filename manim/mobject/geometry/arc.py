@@ -66,7 +66,7 @@ if TYPE_CHECKING:
     from collections.abc import Iterable
     from typing import Any
 
-    import manim.mobject.geometry.tips as tips
+    from manim.mobject.geometry import tips
     from manim.mobject.mobject import Mobject
     from manim.mobject.text.tex_mobject import SingleStringMathTex, Tex
     from manim.mobject.text.text_mobject import Text

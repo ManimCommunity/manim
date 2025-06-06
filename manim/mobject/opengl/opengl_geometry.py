@@ -463,9 +463,7 @@ class OpenGLLine(OpenGLTipableVMobject):
     def account_for_buff(self, buff):
         if buff == 0:
             return
-        #
         length = self.get_length() if self.path_arc == 0 else self.get_arc_length()
-        #
         if length < 2 * buff:
             return
         buff_prop = buff / length

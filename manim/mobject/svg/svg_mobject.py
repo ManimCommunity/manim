@@ -435,7 +435,6 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             The parsed SVG text.
         """
         logger.warning(f"Unsupported element type: {type(text)}")
-        return
 
     def move_into_position(self) -> None:
         """Scale and move the generated mobject into position."""

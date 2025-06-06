@@ -292,7 +292,7 @@ class Table(VGroup):
         help_table = VGroup()
         for i, row in enumerate(table):
             for j, _ in enumerate(row):
-                help_table.add(table[i][j])
+                help_table.add(row[j])
         help_table.arrange_in_grid(
             rows=len(table),
             cols=len(table[0]),
