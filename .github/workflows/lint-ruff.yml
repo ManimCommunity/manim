@@ -6,11 +6,9 @@ concurrency:
 
 on:
   push:
-    branches:
-      - main
-    pull_requests:
-      branches:
-        - main
+    branches: [ "main" ]
+    pull_request:
+      branches: [ "main" ]
 
 jobs:
   lint:
