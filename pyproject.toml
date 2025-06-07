@@ -186,7 +186,6 @@ ignore = [
   "E114",
   "E117",
   "E501",
-
   # Ignoring (too many arguments) from the functions.
   "PLR0913",
   # Ignoring literal values (numbers, strings) used directly in the code.
