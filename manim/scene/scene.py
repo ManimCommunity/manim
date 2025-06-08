@@ -848,7 +848,18 @@ class Scene:
         # as soon as there's one that needs updating of
         # some kind per frame, return the list from that
         # point forward.
-        animation_mobjects = [anim.mobject for anim in animations]
+
+        # Imported inside the method to avoid cyclic import
+        from ..animation.composition import AnimationGroup
+
+        animation_mobjects = []
+        for anim in animations:
+            if isinstance(anim, AnimationGroup):
+                for sub in anim.animations:
+                    animation_mobjects.append(sub.mobject)
+            else:
+                animation_mobjects.append(anim.mobject)
+
         mobjects = self.get_mobject_family_members()
         for i, mob in enumerate(mobjects):
             update_possibilities = [
