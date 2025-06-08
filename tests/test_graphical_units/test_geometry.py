@@ -184,11 +184,9 @@ def test_negative_z_index_AnimationGroup(scene):
 @frames_comparison(last_frame=False)
 def test_negative_z_index_LaggedStart(scene):
     # https://github.com/ManimCommunity/manim/issues/3914
-    scene.wait()
     background = Rectangle(z_index=-1)
-    line = Line([-2, 0, 0], [2, 0, 0], color=RED_D, z_index=-1)
-    scene.play(LaggedStart(FadeIn(background), FadeIn(line), lag_ratio=1 / 2))
-    scene.wait()
+    line = Line(2 * LEFT, 2 * RIGHT, color=RED_D, z_index=-1)
+    scene.play(LaggedStart(FadeIn(background), FadeIn(line), lag_ratio=0.5))
 
 
 @frames_comparison
