@@ -1500,18 +1500,16 @@ def random_bright_color() -> ManimColor:
 def random_color() -> ManimColor:
     """Return a random :class:`ManimColor`.
 
-    .. warning::
-        This operation is very expensive. Please keep in mind the performance loss.
-
     Returns
     -------
     ManimColor
         A random :class:`ManimColor`.
     """
-    return RandomColorGenerator().next()
+    return RandomColorGenerator._random_color()
 
 
 class RandomColorGenerator:
+    _singleton: RandomColorGenerator | None = None
     """A generator for producing random colors from a given list of Manim colors,
     optionally in a reproducible sequence using a seed value.
 
@@ -1603,6 +1601,23 @@ class RandomColorGenerator:
             ManimColor('#FC6255')
         """
         return self.choice(self.colors)
+
+    @classmethod
+    def _random_color(cls) -> ManimColor:
+        """Internal method to generate a random color using the singleton instance of
+        `RandomColorGenerator`.
+        It will be used by proxy method `random_color` publicly available
+        and makes it backwards compatible.
+
+        Returns
+        -------
+        ManimColor:
+            A randomly selected color from the configured color list of
+            the singleton instance.
+        """
+        if cls._singleton is None:
+            cls._singleton = cls()
+        return cls._singleton.next()
 
 
 def get_shaded_rgb(
