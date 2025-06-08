@@ -1512,22 +1512,22 @@ def random_color() -> ManimColor:
 
 
 class RandomColorGenerator:
-    """
-    A generator for producing random colors from a given list of Manim colors,
+    """A generator for producing random colors from a given list of Manim colors,
     optionally in a reproducible sequence using a seed value.
 
     When initialized with a specific seed, this class produces a deterministic
-    sequence of `ManimColor` instances. If no seed is provided, the selection is
+    sequence of :class:`.ManimColor` instances. If no seed is provided, the selection is
     non-deterministic using Python’s global random state.
 
     Parameters
     ----------
-    seed : int | None, optional
+    seed
         A seed value to initialize the internal random number generator.
-        If None (default), colors are chosen using the global random state.
+        If ``None`` (the default), colors are chosen using the global random state.
 
-    sample_colors : list[ManimColor], optional
-        A custom list of Manim colors to sample from. Defaults to the full Manim color palette.
+    sample_colors
+        A custom list of Manim colors to sample from. Defaults to the full Manim
+        color palette.
 
     Examples
     --------
@@ -1586,8 +1586,7 @@ class RandomColorGenerator:
         self.colors = _all_manim_colors if sample_colors is None else sample_colors
 
     def next(self) -> ManimColor:
-        """
-        Returns the next color from the configured color list.
+        """Returns the next color from the configured color list.
 
         Returns
         -------
@@ -1596,10 +1595,12 @@ class RandomColorGenerator:
 
         Examples
         --------
-        >>> from manim import RandomColorGenerator, RED
-        >>> rnd = RandomColorGenerator(sample_colors=[RED])
-        >>> rnd.next()
-        ManimColor('#FC6255')
+        Usage::
+
+            >>> from manim import RandomColorGenerator, RED
+            >>> rnd = RandomColorGenerator(sample_colors=[RED])
+            >>> rnd.next()
+            ManimColor('#FC6255')
         """
         return self.choice(self.colors)
 
