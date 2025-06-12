@@ -31,34 +31,35 @@ all other color types in Manim.
 To implement a custom color space, you must subclass :class:`ManimColor` and implement
 three important methods:
 
-  - :attr:`~.ManimColor._internal_value`: a ``@property`` implemented on
-    :class:`ManimColor` with the goal of keeping a consistent internal representation
-    which can be referenced by other functions in :class:`ManimColor`. This property acts
-    as a proxy to whatever representation you need in your class.
+- :attr:`~.ManimColor._internal_value`: a ``@property`` implemented on
+  :class:`ManimColor` with the goal of keeping a consistent internal representation
+  which can be referenced by other functions in :class:`ManimColor`. This property acts
+  as a proxy to whatever representation you need in your class.
 
-      - The getter should always return a NumPy array in the format ``[r,g,b,a]``, in
-        accordance with the type :class:`ManimColorInternal`.
+  - The getter should always return a NumPy array in the format ``[r,g,b,a]``, in
+    accordance with the type :class:`ManimColorInternal`.
 
-      - The setter should always accept a value in the format ``[r,g,b,a]`` which can be
-        converted to whatever attributes you need.
+  - The setter should always accept a value in the format ``[r,g,b,a]`` which can be
+    converted to whatever attributes you need.
 
-  - :attr:`~ManimColor._internal_space`: a read-only ``@property`` implemented on
-    :class:`ManimColor` with the goal of providing a useful representation which can be
-    used by operators, interpolation and color transform functions.
+- :attr:`~ManimColor._internal_space`: a read-only ``@property`` implemented on
+  :class:`ManimColor` with the goal of providing a useful representation which can be
+  used by operators, interpolation and color transform functions.
 
-    The only constraints on this value are:
+  The only constraints on this value are:
 
-      - It must be a NumPy array.
+  - It must be a NumPy array.
 
-      - The last value must be the opacity in a range ``0.0`` to ``1.0``.
+  - The last value must be the opacity in a range ``0.0`` to ``1.0``.
 
-    Additionally, your ``__init__`` must support this format as an initialization value
-    without additional parameters to ensure correct functionality of all other methods in
-    :class:`ManimColor`.
+  Additionally, your ``__init__`` must support this format as an initialization value
+  without additional parameters to ensure correct functionality of all other methods in
+  :class:`ManimColor`.
 
-  - :meth:`~ManimColor._from_internal`: a ``@classmethod`` which converts an
-    ``[r,g,b,a]`` value into suitable parameters for your ``__init__`` method and calls
-    the ``cls`` parameter.
+- :meth:`~ManimColor._from_internal`: a ``@classmethod`` which converts an
+  ``[r,g,b,a]`` value into suitable parameters for your ``__init__`` method and calls
+  the ``cls`` parameter.
+
 """
 
 from __future__ import annotations
@@ -601,7 +602,8 @@ class ManimColor:
         HSL_Array_Float
             An HSL array of 3 floats from 0.0 to 1.0.
         """
-        return np.array(colorsys.rgb_to_hls(*self.to_rgb()))
+        hls = colorsys.rgb_to_hls(*self.to_rgb())
+        return np.array([hls[0], hls[2], hls[1]])
 
     def invert(self, with_alpha: bool = False) -> Self:
         """Return a new, linearly inverted version of this :class:`ManimColor` (no
@@ -906,7 +908,7 @@ class ManimColor:
             The :class:`ManimColor` with the corresponding RGB values to the given HSL
             array.
         """
-        rgb = colorsys.hls_to_rgb(*hsl)
+        rgb = colorsys.hls_to_rgb(hsl[0], hsl[2], hsl[1])
         return cls._from_internal(ManimColor(rgb, alpha)._internal_value)
 
     @overload
