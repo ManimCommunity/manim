@@ -14,6 +14,7 @@ from PIL.Image import Resampling
 from manim.mobject.geometry.shape_matchers import SurroundingRectangle
 
 from ... import config
+from ...camera.moving_camera import MovingCamera
 from ...constants import *
 from ...mobject.mobject import Mobject
 from ...utils.bezier import interpolate
@@ -28,7 +29,9 @@ if TYPE_CHECKING:
     import numpy.typing as npt
     from typing_extensions import Self
 
-    from manim.typing import StrPath
+    from manim.typing import PixelArray, StrPath
+
+    from ...camera.moving_camera import MovingCamera
 
 
 class AbstractImageMobject(Mobject):
@@ -57,7 +60,7 @@ class AbstractImageMobject(Mobject):
         self.set_resampling_algorithm(resampling_algorithm)
         super().__init__(**kwargs)
 
-    def get_pixel_array(self) -> None:
+    def get_pixel_array(self) -> PixelArray:
         raise NotImplementedError()
 
     def set_color(self, color, alpha=None, family=True):
@@ -303,7 +306,7 @@ class ImageMobject(AbstractImageMobject):
 class ImageMobjectFromCamera(AbstractImageMobject):
     def __init__(
         self,
-        camera,
+        camera: MovingCamera,
         default_display_frame_config: dict[str, Any] | None = None,
         **kwargs: Any,
     ) -> None:
