@@ -553,6 +553,10 @@ class Scene:
         def replace_in_list(
             mobj_list: list[Mobject], old_m: Mobject, new_m: Mobject
         ) -> bool:
+            # Avoid duplicate references to the same object in self.mobjects
+            if new_m in mobj_list:
+                mobj_list.remove(new_m)
+
             # We use breadth-first search because some Mobjects get very deep and
             # we expect top-level elements to be the most common targets for replace.
             for i in range(0, len(mobj_list)):
