@@ -915,10 +915,10 @@ def subdivide_bezier(points: BezierPointsLike, n_divisions: int) -> Spline:
     :class:`~.Spline`
         An array containing the points defining the new :math:`n` subcurves.
     """
+    points = np.asarray(points)
     if n_divisions == 1:
         return points
 
-    points = np.asarray(points)
     N, dim = points.shape
 
     if N <= 4:
@@ -1754,10 +1754,10 @@ def get_quadratic_approximation_of_cubic(
 
 
 def get_quadratic_approximation_of_cubic(
-    a0: Point3D | Point3D_Array,
-    h0: Point3D | Point3D_Array,
-    h1: Point3D | Point3D_Array,
-    a1: Point3D | Point3D_Array,
+    a0: Point3DLike | Point3DLike_Array,
+    h0: Point3DLike | Point3DLike_Array,
+    h1: Point3DLike | Point3DLike_Array,
+    a1: Point3DLike | Point3DLike_Array,
 ) -> QuadraticSpline | QuadraticBezierPath:
     r"""If ``a0``, ``h0``, ``h1`` and ``a1`` are the control points of a cubic
     Bézier curve, approximate the curve with two quadratic Bézier curves and
