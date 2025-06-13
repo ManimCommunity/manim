@@ -76,8 +76,8 @@ def update_cfg(cfg_dict: dict[str, Any], project_cfg_path: Path) -> None:
     cli_config = config["CLI"]
     for key, value in cfg_dict.items():
         if key == "resolution":
-            cli_config["pixel_height"] = str(value[0])
-            cli_config["pixel_width"] = str(value[1])
+            cli_config["pixel_width"] = str(value[0])
+            cli_config["pixel_height"] = str(value[1])
         else:
             cli_config[key] = str(value)
 
