@@ -54,7 +54,6 @@ class Animation:
         For example ``rate_func(0.5)`` is the proportion of the animation that is done
         after half of the animations run time.
 
-
     reverse_rate_function
         Reverses the rate function of the animation. Setting ``reverse_rate_function``
         does not have any effect on ``remover`` or ``introducer``. These need to be
