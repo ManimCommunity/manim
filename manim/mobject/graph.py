@@ -1035,7 +1035,10 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         self._edge_config[(u, v)] = edge_config
 
         edge_mobject = edge_type(
-            self[u].get_center(), self[v].get_center(), z_index=-1, **edge_config
+            start=self[u].get_center(),
+            end=self[v].get_center(),
+            z_index=-1,
+            **edge_config,
         )
         self.edges[(u, v)] = edge_mobject
 
@@ -1543,8 +1546,8 @@ class Graph(GenericGraph):
     ):
         self.edges = {
             (u, v): edge_type(
-                self[u].get_center(),
-                self[v].get_center(),
+                start=self[u].get_center(),
+                end=self[v].get_center(),
                 z_index=-1,
                 **self._edge_config[(u, v)],
             )
@@ -1750,8 +1753,8 @@ class DiGraph(GenericGraph):
     ):
         self.edges = {
             (u, v): edge_type(
-                self[u],
-                self[v],
+                start=self[u],
+                end=self[v],
                 z_index=-1,
                 **self._edge_config[(u, v)],
             )
