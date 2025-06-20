@@ -120,7 +120,7 @@ class Animation:
             if func is not None:
                 anim = func(mobject, *args, **kwargs)
                 logger.debug(
-                    f"The {cls.__name__} animation has been is overridden for "
+                    f"The {cls.__name__} animation has been overridden for "
                     f"{type(mobject).__name__} mobjects. use_override = False can "
                     f" be used as keyword argument to prevent animation overriding.",
                 )
@@ -140,7 +140,7 @@ class Animation:
         introducer: bool = False,
         *,
         _on_finish: Callable[[], None] = lambda _: None,
-        **kwargs,
+        use_override: bool = True,  # included here to avoid TypeError if passed from a subclass' constructor
     ) -> None:
         self._typecheck_input(mobject)
         self.run_time: float = run_time
@@ -160,8 +160,6 @@ class Animation:
         else:
             self.starting_mobject: Mobject = Mobject()
             self.mobject: Mobject = mobject if mobject is not None else Mobject()
-        if kwargs:
-            logger.debug("Animation received extra kwargs: %s", kwargs)
 
         if hasattr(self, "CONFIG"):
             logger.error(
@@ -497,6 +495,8 @@ class Animation:
         super().__init_subclass__(**kwargs)
 
         cls._original__init__ = cls.__init__
+
+    _original__init__ = __init__  # needed if set_default() is called with no kwargs directly from Animation
 
     @classmethod
     def set_default(cls, **kwargs) -> None:
