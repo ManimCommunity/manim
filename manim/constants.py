@@ -48,7 +48,7 @@ __all__ = [
     "START_X",
     "START_Y",
     "DEFAULT_DOT_RADIUS",
-    "DEFAULT_SMALL_DOT_RADIUS",
+    "HEAVY",
     "DEFAULT_DASH_LENGTH",
     "DEFAULT_ARROW_TIP_LENGTH",
     "SMALL_BUFF",
