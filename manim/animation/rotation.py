@@ -88,7 +88,7 @@ class Rotating(Animation):
     def __init__(
         self,
         mobject: Mobject,
-        angle: np.ndarray = TAU,
+        angle: float = TAU,
         axis: np.ndarray = OUT,
         about_point: np.ndarray | None = None,
         about_edge: np.ndarray | None = None,
