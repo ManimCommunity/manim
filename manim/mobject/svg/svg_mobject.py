@@ -10,6 +10,7 @@ import numpy as np
 import svgelements as se
 
 from manim import config, logger
+from manim.utils.color.core import ParsableManimColor
 
 from ...constants import RIGHT
 from ...utils.bezier import get_quadratic_approximation_of_cubic
@@ -98,7 +99,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         should_center: bool = True,
         height: float | None = 2,
         width: float | None = None,
-        color: str | None = None,
+        color: ParsableManimColor | None = None,
         opacity: float | None = None,
         fill_color: str | None = None,
         fill_opacity: float | None = None,
