@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import manim.utils.color as C
-from manim import VMobject
+from manim import Rectangle, Square, VGroup, VMobject
 from manim.mobject.vector_field import StreamLines
 
 
@@ -41,23 +41,39 @@ def test_streamline_attributes_for_single_color():
     assert vector_field[0].stroke_opacity == 0.2
 
 
-def test_stroke_scale():
-    a = VMobject()
-    b = VMobject()
-    a.set_stroke(width=50)
-    b.set_stroke(width=50)
-    a.scale(0.5)
-    b.scale(0.5, scale_stroke=True)
-    assert a.get_stroke_width() == 50
-    assert b.get_stroke_width() == 25
+def test_scale_with_scale_stroke_true_and_false():
+    sq = Square()
+    sq.set_stroke(width=40)
+    sq.set_stroke(width=120, background=True)
+    rec = Rectangle(height=4, width=5)
+    rec.set_stroke(width=10)
+    rec.set_stroke(width=20, background=True)
+    vg = VGroup(sq)
+    rec.add(vg)
 
+    # Scale 1.0 (scale_stroke=True): No changes expected
+    rec.scale(1.0, scale_stroke=True)
+    assert sq.side_length == 2
+    assert rec.height == 4
+    assert sq.get_stroke_width() == 40
+    assert sq.get_stroke_width(background=True) == 120
+    assert rec.get_stroke_width() == 10
+    assert rec.get_stroke_width(background=True) == 20
 
-def test_background_stroke_scale():
-    a = VMobject()
-    b = VMobject()
-    a.set_stroke(width=50, background=True)
-    b.set_stroke(width=50, background=True)
-    a.scale(0.5)
-    b.scale(0.5, scale_stroke=True)
-    assert a.get_stroke_width(background=True) == 50
-    assert b.get_stroke_width(background=True) == 25
+    # Scale 0.5 (scale_stroke=True): Size and stroke width halved
+    rec.scale(0.5, scale_stroke=True)
+    assert sq.side_length == 1
+    assert rec.height == 2
+    assert sq.get_stroke_width() == 20
+    assert sq.get_stroke_width(background=True) == 60
+    assert rec.get_stroke_width() == 5
+    assert rec.get_stroke_width(background=True) == 10
+
+    # Scale 2.0 (scale_stroke=False): Size doubled, stroke width unchanged
+    rec.scale(2.0, scale_stroke=False)
+    assert sq.side_length == 2
+    assert rec.height == 4
+    assert sq.get_stroke_width() == 20
+    assert sq.get_stroke_width(background=True) == 60
+    assert rec.get_stroke_width() == 5
+    assert rec.get_stroke_width(background=True) == 10
