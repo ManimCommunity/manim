@@ -11,24 +11,24 @@ import numpy as np
 from PIL import Image
 from PIL.Image import Resampling
 
+from manim._config import config
+from manim.constants import *
 from manim.mobject.geometry.shape_matchers import SurroundingRectangle
-
-from ... import config
-from ...constants import *
-from ...mobject.mobject import Mobject
-from ...utils.bezier import interpolate
-from ...utils.color import WHITE, ManimColor, color_to_int_rgb
-from ...utils.images import change_to_rgba_array, get_full_raster_image_path
+from manim.mobject.mobject import Mobject
+from manim.utils.bezier import interpolate
+from manim.utils.color import WHITE, ManimColor, color_to_int_rgb
+from manim.utils.images import change_to_rgba_array, get_full_raster_image_path
 
 __all__ = ["ImageMobject", "ImageMobjectFromCamera"]
 
 if TYPE_CHECKING:
     from typing import Any
 
-    import numpy.typing as npt
     from typing_extensions import Self
 
-    from manim.typing import StrPath
+    from manim.camera.camera import Camera
+    from manim.typing import PixelArray, StrPath
+    from manim.utils.color import ParsableManimColor
 
 
 class AbstractImageMobject(Mobject):
@@ -60,9 +60,14 @@ class AbstractImageMobject(Mobject):
     def get_pixel_array(self) -> None:
         raise NotImplementedError()
 
-    def set_color(self, color, alpha=None, family=True):
+    def set_color(
+        self,
+        color: ParsableManimColor,
+        alpha: float | None = None,
+        family: bool = True,
+    ) -> Self:
         # Likely to be implemented in subclasses, but no obligation
-        pass
+        return self
 
     def set_resampling_algorithm(self, resampling_algorithm: int) -> Self:
         """
@@ -180,7 +185,7 @@ class ImageMobject(AbstractImageMobject):
 
     def __init__(
         self,
-        filename_or_array: StrPath | npt.NDArray,
+        filename_or_array: StrPath | PixelArray,
         scale_to_resolution: int = QUALITIES[DEFAULT_QUALITY]["pixel_height"],
         invert: bool = False,
         image_mode: str = "RGBA",
@@ -207,11 +212,16 @@ class ImageMobject(AbstractImageMobject):
             )
         super().__init__(scale_to_resolution, **kwargs)
 
-    def get_pixel_array(self):
+    def get_pixel_array(self) -> PixelArray:
         """A simple getter method."""
         return self.pixel_array
 
-    def set_color(self, color, alpha=None, family=True):
+    def set_color(
+        self,
+        color: ParsableManimColor,
+        alpha: float | None = None,
+        family: bool = True,
+    ) -> Self:
         rgb = color_to_int_rgb(color)
         self.pixel_array[:, :, :3] = rgb
         if alpha is not None:
@@ -303,7 +313,7 @@ class ImageMobject(AbstractImageMobject):
 class ImageMobjectFromCamera(AbstractImageMobject):
     def __init__(
         self,
-        camera,
+        camera: Camera,
         default_display_frame_config: dict[str, Any] | None = None,
         **kwargs: Any,
     ) -> None:
@@ -319,7 +329,7 @@ class ImageMobjectFromCamera(AbstractImageMobject):
         super().__init__(scale_to_resolution=False, **kwargs)
 
     # TODO: Get rid of this.
-    def get_pixel_array(self):
+    def get_pixel_array(self) -> PixelArray:
         self.pixel_array = self.camera.pixel_array
         return self.pixel_array
 
@@ -330,7 +340,9 @@ class ImageMobjectFromCamera(AbstractImageMobject):
         self.add(self.display_frame)
         return self
 
-    def interpolate_color(self, mobject1, mobject2, alpha) -> None:
+    def interpolate_color(
+        self, mobject1: Mobject, mobject2: Mobject, alpha: float
+    ) -> None:
         assert mobject1.pixel_array.shape == mobject2.pixel_array.shape, (
             f"Mobject pixel array shapes incompatible for interpolation.\n"
             f"Mobject 1 ({mobject1}) : {mobject1.pixel_array.shape}\n"
