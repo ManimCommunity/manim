@@ -92,7 +92,7 @@ class Rotating(Animation):
         axis: np.ndarray = OUT,
         about_point: np.ndarray | None = None,
         about_edge: np.ndarray | None = None,
-        run_time: float = 2,
+        run_time: float = 5,
         rate_func: Callable[[float], float] = linear,
         **kwargs,
     ) -> None:
