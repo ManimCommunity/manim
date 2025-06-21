@@ -1002,16 +1002,16 @@ class Mobject:
 
             class NextToUpdater(Scene):
                 def construct(self):
-                    def dot_position(mobject):
+                    def update_label(mobject):
                         mobject.set_value(dot.get_center()[0])
                         mobject.next_to(dot)
 
                     dot = Dot(RIGHT*3)
                     label = DecimalNumber()
-                    label.add_updater(dot_position)
+                    label.add_updater(update_label)
                     self.add(dot, label)
 
-                    self.play(Rotating(dot, about_point=ORIGIN, angle=TAU, run_time=TAU, rate_func=linear))
+                    self.play(Rotating(dot, about_point=ORIGIN, run_time=TAU, rate_func=linear))
 
         .. manim:: DtUpdater
 
