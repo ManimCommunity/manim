@@ -158,7 +158,7 @@ class TracedPath(VMobject, metaclass=ConvertToOpenGL):
         self.time = 1.0 if self.dissipating_time else None
         self.add_updater(self.update_path)
 
-    def update_path(self, mob: Any, dt: float) -> None:
+    def update_path(self, mob: Mobject, dt: float) -> None:
         new_point = self.traced_point_func()
         if not self.has_points():
             self.start_new_path(new_point)
