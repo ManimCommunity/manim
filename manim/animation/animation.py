@@ -136,7 +136,7 @@ class Animation:
         reverse_rate_function: bool = False,
         name: str = None,
         remover: bool = False,  # remove a mobject from the screen?
-        suspend_mobject_updating: bool | None = True,
+        suspend_mobject_updating: bool = True,
         introducer: bool = False,
         *,
         _on_finish: Callable[[], None] = lambda _: None,

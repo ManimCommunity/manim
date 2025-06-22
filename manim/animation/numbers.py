@@ -20,7 +20,7 @@ class ChangingDecimal(Animation):
         self,
         decimal_mob: DecimalNumber,
         number_update_func: typing.Callable[[float], float],
-        suspend_mobject_updating: bool | None = False,
+        suspend_mobject_updating: bool = False,
         **kwargs: Any,
     ) -> None:
         self.check_validity_of_input(decimal_mob)
