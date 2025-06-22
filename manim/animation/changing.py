@@ -80,7 +80,7 @@ class AnimatedBoundary(VGroup):
         fade_alpha = self.fade_rate_func(alpha)
 
         if self.back_and_forth and int(time) % 2 == 1:
-            bounds: tuple[float, float] = (1 - draw_alpha, 1)
+            bounds = (1.0 - draw_alpha, 1.0)
         else:
             bounds = (0, draw_alpha)
         self.full_family_become_partial(growing, vmobject, *bounds)
