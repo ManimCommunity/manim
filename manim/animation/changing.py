@@ -155,7 +155,7 @@ class TracedPath(VMobject, metaclass=ConvertToOpenGL):
         super().__init__(stroke_color=stroke_color, stroke_width=stroke_width, **kwargs)
         self.traced_point_func = traced_point_func
         self.dissipating_time = dissipating_time
-        self.time: float | None = 1 if self.dissipating_time else None
+        self.time = 1.0 if self.dissipating_time else None
         self.add_updater(self.update_path)
 
     def update_path(self, mob: Any, dt: float) -> None:
