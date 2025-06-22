@@ -149,7 +149,7 @@ class ManimBanner(VGroup):
         m_height_over_anim_height = 0.75748
 
         self.font_color = "#ece6e2" if dark_theme else "#343434"
-        self.scale_factor: float = 1
+        self.scale_factor = 1.0
 
         self.M = VMobjectFromSVGPath(MANIM_SVG_PATHS[0]).flip(cst.RIGHT).center()
         self.M.set(stroke_width=0).scale(
