@@ -129,7 +129,7 @@ class MovingCameraScene(Scene):
         *animations
             The Animations whose mobjects will be checked.
         """
-        moving_mobjects: list[Mobject] = super().get_moving_mobjects(*animations)
+        moving_mobjects = super().get_moving_mobjects(*animations)
         all_moving_mobjects = extract_mobject_family_members(moving_mobjects)
         movement_indicators = self.renderer.camera.get_mobjects_indicating_movement()
         for movement_indicator in movement_indicators:

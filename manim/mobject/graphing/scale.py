@@ -165,8 +165,8 @@ class LogBase(_ScaleBase):
         self,
         val_range: Iterable[float],
         unit_decimal_places: int = 0,
-        **base_config: dict[str, Any],
-    ) -> list[Mobject]:
+        **base_config: Any,
+    ) -> list[Integer]:
         """Produces custom :class:`~.Integer` labels in the form of ``10^2``.
 
         Parameters
@@ -179,11 +179,11 @@ class LogBase(_ScaleBase):
             Additional arguments to be passed to :class:`~.Integer`.
         """
         # uses `format` syntax to control the number of decimal places.
-        tex_labels: list[Mobject] = [
+        tex_labels = [
             Integer(
                 self.base,
                 unit="^{%s}" % (f"{self.inverse_function(i):.{unit_decimal_places}f}"),  # noqa: UP031
-                **base_config,  # type: ignore[arg-type]
+                **base_config,
             )
             for i in val_range
         ]
