@@ -61,7 +61,7 @@ class AnimatedBoundary(VGroup):
             vmobject.copy().set_style(stroke_width=0, fill_opacity=0) for x in range(2)
         ]
         self.add(*self.boundary_copies)
-        self.total_time: float = 0
+        self.total_time = 0.0
         self.add_updater(lambda m, dt: self.update_boundary_copies(dt))
 
     def update_boundary_copies(self, dt: float) -> None:
