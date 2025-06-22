@@ -164,7 +164,7 @@ class TracedPath(VMobject, metaclass=ConvertToOpenGL):
             self.start_new_path(new_point)
         self.add_line_to(new_point)
         if self.dissipating_time:
-            assert isinstance(self.time, float)
+            assert self.time is not None
             self.time += dt
             if self.time - 1 > self.dissipating_time:
                 nppcc = self.n_points_per_curve
