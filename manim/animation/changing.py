@@ -82,7 +82,7 @@ class AnimatedBoundary(VGroup):
         if self.back_and_forth and int(time) % 2 == 1:
             bounds = (1.0 - draw_alpha, 1.0)
         else:
-            bounds = (0, draw_alpha)
+            bounds = (0.0, draw_alpha)
         self.full_family_become_partial(growing, vmobject, *bounds)
         growing.set_stroke(colors[index], width=msw)
 
