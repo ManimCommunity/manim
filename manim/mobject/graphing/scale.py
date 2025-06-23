@@ -139,18 +139,20 @@ class LogBase(_ScaleBase):
 
     def function(self, value: float) -> float:
         """Scales the value to fit it to a logarithmic scale.``self.function(5)==10**5``"""
-        return self.base**value
+        return_value: float = self.base**value
+        return return_value
 
     def inverse_function(self, value: float) -> float:
         """Inverse of ``function``. The value must be greater than 0"""
         if isinstance(value, np.ndarray):
             condition = value.any() <= 0
 
-            def func(value, base):
-                return np.log(value) / np.log(base)
+            def func(value: float, base: float) -> float:
+                return_value: float = np.log(value) / np.log(base)
+                return return_value
         else:
             condition = value <= 0
-            func = math.log
+            func = math.log  # type: ignore[assignment]
 
         if condition:
             raise ValueError(
@@ -163,8 +165,8 @@ class LogBase(_ScaleBase):
         self,
         val_range: Iterable[float],
         unit_decimal_places: int = 0,
-        **base_config: dict[str, Any],
-    ) -> list[Mobject]:
+        **base_config: Any,
+    ) -> list[Integer]:
         """Produces custom :class:`~.Integer` labels in the form of ``10^2``.
 
         Parameters

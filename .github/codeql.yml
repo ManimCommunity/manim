@@ -9,6 +9,8 @@ query-filters:
           id: py/multiple-calls-to-init
     - exclude:
           id: py/missing-call-to-init
+    - exclude:
+        id: py/method-first-arg-is-not-self
 paths:
     - manim
 paths-ignore:
