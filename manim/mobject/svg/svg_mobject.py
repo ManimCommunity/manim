@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from xml.etree import ElementTree as ET
+from defusedxml import ElementTree as ET
 
 import numpy as np
 import svgelements as se
