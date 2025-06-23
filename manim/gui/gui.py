@@ -27,7 +27,7 @@ if dearpygui_imported:
 
 
 def configure_pygui(
-    renderer: OpenGLRenderer, widgets: list[Any], update: bool = True
+    renderer: OpenGLRenderer, widgets: Sequence[dict[str, Any]], update: bool = True
 ) -> None:
     if not dearpygui_imported:
         raise RuntimeError("Attempted to use DearPyGUI when it isn't imported.")
