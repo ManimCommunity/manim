@@ -20,10 +20,9 @@ __all__ = [
 ]
 
 import numpy as np
-from typing_extensions import Any
+from typing import Any, Union
 
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-
 from ..animation.transform import Transform
 from ..constants import ORIGIN
 from ..mobject.mobject import Group, Mobject
@@ -31,22 +30,7 @@ from ..scene.scene import Scene
 
 
 class _Fade(Transform):
-    """Fade :class:`~.Mobject` s in or out.
-
-    Parameters
-    ----------
-    mobjects
-        The mobjects to be faded.
-    shift
-        The vector by which the mobject shifts while being faded.
-    target_position
-        The position to/from which the mobject moves while being faded in. In case
-        another mobject is given as target position, its center is used.
-    scale
-        The factor by which the mobject is scaled initially before being rescaling to
-        its original size while being faded in.
-
-    """
+    """Base class for fading Mobjects in or out."""
 
     def __init__(
         self,
@@ -56,81 +40,62 @@ class _Fade(Transform):
         scale: float = 1,
         **kwargs: Any,
     ) -> None:
+        
         if not mobjects:
-            raise ValueError("At least one mobject must be passed.")
-        mobject = mobjects[0] if len(mobjects) == 1 else Group(*mobjects)
+            raise ValueError("At least one mobject must be provided for fading.")
+        
+        for mob in mobjects:
+            if not isinstance(mob, Mobject):
+                raise TypeError(f"Expected Mobject instances, got {type(mob)}")
 
+        mobject = mobjects[0] if len(mobjects) == 1 else Group(*mobjects)
+        
         self.point_target = False
+        
         if shift is None:
             if target_position is not None:
                 if isinstance(target_position, (Mobject, OpenGLMobject)):
                     target_position = target_position.get_center()
-                shift = target_position - mobject.get_center()
+                elif not isinstance(target_position, np.ndarray):
+                    raise TypeError(
+                        "target_position must be a Mobject or np.ndarray"
+                    )
+                shift = np.array(target_position) - mobject.get_center()
                 self.point_target = True
             else:
                 shift = ORIGIN
+        else:
+            if not isinstance(shift, np.ndarray):
+                raise TypeError("shift must be of type np.ndarray")
+
+        if not isinstance(scale, (int, float)):
+            raise TypeError("scale must be a number")
+
         self.shift_vector = shift
         self.scale_factor = scale
+
         super().__init__(mobject, **kwargs)
 
     def _create_faded_mobject(self, fadeIn: bool) -> Mobject:
-        """Create a faded, shifted and scaled copy of the mobject.
+        """Create a faded, shifted and scaled copy of the mobject."""
+        
+        faded_mobject = self.mobject.copy()  # type: ignore[assignment]
+        
+        if not isinstance(faded_mobject, Mobject):
+            raise RuntimeError("Failed to create faded mobject copy.")
 
-        Parameters
-        ----------
-        fadeIn
-            Whether the faded mobject is used to fade in.
-
-        Returns
-        -------
-        Mobject
-            The faded, shifted and scaled copy of the mobject.
-        """
-        faded_mobject: Mobject = self.mobject.copy()  # type: ignore[assignment]
         faded_mobject.fade(1)
+        
         direction_modifier = -1 if fadeIn and not self.point_target else 1
+        
         faded_mobject.shift(self.shift_vector * direction_modifier)
         faded_mobject.scale(self.scale_factor)
+        
         return faded_mobject
 
 
 class FadeIn(_Fade):
-    r"""Fade in :class:`~.Mobject` s.
-
-    Parameters
-    ----------
-    mobjects
-        The mobjects to be faded in.
-    shift
-        The vector by which the mobject shifts while being faded in.
-    target_position
-        The position from which the mobject starts while being faded in. In case
-        another mobject is given as target position, its center is used.
-    scale
-        The factor by which the mobject is scaled initially before being rescaling to
-        its original size while being faded in.
-
-    Examples
-    --------
-
-    .. manim :: FadeInExample
-
-        class FadeInExample(Scene):
-            def construct(self):
-                dot = Dot(UP * 2 + LEFT)
-                self.add(dot)
-                tex = Tex(
-                    "FadeIn with ", "shift ", r" or target\_position", " and scale"
-                ).scale(1)
-                animations = [
-                    FadeIn(tex[0]),
-                    FadeIn(tex[1], shift=DOWN),
-                    FadeIn(tex[2], target_position=dot),
-                    FadeIn(tex[3], scale=1.5),
-                ]
-                self.play(AnimationGroup(*animations, lag_ratio=0.5))
-
-    """
+    """Fade in Mobjects with optional shift, target_position, or scale."""
 
     def __init__(self, *mobjects: Mobject, **kwargs: Any) -> None:
         super().__init__(*mobjects, introducer=True, **kwargs)
@@ -143,42 +108,7 @@ class FadeIn(_Fade):
 
 
 class FadeOut(_Fade):
-    r"""Fade out :class:`~.Mobject` s.
-
-    Parameters
-    ----------
-    mobjects
-        The mobjects to be faded out.
-    shift
-        The vector by which the mobject shifts while being faded out.
-    target_position
-        The position to which the mobject moves while being faded out. In case another
-        mobject is given as target position, its center is used.
-    scale
-        The factor by which the mobject is scaled while being faded out.
-
-    Examples
-    --------
-
-    .. manim :: FadeInExample
-
-        class FadeInExample(Scene):
-            def construct(self):
-                dot = Dot(UP * 2 + LEFT)
-                self.add(dot)
-                tex = Tex(
-                    "FadeOut with ", "shift ", r" or target\_position", " and scale"
-                ).scale(1)
-                animations = [
-                    FadeOut(tex[0]),
-                    FadeOut(tex[1], shift=DOWN),
-                    FadeOut(tex[2], target_position=dot),
-                    FadeOut(tex[3], scale=0.5),
-                ]
-                self.play(AnimationGroup(*animations, lag_ratio=0.5))
-
-
-    """
+    """Fade out Mobjects with optional shift, target_position, or scale."""
 
     def __init__(self, *mobjects: Mobject, **kwargs: Any) -> None:
         super().__init__(*mobjects, remover=True, **kwargs)
@@ -187,5 +117,9 @@ class FadeOut(_Fade):
         return self._create_faded_mobject(fadeIn=False)
 
     def clean_up_from_scene(self, scene: Scene) -> None:
+        """Remove the mobject from the scene after fading out."""
         super().clean_up_from_scene(scene)
-        self.interpolate(0)
+        try:
+            self.interpolate(0)
+        except Exception as e:
+            raise RuntimeError(f"Error during cleanup interpolation: {e}")
