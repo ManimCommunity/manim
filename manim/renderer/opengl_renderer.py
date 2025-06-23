@@ -40,7 +40,6 @@ from .vectorized_mobject_rendering import (
 )
 
 if TYPE_CHECKING:
-    import numpy.typing as npt
     from typing_extensions import Self
 
     from manim.animation.animation import Animation
