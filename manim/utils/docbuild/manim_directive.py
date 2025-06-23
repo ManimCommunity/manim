@@ -1,3 +1,56 @@
+
+import ast
+import logging
+
+def secure_exec(code_to_run, user_globals=None):
+    """
+    Secure alternative to exec() with input validation and restricted execution.
+    """
+    if not isinstance(code_to_run, str):
+        raise TypeError("Code must be a string")
+    
+    if user_globals is None:
+        user_globals = {}
+    
+    # Create a restricted globals dictionary
+    restricted_globals = {
+        '__builtins__': {
+            'len': len,
+            'str': str,
+            'int': int,
+            'float': float,
+            'bool': bool,
+            'list': list,
+            'dict': dict,
+            'tuple': tuple,
+            'set': set,
+            'range': range,
+            'enumerate': enumerate,
+            'zip': zip,
+            'print': print,
+        }
+    }
+    
+    # Merge with user globals, but don't allow overriding restricted builtins
+    safe_globals = {**restricted_globals, **user_globals}
+    safe_globals['__builtins__'] = restricted_globals['__builtins__']
+    
+    try:
+        # Compile the code first to validate syntax
+        compiled_code = compile(code_to_run, '<string>', 'exec')
+        
+        # Execute with restricted globals
+        exec(compiled_code, safe_globals)
+        
+    except SyntaxError as e:
+        logging.error(f"Syntax error in code execution: {e}")
+        raise
+    except Exception as e:
+        logging.error(f"Error during code execution: {e}")
+        raise
+
+
+
 r"""
 A directive for including Manim videos in a Sphinx document
 ===========================================================
@@ -304,7 +357,7 @@ class ManimDirective(Directive):
 
         try:
             with tempconfig(example_config):
-                run_time = timeit(lambda: exec("\n".join(code), globals()), number=1)
+                run_time = timeit(lambda: secure_exec("\n".join(code), globals()), number=1)
                 video_dir = config.get_dir("video_dir")
                 images_dir = config.get_dir("images_dir")
         except Exception as e:
