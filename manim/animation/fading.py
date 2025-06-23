@@ -30,8 +30,23 @@ from ..scene.scene import Scene
 
 
 class _Fade(Transform):
-    """Base class for fading Mobjects in or out."""
+    """Fade :class:`~.Mobject` s in or out.
 
+    Parameters
+    ----------
+    mobjects
+        The mobjects to be faded.
+    shift
+        The vector by which the mobject shifts while being faded.
+    target_position
+        The position to/from which the mobject moves while being faded in. In case
+        another mobject is given as target position, its center is used.
+    scale
+        The factor by which the mobject is scaled initially before being rescaling to
+        its original size while being faded in.
+
+    """
+    
     def __init__(
         self,
         *mobjects: Mobject,
@@ -77,7 +92,18 @@ class _Fade(Transform):
         super().__init__(mobject, **kwargs)
 
     def _create_faded_mobject(self, fadeIn: bool) -> Mobject:
-        """Create a faded, shifted and scaled copy of the mobject."""
+         """Create a faded, shifted and scaled copy of the mobject.
+
+        Parameters
+        ----------
+        fadeIn
+            Whether the faded mobject is used to fade in.
+
+        Returns
+        -------
+        Mobject
+            The faded, shifted and scaled copy of the mobject.
+        """
         
         faded_mobject = self.mobject.copy()  # type: ignore[assignment]
         
@@ -95,7 +121,42 @@ class _Fade(Transform):
 
 
 class FadeIn(_Fade):
-    """Fade in Mobjects with optional shift, target_position, or scale."""
+     r"""Fade in :class:`~.Mobject` s.
+
+    Parameters
+    ----------
+    mobjects
+        The mobjects to be faded in.
+    shift
+        The vector by which the mobject shifts while being faded in.
+    target_position
+        The position from which the mobject starts while being faded in. In case
+        another mobject is given as target position, its center is used.
+    scale
+        The factor by which the mobject is scaled initially before being rescaling to
+        its original size while being faded in.
+
+    Examples
+    --------
+
+    .. manim :: FadeInExample
+
+        class FadeInExample(Scene):
+            def construct(self):
+                dot = Dot(UP * 2 + LEFT)
+                self.add(dot)
+                tex = Tex(
+                    "FadeIn with ", "shift ", r" or target\_position", " and scale"
+                ).scale(1)
+                animations = [
+                    FadeIn(tex[0]),
+                    FadeIn(tex[1], shift=DOWN),
+                    FadeIn(tex[2], target_position=dot),
+                    FadeIn(tex[3], scale=1.5),
+                ]
+                self.play(AnimationGroup(*animations, lag_ratio=0.5))
+
+    """
 
     def __init__(self, *mobjects: Mobject, **kwargs: Any) -> None:
         super().__init__(*mobjects, introducer=True, **kwargs)
@@ -108,7 +169,42 @@ class FadeIn(_Fade):
 
 
 class FadeOut(_Fade):
-    """Fade out Mobjects with optional shift, target_position, or scale."""
+     r"""Fade out :class:`~.Mobject` s.
+
+    Parameters
+    ----------
+    mobjects
+        The mobjects to be faded out.
+    shift
+        The vector by which the mobject shifts while being faded out.
+    target_position
+        The position to which the mobject moves while being faded out. In case another
+        mobject is given as target position, its center is used.
+    scale
+        The factor by which the mobject is scaled while being faded out.
+
+    Examples
+    --------
+
+    .. manim :: FadeInExample
+
+        class FadeInExample(Scene):
+            def construct(self):
+                dot = Dot(UP * 2 + LEFT)
+                self.add(dot)
+                tex = Tex(
+                    "FadeOut with ", "shift ", r" or target\_position", " and scale"
+                ).scale(1)
+                animations = [
+                    FadeOut(tex[0]),
+                    FadeOut(tex[1], shift=DOWN),
+                    FadeOut(tex[2], target_position=dot),
+                    FadeOut(tex[3], scale=0.5),
+                ]
+                self.play(AnimationGroup(*animations, lag_ratio=0.5))
+
+
+    """
 
     def __init__(self, *mobjects: Mobject, **kwargs: Any) -> None:
         super().__init__(*mobjects, remover=True, **kwargs)
