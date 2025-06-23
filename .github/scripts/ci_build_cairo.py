@@ -1,3 +1,26 @@
+
+
+def safe_extract(tar, path=".", members=None):
+    """Safely extract tar file preventing path traversal attacks."""
+    def is_within_directory(directory, target):
+        abs_directory = os.path.abspath(directory)
+        abs_target = os.path.abspath(target)
+        prefix = os.path.commonprefix([abs_directory, abs_target])
+        return prefix == abs_directory
+
+    def safe_members(tar):
+        for member in tar.getmembers():
+            # Skip if path contains traversal sequences
+            if ".." in member.name or member.name.startswith("/"):
+                continue
+            # Check if extraction path would be within target directory
+            member_path = os.path.join(path, member.name)
+            if not is_within_directory(path, member_path):
+                continue
+            yield member
+
+    tar.extractall(path, members=safe_members(tar))
+
 # Logic is as follows:
 # 1. Download cairo source code: https://cairographics.org/releases/cairo-<version>.tar.xz
 # 2. Verify the downloaded file using the sha256sums file: https://cairographics.org/releases/cairo-<version>.tar.xz.sha256sum
@@ -7,18 +30,6 @@
 # 6. Run meson compile -C build.
 # 7. Run meson install -C build.
 
-import hashlib
-import logging
-import os
-import subprocess
-import sys
-import tarfile
-import tempfile
-import typing
-import urllib.request
-from contextlib import contextmanager
-from pathlib import Path
-from sys import stdout
 
 CAIRO_VERSION = "1.18.0"
 CAIRO_URL = f"https://cairographics.org/releases/cairo-{CAIRO_VERSION}.tar.xz"
@@ -56,7 +67,7 @@ def verify_sha256sum(path, sha256sum):
 
 def extract_tar_xz(path, directory):
     with tarfile.open(path) as file:
-        file.extractall(directory)
+        filesafe_extract(tar, directory)
 
 
 def run_command(command, cwd=None, env=None):
