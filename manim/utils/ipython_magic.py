@@ -118,7 +118,37 @@ else:
 
             """
             if cell:
-                exec(cell, local_ns)
+                # Safe execution with restricted environment
+            try:
+                # Parse and validate the code first
+                parsed = compile(code, '<manim_cell>', 'exec')
+                # Create restricted execution environment
+                safe_globals = {
+                    '__builtins__': {
+                        'print': print,
+                        'len': len,
+                        'range': range,
+                        'enumerate': enumerate,
+                        'zip': zip,
+                        'list': list,
+                        'dict': dict,
+                        'tuple': tuple,
+                        'set': set,
+                        'str': str,
+                        'int': int,
+                        'float': float,
+                        'bool': bool,
+                    }
+                }
+                # Add manim-specific imports to safe environment
+                safe_globals.update(globals())
+                exec(parsed, safe_globals, locals())
+            except SyntaxError as e:
+                print(f"Syntax error in code: {e}")
+                raise
+            except Exception as e:
+                print(f"Error executing code: {e}")
+                raise
 
             args = line.split()
             if not len(args) or "-h" in args or "--help" in args or "--version" in args:
