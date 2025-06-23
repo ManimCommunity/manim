@@ -115,7 +115,7 @@ class OpenGLCamera(OpenGLMobject):
         self.euler_angles = euler_angles
         self.refresh_rotation_matrix()
 
-    def get_position(self) -> npt.NDArray:
+    def get_position(self) -> Point3D:
         return self.model_matrix[:, 3][:3]
 
     def set_position(self, position):
