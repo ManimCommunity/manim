@@ -4,10 +4,10 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from defusedxml import ElementTree as ET
 
 import numpy as np
 import svgelements as se
+from defusedxml import ElementTree as ET
 
 from manim import config, logger
 
