@@ -46,7 +46,7 @@ class _Fade(Transform):
         its original size while being faded in.
 
     """
-    
+
     def __init__(
         self,
         *mobjects: Mobject,
@@ -55,18 +55,18 @@ class _Fade(Transform):
         scale: float = 1,
         **kwargs: Any,
     ) -> None:
-        
+
         if not mobjects:
             raise ValueError("At least one mobject must be provided for fading.")
-        
+
         for mob in mobjects:
             if not isinstance(mob, Mobject):
                 raise TypeError(f"Expected Mobject instances, got {type(mob)}")
 
         mobject = mobjects[0] if len(mobjects) == 1 else Group(*mobjects)
-        
+
         self.point_target = False
-        
+
         if shift is None:
             if target_position is not None:
                 if isinstance(target_position, (Mobject, OpenGLMobject)):
@@ -104,19 +104,19 @@ class _Fade(Transform):
         Mobject
             The faded, shifted and scaled copy of the mobject.
         """
-        
+
         faded_mobject = self.mobject.copy()  # type: ignore[assignment]
-        
+
         if not isinstance(faded_mobject, Mobject):
             raise RuntimeError("Failed to create faded mobject copy.")
 
         faded_mobject.fade(1)
-        
+
         direction_modifier = -1 if fadeIn and not self.point_target else 1
-        
+
         faded_mobject.shift(self.shift_vector * direction_modifier)
         faded_mobject.scale(self.scale_factor)
-        
+
         return faded_mobject
 
 
