@@ -31,34 +31,35 @@ all other color types in Manim.
 To implement a custom color space, you must subclass :class:`ManimColor` and implement
 three important methods:
 
-  - :attr:`~.ManimColor._internal_value`: a ``@property`` implemented on
-    :class:`ManimColor` with the goal of keeping a consistent internal representation
-    which can be referenced by other functions in :class:`ManimColor`. This property acts
-    as a proxy to whatever representation you need in your class.
+- :attr:`~.ManimColor._internal_value`: a ``@property`` implemented on
+  :class:`ManimColor` with the goal of keeping a consistent internal representation
+  which can be referenced by other functions in :class:`ManimColor`. This property acts
+  as a proxy to whatever representation you need in your class.
 
-      - The getter should always return a NumPy array in the format ``[r,g,b,a]``, in
-        accordance with the type :class:`ManimColorInternal`.
+  - The getter should always return a NumPy array in the format ``[r,g,b,a]``, in
+    accordance with the type :class:`ManimColorInternal`.
 
-      - The setter should always accept a value in the format ``[r,g,b,a]`` which can be
-        converted to whatever attributes you need.
+  - The setter should always accept a value in the format ``[r,g,b,a]`` which can be
+    converted to whatever attributes you need.
 
-  - :attr:`~ManimColor._internal_space`: a read-only ``@property`` implemented on
-    :class:`ManimColor` with the goal of providing a useful representation which can be
-    used by operators, interpolation and color transform functions.
+- :attr:`~ManimColor._internal_space`: a read-only ``@property`` implemented on
+  :class:`ManimColor` with the goal of providing a useful representation which can be
+  used by operators, interpolation and color transform functions.
 
-    The only constraints on this value are:
+  The only constraints on this value are:
 
-      - It must be a NumPy array.
+  - It must be a NumPy array.
 
-      - The last value must be the opacity in a range ``0.0`` to ``1.0``.
+  - The last value must be the opacity in a range ``0.0`` to ``1.0``.
 
-    Additionally, your ``__init__`` must support this format as an initialization value
-    without additional parameters to ensure correct functionality of all other methods in
-    :class:`ManimColor`.
+  Additionally, your ``__init__`` must support this format as an initialization value
+  without additional parameters to ensure correct functionality of all other methods in
+  :class:`ManimColor`.
 
-  - :meth:`~ManimColor._from_internal`: a ``@classmethod`` which converts an
-    ``[r,g,b,a]`` value into suitable parameters for your ``__init__`` method and calls
-    the ``cls`` parameter.
+- :meth:`~ManimColor._from_internal`: a ``@classmethod`` which converts an
+  ``[r,g,b,a]`` value into suitable parameters for your ``__init__`` method and calls
+  the ``cls`` parameter.
+
 """
 
 from __future__ import annotations
@@ -1500,17 +1501,124 @@ def random_bright_color() -> ManimColor:
 def random_color() -> ManimColor:
     """Return a random :class:`ManimColor`.
 
-    .. warning::
-        This operation is very expensive. Please keep in mind the performance loss.
-
     Returns
     -------
     ManimColor
         A random :class:`ManimColor`.
     """
-    import manim.utils.color.manim_colors as manim_colors
+    return RandomColorGenerator._random_color()
 
-    return random.choice(manim_colors._all_manim_colors)
+
+class RandomColorGenerator:
+    _singleton: RandomColorGenerator | None = None
+    """A generator for producing random colors from a given list of Manim colors,
+    optionally in a reproducible sequence using a seed value.
+
+    When initialized with a specific seed, this class produces a deterministic
+    sequence of :class:`.ManimColor` instances. If no seed is provided, the selection is
+    non-deterministic using Python’s global random state.
+
+    Parameters
+    ----------
+    seed
+        A seed value to initialize the internal random number generator.
+        If ``None`` (the default), colors are chosen using the global random state.
+
+    sample_colors
+        A custom list of Manim colors to sample from. Defaults to the full Manim
+        color palette.
+
+    Examples
+    --------
+    Without a seed (non-deterministic)::
+
+        >>> from manim import RandomColorGenerator, ManimColor, RED, GREEN, BLUE
+        >>> rnd = RandomColorGenerator()
+        >>> isinstance(rnd.next(), ManimColor)
+        True
+
+    With a seed (deterministic sequence)::
+
+        >>> rnd = RandomColorGenerator(42)
+        >>> rnd.next()
+        ManimColor('#ECE7E2')
+        >>> rnd.next()
+        ManimColor('#BBBBBB')
+        >>> rnd.next()
+        ManimColor('#BBBBBB')
+
+    Re-initializing with the same seed gives the same sequence::
+
+        >>> rnd2 = RandomColorGenerator(42)
+        >>> rnd2.next()
+        ManimColor('#ECE7E2')
+        >>> rnd2.next()
+        ManimColor('#BBBBBB')
+        >>> rnd2.next()
+        ManimColor('#BBBBBB')
+
+    Using a custom color list::
+
+        >>> custom_palette = [RED, GREEN, BLUE]
+        >>> rnd_custom = RandomColorGenerator(1, sample_colors=custom_palette)
+        >>> rnd_custom.next() in custom_palette
+        True
+        >>> rnd_custom.next() in custom_palette
+        True
+
+    Without a seed and custom palette (non-deterministic)::
+
+        >>> rnd_nodet = RandomColorGenerator(sample_colors=[RED])
+        >>> rnd_nodet.next()
+        ManimColor('#FC6255')
+    """
+
+    def __init__(
+        self,
+        seed: int | None = None,
+        sample_colors: list[ManimColor] | None = None,
+    ) -> None:
+        self.choice = random.choice if seed is None else random.Random(seed).choice
+
+        from manim.utils.color.manim_colors import _all_manim_colors
+
+        self.colors = _all_manim_colors if sample_colors is None else sample_colors
+
+    def next(self) -> ManimColor:
+        """Returns the next color from the configured color list.
+
+        Returns
+        -------
+        ManimColor
+            A randomly selected color from the specified color list.
+
+        Examples
+        --------
+        Usage::
+
+            >>> from manim import RandomColorGenerator, RED
+            >>> rnd = RandomColorGenerator(sample_colors=[RED])
+            >>> rnd.next()
+            ManimColor('#FC6255')
+        """
+        return self.choice(self.colors)
+
+    @classmethod
+    def _random_color(cls) -> ManimColor:
+        """Internal method to generate a random color using the singleton instance of
+        `RandomColorGenerator`.
+        It will be used by proxy method `random_color` publicly available
+        and makes it backwards compatible.
+
+        Returns
+        -------
+        ManimColor:
+            A randomly selected color from the configured color list of
+            the singleton instance.
+        """
+        if cls._singleton is None:
+            cls._singleton = cls()
+        return cls._singleton.next()
 
 
 def get_shaded_rgb(
@@ -1566,6 +1674,7 @@ __all__ = [
     "average_color",
     "random_bright_color",
     "random_color",
+    "RandomColorGenerator",
     "get_shaded_rgb",
     "HSV",
     "RGBA",

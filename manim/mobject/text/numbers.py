@@ -100,7 +100,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         fill_opacity: float = 1.0,
         **kwargs,
     ):
-        super().__init__(**kwargs, stroke_width=stroke_width)
+        super().__init__(**kwargs, fill_opacity=fill_opacity, stroke_width=stroke_width)
         self.number = number
         self.num_decimal_places = num_decimal_places
         self.include_sign = include_sign

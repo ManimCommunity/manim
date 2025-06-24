@@ -128,7 +128,7 @@ profile = "black"
 omit = ["*tests*"]
 
 [tool.coverage.report]
-exclude_lines = ["pragma: no cover"]
+exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:"]
 
 [tool.ruff]
 line-length = 88
@@ -151,6 +151,7 @@ select = [
   "C4",
   "D",
   "E",
+  "W",
   "F",
   "I",
   "PGH",

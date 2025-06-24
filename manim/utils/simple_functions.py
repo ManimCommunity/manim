@@ -98,7 +98,7 @@ class Comparable(Protocol):
     def __gt__(self, other: Any) -> bool: ...
 
 
-ComparableT = TypeVar("ComparableT", bound=Comparable)  # noqa: Y001
+ComparableT = TypeVar("ComparableT", bound=Comparable)
 
 
 def clip(a: ComparableT, min_a: ComparableT, max_a: ComparableT) -> ComparableT:

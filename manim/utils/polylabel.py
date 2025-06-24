@@ -25,7 +25,8 @@ class Polygon:
     Parameters
     ----------
     rings
-        A collection of closed polygonal ring.
+        A sequence of points, where each sequence represents the rings of the polygon.
+        Typically, multiple rings indicate holes in the polygon.
     """
 
     def __init__(self, rings: Sequence[Point2DLike_Array]) -> None:
@@ -63,18 +64,84 @@ class Polygon:
         )
         return d if self.inside(point) else -d
 
-    def inside(self, point: Point2DLike) -> bool:
-        """Check if a point is inside the polygon."""
-        # Views
-        px, py = point
-        x, y = self.start[:, 0], self.start[:, 1]
-        xr, yr = self.stop[:, 0], self.stop[:, 1]
+    def _is_point_on_segment(
+        self,
+        x_point: float,
+        y_point: float,
+        x0: float,
+        y0: float,
+        x1: float,
+        y1: float,
+    ) -> bool:
+        """
+        Check if a point is on the segment.
 
-        # Count Crossings (enforce short-circuit)
-        c = (y > py) != (yr > py)
-        c = px < x[c] + (py - y[c]) * (xr[c] - x[c]) / (yr[c] - y[c])
-        c_sum: int = np.sum(c)
-        return c_sum % 2 == 1
+        The segment is defined by (x0, y0) to (x1, y1).
+        """
+        if min(x0, x1) <= x_point <= max(x0, x1) and min(y0, y1) <= y_point <= max(
+            y0, y1
+        ):
+            dx = x1 - x0
+            dy = y1 - y0
+            cross = dx * (y_point - y0) - dy * (x_point - x0)
+            return bool(np.isclose(cross, 0.0))
+        return False
+
+    def _ray_crosses_segment(
+        self,
+        x_point: float,
+        y_point: float,
+        x0: float,
+        y0: float,
+        x1: float,
+        y1: float,
+    ) -> bool:
+        """
+        Check if a horizontal ray to the right from point (x_point, y_point) crosses the segment.
+
+        The segment is defined by (x0, y0) to (x1, y1).
+        """
+        if (y0 > y_point) != (y1 > y_point):
+            slope = (x1 - x0) / (y1 - y0)
+            x_intersect = slope * (y_point - y0) + x0
+            return bool(x_point < x_intersect)
+        return False
+
+    def inside(self, point: Point2DLike) -> bool:
+        """
+        Check if a point is inside the polygon.
+
+        Uses ray casting algorithm and checks boundary points consistently.
+        """
+        point_x, point_y = point
+        start_x, start_y = self.start[:, 0], self.start[:, 1]
+        stop_x, stop_y = self.stop[:, 0], self.stop[:, 1]
+        segment_count = len(start_x)
+
+        for i in range(segment_count):
+            if self._is_point_on_segment(
+                point_x,
+                point_y,
+                start_x[i],
+                start_y[i],
+                stop_x[i],
+                stop_y[i],
+            ):
+                return True
+
+        crossings = 0
+        for i in range(segment_count):
+            if self._ray_crosses_segment(
+                point_x,
+                point_y,
+                start_x[i],
+                start_y[i],
+                stop_x[i],
+                stop_y[i],
+            ):
+                crossings += 1
+
+        return crossings % 2 == 1
 
 
 class Cell:
