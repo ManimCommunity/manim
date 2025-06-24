@@ -170,7 +170,7 @@ class Scene:
         """The time since the start of the scene."""
         return self.renderer.time
 
-    def __deepcopy__(self, clone_from_id: Any) -> Scene:
+    def __deepcopy__(self, clone_from_id: dict[int, Any]) -> Scene:
         cls = self.__class__
         result = cls.__new__(cls)
         clone_from_id[id(self)] = result
