@@ -15,7 +15,6 @@ import platform
 import random
 import threading
 import time
-import types
 from queue import Queue
 
 import srt
@@ -148,8 +147,6 @@ class Scene:
         self.widgets: list[Any] = []
         self.dearpygui_imported = dearpygui_imported
         self.updaters: list[Callable[[float], None]] = []
-        self.point_lights: list[Any] = []
-        self.ambient_light = None
         self.key_to_function_map: dict[str, Callable[[], None]] = {}
         self.mouse_press_callbacks: list[Callable[[], None]] = []
         self.interactive_mode = False
@@ -199,48 +196,6 @@ class Scene:
                 setattr(result, k, v)
             setattr(result, k, copy.deepcopy(v, clone_from_id))
 
-        # Update updaters
-        for mobj in self.mobjects:
-            cloned_updaters = []
-            for updater in mobj.updaters:
-                # Make the cloned updater use the cloned Mobjects as free variables
-                # rather than the original ones. Analyzing function bytecode with the
-                # dis module will help in understanding this.
-                # https://docs.python.org/3/library/dis.html
-                # TODO: Do the same for function calls recursively.
-                free_variable_map = inspect.getclosurevars(updater).nonlocals
-                cloned_co_freevars = []
-                cloned_closure = []
-                for free_variable_name in updater.__code__.co_freevars:
-                    free_variable_value = free_variable_map[free_variable_name]
-
-                    # If the referenced variable has not been cloned, raise.
-                    if id(free_variable_value) not in clone_from_id:
-                        raise Exception(
-                            f"{free_variable_name} is referenced from an updater "
-                            "but is not an attribute of the Scene, which isn't "
-                            "allowed.",
-                        )
-
-                    # Add the cloned object's name to the free variable list.
-                    cloned_co_freevars.append(free_variable_name)
-
-                    # Add a cell containing the cloned object's reference to the
-                    # closure list.
-                    cloned_closure.append(
-                        types.CellType(clone_from_id[id(free_variable_value)]),
-                    )
-
-                cloned_updater = types.FunctionType(
-                    updater.__code__.replace(co_freevars=tuple(cloned_co_freevars)),
-                    updater.__globals__,
-                    updater.__name__,
-                    updater.__defaults__,
-                    tuple(cloned_closure),
-                )
-                cloned_updaters.append(cloned_updater)
-            mobject_clone = clone_from_id[id(mobj)]
-            mobject_clone.updaters = cloned_updaters
         return result
 
     def render(self, preview: bool = False) -> bool:

@@ -94,7 +94,6 @@ class VectorScene(Scene):
         self,
         animate: bool = False,
         color: ParsableManimColor | Iterable[ParsableManimColor] = WHITE,
-        **kwargs: Any,
     ) -> Axes:
         """
         Adds a pair of Axes to the Scene.
