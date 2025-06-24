@@ -440,8 +440,8 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
 
         Returns
         --------
-        List[:class:`~.VGroup`]
-            Each VGroup contains a bracket
+        :class:`~.VGroup`
+            A VGroup containing the left and right bracket.
 
         Examples
         --------

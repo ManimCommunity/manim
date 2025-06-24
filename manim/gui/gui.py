@@ -10,6 +10,7 @@ except ImportError:
     dearpygui_imported = False
 
 
+from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any
 
 from .. import __version__, config

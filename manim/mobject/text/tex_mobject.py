@@ -30,8 +30,6 @@ from collections.abc import Iterable
 from functools import reduce
 from textwrap import dedent
 
-from typing_extensions import Self
-
 from manim import config, logger
 from manim.constants import *
 from manim.mobject.geometry.line import Line
@@ -450,7 +448,7 @@ class Tex(MathTex):
 
     def __init__(
         self, *tex_strings, arg_separator="", tex_environment="center", **kwargs
-    ) -> Self:
+    ):
         super().__init__(
             *tex_strings,
             arg_separator=arg_separator,

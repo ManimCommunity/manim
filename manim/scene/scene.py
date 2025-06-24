@@ -30,7 +30,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from tqdm import tqdm
-from watchdog.events import FileSystemEventHandler
+from watchdog.events import DirModifiedEvent, FileModifiedEvent, FileSystemEventHandler
 from watchdog.observers import Observer
 
 from manim.mobject.mobject import Mobject
@@ -68,7 +68,7 @@ class RerunSceneHandler(FileSystemEventHandler):
         super().__init__()
         self.queue = queue
 
-    def on_modified(self, event: Any) -> None:
+    def on_modified(self, event: DirModifiedEvent | FileModifiedEvent) -> None:
         self.queue.put(("rerun_file", [], {}))
 
 
@@ -120,7 +120,7 @@ class Scene:
         self.stop_condition: Callable[[], bool] | None = None
         self.moving_mobjects: list[Mobject] = []
         self.static_mobjects: list[Mobject] = []
-        self.time_progression: tqdm[float] = None
+        self.time_progression: tqdm[float] | None = None
         self.duration: float | None = None
         self.last_t = 0.0
         self.queue: Queue = Queue()
