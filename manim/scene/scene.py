@@ -1397,8 +1397,10 @@ class Scene:
             shell(local_ns=namespace)
             self.queue.put(("exit_keyboard", [], {}))
 
-        def get_embedded_method(method_name: str) -> Callable:
-            return lambda *args, **kwargs: self.queue.put((method_name, args, kwargs))
+        def get_embedded_method(method_name: str) -> Callable[Any, None]:
+            def embedded_method(*args: Any, **kwargs: Any) -> None:
+                self.queue.put((method_name, args, kwargs))
+            return embedded_method
 
         currentframe: FrameType = inspect.currentframe()  # type: ignore[assignment]
         local_namespace = currentframe.f_back.f_locals  # type: ignore[union-attr]
