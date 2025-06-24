@@ -7,7 +7,6 @@ from manim.utils.parameter_parsing import flatten_iterable_parameters
 from ..mobject import mobject
 from ..mobject.opengl import opengl_mobject
 
-
 __all__ = ["Scene"]
 
 import copy
@@ -202,9 +201,9 @@ class Scene:
             setattr(result, k, copy.deepcopy(v, clone_from_id))
 
         # Update updaters
-        for mobject in self.mobjects:
+        for mobj in self.mobjects:
             cloned_updaters = []
-            for updater in mobject.updaters:
+            for updater in mobj.updaters:
                 # Make the cloned updater use the cloned Mobjects as free variables
                 # rather than the original ones. Analyzing function bytecode with the
                 # dis module will help in understanding this.
@@ -241,7 +240,7 @@ class Scene:
                     tuple(cloned_closure),
                 )
                 cloned_updaters.append(cloned_updater)
-            mobject_clone = clone_from_id[id(mobject)]
+            mobject_clone = clone_from_id[id(mobj)]
             mobject_clone.updaters = cloned_updaters
         return result
 
@@ -377,8 +376,8 @@ class Scene:
         dt
             Change in time between updates. Defaults (mostly) to 1/frames_per_second
         """
-        for mobject in self.mobjects:
-            mobject.update(dt)
+        for mobj in self.mobjects:
+            mobj.update(dt)
 
     def update_meshes(self, dt: float) -> None:
         for obj in self.meshes:
@@ -948,7 +947,14 @@ class Scene:
         # Allow passing a generator to self.play instead of comma separated arguments
         for arg in arg_anims:
             try:
-                if isinstance(arg, (Animation, mobject._AnimationBuilder, opengl_mobject._AnimationBuilder)):
+                if isinstance(
+                    arg,
+                    (
+                        Animation,
+                        mobject._AnimationBuilder,
+                        opengl_mobject._AnimationBuilder,
+                    ),
+                ):
                     animations.append(prepare_animation(arg))
                 else:
                     raise TypeError
