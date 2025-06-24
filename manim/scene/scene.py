@@ -62,9 +62,10 @@ if TYPE_CHECKING:
 
     from manim.typing import Point3D
 
+    # TODO: Add docstring
+    SceneInteractAction: TypeAlias = tuple[str, Iterable[Any], dict[str, Any]]
 
-# TODO: Add docstring
-SceneInteractAction: TypeAlias = tuple[str, Iterable[Any], dict[str, Any]]
+
 class RerunSceneHandler(FileSystemEventHandler):
     """A class to handle rerunning a Scene after the input file is modified."""
 

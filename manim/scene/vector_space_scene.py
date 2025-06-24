@@ -49,7 +49,7 @@ if TYPE_CHECKING:
 
     from typing_extensions import Self
 
-    from manim.typing import Point2DLike, Point3D, Point3DLike
+    from manim.typing import MappingFunction, Point2DLike, Point3D, Point3DLike
 
 
 X_COLOR = GREEN_C
@@ -465,7 +465,8 @@ class VectorScene(Scene):
             FadeOut(array.get_brackets()),
         ]
         self.play(*animations)
-        y_coord, _ = (anim.mobject for anim in animations)
+        # TODO: Can we delete the line below? I don't think it have any purpose.
+        # y_coord, _ = (anim.mobject for anim in animations)
         self.play(Create(y_line))
         self.play(Create(arrow))
         self.wait()
@@ -554,9 +555,10 @@ class VectorScene(Scene):
             vector = np.asarray(vector)
             if len(vector) == 2:
                 vector = np.append(np.array(vector), 0.0)
+        vector_cleaned: Point3D = vector
 
-        x_max = int(config["frame_x_radius"] + abs(vector[0]))
-        y_max = int(config["frame_y_radius"] + abs(vector[1]))
+        x_max = int(config["frame_x_radius"] + abs(vector_cleaned[0]))
+        y_max = int(config["frame_y_radius"] + abs(vector_cleaned[1]))
         # TODO:
         # I think that this should be a VGroup instead of a VMobject.
         dots = VMobject(
@@ -567,8 +569,8 @@ class VectorScene(Scene):
             )
         )
         dots.set_fill(BLACK, opacity=0)
-        dots_halfway = dots.copy().shift(vector / 2).set_fill(WHITE, 1)
-        dots_end = dots.copy().shift(vector)
+        dots_halfway = dots.copy().shift(vector_cleaned / 2).set_fill(WHITE, 1)
+        dots_end = dots.copy().shift(vector_cleaned)
 
         self.play(Transform(dots, dots_halfway, rate_func=rush_into))
         self.play(Transform(dots, dots_end, rate_func=rush_from))
@@ -710,7 +712,9 @@ class LinearTransformationScene(VectorScene):
             self.i_hat, self.j_hat = self.basis_vectors
             self.add(self.basis_vectors)
 
-    def add_special_mobjects(self, mob_list: list, *mobs_to_add: Mobject) -> None:
+    def add_special_mobjects(
+        self, mob_list: list[Mobject], *mobs_to_add: Mobject
+    ) -> None:
         """
         Adds mobjects to a separate list that can be tracked,
         if these mobjects have some extra importance.
@@ -798,7 +802,7 @@ class LinearTransformationScene(VectorScene):
 
     def get_unit_square(
         self,
-        color: ParsableManimColor = YELLOW,
+        color: ParsableManimColor | Iterable[ParsableManimColor] = YELLOW,
         opacity: float = 0.3,
         stroke_width: float = 3,
     ) -> Rectangle:
@@ -1041,7 +1045,7 @@ class LinearTransformationScene(VectorScene):
             raise ValueError("Matrix has bad dimensions")
         return lambda point: np.dot(point, transposed_matrix)
 
-    def get_piece_movement(self, pieces: list | tuple | np.ndarray) -> Transform:
+    def get_piece_movement(self, pieces: Iterable[Mobject]) -> Transform:
         """
         This method returns an animation that moves an arbitrary
         mobject in "pieces" to its corresponding .target value.
@@ -1069,9 +1073,7 @@ class LinearTransformationScene(VectorScene):
             self.add(self.ghost_vectors[-1])
         return Transform(start, target, lag_ratio=0)
 
-    def get_moving_mobject_movement(
-        self, func: Callable[[np.ndarray], np.ndarray]
-    ) -> Transform:
+    def get_moving_mobject_movement(self, func: MappingFunction) -> Transform:
         """
         This method returns an animation that moves a mobject
         in "self.moving_mobjects"  to its corresponding .target value.
@@ -1097,9 +1099,7 @@ class LinearTransformationScene(VectorScene):
             m.target.move_to(target_point)
         return self.get_piece_movement(self.moving_mobjects)
 
-    def get_vector_movement(
-        self, func: Callable[[np.ndarray], np.ndarray]
-    ) -> Transform:
+    def get_vector_movement(self, func: MappingFunction) -> Transform:
         """
         This method returns an animation that moves a mobject
         in "self.moving_vectors"  to its corresponding .target value.
@@ -1236,8 +1236,8 @@ class LinearTransformationScene(VectorScene):
 
     def apply_function(
         self,
-        function: Callable[[np.ndarray], np.ndarray],
-        added_anims: list = [],
+        function: MappingFunction,
+        added_anims: list[Animation] = [],
         **kwargs: Any,
     ) -> None:
         """
