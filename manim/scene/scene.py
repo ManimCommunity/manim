@@ -684,7 +684,7 @@ class Scene:
         return self
 
     def get_restructured_mobject_list(
-        self, mobjects: list[Mobject], to_remove: Sequence[Mobject]
+        self, mobjects: Iterable[Mobject], to_remove: Iterable[Mobject]
     ) -> list[Mobject]:
         """
         Given a list of mobjects and a list of mobjects to be removed, this
