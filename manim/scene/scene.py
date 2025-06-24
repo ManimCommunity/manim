@@ -909,10 +909,7 @@ class Scene:
 
     def compile_animations(
         self,
-        # TODO: Consider to remove the part with the types.GeneratorType
-        *args: Animation
-        | Iterable[Animation]
-        | types.GeneratorType[Animation, None, None],
+        *args: Animation | Mobject | _AnimationBuilder,
         **kwargs: Any,
     ) -> list[Animation]:
         """
@@ -936,7 +933,10 @@ class Scene:
         # Allow passing a generator to self.play instead of comma separated arguments
         for arg in arg_anims:
             try:
-                animations.append(prepare_animation(arg))
+                if isinstance(arg, (Animation, _AnimationBuilder)):
+                    animations.append(prepare_animation(arg))
+                else:
+                    raise TypeError
             except TypeError as e:
                 if inspect.ismethod(arg):
                     raise TypeError(
@@ -1104,9 +1104,7 @@ class Scene:
 
     def play(
         self,
-        *args: Animation
-        | Iterable[Animation]
-        | types.GeneratorType[Animation, None, None],
+        *args: Animation | Mobject | _AnimationBuilder,
         subcaption: str | None = None,
         subcaption_duration: float | None = None,
         subcaption_offset: float = 0,
@@ -1156,7 +1154,7 @@ class Scene:
             return
 
         start_time = self.time
-        self.renderer.play(self, *args, **kwargs)  # type: ignore[arg-type]
+        self.renderer.play(self, *args, **kwargs)
         run_time = self.time - start_time
         if subcaption:
             if subcaption_duration is None:
