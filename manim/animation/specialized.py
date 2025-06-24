@@ -6,6 +6,7 @@ from collections.abc import Sequence
 from typing import Any
 
 from manim.animation.transform import Restore
+from manim.mobject.mobject import Mobject
 
 from ..constants import *
 from .composition import LaggedStart
@@ -50,7 +51,7 @@ class Broadcast(LaggedStart):
 
     def __init__(
         self,
-        mobject,
+        mobject: Mobject,
         focal_point: Sequence[float] = ORIGIN,
         n_mobs: int = 5,
         initial_opacity: float = 1,

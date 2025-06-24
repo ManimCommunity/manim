@@ -8,6 +8,7 @@ from collections.abc import Sequence
 from typing import TYPE_CHECKING, Callable
 
 import numpy as np
+from typing_extensions import Any
 
 from ..animation.animation import Animation
 from ..animation.transform import Transform
@@ -94,7 +95,7 @@ class Rotating(Animation):
         about_edge: np.ndarray | None = None,
         run_time: float = 5,
         rate_func: Callable[[float], float] = linear,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         self.angle = angle
         self.axis = axis
@@ -159,7 +160,7 @@ class Rotate(Transform):
         axis: np.ndarray = OUT,
         about_point: Sequence[float] | None = None,
         about_edge: Sequence[float] | None = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         if "path_arc" not in kwargs:
             kwargs["path_arc"] = angle
