@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from manim.utils.parameter_parsing import flatten_iterable_parameters
 
+from ..mobject.mobject import _AnimationBuilder
+
 __all__ = ["Scene"]
 
 import copy
@@ -449,7 +451,8 @@ class Scene:
             for mob in self.mobjects:
                 family_members.extend(mob.get_family())
             return family_members
-        elif config.renderer == RendererType.CAIRO:
+        else:
+            assert config.renderer == RendererType.CAIRO
             return extract_mobject_family_members(
                 self.mobjects,
                 use_z_index=self.renderer.camera.use_z_index,
@@ -483,7 +486,8 @@ class Scene:
             self.mobjects += new_mobjects  # type: ignore[arg-type]
             self.remove(*new_meshes)  # type: ignore[arg-type]
             self.meshes += new_meshes
-        elif config.renderer == RendererType.CAIRO:
+        else:
+            assert config.renderer == RendererType.CAIRO
             new_and_foreground_mobjects: list[Mobject] = [
                 *mobjects,  # type: ignore[list-item]
                 *self.foreground_mobjects,
@@ -542,7 +546,8 @@ class Scene:
                 filter(lambda_function, self.meshes),
             )
             return self
-        elif config.renderer == RendererType.CAIRO:
+        else:
+            assert config.renderer == RendererType.CAIRO
             for list_name in "mobjects", "foreground_mobjects":
                 self.restructure_mobjects(mobjects, list_name, False)
             return self
@@ -707,7 +712,7 @@ class Scene:
         new_mobjects: list[Mobject] = []
 
         def add_safe_mobjects_from_list(
-            list_to_examine: list[Mobject], set_to_remove: set[Mobject]
+            list_to_examine: Iterable[Mobject], set_to_remove: set[Mobject]
         ) -> None:
             for mob in list_to_examine:
                 if mob in set_to_remove:
@@ -880,7 +885,7 @@ class Scene:
         return []
 
     def get_moving_and_static_mobjects(
-        self, animations: list[Animation]
+        self, animations: Iterable[Animation]
     ) -> tuple[list[Mobject], list[Mobject]]:
         all_mobjects = list_update(self.mobjects, self.foreground_mobjects)
         all_mobject_families = extract_mobject_family_members(
@@ -1235,9 +1240,7 @@ class Scene:
 
     def compile_animation_data(
         self,
-        *animations: Animation
-        | Iterable[Animation]
-        | types.GeneratorType[Animation, None, None],
+        *animations: Animation | Mobject | _AnimationBuilder,
         **play_kwargs: Any,
     ) -> Self | None:
         """Given a list of animations, compile the corresponding
@@ -1397,9 +1400,10 @@ class Scene:
             shell(local_ns=namespace)
             self.queue.put(("exit_keyboard", [], {}))
 
-        def get_embedded_method(method_name: str) -> Callable[Any, None]:
+        def get_embedded_method(method_name: str) -> Callable[[Any], None]:
             def embedded_method(*args: Any, **kwargs: Any) -> None:
                 self.queue.put((method_name, args, kwargs))
+
             return embedded_method
 
         currentframe: FrameType = inspect.currentframe()  # type: ignore[assignment]
