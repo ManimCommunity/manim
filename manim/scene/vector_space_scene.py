@@ -79,7 +79,7 @@ class VectorScene(Scene):
         self.add(plane)
         return plane
 
-    def add_axes(self, animate: bool = False, color: bool = WHITE, **kwargs):
+    def add_axes(self, animate: bool = False, color: bool = WHITE):
         """
         Adds a pair of Axes to the Scene.
 
