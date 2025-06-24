@@ -68,16 +68,15 @@ if TYPE_CHECKING:
     used by Scene.interact().
     The elements consist consist of:
 
-    - a string, which is either the name of a Scene method or some special keyword 
+    - a string, which is either the name of a Scene method or some special keyword
       starting with "rerun" or "exit",
-    - a list of args for the Scene method (only used if the first string actually 
+    - a list of args for the Scene method (only used if the first string actually
       corresponds to a method) and
-    - a dict of kwargs for the Scene method (if the first string corresponds to one. 
+    - a dict of kwargs for the Scene method (if the first string corresponds to one.
       Otherwise, currently Scene.interact() extracts a possible "from_animation_number" from it if the first string starts with "rerun"),
     as seen around the source code where it's common to use self.queue.put((method_name, [], {})) and similar items.
 
     """
-
 
 
 class RerunSceneHandler(FileSystemEventHandler):
