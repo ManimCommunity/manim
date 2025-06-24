@@ -4,7 +4,7 @@ from __future__ import annotations
 
 __all__ = ["VectorScene", "LinearTransformationScene"]
 
-from collections.abc import Sequence
+from collections.abc import Iterable
 from typing import TYPE_CHECKING, Any, Callable, cast
 
 import numpy as np
@@ -49,7 +49,7 @@ if TYPE_CHECKING:
 
     from typing_extensions import Self
 
-    from manim.typing import Point3D
+    from manim.typing import Point2DLike, Point3D, Point3DLike
 
 
 X_COLOR = GREEN_C
@@ -64,7 +64,7 @@ Z_COLOR = BLUE_D
 # Also, methods I would have thought of as getters, like coords_to_vector, are
 # actually doing a lot of animating.
 class VectorScene(Scene):
-    def __init__(self, basis_vector_stroke_width: float = 6, **kwargs: Any) -> None:
+    def __init__(self, basis_vector_stroke_width: float = 6.0, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.basis_vector_stroke_width = basis_vector_stroke_width
 
@@ -91,7 +91,10 @@ class VectorScene(Scene):
         return plane
 
     def add_axes(
-        self, animate: bool = False, color: ParsableManimColor = WHITE, **kwargs: Any
+        self,
+        animate: bool = False,
+        color: ParsableManimColor | Iterable[ParsableManimColor] = WHITE,
+        **kwargs: Any,
     ) -> Axes:
         """
         Adds a pair of Axes to the Scene.
@@ -137,9 +140,7 @@ class VectorScene(Scene):
         self.renderer.camera = Camera(self.renderer.get_frame())
         self.clear()
 
-    def get_vector(
-        self, numerical_vector: np.ndarray | list | tuple, **kwargs: Any
-    ) -> Arrow:
+    def get_vector(self, numerical_vector: Point3DLike, **kwargs: Any) -> Arrow:
         """
         Returns an arrow on the Plane given an input numerical vector.
 
@@ -166,8 +167,8 @@ class VectorScene(Scene):
 
     def add_vector(
         self,
-        vector: Arrow | list | tuple | np.ndarray,
-        color: ParsableManimColor = YELLOW,
+        vector: Arrow | Point3DLike,
+        color: ParsableManimColor | Iterable[ParsableManimColor] = YELLOW,
         animate: bool = True,
         **kwargs: Any,
     ) -> Arrow:
@@ -230,8 +231,8 @@ class VectorScene(Scene):
 
     def get_basis_vectors(
         self,
-        i_hat_color: ParsableManimColor = X_COLOR,
-        j_hat_color: ParsableManimColor = Y_COLOR,
+        i_hat_color: ParsableManimColor | Iterable[ParsableManimColor] = X_COLOR,
+        j_hat_color: ParsableManimColor | Iterable[ParsableManimColor] = Y_COLOR,
     ) -> VGroup:
         """
         Returns a VGroup of the Basis Vectors (1,0) and (0,1)
@@ -389,28 +390,28 @@ class VectorScene(Scene):
 
     def position_x_coordinate(
         self,
-        x_coord: VGroup,
+        x_coord: MathTex,
         x_line: Line,
-        vector: np.ndarray,
-    ) -> VGroup:  # TODO Write DocStrings for this.
+        vector: Point3DLike,
+    ) -> MathTex:  # TODO Write DocStrings for this.
         x_coord.next_to(x_line, -np.sign(vector[1]) * UP)
         x_coord.set_color(X_COLOR)
         return x_coord
 
     def position_y_coordinate(
         self,
-        y_coord: VGroup,
+        y_coord: MathTex,
         y_line: Line,
-        vector: np.ndarray,
-    ) -> VGroup:  # TODO Write DocStrings for this.
+        vector: Point3DLike,
+    ) -> MathTex:  # TODO Write DocStrings for this.
         y_coord.next_to(y_line, np.sign(vector[0]) * RIGHT)
         y_coord.set_color(Y_COLOR)
         return y_coord
 
     def coords_to_vector(
         self,
-        vector: Point3D,
-        coords_start: Point3D = 2 * RIGHT + 2 * UP,
+        vector: Point2DLike,
+        coords_start: Point3DLike = 2 * RIGHT + 2 * UP,
         clean_up: bool = True,
     ) -> None:
         """
@@ -443,9 +444,9 @@ class VectorScene(Scene):
         y_line = Line(x_line.get_end(), arrow.get_end())
         x_line.set_color(X_COLOR)
         y_line.set_color(Y_COLOR)
-        # TODO: Write a unit test that tests the coords_to_vector method.
-        # I suspect that it will fail in the next file.
-        x_coord, y_coord = array.get_mob_matrix().flatten()  # type: ignore[attr-defined]
+        mob_matrix = array.get_mob_matrix()
+        x_coord = mob_matrix[0][0]
+        y_coord = mob_matrix[1][0]
 
         self.play(Write(array, run_time=1))
         self.wait()
@@ -474,7 +475,7 @@ class VectorScene(Scene):
 
     def vector_to_coords(
         self,
-        vector: Point3D,
+        vector: Point3DLike,
         integer_labels: bool = True,
         clean_up: bool = True,
     ) -> tuple[Matrix, Line, Line]:
@@ -535,7 +536,7 @@ class VectorScene(Scene):
             self.add(*starting_mobjects)
         return array, x_line, y_line
 
-    def show_ghost_movement(self, vector: Arrow | list | tuple | np.ndarray) -> None:
+    def show_ghost_movement(self, vector: Arrow | Point2DLike | Point3DLike) -> None:
         """
         This method plays an animation that partially shows the entire plane moving
         in the direction of a particular vector. This is useful when you wish to
@@ -549,8 +550,11 @@ class VectorScene(Scene):
         """
         if isinstance(vector, Arrow):
             vector = vector.get_end() - vector.get_start()
-        elif len(vector) == 2:
-            vector = np.append(np.array(vector), 0.0)
+        else:
+            vector = np.asarray(vector)
+            if len(vector) == 2:
+                vector = np.append(np.array(vector), 0.0)
+
         x_max = int(config["frame_x_radius"] + abs(vector[0]))
         y_max = int(config["frame_y_radius"] + abs(vector[1]))
         # TODO:
@@ -623,8 +627,8 @@ class LinearTransformationScene(VectorScene):
         self,
         include_background_plane: bool = True,
         include_foreground_plane: bool = True,
-        background_plane_kwargs: dict | None = None,
-        foreground_plane_kwargs: dict | None = None,
+        background_plane_kwargs: dict[str, Any] | None = None,
+        foreground_plane_kwargs: dict[str, Any] | None = None,
         show_coordinates: bool = False,
         show_basis_vectors: bool = True,
         basis_vector_stroke_width: float = 6,
@@ -669,8 +673,8 @@ class LinearTransformationScene(VectorScene):
 
     @staticmethod
     def update_default_configs(
-        default_configs: Sequence[dict[str, Any]],
-        passed_configs: Sequence[dict[str, Any] | None],
+        default_configs: Iterable[dict[str, Any]],
+        passed_configs: Iterable[dict[str, Any] | None],
     ) -> None:
         for default_config, passed_config in zip(default_configs, passed_configs):
             if passed_config is not None:
@@ -680,7 +684,7 @@ class LinearTransformationScene(VectorScene):
         # The has_already_setup attr is to not break all the old Scenes
         if hasattr(self, "has_already_setup"):
             return
-        self.has_already_setup: bool = True
+        self.has_already_setup = True
         self.background_mobjects: list[Mobject] = []
         self.foreground_mobjects: list[Mobject] = []
         self.transformable_mobjects: list[Mobject] = []

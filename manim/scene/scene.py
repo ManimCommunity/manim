@@ -56,17 +56,19 @@ from ..utils.iterables import list_difference_update, list_update
 if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
     from types import FrameType
-    from typing import Any, Callable
+    from typing import Any, Callable, TypeAlias
 
     from typing_extensions import Self
 
     from manim.typing import Point3D
 
 
+# TODO: Add docstring
+SceneInteractAction: TypeAlias = tuple[str, Iterable[Any], dict[str, Any]]
 class RerunSceneHandler(FileSystemEventHandler):
     """A class to handle rerunning a Scene after the input file is modified."""
 
-    def __init__(self, queue: Queue) -> None:
+    def __init__(self, queue: Queue[SceneInteractAction]) -> None:
         super().__init__()
         self.queue = queue
 
@@ -125,7 +127,7 @@ class Scene:
         self.time_progression: tqdm[float] | None = None
         self.duration: float | None = None
         self.last_t = 0.0
-        self.queue: Queue = Queue()
+        self.queue: Queue[SceneInteractAction] = Queue()
         self.skip_animation_preview = False
         self.meshes: list[Object3D] = []
         self.camera_target = ORIGIN
@@ -1378,6 +1380,7 @@ class Scene:
         if not self.check_interactive_embed_is_valid():
             return
         self.interactive_mode = True
+        from IPython.terminal.embed import InteractiveShellEmbed
 
         def ipython(shell: InteractiveShellEmbed, namespace: dict[str, Any]) -> None:
             import manim.opengl
@@ -1416,7 +1419,6 @@ class Scene:
         from sqlite3 import connect
 
         from IPython.core.getipython import get_ipython
-        from IPython.terminal.embed import InteractiveShellEmbed
         from traitlets.config import Config
 
         cfg = Config()
@@ -1703,7 +1705,7 @@ class Scene:
             self.camera.scale(factor, about_point=self.camera_target)
         self.mouse_scroll_orbit_controls(point, offset)
 
-    def on_key_press(self, symbol: int, modifiers: Any) -> None:
+    def on_key_press(self, symbol: int, modifiers: int) -> None:
         assert isinstance(self.camera, OpenGLCamera)
         try:
             char = chr(symbol)
@@ -1720,7 +1722,7 @@ class Scene:
             if char in self.key_to_function_map:
                 self.key_to_function_map[char]()
 
-    def on_key_release(self, symbol: int, modifiers: Any) -> None:
+    def on_key_release(self, symbol: int, modifiers: int) -> None:
         pass
 
     def on_mouse_drag(
@@ -1728,7 +1730,7 @@ class Scene:
         point: Point3D,
         d_point: Point3D,
         buttons: int,
-        modifiers: Any,
+        modifiers: int,
     ) -> None:
         assert isinstance(self.camera, OpenGLCamera)
         self.mouse_drag_point.move_to(point)
@@ -1758,7 +1760,7 @@ class Scene:
         point: Point3D,
         d_point: Point3D,
         buttons: int,
-        modifiers: Any,
+        modifiers: int,
     ) -> None:
         assert isinstance(self.camera, OpenGLCamera)
         # Left click drag.
@@ -1836,6 +1838,6 @@ class Scene:
     def set_key_function(self, char: str, func: Callable[[], Any]) -> None:
         self.key_to_function_map[char] = func
 
-    def on_mouse_press(self, point: Point3D, button: str, modifiers: Any) -> None:
+    def on_mouse_press(self, point: Point3D, button: int, modifiers: int) -> None:
         for func in self.mouse_press_callbacks:
             func()
