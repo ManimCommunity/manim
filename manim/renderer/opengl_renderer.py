@@ -425,8 +425,11 @@ class OpenGLRenderer:
 
     @handle_caching_play
     def play(
-        self, scene: Scene, *args: Animation | Mobject | _AnimationBuilder, **kwargs
-    ):
+        self,
+        scene: Scene,
+        *args: Animation | Mobject | _AnimationBuilder,
+        **kwargs: Any,
+    ) -> None:
         # TODO: Handle data locking / unlocking.
         self.animation_start_time = time.time()
         self.file_writer.begin_animation(not self.skip_animations)

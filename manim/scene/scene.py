@@ -1423,7 +1423,7 @@ class Scene:
             shell(local_ns=namespace)
             self.queue.put(("exit_keyboard", [], {}))
 
-        def get_embedded_method(method_name: str) -> Callable[[Any], None]:
+        def get_embedded_method(method_name: str) -> Callable[..., None]:
             def embedded_method(*args: Any, **kwargs: Any) -> None:
                 self.queue.put((method_name, args, kwargs))
 
