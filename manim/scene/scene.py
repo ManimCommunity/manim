@@ -122,7 +122,7 @@ class Scene:
         self.static_mobjects: list[Mobject] = []
         self.time_progression: tqdm[float] = None
         self.duration: float | None = None
-        self.last_t: float = 0
+        self.last_t = 0.0
         self.queue: Queue = Queue()
         self.skip_animation_preview = False
         self.meshes: list[Object3D] = []
