@@ -4,7 +4,9 @@ from __future__ import annotations
 
 from manim.utils.parameter_parsing import flatten_iterable_parameters
 
-from ..mobject.mobject import _AnimationBuilder
+from ..mobject import mobject
+from ..mobject.opengl import opengl_mobject
+
 
 __all__ = ["Scene"]
 
@@ -922,7 +924,7 @@ class Scene:
 
     def compile_animations(
         self,
-        *args: Animation | Mobject | _AnimationBuilder,
+        *args: Animation | Mobject | mobject._AnimationBuilder,
         **kwargs: Any,
     ) -> list[Animation]:
         """
@@ -946,7 +948,7 @@ class Scene:
         # Allow passing a generator to self.play instead of comma separated arguments
         for arg in arg_anims:
             try:
-                if isinstance(arg, (Animation, _AnimationBuilder)):
+                if isinstance(arg, (Animation, mobject._AnimationBuilder, opengl_mobject._AnimationBuilder)):
                     animations.append(prepare_animation(arg))
                 else:
                     raise TypeError
@@ -1117,7 +1119,7 @@ class Scene:
 
     def play(
         self,
-        *args: Animation | Mobject | _AnimationBuilder,
+        *args: Animation | Mobject | mobject._AnimationBuilder,
         subcaption: str | None = None,
         subcaption_duration: float | None = None,
         subcaption_offset: float = 0,
@@ -1254,7 +1256,7 @@ class Scene:
 
     def compile_animation_data(
         self,
-        *animations: Animation | Mobject | _AnimationBuilder,
+        *animations: Animation | Mobject | mobject._AnimationBuilder,
         **play_kwargs: Any,
     ) -> Self | None:
         """Given a list of animations, compile the corresponding
