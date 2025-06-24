@@ -266,7 +266,6 @@ class Scene:
         if config["preview"] or config["show_in_file_browser"]:
             open_media_file(self.renderer.file_writer)
 
-        # TODO: What value should the function return when it reaches this point?
         return False
 
     def setup(self) -> None:
