@@ -127,8 +127,6 @@ class Scene:
         self.widgets = []
         self.dearpygui_imported = dearpygui_imported
         self.updaters = []
-        self.point_lights = []
-        self.ambient_light = None
         self.key_to_function_map = {}
         self.mouse_press_callbacks = []
         self.interactive_mode = False
