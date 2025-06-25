@@ -22,17 +22,17 @@
 Manim is an animation engine for explanatory math videos. It's used to create precise animations programmatically, as demonstrated in the videos of [3Blue1Brown](https://www.3blue1brown.com/).
 
 > [!NOTE]
-> The community edition of Manim has been forked from 3b1b/manim, a tool originally created and open-sourced by Grant Sanderson, also creator of the 3Blue1Brown educational math videos. While Grant Sanderson’s repository continues to be maintained separately by him, he is not among the maintainers of the community edition. We recommend this version for its continued development, improved features, enhanced documentation, and more active community-driven maintenance. If you would like to study how Grant makes his videos, head over to his repository ([3b1b/manim](https://github.com/3b1b/manim)).
+> The community edition of Manim (ManimCE) is a version maintained and developed by the community. It was forked from 3b1b/manim, a tool originally created and open-sourced by Grant Sanderson, also creator of the 3Blue1Brown educational math videos. While Grant Sanderson continues to maintain his own repository, we recommend this version for its continued development, improved features, enhanced documentation, and more active community-driven maintenance. If you would like to study how Grant makes his videos, head over to his repository ([3b1b/manim](https://github.com/3b1b/manim)).
 
 ## Table of Contents:
 
--  [Installation](#installation)
--  [Usage](#usage)
--  [Documentation](#documentation)
--  [Docker](#docker)
--  [Help with Manim](#help-with-manim)
--  [Contributing](#contributing)
--  [License](#license)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Documentation](#documentation)
+- [Docker](#docker)
+- [Help with Manim](#help-with-manim)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## Installation
 
@@ -90,9 +90,9 @@ The `-p` flag in the command above is for previewing, meaning the video file wil
 
 Some other useful flags include:
 
--  `-s` to skip to the end and just show the final frame.
--  `-n <number>` to skip ahead to the `n`'th animation of a scene.
--  `-f` show the file in the file browser.
+- `-s` to skip to the end and just show the final frame.
+- `-n <number>` to skip ahead to the `n`'th animation of a scene.
+- `-f` show the file in the file browser.
 
 For a thorough list of command line arguments, visit the [documentation](https://docs.manim.community/en/stable/guides/configuration.html).
 
@@ -120,8 +120,8 @@ The contribution guide may become outdated quickly; we highly recommend joining 
 [Discord server](https://www.manim.community/discord/) to discuss any potential
 contributions and keep up to date with the latest developments.
 
-Most developers on the project use `poetry` for management. You'll want to have poetry installed and available in your environment.
-Learn more about `poetry` at its [documentation](https://python-poetry.org/docs/) and find out how to install manim with poetry at the [manim dev-installation guide](https://docs.manim.community/en/stable/contributing/development.html) in the manim documentation.
+Most developers on the project use `uv` for management. You'll want to have uv installed and available in your environment.
+Learn more about `uv` at its [documentation](https://docs.astral.sh/uv/) and find out how to install manim with uv at the [manim dev-installation guide](https://docs.manim.community/en/latest/contributing/development.html) in the manim documentation.
 
 ## How to Cite Manim
 
