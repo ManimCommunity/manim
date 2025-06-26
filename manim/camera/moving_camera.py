@@ -10,41 +10,78 @@ from __future__ import annotations
 
 __all__ = ["MovingCamera"]
 
+from collections.abc import Iterable
+from typing import TYPE_CHECKING, Any
+
 import numpy as np
 
-from .. import config
-from ..camera.camera import Camera
-from ..constants import DOWN, LEFT, RIGHT, UP
-from ..mobject.frame import ScreenRectangle
-from ..mobject.mobject import Mobject
-from ..utils.color import WHITE
+from manim import config
+from manim.camera.camera import Camera
+from manim.constants import DOWN, LEFT, RIGHT, UP
+from manim.mobject.frame import ScreenRectangle
+from manim.mobject.mobject import Mobject
+from manim.utils.color import WHITE
+
+if TYPE_CHECKING:
+    import cairo
+
+    from manim.mobject.mobject import _AnimationBuilder
+    from manim.typing import Point3D, Point3DLike
+    from manim.utils.color import ParsableManimColor
 
 
 class MovingCamera(Camera):
     """
-    Stays in line with the height, width and position of it's 'frame', which is a Rectangle
+    Subclass of :class:`~.Camera` equipped with a special attribute :attr:`frame`:
+    a :class:`~.ScreenRectangle` delimiting the region displayed
+    by the Camera, which follows the frame's position and stays in line with
+    its height and width.
 
     .. SEEALSO::
 
         :class:`.MovingCameraScene`
 
+    Attributes
+    ----------
+    frame : :class:`~.ScreenRectangle`
+        A :class:`~.ScreenRectangle` which determines the region of space displayed
+        by :class:`MovingCamera`.
+    fixed_dimension
+        Currently unused.
+    default_frame_stroke_color
+        Default stroke color for the border of :attr:`frame`.
+    default_frame_stroke_width
+        Default stroke width for the border of :attr:`frame`.
+
+    Parameters
+    ----------
+    frame
+        An optional :class:`~.ScreenRectangle` which determines the region of space
+        displayed by :class:`MovingCamera`. If ``None``, a new :class:`~.ScreenRectangle`
+        is generated automatically for the camera.
+    fixed_dimension
+        Currently unused.
+    default_frame_stroke_color
+        Default stroke color for the border of :attr:`frame`.
+    default_frame_stroke_width
+        Default stroke width for the border of :attr:`frame`.
     """
 
     def __init__(
         self,
-        frame=None,
-        fixed_dimension=0,  # width
-        default_frame_stroke_color=WHITE,
-        default_frame_stroke_width=0,
+        frame: ScreenRectangle | None = None,
+        fixed_dimension: int = 0,  # width
+        default_frame_stroke_color: ParsableManimColor | None = WHITE,
+        default_frame_stroke_width: float = 0,
         **kwargs,
-    ):
-        """
-        Frame is a Mobject, (should almost certainly be a rectangle)
-        determining which region of space the camera displays
-        """
+    ) -> None:
         self.fixed_dimension = fixed_dimension
         self.default_frame_stroke_color = default_frame_stroke_color
         self.default_frame_stroke_width = default_frame_stroke_width
+        """
+        Frame is a Mobject (should almost certainly be a rectangle)
+        which determines the region of space displayed by the camera.
+        """
         if frame is None:
             frame = ScreenRectangle(height=config["frame_height"])
             frame.set_stroke(
@@ -56,101 +93,106 @@ class MovingCamera(Camera):
 
     # TODO, make these work for a rotated frame
     @property
-    def frame_height(self):
-        """Returns the height of the frame.
+    def frame_height(self) -> float:
+        """Returns the height of :attr:`frame`.
 
         Returns
         -------
         float
-            The height of the frame.
+            The height of :attr:`frame`.
         """
         return self.frame.height
 
-    @property
-    def frame_width(self):
-        """Returns the width of the frame
-
-        Returns
-        -------
-        float
-            The width of the frame.
-        """
-        return self.frame.width
-
-    @property
-    def frame_center(self):
-        """Returns the centerpoint of the frame in cartesian coordinates.
-
-        Returns
-        -------
-        np.array
-            The cartesian coordinates of the center of the frame.
-        """
-        return self.frame.get_center()
-
     @frame_height.setter
-    def frame_height(self, frame_height: float):
-        """Sets the height of the frame in MUnits.
+    def frame_height(self, frame_height: float) -> None:
+        """Sets the height of :attr:`frame` in MUnits.
 
         Parameters
         ----------
         frame_height
-            The new frame_height.
+            The new height for :attr:`frame`.
         """
         self.frame.stretch_to_fit_height(frame_height)
 
+    @property
+    def frame_width(self) -> float:
+        """Returns the width of :attr:`frame`.
+
+        Returns
+        -------
+        float
+            The width of :attr:`frame`.
+        """
+        return self.frame.width
+
     @frame_width.setter
-    def frame_width(self, frame_width: float):
-        """Sets the width of the frame in MUnits.
+    def frame_width(self, frame_width: float) -> None:
+        """Sets the width of :attr:`frame` in MUnits.
 
         Parameters
         ----------
         frame_width
-            The new frame_width.
+            The new width for :attr:`frame`.
         """
         self.frame.stretch_to_fit_width(frame_width)
 
+    @property
+    def frame_center(self) -> Point3D:
+        """Returns the centerpoint of :attr:`frame` in Cartesian coordinates.
+
+        Returns
+        -------
+        np.array
+            The Cartesian coordinates of the center of :attr:`frame`.
+        """
+        return self.frame.get_center()
+
     @frame_center.setter
-    def frame_center(self, frame_center: np.ndarray | list | tuple | Mobject):
-        """Sets the centerpoint of the frame.
+    def frame_center(self, frame_center: Point3DLike | Mobject) -> None:
+        """Sets the centerpoint of :attr:`frame`.
 
         Parameters
         ----------
         frame_center
-            The point to which the frame must be moved.
-            If is of type mobject, the frame will be moved to
-            the center of that mobject.
+            Point to which :attr:`frame` must be moved, or another
+            :class:`~.Mobject` whose center will be used for :attr:`frame`.
         """
         self.frame.move_to(frame_center)
 
-    def capture_mobjects(self, mobjects, **kwargs):
+    # TODO: If the other methods are commented and this only
+    # calls super(), this override might as well be deleted
+    def capture_mobjects(
+        self,
+        mobjects: Iterable[Mobject],
+        **kwargs: Any,
+    ) -> None:
         # self.reset_frame_center()
         # self.realign_frame_shape()
         super().capture_mobjects(mobjects, **kwargs)
 
-    # Since the frame can be moving around, the cairo
+    # Since the frame can be moving around, the Cairo
     # context used for updating should be regenerated
-    # at each frame.  So no caching.
-    def get_cached_cairo_context(self, pixel_array):
+    # at each frame. So no caching.
+    def get_cached_cairo_context(self, pixel_array: np.ndarray) -> None:
         """
-        Since the frame can be moving around, the cairo
+        Since the frame can be moving around, the Cairo
         context used for updating should be regenerated
-        at each frame.  So no caching.
+        at each frame. So no caching.
         """
         return None
 
-    def cache_cairo_context(self, pixel_array, ctx):
+    def cache_cairo_context(self, pixel_array: np.ndarray, ctx: cairo.Context) -> None:
         """
-        Since the frame can be moving around, the cairo
+        Since the frame can be moving around, the Cairo
         context used for updating should be regenerated
-        at each frame.  So no caching.
+        at each frame. So no caching.
         """
         pass
 
-    # def reset_frame_center(self):
+    # def reset_frame_center(self) -> None:
     #     self.frame_center = self.frame.get_center()
 
-    # def realign_frame_shape(self):
+    # def realign_frame_shape(self) -> None:
     #     height, width = self.frame_shape
     #     if self.fixed_dimension == 0:
     #         self.frame_shape = (height, self.frame.width
@@ -158,26 +200,27 @@ class MovingCamera(Camera):
     #         self.frame_shape = (self.frame.height, width)
     #     self.resize_frame_shape(fixed_dimension=self.fixed_dimension)
 
-    def get_mobjects_indicating_movement(self):
-        """
-        Returns all mobjects whose movement implies that the camera
-        should think of all other mobjects on the screen as moving
+    def get_mobjects_indicating_movement(self) -> list[Mobject]:
+        """Returns all Mobjects whose movement implies that
+        the :class:`MovingCamera` should think of all the other Mobjects
+        on the screen as moving.
 
         Returns
         -------
-        list
+        List[:class:`Mobject`]
+            List of Mobjects indicating movement.
         """
         return [self.frame]
 
     def auto_zoom(
         self,
-        mobjects: list[Mobject],
+        mobjects: Mobject | Iterable[Mobject],
         margin: float = 0,
         only_mobjects_in_frame: bool = False,
         animate: bool = True,
-    ):
-        """Zooms on to a given array of mobjects (or a singular mobject)
-        and automatically resizes to frame all the mobjects.
+    ) -> _AnimationBuilder | ScreenRectangle:
+        """Zooms on to a given array of Mobjects (or a singular Mobject)
+        and automatically resizes to frame all the Mobjects.
 
         .. NOTE::
 
@@ -187,22 +230,22 @@ class MovingCamera(Camera):
         Parameters
         ----------
         mobjects
-            The mobject or array of mobjects that the camera will focus on.
+            The :class:`~.Mobject` or array of Mobjects that the :class:`MovingCamera` will focus on.
 
         margin
             The width of the margin that is added to the frame (optional, 0 by default).
 
         only_mobjects_in_frame
-            If set to ``True``, only allows focusing on mobjects that are already in frame.
+            If set to ``True``, only allows focusing on Mobjects that are already in frame.
 
         animate
-            If set to ``False``, applies the changes instead of returning the corresponding animation
+            If set to ``False``, applies the changes instead of returning the corresponding animation.
 
         Returns
         -------
-        Union[_AnimationBuilder, ScreenRectangle]
-            _AnimationBuilder that zooms the camera view to a given list of mobjects
-            or ScreenRectangle with position and size updated to zoomed position.
+        :class:`~._AnimationBuilder` | :class:`~.ScreenRectangle`
+            An :class:`~._AnimationBuilder` that zooms the camera view to a given list of Mobjects,
+            or a :class:`~.ScreenRectangle` with its position and size updated to the zoomed position.
 
         """
         scene_critical_x_left = None
