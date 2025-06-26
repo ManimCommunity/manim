@@ -540,7 +540,7 @@ class Animation:
 
 
 def prepare_animation(
-    anim: Animation | mobject._AnimationBuilder,
+    anim: Animation | mobject._AnimationBuilder | opengl_mobject._AnimationBuilder,
 ) -> Animation:
     r"""Returns either an unchanged animation, or the animation built
     from a passed animation factory.
