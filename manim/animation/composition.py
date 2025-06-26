@@ -66,9 +66,7 @@ class AnimationGroup(Animation):
         self.rate_func = rate_func
         self.group = group
         if self.group is None:
-            mobjects = remove_list_redundancies(
-                [anim.mobject for anim in self.animations if not anim.is_introducer()],
-            )
+            mobjects = self._get_unintroduced_mobjects()
             if config["renderer"] == RendererType.OPENGL:
                 self.group = OpenGLGroup(*mobjects)
             else:
@@ -77,6 +75,11 @@ class AnimationGroup(Animation):
             self.group, rate_func=self.rate_func, lag_ratio=lag_ratio, **kwargs
         )
         self.run_time: float = self.init_run_time(run_time)
+
+    def _get_unintroduced_mobjects(self) -> Sequence[Mobject]:
+        return remove_list_redundancies(
+            [anim.mobject for anim in self.animations if not anim.is_introducer()],
+        )
 
     def get_all_mobjects(self) -> Sequence[Mobject]:
         return list(self.group)
@@ -230,6 +233,16 @@ class Succession(AnimationGroup):
 
     def __init__(self, *animations: Animation, lag_ratio: float = 1, **kwargs) -> None:
         super().__init__(*animations, lag_ratio=lag_ratio, **kwargs)
+
+    def _get_unintroduced_mobjects(self) -> Sequence[Mobject]:
+        introduced_mobjects = set()
+        unintroduced_mobjects = []
+        for anim in self.animations:
+            if anim.is_introducer():
+                introduced_mobjects.add(anim.mobject)
+            elif anim.mobject not in introduced_mobjects:
+                unintroduced_mobjects.append(anim.mobject)
+        return remove_list_redundancies(unintroduced_mobjects)
 
     def begin(self) -> None:
         if not self.animations:
