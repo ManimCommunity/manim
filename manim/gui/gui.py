@@ -13,11 +13,13 @@ except ImportError:
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any
 
-from .. import __version__, config
-from ..utils.module_ops import scene_classes_from_file
+from manim import __version__
+from manim._config import config
+from manim.data_structures import SceneInteractExit, SceneInteractRerun
+from manim.utils.module_ops import scene_classes_from_file
 
 if TYPE_CHECKING:
-    from ..renderer.opengl_renderer import OpenGLRenderer
+    from manim.renderer.opengl_renderer import OpenGLRenderer
 
 
 __all__ = ["configure_pygui"]
@@ -44,14 +46,14 @@ def configure_pygui(
     dpg.set_viewport_height(540)
 
     def rerun_callback(sender, data):
-        renderer.scene.queue.put(("rerun_gui", [], {}))
+        renderer.scene.queue.put(SceneInteractRerun("gui"))
 
     def continue_callback(sender, data):
-        renderer.scene.queue.put(("exit_gui", [], {}))
+        renderer.scene.queue.put(SceneInteractExit("gui"))
 
     def scene_selection_callback(sender, data):
         config["scene_names"] = (dpg.get_value(sender),)
-        renderer.scene.queue.put(("rerun_gui", [], {}))
+        renderer.scene.queue.put(SceneInteractRerun("gui"))
 
     scene_classes = scene_classes_from_file(Path(config["input_file"]), full_list=True)
     scene_names = [scene_class.__name__ for scene_class in scene_classes]
