@@ -2481,13 +2481,13 @@ class OpenGLMobject:
             for key in mob1.data.keys() & mob2.data.keys():
                 if key == "points":
                     continue
-                
+
                 # here we fixe the case when some transform function make the whole thing crashes
                 # it appears that in some cases a float or int is processed as an array so here change it with an ndarray of a single number
-                # that make the whole thing process correctly
-                if type(mob1.data[key]) == type(0.1) or type(mob1.data[key]) == type(1):
+                # that make the whole thing process correctly
+                if type(mob1.data[key]) == float or type(mob1.data[key]) == int:
                     mob1.data[key] = np.array([mob1.data[key]])
-                if type(mob2.data[key]) == type(0.1) or type(mob2.data[key]) == type(1):
+                if type(mob2.data[key]) == float or type(mob2.data[key]) == int:
                     mob2.data[key] = np.array([mob2.data[key]])
 
                 arr1 = mob1.data[key]
