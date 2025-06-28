@@ -16,6 +16,7 @@ import numpy as np
 
 from manim import config, logger
 from manim.constants import *
+from manim.data_structures import MethodWithArgs
 from manim.renderer.shader_wrapper import get_colormap_code
 from manim.utils.bezier import integer_interpolate, interpolate
 from manim.utils.color import (
@@ -2938,7 +2939,7 @@ class _AnimationBuilder:
 
         self.overridden_animation = None
         self.is_chaining = False
-        self.methods = []
+        self.methods: list[MethodWithArgs] = []
 
         # Whether animation args can be passed
         self.cannot_pass_args = False
@@ -2973,7 +2974,7 @@ class _AnimationBuilder:
                     **method_kwargs,
                 )
             else:
-                self.methods.append([method, method_args, method_kwargs])
+                self.methods.append(MethodWithArgs(method, method_args, method_kwargs))
                 method(*method_args, **method_kwargs)
             return self
 
