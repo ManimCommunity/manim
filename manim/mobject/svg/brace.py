@@ -4,7 +4,6 @@ from __future__ import annotations
 
 __all__ = ["Brace", "BraceLabel", "ArcBrace", "BraceText", "BraceBetweenPoints"]
 
-from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
@@ -16,7 +15,7 @@ from manim.mobject.geometry.arc import Arc
 from manim.mobject.geometry.line import Line
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.text.tex_mobject import MathTex, Tex, SingleStringMathTex
+from manim.mobject.text.tex_mobject import MathTex, SingleStringMathTex, Tex
 from manim.mobject.text.text_mobject import Text
 
 from ...animation.animation import Animation
@@ -31,7 +30,6 @@ from ..svg.svg_mobject import VMobjectFromSVGPath
 if TYPE_CHECKING:
     from manim.typing import Point3D, Point3DLike, Vector3D
     from manim.utils.color.core import ParsableManimColor
-
 
 
 class Brace(VMobjectFromSVGPath):
@@ -287,7 +285,11 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
 
 class BraceText(BraceLabel):
     def __init__(
-        self, obj: Mobject, text: str, label_constructor: type[SingleStringMathTex | Text] = Text, **kwargs: Any
+        self,
+        obj: Mobject,
+        text: str,
+        label_constructor: type[SingleStringMathTex | Text] = Text,
+        **kwargs: Any,
     ):
         super().__init__(obj, text, label_constructor=label_constructor, **kwargs)
 
