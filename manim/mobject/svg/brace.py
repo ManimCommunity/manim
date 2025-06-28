@@ -31,7 +31,6 @@ if TYPE_CHECKING:
     from manim.typing import Point3D, Point3DLike, Vector3D
     from manim.utils.color.core import ParsableManimColor
 
-__all__ = ["Brace", "BraceBetweenPoints", "BraceLabel", "ArcBrace"]
 
 
 class Brace(VMobjectFromSVGPath):
