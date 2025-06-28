@@ -266,9 +266,6 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
     ) -> AnimationGroup:
         return AnimationGroup(brace_anim(self.brace), label_anim(self.label))
 
-    # TODO: This method is only called from the method change_brace_label, which is
-    # not called from any location in the current codebase.
-    # TODO: The Mobject could be more specific.
     def shift_brace(self, obj: Mobject, **kwargs: Any) -> Self:
         if isinstance(obj, list):
             obj = self.get_group_class()(*obj)
@@ -276,15 +273,11 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
         self.brace.put_at_tip(self.label)
         return self
 
-    # TODO: This method is only called from the method change_brace_label, which is
-    # not called from any location in the current codebase.
     def change_label(self, *text: str, **kwargs: Any) -> Self:
         self.label = self.label_constructor(*text, **kwargs)
-
         self.brace.put_at_tip(self.label)
         return self
 
-    # TODO: This method is not called from anywhere in the codebase.
     def change_brace_label(self, obj: Mobject, *text: str, **kwargs: Any) -> Self:
         self.shift_brace(obj)
         self.change_label(*text, **kwargs)
