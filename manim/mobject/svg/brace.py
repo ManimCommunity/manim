@@ -16,7 +16,8 @@ from manim.mobject.geometry.arc import Arc
 from manim.mobject.geometry.line import Line
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.text.tex_mobject import MathTex, Tex
+from manim.mobject.text.tex_mobject import MathTex, Tex, SingleStringMathTex
+from manim.mobject.text.text_mobject import Text
 
 from ...animation.animation import Animation
 from ...animation.composition import AnimationGroup
@@ -235,7 +236,7 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
         obj: Mobject,
         text: str,
         brace_direction: Point3DLike = DOWN,
-        label_constructor: type = MathTex,
+        label_constructor: type[SingleStringMathTex | Text] = MathTex,
         font_size: float = DEFAULT_FONT_SIZE,
         buff: float = 0.2,
         brace_config: dict[str, Any] | None = None,
@@ -286,7 +287,7 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
 
 class BraceText(BraceLabel):
     def __init__(
-        self, obj: Mobject, text: str, label_constructor: type[Tex] = Tex, **kwargs: Any
+        self, obj: Mobject, text: str, label_constructor: type[SingleStringMathTex | Text] = Text, **kwargs: Any
     ):
         super().__init__(obj, text, label_constructor=label_constructor, **kwargs)
 
