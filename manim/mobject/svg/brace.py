@@ -326,8 +326,8 @@ class BraceBetweenPoints(Brace):
 
     def __init__(
         self,
-        point_1: Point3DLike | None,
-        point_2: Point3DLike | None,
+        point_1: Point3DLike,
+        point_2: Point3DLike,
         direction: Point3DLike = ORIGIN,
         **kwargs: Any,
     ):
