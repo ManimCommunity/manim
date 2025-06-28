@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+from typing import Any
 from xml.etree import ElementTree as ET
 
 import numpy as np
@@ -108,7 +109,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         svg_default: dict | None = None,
         path_string_config: dict | None = None,
         use_svg_cache: bool = True,
-        **kwargs,
+        **kwargs: Any,
     ):
         super().__init__(color=None, stroke_color=None, fill_color=None, **kwargs)
 
@@ -262,13 +263,13 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         svg
             The parsed SVG file.
         """
-        result = []
+        result: list[VMobject] = []
         for shape in svg.elements():
             # can we combine the two continue cases into one?
             if isinstance(shape, se.Group):  # noqa: SIM114
                 continue
             elif isinstance(shape, se.Path):
-                mob = self.path_to_mobject(shape)
+                mob: VMobject = self.path_to_mobject(shape)
             elif isinstance(shape, se.SimpleLine):
                 mob = self.line_to_mobject(shape)
             elif isinstance(shape, se.Rect):
@@ -422,7 +423,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         return vmobject_class().set_points_as_corners(points)
 
     @staticmethod
-    def text_to_mobject(text: se.Text):
+    def text_to_mobject(text: se.Text) -> VMobject:
         """Convert a text element to a vectorized mobject.
 
         .. warning::
@@ -480,7 +481,7 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
         long_lines: bool = False,
         should_subdivide_sharp_curves: bool = False,
         should_remove_null_curves: bool = False,
-        **kwargs,
+        **kwargs: Any,
     ):
         # Get rid of arcs
         path_obj.approximate_arcs_with_quads()
@@ -509,11 +510,11 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
 
     def handle_commands(self) -> None:
         all_points: list[np.ndarray] = []
-        last_move = None
+        last_move: np.ndarray = None
         curve_start = None
         last_true_move = None
 
-        def move_pen(pt, *, true_move: bool = False):
+        def move_pen(pt: np.ndarray, *, true_move: bool = False) -> None:
             nonlocal last_move, curve_start, last_true_move
             last_move = pt
             if curve_start is None:
@@ -523,17 +524,19 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
 
         if self.n_points_per_curve == 4:
 
-            def add_cubic(start, cp1, cp2, end):
+            def add_cubic(
+                start: np.ndarray, cp1: np.ndarray, cp2: np.ndarray, end: np.ndarray
+            ) -> None:
                 nonlocal all_points
                 assert len(all_points) % 4 == 0, len(all_points)
                 all_points += [start, cp1, cp2, end]
                 move_pen(end)
 
-            def add_quad(start, cp, end):
+            def add_quad(start: np.ndarray, cp: np.ndarray, end: np.ndarray) -> None:
                 add_cubic(start, (start + cp + cp) / 3, (cp + cp + end) / 3, end)
                 move_pen(end)
 
-            def add_line(start, end):
+            def add_line(start: np.ndarray, end: np.ndarray) -> None:
                 add_cubic(
                     start, (start + start + end) / 3, (start + end + end) / 3, end
                 )
@@ -541,7 +544,9 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
 
         else:
 
-            def add_cubic(start, cp1, cp2, end):
+            def add_cubic(
+                start: np.ndarray, cp1: np.ndarray, cp2: np.ndarray, end: np.ndarray
+            ) -> None:
                 nonlocal all_points
                 assert len(all_points) % 3 == 0, len(all_points)
                 two_quads = get_quadratic_approximation_of_cubic(
@@ -554,13 +559,13 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
                 all_points += two_quads[3:].tolist()
                 move_pen(end)
 
-            def add_quad(start, cp, end):
+            def add_quad(start: np.ndarray, cp: np.ndarray, end: np.ndarray) -> None:
                 nonlocal all_points
                 assert len(all_points) % 3 == 0, len(all_points)
                 all_points += [start, cp, end]
                 move_pen(end)
 
-            def add_line(start, end):
+            def add_line(start: np.ndarray, end: np.ndarray) -> None:
                 add_quad(start, (start + end) / 2, end)
                 move_pen(end)
 
