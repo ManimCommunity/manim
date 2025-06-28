@@ -122,10 +122,10 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         self.color = color
         self.opacity = opacity
         self.fill_color = fill_color
-        self.fill_opacity = fill_opacity
+        self.fill_opacity = fill_opacity  # type: ignore[assignment]
         self.stroke_color = stroke_color
-        self.stroke_opacity = stroke_opacity
-        self.stroke_width = stroke_width
+        self.stroke_opacity = stroke_opacity  # type: ignore[assignment]
+        self.stroke_width = stroke_width  # type: ignore[assignment]
 
         if svg_default is None:
             svg_default = {
@@ -436,7 +436,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             The parsed SVG text.
         """
         logger.warning(f"Unsupported element type: {type(text)}")
-        return
+        return  # type: ignore[return-value]
 
     def move_into_position(self) -> None:
         """Scale and move the generated mobject into position."""
