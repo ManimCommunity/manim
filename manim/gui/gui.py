@@ -10,8 +10,15 @@ except ImportError:
     dearpygui_imported = False
 
 
+from collections.abc import Sequence
+from typing import TYPE_CHECKING, Any
+
 from .. import __version__, config
 from ..utils.module_ops import scene_classes_from_file
+
+if TYPE_CHECKING:
+    from ..renderer.opengl_renderer import OpenGLRenderer
+
 
 __all__ = ["configure_pygui"]
 
@@ -20,7 +27,9 @@ if dearpygui_imported:
     window = dpg.generate_uuid()
 
 
-def configure_pygui(renderer, widgets, update=True):
+def configure_pygui(
+    renderer: OpenGLRenderer, widgets: Sequence[dict[str, Any]], update: bool = True
+) -> None:
     if not dearpygui_imported:
         raise RuntimeError("Attempted to use DearPyGUI when it isn't imported.")
     if update:
