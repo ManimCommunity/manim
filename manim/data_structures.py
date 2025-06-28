@@ -33,7 +33,8 @@ class MethodWithArgs:
 class SceneInteractContinue:
     """Object which, when encountered in :meth:`~.Scene.interact`, triggers
     the end of the scene interaction, continuing with the rest of the
-    animations, if any.
+    animations, if any. This object can be queued in :attr:`~.Scene.queue`
+    for later use in :meth:`~.Scene.interact`.
 
     Attributes
     ----------
@@ -49,7 +50,8 @@ class SceneInteractContinue:
 
 class SceneInteractRerun:
     """Object which, when encountered in :meth:`~.Scene.interact`, triggers
-    the rerun of the scene.
+    the rerun of the scene. This object can be queued in :attr:`~.Scene.queue`
+    for later use in :meth:`~.Scene.interact`.
 
     Attributes
     ----------
