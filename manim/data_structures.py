@@ -29,6 +29,24 @@ class MethodWithArgs:
     kwargs: dict[str, Any]
 
 
+@dataclass
+class SceneInteractContinue:
+    """Object which, when encountered in :meth:`~.Scene.interact`, triggers
+    the end of the scene interaction, continuing with the rest of the
+    animations, if any.
+
+    Attributes
+    ----------
+    sender : str
+        The name of the entity which issued the end of the scene interaction,
+        such as "gui" or "keyboard".
+    """
+
+    __slots__ = ["sender"]
+
+    sender: str
+
+
 class SceneInteractRerun:
     """Object which, when encountered in :meth:`~.Scene.interact`, triggers
     the rerun of the scene.
@@ -49,21 +67,3 @@ class SceneInteractRerun:
     def __init__(self, sender: str, **kwargs: Any) -> None:
         self.sender = sender
         self.kwargs = kwargs
-
-
-@dataclass
-class SceneInteractContinue:
-    """Object which, when encountered in :meth:`~.Scene.interact`, triggers
-    the end of the scene interaction, continuing with the rest of the
-    animations, if any.
-
-    Attributes
-    ----------
-    sender : str
-        The name of the entity which issued the end of the scene interaction,
-        such as "gui" or "keyboard".
-    """
-
-    __slots__ = ["sender"]
-
-    sender: str
