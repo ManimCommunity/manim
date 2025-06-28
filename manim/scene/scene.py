@@ -34,7 +34,11 @@ from tqdm import tqdm
 from watchdog.events import DirModifiedEvent, FileModifiedEvent, FileSystemEventHandler
 from watchdog.observers import Observer
 
-from manim.data_structures import MethodWithArgs, SceneInteractExit, SceneInteractRerun
+from manim.data_structures import (
+    MethodWithArgs,
+    SceneInteractContinue,
+    SceneInteractRerun,
+)
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLPoint
 
@@ -63,7 +67,7 @@ if TYPE_CHECKING:
     from manim.typing import Point3D
 
     SceneInteractAction: TypeAlias = Union[
-        MethodWithArgs, SceneInteractExit, SceneInteractRerun
+        MethodWithArgs, SceneInteractContinue, SceneInteractRerun
     ]
     """The SceneInteractAction type alias is used for elements in the queue
     used by Scene.interact().
@@ -72,8 +76,8 @@ if TYPE_CHECKING:
 
     - a :class:`~.MethodWithArgs` object, which represents a :class:`Scene`
       method to be called along with its args and kwargs,
-    - a :class:`~.SceneInteractExit` object, indicating that the scene
-      interaction is over, or
+    - a :class:`~.SceneInteractContinue` object, indicating that the scene
+      interaction is over and the scene will continue rendering after that, or
     - a :class:`~.SceneInteractRerun` object, indicating that the scene should
       render again.
     """
@@ -1361,7 +1365,7 @@ class Scene:
             namespace["rerun"] = embedded_rerun
 
             shell(local_ns=namespace)
-            self.queue.put(SceneInteractExit("keyboard"))
+            self.queue.put(SceneInteractContinue("keyboard"))
 
         def get_embedded_method(method_name: str) -> Callable[..., None]:
             method = getattr(self, method_name)
@@ -1456,7 +1460,7 @@ class Scene:
                     keyboard_thread.join()
                     file_observer.unschedule_all()
                     raise RerunSceneException
-                elif isinstance(action, SceneInteractExit):
+                elif isinstance(action, SceneInteractContinue):
                     # Intentionally skip calling join() on the file thread to save time.
                     if action.sender != "keyboard" and shell.pt_app:
                         shell.pt_app.app.exit(exception=EOFError)

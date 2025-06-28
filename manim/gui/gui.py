@@ -15,7 +15,7 @@ from typing import TYPE_CHECKING, Any
 
 from manim import __version__
 from manim._config import config
-from manim.data_structures import SceneInteractExit, SceneInteractRerun
+from manim.data_structures import SceneInteractContinue, SceneInteractRerun
 from manim.utils.module_ops import scene_classes_from_file
 
 if TYPE_CHECKING:
@@ -49,7 +49,7 @@ def configure_pygui(
         renderer.scene.queue.put(SceneInteractRerun("gui"))
 
     def continue_callback(sender, data):
-        renderer.scene.queue.put(SceneInteractExit("gui"))
+        renderer.scene.queue.put(SceneInteractContinue("gui"))
 
     def scene_selection_callback(sender, data):
         config["scene_names"] = (dpg.get_value(sender),)
