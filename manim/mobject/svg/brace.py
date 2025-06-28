@@ -71,7 +71,7 @@ class Brace(VMobjectFromSVGPath):
     def __init__(
         self,
         mobject: Mobject,
-        direction: Vector3D = DOWN,
+        direction: Point3DLike = DOWN,
         buff: float = 0.2,
         sharpness: float = 2,
         stroke_width: float = 0,
@@ -234,11 +234,11 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
         self,
         obj: Mobject,
         text: str,
-        brace_direction: np.ndarray = DOWN,
+        brace_direction: Point3DLike = DOWN,
         label_constructor: type = MathTex,
         font_size: float = DEFAULT_FONT_SIZE,
         buff: float = 0.2,
-        brace_config: dict | None = None,
+        brace_config: dict[str, Any] | None = None,
         **kwargs: Any,
     ):
         self.label_constructor = label_constructor
@@ -334,7 +334,7 @@ class BraceBetweenPoints(Brace):
         self,
         point_1: Point3DLike | None,
         point_2: Point3DLike | None,
-        direction: Vector3D | None = ORIGIN,
+        direction: Point3DLike = ORIGIN,
         **kwargs: Any,
     ):
         if all(direction == ORIGIN):
@@ -401,7 +401,7 @@ class ArcBrace(Brace):
     def __init__(
         self,
         arc: Arc | None = None,
-        direction: Sequence[float] = RIGHT,
+        direction: Point3DLike = RIGHT,
         **kwargs: Any,
     ):
         if arc is None:
