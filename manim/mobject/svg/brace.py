@@ -273,7 +273,7 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
         return self
 
     def change_label(self, *text: str, **kwargs: Any) -> Self:
-        self.label = self.label_constructor(*text, **kwargs)
+        self.label = self.label_constructor(*text, **kwargs)  # type: ignore[arg-type]
         self.brace.put_at_tip(self.label)
         return self
 
