@@ -10,7 +10,7 @@ try:
     __version__ = version(__name__)
 except PackageNotFoundError:
     # Package is not installed; provide a fallback version string.
-    __version__ = "0.0.0+dev"
+    __version__ = "0.0.0+unknown"
 
 
 # isort: off
