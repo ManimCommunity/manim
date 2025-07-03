@@ -57,8 +57,8 @@ jobs:
         uses: zauguin/install-texlive@v4
         with:
           packages: >
-            scheme-basic fontspec inputenc fontenc tipa mathrsfs calligra xcolor
-            standalone preview doublestroke ms everysel setspace rsfs relsize
+            scheme-basic latex fontspec tipa mathrsfs calligra xcolor
+            standalone preview doublestroke setspace rsfs relsize
             ragged2e fundus-calligra microtype wasysym physics dvisvgm jknapltx
             wasy cm-super babel-english gnu-freefont mathastext cbfonts-fd xetex
 
