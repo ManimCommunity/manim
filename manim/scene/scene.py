@@ -15,6 +15,7 @@ import platform
 import random
 import threading
 import time
+from pathlib import Path
 from queue import Queue
 
 import srt
@@ -25,6 +26,8 @@ try:
     import dearpygui.dearpygui as dpg
 
     dearpygui_imported = True
+    dpg.create_context()
+    window = dpg.generate_uuid()
 except ImportError:
     dearpygui_imported = False
 from typing import TYPE_CHECKING
@@ -34,6 +37,7 @@ from tqdm import tqdm
 from watchdog.events import DirModifiedEvent, FileModifiedEvent, FileSystemEventHandler
 from watchdog.observers import Observer
 
+from manim import __version__
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLPoint
 
@@ -41,7 +45,6 @@ from .. import config, logger
 from ..animation.animation import Animation, Wait, prepare_animation
 from ..camera.camera import Camera
 from ..constants import *
-from ..gui.gui import configure_pygui
 from ..renderer.cairo_renderer import CairoRenderer
 from ..renderer.opengl_renderer import OpenGLCamera, OpenGLMobject, OpenGLRenderer
 from ..renderer.shader import Object3D
@@ -51,6 +54,7 @@ from ..utils.family import extract_mobject_family_members
 from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
 from ..utils.file_ops import open_media_file
 from ..utils.iterables import list_difference_update, list_update
+from ..utils.module_ops import scene_classes_from_file
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
@@ -144,7 +148,7 @@ class Scene:
         self.skip_animation_preview = False
         self.meshes: list[Object3D] = []
         self.camera_target = ORIGIN
-        self.widgets: list[Any] = []
+        self.widgets: list[dict[str, Any]] = []
         self.dearpygui_imported = dearpygui_imported
         self.updaters: list[Callable[[float], None]] = []
         self.key_to_function_map: dict[str, Callable[[], None]] = {}
@@ -1406,13 +1410,12 @@ class Scene:
         if self.dearpygui_imported and config["enable_gui"]:
             if not dpg.is_dearpygui_running():
                 gui_thread = threading.Thread(
-                    target=configure_pygui,
-                    args=(self.renderer, self.widgets),
+                    target=self._configure_pygui,
                     kwargs={"update": False},
                 )
                 gui_thread.start()
             else:
-                configure_pygui(self.renderer, self.widgets, update=True)
+                self._configure_pygui(update=True)
 
         self.camera.model_matrix = self.camera.default_model_matrix
 
@@ -1542,6 +1545,73 @@ class Scene:
 
         # End scene when exiting an embed.
         raise Exception("Exiting scene.")
+
+    def _configure_pygui(self, update: bool = True) -> None:
+        if not self.dearpygui_imported:
+            raise RuntimeError("Attempted to use DearPyGUI when it isn't imported.")
+        if update:
+            dpg.delete_item(window)
+        else:
+            dpg.create_viewport()
+            dpg.setup_dearpygui()
+            dpg.show_viewport()
+
+        dpg.set_viewport_title(title=f"Manim Community v{__version__}")
+        dpg.set_viewport_width(1015)
+        dpg.set_viewport_height(540)
+
+        def rerun_callback(sender: Any, data: Any) -> None:
+            self.queue.put(("rerun_gui", [], {}))
+
+        def continue_callback(sender: Any, data: Any) -> None:
+            self.queue.put(("exit_gui", [], {}))
+
+        def scene_selection_callback(sender: Any, data: Any) -> None:
+            config["scene_names"] = (dpg.get_value(sender),)
+            self.queue.put(("rerun_gui", [], {}))
+
+        scene_classes = scene_classes_from_file(
+            Path(config["input_file"]), full_list=True
+        )  # type: ignore[call-overload]
+        scene_names = [scene_class.__name__ for scene_class in scene_classes]
+
+        with dpg.window(
+            id=window,
+            label="Manim GUI",
+            pos=[config["gui_location"][0], config["gui_location"][1]],
+            width=1000,
+            height=500,
+        ):
+            dpg.set_global_font_scale(2)
+            dpg.add_button(label="Rerun", callback=rerun_callback)
+            dpg.add_button(label="Continue", callback=continue_callback)
+            dpg.add_combo(
+                label="Selected scene",
+                items=scene_names,
+                callback=scene_selection_callback,
+                default_value=config["scene_names"][0],
+            )
+            dpg.add_separator()
+            if len(self.widgets) != 0:
+                with dpg.collapsing_header(
+                    label=f"{config['scene_names'][0]} widgets",
+                    default_open=True,
+                ):
+                    for widget_config in self.widgets:
+                        widget_config_copy = widget_config.copy()
+                        name = widget_config_copy["name"]
+                        widget = widget_config_copy["widget"]
+                        if widget != "separator":
+                            del widget_config_copy["name"]
+                            del widget_config_copy["widget"]
+                            getattr(dpg, f"add_{widget}")(
+                                label=name, **widget_config_copy
+                            )
+                        else:
+                            dpg.add_separator()
+
+        if not update:
+            dpg.start_dearpygui()
 
     def update_to_time(self, t: float) -> None:
         dt = t - self.last_t
