@@ -678,6 +678,7 @@ class Text(SVGMobject):
         settings += str(self.t2f) + str(self.t2s) + str(self.t2w) + str(self.t2c)
         settings += str(self.line_spacing) + str(self._font_size)
         settings += str(self.disable_ligatures)
+        settings += str(self.gradient)
         id_str = self.text + settings
         hasher = hashlib.sha256()
         hasher.update(id_str.encode())
