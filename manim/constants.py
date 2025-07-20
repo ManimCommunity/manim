@@ -83,8 +83,7 @@ SCENE_NOT_FOUND_MESSAGE = """
    {} is not in the script
 """
 CHOOSE_NUMBER_MESSAGE = """
-Choose number corresponding to desired scene/arguments.
-(Use comma separated list for multiple entries)
+Select one or more numbers separated by commas (e.q. 3,1,2).
 Choice(s): """
 INVALID_NUMBER_MESSAGE = "Invalid scene numbers have been specified. Aborting."
 NO_SCENE_MESSAGE = """
