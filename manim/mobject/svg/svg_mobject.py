@@ -125,9 +125,9 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         self.fill_opacity = fill_opacity  # type: ignore[assignment]
         self.stroke_color = stroke_color
         self.stroke_opacity = stroke_opacity  # type: ignore[assignment]
-        if stroke_width is None:
-            stroke_width = 0.0
-        self.stroke_width = stroke_width
+        self.stroke_width = stroke_width  # type: ignore[assignment]
+        if self.stroke_width is None:
+            self.stroke_width = 0
 
         if svg_default is None:
             svg_default = {
