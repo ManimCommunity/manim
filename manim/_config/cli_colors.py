@@ -15,7 +15,7 @@ __all__ = ["parse_cli_ctx"]
 
 
 def parse_cli_ctx(parser: configparser.SectionProxy) -> dict[str, Any]:
-    formatter_settings: dict[str, str | int] = {
+    formatter_settings: dict[str, str | int | None] = {
         "indent_increment": int(parser["indent_increment"]),
         "width": int(parser["width"]),
         "col1_max_width": int(parser["col1_max_width"]),
@@ -44,22 +44,24 @@ def parse_cli_ctx(parser: configparser.SectionProxy) -> dict[str, Any]:
     if theme is None:
         formatter = HelpFormatter.settings(
             theme=HelpTheme(**theme_settings),
-            **formatter_settings,  # type: ignore[arg-type]
+            **formatter_settings,
         )
     elif theme.lower() == "dark":
         formatter = HelpFormatter.settings(
             theme=HelpTheme.dark().with_(**theme_settings),
-            **formatter_settings,  # type: ignore[arg-type]
+            **formatter_settings,
         )
     elif theme.lower() == "light":
         formatter = HelpFormatter.settings(
             theme=HelpTheme.light().with_(**theme_settings),
-            **formatter_settings,  # type: ignore[arg-type]
+            **formatter_settings,
         )
 
-    return Context.settings(
+    return_val: dict[str, Any] = Context.settings(
         align_option_groups=parser["align_option_groups"].lower() == "true",
         align_sections=parser["align_sections"].lower() == "true",
         show_constraints=True,
         formatter_settings=formatter,
     )
+
+    return return_val
