@@ -83,7 +83,7 @@ class MappingCamera(Camera):
 class OldMultiCamera(Camera):
     """Parameters
     ----------
-    *cameras_with_start_positions : tuple
+    cameras_with_start_positions : tuple
         Tuples of (Camera, (start_y, start_x)) indicating camera and
         its pixel offset on the final frame.
     """
