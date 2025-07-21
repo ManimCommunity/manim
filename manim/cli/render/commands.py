@@ -8,11 +8,10 @@ can specify options, and arguments for the render command.
 
 from __future__ import annotations
 
-import http.client
 import json
+import os
 import sys
-import urllib.error
-import urllib.request
+import time
 from argparse import Namespace
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, cast
@@ -100,8 +99,8 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
         return click_args
 
     config.digest_args(click_args)
-    file = Path(config.input_file)
-    scenes = solve_rendrered_scenes(file)
+
+    scenes = solve_rendrered_scenes(config.input_file)
 
     if config.renderer == RendererType.OPENGL:
         from manim.renderer.opengl_renderer import OpenGLRenderer
@@ -143,41 +142,53 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
 
 
 def version_notification() -> None:
-    ### NOTE TODO This has fundamental problem of connecting every time into internet
-    ### As many times Renders are executed during a day.
-    ### There should be a caching mechanisim that will safe simple timecode and result in
-    ### Cached file to be fetched in most of times.
+    """Fetch version from Internet or use cache"""
+    file = Path(os.path.dirname(__file__)) / ".version_cache.log"
+    stable = None
+
+    if file.exists():
+        with file.open() as f:
+            last_time = f.readline()
+            if not time.time() - int(last_time) > 86_400:
+                stable = f.readline()
+
+    if stable is None:
+        new_stable = fetch_version()
+        if new_stable:
+            with file.open(mode="w") as f:
+                f.write(str(int(time.time())) + "\n" + str(new_stable))
+            stable = new_stable
+
+    if stable != __version__:
+        console.print(
+            f"You are using manim version [red]v{__version__}[/red], but version [green]v{stable}[/green] is available.",
+        )
+        console.print(
+            "You should consider upgrading via [yellow]pip install -U manim[/yellow]",
+        )
+
+
+def fetch_version() -> str | None:
+    import http.client
+    import urllib.error
+    import urllib.request
 
     manim_info_url = "https://pypi.org/pypi/manim/json"
     warn_prompt = "Cannot check if latest release of manim is installed"
-
+    request = urllib.request.Request(manim_info_url)
     try:
-        with urllib.request.urlopen(
-            urllib.request.Request(manim_info_url),
-            timeout=10,
-        ) as response:
+        with urllib.request.urlopen(request, timeout=10) as response:
             response = cast(http.client.HTTPResponse, response)
             json_data = json.loads(response.read())
-    except urllib.error.HTTPError:
-        logger.debug("HTTP Error: %s", warn_prompt)
-    except urllib.error.URLError:
-        logger.debug("URL Error: %s", warn_prompt)
-    except json.JSONDecodeError:
-        logger.debug(
-            "Error while decoding JSON from %r: %s", manim_info_url, warn_prompt
-        )
-    except Exception:
-        logger.debug("Something went wrong: %s", warn_prompt)
-    else:
-        stable = json_data["info"]["version"]
 
-        if stable != __version__:
-            console.print(
-                f"You are using manim version [red]v{__version__}[/red], but version [green]v{stable}[/green] is available.",
-            )
-            console.print(
-                "You should consider upgrading via [yellow]pip install -U manim[/yellow]",
-            )
+    except (Exception, urllib.error.HTTPError, urllib.error.URLError) as e:
+        logger.debug(f"{e}: {warn_prompt} ")
+        return None
+    except json.JSONDecodeError:
+        logger.debug(f"Error while decoding JSON from [{manim_info_url}]: warn_prompt")
+        return None
+    else:
+        return str(json_data["info"]["version"])
 
 
 def warn_and_change_deprecated_args(kwargs: dict[str, Any]) -> None:
@@ -198,7 +209,14 @@ def warn_and_change_deprecated_args(kwargs: dict[str, Any]) -> None:
         )
 
 
-def get_scenes_to_render(scene_classes: list[type[Scene]]) -> list[type[Scene]]:
+def select_scenes(scene_classes: list[type[Scene]]) -> list[type[Scene]]:
+    """Collection of selection checks for inserted scenes"""
+    if not scene_classes:
+        logger.error(NO_SCENE_MESSAGE)
+        return []
+    elif config.write_all:
+        return scene_classes
+
     result = []
     for scene_name in config.scene_names:
         found = False
@@ -230,11 +248,11 @@ def get_scenes_to_render(scene_classes: list[type[Scene]]) -> list[type[Scene]]:
     return classes
 
 
-def solve_rendrered_scenes(file_path_input: Path | str) -> list[type[Scene]]:
+def solve_rendrered_scenes(file_path_input: str) -> list[type[Scene]]:
     """Return scenes from file path or create CLI prompt for input"""
     from ...scene.scene import Scene
 
-    if str(file_path_input) == "-":
+    if file_path_input == "-":
         try:
             code = code_input_prompt()
             module = module_from_text(code)
@@ -248,10 +266,4 @@ def solve_rendrered_scenes(file_path_input: Path | str) -> list[type[Scene]]:
 
     scenes = search_classes_from_module(module, Scene)
 
-    if not scenes:
-        logger.error(NO_SCENE_MESSAGE)
-        return []
-    elif config.write_all:
-        return scenes
-    else:
-        return get_scenes_to_render(scenes)
+    return select_scenes(scenes)
