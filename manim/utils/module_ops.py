@@ -82,3 +82,9 @@ def search_classes_from_module(
     if len(classes) == 0:
         raise ValueError(f"Could not found any classes of type {class_type.__name__}")
     return classes
+
+
+def scene_classes_for_gui(path: str, class_type: type[T]) -> list[type[T]]:
+    """Specified interface of  dearpyGUI to fetch Scene-class instances"""
+    module = module_from_file(Path(path))
+    return search_classes_from_module(module, class_type)
