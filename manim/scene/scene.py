@@ -15,6 +15,7 @@ import platform
 import random
 import threading
 import time
+from dataclasses import dataclass
 from pathlib import Path
 from queue import Queue
 
@@ -38,11 +39,7 @@ from watchdog.events import DirModifiedEvent, FileModifiedEvent, FileSystemEvent
 from watchdog.observers import Observer
 
 from manim import __version__
-from manim.data_structures import (
-    MethodWithArgs,
-    SceneInteractContinue,
-    SceneInteractRerun,
-)
+from manim.data_structures import MethodWithArgs
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLPoint
 
@@ -71,7 +68,7 @@ if TYPE_CHECKING:
     from manim.typing import Point3D
 
     SceneInteractAction: TypeAlias = Union[
-        MethodWithArgs, SceneInteractContinue, SceneInteractRerun
+        MethodWithArgs, "SceneInteractContinue", "SceneInteractRerun"
     ]
     """The SceneInteractAction type alias is used for elements in the queue
     used by Scene.interact().
@@ -85,6 +82,48 @@ if TYPE_CHECKING:
     - a :class:`~.SceneInteractRerun` object, indicating that the scene should
       render again.
     """
+
+
+@dataclass
+class SceneInteractContinue:
+    """Object which, when encountered in :meth:`.Scene.interact`, triggers
+    the end of the scene interaction, continuing with the rest of the
+    animations, if any. This object can be queued in :attr:`.Scene.queue`
+    for later use in :meth:`.Scene.interact`.
+
+    Attributes
+    ----------
+    sender : str
+        The name of the entity which issued the end of the scene interaction,
+        such as ``"gui"`` or ``"keyboard"``.
+    """
+
+    __slots__ = ["sender"]
+
+    sender: str
+
+
+class SceneInteractRerun:
+    """Object which, when encountered in :meth:`.Scene.interact`, triggers
+    the rerun of the scene. This object can be queued in :attr:`.Scene.queue`
+    for later use in :meth:`.Scene.interact`.
+
+    Attributes
+    ----------
+    sender : str
+        The name of the entity which issued the rerun of the scene, such as
+        ``"gui"``, ``"keyboard"``, ``"play"`` or ``"file"``.
+    kwargs : dict[str, Any]
+        Additional keyword arguments when rerunning the scene. Currently,
+        only ``"from_animation_number"`` is being used, which determines the
+        animation from which to start rerunning the scene.
+    """
+
+    __slots__ = ["sender", "kwargs"]
+
+    def __init__(self, sender: str, **kwargs: Any) -> None:
+        self.sender = sender
+        self.kwargs = kwargs
 
 
 class RerunSceneHandler(FileSystemEventHandler):
