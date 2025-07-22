@@ -31,16 +31,16 @@ class MethodWithArgs:
 
 @dataclass
 class SceneInteractContinue:
-    """Object which, when encountered in :meth:`~.Scene.interact`, triggers
+    """Object which, when encountered in :meth:`.Scene.interact`, triggers
     the end of the scene interaction, continuing with the rest of the
-    animations, if any. This object can be queued in :attr:`~.Scene.queue`
-    for later use in :meth:`~.Scene.interact`.
+    animations, if any. This object can be queued in :attr:`.Scene.queue`
+    for later use in :meth:`.Scene.interact`.
 
     Attributes
     ----------
     sender : str
         The name of the entity which issued the end of the scene interaction,
-        such as "gui" or "keyboard".
+        such as ``"gui"`` or ``"keyboard"``.
     """
 
     __slots__ = ["sender"]
@@ -49,18 +49,18 @@ class SceneInteractContinue:
 
 
 class SceneInteractRerun:
-    """Object which, when encountered in :meth:`~.Scene.interact`, triggers
-    the rerun of the scene. This object can be queued in :attr:`~.Scene.queue`
-    for later use in :meth:`~.Scene.interact`.
+    """Object which, when encountered in :meth:`.Scene.interact`, triggers
+    the rerun of the scene. This object can be queued in :attr:`.Scene.queue`
+    for later use in :meth:`.Scene.interact`.
 
     Attributes
     ----------
     sender : str
         The name of the entity which issued the rerun of the scene, such as
-        "gui", "keyboard", "play" or "file".
+        ``"gui"``, ``"keyboard"``, ``"play"`` or ``"file"``.
     kwargs : dict[str, Any]
         Additional keyword arguments when rerunning the scene. Currently,
-        only `"from_animation_number"` is being used, which determines the
+        only ``"from_animation_number"`` is being used, which determines the
         animation from which to start rerunning the scene.
     """
 
