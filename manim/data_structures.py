@@ -1,3 +1,5 @@
+"""Data classes and other necessary data structures for use in Manim."""
+
 from __future__ import annotations
 
 from collections.abc import Iterable
