@@ -50,6 +50,7 @@ class ChangingDecimal(Animation):
                 )
                 self.wait()
     """
+
     def __init__(
         self,
         decimal_mob: DecimalNumber,
@@ -100,6 +101,7 @@ class ChangeDecimalToValue(ChangingDecimal):
                 self.play(ChangeDecimalToValue(number, 10, run_time=3))
                 self.wait()
     """
+
     def __init__(
         self, decimal_mob: DecimalNumber, target_number: int, **kwargs: Any
     ) -> None:
