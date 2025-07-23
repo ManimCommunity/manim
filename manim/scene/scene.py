@@ -71,7 +71,7 @@ if TYPE_CHECKING:
         MethodWithArgs, "SceneInteractContinue", "SceneInteractRerun"
     ]
     """The SceneInteractAction type alias is used for elements in the queue
-    used by Scene.interact().
+    used by :meth:`.Scene.interact()`.
 
     The elements can be one of the following three:
 
