@@ -281,6 +281,49 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
 
 
 class BraceText(BraceLabel):
+    """Create a brace with a text label attached.
+
+    Parameters
+    ----------
+    obj
+        The mobject adjacent to which the brace is placed.
+    text
+        The label text.
+    brace_direction
+        The direction of the brace. By default ``DOWN``.
+    label_constructor
+        A class or function used to construct a mobject representing
+        the label. By default :class:`~.Text`.
+    font_size
+        The font size of the label, passed to the ``label_constructor``.
+    buff
+        The buffer between the mobject and the brace.
+    brace_config
+        Arguments to be passed to :class:`.Brace`.
+    kwargs
+        Additional arguments to be passed to :class:`~.VMobject`.
+
+
+    Examples
+    --------
+        .. manim:: BraceTextExample
+            :save_last_frame:
+
+            class BraceTextExample(Scene):
+                def construct(self):
+                    s1 = Square().move_to(2*LEFT)
+                    self.add(s1)
+                    br1 = BraceText(s1, "Label")
+                    self.add(br1)
+
+                    s2 = Square().move_to(2*RIGHT)
+                    self.add(s2)
+                    br2 = BraceText(s2, "Label")
+
+                    br2.change_label("new")
+                    self.add(br2)
+                    self.wait(0.1)
+    """
     def __init__(self, obj, text, label_constructor=Text, **kwargs):
         super().__init__(obj, text, label_constructor=label_constructor, **kwargs)
 
