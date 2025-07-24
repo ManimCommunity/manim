@@ -29,7 +29,6 @@ if TYPE_CHECKING:
     from manim.typing import Point3DLike, Vector3D
     from manim.utils.color.core import ParsableManimColor
 
-__all__ = ["Brace", "BraceBetweenPoints", "BraceLabel", "ArcBrace"]
 
 
 class Brace(VMobjectFromSVGPath):
@@ -267,9 +266,11 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
         return self
 
     def change_label(self, *text, **kwargs):
+        self.remove(self.label)
         self.label = self.label_constructor(*text, **kwargs)
 
         self.brace.put_at_tip(self.label)
+        self.add(self.label)
         return self
 
     def change_brace_label(self, obj, *text, **kwargs):
