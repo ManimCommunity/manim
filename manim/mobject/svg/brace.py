@@ -31,7 +31,6 @@ if TYPE_CHECKING:
     from manim.utils.color.core import ParsableManimColor
 
 
-
 class Brace(VMobjectFromSVGPath):
     """Takes a mobject and draws a brace adjacent to it.
 
@@ -324,6 +323,7 @@ class BraceText(BraceLabel):
                     self.add(br2)
                     self.wait(0.1)
     """
+
     def __init__(self, obj, text, label_constructor=Text, **kwargs):
         super().__init__(obj, text, label_constructor=label_constructor, **kwargs)
 
