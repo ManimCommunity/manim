@@ -271,7 +271,7 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
         self.brace = Brace(obj, self.brace_direction, **kwargs)
         self.brace.put_at_tip(self.label)
         return self
-    
+
     def change_label(self, *text: str, **kwargs: Any) -> Self:
         self.remove(self.label)
         self.label = self.label_constructor(*text, **kwargs)  # type: ignore[arg-type]
@@ -329,6 +329,7 @@ class BraceText(BraceLabel):
                     self.add(br2)
                     self.wait(0.1)
     """
+
     def __init__(
         self,
         obj: Mobject,
