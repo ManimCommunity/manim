@@ -4,19 +4,21 @@ from __future__ import annotations
 
 __all__ = ["Brace", "BraceLabel", "ArcBrace", "BraceText", "BraceBetweenPoints"]
 
-from collections.abc import Sequence
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import svgelements as se
+from typing_extensions import Self
 
 from manim._config import config
 from manim.mobject.geometry.arc import Arc
 from manim.mobject.geometry.line import Line
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.text.tex_mobject import MathTex, Tex
+from manim.mobject.text.tex_mobject import MathTex, SingleStringMathTex, Tex
+from manim.mobject.text.text_mobject import Text
 
+from ...animation.animation import Animation
 from ...animation.composition import AnimationGroup
 from ...animation.fading import FadeIn
 from ...animation.growing import GrowFromCenter
@@ -26,10 +28,8 @@ from ...utils.color import BLACK
 from ..svg.svg_mobject import VMobjectFromSVGPath
 
 if TYPE_CHECKING:
-    from manim.typing import Point3DLike, Vector3D
+    from manim.typing import Point3D, Point3DLike, Vector3D
     from manim.utils.color.core import ParsableManimColor
-
-__all__ = ["Brace", "BraceBetweenPoints", "BraceLabel", "ArcBrace"]
 
 
 class Brace(VMobjectFromSVGPath):
@@ -70,14 +70,14 @@ class Brace(VMobjectFromSVGPath):
     def __init__(
         self,
         mobject: Mobject,
-        direction: Vector3D | None = DOWN,
+        direction: Point3DLike = DOWN,
         buff: float = 0.2,
         sharpness: float = 2,
         stroke_width: float = 0,
         fill_opacity: float = 1.0,
         background_stroke_width: float = 0,
         background_stroke_color: ParsableManimColor = BLACK,
-        **kwargs,
+        **kwargs: Any,
     ):
         path_string_template = (
             "m0.01216 0c-0.01152 0-0.01216 6.103e-4 -0.01216 0.01311v0.007762c0.06776 "
@@ -130,7 +130,7 @@ class Brace(VMobjectFromSVGPath):
         for mob in mobject, self:
             mob.rotate(angle, about_point=ORIGIN)
 
-    def put_at_tip(self, mob: Mobject, use_next_to: bool = True, **kwargs):
+    def put_at_tip(self, mob: Mobject, use_next_to: bool = True, **kwargs: Any) -> Self:
         """Puts the given mobject at the brace tip.
 
         Parameters
@@ -153,7 +153,7 @@ class Brace(VMobjectFromSVGPath):
             mob.shift(self.get_direction() * shift_distance)
         return self
 
-    def get_text(self, *text, **kwargs):
+    def get_text(self, *text: str, **kwargs: Any) -> Tex:
         """Places the text at the brace tip.
 
         Parameters
@@ -172,7 +172,7 @@ class Brace(VMobjectFromSVGPath):
         self.put_at_tip(text_mob, **kwargs)
         return text_mob
 
-    def get_tex(self, *tex, **kwargs):
+    def get_tex(self, *tex: str, **kwargs: Any) -> MathTex:
         """Places the tex at the brace tip.
 
         Parameters
@@ -191,7 +191,7 @@ class Brace(VMobjectFromSVGPath):
         self.put_at_tip(tex_mob, **kwargs)
         return tex_mob
 
-    def get_tip(self):
+    def get_tip(self) -> Point3D:
         """Returns the point at the brace tip."""
         # Returns the position of the seventh point in the path, which is the tip.
         if config["renderer"] == "opengl":
@@ -199,7 +199,7 @@ class Brace(VMobjectFromSVGPath):
 
         return self.points[28]  # = 7*4
 
-    def get_direction(self):
+    def get_direction(self) -> Vector3D:
         """Returns the direction from the center to the brace tip."""
         vect = self.get_tip() - self.get_center()
         return vect / np.linalg.norm(vect)
@@ -233,12 +233,12 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
         self,
         obj: Mobject,
         text: str,
-        brace_direction: np.ndarray = DOWN,
-        label_constructor: type = MathTex,
+        brace_direction: Point3DLike = DOWN,
+        label_constructor: type[SingleStringMathTex | Text] = MathTex,
         font_size: float = DEFAULT_FONT_SIZE,
         buff: float = 0.2,
-        brace_config: dict | None = None,
-        **kwargs,
+        brace_config: dict[str, Any] | None = None,
+        **kwargs: Any,
     ):
         self.label_constructor = label_constructor
         super().__init__(**kwargs)
@@ -249,37 +249,48 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
         self.brace = Brace(obj, brace_direction, buff, **brace_config)
 
         if isinstance(text, (tuple, list)):
-            self.label = self.label_constructor(*text, font_size=font_size, **kwargs)
+            self.label: VMobject = self.label_constructor(
+                *text, font_size=font_size, **kwargs
+            )
         else:
             self.label = self.label_constructor(str(text), font_size=font_size)
 
         self.brace.put_at_tip(self.label)
         self.add(self.brace, self.label)
 
-    def creation_anim(self, label_anim=FadeIn, brace_anim=GrowFromCenter):
+    def creation_anim(
+        self,
+        label_anim: type[Animation] = FadeIn,
+        brace_anim: type[Animation] = GrowFromCenter,
+    ) -> AnimationGroup:
         return AnimationGroup(brace_anim(self.brace), label_anim(self.label))
 
-    def shift_brace(self, obj, **kwargs):
+    def shift_brace(self, obj: Mobject, **kwargs: Any) -> Self:
         if isinstance(obj, list):
             obj = self.get_group_class()(*obj)
         self.brace = Brace(obj, self.brace_direction, **kwargs)
         self.brace.put_at_tip(self.label)
         return self
 
-    def change_label(self, *text, **kwargs):
-        self.label = self.label_constructor(*text, **kwargs)
-
+    def change_label(self, *text: str, **kwargs: Any) -> Self:
+        self.label = self.label_constructor(*text, **kwargs)  # type: ignore[arg-type]
         self.brace.put_at_tip(self.label)
         return self
 
-    def change_brace_label(self, obj, *text, **kwargs):
+    def change_brace_label(self, obj: Mobject, *text: str, **kwargs: Any) -> Self:
         self.shift_brace(obj)
         self.change_label(*text, **kwargs)
         return self
 
 
 class BraceText(BraceLabel):
-    def __init__(self, obj, text, label_constructor=Tex, **kwargs):
+    def __init__(
+        self,
+        obj: Mobject,
+        text: str,
+        label_constructor: type[SingleStringMathTex | Text] = Text,
+        **kwargs: Any,
+    ):
         super().__init__(obj, text, label_constructor=label_constructor, **kwargs)
 
 
@@ -317,10 +328,10 @@ class BraceBetweenPoints(Brace):
 
     def __init__(
         self,
-        point_1: Point3DLike | None,
-        point_2: Point3DLike | None,
-        direction: Vector3D | None = ORIGIN,
-        **kwargs,
+        point_1: Point3DLike,
+        point_2: Point3DLike,
+        direction: Point3DLike = ORIGIN,
+        **kwargs: Any,
     ):
         if all(direction == ORIGIN):
             line_vector = np.array(point_2) - np.array(point_1)
@@ -386,8 +397,8 @@ class ArcBrace(Brace):
     def __init__(
         self,
         arc: Arc | None = None,
-        direction: Sequence[float] = RIGHT,
-        **kwargs,
+        direction: Point3DLike = RIGHT,
+        **kwargs: Any,
     ):
         if arc is None:
             arc = Arc(start_angle=-1, angle=2, radius=1)
