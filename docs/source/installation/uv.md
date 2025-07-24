@@ -143,7 +143,7 @@ the instructions below.
 
 ::::::{tab-set}
 
-:::::{tab-item} MacOS & Windows
+:::::{tab-item} Windows
 The following commands will
 
 - create a new directory for a Python project,
@@ -163,8 +163,55 @@ Manim is now installed in your local project environment!
 
 :::::
 
+:::::{tab-item} MacOS
+Before we can install Manim, we need to make sure that the system utilities
+`cairo` and `pkg-config` are present. They are needed for the [`pycairo` Python
+package](https://pycairo.readthedocs.io/en/latest/), a dependency of Manim.
+
+The easiest way of installing these utilities is by using [Homebrew](https://brew.sh/),
+a fairly popular 3rd party package manager for MacOS. Check whether Homebrew is
+already installed by running
+
+```bash
+brew --version
+```
+
+which will report something along the lines of `Homebrew 4.4.15-54-...`
+if it is installed, and a message `command not found: brew` otherwise. In this
+case, use the shell installer [as instructed on Homebrew's website](https://brew.sh/),
+or get a `.pkg`-installer from
+[their GitHub release page](https://github.com/Homebrew/brew/releases). Make sure to
+follow the instructions of the installer carefully, especially when prompted to
+modify your `.zprofile` to add Homebrew to your system's PATH.
+
+With Homebrew available, the required utilities can be installed by running
+
+```bash
+brew install cairo pkg-config
+```
+
+With all of this preparation out of the way, now it is time to actually install
+Manim itself! The following commands will
+
+- create a new directory for a Python project,
+- and add Manim as a dependency, which installs it into the corresponding
+  local Python environment.
+
+The name for the Python project is *manimations*, which you can change
+to anything you like.
+
+```bash
+uv init manimations
+cd manimations
+uv add manim
+```
+
+Manim is now installed in your local project environment!
+
+:::::
+
 :::::{tab-item} Linux
-Practically, the instructions given in the *MacOS & Windows* tab
+Practically, the instructions given in the *Windows* tab
 also apply for Linux -- however, some additional dependencies are
 required as Linux users need to build
 [ManimPango](https://github.com/ManimCommunity/ManimPango)
