@@ -16,6 +16,7 @@ from manim.mobject.geometry.line import Line
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.text.tex_mobject import MathTex, Tex
+from manim.mobject.text.text_mobject import Text
 
 from ...animation.composition import AnimationGroup
 from ...animation.fading import FadeIn
@@ -280,7 +281,7 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
 
 
 class BraceText(BraceLabel):
-    def __init__(self, obj, text, label_constructor=Tex, **kwargs):
+    def __init__(self, obj, text, label_constructor=Text, **kwargs):
         super().__init__(obj, text, label_constructor=label_constructor, **kwargs)
 
 
