@@ -11,12 +11,13 @@ from typing import Any, Callable
 import moderngl
 import numpy as np
 import numpy.typing as npt
+from cloup import Context
 from moderngl import Attribute
 from typing_extensions import Self
 
 from manim.mobject.mobject import Mobject
 from manim.renderer.opengl_renderer import OpenGLRenderer
-from manim.typing import Vector3D
+from manim.typing import Point3D
 
 from .. import config
 from ..utils import opengl
@@ -52,7 +53,9 @@ def get_shader_code_from_file(file_path: Path) -> str:
     return source
 
 
-def filter_attributes(unfiltered_attributes, attributes: list[Attribute]):
+def filter_attributes(
+    unfiltered_attributes: Attribute, attributes: list[Attribute]
+) -> npt.NDArray:
     # Construct attributes for only those needed by the shader.
     filtered_attributes_dtype = []
     for i, dtype_name in enumerate(unfiltered_attributes.dtype.names):
@@ -137,10 +140,10 @@ class Object3D:
         for child in children:
             child.parent = None
 
-    def get_position(self) -> Vector3D:
+    def get_position(self) -> Point3D:
         return self.model_matrix[:, 3][:3]
 
-    def set_position(self, position: Vector3D) -> Self:
+    def set_position(self, position: Point3D) -> Self:
         self.model_matrix[:, 3][:3] = position
         return self
 
@@ -159,7 +162,7 @@ class Object3D:
             yield parent
             dfs.extend(parent.children)
 
-    def align_data_and_family(self, _):
+    def align_data_and_family(self, _: Any) -> None:
         pass
 
     def hierarchical_model_matrix(self) -> npt.NDArray[np.float64]:
@@ -213,7 +216,7 @@ class Object3D:
         update_function: Callable,
         index: int | None = None,
         call_updater: bool = True,
-    ):
+    ) -> Self:
         if "dt" in inspect.signature(update_function).parameters:
             updater_list = self.time_based_updaters
         else:
@@ -264,21 +267,17 @@ class Object3D:
 
 
 class Mesh(Object3D):
-    ## TODO: Get back to this
-    ## TODO: Get back to this
-    ## TODO: Get back to this
-    ## TODO: Get back to this
-    ## TODO: Get back to this
-    ## TODO: Get back to this
     def __init__(
         self,
         shader: Shader | None = None,
         attributes: list[Attribute] | None = None,
+        # Based on the current codebase, the geometry parameter can only be set to None.
         geometry: None = None,
+        # Based on the current codebase, the material parameter can only be set to None.
         material: None = None,
-        indices: None = None,
+        indices: npt.NDArray = None,
         use_depth_test: bool = True,
-        primitive=moderngl.TRIANGLES,
+        primitive: int = moderngl.TRIANGLES,
     ):
         super().__init__()
         if shader is not None and attributes is not None:
@@ -368,9 +367,9 @@ class Mesh(Object3D):
 class Shader:
     def __init__(
         self,
-        context,
+        context: Context,
         name: Path | None = None,
-        source=None,
+        source: dict | None = None,
     ):
         global shader_program_cache
         self.context = context
@@ -393,6 +392,7 @@ class Shader:
                 "frag": "fragment_shader",
                 "geom": "geometry_shader",
             }
+            assert name is not None
             shader_folder = SHADER_FOLDER / name
             for shader_file in shader_folder.iterdir():
                 shader_file_path = shader_folder / shader_file
@@ -402,9 +402,10 @@ class Shader:
 
         # Cache the shader.
         if name is not None and name not in shader_program_cache:
+            assert self.name is not None
             shader_program_cache[self.name] = self.shader_program
 
-    def set_uniform(self, name, value):
+    def set_uniform(self, name: str, value: Any) -> None:
         with contextlib.suppress(KeyError):
             self.shader_program[name] = value
 
@@ -412,9 +413,9 @@ class Shader:
 class FullScreenQuad(Mesh):
     def __init__(
         self,
-        context,
-        fragment_shader_source=None,
-        fragment_shader_name=None,
+        context: Context,
+        fragment_shader_source: str | None = None,
+        fragment_shader_name: str | None = None,
     ):
         if fragment_shader_source is None and fragment_shader_name is None:
             raise Exception("Must either pass shader name or shader source.")
@@ -461,5 +462,5 @@ class FullScreenQuad(Mesh):
         )
         super().__init__(shader, attributes)
 
-    def render(self):
+    def render(self) -> None:
         super().render()
