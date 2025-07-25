@@ -99,6 +99,16 @@ class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
         """Return whether the value of this ValueTracker evaluates as true."""
         return bool(self.get_value())
 
+    def __add__(self, d_value: float | Mobject) -> ValueTracker:
+        """Return a new :class:`ValueTracker` whose value is the current tracker's value plus
+        ``d_value``.
+        """
+        if isinstance(d_value, Mobject):
+            raise ValueError(
+                "Cannot increment ValueTracker by a Mobject. Please provide a scalar value."
+            )
+        return ValueTracker(self.get_value() + d_value)
+
     def __iadd__(self, d_value: float | Mobject) -> Self:
         """adds ``+=`` syntax to increment the value of the ValueTracker."""
         if isinstance(d_value, Mobject):
@@ -128,15 +138,15 @@ class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
         self.set_value(self.get_value() ** d_value)
         return self
 
-    def __sub__(self, d_value: float | Mobject) -> Self:
-        """Decrements the ValueTracker by ``d_value``."""
+    def __sub__(self, d_value: float | Mobject) -> ValueTracker:
+        """Return a new :class:`ValueTracker` whose value is the current tracker's value minus
+        ``d_value``.
+        """
         if isinstance(d_value, Mobject):
             raise ValueError(
                 "Cannot decrement ValueTracker by a Mobject. Please provide a scalar value."
             )
-        else:
-            self.increment_value(-d_value)
-        return self
+        return ValueTracker(self.get_value() - d_value)
 
     def __isub__(self, d_value: float | Mobject) -> Self:
         """Adds ``-=`` syntax to decrement the value of the ValueTracker."""
