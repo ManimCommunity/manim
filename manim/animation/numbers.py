@@ -69,13 +69,6 @@ class ChangingDecimal(Animation):
             raise TypeError("ChangingDecimal can only take in a DecimalNumber")
 
     def interpolate_mobject(self, alpha: float) -> None:
-        """Interpolates the mobject of the Animation based on alpha value.
-
-        Parameters
-        ----------
-        alpha
-            A float between 0 and 1 representing the animation progress.
-        """
         self.mobject.set_value(self.number_update_func(self.rate_func(alpha)))  # type: ignore[attr-defined]
 
 
