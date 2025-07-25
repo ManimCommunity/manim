@@ -128,7 +128,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         else:
             self.checkerboard_colors = checkerboard_colors
         self.stroke_color: ManimColor = ManimColor(stroke_color)
-        self.stroke_width = stroke_width
+        self.stroke_width = np.array(stroke_width, ndmin=1)
         self.should_make_jagged = should_make_jagged
         self.pre_function_handle_to_anchor_scale_factor = (
             pre_function_handle_to_anchor_scale_factor
