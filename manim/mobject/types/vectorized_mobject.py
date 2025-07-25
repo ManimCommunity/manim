@@ -11,7 +11,6 @@ __all__ = [
     "DashedVMobject",
 ]
 
-
 import itertools as it
 import sys
 from collections.abc import Hashable, Iterable, Mapping, Sequence
@@ -1047,22 +1046,21 @@ class VMobject(Mobject):
             The VMobject itself, after appending the straight lines to its
             path.
         """
+        self.throw_error_if_no_points()
+
         points = np.asarray(points).reshape(-1, self.dim)
         num_points = points.shape[0]
         if num_points == 0:
             return self
 
+        start_corners = np.empty((num_points, self.dim))
+        start_corners[0] = self.points[-1]
+        start_corners[1:] = points[:-1]
+        end_corners = points
+
         if self.has_new_path_started():
-            # Pop the last point from self.points and
-            # add it to start_corners
-            start_corners = np.empty((num_points, self.dim))
-            start_corners[0] = self.points[-1]
-            start_corners[1:] = points[:-1]
-            end_corners = points
+            # Remove the last point from the new path
             self.points = self.points[:-1]
-        else:
-            start_corners = points[:-1]
-            end_corners = points[1:]
 
         nppcc = self.n_points_per_cubic_curve
         new_points = np.empty((nppcc * start_corners.shape[0], self.dim))
@@ -1720,6 +1718,10 @@ class VMobject(Mobject):
         -------
         :class:`VMobject`
            ``self``
+
+        See also
+        --------
+        :meth:`~.Mobject.interpolate`, :meth:`~.Mobject.align_data`
         """
         self.align_rgbas(vmobject)
         # TODO: This shortcut can be a bit over eager. What if they have the same length, but different subpath lengths?
@@ -1913,7 +1915,6 @@ class VMobject(Mobject):
             return self
         num_curves = vmobject.get_num_curves()
         if num_curves == 0:
-            self.clear_points()
             return self
 
         # The following two lines will compute which Bézier curves of the given Mobject must be processed.
@@ -1928,12 +1929,18 @@ class VMobject(Mobject):
         upper_index, upper_residue = integer_interpolate(0, num_curves, b)
 
         nppc = self.n_points_per_curve
+
+        # Copy vmobject.points if vmobject is self to prevent unintended in-place modification
+        vmobject_points = (
+            vmobject.points.copy() if self is vmobject else vmobject.points
+        )
+
         # If both indices coincide, get a part of a single Bézier curve.
         if lower_index == upper_index:
             # Look at the "lower_index"-th Bézier curve and select its part from
             # t=lower_residue to t=upper_residue.
             self.points = partial_bezier_points(
-                vmobject.points[nppc * lower_index : nppc * (lower_index + 1)],
+                vmobject_points[nppc * lower_index : nppc * (lower_index + 1)],
                 lower_residue,
                 upper_residue,
             )
@@ -1943,19 +1950,19 @@ class VMobject(Mobject):
             # Look at the "lower_index"-th Bezier curve and select its part from
             # t=lower_residue to t=1. This is the first curve in self.points.
             self.points[:nppc] = partial_bezier_points(
-                vmobject.points[nppc * lower_index : nppc * (lower_index + 1)],
+                vmobject_points[nppc * lower_index : nppc * (lower_index + 1)],
                 lower_residue,
                 1,
             )
             # If there are more curves between the "lower_index"-th and the
             # "upper_index"-th Béziers, add them all to self.points.
-            self.points[nppc:-nppc] = vmobject.points[
+            self.points[nppc:-nppc] = vmobject_points[
                 nppc * (lower_index + 1) : nppc * upper_index
             ]
             # Look at the "upper_index"-th Bézier curve and select its part from
             # t=0 to t=upper_residue. This is the last curve in self.points.
             self.points[-nppc:] = partial_bezier_points(
-                vmobject.points[nppc * upper_index : nppc * (upper_index + 1)],
+                vmobject_points[nppc * upper_index : nppc * (upper_index + 1)],
                 0,
                 upper_residue,
             )

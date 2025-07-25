@@ -205,6 +205,7 @@ class ImageMobject(AbstractImageMobject):
             self.pixel_array[:, :, :3] = (
                 np.iinfo(self.pixel_array_dtype).max - self.pixel_array[:, :, :3]
             )
+        self.orig_alpha_pixel_array = self.pixel_array[:, :, 3].copy()
         super().__init__(scale_to_resolution, **kwargs)
 
     def get_pixel_array(self):
@@ -230,8 +231,7 @@ class ImageMobject(AbstractImageMobject):
             The alpha value of the object, 1 being opaque and 0 being
             transparent.
         """
-        self.pixel_array[:, :, 3] = int(255 * alpha)
-        self.fill_opacity = alpha
+        self.pixel_array[:, :, 3] = self.orig_alpha_pixel_array * alpha
         self.stroke_opacity = alpha
         return self
 
