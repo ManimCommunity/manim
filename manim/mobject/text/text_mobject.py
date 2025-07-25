@@ -1562,7 +1562,7 @@ def register_font(font_file: str | Path):
             logger.debug("Found file at %s", file_path.absolute())
             break
     else:
-        error = f"Can't find {font_file}.Tried these : {possible_paths}"
+        error = f"Can't find {font_file}. Checked paths: {possible_paths}"
         raise FileNotFoundError(error)
 
     try:
