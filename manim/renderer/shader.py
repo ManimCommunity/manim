@@ -14,9 +14,12 @@ import numpy.typing as npt
 from cloup import Context
 from moderngl import Attribute
 from typing_extensions import Self
+from typing import TYPE_CHECKING
 
 from manim.mobject.mobject import Mobject
-from manim.renderer.opengl_renderer import OpenGLRenderer
+
+if TYPE_CHECKING:
+    from manim.renderer.opengl_renderer import OpenGLRenderer
 from manim.typing import Point3D
 
 from .. import config
