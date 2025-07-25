@@ -21,6 +21,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
+from manim.data_structures import MethodWithArgs
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 
 from .. import config, logger
@@ -387,9 +388,9 @@ class Mobject:
              will interpolate the :class:`~.Mobject` between its points prior to
              ``.animate`` and its points after applying ``.animate`` to it. This may
              result in unexpected behavior when attempting to interpolate along paths,
-             or rotations.
+             or rotations (see :meth:`.rotate`).
              If you want animations to consider the points between, consider using
-             :class:`~.ValueTracker` with updaters instead.
+             :class:`~.ValueTracker` with updaters instead (see :meth:`.add_updater`).
 
         """
         return _AnimationBuilder(self)
@@ -1002,16 +1003,16 @@ class Mobject:
 
             class NextToUpdater(Scene):
                 def construct(self):
-                    def dot_position(mobject):
+                    def update_label(mobject):
                         mobject.set_value(dot.get_center()[0])
                         mobject.next_to(dot)
 
                     dot = Dot(RIGHT*3)
                     label = DecimalNumber()
-                    label.add_updater(dot_position)
+                    label.add_updater(update_label)
                     self.add(dot, label)
 
-                    self.play(Rotating(dot, about_point=ORIGIN, angle=TAU, run_time=TAU, rate_func=linear))
+                    self.play(Rotating(dot, angle=TAU, about_point=ORIGIN, run_time=TAU, rate_func=linear))
 
         .. manim:: DtUpdater
 
@@ -1029,6 +1030,9 @@ class Mobject:
         :meth:`get_updaters`
         :meth:`remove_updater`
         :class:`~.UpdateFromFunc`
+        :class:`~.Rotating`
+        :meth:`rotate`
+        :attr:`~.Mobject.animate`
         """
         if index is None:
             self.updaters.append(update_function)
@@ -1282,7 +1286,64 @@ class Mobject:
         about_point: Point3DLike | None = None,
         **kwargs,
     ) -> Self:
-        """Rotates the :class:`~.Mobject` about a certain point."""
+        """Rotates the :class:`~.Mobject` around a specified axis and point.
+
+        Parameters
+        ----------
+        angle
+            The angle of rotation in radians. Predefined constants such as ``DEGREES``
+            can also be used to specify the angle in degrees.
+        axis
+            The rotation axis (see :class:`~.Rotating` for more).
+        about_point
+            The point about which the mobject rotates. If ``None``, rotation occurs around
+            the center of the mobject.
+        **kwargs
+            Additional keyword arguments passed to :meth:`apply_points_function_about_point`,
+            such as ``about_edge``.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self`` (for method chaining)
+
+
+        .. note::
+            To animate a rotation, use :class:`~.Rotating` or :class:`~.Rotate`
+            instead of ``.animate.rotate(...)``.
+            The ``.animate.rotate(...)`` syntax only applies a transformation
+            from the initial state to the final rotated state
+            (interpolation between the two states), without showing proper rotational motion
+            based on the angle (from 0 to the given angle).
+
+        Examples
+        --------
+
+        .. manim:: RotateMethodExample
+            :save_last_frame:
+
+            class RotateMethodExample(Scene):
+                def construct(self):
+                    circle = Circle(radius=1, color=BLUE)
+                    line = Line(start=ORIGIN, end=RIGHT)
+                    arrow1 = Arrow(start=ORIGIN, end=RIGHT, buff=0, color=GOLD)
+                    group1 = VGroup(circle, line, arrow1)
+
+                    group2 = group1.copy()
+                    arrow2 = group2[2]
+                    arrow2.rotate(angle=PI / 4, about_point=arrow2.get_start())
+
+                    group3 = group1.copy()
+                    arrow3 = group3[2]
+                    arrow3.rotate(angle=120 * DEGREES, about_point=arrow3.get_start())
+
+                    self.add(VGroup(group1, group2, group3).arrange(RIGHT, buff=1))
+
+        See also
+        --------
+        :class:`~.Rotating`, :class:`~.Rotate`, :attr:`~.Mobject.animate`, :meth:`apply_points_function_about_point`
+
+        """
         rot_matrix = rotation_matrix(angle, axis)
         self.apply_points_function_about_point(
             lambda points: np.dot(points, rot_matrix.T), about_point, **kwargs
@@ -3172,7 +3233,7 @@ class _AnimationBuilder:
 
         self.overridden_animation = None
         self.is_chaining = False
-        self.methods = []
+        self.methods: list[MethodWithArgs] = []
 
         # Whether animation args can be passed
         self.cannot_pass_args = False
@@ -3207,7 +3268,7 @@ class _AnimationBuilder:
                     **method_kwargs,
                 )
             else:
-                self.methods.append([method, method_args, method_kwargs])
+                self.methods.append(MethodWithArgs(method, method_args, method_kwargs))
                 method(*method_args, **method_kwargs)
             return self
 
@@ -3241,7 +3302,7 @@ def override_animate(method) -> types.FunctionType:
 
     .. seealso::
 
-        :attr:`Mobject.animate`
+        :attr:`~.Mobject.animate`
 
     .. note::
 
