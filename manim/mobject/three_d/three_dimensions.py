@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from manim.typing import Point3D, Vector3D
+from manim.typing import Point3DLike, Vector3D
 from manim.utils.color import BLUE, BLUE_D, BLUE_E, LIGHT_GREY, WHITE, interpolate_color
 
 __all__ = [
@@ -116,19 +116,21 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
     ) -> None:
         self.u_range = u_range
         self.v_range = v_range
-        super().__init__(**kwargs)
+        super().__init__(
+            fill_color=fill_color,
+            fill_opacity=fill_opacity,
+            stroke_color=stroke_color,
+            stroke_width=stroke_width,
+            **kwargs,
+        )
         self.resolution = resolution
         self.surface_piece_config = surface_piece_config
-        self.fill_color: ManimColor = ManimColor(fill_color)
-        self.fill_opacity = fill_opacity
         if checkerboard_colors:
             self.checkerboard_colors: list[ManimColor] = [
                 ManimColor(x) for x in checkerboard_colors
             ]
         else:
             self.checkerboard_colors = checkerboard_colors
-        self.stroke_color: ManimColor = ManimColor(stroke_color)
-        self.stroke_width = stroke_width
         self.should_make_jagged = should_make_jagged
         self.pre_function_handle_to_anchor_scale_factor = (
             pre_function_handle_to_anchor_scale_factor
@@ -373,7 +375,7 @@ class Sphere(Surface):
 
     def __init__(
         self,
-        center: Point3D = ORIGIN,
+        center: Point3DLike = ORIGIN,
         radius: float = 1,
         resolution: Sequence[int] | None = None,
         u_range: Sequence[float] = (0, TAU),
@@ -517,7 +519,8 @@ class Cube(VGroup):
 
             self.add(face)
 
-    init_points = generate_points
+    def init_points(self) -> None:
+        self.generate_points()
 
 
 class Prism(Cube):
@@ -966,7 +969,7 @@ class Line3D(Cylinder):
 
     def pointify(
         self,
-        mob_or_point: Mobject | Point3D,
+        mob_or_point: Mobject | Point3DLike,
         direction: Vector3D = None,
     ) -> np.ndarray:
         """Gets a point representing the center of the :class:`Mobjects <.Mobject>`.

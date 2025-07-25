@@ -75,9 +75,9 @@ def test_manim_checkhealth_subcommand():
     result = runner.invoke(main, command)
     output_lines = result.output.split("\n")
     num_passed = len([line for line in output_lines if "PASSED" in line])
-    assert num_passed == len(
-        HEALTH_CHECKS
-    ), f"Some checks failed! Full output:\n{result.output}"
+    assert num_passed == len(HEALTH_CHECKS), (
+        f"Some checks failed! Full output:\n{result.output}"
+    )
     assert "No problems detected, your installation seems healthy!" in output_lines
 
 

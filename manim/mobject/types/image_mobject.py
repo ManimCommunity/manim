@@ -5,6 +5,7 @@ from __future__ import annotations
 __all__ = ["AbstractImageMobject", "ImageMobject", "ImageMobjectFromCamera"]
 
 import pathlib
+from typing import TYPE_CHECKING
 
 import numpy as np
 from PIL import Image
@@ -20,6 +21,14 @@ from ...utils.color import WHITE, ManimColor, color_to_int_rgb
 from ...utils.images import change_to_rgba_array, get_full_raster_image_path
 
 __all__ = ["ImageMobject", "ImageMobjectFromCamera"]
+
+if TYPE_CHECKING:
+    from typing import Any
+
+    import numpy.typing as npt
+    from typing_extensions import Self
+
+    from manim.typing import StrPath
 
 
 class AbstractImageMobject(Mobject):
@@ -39,23 +48,23 @@ class AbstractImageMobject(Mobject):
     def __init__(
         self,
         scale_to_resolution: int,
-        pixel_array_dtype="uint8",
-        resampling_algorithm=Resampling.BICUBIC,
-        **kwargs,
-    ):
+        pixel_array_dtype: str = "uint8",
+        resampling_algorithm: Resampling = Resampling.BICUBIC,
+        **kwargs: Any,
+    ) -> None:
         self.pixel_array_dtype = pixel_array_dtype
         self.scale_to_resolution = scale_to_resolution
         self.set_resampling_algorithm(resampling_algorithm)
         super().__init__(**kwargs)
 
-    def get_pixel_array(self):
+    def get_pixel_array(self) -> None:
         raise NotImplementedError()
 
     def set_color(self, color, alpha=None, family=True):
         # Likely to be implemented in subclasses, but no obligation
         pass
 
-    def set_resampling_algorithm(self, resampling_algorithm: int):
+    def set_resampling_algorithm(self, resampling_algorithm: int) -> Self:
         """
         Sets the interpolation method for upscaling the image. By default the image is
         interpolated using bicubic algorithm. This method lets you change it.
@@ -87,7 +96,7 @@ class AbstractImageMobject(Mobject):
             )
         return self
 
-    def reset_points(self):
+    def reset_points(self) -> None:
         """Sets :attr:`points` to be the four image corners."""
         self.points = np.array(
             [
@@ -171,15 +180,15 @@ class ImageMobject(AbstractImageMobject):
 
     def __init__(
         self,
-        filename_or_array,
+        filename_or_array: StrPath | npt.NDArray,
         scale_to_resolution: int = QUALITIES[DEFAULT_QUALITY]["pixel_height"],
-        invert=False,
-        image_mode="RGBA",
-        **kwargs,
-    ):
-        self.fill_opacity = 1
-        self.stroke_opacity = 1
-        self.invert = invert
+        invert: bool = False,
+        image_mode: str = "RGBA",
+        **kwargs: Any,
+    ) -> None:
+        self.fill_opacity: float = 1
+        self.stroke_opacity: float = 1
+        self.invert_image = invert
         self.image_mode = image_mode
         if isinstance(filename_or_array, (str, pathlib.PurePath)):
             path = get_full_raster_image_path(filename_or_array)
@@ -192,10 +201,11 @@ class ImageMobject(AbstractImageMobject):
         self.pixel_array = change_to_rgba_array(
             self.pixel_array, self.pixel_array_dtype
         )
-        if self.invert:
+        if self.invert_image:
             self.pixel_array[:, :, :3] = (
                 np.iinfo(self.pixel_array_dtype).max - self.pixel_array[:, :, :3]
             )
+        self.orig_alpha_pixel_array = self.pixel_array[:, :, 3].copy()
         super().__init__(scale_to_resolution, **kwargs)
 
     def get_pixel_array(self):
@@ -212,7 +222,7 @@ class ImageMobject(AbstractImageMobject):
         self.color = color
         return self
 
-    def set_opacity(self, alpha: float):
+    def set_opacity(self, alpha: float) -> Self:
         """Sets the image's opacity.
 
         Parameters
@@ -221,12 +231,11 @@ class ImageMobject(AbstractImageMobject):
             The alpha value of the object, 1 being opaque and 0 being
             transparent.
         """
-        self.pixel_array[:, :, 3] = int(255 * alpha)
-        self.fill_opacity = alpha
+        self.pixel_array[:, :, 3] = self.orig_alpha_pixel_array * alpha
         self.stroke_opacity = alpha
         return self
 
-    def fade(self, darkness: float = 0.5, family: bool = True):
+    def fade(self, darkness: float = 0.5, family: bool = True) -> Self:
         """Sets the image's opacity using a 1 - alpha relationship.
 
         Parameters
@@ -243,7 +252,7 @@ class ImageMobject(AbstractImageMobject):
 
     def interpolate_color(
         self, mobject1: ImageMobject, mobject2: ImageMobject, alpha: float
-    ):
+    ) -> None:
         """Interpolates the array of pixel color values from one ImageMobject
         into an array of equal size in the target ImageMobject.
 
@@ -279,7 +288,7 @@ class ImageMobject(AbstractImageMobject):
             alpha,
         ).astype(self.pixel_array_dtype)
 
-    def get_style(self):
+    def get_style(self) -> dict[str, Any]:
         return {
             "fill_color": ManimColor(self.color.get_rgb()).to_hex(),
             "fill_opacity": self.fill_opacity,
@@ -292,7 +301,12 @@ class ImageMobject(AbstractImageMobject):
 
 
 class ImageMobjectFromCamera(AbstractImageMobject):
-    def __init__(self, camera, default_display_frame_config=None, **kwargs):
+    def __init__(
+        self,
+        camera,
+        default_display_frame_config: dict[str, Any] | None = None,
+        **kwargs: Any,
+    ) -> None:
         self.camera = camera
         if default_display_frame_config is None:
             default_display_frame_config = {
@@ -309,14 +323,14 @@ class ImageMobjectFromCamera(AbstractImageMobject):
         self.pixel_array = self.camera.pixel_array
         return self.pixel_array
 
-    def add_display_frame(self, **kwargs):
+    def add_display_frame(self, **kwargs: Any) -> Self:
         config = dict(self.default_display_frame_config)
         config.update(kwargs)
         self.display_frame = SurroundingRectangle(self, **config)
         self.add(self.display_frame)
         return self
 
-    def interpolate_color(self, mobject1, mobject2, alpha):
+    def interpolate_color(self, mobject1, mobject2, alpha) -> None:
         assert mobject1.pixel_array.shape == mobject2.pixel_array.shape, (
             f"Mobject pixel array shapes incompatible for interpolation.\n"
             f"Mobject 1 ({mobject1}) : {mobject1.pixel_array.shape}\n"

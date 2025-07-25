@@ -307,7 +307,7 @@ class ShowPassingFlash(ShowPartial):
         self.time_width = time_width
         super().__init__(mobject, remover=True, introducer=True, **kwargs)
 
-    def _get_bounds(self, alpha: float) -> tuple[float]:
+    def _get_bounds(self, alpha: float) -> tuple[float, float]:
         tw = self.time_width
         upper = interpolate(0, 1 + tw, alpha)
         lower = upper - tw
@@ -608,8 +608,8 @@ class Circumscribe(Succession):
         if shape is Rectangle:
             frame = SurroundingRectangle(
                 mobject,
-                color,
-                buff,
+                color=color,
+                buff=buff,
                 stroke_width=stroke_width,
             )
         elif shape is Circle:

@@ -16,6 +16,7 @@ import numpy as np
 
 from manim import config, logger
 from manim.constants import *
+from manim.data_structures import MethodWithArgs
 from manim.renderer.shader_wrapper import get_colormap_code
 from manim.utils.bezier import integer_interpolate, interpolate
 from manim.utils.color import (
@@ -55,9 +56,12 @@ if TYPE_CHECKING:
         ManimFloat,
         MappingFunction,
         MatrixMN,
+        MultiMappingFunction,
         PathFuncType,
         Point3D,
         Point3D_Array,
+        Point3DLike,
+        Point3DLike_Array,
         Vector3D,
     )
 
@@ -398,7 +402,9 @@ class OpenGLMobject:
 
             ::
 
-                self.play(my_mobject.animate.shift(RIGHT), my_mobject.animate.rotate(PI))
+                self.play(
+                    my_mobject.animate.shift(RIGHT), my_mobject.animate.rotate(PI)
+                )
 
             make use of method chaining for ``animate``, meaning::
 
@@ -573,7 +579,7 @@ class OpenGLMobject:
         self.refresh_bounding_box()
         return self
 
-    def set_points(self, points: Point3D_Array) -> Self:
+    def set_points(self, points: Point3DLike_Array) -> Self:
         if len(points) == len(self.points):
             self.points[:] = points
         elif isinstance(points, np.ndarray):
@@ -591,7 +597,7 @@ class OpenGLMobject:
             setattr(self, attr, func(getattr(self, attr)))
         return self
 
-    def append_points(self, new_points: Point3D_Array) -> Self:
+    def append_points(self, new_points: Point3DLike_Array) -> Self:
         self.points = np.vstack([self.points, new_points])
         self.refresh_bounding_box()
         return self
@@ -625,10 +631,11 @@ class OpenGLMobject:
         """
         return self.point_from_proportion(0.5)
 
+    # TODO: name is inconsistent with Mobject.apply_points_function_about_point()
     def apply_points_function(
         self,
-        func: MappingFunction,
-        about_point: Point3D | None = None,
+        func: MultiMappingFunction,
+        about_point: Point3DLike | None = None,
         about_edge: Vector3D | None = ORIGIN,
         works_on_bounding_box: bool = False,
     ) -> Self:
@@ -729,7 +736,9 @@ class OpenGLMobject:
                 parent.refresh_bounding_box()
         return self
 
-    def is_point_touching(self, point: Point3D, buff: float = MED_SMALL_BUFF) -> bool:
+    def is_point_touching(
+        self, point: Point3DLike, buff: float = MED_SMALL_BUFF
+    ) -> bool:
         bb = self.get_bounding_box()
         mins = bb[0] - buff
         maxs = bb[2] + buff
@@ -1291,7 +1300,7 @@ class OpenGLMobject:
 
     def sort(
         self,
-        point_to_num_func: Callable[[Point3D], float] = lambda p: p[0],
+        point_to_num_func: Callable[[Point3DLike], float] = lambda p: p[0],
         submob_func: Callable[[OpenGLMobject], Any] | None = None,
     ) -> Self:
         """Sorts the list of :attr:`submobjects` by a function defined by ``submob_func``."""
@@ -1577,7 +1586,7 @@ class OpenGLMobject:
             if :math:`\alpha < 0`, the mobject is also flipped.
         kwargs
             Additional keyword arguments passed to
-            :meth:`apply_points_function_about_point`.
+            :meth:`apply_points_function`.
 
         Returns
         -------
@@ -1615,7 +1624,7 @@ class OpenGLMobject:
         return self
 
     def stretch(self, factor: float, dim: int, **kwargs) -> Self:
-        def func(points):
+        def func(points: Point3D_Array) -> Point3D_Array:
             points[:, dim] *= factor
             return points
 
@@ -1664,9 +1673,12 @@ class OpenGLMobject:
         # Default to applying matrix about the origin, not mobjects center
         if len(kwargs) == 0:
             kwargs["about_point"] = ORIGIN
-        self.apply_points_function(
-            lambda points: np.array([function(p) for p in points]), **kwargs
-        )
+
+        def multi_mapping_function(points: Point3D_Array) -> Point3D_Array:
+            result: Point3D_Array = np.apply_along_axis(function, 1, points)
+            return result
+
+        self.apply_points_function(multi_mapping_function, **kwargs)
         return self
 
     def apply_function_to_position(self, function: MappingFunction) -> Self:
@@ -1800,13 +1812,13 @@ class OpenGLMobject:
 
     def next_to(
         self,
-        mobject_or_point: OpenGLMobject | Point3D,
+        mobject_or_point: OpenGLMobject | Point3DLike,
         direction: Vector3D = RIGHT,
         buff: float = DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
         aligned_edge: Vector3D = ORIGIN,
         submobject_to_align: OpenGLMobject | None = None,
         index_of_submobject_to_align: int | None = None,
-        coor_mask: Point3D = np.array([1, 1, 1]),
+        coor_mask: Point3DLike = np.array([1, 1, 1]),
     ) -> Self:
         """Move this :class:`~.OpenGLMobject` next to another's :class:`~.OpenGLMobject` or coordinate.
 
@@ -1869,7 +1881,7 @@ class OpenGLMobject:
             return True
         return self.get_top()[1] < -config.frame_y_radius
 
-    def stretch_about_point(self, factor: float, dim: int, point: Point3D) -> Self:
+    def stretch_about_point(self, factor: float, dim: int, point: Point3DLike) -> Self:
         return self.stretch(factor, dim, about_point=point)
 
     def rescale_to_fit(
@@ -1897,15 +1909,16 @@ class OpenGLMobject:
         ::
 
             >>> from manim import *
+            >>> import numpy as np
             >>> sq = Square()
             >>> sq.height
-            2.0
+            np.float64(2.0)
             >>> sq.stretch_to_fit_width(5)
             Square
             >>> sq.width
-            5.0
+            np.float64(5.0)
             >>> sq.height
-            2.0
+            np.float64(2.0)
         """
         return self.rescale_to_fit(width, 0, stretch=True, **kwargs)
 
@@ -1930,15 +1943,16 @@ class OpenGLMobject:
         ::
 
             >>> from manim import *
+            >>> import numpy as np
             >>> sq = Square()
             >>> sq.height
-            2.0
+            np.float64(2.0)
             >>> sq.scale_to_fit_width(5)
             Square
             >>> sq.width
-            5.0
+            np.float64(5.0)
             >>> sq.height
-            5.0
+            np.float64(5.0)
         """
         return self.rescale_to_fit(width, 0, stretch=stretch, **kwargs)
 
@@ -1983,9 +1997,9 @@ class OpenGLMobject:
 
     def move_to(
         self,
-        point_or_mobject: Point3D | OpenGLMobject,
+        point_or_mobject: Point3DLike | OpenGLMobject,
         aligned_edge: Vector3D = ORIGIN,
-        coor_mask: Point3D = np.array([1, 1, 1]),
+        coor_mask: Point3DLike = np.array([1, 1, 1]),
     ) -> Self:
         """Move center of the :class:`~.OpenGLMobject` to certain coordinate."""
         if isinstance(point_or_mobject, OpenGLMobject):
@@ -2029,7 +2043,7 @@ class OpenGLMobject:
         self.scale((length + buff) / length)
         return self
 
-    def put_start_and_end_on(self, start: Point3D, end: Point3D) -> Self:
+    def put_start_and_end_on(self, start: Point3DLike, end: Point3DLike) -> Self:
         curr_start, curr_end = self.get_start_and_end()
         curr_vect = curr_end - curr_start
         if np.all(curr_vect == 0):
@@ -2421,7 +2435,7 @@ class OpenGLMobject:
 
     def align_to(
         self,
-        mobject_or_point: OpenGLMobject | Point3D,
+        mobject_or_point: OpenGLMobject | Point3DLike,
         direction: Vector3D = ORIGIN,
     ) -> Self:
         """
@@ -2892,7 +2906,7 @@ class OpenGLGroup(OpenGLMobject):
 class OpenGLPoint(OpenGLMobject):
     def __init__(
         self,
-        location: Point3D = ORIGIN,
+        location: Point3DLike = ORIGIN,
         artificial_width: float = 1e-6,
         artificial_height: float = 1e-6,
         **kwargs,
@@ -2925,7 +2939,7 @@ class _AnimationBuilder:
 
         self.overridden_animation = None
         self.is_chaining = False
-        self.methods = []
+        self.methods: list[MethodWithArgs] = []
 
         # Whether animation args can be passed
         self.cannot_pass_args = False
@@ -2948,8 +2962,7 @@ class _AnimationBuilder:
 
         if (self.is_chaining and has_overridden_animation) or self.overridden_animation:
             raise NotImplementedError(
-                "Method chaining is currently not supported for "
-                "overridden animations",
+                "Method chaining is currently not supported for overridden animations",
             )
 
         def update_target(*method_args, **method_kwargs):
@@ -2961,7 +2974,7 @@ class _AnimationBuilder:
                     **method_kwargs,
                 )
             else:
-                self.methods.append([method, method_args, method_kwargs])
+                self.methods.append(MethodWithArgs(method, method_args, method_kwargs))
                 method(*method_args, **method_kwargs)
             return self
 

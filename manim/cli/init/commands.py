@@ -10,13 +10,14 @@ from __future__ import annotations
 
 import configparser
 from pathlib import Path
+from typing import Any
 
 import click
 import cloup
 
-from ... import console
-from ...constants import CONTEXT_SETTINGS, EPILOG, QUALITIES
-from ...utils.file_ops import (
+from manim._config import console
+from manim.constants import CONTEXT_SETTINGS, EPILOG, QUALITIES
+from manim.utils.file_ops import (
     add_import_statement,
     copy_template_files,
     get_template_names,
@@ -34,15 +35,15 @@ CFG_DEFAULTS = {
 __all__ = ["select_resolution", "update_cfg", "project", "scene"]
 
 
-def select_resolution():
+def select_resolution() -> tuple[int, int]:
     """Prompts input of type click.Choice from user. Presents options from QUALITIES constant.
 
     Returns
     -------
-        :class:`tuple`
-            Tuple containing height and width.
+    tuple[int, int]
+        Tuple containing height and width.
     """
-    resolution_options = []
+    resolution_options: list[tuple[int, int]] = []
     for quality in QUALITIES.items():
         resolution_options.append(
             (quality[1]["pixel_height"], quality[1]["pixel_width"]),
@@ -54,26 +55,29 @@ def select_resolution():
         show_default=False,
         default="480p",
     )
-    return [res for res in resolution_options if f"{res[0]}p" == choice][0]
+    matches = [res for res in resolution_options if f"{res[0]}p" == choice]
+    return matches[0]
 
 
-def update_cfg(cfg_dict: dict, project_cfg_path: Path):
-    """Updates the manim.cfg file after reading it from the project_cfg_path.
+def update_cfg(cfg_dict: dict[str, Any], project_cfg_path: Path) -> None:
+    """Update the ``manim.cfg`` file after reading it from the specified
+    ``project_cfg_path``.
 
     Parameters
     ----------
     cfg_dict
-        values used to update manim.cfg found project_cfg_path.
+        Values used to update ``manim.cfg`` which is found in
+        ``project_cfg_path``.
     project_cfg_path
-        Path of manim.cfg file.
+        Path of the ``manim.cfg`` file.
     """
     config = configparser.ConfigParser()
     config.read(project_cfg_path)
     cli_config = config["CLI"]
     for key, value in cfg_dict.items():
         if key == "resolution":
-            cli_config["pixel_height"] = str(value[0])
-            cli_config["pixel_width"] = str(value[1])
+            cli_config["pixel_width"] = str(value[0])
+            cli_config["pixel_height"] = str(value[1])
         else:
             cli_config[key] = str(value)
 
@@ -85,7 +89,7 @@ def update_cfg(cfg_dict: dict, project_cfg_path: Path):
     context_settings=CONTEXT_SETTINGS,
     epilog=EPILOG,
 )
-@cloup.argument("project_name", type=Path, required=False)
+@cloup.argument("project_name", type=cloup.Path(path_type=Path), required=False)
 @cloup.option(
     "-d",
     "--default",
@@ -94,13 +98,14 @@ def update_cfg(cfg_dict: dict, project_cfg_path: Path):
     help="Default settings for project creation.",
     nargs=1,
 )
-def project(default_settings, **args):
+def project(default_settings: bool, **kwargs: Any) -> None:
     """Creates a new project.
 
     PROJECT_NAME is the name of the folder in which the new project will be initialized.
     """
-    if args["project_name"]:
-        project_name = args["project_name"]
+    project_name: Path
+    if kwargs["project_name"]:
+        project_name = kwargs["project_name"]
     else:
         project_name = click.prompt("Project Name", type=Path)
 
@@ -117,7 +122,7 @@ def project(default_settings, **args):
         )
     else:
         project_name.mkdir()
-        new_cfg = {}
+        new_cfg: dict[str, Any] = {}
         new_cfg_path = Path.resolve(project_name / "manim.cfg")
 
         if not default_settings:
@@ -145,23 +150,23 @@ def project(default_settings, **args):
 )
 @cloup.argument("scene_name", type=str, required=True)
 @cloup.argument("file_name", type=str, required=False)
-def scene(**args):
+def scene(**kwargs: Any) -> None:
     """Inserts a SCENE to an existing FILE or creates a new FILE.
 
     SCENE is the name of the scene that will be inserted.
 
     FILE is the name of file in which the SCENE will be inserted.
     """
-    template_name = click.prompt(
+    template_name: str = click.prompt(
         "template",
         type=click.Choice(get_template_names(), False),
         default="Default",
     )
     scene = (get_template_path() / f"{template_name}.mtp").resolve().read_text()
-    scene = scene.replace(template_name + "Template", args["scene_name"], 1)
+    scene = scene.replace(template_name + "Template", kwargs["scene_name"], 1)
 
-    if args["file_name"]:
-        file_name = Path(args["file_name"])
+    if kwargs["file_name"]:
+        file_name = Path(kwargs["file_name"])
 
         if file_name.suffix != ".py":
             file_name = file_name.with_suffix(file_name.suffix + ".py")
@@ -190,7 +195,7 @@ def scene(**args):
     help="Create a new project or insert a new scene.",
 )
 @cloup.pass_context
-def init(ctx):
+def init(ctx: cloup.Context) -> None:
     pass
 
 
