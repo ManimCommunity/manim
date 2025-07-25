@@ -559,7 +559,7 @@ class Scene:
                     # In this case, one could say that the old Mobject was already found.
                     # No replacement is needed, since old_m is new_m, so no action is required.
                     # This might be unexpected, so raise a warning.
-                    logging.warning(
+                    logger.warning(
                         f"Attempted to replace {type(old_m).__name__} "
                         "with itself in Scene.mobjects."
                     )
