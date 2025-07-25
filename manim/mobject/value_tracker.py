@@ -144,8 +144,7 @@ class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
             raise ValueError(
                 "Cannot decrement ValueTracker by a Mobject. Please provide a scalar value."
             )
-        else:
-            self.increment_value(-d_value)
+        self.increment_value(-d_value)
         return self
 
     def __itruediv__(self, d_value: float) -> Self:
