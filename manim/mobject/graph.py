@@ -335,7 +335,7 @@ def _tree_layout(
     # Always make a copy of the children because they get eaten
     stack = [list(children[root_vertex]).copy()]
     stick = [root_vertex]
-    parent = {u: root_vertex for u in children[root_vertex]}
+    parent = dict.fromkeys(children[root_vertex], root_vertex)
     pos = {}
     obstruction = [0.0] * len(T)
     o = -1 if orientation == "down" else 1
@@ -810,12 +810,12 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
             vertex_mobjects = {}
 
         graph_center = self.get_center()
-        base_positions = {v: graph_center for v in vertices}
+        base_positions = dict.fromkeys(vertices, graph_center)
         base_positions.update(positions)
         positions = base_positions
 
         if isinstance(labels, bool):
-            labels = {v: labels for v in vertices}
+            labels = dict.fromkeys(vertices, labels)
         else:
             assert isinstance(labels, dict)
             base_labels = dict.fromkeys(vertices, False)
@@ -1035,7 +1035,10 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         self._edge_config[(u, v)] = edge_config
 
         edge_mobject = edge_type(
-            self[u].get_center(), self[v].get_center(), z_index=-1, **edge_config
+            start=self[u].get_center(),
+            end=self[v].get_center(),
+            z_index=-1,
+            **edge_config,
         )
         self.edges[(u, v)] = edge_mobject
 
@@ -1501,7 +1504,9 @@ class Graph(GenericGraph):
             VERTEX_CONF = {"radius": 0.25, "color": BLUE_B, "fill_opacity": 1}
 
             def expand_vertex(self, g, vertex_id: str, depth: int):
-                new_vertices = [f"{vertex_id}/{i}" for i in range(self.CHILDREN_PER_VERTEX)]
+                new_vertices = [
+                    f"{vertex_id}/{i}" for i in range(self.CHILDREN_PER_VERTEX)
+                ]
                 new_edges = [(vertex_id, child_id) for child_id in new_vertices]
                 g.add_edges(
                     *new_edges,
@@ -1541,8 +1546,8 @@ class Graph(GenericGraph):
     ):
         self.edges = {
             (u, v): edge_type(
-                self[u].get_center(),
-                self[v].get_center(),
+                start=self[u].get_center(),
+                end=self[v].get_center(),
                 z_index=-1,
                 **self._edge_config[(u, v)],
             )
@@ -1748,8 +1753,8 @@ class DiGraph(GenericGraph):
     ):
         self.edges = {
             (u, v): edge_type(
-                self[u],
-                self[v],
+                start=self[u],
+                end=self[v],
                 z_index=-1,
                 **self._edge_config[(u, v)],
             )

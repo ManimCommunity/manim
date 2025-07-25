@@ -6,28 +6,28 @@ on:
 
 jobs:
   release:
+    name: "Publish release"
     runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      id-token: write
+
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set up Python 3.11
+    - name: Set up Python 3.13
       uses: actions/setup-python@v5
       with:
-        python-version: 3.11
+        python-version: 3.13
 
-    - name: Install dependencies
-      run: python -m pip install --upgrade poetry
+    - name: Install uv
+      uses: astral-sh/setup-uv@v6
 
-    # TODO: Set PYPI_API_TOKEN to api token from pip in secrets
-    - name: Configure pypi credentials
-      env:
-        PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
-      run: poetry config http-basic.pypi __token__ "$PYPI_API_TOKEN"
-
-    - name: Publish release to pypi
+    - name: Build and push release to PyPI
       run: |
-        poetry publish --build
-        poetry build
+        uv sync
+        uv build
+        uv publish
 
     - name: Store artifacts
       uses: actions/upload-artifact@v4

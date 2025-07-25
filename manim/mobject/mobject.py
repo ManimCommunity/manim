@@ -21,6 +21,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
+from manim.data_structures import MethodWithArgs
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 
 from .. import config, logger
@@ -318,7 +319,9 @@ class Mobject:
 
             ::
 
-                self.play(my_mobject.animate.shift(RIGHT), my_mobject.animate.rotate(PI))
+                self.play(
+                    my_mobject.animate.shift(RIGHT), my_mobject.animate.rotate(PI)
+                )
 
             make use of method chaining.
 
@@ -385,9 +388,9 @@ class Mobject:
              will interpolate the :class:`~.Mobject` between its points prior to
              ``.animate`` and its points after applying ``.animate`` to it. This may
              result in unexpected behavior when attempting to interpolate along paths,
-             or rotations.
+             or rotations (see :meth:`.rotate`).
              If you want animations to consider the points between, consider using
-             :class:`~.ValueTracker` with updaters instead.
+             :class:`~.ValueTracker` with updaters instead (see :meth:`.add_updater`).
 
         """
         return _AnimationBuilder(self)
@@ -1000,16 +1003,16 @@ class Mobject:
 
             class NextToUpdater(Scene):
                 def construct(self):
-                    def dot_position(mobject):
+                    def update_label(mobject):
                         mobject.set_value(dot.get_center()[0])
                         mobject.next_to(dot)
 
                     dot = Dot(RIGHT*3)
                     label = DecimalNumber()
-                    label.add_updater(dot_position)
+                    label.add_updater(update_label)
                     self.add(dot, label)
 
-                    self.play(Rotating(dot, about_point=ORIGIN, angle=TAU, run_time=TAU, rate_func=linear))
+                    self.play(Rotating(dot, angle=TAU, about_point=ORIGIN, run_time=TAU, rate_func=linear))
 
         .. manim:: DtUpdater
 
@@ -1027,6 +1030,9 @@ class Mobject:
         :meth:`get_updaters`
         :meth:`remove_updater`
         :class:`~.UpdateFromFunc`
+        :class:`~.Rotating`
+        :meth:`rotate`
+        :attr:`~.Mobject.animate`
         """
         if index is None:
             self.updaters.append(update_function)
@@ -1280,7 +1286,64 @@ class Mobject:
         about_point: Point3DLike | None = None,
         **kwargs,
     ) -> Self:
-        """Rotates the :class:`~.Mobject` about a certain point."""
+        """Rotates the :class:`~.Mobject` around a specified axis and point.
+
+        Parameters
+        ----------
+        angle
+            The angle of rotation in radians. Predefined constants such as ``DEGREES``
+            can also be used to specify the angle in degrees.
+        axis
+            The rotation axis (see :class:`~.Rotating` for more).
+        about_point
+            The point about which the mobject rotates. If ``None``, rotation occurs around
+            the center of the mobject.
+        **kwargs
+            Additional keyword arguments passed to :meth:`apply_points_function_about_point`,
+            such as ``about_edge``.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self`` (for method chaining)
+
+
+        .. note::
+            To animate a rotation, use :class:`~.Rotating` or :class:`~.Rotate`
+            instead of ``.animate.rotate(...)``.
+            The ``.animate.rotate(...)`` syntax only applies a transformation
+            from the initial state to the final rotated state
+            (interpolation between the two states), without showing proper rotational motion
+            based on the angle (from 0 to the given angle).
+
+        Examples
+        --------
+
+        .. manim:: RotateMethodExample
+            :save_last_frame:
+
+            class RotateMethodExample(Scene):
+                def construct(self):
+                    circle = Circle(radius=1, color=BLUE)
+                    line = Line(start=ORIGIN, end=RIGHT)
+                    arrow1 = Arrow(start=ORIGIN, end=RIGHT, buff=0, color=GOLD)
+                    group1 = VGroup(circle, line, arrow1)
+
+                    group2 = group1.copy()
+                    arrow2 = group2[2]
+                    arrow2.rotate(angle=PI / 4, about_point=arrow2.get_start())
+
+                    group3 = group1.copy()
+                    arrow3 = group3[2]
+                    arrow3.rotate(angle=120 * DEGREES, about_point=arrow3.get_start())
+
+                    self.add(VGroup(group1, group2, group3).arrange(RIGHT, buff=1))
+
+        See also
+        --------
+        :class:`~.Rotating`, :class:`~.Rotate`, :attr:`~.Mobject.animate`, :meth:`apply_points_function_about_point`
+
+        """
         rot_matrix = rotation_matrix(angle, axis)
         self.apply_points_function_about_point(
             lambda points: np.dot(points, rot_matrix.T), about_point, **kwargs
@@ -2307,11 +2370,63 @@ class Mobject:
         return result + self.submobjects
 
     def get_family(self, recurse: bool = True) -> list[Self]:
+        """Lists all mobjects in the hierarchy (family) of the given mobject,
+        including the mobject itself and all its submobjects recursively.
+
+        Parameters
+        ----------
+        recurse
+            Just for consistency with get_family method in OpenGLMobject.
+
+        Returns
+        -------
+        list[Mobject]
+            A list of mobjects in the family of the given mobject.
+
+        Examples
+        --------
+        ::
+
+            >>> from manim import Square, Rectangle, VGroup, Group, Mobject, VMobject
+            >>> s, r, m, v = Square(), Rectangle(), Mobject(), VMobject()
+            >>> vg = VGroup(s, r)
+            >>> gr = Group(vg, m, v)
+            >>> gr.get_family()
+            [Group, VGroup(Square, Rectangle), Square, Rectangle, Mobject, VMobject]
+
+        See also
+        --------
+        :meth:`~.Mobject.family_members_with_points`, :meth:`~.Mobject.align_data`
+
+        """
         sub_families = [x.get_family() for x in self.submobjects]
         all_mobjects = [self] + list(it.chain(*sub_families))
         return remove_list_redundancies(all_mobjects)
 
     def family_members_with_points(self) -> list[Self]:
+        """Filters the list of family members (generated by :meth:`.get_family`) to include only mobjects with points.
+
+        Returns
+        -------
+        list[Mobject]
+            A list of mobjects that have points.
+
+        Examples
+        --------
+        ::
+
+            >>> from manim import Square, Rectangle, VGroup, Group, Mobject, VMobject
+            >>> s, r, m, v = Square(), Rectangle(), Mobject(), VMobject()
+            >>> vg = VGroup(s, r)
+            >>> gr = Group(vg, m, v)
+            >>> gr.family_members_with_points()
+            [Square, Rectangle]
+
+        See also
+        --------
+        :meth:`~.Mobject.get_family`
+
+        """
         return [m for m in self.get_family() if m.get_num_points() > 0]
 
     def arrange(
@@ -2678,11 +2793,11 @@ class Mobject:
 
     # Alignment
     def align_data(self, mobject: Mobject, skip_point_alignment: bool = False) -> None:
-        """Aligns the data of this mobject with another mobject.
+        """Aligns the family structure and data of this mobject with another mobject.
 
         Afterwards, the two mobjects will have the same number of submobjects
-        (see :meth:`.align_submobjects`), the same parent structure (see
-        :meth:`.null_point_align`). If ``skip_point_alignment`` is false,
+        (see :meth:`.align_submobjects`) and the same parent structure (see
+        :meth:`.null_point_align`). If ``skip_point_alignment`` is ``False``,
         they will also have the same number of points (see :meth:`.align_points`).
 
         Parameters
@@ -2691,7 +2806,32 @@ class Mobject:
             The other mobject this mobject should be aligned to.
         skip_point_alignment
             Controls whether or not the computationally expensive
-            point alignment is skipped (default: False).
+            point alignment is skipped (default: ``False``).
+
+
+        .. note::
+
+            This method is primarily used internally by :meth:`.become` and the
+            :class:`~.Transform` animation to ensure that mobjects are structurally
+            compatible before transformation.
+
+        Examples
+        --------
+        ::
+
+            >>> from manim import Rectangle, Line, ORIGIN, RIGHT
+            >>> rect = Rectangle(width=4.0, height=2.0, grid_xstep=1.0, grid_ystep=0.5)
+            >>> line = Line(start=ORIGIN,end=RIGHT)
+            >>> line.align_data(rect)
+            >>> len(line.get_family()) == len(rect.get_family())
+            True
+            >>> line.get_num_points() == rect.get_num_points()
+            True
+
+        See also
+        --------
+        :class:`~.Transform`, :meth:`~.Mobject.become`, :meth:`~.VMobject.align_points`, :meth:`~.Mobject.get_family`
+
         """
         self.null_point_align(mobject)
         self.align_submobjects(mobject)
@@ -2788,22 +2928,64 @@ class Mobject:
         """Turns this :class:`~.Mobject` into an interpolation between ``mobject1``
         and ``mobject2``.
 
+        The interpolation is applied to the points and color of the mobject.
+
+        Parameters
+        ----------
+        mobject1
+            The starting Mobject.
+        mobject2
+            The target Mobject.
+        alpha
+            Interpolation factor between 0 (at ``mobject1``) and 1 (at ``mobject2``).
+        path_func
+            The function defining the interpolation path. Defaults to a straight path.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+
+        .. note::
+
+            - Both mobjects must have the same number of points. If not, this will raise an error.
+              Use :meth:`~.VMobject.align_points` to match point counts beforehand if needed.
+            - This method is used internally by the :class:`~.Transform` animation
+              to interpolate between two mobjects during a transformation.
+
         Examples
         --------
 
-        .. manim:: DotInterpolation
+        .. manim:: InterpolateExample
             :save_last_frame:
 
-            class DotInterpolation(Scene):
+            class InterpolateExample(Scene):
                 def construct(self):
-                    dotR = Dot(color=DARK_GREY)
-                    dotR.shift(2 * RIGHT)
-                    dotL = Dot(color=WHITE)
-                    dotL.shift(2 * LEFT)
+                    # No need for point alignment:
+                    dotL = Dot(color=DARK_GREY).to_edge(LEFT)
+                    dotR = Dot(color=YELLOW).scale(10).to_edge(RIGHT)
+                    dotMid1 = VMobject().interpolate(dotL, dotR, alpha=0.1)
+                    dotMid2 = VMobject().interpolate(dotL, dotR, alpha=0.25)
+                    dotMid3 = VMobject().interpolate(dotL, dotR, alpha=0.5)
+                    dotMid4 = VMobject().interpolate(dotL, dotR, alpha=0.75)
+                    dots = VGroup(dotL, dotR, dotMid1, dotMid2, dotMid3, dotMid4)
 
-                    dotMiddle = VMobject().interpolate(dotL, dotR, alpha=0.3)
+                    # Needs point alignment:
+                    line = Line(ORIGIN, UP).to_edge(LEFT)
+                    sq = Square(color=RED, fill_opacity=1, stroke_color=BLUE).to_edge(RIGHT)
+                    line.align_points(sq)
+                    mid1 = VMobject().interpolate(line, sq, alpha=0.1)
+                    mid2 = VMobject().interpolate(line, sq, alpha=0.25)
+                    mid3 = VMobject().interpolate(line, sq, alpha=0.5)
+                    mid4 = VMobject().interpolate(line, sq, alpha=0.75)
+                    linesquares = VGroup(line, sq, mid1, mid2, mid3, mid4)
 
-                    self.add(dotL, dotR, dotMiddle)
+                    self.add(VGroup(dots, linesquares).arrange(DOWN, buff=1))
+        See also
+        --------
+        :class:`~.Transform`, :meth:`~.VMobject.align_points`, :meth:`~.VMobject.interpolate_color`
+
         """
         self.points = path_func(mobject1.points, mobject2.points, alpha)
         self.interpolate_color(mobject1, mobject2, alpha)
@@ -2916,6 +3098,10 @@ class Mobject:
             >>> result = rect.copy().become(circ, match_center=True)
             >>> np.allclose(rect.get_center(), result.get_center())
             True
+
+        See also
+        --------
+        :meth:`~.Mobject.align_data`, :meth:`~.VMobject.interpolate_color`
         """
         mobject = mobject.copy()
         if stretch:
@@ -3047,7 +3233,7 @@ class _AnimationBuilder:
 
         self.overridden_animation = None
         self.is_chaining = False
-        self.methods = []
+        self.methods: list[MethodWithArgs] = []
 
         # Whether animation args can be passed
         self.cannot_pass_args = False
@@ -3070,8 +3256,7 @@ class _AnimationBuilder:
 
         if (self.is_chaining and has_overridden_animation) or self.overridden_animation:
             raise NotImplementedError(
-                "Method chaining is currently not supported for "
-                "overridden animations",
+                "Method chaining is currently not supported for overridden animations",
             )
 
         def update_target(*method_args, **method_kwargs):
@@ -3083,7 +3268,7 @@ class _AnimationBuilder:
                     **method_kwargs,
                 )
             else:
-                self.methods.append([method, method_args, method_kwargs])
+                self.methods.append(MethodWithArgs(method, method_args, method_kwargs))
                 method(*method_args, **method_kwargs)
             return self
 
@@ -3117,7 +3302,7 @@ def override_animate(method) -> types.FunctionType:
 
     .. seealso::
 
-        :attr:`Mobject.animate`
+        :attr:`~.Mobject.animate`
 
     .. note::
 
