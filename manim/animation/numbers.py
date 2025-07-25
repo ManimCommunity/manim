@@ -40,6 +40,7 @@ class ChangingDecimal(Animation):
                 self.add(decimal)
                 self.play(ChangingDecimal(decimal, lambda a: a * 100))
     """
+
     def __init__(
         self,
         decimal_mob: DecimalNumber,
@@ -83,6 +84,7 @@ class ChangeDecimalToValue(ChangingDecimal):
                 self.add(decimal)
                 self.play(ChangeDecimalToValue(decimal, 100))
     """
+
     def __init__(
         self, decimal_mob: DecimalNumber, target_number: int, **kwargs: Any
     ) -> None:
