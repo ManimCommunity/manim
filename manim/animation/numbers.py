@@ -30,7 +30,7 @@ class ChangingDecimal(Animation):
     Raises
     ------
     TypeError
-        If *decimal_mob* is not an instance of :class:`~.DecimalNumber`.
+        If ``decimal_mob`` is not an instance of :class:`~.DecimalNumber`.
 
     Examples
     --------
