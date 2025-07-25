@@ -14,7 +14,7 @@ from ..utils import opengl
 
 SHADER_FOLDER = Path(__file__).parent / "shaders"
 shader_program_cache: dict = {}
-file_path_to_code_map: dict = {}
+file_path_to_code_map: dict[Path, str] = {}
 
 __all__ = [
     "Object3D",
