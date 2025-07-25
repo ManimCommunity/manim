@@ -29,6 +29,7 @@ import re
 from collections.abc import Iterable
 from functools import reduce
 from textwrap import dedent
+from typing import Any
 
 from manim import config, logger
 from manim.constants import *
@@ -63,7 +64,7 @@ class SingleStringMathTex(SVGMobject):
         tex_template: TexTemplate | None = None,
         font_size: float = DEFAULT_FONT_SIZE,
         color: ParsableManimColor | None = None,
-        **kwargs,
+        **kwargs: Any,
     ):
         if color is None:
             color = VMobject().color
@@ -109,12 +110,12 @@ class SingleStringMathTex(SVGMobject):
         return f"{type(self).__name__}({repr(self.tex_string)})"
 
     @property
-    def font_size(self):
+    def font_size(self) -> float:
         """The font size of the tex mobject."""
         return self.height / self.initial_height / SCALE_FACTOR_PER_FONT_POINT
 
     @font_size.setter
-    def font_size(self, font_val):
+    def font_size(self, font_val: float):
         if font_val <= 0:
             raise ValueError("font_size must be greater than 0.")
         elif self.height > 0:
@@ -447,7 +448,11 @@ class Tex(MathTex):
     """
 
     def __init__(
-        self, *tex_strings, arg_separator="", tex_environment="center", **kwargs
+        self,
+        *tex_strings: str,
+        arg_separator: str = "",
+        tex_environment: str = "center",
+        **kwargs: Any,
     ):
         super().__init__(
             *tex_strings,

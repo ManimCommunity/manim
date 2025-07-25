@@ -6,6 +6,8 @@ __all__ = ["ValueTracker", "ComplexValueTracker"]
 
 from typing import TYPE_CHECKING, Any
 
+from typing import Any
+
 import numpy as np
 
 from manim.mobject.mobject import Mobject
@@ -74,7 +76,7 @@ class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
                 self.wait(2)
 
     """
-
+    
     def __init__(self, value: float = 0, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.set(points=np.zeros((1, 3)))
