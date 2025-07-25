@@ -562,7 +562,7 @@ class Scene:
                     logging.warning(
                         f"Attempted to replace {type(old_m).__name__} "
                         "with itself in Scene.mobjects."
-                    ) 
+                    )
                     return True
                 mobj_list.remove(new_m)
 
