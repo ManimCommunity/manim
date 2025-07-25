@@ -6,7 +6,7 @@ import re
 import textwrap
 from collections.abc import Iterator
 from pathlib import Path
-from typing import Any, Callable
+from typing import TYPE_CHECKING, Any, Callable
 
 import moderngl
 import numpy as np
@@ -14,7 +14,6 @@ import numpy.typing as npt
 from cloup import Context
 from moderngl import Attribute
 from typing_extensions import Self
-from typing import TYPE_CHECKING
 
 from manim.mobject.mobject import Mobject
 
