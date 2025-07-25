@@ -11,7 +11,6 @@ __all__ = [
     "DashedVMobject",
 ]
 
-
 import itertools as it
 import sys
 from collections.abc import Hashable, Iterable, Mapping, Sequence
@@ -1916,7 +1915,6 @@ class VMobject(Mobject):
             return self
         num_curves = vmobject.get_num_curves()
         if num_curves == 0:
-            self.clear_points()
             return self
 
         # The following two lines will compute which Bézier curves of the given Mobject must be processed.
