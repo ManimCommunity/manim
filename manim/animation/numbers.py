@@ -16,6 +16,30 @@ from ..utils.bezier import interpolate
 
 
 class ChangingDecimal(Animation):
+    """Animates a DecimalNumber mobject by interpolating the value over time
+    based on alpha value.
+
+    Parameters
+    ----------
+    decimal_mob
+        The DecimalNumber mobject to animate.
+    number_update_func
+        A function that returns the value to display based on current alpha.
+    suspend_mobject_updating
+        Whether to suspend mobject automatic updates during animation.
+    **kwargs
+        Additional keyword arguments passed to :class:`~.Animation`.
+
+    Examples
+    --------
+    .. manim:: ChangingDecimalDemo
+
+        class ChangingDecimalDemo(Scene):
+            def construct(self):
+                decimal = DecimalNumber(0)
+                self.add(decimal)
+                self.play(ChangingDecimal(decimal, lambda a: a * 100))
+    """
     def __init__(
         self,
         decimal_mob: DecimalNumber,
@@ -38,6 +62,27 @@ class ChangingDecimal(Animation):
 
 
 class ChangeDecimalToValue(ChangingDecimal):
+    """Animates a DecimalNumber mobject from its current value to a target value.
+
+    Parameters
+    ----------
+    decimal_mob
+        The DecimalNumber mobject to animate.
+    target_number
+        The value to which to animate.
+    **kwargs
+        Additional keyword arguments passed to :class:`~.Animation`.
+
+    Examples
+    --------
+    .. manim:: ChangeDecimalToValueDemo
+
+        class ChangeDecimalToValueDemo(Scene):
+            def construct(self):
+                decimal = DecimalNumber(0)
+                self.add(decimal)
+                self.play(ChangeDecimalToValue(decimal, 100))
+    """
     def __init__(
         self, decimal_mob: DecimalNumber, target_number: int, **kwargs: Any
     ) -> None:
