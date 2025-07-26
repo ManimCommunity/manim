@@ -4,17 +4,29 @@ import contextlib
 import inspect
 import re
 import textwrap
+from collections.abc import Iterator
 from pathlib import Path
+from typing import TYPE_CHECKING, Any, Callable
 
 import moderngl
 import numpy as np
+import numpy.typing as npt
+from cloup import Context
+from moderngl import Attribute
+from typing_extensions import Self
+
+from manim.mobject.mobject import Mobject
+
+if TYPE_CHECKING:
+    from manim.renderer.opengl_renderer import OpenGLRenderer
+from manim.typing import Point3D
 
 from .. import config
 from ..utils import opengl
 
 SHADER_FOLDER = Path(__file__).parent / "shaders"
-shader_program_cache: dict = {}
-file_path_to_code_map: dict = {}
+shader_program_cache: dict[Path, Any] = {}
+file_path_to_code_map: dict[Path, str] = {}
 
 __all__ = [
     "Object3D",
@@ -43,7 +55,9 @@ def get_shader_code_from_file(file_path: Path) -> str:
     return source
 
 
-def filter_attributes(unfiltered_attributes, attributes):
+def filter_attributes(
+    unfiltered_attributes: Attribute, attributes: list[Attribute]
+) -> npt.NDArray:
     # Construct attributes for only those needed by the shader.
     filtered_attributes_dtype = []
     for i, dtype_name in enumerate(unfiltered_attributes.dtype.names):
@@ -69,28 +83,28 @@ def filter_attributes(unfiltered_attributes, attributes):
 
 
 class Object3D:
-    def __init__(self, *children):
+    def __init__(self, *children: Object3D):
         self.model_matrix = np.eye(4)
         self.normal_matrix = np.eye(4)
-        self.children = []
-        self.parent = None
+        self.children: list[Object3D] = []
+        self.parent: Object3D | None = None
         self.add(*children)
         self.init_updaters()
 
     # TODO: Use path_func.
-    def interpolate(self, start, end, alpha, _):
+    def interpolate(self, start: Object3D, end: Object3D, alpha: float, _: Any) -> None:
         self.model_matrix = (1 - alpha) * start.model_matrix + alpha * end.model_matrix
         self.normal_matrix = (
             1 - alpha
         ) * start.normal_matrix + alpha * end.normal_matrix
 
-    def single_copy(self):
+    def single_copy(self) -> Object3D:
         copy = Object3D()
         copy.model_matrix = self.model_matrix.copy()
         copy.normal_matrix = self.normal_matrix.copy()
         return copy
 
-    def copy(self):
+    def copy(self) -> Object3D:
         node_to_copy = {}
 
         bfs = [self]
@@ -106,7 +120,7 @@ class Object3D:
                 node_to_copy[node.parent].add(node_copy)
         return node_to_copy[self]
 
-    def add(self, *children):
+    def add(self, *children: Object3D) -> None:
         for child in children:
             if child.parent is not None:
                 raise Exception(
@@ -117,7 +131,7 @@ class Object3D:
         for child in children:
             child.parent = self
 
-    def remove(self, *children, current_children_only=True):
+    def remove(self, *children: Object3D, current_children_only: bool = True) -> None:
         if current_children_only:
             for child in children:
                 if child.parent != self:
@@ -128,14 +142,14 @@ class Object3D:
         for child in children:
             child.parent = None
 
-    def get_position(self):
+    def get_position(self) -> Point3D:
         return self.model_matrix[:, 3][:3]
 
-    def set_position(self, position):
+    def set_position(self, position: Point3D) -> Self:
         self.model_matrix[:, 3][:3] = position
         return self
 
-    def get_meshes(self):
+    def get_meshes(self) -> Iterator[Mesh]:
         dfs = [self]
         while dfs:
             parent = dfs.pop()
@@ -143,17 +157,17 @@ class Object3D:
                 yield parent
             dfs.extend(parent.children)
 
-    def get_family(self):
+    def get_family(self) -> Iterator[Object3D]:
         dfs = [self]
         while dfs:
             parent = dfs.pop()
             yield parent
             dfs.extend(parent.children)
 
-    def align_data_and_family(self, _):
+    def align_data_and_family(self, _: Any) -> None:
         pass
 
-    def hierarchical_model_matrix(self):
+    def hierarchical_model_matrix(self) -> npt.NDArray[np.float64]:
         if self.parent is None:
             return self.model_matrix
 
@@ -164,7 +178,7 @@ class Object3D:
             current_object = current_object.parent
         return np.linalg.multi_dot(list(reversed(model_matrices)))
 
-    def hierarchical_normal_matrix(self):
+    def hierarchical_normal_matrix(self) -> npt.NDArray[np.float64]:
         if self.parent is None:
             return self.normal_matrix[:3, :3]
 
@@ -175,13 +189,13 @@ class Object3D:
             current_object = current_object.parent
         return np.linalg.multi_dot(list(reversed(normal_matrices)))[:3, :3]
 
-    def init_updaters(self):
-        self.time_based_updaters = []
-        self.non_time_updaters = []
+    def init_updaters(self) -> None:
+        self.time_based_updaters: list[Callable] = []
+        self.non_time_updaters: list[Callable] = []
         self.has_updaters = False
         self.updating_suspended = False
 
-    def update(self, dt=0):
+    def update(self, dt: float = 0) -> Self:
         if not self.has_updaters or self.updating_suspended:
             return self
         for updater in self.time_based_updaters:
@@ -190,16 +204,21 @@ class Object3D:
             updater(self)
         return self
 
-    def get_time_based_updaters(self):
+    def get_time_based_updaters(self) -> list[Callable]:
         return self.time_based_updaters
 
-    def has_time_based_updater(self):
+    def has_time_based_updater(self) -> bool:
         return len(self.time_based_updaters) > 0
 
-    def get_updaters(self):
+    def get_updaters(self) -> list[Callable]:
         return self.time_based_updaters + self.non_time_updaters
 
-    def add_updater(self, update_function, index=None, call_updater=True):
+    def add_updater(
+        self,
+        update_function: Callable,
+        index: int | None = None,
+        call_updater: bool = True,
+    ) -> Self:
         if "dt" in inspect.signature(update_function).parameters:
             updater_list = self.time_based_updaters
         else:
@@ -215,36 +234,36 @@ class Object3D:
             self.update()
         return self
 
-    def remove_updater(self, update_function):
+    def remove_updater(self, update_function: Callable) -> Self:
         for updater_list in [self.time_based_updaters, self.non_time_updaters]:
             while update_function in updater_list:
                 updater_list.remove(update_function)
         self.refresh_has_updater_status()
         return self
 
-    def clear_updaters(self):
+    def clear_updaters(self) -> Self:
         self.time_based_updaters = []
         self.non_time_updaters = []
         self.refresh_has_updater_status()
         return self
 
-    def match_updaters(self, mobject):
+    def match_updaters(self, mobject: Mobject) -> Self:
         self.clear_updaters()
         for updater in mobject.get_updaters():
             self.add_updater(updater)
         return self
 
-    def suspend_updating(self):
+    def suspend_updating(self) -> Self:
         self.updating_suspended = True
         return self
 
-    def resume_updating(self, call_updater=True):
+    def resume_updating(self, call_updater: bool = True) -> Self:
         self.updating_suspended = False
         if call_updater:
             self.update(dt=0)
         return self
 
-    def refresh_has_updater_status(self):
+    def refresh_has_updater_status(self) -> Self:
         self.has_updaters = len(self.get_updaters()) > 0
         return self
 
@@ -252,17 +271,19 @@ class Object3D:
 class Mesh(Object3D):
     def __init__(
         self,
-        shader=None,
-        attributes=None,
-        geometry=None,
-        material=None,
-        indices=None,
-        use_depth_test=True,
-        primitive=moderngl.TRIANGLES,
+        shader: Shader | None = None,
+        attributes: list[Attribute] | None = None,
+        # Based on the current codebase, the geometry parameter can only be set to None.
+        geometry: None = None,
+        # Based on the current codebase, the material parameter can only be set to None.
+        material: None = None,
+        indices: npt.NDArray = None,
+        use_depth_test: bool = True,
+        primitive: int = moderngl.TRIANGLES,
     ):
         super().__init__()
         if shader is not None and attributes is not None:
-            self.shader = shader
+            self.shader: Shader = shader
             self.attributes = attributes
             self.indices = indices
         elif geometry is not None and material is not None:
@@ -276,10 +297,10 @@ class Mesh(Object3D):
             )
         self.use_depth_test = use_depth_test
         self.primitive = primitive
-        self.skip_render = False
+        self.skip_render: bool = False
         self.init_updaters()
 
-    def single_copy(self):
+    def single_copy(self) -> Mesh:
         copy = Mesh(
             attributes=self.attributes.copy(),
             shader=self.shader,
@@ -293,7 +314,7 @@ class Mesh(Object3D):
         # TODO: Copy updaters?
         return copy
 
-    def set_uniforms(self, renderer):
+    def set_uniforms(self, renderer: OpenGLRenderer) -> None:
         self.shader.set_uniform(
             "u_model_matrix",
             opengl.matrix_to_shader_input(self.model_matrix),
@@ -304,7 +325,7 @@ class Mesh(Object3D):
             renderer.camera.projection_matrix,
         )
 
-    def render(self):
+    def render(self) -> None:
         if self.skip_render:
             return
 
@@ -313,15 +334,17 @@ class Mesh(Object3D):
         else:
             self.shader.context.disable(moderngl.DEPTH_TEST)
 
-        from moderngl import Attribute
-
-        shader_attributes = []
+        shader_attributes: list[Attribute] = []
         for k, v in self.shader.shader_program._members.items():
             if isinstance(v, Attribute):
                 shader_attributes.append(k)
-        shader_attributes = filter_attributes(self.attributes, shader_attributes)
+        shader_attributes_converted = filter_attributes(
+            self.attributes, shader_attributes
+        )
 
-        vertex_buffer_object = self.shader.context.buffer(shader_attributes.tobytes())
+        vertex_buffer_object = self.shader.context.buffer(
+            shader_attributes_converted.tobytes()
+        )
         if self.indices is None:
             index_buffer_object = None
         else:
@@ -333,7 +356,7 @@ class Mesh(Object3D):
         vertex_array_object = self.shader.context.simple_vertex_array(
             self.shader.shader_program,
             vertex_buffer_object,
-            *shader_attributes.dtype.names,
+            *shader_attributes_converted.dtype.names,
             index_buffer=index_buffer_object,
         )
         vertex_array_object.render(self.primitive)
@@ -346,9 +369,9 @@ class Mesh(Object3D):
 class Shader:
     def __init__(
         self,
-        context,
-        name=None,
-        source=None,
+        context: Context,
+        name: Path | None = None,
+        source: dict | None = None,
     ):
         global shader_program_cache
         self.context = context
@@ -371,6 +394,7 @@ class Shader:
                 "frag": "fragment_shader",
                 "geom": "geometry_shader",
             }
+            assert name is not None
             shader_folder = SHADER_FOLDER / name
             for shader_file in shader_folder.iterdir():
                 shader_file_path = shader_folder / shader_file
@@ -380,9 +404,10 @@ class Shader:
 
         # Cache the shader.
         if name is not None and name not in shader_program_cache:
+            assert self.name is not None
             shader_program_cache[self.name] = self.shader_program
 
-    def set_uniform(self, name, value):
+    def set_uniform(self, name: str, value: Any) -> None:
         with contextlib.suppress(KeyError):
             self.shader_program[name] = value
 
@@ -390,9 +415,9 @@ class Shader:
 class FullScreenQuad(Mesh):
     def __init__(
         self,
-        context,
-        fragment_shader_source=None,
-        fragment_shader_name=None,
+        context: Context,
+        fragment_shader_source: str | None = None,
+        fragment_shader_name: str | None = None,
     ):
         if fragment_shader_source is None and fragment_shader_name is None:
             raise Exception("Must either pass shader name or shader source.")
@@ -439,5 +464,5 @@ class FullScreenQuad(Mesh):
         )
         super().__init__(shader, attributes)
 
-    def render(self):
+    def render(self) -> None:
         super().render()
