@@ -33,7 +33,7 @@ except ImportError:
     dearpygui_imported = False
 
 from collections.abc import Callable, Iterable, Sequence
-from typing import TYPE_CHECKING, Any, TypeAlias, Union
+from typing import TYPE_CHECKING, Any, Union
 
 import numpy as np
 from tqdm import tqdm
@@ -63,7 +63,7 @@ from ..utils.module_ops import scene_classes_from_file
 if TYPE_CHECKING:
     from types import FrameType
 
-    from typing_extensions import Self
+    from typing_extensions import Self, TypeAlias
 
     from manim.typing import Point3D
 
