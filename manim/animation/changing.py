@@ -4,10 +4,10 @@ from __future__ import annotations
 
 __all__ = ["AnimatedBoundary", "TracedPath"]
 
-from collections.abc import Sequence
-from typing import Callable
+from collections.abc import Callable, Sequence
+from typing import Any
 
-from typing_extensions import Any, Self
+from typing_extensions import Self
 
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL

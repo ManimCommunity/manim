@@ -31,7 +31,9 @@ try:
     window = dpg.generate_uuid()
 except ImportError:
     dearpygui_imported = False
-from typing import TYPE_CHECKING
+
+from collections.abc import Callable, Iterable, Sequence
+from typing import TYPE_CHECKING, Any, TypeAlias, Union
 
 import numpy as np
 from tqdm import tqdm
@@ -59,9 +61,7 @@ from ..utils.iterables import list_difference_update, list_update
 from ..utils.module_ops import scene_classes_from_file
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable, Sequence
     from types import FrameType
-    from typing import Any, Callable, TypeAlias, Union
 
     from typing_extensions import Self
 

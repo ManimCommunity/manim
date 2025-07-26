@@ -4,7 +4,7 @@ from __future__ import annotations
 
 __all__ = ["Label", "LabeledLine", "LabeledArrow", "LabeledPolygram"]
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
@@ -22,8 +22,6 @@ from manim.utils.color import WHITE
 from manim.utils.polylabel import polylabel
 
 if TYPE_CHECKING:
-    from typing import Any
-
     from manim.typing import Point3DLike_Array
 
 

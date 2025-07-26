@@ -39,8 +39,7 @@ __all__ = [
     "Blink",
 ]
 
-from collections.abc import Iterable
-from typing import Callable
+from collections.abc import Callable, Iterable
 
 import numpy as np
 

@@ -89,7 +89,7 @@ from __future__ import annotations
 
 __all__ = ["MovingCameraScene"]
 
-from typing_extensions import Any
+from typing import Any
 
 from manim.animation.animation import Animation
 from manim.mobject.mobject import Mobject

@@ -44,7 +44,7 @@ __all__ = [
 
 import itertools
 import warnings
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
 from typing_extensions import Self
@@ -64,7 +64,6 @@ from manim.utils.space_ops import (
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
-    from typing import Any
 
     import manim.mobject.geometry.tips as tips
     from manim.mobject.mobject import Mobject
