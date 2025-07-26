@@ -118,20 +118,44 @@ class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
         self.increment_value(d_value)
         return self
 
+    def __floordiv__(self, d_value: float) -> ValueTracker:
+        """Return a new :class:`ValueTracker` whose value is the floor division of the current
+        tracker's value by ``d_value``.
+        """
+        return ValueTracker(self.get_value() // d_value)
+
     def __ifloordiv__(self, d_value: float) -> Self:
         """Set the value of this ValueTracker to the floor division of the current value by ``d_value``."""
         self.set_value(self.get_value() // d_value)
         return self
+
+    def __mod__(self, d_value: float) -> ValueTracker:
+        """Return a new :class:`ValueTracker` whose value is the current tracker's value
+        modulo ``d_value``.
+        """
+        return ValueTracker(self.get_value() % d_value)
 
     def __imod__(self, d_value: float) -> Self:
         """Set the value of this ValueTracker to the current value modulo ``d_value``."""
         self.set_value(self.get_value() % d_value)
         return self
 
+    def __mul__(self, d_value: float) -> ValueTracker:
+        """Return a new :class:`ValueTracker` whose value is the current tracker's value multiplied by
+        ``d_value``.
+        """
+        return ValueTracker(self.get_value() * d_value)
+
     def __imul__(self, d_value: float) -> Self:
         """Set the value of this ValueTracker to the product of the current value and ``d_value``."""
         self.set_value(self.get_value() * d_value)
         return self
+
+    def __pow__(self, d_value: float) -> ValueTracker:
+        """Return a new :class:`ValueTracker` whose value is the current tracker's value raised to the
+        power of ``d_value``.
+        """
+        return ValueTracker(self.get_value() ** d_value)
 
     def __ipow__(self, d_value: float) -> Self:
         """Set the value of this ValueTracker to the current value raised to the power of ``d_value``."""
@@ -156,6 +180,12 @@ class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
             )
         self.increment_value(-d_value)
         return self
+
+    def __truediv__(self, d_value: float) -> ValueTracker:
+        """Return a new :class:`ValueTracker` whose value is the current tracker's value
+        divided by ``d_value``.
+        """
+        return ValueTracker(self.get_value() / d_value)
 
     def __itruediv__(self, d_value: float) -> Self:
         """Sets the value of this ValueTracker to the current value divided by ``d_value``."""
