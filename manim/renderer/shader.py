@@ -4,28 +4,26 @@ import contextlib
 import inspect
 import re
 import textwrap
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator, Sequence
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any
 
 import moderngl
 import numpy as np
 import numpy.typing as npt
-from cloup import Context
-from moderngl import Attribute
 from typing_extensions import Self
 
 from manim.mobject.mobject import Mobject
 
 if TYPE_CHECKING:
     from manim.renderer.opengl_renderer import OpenGLRenderer
-from manim.typing import Point3D
+from manim.typing import MatrixMN, Point3D
 
 from .. import config
 from ..utils import opengl
 
 SHADER_FOLDER = Path(__file__).parent / "shaders"
-shader_program_cache: dict[Path, Any] = {}
+shader_program_cache: dict[str, moderngl.Program] = {}
 file_path_to_code_map: dict[Path, str] = {}
 
 __all__ = [
@@ -56,7 +54,7 @@ def get_shader_code_from_file(file_path: Path) -> str:
 
 
 def filter_attributes(
-    unfiltered_attributes: Attribute, attributes: list[Attribute]
+    unfiltered_attributes: npt.NDArray, attributes: Sequence[str]
 ) -> npt.NDArray:
     # Construct attributes for only those needed by the shader.
     filtered_attributes_dtype = []
@@ -167,7 +165,7 @@ class Object3D:
     def align_data_and_family(self, _: Any) -> None:
         pass
 
-    def hierarchical_model_matrix(self) -> npt.NDArray[np.float64]:
+    def hierarchical_model_matrix(self) -> MatrixMN:
         if self.parent is None:
             return self.model_matrix
 
@@ -178,7 +176,7 @@ class Object3D:
             current_object = current_object.parent
         return np.linalg.multi_dot(list(reversed(model_matrices)))
 
-    def hierarchical_normal_matrix(self) -> npt.NDArray[np.float64]:
+    def hierarchical_normal_matrix(self) -> MatrixMN:
         if self.parent is None:
             return self.normal_matrix[:3, :3]
 
@@ -272,7 +270,7 @@ class Mesh(Object3D):
     def __init__(
         self,
         shader: Shader | None = None,
-        attributes: list[Attribute] | None = None,
+        attributes: list[moderngl.Attribute] | None = None,
         # Based on the current codebase, the geometry parameter can only be set to None.
         geometry: None = None,
         # Based on the current codebase, the material parameter can only be set to None.
@@ -334,16 +332,16 @@ class Mesh(Object3D):
         else:
             self.shader.context.disable(moderngl.DEPTH_TEST)
 
-        shader_attributes: list[Attribute] = []
-        for k, v in self.shader.shader_program._members.items():
-            if isinstance(v, Attribute):
-                shader_attributes.append(k)
-        shader_attributes_converted = filter_attributes(
-            self.attributes, shader_attributes
+        shader_attribute_names: list[str] = []
+        for member_name, member in self.shader.shader_program._members.items():
+            if isinstance(member, moderngl.Attribute):
+                shader_attribute_names.append(member_name)
+        filtered_shader_attributes = filter_attributes(
+            self.attributes, shader_attribute_names
         )
 
         vertex_buffer_object = self.shader.context.buffer(
-            shader_attributes_converted.tobytes()
+            filtered_shader_attributes.tobytes()
         )
         if self.indices is None:
             index_buffer_object = None
@@ -356,7 +354,7 @@ class Mesh(Object3D):
         vertex_array_object = self.shader.context.simple_vertex_array(
             self.shader.shader_program,
             vertex_buffer_object,
-            *shader_attributes_converted.dtype.names,
+            *filtered_shader_attributes.dtype.names,
             index_buffer=index_buffer_object,
         )
         vertex_array_object.render(self.primitive)
@@ -369,13 +367,15 @@ class Mesh(Object3D):
 class Shader:
     def __init__(
         self,
-        context: Context,
-        name: Path | None = None,
-        source: dict | None = None,
+        context: moderngl.Context,
+        name: str | None = None,
+        source: dict[str, Any] | None = None,
     ):
         global shader_program_cache
         self.context = context
         self.name = name
+        # TODO
+        # self.source = source
 
         # See if the program is cached.
         if (
@@ -386,7 +386,7 @@ class Shader:
         elif source is not None:
             # Generate the shader from inline code if it was passed.
             self.shader_program = context.program(**source)
-        else:
+        elif self.name is not None:
             # Search for a file containing the shader.
             source_dict = {}
             source_dict_key = {
@@ -394,13 +394,14 @@ class Shader:
                 "frag": "fragment_shader",
                 "geom": "geometry_shader",
             }
-            assert name is not None
-            shader_folder = SHADER_FOLDER / name
+            shader_folder = SHADER_FOLDER / self.name
             for shader_file in shader_folder.iterdir():
                 shader_file_path = shader_folder / shader_file
                 shader_source = get_shader_code_from_file(shader_file_path)
                 source_dict[source_dict_key[shader_file_path.stem]] = shader_source
             self.shader_program = context.program(**source_dict)
+        else:
+            raise Exception("Must either pass shader name or shader source.")
 
         # Cache the shader.
         if name is not None and name not in shader_program_cache:
@@ -415,7 +416,7 @@ class Shader:
 class FullScreenQuad(Mesh):
     def __init__(
         self,
-        context: Context,
+        context: moderngl.Context,
         fragment_shader_source: str | None = None,
         fragment_shader_name: str | None = None,
     ):
