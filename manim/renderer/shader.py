@@ -416,8 +416,7 @@ class Shader:
             raise Exception("Must either pass shader name or shader source.")
 
         # Cache the shader.
-        if name is not None and name not in shader_program_cache:
-            assert self.name is not None
+        if self.name is not None and self.name not in shader_program_cache:
             shader_program_cache[self.name] = self.shader_program
 
     def set_uniform(self, name: str, value: Any) -> None:
