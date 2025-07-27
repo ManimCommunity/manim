@@ -592,6 +592,19 @@ class Scene:
         def replace_in_list(
             mobj_list: list[Mobject], old_m: Mobject, new_m: Mobject
         ) -> bool:
+            # Avoid duplicate references to the same object in self.mobjects
+            if new_m in mobj_list:
+                if old_m is new_m:
+                    # In this case, one could say that the old Mobject was already found.
+                    # No replacement is needed, since old_m is new_m, so no action is required.
+                    # This might be unexpected, so raise a warning.
+                    logger.warning(
+                        f"Attempted to replace {type(old_m).__name__} "
+                        "with itself in Scene.mobjects."
+                    )
+                    return True
+                mobj_list.remove(new_m)
+
             # We use breadth-first search because some Mobjects get very deep and
             # we expect top-level elements to be the most common targets for replace.
             for i in range(0, len(mobj_list)):
