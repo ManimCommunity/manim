@@ -221,25 +221,36 @@ class Object3D:
         call_updater: bool = True,
     ) -> Self:
         if "dt" in inspect.signature(update_function).parameters:
-            if index is None:
-                self.time_based_updaters.append(update_function)
-            else:
-                self.time_based_updaters.insert(index, update_function)
+            self._add_time_based_updater(update_function, index)  # type: ignore[arg-type]
         else:
-            if index is None:
-                self.non_time_updaters.append(update_function)
-            else:
-                self.non_time_updaters.insert(index, update_function)
+            self._add_non_time_updater(update_function, index)  # type: ignore[arg-type]
 
         self.refresh_has_updater_status()
         if call_updater:
             self.update()
         return self
 
+    def _add_time_based_updater(
+        self, update_function: MeshTimeBasedUpdater, index: int | None = None
+    ) -> None:
+        if index is None:
+            self.time_based_updaters.append(update_function)
+        else:
+            self.time_based_updaters.insert(index, update_function)
+
+    def _add_non_time_updater(
+        self, update_function: MeshNonTimeBasedUpdater, index: int | None = None
+    ) -> None:
+        if index is None:
+            self.non_time_updaters.append(update_function)
+        else:
+            self.non_time_updaters.insert(index, update_function)
+
     def remove_updater(self, update_function: MeshUpdater) -> Self:
-        for updater_list in [self.time_based_updaters, self.non_time_updaters]:
-            while update_function in updater_list:
-                updater_list.remove(update_function)
+        while update_function in self.time_based_updaters:
+            self.time_based_updaters.remove(update_function)  # type: ignore[arg-type]
+        while update_function in self.non_time_updaters:
+            self.non_time_updaters.remove(update_function)  # type: ignore[arg-type]
         self.refresh_has_updater_status()
         return self
 
