@@ -199,10 +199,10 @@ class Object3D:
     def update(self, dt: float = 0) -> Self:
         if not self.has_updaters or self.updating_suspended:
             return self
-        for updater in self.time_based_updaters:
-            updater(self, dt)
-        for updater in self.non_time_updaters:
-            updater(self)
+        for time_based_updater in self.time_based_updaters:
+            time_based_updater(self, dt)
+        for non_time_based_updater in self.non_time_updaters:
+            non_time_based_updater(self)
         return self
 
     def get_time_based_updaters(self) -> list[MeshTimeBasedUpdater]:
@@ -221,14 +221,15 @@ class Object3D:
         call_updater: bool = True,
     ) -> Self:
         if "dt" in inspect.signature(update_function).parameters:
-            updater_list = self.time_based_updaters
+            if index is None:
+                self.time_based_updaters.append(update_function)
+            else:
+                self.time_based_updaters.insert(index, update_function)
         else:
-            updater_list = self.non_time_updaters
-
-        if index is None:
-            updater_list.append(update_function)
-        else:
-            updater_list.insert(index, update_function)
+            if index is None:
+                self.non_time_updaters.append(update_function)
+            else:
+                self.non_time_updaters.insert(index, update_function)
 
         self.refresh_has_updater_status()
         if call_updater:
