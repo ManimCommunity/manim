@@ -11,12 +11,15 @@ from typing import TYPE_CHECKING, Any
 import moderngl
 import numpy as np
 import numpy.typing as npt
-from typing_extensions import Self
-
-from manim.mobject.mobject import Mobject
+from typing_extensions import Self, TypeAlias
 
 if TYPE_CHECKING:
     from manim.renderer.opengl_renderer import OpenGLRenderer
+
+    MeshTimeBasedUpdater: TypeAlias = Callable[["Object3D", float], None]
+    MeshNonTimeBasedUpdater: TypeAlias = Callable[["Object3D"], None]
+    MeshUpdater: TypeAlias = MeshNonTimeBasedUpdater | MeshTimeBasedUpdater
+
 from manim.typing import MatrixMN, Point3D
 
 from .. import config
@@ -188,8 +191,8 @@ class Object3D:
         return np.linalg.multi_dot(list(reversed(normal_matrices)))[:3, :3]
 
     def init_updaters(self) -> None:
-        self.time_based_updaters: list[Callable] = []
-        self.non_time_updaters: list[Callable] = []
+        self.time_based_updaters: list[MeshTimeBasedUpdater] = []
+        self.non_time_updaters: list[MeshNonTimeBasedUpdater] = []
         self.has_updaters = False
         self.updating_suspended = False
 
@@ -202,18 +205,18 @@ class Object3D:
             updater(self)
         return self
 
-    def get_time_based_updaters(self) -> list[Callable]:
+    def get_time_based_updaters(self) -> list[MeshTimeBasedUpdater]:
         return self.time_based_updaters
 
     def has_time_based_updater(self) -> bool:
         return len(self.time_based_updaters) > 0
 
-    def get_updaters(self) -> list[Callable]:
+    def get_updaters(self) -> list[MeshUpdater]:
         return self.time_based_updaters + self.non_time_updaters
 
     def add_updater(
         self,
-        update_function: Callable,
+        update_function: MeshUpdater,
         index: int | None = None,
         call_updater: bool = True,
     ) -> Self:
@@ -232,7 +235,7 @@ class Object3D:
             self.update()
         return self
 
-    def remove_updater(self, update_function: Callable) -> Self:
+    def remove_updater(self, update_function: MeshUpdater) -> Self:
         for updater_list in [self.time_based_updaters, self.non_time_updaters]:
             while update_function in updater_list:
                 updater_list.remove(update_function)
@@ -245,9 +248,9 @@ class Object3D:
         self.refresh_has_updater_status()
         return self
 
-    def match_updaters(self, mobject: Mobject) -> Self:
+    def match_updaters(self, mesh: Object3D) -> Self:
         self.clear_updaters()
-        for updater in mobject.get_updaters():
+        for updater in mesh.get_updaters():
             self.add_updater(updater)
         return self
 
@@ -270,12 +273,10 @@ class Mesh(Object3D):
     def __init__(
         self,
         shader: Shader | None = None,
-        attributes: list[moderngl.Attribute] | None = None,
-        # Based on the current codebase, the geometry parameter can only be set to None.
-        geometry: None = None,
-        # Based on the current codebase, the material parameter can only be set to None.
-        material: None = None,
-        indices: npt.NDArray = None,
+        attributes: npt.NDArray | None = None,
+        geometry: Mesh | None = None,
+        material: Shader | None = None,
+        indices: npt.NDArray | None = None,
         use_depth_test: bool = True,
         primitive: int = moderngl.TRIANGLES,
     ):
@@ -287,7 +288,7 @@ class Mesh(Object3D):
         elif geometry is not None and material is not None:
             self.shader = material
             self.attributes = geometry.attributes
-            self.indices = geometry.index
+            self.indices = geometry.indices
         else:
             raise Exception(
                 "Mesh requires either attributes and a Shader or a Geometry and a "
@@ -374,8 +375,7 @@ class Shader:
         global shader_program_cache
         self.context = context
         self.name = name
-        # TODO
-        # self.source = source
+        self.source = source
 
         # See if the program is cached.
         if (
@@ -383,9 +383,9 @@ class Shader:
             and shader_program_cache[self.name].ctx == self.context
         ):
             self.shader_program = shader_program_cache[self.name]
-        elif source is not None:
+        elif self.source is not None:
             # Generate the shader from inline code if it was passed.
-            self.shader_program = context.program(**source)
+            self.shader_program = context.program(**self.source)
         elif self.name is not None:
             # Search for a file containing the shader.
             source_dict = {}
