@@ -9,9 +9,9 @@ from xml.etree import ElementTree as ET
 
 import numpy as np
 import svgelements as se
-from utils.color import ParsableManimColor
 
 from manim import config, logger
+from manim.utils.color import ParsableManimColor
 
 from ...constants import RIGHT
 from ...utils.bezier import get_quadratic_approximation_of_cubic

@@ -210,7 +210,7 @@ class SingleStringMathTex(SVGMobject):
     def get_tex_string(self) -> str:
         return self.tex_string
 
-    def init_colors(self, propagate_colors: bool = True) -> None:
+    def init_colors(self, propagate_colors: bool = True) -> Self:
         for submobject in self.submobjects:
             # needed to preserve original (non-black)
             # TeX colors of individual submobjects
@@ -221,6 +221,7 @@ class SingleStringMathTex(SVGMobject):
                 submobject.init_colors()
             elif config.renderer == RendererType.CAIRO:
                 submobject.init_colors(propagate_colors=propagate_colors)
+        return self
 
 
 class MathTex(SingleStringMathTex):
@@ -427,7 +428,7 @@ class MathTex(SingleStringMathTex):
                     self.set_color_by_tex(tex, color, **kwargs)
         return self
 
-    def index_of_part(self, part: str) -> int:
+    def index_of_part(self, part: MathTex) -> int:
         split_self = self.split()
         if part not in split_self:
             raise ValueError("Trying to get index of part not in MathTex")
