@@ -375,7 +375,7 @@ class MathTex(SingleStringMathTex):
 
         return VGroup(*(m for m in self.submobjects if test(tex, m.get_tex_string())))
 
-    def get_part_by_tex(self, tex: str, **kwargs: Any) -> VMobject | None:
+    def get_part_by_tex(self, tex: str, **kwargs: Any) -> MathTex | None:
         all_parts = self.get_parts_by_tex(tex, **kwargs)
         return all_parts[0] if all_parts else None
 
@@ -436,6 +436,8 @@ class MathTex(SingleStringMathTex):
 
     def index_of_part_by_tex(self, tex: str, **kwargs: Any) -> int:
         part = self.get_part_by_tex(tex, **kwargs)
+        if part is None:
+            return -1
         return self.index_of_part(part)
 
     def sort_alphabetically(self) -> None:
@@ -518,7 +520,7 @@ class BulletedList(Tex):
         if isinstance(arg, str):
             part = self.get_part_by_tex(arg)
         elif isinstance(arg, int):
-            part = self.submobjects[arg]
+            part = self.submobjects[arg]  # type: ignore[assignment]
         else:
             raise TypeError(f"Expected int or string, got {arg}")
         for other_part in self.submobjects:
