@@ -9,6 +9,7 @@ from xml.etree import ElementTree as ET
 
 import numpy as np
 import svgelements as se
+from utils.color import ParsableManimColor
 
 from manim import config, logger
 
@@ -99,7 +100,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         should_center: bool = True,
         height: float | None = 2,
         width: float | None = None,
-        color: str | None = None,
+        color: ParsableManimColor | None = None,
         opacity: float | None = None,
         fill_color: str | None = None,
         fill_opacity: float | None = None,
