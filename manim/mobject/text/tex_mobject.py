@@ -74,9 +74,8 @@ class SingleStringMathTex(SVGMobject):
         self.tex_environment = tex_environment
         if tex_template is None:
             tex_template = config["tex_template"]
-        self.tex_template = tex_template
+        self.tex_template: TexTemplate = tex_template
 
-        assert isinstance(tex_string, str)
         self.tex_string = tex_string
         file_name = tex_to_svg_file(
             self._get_modified_expression(tex_string),
@@ -304,12 +303,12 @@ class MathTex(SingleStringMathTex):
         if self.organize_left_to_right:
             self._organize_submobjects_left_to_right()
 
-    def _break_up_tex_strings(self, tex_strings1: Sequence[str]) -> list[str]:
+    def _break_up_tex_strings(self, tex_strings: Sequence[str]) -> list[str]:
         # Separate out anything surrounded in double braces
-        pre_split_length = len(tex_strings1)
-        tex_strings2 = [re.split("{{(.*?)}}", str(t)) for t in tex_strings1]
-        tex_strings3 = sum(tex_strings2, [])
-        if len(tex_strings3) > pre_split_length:
+        pre_split_length = len(tex_strings)
+        tex_strings_brace_splitted = [re.split("{{(.*?)}}", str(t)) for t in tex_strings]
+        tex_strings_combined = sum(tex_strings_brace_splitted, [])
+        if len(tex_strings_combined) > pre_split_length:
             self.brace_notation_split_occurred = True
 
         # Separate out any strings specified in the isolate
@@ -327,10 +326,10 @@ class MathTex(SingleStringMathTex):
         pattern = "|".join(patterns)
         if pattern:
             pieces = []
-            for s in tex_strings3:
+            for s in tex_strings_combined:
                 pieces.extend(re.split(pattern, s))
         else:
-            pieces = tex_strings3
+            pieces = tex_strings_combined
         return [p for p in pieces if p]
 
     def _break_up_by_substrings(self) -> Self:
