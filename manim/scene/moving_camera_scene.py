@@ -94,6 +94,7 @@ from typing import Any
 from manim.animation.animation import Animation
 from manim.mobject.mobject import Mobject
 
+from ..camera.camera import Camera
 from ..camera.moving_camera import MovingCamera
 from ..scene.scene import Scene
 from ..utils.family import extract_mobject_family_members
@@ -115,7 +116,7 @@ class MovingCameraScene(Scene):
     """
 
     def __init__(
-        self, camera_class: type[MovingCamera] = MovingCamera, **kwargs: Any
+        self, camera_class: type[Camera] = MovingCamera, **kwargs: Any
     ) -> None:
         super().__init__(camera_class=camera_class, **kwargs)
 

@@ -263,7 +263,7 @@ class Scene:
         if config["preview"] or config["show_in_file_browser"]:
             open_media_file(self.renderer.file_writer)
 
-    def setup(self):
+    def setup(self) -> None:
         """
         This is meant to be implemented by any scenes which
         are commonly subclassed, and have some common setup
@@ -829,7 +829,7 @@ class Scene:
         self.foreground_mobjects = []
         return self
 
-    def get_moving_mobjects(self, *animations: Animation):
+    def get_moving_mobjects(self, *animations: Animation) -> list[Mobject]:
         """
         Gets all moving mobjects in the passed animation(s).
 

@@ -52,6 +52,7 @@ __all__ = ["ZoomedScene"]
 from typing import TYPE_CHECKING, Any
 
 from ..animation.transform import ApplyMethod
+from ..camera.camera import Camera
 from ..camera.moving_camera import MovingCamera
 from ..camera.multi_camera import MultiCamera
 from ..constants import *
@@ -73,7 +74,7 @@ class ZoomedScene(MovingCameraScene):
 
     def __init__(
         self,
-        camera_class: type[MultiCamera] = MultiCamera,
+        camera_class: type[Camera] = MultiCamera,
         zoomed_display_height: float = 3,
         zoomed_display_width: float = 3,
         zoomed_display_center: Point3DLike | None = None,
@@ -84,7 +85,7 @@ class ZoomedScene(MovingCameraScene):
             "background_opacity": 1,
         },
         zoomed_camera_image_mobject_config: dict[str, Any] = {},
-        zoomed_camera_frame_starting_position: Vector3D = ORIGIN,
+        zoomed_camera_frame_starting_position: Point3DLike = ORIGIN,
         zoom_factor: float = 0.15,
         image_frame_stroke_width: float = 3,
         zoom_activated: bool = False,

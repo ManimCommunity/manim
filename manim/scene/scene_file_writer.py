@@ -112,14 +112,14 @@ class SceneFileWriter:
     def __init__(
         self,
         renderer: CairoRenderer | OpenGLRenderer,
-        scene_name: StrPath,
+        scene_name: str,
         **kwargs: Any,
     ) -> None:
         self.renderer = renderer
-        self.init_output_directories(str(scene_name))
+        self.init_output_directories(scene_name)
         self.init_audio()
         self.frame_count = 0
-        self.partial_movie_files: list[str] = []
+        self.partial_movie_files: list[str | None] = []
         self.subcaptions: list[srt.Subtitle] = []
         self.sections: list[Section] = []
         # first section gets automatically created for convenience
@@ -235,7 +235,7 @@ class SceneFileWriter:
             ),
         )
 
-    def add_partial_movie_file(self, hash_animation: str) -> None:
+    def add_partial_movie_file(self, hash_animation: str | None) -> None:
         """Adds a new partial movie file path to ``scene.partial_movie_files``
         and current section from a hash.
 
@@ -426,7 +426,7 @@ class SceneFileWriter:
 
     def encode_and_write_frame(self, frame: PixelArray, num_frames: int) -> None:
         """For internal use only: takes a given frame in ``np.ndarray`` format and
-        write it to the stream
+        writes it to the stream
         """
         for _ in range(num_frames):
             # Notes: precomputing reusing packets does not work!
@@ -440,7 +440,7 @@ class SceneFileWriter:
                 self.video_container.mux(packet)
 
     def write_frame(
-        self, frame_or_renderer: np.ndarray | OpenGLRenderer, num_frames: int = 1
+        self, frame_or_renderer: PixelArray | OpenGLRenderer, num_frames: int = 1
     ) -> None:
         """Used internally by Manim to write a frame to the FFMPEG input buffer.
 
