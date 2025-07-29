@@ -7,7 +7,6 @@ import numpy as np
 
 if TYPE_CHECKING:
     from manim.renderer.opengl_renderer import (
-        OpenGLMobject,
         OpenGLRenderer,
         OpenGLVMobject,
     )
@@ -23,7 +22,9 @@ __all__ = [
 ]
 
 
-def build_matrix_lists(mob: OpenGLMobject) -> collections.defaultdict[Any, list]:
+def build_matrix_lists(
+    mob: OpenGLVMobject,
+) -> collections.defaultdict[Any, list[OpenGLVMobject]]:
     root_hierarchical_matrix = mob.hierarchical_model_matrix()
     matrix_to_mobject_list = collections.defaultdict(list)
     if mob.has_points():
