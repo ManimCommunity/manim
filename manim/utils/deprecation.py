@@ -8,8 +8,8 @@ __all__ = ["deprecated", "deprecated_params"]
 import inspect
 import logging
 import re
-from collections.abc import Iterable
-from typing import Any, Callable, TypeVar, overload
+from collections.abc import Callable, Iterable
+from typing import Any, TypeVar, overload
 
 from decorator import decorate, decorator
 

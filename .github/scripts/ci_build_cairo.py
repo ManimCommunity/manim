@@ -14,8 +14,8 @@ import subprocess
 import sys
 import tarfile
 import tempfile
-import typing
 import urllib.request
+from collections.abc import Generator
 from contextlib import contextmanager
 from pathlib import Path
 from sys import stdout
@@ -67,7 +67,7 @@ def run_command(command, cwd=None, env=None):
 
 
 @contextmanager
-def gha_group(title: str) -> typing.Generator:
+def gha_group(title: str) -> Generator:
     if not is_ci():
         yield
         return

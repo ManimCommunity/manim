@@ -14,10 +14,10 @@ from ..utils.rate_functions import linear, smooth
 __all__ = ["Animation", "Wait", "Add", "override_animation"]
 
 
-from collections.abc import Iterable, Sequence
+from collections.abc import Callable, Iterable, Sequence
 from copy import deepcopy
 from functools import partialmethod
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any
 
 from typing_extensions import Self
 

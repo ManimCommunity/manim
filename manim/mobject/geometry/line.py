@@ -14,7 +14,7 @@ __all__ = [
     "RightAngle",
 ]
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Literal
 
 import numpy as np
 
@@ -30,9 +30,7 @@ from manim.utils.color import WHITE
 from manim.utils.space_ops import angle_of_vector, line_intersection, normalize
 
 if TYPE_CHECKING:
-    from typing import Any
-
-    from typing_extensions import Literal, Self, TypeAlias
+    from typing_extensions import Self, TypeAlias
 
     from manim.typing import Point2DLike, Point3D, Point3DLike, Vector3D
     from manim.utils.color import ParsableManimColor

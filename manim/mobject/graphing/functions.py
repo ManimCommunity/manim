@@ -5,8 +5,8 @@ from __future__ import annotations
 __all__ = ["ParametricFunction", "FunctionGraph", "ImplicitFunction"]
 
 
-from collections.abc import Iterable, Sequence
-from typing import TYPE_CHECKING, Callable
+from collections.abc import Callable, Iterable, Sequence
+from typing import TYPE_CHECKING
 
 import numpy as np
 from isosurfaces import plot_isoline

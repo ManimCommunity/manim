@@ -5,7 +5,7 @@ from __future__ import annotations
 __all__ = ["AbstractImageMobject", "ImageMobject", "ImageMobjectFromCamera"]
 
 import pathlib
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 from PIL import Image
@@ -23,8 +23,6 @@ from ...utils.images import change_to_rgba_array, get_full_raster_image_path
 __all__ = ["ImageMobject", "ImageMobjectFromCamera"]
 
 if TYPE_CHECKING:
-    from typing import Any
-
     import numpy.typing as npt
     from typing_extensions import Self
 

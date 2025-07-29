@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import collections
+from collections import defaultdict
 
 import numpy as np
 
@@ -16,7 +16,7 @@ __all__ = [
 
 def build_matrix_lists(mob):
     root_hierarchical_matrix = mob.hierarchical_model_matrix()
-    matrix_to_mobject_list = collections.defaultdict(list)
+    matrix_to_mobject_list = defaultdict(list)
     if mob.has_points():
         matrix_to_mobject_list[tuple(root_hierarchical_matrix.ravel())].append(mob)
     mobject_to_hierarchical_matrix = {mob: root_hierarchical_matrix}
