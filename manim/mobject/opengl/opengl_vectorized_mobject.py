@@ -176,6 +176,11 @@ class OpenGLVMobject(OpenGLMobject):
     def submobjects(self) -> Sequence[OpenGLVMobject]:
         return self._submobjects if hasattr(self, "_submobjects") else []
 
+    @submobjects.setter
+    def submobjects(self, submobject_list: Iterable[OpenGLVMobject]) -> None:
+        self.remove(*self.submobjects)
+        self.add(*submobject_list)
+
     def init_data(self):
         super().init_data()
         self.data.pop("rgbas")
