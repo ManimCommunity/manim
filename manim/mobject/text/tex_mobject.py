@@ -60,7 +60,7 @@ class SingleStringMathTex(SVGMobject):
         should_center: bool = True,
         height: float | None = None,
         organize_left_to_right: bool = False,
-        tex_environment: str = "align*",
+        tex_environment: str | None = "align*",
         tex_template: TexTemplate | None = None,
         font_size: float = DEFAULT_FONT_SIZE,
         color: ParsableManimColor | None = None,
@@ -260,7 +260,7 @@ class MathTex(SingleStringMathTex):
         arg_separator: str = " ",
         substrings_to_isolate: Iterable[str] | None = None,
         tex_to_color_map: dict[str, ManimColor] | None = None,
-        tex_environment: str = "align*",
+        tex_environment: str | None = "align*",
         **kwargs: Any,
     ):
         self.tex_template = kwargs.pop("tex_template", config["tex_template"])
@@ -466,7 +466,7 @@ class Tex(MathTex):
         self,
         *tex_strings: str,
         arg_separator: str = "",
-        tex_environment: str = "center",
+        tex_environment: str | None = "center",
         **kwargs: Any,
     ):
         super().__init__(
@@ -500,7 +500,7 @@ class BulletedList(Tex):
         *items: str,
         buff: float = MED_LARGE_BUFF,
         dot_scale_factor: float = 2,
-        tex_environment: str = "",
+        tex_environment: str | None = None,
         **kwargs: Any,
     ):
         self.buff = buff
