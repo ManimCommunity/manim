@@ -50,7 +50,7 @@ For example:
             )
             self.add(text)
 
-.. _Pango library: https://pango.gnome.org
+.. _Pango library: https://pango.org
 
 Working with :class:`~.Text`
 ============================

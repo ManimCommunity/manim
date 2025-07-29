@@ -11,10 +11,13 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set up Python 3.11
+    - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: 3.11
+        python-version: 3.13
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v6
 
     - name: Install system dependencies
       run: |
@@ -30,13 +33,12 @@ jobs:
           babel-english ctex doublestroke dvisvgm frcursive fundus-calligra jknapltx \
           mathastext microtype physics preview ragged2e relsize rsfs setspace standalone \
           wasy wasysym
-        python -m pip install --upgrade poetry
-        poetry install
+        uv sync
 
     - name: Build and package documentation
       run: |
         cd docs/
-        poetry run make html
+        uv run make html
         cd build/html/
         tar -czvf ../html-docs.tar.gz *
 

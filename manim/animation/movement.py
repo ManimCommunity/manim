@@ -171,7 +171,7 @@ class MoveAlongPath(Animation):
         self,
         mobject: Mobject,
         path: VMobject,
-        suspend_mobject_updating: bool | None = False,
+        suspend_mobject_updating: bool = False,
         **kwargs,
     ) -> None:
         self.path = path

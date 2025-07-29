@@ -145,7 +145,7 @@ class ZoomedScene(MovingCameraScene):
             of the zoomed camera.
         """
         self.zoom_activated = True
-        self.renderer.camera.add_image_mobject_from_camera(self.zoomed_display)
+        self.renderer.camera.add_image_mobject_from_camera(self.zoomed_display)  # type: ignore[union-attr]
         if animate:
             self.play(self.get_zoom_in_animation())
             self.play(self.get_zoomed_display_pop_out_animation())
@@ -170,8 +170,10 @@ class ZoomedScene(MovingCameraScene):
             The animation of the camera zooming in.
         """
         frame = self.zoomed_camera.frame
-        full_frame_height = self.camera.frame_height
-        full_frame_width = self.camera.frame_width
+        if isinstance(self.camera, MovingCamera):
+            # OpenGLCamera does not have frame_height and frame_width attributes
+            full_frame_height = self.camera.frame_height
+            full_frame_width = self.camera.frame_width
         frame.save_state()
         frame.stretch_to_fit_width(full_frame_width)
         frame.stretch_to_fit_height(full_frame_height)
