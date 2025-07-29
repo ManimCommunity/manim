@@ -1,9 +1,8 @@
-"""A camera able to move through a scene.
+"""Defines the MovingCamera class, a camera that can pan and zoom through a scene.
 
 .. SEEALSO::
 
     :mod:`.moving_camera_scene`
-
 """
 
 from __future__ import annotations
@@ -24,13 +23,13 @@ from ..utils.color import WHITE, ManimColor
 
 
 class MovingCamera(Camera):
-    """
-    Stays in line with the height, width and position of it's 'frame', which is a Rectangle
+    """A camera that follows and matches the size and position of its 'frame', a Rectangle (or similar Mobject).
+
+    The frame defines the region of space the camera displays and can move or resize dynamically.
 
     .. SEEALSO::
 
         :class:`.MovingCameraScene`
-
     """
 
     def __init__(
@@ -41,8 +40,7 @@ class MovingCamera(Camera):
         default_frame_stroke_width: int = 0,
         **kwargs: Any,
     ) -> None:
-        """
-        Frame is a Mobject, (should almost certainly be a rectangle)
+        """Frame is a Mobject, (should almost certainly be a rectangle)
         determining which region of space the camera displays
         """
         self.fixed_dimension = fixed_dimension
@@ -135,16 +133,14 @@ class MovingCamera(Camera):
     # context used for updating should be regenerated
     # at each frame.  So no caching.
     def get_cached_cairo_context(self, pixel_array):
-        """
-        Since the frame can be moving around, the cairo
+        """Since the frame can be moving around, the cairo
         context used for updating should be regenerated
         at each frame.  So no caching.
         """
         return None
 
     def cache_cairo_context(self, pixel_array, ctx):
-        """
-        Since the frame can be moving around, the cairo
+        """Since the frame can be moving around, the cairo
         context used for updating should be regenerated
         at each frame.  So no caching.
         """
@@ -162,8 +158,7 @@ class MovingCamera(Camera):
     #     self.resize_frame_shape(fixed_dimension=self.fixed_dimension)
 
     def get_mobjects_indicating_movement(self):
-        """
-        Returns all mobjects whose movement implies that the camera
+        """Returns all mobjects whose movement implies that the camera
         should think of all other mobjects on the screen as moving
 
         Returns

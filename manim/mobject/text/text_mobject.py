@@ -301,7 +301,7 @@ class Paragraph(VGroup):
 
 
 class Text(SVGMobject):
-    r"""Display (non-LaTeX) text rendered using `Pango <https://pango.gnome.org/>`_.
+    r"""Display (non-LaTeX) text rendered using `Pango <https://pango.org/>`_.
 
     Text objects behave like a :class:`.VGroup`-like iterable of all characters
     in the given text. In particular, slicing is possible.
@@ -678,6 +678,7 @@ class Text(SVGMobject):
         settings += str(self.t2f) + str(self.t2s) + str(self.t2w) + str(self.t2c)
         settings += str(self.line_spacing) + str(self._font_size)
         settings += str(self.disable_ligatures)
+        settings += str(self.gradient)
         id_str = self.text + settings
         hasher = hashlib.sha256()
         hasher.update(id_str.encode())
@@ -864,7 +865,7 @@ class Text(SVGMobject):
 
 
 class MarkupText(SVGMobject):
-    r"""Display (non-LaTeX) text rendered using `Pango <https://pango.gnome.org/>`_.
+    r"""Display (non-LaTeX) text rendered using `Pango <https://pango.org/>`_.
 
     Text objects behave like a :class:`.VGroup`-like iterable of all characters
     in the given text. In particular, slicing is possible.
@@ -1561,7 +1562,7 @@ def register_font(font_file: str | Path):
             logger.debug("Found file at %s", file_path.absolute())
             break
     else:
-        error = f"Can't find {font_file}.Tried these : {possible_paths}"
+        error = f"Can't find {font_file}. Checked paths: {possible_paths}"
         raise FileNotFoundError(error)
 
     try:

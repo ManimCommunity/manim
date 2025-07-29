@@ -18,7 +18,7 @@ from PIL import Image
 from scipy.spatial.distance import pdist
 from typing_extensions import Self
 
-from manim.typing import PixelArray
+from manim.typing import PixelArray, Point3D_Array
 
 from .. import config, logger
 from ..constants import *
@@ -1105,9 +1105,8 @@ class Camera:
     def transform_points_pre_display(
         self,
         mobject: Mobject,
-        points: np.ndarray,
-    ) -> np.ndarray:
-        # TODO: Write more detailed docstrings for this method.
+        points: Point3D_Array,
+    ) -> Point3D_Array:  # TODO: Write more detailed docstrings for this method.
         # NOTE: There seems to be an unused argument `mobject`.
 
         # Subclasses (like ThreeDCamera) may want to

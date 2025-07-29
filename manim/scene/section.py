@@ -100,5 +100,5 @@ class Section:
             **video_metadata,
         )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<Section '{self.name}' stored in '{self.video}'>"
