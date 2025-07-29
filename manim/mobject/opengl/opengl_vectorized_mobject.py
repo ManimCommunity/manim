@@ -172,6 +172,10 @@ class OpenGLVMobject(OpenGLMobject):
     def get_mobject_type_class():
         return OpenGLVMobject
 
+    @property
+    def submobjects(self) -> Sequence[OpenGLVMobject]:
+        return self._submobjects if hasattr(self, "_submobjects") else []
+
     def init_data(self):
         super().init_data()
         self.data.pop("rgbas")
