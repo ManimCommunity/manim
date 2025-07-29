@@ -9,6 +9,7 @@ from PIL import Image
 
 from manim.constants import *
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.typing import MatrixMN
 from manim.utils.bezier import integer_interpolate, interpolate
 from manim.utils.color import *
 from manim.utils.config_ops import _Data, _Uniforms
@@ -160,12 +161,14 @@ class OpenGLSurface(OpenGLMobject):
     def get_triangle_indices(self):
         return self.triangle_indices
 
-    def get_surface_points_and_nudged_points(self):
+    def get_surface_points_and_nudged_points(
+        self,
+    ) -> tuple[MatrixMN, MatrixMN, MatrixMN]:
         points = self.points
         k = len(points) // 3
         return points[:k], points[k : 2 * k], points[2 * k :]
 
-    def get_unit_normals(self):
+    def get_unit_normals(self) -> MatrixMN:
         s_points, du_points, dv_points = self.get_surface_points_and_nudged_points()
         normals = np.cross(
             (du_points - s_points) / self.epsilon,
