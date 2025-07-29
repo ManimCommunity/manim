@@ -1,12 +1,17 @@
 from __future__ import annotations
 
 import collections
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
-from manim.renderer.opengl_renderer import OpenGLMobject, OpenGLRenderer, OpenGLVMobject
-from manim.typing import MatrixMN
+if TYPE_CHECKING:
+    from manim.renderer.opengl_renderer import (
+        OpenGLMobject,
+        OpenGLRenderer,
+        OpenGLVMobject,
+    )
+    from manim.typing import MatrixMN
 
 from ..utils import opengl
 from ..utils.space_ops import cross2d, earclip_triangulation
