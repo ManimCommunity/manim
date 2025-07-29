@@ -644,32 +644,6 @@ class Text(SVGMobject):
             index = text.find(word, index + len(word))
         return indexes
 
-    @deprecated(
-        since="v0.14.0",
-        until="v0.15.0",
-        message="This was internal function, you shouldn't be using it anyway.",
-    )
-    def _set_color_by_t2c(self, t2c=None):
-        """Sets color for specified strings."""
-        t2c = t2c if t2c else self.t2c
-        for word, color in list(t2c.items()):
-            for start, end in self._find_indexes(word, self.text):
-                self.chars[start:end].set_color(color)
-
-    @deprecated(
-        since="v0.14.0",
-        until="v0.15.0",
-        message="This was internal function, you shouldn't be using it anyway.",
-    )
-    def _set_color_by_t2g(self, t2g=None):
-        """Sets gradient colors for specified
-        strings. Behaves similarly to ``set_color_by_t2c``.
-        """
-        t2g = t2g if t2g else self.t2g
-        for word, gradient in list(t2g.items()):
-            for start, end in self._find_indexes(word, self.text):
-                self.chars[start:end].set_color_by_gradient(*gradient)
-
     def _text2hash(self, color: ManimColor):
         """Generates ``sha256`` hash for file name."""
         settings = (
