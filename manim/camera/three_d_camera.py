@@ -24,7 +24,6 @@ from manim.typing import (
     Point3D,
     Point3D_Array,
     Point3DLike,
-    Point3DLike_Array,
 )
 
 from .. import config
@@ -77,7 +76,7 @@ class ThreeDCamera(Camera):
         self.focal_distance_tracker = ValueTracker(self.focal_distance)
         self.gamma_tracker = ValueTracker(self.gamma)
         self.zoom_tracker = ValueTracker(self.zoom)
-        self.fixed_orientation_mobjects: dict[Mobject, Callable] = {}
+        self.fixed_orientation_mobjects: dict[Mobject, Callable[[], Point3D]] = {}
         self.fixed_in_frame_mobjects: set[Mobject] = set()
         self.reset_rotation_matrix()
 
@@ -301,7 +300,7 @@ class ThreeDCamera(Camera):
             result = np.dot(matrix, result)
         return result
 
-    def project_points(self, points: Point3DLike_Array) -> Point3D_Array:
+    def project_points(self, points: Point3D_Array) -> Point3D_Array:
         """Applies the current rotation_matrix as a projection
         matrix to the passed array of points.
 
@@ -357,7 +356,7 @@ class ThreeDCamera(Camera):
     def transform_points_pre_display(
         self,
         mobject: Mobject,
-        points: Point3DLike_Array,
+        points: Point3D_Array,
     ) -> Point3D_Array:  # TODO: Write Docstrings for this Method.
         points = super().transform_points_pre_display(mobject, points)
         fixed_orientation = mobject in self.fixed_orientation_mobjects
@@ -377,7 +376,7 @@ class ThreeDCamera(Camera):
         self,
         *mobjects: Mobject,
         use_static_center_func: bool = False,
-        center_func: Callable[[], np.ndarray] | None = None,
+        center_func: Callable[[], Point3D] | None = None,
     ) -> None:
         """This method allows the mobject to have a fixed orientation,
         even when the camera moves around.
@@ -399,7 +398,7 @@ class ThreeDCamera(Camera):
 
         # This prevents the computation of mobject.get_center
         # every single time a projection happens
-        def get_static_center_func(mobject: Mobject) -> Point3D:
+        def get_static_center_func(mobject: Mobject) -> Callable[[], Point3D]:
             point = mobject.get_center()
             return lambda: point
 
