@@ -109,7 +109,6 @@ class ThreeDCamera(Camera):
             self.zoom_tracker,
         ]
 
-    # TODO: Find a better way
     def modified_rgbas(self, vmobject: VMobject, rgbas: MatrixMN) -> MatrixMN:
         if not self.should_apply_shading:
             return rgbas
