@@ -179,7 +179,8 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
             self.make_smooth()
         return self
 
-    init_points = generate_points
+    def init_points(self) -> None:
+        self.generate_points()
 
 
 class FunctionGraph(ParametricFunction):
@@ -317,4 +318,5 @@ class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
             self.make_smooth()
         return self
 
-    init_points = generate_points
+    def init_points(self) -> None:
+        self.generate_points()
