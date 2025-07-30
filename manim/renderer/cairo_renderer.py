@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-import typing
+from collections.abc import Iterable
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
@@ -13,9 +14,7 @@ from ..scene.scene_file_writer import SceneFileWriter
 from ..utils.exceptions import EndSceneEarlyException
 from ..utils.iterables import list_update
 
-if typing.TYPE_CHECKING:
-    from typing import Any
-
+if TYPE_CHECKING:
     from manim.animation.animation import Animation
     from manim.scene.scene import Scene
 
@@ -48,7 +47,7 @@ class CairoRenderer:
         self.skip_animations = skip_animations
         self.animations_hashes = []
         self.num_plays = 0
-        self.time = 0
+        self.time = 0.0
         self.static_image = None
 
     def init_scene(self, scene: Scene) -> None:
@@ -61,8 +60,8 @@ class CairoRenderer:
         self,
         scene: Scene,
         *args: Animation | Mobject | _AnimationBuilder,
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> None:
         # Reset skip_animations to the original state.
         # Needed when rendering only some animations, and skipping others.
         self.skip_animations = self._original_skipping_status
@@ -120,7 +119,7 @@ class CairoRenderer:
     def update_frame(  # TODO Description in Docstring
         self,
         scene: Scene,
-        mobjects: typing.Iterable[Mobject] | None = None,
+        mobjects: Iterable[Mobject] | None = None,
         include_submobjects: bool = True,
         ignore_skipping: bool = True,
         **kwargs: Any,
@@ -156,7 +155,12 @@ class CairoRenderer:
         kwargs["include_submobjects"] = include_submobjects
         self.camera.capture_mobjects(mobjects, **kwargs)
 
-    def render(self, scene, time, moving_mobjects):
+    def render(
+        self,
+        scene: Scene,
+        time: float,
+        moving_mobjects: Iterable[Mobject] | None = None,
+    ) -> None:
         self.update_frame(scene, moving_mobjects)
         self.add_frame(self.get_frame())
 
@@ -166,13 +170,13 @@ class CairoRenderer:
 
         Returns
         -------
-        np.array
+        PixelArray
             NumPy array of pixel values of each pixel in screen.
-            The shape of the array is height x width x 3
+            The shape of the array is height x width x 3.
         """
         return np.array(self.camera.pixel_array)
 
-    def add_frame(self, frame: np.ndarray, num_frames: int = 1):
+    def add_frame(self, frame: PixelArray, num_frames: int = 1) -> None:
         """
         Adds a frame to the video_file_stream
 
@@ -189,7 +193,7 @@ class CairoRenderer:
         self.time += num_frames * dt
         self.file_writer.write_frame(frame, num_frames=num_frames)
 
-    def freeze_current_frame(self, duration: float):
+    def freeze_current_frame(self, duration: float) -> None:
         """Adds a static frame to the movie for a given duration. The static frame is the current frame.
 
         Parameters
@@ -203,7 +207,7 @@ class CairoRenderer:
             num_frames=int(duration / dt),
         )
 
-    def show_frame(self):
+    def show_frame(self) -> None:
         """
         Opens the current frame in the Default Image Viewer
         of your system.
@@ -214,8 +218,8 @@ class CairoRenderer:
     def save_static_frame_data(
         self,
         scene: Scene,
-        static_mobjects: typing.Iterable[Mobject],
-    ) -> typing.Iterable[Mobject] | None:
+        static_mobjects: Iterable[Mobject],
+    ) -> Iterable[Mobject] | None:
         """Compute and save the static frame, that will be reused at each frame
         to avoid unnecessarily computing static mobjects.
 
@@ -228,7 +232,7 @@ class CairoRenderer:
 
         Returns
         -------
-        typing.Iterable[Mobject]
+        Iterable[Mobject]
             The static image computed.
         """
         self.static_image = None
@@ -238,7 +242,7 @@ class CairoRenderer:
         self.static_image = self.get_frame()
         return self.static_image
 
-    def update_skipping_status(self):
+    def update_skipping_status(self) -> None:
         """
         This method is used internally to check if the current
         animation needs to be skipped or not. It also checks if
