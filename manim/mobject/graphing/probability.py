@@ -78,9 +78,7 @@ class SampleSpace(Rectangle):
         self, title: str = "Sample space", buff: float = MED_SMALL_BUFF
     ) -> None:
         # TODO, should this really exist in SampleSpaceScene
-        # TODO
-        # error: Call to untyped function "Tex" in typed context  [no-untyped-call]
-        title_mob = Tex(title)  # type: ignore[no-untyped-call]
+        title_mob = Tex(title)
         if title_mob.width > self.width:
             title_mob.width = self.width
         title_mob.next_to(self, UP, buff=buff)

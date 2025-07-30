@@ -163,7 +163,7 @@ class LogBase(_ScaleBase):
                 return return_value
         else:
             condition = value <= 0
-            func = math.log  # type: ignore[assignment]
+            func = math.log
 
         if condition:
             raise ValueError(
@@ -190,13 +190,11 @@ class LogBase(_ScaleBase):
             Additional arguments to be passed to :class:`~.Integer`.
         """
         # uses `format` syntax to control the number of decimal places.
-        tex_labels: list[Mobject] = [
+        tex_labels: list[Integer] = [
             Integer(
                 self.base,
                 unit="^{%s}" % (f"{self.inverse_function(i):.{unit_decimal_places}f}"),  # noqa: UP031
-                # TODO:
-                # error: Argument 3 to "Integer" has incompatible type "**dict[str, dict[str, Any]]"; expected "int"  [arg-type]
-                **base_config,  # type: ignore[arg-type]
+                **base_config,
             )
             for i in val_range
         ]
