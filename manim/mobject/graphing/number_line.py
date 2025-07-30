@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing_extensions import Self
+
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 
@@ -236,7 +238,6 @@ class NumberLine(Line):
                 tip_width=self.tip_width,
                 tip_shape=tip_shape,
             )
-            self.tip.set_stroke(self.stroke_color, self.stroke_width)
 
         if self.include_ticks:
             self.add_ticks()
@@ -274,6 +275,26 @@ class NumberLine(Line):
         self, number: float, angle: float, axis: Sequence[float] = OUT, **kwargs
     ):
         return self.rotate(angle, axis, about_point=self.n2p(number), **kwargs)
+
+    def add_tip(
+        self,
+        tip: ArrowTip | None = None,
+        tip_shape: type[ArrowTip] | None = None,
+        tip_length: float | None = None,
+        tip_width: float | None = None,
+        at_start: bool = False,
+    ) -> Self:
+        if tip_length is None:
+            tip_length = self.tip_height
+
+        if tip_width is None:
+            tip_width = self.tip_width
+
+        super().add_tip(tip, tip_shape, tip_length, tip_width, at_start)
+
+        self.tip.set_stroke(self.stroke_color, self.stroke_width)
+
+        return self
 
     def add_ticks(self):
         """Adds ticks to the number line. Ticks can be accessed after creation
@@ -326,8 +347,7 @@ class NumberLine(Line):
             A numpy array of floats represnting values along the number line.
         """
         x_min, x_max, x_step = self.x_range
-        if not self.include_tip:
-            x_max += 1e-6
+        x_max += 1e-6
 
         # Handle cases where min and max are both positive or both negative
         if x_min < x_max < 0 or x_max > x_min > 0:
