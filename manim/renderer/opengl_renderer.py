@@ -248,6 +248,8 @@ class OpenGLRenderer:
         self.camera = OpenGLCamera()
         self.pressed_keys = set()
 
+        self.window = None
+
         # Initialize texture map.
         self.path_to_texture_id = {}
 
@@ -261,32 +263,31 @@ class OpenGLRenderer:
         )
         self.scene = scene
         self.background_color = config["background_color"]
-        if not hasattr(self, "window"):
-            if self.should_create_window():
-                from .opengl_renderer_window import Window
+        if self.should_create_window():
+            from .opengl_renderer_window import Window
 
-                self.window = Window(self)
-                self.context = self.window.ctx
-                self.frame_buffer_object = self.context.detect_framebuffer()
-            else:
-                self.window = None
-                try:
-                    self.context = moderngl.create_context(standalone=True)
-                except Exception:
-                    self.context = moderngl.create_context(
-                        standalone=True,
-                        backend="egl",
-                    )
-                self.frame_buffer_object = self.get_frame_buffer_object(self.context, 0)
-                self.frame_buffer_object.use()
-            self.context.enable(moderngl.BLEND)
-            self.context.wireframe = config["enable_wireframe"]
-            self.context.blend_func = (
-                moderngl.SRC_ALPHA,
-                moderngl.ONE_MINUS_SRC_ALPHA,
-                moderngl.ONE,
-                moderngl.ONE,
-            )
+            self.window = Window(self)
+            self.context = self.window.ctx
+            self.frame_buffer_object = self.context.detect_framebuffer()
+        else:
+            # self.window = None
+            try:
+                self.context = moderngl.create_context(standalone=True)
+            except Exception:
+                self.context = moderngl.create_context(
+                    standalone=True,
+                    backend="egl",
+                )
+            self.frame_buffer_object = self.get_frame_buffer_object(self.context, 0)
+            self.frame_buffer_object.use()
+        self.context.enable(moderngl.BLEND)
+        self.context.wireframe = config["enable_wireframe"]
+        self.context.blend_func = (
+            moderngl.SRC_ALPHA,
+            moderngl.ONE_MINUS_SRC_ALPHA,
+            moderngl.ONE,
+            moderngl.ONE,
+        )
 
     def should_create_window(self):
         if config["force_window"]:

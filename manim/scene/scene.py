@@ -1489,7 +1489,10 @@ class Scene:
         assert self.queue.qsize() == 0
 
         last_time = time.time()
-        while not (self.renderer.window.is_closing or self.quit_interaction):
+        while not (
+            (self.renderer.window is not None and self.renderer.window.is_closing)
+            or self.quit_interaction
+        ):
             if not self.queue.empty():
                 action = self.queue.get_nowait()
                 if isinstance(action, SceneInteractRerun):
@@ -1550,7 +1553,7 @@ class Scene:
         if self.dearpygui_imported and config["enable_gui"]:
             dpg.stop_dearpygui()
 
-        if self.renderer.window.is_closing:
+        if self.renderer.window is not None and self.renderer.window.is_closing:
             self.renderer.window.destroy()
 
     def embed(self) -> None:
