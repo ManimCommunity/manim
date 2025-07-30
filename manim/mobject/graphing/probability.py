@@ -102,8 +102,14 @@ class SampleSpace(Rectangle):
         colors: Sequence[ParsableManimColor],
         vect: Vector3D,
     ) -> VGroup:
+        # Consideration, can we somehow describe that a VGroup only
+        # contains objects of a certain kind?
+        # For this function I would like to describe the return type as
+        # VGroup[SampleSpace].
         p_list_complete = self.complete_p_list(p_list)
         colors_in_gradient = color_gradient(colors, len(p_list))
+
+        # TODO: Is this needed?
         assert isinstance(colors_in_gradient, list)
 
         last_point = self.get_edge_center(-vect)
@@ -134,15 +140,11 @@ class SampleSpace(Rectangle):
     ) -> VGroup:
         return self.get_division_along_dimension(p_list, 0, colors, vect)
 
-    # TODO:
-    # error: Function is missing a type annotation for one or more arguments  [no-untyped-def]
-    def divide_horizontally(self, *args, **kwargs) -> None:  # type: ignore[no-untyped-def]
+    def divide_horizontally(self, *args: Any, **kwargs: Any) -> None:
         self.horizontal_parts = self.get_horizontal_division(*args, **kwargs)
         self.add(self.horizontal_parts)
 
-    # TODO:
-    # error: Function is missing a type annotation for one or more arguments  [no-untyped-def]
-    def divide_vertically(self, *args, **kwargs) -> None:  # type: ignore[no-untyped-def]
+    def divide_vertically(self, *args: Any, **kwargs: Any) -> None:
         self.vertical_parts = self.get_vertical_division(*args, **kwargs)
         self.add(self.vertical_parts)
 
@@ -166,14 +168,10 @@ class SampleSpace(Rectangle):
             label_mob.next_to(brace, direction, buff)
 
             braces.add(brace)
-            # TODO:
-            # error: Argument 1 to "add" of "VGroup" has incompatible type "Mobject | OpenGLMobject"; expected "VMobject | Iterable[VMobject]"  [arg-type]
-            label_mobs.add(label_mob)  # type: ignore[arg-type]
-        # TODO:
-        # error: "VGroup" has no attribute "braces"  [attr-defined]
-        parts.braces = braces  # type: ignore[attr-defined]
-        parts.labels = label_mobs  # type: ignore[attr-defined]
-        parts.label_kwargs = {  # type: ignore[attr-defined]
+            label_mobs.add(label_mob)
+        parts.braces = braces
+        parts.labels = label_mobs
+        parts.label_kwargs = {
             "labels": label_mobs.copy(),
             "direction": direction,
             "buff": buff,
@@ -215,16 +213,14 @@ class SampleSpace(Rectangle):
                 if hasattr(parts, subattr):
                     self.add(getattr(parts, subattr))
 
-    def __getitem__(self, index: int) -> VGroup:
+    def __getitem__(self, index: int) -> SampleSpace:
         if hasattr(self, "horizontal_parts"):
-            val: VGroup = self.horizontal_parts[index]
+            val: SampleSpace = self.horizontal_parts[index]
             return val
         elif hasattr(self, "vertical_parts"):
             val = self.vertical_parts[index]
             return val
-        # TODO:
-        # error: Incompatible return value type (got "SampleSpace", expected "VGroup")  [return-value]
-        return self.split()[index]  # type: ignore[return-value]
+        return self.split()[index]
 
 
 class BarChart(Axes):

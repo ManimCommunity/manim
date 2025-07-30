@@ -1,6 +1,3 @@
-# The following line is needed to avoid some strange
-# mypy errors related to the code around line 366.
-# mypy: disable_error_code = has-type
 r"""Mobjects representing text rendered using LaTeX.
 
 .. important::

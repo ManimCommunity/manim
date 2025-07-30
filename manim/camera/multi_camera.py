@@ -65,9 +65,7 @@ class MultiCamera(MovingCamera):
         """Reshape sub_camera pixel_arrays"""
         for imfc in self.image_mobjects_from_cameras:
             pixel_height, pixel_width = self.pixel_array.shape[:2]
-            # TODO:
-            # error: "MovingCamera" has no attribute "frame_shape"  [attr-defined]
-            imfc.camera.frame_shape = (  # type: ignore[attr-defined]
+            imfc.camera.frame_shape = (
                 imfc.camera.frame.height,
                 imfc.camera.frame.width,
             )

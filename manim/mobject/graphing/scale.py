@@ -13,7 +13,7 @@ from manim.mobject.text.numbers import Integer
 if TYPE_CHECKING:
     from typing import Callable
 
-    from manim.mobject.mobject import Mobject
+    from manim.mobject.types.vectorized_mobject import VMobject
 
 
 class _ScaleBase:
@@ -68,7 +68,7 @@ class _ScaleBase:
         self,
         val_range: Iterable[float],
         **kw_args: Any,
-    ) -> Iterable[Mobject]:
+    ) -> Iterable[VMobject]:
         """Custom instructions for generating labels along an axis.
 
         Parameters

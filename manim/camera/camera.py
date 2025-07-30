@@ -204,7 +204,9 @@ class Camera:
         """
         from ..mobject.types.image_mobject import AbstractImageMobject
 
-        self.display_funcs = {
+        self.display_funcs: dict[
+            type[Mobject], Callable[[list[Mobject], PixelArray], None]
+        ] = {
             VMobject: self.display_multiple_vectorized_mobjects,
             PMobject: self.display_multiple_point_cloud_mobjects,
             AbstractImageMobject: self.display_multiple_image_mobjects,
@@ -541,9 +543,7 @@ class Camera:
         # partition while at the same time preserving order.
         mobjects = self.get_mobjects_to_display(mobjects, **kwargs)
         for group_type, group in it.groupby(mobjects, self.type_or_raise):
-            # TODO
-            # error: Call to untyped function (unknown) in typed context  [no-untyped-call]
-            self.display_funcs[group_type](list(group), self.pixel_array)  # type: ignore[no-untyped-call]
+            self.display_funcs[group_type](list(group), self.pixel_array)
 
     # Methods associated with svg rendering
 

@@ -228,9 +228,7 @@ class FunctionGraph(ParametricFunction):
         self.parametric_function: Callable[[float], np.array] = lambda t: np.array(
             [t, function(t), 0]
         )
-        # TODO:
-        # error: Incompatible types in assignment (expression has type "Callable[[float], Any]", variable has type "Callable[[Arg(float, 't')], Any]")  [assignment]
-        self.function = function  # type: ignore[assignment]
+        self.function: Callable[[float], Any] = function
         super().__init__(self.parametric_function, self.x_range, color=color, **kwargs)
 
     def get_function(self) -> Callable[[float], Any]:

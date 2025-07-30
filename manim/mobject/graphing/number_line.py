@@ -253,18 +253,16 @@ class NumberLine(Line):
             if self.scaling.custom_labels:
                 tick_range = self.get_tick_range()
 
+                custom_labels = self.scaling.get_custom_labels(
+                    tick_range,
+                    unit_decimal_places=decimal_number_config["num_decimal_places"],
+                )
+
                 self.add_labels(
                     dict(
                         zip(
                             tick_range,
-                            # TODO:
-                            # Argument 2 to "zip" has incompatible type "Iterable[Mobject]"; expected "Iterable[str | float | VMobject]"  [arg-type]
-                            self.scaling.get_custom_labels(  # type: ignore[arg-type]
-                                tick_range,
-                                unit_decimal_places=decimal_number_config[
-                                    "num_decimal_places"
-                                ],
-                            ),
+                            custom_labels,
                         )
                     ),
                 )
