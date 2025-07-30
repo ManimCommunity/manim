@@ -519,7 +519,8 @@ class Cube(VGroup):
 
             self.add(face)
 
-    init_points = generate_points
+    def init_points(self) -> None:
+        self.generate_points()
 
 
 class Prism(Cube):
