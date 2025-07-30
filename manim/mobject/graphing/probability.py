@@ -104,7 +104,6 @@ class SampleSpace(Rectangle):
         p_list_complete = self.complete_p_list(p_list)
         colors_in_gradient = color_gradient(colors, len(p_list))
 
-        # TODO: Is this needed?
         assert isinstance(colors_in_gradient, list)
 
         last_point = self.get_edge_center(-vect)
@@ -163,10 +162,11 @@ class SampleSpace(Rectangle):
             label_mob.next_to(brace, direction, buff)
 
             braces.add(brace)
+            assert isinstance(label_mob, VMobject)
             label_mobs.add(label_mob)
-        parts.braces = braces
-        parts.labels = label_mobs
-        parts.label_kwargs = {
+        parts.braces = braces  # type: ignore[attr-defined]
+        parts.labels = label_mobs  # type: ignore[attr-defined]
+        parts.label_kwargs = {  # type: ignore[attr-defined]
             "labels": label_mobs.copy(),
             "direction": direction,
             "buff": buff,

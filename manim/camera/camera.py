@@ -210,7 +210,7 @@ class Camera:
         self.display_funcs: dict[
             type[Mobject], Callable[[list[Mobject], PixelArray], Any]
         ] = {
-            VMobject: self.display_multiple_vectorized_mobjects,
+            VMobject: self.display_multiple_vectorized_mobjects,  # type: ignore[dict-item]
             PMobject: self.display_multiple_point_cloud_mobjects,
             AbstractImageMobject: self.display_multiple_image_mobjects,
             Mobject: lambda batch, pa: batch,  # Do nothing
