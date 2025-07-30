@@ -14,11 +14,10 @@ from manim import config, logger
 from manim.constants import *
 from manim.mobject.geometry.polygram import Rectangle
 from manim.mobject.graphing.coordinate_systems import Axes
-from manim.mobject.mobject import Mobject
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.svg.brace import Brace
 from manim.mobject.text.tex_mobject import MathTex, Tex
-from manim.mobject.types.vectorized_mobject import VGroup
+from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.typing import Vector3D
 from manim.utils.color import (
     BLUE_E,
@@ -151,7 +150,7 @@ class SampleSpace(Rectangle):
     def get_subdivision_braces_and_labels(
         self,
         parts: VGroup,
-        labels: list[str | Mobject | OpenGLMobject],
+        labels: list[str | VMobject | OpenGLVMobject],
         direction: Vector3D,
         buff: float = SMALL_BUFF,
         min_num_quads: int = 1,
@@ -160,7 +159,7 @@ class SampleSpace(Rectangle):
         braces = VGroup()
         for label, part in zip(labels, parts):
             brace = Brace(part, direction, min_num_quads=min_num_quads, buff=buff)
-            if isinstance(label, (Mobject, OpenGLMobject)):
+            if isinstance(label, (VMobject, OpenGLVMobject)):
                 label_mob = label
             else:
                 label_mob = MathTex(label)
@@ -180,7 +179,7 @@ class SampleSpace(Rectangle):
 
     def get_side_braces_and_labels(
         self,
-        labels: list[str | Mobject | OpenGLMobject],
+        labels: list[str | VMobject | OpenGLVMobject],
         direction: Vector3D = LEFT,
         **kwargs: Any,
     ) -> VGroup:
@@ -191,14 +190,14 @@ class SampleSpace(Rectangle):
         )
 
     def get_top_braces_and_labels(
-        self, labels: list[str | Mobject | OpenGLMobject], **kwargs: Any
+        self, labels: list[str | VMobject | OpenGLVMobject], **kwargs: Any
     ) -> VGroup:
         assert hasattr(self, "vertical_parts")
         parts = self.vertical_parts
         return self.get_subdivision_braces_and_labels(parts, labels, UP, **kwargs)
 
     def get_bottom_braces_and_labels(
-        self, labels: list[str | Mobject | OpenGLMobject], **kwargs: Any
+        self, labels: list[str | VMobject | OpenGLVMobject], **kwargs: Any
     ) -> VGroup:
         assert hasattr(self, "vertical_parts")
         parts = self.vertical_parts
