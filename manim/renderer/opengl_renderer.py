@@ -253,7 +253,7 @@ class OpenGLRenderer:
 
         self.background_color = config["background_color"]
 
-    def init_scene(self, scene):
+    def init_scene(self, scene: Scene) -> None:
         self.partial_movie_files = []
         self.file_writer: Any = self._file_writer_class(
             self,
@@ -585,7 +585,9 @@ class OpenGLRenderer:
     # Returns offset from the bottom left corner in pixels.
     # top_left flag should be set to True when using a GUI framework
     # where the (0,0) is at the top left: e.g. PySide6
-    def pixel_coords_to_space_coords(self, px, py, relative=False, top_left=False):
+    def pixel_coords_to_space_coords(
+        self, px, py, relative=False, top_left=False
+    ) -> np.array:
         pixel_shape = self.get_pixel_shape()
         if pixel_shape is None:
             return np.array([0, 0, 0])

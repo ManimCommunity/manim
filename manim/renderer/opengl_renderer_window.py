@@ -7,6 +7,8 @@ from moderngl_window.context.pyglet.window import Window as PygletWindow
 from moderngl_window.timers.clock import Timer
 from screeninfo import Monitor, get_monitors
 
+from manim.renderer.opengl_renderer import OpenGLRenderer
+
 from .. import __version__, config
 
 __all__ = ["Window"]
@@ -20,7 +22,10 @@ class Window(PygletWindow):
     cursor = True
 
     def __init__(
-        self, renderer: Any, window_size: str = config.window_size, **kwargs: Any
+        self,
+        renderer: OpenGLRenderer,
+        window_size: str = config.window_size,
+        **kwargs: Any,
     ) -> None:
         monitors = get_monitors()
         mon_index = config.window_monitor
@@ -79,10 +84,11 @@ class Window(PygletWindow):
         )
         self.renderer.scene.on_mouse_scroll(point, offset)
 
-    def on_key_press(self, symbol: int, modifiers: int) -> None:
+    def on_key_press(self, symbol: int, modifiers: int) -> bool:
         self.renderer.pressed_keys.add(symbol)
-        super().on_key_press(symbol, modifiers)
+        event_handled: bool = super().on_key_press(symbol, modifiers)
         self.renderer.scene.on_key_press(symbol, modifiers)
+        return event_handled
 
     def on_key_release(self, symbol: int, modifiers: int) -> None:
         if symbol in self.renderer.pressed_keys:
@@ -133,9 +139,4 @@ class Window(PygletWindow):
     def on_mouse_press(self, x: int, y: int, button: int, modifiers: int) -> None:
         super().on_mouse_press(x, y, button, modifiers)
         point = self.renderer.pixel_coords_to_space_coords(x, y)
-        mouse_button_map = {
-            1: "LEFT",
-            2: "MOUSE",
-            4: "RIGHT",
-        }
-        self.renderer.scene.on_mouse_press(point, mouse_button_map[button], modifiers)
+        self.renderer.scene.on_mouse_press(point, button, modifiers)
