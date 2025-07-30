@@ -1818,15 +1818,15 @@ class Scene:
         self,
         point: Point3D,
         d_point: Point3D,
-        buttons: int,
+        buttons: str,
         modifiers: int,
     ) -> None:
         assert isinstance(self.camera, OpenGLCamera)
         self.mouse_drag_point.move_to(point)
-        if buttons == 1:
+        if buttons == "LEFT":
             self.camera.increment_theta(-d_point[0])
             self.camera.increment_phi(d_point[1])
-        elif buttons == 4:
+        elif buttons == "RIGHT":
             camera_x_axis = self.camera.model_matrix[:3, 0]
             horizontal_shift_vector = -d_point[0] * camera_x_axis
             vertical_shift_vector = -d_point[1] * np.cross(OUT, camera_x_axis)
@@ -1848,12 +1848,12 @@ class Scene:
         self,
         point: Point3D,
         d_point: Point3D,
-        buttons: int,
+        buttons: str,
         modifiers: int,
     ) -> None:
         assert isinstance(self.camera, OpenGLCamera)
         # Left click drag.
-        if buttons == 1:
+        if buttons == "LEFT":
             # Translate to target the origin and rotate around the z axis.
             self.camera.model_matrix = (
                 opengl.rotation_matrix(z=-d_point[0])
@@ -1912,7 +1912,7 @@ class Scene:
                 @ self.camera.model_matrix
             )
         # Right click drag.
-        elif buttons == 4:
+        elif buttons == "RIGHT":
             camera_x_axis = self.camera.model_matrix[:3, 0]
             horizontal_shift_vector = -d_point[0] * camera_x_axis
             vertical_shift_vector = -d_point[1] * np.cross(OUT, camera_x_axis)
@@ -1927,6 +1927,6 @@ class Scene:
     def set_key_function(self, char: str, func: Callable[[], Any]) -> None:
         self.key_to_function_map[char] = func
 
-    def on_mouse_press(self, point: Point3D, button: int, modifiers: int) -> None:
+    def on_mouse_press(self, point: Point3D, button: str, modifiers: int) -> None:
         for func in self.mouse_press_callbacks:
             func()
