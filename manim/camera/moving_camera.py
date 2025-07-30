@@ -36,7 +36,7 @@ class MovingCamera(Camera):
         default_frame_stroke_color=WHITE,
         default_frame_stroke_width=0,
         **kwargs,
-    ):
+    ) -> None:
         """Frame is a Mobject, (should almost certainly be a rectangle)
         determining which region of space the camera displays
         """
