@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import moderngl_window as mglw
 from moderngl_window.context.pyglet.window import Window as PygletWindow
@@ -8,7 +8,9 @@ from moderngl_window.timers.clock import Timer
 from screeninfo import Monitor, get_monitors
 
 from .. import __version__, config
-from .opengl_renderer import OpenGLRenderer
+
+if TYPE_CHECKING:
+    from .opengl_renderer import OpenGLRenderer
 
 __all__ = ["Window"]
 
