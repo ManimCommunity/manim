@@ -57,6 +57,7 @@ from ..camera.moving_camera import MovingCamera
 from ..camera.multi_camera import MultiCamera
 from ..constants import *
 from ..mobject.types.image_mobject import ImageMobjectFromCamera
+from ..renderer.opengl_renderer import OpenGLCamera
 from ..scene.moving_camera_scene import MovingCameraScene
 
 if TYPE_CHECKING:
@@ -170,8 +171,9 @@ class ZoomedScene(MovingCameraScene):
             The animation of the camera zooming in.
         """
         frame = self.zoomed_camera.frame
-        if isinstance(self.camera, MovingCamera):
-            # OpenGLCamera does not have frame_height and frame_width attributes
+        if isinstance(self.camera, OpenGLCamera):
+            full_frame_width, full_frame_height = self.camera.frame_shape
+        else:
             full_frame_height = self.camera.frame_height
             full_frame_width = self.camera.frame_width
         frame.save_state()
