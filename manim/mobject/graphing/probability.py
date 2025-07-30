@@ -101,10 +101,6 @@ class SampleSpace(Rectangle):
         colors: Sequence[ParsableManimColor],
         vect: Vector3D,
     ) -> VGroup:
-        # Consideration, can we somehow describe that a VGroup only
-        # contains objects of a certain kind?
-        # For this function I would like to describe the return type as
-        # VGroup[SampleSpace].
         p_list_complete = self.complete_p_list(p_list)
         colors_in_gradient = color_gradient(colors, len(p_list))
 

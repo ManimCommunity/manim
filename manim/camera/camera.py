@@ -18,7 +18,7 @@ from PIL import Image
 from scipy.spatial.distance import pdist
 from typing_extensions import Self
 
-from manim.typing import PixelArray, Point3D_Array
+from manim.typing import MatrixMN, PixelArray, Point3D, Point3D_Array
 
 from .. import config, logger
 from ..constants import *
@@ -76,13 +76,13 @@ class Camera:
     def __init__(
         self,
         background_image: str | None = None,
-        frame_center: np.ndarray = ORIGIN,
+        frame_center: Point3D = ORIGIN,
         image_mode: str = "RGBA",
         n_channels: int = 4,
         pixel_array_dtype: str = "uint8",
         cairo_line_width_multiple: float = 0.01,
         use_z_index: bool = True,
-        background: np.ndarray | None = None,
+        background: PixelArray | None = None,
         pixel_height: int | None = None,
         pixel_width: int | None = None,
         frame_height: float | None = None,
@@ -100,6 +100,9 @@ class Camera:
         self.cairo_line_width_multiple = cairo_line_width_multiple
         self.use_z_index = use_z_index
         self.background = background
+        self.background_colored_vmobject_displayer: (
+            BackgroundColoredVMobjectDisplayer | None
+        ) = None
 
         if pixel_height is None:
             pixel_height = config["pixel_height"]
@@ -290,7 +293,7 @@ class Camera:
 
     def get_image(
         self, pixel_array: PixelArray | list | tuple | None = None
-    ) -> PixelArray:
+    ) -> Image.Image:
         """Returns an image from the passed
         pixel array, or from the current frame
         if the passed pixel array is none.
@@ -302,7 +305,7 @@ class Camera:
 
         Returns
         -------
-        PIL.Image
+        PIL.Image.Image
             The PIL image of the array.
         """
         if pixel_array is None:
@@ -550,7 +553,7 @@ class Camera:
     # NOTE: None of the methods below have been mentioned outside of their definitions. Their DocStrings are not as
     # detailed as possible.
 
-    def get_cached_cairo_context(self, pixel_array: PixelArray) -> cairo.Context:
+    def get_cached_cairo_context(self, pixel_array: PixelArray) -> cairo.Context | None:
         """Returns the cached cairo context of the passed
         pixel array if it exists, and None if it doesn't.
 
@@ -603,7 +606,7 @@ class Camera:
         fh = self.frame_height
         fc = self.frame_center
         surface = cairo.ImageSurface.create_for_data(
-            pixel_array,
+            pixel_array.data,
             cairo.FORMAT_ARGB32,
             pw,
             ph,
@@ -704,8 +707,6 @@ class Camera:
         # TODO, shouldn't this be handled in transform_points_pre_display?
         # points = points - self.get_frame_center()
         if len(points) == 0:
-            # TODO:
-            # Here the return value is modified. Is that ok?
             return self
 
         ctx.new_path()
@@ -722,7 +723,7 @@ class Camera:
         return self
 
     def set_cairo_context_color(
-        self, ctx: cairo.Context, rgbas: PixelArray, vmobject: VMobject
+        self, ctx: cairo.Context, rgbas: MatrixMN, vmobject: VMobject
     ) -> Self:
         """Sets the color of the cairo context
 
@@ -863,11 +864,11 @@ class Camera:
             Object that displays VMobjects that have the same color
             as the background.
         """
-        # Quite wordy to type out a bunch
-        bcvd = "background_colored_vmobject_displayer"
-        if not hasattr(self, bcvd):
-            setattr(self, bcvd, BackgroundColoredVMobjectDisplayer(self))
-        return getattr(self, bcvd)  # type: ignore[no-any-return]
+        if self.background_colored_vmobject_displayer is None:
+            self.background_colored_vmobject_displayer = (
+                BackgroundColoredVMobjectDisplayer(self)
+            )
+        return self.background_colored_vmobject_displayer
 
     def display_multiple_background_colored_vmobjects(
         self, cvmobjects: Iterable[VMobject], pixel_array: PixelArray
