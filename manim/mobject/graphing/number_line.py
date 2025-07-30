@@ -485,6 +485,18 @@ class NumberLine(Line):
             num_mob.shift(num_mob[0].width * LEFT / 2)
         return num_mob
 
+    def default_numbers_to_display(self):
+        leftmost_tick = op.mul(
+            self.tick_frequency, np.ceil(self.x_min / self.tick_size)
+        )
+        numbers = np.arange(
+            np.floor(leftmost_tick),
+            np.ceil(self.x_max),
+        )
+        if self.exclude_zero_from_default_numbers:
+            numbers = numbers[numbers != 0]
+        return numbers
+
     def get_number_mobjects(self, *numbers, **kwargs) -> VGroup:
         if len(numbers) == 0:
             numbers = self.default_numbers_to_display()
