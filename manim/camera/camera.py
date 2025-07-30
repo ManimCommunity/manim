@@ -205,7 +205,7 @@ class Camera:
         from ..mobject.types.image_mobject import AbstractImageMobject
 
         self.display_funcs: dict[
-            type[Mobject], Callable[[list[Mobject], PixelArray], None]
+            type[Mobject], Callable[[list[Mobject], PixelArray], Any]
         ] = {
             VMobject: self.display_multiple_vectorized_mobjects,
             PMobject: self.display_multiple_point_cloud_mobjects,
