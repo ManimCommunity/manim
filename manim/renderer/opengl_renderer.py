@@ -586,8 +586,8 @@ class OpenGLRenderer:
     # top_left flag should be set to True when using a GUI framework
     # where the (0,0) is at the top left: e.g. PySide6
     def pixel_coords_to_space_coords(
-        self, px, py, relative=False, top_left=False
-    ) -> np.array:
+        self, px: int, py: int, relative: bool = False, top_left: bool = False
+    ) -> Point3D:
         pixel_shape = self.get_pixel_shape()
         if pixel_shape is None:
             return np.array([0, 0, 0])
