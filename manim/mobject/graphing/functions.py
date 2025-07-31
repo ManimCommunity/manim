@@ -217,12 +217,12 @@ class FunctionGraph(ParametricFunction):
     def __init__(
         self,
         function: Callable[[float], Any],
-        x_range: np.array | None = None,
+        x_range: tuple[float, float] | tuple[float, float, float] | None = None,
         color: ParsableManimColor = YELLOW,
         **kwargs: Any,
     ) -> None:
         if x_range is None:
-            x_range = np.array([-config["frame_x_radius"], config["frame_x_radius"]])
+            x_range = (-config["frame_x_radius"], config["frame_x_radius"])
 
         self.x_range = x_range
         self.parametric_function: Callable[[float], np.array] = lambda t: np.array(
