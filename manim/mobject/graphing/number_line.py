@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
     from manim.mobject.geometry.tips import ArrowTip
-    from manim.typing import Point3DLike
+    from manim.typing import Point3DLike, Point3D, Vector3D
 
 import numpy as np
 
@@ -162,7 +162,7 @@ class NumberLine(Line):
         # numbers/labels
         include_numbers: bool = False,
         font_size: float = 36,
-        label_direction: Sequence[float] = DOWN,
+        label_direction: Point3DLike = DOWN,
         label_constructor: type[MathTex] = MathTex,
         scaling: _ScaleBase = LinearBase(),
         line_to_number_buff: float = MED_SMALL_BUFF,
@@ -442,7 +442,7 @@ class NumberLine(Line):
         val: float = self.get_length() / (self.x_range[1] - self.x_range[0])
         return val
 
-    def get_unit_vector(self) -> np.ndarray:
+    def get_unit_vector(self) -> Vector3D:
         return super().get_unit_vector() * self.unit_size
 
     def get_number_mobject(
@@ -569,7 +569,7 @@ class NumberLine(Line):
     def add_labels(
         self,
         dict_values: dict[float, str | float | VMobject],
-        direction: Sequence[float] | None = None,
+        direction: Point3DLike | None = None,
         buff: float | None = None,
         font_size: float | None = None,
         label_constructor: type[MathTex] | None = None,
@@ -667,7 +667,7 @@ class NumberLine(Line):
             return 0
         return len(step_str.split(".")[-1])
 
-    def __matmul__(self, other: float) -> np.ndarray:
+    def __matmul__(self, other: float) -> Point3D:
         return self.n2p(other)
 
     def __rmatmul__(self, other: Point3DLike | Mobject) -> float:
