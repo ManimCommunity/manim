@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
     from manim.mobject.geometry.tips import ArrowTip
-    from manim.typing import Point3DLike, Point3D, Vector3D
+    from manim.typing import Point3D, Point3DLike, Vector3D
 
 import numpy as np
 

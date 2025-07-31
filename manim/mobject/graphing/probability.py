@@ -62,7 +62,7 @@ class SampleSpace(Rectangle):
         stroke_width: float = 0.5,
         stroke_color: ParsableManimColor = LIGHT_GREY,
         default_label_scale_val: float = 1,
-    ) -> None:
+    ):
         super().__init__(
             height=height,
             width=width,
@@ -88,7 +88,8 @@ class SampleSpace(Rectangle):
         self.label = label
 
     def complete_p_list(self, p_list: float | Iterable[float]) -> list[float]:
-        new_p_list = list(tuplify(p_list))
+        p_list_tuplified: tuple[float] = tuplify(p_list)
+        new_p_list = list(p_list_tuplified)
         remainder = 1.0 - sum(new_p_list)
         if abs(remainder) > EPSILON:
             new_p_list.append(remainder)
@@ -102,7 +103,7 @@ class SampleSpace(Rectangle):
         vect: Vector3D,
     ) -> VGroup:
         p_list_complete = self.complete_p_list(p_list)
-        colors_in_gradient = color_gradient(colors, len(p_list))
+        colors_in_gradient = color_gradient(colors, len(p_list_complete))
 
         assert isinstance(colors_in_gradient, list)
 
@@ -287,7 +288,7 @@ class BarChart(Axes):
         bar_fill_opacity: float = 0.7,
         bar_stroke_width: float = 3,
         **kwargs: Any,
-    ) -> None:
+    ):
         if isinstance(bar_colors, str):
             logger.warning(
                 "Passing a string to `bar_colors` has been deprecated since v0.15.2 and will be removed after v0.17.0, the parameter must be a list.  "
