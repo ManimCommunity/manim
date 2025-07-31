@@ -225,7 +225,7 @@ class FunctionGraph(ParametricFunction):
             x_range = (-config["frame_x_radius"], config["frame_x_radius"])
 
         self.x_range = x_range
-        self.parametric_function: Callable[[float], np.array] = lambda t: np.array(
+        self.parametric_function: Callable[[float], Point3D] = lambda t: np.array(
             [t, function(t), 0]
         )
         self.function: Callable[[float], Any] = function
