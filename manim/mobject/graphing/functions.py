@@ -234,7 +234,7 @@ class FunctionGraph(ParametricFunction):
     def get_function(self) -> Callable[[float], Any]:
         return self.function
 
-    def get_point_from_function(self, x: float) -> np.array:
+    def get_point_from_function(self, x: float) -> Point3D:
         return self.parametric_function(x)
 
 
