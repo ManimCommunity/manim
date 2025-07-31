@@ -26,7 +26,7 @@ from manim._config import (
     logger,
     tempconfig,
 )
-from manim.cli.cli_utils import code_input_prompt, prompt_user_with_choice
+from manim.cli.cli_utils import code_input_prompt, prompt_user_with_list
 from manim.cli.render.ease_of_access_options import ease_of_access_options
 from manim.cli.render.global_options import global_options
 from manim.cli.render.output_options import output_options
@@ -92,7 +92,7 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
 
     SCENES is an optional list of scenes in the file.
     """
-    warn_and_change_deprecated_args(kwargs)
+    warn_and_change_deprecated_arguments(kwargs)
 
     click_args = ClickArgs(kwargs)
     if kwargs["jupyter"]:
@@ -100,7 +100,7 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
 
     config.digest_args(click_args)
 
-    scenes = solve_rendrered_scenes(config.input_file)
+    scenes = scenes_from_input(config.input_file)
 
     if config.renderer == RendererType.OPENGL:
         from manim.renderer.opengl_renderer import OpenGLRenderer
@@ -142,26 +142,32 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
 
 
 def version_notification() -> None:
-    """Fetch version from Internet or use cache"""
-    file = Path(os.path.dirname(__file__)) / ".version_cache.log"
-    stable = None
+    """Compare used version to latest version of manim.
+    Version info is fetched from internet once a day and cached into a file.
+    """
+    stable_version = None
 
-    if file.exists():
-        with file.open() as f:
-            last_time = f.readline()
-            if not time.time() - int(last_time) > 86_400:
-                stable = f.readline()
+    cache_file = Path(os.path.dirname(__file__)) / ".version_cache.log"
 
-    if stable is None:
-        new_stable = fetch_version()
-        if new_stable:
-            with file.open(mode="w") as f:
-                f.write(str(int(time.time())) + "\n" + str(new_stable))
-            stable = new_stable
+    if cache_file.exists():
+        with cache_file.open() as f:
+            cache_lifetime = int(f.readline())
+            if time.time() < cache_lifetime:
+                stable_version = f.readline()
 
-    if stable != __version__:
+    if stable_version is None:
+        version = fetch_version()
+        if version is None:
+            return None
+
+        with cache_file.open(mode="w") as f:
+            timecode = int(time.time()) + 86_400
+            f.write(str(timecode) + "\n" + str(version))
+        stable_version = version
+
+    if stable_version != __version__:
         console.print(
-            f"You are using manim version [red]v{__version__}[/red], but version [green]v{stable}[/green] is available.",
+            f"You are using manim version [red]v{__version__}[/red], but version [green]v{stable_version}[/green] is available.",
         )
         console.print(
             "You should consider upgrading via [yellow]pip install -U manim[/yellow]",
@@ -169,6 +175,7 @@ def version_notification() -> None:
 
 
 def fetch_version() -> str | None:
+    """Fetch latest manim version from PYPI-database"""
     import http.client
     import urllib.error
     import urllib.request
@@ -185,15 +192,17 @@ def fetch_version() -> str | None:
         logger.debug(f"{e}: {warn_prompt} ")
         return None
     except json.JSONDecodeError:
-        logger.debug(f"Error while decoding JSON from [{manim_info_url}]: warn_prompt")
+        logger.debug(
+            f"Error while decoding JSON from [{manim_info_url}]: {warn_prompt}"
+        )
         return None
     else:
         return str(json_data["info"]["version"])
 
 
-def warn_and_change_deprecated_args(kwargs: dict[str, Any]) -> None:
-    """Helper function to print info about deprecated functions
-    and mutate inserted dict to contain proper format
+def warn_and_change_deprecated_arguments(kwargs: dict[str, Any]) -> None:
+    """Helper function to print info about deprecated arguments
+    and mutate inserted dictionary to use new format
     """
     if kwargs["save_as_gif"]:
         logger.warning("--save_as_gif is deprecated, please use --format=gif instead!")
@@ -210,11 +219,14 @@ def warn_and_change_deprecated_args(kwargs: dict[str, Any]) -> None:
 
 
 def select_scenes(scene_classes: list[type[Scene]]) -> list[type[Scene]]:
-    """Collection of selection checks for inserted scenes"""
-    if not scene_classes:
-        logger.error(NO_SCENE_MESSAGE)
-        return []
-    elif config.write_all:
+    """Assortment of selection functionality in which one or more Scenes are selected from list.
+
+    Parameters
+    ----------
+    scene_classes
+        list of scene classes that
+    """
+    if config.write_all:
         return scene_classes
 
     result = []
@@ -229,13 +241,14 @@ def select_scenes(scene_classes: list[type[Scene]]) -> list[type[Scene]]:
             logger.error(SCENE_NOT_FOUND_MESSAGE.format(scene_name))
     if result:
         return result
+
     if len(scene_classes) == 1:
         config.scene_names = [scene_classes[0].__name__]
         return [scene_classes[0]]
 
     try:
         console.print(f"{MULTIPLE_SCENES}:\n", style="underline white")
-        scene_indices = prompt_user_with_choice([a.__name__ for a in scene_classes])
+        scene_indices = prompt_user_with_list([a.__name__ for a in scene_classes])
     except Exception as e:
         logger.error(f"{e}\n{INVALID_NUMBER_MESSAGE} ")
         sys.exit(2)
@@ -248,8 +261,14 @@ def select_scenes(scene_classes: list[type[Scene]]) -> list[type[Scene]]:
     return classes
 
 
-def solve_rendrered_scenes(file_path_input: str) -> list[type[Scene]]:
-    """Return scenes from file path or create CLI prompt for input"""
+def scenes_from_input(file_path_input: str) -> list[type[Scene]]:
+    """Return scenes from file path or create CLI prompt for input
+
+    Parameters
+    ----------
+    file_path_input
+        file path or '-' that will open a code prompt
+    """
     from ...scene.scene import Scene
 
     if file_path_input == "-":
@@ -257,13 +276,16 @@ def solve_rendrered_scenes(file_path_input: str) -> list[type[Scene]]:
             code = code_input_prompt()
             module = module_from_text(code)
         except Exception as e:
-            logger.error(f" Failed to create from input code: {e}")
+            logger.error(f"Failed to create from input code: {e}")
             sys.exit(2)
 
         logger.info(INPUT_CODE_RENDER)
     else:
         module = module_from_file(Path(file_path_input))
 
-    scenes = search_classes_from_module(module, Scene)
-
-    return select_scenes(scenes)
+    try:
+        scenes = search_classes_from_module(module, Scene)
+        return select_scenes(scenes)
+    except ValueError:
+        logger.error(NO_SCENE_MESSAGE)
+        return []
