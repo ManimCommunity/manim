@@ -281,7 +281,7 @@ class NumberLine(Line):
         return self.rotate_about_number(0, angle, axis, **kwargs)
 
     def rotate_about_number(
-        self, number: float, angle: float, axis: Sequence[float] = OUT, **kwargs: Any
+        self, number: float, angle: float, axis: Vector3D = OUT, **kwargs: Any
     ) -> Self:
         return self.rotate(angle, axis, about_point=self.n2p(number), **kwargs)
 
