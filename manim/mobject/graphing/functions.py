@@ -248,7 +248,7 @@ class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
         max_quads: int = 1500,
         use_smoothing: bool = True,
         **kwargs: Any,
-    ) -> None:
+    ):
         """An implicit function.
 
         Parameters
