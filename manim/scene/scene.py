@@ -1621,7 +1621,7 @@ class Scene:
             config["scene_names"] = (dpg.get_value(sender),)
             self.queue.put(SceneInteractRerun("gui"))
 
-        scene_classes = scene_classes_for_gui(config.input_file, type(self))
+        scene_classes = scene_classes_for_gui(config.input_file, Scene)
         scene_names = [scene_class.__name__ for scene_class in scene_classes]
 
         with dpg.window(
