@@ -155,7 +155,7 @@ class CoordinateSystem:
         self.num_sampled_graph_points_per_tick = 10
         self.x_axis: NumberLine
 
-    def coords_to_point(self, *coords: ManimFloat) -> Point3DLike:
+    def coords_to_point(self, *coords: ManimFloat) -> Point3D:
         raise NotImplementedError()
 
     def point_to_coords(self, point: Point3DLike) -> list[ManimFloat]:
@@ -233,7 +233,7 @@ class CoordinateSystem:
         val: NumberLine = self.get_axes()[index]
         return val
 
-    def get_origin(self) -> Point3DLike:
+    def get_origin(self) -> Point3D:
         """Gets the origin of :class:`~.Axes`.
 
         Returns

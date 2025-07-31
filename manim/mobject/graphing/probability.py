@@ -87,7 +87,7 @@ class SampleSpace(Rectangle):
     def add_label(self, label: str) -> None:
         self.label = label
 
-    def complete_p_list(self, p_list: list[tuple]) -> list[float]:
+    def complete_p_list(self, p_list: float | Iterable[float]) -> list[float]:
         new_p_list = list(tuplify(p_list))
         remainder = 1.0 - sum(new_p_list)
         if abs(remainder) > EPSILON:
@@ -96,7 +96,7 @@ class SampleSpace(Rectangle):
 
     def get_division_along_dimension(
         self,
-        p_list: list[tuple],
+        p_list: float | Iterable[float],
         dim: int,
         colors: Sequence[ParsableManimColor],
         vect: Vector3D,
@@ -120,7 +120,7 @@ class SampleSpace(Rectangle):
 
     def get_horizontal_division(
         self,
-        p_list: list[tuple],
+        p_list: float | Iterable[float],
         colors: Sequence[ParsableManimColor] = [GREEN_E, BLUE_E],
         vect: Vector3D = DOWN,
     ) -> VGroup:
@@ -128,7 +128,7 @@ class SampleSpace(Rectangle):
 
     def get_vertical_division(
         self,
-        p_list: list[tuple],
+        p_list: float | Iterable[float],
         colors: Sequence[ParsableManimColor] = [MAROON_B, YELLOW],
         vect: Vector3D = RIGHT,
     ) -> VGroup:
