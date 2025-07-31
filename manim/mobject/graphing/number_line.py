@@ -170,7 +170,7 @@ class NumberLine(Line):
         numbers_to_exclude: Iterable[float] | None = None,
         numbers_to_include: Iterable[float] | None = None,
         **kwargs: Any,
-    ) -> None:
+    ):
         # avoid mutable arguments in defaults
         if numbers_to_exclude is None:
             numbers_to_exclude = []
@@ -448,7 +448,7 @@ class NumberLine(Line):
     def get_number_mobject(
         self,
         x: float,
-        direction: Sequence[float] | None = None,
+        direction: Vector3D | None = None,
         buff: float | None = None,
         font_size: float | None = None,
         label_constructor: type[MathTex] | None = None,
@@ -683,7 +683,7 @@ class UnitInterval(NumberLine):
         numbers_with_elongated_ticks: list[float] | None = None,
         decimal_number_config: dict[str, Any] | None = None,
         **kwargs: Any,
-    ) -> None:
+    ):
         numbers_with_elongated_ticks = (
             [0, 1]
             if numbers_with_elongated_ticks is None
