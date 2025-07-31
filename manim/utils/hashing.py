@@ -20,7 +20,7 @@ if typing.TYPE_CHECKING:
     from manim.animation.animation import Animation
     from manim.camera.camera import Camera
     from manim.mobject.mobject import Mobject
-    from manim.opengl.opengl_renderer import OpenGLCamera
+    from manim.renderer.opengl_renderer import OpenGLCamera
     from manim.scene.scene import Scene
 
 __all__ = ["KEYS_TO_FILTER_OUT", "get_hash_from_play_call", "get_json"]

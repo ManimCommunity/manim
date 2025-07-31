@@ -3103,21 +3103,22 @@ class Mobject:
         --------
         :meth:`~.Mobject.align_data`, :meth:`~.VMobject.interpolate_color`
         """
-        mobject = mobject.copy()
-        if stretch:
-            mobject.stretch_to_fit_height(self.height)
-            mobject.stretch_to_fit_width(self.width)
-            mobject.stretch_to_fit_depth(self.depth)
-        else:
-            if match_height:
-                mobject.match_height(self)
-            if match_width:
-                mobject.match_width(self)
-            if match_depth:
-                mobject.match_depth(self)
+        if stretch or match_height or match_width or match_depth or match_center:
+            mobject = mobject.copy()
+            if stretch:
+                mobject.stretch_to_fit_height(self.height)
+                mobject.stretch_to_fit_width(self.width)
+                mobject.stretch_to_fit_depth(self.depth)
+            else:
+                if match_height:
+                    mobject.match_height(self)
+                if match_width:
+                    mobject.match_width(self)
+                if match_depth:
+                    mobject.match_depth(self)
 
-        if match_center:
-            mobject.move_to(self.get_center())
+            if match_center:
+                mobject.move_to(self.get_center())
 
         self.align_data(mobject, skip_point_alignment=True)
         for sm1, sm2 in zip(self.get_family(), mobject.get_family()):

@@ -962,7 +962,7 @@ class LinearTransformationScene(VectorScene):
             label_mob.target_text = new_label  # type: ignore[attr-defined]
         else:
             label_mob.target_text = (  # type: ignore[attr-defined]
-                f"{transformation_name}({label_mob.get_tex_string()})"  # type: ignore[no-untyped-call]
+                f"{transformation_name}({label_mob.get_tex_string()})"
             )
         label_mob.vector = vector  # type: ignore[attr-defined]
         label_mob.kwargs = kwargs  # type: ignore[attr-defined]

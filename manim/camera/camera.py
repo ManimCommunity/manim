@@ -16,6 +16,9 @@ import cairo
 import numpy as np
 from PIL import Image
 from scipy.spatial.distance import pdist
+from typing_extensions import Self
+
+from manim.typing import Point3D_Array
 
 from .. import config, logger
 from ..constants import *
@@ -386,7 +389,7 @@ class Camera:
 
     def set_background_from_func(
         self, coords_to_colors_func: Callable[[np.ndarray], np.ndarray]
-    ):
+    ) -> None:
         """
         Sets the background to a pixel array using coords_to_colors_func to determine each pixel's color. Each input
         pixel's color. Each input to coords_to_colors_func is an (x, y) pair in space (in ordinary space coordinates; not
@@ -400,7 +403,7 @@ class Camera:
         """
         self.set_background(self.make_background_from_func(coords_to_colors_func))
 
-    def reset(self):
+    def reset(self) -> Self:
         """Resets the camera's pixel array
         to that of the background
 
@@ -1078,8 +1081,8 @@ class Camera:
 
     def transform_points_pre_display(
         self,
-        mobject,
-        points,
+        mobject: Mobject,
+        points: Point3D_Array,
     ):  # TODO: Write more detailed docstrings for this method.
         # NOTE: There seems to be an unused argument `mobject`.
 
