@@ -430,7 +430,7 @@ class NumberLine(Line):
         )
         return interpolate(self.x_min, self.x_max, proportion)
 
-    def n2p(self, number: float | np.ndarray) -> np.ndarray:
+    def n2p(self, number: float | np.ndarray) -> Point3D:
         """Abbreviation for :meth:`~.NumberLine.number_to_point`."""
         return self.number_to_point(number)
 
