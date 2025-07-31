@@ -122,19 +122,21 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
     ) -> None:
         self.u_range = u_range
         self.v_range = v_range
-        super().__init__(**kwargs)
+        super().__init__(
+            fill_color=fill_color,
+            fill_opacity=fill_opacity,
+            stroke_color=stroke_color,
+            stroke_width=stroke_width,
+            **kwargs,
+        )
         self.resolution = resolution
         self.surface_piece_config = surface_piece_config
-        self.fill_color: ManimColor = ManimColor(fill_color)
-        self.fill_opacity = fill_opacity
         if checkerboard_colors:
             self.checkerboard_colors: list[ManimColor] = [
                 ManimColor(x) for x in checkerboard_colors
             ]
         else:
             self.checkerboard_colors = checkerboard_colors
-        self.stroke_color: ManimColor = ManimColor(stroke_color)
-        self.stroke_width = stroke_width
         self.should_make_jagged = should_make_jagged
         self.pre_function_handle_to_anchor_scale_factor = (
             pre_function_handle_to_anchor_scale_factor
@@ -523,7 +525,8 @@ class Cube(VGroup):
 
             self.add(face)
 
-    init_points = generate_points
+    def init_points(self) -> None:
+        self.generate_points()
 
 
 class Prism(Cube):
