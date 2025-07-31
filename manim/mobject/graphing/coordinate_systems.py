@@ -126,7 +126,7 @@ class CoordinateSystem:
         x_length: float | None = None,
         y_length: float | None = None,
         dimension: int = 2,
-    ) -> None:
+    ):
         self.dimension = dimension
 
         default_step = 1
@@ -156,6 +156,8 @@ class CoordinateSystem:
         self.x_axis: NumberLine
 
     def coords_to_point(self, *coords: ManimFloat) -> Point3D:
+        # TODO: I think the method should be able to return more than just a single point.
+        # E.g. see the implementation of it on line 2065.
         raise NotImplementedError()
 
     def point_to_coords(self, point: Point3DLike) -> list[ManimFloat]:
@@ -202,7 +204,7 @@ class CoordinateSystem:
 
         Returns
         -------
-        Tuple[:class:`float`, :class:`float`]
+        Point2D
             The coordinate radius (:math:`r`) and the coordinate azimuth (:math:`\theta`).
         """
         x, y = self.point_to_coords(point)
@@ -261,8 +263,8 @@ class CoordinateSystem:
     def get_x_axis_label(
         self,
         label: float | str | VMobject,
-        edge: Sequence[float] = UR,
-        direction: Sequence[float] = UR,
+        edge: Vector3D = UR,
+        direction: Vector3D = UR,
         buff: float = SMALL_BUFF,
         **kwargs: Any,
     ) -> Mobject:
@@ -304,8 +306,8 @@ class CoordinateSystem:
     def get_y_axis_label(
         self,
         label: float | str | VMobject,
-        edge: Sequence[float] = UR,
-        direction: Sequence[float] = UP * 0.5 + RIGHT,
+        edge: Vector3D = UR,
+        direction: Vector3D = UP * 0.5 + RIGHT,
         buff: float = SMALL_BUFF,
         **kwargs: Any,
     ) -> Mobject:
@@ -351,8 +353,8 @@ class CoordinateSystem:
         self,
         label: float | str | VMobject,
         axis: Mobject,
-        edge: Sequence[float],
-        direction: Sequence[float],
+        edge: Vector3D,
+        direction: Vector3D,
         buff: float = SMALL_BUFF,
     ) -> Mobject:
         """Gets the label for an axis.
@@ -457,7 +459,7 @@ class CoordinateSystem:
     def get_line_from_axis_to_point(
         self,
         index: int,
-        point: Sequence[float],
+        point: Point3DLike,
         line_config: dict | None = ...,
         color: ParsableManimColor | None = ...,
         stroke_width: float = ...,
@@ -467,7 +469,7 @@ class CoordinateSystem:
     def get_line_from_axis_to_point(
         self,
         index: int,
-        point: Sequence[float],
+        point: Point3DLike,
         line_func: type[LineType],
         line_config: dict | None = ...,
         color: ParsableManimColor | None = ...,
@@ -522,7 +524,7 @@ class CoordinateSystem:
         line = line_func(axis.get_projection(point), point, **line_config)
         return line
 
-    def get_vertical_line(self, point: Sequence[float], **kwargs: Any) -> Line:
+    def get_vertical_line(self, point: Point3DLike, **kwargs: Any) -> Line:
         """A vertical line from the x-axis to a given point in the scene.
 
         Parameters
@@ -556,7 +558,7 @@ class CoordinateSystem:
         """
         return self.get_line_from_axis_to_point(0, point, **kwargs)
 
-    def get_horizontal_line(self, point: Sequence[float], **kwargs: Any) -> Line:
+    def get_horizontal_line(self, point: Point3DLike, **kwargs: Any) -> Line:
         """A horizontal line from the y-axis to a given point in the scene.
 
         Parameters
@@ -588,7 +590,7 @@ class CoordinateSystem:
         """
         return self.get_line_from_axis_to_point(1, point, **kwargs)
 
-    def get_lines_to_point(self, point: Sequence[float], **kwargs: Any) -> VGroup:
+    def get_lines_to_point(self, point: Point3DLike, **kwargs: Any) -> VGroup:
         """Generate both horizontal and vertical lines from the axis to a point.
 
         Parameters
@@ -634,7 +636,9 @@ class CoordinateSystem:
         function: Callable[[float], float],
         x_range: Sequence[float] | None = None,
         use_vectorized: bool = False,
-        colorscale: Union[Iterable[Color], Iterable[Color, float]] | None = None,
+        colorscale: Iterable[ParsableManimColor]
+        | Iterable[ParsableManimColor, float]
+        | None = None,
         colorscale_axis: int = 1,
         **kwargs: Any,
     ) -> ParametricFunction:
@@ -1595,7 +1599,7 @@ class CoordinateSystem:
             x_vals = np.linspace(0, x, samples, axis=1 if use_vectorized else 0)
             f_vec = np.vectorize(graph.underlying_function)
             y_vals = f_vec(x_vals)
-            return np.trapz(y_vals, x_vals) + y_intercept
+            return np.trapezoid(y_vals, x_vals) + y_intercept
 
         return self.plot(antideriv, use_vectorized=use_vectorized, **kwargs)
 
@@ -1929,7 +1933,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         y_axis_config: dict | None = None,
         tips: bool = True,
         **kwargs: Any,
-    ) -> None:
+    ):
         VGroup.__init__(self, **kwargs)
         CoordinateSystem.__init__(self, x_range, y_range, x_length, y_length)
 
@@ -2430,12 +2434,12 @@ class ThreeDAxes(Axes):
         z_axis_config: dict[str, Any] | None = None,
         z_normal: Vector3D = DOWN,
         num_axis_pieces: int = 20,
-        light_source: Sequence[float] = 9 * DOWN + 7 * LEFT + 10 * OUT,
+        light_source: Point3DLike = 9 * DOWN + 7 * LEFT + 10 * OUT,
         # opengl stuff (?)
         depth: Any = None,
         gloss: float = 0.5,
         **kwargs: dict[str, Any],
-    ) -> None:
+    ):
         super().__init__(
             x_range=x_range,
             x_length=x_length,
@@ -2457,7 +2461,7 @@ class ThreeDAxes(Axes):
         self.z_normal = z_normal
         self.num_axis_pieces = num_axis_pieces
 
-        self.light_source = light_source
+        self.light_source = np.array(light_source)
 
         self.dimension = 3
 
@@ -2515,8 +2519,8 @@ class ThreeDAxes(Axes):
     def get_y_axis_label(
         self,
         label: float | str | VMobject,
-        edge: Sequence[float] = UR,
-        direction: Sequence[float] = UR,
+        edge: Vector3D = UR,
+        direction: Vector3D = UR,
         buff: float = SMALL_BUFF,
         rotation: float = PI / 2,
         rotation_axis: Vector3D = OUT,
@@ -3023,7 +3027,7 @@ class PolarPlane(Axes):
         faded_line_ratio: int = 1,
         make_smooth_after_applying_functions: bool = True,
         **kwargs: Any,
-    ) -> None:
+    ):
         # error catching
         if azimuth_units in ["PI radians", "TAU radians", "degrees", "gradians", None]:
             self.azimuth_units = azimuth_units
@@ -3377,7 +3381,7 @@ class ComplexPlane(NumberPlane):
 
     """
 
-    def __init__(self, **kwargs: Any) -> None:
+    def __init__(self, **kwargs: Any):
         super().__init__(
             **kwargs,
         )
