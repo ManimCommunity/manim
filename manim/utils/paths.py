@@ -19,7 +19,12 @@ from ..utils.bezier import interpolate
 from ..utils.space_ops import normalize, rotation_matrix
 
 if TYPE_CHECKING:
-    from manim.typing import PathFuncType, Point3D_Array, Point3DLike_Array, Vector3DLike
+    from manim.typing import (
+        PathFuncType,
+        Point3D_Array,
+        Point3DLike_Array,
+        Vector3DLike,
+    )
 
 
 STRAIGHT_PATH_THRESHOLD = 0.01
