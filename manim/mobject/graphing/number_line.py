@@ -276,7 +276,7 @@ class NumberLine(Line):
                 )
 
     def rotate_about_zero(
-        self, angle: float, axis: Sequence[float] = OUT, **kwargs: Any
+        self, angle: float, axis: Vector3D = OUT, **kwargs: Any
     ) -> Self:
         return self.rotate_about_number(0, angle, axis, **kwargs)
 
