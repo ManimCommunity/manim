@@ -72,6 +72,7 @@ from manim import config, logger
 from manim.constants import *
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.svg.svg_mobject import SVGMobject
+from manim.mobject.text.code_mobject import Code
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.typing import Point3D
 from manim.utils.color import ManimColor, ParsableManimColor, color_gradient
@@ -83,7 +84,7 @@ TEXT2SVG_ADJUSTMENT_FACTOR = 4.8
 __all__ = ["Text", "Paragraph", "MarkupText", "register_font"]
 
 
-def remove_invisible_chars(mobject: SVGMobject) -> VGroup:
+def remove_invisible_chars(mobject: SVGMobject) -> VGroup | SVGMobject:
     """Function to remove unwanted invisible characters from some mobjects.
 
     Parameters
@@ -98,9 +99,9 @@ def remove_invisible_chars(mobject: SVGMobject) -> VGroup:
     """
     # TODO: Refactor needed
     iscode = False
-    if mobject.__class__.__name__ == "Text":
+    if isinstance(mobject, Text):
         mobject = mobject[:]
-    elif mobject.__class__.__name__ == "Code":
+    elif isinstance(mobject, Code):
         iscode = True
         code = mobject
         mobject = mobject.code
@@ -112,6 +113,7 @@ def remove_invisible_chars(mobject: SVGMobject) -> VGroup:
     else:
         mobject_without_dots.add(*(k for k in mobject if k.__class__ != Dot))
     if iscode:
+        assert isinstance(code, Code)
         code.code = mobject_without_dots
         return code
     return mobject_without_dots
@@ -157,7 +159,7 @@ class Paragraph(VGroup):
 
     def __init__(
         self,
-        *text: Sequence[str],
+        *text: str,
         line_spacing: float = -1,
         alignment: str | None = None,
         **kwargs: Any,
@@ -492,11 +494,16 @@ class Text(SVGMobject):
         t2g = kwargs.pop("text2gradient", t2g)
         t2s = kwargs.pop("text2slant", t2s)
         t2w = kwargs.pop("text2weight", t2w)
-        self.t2c = {k: ManimColor(v).to_hex() for k, v in t2c.items()}
-        self.t2f = t2f
-        self.t2g = t2g
-        self.t2s = t2s
-        self.t2w = t2w
+        assert t2c is not None
+        assert t2f is not None
+        assert t2g is not None
+        assert t2s is not None
+        assert t2w is not None
+        self.t2c: dict[str, str] = {k: ManimColor(v).to_hex() for k, v in t2c.items()}
+        self.t2f: dict[str, str] = t2f
+        self.t2g: dict[str, tuple] = t2g
+        self.t2s: dict[str, str] = t2s
+        self.t2w: dict[str, str] = t2w
 
         self.original_text = text
         self.disable_ligatures = disable_ligatures
@@ -690,8 +697,8 @@ class Text(SVGMobject):
     def _get_settings_from_t2xs(
         self,
         t2xs: Sequence[tuple[dict[str, str], str]],
-        default_args: dict[str, Iterable[str]],
-    ) -> Sequence[TextSetting]:
+        default_args: dict[str, Any],
+    ) -> list[TextSetting]:
         settings = []
         t2xwords = set(chain(*([*t2x.keys()] for t2x, _ in t2xs)))
         for word in t2xwords:
@@ -707,24 +714,27 @@ class Text(SVGMobject):
         return settings
 
     def _get_settings_from_gradient(
-        self, default_args: dict[str, Iterable[str]]
+        self, default_args: dict[str, str]
     ) -> Sequence[TextSetting]:
         settings = []
         args = copy.copy(default_args)
         if self.gradient:
             colors = color_gradient(self.gradient, len(self.text))
             for i in range(len(self.text)):
+                # The type error below
+                # manim/mobject/text/text_mobject.py:724: error: Item "float" of "ManimColor | float" has no attribute "to_hex"  [union-attr]
+                # is caused by the color_gradient function, as it is not guaranteed to return a list of ManimColors.
                 args["color"] = colors[i].to_hex()
                 settings.append(TextSetting(i, i + 1, **args))
 
         for word, gradient in self.t2g.items():
             if isinstance(gradient, str) or len(gradient) == 1:
                 color = gradient if isinstance(gradient, str) else gradient[0]
-                gradient = [ManimColor(color)]
+                gradient = (ManimColor(color), ManimColor(color))
             colors = (
                 color_gradient(gradient, len(word))
                 if len(gradient) != 1
-                else len(word) * gradient
+                else len(word) * list(gradient)
             )
             for start, end in self._find_indexes(word, self.text):
                 for i in range(start, end):
@@ -734,7 +744,7 @@ class Text(SVGMobject):
 
     def _text2settings(self, color: ParsableManimColor) -> Sequence[TextSetting]:
         """Converts the texts and styles to a setting for parsing."""
-        t2xs = [
+        t2xs: list[tuple[dict[str, str], str]] = [
             (self.t2f, "font"),
             (self.t2s, "slant"),
             (self.t2w, "weight"),
@@ -742,7 +752,7 @@ class Text(SVGMobject):
         ]
         # setting_args requires values to be strings
 
-        default_args = {
+        default_args: dict[str, Any] = {
             arg: getattr(self, arg) if arg != "color" else color for _, arg in t2xs
         }
 
