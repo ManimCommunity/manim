@@ -9,7 +9,7 @@ from PIL import Image
 
 from manim.constants import *
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-from manim.typing import MatrixMN
+from manim.typing import Point3D_Array, Vector3D_Array
 from manim.utils.bezier import integer_interpolate, interpolate
 from manim.utils.color import *
 from manim.utils.config_ops import _Data, _Uniforms
