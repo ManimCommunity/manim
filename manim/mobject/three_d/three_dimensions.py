@@ -1060,11 +1060,11 @@ class Line3D(Cylinder):
                     line2 = Line3D.parallel_to(line1, color=YELLOW)
                     self.add(ax, line1, line2)
         """
-        point = np.asarray(point)
+        np_point = np.asarray(point)
         vect = normalize(line.vect)
         return cls(
-            point + vect * length / 2,
-            point - vect * length / 2,
+            np_point + vect * length / 2,
+            np_point - vect * length / 2,
             **kwargs,
         )
 
@@ -1108,17 +1108,17 @@ class Line3D(Cylinder):
                     line2 = Line3D.perpendicular_to(line1, color=BLUE)
                     self.add(ax, line1, line2)
         """
-        point = np.asarray(point)
+        np_point = np.asarray(point)
 
-        norm = np.cross(line.vect, point - line.start)
+        norm = np.cross(line.vect, np_point - line.start)
         if all(np.linalg.norm(norm) == np.zeros(3)):
             raise ValueError("Could not find the perpendicular.")
 
         start, end = perpendicular_bisector([line.start, line.end], norm)
         vect = normalize(end - start)
         return cls(
-            point + vect * length / 2,
-            point - vect * length / 2,
+            np_point + vect * length / 2,
+            np_point - vect * length / 2,
             **kwargs,
         )
 

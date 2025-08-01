@@ -259,7 +259,7 @@ def rotation_matrix(
 ) -> np.ndarray:
     """Rotation in R^3 about a specified axis of rotation."""
     inhomogeneous_rotation_matrix = Rotation.from_rotvec(
-        angle * normalize(np.asarray(axis))
+        angle * normalize(axis)
     ).as_matrix()
     if not homogeneous:
         return inhomogeneous_rotation_matrix

@@ -642,7 +642,7 @@ class VMobject(Mobject):
         direction_copy = np.array(direction)
         if family:
             for submob in self.get_family():
-                submob.sheen_direction = direction_copy
+                submob.sheen_direction = direction_copy.copy()
         else:
             self.sheen_direction = direction_copy
         return self

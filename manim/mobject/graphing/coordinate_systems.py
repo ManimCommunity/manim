@@ -2519,7 +2519,7 @@ class ThreeDAxes(Axes):
 
     def get_y_axis_label(
         self,
-        label: float | str | Mobject,
+        label: float | str | VMobject,
         edge: Vector3DLike = UR,
         direction: Vector3DLike = UR,
         buff: float = SMALL_BUFF,
