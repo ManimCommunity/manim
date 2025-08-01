@@ -218,7 +218,9 @@ def render_opengl_vectorized_mobject_stroke(
 
 
 def render_mobject_strokes_with_matrix(
-    renderer: OpenGLRenderer, model_matrix: MatrixMN, mobjects: list[OpenGLVMobject]
+    renderer: OpenGLRenderer,
+    model_matrix: MatrixMN,
+    mobjects: Iterable[OpenGLVMobject],
 ) -> None:
     # Precompute the total number of vertices for which to reserve space.
     total_size = 0
