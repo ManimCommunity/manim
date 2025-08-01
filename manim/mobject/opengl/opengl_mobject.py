@@ -2283,19 +2283,19 @@ class OpenGLMobject:
         boundary_directions = all_points - self.get_center()
         norms = np.linalg.norm(boundary_directions, axis=1)
         boundary_directions /= np.repeat(norms, 3).reshape((len(norms), 3))
-        index = np.argmax(np.dot(boundary_directions, np.asarray(direction)))
+        index = np.argmax(np.dot(boundary_directions, direction))
         return all_points[index]
 
     def get_continuous_bounding_box_point(self, direction: Vector3DLike) -> Point3D:
         dl, center, ur = self.get_bounding_box()
         corner_vect = ur - center
-        direction = np.asarray(direction)
-        return center + direction / np.max(
+        np_direction = np.asarray(direction)
+        return center + np_direction / np.max(
             np.abs(
                 np.true_divide(
-                    direction,
+                    np_direction,
                     corner_vect,
-                    out=np.zeros(len(direction)),
+                    out=np.zeros(len(np_direction)),
                     where=((corner_vect) != 0),
                 ),
             ),

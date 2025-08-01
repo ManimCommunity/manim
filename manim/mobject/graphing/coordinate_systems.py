@@ -2459,7 +2459,7 @@ class ThreeDAxes(Axes):
             self.z_axis_config,
         )
 
-        self.z_normal: Vector3D = np.asarray(z_normal)
+        self.z_normal = z_normal
         self.num_axis_pieces = num_axis_pieces
 
         self.light_source = np.array(light_source)

@@ -179,8 +179,8 @@ def quaternion_conjugate(quaternion: Sequence[float]) -> np.ndarray:
 
 
 def rotate_vector(
-    vector: np.ndarray, angle: float, axis: np.ndarray = OUT
-) -> np.ndarray:
+    vector: Vector3DLike, angle: float, axis: Vector3DLike = OUT
+) -> Vector3D:
     """Function for rotating a vector.
 
     Parameters
@@ -406,21 +406,21 @@ def get_unit_normal(v1: Vector3DLike, v2: Vector3DLike, tol: float = 1e-6) -> Ve
     np.ndarray
         The normal of the two vectors.
     """
-    v1 = np.asarray(v1)
-    v2 = np.asarray(v2)
+    np_v1 = np.asarray(v1)
+    np_v2 = np.asarray(v2)
 
     # Instead of normalizing v1 and v2, just divide by the greatest
     # of all their absolute components, which is just enough
-    div1, div2 = max(np.abs(v1)), max(np.abs(v2))
+    div1, div2 = max(np.abs(np_v1)), max(np.abs(np_v2))
     if div1 == 0.0:
         if div2 == 0.0:
             return DOWN
-        u = v2 / div2
+        u = np_v2 / div2
     elif div2 == 0.0:
-        u = v1 / div1
+        u = np_v1 / div1
     else:
         # Normal scenario: v1 and v2 are both non-null
-        u1, u2 = v1 / div1, v2 / div2
+        u1, u2 = np_v1 / div1, np_v2 / div2
         cp = cross(u1, u2)
         cp_norm = np.sqrt(norm_squared(cp))
         if cp_norm > tol:
@@ -609,12 +609,7 @@ def find_intersection(
     # algorithm from https://en.wikipedia.org/wiki/Skew_lines#Nearest_points
     result = []
 
-    p0s = np.asarray(p0s)
-    v0s = np.asarray(v0s)
-    p1s = np.asarray(p1s)
-    v1s = np.asarray(v1s)
-
-    for p0, v0, p1, v1 in zip(*[p0s, v0s, p1s, v1s]):
+    for p0, v0, p1, v1 in zip(p0s, v0s, p1s, v1s):
         normal = cross(v1, cross(v0, v1))
         denom = max(np.dot(v0, normal), threshold)
         result += [p0 + np.dot(p1 - p0, normal) / denom * v0]

@@ -74,7 +74,6 @@ if TYPE_CHECKING:
         Point3D,
         Point3DLike,
         QuadraticSpline,
-        Vector3D,
         Vector3DLike,
     )
 
@@ -105,7 +104,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         **kwargs: Any,
     ) -> None:
         self.tip_length: float = tip_length
-        self.normal_vector: Vector3D = np.asarray(normal_vector)
+        self.normal_vector = normal_vector
         self.tip_style: dict = tip_style
         super().__init__(**kwargs)
 

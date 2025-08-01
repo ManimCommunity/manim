@@ -1810,7 +1810,7 @@ class Mobject:
         else:
             target = point_or_mobject
         point_to_align = self.get_critical_point(aligned_edge)
-        self.shift((target - point_to_align) * np.asarray(coor_mask))
+        self.shift((target - point_to_align) * coor_mask)
         return self
 
     def replace(
@@ -2167,7 +2167,7 @@ class Mobject:
 
     def get_boundary_point(self, direction: Vector3DLike) -> Point3D:
         all_points = self.get_points_defining_boundary()
-        index = np.argmax(np.dot(all_points, np.asarray(direction)))
+        index = np.argmax(np.dot(all_points, direction))
         return all_points[index]
 
     def get_midpoint(self) -> Point3D:

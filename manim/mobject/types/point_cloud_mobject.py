@@ -35,7 +35,7 @@ if TYPE_CHECKING:
     import numpy.typing as npt
     from typing_extensions import Self
 
-    from manim.typing import ManimFloat, Point3D, Point3DLike
+    from manim.typing import ManimFloat, Point3DLike
 
 
 class PMobject(Mobject, metaclass=ConvertToOpenGL):
@@ -408,7 +408,7 @@ class Point(PMobject):
     def __init__(
         self, location: Point3DLike = ORIGIN, color: ManimColor = BLACK, **kwargs: Any
     ) -> None:
-        self.location: Point3D = np.asarray(location)
+        self.location = location
         super().__init__(color=color, **kwargs)
 
     def init_points(self) -> None:

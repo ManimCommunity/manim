@@ -142,7 +142,7 @@ class VMobject(Mobject):
         self.joint_type: LineJointType = (
             LineJointType.AUTO if joint_type is None else joint_type
         )
-        self.sheen_direction: Vector3D = np.asarray(sheen_direction)
+        self.sheen_direction = sheen_direction
         self.close_new_points: bool = close_new_points
         self.pre_function_handle_to_anchor_scale_factor: float = (
             pre_function_handle_to_anchor_scale_factor
@@ -639,12 +639,12 @@ class VMobject(Mobject):
         :meth:`~.VMobject.set_sheen`
         :meth:`~.VMobject.rotate_sheen_direction`
         """
-        direction = np.asarray(direction)
+        direction_copy = np.array(direction)
         if family:
             for submob in self.get_family():
-                submob.sheen_direction = direction
+                submob.sheen_direction = direction_copy
         else:
-            self.sheen_direction = direction
+            self.sheen_direction = direction_copy
         return self
 
     def rotate_sheen_direction(
@@ -719,7 +719,7 @@ class VMobject(Mobject):
         return self
 
     def get_sheen_direction(self) -> Vector3D:
-        return self.sheen_direction
+        return np.array(self.sheen_direction)
 
     def get_sheen_factor(self) -> float:
         return self.sheen_factor
