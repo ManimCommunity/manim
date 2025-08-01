@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import collections
+from collections.abc import Iterable, Sequence
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -220,7 +221,7 @@ def render_opengl_vectorized_mobject_stroke(
 def render_mobject_strokes_with_matrix(
     renderer: OpenGLRenderer,
     model_matrix: MatrixMN,
-    mobjects: Iterable[OpenGLVMobject],
+    mobjects: Sequence[OpenGLVMobject],
 ) -> None:
     # Precompute the total number of vertices for which to reserve space.
     total_size = 0
