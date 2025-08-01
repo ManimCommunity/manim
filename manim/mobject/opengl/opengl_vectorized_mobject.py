@@ -604,7 +604,9 @@ class OpenGLVMobject(OpenGLMobject):
         )
         return self
 
-    def set_points_smoothly(self, points, true_smooth: bool = False) -> Self:
+    def set_points_smoothly(
+        self, points: Point3DLike_Array, true_smooth: bool = False
+    ) -> Self:
         self.set_points_as_corners(points)
         self.make_smooth()
         return self
