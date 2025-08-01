@@ -1666,7 +1666,7 @@ class OpenGLVGroup(OpenGLVMobject):
                 self.add(circles_group)
     """
 
-    def __init__(self, *vmobjects: Any, **kwargs: Any):
+    def __init__(self, *vmobjects: OpenGLVMobject, **kwargs: Any):
         super().__init__(**kwargs)
         self.add(*vmobjects)
 
