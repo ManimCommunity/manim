@@ -318,9 +318,6 @@ A 2-dimensional point: ``[float, float]``.
 
 This represents anything which can be converted to a :class:`Point2D` NumPy
 array.
-
-Normally, a function or method which expects a :class:`Point2DLike` as a
-parameter can handle being passed a :class:`Point3DLike` instead.
 """
 
 Point2D_Array: TypeAlias = npt.NDArray[PointDType]
@@ -337,9 +334,6 @@ An array of :class:`Point2DLike` objects: ``[[float, float], ...]``.
 
 This represents anything which can be converted to a :class:`Point2D_Array`
 NumPy array.
-
-Normally, a function or method which expects a :class:`Point2DLike_Array` as a
-parameter can handle being passed a :class:`Point3DLike_Array` instead.
 
 Please refer to the documentation of the function you are using for
 further type information.
@@ -437,9 +431,6 @@ A 2-dimensional vector: ``[float, float]``.
 This represents anything which can be converted to a :class:`Vector2D` NumPy
 array.
 
-Normally, a function or method which expects a :class:`Vector2DLike` as a
-parameter can handle being passed a :class:`Vector3DLike` instead.
-
 .. caution::
     Do not confuse with the :class:`~.Vector` or :class:`~.Arrow`
     VMobjects!
@@ -459,9 +450,6 @@ An array of :class:`Vector2DLike` objects: ``[[float, float], ...]``.
 
 This represents anything which can be converted to a :class:`Vector2D_Array`
 NumPy array.
-
-Normally, a function or method which expects a :class:`Vector2DLike_Array` as a
-parameter can handle being passed a :class:`Vector3DLike_Array` instead.
 """
 
 Vector3D: TypeAlias = npt.NDArray[PointDType]
