@@ -9,6 +9,9 @@ from __future__ import annotations
 
 __all__ = ["MovingCamera"]
 
+from collections.abc import Iterable
+from typing import Any
+
 import numpy as np
 
 from .. import config
@@ -16,7 +19,7 @@ from ..camera.camera import Camera
 from ..constants import DOWN, LEFT, RIGHT, UP
 from ..mobject.frame import ScreenRectangle
 from ..mobject.mobject import Mobject
-from ..utils.color import WHITE
+from ..utils.color import WHITE, ManimColor
 
 
 class MovingCamera(Camera):
@@ -32,10 +35,10 @@ class MovingCamera(Camera):
     def __init__(
         self,
         frame=None,
-        fixed_dimension=0,  # width
-        default_frame_stroke_color=WHITE,
-        default_frame_stroke_width=0,
-        **kwargs,
+        fixed_dimension: int = 0,  # width
+        default_frame_stroke_color: ManimColor = WHITE,
+        default_frame_stroke_width: int = 0,
+        **kwargs: Any,
     ) -> None:
         """Frame is a Mobject, (should almost certainly be a rectangle)
         determining which region of space the camera displays
@@ -121,7 +124,7 @@ class MovingCamera(Camera):
         """
         self.frame.move_to(frame_center)
 
-    def capture_mobjects(self, mobjects, **kwargs):
+    def capture_mobjects(self, mobjects: Iterable[Mobject], **kwargs: Any) -> None:
         # self.reset_frame_center()
         # self.realign_frame_shape()
         super().capture_mobjects(mobjects, **kwargs)
