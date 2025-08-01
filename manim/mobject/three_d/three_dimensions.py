@@ -518,6 +518,7 @@ class Cube(VGroup):
             face = Square(
                 side_length=self.side_length,
                 shade_in_3d=True,
+                joint_type=LineJointType.BEVEL,
             )
             face.flip()
             face.shift(self.side_length * OUT / 2.0)
