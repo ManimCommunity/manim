@@ -163,7 +163,7 @@ class OpenGLSurface(OpenGLMobject):
 
     def get_surface_points_and_nudged_points(
         self,
-    ) -> tuple[MatrixMN, MatrixMN, MatrixMN]:
+    ) -> tuple[Point3D_Array, Point3D_Array, Point3D_Array]:
         points = self.points
         k = len(points) // 3
         return points[:k], points[k : 2 * k], points[2 * k :]
