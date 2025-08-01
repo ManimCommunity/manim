@@ -212,4 +212,10 @@ render_options = option_group(
         help="Use shaders for OpenGLVMobject stroke which are compatible with transformation matrices.",
         default=None,
     ),
+    option(
+        "--lossless",
+        is_flag=True,
+        help="Render with lossless x265 encoding (mp4 format only).",
+        default=False,
+    ),
 )
