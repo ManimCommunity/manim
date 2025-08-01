@@ -1841,8 +1841,8 @@ class OpenGLMobject:
                     self.add(d, c, s, t)
 
         """
-        direction = np.asarray(direction)
-        aligned_edge = np.asarray(aligned_edge)
+        np_direction = np.asarray(direction)
+        np_aligned_edge = np.asarray(aligned_edge)
 
         if isinstance(mobject_or_point, OpenGLMobject):
             mob = mobject_or_point
@@ -1851,7 +1851,7 @@ class OpenGLMobject:
             else:
                 target_aligner = mob
             target_point = target_aligner.get_bounding_box_point(
-                aligned_edge + direction,
+                np_aligned_edge + np_direction,
             )
         else:
             target_point = mobject_or_point
@@ -1861,8 +1861,8 @@ class OpenGLMobject:
             aligner = self[index_of_submobject_to_align]
         else:
             aligner = self
-        point_to_align = aligner.get_bounding_box_point(aligned_edge - direction)
-        self.shift((target_point - point_to_align + buff * direction) * coor_mask)
+        point_to_align = aligner.get_bounding_box_point(np_aligned_edge - np_direction)
+        self.shift((target_point - point_to_align + buff * np_direction) * coor_mask)
         return self
 
     def shift_onto_screen(self, **kwargs) -> Self:
@@ -2005,7 +2005,7 @@ class OpenGLMobject:
         self,
         point_or_mobject: Point3DLike | OpenGLMobject,
         aligned_edge: Vector3DLike = ORIGIN,
-        coor_mask: Point3DLike = np.array([1, 1, 1]),
+        coor_mask: Vector3DLike = np.array([1, 1, 1]),
     ) -> Self:
         """Move center of the :class:`~.OpenGLMobject` to certain coordinate."""
         if isinstance(point_or_mobject, OpenGLMobject):

@@ -25,8 +25,8 @@ if TYPE_CHECKING:
         Point3DLike_Array,
         PointND,
         PointNDLike_Array,
-        Vector2DLike,
-        Vector2DLike_Array,
+        Vector2D,
+        Vector2D_Array,
         Vector3D,
         Vector3DLike,
         Vector3DLike_Array,
@@ -682,8 +682,8 @@ def shoelace_direction(x_y: Point2D_Array) -> str:
 
 
 def cross2d(
-    a: Vector2DLike | Vector2DLike_Array,
-    b: Vector2DLike | Vector2DLike_Array,
+    a: Vector2D | Vector2D_Array,
+    b: Vector2D | Vector2D_Array,
 ) -> ManimFloat | npt.NDArray[ManimFloat]:
     """Compute the determinant(s) of the passed
     vector (sequences).

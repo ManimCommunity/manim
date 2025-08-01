@@ -1606,8 +1606,8 @@ class Mobject:
                     self.add(d, c, s, t)
 
         """
-        direction = np.asarray(direction)
-        aligned_edge = np.asarray(aligned_edge)
+        np_direction = np.asarray(direction)
+        np_aligned_edge = np.asarray(aligned_edge)
 
         if isinstance(mobject_or_point, Mobject):
             mob = mobject_or_point
@@ -1615,7 +1615,9 @@ class Mobject:
                 target_aligner = mob[index_of_submobject_to_align]
             else:
                 target_aligner = mob
-            target_point = target_aligner.get_critical_point(aligned_edge + direction)
+            target_point = target_aligner.get_critical_point(
+                np_aligned_edge + np_direction
+            )
         else:
             target_point = mobject_or_point
         if submobject_to_align is not None:
@@ -1624,8 +1626,8 @@ class Mobject:
             aligner = self[index_of_submobject_to_align]
         else:
             aligner = self
-        point_to_align = aligner.get_critical_point(aligned_edge - direction)
-        self.shift((target_point - point_to_align + buff * direction) * coor_mask)
+        point_to_align = aligner.get_critical_point(np_aligned_edge - np_direction)
+        self.shift((target_point - point_to_align + buff * np_direction) * coor_mask)
         return self
 
     def shift_onto_screen(self, **kwargs) -> Self:
