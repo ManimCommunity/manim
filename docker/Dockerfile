@@ -9,10 +9,14 @@ RUN apt-get update -qq \
         libffi-dev \
         libpango1.0-dev \
         freeglut3-dev \
+        ffmpeg \
         pkg-config \
         make \
         wget \
-        ghostscript
+        ghostscript \
+        fonts-noto
+
+RUN fc-cache -fv
 
 # setup a minimal texlive installation
 COPY docker/texlive-profile.txt /tmp/

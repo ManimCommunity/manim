@@ -3236,7 +3236,7 @@ class PolarPlane(Axes):
         elif self.azimuth_units == "degrees":
             a_tex = [
                 MathTex(
-                    f'{360 * i["label"]:g}' + r"^{\circ}",
+                    f"{360 * i['label']:g}" + r"^{\circ}",
                     font_size=self.azimuth_label_font_size,
                 ).next_to(
                     i["point"],
@@ -3249,7 +3249,7 @@ class PolarPlane(Axes):
         elif self.azimuth_units == "gradians":
             a_tex = [
                 MathTex(
-                    f'{400 * i["label"]:g}' + r"^{g}",
+                    f"{400 * i['label']:g}" + r"^{g}",
                     font_size=self.azimuth_label_font_size,
                 ).next_to(
                     i["point"],
@@ -3262,7 +3262,7 @@ class PolarPlane(Axes):
         elif self.azimuth_units is None:
             a_tex = [
                 MathTex(
-                    f'{i["label"]:g}',
+                    f"{i['label']:g}",
                     font_size=self.azimuth_label_font_size,
                 ).next_to(
                     i["point"],

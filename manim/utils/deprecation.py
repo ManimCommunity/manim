@@ -160,7 +160,9 @@ def deprecated(
         from manim.utils.deprecation import deprecated
 
 
-        @deprecated(since="v0.2", until="v0.4", replacement="bar", message="It is cooler.")
+        @deprecated(
+            since="v0.2", until="v0.4", replacement="bar", message="It is cooler."
+        )
         def foo():
             pass
 

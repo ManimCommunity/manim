@@ -16,6 +16,7 @@ import numpy as np
 
 from manim import config, logger
 from manim.constants import *
+from manim.data_structures import MethodWithArgs
 from manim.renderer.shader_wrapper import get_colormap_code
 from manim.utils.bezier import integer_interpolate, interpolate
 from manim.utils.color import (
@@ -402,7 +403,9 @@ class OpenGLMobject:
 
             ::
 
-                self.play(my_mobject.animate.shift(RIGHT), my_mobject.animate.rotate(PI))
+                self.play(
+                    my_mobject.animate.shift(RIGHT), my_mobject.animate.rotate(PI)
+                )
 
             make use of method chaining for ``animate``, meaning::
 
@@ -1910,15 +1913,16 @@ class OpenGLMobject:
         ::
 
             >>> from manim import *
+            >>> import numpy as np
             >>> sq = Square()
             >>> sq.height
-            2.0
+            np.float64(2.0)
             >>> sq.stretch_to_fit_width(5)
             Square
             >>> sq.width
-            5.0
+            np.float64(5.0)
             >>> sq.height
-            2.0
+            np.float64(2.0)
         """
         return self.rescale_to_fit(width, 0, stretch=True, **kwargs)
 
@@ -1943,15 +1947,16 @@ class OpenGLMobject:
         ::
 
             >>> from manim import *
+            >>> import numpy as np
             >>> sq = Square()
             >>> sq.height
-            2.0
+            np.float64(2.0)
             >>> sq.scale_to_fit_width(5)
             Square
             >>> sq.width
-            5.0
+            np.float64(5.0)
             >>> sq.height
-            5.0
+            np.float64(5.0)
         """
         return self.rescale_to_fit(width, 0, stretch=stretch, **kwargs)
 
@@ -2941,7 +2946,7 @@ class _AnimationBuilder:
 
         self.overridden_animation = None
         self.is_chaining = False
-        self.methods = []
+        self.methods: list[MethodWithArgs] = []
 
         # Whether animation args can be passed
         self.cannot_pass_args = False
@@ -2964,8 +2969,7 @@ class _AnimationBuilder:
 
         if (self.is_chaining and has_overridden_animation) or self.overridden_animation:
             raise NotImplementedError(
-                "Method chaining is currently not supported for "
-                "overridden animations",
+                "Method chaining is currently not supported for overridden animations",
             )
 
         def update_target(*method_args, **method_kwargs):
@@ -2977,7 +2981,7 @@ class _AnimationBuilder:
                     **method_kwargs,
                 )
             else:
-                self.methods.append([method, method_args, method_kwargs])
+                self.methods.append(MethodWithArgs(method, method_args, method_kwargs))
                 method(*method_args, **method_kwargs)
             return self
 

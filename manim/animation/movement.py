@@ -44,6 +44,26 @@ class Homotopy(Animation):
         Keyword arguments propagated to :meth:`.Mobject.apply_function`.
     kwargs
         Further keyword arguments passed to the parent class.
+
+    Examples
+    --------
+
+    .. manim:: HomotopyExample
+
+        class HomotopyExample(Scene):
+            def construct(self):
+                square = Square()
+
+                def homotopy(x, y, z, t):
+                    if t <= 0.25:
+                        progress = t / 0.25
+                        return (x, y + progress * 0.2 * np.sin(x), z)
+                    else:
+                        wave_progress = (t - 0.25) / 0.75
+                        return (x, y + 0.2 * np.sin(x + 10 * wave_progress), z)
+
+                self.play(Homotopy(homotopy, square, rate_func= linear, run_time=2))
+
     """
 
     def __init__(
@@ -151,7 +171,7 @@ class MoveAlongPath(Animation):
         self,
         mobject: Mobject,
         path: VMobject,
-        suspend_mobject_updating: bool | None = False,
+        suspend_mobject_updating: bool = False,
         **kwargs,
     ) -> None:
         self.path = path

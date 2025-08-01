@@ -9,6 +9,7 @@ releases since v0.18.0) are documented on our
 
 .. toctree::
 
+    changelog/0.19.0-changelog
     changelog/0.18.0-changelog
     changelog/0.17.3-changelog
     changelog/0.17.2-changelog
