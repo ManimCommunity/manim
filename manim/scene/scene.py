@@ -16,7 +16,6 @@ import random
 import threading
 import time
 from dataclasses import dataclass
-from pathlib import Path
 from queue import Queue
 
 import srt
@@ -56,7 +55,7 @@ from ..utils.family import extract_mobject_family_members
 from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
 from ..utils.file_ops import open_media_file
 from ..utils.iterables import list_difference_update, list_update
-from ..utils.module_ops import scene_classes_from_file
+from ..utils.module_ops import scene_classes_for_gui
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
@@ -1622,9 +1621,7 @@ class Scene:
             config["scene_names"] = (dpg.get_value(sender),)
             self.queue.put(SceneInteractRerun("gui"))
 
-        scene_classes = scene_classes_from_file(
-            Path(config["input_file"]), full_list=True
-        )  # type: ignore[call-overload]
+        scene_classes = scene_classes_for_gui(config.input_file, Scene)
         scene_names = [scene_class.__name__ for scene_class in scene_classes]
 
         with dpg.window(
