@@ -168,7 +168,7 @@ class OpenGLSurface(OpenGLMobject):
         k = len(points) // 3
         return points[:k], points[k : 2 * k], points[2 * k :]
 
-    def get_unit_normals(self) -> MatrixMN:
+    def get_unit_normals(self) -> Vector3D_Array:
         s_points, du_points, dv_points = self.get_surface_points_and_nudged_points()
         normals = np.cross(
             (du_points - s_points) / self.epsilon,
