@@ -64,6 +64,7 @@ if TYPE_CHECKING:
         Point3D,
         Point3DLike,
         Vector3D,
+        Vector3DLike,
     )
 
     LineType = TypeVar("LineType", bound=Line)
@@ -353,8 +354,8 @@ class CoordinateSystem:
         self,
         label: float | str | VMobject,
         axis: Mobject,
-        edge: Vector3D,
-        direction: Vector3D,
+        edge: Vector3DLike,
+        direction: Vector3DLike,
         buff: float = SMALL_BUFF,
     ) -> Mobject:
         """Gets the label for an axis.
@@ -2432,7 +2433,7 @@ class ThreeDAxes(Axes):
         y_length: float | None = config.frame_height + 2.5,
         z_length: float | None = config.frame_height - 1.5,
         z_axis_config: dict[str, Any] | None = None,
-        z_normal: Vector3D = DOWN,
+        z_normal: Vector3DLike = DOWN,
         num_axis_pieces: int = 20,
         light_source: Point3DLike = 9 * DOWN + 7 * LEFT + 10 * OUT,
         # opengl stuff (?)
@@ -2519,11 +2520,11 @@ class ThreeDAxes(Axes):
     def get_y_axis_label(
         self,
         label: float | str | VMobject,
-        edge: Vector3D = UR,
-        direction: Vector3D = UR,
+        edge: Vector3DLike = UR,
+        direction: Vector3DLike = UR,
         buff: float = SMALL_BUFF,
         rotation: float = PI / 2,
-        rotation_axis: Vector3D = OUT,
+        rotation_axis: Vector3DLike = OUT,
         **kwargs: dict[str, Any],
     ) -> Mobject:
         """Generate a y-axis label.
@@ -2569,11 +2570,11 @@ class ThreeDAxes(Axes):
     def get_z_axis_label(
         self,
         label: float | str | VMobject,
-        edge: Vector3D = OUT,
-        direction: Vector3D = RIGHT,
+        edge: Vector3DLike = OUT,
+        direction: Vector3DLike = RIGHT,
         buff: float = SMALL_BUFF,
         rotation: float = PI / 2,
-        rotation_axis: Vector3D = RIGHT,
+        rotation_axis: Vector3DLike = RIGHT,
         **kwargs: Any,
     ) -> Mobject:
         """Generate a z-axis label.

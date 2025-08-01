@@ -2,9 +2,6 @@
 
 from __future__ import annotations
 
-from manim.typing import Point3DLike, Vector3D
-from manim.utils.color import BLUE, BLUE_D, BLUE_E, LIGHT_GREY, WHITE, interpolate_color
-
 __all__ = [
     "ThreeDVMobject",
     "Surface",
@@ -20,7 +17,7 @@ __all__ = [
 ]
 
 from collections.abc import Iterable, Sequence
-from typing import Any, Callable
+from typing import TYPE_CHECKING, Any, Callable
 
 import numpy as np
 from typing_extensions import Self
@@ -34,11 +31,20 @@ from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.types.vectorized_mobject import VectorizedPoint, VGroup, VMobject
 from manim.utils.color import (
+    BLUE,
+    BLUE_D,
+    BLUE_E,
+    LIGHT_GREY,
+    WHITE,
     ManimColor,
     ParsableManimColor,
+    interpolate_color,
 )
 from manim.utils.iterables import tuplify
 from manim.utils.space_ops import normalize, perpendicular_bisector, z_to_vector
+
+if TYPE_CHECKING:
+    from manim.typing import Point3D, Point3DLike, Vector3DLike
 
 
 class ThreeDVMobject(VMobject, metaclass=ConvertToOpenGL):
@@ -970,8 +976,8 @@ class Line3D(Cylinder):
     def pointify(
         self,
         mob_or_point: Mobject | Point3DLike,
-        direction: Vector3D = None,
-    ) -> np.ndarray:
+        direction: Vector3DLike | None = None,
+    ) -> Point3D:
         """Gets a point representing the center of the :class:`Mobjects <.Mobject>`.
 
         Parameters
@@ -1018,7 +1024,7 @@ class Line3D(Cylinder):
     def parallel_to(
         cls,
         line: Line3D,
-        point: Vector3D = ORIGIN,
+        point: Point3DLike = ORIGIN,
         length: float = 5,
         **kwargs,
     ) -> Line3D:
@@ -1054,11 +1060,11 @@ class Line3D(Cylinder):
                     line2 = Line3D.parallel_to(line1, color=YELLOW)
                     self.add(ax, line1, line2)
         """
-        point = np.array(point)
+        np_point = np.asarray(point)
         vect = normalize(line.vect)
         return cls(
-            point + vect * length / 2,
-            point - vect * length / 2,
+            np_point + vect * length / 2,
+            np_point - vect * length / 2,
             **kwargs,
         )
 
@@ -1066,7 +1072,7 @@ class Line3D(Cylinder):
     def perpendicular_to(
         cls,
         line: Line3D,
-        point: Vector3D = ORIGIN,
+        point: Vector3DLike = ORIGIN,
         length: float = 5,
         **kwargs,
     ) -> Line3D:
@@ -1102,17 +1108,17 @@ class Line3D(Cylinder):
                     line2 = Line3D.perpendicular_to(line1, color=BLUE)
                     self.add(ax, line1, line2)
         """
-        point = np.array(point)
+        np_point = np.asarray(point)
 
-        norm = np.cross(line.vect, point - line.start)
+        norm = np.cross(line.vect, np_point - line.start)
         if all(np.linalg.norm(norm) == np.zeros(3)):
             raise ValueError("Could not find the perpendicular.")
 
         start, end = perpendicular_bisector([line.start, line.end], norm)
         vect = normalize(end - start)
         return cls(
-            point + vect * length / 2,
-            point - vect * length / 2,
+            np_point + vect * length / 2,
+            np_point - vect * length / 2,
             **kwargs,
         )
 
