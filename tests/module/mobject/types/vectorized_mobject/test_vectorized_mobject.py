@@ -526,3 +526,25 @@ def test_proportion_from_point():
     abc.scale(0.8)
     props = [abc.proportion_from_point(p) for p in abc.get_vertices()]
     np.testing.assert_allclose(props, [0, 1 / 3, 2 / 3])
+
+
+def test_pointwise_become_partial_where_vmobject_is_self():
+    sq = Square()
+    sq.pointwise_become_partial(vmobject=sq, a=0.2, b=0.7)
+    expected_points = np.array(
+        [
+            [-0.6, 1.0, 0.0],
+            [-0.73333333, 1.0, 0.0],
+            [-0.86666667, 1.0, 0.0],
+            [-1.0, 1.0, 0.0],
+            [-1.0, 1.0, 0.0],
+            [-1.0, 0.33333333, 0.0],
+            [-1.0, -0.33333333, 0.0],
+            [-1.0, -1.0, 0.0],
+            [-1.0, -1.0, 0.0],
+            [-0.46666667, -1.0, 0.0],
+            [0.06666667, -1.0, 0.0],
+            [0.6, -1.0, 0.0],
+        ]
+    )
+    np.testing.assert_allclose(sq.points, expected_points)

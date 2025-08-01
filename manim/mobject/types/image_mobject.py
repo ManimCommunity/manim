@@ -14,6 +14,7 @@ from PIL.Image import Resampling
 from manim.mobject.geometry.shape_matchers import SurroundingRectangle
 
 from ... import config
+from ...camera.moving_camera import MovingCamera
 from ...constants import *
 from ...mobject.mobject import Mobject
 from ...utils.bezier import interpolate
@@ -29,6 +30,8 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
     from manim.typing import PixelArray, StrPath
+
+    from ...camera.moving_camera import MovingCamera
 
 
 class AbstractImageMobject(Mobject):
@@ -205,6 +208,7 @@ class ImageMobject(AbstractImageMobject):
             self.pixel_array[:, :, :3] = (
                 np.iinfo(self.pixel_array_dtype).max - self.pixel_array[:, :, :3]
             )
+        self.orig_alpha_pixel_array = self.pixel_array[:, :, 3].copy()
         super().__init__(scale_to_resolution, **kwargs)
 
     def get_pixel_array(self):
@@ -230,8 +234,7 @@ class ImageMobject(AbstractImageMobject):
             The alpha value of the object, 1 being opaque and 0 being
             transparent.
         """
-        self.pixel_array[:, :, 3] = int(255 * alpha)
-        self.fill_opacity = alpha
+        self.pixel_array[:, :, 3] = self.orig_alpha_pixel_array * alpha
         self.stroke_opacity = alpha
         return self
 
@@ -303,7 +306,7 @@ class ImageMobject(AbstractImageMobject):
 class ImageMobjectFromCamera(AbstractImageMobject):
     def __init__(
         self,
-        camera,
+        camera: MovingCamera,
         default_display_frame_config: dict[str, Any] | None = None,
         **kwargs: Any,
     ) -> None:

@@ -4,7 +4,6 @@ from __future__ import annotations
 
 __all__ = ["DecimalNumber", "Integer", "Variable"]
 
-from collections.abc import Sequence
 from typing import Any
 
 import numpy as np
@@ -17,10 +16,9 @@ from manim.mobject.text.tex_mobject import MathTex, SingleStringMathTex, Tex
 from manim.mobject.text.text_mobject import Text
 from manim.mobject.types.vectorized_mobject import VMobject
 from manim.mobject.value_tracker import ValueTracker
+from manim.typing import Vector3DLike
 
 string_to_mob_map: dict[str, SingleStringMathTex] = {}
-
-__all__ = ["DecimalNumber", "Integer", "Variable"]
 
 
 class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
@@ -87,7 +85,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         self,
         number: float = 0,
         num_decimal_places: int = 2,
-        mob_class: type[VMobject] = MathTex,
+        mob_class: type[SingleStringMathTex] = MathTex,
         include_sign: bool = False,
         group_with_commas: bool = True,
         digit_buff_per_font_unit: float = 0.001,
@@ -95,13 +93,13 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         unit: str | None = None,  # Aligned to bottom unless it starts with "^"
         unit_buff_per_font_unit: float = 0,
         include_background_rectangle: bool = False,
-        edge_to_fix: Sequence[float] = LEFT,
+        edge_to_fix: Vector3DLike = LEFT,
         font_size: float = DEFAULT_FONT_SIZE,
         stroke_width: float = 0,
         fill_opacity: float = 1.0,
         **kwargs: Any,
-    ) -> None:
-        super().__init__(**kwargs, stroke_width=stroke_width)
+    ):
+        super().__init__(**kwargs, fill_opacity=fill_opacity, stroke_width=stroke_width)
         self.number = number
         self.num_decimal_places = num_decimal_places
         self.include_sign = include_sign
@@ -140,7 +138,8 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
     @property
     def font_size(self) -> float:
         """The font size of the tex mobject."""
-        return self.height / self.initial_height * self._font_size
+        return_value: float = self.height / self.initial_height * self._font_size
+        return return_value
 
     @font_size.setter
     def font_size(self, font_val: float) -> None:
@@ -217,7 +216,10 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         return num_string
 
     def _string_to_mob(
-        self, string: str, mob_class: type[VMobject] | None = None, **kwargs: Any
+        self,
+        string: str,
+        mob_class: type[SingleStringMathTex] | None = None,
+        **kwargs: Any,
     ) -> VMobject:
         if mob_class is None:
             mob_class = self.mob_class
@@ -228,7 +230,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
             # But this seems to conflict with the default case, where it is set to VMobject.
             string_to_mob_map[string] = mob_class(string, **kwargs)  # type: ignore[assignment]
         mob = string_to_mob_map[string].copy()
-        mob.font_size = self._font_size
+        mob.font_size = self._font_size  # type: ignore[attr-defined]
         return mob
 
     def _get_formatter(self, **kwargs: Any) -> str:
@@ -450,10 +452,10 @@ class Variable(VMobject, metaclass=ConvertToOpenGL):
         self,
         var: float,
         label: str | Tex | MathTex | Text | SingleStringMathTex,
-        var_type: type[DecimalNumber] | type[Integer] = DecimalNumber,
+        var_type: type[DecimalNumber | Integer] = DecimalNumber,
         num_decimal_places: int = 2,
         **kwargs: Any,
-    ) -> None:
+    ):
         self.label = MathTex(label) if isinstance(label, str) else label
         equals = MathTex("=").next_to(self.label, RIGHT)
         self.label.add(equals)

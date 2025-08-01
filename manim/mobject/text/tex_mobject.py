@@ -44,8 +44,6 @@ from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.tex import TexTemplate
 from manim.utils.tex_file_writing import tex_to_svg_file
 
-tex_string_to_mob_map: dict[str, VMobject] = {}
-
 
 class SingleStringMathTex(SVGMobject):
     """Elementary building block for rendering text with LaTeX.
@@ -65,12 +63,12 @@ class SingleStringMathTex(SVGMobject):
         should_center: bool = True,
         height: float | None = None,
         organize_left_to_right: bool = False,
-        tex_environment: str = "align*",
+        tex_environment: str | None = "align*",
         tex_template: TexTemplate | None = None,
         font_size: float = DEFAULT_FONT_SIZE,
         color: ParsableManimColor | None = None,
         **kwargs: Any,
-    ) -> None:
+    ):
         if color is None:
             color = VMobject().color
 
@@ -79,9 +77,8 @@ class SingleStringMathTex(SVGMobject):
         self.tex_environment = tex_environment
         if tex_template is None:
             tex_template = config["tex_template"]
-        self.tex_template = tex_template
+        self.tex_template: TexTemplate = tex_template
 
-        assert isinstance(tex_string, str)
         self.tex_string = tex_string
         file_name = tex_to_svg_file(
             self._get_modified_expression(tex_string),
@@ -266,19 +263,17 @@ class MathTex(SingleStringMathTex):
         arg_separator: str = " ",
         substrings_to_isolate: Iterable[str] | None = None,
         tex_to_color_map: dict[str, ParsableManimColor] | None = None,
-        tex_environment: str = "align*",
+        tex_environment: str | None = "align*",
         **kwargs: Any,
-    ) -> None:
+    ):
         self.tex_template = kwargs.pop("tex_template", config["tex_template"])
         self.arg_separator = arg_separator
         self.substrings_to_isolate = (
             [] if substrings_to_isolate is None else substrings_to_isolate
         )
-
         if tex_to_color_map is None:
-            self.tex_to_color_map: dict[str, ParsableManimColor] = {}
+            self.tex_to_color_map: dict[str, ManimColor] = {}
         else:
-            assert isinstance(tex_to_color_map, dict)
             self.tex_to_color_map = tex_to_color_map
         self.tex_environment = tex_environment
         self.brace_notation_split_occurred = False
@@ -314,11 +309,11 @@ class MathTex(SingleStringMathTex):
     def _break_up_tex_strings(self, tex_strings: Sequence[str]) -> list[str]:
         # Separate out anything surrounded in double braces
         pre_split_length = len(tex_strings)
-        # TODO:
-        # Give meaning full names to tex_strings_2 and tex_strings_3
-        tex_strings_2 = [re.split("{{(.*?)}}", str(t)) for t in tex_strings]
-        tex_strings_3 = sum(tex_strings_2, [])
-        if len(tex_strings_3) > pre_split_length:
+        tex_strings_brace_splitted = [
+            re.split("{{(.*?)}}", str(t)) for t in tex_strings
+        ]
+        tex_strings_combined = sum(tex_strings_brace_splitted, [])
+        if len(tex_strings_combined) > pre_split_length:
             self.brace_notation_split_occurred = True
 
         # Separate out any strings specified in the isolate
@@ -336,10 +331,10 @@ class MathTex(SingleStringMathTex):
         pattern = "|".join(patterns)
         if pattern:
             pieces = []
-            for s in tex_strings_3:
+            for s in tex_strings_combined:
                 pieces.extend(re.split(pattern, s))
         else:
-            pieces = tex_strings_3
+            pieces = tex_strings_combined
         return [p for p in pieces if p]
 
     def _break_up_by_substrings(self) -> Self:
@@ -384,7 +379,7 @@ class MathTex(SingleStringMathTex):
 
         return VGroup(*(m for m in self.submobjects if test(tex, m.get_tex_string())))
 
-    def get_part_by_tex(self, tex: str, **kwargs: Any) -> VGroup | None:
+    def get_part_by_tex(self, tex: str, **kwargs: Any) -> MathTex | None:
         all_parts = self.get_parts_by_tex(tex, **kwargs)
         return all_parts[0] if all_parts else None
 
@@ -424,7 +419,7 @@ class MathTex(SingleStringMathTex):
         return self
 
     def set_color_by_tex_to_color_map(
-        self, texs_to_color_map: dict[str, ParsableManimColor], **kwargs: Any
+        self, texs_to_color_map: dict[str, ManimColor], **kwargs: Any
     ) -> Self:
         for texs, color in list(texs_to_color_map.items()):
             try:
@@ -444,12 +439,10 @@ class MathTex(SingleStringMathTex):
         return split_self.index(part)
 
     def index_of_part_by_tex(self, tex: str, **kwargs: Any) -> int:
-        # TODO:
-        # This part is tricky to type annotate.
-        # The issue is that self.get_part_by_tex return VGroup | None.
-        # But self.index_of_part only accepts a VGroup / MathTex as input.
         part = self.get_part_by_tex(tex, **kwargs)
-        return self.index_of_part(part)  # type: ignore[arg-type]
+        if part is None:
+            return -1
+        return self.index_of_part(part)
 
     def sort_alphabetically(self) -> None:
         self.submobjects.sort(key=lambda m: m.get_tex_string())
@@ -476,9 +469,9 @@ class Tex(MathTex):
         self,
         *tex_strings: str,
         arg_separator: str = "",
-        tex_environment: str = "center",
+        tex_environment: str | None = "center",
         **kwargs: Any,
-    ) -> None:
+    ):
         super().__init__(
             *tex_strings,
             arg_separator=arg_separator,
@@ -510,14 +503,9 @@ class BulletedList(Tex):
         *items: str,
         buff: float = MED_LARGE_BUFF,
         dot_scale_factor: float = 2,
-        # TODO:
-        # I am tempted to change the line to this
-        # tex_environment: str = "center",
-        # which matches the default tex_environment in the
-        # Tex class.
         tex_environment: str | None = None,
         **kwargs: Any,
-    ) -> None:
+    ):
         self.buff = buff
         self.dot_scale_factor = dot_scale_factor
         # TODO: See comment 10 lines above this
@@ -534,14 +522,14 @@ class BulletedList(Tex):
             part.add_to_back(dot)
         self.arrange(DOWN, aligned_edge=LEFT, buff=self.buff)
 
-    def fade_all_but(self, index_or_string: str | int, opacity: float = 0.5) -> None:
+    def fade_all_but(self, index_or_string: int | str, opacity: float = 0.5) -> None:
         arg = index_or_string
         if isinstance(arg, str):
             part: VGroup | VMobject | None = self.get_part_by_tex(arg)
             if part is None:
                 raise Exception("Could not locate part by provided tex string")
         elif isinstance(arg, int):
-            part = self.submobjects[arg]
+            part = self.submobjects[arg]  # type: ignore[assignment]
         else:
             raise TypeError(f"Expected int or string, got {arg}")
         for other_part in self.submobjects:
@@ -576,7 +564,7 @@ class Title(Tex):
         match_underline_width_to_text: bool = False,
         underline_buff: float = MED_SMALL_BUFF,
         **kwargs: Any,
-    ) -> None:
+    ):
         self.include_underline = include_underline
         self.match_underline_width_to_text = match_underline_width_to_text
         self.underline_buff = underline_buff

@@ -1,14 +1,14 @@
-[tool.poetry]
+[project]
 name = "manim"
-version = "0.18.1"
+version = "0.19.0"
 description = "Animation engine for explanatory math videos."
-authors = ["The Manim Community Developers <contact@manim.community>", "3b1b <grant@3blue1brown.com>"]
-license="MIT"
-readme="README.md"
-repository="https://github.com/manimcommunity/manim"
-documentation="https://docs.manim.community/"
-homepage="https://www.manim.community/"
-classifiers= [
+authors = [
+  {name = "The Manim Community Developers", email = "contact@manim.community"},
+  {name = "Grant '3Blue1Brown' Sanderson", email = "grant@3blue1brown.com"},
+]
+license = "MIT"
+readme = "README.md"
+classifiers = [
     "Development Status :: 4 - Beta",
     "License :: OSI Approved :: MIT License",
     "Topic :: Scientific/Engineering",
@@ -21,87 +21,101 @@ classifiers= [
     "Programming Language :: Python :: 3.13",
     "Natural Language :: English",
     ]
-exclude = ["scripts/","logo/","readme-assets/"]
-packages = [
-    { include = "manim" },
+requires-python = ">=3.9"
+dependencies = [
+    "audioop-lts>=0.2.1 ; python_full_version >= '3.13'",
+    "av>=9.0.0,<14.0.0",
+    "beautifulsoup4>=4.12",
+    "click>=8.0",
+    "cloup>=2.0.0",
+    "decorator>=4.3.2",
+    "importlib-metadata>=8.6.1 ; python_full_version < '3.10'",
+    "isosurfaces>=0.1.0",
+    "manimpango>=0.5.0,<1.0.0",
+    "mapbox-earcut>=1.0.0",
+    "moderngl-window>=2.0.0",
+    "moderngl>=5.0.0,<6.0.0",
+    "networkx>=2.6",
+    "numpy>=2.0",
+    "numpy>=2.1 ; python_full_version >= '3.10'",
+    "pillow>=9.1",
+    "pycairo>=1.13,<2.0.0",
+    "pydub>=0.20.0",
+    "pygments>=2.0.0",
+    "rich>=12.0.0",
+    "scipy>=1.13.0",
+    "scipy>=1.14.0 ; python_full_version >= '3.13'",
+    "screeninfo>=0.7",
+    "skia-pathops>=0.7.0",
+    "srt>=3.0.0",
+    "svgelements>=1.8.0",
+    "tqdm>=4.0.0",
+    "typing-extensions>=4.12.0",
+    "watchdog>=2.0.0",
 ]
 
-[tool.poetry.dependencies]
-python = ">=3.9"
-av = ">=9.0.0,<14.0.0"  # v14.0.0 contains breaking changes, remove after dropping python 3.9
-click = ">=8.0"
-cloup = ">=2.0.0"
-dearpygui = { version = ">=1.0.0", optional = true }
-decorator = ">=4.3.2"
-importlib-metadata = {version = ">=3.6", python = "<=3.9"}  # Required to discover plugins
-isosurfaces = ">=0.1.0"
-jupyterlab = { version = ">=3.0.0", optional = true }
-manimpango = ">=0.5.0,<1.0.0"  # Complete API change in 1.0.0
-mapbox-earcut = ">=1.0.0"
-moderngl = ">=5.0.0,<6.0.0"
-moderngl-window = ">=2.0.0"
-networkx = ">=2.6"
-notebook = { version = ">=6.0.0", optional = true }
-numpy = [
-  # numpy 2.1 is the first version with prebuilt wheels for 3.13,
-  # while numpy 2.0 is the last version supporting 3.9
-  # TODO: remove when python 3.10 is the minimum supported version
-  {version = ">=2.1", python = ">=3.10"},
-  {version = ">=2.0", python = "<3.10"},
-]
-Pillow = ">=9.1"
-pycairo = ">=1.13,<2.0.0"
-pydub = ">=0.20.0"
-audioop-lts = { version = ">=0.2.0", python = ">=3.13" }  # for pydub
-Pygments = ">=2.0.0"
-rich = ">=12.0.0"
-scipy = [
-  # scipy 1.14.0 is the first version with prebuilt wheels for 3.13
-  # TODO: remove when python 3.10 is the minimum supported version
-  {version = ">=1.13.0", python = "<3.13"},
-  {version = ">=1.14.0", python = ">=3.13"},
-]
-screeninfo = ">=0.7"
-skia-pathops = ">=0.7.0"
-srt = ">=3.0.0"
-svgelements = ">=1.8.0"
-tqdm = ">=4.0.0"
-typing-extensions = ">=4.0.0"
-watchdog = ">=2.0.0"
 
-[tool.poetry.extras]
-jupyterlab = ["jupyterlab", "notebook"]
-gui = ["dearpygui"]
+[project.scripts]
+"manim" = "manim.__main__:main"
+"manimce" = "manim.__main__:main"
 
-[tool.poetry.group.dev.dependencies]
-furo = "^2023.09.10"
-gitpython = "^3"
-isort = "^5.12.0"
-matplotlib = "^3.8.2"
-myst-parser = "^2.0.0"
-pre-commit = "^3.5.0"
-psutil = {version = "^5.8.0", python = "<3.10"}
-psutil-wheels = {version = "5.8.0", python = ">=3.10"}
-pytest = "^8.3"
-pygithub = "^2.1.1"
-pytest-cov = "^4.1.0"
-pytest-xdist = "^2.2"  # Using latest gives flaky tests
-ruff = "*"
-Sphinx = "^7.2.6"
-sphinx-copybutton = "^0.5.2"
-sphinxcontrib-programoutput = "^0.17"
-sphinxext-opengraph = "^0.9.1"
-types-decorator = "^0.1.7"
-types-Pillow = "^10.1.0.2"
-types-Pygments = "^2.17.0.0"
-sphinx-design = "^0.6.1"
-sphinx-reredirects = "^0.1.5"
-
-[tool.poetry.urls]
+[project.urls]
+repository = "https://github.com/manimcommunity/manim"
+documentation = "https://docs.manim.community/"
+homepage = "https://www.manim.community/"
 "Bug Tracker" = "https://github.com/ManimCommunity/manim/issues"
 "Changelog" = "https://docs.manim.community/en/stable/changelog.html"
-"Twitter" = "https://twitter.com/manim_community"
+"X / Twitter" = "https://x.com/manim_community"
+"Bluesky" = "https://bsky.app/profile/manim.community"
 "Discord" = "https://www.manim.community/discord/"
+
+[project.optional-dependencies]
+gui = [
+    "dearpygui>=1.0.0",
+]
+jupyterlab = [
+    "jupyterlab>=4.3.4",
+    "notebook>=7.3.2",
+]
+
+[dependency-groups]
+dev = [
+    "furo>=2024.8.6",
+    "gitpython>=3.1.44",
+    "matplotlib>=3.9.4",
+    "myst-parser>=3.0.1",
+    "pre-commit>=4.1.0",
+    "pygithub>=2.5.0",
+    "pytest>=8.3.4",
+    "pytest-cov>=6.0.0",
+    "pytest-xdist>=2.2,<3.0",
+    "ruff>=0.9.3",
+    "sphinx>=7.4.7",
+    "sphinx-copybutton>=0.5.2",
+    "sphinx-design>=0.6.1",
+    "sphinx-reredirects>=0.1.5",
+    "sphinxcontrib-programoutput>=0.18",
+    "sphinxext-opengraph>=0.9.1",
+    "types-decorator>=5.1.8.20250121",
+    "types-pillow>=10.2.0.20240822",
+    "types-pygments>=2.19.0.20250107",
+    "psutil>=6.1.1",
+    "requests>=2.32.3",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build]
+include = [
+  "/manim"
+]
+exclude = [
+  "/docker",
+  "/logo",
+  "/scripts",
+]
 
 [tool.pytest.ini_options]
 markers = "slow: Mark the test as slow. Can be skipped with --skip_slow"
@@ -114,16 +128,7 @@ profile = "black"
 omit = ["*tests*"]
 
 [tool.coverage.report]
-exclude_lines = ["pragma: no cover"]
-
-[tool.poetry.plugins]
-[tool.poetry.plugins."console_scripts"]
-"manim" = "manim.__main__:main"
-"manimce" = "manim.__main__:main"
-
-[build-system]
-requires = ["setuptools", "poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:"]
 
 [tool.ruff]
 line-length = 88
@@ -146,6 +151,7 @@ select = [
   "C4",
   "D",
   "E",
+  "W",
   "F",
   "I",
   "PGH",
@@ -155,6 +161,8 @@ select = [
 ]
 
 ignore = [
+  # (sub)module shadows standard library module
+  "A005",
   # mutable argument defaults (too many changes)
   "B006",
   # No function calls in defaults
@@ -169,8 +177,6 @@ ignore = [
   # due to the import * used in manim
   "F403",
   "F405",
-  # fixtures not returning anything should have leading underscore
-  "PT004",
   # Exception too broad (this would require lots of changes + re.escape) for little benefit
   "PT011",
   # as recommended by https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules

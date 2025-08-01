@@ -74,7 +74,7 @@ if TYPE_CHECKING:
         Point3D,
         Point3DLike,
         QuadraticSpline,
-        Vector3D,
+        Vector3DLike,
     )
 
 
@@ -99,12 +99,12 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
     def __init__(
         self,
         tip_length: float = DEFAULT_ARROW_TIP_LENGTH,
-        normal_vector: Vector3D = OUT,
+        normal_vector: Vector3DLike = OUT,
         tip_style: dict = {},
         **kwargs: Any,
     ) -> None:
         self.tip_length: float = tip_length
-        self.normal_vector: Vector3D = normal_vector
+        self.normal_vector = normal_vector
         self.tip_style: dict = tip_style
         super().__init__(**kwargs)
 
@@ -394,8 +394,9 @@ class Arc(TipableVMobject):
         tangent_vectors[:, 1] = anchors[:, 0]
         tangent_vectors[:, 0] = -anchors[:, 1]
         # Use tangent vectors to deduce anchors
-        handles1 = anchors[:-1] + (d_theta / 3) * tangent_vectors[:-1]
-        handles2 = anchors[1:] - (d_theta / 3) * tangent_vectors[1:]
+        factor = 4 / 3 * np.tan(d_theta / 4)
+        handles1 = anchors[:-1] + factor * tangent_vectors[:-1]
+        handles2 = anchors[1:] - factor * tangent_vectors[1:]
         self.set_anchors_and_handles(anchors[:-1], handles1, handles2, anchors[1:])
 
     def get_arc_center(self, warning: bool = True) -> Point3D:

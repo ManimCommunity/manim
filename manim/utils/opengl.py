@@ -15,6 +15,12 @@ if TYPE_CHECKING:
     from manim.typing import MatrixMN, Point3D
 
 
+if TYPE_CHECKING:
+    from typing_extensions import TypeAlias
+
+    from manim.typing import MatrixMN
+
+
 depth = 20
 
 __all__ = [
@@ -30,7 +36,6 @@ __all__ = [
     "scale_matrix",
     "view_matrix",
 ]
-
 
 FlattenedMatrix4x4: TypeAlias = tuple[
     float,
