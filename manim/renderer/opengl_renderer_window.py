@@ -98,7 +98,7 @@ class Window(PygletWindow):
         self.renderer.scene.on_key_release(symbol, modifiers)
 
     def on_mouse_drag(
-        self, x: int, y: int, dx: int, dy: int, buttons: str, modifiers: int
+        self, x: int, y: int, dx: int, dy: int, buttons: int, modifiers: int
     ) -> None:
         super().on_mouse_drag(x, y, dx, dy, buttons, modifiers)
         point = self.renderer.pixel_coords_to_space_coords(x, y)

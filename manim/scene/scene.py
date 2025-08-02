@@ -1818,15 +1818,15 @@ class Scene:
         self,
         point: Point3D,
         d_point: Point3D,
-        buttons: str,
+        buttons: int,
         modifiers: int,
     ) -> None:
         assert isinstance(self.camera, OpenGLCamera)
         self.mouse_drag_point.move_to(point)
-        if buttons == "LEFT":
+        if buttons == 1:
             self.camera.increment_theta(-d_point[0])
             self.camera.increment_phi(d_point[1])
-        elif buttons == "RIGHT":
+        elif buttons == 4:
             camera_x_axis = self.camera.model_matrix[:3, 0]
             horizontal_shift_vector = -d_point[0] * camera_x_axis
             vertical_shift_vector = -d_point[1] * np.cross(OUT, camera_x_axis)
@@ -1848,12 +1848,12 @@ class Scene:
         self,
         point: Point3D,
         d_point: Point3D,
-        buttons: str,
+        buttons: int,
         modifiers: int,
     ) -> None:
         assert isinstance(self.camera, OpenGLCamera)
         # Left click drag.
-        if buttons == "LEFT":
+        if buttons == 1:
             # Translate to target the origin and rotate around the z axis.
             self.camera.model_matrix = (
                 opengl.rotation_matrix(z=-d_point[0])
@@ -1912,7 +1912,7 @@ class Scene:
                 @ self.camera.model_matrix
             )
         # Right click drag.
-        elif buttons == "RIGHT":
+        elif buttons == 4:
             camera_x_axis = self.camera.model_matrix[:3, 0]
             horizontal_shift_vector = -d_point[0] * camera_x_axis
             vertical_shift_vector = -d_point[1] * np.cross(OUT, camera_x_axis)
