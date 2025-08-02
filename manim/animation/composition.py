@@ -11,7 +11,7 @@ from manim._config import config
 from manim.animation.animation import Animation, prepare_animation
 from manim.constants import RendererType
 from manim.mobject.mobject import Group, Mobject
-from manim.mobject.opengl.opengl_mobject import OpenGLGroup
+from manim.mobject.opengl.opengl_mobject import OpenGLGroup, OpenGLMobject
 from manim.scene.scene import Scene
 from manim.utils.iterables import remove_list_redundancies
 from manim.utils.parameter_parsing import flatten_iterable_parameters
@@ -80,9 +80,7 @@ class AnimationGroup(Animation):
         )
         self.run_time: float = self.init_run_time(run_time)
 
-    def get_all_mobjects(self) -> Sequence[Mobject]:
-        # The following line throws this mypy error
-        # error: Argument 1 to "list" has incompatible type "Group | VGroup | OpenGLGroup | OpenGLVGroup"; expected "Iterable[Mobject]"  [arg-type]
+    def get_all_mobjects(self) -> Sequence[Mobject | OpenGLMobject]:
         return list(self.group)
 
     def begin(self) -> None:
