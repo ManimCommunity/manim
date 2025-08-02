@@ -33,6 +33,7 @@ from typing import TYPE_CHECKING, Any, Callable
 
 import numpy as np
 
+from manim.data_structures import MethodWithArgs
 from manim.mobject.opengl.opengl_mobject import OpenGLGroup, OpenGLMobject
 
 from .. import config
@@ -438,13 +439,13 @@ class MoveToTarget(Transform):
 
 
 class _MethodAnimation(MoveToTarget):
-    def __init__(self, mobject, methods):
+    def __init__(self, mobject: Mobject, methods: list[MethodWithArgs]) -> None:
         self.methods = methods
         super().__init__(mobject)
 
     def finish(self) -> None:
-        for method, method_args, method_kwargs in self.methods:
-            method.__func__(self.mobject, *method_args, **method_kwargs)
+        for item in self.methods:
+            item.method.__func__(self.mobject, *item.args, **item.kwargs)
         super().finish()
 
 

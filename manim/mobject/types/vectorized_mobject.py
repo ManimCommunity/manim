@@ -11,7 +11,6 @@ __all__ = [
     "DashedVMobject",
 ]
 
-
 import itertools as it
 import sys
 from collections.abc import Hashable, Iterable, Mapping, Sequence
@@ -66,6 +65,7 @@ if TYPE_CHECKING:
         Point3DLike_Array,
         RGBA_Array_Float,
         Vector3D,
+        Vector3DLike,
         Zeros,
     )
 
@@ -117,7 +117,7 @@ class VMobject(Mobject):
         background_stroke_width: float = 0,
         sheen_factor: float = 0.0,
         joint_type: LineJointType | None = None,
-        sheen_direction: Vector3D = UL,
+        sheen_direction: Vector3DLike = UL,
         close_new_points: bool = False,
         pre_function_handle_to_anchor_scale_factor: float = 0.01,
         make_smooth_after_applying_functions: bool = False,
@@ -142,7 +142,7 @@ class VMobject(Mobject):
         self.joint_type: LineJointType = (
             LineJointType.AUTO if joint_type is None else joint_type
         )
-        self.sheen_direction: Vector3D = sheen_direction
+        self.sheen_direction = sheen_direction
         self.close_new_points: bool = close_new_points
         self.pre_function_handle_to_anchor_scale_factor: float = (
             pre_function_handle_to_anchor_scale_factor
@@ -395,7 +395,7 @@ class VMobject(Mobject):
         background_stroke_width: float | None = None,
         background_stroke_opacity: float | None = None,
         sheen_factor: float | None = None,
-        sheen_direction: Vector3D | None = None,
+        sheen_direction: Vector3DLike | None = None,
         background_image: Image | str | None = None,
         family: bool = True,
     ) -> Self:
@@ -620,7 +620,7 @@ class VMobject(Mobject):
 
     color = property(get_color, set_color)
 
-    def set_sheen_direction(self, direction: Vector3D, family: bool = True) -> Self:
+    def set_sheen_direction(self, direction: Vector3DLike, family: bool = True) -> Self:
         """Sets the direction of the applied sheen.
 
         Parameters
@@ -639,16 +639,16 @@ class VMobject(Mobject):
         :meth:`~.VMobject.set_sheen`
         :meth:`~.VMobject.rotate_sheen_direction`
         """
-        direction = np.array(direction)
+        direction_copy = np.array(direction)
         if family:
             for submob in self.get_family():
-                submob.sheen_direction = direction
+                submob.sheen_direction = direction_copy.copy()
         else:
-            self.sheen_direction: Vector3D = direction
+            self.sheen_direction = direction_copy
         return self
 
     def rotate_sheen_direction(
-        self, angle: float, axis: Vector3D = OUT, family: bool = True
+        self, angle: float, axis: Vector3DLike = OUT, family: bool = True
     ) -> Self:
         """Rotates the direction of the applied sheen.
 
@@ -681,7 +681,7 @@ class VMobject(Mobject):
         return self
 
     def set_sheen(
-        self, factor: float, direction: Vector3D | None = None, family: bool = True
+        self, factor: float, direction: Vector3DLike | None = None, family: bool = True
     ) -> Self:
         """Applies a color gradient from a direction.
 
@@ -1189,7 +1189,7 @@ class VMobject(Mobject):
     def rotate(
         self,
         angle: float,
-        axis: Vector3D = OUT,
+        axis: Vector3DLike = OUT,
         about_point: Point3DLike | None = None,
         **kwargs,
     ) -> Self:
@@ -1916,7 +1916,6 @@ class VMobject(Mobject):
             return self
         num_curves = vmobject.get_num_curves()
         if num_curves == 0:
-            self.clear_points()
             return self
 
         # The following two lines will compute which Bézier curves of the given Mobject must be processed.

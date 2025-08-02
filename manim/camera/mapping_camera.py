@@ -1,4 +1,4 @@
-"""A camera that allows mapping between objects."""
+"""A camera module that supports spatial mapping between objects for distortion effects."""
 
 from __future__ import annotations
 
@@ -17,8 +17,16 @@ from ..utils.config_ops import DictAsObject
 
 
 class MappingCamera(Camera):
-    """Camera object that allows mapping
-    between objects.
+    """Parameters
+    ----------
+    mapping_func : callable
+        Function to map 3D points to new 3D points (identity by default).
+    min_num_curves : int
+        Minimum number of curves for VMobjects to avoid visual glitches.
+    allow_object_intrusion : bool
+        If True, modifies original mobjects; else works on copies.
+    kwargs : dict
+        Additional arguments passed to Camera base class.
     """
 
     def __init__(
@@ -34,12 +42,18 @@ class MappingCamera(Camera):
         super().__init__(**kwargs)
 
     def points_to_pixel_coords(self, mobject, points):
+        # Map points with custom function before converting to pixels
         return super().points_to_pixel_coords(
             mobject,
             np.apply_along_axis(self.mapping_func, 1, points),
         )
 
     def capture_mobjects(self, mobjects, **kwargs):
+        """Capture mobjects for rendering after applying the spatial mapping.
+
+        Copies mobjects unless intrusion is allowed, and ensures
+        vector objects have enough curves for smooth distortion.
+        """
         mobjects = self.get_mobjects_to_display(mobjects, **kwargs)
         if self.allow_object_intrusion:
             mobject_copies = mobjects
@@ -67,6 +81,13 @@ class MappingCamera(Camera):
 
 # TODO, the classes below should likely be deleted
 class OldMultiCamera(Camera):
+    """Parameters
+    ----------
+    cameras_with_start_positions : tuple
+        Tuples of (Camera, (start_y, start_x)) indicating camera and
+        its pixel offset on the final frame.
+    """
+
     def __init__(self, *cameras_with_start_positions, **kwargs):
         self.shifted_cameras = [
             DictAsObject(
@@ -125,6 +146,15 @@ class OldMultiCamera(Camera):
 
 
 class SplitScreenCamera(OldMultiCamera):
+    """Initializes a split screen camera setup with two side-by-side cameras.
+
+    Parameters
+    ----------
+    left_camera : Camera
+    right_camera : Camera
+    kwargs : dict
+    """
+
     def __init__(self, left_camera, right_camera, **kwargs):
         Camera.__init__(self, **kwargs)  # to set attributes such as pixel_width
         self.left_camera = left_camera
