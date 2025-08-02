@@ -81,6 +81,8 @@ class AnimationGroup(Animation):
         self.run_time: float = self.init_run_time(run_time)
 
     def get_all_mobjects(self) -> Sequence[Mobject]:
+        # The following line throws this mypy error
+        # error: Argument 1 to "list" has incompatible type "Group | VGroup | OpenGLGroup | OpenGLVGroup"; expected "Iterable[Mobject]"  [arg-type]
         return list(self.group)
 
     def begin(self) -> None:
