@@ -262,7 +262,7 @@ class Animation:
         ):
             scene.add(self.mobject)
 
-    def create_starting_mobject(self) -> Mobject:
+    def create_starting_mobject(self) -> Mobject | OpenGLMobject:
         # Keep track of where the mobject starts
         return self.mobject.copy()
 
