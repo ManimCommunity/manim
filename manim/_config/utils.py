@@ -1414,7 +1414,7 @@ class ManimConfig(MutableMapping):
 
     @property
     def window_size(self) -> str:
-        """The size of the opengl window. 'default' to automatically scale the window based on the display monitor."""
+        """The size of the opengl window as 'width,height' or 'default' to automatically scale the window based on the display monitor."""
         return self._d["window_size"]
 
     @window_size.setter
