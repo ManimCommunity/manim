@@ -129,7 +129,7 @@ class Animation:
 
     def __init__(
         self,
-        mobject: Mobject | None,
+        mobject: Mobject | OpenGLMobject | None,
         lag_ratio: float = DEFAULT_ANIMATION_LAG_RATIO,
         run_time: float = DEFAULT_ANIMATION_RUN_TIME,
         rate_func: Callable[[float], float] = smooth,

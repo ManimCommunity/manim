@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 
-import types
 from collections.abc import Iterable, Sequence
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING, Any, Callable
 
 import numpy as np
 
@@ -54,25 +53,28 @@ class AnimationGroup(Animation):
 
     def __init__(
         self,
-        *animations: Animation | Iterable[Animation] | types.GeneratorType[Animation],
-        group: Group | VGroup | OpenGLGroup | OpenGLVGroup = None,
+        *animations: Animation | Iterable[Animation],
+        group: Group | VGroup | OpenGLGroup | OpenGLVGroup | None = None,
         run_time: float | None = None,
         rate_func: Callable[[float], float] = linear,
         lag_ratio: float = 0,
-        **kwargs,
-    ) -> None:
+        **kwargs: Any,
+    ):
         arg_anim = flatten_iterable_parameters(animations)
         self.animations = [prepare_animation(anim) for anim in arg_anim]
         self.rate_func = rate_func
-        self.group = group
-        if self.group is None:
+        if group is None:
             mobjects = remove_list_redundancies(
                 [anim.mobject for anim in self.animations if not anim.is_introducer()],
             )
             if config["renderer"] == RendererType.OPENGL:
-                self.group = OpenGLGroup(*mobjects)
+                self.group: Group | VGroup | OpenGLGroup | OpenGLVGroup = OpenGLGroup(
+                    *mobjects
+                )
             else:
                 self.group = Group(*mobjects)
+        else:
+            self.group = group
         super().__init__(
             self.group, rate_func=self.rate_func, lag_ratio=lag_ratio, **kwargs
         )
@@ -93,7 +95,7 @@ class AnimationGroup(Animation):
         for anim in self.animations:
             anim.begin()
 
-    def _setup_scene(self, scene) -> None:
+    def _setup_scene(self, scene: Scene) -> None:
         for anim in self.animations:
             anim._setup_scene(scene)
 
@@ -118,7 +120,7 @@ class AnimationGroup(Animation):
         ]:
             anim.update_mobjects(dt)
 
-    def init_run_time(self, run_time) -> float:
+    def init_run_time(self, run_time: float | None) -> float:
         """Calculates the run time of the animation, if different from ``run_time``.
 
         Parameters
@@ -146,9 +148,9 @@ class AnimationGroup(Animation):
         run_times = np.array([anim.run_time for anim in self.animations])
         num_animations = run_times.shape[0]
         dtype = [("anim", "O"), ("start", "f8"), ("end", "f8")]
-        self.anims_with_timings = np.zeros(num_animations, dtype=dtype)
-        self.anims_begun = np.zeros(num_animations, dtype=bool)
-        self.anims_finished = np.zeros(num_animations, dtype=bool)
+        self.anims_with_timings: np.ndarray = np.zeros(num_animations, dtype=dtype)
+        self.anims_begun: np.ndarray = np.zeros(num_animations, dtype=bool)
+        self.anims_finished: np.ndarray = np.zeros(num_animations, dtype=bool)
         if num_animations == 0:
             return
 
@@ -228,7 +230,7 @@ class Succession(AnimationGroup):
                 ))
     """
 
-    def __init__(self, *animations: Animation, lag_ratio: float = 1, **kwargs) -> None:
+    def __init__(self, *animations: Animation, lag_ratio: float = 1, **kwargs: Any):
         super().__init__(*animations, lag_ratio=lag_ratio, **kwargs)
 
     def begin(self) -> None:
@@ -247,7 +249,7 @@ class Succession(AnimationGroup):
         if self.active_animation:
             self.active_animation.update_mobjects(dt)
 
-    def _setup_scene(self, scene) -> None:
+    def _setup_scene(self, scene: Scene | None) -> None:
         if scene is None:
             return
         if self.is_introducer():
@@ -339,7 +341,7 @@ class LaggedStart(AnimationGroup):
         self,
         *animations: Animation,
         lag_ratio: float = DEFAULT_LAGGED_START_LAG_RATIO,
-        **kwargs,
+        **kwargs: Any,
     ):
         super().__init__(*animations, lag_ratio=lag_ratio, **kwargs)
 
@@ -386,11 +388,11 @@ class LaggedStartMap(LaggedStart):
         self,
         AnimationClass: Callable[..., Animation],
         mobject: Mobject,
-        arg_creator: Callable[[Mobject], str] = None,
+        arg_creator: Callable[[Mobject], str] | None = None,
         run_time: float = 2,
-        **kwargs,
-    ) -> None:
-        args_list = []
+        **kwargs: Any,
+    ):
+        args_list: list[str | tuple[Mobject]] = []
         for submob in mobject:
             if arg_creator:
                 args_list.append(arg_creator(submob))
