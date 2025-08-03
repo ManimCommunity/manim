@@ -217,7 +217,7 @@ class Transform(Animation):
     def clean_up_from_scene(self, scene: Scene) -> None:
         super().clean_up_from_scene(scene)
         if self.replace_mobject_with_target_in_scene:
-            scene.replace(self.mobject, self.target_mobject)
+            scene.remove(self.mobject)
 
     def get_all_mobjects(self) -> Sequence[Mobject]:
         return [
