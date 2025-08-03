@@ -399,7 +399,11 @@ def _delete_rendering_times(*args: tuple[Any]) -> None:
 
 
 def setup(app: Sphinx) -> SetupMetadata:
-    app.add_node(SkipManimNode, html=(visit, depart))
+    app.add_node(
+        SkipManimNode,
+        html=(visit, depart),
+        latex=(lambda a, b: None, lambda a, b: None)
+    )
 
     setup.app = app  # type: ignore[attr-defined]
     setup.config = app.config  # type: ignore[attr-defined]
