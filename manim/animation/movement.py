@@ -88,12 +88,13 @@ class Homotopy(Animation):
     def function_at_time_t(
         self, t: float
     ) -> Callable[
-        [
-            float,
-        ],
+        [float, float, float],
         tuple[float, float, float],
     ]:
-        return lambda p: self.homotopy(*p, t)
+        def temp(p1: float, p2: float, p3: float) -> tuple[float, float, float]:
+            return self.homotopy(p1, p2, p3, t)
+
+        return temp
 
     def interpolate_submobject(
         self,
@@ -124,7 +125,7 @@ class SmoothedVectorizedHomotopy(Homotopy):
 class ComplexHomotopy(Homotopy):
     def __init__(
         self,
-        complex_homotopy: Callable[[complex], float],
+        complex_homotopy: Callable[[complex, float], float],
         mobject: Mobject,
         **kwargs: Any,
     ):
