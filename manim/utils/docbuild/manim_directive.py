@@ -402,7 +402,7 @@ def setup(app: Sphinx) -> SetupMetadata:
     app.add_node(
         SkipManimNode,
         html=(visit, depart),
-        latex=(lambda a, b: None, lambda a, b: None)
+        latex=(lambda a, b: None, lambda a, b: None),
     )
 
     setup.app = app  # type: ignore[attr-defined]
