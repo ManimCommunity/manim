@@ -89,7 +89,8 @@ class ManimColorModuleDocumenter(Directive):
                         format="html",
                     )
                 else:
-                    col1 = col2 = nodes.literal(text="")
+                    col1 = nodes.literal(text="")
+                    col2 = nodes.raw("", "", format="html")
                 row += nodes.entry("", col1)
                 row += nodes.entry("", col2)
             tbody += row
