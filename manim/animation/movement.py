@@ -91,10 +91,10 @@ class Homotopy(Animation):
         [float, float, float],
         tuple[float, float, float],
     ]:
-        def temp(p1: float, p2: float, p3: float) -> tuple[float, float, float]:
-            return self.homotopy(p1, p2, p3, t)
-
-        return temp
+        # error: Cannot infer type of lambda  [misc]
+        # error: Incompatible return value type (got "Callable[[Any], tuple[float, float, float]]", expected "Callable[[float, float, float], tuple[float, float, float]]")  [return-value]
+        # error: Too many arguments  [call-arg]
+        return lambda p: self.homotopy(*p, t)
 
     def interpolate_submobject(
         self,
