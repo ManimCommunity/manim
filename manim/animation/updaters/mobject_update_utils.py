@@ -15,7 +15,7 @@ __all__ = [
 
 
 import inspect
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING, Any, Callable
 
 import numpy as np
 
@@ -26,6 +26,7 @@ from manim.utils.space_ops import normalize
 
 if TYPE_CHECKING:
     from manim.animation.animation import Animation
+    from manim.typing import Vector3DLike
 
 
 def assert_is_mobject_method(method: Callable) -> None:
@@ -34,25 +35,27 @@ def assert_is_mobject_method(method: Callable) -> None:
     assert isinstance(mobject, (Mobject, OpenGLMobject))
 
 
-def always(method: Callable, *args, **kwargs) -> Mobject:
+def always(method: Callable, *args: Any, **kwargs: Any) -> Mobject | OpenGLMobject:
     assert_is_mobject_method(method)
-    mobject = method.__self__
+    mobject: Mobject | OpenGLMobject = method.__self__
     func = method.__func__
     mobject.add_updater(lambda m: func(m, *args, **kwargs))
     return mobject
 
 
-def f_always(method: Callable[[Mobject], None], *arg_generators, **kwargs) -> Mobject:
+def f_always(
+    method: Callable[[Mobject], None], *arg_generators: Any, **kwargs: Any
+) -> Mobject | OpenGLMobject:
     """
     More functional version of always, where instead
     of taking in args, it takes in functions which output
     the relevant arguments.
     """
     assert_is_mobject_method(method)
-    mobject = method.__self__
+    mobject: Mobject | OpenGLMobject = method.__self__
     func = method.__func__
 
-    def updater(mob):
+    def updater(mob: Mobject | OpenGLMobject) -> None:
         args = [arg_generator() for arg_generator in arg_generators]
         func(mob, *args, **kwargs)
 
@@ -60,7 +63,7 @@ def f_always(method: Callable[[Mobject], None], *arg_generators, **kwargs) -> Mo
     return mobject
 
 
-def always_redraw(func: Callable[[], Mobject]) -> Mobject:
+def always_redraw(func: Callable[[], Mobject]) -> Mobject | OpenGLMobject:
     """Redraw the mobject constructed by a function every frame.
 
     This function returns a mobject with an attached updater that
@@ -106,8 +109,8 @@ def always_redraw(func: Callable[[], Mobject]) -> Mobject:
 
 
 def always_shift(
-    mobject: Mobject, direction: np.ndarray[np.float64] = RIGHT, rate: float = 0.1
-) -> Mobject:
+    mobject: Mobject | OpenGLMobject, direction: Vector3DLike = RIGHT, rate: float = 0.1
+) -> Mobject | OpenGLMobject:
     """A mobject which is continuously shifted along some direction
     at a certain rate.
 
@@ -144,7 +147,9 @@ def always_shift(
     return mobject
 
 
-def always_rotate(mobject: Mobject, rate: float = 20 * DEGREES, **kwargs) -> Mobject:
+def always_rotate(
+    mobject: Mobject | OpenGLMobject, rate: float = 20 * DEGREES, **kwargs: Any
+) -> Mobject | OpenGLMobject:
     """A mobject which is continuously rotated at a certain rate.
 
     Parameters
@@ -178,8 +183,8 @@ def always_rotate(mobject: Mobject, rate: float = 20 * DEGREES, **kwargs) -> Mob
 
 
 def turn_animation_into_updater(
-    animation: Animation, cycle: bool = False, delay: float = 0, **kwargs
-) -> Mobject:
+    animation: Animation, cycle: bool = False, delay: float = 0, **kwargs: Any
+) -> Mobject | OpenGLMobject:
     """
     Add an updater to the animation's mobject which applies
     the interpolation and update functions of the animation
@@ -210,7 +215,7 @@ def turn_animation_into_updater(
     animation.begin()
     animation.total_time = -delay
 
-    def update(m: Mobject, dt: float):
+    def update(m: Mobject, dt: float) -> None:
         if animation.total_time >= 0:
             run_time = animation.get_run_time()
             time_ratio = animation.total_time / run_time
@@ -230,5 +235,5 @@ def turn_animation_into_updater(
     return mobject
 
 
-def cycle_animation(animation: Animation, **kwargs) -> Mobject:
+def cycle_animation(animation: Animation, **kwargs: Any) -> Mobject | OpenGLMobject:
     return turn_animation_into_updater(animation, cycle=True, **kwargs)
