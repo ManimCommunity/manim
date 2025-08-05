@@ -837,7 +837,7 @@ class Mobject:
         camera.capture_mobject(self)
         return camera.get_image()
 
-    def show(self, camera: Camera = None) -> None:
+    def show(self, camera: Camera | None = None) -> None:
         self.get_image(camera=camera).show()
 
     def save_image(self, name: str | None = None) -> None:
@@ -924,11 +924,11 @@ class Mobject:
         :meth:`has_time_based_updater`
 
         """
-        return [
-            updater
-            for updater in self.updaters
-            if "dt" in inspect.signature(updater).parameters
-        ]
+        rv: list[TimeBasedUpdater] = []
+        for updater in self.updaters:
+            if "dt" in inspect.signature(updater).parameters:
+                rv.append(updater)
+        return rv
 
     def has_time_based_updater(self) -> bool:
         """Test if ``self`` has a time based updater.
