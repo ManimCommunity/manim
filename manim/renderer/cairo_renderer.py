@@ -27,8 +27,13 @@ __all__ = ["CairoRenderer"]
 class CairoRenderer:
     """A renderer using Cairo.
 
-    num_plays : Number of play() functions in the scene.
-    time: time elapsed since initialisation of scene.
+    Attributes
+    ----------
+    num_plays : int
+        Number of play() functions in the scene.
+
+    time : float
+        Time elapsed since initialisation of scene.
     """
 
     def __init__(
@@ -139,7 +144,6 @@ class CairoRenderer:
         ignore_skipping
 
         **kwargs
-
         """
         if self.skip_animations and not ignore_skipping:
             return
@@ -161,20 +165,18 @@ class CairoRenderer:
         self.add_frame(self.get_frame())
 
     def get_frame(self) -> PixelArray:
-        """
-        Gets the current frame as NumPy array.
+        """Gets the current frame as NumPy array.
 
         Returns
         -------
         np.array
             NumPy array of pixel values of each pixel in screen.
-            The shape of the array is height x width x 3
+            The shape of the array is height x width x 3.
         """
         return np.array(self.camera.pixel_array)
 
     def add_frame(self, frame: np.ndarray, num_frames: int = 1):
-        """
-        Adds a frame to the video_file_stream
+        """Adds a frame to the video_file_stream
 
         Parameters
         ----------
@@ -204,10 +206,7 @@ class CairoRenderer:
         )
 
     def show_frame(self):
-        """
-        Opens the current frame in the Default Image Viewer
-        of your system.
-        """
+        """Opens the current frame in the Default Image Viewer of your system."""
         self.update_frame(ignore_skipping=True)
         self.camera.get_image().show()
 
@@ -224,7 +223,7 @@ class CairoRenderer:
         scene
             The scene played.
         static_mobjects
-            Static mobjects of the scene. If None, self.static_image is set to None
+            Static mobjects of the scene. If None, self.static_image is set to None.
 
         Returns
         -------
@@ -277,4 +276,4 @@ class CairoRenderer:
         if config["save_last_frame"]:
             self.static_image = None
             self.update_frame(scene)
-            self.file_writer.save_final_image(self.camera.get_image())
+            self.file_writer.save_image(self.camera.get_image())

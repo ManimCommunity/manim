@@ -401,8 +401,7 @@ class OpenGLRenderer:
         return self.path_to_texture_id[repr(path)]
 
     def update_skipping_status(self) -> None:
-        """
-        This method is used internally to check if the current
+        """This method is used internally to check if the current
         animation needs to be skipped or not. It also checks if
         the number of animations that were played correspond to
         the number of animations that need to be played, and
@@ -504,7 +503,7 @@ class OpenGLRenderer:
         if self.should_save_last_frame():
             config.save_last_frame = True
             self.update_frame(scene)
-            self.file_writer.save_final_image(self.get_image())
+            self.file_writer.save_image(self.get_image())
 
     def should_save_last_frame(self):
         if config["save_last_frame"]:
