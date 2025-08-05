@@ -67,25 +67,32 @@ Z_COLOR = BLUE_D
 # Type definition for transformable labels
 class TransformableLabel(MathTex):
     """A MathTex object with additional attributes for transformation tracking."""
-    
+
     target_text: str | MathTex
     vector: Vector
     original_kwargs: dict[str, Any]
     transformation_name: str | MathTex
     target: Mobject | None
-    
-    def __init__(self, base_tex: str, vector: Vector, transformation_name: str | MathTex = "L", new_label: str | MathTex | None = None, **kwargs: Any):
+
+    def __init__(
+        self,
+        base_tex: str,
+        vector: Vector,
+        transformation_name: str | MathTex = "L",
+        new_label: str | MathTex | None = None,
+        **kwargs: Any,
+    ):
         # Clean kwargs for MathTex constructor
         cleaned_kwargs = kwargs.copy()
         if "animate" in cleaned_kwargs:
             cleaned_kwargs.pop("animate")
-        
+
         super().__init__(base_tex, **cleaned_kwargs)
-        
+
         self.vector = vector
         self.original_kwargs = kwargs  # Store original for reference
         self.transformation_name = transformation_name
-        
+
         # Process target text
         if new_label is not None:
             self.target_text = new_label
@@ -98,7 +105,7 @@ class TransformableLabel(MathTex):
             )
             self.target_text = f"{trans_str}({base_tex})"
 
-    
+
 # TODO: Much of this scene type seems dependent on the coordinate system chosen.
 # That is, being centered at the origin with grid units corresponding to the
 # arbitrary space units.  Change it!
@@ -428,6 +435,7 @@ class VectorScene(Scene):
             self.play(Write(mathtex_label, run_time=1))
         self.add(mathtex_label)
         return mathtex_label
+
     def position_x_coordinate(
         self,
         x_coord: MathTex,
@@ -1042,20 +1050,20 @@ class LinearTransformationScene(VectorScene):
             The TransformableLabel of the label.
         """
         base_label = label if isinstance(label, MathTex) else MathTex(label)
-        
+
         # Create transformable label
         label_mob = TransformableLabel(
             base_tex=base_label.get_tex_string(),
             vector=vector,
             transformation_name=transformation_name,
             new_label=new_label,
-            **kwargs
+            **kwargs,
         )
-        
+
         # Position label and register
         self.add(label_mob)
         self.transformable_labels.append(label_mob)
-        
+
         return label_mob
 
     def add_title(
@@ -1360,4 +1368,3 @@ class LinearTransformationScene(VectorScene):
             + added_anims
         )
         self.play(*anims, **kwargs)
-
