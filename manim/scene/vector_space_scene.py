@@ -64,6 +64,41 @@ Y_COLOR = RED_C
 Z_COLOR = BLUE_D
 
 
+# Type definition for transformable labels
+class TransformableLabel(MathTex):
+    """A MathTex object with additional attributes for transformation tracking."""
+    
+    target_text: str | MathTex
+    vector: Vector
+    original_kwargs: dict[str, Any]
+    transformation_name: str | MathTex
+    target: Mobject | None
+    
+    def __init__(self, base_tex: str, vector: Vector, transformation_name: str | MathTex = "L", new_label: str | MathTex | None = None, **kwargs: Any):
+        # Clean kwargs for MathTex constructor
+        cleaned_kwargs = kwargs.copy()
+        if "animate" in cleaned_kwargs:
+            cleaned_kwargs.pop("animate")
+        
+        super().__init__(base_tex, **cleaned_kwargs)
+        
+        self.vector = vector
+        self.original_kwargs = kwargs  # Store original for reference
+        self.transformation_name = transformation_name
+        
+        # Process target text
+        if new_label is not None:
+            self.target_text = new_label
+        else:
+            # Handle MathTex transformation names
+            trans_str = (
+                transformation_name.get_tex_string()
+                if isinstance(transformation_name, MathTex)
+                else str(transformation_name)
+            )
+            self.target_text = f"{trans_str}({base_tex})"
+
+    
 # TODO: Much of this scene type seems dependent on the coordinate system chosen.
 # That is, being centered at the origin with grid units corresponding to the
 # arbitrary space units.  Change it!
@@ -393,13 +428,34 @@ class VectorScene(Scene):
             self.play(Write(mathtex_label, run_time=1))
         self.add(mathtex_label)
         return mathtex_label
-
     def position_x_coordinate(
         self,
         x_coord: MathTex,
         x_line: Line,
         vector: Vector3DLike,
-    ) -> MathTex:  # TODO Write DocStrings for this.
+    ) -> MathTex:
+        """
+        Positions and styles the x-axis coordinate label relative to its projection line.
+
+        This will place `x_coord` just above or below `x_line` depending on the
+        sign of the y-component of the original vector, and color it with X_COLOR.
+
+        Parameters
+        ----------
+        x_coord : MathTex
+            The coordinate label to position (e.g. “x” or “3”).
+        x_line : Line
+            The line segment representing the x-projection of the vector.
+        vector : Vector3DLike
+            The 3D vector whose x-projection is being labeled. Used only for
+            determining whether to place the label above (positive y) or
+            below (negative y) the projection line.
+
+        Returns
+        -------
+        MathTex
+            The same `x_coord` object, moved into place and colored.
+        """
         x_coord.next_to(x_line, -np.sign(vector[1]) * UP)
         x_coord.set_color(X_COLOR)
         return x_coord
@@ -409,7 +465,29 @@ class VectorScene(Scene):
         y_coord: MathTex,
         y_line: Line,
         vector: Vector3DLike,
-    ) -> MathTex:  # TODO Write DocStrings for this.
+    ) -> MathTex:
+        """
+        Positions and styles the y-axis coordinate label relative to its projection line.
+
+        This will place `y_coord` just to the left or right of `y_line` depending on the
+        sign of the x-component of the original vector, and color it with Y_COLOR.
+
+        Parameters
+        ----------
+        y_coord : MathTex
+            The coordinate label to position (e.g. “y” or “5”).
+        y_line : Line
+            The line segment representing the y-projection of the vector.
+        vector : Vector3DLike
+            The 3D vector whose y-projection is being labeled. Used only for
+            determining whether to place the label to the right (positive x) or
+            left (negative x) of the projection line.
+
+        Returns
+        -------
+        MathTex
+            The same `y_coord` object, moved into place and colored.
+        """
         y_coord.next_to(y_line, np.sign(vector[0]) * RIGHT)
         y_coord.set_color(Y_COLOR)
         return y_coord
@@ -697,7 +775,7 @@ class LinearTransformationScene(VectorScene):
         self.foreground_mobjects: list[Mobject] = []
         self.transformable_mobjects: list[Mobject] = []
         self.moving_vectors: list[Mobject] = []
-        self.transformable_labels: list[MathTex] = []
+        self.transformable_labels: list[TransformableLabel] = []
         self.moving_mobjects: list[Mobject] = []
 
         self.background_plane = NumberPlane(**self.background_plane_kwargs)
@@ -936,7 +1014,7 @@ class LinearTransformationScene(VectorScene):
         transformation_name: str | MathTex = "L",
         new_label: str | MathTex | None = None,
         **kwargs: Any,
-    ) -> MathTex:
+    ) -> TransformableLabel:
         """
         Method for creating, and animating the addition of
         a transformable label for the vector.
@@ -960,23 +1038,25 @@ class LinearTransformationScene(VectorScene):
 
         Returns
         -------
-        :class:`~.MathTex`
-            The MathTex of the label.
+        :class:`~.TransformableLabel`
+            The TransformableLabel of the label.
         """
-        # TODO: Clear up types in this function. This is currently a mess.
-        label_mob = self.label_vector(vector, label, **kwargs)
-        if new_label:
-            label_mob.target_text = new_label  # type: ignore[attr-defined]
-        else:
-            label_mob.target_text = (  # type: ignore[attr-defined]
-                f"{transformation_name}({label_mob.get_tex_string()})"
-            )
-        label_mob.vector = vector  # type: ignore[attr-defined]
-        label_mob.kwargs = kwargs  # type: ignore[attr-defined]
-        if "animate" in label_mob.kwargs:  # type: ignore[attr-defined]
-            label_mob.kwargs.pop("animate")  # type: ignore[attr-defined]
+        base_label = label if isinstance(label, MathTex) else MathTex(label)
+        
+        # Create transformable label
+        label_mob = TransformableLabel(
+            base_tex=base_label.get_tex_string(),
+            vector=vector,
+            transformation_name=transformation_name,
+            new_label=new_label,
+            **kwargs
+        )
+        
+        # Position label and register
+        self.add(label_mob)
         self.transformable_labels.append(label_mob)
-        return cast(MathTex, label_mob)
+        
+        return label_mob
 
     def add_title(
         self,
@@ -1143,11 +1223,11 @@ class LinearTransformationScene(VectorScene):
         for label in self.transformable_labels:
             # TODO: This location and lines 933 and 335 are the only locations in
             # the code where the target_text property is referenced.
-            target_text: MathTex | str = label.target_text  # type: ignore[assignment]
+            target_text: MathTex | str = label.target_text
             label.target = self.get_vector_label(
-                label.vector.target,  # type: ignore[attr-defined]
+                label.vector.target,
                 target_text,
-                **label.kwargs,  # type: ignore[arg-type]
+                **label.original_kwargs,
             )
         return self.get_piece_movement(self.transformable_labels)
 
@@ -1280,3 +1360,4 @@ class LinearTransformationScene(VectorScene):
             + added_anims
         )
         self.play(*anims, **kwargs)
+
