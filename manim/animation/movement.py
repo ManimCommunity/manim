@@ -98,7 +98,6 @@ class Homotopy(Animation):
     ) -> Self:
         submobject.points = starting_submobject.points
         submobject.apply_function(
-            # error: Argument 1 to "apply_function" of "Mobject" has incompatible type "Callable[[float, float, float], tuple[float, float, float]]"; expected "Callable[[Any], Any]"  [arg-type]
             self.function_at_time_t(alpha),
             **self.apply_function_kwargs,
         )
