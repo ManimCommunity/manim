@@ -18,7 +18,13 @@ from ..animation.animation import Animation
 from ..utils.rate_functions import linear
 
 if TYPE_CHECKING:
-    from ..mobject.mobject import Mobject, VMobject
+    from typing_extensions import Self
+
+    from manim.mobject.types.vectorized_mobject import VMobject
+    from manim.typing import MappingFunction, Point3D
+    from manim.utils.rate_functions import RateFunction
+
+    from ..mobject.mobject import Mobject
 
 
 class Homotopy(Animation):
@@ -72,27 +78,33 @@ class Homotopy(Animation):
         mobject: Mobject,
         run_time: float = 3,
         apply_function_kwargs: dict[str, Any] | None = None,
-        **kwargs,
-    ) -> None:
+        **kwargs: Any,
+    ):
         self.homotopy = homotopy
         self.apply_function_kwargs = (
             apply_function_kwargs if apply_function_kwargs is not None else {}
         )
         super().__init__(mobject, run_time=run_time, **kwargs)
 
-    def function_at_time_t(self, t: float) -> tuple[float, float, float]:
-        return lambda p: self.homotopy(*p, t)
+    def function_at_time_t(self, t: float) -> MappingFunction:
+        def mapping_function(p: Point3D) -> Point3D:
+            x, y, z = p
+            return np.array(self.homotopy(x, y, z, t))
+
+        return mapping_function
 
     def interpolate_submobject(
         self,
         submobject: Mobject,
         starting_submobject: Mobject,
         alpha: float,
-    ) -> None:
+    ) -> Self:
         submobject.points = starting_submobject.points
         submobject.apply_function(
-            self.function_at_time_t(alpha), **self.apply_function_kwargs
+            self.function_at_time_t(alpha),
+            **self.apply_function_kwargs,
         )
+        return self
 
 
 class SmoothedVectorizedHomotopy(Homotopy):
@@ -101,15 +113,20 @@ class SmoothedVectorizedHomotopy(Homotopy):
         submobject: Mobject,
         starting_submobject: Mobject,
         alpha: float,
-    ) -> None:
+    ) -> Self:
+        assert isinstance(submobject, VMobject)
         super().interpolate_submobject(submobject, starting_submobject, alpha)
         submobject.make_smooth()
+        return self
 
 
 class ComplexHomotopy(Homotopy):
     def __init__(
-        self, complex_homotopy: Callable[[complex], float], mobject: Mobject, **kwargs
-    ) -> None:
+        self,
+        complex_homotopy: Callable[[complex, float], float],
+        mobject: Mobject,
+        **kwargs: Any,
+    ):
         """Complex Homotopy a function Cx[0, 1] to C"""
 
         def homotopy(
@@ -131,9 +148,9 @@ class PhaseFlow(Animation):
         mobject: Mobject,
         virtual_time: float = 1,
         suspend_mobject_updating: bool = False,
-        rate_func: Callable[[float], float] = linear,
-        **kwargs,
-    ) -> None:
+        rate_func: RateFunction = linear,
+        **kwargs: Any,
+    ):
         self.virtual_time = virtual_time
         self.function = function
         super().__init__(
@@ -149,7 +166,7 @@ class PhaseFlow(Animation):
                 self.rate_func(alpha) - self.rate_func(self.last_alpha)
             )
             self.mobject.apply_function(lambda p: p + dt * self.function(p))
-        self.last_alpha = alpha
+        self.last_alpha: float = alpha
 
 
 class MoveAlongPath(Animation):
@@ -172,8 +189,8 @@ class MoveAlongPath(Animation):
         mobject: Mobject,
         path: VMobject,
         suspend_mobject_updating: bool = False,
-        **kwargs,
-    ) -> None:
+        **kwargs: Any,
+    ):
         self.path = path
         super().__init__(
             mobject, suspend_mobject_updating=suspend_mobject_updating, **kwargs
