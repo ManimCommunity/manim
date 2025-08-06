@@ -388,7 +388,7 @@ class LaggedStartMap(LaggedStart):
         self,
         AnimationClass: Callable[..., Animation],
         mobject: Mobject,
-        arg_creator: Callable[[Mobject], str] | None = None,
+        arg_creator: Callable[[Mobject], Iterable[Any]] | None = None,
         run_time: float = 2,
         **kwargs: Any,
     ):
