@@ -386,7 +386,7 @@ class LaggedStartMap(LaggedStart):
 
     def __init__(
         self,
-        AnimationClass: Callable[..., Animation],
+        animation_class: type[Animation],
         mobject: Mobject,
         arg_creator: Callable[[Mobject], Iterable[Any]] | None = None,
         run_time: float = 2,
