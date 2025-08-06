@@ -42,7 +42,7 @@ if typing.TYPE_CHECKING:
 
     from manim.mobject.geometry.line import Arrow
     from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-    from manim.typing import Point3DLike
+    from manim.typing import Point3DLike, Vector3DLike
     from manim.utils.color import ParsableManimColor
 
     from ..mobject.mobject import Mobject
@@ -167,7 +167,7 @@ class GrowFromEdge(GrowFromPoint):
     def __init__(
         self,
         mobject: Mobject,
-        edge: Point3DLike,
+        edge: Vector3DLike,
         point_color: ParsableManimColor | None = None,
         **kwargs: Any,
     ):
