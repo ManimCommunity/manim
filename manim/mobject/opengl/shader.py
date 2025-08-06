@@ -9,8 +9,8 @@ from pathlib import Path
 import moderngl
 import numpy as np
 
-from .. import config
-from ..utils import opengl
+from ... import config
+from ...utils import opengl
 
 SHADER_FOLDER = Path(__file__).parent / "shaders"
 shader_program_cache: dict = {}
