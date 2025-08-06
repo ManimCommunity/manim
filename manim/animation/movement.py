@@ -21,6 +21,7 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
     from manim.mobject.types.vectorized_mobject import VMobject
+    from manim.typing import MappingFunction
     from manim.utils.rate_functions import RateFunction
 
     from ..mobject.mobject import Mobject
@@ -85,16 +86,9 @@ class Homotopy(Animation):
         )
         super().__init__(mobject, run_time=run_time, **kwargs)
 
-    def function_at_time_t(
-        self, t: float
-    ) -> Callable[
-        [float, float, float],
-        tuple[float, float, float],
-    ]:
-        # error: Cannot infer type of lambda  [misc]
-        # error: Incompatible return value type (got "Callable[[Any], tuple[float, float, float]]", expected "Callable[[float, float, float], tuple[float, float, float]]")  [return-value]
+    def function_at_time_t(self, t: float) -> MappingFunction:
         # error: Too many arguments  [call-arg]
-        return lambda p: self.homotopy(*p, t)
+        return lambda p: np.array(self.homotopy(*p, t))
 
     def interpolate_submobject(
         self,
