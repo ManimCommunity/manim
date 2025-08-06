@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
     from manim.mobject.types.vectorized_mobject import VMobject
-    from manim.typing import MappingFunction
+    from manim.typing import MappingFunction, Point3D
     from manim.utils.rate_functions import RateFunction
 
     from ..mobject.mobject import Mobject
@@ -87,8 +87,11 @@ class Homotopy(Animation):
         super().__init__(mobject, run_time=run_time, **kwargs)
 
     def function_at_time_t(self, t: float) -> MappingFunction:
-        # error: Too many arguments  [call-arg]
-        return lambda p: np.array(self.homotopy(*p, t))
+        def mapping_function(p: Point3D) -> Point3D:
+            x, y, z = p
+            return np.array(self.homotopy(x, y, z, t))
+
+        return mapping_function
 
     def interpolate_submobject(
         self,
