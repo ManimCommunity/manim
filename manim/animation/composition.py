@@ -392,14 +392,16 @@ class LaggedStartMap(LaggedStart):
         run_time: float = 2,
         **kwargs: Any,
     ):
-        args_list: list[str | tuple[Mobject]] = []
-        for submob in mobject:
-            if arg_creator:
-                args_list.append(arg_creator(submob))
-            else:
-                args_list.append((submob,))
+        if arg_creator is None:
+
+            def identity(mob: Mobject) -> Mobject:
+                return mob
+
+            arg_creator = identity
+
+        args_list = [arg_creator(submob) for submob in mobject]
         anim_kwargs = dict(kwargs)
         if "lag_ratio" in anim_kwargs:
             anim_kwargs.pop("lag_ratio")
-        animations = [AnimationClass(*args, **anim_kwargs) for args in args_list]
+        animations = [animation_class(*args, **anim_kwargs) for args in args_list]
         super().__init__(*animations, run_time=run_time, **kwargs)
