@@ -6,8 +6,8 @@ import contextlib
 import platform
 import time
 import warnings
-from collections.abc import Iterable, Iterator, Sequence
-from typing import TYPE_CHECKING, Callable, Generic, TypeVar
+from collections.abc import Callable, Iterable, Iterator, Sequence
+from typing import TYPE_CHECKING, Generic, TypeVar
 
 import numpy as np
 
