@@ -71,7 +71,7 @@ from manim.constants import *
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.svg.svg_mobject import SVGMobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
-from manim.utils.color import ManimColor, ParsableManimColor, color_gradient
+from manim.utils.color import ManimColor, ParsableManimColor, color_gradient_as_list
 from manim.utils.deprecation import deprecated
 
 TEXT_MOB_SCALE_FACTOR = 0.05
@@ -735,17 +735,14 @@ class Text(SVGMobject):
         settings = []
         args = copy.copy(default_args)
         if self.gradient:
-            colors = color_gradient(self.gradient, len(self.text))
+            colors = color_gradient_as_list(self.gradient, len(self.text))
             for i in range(len(self.text)):
                 args["color"] = colors[i].to_hex()
                 settings.append(TextSetting(i, i + 1, **args))
 
         for word, gradient in self.t2g.items():
-            if isinstance(gradient, str) or len(gradient) == 1:
-                color = gradient if isinstance(gradient, str) else gradient[0]
-                gradient = [ManimColor(color)]
             colors = (
-                color_gradient(gradient, len(word))
+                color_gradient_as_list(gradient, len(word))
                 if len(gradient) != 1
                 else len(word) * gradient
             )

@@ -14,7 +14,7 @@ from manim.utils.color import (
     WHITE,
     YELLOW,
     ParsableManimColor,
-    color_gradient,
+    color_gradient_as_list,
     color_to_rgba,
 )
 from manim.utils.config_ops import _Uniforms
@@ -92,7 +92,7 @@ class OpenGLPMobject(OpenGLMobject):
 
     def set_color_by_gradient(self, *colors):
         self.rgbas = np.array(
-            list(map(color_to_rgba, color_gradient(*colors, self.get_num_points()))),
+            map(color_to_rgba, color_gradient_as_list(*colors, self.get_num_points())),
         )
         return self
 

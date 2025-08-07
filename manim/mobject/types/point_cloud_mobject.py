@@ -20,7 +20,7 @@ from ...utils.color import (
     YELLOW,
     ManimColor,
     ParsableManimColor,
-    color_gradient,
+    color_gradient_as_list,
     color_to_rgba,
     rgba_to_color,
 )
@@ -124,7 +124,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
 
     def set_color_by_gradient(self, *colors: ParsableManimColor) -> Self:
         self.rgbas = np.array(
-            list(map(color_to_rgba, color_gradient(*colors, len(self.points)))),
+            map(color_to_rgba, color_gradient_as_list(*colors, len(self.points))),
         )
         return self
 
