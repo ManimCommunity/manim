@@ -129,7 +129,7 @@ class Animation:
 
     def __init__(
         self,
-        mobject: Mobject | None,
+        mobject: Mobject | OpenGLMobject | None,
         lag_ratio: float = DEFAULT_ANIMATION_LAG_RATIO,
         run_time: float = DEFAULT_ANIMATION_RUN_TIME,
         rate_func: Callable[[float], float] = smooth,
@@ -263,11 +263,11 @@ class Animation:
         ):
             scene.add(self.mobject)
 
-    def create_starting_mobject(self) -> Mobject:
+    def create_starting_mobject(self) -> Mobject | OpenGLMobject:
         # Keep track of where the mobject starts
         return self.mobject.copy()
 
-    def get_all_mobjects(self) -> Sequence[Mobject]:
+    def get_all_mobjects(self) -> Sequence[Mobject | OpenGLMobject]:
         """Get all mobjects involved in the animation.
 
         Ordering must match the ordering of arguments to interpolate_submobject
