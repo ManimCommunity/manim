@@ -124,7 +124,7 @@ class OpenGLVMobject(OpenGLMobject):
         self.data = {}
         self.fill_opacity = fill_opacity
         self.stroke_opacity = stroke_opacity
-        self.stroke_width = stroke_width
+        self.stroke_width = np.array([[stroke_width]])
         self.draw_stroke_behind_fill = draw_stroke_behind_fill
         # Indicates that it will not be displayed, but
         # that it should count in parent mobject's path
@@ -267,6 +267,8 @@ class OpenGLVMobject(OpenGLMobject):
         background=None,
         recurse=True,
     ):
+        if width is None:
+            width = np.array([[0]])
         if opacity is not None:
             self.stroke_opacity = opacity
         if recurse:
@@ -283,7 +285,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         if width is not None:
             for mob in self.get_family(recurse):
-                mob.stroke_width = np.array([[width] for width in tuplify(width)])
+                mob.stroke_width = np.array(width)
 
         if background is not None:
             for mob in self.get_family(recurse):
