@@ -122,10 +122,14 @@ def make_config_parser(
     # read_file() before calling read() for any optional files."
     # https://docs.python.org/3/library/configparser.html#configparser.ConfigParser.read
     parser = configparser.ConfigParser()
+    logger.info(f"Reading config file: {library_wide}")
     with library_wide.open() as file:
         parser.read_file(file)  # necessary file
 
     other_files = [user_wide, Path(custom_file) if custom_file else folder_wide]
+    for path in other_files:
+        if path.exists():
+            logger.info(f"Reading config file: {path}")
     parser.read(other_files)  # optional files
 
     return parser
