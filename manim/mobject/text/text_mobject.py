@@ -84,7 +84,7 @@ TEXT2SVG_ADJUSTMENT_FACTOR = 4.8
 __all__ = ["Text", "Paragraph", "MarkupText", "register_font"]
 
 
-def remove_invisible_chars(mobject: SVGMobject) -> VGroup | SVGMobject:
+def remove_invisible_chars(mobject: VMobject) -> VMobject:
     """Function to remove unwanted invisible characters from some mobjects.
 
     Parameters

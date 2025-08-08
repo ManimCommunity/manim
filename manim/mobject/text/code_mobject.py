@@ -118,6 +118,7 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
         "line_spacing": 0.5,
         "disable_ligatures": True,
     }
+    code: VMobject
 
     def __init__(
         self,
