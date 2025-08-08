@@ -2993,10 +2993,7 @@ class _AnimationBuilder:
     def build(self) -> _MethodAnimation:
         from manim.animation.transform import _MethodAnimation
 
-        if self.overridden_animation:
-            anim = self.overridden_animation
-        else:
-            anim = _MethodAnimation(self.mobject, self.methods)
+        anim = self.overridden_animation or _MethodAnimation(self.mobject, self.methods)
 
         for attr, value in self.anim_args.items():
             setattr(anim, attr, value)
