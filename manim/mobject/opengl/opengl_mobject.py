@@ -2581,7 +2581,7 @@ class OpenGLMobject:
             # can handle that case differently if they choose
             mob1.align_points(mob2)
             for key in mob1.data.keys() & mob2.data.keys():
-                if key == "points" or key == "stroke_width":
+                if key == "points":
                     continue
                 arr1 = mob1.data[key]
                 arr2 = mob2.data[key]
@@ -2675,8 +2675,6 @@ class OpenGLMobject:
         """
         for key in self.data:
             if key in self.locked_data_keys:
-                continue
-            if isinstance(self.data[key], int):
                 continue
             if len(self.data[key]) == 0:
                 continue
