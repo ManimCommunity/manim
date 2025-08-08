@@ -111,9 +111,7 @@ def remove_invisible_chars(mobject: VMobject) -> VMobject:
     elif isinstance(mobject, Code):
         iscode = True
         code = mobject
-        # TODO:
-        # error: Incompatible types in assignment (expression has type "MethodType", variable has type "SVGMobject")  [assignment]
-        mobject = mobject.code  # type: ignore[assignment]
+        mobject = mobject.code
     mobject_without_dots = VGroup()
     if mobject[0].__class__ == VGroup:
         for i in range(len(mobject)):
@@ -766,13 +764,8 @@ class Text(SVGMobject):
             arg: getattr(self, arg) if arg != "color" else color for _, arg in t2xs
         }
 
-        # TODO:
-        # error: Argument 1 to "_get_settings_from_t2xs" of "Text" has incompatible type "list[tuple[dict[str, str] | None, str]]"; expected "Sequence[tuple[dict[str, str], str]]"  [arg-type]
-        # error: Argument 2 to "_get_settings_from_t2xs" of "Text" has incompatible type "dict[str, Any | ManimColor | int | str | tuple[int, int, int] | tuple[float, float, float] | tuple[int, int, int, int] | tuple[float, float, float, float]]"; expected "dict[str, Iterable[str]]"  [arg-type]
-        settings = self._get_settings_from_t2xs(t2xs, default_args)  # type: ignore[arg-type]
-        # TODO:
-        # error: Argument 1 to "_get_settings_from_gradient" of "Text" has incompatible type "dict[str, Any | ManimColor | int | str | tuple[int, int, int] | tuple[float, float, float] | tuple[int, int, int, int] | tuple[float, float, float, float]]"; expected "dict[str, Iterable[str]]"  [arg-type]
-        settings.extend(self._get_settings_from_gradient(default_args))  # type: ignore[arg-type]
+        settings = self._get_settings_from_t2xs(t2xs, default_args)
+        settings.extend(self._get_settings_from_gradient(default_args))
 
         # Handle overlaps
 
@@ -783,9 +776,7 @@ class Text(SVGMobject):
 
             next_setting = settings[index + 1]
             if setting.end > next_setting.start:
-                # TODO:
-                # error: Argument 3 to "_merge_settings" of "Text" has incompatible type "dict[str, Any | ManimColor | int | str | tuple[int, int, int] | tuple[float, float, float] | tuple[int, int, int, int] | tuple[float, float, float, float]]"; expected "dict[str, Iterable[str]]"  [arg-type]
-                new_setting = self._merge_settings(setting, next_setting, default_args)  # type: ignore[arg-type]
+                new_setting = self._merge_settings(setting, next_setting, default_args)
                 new_index = index + 1
                 while (
                     new_index < len(settings)
