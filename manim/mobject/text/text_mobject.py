@@ -706,9 +706,7 @@ class Text(SVGMobject):
     def _get_settings_from_t2xs(
         self,
         t2xs: Sequence[tuple[dict[str, str], str]],
-        # default_args: dict[str, Iterable[str]],
-        default_args: dict[str, Any],
-        # TODO Look into this
+        default_args: dict[str, Iterable[str]],
     ) -> list[TextSetting]:
         settings = []
         t2xwords = set(chain(*([*t2x.keys()] for t2x, _ in t2xs)))
