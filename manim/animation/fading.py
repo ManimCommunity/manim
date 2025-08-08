@@ -20,6 +20,7 @@ __all__ = [
 ]
 
 import numpy as np
+from typing_extensions import Any
 
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 
@@ -53,7 +54,7 @@ class _Fade(Transform):
         shift: np.ndarray | None = None,
         target_position: np.ndarray | Mobject | None = None,
         scale: float = 1,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         if not mobjects:
             raise ValueError("At least one mobject must be passed.")
@@ -85,7 +86,7 @@ class _Fade(Transform):
         Mobject
             The faded, shifted and scaled copy of the mobject.
         """
-        faded_mobject = self.mobject.copy()
+        faded_mobject: Mobject = self.mobject.copy()  # type: ignore[assignment]
         faded_mobject.fade(1)
         direction_modifier = -1 if fadeIn and not self.point_target else 1
         faded_mobject.shift(self.shift_vector * direction_modifier)
@@ -131,13 +132,13 @@ class FadeIn(_Fade):
 
     """
 
-    def __init__(self, *mobjects: Mobject, **kwargs) -> None:
+    def __init__(self, *mobjects: Mobject, **kwargs: Any) -> None:
         super().__init__(*mobjects, introducer=True, **kwargs)
 
-    def create_target(self):
-        return self.mobject
+    def create_target(self) -> Mobject:
+        return self.mobject  # type: ignore[return-value]
 
-    def create_starting_mobject(self):
+    def create_starting_mobject(self) -> Mobject:
         return self._create_faded_mobject(fadeIn=True)
 
 
@@ -166,7 +167,7 @@ class FadeOut(_Fade):
                 dot = Dot(UP * 2 + LEFT)
                 self.add(dot)
                 tex = Tex(
-                    "FadeOut with ", "shift ", " or target\\_position", " and scale"
+                    "FadeOut with ", "shift ", r" or target\_position", " and scale"
                 ).scale(1)
                 animations = [
                     FadeOut(tex[0]),
@@ -179,12 +180,12 @@ class FadeOut(_Fade):
 
     """
 
-    def __init__(self, *mobjects: Mobject, **kwargs) -> None:
+    def __init__(self, *mobjects: Mobject, **kwargs: Any) -> None:
         super().__init__(*mobjects, remover=True, **kwargs)
 
-    def create_target(self):
+    def create_target(self) -> Mobject:
         return self._create_faded_mobject(fadeIn=False)
 
-    def clean_up_from_scene(self, scene: Scene = None) -> None:
+    def clean_up_from_scene(self, scene: Scene) -> None:
         super().clean_up_from_scene(scene)
         self.interpolate(0)

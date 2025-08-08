@@ -33,6 +33,7 @@ from typing import TYPE_CHECKING, Any, Callable
 
 import numpy as np
 
+from manim.data_structures import MethodWithArgs
 from manim.mobject.opengl.opengl_mobject import OpenGLGroup, OpenGLMobject
 
 from .. import config
@@ -123,6 +124,10 @@ class Transform(Animation):
 
                 self.play(*anims, run_time=2)
                 self.wait()
+
+    See also
+    --------
+    :class:`~.ReplacementTransform`, :meth:`~.Mobject.interpolate`, :meth:`~.Mobject.align_data`
     """
 
     def __init__(
@@ -204,7 +209,7 @@ class Transform(Animation):
             self.mobject.align_data(self.target_copy)
         super().begin()
 
-    def create_target(self) -> Mobject:
+    def create_target(self) -> Mobject | OpenGLMobject:
         # Has no meaningful effect here, but may be useful
         # in subclasses
         return self.target_mobject
@@ -429,18 +434,18 @@ class MoveToTarget(Transform):
     def check_validity_of_input(self, mobject: Mobject) -> None:
         if not hasattr(mobject, "target"):
             raise ValueError(
-                "MoveToTarget called on mobject" "without attribute 'target'",
+                "MoveToTarget called on mobjectwithout attribute 'target'",
             )
 
 
 class _MethodAnimation(MoveToTarget):
-    def __init__(self, mobject, methods):
+    def __init__(self, mobject: Mobject, methods: list[MethodWithArgs]) -> None:
         self.methods = methods
         super().__init__(mobject)
 
     def finish(self) -> None:
-        for method, method_args, method_kwargs in self.methods:
-            method.__func__(self.mobject, *method_args, **method_kwargs)
+        for item in self.methods:
+            item.method.__func__(self.mobject, *item.args, **item.kwargs)
         super().finish()
 
 

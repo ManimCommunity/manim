@@ -12,8 +12,12 @@ from collections.abc import Iterable, Sequence
 from typing import TYPE_CHECKING, Callable
 
 if TYPE_CHECKING:
+    from typing import Any
+
+    from typing_extensions import Self
+
     from manim.mobject.geometry.tips import ArrowTip
-    from manim.typing import Point3D
+    from manim.typing import Point3D, Point3DLike, Vector3D
 
 import numpy as np
 
@@ -21,8 +25,9 @@ from manim import config
 from manim.constants import *
 from manim.mobject.geometry.line import Line
 from manim.mobject.graphing.scale import LinearBase, _ScaleBase
-from manim.mobject.text.numbers import DecimalNumber
+from manim.mobject.text.numbers import DecimalNumber, Integer
 from manim.mobject.text.tex_mobject import MathTex, Tex
+from manim.mobject.text.text_mobject import Text
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.bezier import interpolate
 from manim.utils.config_ops import merge_dicts_recursively
@@ -157,14 +162,14 @@ class NumberLine(Line):
         # numbers/labels
         include_numbers: bool = False,
         font_size: float = 36,
-        label_direction: Sequence[float] = DOWN,
-        label_constructor: VMobject = MathTex,
+        label_direction: Point3DLike = DOWN,
+        label_constructor: type[MathTex] = MathTex,
         scaling: _ScaleBase = LinearBase(),
         line_to_number_buff: float = MED_SMALL_BUFF,
         decimal_number_config: dict | None = None,
         numbers_to_exclude: Iterable[float] | None = None,
         numbers_to_include: Iterable[float] | None = None,
-        **kwargs,
+        **kwargs: Any,
     ):
         # avoid mutable arguments in defaults
         if numbers_to_exclude is None:
@@ -189,6 +194,9 @@ class NumberLine(Line):
 
         # turn into a NumPy array to scale by just applying the function
         self.x_range = np.array(x_range, dtype=float)
+        self.x_min: float
+        self.x_max: float
+        self.x_step: float
         self.x_min, self.x_max, self.x_step = scaling.function(self.x_range)
         self.length = length
         self.unit_size = unit_size
@@ -246,16 +254,16 @@ class NumberLine(Line):
             if self.scaling.custom_labels:
                 tick_range = self.get_tick_range()
 
+                custom_labels = self.scaling.get_custom_labels(
+                    tick_range,
+                    unit_decimal_places=decimal_number_config["num_decimal_places"],
+                )
+
                 self.add_labels(
                     dict(
                         zip(
                             tick_range,
-                            self.scaling.get_custom_labels(
-                                tick_range,
-                                unit_decimal_places=decimal_number_config[
-                                    "num_decimal_places"
-                                ],
-                            ),
+                            custom_labels,
                         )
                     ),
                 )
@@ -267,21 +275,25 @@ class NumberLine(Line):
                     font_size=self.font_size,
                 )
 
-    def rotate_about_zero(self, angle: float, axis: Sequence[float] = OUT, **kwargs):
+    def rotate_about_zero(
+        self, angle: float, axis: Vector3D = OUT, **kwargs: Any
+    ) -> Self:
         return self.rotate_about_number(0, angle, axis, **kwargs)
 
     def rotate_about_number(
-        self, number: float, angle: float, axis: Sequence[float] = OUT, **kwargs
-    ):
+        self, number: float, angle: float, axis: Vector3D = OUT, **kwargs: Any
+    ) -> Self:
         return self.rotate(angle, axis, about_point=self.n2p(number), **kwargs)
 
-    def add_ticks(self):
+    def add_ticks(self) -> None:
         """Adds ticks to the number line. Ticks can be accessed after creation
         via ``self.ticks``.
         """
         ticks = VGroup()
         elongated_tick_size = self.tick_size * self.longer_tick_multiple
-        elongated_tick_offsets = self.numbers_with_elongated_ticks - self.x_min
+        elongated_tick_offsets = (
+            np.array(self.numbers_with_elongated_ticks) - self.x_min
+        )
         for x in self.get_tick_range():
             size = self.tick_size
             if np.any(np.isclose(x - self.x_min, elongated_tick_offsets)):
@@ -403,9 +415,9 @@ class NumberLine(Line):
             >>> from manim import NumberLine
             >>> number_line = NumberLine()
             >>> number_line.point_to_number((0, 0, 0))
-            0.0
+            np.float64(0.0)
             >>> number_line.point_to_number((1, 0, 0))
-            1.0
+            np.float64(1.0)
             >>> number_line.point_to_number([[0.5, 0, 0], [1, 0, 0], [1.5, 0, 0]])
             array([0.5, 1. , 1.5])
 
@@ -413,31 +425,34 @@ class NumberLine(Line):
         point = np.asarray(point)
         start, end = self.get_start_and_end()
         unit_vect = normalize(end - start)
-        proportion = np.dot(point - start, unit_vect) / np.dot(end - start, unit_vect)
+        proportion: float = np.dot(point - start, unit_vect) / np.dot(
+            end - start, unit_vect
+        )
         return interpolate(self.x_min, self.x_max, proportion)
 
-    def n2p(self, number: float | np.ndarray) -> np.ndarray:
+    def n2p(self, number: float | np.ndarray) -> Point3D:
         """Abbreviation for :meth:`~.NumberLine.number_to_point`."""
         return self.number_to_point(number)
 
-    def p2n(self, point: Sequence[float]) -> float:
+    def p2n(self, point: Point3DLike) -> float:
         """Abbreviation for :meth:`~.NumberLine.point_to_number`."""
         return self.point_to_number(point)
 
     def get_unit_size(self) -> float:
-        return self.get_length() / (self.x_range[1] - self.x_range[0])
+        val: float = self.get_length() / (self.x_range[1] - self.x_range[0])
+        return val
 
-    def get_unit_vector(self) -> np.ndarray:
+    def get_unit_vector(self) -> Vector3D:
         return super().get_unit_vector() * self.unit_size
 
     def get_number_mobject(
         self,
         x: float,
-        direction: Sequence[float] | None = None,
+        direction: Vector3D | None = None,
         buff: float | None = None,
         font_size: float | None = None,
-        label_constructor: VMobject | None = None,
-        **number_config,
+        label_constructor: type[MathTex] | None = None,
+        **number_config: dict[str, Any],
     ) -> VMobject:
         """Generates a positioned :class:`~.DecimalNumber` mobject
         generated according to ``label_constructor``.
@@ -462,7 +477,7 @@ class NumberLine(Line):
         :class:`~.DecimalNumber`
             The positioned mobject.
         """
-        number_config = merge_dicts_recursively(
+        number_config_merged = merge_dicts_recursively(
             self.decimal_number_config,
             number_config,
         )
@@ -476,7 +491,10 @@ class NumberLine(Line):
             label_constructor = self.label_constructor
 
         num_mob = DecimalNumber(
-            x, font_size=font_size, mob_class=label_constructor, **number_config
+            x,
+            font_size=font_size,
+            mob_class=label_constructor,
+            **number_config_merged,
         )
 
         num_mob.next_to(self.number_to_point(x), direction=direction, buff=buff)
@@ -485,7 +503,7 @@ class NumberLine(Line):
             num_mob.shift(num_mob[0].width * LEFT / 2)
         return num_mob
 
-    def get_number_mobjects(self, *numbers, **kwargs) -> VGroup:
+    def get_number_mobjects(self, *numbers: float, **kwargs: Any) -> VGroup:
         if len(numbers) == 0:
             numbers = self.default_numbers_to_display()
         return VGroup([self.get_number_mobject(number, **kwargs) for number in numbers])
@@ -498,9 +516,9 @@ class NumberLine(Line):
         x_values: Iterable[float] | None = None,
         excluding: Iterable[float] | None = None,
         font_size: float | None = None,
-        label_constructor: VMobject | None = None,
-        **kwargs,
-    ):
+        label_constructor: type[MathTex] | None = None,
+        **kwargs: Any,
+    ) -> Self:
         """Adds :class:`~.DecimalNumber` mobjects representing their position
         at each tick of the number line. The numbers can be accessed after creation
         via ``self.numbers``.
@@ -551,11 +569,11 @@ class NumberLine(Line):
     def add_labels(
         self,
         dict_values: dict[float, str | float | VMobject],
-        direction: Sequence[float] = None,
+        direction: Point3DLike | None = None,
         buff: float | None = None,
         font_size: float | None = None,
-        label_constructor: VMobject | None = None,
-    ):
+        label_constructor: type[MathTex] | None = None,
+    ) -> Self:
         """Adds specifically positioned labels to the :class:`~.NumberLine` using a ``dict``.
         The labels can be accessed after creation via ``self.labels``.
 
@@ -598,6 +616,7 @@ class NumberLine(Line):
                 label = self._create_label_tex(label, label_constructor)
 
             if hasattr(label, "font_size"):
+                assert isinstance(label, (MathTex, Tex, Text, Integer)), label
                 label.font_size = font_size
             else:
                 raise AttributeError(f"{label} is not compatible with add_labels.")
@@ -612,7 +631,7 @@ class NumberLine(Line):
         self,
         label_tex: str | float | VMobject,
         label_constructor: Callable | None = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> VMobject:
         """Checks if the label is a :class:`~.VMobject`, otherwise, creates a
         label by passing ``label_tex`` to ``label_constructor``.
@@ -633,24 +652,25 @@ class NumberLine(Line):
         :class:`~.VMobject`
             The label.
         """
-        if label_constructor is None:
-            label_constructor = self.label_constructor
         if isinstance(label_tex, (VMobject, OpenGLVMobject)):
             return label_tex
-        else:
+        if label_constructor is None:
+            label_constructor = self.label_constructor
+        if isinstance(label_tex, str):
             return label_constructor(label_tex, **kwargs)
+        return label_constructor(str(label_tex), **kwargs)
 
     @staticmethod
-    def _decimal_places_from_step(step) -> int:
-        step = str(step)
-        if "." not in step:
+    def _decimal_places_from_step(step: float) -> int:
+        step_str = str(step)
+        if "." not in step_str:
             return 0
-        return len(step.split(".")[-1])
+        return len(step_str.split(".")[-1])
 
-    def __matmul__(self, other: float):
+    def __matmul__(self, other: float) -> Point3D:
         return self.n2p(other)
 
-    def __rmatmul__(self, other: Point3D | Mobject):
+    def __rmatmul__(self, other: Point3DLike | Mobject) -> float:
         if isinstance(other, Mobject):
             other = other.get_center()
         return self.p2n(other)
@@ -659,10 +679,10 @@ class NumberLine(Line):
 class UnitInterval(NumberLine):
     def __init__(
         self,
-        unit_size=10,
-        numbers_with_elongated_ticks=None,
-        decimal_number_config=None,
-        **kwargs,
+        unit_size: float = 10,
+        numbers_with_elongated_ticks: list[float] | None = None,
+        decimal_number_config: dict[str, Any] | None = None,
+        **kwargs: Any,
     ):
         numbers_with_elongated_ticks = (
             [0, 1]

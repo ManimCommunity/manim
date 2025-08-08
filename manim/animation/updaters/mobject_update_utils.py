@@ -349,9 +349,11 @@ def always_rotate(mobject: MobjectT, rate: float = 20 * DEGREES, **kwargs) -> Mo
     """
     mobject.add_updater(lambda m, dt: m.rotate(dt * rate, **kwargs))
     return mobject
+  
 
-
-def turn_animation_into_updater(animation: Animation, cycle: bool = False) -> Mobject:
+def turn_animation_into_updater(
+    animation: Animation, cycle: bool = False, delay: float = 0
+) -> Mobject:
     """Add an updater to the animation's Mobject, which applies
     the interpolation and update functions of the animation.
 
@@ -365,6 +367,8 @@ def turn_animation_into_updater(animation: Animation, cycle: bool = False) -> Mo
     cycle
         Whether to repeat the animation over and over, or do it
         only once and remove the updater once finished.
+    delay
+        The delay in seconds before the animation starts.
 
     Returns
     -------
@@ -391,21 +395,22 @@ def turn_animation_into_updater(animation: Animation, cycle: bool = False) -> Mo
     mobject = animation.mobject
     animation.suspend_mobject_updating = False
     animation.begin()
-    animation.total_time = 0
+    animation.total_time = -delay
 
     def update(m: Mobject, dt: float):
-        run_time = animation.get_run_time()
-        time_ratio = animation.total_time / run_time
-        if cycle:
-            alpha = time_ratio % 1
-        else:
-            alpha = np.clip(time_ratio, 0, 1)
-            if alpha >= 1:
-                animation.finish()
-                m.remove_updater(update)
-                return
-        animation.interpolate(alpha)
-        animation.update_mobjects(dt)
+        if animation.total_time >= 0:
+            run_time = animation.get_run_time()
+            time_ratio = animation.total_time / run_time
+            if cycle:
+                alpha = time_ratio % 1
+            else:
+                alpha = np.clip(time_ratio, 0, 1)
+                if alpha >= 1:
+                    animation.finish()
+                    m.remove_updater(update)
+                    return
+            animation.interpolate(alpha)
+            animation.update_mobjects(dt)
         animation.total_time += dt
 
     mobject.add_updater(update)

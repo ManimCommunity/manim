@@ -4,14 +4,18 @@ import contextlib
 import itertools as it
 import time
 from functools import cached_property
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import moderngl
 import numpy as np
 from PIL import Image
 
 from manim import config, logger
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject, OpenGLPoint
+from manim.mobject.opengl.opengl_mobject import (
+    OpenGLMobject,
+    OpenGLPoint,
+    _AnimationBuilder,
+)
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.utils.caching import handle_caching_play
 from manim.utils.color import color_to_rgba
@@ -34,6 +38,14 @@ from .vectorized_mobject_rendering import (
     render_opengl_vectorized_mobject_fill,
     render_opengl_vectorized_mobject_stroke,
 )
+
+if TYPE_CHECKING:
+    from typing_extensions import Self
+
+    from manim.animation.animation import Animation
+    from manim.mobject.mobject import Mobject
+    from manim.scene.scene import Scene
+
 
 __all__ = ["OpenGLCamera", "OpenGLRenderer"]
 
@@ -102,7 +114,7 @@ class OpenGLCamera(OpenGLMobject):
         self.euler_angles = euler_angles
         self.refresh_rotation_matrix()
 
-    def get_position(self):
+    def get_position(self) -> Point3D:
         return self.model_matrix[:, 3][:3]
 
     def set_position(self, position):
@@ -123,7 +135,7 @@ class OpenGLCamera(OpenGLMobject):
         self.set_height(self.frame_shape[1], stretch=True)
         self.move_to(self.center_point)
 
-    def to_default_state(self):
+    def to_default_state(self) -> Self:
         self.center()
         self.set_height(config["frame_height"])
         self.set_width(config["frame_width"])
@@ -166,28 +178,28 @@ class OpenGLCamera(OpenGLMobject):
         self.refresh_rotation_matrix()
         return self
 
-    def set_theta(self, theta):
+    def set_theta(self, theta: float) -> Self:
         return self.set_euler_angles(theta=theta)
 
-    def set_phi(self, phi):
+    def set_phi(self, phi: float) -> Self:
         return self.set_euler_angles(phi=phi)
 
-    def set_gamma(self, gamma):
+    def set_gamma(self, gamma: float) -> Self:
         return self.set_euler_angles(gamma=gamma)
 
-    def increment_theta(self, dtheta):
+    def increment_theta(self, dtheta: float) -> Self:
         self.euler_angles[0] += dtheta
         self.refresh_rotation_matrix()
         return self
 
-    def increment_phi(self, dphi):
+    def increment_phi(self, dphi: float) -> Self:
         phi = self.euler_angles[1]
         new_phi = clip(phi + dphi, -PI / 2, PI / 2)
         self.euler_angles[1] = new_phi
         self.refresh_rotation_matrix()
         return self
 
-    def increment_gamma(self, dgamma):
+    def increment_gamma(self, dgamma: float) -> Self:
         self.euler_angles[2] += dgamma
         self.refresh_rotation_matrix()
         return self
@@ -199,15 +211,15 @@ class OpenGLCamera(OpenGLMobject):
         # Assumes first point is at the center
         return self.points[0]
 
-    def get_width(self):
+    def get_width(self) -> float:
         points = self.points
         return points[2, 0] - points[1, 0]
 
-    def get_height(self):
+    def get_height(self) -> float:
         points = self.points
         return points[4, 1] - points[3, 1]
 
-    def get_focal_distance(self):
+    def get_focal_distance(self) -> float:
         return self.focal_distance * self.get_height()
 
     def interpolate(self, *args, **kwargs):
@@ -216,7 +228,11 @@ class OpenGLCamera(OpenGLMobject):
 
 
 class OpenGLRenderer:
-    def __init__(self, file_writer_class=SceneFileWriter, skip_animations=False):
+    def __init__(
+        self,
+        file_writer_class: type[SceneFileWriter] = SceneFileWriter,
+        skip_animations: bool = False,
+    ) -> None:
         # Measured in pixel widths, used for vector graphics
         self.anti_alias_width = 1.5
         self._file_writer_class = file_writer_class
@@ -384,7 +400,7 @@ class OpenGLRenderer:
 
         return self.path_to_texture_id[repr(path)]
 
-    def update_skipping_status(self):
+    def update_skipping_status(self) -> None:
         """
         This method is used internally to check if the current
         animation needs to be skipped or not. It also checks if
@@ -396,19 +412,24 @@ class OpenGLRenderer:
         if self.file_writer.sections[-1].skip_animations:
             self.skip_animations = True
         if (
-            config["from_animation_number"]
-            and self.num_plays < config["from_animation_number"]
+            config.from_animation_number > 0
+            and self.num_plays < config.from_animation_number
         ):
             self.skip_animations = True
         if (
-            config["upto_animation_number"]
-            and self.num_plays > config["upto_animation_number"]
+            config.upto_animation_number >= 0
+            and self.num_plays > config.upto_animation_number
         ):
             self.skip_animations = True
             raise EndSceneEarlyException()
 
     @handle_caching_play
-    def play(self, scene, *args, **kwargs):
+    def play(
+        self,
+        scene: Scene,
+        *args: Animation | Mobject | _AnimationBuilder,
+        **kwargs: Any,
+    ) -> None:
         # TODO: Handle data locking / unlocking.
         self.animation_start_time = time.time()
         self.file_writer.begin_animation(not self.skip_animations)
@@ -436,11 +457,13 @@ class OpenGLRenderer:
         self.time += scene.duration
         self.num_plays += 1
 
-    def clear_screen(self):
+    def clear_screen(self) -> None:
         self.frame_buffer_object.clear(*self.background_color)
         self.window.swap_buffers()
 
-    def render(self, scene, frame_offset, moving_mobjects):
+    def render(
+        self, scene: Scene, frame_offset, moving_mobjects: list[Mobject]
+    ) -> None:
         self.update_frame(scene)
 
         if self.skip_animations:

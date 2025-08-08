@@ -8,18 +8,18 @@ from manim.utils.hashing import get_hash_from_play_call
 
 from .. import config, logger
 from ..camera.camera import Camera
-from ..mobject.mobject import Mobject
+from ..mobject.mobject import Mobject, _AnimationBuilder
 from ..scene.scene_file_writer import SceneFileWriter
 from ..utils.exceptions import EndSceneEarlyException
 from ..utils.iterables import list_update
 
 if typing.TYPE_CHECKING:
-    import types
-    from collections.abc import Iterable
     from typing import Any
 
     from manim.animation.animation import Animation
     from manim.scene.scene import Scene
+
+    from ..typing import PixelArray
 
 __all__ = ["CairoRenderer"]
 
@@ -33,11 +33,11 @@ class CairoRenderer:
 
     def __init__(
         self,
-        file_writer_class=SceneFileWriter,
-        camera_class=None,
-        skip_animations=False,
-        **kwargs,
-    ):
+        file_writer_class: type[SceneFileWriter] = SceneFileWriter,
+        camera_class: type[Camera] | None = None,
+        skip_animations: bool = False,
+        **kwargs: Any,
+    ) -> None:
         # All of the following are set to EITHER the value passed via kwargs,
         # OR the value stored in the global config dict at the time of
         # _instance construction_.
@@ -51,7 +51,7 @@ class CairoRenderer:
         self.time = 0
         self.static_image = None
 
-    def init_scene(self, scene):
+    def init_scene(self, scene: Scene) -> None:
         self.file_writer: Any = self._file_writer_class(
             self,
             scene.__class__.__name__,
@@ -60,7 +60,7 @@ class CairoRenderer:
     def play(
         self,
         scene: Scene,
-        *args: Animation | Iterable[Animation] | types.GeneratorType[Animation],
+        *args: Animation | Mobject | _AnimationBuilder,
         **kwargs,
     ):
         # Reset skip_animations to the original state.
@@ -119,12 +119,12 @@ class CairoRenderer:
 
     def update_frame(  # TODO Description in Docstring
         self,
-        scene,
+        scene: Scene,
         mobjects: typing.Iterable[Mobject] | None = None,
         include_submobjects: bool = True,
         ignore_skipping: bool = True,
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> None:
         """Update the frame.
 
         Parameters
@@ -160,7 +160,7 @@ class CairoRenderer:
         self.update_frame(scene, moving_mobjects)
         self.add_frame(self.get_frame())
 
-    def get_frame(self):
+    def get_frame(self) -> PixelArray:
         """
         Gets the current frame as NumPy array.
 
@@ -252,18 +252,18 @@ class CairoRenderer:
         if config["save_last_frame"]:
             self.skip_animations = True
         if (
-            config["from_animation_number"]
-            and self.num_plays < config["from_animation_number"]
+            config.from_animation_number > 0
+            and self.num_plays < config.from_animation_number
         ):
             self.skip_animations = True
         if (
-            config["upto_animation_number"]
-            and self.num_plays > config["upto_animation_number"]
+            config.upto_animation_number >= 0
+            and self.num_plays > config.upto_animation_number
         ):
             self.skip_animations = True
             raise EndSceneEarlyException()
 
-    def scene_finished(self, scene):
+    def scene_finished(self, scene: Scene) -> None:
         # If no animations in scene, render an image instead
         if self.num_plays:
             self.file_writer.finish()
