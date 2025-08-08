@@ -1409,7 +1409,7 @@ def invert_color(color: ManimColorT) -> ManimColorT:
 def color_gradient(
     reference_colors: Sequence[ParsableManimColor],
     length_of_output: int,
-) -> list[ManimColor] | ManimColor:
+) -> list[ManimColor]:
     """Create a list of colors interpolated between the input array of colors with a
     specific number of colors.
 
@@ -1426,7 +1426,7 @@ def color_gradient(
         A :class:`ManimColor` or a list of interpolated :class:`ManimColor`'s.
     """
     if length_of_output == 0:
-        return ManimColor(reference_colors[0])
+        return [ManimColor(reference_colors[0])]
     if len(reference_colors) == 1:
         return [ManimColor(reference_colors[0])] * length_of_output
     rgbs = [color_to_rgb(color) for color in reference_colors]
