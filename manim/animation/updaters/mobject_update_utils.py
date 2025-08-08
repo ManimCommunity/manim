@@ -349,7 +349,7 @@ def always_rotate(mobject: MobjectT, rate: float = 20 * DEGREES, **kwargs) -> Mo
     """
     mobject.add_updater(lambda m, dt: m.rotate(dt * rate, **kwargs))
     return mobject
-  
+
 
 def turn_animation_into_updater(
     animation: Animation, cycle: bool = False, delay: float = 0
