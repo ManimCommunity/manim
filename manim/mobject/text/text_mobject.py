@@ -57,23 +57,25 @@ __all__ = ["Text", "Paragraph", "MarkupText", "register_font"]
 import copy
 import hashlib
 import re
-from collections.abc import Generator, Iterable, Sequence
+from collections.abc import Iterable, Iterator, Sequence
 from contextlib import contextmanager
 from itertools import chain
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import manimpango
 import numpy as np
 from manimpango import MarkupUtils, PangoUtils, TextSetting
+from typing_extensions import Self
 
 from manim import config, logger
 from manim.constants import *
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.svg.svg_mobject import SVGMobject
+from manim.mobject.text.code_mobject import Code
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
+from manim.typing import Point3D
 from manim.utils.color import ManimColor, ParsableManimColor, color_gradient
-from manim.utils.deprecation import deprecated
 
 if TYPE_CHECKING:
     from typing import Any
@@ -89,7 +91,7 @@ TEXT2SVG_ADJUSTMENT_FACTOR = 4.8
 __all__ = ["Text", "Paragraph", "MarkupText", "register_font"]
 
 
-def remove_invisible_chars(mobject: SVGMobject) -> SVGMobject | VGroup:
+def remove_invisible_chars(mobject: VMobject) -> VMobject:
     """Function to remove unwanted invisible characters from some mobjects.
 
     Parameters
@@ -104,9 +106,9 @@ def remove_invisible_chars(mobject: SVGMobject) -> SVGMobject | VGroup:
     """
     # TODO: Refactor needed
     iscode = False
-    if mobject.__class__.__name__ == "Text":
+    if isinstance(mobject, Text):
         mobject = mobject[:]
-    elif mobject.__class__.__name__ == "Code":
+    elif isinstance(mobject, Code):
         iscode = True
         code = mobject
         # TODO:
@@ -120,9 +122,8 @@ def remove_invisible_chars(mobject: SVGMobject) -> SVGMobject | VGroup:
     else:
         mobject_without_dots.add(*(k for k in mobject if k.__class__ != Dot))
     if iscode:
-        # TODO:
-        # error: "SVGMobject" has no attribute "code"  [attr-defined]
-        code.code = mobject_without_dots  # type: ignore[attr-defined]
+        assert isinstance(code, Code)
+        code.code = mobject_without_dots
         return code
     return mobject_without_dots
 
@@ -171,7 +172,7 @@ class Paragraph(VGroup):
         line_spacing: float = -1,
         alignment: str | None = None,
         **kwargs: Any,
-    ) -> None:
+    ):
         self.line_spacing = line_spacing
         self.alignment = alignment
         self.consider_spaces_as_chars = kwargs.get("disable_ligatures", False)
@@ -432,7 +433,8 @@ class Text(SVGMobject):
     @staticmethod
     @functools.cache
     def font_list() -> list[str]:
-        return manimpango.list_fonts()  # type: ignore[no-any-return]
+        value: list[str] = manimpango.list_fonts()
+        return value
 
     def __init__(
         self,
@@ -460,7 +462,7 @@ class Text(SVGMobject):
         disable_ligatures: bool = False,
         use_svg_cache: bool = False,
         **kwargs: Any,
-    ) -> None:
+    ):
         self.line_spacing = line_spacing
         if font and warn_missing_font:
             fonts_list = Text.font_list()
@@ -501,14 +503,16 @@ class Text(SVGMobject):
         t2g = kwargs.pop("text2gradient", t2g)
         t2s = kwargs.pop("text2slant", t2s)
         t2w = kwargs.pop("text2weight", t2w)
-        assert isinstance(t2c, dict)
-        assert isinstance(t2g, dict)
-
-        self.t2c = {k: ManimColor(v).to_hex() for k, v in t2c.items()}
-        self.t2f = t2f
-        self.t2g = t2g
-        self.t2s = t2s
-        self.t2w = t2w
+        assert t2c is not None
+        assert t2f is not None
+        assert t2g is not None
+        assert t2s is not None
+        assert t2w is not None
+        self.t2c: dict[str, str] = {k: ManimColor(v).to_hex() for k, v in t2c.items()}
+        self.t2f: dict[str, str] = t2f
+        self.t2g: dict[str, tuple] = t2g
+        self.t2s: dict[str, str] = t2s
+        self.t2w: dict[str, str] = t2w
 
         self.original_text = text
         self.disable_ligatures = disable_ligatures
@@ -524,7 +528,6 @@ class Text(SVGMobject):
             self.line_spacing = self._font_size + self._font_size * self.line_spacing
 
         parsed_color: ManimColor = ManimColor(color) if color else VMobject().color
-        # TODO: Should _text2svg receive a str or a ManimColor?
         file_name = self._text2svg(parsed_color.to_hex())
         PangoUtils.remove_last_M(file_name)
         super().__init__(
@@ -644,7 +647,7 @@ class Text(SVGMobject):
                 submobjects_char_index += 1
         return chars
 
-    def _find_indexes(self, word: str, text: str) -> Sequence[tuple[int, int]]:
+    def _find_indexes(self, word: str, text: str) -> list[tuple[int, int]]:
         """Finds the indexes of ``text`` in ``word``."""
         temp = re.match(r"\[([0-9\-]{0,}):([0-9\-]{0,})\]", word)
         if temp:
@@ -661,32 +664,6 @@ class Text(SVGMobject):
             indexes.append((index, index + len(word)))
             index = text.find(word, index + len(word))
         return indexes
-
-    @deprecated(
-        since="v0.14.0",
-        until="v0.15.0",
-        message="This was internal function, you shouldn't be using it anyway.",
-    )
-    def _set_color_by_t2c(self, t2c: Any = None) -> None:
-        """Sets color for specified strings."""
-        t2c = t2c if t2c else self.t2c
-        for word, color in list(t2c.items()):
-            for for_start, for_end in self._find_indexes(word, self.text):
-                self.chars[for_start:for_end].set_color(color)
-
-    @deprecated(
-        since="v0.14.0",
-        until="v0.15.0",
-        message="This was internal function, you shouldn't be using it anyway.",
-    )
-    def _set_color_by_t2g(self, t2g: Any = None) -> None:
-        """Sets gradient colors for specified
-        strings. Behaves similarly to ``set_color_by_t2c``.
-        """
-        t2g = t2g if t2g else self.t2g
-        for word, gradient in list(t2g.items()):
-            for start, end in self._find_indexes(word, self.text):
-                self.chars[start:end].set_color_by_gradient(*gradient)
 
     def _text2hash(self, color: ParsableManimColor) -> str:
         """Generates ``sha256`` hash for file name."""
@@ -731,7 +708,9 @@ class Text(SVGMobject):
     def _get_settings_from_t2xs(
         self,
         t2xs: Sequence[tuple[dict[str, str], str]],
-        default_args: dict[str, Iterable[str]],
+        # default_args: dict[str, Iterable[str]],
+        default_args: dict[str, Any],
+        # TODO Look into this
     ) -> list[TextSetting]:
         settings = []
         t2xwords = set(chain(*([*t2x.keys()] for t2x, _ in t2xs)))
@@ -748,42 +727,34 @@ class Text(SVGMobject):
         return settings
 
     def _get_settings_from_gradient(
-        self, default_args: dict[str, Iterable[str]]
+        self, default_args: dict[str, str]
     ) -> Sequence[TextSetting]:
         settings = []
         args = copy.copy(default_args)
         if self.gradient:
             colors = color_gradient(self.gradient, len(self.text))
             for i in range(len(self.text)):
-                # TODO:
-                # error: Item "float" of "ManimColor | float" has no attribute "to_hex"  [union-attr]
-                args["color"] = colors[i].to_hex()  # type: ignore[union-attr]
+                args["color"] = colors[i].to_hex()
                 settings.append(TextSetting(i, i + 1, **args))
 
         for word, gradient in self.t2g.items():
             if isinstance(gradient, str) or len(gradient) == 1:
                 color = gradient if isinstance(gradient, str) else gradient[0]
-                # TODO:
-                # error: Incompatible types in assignment (expression has type "list[ManimColor]", variable has type "tuple[Any, ...]")  [assignment]
-                gradient = [ManimColor(color)]  # type: ignore[assignment]
+                gradient = (ManimColor(color), ManimColor(color))
             colors = (
-                # TODO:
-                # error: Incompatible types in assignment (expression has type "list[ManimColor] | ManimColor | tuple[Any, ...]", variable has type "list[ManimColor] | ManimColor")  [assignment]
-                color_gradient(gradient, len(word))  # type: ignore[assignment]
+                color_gradient(gradient, len(word))
                 if len(gradient) != 1
-                else len(word) * gradient
+                else len(word) * list(gradient)
             )
             for start, end in self._find_indexes(word, self.text):
                 for i in range(start, end):
-                    # TODO:
-                    # error: Item "float" of "ManimColor | float" has no attribute "to_hex"  [union-attr]
-                    args["color"] = colors[i - start].to_hex()  # type: ignore[union-attr]
+                    args["color"] = colors[i - start].to_hex()
                     settings.append(TextSetting(i, i + 1, **args))
         return settings
 
     def _text2settings(self, color: ParsableManimColor) -> Sequence[TextSetting]:
         """Converts the texts and styles to a setting for parsing."""
-        t2xs = [
+        t2xs: list[tuple[dict[str, str], str]] = [
             (self.t2f, "font"),
             (self.t2s, "slant"),
             (self.t2w, "weight"),
@@ -791,7 +762,7 @@ class Text(SVGMobject):
         ]
         # setting_args requires values to be strings
 
-        default_args = {
+        default_args: dict[str, Any] = {
             arg: getattr(self, arg) if arg != "color" else color for _, arg in t2xs
         }
 
@@ -1199,9 +1170,8 @@ class MarkupText(SVGMobject):
     @staticmethod
     @functools.cache
     def font_list() -> list[str]:
-        # TODO:
-        # Add type annotation to manimpango.list_fonts
-        return manimpango.list_fonts()  # type: ignore[no-any-return]
+        value: list[str] = manimpango.list_fonts()
+        return value
 
     def __init__(
         self,
@@ -1210,7 +1180,7 @@ class MarkupText(SVGMobject):
         stroke_width: float = 0,
         color: ParsableManimColor | None = None,
         font_size: float = DEFAULT_FONT_SIZE,
-        line_spacing: int = -1,
+        line_spacing: float = -1,
         font: str = "",
         slant: str = NORMAL,
         weight: str = NORMAL,
@@ -1223,7 +1193,7 @@ class MarkupText(SVGMobject):
         disable_ligatures: bool = False,
         warn_missing_font: bool = True,
         **kwargs: Any,
-    ) -> None:
+    ):
         self.text = text
         self.line_spacing: float = line_spacing
         if font and warn_missing_font:
@@ -1497,7 +1467,7 @@ class MarkupText(SVGMobject):
         )
         return gradientmap
 
-    def _parse_color(self, col: str) -> ParsableManimColor:
+    def _parse_color(self, col: str) -> str:
         """Parse color given in ``<color>`` or ``<gradient>`` tags."""
         if re.match("#[0-9a-f]{6}", col):
             return col
@@ -1546,7 +1516,7 @@ class MarkupText(SVGMobject):
 
 
 @contextmanager
-def register_font(font_file: str | Path) -> Generator[None, None, None]:
+def register_font(font_file: str | Path) -> Iterator[None]:
     """Temporarily add a font file to Pango's search path.
 
     This searches for the font_file at various places. The order it searches it described below.
