@@ -37,7 +37,9 @@ def assert_is_mobject_method(method: Callable) -> None:
 
 def always(method: Callable, *args: Any, **kwargs: Any) -> Mobject | OpenGLMobject:
     assert_is_mobject_method(method)
+    # error: "Callable[..., Any]" has no attribute "__self__"  [attr-defined]
     mobject: Mobject | OpenGLMobject = method.__self__
+    # error: "Callable[..., Any]" has no attribute "__func__"  [attr-defined]
     func = method.__func__
     mobject.add_updater(lambda m: func(m, *args, **kwargs))
     return mobject
@@ -52,7 +54,9 @@ def f_always(
     the relevant arguments.
     """
     assert_is_mobject_method(method)
+    # error: "Callable[[Mobject], None]" has no attribute "__self__"  [attr-defined]
     mobject: Mobject | OpenGLMobject = method.__self__
+    # error: "Callable[[Mobject], None]" has no attribute "__func__"  [attr-defined]
     func = method.__func__
 
     def updater(mob: Mobject | OpenGLMobject) -> None:
