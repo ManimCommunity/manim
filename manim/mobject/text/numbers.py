@@ -225,12 +225,9 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
             mob_class = self.mob_class
 
         if string not in string_to_mob_map:
-            # TODO: I am not sure about the type of mob_class.
-            # I think it should be SingleStringMathTex, as that class has the _fontsize property.
-            # But this seems to conflict with the default case, where it is set to VMobject.
-            string_to_mob_map[string] = mob_class(string, **kwargs)  # type: ignore[assignment]
+            string_to_mob_map[string] = mob_class(string, **kwargs)
         mob = string_to_mob_map[string].copy()
-        mob.font_size = self._font_size  # type: ignore[attr-defined]
+        mob.font_size = self._font_size
         return mob
 
     def _get_formatter(self, **kwargs: Any) -> str:

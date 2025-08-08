@@ -309,9 +309,7 @@ class Camera:
             The PIL image of the array.
         """
         if pixel_array is None:
-            # TODO:
-            # error: Cannot determine type of "pixel_array"  [has-type]
-            pixel_array = self.pixel_array  # type: ignore[has-type]
+            pixel_array = self.pixel_array
         return Image.fromarray(pixel_array, mode=self.image_mode)
 
     def convert_pixel_array(
@@ -358,9 +356,7 @@ class Camera:
         )
         if not (
             hasattr(self, "pixel_array")
-            # TODO:
-            # error: Cannot determine type of "pixel_array"  [has-type]
-            and self.pixel_array.shape == converted_array.shape  # type: ignore[has-type]
+            and self.pixel_array.shape == converted_array.shape
         ):
             self.pixel_array: PixelArray = converted_array
         else:
@@ -550,9 +546,7 @@ class Camera:
         # partition while at the same time preserving order.
         mobjects = self.get_mobjects_to_display(mobjects, **kwargs)
         for group_type, group in it.groupby(mobjects, self.type_or_raise):
-            # TODO
-            # error: Call to untyped function (unknown) in typed context  [no-untyped-call]
-            self.display_funcs[group_type](list(group), self.pixel_array)  # type: ignore[no-untyped-call]
+            self.display_funcs[group_type](list(group), self.pixel_array)
 
     # Methods associated with svg rendering
 

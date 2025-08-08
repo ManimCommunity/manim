@@ -15,7 +15,7 @@ r"""Mobjects representing text rendered using LaTeX.
 
 from __future__ import annotations
 
-from manim.utils.color import BLACK, ParsableManimColor
+from manim.utils.color import BLACK, ManimColor, ParsableManimColor
 
 __all__ = [
     "SingleStringMathTex",
@@ -272,7 +272,7 @@ class MathTex(SingleStringMathTex):
             [] if substrings_to_isolate is None else substrings_to_isolate
         )
         if tex_to_color_map is None:
-            self.tex_to_color_map: dict[str, ManimColor] = {}
+            self.tex_to_color_map: dict[str, ParsableManimColor] = {}
         else:
             self.tex_to_color_map = tex_to_color_map
         self.tex_environment = tex_environment
@@ -419,17 +419,17 @@ class MathTex(SingleStringMathTex):
         return self
 
     def set_color_by_tex_to_color_map(
-        self, texs_to_color_map: dict[str, ManimColor], **kwargs: Any
+        self, texs_to_color_map: dict[str, ParsableManimColor], **kwargs: Any
     ) -> Self:
         for texs, color in list(texs_to_color_map.items()):
             try:
                 # If the given key behaves like tex_strings
                 texs + ""
-                self.set_color_by_tex(texs, color, **kwargs)
+                self.set_color_by_tex(texs, ManimColor(color), **kwargs)
             except TypeError:
                 # If the given key is a tuple
                 for tex in texs:
-                    self.set_color_by_tex(tex, color, **kwargs)
+                    self.set_color_by_tex(tex, ManimColor(color), **kwargs)
         return self
 
     def index_of_part(self, part: MathTex) -> int:
@@ -508,12 +508,11 @@ class BulletedList(Tex):
     ):
         self.buff = buff
         self.dot_scale_factor = dot_scale_factor
-        # TODO: See comment 10 lines above this
-        self.tex_environment = tex_environment  # type: ignore[assignment]
+        self.tex_environment = tex_environment
         line_separated_items = [s + "\\\\" for s in items]
         super().__init__(
             *line_separated_items,
-            tex_environment=tex_environment,  # type: ignore[arg-type]
+            tex_environment=tex_environment,
             **kwargs,
         )
         for part in self:
@@ -529,7 +528,7 @@ class BulletedList(Tex):
             if part is None:
                 raise Exception("Could not locate part by provided tex string")
         elif isinstance(arg, int):
-            part = self.submobjects[arg]  # type: ignore[assignment]
+            part = self.submobjects[arg]
         else:
             raise TypeError(f"Expected int or string, got {arg}")
         for other_part in self.submobjects:
