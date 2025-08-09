@@ -172,7 +172,7 @@ class SampleSpace(Rectangle):
             "direction": direction,
             "buff": buff,
         }
-        return VGroup(parts.braces, parts.labels)
+        return VGroup(parts.braces, parts.labels)  # type: ignore[arg-type]
 
     def get_side_braces_and_labels(
         self,
