@@ -10,7 +10,9 @@ query-filters:
     - exclude:
           id: py/missing-call-to-init
     - exclude:
-        id: py/method-first-arg-is-not-self
+          id: py/method-first-arg-is-not-self
+    - exclude:
+          id: py/cyclic-import
 paths:
     - manim
 paths-ignore:
