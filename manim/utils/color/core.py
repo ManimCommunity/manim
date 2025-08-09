@@ -1442,6 +1442,42 @@ def color_gradient(
     ]
 
 
+def color_gradient_as_list(
+    reference_colors: Sequence[ParsableManimColor],
+    length_of_output: int,
+) -> list[ManimColor]:
+    """Create a list of colors interpolated between the input array of colors with a
+    specific number of colors.
+
+    Parameters
+    ----------
+    reference_colors
+        The colors to be interpolated between or spread apart.
+    length_of_output
+        The number of colors that the output should have, ideally more than the input.
+
+    Returns
+    -------
+    list[ManimColor]
+        A list of interpolated :class:`ManimColor`'s.
+    """
+    if length_of_output == 0:
+        return [ManimColor(reference_colors[0])]
+    if len(reference_colors) == 1:
+        return [ManimColor(reference_colors[0])] * length_of_output
+    rgbs = [color_to_rgb(color) for color in reference_colors]
+    alphas = np.linspace(0, (len(rgbs) - 1), length_of_output)
+    floors = alphas.astype("int")
+    alphas_mod1 = alphas % 1
+    # End edge case
+    alphas_mod1[-1] = 1
+    floors[-1] = len(rgbs) - 2
+    return [
+        rgb_to_color((rgbs[i] * (1 - alpha)) + (rgbs[i + 1] * alpha))
+        for i, alpha in zip(floors, alphas_mod1)
+    ]
+
+
 def interpolate_color(
     color1: ManimColorT, color2: ManimColorT, alpha: float
 ) -> ManimColorT:
@@ -1670,6 +1706,7 @@ __all__ = [
     "hex_to_rgb",
     "invert_color",
     "color_gradient",
+    "color_gradient_as_list",
     "interpolate_color",
     "average_color",
     "random_bright_color",
