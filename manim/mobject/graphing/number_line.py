@@ -8,8 +8,8 @@ from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 __all__ = ["NumberLine", "UnitInterval"]
 
 
-from collections.abc import Iterable, Sequence
-from typing import TYPE_CHECKING, Callable
+from collections.abc import Callable, Iterable, Sequence
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from typing import Any

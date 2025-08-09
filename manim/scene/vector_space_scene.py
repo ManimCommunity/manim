@@ -4,8 +4,8 @@ from __future__ import annotations
 
 __all__ = ["VectorScene", "LinearTransformationScene"]
 
-from collections.abc import Iterable
-from typing import TYPE_CHECKING, Any, Callable, cast
+from collections.abc import Callable, Iterable
+from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
 
@@ -45,8 +45,6 @@ from ..utils.rate_functions import rush_from, rush_into
 from ..utils.space_ops import angle_of_vector
 
 if TYPE_CHECKING:
-    from typing import Any
-
     from typing_extensions import Self
 
     from manim.typing import (

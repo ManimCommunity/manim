@@ -4,7 +4,8 @@ from __future__ import annotations
 
 __all__ = ["PMobject", "Mobject1D", "Mobject2D", "PGroup", "PointCloudDot", "Point"]
 
-from typing import TYPE_CHECKING
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
@@ -29,9 +30,6 @@ from ...utils.iterables import stretch_array_to_length
 __all__ = ["PMobject", "Mobject1D", "Mobject2D", "PGroup", "PointCloudDot", "Point"]
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
-    from typing import Any
-
     import numpy.typing as npt
     from typing_extensions import Self
 
