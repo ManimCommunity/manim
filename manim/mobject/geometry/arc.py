@@ -916,7 +916,8 @@ class AnnularSector(Arc):
         self.append_points(outer_arc.points)
         self.add_line_to(inner_arc.points[0])
 
-    init_points = generate_points
+    def init_points(self) -> None:
+        self.generate_points()
 
 
 class Sector(AnnularSector):
@@ -990,7 +991,8 @@ class Annulus(Circle):
         self.append_points(inner_circle.points)
         self.shift(self.arc_center)
 
-    init_points = generate_points
+    def init_points(self) -> None:
+        self.generate_points()
 
 
 class CubicBezier(VMobject, metaclass=ConvertToOpenGL):

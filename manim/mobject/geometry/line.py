@@ -147,7 +147,8 @@ class Line(TipableVMobject):
 
         self._account_for_buff(buff)
 
-    init_points = generate_points
+    def init_points(self) -> None:
+        self.generate_points()
 
     def _account_for_buff(self, buff: float) -> None:
         if buff <= 0:
