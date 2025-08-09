@@ -2,21 +2,20 @@
 
 from __future__ import annotations
 
-import collections
 import copy
 import inspect
 import json
-import typing
 import zlib
+from collections.abc import Callable, Hashable, Iterable
 from time import perf_counter
 from types import FunctionType, MappingProxyType, MethodType, ModuleType
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
 from manim._config import config, logger
 
-if typing.TYPE_CHECKING:
+if TYPE_CHECKING:
     from manim.animation.animation import Animation
     from manim.camera.camera import Camera
     from manim.mobject.mobject import Mobject
@@ -117,7 +116,7 @@ class _Memoizer:
     def _handle_already_processed(
         cls,
         obj,
-        default_function: typing.Callable[[Any], Any],
+        default_function: Callable[[Any], Any],
     ):
         if isinstance(
             obj,
@@ -131,7 +130,7 @@ class _Memoizer:
             # It makes no sense (and it'd slower) to memoize objects of these primitive
             # types.  Hence, we simply return the object.
             return obj
-        if isinstance(obj, collections.abc.Hashable):
+        if isinstance(obj, Hashable):
             try:
                 return cls._return(obj, hash, default_function)
             except TypeError:
@@ -144,8 +143,8 @@ class _Memoizer:
     @classmethod
     def _return(
         cls,
-        obj: typing.Any,
-        obj_to_membership_sign: typing.Callable[[Any], int],
+        obj: Any,
+        obj_to_membership_sign: Callable[[Any], int],
         default_func,
         memoizing=True,
     ) -> str | Any:
@@ -234,7 +233,7 @@ class _CustomEncoder(json.JSONEncoder):
         # Serialize it with only the type of the object. You can change this to whatever string when debugging the serialization process.
         return str(type(obj))
 
-    def _cleaned_iterable(self, iterable: typing.Iterable[Any]):
+    def _cleaned_iterable(self, iterable: Iterable[Any]):
         """Check for circular reference at each iterable that will go through the JSONEncoder, as well as key of the wrong format.
 
         If a key with a bad format is found (i.e not a int, string, or float), it gets replaced byt its hash using the same process implemented here.
@@ -325,8 +324,8 @@ def get_json(obj: dict):
 def get_hash_from_play_call(
     scene_object: Scene,
     camera_object: Camera | OpenGLCamera,
-    animations_list: typing.Iterable[Animation],
-    current_mobjects_list: typing.Iterable[Mobject],
+    animations_list: Iterable[Animation],
+    current_mobjects_list: Iterable[Mobject],
 ) -> str:
     """Take the list of animations and a list of mobjects and output their hashes. This is meant to be used for `scene.play` function.
 

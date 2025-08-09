@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import collections
+from collections import defaultdict
 from collections.abc import Iterable, Sequence
 from typing import TYPE_CHECKING
 
@@ -25,9 +25,9 @@ __all__ = [
 
 def build_matrix_lists(
     mob: OpenGLVMobject,
-) -> collections.defaultdict[tuple[float, ...], list[OpenGLVMobject]]:
+) -> defaultdict[tuple[float, ...], list[OpenGLVMobject]]:
     root_hierarchical_matrix = mob.hierarchical_model_matrix()
-    matrix_to_mobject_list = collections.defaultdict(list)
+    matrix_to_mobject_list = defaultdict(list)
     if mob.has_points():
         matrix_to_mobject_list[tuple(root_hierarchical_matrix.ravel())].append(mob)
     mobject_to_hierarchical_matrix = {mob: root_hierarchical_matrix}
