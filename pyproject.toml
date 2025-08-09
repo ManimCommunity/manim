@@ -14,17 +14,15 @@ classifiers = [
     "Topic :: Scientific/Engineering",
     "Topic :: Multimedia :: Video",
     "Topic :: Multimedia :: Graphics",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Natural Language :: English",
     ]
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 dependencies = [
     "audioop-lts>=0.2.1 ; python_full_version >= '3.13'",
-    "av>=9.0.0,<14.0.0",
+    "av>14.0.0",
     "beautifulsoup4>=4.12",
     "click>=8.0",
     "cloup>=2.0.0",
@@ -119,7 +117,7 @@ exclude = [
 
 [tool.pytest.ini_options]
 markers = "slow: Mark the test as slow. Can be skipped with --skip_slow"
-addopts = "--no-cov-on-fail --cov=manim --cov-report xml --cov-report term -n auto --dist=loadfile --durations=0"
+addopts = "--no-cov-on-fail --cov=manim --cov-report xml --cov-report term -n 10 --dist=loadfile --durations=0"
 
 [tool.isort]
 profile = "black"
