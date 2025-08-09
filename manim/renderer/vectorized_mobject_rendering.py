@@ -25,7 +25,7 @@ __all__ = [
 
 def build_matrix_lists(
     mob: OpenGLVMobject,
-) -> collections.defaultdict[tuple[float, ...], list[OpenGLVMobject]]:
+) -> defaultdict[tuple[float, ...], list[OpenGLVMobject]]:
     root_hierarchical_matrix = mob.hierarchical_model_matrix()
     matrix_to_mobject_list = defaultdict(list)
     if mob.has_points():
