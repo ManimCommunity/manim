@@ -13,6 +13,8 @@ query-filters:
           id: py/method-first-arg-is-not-self
     - exclude:
           id: py/cyclic-import
+    - exclude:
+          id: py/unsafe-cyclic-import
 paths:
     - manim
 paths-ignore:
