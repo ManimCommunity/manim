@@ -228,7 +228,7 @@ class FunctionGraph(ParametricFunction):
         self.parametric_function: Callable[[float], Point3D] = lambda t: np.array(
             [t, function(t), 0]
         )
-        self.function: Callable[[float], Any] = function
+        self.function = function  # type: ignore[assignment]
         super().__init__(self.parametric_function, self.x_range, color=color, **kwargs)
 
     def get_function(self) -> Callable[[float], Any]:
