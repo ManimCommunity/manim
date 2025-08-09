@@ -31,7 +31,9 @@ try:
     window = dpg.generate_uuid()
 except ImportError:
     dearpygui_imported = False
-from typing import TYPE_CHECKING
+
+from collections.abc import Callable, Iterable, Sequence
+from typing import TYPE_CHECKING, Any, Union
 
 import numpy as np
 from tqdm import tqdm
@@ -59,11 +61,9 @@ from ..utils.iterables import list_difference_update, list_update
 from ..utils.module_ops import scene_classes_from_file
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable, Sequence
     from types import FrameType
-    from typing import Any, Callable, TypeAlias, Union
 
-    from typing_extensions import Self
+    from typing_extensions import Self, TypeAlias
 
     from manim.typing import Point3D
 
@@ -186,7 +186,7 @@ class Scene:
         self.moving_mobjects: list[Mobject] = []
         self.static_mobjects: list[Mobject] = []
         self.time_progression: tqdm[float] | None = None
-        self.duration: float | None = None
+        self.duration: float = 0.0
         self.last_t = 0.0
         self.queue: Queue[SceneInteractAction] = Queue()
         self.skip_animation_preview = False

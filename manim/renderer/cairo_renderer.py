@@ -36,7 +36,7 @@ class CairoRenderer:
         camera_class: type[Camera] | None = None,
         skip_animations: bool = False,
         **kwargs: Any,
-    ) -> None:
+    ):
         # All of the following are set to EITHER the value passed via kwargs,
         # OR the value stored in the global config dict at the time of
         # _instance construction_.
@@ -45,10 +45,10 @@ class CairoRenderer:
         self.camera = camera_cls()
         self._original_skipping_status = skip_animations
         self.skip_animations = skip_animations
-        self.animations_hashes = []
+        self.animations_hashes: list[str | None] = []
         self.num_plays = 0
         self.time = 0.0
-        self.static_image = None
+        self.static_image: PixelArray | None = None
 
     def init_scene(self, scene: Scene) -> None:
         self.file_writer: Any = self._file_writer_class(
@@ -165,8 +165,7 @@ class CairoRenderer:
         self.add_frame(self.get_frame())
 
     def get_frame(self) -> PixelArray:
-        """
-        Gets the current frame as NumPy array.
+        """Gets the current frame as NumPy array.
 
         Returns
         -------
@@ -177,8 +176,7 @@ class CairoRenderer:
         return np.array(self.camera.pixel_array)
 
     def add_frame(self, frame: PixelArray, num_frames: int = 1) -> None:
-        """
-        Adds a frame to the video_file_stream
+        """Adds a frame to the video_file_stream
 
         Parameters
         ----------
@@ -207,12 +205,11 @@ class CairoRenderer:
             num_frames=int(duration / dt),
         )
 
-    def show_frame(self) -> None:
-        """
-        Opens the current frame in the Default Image Viewer
+    def show_frame(self, scene: Scene) -> None:
+        """Opens the current frame in the Default Image Viewer
         of your system.
         """
-        self.update_frame(ignore_skipping=True)
+        self.update_frame(scene, ignore_skipping=True)
         self.camera.get_image().show()
 
     def save_static_frame_data(
@@ -228,7 +225,7 @@ class CairoRenderer:
         scene
             The scene played.
         static_mobjects
-            Static mobjects of the scene. If None, self.static_image is set to None
+            Static mobjects of the scene. If None, self.static_image is set to None.
 
         Returns
         -------
@@ -243,8 +240,7 @@ class CairoRenderer:
         return self.static_image
 
     def update_skipping_status(self) -> None:
-        """
-        This method is used internally to check if the current
+        """This method is used internally to check if the current
         animation needs to be skipped or not. It also checks if
         the number of animations that were played correspond to
         the number of animations that need to be played, and
