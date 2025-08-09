@@ -253,7 +253,7 @@ def deprecated(
         # The following line raises this mypy error:
         # Accessing "__init__" on an instance is unsound, since instance.__init__
         # could be from an incompatible subclass  [misc]</pre>
-        func.__init__ = decorate(func.__init__, deprecate)  # type: ignore[misc]
+        func.__init__ = decorate(func.__init__, deprecate)  # type: ignore[method-assign]
         return func
 
     func = decorate(func, deprecate)
