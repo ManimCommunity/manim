@@ -144,6 +144,7 @@ class Animation:
     ) -> None:
         self._typecheck_input(mobject)
         self.run_time: float = run_time
+        self.total_time: float
         self.rate_func: Callable[[float], float] = rate_func
         self.reverse_rate_function: bool = reverse_rate_function
         self.name: str | None = name
