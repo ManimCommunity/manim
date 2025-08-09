@@ -556,22 +556,22 @@ class SceneFileWriter:
             partial_movie_file_codec = "qtrle"
             partial_movie_file_pix_fmt = "argb"
 
-        with av.open(file_path, mode="w") as video_container:
-            stream = video_container.add_stream(
-                partial_movie_file_codec,
-                rate=fps,
-                options=av_options,
-            )
-            stream.pix_fmt = partial_movie_file_pix_fmt
-            stream.width = config.pixel_width
-            stream.height = config.pixel_height
+        video_container = av.open(file_path, mode="w")
+        stream = video_container.add_stream(
+            partial_movie_file_codec,
+            rate=fps,
+            options=av_options,
+        )
+        stream.pix_fmt = partial_movie_file_pix_fmt
+        stream.width = config.pixel_width
+        stream.height = config.pixel_height
 
-            self.video_container: OutputContainer = video_container
-            self.video_stream: Stream = stream
+        self.video_container: OutputContainer = video_container
+        self.video_stream: Stream = stream
 
-            self.queue: Queue[tuple[int, PixelArray | None]] = Queue()
-            self.writer_thread = Thread(target=self.listen_and_write, args=())
-            self.writer_thread.start()
+        self.queue: Queue[tuple[int, PixelArray | None]] = Queue()
+        self.writer_thread = Thread(target=self.listen_and_write, args=())
+        self.writer_thread.start()
 
     def close_partial_movie_stream(self) -> None:
         """Close the currently opened video container.
@@ -647,18 +647,15 @@ class SceneFileWriter:
         output_container.metadata["comment"] = (
             f"Rendered with Manim Community v{__version__}"
         )
-        output_stream = output_container.add_stream(
-            codec_name="gif" if create_gif else None,
-            template=partial_movies_stream if not create_gif else None,
-        )
-        if config.transparent and config.movie_file_extension == ".webm":
-            output_stream.pix_fmt = "yuva420p"
         if create_gif:
             """The following solution was largely inspired from this comment
             https://github.com/imageio/imageio/issues/995#issuecomment-1580533018,
             and the following code
             https://github.com/imageio/imageio/blob/65d79140018bb7c64c0692ea72cb4093e8d632a0/imageio/plugins/pyav.py#L927-L996.
             """
+            output_stream = output_container.add_stream(
+                codec_name="gif",
+            )
             output_stream.pix_fmt = "rgb8"
             if config.transparent:
                 output_stream.pix_fmt = "pal8"
@@ -703,6 +700,11 @@ class SceneFileWriter:
                 output_container.mux(packet)
 
         else:
+            output_stream = output_container.add_stream_from_template(
+                template=partial_movies_stream,
+            )
+            if config.transparent and config.movie_file_extension == ".webm":
+                output_stream.pix_fmt = "yuva420p"
             for packet in partial_movies_input.demux(partial_movies_stream):
                 # We need to skip the "flushing" packets that `demux` generates.
                 if packet.dts is None:
@@ -790,8 +792,8 @@ class SceneFileWriter:
                 output_container = av.open(
                     str(temp_file_path), mode="w", options=av_options
                 )
-                output_video_stream = output_container.add_stream(template=video_stream)
-                output_audio_stream = output_container.add_stream(template=audio_stream)
+                output_video_stream = output_container.add_stream_from_template(template=video_stream)
+                output_audio_stream = output_container.add_stream_from_template(template=audio_stream)
 
                 for packet in video_input.demux(video_stream):
                     # We need to skip the "flushing" packets that `demux` generates.
