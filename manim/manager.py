@@ -6,8 +6,8 @@ import contextlib
 import platform
 import time
 import warnings
-from collections.abc import Iterable, Iterator, Sequence
-from typing import TYPE_CHECKING, Callable, Generic, TypeVar
+from collections.abc import Callable, Iterable, Iterator, Sequence
+from typing import TYPE_CHECKING, Generic, TypeVar
 
 import numpy as np
 
@@ -108,10 +108,10 @@ class Manager(Generic[Scene_co]):
         -------
             A window if previewing, else None
         """
-        return Window() if config.preview else None  # type: ignore[abstract]
+        return Window() if config.preview else None
 
     def create_file_writer(self) -> FileWriterProtocol:
-        """Create and returna file writer instance.
+        """Create and return a file writer instance.
 
         This can be overridden in subclasses (plugins), if more
         processing is needed.

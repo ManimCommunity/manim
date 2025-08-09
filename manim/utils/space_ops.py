@@ -598,8 +598,7 @@ def find_intersection(
     v1s: Sequence[np.ndarray] | Point3D_Array,
     threshold: float = 1e-5,
 ) -> Sequence[np.ndarray]:
-    """
-    Return the intersection of a line passing through p0 in direction v0
+    """Return the intersection of a line passing through p0 in direction v0
     with one passing through p1 in direction v1 (or array of intersections
     from arrays of such points/directions).
     For 3d values, it returns the point on the ray p0 + v0 * t closest to the
@@ -660,8 +659,7 @@ def shoelace(x_y: np.ndarray) -> float:
 
 
 def shoelace_direction(x_y: np.ndarray) -> str:
-    """
-    Uses the area determined by the shoelace method to determine whether
+    """Uses the area determined by the shoelace method to determine whether
     the input set of points is directed clockwise or counterclockwise.
 
     Returns

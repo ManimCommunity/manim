@@ -7,7 +7,7 @@ import numpy as np
 import pytest
 
 from manim import DR, Circle, Create, Manager, Scene, Star
-from manim.scene.scene_file_writer import to_av_frame_rate
+from manim.file_writer.file_writer import to_av_frame_rate
 from manim.utils.commands import capture, get_video_metadata
 
 

@@ -11,7 +11,7 @@ from typing import Any
 from manim import config, logger, tempconfig
 from manim.__main__ import main
 from manim.manager import Manager
-from manim.renderer.shader import shader_program_cache
+from manim.mobject.opengl.shader import shader_program_cache
 
 __all__ = ["ManimMagic"]
 
