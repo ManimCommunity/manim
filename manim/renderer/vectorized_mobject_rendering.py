@@ -101,7 +101,7 @@ def render_mobject_fills_with_matrix(
     )
     fill_shader.set_uniform(
         "u_projection_matrix",
-        renderer.scene.camera.projection_matrix,
+        renderer.camera.projection_matrix,
     )
 
     vbo = renderer.context.buffer(attributes.tobytes())
@@ -302,7 +302,7 @@ def render_mobject_strokes_with_matrix(
             renderer.camera.unformatted_view_matrix @ model_matrix,
         ),
     )
-    shader.set_uniform("u_projection_matrix", renderer.scene.camera.projection_matrix)
+    shader.set_uniform("u_projection_matrix", renderer.camera.projection_matrix)
     shader.set_uniform("manim_unit_normal", tuple(-mobjects[0].unit_normal[0]))
 
     vbo = renderer.context.buffer(stroke_data.tobytes())
