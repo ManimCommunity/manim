@@ -383,7 +383,7 @@ class Scene:
 
     def update_meshes(self, dt: float) -> None:
         for obj in self.meshes:
-            for mesh in obj.get_family():  # type: ignore[no-untyped-call]
+            for mesh in obj.get_family():
                 mesh.update(dt)
 
     def update_self(self, dt: float) -> None:

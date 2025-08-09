@@ -4,9 +4,11 @@ import itertools as it
 import operator as op
 from collections.abc import Callable, Iterable, Sequence
 from functools import reduce, wraps
+from typing import Any
 
 import moderngl
 import numpy as np
+from typing_extensions import Self
 
 from manim import config
 from manim.constants import *
@@ -169,6 +171,15 @@ class OpenGLVMobject(OpenGLMobject):
     @staticmethod
     def get_mobject_type_class():
         return OpenGLVMobject
+
+    @property
+    def submobjects(self) -> Sequence[OpenGLVMobject]:
+        return self._submobjects if hasattr(self, "_submobjects") else []
+
+    @submobjects.setter
+    def submobjects(self, submobject_list: Iterable[OpenGLVMobject]) -> None:
+        self.remove(*self.submobjects)
+        self.add(*submobject_list)
 
     def init_data(self):
         super().init_data()
@@ -593,7 +604,9 @@ class OpenGLVMobject(OpenGLMobject):
         )
         return self
 
-    def set_points_smoothly(self, points, true_smooth=False):
+    def set_points_smoothly(
+        self, points: Point3DLike_Array, true_smooth: bool = False
+    ) -> Self:
         self.set_points_as_corners(points)
         self.make_smooth()
         return self
@@ -1653,7 +1666,7 @@ class OpenGLVGroup(OpenGLVMobject):
                 self.add(circles_group)
     """
 
-    def __init__(self, *vmobjects, **kwargs):
+    def __init__(self, *vmobjects: OpenGLVMobject, **kwargs: Any):
         super().__init__(**kwargs)
         self.add(*vmobjects)
 

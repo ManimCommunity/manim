@@ -32,7 +32,7 @@ from manim.utils.space_ops import angle_of_vector, line_intersection, normalize
 if TYPE_CHECKING:
     from typing_extensions import Self, TypeAlias
 
-    from manim.typing import Point2DLike, Point3D, Point3DLike, Vector3D
+    from manim.typing import Point3D, Point3DLike, Vector2DLike, Vector3D, Vector3DLike
     from manim.utils.color import ParsableManimColor
 
     from ..matrix import Matrix  # Avoid circular import
@@ -173,7 +173,7 @@ class Line(TipableVMobject):
     def _pointify(
         self,
         mob_or_point: Mobject | Point3DLike,
-        direction: Vector3D | None = None,
+        direction: Vector3DLike | None = None,
     ) -> Point3D:
         """Transforms a mobject into its corresponding point. Does nothing if a point is passed.
 
@@ -736,7 +736,7 @@ class Vector(Arrow):
 
     def __init__(
         self,
-        direction: Point2DLike | Point3DLike = RIGHT,
+        direction: Vector2DLike | Vector3DLike = RIGHT,
         buff: float = 0,
         **kwargs: Any,
     ) -> None:
