@@ -936,6 +936,10 @@ class Line3D(Cylinder):
     ):
         self.thickness = thickness
         self.resolution = (2, resolution) if isinstance(resolution, int) else resolution
+
+        start = np.array(start, dtype=np.float64)
+        end = np.array(end, dtype=np.float64)
+
         self.set_start_and_end_attrs(start, end, **kwargs)
         if color is not None:
             self.set_color(color)
@@ -1193,8 +1197,9 @@ class Arrow3D(Line3D):
             height=height,
             **kwargs,
         )
-        self.cone.shift(end)
-        self.end_point = VectorizedPoint(end)
+        np_end = np.asarray(end, dtype=np.float64)
+        self.cone.shift(np_end)
+        self.end_point = VectorizedPoint(np_end)
         self.add(self.end_point, self.cone)
         self.set_color(color)
 
