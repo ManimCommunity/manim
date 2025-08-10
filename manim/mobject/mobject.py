@@ -1056,8 +1056,6 @@ class Mobject:
                 non_time_based_updater(self)
 
         return self
-    
-
 
     def remove_updater(self, update_function: Updater) -> Self:
         """Remove an updater.
@@ -3286,7 +3284,7 @@ class Group(Mobject, metaclass=ConvertToOpenGL):
 
 class _AnimationBuilder:
     _override_animate: Any
-    
+
     def __init__(self, mobject: Mobject) -> None:
         self.mobject = mobject
         self.mobject.generate_target()
