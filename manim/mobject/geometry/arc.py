@@ -264,7 +264,6 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         if len(tips) == 0:
             raise Exception("tip not found")
         else:
-            # error: Incompatible types in assignment (expression has type "Mobject | Group", variable has type "VMobject")  [assignment]
             tip: VMobject = tips[0]
             return tip
 
