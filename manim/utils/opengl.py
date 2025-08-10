@@ -15,12 +15,6 @@ if TYPE_CHECKING:
     from manim.typing import MatrixMN, Point3D
 
 
-if TYPE_CHECKING:
-    from typing_extensions import TypeAlias
-
-    from manim.typing import MatrixMN
-
-
 depth = 20
 
 __all__ = [

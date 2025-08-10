@@ -5,8 +5,8 @@ from __future__ import annotations
 __all__ = ["ParametricFunction", "FunctionGraph", "ImplicitFunction"]
 
 
-from collections.abc import Iterable, Sequence
-from typing import TYPE_CHECKING, Callable
+from collections.abc import Callable, Iterable, Sequence
+from typing import TYPE_CHECKING
 
 import numpy as np
 from isosurfaces import plot_isoline
@@ -182,7 +182,8 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
             self.make_smooth()
         return self
 
-    init_points = generate_points
+    def init_points(self) -> None:
+        self.generate_points()
 
 
 class FunctionGraph(ParametricFunction):
@@ -228,7 +229,7 @@ class FunctionGraph(ParametricFunction):
         self.parametric_function: Callable[[float], Point3D] = lambda t: np.array(
             [t, function(t), 0]
         )
-        self.function: Callable[[float], Any] = function
+        self.function = function  # type: ignore[assignment]
         super().__init__(self.parametric_function, self.x_range, color=color, **kwargs)
 
     def get_function(self) -> Callable[[float], Any]:
@@ -328,4 +329,5 @@ class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
             self.make_smooth()
         return self
 
-    init_points = generate_points
+    def init_points(self) -> None:
+        self.generate_points()

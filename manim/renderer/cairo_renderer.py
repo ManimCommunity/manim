@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-import typing
+from collections.abc import Iterable
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
@@ -13,9 +14,7 @@ from ..scene.scene_file_writer import SceneFileWriter
 from ..utils.exceptions import EndSceneEarlyException
 from ..utils.iterables import list_update
 
-if typing.TYPE_CHECKING:
-    from typing import Any
-
+if TYPE_CHECKING:
     from manim.animation.animation import Animation
     from manim.scene.scene import Scene
 
@@ -120,7 +119,7 @@ class CairoRenderer:
     def update_frame(  # TODO Description in Docstring
         self,
         scene: Scene,
-        mobjects: typing.Iterable[Mobject] | None = None,
+        mobjects: Iterable[Mobject] | None = None,
         include_submobjects: bool = True,
         ignore_skipping: bool = True,
         **kwargs: Any,
@@ -214,8 +213,8 @@ class CairoRenderer:
     def save_static_frame_data(
         self,
         scene: Scene,
-        static_mobjects: typing.Iterable[Mobject],
-    ) -> typing.Iterable[Mobject] | None:
+        static_mobjects: Iterable[Mobject],
+    ) -> Iterable[Mobject] | None:
         """Compute and save the static frame, that will be reused at each frame
         to avoid unnecessarily computing static mobjects.
 

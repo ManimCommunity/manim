@@ -20,9 +20,9 @@
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from os import PathLike
-from typing import Callable, Union
+from typing import Union
 
 import numpy as np
 import numpy.typing as npt
