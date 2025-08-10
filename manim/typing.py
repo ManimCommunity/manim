@@ -173,9 +173,7 @@ FloatRGB_Array: TypeAlias = npt.NDArray[ManimColorDType]
 A :class:`numpy.ndarray` of many rows of 3 floats representing RGB colors.
 """
 
-FloatRGBLike_Array: TypeAlias = Union[
-    FloatRGB_Array, Sequence[tuple[float, float, float, float]]
-]
+FloatRGBLike_Array: TypeAlias = Union[FloatRGB_Array, Sequence[FloatRGBLike]]
 """``shape: (M, 4)``
 
 An array of many rows of 3 floats representing RGB colors.
@@ -230,9 +228,7 @@ FloatRGBA_Array: TypeAlias = npt.NDArray[ManimColorDType]
 A :class:`numpy.ndarray` of many rows of 4 floats representing RGBA colors.
 """
 
-FloatRGBALike_Array: TypeAlias = Union[
-    FloatRGBA_Array, Sequence[tuple[float, float, float, float]]
-]
+FloatRGBALike_Array: TypeAlias = Union[FloatRGBA_Array, Sequence[FloatRGBALike]]
 """``shape: (M, 4)``
 
 An array of many rows of 4 floats representing RGBA colors.
