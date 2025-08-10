@@ -2304,6 +2304,9 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
         self._assert_valid_submobjects(tuplify(value))
         self.submobjects[key] = value
 
+    def __getitem__(self, key: int) -> VMobject:
+        return self.submobjects[key]
+
 
 class VDict(VMobject, metaclass=ConvertToOpenGL):
     """A VGroup-like class, also offering submobject access by
