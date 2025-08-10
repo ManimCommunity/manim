@@ -885,7 +885,34 @@ class Scene:
         self.foreground_mobjects = []
         return self
 
-    def get_moving_mobjects(self, *animations: Animation) -> list[Mobject]:
+    def recursively_unpack_animation_groups(self, *animations: Animation):
+        """
+        Unpacks animations
+
+        Parameters
+        ----------
+        *animations
+            The animations to unpack
+
+        Returns
+        ------
+        list
+            The list of mobjects in animations
+        """
+        # Imported inside the method to avoid cyclic import
+        from ..animation.composition import AnimationGroup
+
+        mobjects = []
+        for anim in animations:
+            if isinstance(anim, AnimationGroup):
+                for sub in anim.animations:
+                    unpacked = self.recursively_unpack_animation_groups(sub)
+                    mobjects.extend(unpacked)
+            else:
+                mobjects.append(anim.mobject)
+        return mobjects
+
+    def get_moving_mobjects(self, *animations: Animation):
         """
         Gets all moving mobjects in the passed animation(s).
 
@@ -904,7 +931,9 @@ class Scene:
         # as soon as there's one that needs updating of
         # some kind per frame, return the list from that
         # point forward.
-        animation_mobjects = [anim.mobject for anim in animations]
+
+        animation_mobjects = self.recursively_unpack_animation_groups(*animations)
+
         mobjects = self.get_mobject_family_members()
         for i, mob in enumerate(mobjects):
             update_possibilities = [
