@@ -908,7 +908,7 @@ class Scene:
                 for sub in anim.animations:
                     unpacked = self.recursively_unpack_animation_groups(sub)
                     unpacked_mobjects.extend(unpacked)
-            else:
+            elif isinstance(anim, Mobject):
                 unpacked_mobjects.append(anim.mobject)
         return unpacked_mobjects
 
