@@ -14,7 +14,7 @@ __all__ = [
     "RightAngle",
 ]
 
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 
 import numpy as np
 
@@ -34,7 +34,6 @@ if TYPE_CHECKING:
 
     from typing_extensions import Literal, Self, TypeAlias
 
-    from manim.mobject.geometry.tips import ArrowTip
     from manim.typing import Point3D, Point3DLike, Vector2DLike, Vector3D, Vector3DLike
     from manim.utils.color import ParsableManimColor
 
@@ -651,10 +650,10 @@ class Arrow(Line):
 
         if has_tip:
             # error: Argument "tip" to "add_tip" of "TipableVMobject" has incompatible type "VMobject"; expected "ArrowTip | None"  [arg-type]
-            self.add_tip(tip=cast(ArrowTip, old_tips[0]))
+            self.add_tip(tip=old_tips[0])
         if has_start_tip:
             # error: Argument "tip" to "add_tip" of "TipableVMobject" has incompatible type "VMobject"; expected "ArrowTip | None"  [arg-type]
-            self.add_tip(tip=cast(ArrowTip, old_tips[1]), at_start=True)
+            self.add_tip(tip=old_tips[1], at_start=True)
         return self
 
     def get_normal_vector(self) -> Vector3D:
