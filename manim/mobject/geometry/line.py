@@ -648,8 +648,10 @@ class Arrow(Line):
         self._set_stroke_width_from_length()
 
         if has_tip:
+            # error: Argument "tip" to "add_tip" of "TipableVMobject" has incompatible type "Mobject | Group"; expected "ArrowTip | None"  [arg-type]
             self.add_tip(tip=old_tips[0])
         if has_start_tip:
+            # error: Argument "tip" to "add_tip" of "TipableVMobject" has incompatible type "Mobject | Group"; expected "ArrowTip | None"  [arg-type]
             self.add_tip(tip=old_tips[1], at_start=True)
         return self
 

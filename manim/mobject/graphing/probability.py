@@ -209,9 +209,11 @@ class SampleSpace(Rectangle):
 
     def __getitem__(self, index: int) -> VMobject:
         if hasattr(self, "horizontal_parts"):
+            # error: Incompatible types in assignment (expression has type "Mobject | Group", variable has type "VMobject")  [assignment]
             val: VMobject = self.horizontal_parts[index]
             return val
         elif hasattr(self, "vertical_parts"):
+            # error: Incompatible types in assignment (expression has type "Mobject | Group", variable has type "VMobject")  [assignment]
             val = self.vertical_parts[index]
             return val
         return self.split()[index]
