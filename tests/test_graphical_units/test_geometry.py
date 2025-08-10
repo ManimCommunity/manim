@@ -188,10 +188,12 @@ def test_negative_z_index_LaggedStart(scene):
     line_2 = Line(UP + LEFT, UP + RIGHT, color=RED).set_z_index(-1)
     scene.play(LaggedStart(FadeIn(line_1), FadeIn(line_2), lag_ratio=0.5))
 
+
 @frames_comparison(last_frame=False)
 def test_nested_animation_groups_with_negative_z_index(scene):
     line = Line(LEFT, RIGHT, color=BLUE).set_z_index(-1)
     scene.play(AnimationGroup(AnimationGroup(AnimationGroup(FadeIn(line)))))
+
 
 @frames_comparison
 def test_Angle(scene):
