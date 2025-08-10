@@ -885,7 +885,7 @@ class Scene:
         self.foreground_mobjects = []
         return self
 
-    def recursively_unpack_animation_groups(self, *animations: Animation):
+    def recursively_unpack_animation_groups(self, *animations: Animation) -> list[Mobject]:
         """
         Unpacks animations
 
@@ -912,7 +912,7 @@ class Scene:
                 mobjects.append(anim.mobject)
         return mobjects
 
-    def get_moving_mobjects(self, *animations: Animation):
+    def get_moving_mobjects(self, *animations: Animation) -> list[Mobject]:
         """
         Gets all moving mobjects in the passed animation(s).
 
