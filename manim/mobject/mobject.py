@@ -42,7 +42,7 @@ from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
-    from typing import Any, Callable, Literal
+    from typing import Any, Callable, Literal, cast
 
     from typing_extensions import Self, TypeAlias
 
@@ -904,11 +904,11 @@ class Mobject:
             return self
         for updater in self.updaters:
             if "dt" in inspect.signature(updater).parameters:
-                # assert isinstance(updater, TimeBasedUpdater)
-                updater(self, dt)
+                time_based_updater = cast(TimeBasedUpdater, updater)
+                time_based_updater(self, dt)
             else:
-                # assert isinstance(updater, NonTimeBasedUpdater)
-                updater(self)
+                non_time_based_updater = cast(NonTimeBasedUpdater, updater)
+                non_time_based_updater(self)
         if recursive:
             for submob in self.submobjects:
                 submob.update(dt, recursive)
@@ -1049,10 +1049,15 @@ class Mobject:
         if call_updater:
             parameters = inspect.signature(update_function).parameters
             if "dt" in parameters:
-                update_function(self, 0)
+                time_based_updater = cast(TimeBasedUpdater, update_function)
+                time_based_updater(self, 0)
             else:
-                update_function(self)
+                non_time_based_updater = cast(NonTimeBasedUpdater, update_function)
+                non_time_based_updater(self)
+
         return self
+    
+
 
     def remove_updater(self, update_function: Updater) -> Self:
         """Remove an updater.
