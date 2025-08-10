@@ -902,15 +902,15 @@ class Scene:
         # Imported inside the method to avoid cyclic import
         from ..animation.composition import AnimationGroup
 
-        mobjects = []
+        unpacked_mobjects = []
         for anim in animations:
             if isinstance(anim, AnimationGroup):
                 for sub in anim.animations:
                     unpacked = self.recursively_unpack_animation_groups(sub)
-                    mobjects.extend(unpacked)
+                    unpacked_mobjects.extend(unpacked)
             else:
-                mobjects.append(anim.mobject)
-        return mobjects
+                unpacked_mobjects.append(anim.mobject)
+        return unpacked_mobjects
 
     def get_moving_mobjects(self, *animations: Animation) -> list[Mobject]:
         """
