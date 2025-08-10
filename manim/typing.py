@@ -174,7 +174,7 @@ A :class:`numpy.ndarray` of many rows of 3 floats representing RGB colors.
 """
 
 FloatRGBLike_Array: TypeAlias = Union[FloatRGB_Array, Sequence[FloatRGBLike]]
-"""``shape: (M, 4)``
+"""``shape: (M, 3)``
 
 An array of many rows of 3 floats representing RGB colors.
 
