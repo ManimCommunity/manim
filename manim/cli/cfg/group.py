@@ -267,6 +267,12 @@ modify write_cfg_subcmd_input to account for it.""",
 
 @cfg.command(context_settings=cli_ctx_settings)
 def show() -> None:
+    console.print("CONFIG FILES READ", style="bold green underline")
+    for path in config_file_paths():
+        if path.exists():
+            console.print(f"{path}")
+    console.print()
+
     parser = make_config_parser()
     rich_non_style_entries = [a.replace(".", "_") for a in RICH_NON_STYLE_ENTRIES]
     for category in parser:
