@@ -90,6 +90,8 @@ class Mobject:
 
     """
 
+    original_id: str
+    _original__init__: Callable[..., None]
     animation_overrides: dict[
         type[Animation],
         FunctionOverride,
@@ -897,12 +899,15 @@ class Mobject:
         :meth:`get_updaters`
 
         """
-        if not self.updating_suspended:
-            for updater in self.updaters:
-                if "dt" in inspect.signature(updater).parameters:
-                    updater(self, dt)
-                else:
-                    updater(self)
+        if self.updating_suspended:
+            return self
+        for updater in self.updaters:
+            if "dt" in inspect.signature(updater).parameters:
+                # assert isinstance(updater, TimeBasedUpdater)
+                updater(self, dt)
+            else:
+                # assert isinstance(updater, NonTimeBasedUpdater)
+                updater(self)
         if recursive:
             for submob in self.submobjects:
                 submob.update(dt, recursive=recursive)
@@ -2439,8 +2444,8 @@ class Mobject:
         """Return the base class of this mobject type."""
         return Mobject
 
-    def split(self) -> list[Self]:
-        result = [self] if len(self.points) > 0 else []
+    def split(self) -> list[Mobject]:
+        result: list[Mobject] = [self] if len(self.points) > 0 else []
         return result + self.submobjects
 
     def get_family(self, recurse: bool = True) -> list[Mobject]:
@@ -3320,6 +3325,8 @@ class Group(Mobject, metaclass=ConvertToOpenGL):
 
 
 class _AnimationBuilder:
+    _override_animate: Any
+    
     def __init__(self, mobject: Mobject) -> None:
         self.mobject = mobject
         self.mobject.generate_target()

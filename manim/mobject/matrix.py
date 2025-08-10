@@ -172,7 +172,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         bracket_v_buff: float = MED_SMALL_BUFF,
         add_background_rectangles_to_entries: bool = False,
         include_background_rectangle: bool = False,
-        element_to_mobject: type[Mobject] | Callable[..., Mobject] = MathTex,
+        element_to_mobject: type[VMobject] | Callable[..., VMobject] = MathTex,
         element_to_mobject_config: dict = {},
         element_alignment_corner: Sequence[float] = DR,
         left_bracket: str = "[",
@@ -207,7 +207,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         if self.include_background_rectangle:
             self.add_background_rectangle()
 
-    def _matrix_to_mob_matrix(self, matrix: np.ndarray) -> list[list[Mobject]]:
+    def _matrix_to_mob_matrix(self, matrix: np.ndarray) -> list[list[VMobject]]:
         return [
             [
                 self.element_to_mobject(item, **self.element_to_mobject_config)
@@ -216,7 +216,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
             for row in matrix
         ]
 
-    def _organize_mob_matrix(self, matrix: list[list[Mobject]]) -> Self:
+    def _organize_mob_matrix(self, matrix: list[list[VMobject]]) -> Self:
         for i, row in enumerate(matrix):
             for j, _ in enumerate(row):
                 mob = matrix[i][j]
@@ -402,7 +402,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
             mob.add_background_rectangle()
         return self
 
-    def get_mob_matrix(self) -> list[list[Mobject]]:
+    def get_mob_matrix(self) -> list[list[VMobject]]:
         """Return the underlying mob matrix mobjects.
 
         Returns
@@ -485,7 +485,7 @@ class DecimalMatrix(Matrix):
     def __init__(
         self,
         matrix: Iterable,
-        element_to_mobject: type[Mobject] = DecimalNumber,
+        element_to_mobject: type[VMobject] = DecimalNumber,
         element_to_mobject_config: dict[str, Any] = {"num_decimal_places": 1},
         **kwargs: Any,
     ):
@@ -530,7 +530,7 @@ class IntegerMatrix(Matrix):
     def __init__(
         self,
         matrix: Iterable,
-        element_to_mobject: type[Mobject] = Integer,
+        element_to_mobject: type[VMobject] = Integer,
         **kwargs: Any,
     ):
         """
@@ -568,7 +568,7 @@ class MobjectMatrix(Matrix):
     def __init__(
         self,
         matrix: Iterable,
-        element_to_mobject: type[Mobject] | Callable[..., Mobject] = lambda m: m,
+        element_to_mobject: type[VMobject] | Callable[..., VMobject] = lambda m: m,
         **kwargs: Any,
     ):
         super().__init__(matrix, element_to_mobject=element_to_mobject, **kwargs)

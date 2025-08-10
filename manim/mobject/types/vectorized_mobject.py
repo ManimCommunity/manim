@@ -102,6 +102,7 @@ class VMobject(Mobject):
     """
 
     sheen_factor = 0.0
+    target: VMobject
 
     def __init__(
         self,
@@ -626,6 +627,10 @@ class VMobject(Mobject):
 
     color: ManimColor = property(get_color, set_color)
 
+    def split(self) -> list[VMobject]:
+        result: list[VMobject] = [self] if len(self.points) > 0 else []
+        return result + self.submobjects
+        
     def set_sheen_direction(self, direction: Vector3DLike, family: bool = True) -> Self:
         """Sets the direction of the applied sheen.
 

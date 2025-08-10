@@ -207,9 +207,9 @@ class SampleSpace(Rectangle):
                 if hasattr(parts, subattr):
                     self.add(getattr(parts, subattr))
 
-    def __getitem__(self, index: int) -> SampleSpace:
+    def __getitem__(self, index: int) -> VMobject:
         if hasattr(self, "horizontal_parts"):
-            val: SampleSpace = self.horizontal_parts[index]
+            val: VMobject = self.horizontal_parts[index]
             return val
         elif hasattr(self, "vertical_parts"):
             val = self.vertical_parts[index]

@@ -281,7 +281,9 @@ class VectorScene(Scene):
                 color (str),
                 label_scale_factor=VECTOR_LABEL_SCALE_FACTOR (int, float),
         """
-        i_hat, j_hat = self.get_basis_vectors()
+        temp = self.get_basis_vectors()
+        i_hat = temp.submobjects[0]
+        j_hat = temp.submobjects[1]
         return VGroup(
             *(
                 self.get_vector_label(
@@ -296,7 +298,7 @@ class VectorScene(Scene):
 
     def get_vector_label(
         self,
-        vector: Vector,
+        vector: VMobject,
         label: MathTex | str,
         at_tip: bool = False,
         direction: str = "left",
@@ -517,7 +519,9 @@ class VectorScene(Scene):
         y_line = Line(x_line.get_end(), arrow.get_end())
         x_line.set_color(X_COLOR)
         y_line.set_color(Y_COLOR)
-        x_coord, y_coord = cast(VGroup, array.get_entries())
+        temp = array.get_entries()
+        x_coord = temp.submobjects[0]
+        y_coord = temp.submobjects[1]
         x_coord_start = self.position_x_coordinate(x_coord.copy(), x_line, vector)
         y_coord_start = self.position_y_coordinate(y_coord.copy(), y_line, vector)
         brackets = array.get_brackets()
