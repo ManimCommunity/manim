@@ -885,7 +885,9 @@ class Scene:
         self.foreground_mobjects = []
         return self
 
-    def recursively_unpack_animation_groups(self, *animations: Animation) -> list[Mobject]:
+    def recursively_unpack_animation_groups(
+        self, *animations: Animation
+    ) -> list[Mobject]:
         """
         Unpacks animations
         Parameters

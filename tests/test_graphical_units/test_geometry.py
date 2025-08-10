@@ -173,6 +173,7 @@ def test_ZIndex(scene):
     scene.play(ApplyMethod(circle.shift, UP))
     scene.play(ApplyMethod(triangle.shift, 2 * UP))
 
+
 @frames_comparison(last_frame=False)
 def test_negative_z_index_AnimationGroup(scene):
     # https://github.com/ManimCommunity/manim/issues/3334
