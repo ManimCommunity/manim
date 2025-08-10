@@ -46,7 +46,6 @@ from typing import Any
 import numpy as np
 from typing_extensions import Self
 
-from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.text.numbers import DecimalNumber, Integer
 from manim.mobject.text.tex_mobject import MathTex, Tex
