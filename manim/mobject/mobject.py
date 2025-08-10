@@ -299,8 +299,11 @@ class Mobject:
 
         """
         if kwargs:
+            # error: Cannot assign to a method  [method-assign]
+            # error: Incompatible types in assignment (expression has type "partialmethod[Any]", variable has type "Callable[[Mobject, ManimColor | int | str | tuple[int, int, int] | tuple[float, float, float] | <6 more items> | list[ManimColor | int | str | tuple[int, int, int] | tuple[float, float, float] | <6 more items>], str | None, int, Mobject | None, float], None]")  [assignment]
             cls.__init__ = partialmethod(cls.__init__, **kwargs)
         else:
+            # error: Cannot assign to a method  [method-assign]
             cls.__init__ = cls._original__init__
 
     @property
@@ -932,7 +935,8 @@ class Mobject:
         rv: list[TimeBasedUpdater] = []
         for updater in self.updaters:
             if "dt" in inspect.signature(updater).parameters:
-                rv.append(updater)
+                time_based_updater = cast(TimeBasedUpdater, updater)
+                rv.append(time_based_updater)
         return rv
 
     def has_time_based_updater(self) -> bool:
@@ -3396,7 +3400,9 @@ class _AnimationBuilder:
         return anim
 
 
-def override_animate(method: Callable[..., Animation]) -> types.FunctionType:
+def override_animate(
+    method: Callable[..., Animation],
+) -> Callable[[Callable], Callable]:
     r"""Decorator for overriding method animations.
 
     This allows to specify a method (returning an :class:`~.Animation`)
@@ -3449,6 +3455,7 @@ def override_animate(method: Callable[..., Animation]) -> types.FunctionType:
     """
 
     def decorator(animation_method: Callable) -> Callable:
+        # error: "Callable[..., Animation]" has no attribute "_override_animate"  [attr-defined]
         method._override_animate = animation_method
         return animation_method
 
