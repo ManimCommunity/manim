@@ -54,6 +54,8 @@ if TYPE_CHECKING:
         CubicBezierPath,
         CubicBezierPointsLike,
         CubicSpline,
+        FloatRGBA,
+        FloatRGBA_Array,
         ManimFloat,
         MappingFunction,
         Point2DLike,
@@ -61,10 +63,8 @@ if TYPE_CHECKING:
         Point3D_Array,
         Point3DLike,
         Point3DLike_Array,
-        RGBA_Array_Float,
         Vector3D,
         Vector3DLike,
-        Zeros,
     )
 
 # TODO
@@ -215,8 +215,10 @@ class VMobject(Mobject):
         return self
 
     def generate_rgbas_array(
-        self, color: ManimColor | list[ManimColor], opacity: float | Iterable[float]
-    ) -> RGBA_Array_Float:
+        self,
+        color: ParsableManimColor | Iterable[ManimColor] | None,
+        opacity: float | Iterable[float],
+    ) -> FloatRGBA:
         """
         First arg can be either a color, or a tuple/list of colors.
         Likewise, opacity can either be a float, or a tuple of floats.
@@ -230,7 +232,7 @@ class VMobject(Mobject):
         opacities: list[float] = [
             o if (o is not None) else 0.0 for o in tuplify(opacity)
         ]
-        rgbas: npt.NDArray[RGBA_Array_Float] = np.array(
+        rgbas: FloatRGBA_Array = np.array(
             [c.to_rgba_with_alpha(o) for c, o in zip(*make_even(colors, opacities))],
         )
 
@@ -245,7 +247,7 @@ class VMobject(Mobject):
     def update_rgbas_array(
         self,
         array_name: str,
-        color: ManimColor | None = None,
+        color: ParsableManimColor | Iterable[ManimColor] | None = None,
         opacity: float | None = None,
     ) -> Self:
         rgbas = self.generate_rgbas_array(color, opacity)
@@ -313,7 +315,7 @@ class VMobject(Mobject):
             for submobject in self.submobjects:
                 submobject.set_fill(color, opacity, family)
         self.update_rgbas_array("fill_rgbas", color, opacity)
-        self.fill_rgbas: RGBA_Array_Float
+        self.fill_rgbas: FloatRGBA_Array
         if opacity is not None:
             self.fill_opacity = opacity
         return self
@@ -539,7 +541,7 @@ class VMobject(Mobject):
         super().fade(darkness, family)
         return self
 
-    def get_fill_rgbas(self) -> RGBA_Array_Float | Zeros:
+    def get_fill_rgbas(self) -> FloatRGBA_Array:
         try:
             return self.fill_rgbas
         except AttributeError:
@@ -572,13 +574,13 @@ class VMobject(Mobject):
     def get_fill_opacities(self) -> npt.NDArray[ManimFloat]:
         return self.get_fill_rgbas()[:, 3]
 
-    def get_stroke_rgbas(self, background: bool = False) -> RGBA_Array_float | Zeros:
+    def get_stroke_rgbas(self, background: bool = False) -> FloatRGBA_Array:
         try:
             if background:
-                self.background_stroke_rgbas: RGBA_Array_Float
+                self.background_stroke_rgbas: FloatRGBA_Array
                 rgbas = self.background_stroke_rgbas
             else:
-                self.stroke_rgbas: RGBA_Array_Float
+                self.stroke_rgbas: FloatRGBA_Array
                 rgbas = self.stroke_rgbas
             return rgbas
         except AttributeError:

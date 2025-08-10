@@ -32,20 +32,24 @@ __all__ = [
     "ManimFloat",
     "ManimInt",
     "ManimColorDType",
-    "RGB_Array_Float",
-    "RGB_Tuple_Float",
-    "RGB_Array_Int",
-    "RGB_Tuple_Int",
-    "RGBA_Array_Float",
-    "RGBA_Tuple_Float",
-    "RGBA_Array_Int",
-    "RGBA_Tuple_Int",
-    "HSV_Array_Float",
-    "HSV_Tuple_Float",
-    "HSL_Array_Float",
-    "HSL_Tuple_Float",
-    "HSVA_Array_Float",
-    "HSVA_Tuple_Float",
+    "FloatRGB",
+    "FloatRGBLike",
+    "FloatRGB_Array",
+    "FloatRGBLike_Array",
+    "IntRGB",
+    "IntRGBLike",
+    "FloatRGBA",
+    "FloatRGBALike",
+    "FloatRGBA_Array",
+    "FloatRGBALike_Array",
+    "IntRGBA",
+    "IntRGBALike",
+    "FloatHSV",
+    "FloatHSVLike",
+    "FloatHSL",
+    "FloatHSLLike",
+    "FloatHSVA",
+    "FloatHSVALike",
     "ManimColorInternal",
     "PointDType",
     "Point2D",
@@ -143,7 +147,7 @@ ManimColorDType: TypeAlias = ManimFloat
 double-precision float between 0 and 1.
 """
 
-RGB_Array_Float: TypeAlias = npt.NDArray[ManimColorDType]
+FloatRGB: TypeAlias = npt.NDArray[ManimColorDType]
 """``shape: (3,)``
 
 A :class:`numpy.ndarray` of 3 floats between 0 and 1, representing a
@@ -153,17 +157,34 @@ Its components describe, in order, the intensity of Red, Green, and
 Blue in the represented color.
 """
 
-RGB_Tuple_Float: TypeAlias = tuple[float, float, float]
+FloatRGBLike: TypeAlias = Union[FloatRGB, tuple[float, float, float]]
 """``shape: (3,)``
 
-A tuple of 3 floats between 0 and 1, representing a color in RGB
+An array of 3 floats between 0 and 1, representing a color in RGB
 format.
 
-Its components describe, in order, the intensity of Red, Green, and
-Blue in the represented color.
+This represents anything which can be converted to a :class:`FloatRGB` NumPy
+array.
 """
 
-RGB_Array_Int: TypeAlias = npt.NDArray[ManimInt]
+FloatRGB_Array: TypeAlias = npt.NDArray[ManimColorDType]
+"""``shape: (M, 3)``
+
+A :class:`numpy.ndarray` of many rows of 3 floats representing RGB colors.
+"""
+
+FloatRGBLike_Array: TypeAlias = Union[
+    FloatRGB_Array, Sequence[tuple[float, float, float, float]]
+]
+"""``shape: (M, 4)``
+
+An array of many rows of 3 floats representing RGB colors.
+
+This represents anything which can be converted to a :class:`FloatRGB_Array` NumPy
+array.
+"""
+
+IntRGB: TypeAlias = npt.NDArray[ManimInt]
 """``shape: (3,)``
 
 A :class:`numpy.ndarray` of 3 integers between 0 and 255,
@@ -173,17 +194,17 @@ Its components describe, in order, the intensity of Red, Green, and
 Blue in the represented color.
 """
 
-RGB_Tuple_Int: TypeAlias = tuple[int, int, int]
+IntRGBLike: TypeAlias = Union[IntRGB, tuple[int, int, int]]
 """``shape: (3,)``
 
-A tuple of 3 integers between 0 and 255, representing a color in RGB
+An array of 3 integers between 0 and 255, representing a color in RGB
 format.
 
-Its components describe, in order, the intensity of Red, Green, and
-Blue in the represented color.
+This represents anything which can be converted to an :class:`IntRGB` NumPy
+array.
 """
 
-RGBA_Array_Float: TypeAlias = npt.NDArray[ManimColorDType]
+FloatRGBA: TypeAlias = npt.NDArray[ManimColorDType]
 """``shape: (4,)``
 
 A :class:`numpy.ndarray` of 4 floats between 0 and 1, representing a
@@ -193,17 +214,34 @@ Its components describe, in order, the intensity of Red, Green, Blue
 and Alpha (opacity) in the represented color.
 """
 
-RGBA_Tuple_Float: TypeAlias = tuple[float, float, float, float]
+FloatRGBALike: TypeAlias = Union[FloatRGBA, tuple[float, float, float, float]]
 """``shape: (4,)``
 
-A tuple of 4 floats between 0 and 1, representing a color in RGBA
+An array of 4 floats between 0 and 1, representing a color in RGBA
 format.
 
-Its components describe, in order, the intensity of Red, Green, Blue
-and Alpha (opacity) in the represented color.
+This represents anything which can be converted to a :class:`FloatRGBA` NumPy
+array.
 """
 
-RGBA_Array_Int: TypeAlias = npt.NDArray[ManimInt]
+FloatRGBA_Array: TypeAlias = npt.NDArray[ManimColorDType]
+"""``shape: (M, 4)``
+
+A :class:`numpy.ndarray` of many rows of 4 floats representing RGBA colors.
+"""
+
+FloatRGBALike_Array: TypeAlias = Union[
+    FloatRGBA_Array, Sequence[tuple[float, float, float, float]]
+]
+"""``shape: (M, 4)``
+
+An array of many rows of 4 floats representing RGBA colors.
+
+This represents anything which can be converted to a :class:`FloatRGBA_Array` NumPy
+array.
+"""
+
+IntRGBA: TypeAlias = npt.NDArray[ManimInt]
 """``shape: (4,)``
 
 A :class:`numpy.ndarray` of 4 integers between 0 and 255,
@@ -213,17 +251,17 @@ Its components describe, in order, the intensity of Red, Green, Blue
 and Alpha (opacity) in the represented color.
 """
 
-RGBA_Tuple_Int: TypeAlias = tuple[int, int, int, int]
+IntRGBALike: TypeAlias = Union[IntRGBA, tuple[int, int, int, int]]
 """``shape: (4,)``
 
-A tuple of 4 integers between 0 and 255, representing a color in RGBA
+An array of 4 integers between 0 and 255, representing a color in RGBA
 format.
 
-Its components describe, in order, the intensity of Red, Green, Blue
-and Alpha (opacity) in the represented color.
+This represents anything which can be converted to an :class:`IntRGBA` NumPy
+array.
 """
 
-HSV_Array_Float: TypeAlias = RGB_Array_Float
+FloatHSV: TypeAlias = FloatRGB
 """``shape: (3,)``
 
 A :class:`numpy.ndarray` of 3 floats between 0 and 1, representing a
@@ -233,17 +271,17 @@ Its components describe, in order, the Hue, Saturation and Value (or
 Brightness) in the represented color.
 """
 
-HSV_Tuple_Float: TypeAlias = RGB_Tuple_Float
+FloatHSVLike: TypeAlias = FloatRGBLike
 """``shape: (3,)``
 
-A tuple of 3 floats between 0 and 1, representing a color in HSV (or
+An array of 3 floats between 0 and 1, representing a color in HSV (or
 HSB) format.
 
-Its components describe, in order, the Hue, Saturation and Value (or
-Brightness) in the represented color.
+This represents anything which can be converted to a :class:`FloatHSV` NumPy
+array.
 """
 
-HSVA_Array_Float: TypeAlias = RGBA_Array_Float
+FloatHSVA: TypeAlias = FloatRGBA
 """``shape: (4,)``
 
 A :class:`numpy.ndarray` of 4 floats between 0 and 1, representing a
@@ -253,17 +291,17 @@ Its components describe, in order, the Hue, Saturation and Value (or
 Brightness) in the represented color.
 """
 
-HSVA_Tuple_Float: TypeAlias = RGBA_Tuple_Float
+FloatHSVALike: TypeAlias = FloatRGBALike
 """``shape: (4,)``
 
-A tuple of 4 floats between 0 and 1, representing a color in HSVA (or
+An array of 4 floats between 0 and 1, representing a color in HSVA (or
 HSBA) format.
 
-Its components describe, in order, the Hue, Saturation and Value (or
-Brightness) in the represented color.
+This represents anything which can be converted to a :class:`FloatHSVA` NumPy
+array.
 """
 
-HSL_Array_Float: TypeAlias = RGB_Array_Float
+FloatHSL: TypeAlias = FloatRGB
 """``shape: (3,)``
 
 A :class:`numpy.ndarray` of 3 floats between 0 and 1, representing a
@@ -273,17 +311,16 @@ Its components describe, in order, the Hue, Saturation and Lightness
 in the represented color.
 """
 
-HSL_Tuple_Float: TypeAlias = RGB_Tuple_Float
+FloatHSLLike: TypeAlias = FloatRGBLike
 """``shape: (3,)``
 
-A :class:`numpy.ndarray` of 3 floats between 0 and 1, representing a
-color in HSL format.
+An array of 3 floats between 0 and 1, representing a color in HSL format.
 
-Its components describe, in order, the Hue, Saturation and Lightness
-in the represented color.
+This represents anything which can be converted to a :class:`FloatHSL` NumPy
+array.
 """
 
-ManimColorInternal: TypeAlias = RGBA_Array_Float
+ManimColorInternal: TypeAlias = FloatRGBA
 """``shape: (4,)``
 
 Internal color representation used by :class:`~.ManimColor`,
