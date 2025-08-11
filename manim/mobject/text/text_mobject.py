@@ -116,7 +116,7 @@ def remove_invisible_chars(mobject: VMobject) -> VMobject:
                 VGroup(k for k in submob if not isinstance(k, Dot))
             )
     else:
-        mobject_without_dots.add(*(k for k in mobject if k.__class__ != Dot))
+        mobject_without_dots.add(*(k for k in mobject if not isinstance(k, Dot)))
     if iscode:
         assert isinstance(code, Code)
         code.code = mobject_without_dots
@@ -732,11 +732,7 @@ class Text(SVGMobject):
                 settings.append(TextSetting(i, i + 1, **args))
 
         for word, gradient in self.t2g.items():
-            colors = (
-                color_gradient(gradient, len(word))
-                if len(list(gradient)) != 1
-                else len(word) * [ManimColor(gradient)]
-            )
+            colors = color_gradient(gradient, len(word))
             for start, end in self._find_indexes(word, self.text):
                 for i in range(start, end):
                     args["color"] = colors[i - start].to_hex()
