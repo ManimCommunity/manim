@@ -1285,19 +1285,23 @@ class MarkupText(SVGMobject):
         if self.gradient:
             self.set_color_by_gradient(*self.gradient)
         for col in colormap:
-            self.chars[
+            chars = self.chars[
                 col["start"] - col["start_offset"] : col["end"]
                 - col["start_offset"]
                 - col["end_offset"]
-            ].set_color(self._parse_color(col["color"]))
+            ]
+            for char in chars:
+                char.set_color(self._parse_color(col["color"]))
         for grad in gradientmap:
-            self.chars[
+            chars = self.chars[
                 grad["start"] - grad["start_offset"] : grad["end"]
                 - grad["start_offset"]
                 - grad["end_offset"]
-            ].set_color_by_gradient(
-                *(self._parse_color(grad["from"]), self._parse_color(grad["to"]))
-            )
+            ]
+            for char in chars:
+                char.set_color_by_gradient(
+                    *(self._parse_color(grad["from"]), self._parse_color(grad["to"]))
+                )
         # anti-aliasing
         if height is None and width is None:
             self.scale(TEXT_MOB_SCALE_FACTOR)
