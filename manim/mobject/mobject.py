@@ -2771,7 +2771,7 @@ class Mobject:
         def init_sizes(
             sizes: list | None, num: int, measures: list, name: str
         ) -> list[float]:
-            if sizes is None:
+            if len(sizes) == 0:
                 sizes = [None] * num
             if len(sizes) != num:
                 raise ValueError(f"{name} has a mismatching size.")
