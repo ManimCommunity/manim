@@ -616,7 +616,7 @@ class VMobject(Mobject):
             return self.get_stroke_color()
         return self.get_fill_color()
 
-    color = property(get_color, set_color)
+    color: ManimColor = property(get_color, set_color)
 
     def set_sheen_direction(self, direction: Vector3DLike, family: bool = True) -> Self:
         """Sets the direction of the applied sheen.
