@@ -726,7 +726,7 @@ class Text(SVGMobject):
         settings = []
         args = copy.copy(default_args)
         if self.gradient:
-            colors = color_gradient(self.gradient, len(self.text))
+            colors: list[ManimColor] = color_gradient(self.gradient, len(self.text))
             for i in range(len(self.text)):
                 args["color"] = colors[i].to_hex()
                 settings.append(TextSetting(i, i + 1, **args))
@@ -734,8 +734,8 @@ class Text(SVGMobject):
         for word, gradient in self.t2g.items():
             colors = (
                 color_gradient(gradient, len(word))
-                if len(gradient) != 1
-                else len(word) * list(gradient)
+                if len(list(gradient)) != 1
+                else len(word) * [ManimColor(gradient)]
             )
             for start, end in self._find_indexes(word, self.text):
                 for i in range(start, end):

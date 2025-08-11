@@ -523,7 +523,9 @@ class BulletedList(Tex):
         if isinstance(arg, str):
             part: VGroup | VMobject | None = self.get_part_by_tex(arg)
             if part is None:
-                raise Exception(f"Could not locate part by provided tex string '{arg}'.")
+                raise Exception(
+                    f"Could not locate part by provided tex string '{arg}'."
+                )
         elif isinstance(arg, int):
             part = self.submobjects[arg]
         else:
