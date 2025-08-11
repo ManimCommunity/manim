@@ -732,9 +732,6 @@ class Text(SVGMobject):
                 settings.append(TextSetting(i, i + 1, **args))
 
         for word, gradient in self.t2g.items():
-            if isinstance(gradient, str) or len(gradient) == 1:
-                color = gradient if isinstance(gradient, str) else gradient[0]
-                gradient = (ManimColor(color), ManimColor(color))
             colors = (
                 color_gradient(gradient, len(word))
                 if len(gradient) != 1

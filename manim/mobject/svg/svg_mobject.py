@@ -496,7 +496,7 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
 
         super().__init__(**kwargs)
 
-    def init_points(self) -> None:
+    def generate_points(self) -> None:
         # TODO: cache mobject in a re-importable way
 
         self.handle_commands()
@@ -509,7 +509,8 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
                 # Get rid of any null curves
                 self.set_points(self.get_points_without_null_curves())
 
-    generate_points = init_points
+    def init_points(self) -> None:
+        self.generate_points()
 
     def handle_commands(self) -> None:
         all_points: list[np.ndarray] = []
