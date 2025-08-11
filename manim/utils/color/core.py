@@ -1440,7 +1440,7 @@ def color_gradient(
     alphas_mod1 = alphas % 1
     # End edge case
     alphas_mod1[-1] = 1
-    floors[-1] = len(rgbs) - 2
+    floors[-1] = num_colors - 2
     return [
         rgb_to_color((rgbs[i] * (1 - alpha)) + (rgbs[i + 1] * alpha))
         for i, alpha in zip(floors, alphas_mod1)
