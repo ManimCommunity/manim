@@ -328,7 +328,7 @@ def get_json(obj: Any) -> str:
 def get_hash_from_play_call(
     scene_object: Scene,
     camera_object: Camera | OpenGLCamera,
-    animations_list: Iterable[Animation],
+    animations_list: Iterable[Animation] | None,
     current_mobjects_list: Iterable[Mobject],
 ) -> str:
     """Take the list of animations and a list of mobjects and output their hashes. This is meant to be used for `scene.play` function.

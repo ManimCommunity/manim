@@ -220,7 +220,7 @@ class CairoRenderer:
         self,
         scene: Scene,
         static_mobjects: Iterable[Mobject],
-    ) -> Iterable[Mobject] | None:
+    ) -> PixelArray | None:
         """Compute and save the static frame, that will be reused at each frame
         to avoid unnecessarily computing static mobjects.
 
