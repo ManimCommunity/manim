@@ -156,6 +156,7 @@ html_title = f"Manim Community v{manim.__version__}"
 # This specifies any additional css files that will override the theme's
 html_css_files = ["custom.css"]
 
+latex_engine = "lualatex"
 
 # external links
 extlinks = {

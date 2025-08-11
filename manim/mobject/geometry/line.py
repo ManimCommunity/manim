@@ -14,7 +14,7 @@ __all__ = [
     "RightAngle",
 ]
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Literal
 
 import numpy as np
 
@@ -30,11 +30,9 @@ from manim.utils.color import WHITE
 from manim.utils.space_ops import angle_of_vector, line_intersection, normalize
 
 if TYPE_CHECKING:
-    from typing import Any
+    from typing_extensions import Self, TypeAlias
 
-    from typing_extensions import Literal, Self, TypeAlias
-
-    from manim.typing import Point2DLike, Point3D, Point3DLike, Vector3D
+    from manim.typing import Point3D, Point3DLike, Vector2DLike, Vector3D, Vector3DLike
     from manim.utils.color import ParsableManimColor
 
     from ..matrix import Matrix  # Avoid circular import
@@ -147,7 +145,8 @@ class Line(TipableVMobject):
 
         self._account_for_buff(buff)
 
-    init_points = generate_points
+    def init_points(self) -> None:
+        self.generate_points()
 
     def _account_for_buff(self, buff: float) -> None:
         if buff <= 0:
@@ -175,7 +174,7 @@ class Line(TipableVMobject):
     def _pointify(
         self,
         mob_or_point: Mobject | Point3DLike,
-        direction: Vector3D | None = None,
+        direction: Vector3DLike | None = None,
     ) -> Point3D:
         """Transforms a mobject into its corresponding point. Does nothing if a point is passed.
 
@@ -738,7 +737,7 @@ class Vector(Arrow):
 
     def __init__(
         self,
-        direction: Point2DLike | Point3DLike = RIGHT,
+        direction: Vector2DLike | Vector3DLike = RIGHT,
         buff: float = 0,
         **kwargs: Any,
     ) -> None:

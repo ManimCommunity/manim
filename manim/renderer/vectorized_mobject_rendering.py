@@ -1,8 +1,17 @@
 from __future__ import annotations
 
-import collections
+from collections import defaultdict
+from collections.abc import Iterable, Sequence
+from typing import TYPE_CHECKING
 
 import numpy as np
+
+if TYPE_CHECKING:
+    from manim.renderer.opengl_renderer import (
+        OpenGLRenderer,
+        OpenGLVMobject,
+    )
+    from manim.typing import MatrixMN
 
 from ..utils import opengl
 from ..utils.space_ops import cross2d, earclip_triangulation
@@ -14,9 +23,11 @@ __all__ = [
 ]
 
 
-def build_matrix_lists(mob):
+def build_matrix_lists(
+    mob: OpenGLVMobject,
+) -> defaultdict[tuple[float, ...], list[OpenGLVMobject]]:
     root_hierarchical_matrix = mob.hierarchical_model_matrix()
-    matrix_to_mobject_list = collections.defaultdict(list)
+    matrix_to_mobject_list = defaultdict(list)
     if mob.has_points():
         matrix_to_mobject_list[tuple(root_hierarchical_matrix.ravel())].append(mob)
     mobject_to_hierarchical_matrix = {mob: root_hierarchical_matrix}
@@ -36,7 +47,9 @@ def build_matrix_lists(mob):
     return matrix_to_mobject_list
 
 
-def render_opengl_vectorized_mobject_fill(renderer, mobject):
+def render_opengl_vectorized_mobject_fill(
+    renderer: OpenGLRenderer, mobject: OpenGLVMobject
+) -> None:
     matrix_to_mobject_list = build_matrix_lists(mobject)
 
     for matrix_tuple, mobject_list in matrix_to_mobject_list.items():
@@ -44,7 +57,11 @@ def render_opengl_vectorized_mobject_fill(renderer, mobject):
         render_mobject_fills_with_matrix(renderer, model_matrix, mobject_list)
 
 
-def render_mobject_fills_with_matrix(renderer, model_matrix, mobjects):
+def render_mobject_fills_with_matrix(
+    renderer: OpenGLRenderer,
+    model_matrix: MatrixMN,
+    mobjects: Iterable[OpenGLVMobject],
+) -> None:
     # Precompute the total number of vertices for which to reserve space.
     # Note that triangulate_mobject() will cache its results.
     total_size = 0
@@ -84,7 +101,7 @@ def render_mobject_fills_with_matrix(renderer, model_matrix, mobjects):
     )
     fill_shader.set_uniform(
         "u_projection_matrix",
-        renderer.scene.camera.projection_matrix,
+        renderer.camera.projection_matrix,
     )
 
     vbo = renderer.context.buffer(attributes.tobytes())
@@ -98,7 +115,7 @@ def render_mobject_fills_with_matrix(renderer, model_matrix, mobjects):
     vbo.release()
 
 
-def triangulate_mobject(mob):
+def triangulate_mobject(mob: OpenGLVMobject) -> np.ndarray:
     if not mob.needs_new_triangulation:
         return mob.triangulation
 
@@ -192,14 +209,20 @@ def triangulate_mobject(mob):
     return attributes
 
 
-def render_opengl_vectorized_mobject_stroke(renderer, mobject):
+def render_opengl_vectorized_mobject_stroke(
+    renderer: OpenGLRenderer, mobject: OpenGLVMobject
+) -> None:
     matrix_to_mobject_list = build_matrix_lists(mobject)
     for matrix_tuple, mobject_list in matrix_to_mobject_list.items():
         model_matrix = np.array(matrix_tuple).reshape((4, 4))
         render_mobject_strokes_with_matrix(renderer, model_matrix, mobject_list)
 
 
-def render_mobject_strokes_with_matrix(renderer, model_matrix, mobjects):
+def render_mobject_strokes_with_matrix(
+    renderer: OpenGLRenderer,
+    model_matrix: MatrixMN,
+    mobjects: Sequence[OpenGLVMobject],
+) -> None:
     # Precompute the total number of vertices for which to reserve space.
     total_size = 0
     for submob in mobjects:
@@ -279,7 +302,7 @@ def render_mobject_strokes_with_matrix(renderer, model_matrix, mobjects):
             renderer.camera.unformatted_view_matrix @ model_matrix,
         ),
     )
-    shader.set_uniform("u_projection_matrix", renderer.scene.camera.projection_matrix)
+    shader.set_uniform("u_projection_matrix", renderer.camera.projection_matrix)
     shader.set_uniform("manim_unit_normal", tuple(-mobjects[0].unit_normal[0]))
 
     vbo = renderer.context.buffer(stroke_data.tobytes())

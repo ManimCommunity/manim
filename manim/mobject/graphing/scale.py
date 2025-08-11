@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import math
 from collections.abc import Iterable
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, overload
 
 import numpy as np
 
@@ -11,7 +11,9 @@ __all__ = ["LogBase", "LinearBase"]
 from manim.mobject.text.numbers import Integer
 
 if TYPE_CHECKING:
-    from manim.mobject.mobject import Mobject
+    from typing import Callable
+
+    from manim.mobject.types.vectorized_mobject import VMobject
 
 
 class _ScaleBase:
@@ -25,6 +27,12 @@ class _ScaleBase:
 
     def __init__(self, custom_labels: bool = False):
         self.custom_labels = custom_labels
+
+    @overload
+    def function(self, value: float) -> float: ...
+
+    @overload
+    def function(self, value: np.ndarray) -> np.ndarray: ...
 
     def function(self, value: float) -> float:
         """The function that will be used to scale the values.
@@ -59,7 +67,8 @@ class _ScaleBase:
     def get_custom_labels(
         self,
         val_range: Iterable[float],
-    ) -> Iterable[Mobject]:
+        **kw_args: Any,
+    ) -> Iterable[VMobject]:
         """Custom instructions for generating labels along an axis.
 
         Parameters
@@ -147,12 +156,14 @@ class LogBase(_ScaleBase):
         if isinstance(value, np.ndarray):
             condition = value.any() <= 0
 
+            func: Callable[[float, float], float]
+
             def func(value: float, base: float) -> float:
                 return_value: float = np.log(value) / np.log(base)
                 return return_value
         else:
             condition = value <= 0
-            func = math.log  # type: ignore[assignment]
+            func = math.log
 
         if condition:
             raise ValueError(
@@ -179,7 +190,7 @@ class LogBase(_ScaleBase):
             Additional arguments to be passed to :class:`~.Integer`.
         """
         # uses `format` syntax to control the number of decimal places.
-        tex_labels = [
+        tex_labels: list[Integer] = [
             Integer(
                 self.base,
                 unit="^{%s}" % (f"{self.inverse_function(i):.{unit_decimal_places}f}"),  # noqa: UP031

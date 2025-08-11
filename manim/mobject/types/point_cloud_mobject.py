@@ -4,7 +4,8 @@ from __future__ import annotations
 
 __all__ = ["PMobject", "Mobject1D", "Mobject2D", "PGroup", "PointCloudDot", "Point"]
 
-from typing import TYPE_CHECKING
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
@@ -29,13 +30,10 @@ from ...utils.iterables import stretch_array_to_length
 __all__ = ["PMobject", "Mobject1D", "Mobject2D", "PGroup", "PointCloudDot", "Point"]
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
-    from typing import Any
-
     import numpy.typing as npt
     from typing_extensions import Self
 
-    from manim.typing import ManimFloat, Point3DLike, Vector3D
+    from manim.typing import ManimFloat, Point3DLike
 
 
 class PMobject(Mobject, metaclass=ConvertToOpenGL):
@@ -349,7 +347,7 @@ class PointCloudDot(Mobject1D):
 
     def __init__(
         self,
-        center: Vector3D = ORIGIN,
+        center: Point3DLike = ORIGIN,
         radius: float = 2.0,
         stroke_width: int = 2,
         density: int = DEFAULT_POINT_DENSITY_1D,
@@ -406,7 +404,7 @@ class Point(PMobject):
     """
 
     def __init__(
-        self, location: Vector3D = ORIGIN, color: ManimColor = BLACK, **kwargs: Any
+        self, location: Point3DLike = ORIGIN, color: ManimColor = BLACK, **kwargs: Any
     ) -> None:
         self.location = location
         super().__init__(color=color, **kwargs)

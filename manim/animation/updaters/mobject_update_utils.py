@@ -15,7 +15,8 @@ __all__ = [
 
 
 import inspect
-from typing import TYPE_CHECKING, Callable
+from collections.abc import Callable
+from typing import TYPE_CHECKING
 
 import numpy as np
 

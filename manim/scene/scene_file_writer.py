@@ -483,7 +483,7 @@ class SceneFileWriter:
             )
 
     def output_image(
-        self, image: Image.Image, target_dir: StrPath, ext: str, zero_pad: bool
+        self, image: Image.Image, target_dir: StrPath, ext: str, zero_pad: int
     ) -> None:
         if zero_pad:
             image.save(f"{target_dir}{str(self.frame_count).zfill(zero_pad)}{ext}")
@@ -491,9 +491,8 @@ class SceneFileWriter:
             image.save(f"{target_dir}{self.frame_count}{ext}")
         self.frame_count += 1
 
-    def save_final_image(self, image: Image.Image) -> None:
-        """The name is a misnomer. This method saves the image
-        passed to it as an in the default image directory.
+    def save_image(self, image: Image.Image) -> None:
+        """This method saves the image passed to it in the default image directory.
 
         Parameters
         ----------

@@ -195,7 +195,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         """Parse the SVG and translate its elements to submobjects."""
         file_path = self.get_file_path()
         element_tree = ET.parse(file_path)
-        new_tree = self.modify_xml_tree(element_tree)
+        new_tree = self.modify_xml_tree(element_tree)  # type: ignore[arg-type]
         # Create a temporary svg file to dump modified svg to be parsed
         modified_file_path = file_path.with_name(f"{file_path.stem}_{file_path.suffix}")
         new_tree.write(modified_file_path)
@@ -232,12 +232,12 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             "style",
         )
         root = element_tree.getroot()
-        root_style_dict = {k: v for k, v in root.attrib.items() if k in style_keys}
+        root_style_dict = {k: v for k, v in root.attrib.items() if k in style_keys}  # type: ignore[union-attr]
 
         new_root = ET.Element("svg", {})
         config_style_node = ET.SubElement(new_root, "g", config_style_dict)
         root_style_node = ET.SubElement(config_style_node, "g", root_style_dict)
-        root_style_node.extend(root)
+        root_style_node.extend(root)  # type: ignore[arg-type]
         return ET.ElementTree(new_root)
 
     def generate_config_style_dict(self) -> dict[str, str]:
@@ -496,7 +496,7 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
 
         super().__init__(**kwargs)
 
-    def init_points(self) -> None:
+    def generate_points(self) -> None:
         # TODO: cache mobject in a re-importable way
 
         self.handle_commands()
@@ -509,7 +509,8 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
                 # Get rid of any null curves
                 self.set_points(self.get_points_without_null_curves())
 
-    generate_points = init_points
+    def init_points(self) -> None:
+        self.generate_points()
 
     def handle_commands(self) -> None:
         all_points: list[np.ndarray] = []

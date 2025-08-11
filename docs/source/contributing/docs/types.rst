@@ -85,14 +85,8 @@ typed as a :class:`~.Point3D`, because it represents a direction along
 which to shift a :class:`~.Mobject`, not a position in space.
 
 As a general rule, if a parameter is called ``direction`` or ``axis``,
-it should be type hinted as some form of :class:`~.VectorND`.
-
-.. warning::
-
-   This is not always true. For example, as of Manim 0.18.0, the direction
-   parameter of the :class:`.Vector` Mobject should be
-   ``Point2DLike | Point3DLike``, as it can also accept ``tuple[float, float]``
-   and ``tuple[float, float, float]``.
+it should be type hinted as some form of :class:`~.VectorND` or
+:class:`~.VectorNDLike`.
 
 Colors
 ------
