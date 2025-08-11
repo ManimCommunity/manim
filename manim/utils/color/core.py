@@ -69,7 +69,7 @@ import colorsys
 # logger = _config.logger
 import random
 import re
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 from typing import TypeVar, Union, overload
 
 import numpy as np
@@ -1407,9 +1407,9 @@ def invert_color(color: ManimColorT) -> ManimColorT:
 
 
 def color_gradient(
-    reference_colors: Sequence[ParsableManimColor],
+    reference_colors: Iterable[ParsableManimColor],
     length_of_output: int,
-) -> list[ManimColor] | ManimColor:
+) -> list[ManimColor]:
     """Create a list of colors interpolated between the input array of colors with a
     specific number of colors.
 
@@ -1422,20 +1422,25 @@ def color_gradient(
 
     Returns
     -------
-    list[ManimColor] | ManimColor
-        A :class:`ManimColor` or a list of interpolated :class:`ManimColor`'s.
+    list[ManimColor]
+        A list of interpolated :class:`ManimColor`'s.
     """
     if length_of_output == 0:
-        return ManimColor(reference_colors[0])
-    if len(reference_colors) == 1:
-        return [ManimColor(reference_colors[0])] * length_of_output
-    rgbs = [color_to_rgb(color) for color in reference_colors]
-    alphas = np.linspace(0, (len(rgbs) - 1), length_of_output)
+        return []
+    parsed_colors = [ManimColor(color) for color in reference_colors]
+    num_colors = len(parsed_colors)
+    if num_colors == 0:
+        raise ValueError("Expected 1 or more reference colors. Got 0 colors.")
+    if num_colors == 1:
+        return parsed_colors * length_of_output
+
+    rgbs = [color.to_rgb() for color in parsed_colors]
+    alphas = np.linspace(0, (num_colors - 1), length_of_output)
     floors = alphas.astype("int")
     alphas_mod1 = alphas % 1
     # End edge case
     alphas_mod1[-1] = 1
-    floors[-1] = len(rgbs) - 2
+    floors[-1] = num_colors - 2
     return [
         rgb_to_color((rgbs[i] * (1 - alpha)) + (rgbs[i + 1] * alpha))
         for i, alpha in zip(floors, alphas_mod1)
