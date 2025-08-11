@@ -177,9 +177,6 @@ class VMobject(Mobject):
     def __iter__(self) -> Iterator[VMobject]:
         return iter(self.split())
 
-    def __len__(self) -> int:
-        return len(self.split())
-
     # OpenGL compatibility
     @property
     def n_points_per_curve(self) -> int:
