@@ -14,15 +14,14 @@ __all__ = [
     "RightAngle",
 ]
 
-from typing import TYPE_CHECKING, Any, Literal
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Any, Literal, cast
 
 import numpy as np
 
 from manim import config
 from manim.constants import *
 from manim.mobject.geometry.arc import Arc, ArcBetweenPoints, Dot, TipableVMobject
-from manim.mobject.geometry.tips import ArrowTriangleFilledTip
+from manim.mobject.geometry.tips import ArrowTip, ArrowTriangleFilledTip
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
@@ -650,10 +649,10 @@ class Arrow(Line):
 
         if has_tip:
             # error: Argument "tip" to "add_tip" of "TipableVMobject" has incompatible type "VMobject"; expected "ArrowTip | None"  [arg-type]
-            self.add_tip(tip=old_tips[0])
+            self.add_tip(tip=cast(ArrowTip, old_tips[0]))
         if has_start_tip:
             # error: Argument "tip" to "add_tip" of "TipableVMobject" has incompatible type "VMobject"; expected "ArrowTip | None"  [arg-type]
-            self.add_tip(tip=old_tips[1], at_start=True)
+            self.add_tip(tip=cast(ArrowTip, old_tips[1]), at_start=True)
         return self
 
     def get_normal_vector(self) -> Vector3D:

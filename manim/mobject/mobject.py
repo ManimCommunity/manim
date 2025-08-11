@@ -3448,10 +3448,11 @@ def override_animate(
                 self.wait()
 
     """
+    temp_method = cast(_AnimationBuilder, method)
 
     def decorator(animation_method: Callable) -> Callable:
         # error: "Callable[..., Animation]" has no attribute "_override_animate"  [attr-defined]
-        method._override_animate = animation_method
+        temp_method._override_animate = animation_method
         return animation_method
 
     return decorator
