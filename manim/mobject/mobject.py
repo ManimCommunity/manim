@@ -17,7 +17,7 @@ import warnings
 from collections.abc import Callable, Iterable
 from functools import partialmethod, reduce
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Any, Literal, cast
 
 import numpy as np
 
@@ -42,7 +42,7 @@ from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
-    from typing import Any, Callable, Literal, cast
+    from typing import Any, Callable, Literal
 
     from typing_extensions import Self, TypeAlias
 
@@ -65,9 +65,9 @@ if TYPE_CHECKING:
     from ..animation.animation import Animation
     from ..camera.camera import Camera
 
-    TimeBasedUpdater: TypeAlias = Callable[["Mobject", float], object]
-    NonTimeBasedUpdater: TypeAlias = Callable[["Mobject"], object]
-    Updater: TypeAlias = NonTimeBasedUpdater | TimeBasedUpdater
+TimeBasedUpdater: TypeAlias = Callable[["Mobject", float], object]
+NonTimeBasedUpdater: TypeAlias = Callable[["Mobject"], object]
+Updater: TypeAlias = NonTimeBasedUpdater | TimeBasedUpdater
 
 
 class Mobject:
@@ -3385,14 +3385,9 @@ class _AnimationBuilder:
         return update_target
 
     def build(self) -> Animation:
-        from ..animation.transform import (  # is this to prevent circular import?
-            _MethodAnimation,
-        )
+        from ..animation.transform import _MethodAnimation
 
-        if self.overridden_animation:
-            anim = self.overridden_animation
-        else:
-            anim = _MethodAnimation(self.mobject, self.methods)
+        anim = self.overridden_animation or _MethodAnimation(self.mobject, self.methods)
 
         for attr, value in self.anim_args.items():
             setattr(anim, attr, value)
