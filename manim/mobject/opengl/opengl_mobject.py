@@ -23,7 +23,7 @@ from manim.utils.color import (
     WHITE,
     ManimColor,
     ParsableManimColor,
-    color_gradient_as_list,
+    color_gradient,
     color_to_rgb,
     rgb_to_hex,
 )
@@ -2176,7 +2176,7 @@ class OpenGLMobject:
 
         # mobs = self.family_members_with_points()
         mobs = self.submobjects
-        new_colors = color_gradient_as_list(colors, len(mobs))
+        new_colors = color_gradient(colors, len(mobs))
 
         for mob, color in zip(mobs, new_colors):
             mob.set_color(color)

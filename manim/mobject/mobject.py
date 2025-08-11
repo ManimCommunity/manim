@@ -32,7 +32,7 @@ from ..utils.color import (
     YELLOW_C,
     ManimColor,
     ParsableManimColor,
-    color_gradient_as_list,
+    color_gradient,
     interpolate_color,
 )
 from ..utils.exceptions import MultiAnimationOverrideException
@@ -1970,7 +1970,7 @@ class Mobject:
             return self.set_color(*colors)
 
         mobs = self.family_members_with_points()
-        new_colors = color_gradient_as_list(colors, len(mobs))
+        new_colors = color_gradient(colors, len(mobs))
 
         for mob, color in zip(mobs, new_colors):
             mob.set_color(color, family=False)

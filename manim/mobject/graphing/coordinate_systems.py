@@ -47,7 +47,7 @@ from manim.utils.color import (
     YELLOW,
     ManimColor,
     ParsableManimColor,
-    color_gradient_as_list,
+    color_gradient,
     interpolate_color,
     invert_color,
 )
@@ -1293,7 +1293,7 @@ class CoordinateSystem:
         else:
             color = [ManimColor(color)]
 
-        colors = color_gradient_as_list(color, len(x_range_array))
+        colors = color_gradient(color, len(x_range_array))
 
         for x, color in zip(x_range_array, colors):
             if input_sample_type == "left":

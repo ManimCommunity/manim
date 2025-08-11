@@ -27,7 +27,7 @@ from manim.utils.color import (
     MAROON_B,
     YELLOW,
     ParsableManimColor,
-    color_gradient_as_list,
+    color_gradient,
 )
 from manim.utils.iterables import tuplify
 
@@ -103,7 +103,7 @@ class SampleSpace(Rectangle):
         vect: Vector3D,
     ) -> VGroup:
         p_list_complete = self.complete_p_list(p_list)
-        colors_in_gradient = color_gradient_as_list(colors, len(p_list_complete))
+        colors_in_gradient = color_gradient(colors, len(p_list_complete))
 
         last_point = self.get_edge_center(-vect)
         parts = VGroup()
