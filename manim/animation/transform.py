@@ -28,8 +28,8 @@ __all__ = [
 
 import inspect
 import types
-from collections.abc import Iterable, Sequence
-from typing import TYPE_CHECKING, Any, Callable
+from collections.abc import Callable, Iterable, Sequence
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
@@ -209,7 +209,7 @@ class Transform(Animation):
             self.mobject.align_data(self.target_copy)
         super().begin()
 
-    def create_target(self) -> Mobject:
+    def create_target(self) -> Mobject | OpenGLMobject:
         # Has no meaningful effect here, but may be useful
         # in subclasses
         return self.target_mobject

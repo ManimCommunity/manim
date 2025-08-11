@@ -10,8 +10,9 @@ __all__ = [
 ]
 
 
+from collections.abc import Callable
 from functools import lru_cache
-from typing import Any, Callable, Protocol, TypeVar
+from typing import Any, Protocol, TypeVar
 
 import numpy as np
 from scipy import special

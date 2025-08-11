@@ -26,8 +26,13 @@ __all__ = ["CairoRenderer"]
 class CairoRenderer:
     """A renderer using Cairo.
 
-    num_plays : Number of play() functions in the scene.
-    time: time elapsed since initialisation of scene.
+    Attributes
+    ----------
+    num_plays : int
+        Number of play() functions in the scene.
+
+    time : float
+        Time elapsed since initialisation of scene.
     """
 
     def __init__(
@@ -138,7 +143,6 @@ class CairoRenderer:
         ignore_skipping
 
         **kwargs
-
         """
         if self.skip_animations and not ignore_skipping:
             return
@@ -277,4 +281,4 @@ class CairoRenderer:
         if config["save_last_frame"]:
             self.static_image = None
             self.update_frame(scene)
-            self.file_writer.save_final_image(self.camera.get_image())
+            self.file_writer.save_image(self.camera.get_image())
