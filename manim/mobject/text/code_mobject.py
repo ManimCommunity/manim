@@ -209,9 +209,6 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
         )
         for line, color_range in zip(self.code_lines, color_ranges):
             for start, end, color in color_range:
-                # AttributeError: 'list' object has no attribute 'set_color'
-                #line[start:end].set_color(color)
-                #continue
                 if end == start:
                     continue
                 for single_line in line[start:end]:
