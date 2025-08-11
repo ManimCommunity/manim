@@ -224,6 +224,8 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
             )
             self.add(self.line_numbers)
 
+        for line in self.code_lines:
+            line.submobjects = [c for c in line if not isinstance(c, Dot)]
         self.add(self.code_lines)
 
         if background_config is None:
