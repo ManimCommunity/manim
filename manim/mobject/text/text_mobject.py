@@ -66,7 +66,6 @@ from typing import TYPE_CHECKING, Any
 import manimpango
 import numpy as np
 from manimpango import MarkupUtils, PangoUtils, TextSetting
-from typing_extensions import Self
 
 from manim import config, logger
 from manim.constants import *
@@ -78,8 +77,6 @@ from manim.typing import Point3D
 from manim.utils.color import ManimColor, ParsableManimColor, color_gradient
 
 if TYPE_CHECKING:
-    from typing import Any
-
     from typing_extensions import Self
 
     from manim.typing import Point3D
@@ -113,10 +110,11 @@ def remove_invisible_chars(mobject: VMobject) -> VMobject:
         code = mobject
         mobject = mobject.code
     mobject_without_dots = VGroup()
-    if mobject[0].__class__ == VGroup:
-        for i in range(len(mobject)):
-            mobject_without_dots.add(VGroup())
-            mobject_without_dots[i].add(*(k for k in mobject[i] if k.__class__ != Dot))
+    if isinstance(mobject[0], VGroup):
+        for submob in mobject:
+            mobject_without_dots.add(
+                VGroup(k for k in submob if not isinstance(k, Dot))
+            )
     else:
         mobject_without_dots.add(*(k for k in mobject if k.__class__ != Dot))
     if iscode:
@@ -447,10 +445,10 @@ class Text(SVGMobject):
         weight: str = NORMAL,
         t2c: dict[str, str] | None = None,
         t2f: dict[str, str] | None = None,
-        t2g: dict[str, tuple] | None = None,
+        t2g: dict[str, Iterable[ParsableManimColor]] | None = None,
         t2s: dict[str, str] | None = None,
         t2w: dict[str, str] | None = None,
-        gradient: tuple | None = None,
+        gradient: Iterable[ParsableManimColor] | None = None,
         tab_width: int = 4,
         warn_missing_font: bool = True,
         # Mobject
@@ -508,7 +506,7 @@ class Text(SVGMobject):
         assert t2w is not None
         self.t2c: dict[str, str] = {k: ManimColor(v).to_hex() for k, v in t2c.items()}
         self.t2f: dict[str, str] = t2f
-        self.t2g: dict[str, tuple] = t2g
+        self.t2g: dict[str, Iterable[ParsableManimColor]] = t2g
         self.t2s: dict[str, str] = t2s
         self.t2w: dict[str, str] = t2w
 
@@ -723,8 +721,8 @@ class Text(SVGMobject):
         return settings
 
     def _get_settings_from_gradient(
-        self, default_args: dict[str, str]
-    ) -> Sequence[TextSetting]:
+        self, default_args: dict[str, Any]
+    ) -> list[TextSetting]:
         settings = []
         args = copy.copy(default_args)
         if self.gradient:
@@ -748,7 +746,7 @@ class Text(SVGMobject):
                     settings.append(TextSetting(i, i + 1, **args))
         return settings
 
-    def _text2settings(self, color: ParsableManimColor) -> Sequence[TextSetting]:
+    def _text2settings(self, color: ParsableManimColor) -> list[TextSetting]:
         """Converts the texts and styles to a setting for parsing."""
         t2xs: list[tuple[dict[str, str], str]] = [
             (self.t2f, "font"),
@@ -1174,7 +1172,7 @@ class MarkupText(SVGMobject):
         slant: str = NORMAL,
         weight: str = NORMAL,
         justify: bool = False,
-        gradient: tuple | None = None,
+        gradient: Iterable[ParsableManimColor] | None = None,
         tab_width: int = 4,
         height: int | None = None,
         width: int | None = None,
