@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+from typing import Any
+
 import numpy as np
+from typing_extensions import Self
 
 from manim.constants import *
 from manim.mobject.mobject import Mobject
@@ -9,6 +12,7 @@ from manim.mobject.opengl.opengl_vectorized_mobject import (
     OpenGLVGroup,
     OpenGLVMobject,
 )
+from manim.typing import Point3D, Point3D_Array, Point3DLike, Vector3DLike
 from manim.utils.color import *
 from manim.utils.iterables import adjacent_n_tuples, adjacent_pairs
 from manim.utils.simple_functions import clip
@@ -77,17 +81,17 @@ class OpenGLTipableVMobject(OpenGLVMobject):
 
     def __init__(
         self,
-        tip_length=DEFAULT_ARROW_TIP_LENGTH,
-        normal_vector=OUT,
-        tip_config={},
-        **kwargs,
+        tip_length: float = DEFAULT_ARROW_TIP_LENGTH,
+        normal_vector: Vector3DLike = OUT,
+        tip_config: dict = {},
+        **kwargs: Any,
     ):
         self.tip_length = tip_length
         self.normal_vector = normal_vector
         self.tip_config = tip_config
         super().__init__(**kwargs)
 
-    def add_tip(self, at_start=False, **kwargs):
+    def add_tip(self, at_start: bool = False, **kwargs: Any) -> Self:
         """
         Adds a tip to the TipableVMobject instance, recognising
         that the endpoints might need to be switched if it's
@@ -99,7 +103,7 @@ class OpenGLTipableVMobject(OpenGLVMobject):
         self.add(tip)
         return self
 
-    def create_tip(self, at_start=False, **kwargs):
+    def create_tip(self, at_start: bool = False, **kwargs: Any) -> Self:
         """
         Stylises the tip, positions it spacially, and returns
         the newly instantiated tip to the caller.
@@ -108,7 +112,7 @@ class OpenGLTipableVMobject(OpenGLVMobject):
         self.position_tip(tip, at_start)
         return tip
 
-    def get_unpositioned_tip(self, **kwargs):
+    def get_unpositioned_tip(self, **kwargs: Any) -> OpenGLArrowTip:
         """
         Returns a tip that has been stylistically configured,
         but has not yet been given a position in space.
@@ -118,7 +122,9 @@ class OpenGLTipableVMobject(OpenGLVMobject):
         config.update(kwargs)
         return OpenGLArrowTip(**config)
 
-    def position_tip(self, tip, at_start=False):
+    def position_tip(
+        self, tip: OpenGLArrowTip, at_start: bool = False
+    ) -> OpenGLArrowTip:
         # Last two control points, defining both
         # the end, and the tangency direction
         if at_start:
@@ -131,7 +137,9 @@ class OpenGLTipableVMobject(OpenGLVMobject):
         tip.shift(anchor - tip.get_tip_point())
         return tip
 
-    def reset_endpoints_based_on_tip(self, tip, at_start):
+    def reset_endpoints_based_on_tip(
+        self, tip: OpenGLTipableVMobject, at_start: bool
+    ) -> Self:
         if self.get_length() == 0:
             # Zero length, put_start_and_end_on wouldn't
             # work
@@ -146,7 +154,7 @@ class OpenGLTipableVMobject(OpenGLVMobject):
         self.put_start_and_end_on(start, end)
         return self
 
-    def asign_tip_attr(self, tip, at_start):
+    def asign_tip_attr(self, tip: OpenGLArrowTip, at_start: bool) -> Self:
         if at_start:
             self.start_tip = tip
         else:
@@ -154,14 +162,14 @@ class OpenGLTipableVMobject(OpenGLVMobject):
         return self
 
     # Checking for tips
-    def has_tip(self):
+    def has_tip(self) -> bool:
         return hasattr(self, "tip") and self.tip in self
 
-    def has_start_tip(self):
+    def has_start_tip(self) -> bool:
         return hasattr(self, "start_tip") and self.start_tip in self
 
     # Getters
-    def pop_tips(self):
+    def pop_tips(self) -> OpenGLVGroup:
         start, end = self.get_start_and_end()
         result = OpenGLVGroup()
         if self.has_tip():
@@ -173,7 +181,7 @@ class OpenGLTipableVMobject(OpenGLVMobject):
         self.put_start_and_end_on(start, end)
         return result
 
-    def get_tips(self):
+    def get_tips(self) -> OpenGLVGroup:
         """
         Returns a VGroup (collection of VMobjects) containing
         the TipableVMObject instance's tips.
@@ -185,7 +193,7 @@ class OpenGLTipableVMobject(OpenGLVMobject):
             result.add(self.start_tip)
         return result
 
-    def get_tip(self):
+    def get_tip(self) -> OpenGLArrowTip:
         """Returns the TipableVMobject instance's (first) tip,
         otherwise throws an exception.
         """
@@ -195,28 +203,28 @@ class OpenGLTipableVMobject(OpenGLVMobject):
         else:
             return tips[0]
 
-    def get_default_tip_length(self):
+    def get_default_tip_length(self) -> float:
         return self.tip_length
 
-    def get_first_handle(self):
+    def get_first_handle(self) -> Point3D:
         return self.points[1]
 
-    def get_last_handle(self):
+    def get_last_handle(self) -> Point3D:
         return self.points[-2]
 
-    def get_end(self):
+    def get_end(self) -> Point3D:
         if self.has_tip():
             return self.tip.get_start()
         else:
             return super().get_end()
 
-    def get_start(self):
+    def get_start(self) -> Point3D:
         if self.has_start_tip():
             return self.start_tip.get_start()
         else:
             return super().get_start()
 
-    def get_length(self):
+    def get_length(self) -> float:
         start, end = self.get_start_and_end()
         return np.linalg.norm(start - end)
 
@@ -224,12 +232,12 @@ class OpenGLTipableVMobject(OpenGLVMobject):
 class OpenGLArc(OpenGLTipableVMobject):
     def __init__(
         self,
-        start_angle=0,
-        angle=TAU / 4,
-        radius=1.0,
-        n_components=8,
-        arc_center=ORIGIN,
-        **kwargs,
+        start_angle: float = 0,
+        angle: float = TAU / 4,
+        radius: float = 1.0,
+        n_components: int = 8,
+        arc_center: Point3DLike = ORIGIN,
+        **kwargs: Any,
     ):
         self.start_angle = start_angle
         self.angle = angle
@@ -239,7 +247,7 @@ class OpenGLArc(OpenGLTipableVMobject):
         super().__init__(self, **kwargs)
         self.orientation = -1
 
-    def init_points(self):
+    def init_points(self) -> None:
         self.set_points(
             OpenGLArc.create_quadratic_bezier_points(
                 angle=self.angle,
@@ -252,7 +260,9 @@ class OpenGLArc(OpenGLTipableVMobject):
         self.shift(self.arc_center)
 
     @staticmethod
-    def create_quadratic_bezier_points(angle, start_angle=0, n_components=8):
+    def create_quadratic_bezier_points(
+        angle, start_angle: float = 0, n_components: int = 8
+    ) -> Point3D_Array:
         samples = np.array(
             [
                 [np.cos(a), np.sin(a), 0]
@@ -272,7 +282,7 @@ class OpenGLArc(OpenGLTipableVMobject):
         points[2::3] = samples[2::2]
         return points
 
-    def get_arc_center(self):
+    def get_arc_center(self) -> Point3D:
         """
         Looks at the normals to the first two
         anchors, and finds their intersection points
@@ -287,21 +297,27 @@ class OpenGLArc(OpenGLTipableVMobject):
         n2 = rotate_vector(t2, TAU / 4)
         return find_intersection(a1, n1, a2, n2)
 
-    def get_start_angle(self):
+    def get_start_angle(self) -> float:
         angle = angle_of_vector(self.get_start() - self.get_arc_center())
         return angle % TAU
 
-    def get_stop_angle(self):
+    def get_stop_angle(self) -> float:
         angle = angle_of_vector(self.get_end() - self.get_arc_center())
         return angle % TAU
 
-    def move_arc_center_to(self, point):
+    def move_arc_center_to(self, point: Point3DLike) -> Self:
         self.shift(point - self.get_arc_center())
         return self
 
 
 class OpenGLArcBetweenPoints(OpenGLArc):
-    def __init__(self, start, end, angle=TAU / 4, **kwargs):
+    def __init__(
+        self,
+        start: Point3DLike,
+        end: Point3DLike,
+        angle: float = TAU / 4,
+        **kwargs: Any,
+    ):
         super().__init__(angle=angle, **kwargs)
         if angle == 0:
             self.set_points_as_corners([LEFT, RIGHT])
@@ -309,22 +325,28 @@ class OpenGLArcBetweenPoints(OpenGLArc):
 
 
 class OpenGLCurvedArrow(OpenGLArcBetweenPoints):
-    def __init__(self, start_point, end_point, **kwargs):
+    def __init__(self, start_point: Point3DLike, end_point: Point3DLike, **kwargs: Any):
         super().__init__(start_point, end_point, **kwargs)
         self.add_tip()
 
 
 class OpenGLCurvedDoubleArrow(OpenGLCurvedArrow):
-    def __init__(self, start_point, end_point, **kwargs):
+    def __init__(self, start_point: Point3DLike, end_point: Point3DLike, **kwargs: Any):
         super().__init__(start_point, end_point, **kwargs)
         self.add_tip(at_start=True)
 
 
 class OpenGLCircle(OpenGLArc):
-    def __init__(self, color=RED, **kwargs):
+    def __init__(self, color: ParsableManimColor = RED, **kwargs: Any):
         super().__init__(0, TAU, color=color, **kwargs)
 
-    def surround(self, mobject, dim_to_match=0, stretch=False, buff=MED_SMALL_BUFF):
+    def surround(
+        self,
+        mobject: Mobject,
+        dim_to_match: int = 0,
+        stretch: bool = False,
+        buff: float = MED_SMALL_BUFF,
+    ) -> None:
         # Ignores dim_to_match and stretch; result will always be a circle
         # TODO: Perhaps create an ellipse class to handle singele-dimension stretching
 
@@ -332,7 +354,7 @@ class OpenGLCircle(OpenGLArc):
         self.stretch((self.get_width() + 2 * buff) / self.get_width(), 0)
         self.stretch((self.get_height() + 2 * buff) / self.get_height(), 1)
 
-    def point_at_angle(self, angle):
+    def point_at_angle(self, angle: float):
         start_angle = self.get_start_angle()
         return self.point_from_proportion((angle - start_angle) / TAU)
 
