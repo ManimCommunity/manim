@@ -47,6 +47,8 @@ from manim.utils.iterables import (
 from manim.utils.space_ops import rotate_vector, shoelace_direction
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
+
     import numpy.typing as npt
     from typing_extensions import Self
 
@@ -171,6 +173,12 @@ class VMobject(Mobject):
 
     def _assert_valid_submobjects(self, submobjects: Iterable[VMobject]) -> Self:
         return self._assert_valid_submobjects_internal(submobjects, VMobject)
+
+    def __iter__(self) -> Iterator[VMobject]:
+        return iter(self.split())
+
+    def __len__(self) -> int:
+        return len(self.split())
 
     # OpenGL compatibility
     @property
