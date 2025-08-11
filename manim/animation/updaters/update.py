@@ -6,14 +6,12 @@ __all__ = ["UpdateFromFunc", "UpdateFromAlphaFunc", "MaintainPositionRelativeTo"
 
 
 import operator as op
-import typing
-from typing import Callable
-
-from typing_extensions import Any
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any
 
 from manim.animation.animation import Animation
 
-if typing.TYPE_CHECKING:
+if TYPE_CHECKING:
     from manim.mobject.mobject import Mobject
 
 
