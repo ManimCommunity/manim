@@ -491,7 +491,7 @@ class SceneFileWriter:
             image.save(f"{target_dir}{self.frame_count}{ext}")
         self.frame_count += 1
 
-    def save_image(self, image: PixelArray) -> None:
+    def save_image(self, image: Image.Image) -> None:
         """This method saves the image passed to it in the default image directory.
 
         Parameters
