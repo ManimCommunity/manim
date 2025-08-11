@@ -317,6 +317,22 @@ class Text(SVGMobject):
     warn_missing_font
         If True (default), Manim will issue a warning if the font does not exist in the
         (case-sensitive) list of fonts returned from `manimpango.list_fonts()`.
+    t2c
+        A dictionary mapping substrings in the text to colors. These will be resolved
+        the same way they would by `set_color`. May also be provided as `text2color`.
+    t2f
+        A dictionary mapping substrings in the text to fonts. These will be resolved
+        the same way the `font` parameter is. May also be provided as `text2font`.
+    t2g
+        A dictionary mapping substrings in the text to gradients, specified as an iterable
+        of color strings. These will be resolved the same way `set_color_by_gradient` is.
+        May also be provided as `text2gradient`.
+    t2s
+        A dictionary mapping substrings in the text to slant values. May be
+        NORMAL (the default), ITALIC, or OBLIQUE. May also be provided as `text2slant`.
+    t2w
+        A dictionary mapping substrings in the text to font weight values, listed in
+        `manimpango.Weight`. May also be provided as `text2weight`.
 
     Returns
     -------
@@ -433,9 +449,9 @@ class Text(SVGMobject):
         font: str = "",
         slant: str = NORMAL,
         weight: str = NORMAL,
-        t2c: dict[str, str] = None,
+        t2c: dict[str, ParsableManimColor] = None,
         t2f: dict[str, str] = None,
-        t2g: dict[str, tuple] = None,
+        t2g: dict[str, Iterable[ParsableManimColor]] = None,
         t2s: dict[str, str] = None,
         t2w: dict[str, str] = None,
         gradient: tuple = None,
