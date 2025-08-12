@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 from typing_extensions import Self
@@ -9,6 +9,7 @@ from manim.constants import *
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_vectorized_mobject import (
     OpenGLDashedVMobject,
+    OpenGLMobject,
     OpenGLVGroup,
     OpenGLVMobject,
 )
@@ -103,7 +104,7 @@ class OpenGLTipableVMobject(OpenGLVMobject):
         self.add(tip)
         return self
 
-    def create_tip(self, at_start: bool = False, **kwargs: Any) -> Self:
+    def create_tip(self, at_start: bool = False, **kwargs: Any) -> OpenGLArrowTip:
         """
         Stylises the tip, positions it spacially, and returns
         the newly instantiated tip to the caller.
@@ -137,9 +138,7 @@ class OpenGLTipableVMobject(OpenGLVMobject):
         tip.shift(anchor - tip.get_tip_point())
         return tip
 
-    def reset_endpoints_based_on_tip(
-        self, tip: OpenGLTipableVMobject, at_start: bool
-    ) -> Self:
+    def reset_endpoints_based_on_tip(self, tip: OpenGLArrowTip, at_start: bool) -> Self:
         if self.get_length() == 0:
             # Zero length, put_start_and_end_on wouldn't
             # work
@@ -201,7 +200,8 @@ class OpenGLTipableVMobject(OpenGLVMobject):
         if len(tips) == 0:
             raise Exception("tip not found")
         else:
-            return tips[0]
+            rv = cast(OpenGLArrowTip, tips[0])
+            return rv
 
     def get_default_tip_length(self) -> float:
         return self.tip_length
@@ -226,7 +226,8 @@ class OpenGLTipableVMobject(OpenGLVMobject):
 
     def get_length(self) -> float:
         start, end = self.get_start_and_end()
-        return np.linalg.norm(start - end)
+        rv: float = np.linalg.norm(start - end)
+        return rv
 
 
 class OpenGLArc(OpenGLTipableVMobject):
@@ -244,6 +245,7 @@ class OpenGLArc(OpenGLTipableVMobject):
         self.radius = radius
         self.n_components = n_components
         self.arc_center = arc_center
+        # error: Argument 1 to "__init__" of "OpenGLTipableVMobject" has incompatible type "OpenGLArc"; expected "float"  [arg-type]
         super().__init__(self, **kwargs)
         self.orientation = -1
 
@@ -299,11 +301,13 @@ class OpenGLArc(OpenGLTipableVMobject):
 
     def get_start_angle(self) -> float:
         angle = angle_of_vector(self.get_start() - self.get_arc_center())
-        return angle % TAU
+        rv: float = angle % TAU
+        return rv
 
     def get_stop_angle(self) -> float:
         angle = angle_of_vector(self.get_end() - self.get_arc_center())
-        return angle % TAU
+        rv: float = angle % TAU
+        return rv
 
     def move_arc_center_to(self, point: Point3DLike) -> Self:
         self.shift(point - self.get_arc_center())
@@ -342,19 +346,20 @@ class OpenGLCircle(OpenGLArc):
 
     def surround(
         self,
-        mobject: Mobject,
+        mobject: OpenGLMobject,
         dim_to_match: int = 0,
         stretch: bool = False,
         buff: float = MED_SMALL_BUFF,
-    ) -> None:
+    ) -> Self:
         # Ignores dim_to_match and stretch; result will always be a circle
         # TODO: Perhaps create an ellipse class to handle singele-dimension stretching
 
         self.replace(mobject, dim_to_match, stretch)
         self.stretch((self.get_width() + 2 * buff) / self.get_width(), 0)
         self.stretch((self.get_height() + 2 * buff) / self.get_height(), 1)
+        return self
 
-    def point_at_angle(self, angle: float):
+    def point_at_angle(self, angle: float) -> Point3D:
         start_angle = self.get_start_angle()
         return self.point_from_proportion((angle - start_angle) / TAU)
 
@@ -493,12 +498,12 @@ class OpenGLLine(OpenGLTipableVMobject):
 
     def account_for_buff(self, buff: float) -> Self:
         if buff == 0:
-            return
+            return self
         #
         length = self.get_length() if self.path_arc == 0 else self.get_arc_length()
         #
         if length < 2 * buff:
-            return
+            return self
         buff_prop = buff / length
         self.pointwise_become_partial(self, buff_prop, 1 - buff_prop)
         return self
@@ -558,7 +563,8 @@ class OpenGLLine(OpenGLTipableVMobject):
         return start + np.dot(point - start, unit_vect) * unit_vect
 
     def get_slope(self) -> float:
-        return np.tan(self.get_angle())
+        rv: float = np.tan(self.get_angle())
+        return rv
 
     def set_angle(self, angle: float, about_point: Point3DLike | None = None) -> Self:
         if about_point is None:
@@ -683,7 +689,7 @@ class OpenGLArrow(OpenGLLine):
         self, start: Point3DLike, end: Point3DLike, buff: float = 0, path_arc: float = 0
     ) -> None:
         # Find the right tip length and thickness
-        vect = end - start
+        vect = np.array(end) - np.array(start)
         length = max(np.linalg.norm(vect), 1e-8)
         thickness = self.thickness
         w_ratio = self.max_width_to_length_ratio / (thickness / length)
@@ -774,10 +780,10 @@ class OpenGLArrow(OpenGLLine):
         self.reset_points_around_ends()
         return self
 
-    def set_path_arc(self, path_arc: float) -> Self:
+    def set_path_arc(self, path_arc: float) -> None:
         self.path_arc = path_arc
         self.reset_points_around_ends()
-        return self
+        # return self
 
 
 class OpenGLVector(OpenGLArrow):
@@ -907,7 +913,8 @@ class OpenGLArrowTip(OpenGLTriangle):
         return angle_of_vector(self.get_vector())
 
     def get_length(self) -> float:
-        return np.linalg.norm(self.get_vector())
+        rv: float = np.linalg.norm(self.get_vector())
+        return rv
 
 
 class OpenGLRectangle(OpenGLPolygon):
