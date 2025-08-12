@@ -53,6 +53,8 @@ if TYPE_CHECKING:
 
     from manim.renderer.shader_wrapper import ShaderWrapper
     from manim.typing import (
+        FloatRGB_Array,
+        FloatRGBA_Array,
         ManimFloat,
         MappingFunction,
         MatrixMN,
@@ -328,9 +330,9 @@ class OpenGLMobject:
         """Initializes the ``points``, ``bounding_box`` and ``rgbas`` attributes and groups them into self.data.
         Subclasses can inherit and overwrite this method to extend `self.data`.
         """
-        self.points = np.zeros((0, 3))
-        self.bounding_box = np.zeros((3, 3))
-        self.rgbas = np.zeros((1, 4))
+        self.points: Point3D_Array = np.zeros((0, 3))
+        self.bounding_box: Point3D_Array = np.zeros((3, 3))
+        self.rgbas: FloatRGBA_Array = np.zeros((1, 4))
 
     def init_colors(self) -> object:
         """Initializes the colors.
@@ -2082,7 +2084,7 @@ class OpenGLMobject:
         recurse: bool = True,
     ) -> Self:
         if color is not None:
-            rgbs = np.array([color_to_rgb(c) for c in listify(color)])
+            rgbs: FloatRGB_Array = np.array([color_to_rgb(c) for c in listify(color)])
         if opacity is not None:
             opacities = listify(opacity)
 
@@ -2105,14 +2107,16 @@ class OpenGLMobject:
 
         # Color and opacity
         if color is not None and opacity is not None:
-            rgbas = np.array([[*rgb, o] for rgb, o in zip(*make_even(rgbs, opacities))])
+            rgbas: FloatRGBA_Array = np.array(
+                [[*rgb, o] for rgb, o in zip(*make_even(rgbs, opacities))]
+            )
             for mob in self.get_family(recurse):
                 mob.data[name] = rgbas.copy()
         return self
 
     def set_rgba_array_direct(
         self,
-        rgbas: npt.NDArray[RGBA_Array_Float],
+        rgbas: FloatRGBA_Array,
         name: str = "rgbas",
         recurse: bool = True,
     ) -> Self:
@@ -2794,6 +2798,7 @@ class OpenGLMobject:
         # of the shader code
         for char in "xyz":
             glsl_snippet = glsl_snippet.replace(char, "point." + char)
+        # TODO: get_colormap_list does not exist
         rgb_list = get_colormap_list(colormap)
         self.set_color_by_code(
             f"color.rgb = float_to_color({glsl_snippet}, {float(min_value)}, {float(max_value)}, {get_colormap_code(rgb_list)});",
