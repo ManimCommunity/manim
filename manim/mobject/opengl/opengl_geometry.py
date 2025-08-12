@@ -245,8 +245,7 @@ class OpenGLArc(OpenGLTipableVMobject):
         self.radius = radius
         self.n_components = n_components
         self.arc_center = arc_center
-        # error: Argument 1 to "__init__" of "OpenGLTipableVMobject" has incompatible type "OpenGLArc"; expected "float"  [arg-type]
-        super().__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.orientation = -1
 
     def init_points(self) -> None:
