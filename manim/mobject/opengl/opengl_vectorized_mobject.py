@@ -14,6 +14,7 @@ from manim import config
 from manim.constants import *
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject, OpenGLPoint
 from manim.renderer.shader_wrapper import ShaderWrapper
+from manim.typing import Point3D, Point3DLike
 from manim.utils.bezier import (
     bezier,
     bezier_remap,
@@ -472,7 +473,13 @@ class OpenGLVMobject(OpenGLMobject):
         self.append_points([point])
         return self
 
-    def add_cubic_bezier_curve(self, anchor1, handle1, handle2, anchor2):
+    def add_cubic_bezier_curve(
+        self,
+        anchor1: Point3DLike,
+        handle1: Point3DLike,
+        handle2: Point3DLike,
+        anchor2: Point3DLike,
+    ):
         new_points = get_quadratic_approximation_of_cubic(
             anchor1,
             handle1,
@@ -934,7 +941,7 @@ class OpenGLVMobject(OpenGLMobject):
         for n in range(num_curves):
             yield self.get_nth_curve_function_with_length(n, **kwargs)
 
-    def point_from_proportion(self, alpha: float) -> np.ndarray:
+    def point_from_proportion(self, alpha: float) -> Point3D:
         """Gets the point at a proportion along the path of the :class:`OpenGLVMobject`.
 
         Parameters
@@ -944,7 +951,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         Returns
         -------
-        :class:`numpy.ndarray`
+        :class:`Point3D`
             The point on the :class:`OpenGLVMobject`.
 
         Raises
@@ -981,7 +988,7 @@ class OpenGLVMobject(OpenGLMobject):
 
     def proportion_from_point(
         self,
-        point: Iterable[float | int],
+        point: Point3DLike,
     ) -> float:
         """Returns the proportion along the path of the :class:`OpenGLVMobject`
         a particular given point is at.
