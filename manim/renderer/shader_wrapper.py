@@ -4,9 +4,13 @@ import copy
 import logging
 import re
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import moderngl
 import numpy as np
+
+if TYPE_CHECKING:
+    from manim.typing import FloatRGBLike_Array
 
 # Mobjects that should be rendered with
 # the same shader will be organized and
@@ -193,6 +197,6 @@ def get_shader_code_from_file(filename: Path) -> str | None:
     return result
 
 
-def get_colormap_code(rgb_list):
+def get_colormap_code(rgb_list: FloatRGBLike_Array) -> str:
     data = ",".join("vec3({}, {}, {})".format(*rgb) for rgb in rgb_list)
     return f"vec3[{len(rgb_list)}]({data})"

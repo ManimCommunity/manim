@@ -14,6 +14,7 @@ from manim import config
 from manim.constants import *
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject, OpenGLPoint
 from manim.renderer.shader_wrapper import ShaderWrapper
+from manim.typing import Point3D, Point3DLike, Point3DLike_Array
 from manim.utils.bezier import (
     bezier,
     bezier_remap,
@@ -84,6 +85,9 @@ class OpenGLVMobject(OpenGLMobject):
     stroke_shader_folder = "quadratic_bezier_stroke"
     fill_shader_folder = "quadratic_bezier_fill"
 
+    # TODO: although these are called "rgba" in singular, they are used as
+    # FloatRGBA_Arrays and should be called instead "rgbas" in plural for consistency.
+    # The same should probably apply for "stroke_width" and "unit_normal".
     fill_rgba = _Data()
     stroke_rgba = _Data()
     stroke_width = _Data()
@@ -472,7 +476,13 @@ class OpenGLVMobject(OpenGLMobject):
         self.append_points([point])
         return self
 
-    def add_cubic_bezier_curve(self, anchor1, handle1, handle2, anchor2):
+    def add_cubic_bezier_curve(
+        self,
+        anchor1: Point3DLike,
+        handle1: Point3DLike,
+        handle2: Point3DLike,
+        anchor2: Point3DLike,
+    ):
         new_points = get_quadratic_approximation_of_cubic(
             anchor1,
             handle1,
@@ -581,7 +591,7 @@ class OpenGLVMobject(OpenGLMobject):
             self.add_line_to(point)
         return points
 
-    def set_points_as_corners(self, points: Iterable[float]) -> OpenGLVMobject:
+    def set_points_as_corners(self, points: Point3DLike_Array) -> OpenGLVMobject:
         """Given an array of points, set them as corner of the vmobject.
 
         To achieve that, this algorithm sets handles aligned with the anchors such that the resultant bezier curve will be the segment
@@ -934,7 +944,7 @@ class OpenGLVMobject(OpenGLMobject):
         for n in range(num_curves):
             yield self.get_nth_curve_function_with_length(n, **kwargs)
 
-    def point_from_proportion(self, alpha: float) -> np.ndarray:
+    def point_from_proportion(self, alpha: float) -> Point3D:
         """Gets the point at a proportion along the path of the :class:`OpenGLVMobject`.
 
         Parameters
@@ -944,7 +954,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         Returns
         -------
-        :class:`numpy.ndarray`
+        :class:`Point3D`
             The point on the :class:`OpenGLVMobject`.
 
         Raises
@@ -981,7 +991,7 @@ class OpenGLVMobject(OpenGLMobject):
 
     def proportion_from_point(
         self,
-        point: Iterable[float | int],
+        point: Point3DLike,
     ) -> float:
         """Returns the proportion along the path of the :class:`OpenGLVMobject`
         a particular given point is at.
@@ -1387,7 +1397,7 @@ class OpenGLVMobject(OpenGLMobject):
 
     # Related to triangulation
 
-    def refresh_triangulation(self):
+    def refresh_triangulation(self) -> Self:
         for mob in self.get_family():
             mob.needs_new_triangulation = True
         return self
