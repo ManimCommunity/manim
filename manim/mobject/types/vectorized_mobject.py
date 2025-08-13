@@ -2309,7 +2309,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
         self._assert_valid_submobjects(tuplify(value))
         self.submobjects[key] = value
 
-    def __getitem__(self, key: int) -> VMobject:
+    def __getitem__(self, key: int | slice) -> VMobject:
         return self.submobjects[key]
 
 
