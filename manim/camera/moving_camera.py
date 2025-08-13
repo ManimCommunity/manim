@@ -232,10 +232,11 @@ class MovingCamera(Camera):
     def _get_bounding_box(
         self, mobjects: Iterable[Mobject], only_mobjects_in_frame: bool
     ) -> tuple[float, float, float, float]:
-        scene_critical_x_left: float | None = None
-        scene_critical_x_right: float | None = None
-        scene_critical_y_up: float | None = None
-        scene_critical_y_down: float | None = None
+        bounding_box_located = False
+        scene_critical_x_left: float = 0
+        scene_critical_x_right: float = 1
+        scene_critical_y_up: float = 1
+        scene_critical_y_down: float = 0
 
         for m in mobjects:
             if (m == self.frame) or (
@@ -245,11 +246,12 @@ class MovingCamera(Camera):
                 continue
 
             # initialize scene critical points with first mobjects critical points
-            if scene_critical_x_left is None:
+            if not bounding_box_located:
                 scene_critical_x_left = m.get_critical_point(LEFT)[0]
                 scene_critical_x_right = m.get_critical_point(RIGHT)[0]
                 scene_critical_y_up = m.get_critical_point(UP)[1]
                 scene_critical_y_down = m.get_critical_point(DOWN)[1]
+                bounding_box_located = True
 
             else:
                 if m.get_critical_point(LEFT)[0] < scene_critical_x_left:
