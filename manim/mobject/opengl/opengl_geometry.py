@@ -13,7 +13,15 @@ from manim.mobject.opengl.opengl_vectorized_mobject import (
     OpenGLVGroup,
     OpenGLVMobject,
 )
-from manim.typing import Point3D, Point3D_Array, Point3DLike, Vector3D, Vector3DLike
+from manim.typing import (
+    Point3D,
+    Point3D_Array,
+    Point3DLike,
+    QuadraticSpline,
+    Vector2DLike,
+    Vector3D,
+    Vector3DLike,
+)
 from manim.utils.color import *
 from manim.utils.iterables import adjacent_n_tuples, adjacent_pairs
 from manim.utils.simple_functions import clip
@@ -84,7 +92,7 @@ class OpenGLTipableVMobject(OpenGLVMobject):
         self,
         tip_length: float = DEFAULT_ARROW_TIP_LENGTH,
         normal_vector: Vector3DLike = OUT,
-        tip_config: dict = {},
+        tip_config: dict[str, Any] = {},
         **kwargs: Any,
     ):
         self.tip_length = tip_length
@@ -263,7 +271,7 @@ class OpenGLArc(OpenGLTipableVMobject):
     @staticmethod
     def create_quadratic_bezier_points(
         angle: float, start_angle: float = 0, n_components: int = 8
-    ) -> Point3D_Array:
+    ) -> QuadraticSpline:
         samples = np.array(
             [
                 [np.cos(a), np.sin(a), 0]
@@ -688,7 +696,7 @@ class OpenGLArrow(OpenGLLine):
         self, start: Point3DLike, end: Point3DLike, buff: float = 0, path_arc: float = 0
     ) -> None:
         # Find the right tip length and thickness
-        vect = np.array(end) - np.array(start)
+        vect = np.asarray(end) - np.asarray(start)
         length = max(np.linalg.norm(vect), 1e-8)
         thickness = self.thickness
         w_ratio = self.max_width_to_length_ratio / (thickness / length)
@@ -786,7 +794,12 @@ class OpenGLArrow(OpenGLLine):
 
 
 class OpenGLVector(OpenGLArrow):
-    def __init__(self, direction: Vector3DLike = RIGHT, buff: float = 0, **kwargs: Any):
+    def __init__(
+        self,
+        direction: Vector2DLike | Vector3DLike = RIGHT,
+        buff: float = 0,
+        **kwargs: Any,
+    ):
         self.buff = buff
         if len(direction) == 2:
             direction = np.hstack([direction, 0])
@@ -905,7 +918,7 @@ class OpenGLArrowTip(OpenGLTriangle):
     def get_tip_point(self) -> Point3D:
         return self.points[0]
 
-    def get_vector(self) -> Point3D:
+    def get_vector(self) -> Vector3D:
         return self.get_tip_point() - self.get_base()
 
     def get_angle(self) -> float:

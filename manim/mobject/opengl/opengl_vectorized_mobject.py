@@ -14,7 +14,7 @@ from manim import config
 from manim.constants import *
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject, OpenGLPoint
 from manim.renderer.shader_wrapper import ShaderWrapper
-from manim.typing import Point3D, Point3DLike
+from manim.typing import Point3D, Point3DLike, Point3DLike_Array
 from manim.utils.bezier import (
     bezier,
     bezier_remap,
@@ -591,7 +591,7 @@ class OpenGLVMobject(OpenGLMobject):
             self.add_line_to(point)
         return points
 
-    def set_points_as_corners(self, points: Iterable[Point3DLike]) -> OpenGLVMobject:
+    def set_points_as_corners(self, points: Point3DLike_Array) -> OpenGLVMobject:
         """Given an array of points, set them as corner of the vmobject.
 
         To achieve that, this algorithm sets handles aligned with the anchors such that the resultant bezier curve will be the segment
