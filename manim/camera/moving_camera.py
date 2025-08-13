@@ -12,7 +12,9 @@ __all__ = ["MovingCamera"]
 from collections.abc import Iterable
 from typing import Any
 
-import numpy as np
+from cairo import Context
+
+from manim.typing import PixelArray, Point3D, Point3DLike
 
 from .. import config
 from ..camera.camera import Camera
@@ -34,12 +36,12 @@ class MovingCamera(Camera):
 
     def __init__(
         self,
-        frame=None,
+        frame: Mobject | None = None,
         fixed_dimension: int = 0,  # width
         default_frame_stroke_color: ManimColor = WHITE,
         default_frame_stroke_width: int = 0,
         **kwargs: Any,
-    ) -> None:
+    ):
         """Frame is a Mobject, (should almost certainly be a rectangle)
         determining which region of space the camera displays
         """
@@ -57,7 +59,7 @@ class MovingCamera(Camera):
 
     # TODO, make these work for a rotated frame
     @property
-    def frame_height(self):
+    def frame_height(self) -> float:
         """Returns the height of the frame.
 
         Returns
@@ -67,30 +69,8 @@ class MovingCamera(Camera):
         """
         return self.frame.height
 
-    @property
-    def frame_width(self):
-        """Returns the width of the frame
-
-        Returns
-        -------
-        float
-            The width of the frame.
-        """
-        return self.frame.width
-
-    @property
-    def frame_center(self):
-        """Returns the centerpoint of the frame in cartesian coordinates.
-
-        Returns
-        -------
-        np.array
-            The cartesian coordinates of the center of the frame.
-        """
-        return self.frame.get_center()
-
     @frame_height.setter
-    def frame_height(self, frame_height: float):
+    def frame_height(self, frame_height: float) -> None:
         """Sets the height of the frame in MUnits.
 
         Parameters
@@ -100,8 +80,19 @@ class MovingCamera(Camera):
         """
         self.frame.stretch_to_fit_height(frame_height)
 
+    @property
+    def frame_width(self) -> float:
+        """Returns the width of the frame
+
+        Returns
+        -------
+        float
+            The width of the frame.
+        """
+        return self.frame.width
+
     @frame_width.setter
-    def frame_width(self, frame_width: float):
+    def frame_width(self, frame_width: float) -> None:
         """Sets the width of the frame in MUnits.
 
         Parameters
@@ -111,8 +102,19 @@ class MovingCamera(Camera):
         """
         self.frame.stretch_to_fit_width(frame_width)
 
+    @property
+    def frame_center(self) -> Point3D:
+        """Returns the centerpoint of the frame in cartesian coordinates.
+
+        Returns
+        -------
+        np.array
+            The cartesian coordinates of the center of the frame.
+        """
+        return self.frame.get_center()
+
     @frame_center.setter
-    def frame_center(self, frame_center: np.ndarray | list | tuple | Mobject):
+    def frame_center(self, frame_center: Point3DLike | Mobject) -> None:
         """Sets the centerpoint of the frame.
 
         Parameters
@@ -129,17 +131,14 @@ class MovingCamera(Camera):
         # self.realign_frame_shape()
         super().capture_mobjects(mobjects, **kwargs)
 
-    # Since the frame can be moving around, the cairo
-    # context used for updating should be regenerated
-    # at each frame.  So no caching.
-    def get_cached_cairo_context(self, pixel_array):
+    def get_cached_cairo_context(self, pixel_array: PixelArray) -> None:
         """Since the frame can be moving around, the cairo
         context used for updating should be regenerated
         at each frame.  So no caching.
         """
         return None
 
-    def cache_cairo_context(self, pixel_array, ctx):
+    def cache_cairo_context(self, pixel_array: PixelArray, ctx: Context) -> None:
         """Since the frame can be moving around, the cairo
         context used for updating should be regenerated
         at each frame.  So no caching.
@@ -157,23 +156,23 @@ class MovingCamera(Camera):
     #         self.frame_shape = (self.frame.height, width)
     #     self.resize_frame_shape(fixed_dimension=self.fixed_dimension)
 
-    def get_mobjects_indicating_movement(self):
+    def get_mobjects_indicating_movement(self) -> list[Mobject]:
         """Returns all mobjects whose movement implies that the camera
         should think of all other mobjects on the screen as moving
 
         Returns
         -------
-        list
+        list[Mobject]
         """
         return [self.frame]
 
     def auto_zoom(
         self,
-        mobjects: list[Mobject],
+        mobjects: Iterable[Mobject],
         margin: float = 0,
         only_mobjects_in_frame: bool = False,
         animate: bool = True,
-    ):
+    ) -> Mobject:
         """Zooms on to a given array of mobjects (or a singular mobject)
         and automatically resizes to frame all the mobjects.
 
@@ -203,37 +202,12 @@ class MovingCamera(Camera):
             or ScreenRectangle with position and size updated to zoomed position.
 
         """
-        scene_critical_x_left = None
-        scene_critical_x_right = None
-        scene_critical_y_up = None
-        scene_critical_y_down = None
-
-        for m in mobjects:
-            if (m == self.frame) or (
-                only_mobjects_in_frame and not self.is_in_frame(m)
-            ):
-                # detected camera frame, should not be used to calculate final position of camera
-                continue
-
-            # initialize scene critical points with first mobjects critical points
-            if scene_critical_x_left is None:
-                scene_critical_x_left = m.get_critical_point(LEFT)[0]
-                scene_critical_x_right = m.get_critical_point(RIGHT)[0]
-                scene_critical_y_up = m.get_critical_point(UP)[1]
-                scene_critical_y_down = m.get_critical_point(DOWN)[1]
-
-            else:
-                if m.get_critical_point(LEFT)[0] < scene_critical_x_left:
-                    scene_critical_x_left = m.get_critical_point(LEFT)[0]
-
-                if m.get_critical_point(RIGHT)[0] > scene_critical_x_right:
-                    scene_critical_x_right = m.get_critical_point(RIGHT)[0]
-
-                if m.get_critical_point(UP)[1] > scene_critical_y_up:
-                    scene_critical_y_up = m.get_critical_point(UP)[1]
-
-                if m.get_critical_point(DOWN)[1] < scene_critical_y_down:
-                    scene_critical_y_down = m.get_critical_point(DOWN)[1]
+        (
+            scene_critical_x_left,
+            scene_critical_x_right,
+            scene_critical_y_up,
+            scene_critical_y_down,
+        ) = self._get_bounding_box(mobjects, only_mobjects_in_frame)
 
         # calculate center x and y
         x = (scene_critical_x_left + scene_critical_x_right) / 2
@@ -249,3 +223,52 @@ class MovingCamera(Camera):
             return m_target.set_x(x).set_y(y).set(width=new_width + margin)
         else:
             return m_target.set_x(x).set_y(y).set(height=new_height + margin)
+
+    def _get_bounding_box(
+        self, mobjects: Iterable[Mobject], only_mobjects_in_frame: bool
+    ) -> tuple[float, float, float, float]:
+        bounding_box_located = False
+        scene_critical_x_left: float = 0
+        scene_critical_x_right: float = 1
+        scene_critical_y_up: float = 1
+        scene_critical_y_down: float = 0
+
+        for m in mobjects:
+            if (m == self.frame) or (
+                only_mobjects_in_frame and not self.is_in_frame(m)
+            ):
+                # detected camera frame, should not be used to calculate final position of camera
+                continue
+
+            # initialize scene critical points with first mobjects critical points
+            if not bounding_box_located:
+                scene_critical_x_left = m.get_critical_point(LEFT)[0]
+                scene_critical_x_right = m.get_critical_point(RIGHT)[0]
+                scene_critical_y_up = m.get_critical_point(UP)[1]
+                scene_critical_y_down = m.get_critical_point(DOWN)[1]
+                bounding_box_located = True
+
+            else:
+                if m.get_critical_point(LEFT)[0] < scene_critical_x_left:
+                    scene_critical_x_left = m.get_critical_point(LEFT)[0]
+
+                if m.get_critical_point(RIGHT)[0] > scene_critical_x_right:
+                    scene_critical_x_right = m.get_critical_point(RIGHT)[0]
+
+                if m.get_critical_point(UP)[1] > scene_critical_y_up:
+                    scene_critical_y_up = m.get_critical_point(UP)[1]
+
+                if m.get_critical_point(DOWN)[1] < scene_critical_y_down:
+                    scene_critical_y_down = m.get_critical_point(DOWN)[1]
+
+        if not bounding_box_located:
+            raise Exception(
+                "Could not determine bounding box of the mobjects given to 'auto_zoom'."
+            )
+
+        return (
+            scene_critical_x_left,
+            scene_critical_x_right,
+            scene_critical_y_up,
+            scene_critical_y_down,
+        )
