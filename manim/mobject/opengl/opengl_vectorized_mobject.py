@@ -84,6 +84,9 @@ class OpenGLVMobject(OpenGLMobject):
     stroke_shader_folder = "quadratic_bezier_stroke"
     fill_shader_folder = "quadratic_bezier_fill"
 
+    # TODO: although these are called "rgba" in singular, they are used as
+    # FloatRGBA_Arrays and should be called instead "rgbas" in plural for consistency.
+    # The same should probably apply for "stroke_width" and "unit_normal".
     fill_rgba = _Data()
     stroke_rgba = _Data()
     stroke_width = _Data()

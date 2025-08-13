@@ -20,6 +20,7 @@ from manim.mobject.three_d.three_d_utils import (
 from manim.mobject.types.vectorized_mobject import VMobject
 from manim.mobject.value_tracker import ValueTracker
 from manim.typing import (
+    FloatRGBA_Array,
     MatrixMN,
     Point3D,
     Point3D_Array,
@@ -109,7 +110,9 @@ class ThreeDCamera(Camera):
             self.zoom_tracker,
         ]
 
-    def modified_rgbas(self, vmobject: VMobject, rgbas: MatrixMN) -> MatrixMN:
+    def modified_rgbas(
+        self, vmobject: VMobject, rgbas: FloatRGBA_Array
+    ) -> FloatRGBA_Array:
         if not self.should_apply_shading:
             return rgbas
         if vmobject.shade_in_3d and (vmobject.get_num_points() > 0):
@@ -137,12 +140,12 @@ class ThreeDCamera(Camera):
         self,
         vmobject: VMobject,
         background: bool = False,
-    ) -> MatrixMN:  # NOTE : DocStrings From parent
+    ) -> FloatRGBA_Array:  # NOTE : DocStrings From parent
         return self.modified_rgbas(vmobject, vmobject.get_stroke_rgbas(background))
 
     def get_fill_rgbas(
         self, vmobject: VMobject
-    ) -> MatrixMN:  # NOTE : DocStrings From parent
+    ) -> FloatRGBA_Array:  # NOTE : DocStrings From parent
         return self.modified_rgbas(vmobject, vmobject.get_fill_rgbas())
 
     def get_mobjects_to_display(

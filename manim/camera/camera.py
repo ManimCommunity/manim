@@ -14,11 +14,19 @@ from typing import TYPE_CHECKING, Any
 
 import cairo
 import numpy as np
+import numpy.typing as npt
 from PIL import Image
 from scipy.spatial.distance import pdist
 from typing_extensions import Self
 
-from manim.typing import MatrixMN, PixelArray, Point3D, Point3D_Array
+from manim.typing import (
+    FloatRGBA_Array,
+    FloatRGBALike_Array,
+    ManimInt,
+    PixelArray,
+    Point3D,
+    Point3D_Array,
+)
 
 from .. import config, logger
 from ..constants import *
@@ -211,8 +219,8 @@ class Camera:
             type[Mobject], Callable[[list[Mobject], PixelArray], Any]
         ] = {
             VMobject: self.display_multiple_vectorized_mobjects,  # type: ignore[dict-item]
-            PMobject: self.display_multiple_point_cloud_mobjects,
-            AbstractImageMobject: self.display_multiple_image_mobjects,
+            PMobject: self.display_multiple_point_cloud_mobjects,  # type: ignore[dict-item]
+            AbstractImageMobject: self.display_multiple_image_mobjects,  # type: ignore[dict-item]
             Mobject: lambda batch, pa: batch,  # Do nothing
         }
         # We have to check each type in turn because we are dealing with
@@ -723,7 +731,7 @@ class Camera:
         return self
 
     def set_cairo_context_color(
-        self, ctx: cairo.Context, rgbas: MatrixMN, vmobject: VMobject
+        self, ctx: cairo.Context, rgbas: FloatRGBALike_Array, vmobject: VMobject
     ) -> Self:
         """Sets the color of the cairo context
 
@@ -818,7 +826,7 @@ class Camera:
 
     def get_stroke_rgbas(
         self, vmobject: VMobject, background: bool = False
-    ) -> PixelArray:
+    ) -> FloatRGBA_Array:
         """Gets the RGBA array for the stroke of the passed
         VMobject.
 
@@ -837,7 +845,7 @@ class Camera:
         """
         return vmobject.get_stroke_rgbas(background)
 
-    def get_fill_rgbas(self, vmobject: VMobject) -> PixelArray:
+    def get_fill_rgbas(self, vmobject: VMobject) -> FloatRGBA_Array:
         """Returns the RGBA array of the fill of the passed VMobject
 
         Parameters
@@ -898,7 +906,7 @@ class Camera:
     # As a result, the other methods do not have as detailed docstrings as would be preferred.
 
     def display_multiple_point_cloud_mobjects(
-        self, pmobjects: list, pixel_array: PixelArray
+        self, pmobjects: Iterable[PMobject], pixel_array: PixelArray
     ) -> None:
         """Displays multiple PMobjects by modifying the passed pixel array.
 
@@ -921,8 +929,8 @@ class Camera:
     def display_point_cloud(
         self,
         pmobject: PMobject,
-        points: list,
-        rgbas: np.ndarray,
+        points: Point3D_Array,
+        rgbas: FloatRGBA_Array,
         thickness: float,
         pixel_array: PixelArray,
     ) -> None:
@@ -972,7 +980,9 @@ class Camera:
         pixel_array[:, :] = new_pa.reshape((ph, pw, rgba_len))
 
     def display_multiple_image_mobjects(
-        self, image_mobjects: list, pixel_array: np.ndarray
+        self,
+        image_mobjects: Iterable[AbstractImageMobject],
+        pixel_array: PixelArray,
     ) -> None:
         """Displays multiple image mobjects by modifying the passed pixel_array.
 
@@ -1121,8 +1131,8 @@ class Camera:
     def points_to_pixel_coords(
         self,
         mobject: Mobject,
-        points: np.ndarray,
-    ) -> np.ndarray:  # TODO: Write more detailed docstrings for this method.
+        points: Point3D_Array,
+    ) -> npt.NDArray[ManimInt]:  # TODO: Write more detailed docstrings for this method.
         points = self.transform_points_pre_display(mobject, points)
         shifted_points = points - self.frame_center
 
