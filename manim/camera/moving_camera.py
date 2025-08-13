@@ -69,28 +69,6 @@ class MovingCamera(Camera):
         """
         return self.frame.height
 
-    @property
-    def frame_width(self) -> float:
-        """Returns the width of the frame
-
-        Returns
-        -------
-        float
-            The width of the frame.
-        """
-        return self.frame.width
-
-    @property
-    def frame_center(self) -> Point3D:
-        """Returns the centerpoint of the frame in cartesian coordinates.
-
-        Returns
-        -------
-        np.array
-            The cartesian coordinates of the center of the frame.
-        """
-        return self.frame.get_center()
-
     @frame_height.setter
     def frame_height(self, frame_height: float) -> None:
         """Sets the height of the frame in MUnits.
@@ -102,6 +80,17 @@ class MovingCamera(Camera):
         """
         self.frame.stretch_to_fit_height(frame_height)
 
+    @property
+    def frame_width(self) -> float:
+        """Returns the width of the frame
+
+        Returns
+        -------
+        float
+            The width of the frame.
+        """
+        return self.frame.width
+
     @frame_width.setter
     def frame_width(self, frame_width: float) -> None:
         """Sets the width of the frame in MUnits.
@@ -112,6 +101,17 @@ class MovingCamera(Camera):
             The new frame_width.
         """
         self.frame.stretch_to_fit_width(frame_width)
+
+    @property
+    def frame_center(self) -> Point3D:
+        """Returns the centerpoint of the frame in cartesian coordinates.
+
+        Returns
+        -------
+        np.array
+            The cartesian coordinates of the center of the frame.
+        """
+        return self.frame.get_center()
 
     @frame_center.setter
     def frame_center(self, frame_center: Point3DLike | Mobject) -> None:
