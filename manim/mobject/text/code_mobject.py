@@ -19,7 +19,6 @@ from manim.constants import *
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.geometry.shape_matchers import SurroundingRectangle
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.text.text_mobject import Paragraph
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.typing import StrPath
 from manim.utils.color import WHITE, ManimColor
@@ -119,6 +118,7 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
         "line_spacing": 0.5,
         "disable_ligatures": True,
     }
+    code: VMobject
 
     def __init__(
         self,
@@ -199,6 +199,8 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
             paragraph_config = {}
         base_paragraph_config = self.default_paragraph_config.copy()
         base_paragraph_config.update(paragraph_config)
+
+        from manim.mobject.text.text_mobject import Paragraph
 
         self.code_lines = Paragraph(
             *code_lines,

@@ -33,7 +33,14 @@ if TYPE_CHECKING:
     import numpy.typing as npt
     from typing_extensions import Self
 
-    from manim.typing import ManimFloat, Point3DLike
+    from manim.typing import (
+        FloatRGBA_Array,
+        FloatRGBALike_Array,
+        ManimFloat,
+        Point3D_Array,
+        Point3DLike,
+        Point3DLike_Array,
+    )
 
 
 class PMobject(Mobject, metaclass=ConvertToOpenGL):
@@ -70,8 +77,8 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         super().__init__(**kwargs)
 
     def reset_points(self) -> Self:
-        self.rgbas = np.zeros((0, 4))
-        self.points = np.zeros((0, 3))
+        self.rgbas: FloatRGBA_Array = np.zeros((0, 4))
+        self.points: Point3D_Array = np.zeros((0, 3))
         return self
 
     def get_array_attrs(self) -> list[str]:
@@ -79,10 +86,10 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
 
     def add_points(
         self,
-        points: npt.NDArray,
-        rgbas: npt.NDArray | None = None,
+        points: Point3DLike_Array,
+        rgbas: FloatRGBALike_Array | None = None,
         color: ParsableManimColor | None = None,
-        alpha: float = 1,
+        alpha: float = 1.0,
     ) -> Self:
         """Add points.
 
