@@ -209,11 +209,6 @@ class MovingCamera(Camera):
             scene_critical_y_down,
         ) = self._get_bounding_box(mobjects, only_mobjects_in_frame)
 
-        if scene_critical_x_left is None:
-            raise Exception(
-                "Could not determine bounding box of the mobjects given to 'auto_zoom'."
-            )
-
         # calculate center x and y
         x = (scene_critical_x_left + scene_critical_x_right) / 2
         y = (scene_critical_y_up + scene_critical_y_down) / 2
@@ -265,6 +260,11 @@ class MovingCamera(Camera):
 
                 if m.get_critical_point(DOWN)[1] < scene_critical_y_down:
                     scene_critical_y_down = m.get_critical_point(DOWN)[1]
+
+        if not bounding_box_located:
+            raise Exception(
+                "Could not determine bounding box of the mobjects given to 'auto_zoom'."
+            )
 
         return (
             scene_critical_x_left,
