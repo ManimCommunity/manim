@@ -94,23 +94,14 @@ def remove_invisible_chars(mobject: SVGMobject) -> SVGMobject:
     :class:`~.SVGMobject`
         The SVGMobject without unwanted invisible characters.
     """
-    if mobject.__class__.__name__ == "Text":
-        return exclude_dots_from_mobject(mobject[:])
-    elif mobject.__class__.__name__ == "Code":
-        mobject.code = exclude_dots_from_mobject(mobject.code)
-        return mobject
-    else:
-        return exclude_dots_from_mobject(mobject)
-
-
-def exclude_dots_from_mobject(mobject: SVGMobject) -> SVGMobject:
     mobject_without_dots = VGroup()
-    if mobject[0].__class__ == VGroup:
-        for i in range(len(mobject)):
-            mobject_without_dots.add(VGroup())
-            mobject_without_dots[i].add(*(k for k in mobject[i] if k.__class__ != Dot))
+    if isinstance(mobject[0], VGroup):
+        for submob in mobject:
+            mobject_without_dots.add(
+                VGroup(k for k in submob if not isinstance(k, Dot))
+            )
     else:
-        mobject_without_dots.add(*(k for k in mobject if k.__class__ != Dot))
+        mobject_without_dots.add(*(k for k in mobject if not isinstance(k, Dot)))
     return mobject_without_dots
 
 
