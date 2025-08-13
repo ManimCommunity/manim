@@ -233,8 +233,8 @@ class CairoRenderer:
 
         Returns
         -------
-        Iterable[Mobject]
-            The static image computed.
+        PixelArray | None
+            The static image computed. The return value is None if there are no static mobjects in the scene.
         """
         self.static_image = None
         if not static_mobjects:
