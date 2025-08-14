@@ -2045,13 +2045,13 @@ class Mobject:
         self.become(self.saved_state)
         return self
 
-    def reduce_across_dimension(self, reduce_func: Callable, dim: int):
+    def reduce_across_dimension(self, reduce_func: Callable, dim: int) -> float | None:
         """Find the min or max value from a dimension across all points in this and submobjects."""
         assert dim >= 0
         assert dim <= 2
         if len(self.submobjects) == 0 and len(self.points) == 0:
-            # If we have no points and no submobjects, return 0 (e.g. center)
-            return 0
+            # If we have no points and no submobjects, return None
+            return None
 
         # If we do not have points (but do have submobjects)
         # use only the points from those.
@@ -2064,7 +2064,11 @@ class Mobject:
         # smallest dimension they have and compare it to the return value.
         for mobj in self.submobjects:
             value = mobj.reduce_across_dimension(reduce_func, dim)
-            rv = value if rv is None else reduce_func([value, rv])
+            if rv is None:
+                rv = value
+            else:
+                if value is not None:
+                    rv = reduce_func([value, rv])
         return rv
 
     def nonempty_submobjects(self) -> list[Self]:
@@ -2215,10 +2219,11 @@ class Mobject:
 
     def length_over_dim(self, dim: int) -> float:
         """Measure the length of an :class:`~.Mobject` in a certain direction."""
-        return self.reduce_across_dimension(
-            max,
-            dim,
-        ) - self.reduce_across_dimension(min, dim)
+        val_max = self.reduce_across_dimension(max, dim)
+        val_min = self.reduce_across_dimension(min, dim)
+        if val_max is None and val_min is None:
+            return 0
+        return val_max - val_min
 
     def get_coord(self, dim: int, direction: Vector3DLike = ORIGIN) -> float:
         """Meant to generalize ``get_x``, ``get_y`` and ``get_z``"""
