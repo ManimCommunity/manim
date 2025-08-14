@@ -324,6 +324,7 @@ class ManimConfig(MutableMapping):
         "force_window",
         "no_latex_cleanup",
         "preview_command",
+        "lossless",
     }
 
     def __init__(self) -> None:
@@ -595,6 +596,7 @@ class ManimConfig(MutableMapping):
             "enable_wireframe",
             "force_window",
             "no_latex_cleanup",
+            "lossless",
         ]:
             setattr(self, key, parser["CLI"].getboolean(key, fallback=False))
 
@@ -771,6 +773,7 @@ class ManimConfig(MutableMapping):
             "dry_run",
             "no_latex_cleanup",
             "preview_command",
+            "lossless",
         ]:
             if hasattr(args, key):
                 attr = getattr(args, key)
@@ -1494,6 +1497,15 @@ class ManimConfig(MutableMapping):
     @zero_pad.setter
     def zero_pad(self, value: int) -> None:
         self._set_int_between("zero_pad", value, 0, 9)
+
+    @property
+    def lossless(self) -> bool:
+        """Whether to use lossless x265 encoding (mp4 format only)."""
+        return self._d["lossless"]
+
+    @lossless.setter
+    def lossless(self, value: bool) -> None:
+        self._set_boolean("lossless", value)
 
     def get_dir(self, key: str, **kwargs: Any) -> Path:
         """Resolve a config option that stores a directory.
