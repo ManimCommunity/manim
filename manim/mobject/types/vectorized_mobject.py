@@ -257,6 +257,10 @@ class VMobject(Mobject):
         # Match up current rgbas array with the newly calculated
         # one. 99% of the time they'll be the same.
         curr_rgbas = getattr(self, array_name)
+        if isinstance(color, (list, tuple)) and len(color) > 1:
+            start_rgba = ManimColor.parse(color[0]).to_rgba_with_alpha(curr_rgbas[0, 3])
+            end_rgba = ManimColor.parse(color[-1]).to_rgba_with_alpha(curr_rgbas[-1, 3])
+            rgbas = np.linspace(start_rgba, end_rgba, len(curr_rgbas))
         if len(curr_rgbas) < len(rgbas):
             curr_rgbas = stretch_array_to_length(curr_rgbas, len(rgbas))
             setattr(self, array_name, curr_rgbas)
