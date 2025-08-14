@@ -69,7 +69,7 @@ import colorsys
 # logger = _config.logger
 import random
 import re
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 from typing import TypeVar, Union, overload
 
 import numpy as np
@@ -77,24 +77,24 @@ import numpy.typing as npt
 from typing_extensions import Self, TypeAlias, TypeIs, override
 
 from manim.typing import (
-    HSL_Array_Float,
-    HSL_Tuple_Float,
-    HSV_Array_Float,
-    HSV_Tuple_Float,
-    HSVA_Array_Float,
-    HSVA_Tuple_Float,
+    FloatHSL,
+    FloatHSLLike,
+    FloatHSV,
+    FloatHSVA,
+    FloatHSVALike,
+    FloatHSVLike,
+    FloatRGB,
+    FloatRGBA,
+    FloatRGBALike,
+    FloatRGBLike,
+    IntRGB,
+    IntRGBA,
+    IntRGBALike,
+    IntRGBLike,
     ManimColorDType,
     ManimColorInternal,
     ManimFloat,
     Point3D,
-    RGB_Array_Float,
-    RGB_Array_Int,
-    RGB_Tuple_Float,
-    RGB_Tuple_Int,
-    RGBA_Array_Float,
-    RGBA_Array_Int,
-    RGBA_Tuple_Float,
-    RGBA_Tuple_Int,
     Vector3D,
 )
 
@@ -190,9 +190,9 @@ class ManimColor:
             length = len(value)
             if all(isinstance(x, float) for x in value):
                 if length == 3:
-                    self._internal_value = ManimColor._internal_from_rgb(value, alpha)  # type: ignore[arg-type]
+                    self._internal_value = ManimColor._internal_from_rgb(value, alpha)
                 elif length == 4:
-                    self._internal_value = ManimColor._internal_from_rgba(value)  # type: ignore[arg-type]
+                    self._internal_value = ManimColor._internal_from_rgba(value)
                 else:
                     raise ValueError(
                         f"ManimColor only accepts lists/tuples/arrays of length 3 or 4, not {length}"
@@ -200,11 +200,10 @@ class ManimColor:
             else:
                 if length == 3:
                     self._internal_value = ManimColor._internal_from_int_rgb(
-                        value,  # type: ignore[arg-type]
-                        alpha,
+                        value, alpha
                     )
                 elif length == 4:
-                    self._internal_value = ManimColor._internal_from_int_rgba(value)  # type: ignore[arg-type]
+                    self._internal_value = ManimColor._internal_from_int_rgba(value)
                 else:
                     raise ValueError(
                         f"ManimColor only accepts lists/tuples/arrays of length 3 or 4, not {length}"
@@ -336,7 +335,7 @@ class ManimColor:
 
     @staticmethod
     def _internal_from_int_rgb(
-        rgb: RGB_Tuple_Int, alpha: float = 1.0
+        rgb: IntRGBLike, alpha: float = 1.0
     ) -> ManimColorInternal:
         """Internal function for converting an RGB tuple of integers into the internal
         representation of a :class:`ManimColor`.
@@ -361,9 +360,7 @@ class ManimColor:
         return value
 
     @staticmethod
-    def _internal_from_rgb(
-        rgb: RGB_Tuple_Float, alpha: float = 1.0
-    ) -> ManimColorInternal:
+    def _internal_from_rgb(rgb: FloatRGBLike, alpha: float = 1.0) -> ManimColorInternal:
         """Internal function for converting a rgb tuple of floats into the internal
         representation of a :class:`ManimColor`.
 
@@ -387,7 +384,7 @@ class ManimColor:
         return value
 
     @staticmethod
-    def _internal_from_int_rgba(rgba: RGBA_Tuple_Int) -> ManimColorInternal:
+    def _internal_from_int_rgba(rgba: IntRGBALike) -> ManimColorInternal:
         """Internal function for converting an RGBA tuple of integers into the internal
         representation of a :class:`ManimColor`.
 
@@ -406,7 +403,7 @@ class ManimColor:
         return np.asarray(rgba, dtype=ManimColorDType) / 255
 
     @staticmethod
-    def _internal_from_rgba(rgba: RGBA_Tuple_Float) -> ManimColorInternal:
+    def _internal_from_rgba(rgba: FloatRGBALike) -> ManimColorInternal:
         """Internal function for converting an RGBA tuple of floats into the internal
         representation of a :class:`ManimColor`.
 
@@ -470,7 +467,7 @@ class ManimColor:
         tmp = (self._internal_value[:3] * 255).astype(dtype=np.byte).tobytes()
         return int.from_bytes(tmp, "big")
 
-    def to_rgb(self) -> RGB_Array_Float:
+    def to_rgb(self) -> FloatRGB:
         """Convert the current :class:`ManimColor` into an RGB array of floats.
 
         Returns
@@ -480,7 +477,7 @@ class ManimColor:
         """
         return self._internal_value[:3]
 
-    def to_int_rgb(self) -> RGB_Array_Int:
+    def to_int_rgb(self) -> IntRGB:
         """Convert the current :class:`ManimColor` into an RGB array of integers.
 
         Returns
@@ -490,7 +487,7 @@ class ManimColor:
         """
         return (self._internal_value[:3] * 255).astype(int)
 
-    def to_rgba(self) -> RGBA_Array_Float:
+    def to_rgba(self) -> FloatRGBA:
         """Convert the current :class:`ManimColor` into an RGBA array of floats.
 
         Returns
@@ -500,7 +497,7 @@ class ManimColor:
         """
         return self._internal_value
 
-    def to_int_rgba(self) -> RGBA_Array_Int:
+    def to_int_rgba(self) -> IntRGBA:
         """Convert the current ManimColor into an RGBA array of integers.
 
 
@@ -511,7 +508,7 @@ class ManimColor:
         """
         return (self._internal_value * 255).astype(int)
 
-    def to_rgba_with_alpha(self, alpha: float) -> RGBA_Array_Float:
+    def to_rgba_with_alpha(self, alpha: float) -> FloatRGBA:
         """Convert the current :class:`ManimColor` into an RGBA array of floats. This is
         similar to :meth:`to_rgba`, but you can change the alpha value.
 
@@ -527,7 +524,7 @@ class ManimColor:
         """
         return np.fromiter((*self._internal_value[:3], alpha), dtype=ManimColorDType)
 
-    def to_int_rgba_with_alpha(self, alpha: float) -> RGBA_Array_Int:
+    def to_int_rgba_with_alpha(self, alpha: float) -> IntRGBA:
         """Convert the current :class:`ManimColor` into an RGBA array of integers. This
         is similar to :meth:`to_int_rgba`, but you can change the alpha value.
 
@@ -570,7 +567,7 @@ class ManimColor:
             tmp += f"{int(self._internal_value[3] * 255):02X}"
         return tmp
 
-    def to_hsv(self) -> HSV_Array_Float:
+    def to_hsv(self) -> FloatHSV:
         """Convert the :class:`ManimColor` to an HSV array.
 
         .. note::
@@ -587,7 +584,7 @@ class ManimColor:
         """
         return np.array(colorsys.rgb_to_hsv(*self.to_rgb()))
 
-    def to_hsl(self) -> HSL_Array_Float:
+    def to_hsl(self) -> FloatHSL:
         """Convert the :class:`ManimColor` to an HSL array.
 
         .. note::
@@ -797,7 +794,7 @@ class ManimColor:
     @classmethod
     def from_rgb(
         cls,
-        rgb: RGB_Array_Float | RGB_Tuple_Float | RGB_Array_Int | RGB_Tuple_Int,
+        rgb: FloatRGBLike | IntRGBLike,
         alpha: float = 1.0,
     ) -> Self:
         """Create a ManimColor from an RGB array. Automagically decides which type it
@@ -824,9 +821,7 @@ class ManimColor:
         return cls._from_internal(ManimColor(rgb, alpha)._internal_value)
 
     @classmethod
-    def from_rgba(
-        cls, rgba: RGBA_Array_Float | RGBA_Tuple_Float | RGBA_Array_Int | RGBA_Tuple_Int
-    ) -> Self:
+    def from_rgba(cls, rgba: FloatRGBALike | IntRGBALike) -> Self:
         """Create a ManimColor from an RGBA Array. Automagically decides which type it
         is: ``int`` or ``float``.
 
@@ -868,9 +863,7 @@ class ManimColor:
         return cls._from_internal(ManimColor(hex_str, alpha)._internal_value)
 
     @classmethod
-    def from_hsv(
-        cls, hsv: HSV_Array_Float | HSV_Tuple_Float, alpha: float = 1.0
-    ) -> Self:
+    def from_hsv(cls, hsv: FloatHSVLike, alpha: float = 1.0) -> Self:
         """Create a :class:`ManimColor` from an HSV array.
 
         Parameters
@@ -890,9 +883,7 @@ class ManimColor:
         return cls._from_internal(ManimColor(rgb, alpha)._internal_value)
 
     @classmethod
-    def from_hsl(
-        cls, hsl: HSL_Array_Float | HSL_Tuple_Float, alpha: float = 1.0
-    ) -> Self:
+    def from_hsl(cls, hsl: FloatHSLLike, alpha: float = 1.0) -> Self:
         """Create a :class:`ManimColor` from an HSL array.
 
         Parameters
@@ -1102,11 +1093,11 @@ class HSV(ManimColor):
 
     def __init__(
         self,
-        hsv: HSV_Array_Float | HSV_Tuple_Float | HSVA_Array_Float | HSVA_Tuple_Float,
+        hsv: FloatHSVLike | FloatHSVALike,
         alpha: float = 1.0,
     ) -> None:
         super().__init__(None)
-        self.__hsv: HSVA_Array_Float
+        self.__hsv: FloatHSVA
         if len(hsv) == 3:
             self.__hsv = np.asarray((*hsv, alpha))
         elif len(hsv) == 4:
@@ -1224,14 +1215,10 @@ ParsableManimColor: TypeAlias = Union[
     ManimColor,
     int,
     str,
-    RGB_Tuple_Int,
-    RGB_Tuple_Float,
-    RGBA_Tuple_Int,
-    RGBA_Tuple_Float,
-    RGB_Array_Int,
-    RGB_Array_Float,
-    RGBA_Array_Int,
-    RGBA_Array_Float,
+    IntRGBLike,
+    FloatRGBLike,
+    IntRGBALike,
+    FloatRGBALike,
 ]
 """`ParsableManimColor` represents all the types which can be parsed
 to a :class:`ManimColor` in Manim.
@@ -1241,7 +1228,7 @@ to a :class:`ManimColor` in Manim.
 ManimColorT = TypeVar("ManimColorT", bound=ManimColor)
 
 
-def color_to_rgb(color: ParsableManimColor) -> RGB_Array_Float:
+def color_to_rgb(color: ParsableManimColor) -> FloatRGB:
     """Helper function for use in functional style programming.
     Refer to :meth:`ManimColor.to_rgb`.
 
@@ -1258,7 +1245,7 @@ def color_to_rgb(color: ParsableManimColor) -> RGB_Array_Float:
     return ManimColor(color).to_rgb()
 
 
-def color_to_rgba(color: ParsableManimColor, alpha: float = 1.0) -> RGBA_Array_Float:
+def color_to_rgba(color: ParsableManimColor, alpha: float = 1.0) -> FloatRGBA:
     """Helper function for use in functional style programming. Refer to
     :meth:`ManimColor.to_rgba_with_alpha`.
 
@@ -1278,7 +1265,7 @@ def color_to_rgba(color: ParsableManimColor, alpha: float = 1.0) -> RGBA_Array_F
     return ManimColor(color).to_rgba_with_alpha(alpha)
 
 
-def color_to_int_rgb(color: ParsableManimColor) -> RGB_Array_Int:
+def color_to_int_rgb(color: ParsableManimColor) -> IntRGB:
     """Helper function for use in functional style programming. Refer to
     :meth:`ManimColor.to_int_rgb`.
 
@@ -1295,7 +1282,7 @@ def color_to_int_rgb(color: ParsableManimColor) -> RGB_Array_Int:
     return ManimColor(color).to_int_rgb()
 
 
-def color_to_int_rgba(color: ParsableManimColor, alpha: float = 1.0) -> RGBA_Array_Int:
+def color_to_int_rgba(color: ParsableManimColor, alpha: float = 1.0) -> IntRGBA:
     """Helper function for use in functional style programming. Refer to
     :meth:`ManimColor.to_int_rgba_with_alpha`.
 
@@ -1315,9 +1302,7 @@ def color_to_int_rgba(color: ParsableManimColor, alpha: float = 1.0) -> RGBA_Arr
     return ManimColor(color).to_int_rgba_with_alpha(alpha)
 
 
-def rgb_to_color(
-    rgb: RGB_Array_Float | RGB_Tuple_Float | RGB_Array_Int | RGB_Tuple_Int,
-) -> ManimColor:
+def rgb_to_color(rgb: FloatRGBLike | IntRGBLike) -> ManimColor:
     """Helper function for use in functional style programming. Refer to
     :meth:`ManimColor.from_rgb`.
 
@@ -1334,9 +1319,7 @@ def rgb_to_color(
     return ManimColor.from_rgb(rgb)
 
 
-def rgba_to_color(
-    rgba: RGBA_Array_Float | RGBA_Tuple_Float | RGBA_Array_Int | RGBA_Tuple_Int,
-) -> ManimColor:
+def rgba_to_color(rgba: FloatRGBALike | IntRGBALike) -> ManimColor:
     """Helper function for use in functional style programming. Refer to
     :meth:`ManimColor.from_rgba`.
 
@@ -1353,9 +1336,7 @@ def rgba_to_color(
     return ManimColor.from_rgba(rgba)
 
 
-def rgb_to_hex(
-    rgb: RGB_Array_Float | RGB_Tuple_Float | RGB_Array_Int | RGB_Tuple_Int,
-) -> str:
+def rgb_to_hex(rgb: FloatRGBLike | IntRGBLike) -> str:
     """Helper function for use in functional style programming. Refer to
     :meth:`ManimColor.from_rgb` and :meth:`ManimColor.to_hex`.
 
@@ -1372,7 +1353,7 @@ def rgb_to_hex(
     return ManimColor.from_rgb(rgb).to_hex()
 
 
-def hex_to_rgb(hex_code: str) -> RGB_Array_Float:
+def hex_to_rgb(hex_code: str) -> FloatRGB:
     """Helper function for use in functional style programming. Refer to
     :meth:`ManimColor.to_rgb`.
 
@@ -1407,9 +1388,9 @@ def invert_color(color: ManimColorT) -> ManimColorT:
 
 
 def color_gradient(
-    reference_colors: Sequence[ParsableManimColor],
+    reference_colors: Iterable[ParsableManimColor],
     length_of_output: int,
-) -> list[ManimColor] | ManimColor:
+) -> list[ManimColor]:
     """Create a list of colors interpolated between the input array of colors with a
     specific number of colors.
 
@@ -1422,20 +1403,25 @@ def color_gradient(
 
     Returns
     -------
-    list[ManimColor] | ManimColor
-        A :class:`ManimColor` or a list of interpolated :class:`ManimColor`'s.
+    list[ManimColor]
+        A list of interpolated :class:`ManimColor`'s.
     """
     if length_of_output == 0:
-        return ManimColor(reference_colors[0])
-    if len(reference_colors) == 1:
-        return [ManimColor(reference_colors[0])] * length_of_output
-    rgbs = [color_to_rgb(color) for color in reference_colors]
-    alphas = np.linspace(0, (len(rgbs) - 1), length_of_output)
+        return []
+    parsed_colors = [ManimColor(color) for color in reference_colors]
+    num_colors = len(parsed_colors)
+    if num_colors == 0:
+        raise ValueError("Expected 1 or more reference colors. Got 0 colors.")
+    if num_colors == 1:
+        return parsed_colors * length_of_output
+
+    rgbs = [color.to_rgb() for color in parsed_colors]
+    alphas = np.linspace(0, (num_colors - 1), length_of_output)
     floors = alphas.astype("int")
     alphas_mod1 = alphas % 1
     # End edge case
     alphas_mod1[-1] = 1
-    floors[-1] = len(rgbs) - 2
+    floors[-1] = num_colors - 2
     return [
         rgb_to_color((rgbs[i] * (1 - alpha)) + (rgbs[i + 1] * alpha))
         for i, alpha in zip(floors, alphas_mod1)
@@ -1622,11 +1608,11 @@ class RandomColorGenerator:
 
 
 def get_shaded_rgb(
-    rgb: RGB_Array_Float,
+    rgb: FloatRGB,
     point: Point3D,
     unit_normal_vect: Vector3D,
     light_source: Point3D,
-) -> RGB_Array_Float:
+) -> FloatRGB:
     """Add light or shadow to the ``rgb`` color of some surface which is located at a
     given ``point`` in space and facing in the direction of ``unit_normal_vect``,
     depending on whether the surface is facing a ``light_source`` or away from it.
@@ -1652,7 +1638,7 @@ def get_shaded_rgb(
     light = 0.5 * np.dot(unit_normal_vect, to_sun) ** 3
     if light < 0:
         light *= 0.5
-    shaded_rgb: RGB_Array_Float = rgb + light
+    shaded_rgb: FloatRGB = rgb + light
     return shaded_rgb
 
 

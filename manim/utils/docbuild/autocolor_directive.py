@@ -79,15 +79,18 @@ class ManimColorModuleDocumenter(Directive):
 
         for base_i in range(0, len(color_elements), num_color_cols):
             row = nodes.row()
-            for member_name, hex_code, font_color in color_elements[
-                base_i : base_i + num_color_cols
-            ]:
-                col1 = nodes.literal(text=member_name)
-                col2 = nodes.raw(
-                    "",
-                    f'<div style="background-color:{hex_code};padding: 0.25rem 0;border-radius:8px;margin: 0.5rem 0.2rem"><code style="color:{font_color};">{hex_code}</code></div>',
-                    format="html",
-                )
+            for idx in range(base_i, base_i + num_color_cols):
+                if idx < len(color_elements):
+                    member_name, hex_code, font_color = color_elements[idx]
+                    col1 = nodes.literal(text=member_name)
+                    col2 = nodes.raw(
+                        "",
+                        f'<div style="background-color:{hex_code};padding: 0.25rem 0;border-radius:8px;margin: 0.5rem 0.2rem"><code style="color:{font_color};">{hex_code}</code></div>',
+                        format="html",
+                    )
+                else:
+                    col1 = nodes.literal(text="")
+                    col2 = nodes.raw("", "", format="html")
                 row += nodes.entry("", col1)
                 row += nodes.entry("", col2)
             tbody += row

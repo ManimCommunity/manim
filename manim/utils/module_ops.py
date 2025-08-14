@@ -7,7 +7,7 @@ import sys
 import types
 import warnings
 from pathlib import Path
-from typing import TYPE_CHECKING, Literal, overload
+from typing import TYPE_CHECKING, Any, Literal, overload
 
 from manim._config import config, console, logger
 from manim.constants import (
@@ -19,8 +19,6 @@ from manim.constants import (
 from manim.scene.scene_file_writer import SceneFileWriter
 
 if TYPE_CHECKING:
-    from typing import Any
-
     from manim.scene.scene import Scene
 
 __all__ = ["scene_classes_from_file"]
