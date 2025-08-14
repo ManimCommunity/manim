@@ -14,10 +14,10 @@ import random
 import sys
 import types
 import warnings
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from functools import partialmethod, reduce
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Literal
 
 import numpy as np
 
@@ -41,8 +41,6 @@ from ..utils.paths import straight_path
 from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
 
 if TYPE_CHECKING:
-    from typing import Any, Callable, Literal
-
     from typing_extensions import Self, TypeAlias
 
     from manim.typing import (
@@ -2359,7 +2357,7 @@ class Mobject:
     def __iter__(self):
         return iter(self.split())
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.split())
 
     def get_group_class(self) -> type[Group]:
@@ -3288,10 +3286,7 @@ class _AnimationBuilder:
             _MethodAnimation,
         )
 
-        if self.overridden_animation:
-            anim = self.overridden_animation
-        else:
-            anim = _MethodAnimation(self.mobject, self.methods)
+        anim = self.overridden_animation or _MethodAnimation(self.mobject, self.methods)
 
         for attr, value in self.anim_args.items():
             setattr(anim, attr, value)
