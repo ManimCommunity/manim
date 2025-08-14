@@ -283,7 +283,10 @@ class OpenGLVMobject(OpenGLMobject):
 
         if width is not None:
             for mob in self.get_family(recurse):
-                mob.stroke_width = np.array([[width] for width in tuplify(width)])
+                if isinstance(width, np.ndarray):
+                    mob.stroke_width = width
+                else:
+                    mob.stroke_width = np.array([[width] for width in tuplify(width)])
 
         if background is not None:
             for mob in self.get_family(recurse):
