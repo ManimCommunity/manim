@@ -19,8 +19,9 @@ from .. import config
 from ..utils.file_ops import seek_full_path_from_defaults
 
 if TYPE_CHECKING:
-    from manim.typing import RGBAPixelArray, RGBPixelArray, PixelArray
     from collections.abc import Sequence
+
+    from manim.typing import PixelArray, RGBAPixelArray, RGBPixelArray
 
 
 def get_full_raster_image_path(image_file_name: str | PurePath) -> Path:
