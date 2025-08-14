@@ -1413,7 +1413,9 @@ class Mobject:
             return result
 
         self.apply_points_function_about_point(
-            multi_mapping_function, about_point, about_edge,
+            multi_mapping_function,
+            about_point,
+            about_edge,
         )
         return self
 
