@@ -46,6 +46,7 @@ if TYPE_CHECKING:
     from manim.typing import (
         FunctionOverride,
         MappingFunction,
+        MatrixMN,
         MultiMappingFunction,
         PathFuncType,
         PixelArray,

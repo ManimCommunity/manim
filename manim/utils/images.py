@@ -15,13 +15,12 @@ from typing import TYPE_CHECKING
 import numpy as np
 from PIL import Image
 
-from manim.typing import RGBAPixelArray, RGBPixelArray
-
 from .. import config
 from ..utils.file_ops import seek_full_path_from_defaults
 
 if TYPE_CHECKING:
-    pass
+    from manim.typing import RGBAPixelArray, RGBPixelArray, PixelArray
+    from collections.abc import Sequence
 
 
 def get_full_raster_image_path(image_file_name: str | PurePath) -> Path:

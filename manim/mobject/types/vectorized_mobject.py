@@ -600,7 +600,6 @@ class VMobject(Mobject):
 
     def get_stroke_width(self, background: bool = False) -> float:
         if background:
-            self.background_stroke_width: float
             width = self.background_stroke_width
         else:
             width = self.stroke_width
