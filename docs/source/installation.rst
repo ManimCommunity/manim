@@ -121,6 +121,27 @@ of the animation inside the editor. The extension can be installed through the
    This extension is not officially maintained by the Manim Community.
    If you run into issues, please report them to the extension's author.
 
+If you are using an editor such as `Helix <https://github.com/helix-editor/helix>`__ and you rely on language servers, you may get face several annoyances.
+
+The language server will complain about the wildcard import, and every time a variable is referenced from manim you will get a warning such as: Scene may be undefined, or defined from star imports
+
+Additionally, when items from Manim are autocompleted, the language server may automatically import items from Manim even though Manim is imported via a glob import.
+
+To fix the issues above, you will need to configure your language server to disable automatic import on completion. For Helix, this would be for example:
+
+.. code-block:: toml
+
+  [language-server]
+  pyright = { command = "pyright-langserver", args = [
+    "--stdio",
+  ], config = { "python.analysis.autoImportCompletions" = false } }
+
+To disable the warnings around star imports, modify your :code:`pyproject.toml` file:
+
+.. code-block:: toml
+
+  [tool.ruff]
+  ignore = ["F403", "F405"]
 
 Installation for developers
 ***************************
