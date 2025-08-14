@@ -40,16 +40,16 @@ def get_full_vector_image_path(image_file_name: str | PurePath) -> Path:
     )
 
 
-def drag_pixels(frames: list[np.array]) -> list[np.array]:
+def drag_pixels(frames: Sequence[PixelArray]) -> list[np.ndarray]:
     curr = frames[0]
-    new_frames = []
+    new_frames: list[np.ndarray] = []
     for frame in frames:
         curr += (curr == 0) * np.array(frame)
         new_frames.append(np.array(curr))
     return new_frames
 
 
-def invert_image(image: np.array) -> Image:
+def invert_image(image: PixelArray) -> Image:
     arr = np.array(image)
     arr = (255 * np.ones(arr.shape)).astype(arr.dtype) - arr
     return Image.fromarray(arr)
