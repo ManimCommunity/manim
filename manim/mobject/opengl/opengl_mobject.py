@@ -105,9 +105,25 @@ _ShaderDType: TypeAlias = np.void
 _ShaderData: TypeAlias = npt.NDArray[_ShaderDType]
 
 
-class _StretchKwargs(TypedDict, total=False):
+# NOTE: Once PEP 764 gets accepted and implemented in mypy (https://peps.python.org/pep-0764/),
+#   we'll no longer need some of these `TypedDict`s (for example `_Kw_AboutPoint` or `_Kw_AboutEdge`).
+#   The rest of them will still be needed, until we have a better way of extracting the types of function kwargs.
+
+
+class _Kw_AboutPoint(TypedDict, total=False):
     about_point: Point3DLike | None
+
+
+class _Kw_AboutEdge(TypedDict, total=False):
     about_edge: Vector3DLike | None
+
+
+class _Kw_AboutPoint_AboutEdge(_Kw_AboutPoint, _Kw_AboutEdge, total=False):
+    pass
+
+
+class _Kw_ApplyFunc(_Kw_AboutPoint_AboutEdge, total=False):
+    works_on_bounding_box: bool
 
 
 class OpenGLMobject:
@@ -172,7 +188,7 @@ class OpenGLMobject:
         self.data: dict[str, npt.NDArray[Any]] = getattr(self, "data", {})
         self.uniforms = getattr(self, "uniforms", {})
 
-        self.opacity: float = opacity
+        self.opacity: float | Iterable[float] = opacity
         self.dim: int = dim  # TODO, get rid of this
         # Lighting parameters
         # Positive gloss up to 1 makes it reflect the light.
@@ -671,7 +687,7 @@ class OpenGLMobject:
             about_point = self.get_bounding_box_point(about_edge)
 
         for mob in self.get_family():
-            arrs = []
+            arrs: list[Point3D_Array] = []
             if mob.has_points():
                 arrs.append(mob.points)
             if works_on_bounding_box:
@@ -1468,7 +1484,7 @@ class OpenGLMobject:
         return result
 
     def generate_target(self, use_deepcopy: bool = False) -> OpenGLMobject:
-        self.target = None  # Prevent exponential explosion
+        self.target: OpenGLMobject | None = None  # Prevent exponential explosion
         if use_deepcopy:
             self.target = self.deepcopy()
         else:
@@ -1605,7 +1621,7 @@ class OpenGLMobject:
         scale_factor: float,
         about_point: Point3DLike | None = None,
         about_edge: Point3DLike = ORIGIN,
-        **kwargs,
+        **_kwargs: object,
     ) -> Self:
         r"""Scale the size by a factor.
 
@@ -1658,12 +1674,11 @@ class OpenGLMobject:
             about_point=about_point,
             about_edge=about_edge,
             works_on_bounding_box=True,
-            **kwargs,
         )
         return self
 
     def stretch(
-        self, factor: float, dim: int, **kwargs: Unpack[_StretchKwargs]
+        self, factor: float, dim: int, **kwargs: Unpack[_Kw_AboutPoint_AboutEdge]
     ) -> Self:
         def func(points: Point3D_Array) -> Point3D_Array:
             points[:, dim] *= factor
@@ -1680,7 +1695,7 @@ class OpenGLMobject:
         angle: float,
         axis: Vector3DLike = OUT,
         about_point: Point3DLike | None = None,
-        **kwargs,
+        **kwargs: Unpack[_Kw_AboutEdge],
     ) -> Self:
         """Rotates the :class:`~.OpenGLMobject` about a certain point."""
         rot_matrix_T = rotation_matrix_transpose(angle, axis)
@@ -1691,7 +1706,9 @@ class OpenGLMobject:
         )
         return self
 
-    def flip(self, axis: Vector3DLike = UP, **kwargs) -> Self:
+    def flip(
+        self, axis: Vector3DLike = UP, **kwargs: Unpack[_Kw_AboutPoint_AboutEdge]
+    ) -> Self:
         """Flips/Mirrors an mobject about its center.
 
         Examples
@@ -1710,7 +1727,9 @@ class OpenGLMobject:
         """
         return self.rotate(TAU / 2, axis, **kwargs)
 
-    def apply_function(self, function: MappingFunction, **kwargs) -> Self:
+    def apply_function(
+        self, function: MappingFunction, **kwargs: Unpack[_Kw_ApplyFunc]
+    ) -> Self:
         # Default to applying matrix about the origin, not mobjects center
         if len(kwargs) == 0:
             kwargs["about_point"] = ORIGIN
@@ -1731,7 +1750,7 @@ class OpenGLMobject:
             submob.apply_function_to_position(function)
         return self
 
-    def apply_matrix(self, matrix: MatrixMN, **kwargs) -> Self:
+    def apply_matrix(self, matrix: MatrixMN, **kwargs: Unpack[_Kw_ApplyFunc]) -> Self:
         # Default to applying matrix about the origin, not mobjects center
         if ("about_point" not in kwargs) and ("about_edge" not in kwargs):
             kwargs["about_point"] = ORIGIN
@@ -1744,7 +1763,7 @@ class OpenGLMobject:
         return self
 
     def apply_complex_function(
-        self, function: Callable[[complex], complex], **kwargs
+        self, function: Callable[[complex], complex], **kwargs: Unpack[_Kw_ApplyFunc]
     ) -> Self:
         """Applies a complex function to a :class:`OpenGLMobject`.
         The x and y coordinates correspond to the real and imaginary parts respectively.
@@ -1772,12 +1791,12 @@ class OpenGLMobject:
                     self.play(t.animate.set_value(TAU), run_time=3)
         """
 
-        def R3_func(point):
+        def R3_func(point: Point3D) -> Point3D:
             x, y, z = point
             xy_complex = function(complex(x, y))
-            return [xy_complex.real, xy_complex.imag, z]
+            return np.array([xy_complex.real, xy_complex.imag, z])
 
-        return self.apply_function(R3_func)
+        return self.apply_function(R3_func, **kwargs)
 
     def hierarchical_model_matrix(self) -> MatrixMN:
         if self.parent is None:
