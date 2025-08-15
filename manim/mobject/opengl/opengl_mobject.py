@@ -9,7 +9,7 @@ import types
 from collections.abc import Callable, Iterable, Iterator, Sequence
 from functools import partialmethod, wraps
 from math import ceil
-from typing import TYPE_CHECKING, Any, TypeVar
+from typing import TYPE_CHECKING, Any, Never, TypeVar, override
 
 import moderngl
 import numpy as np
@@ -72,7 +72,7 @@ if TYPE_CHECKING:
     _NonTimeBasedUpdater: TypeAlias = Callable[["OpenGLMobject"], object]
     _Updater: TypeAlias = _NonTimeBasedUpdater | _TimeBasedUpdater
 
-    T = TypeVar("T")
+    _T = TypeVar("_T", bound=np.generic)
 
 
 def affects_shader_info_id(
@@ -172,7 +172,7 @@ class OpenGLMobject:
         # Event listener
         self.listen_to_events: bool = listen_to_events
 
-        self._submobjects = []
+        self._submobjects: list[OpenGLMobject] = []
         self.parents = []
         self.parent = None
         self.family: list[OpenGLMobject] = [self]
@@ -256,30 +256,32 @@ class OpenGLMobject:
         return self
 
     @classmethod
-    def __init_subclass__(cls, **kwargs) -> None:
+    def __init_subclass__(cls, **kwargs: object) -> None:
         super().__init_subclass__(**kwargs)
-        cls._original__init__ = cls.__init__
+        cls._original__init__: Callable[..., None] = cls.__init__
 
+    @override
     def __str__(self) -> str:
         return self.__class__.__name__
 
+    @override
     def __repr__(self) -> str:
         return str(self.name)
 
-    def __sub__(self, other):
+    def __sub__(self, other: Never):
         return NotImplemented
 
-    def __isub__(self, other):
+    def __isub__(self, other: Never):
         return NotImplemented
 
-    def __add__(self, mobject):
+    def __add__(self, mobject: Never):
         return NotImplemented
 
-    def __iadd__(self, mobject):
+    def __iadd__(self, mobject: Never):
         return NotImplemented
 
     @classmethod
-    def set_default(cls, **kwargs) -> None:
+    def set_default(cls, **kwargs: object) -> None:
         """Sets the default values of keyword arguments.
 
         If this method is called without any additional keyword
@@ -350,7 +352,7 @@ class OpenGLMobject:
         # Typically implemented in subclass, unless purposefully left blank
         pass
 
-    def set(self, **kwargs) -> Self:
+    def set(self, **kwargs: object) -> Self:
         """Sets attributes.
 
         Mainly to be used along with :attr:`animate` to
@@ -593,7 +595,7 @@ class OpenGLMobject:
         return self
 
     def apply_over_attr_arrays(
-        self, func: Callable[[npt.NDArray[T]], npt.NDArray[T]]
+        self, func: Callable[[npt.NDArray[_T]], npt.NDArray[_T]]
     ) -> Self:
         # TODO: OpenGLMobject.get_array_attrs() doesn't even exist!
         for attr in self.get_array_attrs():
@@ -703,13 +705,13 @@ class OpenGLMobject:
     def has_points(self) -> bool:
         return self.get_num_points() > 0
 
-    def get_bounding_box(self) -> npt.NDArray[float]:
+    def get_bounding_box(self) -> Point3D_Array:
         if self.needs_new_bounding_box:
             self.bounding_box = self.compute_bounding_box()
             self.needs_new_bounding_box = False
         return self.bounding_box
 
-    def compute_bounding_box(self) -> npt.NDArray[float]:
+    def compute_bounding_box(self) -> Point3D_Array:
         all_points = np.vstack(
             [
                 self.points,
@@ -2890,7 +2892,7 @@ class OpenGLMobject:
         return self.shader_indices
 
     @property
-    def submobjects(self) -> Sequence[OpenGLMobject]:
+    def submobjects(self, /) -> Sequence[OpenGLMobject]:
         return self._submobjects if hasattr(self, "_submobjects") else []
 
     @submobjects.setter
