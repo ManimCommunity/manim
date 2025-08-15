@@ -13,7 +13,16 @@ from typing import TYPE_CHECKING, Any, TypeVar
 
 import moderngl
 import numpy as np
-from typing_extensions import Never, TypedDict, Unpack, overload, override
+import numpy.typing as npt
+from typing_extensions import (
+    Never,
+    Self,
+    TypeAlias,
+    TypedDict,
+    Unpack,
+    overload,
+    override,
+)
 
 from manim import config, logger
 from manim.constants import *
@@ -49,9 +58,7 @@ from manim.utils.space_ops import (
 )
 
 if TYPE_CHECKING:
-    import numpy.typing as npt
-    from typing_extensions import Self, TypeAlias
-
+    from manim.animation.transform import _MethodAnimation
     from manim.renderer.shader_wrapper import ShaderWrapper
     from manim.typing import (
         FloatRGB_Array,
@@ -202,7 +209,7 @@ class OpenGLMobject:
         self.color: ManimColor | list[ManimColor] = ManimColor.parse(color)
         self.init_colors()
 
-        self.shader_indices = None
+        self.shader_indices: Sequence[int] | None = None
 
         if self.depth_test:
             self.apply_depth_test()
@@ -590,7 +597,11 @@ class OpenGLMobject:
     def depth(self, value: float) -> None:
         self.rescale_to_fit(value, 2, stretch=False)
 
-    def resize_points(self, new_length, resize_func=resize_array):
+    def resize_points(
+        self,
+        new_length: int,
+        resize_func: Callable[[Point3D_Array, int], Point3D_Array] = resize_array,
+    ) -> Self:
         if new_length != len(self.points):
             self.points = resize_func(self.points, new_length)
         self.refresh_bounding_box()
@@ -1465,7 +1476,7 @@ class OpenGLMobject:
         """Save the current state (position, color & size). Can be restored with :meth:`~.OpenGLMobject.restore`."""
         if hasattr(self, "saved_state"):
             # Prevent exponential growth of data
-            self.saved_state = None
+            self.saved_state: OpenGLMobject | None = None
         if use_deepcopy:
             self.saved_state = self.deepcopy()
         else:
@@ -1589,8 +1600,8 @@ class OpenGLMobject:
     def scale(
         self,
         scale_factor: float,
-        about_point: Sequence[float] | None = None,
-        about_edge: Sequence[float] = ORIGIN,
+        about_point: Point3DLike | None = None,
+        about_edge: Point3DLike = ORIGIN,
         **kwargs,
     ) -> Self:
         r"""Scale the size by a factor.
@@ -2159,6 +2170,7 @@ class OpenGLMobject:
         """
         for mob in self.get_family(recurse):
             mob.data[name] = rgbas.copy()
+        return self
 
     def set_color(
         self,
@@ -2835,13 +2847,13 @@ class OpenGLMobject:
         self.get_shader_wrapper().refresh_id()
         return self
 
-    def get_shader_wrapper(self) -> ShaderWrapper:
+    def get_shader_wrapper(self) -> "ShaderWrapper":  # noqa: UP037
         from manim.renderer.shader_wrapper import ShaderWrapper
 
         # if hasattr(self, "__shader_wrapper"):
         # return self.__shader_wrapper
 
-        self.shader_wrapper = ShaderWrapper(
+        self.shader_wrapper: ShaderWrapper = ShaderWrapper(
             vert_data=self.get_shader_data(),
             vert_indices=self.get_shader_vert_indices(),
             uniforms=self.get_shader_uniforms(),
@@ -2852,7 +2864,7 @@ class OpenGLMobject:
         )
         return self.shader_wrapper
 
-    def get_shader_wrapper_list(self) -> Sequence[ShaderWrapper]:
+    def get_shader_wrapper_list(self) -> Sequence["ShaderWrapper"]:  # noqa: UP037
         shader_wrappers = it.chain(
             [self.get_shader_wrapper()],
             *(sm.get_shader_wrapper_list() for sm in self.submobjects),
@@ -2910,7 +2922,7 @@ class OpenGLMobject:
     def get_shader_uniforms(self, /) -> dict[str, Any]:
         return self.uniforms
 
-    def get_shader_vert_indices(self, /) -> Sequence[int]:
+    def get_shader_vert_indices(self, /) -> Sequence[int] | None:
         return self.shader_indices
 
     @property
@@ -3019,7 +3031,7 @@ class _AnimationBuilder:
 
         return update_target
 
-    def build(self) -> _MethodAnimation:
+    def build(self) -> "_MethodAnimation":  # noqa: UP037
         from manim.animation.transform import _MethodAnimation
 
         anim = self.overridden_animation or _MethodAnimation(self.mobject, self.methods)
