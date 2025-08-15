@@ -10,7 +10,6 @@ __all__ = [
 
 
 import itertools as it
-from collections.abc import MutableMapping
 from typing import Any, Generic, Protocol, cast
 
 import numpy.typing as npt
@@ -57,7 +56,7 @@ _Data_T = TypeVar("_Data_T", bound="npt.NDArray[Any]", default="npt.NDArray[Any]
 
 
 class _HasData(Protocol):
-    data: MutableMapping[str, npt.NDArray[Any]]
+    data: dict[str, npt.NDArray[Any]]
 
 
 class _Data(Generic[_Data_T]):

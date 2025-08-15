@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING, Any, TypeVar
 
 import moderngl
 import numpy as np
-from typing_extensions import Never, override
+from typing_extensions import Never, TypedDict, Unpack, overload, override
 
 from manim import config, logger
 from manim.constants import *
@@ -73,7 +73,8 @@ if TYPE_CHECKING:
     _NonTimeBasedUpdater: TypeAlias = Callable[["OpenGLMobject"], object]
     _Updater: TypeAlias = _NonTimeBasedUpdater | _TimeBasedUpdater
 
-    _T = TypeVar("_T", bound=np.generic)
+    _T = TypeVar("_T")
+    _T_np = TypeVar("_T_np", bound=np.generic)
 
 
 def affects_shader_info_id(
@@ -90,6 +91,16 @@ def affects_shader_info_id(
 
 
 __all__ = ["OpenGLMobject", "OpenGLGroup", "OpenGLPoint", "_AnimationBuilder"]
+
+
+_ShaderDType: TypeAlias = np.void
+"""The dtype for NumPy arrays representing shader data. It's a structured dtype with signature `(point, np.float32, (3,))`."""
+_ShaderData: TypeAlias = npt.NDArray[_ShaderDType]
+
+
+class _StretchKwargs(TypedDict, total=False):
+    about_point: Point3DLike | None
+    about_edge: Vector3DLike | None
 
 
 class OpenGLMobject:
@@ -114,9 +125,9 @@ class OpenGLMobject:
     shader_folder = ""
 
     # _Data and _Uniforms are set as class variables to tell manim how to handle setting/getting these attributes later.
-    points = _Data()
-    bounding_box = _Data()
-    rgbas = _Data()
+    points: _Data[Point3D_Array] = _Data()
+    bounding_box: _Data[Point3D_Array] = _Data()
+    rgbas: _Data[FloatRGBA_Array] = _Data()
 
     is_fixed_in_frame: _Uniforms = _Uniforms()
     is_fixed_orientation: _Uniforms = _Uniforms()
@@ -151,7 +162,7 @@ class OpenGLMobject:
     ):
         self.name: str = self.__class__.__name__ if name is None else name
         # getattr in case data/uniforms are already defined in parent classes.
-        self.data = getattr(self, "data", {})
+        self.data: dict[str, npt.NDArray[Any]] = getattr(self, "data", {})
         self.uniforms = getattr(self, "uniforms", {})
 
         self.opacity: float = opacity
@@ -333,9 +344,9 @@ class OpenGLMobject:
         """Initializes the ``points``, ``bounding_box`` and ``rgbas`` attributes and groups them into self.data.
         Subclasses can inherit and overwrite this method to extend `self.data`.
         """
-        self.points: Point3D_Array = np.zeros((0, 3))
-        self.bounding_box: Point3D_Array = np.zeros((3, 3))
-        self.rgbas: FloatRGBA_Array = np.zeros((1, 4))
+        self.points = np.zeros((0, 3))
+        self.bounding_box = np.zeros((3, 3))
+        self.rgbas = np.zeros((1, 4))
 
     def init_colors(self) -> object:
         """Initializes the colors.
@@ -596,7 +607,7 @@ class OpenGLMobject:
         return self
 
     def apply_over_attr_arrays(
-        self, func: Callable[[npt.NDArray[_T]], npt.NDArray[_T]]
+        self, func: Callable[[npt.NDArray[_T_np]], npt.NDArray[_T_np]]
     ) -> Self:
         # TODO: OpenGLMobject.get_array_attrs() doesn't even exist!
         for attr in self.get_array_attrs():
@@ -1189,14 +1200,14 @@ class OpenGLMobject:
                 raise ValueError(f"{name}_alignments has a mismatching size.")
             return [mapping[letter] for letter in str_alignments]
 
-        row_alignments = init_alignments(
+        row_alignments: Sequence[Vector3D] = init_alignments(
             row_alignments,
             rows,
             {"u": UP, "c": ORIGIN, "d": DOWN},
             "row",
             RIGHT,
         )
-        col_alignments = init_alignments(
+        col_alignments: Sequence[Vector3D] = init_alignments(
             col_alignments,
             cols,
             {"l": LEFT, "c": ORIGIN, "r": RIGHT},
@@ -1205,7 +1216,7 @@ class OpenGLMobject:
         )
         # Now row_alignment[r] + col_alignment[c] is the alignment in cell [r][c]
 
-        mapper = {
+        mapper: dict[str, Callable[[int, int], int]] = {
             "dr": lambda r, c: (rows - r - 1) + c * rows,
             "dl": lambda r, c: (rows - r - 1) + (cols - c - 1) * rows,
             "ur": lambda r, c: r + c * rows,
@@ -1216,14 +1227,21 @@ class OpenGLMobject:
             "lu": lambda r, c: r * cols + (cols - c - 1),
         }
         if flow_order not in mapper:
+            valid_flow_orders = ",".join([f'"{key}"' for key in mapper])
             raise ValueError(
-                'flow_order must be one of the following values: "dr", "rd", "ld" "dl", "ru", "ur", "lu", "ul".',
+                f"flow_order must be one of the following values: {valid_flow_orders}.",
             )
-        flow_order = mapper[flow_order]
+        flow_order: Callable[[int, int], int] = mapper[flow_order]
 
         # Reverse row_alignments and row_heights. Necessary since the
         # grid filling is handled bottom up for simplicity reasons.
-        def reverse(maybe_list: Sequence[Any] | None) -> Sequence[Any] | None:
+        @overload
+        def reverse(maybe_list: None, /) -> None: ...
+        @overload
+        def reverse(maybe_list: Sequence[_T], /) -> Sequence[_T]: ...
+        @overload
+        def reverse(maybe_list: Sequence[_T] | None, /) -> Sequence[_T] | None: ...
+        def reverse(maybe_list: Sequence[_T] | None, /) -> Sequence[_T] | None:
             if maybe_list is not None:
                 maybe_list = list(maybe_list)
                 maybe_list.reverse()
@@ -1260,7 +1278,8 @@ class OpenGLMobject:
             if len(sizes) != num:
                 raise ValueError(f"{name} has a mismatching size.")
             return [
-                sizes[i] if sizes[i] is not None else measures[i] for i in range(num)
+                size if (size := sizes[i]) is not None else measures[i]
+                for i in range(num)
             ]
 
         heights = init_sizes(row_heights, rows, measured_heigths, "row_heights")
@@ -1629,7 +1648,9 @@ class OpenGLMobject:
         )
         return self
 
-    def stretch(self, factor: float, dim: int, **kwargs) -> Self:
+    def stretch(
+        self, factor: float, dim: int, **kwargs: Unpack[_StretchKwargs]
+    ) -> Self:
         def func(points: Point3D_Array) -> Point3D_Array:
             points[:, dim] *= factor
             return points
@@ -1894,7 +1915,7 @@ class OpenGLMobject:
         return self.stretch(factor, dim, about_point=point)
 
     def rescale_to_fit(
-        self, length: float, dim: int, stretch: bool = False, **kwargs
+        self, length: float, dim: int, stretch: bool = False, **kwargs: Any
     ) -> Self:
         old_length = self.length_over_dim(dim)
         if old_length == 0:
@@ -2848,7 +2869,7 @@ class OpenGLMobject:
                 result.append(shader_wrapper)
         return result
 
-    def check_data_alignment(self, array: npt.NDArray, data_key: str) -> Self:
+    def check_data_alignment(self, array: _ShaderData, data_key: str) -> Self:
         # Makes sure that self.data[key] can be broadcast into
         # the given array, meaning its length has to be either 1
         # or the length of the array
@@ -2860,7 +2881,7 @@ class OpenGLMobject:
             )
         return self
 
-    def get_resized_shader_data_array(self, length: float) -> npt.NDArray:
+    def get_resized_shader_data_array(self, length: float) -> _ShaderData:
         # If possible, try to populate an existing array, rather
         # than recreating it each frame
         points = self.points
@@ -2869,7 +2890,7 @@ class OpenGLMobject:
 
     def read_data_to_shader(
         self,
-        shader_data: npt.NDArray,  # has structured data type, ex. ("point", np.float32, (3,))
+        shader_data: _ShaderData,  # has structured data type, ex. ("point", np.float32, (3,))
         shader_data_key: str,
         data_key: str,
     ) -> None:
@@ -2878,26 +2899,26 @@ class OpenGLMobject:
         self.check_data_alignment(shader_data, data_key)
         shader_data[shader_data_key] = self.data[data_key]
 
-    def get_shader_data(self) -> npt.NDArray:
+    def get_shader_data(self, /) -> _ShaderData:
         shader_data = self.get_resized_shader_data_array(self.get_num_points())
         self.read_data_to_shader(shader_data, "point", "points")
         return shader_data
 
-    def refresh_shader_data(self) -> None:
+    def refresh_shader_data(self, /) -> None:
         self.get_shader_data()
 
-    def get_shader_uniforms(self) -> dict[str, Any]:
+    def get_shader_uniforms(self, /) -> dict[str, Any]:
         return self.uniforms
 
-    def get_shader_vert_indices(self) -> Sequence[int]:
+    def get_shader_vert_indices(self, /) -> Sequence[int]:
         return self.shader_indices
 
     @property
-    def submobjects(self, /) -> Sequence[OpenGLMobject]:
+    def submobjects(self, /) -> list[OpenGLMobject]:
         return self._submobjects if hasattr(self, "_submobjects") else []
 
     @submobjects.setter
-    def submobjects(self, submobject_list: Iterable[OpenGLMobject]) -> None:
+    def submobjects(self, submobject_list: Iterable[OpenGLMobject], /) -> None:
         self.remove(*self.submobjects)
         self.add(*submobject_list)
 
