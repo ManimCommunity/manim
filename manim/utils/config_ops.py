@@ -10,7 +10,8 @@ __all__ = [
 
 
 import itertools as it
-from typing import Any
+from collections.abc import MutableMapping
+from typing import Any, Generic, Protocol, TypeVar, cast
 
 import numpy.typing as npt
 
@@ -51,19 +52,26 @@ class DictAsObject:
         self.__dict__ = dictin
 
 
-class _Data:
+_Data_T = TypeVar("_Data_T", bound="npt.NDArray[Any]", default="npt.NDArray[Any]")
+
+
+class _HasData(Protocol):
+    data: MutableMapping[str, npt.NDArray[Any]]
+
+
+class _Data(Generic[_Data_T]):
     """Descriptor that allows _Data variables to be grouped and accessed from self.data["attr"] via self.attr.
     self.data attributes must be arrays.
     """
 
-    def __set_name__(self, obj: Any, name: str) -> None:
-        self.name = name
+    def __set_name__(self, obj: _HasData, name: str) -> None:
+        self.name: str = name
 
-    def __get__(self, obj: Any, owner: Any) -> npt.NDArray[Any]:
-        value: npt.NDArray[Any] = obj.data[self.name]
+    def __get__(self, obj: _HasData, owner: Any) -> _Data_T:
+        value = cast(_Data_T, obj.data[self.name])
         return value
 
-    def __set__(self, obj: Any, array: npt.NDArray[Any]) -> None:
+    def __set__(self, obj: _HasData, array: _Data_T) -> None:
         obj.data[self.name] = array
 
 
