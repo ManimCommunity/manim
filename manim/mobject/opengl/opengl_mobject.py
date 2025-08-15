@@ -1246,13 +1246,16 @@ class OpenGLMobject:
 
         # Reverse row_alignments and row_heights. Necessary since the
         # grid filling is handled bottom up for simplicity reasons.
-        @overload
-        def reverse(maybe_list: None, /) -> None: ...
-        @overload
-        def reverse(maybe_list: Sequence[_T], /) -> Sequence[_T]: ...
-        @overload
-        def reverse(maybe_list: Sequence[_T] | None, /) -> Sequence[_T] | None: ...
-        def reverse(maybe_list: Sequence[_T] | None, /) -> Sequence[_T] | None:
+        if TYPE_CHECKING:
+
+            @overload
+            def reverse(maybe_list: None, /) -> None: ...
+            @overload
+            def reverse(maybe_list: Sequence[_T], /) -> list[_T]: ...
+            @overload
+            def reverse(maybe_list: Sequence[_T] | None, /) -> list[_T] | None: ...
+
+        def reverse(maybe_list: Sequence[_T] | None, /) -> list[_T] | None:
             if maybe_list is not None:
                 maybe_list = list(maybe_list)
                 maybe_list.reverse()
