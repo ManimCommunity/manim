@@ -9,11 +9,11 @@ import types
 from collections.abc import Callable, Iterable, Iterator, Sequence
 from functools import partialmethod, wraps
 from math import ceil
-from typing import TYPE_CHECKING, Any, Never, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
 
 import moderngl
 import numpy as np
-from typing_extensions import override
+from typing_extensions import Never, override
 
 from manim import config, logger
 from manim.constants import *
