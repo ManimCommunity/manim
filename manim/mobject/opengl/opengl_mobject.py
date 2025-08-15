@@ -1474,7 +1474,7 @@ class OpenGLMobject:
 
     def restore(self) -> Self:
         """Restores the state that was previously saved with :meth:`~.OpenGLMobject.save_state`."""
-        if not hasattr(self, "saved_state") or self.save_state is None:
+        if not hasattr(self, "saved_state") or self.saved_state is None:
             raise Exception("Trying to restore without having saved")
         self.become(self.saved_state)
         return self
