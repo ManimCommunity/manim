@@ -68,9 +68,9 @@ if TYPE_CHECKING:
         Vector3DLike,
     )
 
-    TimeBasedUpdater: TypeAlias = Callable[["Mobject", float], object]
-    NonTimeBasedUpdater: TypeAlias = Callable[["Mobject"], object]
-    Updater: TypeAlias = NonTimeBasedUpdater | TimeBasedUpdater
+    _TimeBasedUpdater: TypeAlias = Callable[["OpenGLMobject", float], object]
+    _NonTimeBasedUpdater: TypeAlias = Callable[["OpenGLMobject"], object]
+    _Updater: TypeAlias = _NonTimeBasedUpdater | _TimeBasedUpdater
 
     T = TypeVar("T")
 
@@ -117,15 +117,15 @@ class OpenGLMobject:
     bounding_box = _Data()
     rgbas = _Data()
 
-    is_fixed_in_frame = _Uniforms()
-    is_fixed_orientation = _Uniforms()
-    fixed_orientation_center = _Uniforms()  # for fixed orientation reference
-    gloss = _Uniforms()
-    shadow = _Uniforms()
+    is_fixed_in_frame: _Uniforms = _Uniforms()
+    is_fixed_orientation: _Uniforms = _Uniforms()
+    fixed_orientation_center: _Uniforms = _Uniforms()  # for fixed orientation reference
+    gloss: _Uniforms = _Uniforms()
+    shadow: _Uniforms = _Uniforms()
 
     def __init__(
         self,
-        color: ParsableManimColor | Iterable[ParsableManimColor] = WHITE,
+        color: ParsableManimColor | Sequence[ParsableManimColor] = WHITE,
         opacity: float = 1,
         dim: int = 3,  # TODO, get rid of this
         # Lighting parameters
@@ -146,40 +146,40 @@ class OpenGLMobject:
         model_matrix: MatrixMN | None = None,
         should_render: bool = True,
         name: str | None = None,
-        **kwargs,
+        **kwargs: dict[str, object],
     ):
-        self.name = self.__class__.__name__ if name is None else name
+        self.name: str = self.__class__.__name__ if name is None else name
         # getattr in case data/uniforms are already defined in parent classes.
         self.data = getattr(self, "data", {})
         self.uniforms = getattr(self, "uniforms", {})
 
-        self.opacity = opacity
-        self.dim = dim  # TODO, get rid of this
+        self.opacity: float = opacity
+        self.dim: int = dim  # TODO, get rid of this
         # Lighting parameters
         # Positive gloss up to 1 makes it reflect the light.
         self.gloss = gloss
         # Positive shadow up to 1 makes a side opposite the light darker
         self.shadow = shadow
         # For shaders
-        self.render_primitive = render_primitive
-        self.texture_paths = texture_paths
-        self.depth_test = depth_test
+        self.render_primitive: int = render_primitive
+        self.texture_paths: dict[str, str] | None = texture_paths
+        self.depth_test: bool = depth_test
         # If true, the mobject will not get rotated according to camera position
         self.is_fixed_in_frame = float(is_fixed_in_frame)
         self.is_fixed_orientation = float(is_fixed_orientation)
         self.fixed_orientation_center = (0, 0, 0)
         # Must match in attributes of vert shader
         # Event listener
-        self.listen_to_events = listen_to_events
+        self.listen_to_events: bool = listen_to_events
 
         self._submobjects = []
         self.parents = []
         self.parent = None
-        self.family = [self]
-        self.locked_data_keys = set()
-        self.needs_new_bounding_box = True
+        self.family: list[OpenGLMobject] = [self]
+        self.locked_data_keys: set[str] = set()
+        self.needs_new_bounding_box: bool = True
         if model_matrix is None:
-            self.model_matrix = np.eye(4)
+            self.model_matrix: MatrixMN = np.eye(4)
         else:
             self.model_matrix = model_matrix
 
@@ -187,7 +187,7 @@ class OpenGLMobject:
         self.init_updaters()
         # self.init_event_listners()
         self.init_points()
-        self.color = ManimColor.parse(color)
+        self.color: ManimColor | list[ManimColor] = ManimColor.parse(color)
         self.init_colors()
 
         self.shader_indices = None
@@ -195,7 +195,7 @@ class OpenGLMobject:
         if self.depth_test:
             self.apply_depth_test()
 
-        self.should_render = should_render
+        self.should_render: bool = should_render
 
     def _assert_valid_submobjects(self, submobjects: Iterable[OpenGLMobject]) -> Self:
         """Check that all submobjects are actually instances of
@@ -1477,21 +1477,21 @@ class OpenGLMobject:
                 submob.update(dt, recurse)
         return self
 
-    def get_time_based_updaters(self) -> Sequence[TimeBasedUpdater]:
+    def get_time_based_updaters(self) -> Sequence[_TimeBasedUpdater]:
         return self.time_based_updaters
 
     def has_time_based_updater(self) -> bool:
         return len(self.time_based_updaters) > 0
 
-    def get_updaters(self) -> Sequence[Updater]:
+    def get_updaters(self) -> Sequence[_Updater]:
         return self.time_based_updaters + self.non_time_updaters
 
-    def get_family_updaters(self) -> Sequence[Updater]:
+    def get_family_updaters(self) -> Sequence[_Updater]:
         return list(it.chain(*(sm.get_updaters() for sm in self.get_family())))
 
     def add_updater(
         self,
-        update_function: Updater,
+        update_function: _Updater,
         index: int | None = None,
         call_updater: bool = False,
     ) -> Self:
@@ -1510,7 +1510,7 @@ class OpenGLMobject:
             self.update()
         return self
 
-    def remove_updater(self, update_function: Updater) -> Self:
+    def remove_updater(self, update_function: _Updater) -> Self:
         for updater_list in [self.time_based_updaters, self.non_time_updaters]:
             while update_function in updater_list:
                 updater_list.remove(update_function)
@@ -2146,7 +2146,7 @@ class OpenGLMobject:
         # Recurse to submobjects differently from how set_rgba_array
         # in case they implement set_color differently
         if color is not None:
-            self.color: ManimColor = ManimColor.parse(color)
+            self.color = ManimColor.parse(color)
         if opacity is not None:
             self.opacity = opacity
         if recurse:
