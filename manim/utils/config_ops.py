@@ -11,9 +11,10 @@ __all__ = [
 
 import itertools as it
 from collections.abc import MutableMapping
-from typing import Any, Generic, Protocol, TypeVar, cast
+from typing import Any, Generic, Protocol, cast
 
 import numpy.typing as npt
+from typing_extensions import TypeVar
 
 
 def merge_dicts_recursively(*dicts: dict[Any, Any]) -> dict[Any, Any]:
