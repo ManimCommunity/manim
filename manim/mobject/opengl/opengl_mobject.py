@@ -9,7 +9,7 @@ import types
 from collections.abc import Callable, Iterable, Iterator, Sequence
 from functools import partialmethod, wraps
 from math import ceil
-from typing import TYPE_CHECKING, Any, ClassVar, Protocol, TypeVar
+from typing import TYPE_CHECKING, Any, ClassVar, Protocol, TypeVar, cast
 
 import moderngl
 import numpy as np
@@ -58,7 +58,7 @@ from manim.utils.space_ops import (
 )
 
 if TYPE_CHECKING:
-    from manim.animation.transform import _MethodAnimation
+    from manim.animation.animation import Animation
     from manim.renderer.shader_wrapper import ShaderWrapper
     from manim.typing import (
         FloatRGB_Array,
@@ -2983,43 +2983,45 @@ class OpenGLPoint(OpenGLMobject):
         location: Point3DLike = ORIGIN,
         artificial_width: float = 1e-6,
         artificial_height: float = 1e-6,
-        **kwargs,
-    ):
-        self.artificial_width = artificial_width
-        self.artificial_height = artificial_height
+        **kwargs: Any,  # TODO: Annotate kwargs
+    ) -> None:
+        self.artificial_width: float = artificial_width
+        self.artificial_height: float = artificial_height
         super().__init__(**kwargs)
         self.set_location(location)
 
+    @override
     def get_width(self) -> float:
         return self.artificial_width
 
+    @override
     def get_height(self) -> float:
         return self.artificial_height
 
     def get_location(self) -> Point3D:
-        return self.points[0].copy()
+        return cast(Point3D, self.points[0]).copy()
 
-    def get_bounding_box_point(self, *args, **kwargs) -> Point3D:
+    def get_bounding_box_point(self, *args: object, **kwargs: object) -> Point3D:
         return self.get_location()
 
-    def set_location(self, new_loc: Point3D) -> None:
+    def set_location(self, new_loc: Point3DLike) -> None:
         self.set_points(np.array(new_loc, ndmin=2, dtype=float))
 
 
 class _AnimationBuilder:
-    def __init__(self, mobject: OpenGLMobject):
-        self.mobject = mobject
+    def __init__(self, mobject: OpenGLMobject) -> None:
+        self.mobject: OpenGLMobject = mobject
         self.mobject.generate_target()
 
-        self.overridden_animation = None
-        self.is_chaining = False
+        self.overridden_animation: Animation | None = None
+        self.is_chaining: bool = False
         self.methods: list[MethodWithArgs] = []
 
         # Whether animation args can be passed
-        self.cannot_pass_args = False
-        self.anim_args = {}
+        self.cannot_pass_args: bool = False
+        self.anim_args: dict[str, object] = {}
 
-    def __call__(self, **kwargs) -> Self:
+    def __call__(self, **kwargs: object) -> Self:
         if self.cannot_pass_args:
             raise ValueError(
                 "Animation arguments must be passed before accessing methods and can only be passed once",
@@ -3030,7 +3032,7 @@ class _AnimationBuilder:
 
         return self
 
-    def __getattr__(self, method_name: str) -> Callable[..., Self]:
+    def __getattr__(self, method_name: str, /) -> Callable[..., Self]:
         method = getattr(self.mobject.target, method_name)
         has_overridden_animation = hasattr(method, "_override_animate")
 
@@ -3039,9 +3041,11 @@ class _AnimationBuilder:
                 "Method chaining is currently not supported for overridden animations",
             )
 
-        def update_target(*method_args, **method_kwargs):
+        def update_target(*method_args: object, **method_kwargs: object) -> Self:  # type: ignore[type-var]
             if has_overridden_animation:
-                self.overridden_animation = method._override_animate(
+                self.overridden_animation = cast(
+                    "Callable[..., Animation]", method._override_animate
+                )(
                     self.mobject,
                     *method_args,
                     anim_args=self.anim_args,
@@ -3057,7 +3061,7 @@ class _AnimationBuilder:
 
         return update_target
 
-    def build(self) -> "_MethodAnimation":  # noqa: UP037
+    def build(self) -> "Animation":  # noqa: UP037
         from manim.animation.transform import _MethodAnimation
 
         anim = self.overridden_animation or _MethodAnimation(self.mobject, self.methods)
@@ -3068,19 +3072,14 @@ class _AnimationBuilder:
         return anim
 
 
-_Decorated = TypeVar(
-    "_Decorated",
-    bound=types.FunctionType,  # TODO: Is this bound strict enough?
-)
+_Decorated = TypeVar("_Decorated", bound=Callable[..., "Animation"])
 
 
 class _OverrideAnimateDecorator(Protocol):
     def __call__(self, decorated: _Decorated, /) -> _Decorated: ...
 
 
-def override_animate(
-    method: types.FunctionType,
-) -> _OverrideAnimateDecorator:  # TODO: Is `method` strict enough?
+def override_animate(method: types.FunctionType) -> _OverrideAnimateDecorator:
     r"""Decorator for overriding method animations.
 
     This allows to specify a method (returning an :class:`~.Animation`)
