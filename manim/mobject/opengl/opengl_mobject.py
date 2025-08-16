@@ -2522,6 +2522,7 @@ class OpenGLMobject:
         horizontally so that it's center is directly above/below
         the center of mob2
         """
+        point: Point3DLike
         if isinstance(mobject_or_point, OpenGLMobject):
             point = mobject_or_point.get_bounding_box_point(direction)
         else:
@@ -2836,7 +2837,7 @@ class OpenGLMobject:
         # that it does not simpler return shader_wrappers of
         # family?
         for wrapper in self.get_shader_wrapper_list():
-            wrapper.replace_code(old_code, new_code)
+            wrapper.replace_code(old_code, new_code)  # type: ignore[no-untyped-call]
         return self
 
     def set_color_by_code(self, glsl_code: str) -> Self:
@@ -2874,16 +2875,16 @@ class OpenGLMobject:
     # For shader data
 
     def refresh_shader_wrapper_id(self) -> Self:
-        self.get_shader_wrapper().refresh_id()
+        self.get_shader_wrapper().refresh_id()  # type: ignore[no-untyped-call]
         return self
 
     def get_shader_wrapper(self) -> "ShaderWrapper":  # noqa: UP037
         from manim.renderer.shader_wrapper import ShaderWrapper
 
-        # if hasattr(self, "__shader_wrapper"):
-        # return self.__shader_wrapper
+        # if hasattr(self, "shader_wrapper"):
+        #     return self.shader_wrapper
 
-        self.shader_wrapper: ShaderWrapper = ShaderWrapper(
+        self.shader_wrapper: ShaderWrapper = ShaderWrapper(  # type: ignore[no-untyped-call]
             vert_data=self.get_shader_data(),
             vert_indices=self.get_shader_vert_indices(),
             uniforms=self.get_shader_uniforms(),
@@ -2899,14 +2900,14 @@ class OpenGLMobject:
             [self.get_shader_wrapper()],
             *(sm.get_shader_wrapper_list() for sm in self.submobjects),
         )
-        batches = batch_by_property(shader_wrappers, lambda sw: sw.get_id())
+        batches = batch_by_property(shader_wrappers, lambda sw: sw.get_id())  # type: ignore[no-untyped-call]
 
         result = []
         for wrapper_group, _ in batches:
             shader_wrapper = wrapper_group[0]
-            if not shader_wrapper.is_valid():
+            if not shader_wrapper.is_valid():  # type: ignore[no-untyped-call]
                 continue
-            shader_wrapper.combine_with(*wrapper_group[1:])
+            shader_wrapper.combine_with(*wrapper_group[1:])  # type: ignore[no-untyped-call]
             if len(shader_wrapper.vert_data) > 0:
                 result.append(shader_wrapper)
         return result
