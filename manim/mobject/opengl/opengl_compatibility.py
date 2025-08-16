@@ -1,20 +1,16 @@
 from __future__ import annotations
 
 from abc import ABCMeta
-from typing import TypeVar
 
 from manim import config
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.opengl.opengl_point_cloud_mobject import OpenGLPMobject
-from manim.mobject.opengl.opengl_surface import OpenGLSurface
+from manim.mobject.opengl.opengl_three_dimensions import OpenGLSurface
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 
 from ...constants import RendererType
 
 __all__ = ["ConvertToOpenGL"]
-
-
-_Class = TypeVar("_Class", bound=type)
 
 
 class ConvertToOpenGL(ABCMeta):
@@ -23,11 +19,9 @@ class ConvertToOpenGL(ABCMeta):
     on the lowest order inheritance classes such as Mobject and VMobject.
     """
 
-    _converted_classes: list[ConvertToOpenGL] = []
+    _converted_classes = []
 
-    def __new__(
-        mcls: _Class, name: str, bases: tuple[type, ...], namespace: dict[str, object]
-    ) -> _Class:  # this would ideally be something like `_Type & OpenGLMobject`, but we don't have intersections yet
+    def __new__(mcls, name, bases, namespace):
         if config.renderer == RendererType.OPENGL:
             # Must check class names to prevent
             # cyclic importing.
@@ -46,8 +40,6 @@ class ConvertToOpenGL(ABCMeta):
 
         return super().__new__(mcls, name, bases, namespace)
 
-    def __init__(
-        cls, name: str, bases: tuple[type, ...], namespace: dict[str, object]
-    ) -> None:
+    def __init__(cls, name, bases, namespace):
         super().__init__(name, bases, namespace)
         cls._converted_classes.append(cls)
