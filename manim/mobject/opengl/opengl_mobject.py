@@ -9,7 +9,7 @@ import types
 from collections.abc import Callable, Iterable, Iterator, Sequence
 from functools import partialmethod, wraps
 from math import ceil
-from typing import TYPE_CHECKING, Any, TypeVar
+from typing import TYPE_CHECKING, Any, ClassVar, TypeVar
 
 import moderngl
 import numpy as np
@@ -142,6 +142,8 @@ class OpenGLMobject:
 
     """
 
+    _original__init__: ClassVar[Callable[..., None]]
+
     shader_dtype = [
         ("point", np.float32, (3,)),
     ]
@@ -208,8 +210,8 @@ class OpenGLMobject:
         self.listen_to_events: bool = listen_to_events
 
         self._submobjects: list[OpenGLMobject] = []
-        self.parents = []
-        self.parent = None
+        self.parents: list[OpenGLMobject] = []
+        self.parent: OpenGLMobject | None = None
         self.family: list[OpenGLMobject] = [self]
         self.locked_data_keys: set[str] = set()
         self.needs_new_bounding_box: bool = True
@@ -293,7 +295,7 @@ class OpenGLMobject:
     @classmethod
     def __init_subclass__(cls, **kwargs: object) -> None:
         super().__init_subclass__(**kwargs)
-        cls._original__init__: Callable[..., None] = cls.__init__
+        cls._original__init__ = cls.__init__
 
     @override
     def __str__(self) -> str:
@@ -303,16 +305,16 @@ class OpenGLMobject:
     def __repr__(self) -> str:
         return str(self.name)
 
-    def __sub__(self, other: Never):
+    def __sub__(self, other: Never) -> object:
         return NotImplemented
 
-    def __isub__(self, other: Never):
+    def __isub__(self, other: Never) -> object:
         return NotImplemented
 
-    def __add__(self, mobject: Never):
+    def __add__(self, mobject: Never) -> object:
         return NotImplemented
 
-    def __iadd__(self, mobject: Never):
+    def __iadd__(self, mobject: Never) -> object:
         return NotImplemented
 
     @classmethod
@@ -371,7 +373,7 @@ class OpenGLMobject:
         self.bounding_box = np.zeros((3, 3))
         self.rgbas = np.zeros((1, 4))
 
-    def init_colors(self) -> object:
+    def init_colors(self) -> None:
         """Initializes the colors.
 
         Gets called upon creation
@@ -636,10 +638,12 @@ class OpenGLMobject:
     def apply_over_attr_arrays(
         self, func: Callable[[npt.NDArray[_T_np]], npt.NDArray[_T_np]]
     ) -> Self:
-        # TODO: OpenGLMobject.get_array_attrs() doesn't even exist!
         for attr in self.get_array_attrs():
             setattr(self, attr, func(getattr(self, attr)))
         return self
+
+    def get_array_attrs(self, /) -> Iterable[str]:
+        return ["points"]
 
     def append_points(self, new_points: Point3DLike_Array) -> Self:
         self.points = np.vstack([self.points, new_points])
