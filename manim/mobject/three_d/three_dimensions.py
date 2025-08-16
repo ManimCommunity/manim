@@ -2,9 +2,6 @@
 
 from __future__ import annotations
 
-from manim.typing import Point3DLike, Vector3D
-from manim.utils.color import BLUE, BLUE_D, BLUE_E, LIGHT_GREY, WHITE, interpolate_color
-
 __all__ = [
     "ThreeDVMobject",
     "Surface",
@@ -19,8 +16,8 @@ __all__ = [
     "Torus",
 ]
 
-from collections.abc import Iterable, Sequence
-from typing import Any, Callable
+from collections.abc import Callable, Iterable, Sequence
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 from typing_extensions import Self
@@ -34,11 +31,20 @@ from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.types.vectorized_mobject import VectorizedPoint, VGroup, VMobject
 from manim.utils.color import (
+    BLUE,
+    BLUE_D,
+    BLUE_E,
+    LIGHT_GREY,
+    WHITE,
     ManimColor,
     ParsableManimColor,
+    interpolate_color,
 )
 from manim.utils.iterables import tuplify
 from manim.utils.space_ops import normalize, perpendicular_bisector, z_to_vector
+
+if TYPE_CHECKING:
+    from manim.typing import Point3D, Point3DLike, Vector3DLike
 
 
 class ThreeDVMobject(VMobject, metaclass=ConvertToOpenGL):
@@ -116,19 +122,21 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
     ) -> None:
         self.u_range = u_range
         self.v_range = v_range
-        super().__init__(**kwargs)
+        super().__init__(
+            fill_color=fill_color,
+            fill_opacity=fill_opacity,
+            stroke_color=stroke_color,
+            stroke_width=stroke_width,
+            **kwargs,
+        )
         self.resolution = resolution
         self.surface_piece_config = surface_piece_config
-        self.fill_color: ManimColor = ManimColor(fill_color)
-        self.fill_opacity = fill_opacity
         if checkerboard_colors:
             self.checkerboard_colors: list[ManimColor] = [
                 ManimColor(x) for x in checkerboard_colors
             ]
         else:
             self.checkerboard_colors = checkerboard_colors
-        self.stroke_color: ManimColor = ManimColor(stroke_color)
-        self.stroke_width = stroke_width
         self.should_make_jagged = should_make_jagged
         self.pre_function_handle_to_anchor_scale_factor = (
             pre_function_handle_to_anchor_scale_factor
@@ -510,6 +518,7 @@ class Cube(VGroup):
             face = Square(
                 side_length=self.side_length,
                 shade_in_3d=True,
+                joint_type=LineJointType.BEVEL,
             )
             face.flip()
             face.shift(self.side_length * OUT / 2.0)
@@ -517,7 +526,8 @@ class Cube(VGroup):
 
             self.add(face)
 
-    init_points = generate_points
+    def init_points(self) -> None:
+        self.generate_points()
 
 
 class Prism(Cube):
@@ -967,8 +977,8 @@ class Line3D(Cylinder):
     def pointify(
         self,
         mob_or_point: Mobject | Point3DLike,
-        direction: Vector3D = None,
-    ) -> np.ndarray:
+        direction: Vector3DLike | None = None,
+    ) -> Point3D:
         """Gets a point representing the center of the :class:`Mobjects <.Mobject>`.
 
         Parameters
@@ -1015,7 +1025,7 @@ class Line3D(Cylinder):
     def parallel_to(
         cls,
         line: Line3D,
-        point: Vector3D = ORIGIN,
+        point: Point3DLike = ORIGIN,
         length: float = 5,
         **kwargs,
     ) -> Line3D:
@@ -1051,11 +1061,11 @@ class Line3D(Cylinder):
                     line2 = Line3D.parallel_to(line1, color=YELLOW)
                     self.add(ax, line1, line2)
         """
-        point = np.array(point)
+        np_point = np.asarray(point)
         vect = normalize(line.vect)
         return cls(
-            point + vect * length / 2,
-            point - vect * length / 2,
+            np_point + vect * length / 2,
+            np_point - vect * length / 2,
             **kwargs,
         )
 
@@ -1063,7 +1073,7 @@ class Line3D(Cylinder):
     def perpendicular_to(
         cls,
         line: Line3D,
-        point: Vector3D = ORIGIN,
+        point: Vector3DLike = ORIGIN,
         length: float = 5,
         **kwargs,
     ) -> Line3D:
@@ -1099,17 +1109,17 @@ class Line3D(Cylinder):
                     line2 = Line3D.perpendicular_to(line1, color=BLUE)
                     self.add(ax, line1, line2)
         """
-        point = np.array(point)
+        np_point = np.asarray(point)
 
-        norm = np.cross(line.vect, point - line.start)
+        norm = np.cross(line.vect, np_point - line.start)
         if all(np.linalg.norm(norm) == np.zeros(3)):
             raise ValueError("Could not find the perpendicular.")
 
         start, end = perpendicular_bisector([line.start, line.end], norm)
         vect = normalize(end - start)
         return cls(
-            point + vect * length / 2,
-            point - vect * length / 2,
+            np_point + vect * length / 2,
+            np_point - vect * length / 2,
             **kwargs,
         )
 

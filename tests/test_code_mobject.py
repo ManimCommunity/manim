@@ -1,3 +1,5 @@
+import numpy as np
+
 from manim.mobject.text.code_mobject import Code
 from manim.utils.color.core import ManimColor
 
@@ -29,3 +31,17 @@ def test_code_initialization_from_file():
     )
     assert len(rendered_code.code_lines) == len(rendered_code.line_numbers)
     assert rendered_code.background.fill_color == ManimColor("#101010")
+
+
+def test_line_heights_initial_whitespace():
+    rendered_code = Code(
+        code_string="""print('Hello, World!')
+for _ in range(42):
+    print('Hello, World!')
+""",
+        language="python",
+    )
+    np.testing.assert_almost_equal(
+        rendered_code.code_lines[0].height,
+        rendered_code.code_lines[2].height,
+    )

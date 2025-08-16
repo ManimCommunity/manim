@@ -14,13 +14,14 @@ import random
 import sys
 import types
 import warnings
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from functools import partialmethod, reduce
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Literal
 
 import numpy as np
 
+from manim.data_structures import MethodWithArgs
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 
 from .. import config, logger
@@ -40,8 +41,6 @@ from ..utils.paths import straight_path
 from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
 
 if TYPE_CHECKING:
-    from typing import Any, Callable, Literal
-
     from typing_extensions import Self, TypeAlias
 
     from manim.typing import (
@@ -53,7 +52,7 @@ if TYPE_CHECKING:
         Point3D,
         Point3DLike,
         Point3DLike_Array,
-        Vector3D,
+        Vector3DLike,
     )
 
     from ..animation.animation import Animation
@@ -387,9 +386,9 @@ class Mobject:
              will interpolate the :class:`~.Mobject` between its points prior to
              ``.animate`` and its points after applying ``.animate`` to it. This may
              result in unexpected behavior when attempting to interpolate along paths,
-             or rotations.
+             or rotations (see :meth:`.rotate`).
              If you want animations to consider the points between, consider using
-             :class:`~.ValueTracker` with updaters instead.
+             :class:`~.ValueTracker` with updaters instead (see :meth:`.add_updater`).
 
         """
         return _AnimationBuilder(self)
@@ -1002,16 +1001,16 @@ class Mobject:
 
             class NextToUpdater(Scene):
                 def construct(self):
-                    def dot_position(mobject):
+                    def update_label(mobject):
                         mobject.set_value(dot.get_center()[0])
                         mobject.next_to(dot)
 
                     dot = Dot(RIGHT*3)
                     label = DecimalNumber()
-                    label.add_updater(dot_position)
+                    label.add_updater(update_label)
                     self.add(dot, label)
 
-                    self.play(Rotating(dot, about_point=ORIGIN, angle=TAU, run_time=TAU, rate_func=linear))
+                    self.play(Rotating(dot, angle=TAU, about_point=ORIGIN, run_time=TAU, rate_func=linear))
 
         .. manim:: DtUpdater
 
@@ -1029,6 +1028,9 @@ class Mobject:
         :meth:`get_updaters`
         :meth:`remove_updater`
         :class:`~.UpdateFromFunc`
+        :class:`~.Rotating`
+        :meth:`rotate`
+        :attr:`~.Mobject.animate`
         """
         if index is None:
             self.updaters.append(update_function)
@@ -1200,7 +1202,7 @@ class Mobject:
         for mob in self.family_members_with_points():
             func(mob)
 
-    def shift(self, *vectors: Vector3D) -> Self:
+    def shift(self, *vectors: Vector3DLike) -> Self:
         """Shift by the given vectors.
 
         Parameters
@@ -1271,25 +1273,82 @@ class Mobject:
         )
         return self
 
-    def rotate_about_origin(self, angle: float, axis: Vector3D = OUT, axes=[]) -> Self:
+    def rotate_about_origin(self, angle: float, axis: Vector3DLike = OUT) -> Self:
         """Rotates the :class:`~.Mobject` about the ORIGIN, which is at [0,0,0]."""
         return self.rotate(angle, axis, about_point=ORIGIN)
 
     def rotate(
         self,
         angle: float,
-        axis: Vector3D = OUT,
+        axis: Vector3DLike = OUT,
         about_point: Point3DLike | None = None,
         **kwargs,
     ) -> Self:
-        """Rotates the :class:`~.Mobject` about a certain point."""
+        """Rotates the :class:`~.Mobject` around a specified axis and point.
+
+        Parameters
+        ----------
+        angle
+            The angle of rotation in radians. Predefined constants such as ``DEGREES``
+            can also be used to specify the angle in degrees.
+        axis
+            The rotation axis (see :class:`~.Rotating` for more).
+        about_point
+            The point about which the mobject rotates. If ``None``, rotation occurs around
+            the center of the mobject.
+        **kwargs
+            Additional keyword arguments passed to :meth:`apply_points_function_about_point`,
+            such as ``about_edge``.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self`` (for method chaining)
+
+
+        .. note::
+            To animate a rotation, use :class:`~.Rotating` or :class:`~.Rotate`
+            instead of ``.animate.rotate(...)``.
+            The ``.animate.rotate(...)`` syntax only applies a transformation
+            from the initial state to the final rotated state
+            (interpolation between the two states), without showing proper rotational motion
+            based on the angle (from 0 to the given angle).
+
+        Examples
+        --------
+
+        .. manim:: RotateMethodExample
+            :save_last_frame:
+
+            class RotateMethodExample(Scene):
+                def construct(self):
+                    circle = Circle(radius=1, color=BLUE)
+                    line = Line(start=ORIGIN, end=RIGHT)
+                    arrow1 = Arrow(start=ORIGIN, end=RIGHT, buff=0, color=GOLD)
+                    group1 = VGroup(circle, line, arrow1)
+
+                    group2 = group1.copy()
+                    arrow2 = group2[2]
+                    arrow2.rotate(angle=PI / 4, about_point=arrow2.get_start())
+
+                    group3 = group1.copy()
+                    arrow3 = group3[2]
+                    arrow3.rotate(angle=120 * DEGREES, about_point=arrow3.get_start())
+
+                    self.add(VGroup(group1, group2, group3).arrange(RIGHT, buff=1))
+
+        See also
+        --------
+        :class:`~.Rotating`, :class:`~.Rotate`, :attr:`~.Mobject.animate`, :meth:`apply_points_function_about_point`
+
+        """
         rot_matrix = rotation_matrix(angle, axis)
         self.apply_points_function_about_point(
             lambda points: np.dot(points, rot_matrix.T), about_point, **kwargs
         )
         return self
 
-    def flip(self, axis: Vector3D = UP, **kwargs) -> Self:
+    def flip(self, axis: Vector3DLike = UP, **kwargs) -> Self:
         """Flips/Mirrors an mobject about its center.
 
         Examples
@@ -1409,7 +1468,7 @@ class Mobject:
         self,
         func: MultiMappingFunction,
         about_point: Point3DLike | None = None,
-        about_edge: Vector3D | None = None,
+        about_edge: Vector3DLike | None = None,
     ) -> Self:
         if about_point is None:
             if about_edge is None:
@@ -1439,7 +1498,7 @@ class Mobject:
         return self
 
     def align_on_border(
-        self, direction: Vector3D, buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER
+        self, direction: Vector3DLike, buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER
     ) -> Self:
         """Direction just needs to be a vector pointing towards side or
         corner in the 2d plane.
@@ -1456,7 +1515,7 @@ class Mobject:
         return self
 
     def to_corner(
-        self, corner: Vector3D = DL, buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER
+        self, corner: Vector3DLike = DL, buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER
     ) -> Self:
         """Moves this :class:`~.Mobject` to the given corner of the screen.
 
@@ -1484,7 +1543,7 @@ class Mobject:
         return self.align_on_border(corner, buff)
 
     def to_edge(
-        self, edge: Vector3D = LEFT, buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER
+        self, edge: Vector3DLike = LEFT, buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER
     ) -> Self:
         """Moves this :class:`~.Mobject` to the given edge of the screen,
         without affecting its position in the other dimension.
@@ -1516,12 +1575,12 @@ class Mobject:
     def next_to(
         self,
         mobject_or_point: Mobject | Point3DLike,
-        direction: Vector3D = RIGHT,
+        direction: Vector3DLike = RIGHT,
         buff: float = DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
-        aligned_edge: Vector3D = ORIGIN,
+        aligned_edge: Vector3DLike = ORIGIN,
         submobject_to_align: Mobject | None = None,
         index_of_submobject_to_align: int | None = None,
-        coor_mask: Vector3D = np.array([1, 1, 1]),
+        coor_mask: Vector3DLike = np.array([1, 1, 1]),
     ) -> Self:
         """Move this :class:`~.Mobject` next to another's :class:`~.Mobject` or Point3D.
 
@@ -1543,13 +1602,18 @@ class Mobject:
                     self.add(d, c, s, t)
 
         """
+        np_direction = np.asarray(direction)
+        np_aligned_edge = np.asarray(aligned_edge)
+
         if isinstance(mobject_or_point, Mobject):
             mob = mobject_or_point
             if index_of_submobject_to_align is not None:
                 target_aligner = mob[index_of_submobject_to_align]
             else:
                 target_aligner = mob
-            target_point = target_aligner.get_critical_point(aligned_edge + direction)
+            target_point = target_aligner.get_critical_point(
+                np_aligned_edge + np_direction
+            )
         else:
             target_point = mobject_or_point
         if submobject_to_align is not None:
@@ -1558,8 +1622,8 @@ class Mobject:
             aligner = self[index_of_submobject_to_align]
         else:
             aligner = self
-        point_to_align = aligner.get_critical_point(aligned_edge - direction)
-        self.shift((target_point - point_to_align + buff * direction) * coor_mask)
+        point_to_align = aligner.get_critical_point(np_aligned_edge - np_direction)
+        self.shift((target_point - point_to_align + buff * np_direction) * coor_mask)
         return self
 
     def shift_onto_screen(self, **kwargs) -> Self:
@@ -1705,22 +1769,22 @@ class Mobject:
         """Stretches the :class:`~.Mobject` to fit a depth, not keeping width/height proportional."""
         return self.rescale_to_fit(depth, 2, stretch=True, **kwargs)
 
-    def set_coord(self, value, dim: int, direction: Vector3D = ORIGIN) -> Self:
+    def set_coord(self, value, dim: int, direction: Vector3DLike = ORIGIN) -> Self:
         curr = self.get_coord(dim, direction)
         shift_vect = np.zeros(self.dim)
         shift_vect[dim] = value - curr
         self.shift(shift_vect)
         return self
 
-    def set_x(self, x: float, direction: Vector3D = ORIGIN) -> Self:
+    def set_x(self, x: float, direction: Vector3DLike = ORIGIN) -> Self:
         """Set x value of the center of the :class:`~.Mobject` (``int`` or ``float``)"""
         return self.set_coord(x, 0, direction)
 
-    def set_y(self, y: float, direction: Vector3D = ORIGIN) -> Self:
+    def set_y(self, y: float, direction: Vector3DLike = ORIGIN) -> Self:
         """Set y value of the center of the :class:`~.Mobject` (``int`` or ``float``)"""
         return self.set_coord(y, 1, direction)
 
-    def set_z(self, z: float, direction: Vector3D = ORIGIN) -> Self:
+    def set_z(self, z: float, direction: Vector3DLike = ORIGIN) -> Self:
         """Set z value of the center of the :class:`~.Mobject` (``int`` or ``float``)"""
         return self.set_coord(z, 2, direction)
 
@@ -1733,8 +1797,8 @@ class Mobject:
     def move_to(
         self,
         point_or_mobject: Point3DLike | Mobject,
-        aligned_edge: Vector3D = ORIGIN,
-        coor_mask: Vector3D = np.array([1, 1, 1]),
+        aligned_edge: Vector3DLike = ORIGIN,
+        coor_mask: Vector3DLike = np.array([1, 1, 1]),
     ) -> Self:
         """Move center of the :class:`~.Mobject` to certain Point3D."""
         if isinstance(point_or_mobject, Mobject):
@@ -2053,7 +2117,7 @@ class Mobject:
         else:
             return np.max(values)
 
-    def get_critical_point(self, direction: Vector3D) -> Point3D:
+    def get_critical_point(self, direction: Vector3DLike) -> Point3D:
         """Picture a box bounding the :class:`~.Mobject`.  Such a box has
         9 'critical points': 4 corners, 4 edge center, the
         center. This returns one of them, along the given direction.
@@ -2082,11 +2146,11 @@ class Mobject:
 
     # Pseudonyms for more general get_critical_point method
 
-    def get_edge_center(self, direction: Vector3D) -> Point3D:
+    def get_edge_center(self, direction: Vector3DLike) -> Point3D:
         """Get edge Point3Ds for certain direction."""
         return self.get_critical_point(direction)
 
-    def get_corner(self, direction: Vector3D) -> Point3D:
+    def get_corner(self, direction: Vector3DLike) -> Point3D:
         """Get corner Point3Ds for certain direction."""
         return self.get_critical_point(direction)
 
@@ -2097,9 +2161,9 @@ class Mobject:
     def get_center_of_mass(self) -> Point3D:
         return np.apply_along_axis(np.mean, 0, self.get_all_points())
 
-    def get_boundary_point(self, direction: Vector3D) -> Point3D:
+    def get_boundary_point(self, direction: Vector3DLike) -> Point3D:
         all_points = self.get_points_defining_boundary()
-        index = np.argmax(np.dot(all_points, np.array(direction).T))
+        index = np.argmax(np.dot(all_points, direction))
         return all_points[index]
 
     def get_midpoint(self) -> Point3D:
@@ -2156,19 +2220,19 @@ class Mobject:
             dim,
         ) - self.reduce_across_dimension(min, dim)
 
-    def get_coord(self, dim: int, direction: Vector3D = ORIGIN):
+    def get_coord(self, dim: int, direction: Vector3DLike = ORIGIN) -> float:
         """Meant to generalize ``get_x``, ``get_y`` and ``get_z``"""
         return self.get_extremum_along_dim(dim=dim, key=direction[dim])
 
-    def get_x(self, direction: Vector3D = ORIGIN) -> float:
+    def get_x(self, direction: Vector3DLike = ORIGIN) -> float:
         """Returns x Point3D of the center of the :class:`~.Mobject` as ``float``"""
         return self.get_coord(0, direction)
 
-    def get_y(self, direction: Vector3D = ORIGIN) -> float:
+    def get_y(self, direction: Vector3DLike = ORIGIN) -> float:
         """Returns y Point3D of the center of the :class:`~.Mobject` as ``float``"""
         return self.get_coord(1, direction)
 
-    def get_z(self, direction: Vector3D = ORIGIN) -> float:
+    def get_z(self, direction: Vector3DLike = ORIGIN) -> float:
         """Returns z Point3D of the center of the :class:`~.Mobject` as ``float``"""
         return self.get_coord(2, direction)
 
@@ -2239,7 +2303,7 @@ class Mobject:
         return self.match_dim_size(mobject, 2, **kwargs)
 
     def match_coord(
-        self, mobject: Mobject, dim: int, direction: Vector3D = ORIGIN
+        self, mobject: Mobject, dim: int, direction: Vector3DLike = ORIGIN
     ) -> Self:
         """Match the Point3Ds with the Point3Ds of another :class:`~.Mobject`."""
         return self.set_coord(
@@ -2263,7 +2327,7 @@ class Mobject:
     def align_to(
         self,
         mobject_or_point: Mobject | Point3DLike,
-        direction: Vector3D = ORIGIN,
+        direction: Vector3DLike = ORIGIN,
     ) -> Self:
         """Aligns mobject to another :class:`~.Mobject` in a certain direction.
 
@@ -2293,7 +2357,7 @@ class Mobject:
     def __iter__(self):
         return iter(self.split())
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.split())
 
     def get_group_class(self) -> type[Group]:
@@ -2370,7 +2434,7 @@ class Mobject:
 
     def arrange(
         self,
-        direction: Vector3D = RIGHT,
+        direction: Vector3DLike = RIGHT,
         buff: float = DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
         center: bool = True,
         **kwargs,
@@ -2403,7 +2467,7 @@ class Mobject:
         rows: int | None = None,
         cols: int | None = None,
         buff: float | tuple[float, float] = MED_SMALL_BUFF,
-        cell_alignment: Vector3D = ORIGIN,
+        cell_alignment: Vector3DLike = ORIGIN,
         row_alignments: str | None = None,  # "ucd"
         col_alignments: str | None = None,  # "lcr"
         row_heights: Iterable[float | None] | None = None,
@@ -3042,21 +3106,22 @@ class Mobject:
         --------
         :meth:`~.Mobject.align_data`, :meth:`~.VMobject.interpolate_color`
         """
-        mobject = mobject.copy()
-        if stretch:
-            mobject.stretch_to_fit_height(self.height)
-            mobject.stretch_to_fit_width(self.width)
-            mobject.stretch_to_fit_depth(self.depth)
-        else:
-            if match_height:
-                mobject.match_height(self)
-            if match_width:
-                mobject.match_width(self)
-            if match_depth:
-                mobject.match_depth(self)
+        if stretch or match_height or match_width or match_depth or match_center:
+            mobject = mobject.copy()
+            if stretch:
+                mobject.stretch_to_fit_height(self.height)
+                mobject.stretch_to_fit_width(self.width)
+                mobject.stretch_to_fit_depth(self.depth)
+            else:
+                if match_height:
+                    mobject.match_height(self)
+                if match_width:
+                    mobject.match_width(self)
+                if match_depth:
+                    mobject.match_depth(self)
 
-        if match_center:
-            mobject.move_to(self.get_center())
+            if match_center:
+                mobject.move_to(self.get_center())
 
         self.align_data(mobject, skip_point_alignment=True)
         for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
@@ -3172,7 +3237,7 @@ class _AnimationBuilder:
 
         self.overridden_animation = None
         self.is_chaining = False
-        self.methods = []
+        self.methods: list[MethodWithArgs] = []
 
         # Whether animation args can be passed
         self.cannot_pass_args = False
@@ -3207,7 +3272,7 @@ class _AnimationBuilder:
                     **method_kwargs,
                 )
             else:
-                self.methods.append([method, method_args, method_kwargs])
+                self.methods.append(MethodWithArgs(method, method_args, method_kwargs))
                 method(*method_args, **method_kwargs)
             return self
 
@@ -3221,10 +3286,7 @@ class _AnimationBuilder:
             _MethodAnimation,
         )
 
-        if self.overridden_animation:
-            anim = self.overridden_animation
-        else:
-            anim = _MethodAnimation(self.mobject, self.methods)
+        anim = self.overridden_animation or _MethodAnimation(self.mobject, self.methods)
 
         for attr, value in self.anim_args.items():
             setattr(anim, attr, value)
@@ -3241,7 +3303,7 @@ def override_animate(method) -> types.FunctionType:
 
     .. seealso::
 
-        :attr:`Mobject.animate`
+        :attr:`~.Mobject.animate`
 
     .. note::
 

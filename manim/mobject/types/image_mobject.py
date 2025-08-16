@@ -5,7 +5,7 @@ from __future__ import annotations
 __all__ = ["AbstractImageMobject", "ImageMobject", "ImageMobjectFromCamera"]
 
 import pathlib
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 from PIL import Image
@@ -14,6 +14,7 @@ from PIL.Image import Resampling
 from manim.mobject.geometry.shape_matchers import SurroundingRectangle
 
 from ... import config
+from ...camera.moving_camera import MovingCamera
 from ...constants import *
 from ...mobject.mobject import Mobject
 from ...utils.bezier import interpolate
@@ -23,12 +24,12 @@ from ...utils.images import change_to_rgba_array, get_full_raster_image_path
 __all__ = ["ImageMobject", "ImageMobjectFromCamera"]
 
 if TYPE_CHECKING:
-    from typing import Any
-
     import numpy.typing as npt
     from typing_extensions import Self
 
-    from manim.typing import StrPath
+    from manim.typing import PixelArray, StrPath
+
+    from ...camera.moving_camera import MovingCamera
 
 
 class AbstractImageMobject(Mobject):
@@ -57,7 +58,7 @@ class AbstractImageMobject(Mobject):
         self.set_resampling_algorithm(resampling_algorithm)
         super().__init__(**kwargs)
 
-    def get_pixel_array(self) -> None:
+    def get_pixel_array(self) -> PixelArray:
         raise NotImplementedError()
 
     def set_color(self, color, alpha=None, family=True):
@@ -196,6 +197,7 @@ class ImageMobject(AbstractImageMobject):
             self.pixel_array[:, :, :3] = (
                 np.iinfo(self.pixel_array_dtype).max - self.pixel_array[:, :, :3]
             )
+        self.orig_alpha_pixel_array = self.pixel_array[:, :, 3].copy()
         super().__init__(scale_to_resolution, **kwargs)
 
     def get_pixel_array(self):
@@ -221,8 +223,7 @@ class ImageMobject(AbstractImageMobject):
             The alpha value of the object, 1 being opaque and 0 being
             transparent.
         """
-        self.pixel_array[:, :, 3] = int(255 * alpha)
-        self.fill_opacity = alpha
+        self.pixel_array[:, :, 3] = self.orig_alpha_pixel_array * alpha
         self.stroke_opacity = alpha
         return self
 
@@ -294,7 +295,7 @@ class ImageMobject(AbstractImageMobject):
 class ImageMobjectFromCamera(AbstractImageMobject):
     def __init__(
         self,
-        camera,
+        camera: MovingCamera,
         default_display_frame_config: dict[str, Any] | None = None,
         **kwargs: Any,
     ) -> None:
