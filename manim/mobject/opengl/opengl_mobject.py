@@ -179,7 +179,9 @@ class OpenGLMobject:
 
     is_fixed_in_frame: _Uniforms = _Uniforms()
     is_fixed_orientation: _Uniforms = _Uniforms()
-    fixed_orientation_center: _Uniforms = _Uniforms()  # for fixed orientation reference
+    fixed_orientation_center: _Uniforms[tuple[float, float, float]] = (
+        _Uniforms()
+    )  # for fixed orientation reference
     gloss: _Uniforms = _Uniforms()
     shadow: _Uniforms = _Uniforms()
 
@@ -211,7 +213,9 @@ class OpenGLMobject:
         self.name: str = self.__class__.__name__ if name is None else name
         # getattr in case data/uniforms are already defined in parent classes.
         self.data: dict[str, npt.NDArray[Any]] = getattr(self, "data", {})
-        self.uniforms = getattr(self, "uniforms", {})
+        self.uniforms: dict[str, float | tuple[float, ...]] = getattr(
+            self, "uniforms", {}
+        )
 
         self.opacity: float | Iterable[float] = opacity
         self.dim: int = dim  # TODO, get rid of this
@@ -2946,7 +2950,7 @@ class OpenGLMobject:
         for char in "xyz":
             glsl_snippet = glsl_snippet.replace(char, "point." + char)
         # TODO: get_colormap_list does not exist
-        rgb_list = get_colormap_list(colormap)
+        rgb_list = get_colormap_list(colormap)  # type: ignore[name-defined]    # TODO: type this
         self.set_color_by_code(
             f"color.rgb = float_to_color({glsl_snippet}, {float(min_value)}, {float(max_value)}, {get_colormap_code(rgb_list)});",
         )

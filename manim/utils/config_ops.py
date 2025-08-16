@@ -75,17 +75,24 @@ class _Data(Generic[_Data_T]):
         obj.data[self.name] = array
 
 
-class _Uniforms:
+_Uniforms_T = TypeVar("_Uniforms_T", bound=float | tuple[float, ...], default=float)
+
+
+class _HasUniforms(Protocol):
+    uniforms: dict[str, float | tuple[float, ...]]
+
+
+class _Uniforms(Generic[_Uniforms_T]):
     """Descriptor that allows _Uniforms variables to be grouped from self.uniforms["attr"] via self.attr.
-    self.uniforms attributes must be floats.
+    self.uniforms attributes must be floats or tuples of floats.
     """
 
-    def __set_name__(self, obj: Any, name: str) -> None:
-        self.name = name
+    def __set_name__(self, obj: _HasUniforms, name: str) -> None:
+        self.name: str = name
 
-    def __get__(self, obj: Any, owner: Any) -> float:
-        val: float = obj.__dict__["uniforms"][self.name]
+    def __get__(self, obj: _HasUniforms, owner: Any) -> _Uniforms_T:
+        val = cast(_Uniforms_T, obj.uniforms[self.name])
         return val
 
-    def __set__(self, obj: Any, num: float) -> None:
-        obj.__dict__["uniforms"][self.name] = num
+    def __set__(self, obj: _HasUniforms, num: _Uniforms_T) -> None:
+        obj.uniforms[self.name] = num
