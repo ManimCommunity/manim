@@ -30,7 +30,7 @@ from manim.utils.iterables import list_difference_update
 if TYPE_CHECKING:
     import numpy.typing as npt
     from typing_extensions import Self
-    
+
     from manim.typing import (
         FloatRGBA_Array,
         FloatRGBALike_Array,
