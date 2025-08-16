@@ -2678,14 +2678,16 @@ class OpenGLMobject:
 
     def pointwise_become_partial(
         self, mobject: OpenGLMobject, a: float, b: float
-    ) -> None:
+    ) -> Self:
         """
         Set points in such a way as to become only
         part of mobject.
         Inputs 0 <= a < b <= 1 determine what portion
         of mobject to become.
+
+        Returns `self` to allow method chaining.
         """
-        pass  # To implement in subclass
+        return self  # To implement in subclass
 
     def become(
         self,
