@@ -834,7 +834,14 @@ class FadeTransform(Transform):
 
     """
 
-    def __init__(self, mobject, target_mobject, stretch=True, dim_to_match=1, **kwargs):
+    def __init__(
+        self,
+        mobject: Mobject,
+        target_mobject: Mobject,
+        stretch: bool = True,
+        dim_to_match: int = 1,
+        **kwargs: Any,
+    ):
         self.to_add_on_completion = target_mobject
         self.stretch = stretch
         self.dim_to_match = dim_to_match
