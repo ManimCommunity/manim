@@ -28,6 +28,12 @@ from manim import config, logger
 from manim.constants import *
 from manim.data_structures import MethodWithArgs
 from manim.renderer.shader_wrapper import get_colormap_code
+from manim.typing import (
+    Point3D,
+    Point3D_Array,
+    Point3DLike,
+    Point3DLike_Array,
+)
 from manim.utils.bezier import integer_interpolate, interpolate
 from manim.utils.color import (
     WHITE,
@@ -68,10 +74,6 @@ if TYPE_CHECKING:
         MatrixMN,
         MultiMappingFunction,
         PathFuncType,
-        Point3D,
-        Point3D_Array,
-        Point3DLike,
-        Point3DLike_Array,
         Vector3D,
         Vector3DLike,
     )
@@ -2972,7 +2974,9 @@ class OpenGLMobject:
 
 
 class OpenGLGroup(OpenGLMobject):
-    def __init__(self, *mobjects: OpenGLMobject, **kwargs):
+    def __init__(
+        self, *mobjects: OpenGLMobject, **kwargs: Any
+    ) -> None:  # TODO: Annotate kwargs
         super().__init__(**kwargs)
         self.add(*mobjects)
 
@@ -3001,6 +3005,7 @@ class OpenGLPoint(OpenGLMobject):
     def get_location(self) -> Point3D:
         return cast(Point3D, self.points[0]).copy()
 
+    @override
     def get_bounding_box_point(self, *args: object, **kwargs: object) -> Point3D:
         return self.get_location()
 
@@ -3041,7 +3046,10 @@ class _AnimationBuilder:
                 "Method chaining is currently not supported for overridden animations",
             )
 
-        def update_target(*method_args: object, **method_kwargs: object) -> Self:  # type: ignore[type-var]
+        # NOTE: using `Self` here should not be a problem, because it's equivalent to a `TypeVar` introduced in `__getattr__`.
+        #   For this reason, here it's still in scope and can be used (that's why pyright does not flag this as an error).
+        #   However, mypy currently does not seem to understand this: hence the `type: ignore` comment.
+        def update_target(*method_args: object, **method_kwargs: object) -> Self:  # type: ignore[type-var, misc]
             if has_overridden_animation:
                 self.overridden_animation = cast(
                     "Callable[..., Animation]", method._override_animate
@@ -3064,7 +3072,9 @@ class _AnimationBuilder:
     def build(self) -> "Animation":  # noqa: UP037
         from manim.animation.transform import _MethodAnimation
 
-        anim = self.overridden_animation or _MethodAnimation(self.mobject, self.methods)
+        # NOTE: To fix this mypy error, we'll need to update `_MethodAnimation` to accept `Mobject | OpenGLMobject` instead of `Mobject`.
+        #   Once that is done, the `type: ignore` comment below won't be necessary anymore and mypy will emit a corresponding warning.
+        anim = self.overridden_animation or _MethodAnimation(self.mobject, self.methods)  # type: ignore[arg-type]
 
         for attr, value in self.anim_args.items():
             setattr(anim, attr, value)
