@@ -34,7 +34,6 @@ if TYPE_CHECKING:
     from manim.typing import (
         FloatRGBA_Array,
         FloatRGBALike_Array,
-        ManimFloat,
         ManimInt,
         PixelArray,
         Point3D,
@@ -1043,8 +1042,8 @@ class Camera:
             homography_matrix.append([x, y, 1, 0, 0, 0, -X * x, -X * y])
             homography_matrix.append([0, 0, 0, x, y, 1, -Y * x, -Y * y])
 
-        A = np.array(homography_matrix, dtype=ManimFloat)
-        b = original_coords.reshape(8).astype(ManimFloat)
+        A = np.array(homography_matrix, dtype=np.float64)
+        b = original_coords.reshape(8).astype(np.float64)
 
         try:
             transform_coefficients = np.linalg.solve(A, b)
