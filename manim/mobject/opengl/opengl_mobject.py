@@ -132,6 +132,23 @@ class _Kw_Buff(TypedDict, total=False):
     buff: float
 
 
+class _Kw_Arrange(_Kw_Buff, total=False):
+    aligned_edge: Vector3DLike
+    submobject_to_align: OpenGLMobject | None
+    index_of_submobject_to_align: int | None
+    coor_mask: Vector3DLike
+
+
+class _Kw_GetGrid(TypedDict, total=False):
+    buff: float | tuple[float, float]
+    cell_alignment: Vector3DLike
+    row_alignments: str | None
+    col_alignments: str | None
+    row_heights: Sequence[float | None] | None
+    col_widths: Sequence[float | None] | None
+    flow_order: str
+
+
 class OpenGLMobject:
     """Mathematical Object: base class for objects that can be displayed on screen.
 
@@ -367,9 +384,9 @@ class OpenGLMobject:
 
         """
         if kwargs:
-            cls.__init__ = partialmethod(cls.__init__, **kwargs)
+            cls.__init__ = partialmethod(cls.__init__, **kwargs)  # type: ignore[method-assign, assignment]
         else:
-            cls.__init__ = cls._original__init__
+            cls.__init__ = cls._original__init__  # type: ignore[method-assign]
 
     def init_data(self) -> None:
         """Initializes the ``points``, ``bounding_box`` and ``rgbas`` attributes and groups them into self.data.
@@ -386,7 +403,7 @@ class OpenGLMobject:
         """
         self.set_color(self.color, self.opacity)
 
-    def init_points(self) -> object:
+    def init_points(self) -> None:
         """Initializes :attr:`points` and therefore the shape.
 
         Gets called upon creation. This is an empty method that can be implemented by
@@ -1046,7 +1063,10 @@ class OpenGLMobject:
     # Submobject organization
 
     def arrange(
-        self, direction: Vector3DLike = RIGHT, center: bool = True, **kwargs
+        self,
+        direction: Vector3DLike = RIGHT,
+        center: bool = True,
+        **kwargs: Unpack[_Kw_Arrange],
     ) -> Self:
         """Sorts :class:`~.OpenGLMobject` next to each other on screen.
 
@@ -1082,7 +1102,7 @@ class OpenGLMobject:
         row_heights: Sequence[float | None] | None = None,
         col_widths: Sequence[float | None] | None = None,
         flow_order: str = "rd",
-        **kwargs,
+        **kwargs: object,
     ) -> Self:
         """Arrange submobjects in a grid.
 
@@ -1339,7 +1359,7 @@ class OpenGLMobject:
                     # box code that Mobject.move_to(Mobject) already
                     # includes.
 
-                    grid[r][c].move_to(line, alignment)
+                    grid[r][c].move_to(line, alignment)  # type: ignore[arg-type]
                 x += widths[c] + buff_x
             y += heights[r] + buff_y
 
@@ -1347,7 +1367,11 @@ class OpenGLMobject:
         return self
 
     def get_grid(
-        self, n_rows: int, n_cols: int, height: float | None = None, **kwargs
+        self,
+        n_rows: int,
+        n_cols: int,
+        height: float | None = None,
+        **kwargs: Unpack[_Kw_GetGrid],
     ) -> OpenGLGroup:
         """
         Returns a new mobject containing multiple copies of this one
@@ -1817,7 +1841,7 @@ class OpenGLMobject:
         while current_object.parent is not None:
             model_matrices.append(current_object.parent.model_matrix)
             current_object = current_object.parent
-        return np.linalg.multi_dot(list(reversed(model_matrices)))
+        return np.linalg.multi_dot(list(reversed(model_matrices)))  # type: ignore[no-any-return]
 
     def wag(
         self,
@@ -1913,6 +1937,7 @@ class OpenGLMobject:
         np_direction = np.asarray(direction)
         np_aligned_edge = np.asarray(aligned_edge)
 
+        target_point: Point3DLike
         if isinstance(mobject_or_point, OpenGLMobject):
             mob = mobject_or_point
             if index_of_submobject_to_align is not None:
@@ -1955,7 +1980,7 @@ class OpenGLMobject:
             return True
         if self.get_bottom()[1] > config.frame_y_radius:
             return True
-        return self.get_top()[1] < -config.frame_y_radius
+        return cast(float, self.get_top()[1]) < -config.frame_y_radius
 
     def stretch_about_point(self, factor: float, dim: int, point: Point3DLike) -> Self:
         return self.stretch(factor, dim, about_point=point)
@@ -2065,7 +2090,7 @@ class OpenGLMobject:
         depth: float,
         stretch: bool = False,
         **kwargs: Unpack[_Kw_AboutPoint_AboutEdge],
-    ):
+    ) -> Self:
         """Scales the :class:`~.OpenGLMobject` to fit a depth while keeping width/height proportional."""
         return self.rescale_to_fit(depth, 2, stretch=stretch, **kwargs)
 
@@ -2107,6 +2132,7 @@ class OpenGLMobject:
         coor_mask: Vector3DLike = np.array([1, 1, 1]),
     ) -> Self:
         """Move center of the :class:`~.OpenGLMobject` to certain coordinate."""
+        target: Point3DLike
         if isinstance(point_or_mobject, OpenGLMobject):
             target = point_or_mobject.get_bounding_box_point(aligned_edge)
         else:
@@ -2160,7 +2186,7 @@ class OpenGLMobject:
             else OUT
         )
         self.scale(
-            np.linalg.norm(target_vect) / np.linalg.norm(curr_vect),
+            float(np.linalg.norm(target_vect) / np.linalg.norm(curr_vect)),
             about_point=curr_start,
         )
         self.rotate(
@@ -2236,7 +2262,7 @@ class OpenGLMobject:
 
     def set_color(
         self,
-        color: ParsableManimColor | Iterable[ParsableManimColor] | None,
+        color: ParsableManimColor | Sequence[ParsableManimColor] | None,
         opacity: float | Iterable[float] | None = None,
         recurse: bool = True,
     ) -> Self:
@@ -2265,7 +2291,7 @@ class OpenGLMobject:
         return rgb_to_hex(self.rgbas[0, :3])
 
     def get_opacity(self) -> float:
-        return self.rgbas[0, 3]
+        return self.rgbas[0, 3]  # type: ignore[no-any-return]
 
     def set_color_by_gradient(self, *colors: ParsableManimColor) -> Self:
         return self.set_submobject_colors_by_gradient(*colors)
@@ -2342,8 +2368,11 @@ class OpenGLMobject:
         """
         from manim.mobject.geometry.shape_matchers import BackgroundRectangle
 
-        self.background_rectangle: BackgroundRectangle = BackgroundRectangle(  # type: ignore[arg-type]
-            self, color=color, fill_opacity=opacity, **kwargs
+        self.background_rectangle: BackgroundRectangle = BackgroundRectangle(
+            self,  # type: ignore[arg-type]
+            color=color,
+            fill_opacity=opacity,
+            **kwargs,
         )
         self.add_to_back(self.background_rectangle)  # type: ignore[arg-type]
         return self
