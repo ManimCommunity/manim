@@ -2950,7 +2950,8 @@ class OpenGLMobject:
         for char in "xyz":
             glsl_snippet = glsl_snippet.replace(char, "point." + char)
         # TODO: get_colormap_list does not exist
-        rgb_list = get_colormap_list(colormap)  # type: ignore[name-defined]    # TODO: type this
+        #   See https://github.com/ManimCommunity/manim/issues/4176
+        rgb_list = get_colormap_list(colormap)  # type: ignore[name-defined]
         self.set_color_by_code(
             f"color.rgb = float_to_color({glsl_snippet}, {float(min_value)}, {float(max_value)}, {get_colormap_code(rgb_list)});",
         )

@@ -75,7 +75,7 @@ class _Data(Generic[_Data_T]):
         obj.data[self.name] = array
 
 
-_Uniforms_T = TypeVar("_Uniforms_T", bound=float | tuple[float, ...], default=float)
+_Uniforms_T = TypeVar("_Uniforms_T", bound="float | tuple[float, ...]", default=float)
 
 
 class _HasUniforms(Protocol):
