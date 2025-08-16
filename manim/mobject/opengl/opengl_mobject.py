@@ -9,7 +9,7 @@ import types
 from collections.abc import Callable, Iterable, Iterator, Sequence
 from functools import partialmethod, wraps
 from math import ceil
-from typing import TYPE_CHECKING, Any, ClassVar, TypeVar
+from typing import TYPE_CHECKING, Any, ClassVar, Protocol, TypeVar
 
 import moderngl
 import numpy as np
@@ -3068,7 +3068,19 @@ class _AnimationBuilder:
         return anim
 
 
-def override_animate(method: types.FunctionType) -> types.FunctionType:
+_Decorated = TypeVar(
+    "_Decorated",
+    bound=types.FunctionType,  # TODO: Is this bound strict enough?
+)
+
+
+class _OverrideAnimateDecorator(Protocol):
+    def __call__(self, decorated: _Decorated, /) -> _Decorated: ...
+
+
+def override_animate(
+    method: types.FunctionType,
+) -> _OverrideAnimateDecorator:  # TODO: Is `method` strict enough?
     r"""Decorator for overriding method animations.
 
     This allows to specify a method (returning an :class:`~.Animation`)
@@ -3120,8 +3132,8 @@ def override_animate(method: types.FunctionType) -> types.FunctionType:
 
     """
 
-    def decorator(animation_method):
-        method._override_animate = animation_method
+    def decorator(animation_method: _Decorated, /) -> _Decorated:
+        method._override_animate = animation_method  # type: ignore[attr-defined]
         return animation_method
 
     return decorator
