@@ -3099,7 +3099,7 @@ class OpenGLPoint(OpenGLMobject):
         location: Point3DLike = ORIGIN,
         artificial_width: float = 1e-6,
         artificial_height: float = 1e-6,
-        **kwargs: Any,  # TODO: Annotate kwargs
+        **kwargs: Unpack[_Kw_OpenGLMobject],
     ) -> None:
         self.artificial_width: float = artificial_width
         self.artificial_height: float = artificial_height
