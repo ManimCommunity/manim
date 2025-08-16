@@ -146,10 +146,10 @@ class OpenGLMobject:
 
     _original__init__: ClassVar[Callable[..., None]]
 
-    shader_dtype = [
+    shader_dtype: ClassVar[Sequence[tuple[str, type[np.generic], tuple[int, ...]]]] = [
         ("point", np.float32, (3,)),
     ]
-    shader_folder = ""
+    shader_folder: ClassVar[str] = ""
 
     # _Data and _Uniforms are set as class variables to tell manim how to handle setting/getting these attributes later.
     points: _Data[Point3D_Array] = _Data()
