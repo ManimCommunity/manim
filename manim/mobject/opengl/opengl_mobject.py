@@ -3061,10 +3061,34 @@ class OpenGLMobject:
             raise Exception(message.format(caller_name))
 
 
+class _Kw_OpenGLMobject(TypedDict, total=False):
+    color: ParsableManimColor | Sequence[ParsableManimColor]
+    opacity: float
+    dim: int  # TODO, get rid of this
+    # Lighting parameters
+    gloss: float
+    """Positive gloss up to 1 makes it reflect the light."""
+    shadow: float
+    """Positive shadow up to 1 makes a side opposite the light darker."""
+    # For shaders
+    render_primitive: int
+    texture_paths: dict[str, str] | None
+    depth_test: bool
+    # If true, the mobject will not get rotated according to camera position
+    is_fixed_in_frame: bool
+    is_fixed_orientation: bool
+    # Must match in attributes of vert shader
+    # Event listener
+    listen_to_events: bool
+    model_matrix: MatrixMN | None
+    should_render: bool
+    name: str | None
+
+
 class OpenGLGroup(OpenGLMobject):
     def __init__(
-        self, *mobjects: OpenGLMobject, **kwargs: Any
-    ) -> None:  # TODO: Annotate kwargs
+        self, *mobjects: OpenGLMobject, **kwargs: Unpack[_Kw_OpenGLMobject]
+    ) -> None:
         super().__init__(**kwargs)
         self.add(*mobjects)
 
