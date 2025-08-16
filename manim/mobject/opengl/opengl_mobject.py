@@ -128,6 +128,10 @@ class _Kw_ApplyFunc(_Kw_AboutPoint_AboutEdge, total=False):
     works_on_bounding_box: bool
 
 
+class _Kw_Buff(TypedDict, total=False):
+    buff: float
+
+
 class OpenGLMobject:
     """Mathematical Object: base class for objects that can be displayed on screen.
 
@@ -1626,7 +1630,7 @@ class OpenGLMobject:
         self,
         scale_factor: float,
         about_point: Point3DLike | None = None,
-        about_edge: Point3DLike = ORIGIN,
+        about_edge: Point3DLike | None = ORIGIN,
         **_kwargs: object,
     ) -> Self:
         r"""Scale the size by a factor.
@@ -1930,15 +1934,18 @@ class OpenGLMobject:
         self.shift((target_point - point_to_align + buff * np_direction) * coor_mask)
         return self
 
-    def shift_onto_screen(self, **kwargs) -> Self:
-        space_lengths = [config["frame_x_radius"], config["frame_y_radius"]]
+    def shift_onto_screen(self, **kwargs: Unpack[_Kw_Buff]) -> Self:
+        space_lengths: list[float] = [
+            config["frame_x_radius"],
+            config["frame_y_radius"],
+        ]
         for vect in UP, DOWN, LEFT, RIGHT:
             dim = np.argmax(np.abs(vect))
-            buff = kwargs.get("buff", DEFAULT_MOBJECT_TO_EDGE_BUFFER)
+            buff: float = kwargs.get("buff", DEFAULT_MOBJECT_TO_EDGE_BUFFER)
             max_val = space_lengths[dim] - buff
             edge_center = self.get_edge_center(vect)
             if np.dot(edge_center, vect) > max_val:
-                self.to_edge(vect, **kwargs)
+                self.to_edge(vect, buff=buff)
         return self
 
     def is_off_screen(self) -> bool:
@@ -1954,7 +1961,11 @@ class OpenGLMobject:
         return self.stretch(factor, dim, about_point=point)
 
     def rescale_to_fit(
-        self, length: float, dim: int, stretch: bool = False, **kwargs: Any
+        self,
+        length: float,
+        dim: int,
+        stretch: bool = False,
+        **kwargs: Unpack[_Kw_AboutPoint_AboutEdge],
     ) -> Self:
         old_length = self.length_over_dim(dim)
         if old_length == 0:
@@ -1965,7 +1976,9 @@ class OpenGLMobject:
             self.scale(length / old_length, **kwargs)
         return self
 
-    def stretch_to_fit_width(self, width: float, **kwargs) -> Self:
+    def stretch_to_fit_width(
+        self, width: float, **kwargs: Unpack[_Kw_AboutPoint_AboutEdge]
+    ) -> Self:
         """Stretches the :class:`~.OpenGLMobject` to fit a width, not keeping height/depth proportional.
 
         Returns
@@ -1991,15 +2004,24 @@ class OpenGLMobject:
         """
         return self.rescale_to_fit(width, 0, stretch=True, **kwargs)
 
-    def stretch_to_fit_height(self, height: float, **kwargs) -> Self:
+    def stretch_to_fit_height(
+        self, height: float, **kwargs: Unpack[_Kw_AboutPoint_AboutEdge]
+    ) -> Self:
         """Stretches the :class:`~.OpenGLMobject` to fit a height, not keeping width/height proportional."""
         return self.rescale_to_fit(height, 1, stretch=True, **kwargs)
 
-    def stretch_to_fit_depth(self, depth: float, **kwargs) -> Self:
+    def stretch_to_fit_depth(
+        self, depth: float, **kwargs: Unpack[_Kw_AboutPoint_AboutEdge]
+    ) -> Self:
         """Stretches the :class:`~.OpenGLMobject` to fit a depth, not keeping width/height proportional."""
         return self.rescale_to_fit(depth, 1, stretch=True, **kwargs)
 
-    def set_width(self, width: float, stretch: bool = False, **kwargs) -> Self:
+    def set_width(
+        self,
+        width: float,
+        stretch: bool = False,
+        **kwargs: Unpack[_Kw_AboutPoint_AboutEdge],
+    ) -> Self:
         """Scales the :class:`~.OpenGLMobject` to fit a width while keeping height/depth proportional.
 
         Returns
@@ -2027,13 +2049,23 @@ class OpenGLMobject:
 
     scale_to_fit_width = set_width
 
-    def set_height(self, height: float, stretch: bool = False, **kwargs) -> Self:
+    def set_height(
+        self,
+        height: float,
+        stretch: bool = False,
+        **kwargs: Unpack[_Kw_AboutPoint_AboutEdge],
+    ) -> Self:
         """Scales the :class:`~.OpenGLMobject` to fit a height while keeping width/depth proportional."""
         return self.rescale_to_fit(height, 1, stretch=stretch, **kwargs)
 
     scale_to_fit_height = set_height
 
-    def set_depth(self, depth: float, stretch: bool = False, **kwargs):
+    def set_depth(
+        self,
+        depth: float,
+        stretch: bool = False,
+        **kwargs: Unpack[_Kw_AboutPoint_AboutEdge],
+    ):
         """Scales the :class:`~.OpenGLMobject` to fit a depth while keeping width/height proportional."""
         return self.rescale_to_fit(depth, 2, stretch=stretch, **kwargs)
 
@@ -2060,7 +2092,9 @@ class OpenGLMobject:
         """Set z value of the center of the :class:`~.OpenGLMobject` (``int`` or ``float``)"""
         return self.set_coord(z, 2, direction)
 
-    def space_out_submobjects(self, factor: float = 1.5, **kwargs) -> Self:
+    def space_out_submobjects(
+        self, factor: float = 1.5, **kwargs: Unpack[_Kw_AboutPoint_AboutEdge]
+    ) -> Self:
         self.scale(factor, **kwargs)
         for submob in self.submobjects:
             submob.scale(1.0 / factor)
@@ -2275,7 +2309,7 @@ class OpenGLMobject:
         self,
         color: ParsableManimColor | None = None,
         opacity: float = 0.75,
-        **kwargs,
+        **kwargs: Any,
     ) -> Self:
         # TODO, this does not behave well when the mobject has points,
         # since it gets displayed on top
@@ -2308,18 +2342,20 @@ class OpenGLMobject:
         """
         from manim.mobject.geometry.shape_matchers import BackgroundRectangle
 
-        self.background_rectangle = BackgroundRectangle(
+        self.background_rectangle: BackgroundRectangle = BackgroundRectangle(  # type: ignore[arg-type]
             self, color=color, fill_opacity=opacity, **kwargs
         )
-        self.add_to_back(self.background_rectangle)
+        self.add_to_back(self.background_rectangle)  # type: ignore[arg-type]
         return self
 
-    def add_background_rectangle_to_submobjects(self, **kwargs) -> Self:
+    def add_background_rectangle_to_submobjects(self, **kwargs: Any) -> Self:
         for submobject in self.submobjects:
             submobject.add_background_rectangle(**kwargs)
         return self
 
-    def add_background_rectangle_to_family_members_with_points(self, **kwargs) -> Self:
+    def add_background_rectangle_to_family_members_with_points(
+        self, **kwargs: Any
+    ) -> Self:
         for mob in self.family_members_with_points():
             mob.add_background_rectangle(**kwargs)
         return self
@@ -2341,10 +2377,10 @@ class OpenGLMobject:
 
     def get_center(self) -> Point3D:
         """Get center coordinates."""
-        return self.get_bounding_box()[1]
+        return self.get_bounding_box()[1]  # type: ignore[no-any-return]
 
     def get_center_of_mass(self) -> Point3D:
-        return self.get_all_points().mean(0)
+        return self.get_all_points().mean(0)  # type: ignore[no-any-return]
 
     def get_boundary_point(self, direction: Vector3DLike) -> Point3D:
         all_points = self.get_all_points()
@@ -2352,13 +2388,13 @@ class OpenGLMobject:
         norms = np.linalg.norm(boundary_directions, axis=1)
         boundary_directions /= np.repeat(norms, 3).reshape((len(norms), 3))
         index = np.argmax(np.dot(boundary_directions, direction))
-        return all_points[index]
+        return all_points[index]  # type: ignore[no-any-return]
 
     def get_continuous_bounding_box_point(self, direction: Vector3DLike) -> Point3D:
         dl, center, ur = self.get_bounding_box()
         corner_vect = ur - center
         np_direction = np.asarray(direction)
-        return center + np_direction / np.max(
+        return center + np_direction / np.max(  # type: ignore[no-any-return]
             np.abs(
                 np.true_divide(
                     np_direction,
@@ -2395,7 +2431,7 @@ class OpenGLMobject:
 
     def length_over_dim(self, dim: int) -> float:
         bb = self.get_bounding_box()
-        return abs((bb[2] - bb[0])[dim])
+        return abs((bb[2] - bb[0])[dim])  # type: ignore[no-any-return]
 
     def get_width(self) -> float:
         """Returns the width of the mobject."""
@@ -2411,7 +2447,7 @@ class OpenGLMobject:
 
     def get_coord(self, dim: int, direction: Vector3DLike = ORIGIN) -> ManimFloat:
         """Meant to generalize ``get_x``, ``get_y`` and ``get_z``"""
-        return self.get_bounding_box_point(direction)[dim]
+        return self.get_bounding_box_point(direction)[dim]  # type: ignore[no-any-return]
 
     def get_x(self, direction: Vector3DLike = ORIGIN) -> ManimFloat:
         """Returns x coordinate of the center of the :class:`~.OpenGLMobject` as ``float``"""
@@ -2442,7 +2478,7 @@ class OpenGLMobject:
     def point_from_proportion(self, alpha: float) -> Point3D:
         points = self.points
         i, subalpha = integer_interpolate(0, len(points) - 1, alpha)
-        return interpolate(points[i], points[i + 1], subalpha)
+        return interpolate(points[i], points[i + 1], subalpha)  # type: ignore[no-any-return]
 
     def pfp(self, alpha: float) -> Point3D:
         """Abbreviation for point_from_proportion"""
@@ -2470,19 +2506,30 @@ class OpenGLMobject:
         """Match the color with the color of another :class:`~.OpenGLMobject`."""
         return self.set_color(mobject.get_color())
 
-    def match_dim_size(self, mobject: OpenGLMobject, dim: int, **kwargs) -> Self:
+    def match_dim_size(
+        self,
+        mobject: OpenGLMobject,
+        dim: int,
+        **kwargs: Unpack[_Kw_AboutPoint_AboutEdge],
+    ) -> Self:
         """Match the specified dimension with the dimension of another :class:`~.OpenGLMobject`."""
         return self.rescale_to_fit(mobject.length_over_dim(dim), dim, **kwargs)
 
-    def match_width(self, mobject: OpenGLMobject, **kwargs) -> Self:
+    def match_width(
+        self, mobject: OpenGLMobject, **kwargs: Unpack[_Kw_AboutPoint_AboutEdge]
+    ) -> Self:
         """Match the width with the width of another :class:`~.OpenGLMobject`."""
         return self.match_dim_size(mobject, 0, **kwargs)
 
-    def match_height(self, mobject: OpenGLMobject, **kwargs) -> Self:
+    def match_height(
+        self, mobject: OpenGLMobject, **kwargs: Unpack[_Kw_AboutPoint_AboutEdge]
+    ) -> Self:
         """Match the height with the height of another :class:`~.OpenGLMobject`."""
         return self.match_dim_size(mobject, 1, **kwargs)
 
-    def match_depth(self, mobject: OpenGLMobject, **kwargs) -> Self:
+    def match_depth(
+        self, mobject: OpenGLMobject, **kwargs: Unpack[_Kw_AboutPoint_AboutEdge]
+    ) -> Self:
         """Match the depth with the depth of another :class:`~.OpenGLMobject`."""
         return self.match_dim_size(mobject, 2, **kwargs)
 
@@ -2928,7 +2975,7 @@ class OpenGLMobject:
         # If possible, try to populate an existing array, rather
         # than recreating it each frame
         points = self.points
-        shader_data = np.zeros(len(points), dtype=self.shader_dtype)
+        shader_data = cast(_ShaderData, np.zeros(len(points), dtype=self.shader_dtype))
         return shader_data
 
     def read_data_to_shader(
