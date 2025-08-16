@@ -813,7 +813,7 @@ class OpenGLMobject:
         bb = self.get_bounding_box()
         mins = bb[0] - buff
         maxs = bb[2] + buff
-        return (point >= mins).all() and (point <= maxs).all()
+        return (point >= mins).all() and (point <= maxs).all()  # type: ignore[no-any-return]
 
     # Family matters
 
@@ -1252,19 +1252,19 @@ class OpenGLMobject:
         ) -> Sequence[Vector3D]:
             if str_alignments is None:
                 # Use cell_alignment as fallback
-                return [cell_alignment * direction] * num
+                return [cast(Vector3D, cell_alignment * direction)] * num
             if len(str_alignments) != num:
                 raise ValueError(f"{name}_alignments has a mismatching size.")
             return [mapping[letter] for letter in str_alignments]
 
-        row_alignments: Sequence[Vector3D] = init_alignments(
+        row_alignments: Sequence[Vector3D] = init_alignments(  # type: ignore[no-redef]
             row_alignments,
             rows,
             {"u": UP, "c": ORIGIN, "d": DOWN},
             "row",
             RIGHT,
         )
-        col_alignments: Sequence[Vector3D] = init_alignments(
+        col_alignments: Sequence[Vector3D] = init_alignments(  # type: ignore[no-redef]
             col_alignments,
             cols,
             {"l": LEFT, "c": ORIGIN, "r": RIGHT},
@@ -1288,7 +1288,7 @@ class OpenGLMobject:
             raise ValueError(
                 f"flow_order must be one of the following values: {valid_flow_orders}.",
             )
-        flow_order: Callable[[int, int], int] = mapper[flow_order]
+        flow_order: Callable[[int, int], int] = mapper[flow_order]  # type: ignore[no-redef]
 
         # Reverse row_alignments and row_heights. Necessary since the
         # grid filling is handled bottom up for simplicity reasons.
@@ -1308,7 +1308,7 @@ class OpenGLMobject:
                 return maybe_list
             return None
 
-        row_alignments = reverse(row_alignments)
+        row_alignments: Sequence[Vector3D] = reverse(row_alignments)  # type: ignore[no-redef]
         row_heights = reverse(row_heights)
 
         placeholder = OpenGLMobject()
@@ -1317,7 +1317,7 @@ class OpenGLMobject:
         # properties of 0.
 
         mobs.extend([placeholder] * (rows * cols - len(mobs)))
-        grid = [[mobs[flow_order(r, c)] for c in range(cols)] for r in range(rows)]
+        grid = [[mobs[flow_order(r, c)] for c in range(cols)] for r in range(rows)]  # type: ignore[operator]
 
         measured_heigths = [
             max(grid[r][c].height for c in range(cols)) for r in range(rows)
@@ -1345,12 +1345,12 @@ class OpenGLMobject:
         heights = init_sizes(row_heights, rows, measured_heigths, "row_heights")
         widths = init_sizes(col_widths, cols, measured_widths, "col_widths")
 
-        x, y = 0, 0
+        x, y = 0.0, 0.0
         for r in range(rows):
-            x = 0
+            x = 0.0
             for c in range(cols):
                 if grid[r][c] is not placeholder:
-                    alignment = row_alignments[r] + col_alignments[c]
+                    alignment = row_alignments[r] + col_alignments[c]  # type: ignore[index]
                     line = Line(
                         x * RIGHT + y * UP,
                         (x + widths[c]) * RIGHT + (y + heights[r]) * UP,
@@ -1359,7 +1359,7 @@ class OpenGLMobject:
                     # box code that Mobject.move_to(Mobject) already
                     # includes.
 
-                    grid[r][c].move_to(line, alignment)  # type: ignore[arg-type]
+                    grid[r][c].move_to(line, alignment)
                 x += widths[c] + buff_x
             y += heights[r] + buff_y
 
@@ -1546,10 +1546,10 @@ class OpenGLMobject:
     # Updating
 
     def init_updaters(self) -> None:
-        self.time_based_updaters = []
-        self.non_time_updaters = []
-        self.has_updaters = False
-        self.updating_suspended = False
+        self.time_based_updaters: list["_TimeBasedUpdater"] = []  # noqa: UP037
+        self.non_time_updaters: list["_NonTimeBasedUpdater"] = []  # noqa: UP037
+        self.has_updaters: bool = False
+        self.updating_suspended: bool = False
 
     def update(self, dt: float = 0, recurse: bool = True) -> Self:
         if not self.has_updaters or self.updating_suspended:
@@ -1570,7 +1570,9 @@ class OpenGLMobject:
         return len(self.time_based_updaters) > 0
 
     def get_updaters(self) -> Sequence[_Updater]:
-        return self.time_based_updaters + self.non_time_updaters
+        return cast("list[_Updater]", self.time_based_updaters) + cast(
+            "list[_Updater]", self.non_time_updaters
+        )
 
     def get_family_updaters(self) -> Sequence[_Updater]:
         return list(it.chain(*(sm.get_updaters() for sm in self.get_family())))
@@ -1581,15 +1583,16 @@ class OpenGLMobject:
         index: int | None = None,
         call_updater: bool = False,
     ) -> Self:
+        updater_list: list[_TimeBasedUpdater] | list[_NonTimeBasedUpdater]
         if "dt" in inspect.signature(update_function).parameters:
             updater_list = self.time_based_updaters
         else:
             updater_list = self.non_time_updaters
 
         if index is None:
-            updater_list.append(update_function)
+            cast("list[_Updater]", updater_list).append(update_function)
         else:
-            updater_list.insert(index, update_function)
+            cast("list[_Updater]", updater_list).insert(index, update_function)
 
         self.refresh_has_updater_status()
         if call_updater:
@@ -1598,6 +1601,7 @@ class OpenGLMobject:
 
     def remove_updater(self, update_function: _Updater) -> Self:
         for updater_list in [self.time_based_updaters, self.non_time_updaters]:
+            updater_list = cast("list[_Updater]", updater_list)
             while update_function in updater_list:
                 updater_list.remove(update_function)
         self.refresh_has_updater_status()
@@ -1841,7 +1845,7 @@ class OpenGLMobject:
         while current_object.parent is not None:
             model_matrices.append(current_object.parent.model_matrix)
             current_object = current_object.parent
-        return np.linalg.multi_dot(list(reversed(model_matrices)))  # type: ignore[no-any-return]
+        return np.linalg.multi_dot(list(reversed(model_matrices)))
 
     def wag(
         self,
@@ -2406,10 +2410,10 @@ class OpenGLMobject:
 
     def get_center(self) -> Point3D:
         """Get center coordinates."""
-        return self.get_bounding_box()[1]  # type: ignore[no-any-return]
+        return self.get_bounding_box()[1]
 
     def get_center_of_mass(self) -> Point3D:
-        return self.get_all_points().mean(0)  # type: ignore[no-any-return]
+        return self.get_all_points().mean(0)
 
     def get_boundary_point(self, direction: Vector3DLike) -> Point3D:
         all_points = self.get_all_points()
@@ -2417,13 +2421,13 @@ class OpenGLMobject:
         norms = np.linalg.norm(boundary_directions, axis=1)
         boundary_directions /= np.repeat(norms, 3).reshape((len(norms), 3))
         index = np.argmax(np.dot(boundary_directions, direction))
-        return all_points[index]  # type: ignore[no-any-return]
+        return all_points[index]
 
     def get_continuous_bounding_box_point(self, direction: Vector3DLike) -> Point3D:
-        dl, center, ur = self.get_bounding_box()
+        _dl, center, ur = self.get_bounding_box()
         corner_vect = ur - center
         np_direction = np.asarray(direction)
-        return center + np_direction / np.max(  # type: ignore[no-any-return]
+        return center + np_direction / np.max(
             np.abs(
                 np.true_divide(
                     np_direction,
@@ -2476,7 +2480,7 @@ class OpenGLMobject:
 
     def get_coord(self, dim: int, direction: Vector3DLike = ORIGIN) -> ManimFloat:
         """Meant to generalize ``get_x``, ``get_y`` and ``get_z``"""
-        return self.get_bounding_box_point(direction)[dim]  # type: ignore[no-any-return]
+        return self.get_bounding_box_point(direction)[dim]
 
     def get_x(self, direction: Vector3DLike = ORIGIN) -> ManimFloat:
         """Returns x coordinate of the center of the :class:`~.OpenGLMobject` as ``float``"""
@@ -2507,7 +2511,7 @@ class OpenGLMobject:
     def point_from_proportion(self, alpha: float) -> Point3D:
         points = self.points
         i, subalpha = integer_interpolate(0, len(points) - 1, alpha)
-        return interpolate(points[i], points[i + 1], subalpha)  # type: ignore[no-any-return]
+        return interpolate(points[i], points[i + 1], subalpha)
 
     def pfp(self, alpha: float) -> Point3D:
         """Abbreviation for point_from_proportion"""
