@@ -208,7 +208,7 @@ class OpenGLMobject:
         model_matrix: MatrixMN | None = None,
         should_render: bool = True,
         name: str | None = None,
-        **kwargs: dict[str, object],
+        **kwargs: Any,
     ):
         self.name: str = self.__class__.__name__ if name is None else name
         # getattr in case data/uniforms are already defined in parent classes.
@@ -320,7 +320,7 @@ class OpenGLMobject:
         return self
 
     @classmethod
-    def __init_subclass__(cls, **kwargs: object) -> None:
+    def __init_subclass__(cls, **kwargs: Any) -> None:
         super().__init_subclass__(**kwargs)
         cls._original__init__ = cls.__init__
 
@@ -345,7 +345,7 @@ class OpenGLMobject:
         return NotImplemented
 
     @classmethod
-    def set_default(cls, **kwargs: object) -> None:
+    def set_default(cls, **kwargs: Unpack["_Kw_OpenGLMobject"]) -> None:  # noqa: UP037
         """Sets the default values of keyword arguments.
 
         If this method is called without any additional keyword
@@ -388,9 +388,11 @@ class OpenGLMobject:
 
         """
         if kwargs:
-            cls.__init__ = partialmethod(cls.__init__, **kwargs)  # type: ignore[method-assign, assignment]
+            # Apparently mypy does not correctly understand `partialmethod`:
+            #   see https://github.com/python/mypy/issues/8619
+            cls.__init__ = partialmethod(cls.__init__, **kwargs)  # type: ignore[assignment]
         else:
-            cls.__init__ = cls._original__init__  # type: ignore[method-assign]
+            cls.__init__ = cls._original__init__
 
     def init_data(self) -> None:
         """Initializes the ``points``, ``bounding_box`` and ``rgbas`` attributes and groups them into self.data.
@@ -1106,7 +1108,7 @@ class OpenGLMobject:
         row_heights: Sequence[float | None] | None = None,
         col_widths: Sequence[float | None] | None = None,
         flow_order: str = "rd",
-        **kwargs: object,
+        **kwargs: Any,
     ) -> Self:
         """Arrange submobjects in a grid.
 
@@ -3118,7 +3120,7 @@ class OpenGLPoint(OpenGLMobject):
         return cast(Point3D, self.points[0]).copy()
 
     @override
-    def get_bounding_box_point(self, *args: object, **kwargs: object) -> Point3D:
+    def get_bounding_box_point(self, *args: object, **kwargs: Any) -> Point3D:
         return self.get_location()
 
     def set_location(self, new_loc: Point3DLike) -> None:
@@ -3138,7 +3140,7 @@ class _AnimationBuilder:
         self.cannot_pass_args: bool = False
         self.anim_args: dict[str, object] = {}
 
-    def __call__(self, **kwargs: object) -> Self:
+    def __call__(self, **kwargs: Any) -> Self:
         if self.cannot_pass_args:
             raise ValueError(
                 "Animation arguments must be passed before accessing methods and can only be passed once",
