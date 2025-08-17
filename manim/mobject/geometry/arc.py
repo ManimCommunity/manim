@@ -797,7 +797,7 @@ class LabeledDot(Dot):
 
         if radius is None:
             radius = buff + float(
-                np.linalg.norm(rendered_label.width, rendered_label.height) / 2
+                np.linalg.norm([rendered_label.width, rendered_label.height]) / 2
             )
         super().__init__(radius=radius, **kwargs)
         rendered_label.move_to(self.get_center())
