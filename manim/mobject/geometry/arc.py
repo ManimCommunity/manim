@@ -759,7 +759,7 @@ class LabeledDot(Dot):
     radius
         The radius of the :class:`Dot`. If provided, the ``buff`` is ignored.
         If ``None`` (the default), the radius is calculated based on the size
-        of the ``label``.
+        of the ``label`` and the ``buff``.
 
     Examples
     --------
