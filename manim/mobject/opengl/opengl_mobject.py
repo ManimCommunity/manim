@@ -107,39 +107,46 @@ _ShaderDType: TypeAlias = np.void
 _ShaderData: TypeAlias = npt.NDArray[_ShaderDType]
 
 
+# NOTE: Until PEP 728 is implemented in mypy, we have to use `# type: ignore[call-arg]` every time we make use of it.
+
 # NOTE: Once PEP 764 gets accepted and implemented in mypy (https://peps.python.org/pep-0764/),
 #   we'll no longer need some of these `TypedDict`s (for example `_Kw_AboutPoint` or `_Kw_AboutEdge`).
 #   The rest of them will still be needed, until we have a better way of extracting the types of function kwargs.
 
 
-class _Kw_AboutPoint(TypedDict, total=False):
+class _Kw_AboutPoint(TypedDict, total=False, extra_items=Any):  # type: ignore[call-arg]
     about_point: Point3DLike | None
 
 
-class _Kw_AboutEdge(TypedDict, total=False):
+class _Kw_AboutEdge(TypedDict, total=False, extra_items=Any):  # type: ignore[call-arg]
     about_edge: Vector3DLike | None
 
 
-class _Kw_AboutPoint_AboutEdge(_Kw_AboutPoint, _Kw_AboutEdge, total=False):
+class _Kw_AboutPoint_AboutEdge(  # type: ignore[call-arg]
+    _Kw_AboutPoint,
+    _Kw_AboutEdge,
+    total=False,
+    extra_items=Any,
+):
     pass
 
 
-class _Kw_ApplyFunc(_Kw_AboutPoint_AboutEdge, total=False):
+class _Kw_ApplyFunc(_Kw_AboutPoint_AboutEdge, total=False, extra_items=Any):  # type: ignore[call-arg]
     works_on_bounding_box: bool
 
 
-class _Kw_Buff(TypedDict, total=False):
+class _Kw_Buff(TypedDict, total=False, extra_items=Any):  # type: ignore[call-arg]
     buff: float
 
 
-class _Kw_Arrange(_Kw_Buff, total=False):
+class _Kw_Arrange(_Kw_Buff, total=False, extra_items=Any):  # type: ignore[call-arg]
     aligned_edge: Vector3DLike
     submobject_to_align: OpenGLMobject | None
     index_of_submobject_to_align: int | None
     coor_mask: Vector3DLike
 
 
-class _Kw_GetGrid(TypedDict, total=False):
+class _Kw_GetGrid(TypedDict, total=False, extra_items=Any):  # type: ignore[call-arg]
     buff: float | tuple[float, float]
     cell_alignment: Vector3DLike
     row_alignments: str | None
@@ -3063,7 +3070,7 @@ class OpenGLMobject:
             raise Exception(message.format(caller_name))
 
 
-class _Kw_OpenGLMobject(TypedDict, total=False):
+class _Kw_OpenGLMobject(TypedDict, total=False, extra_items=Any):  # type: ignore[call-arg]
     color: ParsableManimColor | Sequence[ParsableManimColor]
     opacity: float
     dim: int  # TODO, get rid of this
