@@ -19,7 +19,6 @@ from PIL import Image
 from manim._config import config, logger
 from manim.constants import *
 from manim.mobject.mobject import Mobject
-from manim.mobject.types.image_mobject import AbstractImageMobject
 from manim.mobject.types.point_cloud_mobject import PMobject
 from manim.mobject.types.vectorized_mobject import VMobject
 from manim.utils.color import ManimColor, ParsableManimColor, color_to_int_rgba
@@ -31,6 +30,7 @@ if TYPE_CHECKING:
     import numpy.typing as npt
     from typing_extensions import Self
 
+    from manim.mobject.types.image_mobject import AbstractImageMobject
     from manim.typing import (
         FloatRGBA_Array,
         FloatRGBALike_Array,
