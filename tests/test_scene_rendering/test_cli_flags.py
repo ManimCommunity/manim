@@ -745,3 +745,33 @@ input_file = {simple_scenes_path}
     ]
     out, err, exit_code = capture(command, cwd=tmp_path)
     assert exit_code == 0, err
+
+
+@pytest.mark.slow
+def test_dry_run_via_config_file_no_output(tmp_path, simple_scenes_path):
+    """Test that no file is created when dry_run is set to true in a config file."""
+    scene_name = "SquareToCircle"
+    config_file = tmp_path / "test_config.cfg"
+    config_file.write_text(
+        """
+[CLI]
+dry_run = true
+"""
+    )
+
+    command = [
+        sys.executable,
+        "-m",
+        "manim",
+        "--config_file",
+        str(config_file),
+        "--media_dir",
+        str(tmp_path),
+        str(simple_scenes_path),
+        scene_name,
+    ]
+    out, err, exit_code = capture(command)
+    assert exit_code == 0, err
+
+    assert not (tmp_path / "videos").exists(), "videos folder was created in dry_run"
+    assert not (tmp_path / "images").exists(), "images folder was created in dry_run"
