@@ -5,11 +5,12 @@ import logging
 import re
 from collections.abc import Mapping, Sequence
 from pathlib import Path
-from typing import TYPE_CHECKING, Self, TypeAlias
+from typing import TYPE_CHECKING, TypeAlias
 
 import moderngl
 import numpy as np
 import numpy.typing as npt
+from typing_extensions import Self
 
 if TYPE_CHECKING:
     from manim.typing import FloatRGBLike_Array
