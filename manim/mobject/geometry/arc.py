@@ -757,8 +757,9 @@ class LabeledDot(Dot):
         representing rendered strings like :class:`~.Text` or :class:`~.Tex`
         can be passed as well.
     radius
-        The radius of the :class:`Dot`. If ``None`` (the default), the radius
-        is calculated based on the size of the ``label``.
+        The radius of the :class:`Dot`. If provided, the ``buff`` is ignored.
+        If ``None`` (the default), the radius is calculated based on the size
+        of the ``label``.
 
     Examples
     --------
@@ -784,6 +785,7 @@ class LabeledDot(Dot):
         self,
         label: str | SingleStringMathTex | Text | Tex,
         radius: float | None = None,
+        buff: float = SMALL_BUFF,
         **kwargs: Any,
     ) -> None:
         if isinstance(label, str):
@@ -794,7 +796,9 @@ class LabeledDot(Dot):
             rendered_label = label
 
         if radius is None:
-            radius = 0.1 + max(rendered_label.width, rendered_label.height) / 2
+            radius = buff + float(
+                np.linalg.norm(rendered_label.width, rendered_label.height) / 2
+            )
         super().__init__(radius=radius, **kwargs)
         rendered_label.move_to(self.get_center())
         self.add(rendered_label)
