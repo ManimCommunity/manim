@@ -1466,12 +1466,11 @@ class OpenGLMobject:
         self.updating_suspended = False
 
     def update(self, dt: float = 0, recurse: bool = True) -> Self:
-        if not self.has_updaters or self.updating_suspended:
-            return self
-        for updater in self.time_based_updaters:
-            updater(self, dt)
-        for updater in self.non_time_updaters:
-            updater(self)
+        if self.has_updaters and not self.updating_suspended:
+            for updater in self.time_based_updaters:
+                updater(self, dt)
+            for updater in self.non_time_updaters:
+                updater(self)
         if recurse:
             for submob in self.submobjects:
                 submob.update(dt, recurse)
