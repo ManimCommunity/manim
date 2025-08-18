@@ -13,14 +13,6 @@ making it convenient to specify exactly how each one should run. Take a look
 at the :doc:`Example Gallery <../examples>` for some inspiration on how to
 create beautiful images and videos with Manim.
 
-License Information
--------------------
-
-Manim is an open-source library licensed under the **MIT License**, which applies to both the original and the community editions of the software. This means you are free to use, modify, and distribute the code in accordance with the MIT License terms. However, there are some additional points to be aware of:
-- **Copyrighted Assets:** Specific assets, such as the "Pi creatures" in Grant Sanderson's (3Blue1Brown) videos, are copyrighted and protected. Please avoid using these characters in any derivative works.
-- **Content Creation and Sharing:** Videos and animations created with Manim can be freely shared, and no attribution to Manim is required—although it is much appreciated! You are encouraged to showcase your work online and share it with the Manim community.
-
-
 First Steps
 -----------
 
@@ -101,6 +93,21 @@ We'd love to hear from you and see your manimations
 or `Discord <https://www.manim.community/discord/>`_. If you're using Manim in a scientific
 context, instructions on how to cite a particular release can be found
 `in our README <https://github.com/ManimCommunity/manim/blob/main/README.md>`_.
+
+License Information
+-------------------
+
+Manim is an open-source library licensed under the **MIT License**, which applies to both the
+original and the community editions of the software. This means you are free to use, modify,
+and distribute the code in accordance with the MIT License terms. However, there are some
+additional points to be aware of:
+
+- **Copyrighted Assets:** Specific assets, such as the "Pi creatures" in Grant Sanderson's
+  (3Blue1Brown) videos, are copyrighted and protected. Please avoid using these characters in
+  any derivative works.
+- **Content Creation and Sharing:** Videos and animations created with Manim can be freely
+  shared, and no attribution to Manim is required—although it is much appreciated! You are
+  encouraged to showcase your work online and share it with the Manim community.
 
 Index
 -----
