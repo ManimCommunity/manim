@@ -18,8 +18,6 @@ from typing_extensions import (
     Never,
     Self,
     TypeAlias,
-    TypedDict,
-    Unpack,
     overload,
     override,
 )
@@ -105,55 +103,6 @@ __all__ = ["OpenGLMobject", "OpenGLGroup", "OpenGLPoint", "_AnimationBuilder"]
 _ShaderDType: TypeAlias = np.void
 """The dtype for NumPy arrays representing shader data. It's a structured dtype with signature `(point, np.float32, (3,))`."""
 _ShaderData: TypeAlias = npt.NDArray[_ShaderDType]
-
-
-# NOTE: Until PEP 728 is implemented in mypy, we have to use `# type: ignore[call-arg]` every time we make use of it.
-
-# NOTE: Once PEP 764 gets accepted and implemented in mypy (https://peps.python.org/pep-0764/),
-#   we'll no longer need some of these `TypedDict`s (for example `_Kw_AboutPoint` or `_Kw_AboutEdge`).
-#   The rest of them will still be needed, until we have a better way of extracting the types of function kwargs.
-
-
-class _Kw_AboutPoint(TypedDict, total=False, extra_items=Any):  # type: ignore[call-arg]
-    about_point: Point3DLike | None
-
-
-class _Kw_AboutEdge(TypedDict, total=False, extra_items=Any):  # type: ignore[call-arg]
-    about_edge: Vector3DLike | None
-
-
-class _Kw_AboutPoint_AboutEdge(  # type: ignore[call-arg]
-    _Kw_AboutPoint,
-    _Kw_AboutEdge,
-    total=False,
-    extra_items=Any,
-):
-    pass
-
-
-class _Kw_ApplyFunc(_Kw_AboutPoint_AboutEdge, total=False, extra_items=Any):  # type: ignore[call-arg]
-    works_on_bounding_box: bool
-
-
-class _Kw_Buff(TypedDict, total=False, extra_items=Any):  # type: ignore[call-arg]
-    buff: float
-
-
-class _Kw_Arrange(_Kw_Buff, total=False, extra_items=Any):  # type: ignore[call-arg]
-    aligned_edge: Vector3DLike
-    submobject_to_align: OpenGLMobject | None
-    index_of_submobject_to_align: int | None
-    coor_mask: Vector3DLike
-
-
-class _Kw_GetGrid(TypedDict, total=False, extra_items=Any):  # type: ignore[call-arg]
-    buff: float | tuple[float, float]
-    cell_alignment: Vector3DLike
-    row_alignments: str | None
-    col_alignments: str | None
-    row_heights: Sequence[float | None] | None
-    col_widths: Sequence[float | None] | None
-    flow_order: str
 
 
 class OpenGLMobject:
@@ -352,7 +301,7 @@ class OpenGLMobject:
         return NotImplemented
 
     @classmethod
-    def set_default(cls, **kwargs: Unpack["_Kw_OpenGLMobject"]) -> None:  # noqa: UP037
+    def set_default(cls, **kwargs: Any) -> None:
         """Sets the default values of keyword arguments.
 
         If this method is called without any additional keyword
@@ -1079,7 +1028,7 @@ class OpenGLMobject:
         self,
         direction: Vector3DLike = RIGHT,
         center: bool = True,
-        **kwargs: Unpack[_Kw_Arrange],
+        **kwargs: Any,
     ) -> Self:
         """Sorts :class:`~.OpenGLMobject` next to each other on screen.
 
@@ -1384,7 +1333,7 @@ class OpenGLMobject:
         n_rows: int,
         n_cols: int,
         height: float | None = None,
-        **kwargs: Unpack[_Kw_GetGrid],
+        **kwargs: Any,
     ) -> OpenGLGroup:
         """
         Returns a new mobject containing multiple copies of this one
@@ -1728,9 +1677,7 @@ class OpenGLMobject:
         )
         return self
 
-    def stretch(
-        self, factor: float, dim: int, **kwargs: Unpack[_Kw_AboutPoint_AboutEdge]
-    ) -> Self:
+    def stretch(self, factor: float, dim: int, **kwargs: Any) -> Self:
         def func(points: Point3D_Array) -> Point3D_Array:
             points[:, dim] *= factor
             return points
@@ -1746,7 +1693,7 @@ class OpenGLMobject:
         angle: float,
         axis: Vector3DLike = OUT,
         about_point: Point3DLike | None = None,
-        **kwargs: Unpack[_Kw_AboutEdge],
+        **kwargs: Any,
     ) -> Self:
         """Rotates the :class:`~.OpenGLMobject` about a certain point."""
         rot_matrix_T = rotation_matrix_transpose(angle, axis)
@@ -1757,9 +1704,7 @@ class OpenGLMobject:
         )
         return self
 
-    def flip(
-        self, axis: Vector3DLike = UP, **kwargs: Unpack[_Kw_AboutPoint_AboutEdge]
-    ) -> Self:
+    def flip(self, axis: Vector3DLike = UP, **kwargs: Any) -> Self:
         """Flips/Mirrors an mobject about its center.
 
         Examples
@@ -1778,9 +1723,7 @@ class OpenGLMobject:
         """
         return self.rotate(TAU / 2, axis, **kwargs)
 
-    def apply_function(
-        self, function: MappingFunction, **kwargs: Unpack[_Kw_ApplyFunc]
-    ) -> Self:
+    def apply_function(self, function: MappingFunction, **kwargs: Any) -> Self:
         # Default to applying matrix about the origin, not mobjects center
         if len(kwargs) == 0:
             kwargs["about_point"] = ORIGIN
@@ -1801,7 +1744,7 @@ class OpenGLMobject:
             submob.apply_function_to_position(function)
         return self
 
-    def apply_matrix(self, matrix: MatrixMN, **kwargs: Unpack[_Kw_ApplyFunc]) -> Self:
+    def apply_matrix(self, matrix: MatrixMN, **kwargs: Any) -> Self:
         # Default to applying matrix about the origin, not mobjects center
         if ("about_point" not in kwargs) and ("about_edge" not in kwargs):
             kwargs["about_point"] = ORIGIN
@@ -1814,7 +1757,7 @@ class OpenGLMobject:
         return self
 
     def apply_complex_function(
-        self, function: Callable[[complex], complex], **kwargs: Unpack[_Kw_ApplyFunc]
+        self, function: Callable[[complex], complex], **kwargs: Any
     ) -> Self:
         """Applies a complex function to a :class:`OpenGLMobject`.
         The x and y coordinates correspond to the real and imaginary parts respectively.
@@ -1976,7 +1919,7 @@ class OpenGLMobject:
         self.shift((target_point - point_to_align + buff * np_direction) * coor_mask)
         return self
 
-    def shift_onto_screen(self, **kwargs: Unpack[_Kw_Buff]) -> Self:
+    def shift_onto_screen(self, **kwargs: Any) -> Self:
         space_lengths: list[float] = [
             config["frame_x_radius"],
             config["frame_y_radius"],
@@ -2007,7 +1950,7 @@ class OpenGLMobject:
         length: float,
         dim: int,
         stretch: bool = False,
-        **kwargs: Unpack[_Kw_AboutPoint_AboutEdge],
+        **kwargs: Any,
     ) -> Self:
         old_length = self.length_over_dim(dim)
         if old_length == 0:
@@ -2018,9 +1961,7 @@ class OpenGLMobject:
             self.scale(length / old_length, **kwargs)
         return self
 
-    def stretch_to_fit_width(
-        self, width: float, **kwargs: Unpack[_Kw_AboutPoint_AboutEdge]
-    ) -> Self:
+    def stretch_to_fit_width(self, width: float, **kwargs: Any) -> Self:
         """Stretches the :class:`~.OpenGLMobject` to fit a width, not keeping height/depth proportional.
 
         Returns
@@ -2046,15 +1987,11 @@ class OpenGLMobject:
         """
         return self.rescale_to_fit(width, 0, stretch=True, **kwargs)
 
-    def stretch_to_fit_height(
-        self, height: float, **kwargs: Unpack[_Kw_AboutPoint_AboutEdge]
-    ) -> Self:
+    def stretch_to_fit_height(self, height: float, **kwargs: Any) -> Self:
         """Stretches the :class:`~.OpenGLMobject` to fit a height, not keeping width/height proportional."""
         return self.rescale_to_fit(height, 1, stretch=True, **kwargs)
 
-    def stretch_to_fit_depth(
-        self, depth: float, **kwargs: Unpack[_Kw_AboutPoint_AboutEdge]
-    ) -> Self:
+    def stretch_to_fit_depth(self, depth: float, **kwargs: Any) -> Self:
         """Stretches the :class:`~.OpenGLMobject` to fit a depth, not keeping width/height proportional."""
         return self.rescale_to_fit(depth, 1, stretch=True, **kwargs)
 
@@ -2062,7 +1999,7 @@ class OpenGLMobject:
         self,
         width: float,
         stretch: bool = False,
-        **kwargs: Unpack[_Kw_AboutPoint_AboutEdge],
+        **kwargs: Any,
     ) -> Self:
         """Scales the :class:`~.OpenGLMobject` to fit a width while keeping height/depth proportional.
 
@@ -2095,7 +2032,7 @@ class OpenGLMobject:
         self,
         height: float,
         stretch: bool = False,
-        **kwargs: Unpack[_Kw_AboutPoint_AboutEdge],
+        **kwargs: Any,
     ) -> Self:
         """Scales the :class:`~.OpenGLMobject` to fit a height while keeping width/depth proportional."""
         return self.rescale_to_fit(height, 1, stretch=stretch, **kwargs)
@@ -2106,7 +2043,7 @@ class OpenGLMobject:
         self,
         depth: float,
         stretch: bool = False,
-        **kwargs: Unpack[_Kw_AboutPoint_AboutEdge],
+        **kwargs: Any,
     ) -> Self:
         """Scales the :class:`~.OpenGLMobject` to fit a depth while keeping width/height proportional."""
         return self.rescale_to_fit(depth, 2, stretch=stretch, **kwargs)
@@ -2134,9 +2071,7 @@ class OpenGLMobject:
         """Set z value of the center of the :class:`~.OpenGLMobject` (``int`` or ``float``)"""
         return self.set_coord(z, 2, direction)
 
-    def space_out_submobjects(
-        self, factor: float = 1.5, **kwargs: Unpack[_Kw_AboutPoint_AboutEdge]
-    ) -> Self:
+    def space_out_submobjects(self, factor: float = 1.5, **kwargs: Any) -> Self:
         self.scale(factor, **kwargs)
         for submob in self.submobjects:
             submob.scale(1.0 / factor)
@@ -2556,26 +2491,20 @@ class OpenGLMobject:
         self,
         mobject: OpenGLMobject,
         dim: int,
-        **kwargs: Unpack[_Kw_AboutPoint_AboutEdge],
+        **kwargs: Any,
     ) -> Self:
         """Match the specified dimension with the dimension of another :class:`~.OpenGLMobject`."""
         return self.rescale_to_fit(mobject.length_over_dim(dim), dim, **kwargs)
 
-    def match_width(
-        self, mobject: OpenGLMobject, **kwargs: Unpack[_Kw_AboutPoint_AboutEdge]
-    ) -> Self:
+    def match_width(self, mobject: OpenGLMobject, **kwargs: Any) -> Self:
         """Match the width with the width of another :class:`~.OpenGLMobject`."""
         return self.match_dim_size(mobject, 0, **kwargs)
 
-    def match_height(
-        self, mobject: OpenGLMobject, **kwargs: Unpack[_Kw_AboutPoint_AboutEdge]
-    ) -> Self:
+    def match_height(self, mobject: OpenGLMobject, **kwargs: Any) -> Self:
         """Match the height with the height of another :class:`~.OpenGLMobject`."""
         return self.match_dim_size(mobject, 1, **kwargs)
 
-    def match_depth(
-        self, mobject: OpenGLMobject, **kwargs: Unpack[_Kw_AboutPoint_AboutEdge]
-    ) -> Self:
+    def match_depth(self, mobject: OpenGLMobject, **kwargs: Any) -> Self:
         """Match the depth with the depth of another :class:`~.OpenGLMobject`."""
         return self.match_dim_size(mobject, 2, **kwargs)
 
@@ -3070,34 +2999,8 @@ class OpenGLMobject:
             raise Exception(message.format(caller_name))
 
 
-class _Kw_OpenGLMobject(TypedDict, total=False, extra_items=Any):  # type: ignore[call-arg]
-    color: ParsableManimColor | Sequence[ParsableManimColor]
-    opacity: float
-    dim: int  # TODO, get rid of this
-    # Lighting parameters
-    gloss: float
-    """Positive gloss up to 1 makes it reflect the light."""
-    shadow: float
-    """Positive shadow up to 1 makes a side opposite the light darker."""
-    # For shaders
-    render_primitive: int
-    texture_paths: dict[str, str] | None
-    depth_test: bool
-    # If true, the mobject will not get rotated according to camera position
-    is_fixed_in_frame: bool
-    is_fixed_orientation: bool
-    # Must match in attributes of vert shader
-    # Event listener
-    listen_to_events: bool
-    model_matrix: MatrixMN | None
-    should_render: bool
-    name: str | None
-
-
 class OpenGLGroup(OpenGLMobject):
-    def __init__(
-        self, *mobjects: OpenGLMobject, **kwargs: Unpack[_Kw_OpenGLMobject]
-    ) -> None:
+    def __init__(self, *mobjects: OpenGLMobject, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.add(*mobjects)
 
@@ -3108,7 +3011,7 @@ class OpenGLPoint(OpenGLMobject):
         location: Point3DLike = ORIGIN,
         artificial_width: float = 1e-6,
         artificial_height: float = 1e-6,
-        **kwargs: Unpack[_Kw_OpenGLMobject],
+        **kwargs: Any,
     ) -> None:
         self.artificial_width: float = artificial_width
         self.artificial_height: float = artificial_height
