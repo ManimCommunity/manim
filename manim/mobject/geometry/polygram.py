@@ -18,7 +18,7 @@ __all__ = [
 
 
 from math import ceil
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Literal
 
 import numpy as np
 
@@ -32,8 +32,6 @@ from manim.utils.qhull import QuickHull
 from manim.utils.space_ops import angle_between_vectors, normalize, regular_vertices
 
 if TYPE_CHECKING:
-    from typing import Any, Literal
-
     import numpy.typing as npt
     from typing_extensions import Self
 

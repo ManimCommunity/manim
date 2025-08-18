@@ -31,7 +31,9 @@ try:
     window = dpg.generate_uuid()
 except ImportError:
     dearpygui_imported = False
-from typing import TYPE_CHECKING
+
+from collections.abc import Callable, Iterable, Sequence
+from typing import TYPE_CHECKING, Any, Union
 
 import numpy as np
 from tqdm import tqdm
@@ -59,11 +61,9 @@ from ..utils.iterables import list_difference_update, list_update
 from ..utils.module_ops import scene_classes_from_file
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable, Sequence
     from types import FrameType
-    from typing import Any, Callable, TypeAlias, Union
 
-    from typing_extensions import Self
+    from typing_extensions import Self, TypeAlias
 
     from manim.typing import Point3D
 
@@ -383,7 +383,7 @@ class Scene:
 
     def update_meshes(self, dt: float) -> None:
         for obj in self.meshes:
-            for mesh in obj.get_family():  # type: ignore[no-untyped-call]
+            for mesh in obj.get_family():
                 mesh.update(dt)
 
     def update_self(self, dt: float) -> None:
@@ -592,6 +592,19 @@ class Scene:
         def replace_in_list(
             mobj_list: list[Mobject], old_m: Mobject, new_m: Mobject
         ) -> bool:
+            # Avoid duplicate references to the same object in self.mobjects
+            if new_m in mobj_list:
+                if old_m is new_m:
+                    # In this case, one could say that the old Mobject was already found.
+                    # No replacement is needed, since old_m is new_m, so no action is required.
+                    # This might be unexpected, so raise a warning.
+                    logger.warning(
+                        f"Attempted to replace {type(old_m).__name__} "
+                        "with itself in Scene.mobjects."
+                    )
+                    return True
+                mobj_list.remove(new_m)
+
             # We use breadth-first search because some Mobjects get very deep and
             # we expect top-level elements to be the most common targets for replace.
             for i in range(0, len(mobj_list)):
@@ -1476,7 +1489,10 @@ class Scene:
         assert self.queue.qsize() == 0
 
         last_time = time.time()
-        while not (self.renderer.window.is_closing or self.quit_interaction):
+        while not (
+            (self.renderer.window is not None and self.renderer.window.is_closing)
+            or self.quit_interaction
+        ):
             if not self.queue.empty():
                 action = self.queue.get_nowait()
                 if isinstance(action, SceneInteractRerun):
@@ -1537,7 +1553,7 @@ class Scene:
         if self.dearpygui_imported and config["enable_gui"]:
             dpg.stop_dearpygui()
 
-        if self.renderer.window.is_closing:
+        if self.renderer.window is not None and self.renderer.window.is_closing:
             self.renderer.window.destroy()
 
     def embed(self) -> None:
@@ -1911,6 +1927,6 @@ class Scene:
     def set_key_function(self, char: str, func: Callable[[], Any]) -> None:
         self.key_to_function_map[char] = func
 
-    def on_mouse_press(self, point: Point3D, button: int, modifiers: int) -> None:
+    def on_mouse_press(self, point: Point3D, button: str, modifiers: int) -> None:
         for func in self.mouse_press_callbacks:
             func()

@@ -28,7 +28,7 @@ from ...utils.color import BLACK
 from ..svg.svg_mobject import VMobjectFromSVGPath
 
 if TYPE_CHECKING:
-    from manim.typing import Point3D, Point3DLike, Vector3D
+    from manim.typing import Point3D, Point3DLike, Vector3D, Vector3DLike
     from manim.utils.color.core import ParsableManimColor
 
 
@@ -70,7 +70,7 @@ class Brace(VMobjectFromSVGPath):
     def __init__(
         self,
         mobject: Mobject,
-        direction: Point3DLike = DOWN,
+        direction: Vector3DLike = DOWN,
         buff: float = 0.2,
         sharpness: float = 2,
         stroke_width: float = 0,
@@ -233,7 +233,7 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
         self,
         obj: Mobject,
         text: str,
-        brace_direction: Point3DLike = DOWN,
+        brace_direction: Vector3DLike = DOWN,
         label_constructor: type[SingleStringMathTex | Text] = MathTex,
         font_size: float = DEFAULT_FONT_SIZE,
         buff: float = 0.2,
@@ -376,7 +376,7 @@ class BraceBetweenPoints(Brace):
         self,
         point_1: Point3DLike,
         point_2: Point3DLike,
-        direction: Point3DLike = ORIGIN,
+        direction: Vector3DLike = ORIGIN,
         **kwargs: Any,
     ):
         if all(direction == ORIGIN):
@@ -443,7 +443,7 @@ class ArcBrace(Brace):
     def __init__(
         self,
         arc: Arc | None = None,
-        direction: Point3DLike = RIGHT,
+        direction: Vector3DLike = RIGHT,
         **kwargs: Any,
     ):
         if arc is None:
