@@ -1270,21 +1270,21 @@ class OpenGLMobject:
                 raise ValueError(f"{name}_alignments has a mismatching size.")
             return [mapping[letter] for letter in str_alignments]
 
-        row_alignments: Sequence[Vector3D] = init_alignments(  # type: ignore[no-redef]
+        row_alignments_seq: Sequence[Vector3D] = init_alignments(
             row_alignments,
             rows,
             {"u": UP, "c": ORIGIN, "d": DOWN},
             "row",
             RIGHT,
         )
-        col_alignments: Sequence[Vector3D] = init_alignments(  # type: ignore[no-redef]
+        col_alignments_seq: Sequence[Vector3D] = init_alignments(
             col_alignments,
             cols,
             {"l": LEFT, "c": ORIGIN, "r": RIGHT},
             "col",
             UP,
         )
-        # Now row_alignment[r] + col_alignment[c] is the alignment in cell [r][c]
+        # Now row_alignments_seq[r] + col_alignment_seq[c] is the alignment in cell [r][c]
 
         mapper: dict[str, Callable[[int, int], int]] = {
             "dr": lambda r, c: (rows - r - 1) + c * rows,
@@ -1301,7 +1301,7 @@ class OpenGLMobject:
             raise ValueError(
                 f"flow_order must be one of the following values: {valid_flow_orders}.",
             )
-        flow_order: Callable[[int, int], int] = mapper[flow_order]  # type: ignore[no-redef]
+        flow_order_func = mapper[flow_order]
 
         # Reverse row_alignments and row_heights. Necessary since the
         # grid filling is handled bottom up for simplicity reasons.
@@ -1321,7 +1321,7 @@ class OpenGLMobject:
                 return maybe_list
             return None
 
-        row_alignments: Sequence[Vector3D] = reverse(row_alignments)  # type: ignore[no-redef]
+        row_alignments_seq = reverse(row_alignments_seq)
         row_heights = reverse(row_heights)
 
         placeholder = OpenGLMobject()
@@ -1330,7 +1330,7 @@ class OpenGLMobject:
         # properties of 0.
 
         mobs.extend([placeholder] * (rows * cols - len(mobs)))
-        grid = [[mobs[flow_order(r, c)] for c in range(cols)] for r in range(rows)]  # type: ignore[operator]
+        grid = [[mobs[flow_order_func(r, c)] for c in range(cols)] for r in range(rows)]
 
         measured_heigths = [
             max(grid[r][c].height for c in range(cols)) for r in range(rows)
@@ -1363,7 +1363,7 @@ class OpenGLMobject:
             x = 0.0
             for c in range(cols):
                 if grid[r][c] is not placeholder:
-                    alignment = row_alignments[r] + col_alignments[c]  # type: ignore[index]
+                    alignment = row_alignments_seq[r] + col_alignments_seq[c]
                     line = Line(
                         x * RIGHT + y * UP,
                         (x + widths[c]) * RIGHT + (y + heights[r]) * UP,
