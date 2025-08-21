@@ -1,0 +1,74 @@
+# Simpan dengan nama: promo_xwords_id.py
+# Jalankan: manim -pql promo_xwords_id.py PromoXwordsID
+# Output: promo_xwords_id.mp4
+
+from manim import *
+
+class PromoXwordsID(Scene):
+    def construct(self):
+        # Judul Awal
+        title = Text("Aplikasi Penghasil Uang - Xwords", font_size=36, color=YELLOW)
+        self.play(Write(title))
+        self.wait(2)
+        self.play(FadeOut(title))
+
+        # Scene 1: Ilham tanya uang
+        chat1 = Text("Ilham: Jamal, kamu ada uang tidak?", font_size=28)
+        self.play(Write(chat1))
+        self.wait(2)
+        self.play(FadeOut(chat1))
+
+        # Scene 2: Jawaban Jamal
+        chat2 = Text("Jamal: Tidak ada uang.", font_size=28, color=BLUE)
+        self.play(Write(chat2))
+        self.wait(2)
+        self.play(FadeOut(chat2))
+
+        # Scene 3: Ilham tanya lagi
+        chat3 = Text("Ilham: Kamu lagi apa?", font_size=28)
+        self.play(Write(chat3))
+        self.wait(2)
+        self.play(FadeOut(chat3))
+
+        # Scene 4: Jamal jawab
+        chat4 = Text("Jamal: Aku lagi main game penghasil uang.", font_size=28, color=BLUE)
+        self.play(Write(chat4))
+        self.wait(2)
+        self.play(FadeOut(chat4))
+
+        # Scene 5: Ilham tanya game apa
+        chat5 = Text("Ilham: Game apa itu?", font_size=28)
+        self.play(Write(chat5))
+        self.wait(2)
+        self.play(FadeOut(chat5))
+
+        # Scene 6: Jamal jelaskan
+        chat6 = Text(
+            "Jamal: Game-nya bernama Xwords.\n"
+            "Bisa menghasilkan uang dengan cara\n"
+            "bermain game dan meningkatkan level pet.",
+            font_size=26, color=BLUE
+        )
+        self.play(Write(chat6))
+        self.wait(3)
+        self.play(FadeOut(chat6))
+
+        # Scene 7: Ilham bicara ke kamera
+        ilham_line = Text(
+            "Ilham: Kalau kalian ingin membantu saya,\n"
+            "gunakan kode undangan saya: G6T4KA\n"
+            "Terima kasih!",
+            font_size=28, color=GREEN
+        )
+        self.play(Write(ilham_line))
+        self.wait(3)
+        self.play(FadeOut(ilham_line))
+
+        # Ending Promo
+        ending = Text(
+            "Main game, naik level, hasilkan uang!\n"
+            "Download sekarang: Xwords 🎮💰",
+            font_size=32, color=YELLOW
+        )
+        self.play(Write(ending, run_time=2))
+        self.wait(3)
