@@ -299,9 +299,9 @@ class Mobject:
 
         """
         if kwargs:
-            # error: Cannot assign to a method  [method-assign]
-            # error: Incompatible types in assignment (expression has type "partialmethod[Any]", variable has type "Callable[[Mobject, ManimColor | int | str | tuple[int, int, int] | tuple[float, float, float] | <6 more items> | list[ManimColor | int | str | tuple[int, int, int] | tuple[float, float, float] | <6 more items>], str | None, int, Mobject | None, float], None]")  [assignment]
-            cls.__init__ = partialmethod(cls.__init__, **kwargs)
+            # Apparently mypy does not correctly understand `partialmethod`:
+            #   see https://github.com/python/mypy/issues/8619
+            cls.__init__ = partialmethod(cls.__init__, **kwargs)  # type: ignore[assignment]
         else:
             # error: Cannot assign to a method  [method-assign]
             cls.__init__ = cls._original__init__
