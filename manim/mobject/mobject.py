@@ -42,7 +42,7 @@ from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
-    from typing import Any, Callable, Literal
+    from typing import Any, Callable, Literal, Union
 
     from typing_extensions import Self, TypeAlias
 
@@ -67,7 +67,7 @@ if TYPE_CHECKING:
 
 _TimeBasedUpdater: TypeAlias = Callable[["Mobject", float], object]
 _NonTimeBasedUpdater: TypeAlias = Callable[["Mobject"], object]
-_Updater: TypeAlias = _NonTimeBasedUpdater | _TimeBasedUpdater
+_Updater: TypeAlias = Union[_NonTimeBasedUpdater, _TimeBasedUpdater]
 
 
 class Mobject:
