@@ -65,9 +65,9 @@ if TYPE_CHECKING:
     from ..animation.animation import Animation
     from ..camera.camera import Camera
 
-TimeBasedUpdater: TypeAlias = Callable[["Mobject", float], object]
-NonTimeBasedUpdater: TypeAlias = Callable[["Mobject"], object]
-Updater: TypeAlias = NonTimeBasedUpdater | TimeBasedUpdater
+_TimeBasedUpdater: TypeAlias = Callable[["Mobject", float], object]
+_NonTimeBasedUpdater: TypeAlias = Callable[["Mobject"], object]
+_Updater: TypeAlias = _NonTimeBasedUpdater | _TimeBasedUpdater
 
 
 class Mobject:
@@ -119,7 +119,7 @@ class Mobject:
         self.z_index = z_index
         self.point_hash = None
         self.submobjects: list[Mobject] = []
-        self.updaters: list[Updater] = []
+        self.updaters: list[_Updater] = []
         self.updating_suspended = False
         self.color = ManimColor.parse(color)
 
@@ -906,17 +906,17 @@ class Mobject:
             return self
         for updater in self.updaters:
             if "dt" in inspect.signature(updater).parameters:
-                time_based_updater = cast(TimeBasedUpdater, updater)
+                time_based_updater = cast(_TimeBasedUpdater, updater)
                 time_based_updater(self, dt)
             else:
-                non_time_based_updater = cast(NonTimeBasedUpdater, updater)
+                non_time_based_updater = cast(_NonTimeBasedUpdater, updater)
                 non_time_based_updater(self)
         if recursive:
             for submob in self.submobjects:
                 submob.update(dt, recursive=recursive)
         return self
 
-    def get_time_based_updaters(self) -> list[TimeBasedUpdater]:
+    def get_time_based_updaters(self) -> list[_TimeBasedUpdater]:
         """Return all updaters using the ``dt`` parameter.
 
         The updaters use this parameter as the input for difference in time.
@@ -932,10 +932,10 @@ class Mobject:
         :meth:`has_time_based_updater`
 
         """
-        rv: list[TimeBasedUpdater] = []
+        rv: list[_TimeBasedUpdater] = []
         for updater in self.updaters:
             if "dt" in inspect.signature(updater).parameters:
-                time_based_updater = cast(TimeBasedUpdater, updater)
+                time_based_updater = cast(_TimeBasedUpdater, updater)
                 rv.append(time_based_updater)
         return rv
 
@@ -957,7 +957,7 @@ class Mobject:
             "dt" in inspect.signature(updater).parameters for updater in self.updaters
         )
 
-    def get_updaters(self) -> list[Updater]:
+    def get_updaters(self) -> list[_Updater]:
         """Return all updaters.
 
         Returns
@@ -973,12 +973,12 @@ class Mobject:
         """
         return self.updaters
 
-    def get_family_updaters(self) -> list[Updater]:
+    def get_family_updaters(self) -> list[_Updater]:
         return list(it.chain(*(sm.get_updaters() for sm in self.get_family())))
 
     def add_updater(
         self,
-        update_function: Updater,
+        update_function: _Updater,
         index: int | None = None,
         call_updater: bool = False,
     ) -> Self:
@@ -1052,15 +1052,15 @@ class Mobject:
         if call_updater:
             parameters = inspect.signature(update_function).parameters
             if "dt" in parameters:
-                time_based_updater = cast(TimeBasedUpdater, update_function)
+                time_based_updater = cast(_TimeBasedUpdater, update_function)
                 time_based_updater(self, 0)
             else:
-                non_time_based_updater = cast(NonTimeBasedUpdater, update_function)
+                non_time_based_updater = cast(_NonTimeBasedUpdater, update_function)
                 non_time_based_updater(self)
 
         return self
 
-    def remove_updater(self, update_function: Updater) -> Self:
+    def remove_updater(self, update_function: _Updater) -> Self:
         """Remove an updater.
 
         If the same updater is applied multiple times, every instance gets removed.
