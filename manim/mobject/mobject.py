@@ -66,6 +66,7 @@ if TYPE_CHECKING:
     from ..camera.camera import Camera
 
 from typing import Union
+
 _TimeBasedUpdater: TypeAlias = Callable[["Mobject", float], object]
 _NonTimeBasedUpdater: TypeAlias = Callable[["Mobject"], object]
 _Updater: TypeAlias = Union[_NonTimeBasedUpdater, _TimeBasedUpdater]
