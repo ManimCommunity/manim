@@ -3113,7 +3113,8 @@ _Decorated = TypeVar("_Decorated", bound=Callable[..., "Animation"])
 
 
 class _OverrideAnimateDecorator(Protocol):
-    def __call__(self, decorated: _Decorated) -> _Decorated: ...
+    # The slash divider on the next line prevents a mypy error in line 3176.
+    def __call__(self, decorated: _Decorated, /) -> _Decorated: ...
 
 
 def override_animate(method: types.FunctionType) -> _OverrideAnimateDecorator:
