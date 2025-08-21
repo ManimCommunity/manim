@@ -20,7 +20,7 @@ from .. import config
 from ..camera.camera import Camera
 from ..constants import DOWN, LEFT, RIGHT, UP
 from ..mobject.frame import ScreenRectangle
-from ..mobject.mobject import Mobject
+from ..mobject.mobject import Mobject, _AnimationBuilder
 from ..utils.color import WHITE, ManimColor
 
 
@@ -172,7 +172,7 @@ class MovingCamera(Camera):
         margin: float = 0,
         only_mobjects_in_frame: bool = False,
         animate: bool = True,
-    ) -> Mobject:
+    ) -> _AnimationBuilder | Mobject:
         """Zooms on to a given array of mobjects (or a singular mobject)
         and automatically resizes to frame all the mobjects.
 
