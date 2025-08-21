@@ -627,7 +627,7 @@ class OpenGLMobject:
             setattr(self, attr, func(getattr(self, attr)))
         return self
 
-    def get_array_attrs(self, /) -> Iterable[str]:
+    def get_array_attrs(self) -> Iterable[str]:
         return ["points"]
 
     def append_points(self, new_points: Point3DLike_Array) -> Self:
@@ -1258,13 +1258,13 @@ class OpenGLMobject:
         if TYPE_CHECKING:
 
             @overload
-            def reverse(maybe_list: None, /) -> None: ...
+            def reverse(maybe_list: None) -> None: ...
             @overload
-            def reverse(maybe_list: Sequence[_T], /) -> list[_T]: ...
+            def reverse(maybe_list: Sequence[_T]) -> list[_T]: ...
             @overload
-            def reverse(maybe_list: Sequence[_T] | None, /) -> list[_T] | None: ...
+            def reverse(maybe_list: Sequence[_T] | None) -> list[_T] | None: ...
 
-        def reverse(maybe_list: Sequence[_T] | None, /) -> list[_T] | None:
+        def reverse(maybe_list: Sequence[_T] | None) -> list[_T] | None:
             if maybe_list is not None:
                 maybe_list = list(maybe_list)
                 maybe_list.reverse()
@@ -2968,26 +2968,26 @@ class OpenGLMobject:
         self.check_data_alignment(shader_data, data_key)
         shader_data[shader_data_key] = self.data[data_key]
 
-    def get_shader_data(self, /) -> _ShaderData:
+    def get_shader_data(self) -> _ShaderData:
         shader_data = self.get_resized_shader_data_array(self.get_num_points())
         self.read_data_to_shader(shader_data, "point", "points")
         return shader_data
 
-    def refresh_shader_data(self, /) -> None:
+    def refresh_shader_data(self) -> None:
         self.get_shader_data()
 
-    def get_shader_uniforms(self, /) -> dict[str, Any]:
+    def get_shader_uniforms(self) -> dict[str, Any]:
         return self.uniforms
 
-    def get_shader_vert_indices(self, /) -> Sequence[int] | None:
+    def get_shader_vert_indices(self) -> Sequence[int] | None:
         return self.shader_indices
 
     @property
-    def submobjects(self, /) -> list[OpenGLMobject]:
+    def submobjects(self) -> list[OpenGLMobject]:
         return self._submobjects if hasattr(self, "_submobjects") else []
 
     @submobjects.setter
-    def submobjects(self, submobject_list: Iterable[OpenGLMobject], /) -> None:
+    def submobjects(self, submobject_list: Iterable[OpenGLMobject]) -> None:
         self.remove(*self.submobjects)
         self.add(*submobject_list)
 
@@ -3064,7 +3064,7 @@ class _AnimationBuilder:
 
         return self
 
-    def __getattr__(self, method_name: str, /) -> Callable[..., Self]:
+    def __getattr__(self, method_name: str) -> Callable[..., Self]:
         method = getattr(self.mobject.target, method_name)
         has_overridden_animation = hasattr(method, "_override_animate")
 
@@ -3113,7 +3113,7 @@ _Decorated = TypeVar("_Decorated", bound=Callable[..., "Animation"])
 
 
 class _OverrideAnimateDecorator(Protocol):
-    def __call__(self, decorated: _Decorated, /) -> _Decorated: ...
+    def __call__(self, decorated: _Decorated) -> _Decorated: ...
 
 
 def override_animate(method: types.FunctionType) -> _OverrideAnimateDecorator:
@@ -3168,7 +3168,7 @@ def override_animate(method: types.FunctionType) -> _OverrideAnimateDecorator:
 
     """
 
-    def decorator(animation_method: _Decorated, /) -> _Decorated:
+    def decorator(animation_method: _Decorated) -> _Decorated:
         method._override_animate = animation_method  # type: ignore[attr-defined]
         return animation_method
 
