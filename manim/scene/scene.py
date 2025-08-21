@@ -186,7 +186,7 @@ class Scene:
         self.moving_mobjects: list[Mobject] = []
         self.static_mobjects: list[Mobject] = []
         self.time_progression: tqdm[float] | None = None
-        self.duration: float | None = None
+        self.duration: float = 0.0
         self.last_t = 0.0
         self.queue: Queue[SceneInteractAction] = Queue()
         self.skip_animation_preview = False
