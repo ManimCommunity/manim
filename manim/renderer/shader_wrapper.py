@@ -82,7 +82,7 @@ class ShaderWrapper:
             result.texture_paths = dict(self.texture_paths)
         return result
 
-    def is_valid(self, /) -> bool:
+    def is_valid(self) -> bool:
         return all(
             [
                 self.vert_data is not None,
@@ -91,10 +91,10 @@ class ShaderWrapper:
             ],
         )
 
-    def get_id(self, /) -> str:
+    def get_id(self) -> str:
         return self.id
 
-    def get_program_id(self, /) -> int:
+    def get_program_id(self) -> int:
         return self.program_id
 
     def create_id(self):
@@ -112,7 +112,7 @@ class ShaderWrapper:
             ),
         )
 
-    def refresh_id(self, /) -> None:
+    def refresh_id(self) -> None:
         self.program_id: int = self.create_program_id()
         self.id: str = self.create_id()
 
