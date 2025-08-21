@@ -775,7 +775,8 @@ class OpenGLMobject:
         bb = self.get_bounding_box()
         mins = bb[0] - buff
         maxs = bb[2] + buff
-        return (point >= mins).all() and (point <= maxs).all()  # type: ignore[no-any-return]
+        rv: bool = (point >= mins).all() and (point <= maxs).all()
+        return rv
 
     # Family matters
 
@@ -2243,7 +2244,8 @@ class OpenGLMobject:
         return rgb_to_hex(self.rgbas[0, :3])
 
     def get_opacity(self) -> float:
-        return self.rgbas[0, 3]  # type: ignore[no-any-return]
+        rv: float = self.rgbas[0, 3]
+        return rv
 
     def set_color_by_gradient(self, *colors: ParsableManimColor) -> Self:
         return self.set_submobject_colors_by_gradient(*colors)
@@ -2412,7 +2414,8 @@ class OpenGLMobject:
 
     def length_over_dim(self, dim: int) -> float:
         bb = self.get_bounding_box()
-        return abs((bb[2] - bb[0])[dim])  # type: ignore[no-any-return]
+        rv: float = abs((bb[2] - bb[0])[dim])
+        return rv
 
     def get_width(self) -> float:
         """Returns the width of the mobject."""
