@@ -71,7 +71,6 @@ from manim import config, logger
 from manim.constants import *
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.svg.svg_mobject import SVGMobject
-from manim.mobject.text.code_mobject import Code
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.typing import Point3D
 from manim.utils.color import ManimColor, ParsableManimColor, color_gradient
@@ -101,14 +100,6 @@ def remove_invisible_chars(mobject: VMobject) -> VMobject:
     :class:`~.SVGMobject`
         The SVGMobject without unwanted invisible characters.
     """
-    # TODO: Refactor needed
-    iscode = False
-    if isinstance(mobject, Text):
-        mobject = mobject[:]
-    elif isinstance(mobject, Code):
-        iscode = True
-        code = mobject
-        mobject = mobject.code
     mobject_without_dots = VGroup()
     if isinstance(mobject[0], VGroup):
         for submob in mobject:
@@ -117,10 +108,6 @@ def remove_invisible_chars(mobject: VMobject) -> VMobject:
             )
     else:
         mobject_without_dots.add(*(k for k in mobject if not isinstance(k, Dot)))
-    if iscode:
-        assert isinstance(code, Code)
-        code.code = mobject_without_dots
-        return code
     return mobject_without_dots
 
 

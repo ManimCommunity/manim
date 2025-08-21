@@ -94,6 +94,21 @@ or `Discord <https://www.manim.community/discord/>`_. If you're using Manim in a
 context, instructions on how to cite a particular release can be found
 `in our README <https://github.com/ManimCommunity/manim/blob/main/README.md>`_.
 
+License Information
+-------------------
+
+Manim is an open-source library licensed under the **MIT License**, which applies to both the
+original and the community editions of the software. This means you are free to use, modify,
+and distribute the code in accordance with the MIT License terms. However, there are some
+additional points to be aware of:
+
+- **Copyrighted Assets:** Specific assets, such as the "Pi creatures" in Grant Sanderson's
+  (3Blue1Brown) videos, are copyrighted and protected. Please avoid using these characters in
+  any derivative works.
+- **Content Creation and Sharing:** Videos and animations created with Manim can be freely
+  shared, and no attribution to Manim is required—although it is much appreciated! You are
+  encouraged to showcase your work online and share it with the Manim community.
+
 Index
 -----
 
