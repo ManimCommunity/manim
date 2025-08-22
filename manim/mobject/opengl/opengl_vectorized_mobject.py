@@ -124,7 +124,10 @@ class OpenGLVMobject(OpenGLMobject):
         self.data = {}
         self.fill_opacity = fill_opacity
         self.stroke_opacity = stroke_opacity
-        self.stroke_width = stroke_width
+        print("OpenGLVMobject")
+        print(stroke_width)
+        self.stroke_width = np.array([[stroke_width]])
+        print("self.stroke_width:", self.stroke_width)
         self.draw_stroke_behind_fill = draw_stroke_behind_fill
         # Indicates that it will not be displayed, but
         # that it should count in parent mobject's path
@@ -199,6 +202,8 @@ class OpenGLVMobject(OpenGLMobject):
             color=self.fill_color or self.color,
             opacity=self.fill_opacity,
         )
+        print("init_colors")
+        print("self.stroke_width:", self.stroke_width)
         self.set_stroke(
             color=self.stroke_color or self.color,
             width=self.stroke_width,
@@ -283,7 +288,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         if width is not None:
             for mob in self.get_family(recurse):
-                mob.stroke_width = np.array([[width] for width in tuplify(width)])
+                mob.stroke_width = np.array(width)
 
         if background is not None:
             for mob in self.get_family(recurse):
@@ -310,8 +315,16 @@ class OpenGLVMobject(OpenGLMobject):
 
         if stroke_rgba is not None:
             self.stroke_rgba = resize_with_interpolation(stroke_rgba, len(fill_rgba))
+            print("set_style")
+            print(self)
+            print("stroke_width: ", stroke_width)
+            print("self.stroke_width:", self.stroke_width)
             self.set_stroke(width=stroke_width)
         else:
+            print("set_style")
+            print(self)
+            print("stroke_width: ", stroke_width)
+            print("self.stroke_width:", self.stroke_width)
             self.set_stroke(
                 color=stroke_color,
                 width=stroke_width,
@@ -357,6 +370,8 @@ class OpenGLVMobject(OpenGLMobject):
             self.opacity = opacity
 
         self.set_fill(color, opacity=opacity, recurse=recurse)
+        print("set_color")
+        print(self.stroke_width)
         self.set_stroke(color, opacity=opacity, recurse=recurse)
         return self
 
@@ -434,7 +449,11 @@ class OpenGLVMobject(OpenGLMobject):
     fill_color = property(get_fill_color, set_fill)
 
     def has_stroke(self):
+        print("has_stroke")
+        print(self)
+        print("self.stroke_width: ", self.stroke_width)
         stroke_widths = self.get_stroke_widths()
+        print("stroke_widths: ", stroke_widths)
         stroke_opacities = self.get_stroke_opacities()
         return (
             stroke_widths is not None

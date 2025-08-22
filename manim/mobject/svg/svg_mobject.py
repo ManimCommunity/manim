@@ -126,9 +126,10 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         self.fill_opacity = fill_opacity  # type: ignore[assignment]
         self.stroke_color = stroke_color
         self.stroke_opacity = stroke_opacity  # type: ignore[assignment]
-        self.stroke_width = stroke_width  # type: ignore[assignment]
-        if self.stroke_width is None:
-            self.stroke_width = 0
+        if stroke_width is None:
+            self.stroke_width = None
+        else:
+            self.stroke_width = np.array([[stroke_width]])  # type: ignore[assignment]
 
         if svg_default is None:
             svg_default = {
@@ -136,7 +137,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
                 "opacity": None,
                 "fill_color": None,
                 "fill_opacity": None,
-                "stroke_width": 0,
+                "stroke_width": None,
                 "stroke_color": None,
                 "stroke_opacity": None,
             }
@@ -327,6 +328,9 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         shape
             The parsed SVG element.
         """
+        print("apply_style_to_mobject")
+        print("mob")
+        print("mob.stroke_width:", mob.stroke_width)
         mob.set_style(
             stroke_width=shape.stroke_width,
             stroke_color=shape.stroke.hexrgb,
@@ -334,6 +338,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             fill_color=shape.fill.hexrgb,
             fill_opacity=shape.fill.opacity,
         )
+        print("mob.stroke_width:", mob.stroke_width)
         return mob
 
     def path_to_mobject(self, path: se.Path) -> VMobjectFromSVGPath:
