@@ -20,9 +20,9 @@ __all__ = [
 ]
 
 
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from functools import reduce
-from typing import TYPE_CHECKING, Callable, overload
+from typing import TYPE_CHECKING, overload
 
 import numpy as np
 

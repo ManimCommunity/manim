@@ -44,7 +44,7 @@ __all__ = [
 
 import itertools
 import warnings
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
 from typing_extensions import Self
@@ -64,7 +64,6 @@ from manim.utils.space_ops import (
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
-    from typing import Any
 
     import manim.mobject.geometry.tips as tips
     from manim.mobject.mobject import Mobject
@@ -74,7 +73,7 @@ if TYPE_CHECKING:
         Point3D,
         Point3DLike,
         QuadraticSpline,
-        Vector3D,
+        Vector3DLike,
     )
 
 
@@ -99,12 +98,12 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
     def __init__(
         self,
         tip_length: float = DEFAULT_ARROW_TIP_LENGTH,
-        normal_vector: Vector3D = OUT,
+        normal_vector: Vector3DLike = OUT,
         tip_style: dict = {},
         **kwargs: Any,
     ) -> None:
         self.tip_length: float = tip_length
-        self.normal_vector: Vector3D = normal_vector
+        self.normal_vector = normal_vector
         self.tip_style: dict = tip_style
         super().__init__(**kwargs)
 
@@ -916,7 +915,8 @@ class AnnularSector(Arc):
         self.append_points(outer_arc.points)
         self.add_line_to(inner_arc.points[0])
 
-    init_points = generate_points
+    def init_points(self) -> None:
+        self.generate_points()
 
 
 class Sector(AnnularSector):
@@ -990,7 +990,8 @@ class Annulus(Circle):
         self.append_points(inner_circle.points)
         self.shift(self.arc_center)
 
-    init_points = generate_points
+    def init_points(self) -> None:
+        self.generate_points()
 
 
 class CubicBezier(VMobject, metaclass=ConvertToOpenGL):

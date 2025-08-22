@@ -4,14 +4,18 @@ import contextlib
 import itertools as it
 import time
 from functools import cached_property
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import moderngl
 import numpy as np
 from PIL import Image
 
 from manim import config, logger
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject, OpenGLPoint
+from manim.mobject.opengl.opengl_mobject import (
+    OpenGLMobject,
+    OpenGLPoint,
+    _AnimationBuilder,
+)
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.utils.caching import handle_caching_play
 from manim.utils.color import color_to_rgba
@@ -34,6 +38,15 @@ from .vectorized_mobject_rendering import (
     render_opengl_vectorized_mobject_fill,
     render_opengl_vectorized_mobject_stroke,
 )
+
+if TYPE_CHECKING:
+    from typing_extensions import Self
+
+    from manim.animation.animation import Animation
+    from manim.mobject.mobject import Mobject
+    from manim.scene.scene import Scene
+    from manim.typing import Point3D
+
 
 __all__ = ["OpenGLCamera", "OpenGLRenderer"]
 
@@ -102,7 +115,7 @@ class OpenGLCamera(OpenGLMobject):
         self.euler_angles = euler_angles
         self.refresh_rotation_matrix()
 
-    def get_position(self):
+    def get_position(self) -> Point3D:
         return self.model_matrix[:, 3][:3]
 
     def set_position(self, position):
@@ -123,7 +136,7 @@ class OpenGLCamera(OpenGLMobject):
         self.set_height(self.frame_shape[1], stretch=True)
         self.move_to(self.center_point)
 
-    def to_default_state(self):
+    def to_default_state(self) -> Self:
         self.center()
         self.set_height(config["frame_height"])
         self.set_width(config["frame_width"])
@@ -166,28 +179,28 @@ class OpenGLCamera(OpenGLMobject):
         self.refresh_rotation_matrix()
         return self
 
-    def set_theta(self, theta):
+    def set_theta(self, theta: float) -> Self:
         return self.set_euler_angles(theta=theta)
 
-    def set_phi(self, phi):
+    def set_phi(self, phi: float) -> Self:
         return self.set_euler_angles(phi=phi)
 
-    def set_gamma(self, gamma):
+    def set_gamma(self, gamma: float) -> Self:
         return self.set_euler_angles(gamma=gamma)
 
-    def increment_theta(self, dtheta):
+    def increment_theta(self, dtheta: float) -> Self:
         self.euler_angles[0] += dtheta
         self.refresh_rotation_matrix()
         return self
 
-    def increment_phi(self, dphi):
+    def increment_phi(self, dphi: float) -> Self:
         phi = self.euler_angles[1]
         new_phi = clip(phi + dphi, -PI / 2, PI / 2)
         self.euler_angles[1] = new_phi
         self.refresh_rotation_matrix()
         return self
 
-    def increment_gamma(self, dgamma):
+    def increment_gamma(self, dgamma: float) -> Self:
         self.euler_angles[2] += dgamma
         self.refresh_rotation_matrix()
         return self
@@ -199,15 +212,15 @@ class OpenGLCamera(OpenGLMobject):
         # Assumes first point is at the center
         return self.points[0]
 
-    def get_width(self):
+    def get_width(self) -> float:
         points = self.points
         return points[2, 0] - points[1, 0]
 
-    def get_height(self):
+    def get_height(self) -> float:
         points = self.points
         return points[4, 1] - points[3, 1]
 
-    def get_focal_distance(self):
+    def get_focal_distance(self) -> float:
         return self.focal_distance * self.get_height()
 
     def interpolate(self, *args, **kwargs):
@@ -236,12 +249,14 @@ class OpenGLRenderer:
         self.camera = OpenGLCamera()
         self.pressed_keys = set()
 
+        self.window = None
+
         # Initialize texture map.
         self.path_to_texture_id = {}
 
         self.background_color = config["background_color"]
 
-    def init_scene(self, scene):
+    def init_scene(self, scene: Scene) -> None:
         self.partial_movie_files = []
         self.file_writer: Any = self._file_writer_class(
             self,
@@ -249,32 +264,31 @@ class OpenGLRenderer:
         )
         self.scene = scene
         self.background_color = config["background_color"]
-        if not hasattr(self, "window"):
-            if self.should_create_window():
-                from .opengl_renderer_window import Window
+        if self.should_create_window():
+            from .opengl_renderer_window import Window
 
-                self.window = Window(self)
-                self.context = self.window.ctx
-                self.frame_buffer_object = self.context.detect_framebuffer()
-            else:
-                self.window = None
-                try:
-                    self.context = moderngl.create_context(standalone=True)
-                except Exception:
-                    self.context = moderngl.create_context(
-                        standalone=True,
-                        backend="egl",
-                    )
-                self.frame_buffer_object = self.get_frame_buffer_object(self.context, 0)
-                self.frame_buffer_object.use()
-            self.context.enable(moderngl.BLEND)
-            self.context.wireframe = config["enable_wireframe"]
-            self.context.blend_func = (
-                moderngl.SRC_ALPHA,
-                moderngl.ONE_MINUS_SRC_ALPHA,
-                moderngl.ONE,
-                moderngl.ONE,
-            )
+            self.window = Window(self)
+            self.context = self.window.ctx
+            self.frame_buffer_object = self.context.detect_framebuffer()
+        else:
+            # self.window = None
+            try:
+                self.context = moderngl.create_context(standalone=True)
+            except Exception:
+                self.context = moderngl.create_context(
+                    standalone=True,
+                    backend="egl",
+                )
+            self.frame_buffer_object = self.get_frame_buffer_object(self.context, 0)
+            self.frame_buffer_object.use()
+        self.context.enable(moderngl.BLEND)
+        self.context.wireframe = config["enable_wireframe"]
+        self.context.blend_func = (
+            moderngl.SRC_ALPHA,
+            moderngl.ONE_MINUS_SRC_ALPHA,
+            moderngl.ONE,
+            moderngl.ONE,
+        )
 
     def should_create_window(self):
         if config["force_window"]:
@@ -389,8 +403,7 @@ class OpenGLRenderer:
         return self.path_to_texture_id[repr(path)]
 
     def update_skipping_status(self) -> None:
-        """
-        This method is used internally to check if the current
+        """This method is used internally to check if the current
         animation needs to be skipped or not. It also checks if
         the number of animations that were played correspond to
         the number of animations that need to be played, and
@@ -412,7 +425,12 @@ class OpenGLRenderer:
             raise EndSceneEarlyException()
 
     @handle_caching_play
-    def play(self, scene, *args, **kwargs):
+    def play(
+        self,
+        scene: Scene,
+        *args: Animation | Mobject | _AnimationBuilder,
+        **kwargs: Any,
+    ) -> None:
         # TODO: Handle data locking / unlocking.
         self.animation_start_time = time.time()
         self.file_writer.begin_animation(not self.skip_animations)
@@ -440,11 +458,13 @@ class OpenGLRenderer:
         self.time += scene.duration
         self.num_plays += 1
 
-    def clear_screen(self):
+    def clear_screen(self) -> None:
         self.frame_buffer_object.clear(*self.background_color)
         self.window.swap_buffers()
 
-    def render(self, scene, frame_offset, moving_mobjects):
+    def render(
+        self, scene: Scene, frame_offset, moving_mobjects: list[Mobject]
+    ) -> None:
         self.update_frame(scene)
 
         if self.skip_animations:
@@ -485,7 +505,7 @@ class OpenGLRenderer:
         if self.should_save_last_frame():
             config.save_last_frame = True
             self.update_frame(scene)
-            self.file_writer.save_final_image(self.get_image())
+            self.file_writer.save_image(self.get_image())
 
     def should_save_last_frame(self):
         if config["save_last_frame"]:
@@ -566,7 +586,9 @@ class OpenGLRenderer:
     # Returns offset from the bottom left corner in pixels.
     # top_left flag should be set to True when using a GUI framework
     # where the (0,0) is at the top left: e.g. PySide6
-    def pixel_coords_to_space_coords(self, px, py, relative=False, top_left=False):
+    def pixel_coords_to_space_coords(
+        self, px: float, py: float, relative: bool = False, top_left: bool = False
+    ) -> Point3D:
         pixel_shape = self.get_pixel_shape()
         if pixel_shape is None:
             return np.array([0, 0, 0])

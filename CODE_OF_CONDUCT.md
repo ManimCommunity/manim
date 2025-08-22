@@ -152,6 +152,7 @@ Examples of conflicts of interest include:
    * The reporter or reported person is a maintainer who regularly reviews your contributions
    * The reporter or reported person is your metamour.
    * The reporter or reported person is your family member
+
 Committee members do not need to state why they have a conflict of interest, only that one exists. Other team members should not ask why the person has a conflict of interest.
 
 Anyone who has a conflict of interest will remove themselves from the discussion of the incident, and recluse themselves from voting on a response to the report.

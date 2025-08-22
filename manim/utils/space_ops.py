@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import itertools as it
-from collections.abc import Sequence
-from typing import TYPE_CHECKING, Callable
+from collections.abc import Callable, Sequence
+from typing import TYPE_CHECKING
 
 import numpy as np
 from mapbox_earcut import triangulate_float32 as earcut
@@ -28,7 +28,8 @@ if TYPE_CHECKING:
         Vector2D,
         Vector2D_Array,
         Vector3D,
-        Vector3D_Array,
+        Vector3DLike,
+        Vector3DLike_Array,
     )
 
 __all__ = [
@@ -70,7 +71,7 @@ def norm_squared(v: float) -> float:
     return val
 
 
-def cross(v1: Vector3D, v2: Vector3D) -> Vector3D:
+def cross(v1: Vector3DLike, v2: Vector3DLike) -> Vector3D:
     return np.array(
         [
             v1[1] * v2[2] - v1[2] * v2[1],
@@ -178,8 +179,8 @@ def quaternion_conjugate(quaternion: Sequence[float]) -> np.ndarray:
 
 
 def rotate_vector(
-    vector: np.ndarray, angle: float, axis: np.ndarray = OUT
-) -> np.ndarray:
+    vector: Vector3DLike, angle: float, axis: Vector3DLike = OUT
+) -> Vector3D:
     """Function for rotating a vector.
 
     Parameters
@@ -245,7 +246,7 @@ def rotation_matrix_from_quaternion(quat: np.ndarray) -> np.ndarray:
     return np.transpose(rotation_matrix_transpose_from_quaternion(quat))
 
 
-def rotation_matrix_transpose(angle: float, axis: np.ndarray) -> np.ndarray:
+def rotation_matrix_transpose(angle: float, axis: Vector3DLike) -> np.ndarray:
     if all(np.array(axis)[:2] == np.zeros(2)):
         return rotation_about_z(angle * np.sign(axis[2])).T
     return rotation_matrix(angle, axis).T
@@ -253,12 +254,12 @@ def rotation_matrix_transpose(angle: float, axis: np.ndarray) -> np.ndarray:
 
 def rotation_matrix(
     angle: float,
-    axis: np.ndarray,
+    axis: Vector3DLike,
     homogeneous: bool = False,
 ) -> np.ndarray:
     """Rotation in R^3 about a specified axis of rotation."""
     inhomogeneous_rotation_matrix = Rotation.from_rotvec(
-        angle * normalize(np.array(axis))
+        angle * normalize(axis)
     ).as_matrix()
     if not homogeneous:
         return inhomogeneous_rotation_matrix
@@ -388,7 +389,7 @@ def normalize_along_axis(array: np.ndarray, axis: np.ndarray) -> np.ndarray:
     return array
 
 
-def get_unit_normal(v1: Vector3D, v2: Vector3D, tol: float = 1e-6) -> Vector3D:
+def get_unit_normal(v1: Vector3DLike, v2: Vector3DLike, tol: float = 1e-6) -> Vector3D:
     """Gets the unit normal of the vectors.
 
     Parameters
@@ -405,18 +406,21 @@ def get_unit_normal(v1: Vector3D, v2: Vector3D, tol: float = 1e-6) -> Vector3D:
     np.ndarray
         The normal of the two vectors.
     """
+    np_v1 = np.asarray(v1)
+    np_v2 = np.asarray(v2)
+
     # Instead of normalizing v1 and v2, just divide by the greatest
     # of all their absolute components, which is just enough
-    div1, div2 = max(np.abs(v1)), max(np.abs(v2))
+    div1, div2 = max(np.abs(np_v1)), max(np.abs(np_v2))
     if div1 == 0.0:
         if div2 == 0.0:
             return DOWN
-        u = v2 / div2
+        u = np_v2 / div2
     elif div2 == 0.0:
-        u = v1 / div1
+        u = np_v1 / div1
     else:
         # Normal scenario: v1 and v2 are both non-null
-        u1, u2 = v1 / div1, v2 / div2
+        u1, u2 = np_v1 / div1, np_v2 / div2
         cp = cross(u1, u2)
         cp_norm = np.sqrt(norm_squared(cp))
         if cp_norm > tol:
@@ -590,9 +594,9 @@ def line_intersection(
 
 def find_intersection(
     p0s: Point3DLike_Array,
-    v0s: Vector3D_Array,
+    v0s: Vector3DLike_Array,
     p1s: Point3DLike_Array,
-    v1s: Vector3D_Array,
+    v1s: Vector3DLike_Array,
     threshold: float = 1e-5,
 ) -> list[Point3D]:
     """
@@ -605,7 +609,7 @@ def find_intersection(
     # algorithm from https://en.wikipedia.org/wiki/Skew_lines#Nearest_points
     result = []
 
-    for p0, v0, p1, v1 in zip(*[p0s, v0s, p1s, v1s]):
+    for p0, v0, p1, v1 in zip(p0s, v0s, p1s, v1s):
         normal = cross(v1, cross(v0, v1))
         denom = max(np.dot(v0, normal), threshold)
         result += [p0 + np.dot(p1 - p0, normal) / denom * v0]
