@@ -262,7 +262,7 @@ class _CustomEncoder(json.JSONEncoder):
                 processed_list[i] = new_value
             return processed_list
 
-        def _iter_check_dict(dct: dict) -> dict:
+        def _iter_check_dict(dct: dict[Any, Any]) -> dict[Any, Any]:
             processed_dict = {}
             for k, v in dct.items():
                 v = _Memoizer.check_already_processed(v)
