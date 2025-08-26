@@ -234,7 +234,13 @@ class _CustomEncoder(json.JSONEncoder):
         # Serialize it with only the type of the object. You can change this to whatever string when debugging the serialization process.
         return str(type(obj))
 
-    def _cleaned_iterable(self, iterable: Iterable[Any]) -> list[Any] | dict[Any, Any]:
+    @overload
+    def _cleaned_iterable(self, iterable: Sequence[Any]) -> list[Any]: ...
+    
+    @overload
+    def _cleaned_iterable(self, iterable: dict[Any, Any]) -> dict[Any, Any]: ...
+    
+    def _cleaned_iterable(self, iterable):
         """Check for circular reference at each iterable that will go through the JSONEncoder, as well as key of the wrong format.
 
         If a key with a bad format is found (i.e not a int, string, or float), it gets replaced byt its hash using the same process implemented here.
@@ -249,7 +255,7 @@ class _CustomEncoder(json.JSONEncoder):
         def _key_to_hash(key: Any) -> int:
             return zlib.crc32(json.dumps(key, cls=_CustomEncoder).encode())
 
-        def _iter_check_list(lst: list[Any]) -> list[Any]:
+        def _iter_check_list(lst: Sequence[Any]) -> list[Any]:
             processed_list = [None] * len(lst)
             for i, el in enumerate(lst):
                 el = _Memoizer.check_already_processed(el)
@@ -287,8 +293,7 @@ class _CustomEncoder(json.JSONEncoder):
         elif isinstance(iterable, dict):
             return _iter_check_dict(iterable)
         else:
-            # mypy requires this line, even though it should not be reached.
-            return iterable
+            raise TypeError("'iterable' is neither an iterable nor a dictionary.")
 
     def encode(self, obj: Any) -> str:
         """Overriding of :meth:`JSONEncoder.encode`, to make our own process.
