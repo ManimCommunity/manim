@@ -246,7 +246,7 @@ class _CustomEncoder(json.JSONEncoder):
             The iterable to check.
         """
 
-        def _key_to_hash(key) -> int:
+        def _key_to_hash(key: Any) -> int:
             return zlib.crc32(json.dumps(key, cls=_CustomEncoder).encode())
 
         def _iter_check_list(lst: list[Any]) -> list[Any]:
