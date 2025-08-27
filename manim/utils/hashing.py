@@ -6,10 +6,10 @@ import copy
 import inspect
 import json
 import zlib
-from collections.abc import Callable, Hashable, Iterable
+from collections.abc import Callable, Hashable, Iterable, Sequence
 from time import perf_counter
 from types import FunctionType, MappingProxyType, MethodType, ModuleType
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, overload
 
 import numpy as np
 
@@ -236,10 +236,10 @@ class _CustomEncoder(json.JSONEncoder):
 
     @overload
     def _cleaned_iterable(self, iterable: Sequence[Any]) -> list[Any]: ...
-    
+
     @overload
     def _cleaned_iterable(self, iterable: dict[Any, Any]) -> dict[Any, Any]: ...
-    
+
     def _cleaned_iterable(self, iterable):
         """Check for circular reference at each iterable that will go through the JSONEncoder, as well as key of the wrong format.
 
