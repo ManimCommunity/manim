@@ -219,7 +219,7 @@ class _CustomEncoder(json.JSONEncoder):
             if obj.size > 1000:
                 obj = np.resize(obj, (100, 100))
                 return f"TRUNCATED ARRAY: {repr(obj)}"
-            # We return the repr and not a list to avoid the JsonEncoder to iterate over it.
+            # We return the repr and not a list to avoid the JSONEncoder to iterate over it.
             return repr(obj)
         elif hasattr(obj, "__dict__"):
             temp = obj.__dict__
@@ -236,7 +236,7 @@ class _CustomEncoder(json.JSONEncoder):
     def _cleaned_iterable(self, iterable: Iterable[Any]):
         """Check for circular reference at each iterable that will go through the JSONEncoder, as well as key of the wrong format.
 
-        If a key with a bad format is found (i.e not a int, string, or float), it gets replaced byt its hash using the same process implemented here.
+        If a key with a bad format is found (i.e not a int, string, or float), it gets replaced by its hash using the same process implemented here.
         If a circular reference is found within the iterable, it will be replaced by the string "already processed".
 
         Parameters
@@ -249,16 +249,16 @@ class _CustomEncoder(json.JSONEncoder):
             return zlib.crc32(json.dumps(key, cls=_CustomEncoder).encode())
 
         def _iter_check_list(lst):
-            processed_list = [None] * len(lst)
-            for i, el in enumerate(lst):
+            processed_list = []
+            for el in lst:
                 el = _Memoizer.check_already_processed(el)
-                if isinstance(el, (list, tuple)):
-                    new_value = _iter_check_list(el)
-                elif isinstance(el, dict):
+                if isinstance(el, dict):
                     new_value = _iter_check_dict(el)
+                elif isinstance(el, Iterable) and not isinstance(el, (str, bytes)):
+                    new_value = _iter_check_list(el)
                 else:
                     new_value = el
-                processed_list[i] = new_value
+                processed_list.append(new_value)
             return processed_list
 
         def _iter_check_dict(dct):
@@ -267,24 +267,24 @@ class _CustomEncoder(json.JSONEncoder):
                 v = _Memoizer.check_already_processed(v)
                 if k in KEYS_TO_FILTER_OUT:
                     continue
-                # We check if the k is of the right format (supporter by Json)
+                # We check if the k is of the right format (supported by JSON)
                 if not isinstance(k, (str, int, float, bool)) and k is not None:
                     k_new = _key_to_hash(k)
                 else:
                     k_new = k
                 if isinstance(v, dict):
                     new_value = _iter_check_dict(v)
-                elif isinstance(v, (list, tuple)):
+                elif isinstance(v, Iterable) and not isinstance(v, (str, bytes)):
                     new_value = _iter_check_list(v)
                 else:
                     new_value = v
                 processed_dict[k_new] = new_value
             return processed_dict
 
-        if isinstance(iterable, (list, tuple)):
-            return _iter_check_list(iterable)
-        elif isinstance(iterable, dict):
+        if isinstance(iterable, dict):
             return _iter_check_dict(iterable)
+        elif isinstance(iterable, Iterable):
+            return _iter_check_list(iterable)
 
     def encode(self, obj: Any):
         """Overriding of :meth:`JSONEncoder.encode`, to make our own process.
