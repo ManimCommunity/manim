@@ -152,16 +152,20 @@ class OpenGLRenderer(Renderer, RendererProtocol):
 
     def __init__(
         self,
-        pixel_width: int = config.pixel_width,
-        pixel_height: int = config.pixel_height,
+        pixel_width: int | None = None,
+        pixel_height: int | None = None,
         samples: int = 4,
         background_color: c.ManimColor = color.BLACK,
         background_opacity: float = 1.0,
         background_image: str | None = None,
     ) -> None:
         super().__init__()
-        self.pixel_width = pixel_width
-        self.pixel_height = pixel_height
+        self.pixel_width = (
+            pixel_width if pixel_width is not None else config.pixel_width
+        )
+        self.pixel_height = (
+            pixel_height if pixel_height is not None else config.pixel_height
+        )
         self.samples = samples
         if background_opacity:
             background_color = background_color.opacity(background_opacity)
