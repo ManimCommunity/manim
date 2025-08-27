@@ -243,7 +243,7 @@ class _CustomEncoder(json.JSONEncoder):
     def _cleaned_iterable(self, iterable):
         """Check for circular reference at each iterable that will go through the JSONEncoder, as well as key of the wrong format.
 
-        If a key with a bad format is found (i.e not a int, string, or float), it gets replaced byt its hash using the same process implemented here.
+        If a key with a bad format is found (i.e not a int, string, or float), it gets replaced by its hash using the same process implemented here.
         If a circular reference is found within the iterable, it will be replaced by the value of ALREADY_PROCESSED_PLACEHOLDER.
 
         Parameters
@@ -259,7 +259,7 @@ class _CustomEncoder(json.JSONEncoder):
             processed_list = [None] * len(lst)
             for i, el in enumerate(lst):
                 el = _Memoizer.check_already_processed(el)
-                if isinstance(el, (list, tuple)):
+                if isinstance(el, Sequence):
                     new_value = _iter_check_list(el)
                 elif isinstance(el, dict):
                     new_value = _iter_check_dict(el)
@@ -274,21 +274,21 @@ class _CustomEncoder(json.JSONEncoder):
                 v = _Memoizer.check_already_processed(v)
                 if k in KEYS_TO_FILTER_OUT:
                     continue
-                # We check if the k is of the right format (supporter by Json)
+                # We check if the k is of the right format (supported by JSON)
                 if not isinstance(k, (str, int, float, bool)) and k is not None:
                     k_new = _key_to_hash(k)
                 else:
                     k_new = k
                 if isinstance(v, dict):
                     new_value = _iter_check_dict(v)
-                elif isinstance(v, (list, tuple)):
+                elif isinstance(v, Sequence):
                     new_value = _iter_check_list(v)
                 else:
                     new_value = v
                 processed_dict[k_new] = new_value
             return processed_dict
 
-        if isinstance(iterable, (list, tuple)):
+        if isinstance(iterable, Sequence):
             return _iter_check_list(iterable)
         elif isinstance(iterable, dict):
             return _iter_check_dict(iterable)
@@ -309,7 +309,7 @@ class _CustomEncoder(json.JSONEncoder):
            The object encoder with the standard json process.
         """
         _Memoizer.mark_as_processed(obj)
-        if isinstance(obj, (dict, list, tuple)):
+        if isinstance(obj, (dict, Sequence)):
             return super().encode(self._cleaned_iterable(obj))
         return super().encode(obj)
 
