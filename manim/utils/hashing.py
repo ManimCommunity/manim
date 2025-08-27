@@ -220,7 +220,7 @@ class _CustomEncoder(json.JSONEncoder):
             if obj.size > 1000:
                 obj = np.resize(obj, (100, 100))
                 return f"TRUNCATED ARRAY: {repr(obj)}"
-            # We return the repr and not a list to avoid the JsonEncoder to iterate over it.
+            # We return the repr and not a list to avoid the JSONEncoder to iterate over it.
             return repr(obj)
         elif hasattr(obj, "__dict__"):
             temp = obj.__dict__
@@ -259,7 +259,7 @@ class _CustomEncoder(json.JSONEncoder):
             processed_list = [None] * len(lst)
             for i, el in enumerate(lst):
                 el = _Memoizer.check_already_processed(el)
-                if isinstance(el, Sequence):
+                if isinstance(el, (list, tuple)):
                     new_value = _iter_check_list(el)
                 elif isinstance(el, dict):
                     new_value = _iter_check_dict(el)
@@ -281,14 +281,14 @@ class _CustomEncoder(json.JSONEncoder):
                     k_new = k
                 if isinstance(v, dict):
                     new_value = _iter_check_dict(v)
-                elif isinstance(v, Sequence):
+                elif isinstance(v, (list, tuple)):
                     new_value = _iter_check_list(v)
                 else:
                     new_value = v
                 processed_dict[k_new] = new_value
             return processed_dict
 
-        if isinstance(iterable, Sequence):
+        if isinstance(iterable, (list, tuple)):
             return _iter_check_list(iterable)
         elif isinstance(iterable, dict):
             return _iter_check_dict(iterable)
@@ -309,7 +309,7 @@ class _CustomEncoder(json.JSONEncoder):
            The object encoder with the standard json process.
         """
         _Memoizer.mark_as_processed(obj)
-        if isinstance(obj, (dict, Sequence)):
+        if isinstance(obj, (dict, list, tuple)):
             return super().encode(self._cleaned_iterable(obj))
         return super().encode(obj)
 
