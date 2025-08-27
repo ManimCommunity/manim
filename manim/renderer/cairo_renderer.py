@@ -83,6 +83,7 @@ class CairoRenderer:
                 logger.info("Caching disabled.")
                 hash_current_animation = f"uncached_{self.num_plays:05}"
             else:
+                assert scene.animations is not None
                 hash_current_animation = get_hash_from_play_call(
                     scene,
                     self.camera,
