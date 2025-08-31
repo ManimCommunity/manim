@@ -2683,7 +2683,34 @@ class OpenGLMobject:
 
             func = path_func if key in ("points", "bounding_box") else interpolate
 
-            self.data[key][:] = func(mobject1.data[key], mobject2.data[key], alpha)
+            # Check for shape compatibility before interpolation
+            arr1 = mobject1.data[key]
+            arr2 = mobject2.data[key]
+            target_arr = self.data[key]
+            
+            try:
+                interpolated_data = func(arr1, arr2, alpha)
+                # Ensure the interpolated data has compatible shape with target array
+                if target_arr.shape != interpolated_data.shape:
+                    # If shapes don't match, try to resize target array to match interpolated data
+                    if hasattr(interpolated_data, 'shape'):
+                        # For numpy arrays, copy the data directly
+                        self.data[key] = interpolated_data.copy()
+                    else:
+                        # For other data types, assign directly
+                        self.data[key] = interpolated_data
+                else:
+                    target_arr[:] = interpolated_data
+            except (ValueError, TypeError) as e:
+                # If interpolation fails due to shape mismatch, fall back to mobject2 data
+                # This ensures animations don't crash with very short run times
+                if hasattr(arr2, 'shape'):
+                    if target_arr.shape != arr2.shape:
+                        self.data[key] = arr2.copy()
+                    else:
+                        target_arr[:] = arr2
+                else:
+                    self.data[key] = arr2
 
         for key in self.uniforms:
             if key != "fixed_orientation_center":
