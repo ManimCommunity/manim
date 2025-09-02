@@ -27,7 +27,7 @@ jobs:
 
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Python ${{ matrix.python }}
         uses: actions/setup-python@v5
