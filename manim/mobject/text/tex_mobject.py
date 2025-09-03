@@ -223,7 +223,7 @@ class SingleStringMathTex(SVGMobject):
         return self
 
 
-class MathTex(SingleStringMathTex):
+class MathTex(ColoredSingleStringMathTex):
     r"""A string compiled with LaTeX in math mode.
 
     Examples
@@ -261,7 +261,9 @@ class MathTex(SingleStringMathTex):
         substrings_to_isolate: Iterable[str] | None = None,
         regexes_to_isolate: Iterable[str] | None = None,
         tex_to_color_map: dict[str, ParsableManimColor] | None = None,
-        regex_to_color_map: dict[str, ManimColor] | None = None,
+        regex_to_color_map: dict[str, ParsableManimColor] | None = None,
+        tex_to_tex_color_map: dict[str, ParsableManimColor] | None = None,
+        regex_to_tex_color_map: dict[str, ParsableManimColor] | None = None,
         tex_environment: str | None = "align*",
         **kwargs: Any,
     ):
@@ -271,12 +273,16 @@ class MathTex(SingleStringMathTex):
         self.regexes_to_isolate = regexes_to_isolate or []
         self.tex_to_color_map = tex_to_color_map or {}
         self.regex_to_color_map = regex_to_color_map or {}
+        self.tex_to_tex_color_map = tex_to_tex_color_map or {}
+        self.regex_to_tex_color_map = regex_to_tex_color_map or {}
         self.tex_environment = tex_environment
         self.brace_notation_split_occurred = False
         self.tex_strings = self._break_up_tex_strings(tex_strings)
         try:
             super().__init__(
                 self.arg_separator.join(self.tex_strings),
+                tex_to_tex_color_map=self.tex_to_tex_color_map,
+                regex_to_tex_color_map=self.regex_to_tex_color_map,
                 tex_environment=self.tex_environment,
                 tex_template=self.tex_template,
                 **kwargs,
