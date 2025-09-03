@@ -222,6 +222,29 @@ class SingleStringMathTex(SVGMobject):
                 submobject.init_colors(propagate_colors=propagate_colors)
         return self
 
+class ColoredSingleStringMathTex(SingleStringMathTex):
+   """An automatically colored string compiled with LaTeX"""
+    def __init__(self, s:str, tex_to_tex_color_map=None, regex_to_tex_color_map=None, **kw):
+        self.tex_to_tex_color_map = tex_to_tex_color_map or {}
+        self.regex_to_tex_color_map = regex_to_tex_color_map or {}
+        super().__init__(
+            tex_string=self._make_colored_string(s),
+            tex_template=kw.pop("tex_template", config["tex_template"]).add_to_preamble(r"\usepackage{xcolor}"),
+            **kw
+        )
+
+    def _make_colored_string(self, s):
+        regex_to_color = (self.regex_to_tex_color_map or {}) | {re.escape(k):v for k,v in self.tex_to_tex_color_map.items()}
+        if not regex_to_color: 
+           return s
+         
+        matches = sorted(((m.start(), m.end(), c) for r,c in regex_to_color.items() for m in re.finditer(r,s)), key=lambda x:(x[0],-(x[1]-x[0])))
+        last,end,fmt = -1,-1,""
+        for start,stop,color in matches:
+            if start>=end:
+                fmt += s[max(end,0):start]+r'{\textcolor[HTML]{'+str(color)[1:]+'}{'+s[start:stop]+'}}'
+                end = stop
+        return fmt+s[end:]
 
 class MathTex(SingleStringMathTex):
     r"""A string compiled with LaTeX in math mode.
