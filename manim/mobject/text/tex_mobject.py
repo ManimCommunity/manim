@@ -246,7 +246,7 @@ class ColoredSingleStringMathTex(SingleStringMathTex):
                 end = stop
         return fmt+s[end:]
 
-class MathTex(SingleStringMathTex):
+class MathTex(ColoredSingleStringMathTex):
     r"""A string compiled with LaTeX in math mode.
 
     Examples
@@ -282,25 +282,30 @@ class MathTex(SingleStringMathTex):
         *tex_strings: str,
         arg_separator: str = " ",
         substrings_to_isolate: Iterable[str] | None = None,
+        regexes_to_isolate: Iterable[str] | None = None,
         tex_to_color_map: dict[str, ParsableManimColor] | None = None,
+        regex_to_color_map: dict[str, ParsableManimColor] | None = None,
+        tex_to_tex_color_map: dict[str, ParsableManimColor] | None = None,
+        regex_to_tex_color_map: dict[str, ParsableManimColor] | None = None,
         tex_environment: str | None = "align*",
         **kwargs: Any,
     ):
         self.tex_template = kwargs.pop("tex_template", config["tex_template"])
         self.arg_separator = arg_separator
-        self.substrings_to_isolate = (
-            [] if substrings_to_isolate is None else substrings_to_isolate
-        )
-        if tex_to_color_map is None:
-            self.tex_to_color_map: dict[str, ParsableManimColor] = {}
-        else:
-            self.tex_to_color_map = tex_to_color_map
+        self.substrings_to_isolate = substrings_to_isolate or []
+        self.regexes_to_isolate = regexes_to_isolate or []
+        self.tex_to_color_map = tex_to_color_map or {}
+        self.regex_to_color_map = regex_to_color_map or {}
+        self.tex_to_tex_color_map = tex_to_tex_color_map or {}
+        self.regex_to_tex_color_map = regex_to_tex_color_map or {}
         self.tex_environment = tex_environment
         self.brace_notation_split_occurred = False
         self.tex_strings = self._break_up_tex_strings(tex_strings)
         try:
             super().__init__(
                 self.arg_separator.join(self.tex_strings),
+                tex_to_tex_color_map=self.tex_to_tex_color_map,
+                regex_to_tex_color_map=self.regex_to_tex_color_map,
                 tex_environment=self.tex_environment,
                 tex_template=self.tex_template,
                 **kwargs,
@@ -321,6 +326,7 @@ class MathTex(SingleStringMathTex):
                     ),
                 )
             raise compilation_error
+        self.set_color_by_regex_to_color_map(self.regex_to_color_map)
         self.set_color_by_tex_to_color_map(self.tex_to_color_map)
 
         if self.organize_left_to_right:
@@ -340,13 +346,18 @@ class MathTex(SingleStringMathTex):
         # or tex_to_color_map lists.
         patterns = []
         patterns.extend(
-            [
-                f"({re.escape(ss)})"
-                for ss in it.chain(
-                    self.substrings_to_isolate,
-                    self.tex_to_color_map.keys(),
-                )
-            ],
+            f"({regex})" 
+            for regex in it.chain(
+                self.regexes_to_isolate,
+                self.regex_to_color_map.keys(),
+            )
+        )
+        patterns.extend(
+            f"({re.escape(tex)})"
+            for tex in it.chain(
+                self.substrings_to_isolate,
+                self.tex_to_color_map.keys(),
+            )
         )
         pattern = "|".join(patterns)
         if pattern:
@@ -450,6 +461,25 @@ class MathTex(SingleStringMathTex):
                 # If the given key is a tuple
                 for tex in texs:
                     self.set_color_by_tex(tex, ManimColor(color), **kwargs)
+        return self
+
+    def get_parts_by_regex(self, regex):
+        return VGroup(*(m for m in self.submobjects if re.search(regex, m.get_tex_string())))
+
+    def set_color_by_regex(self, regex, color):
+        parts_to_color = self.get_parts_by_regex(regex)
+        for part in parts_to_color:
+            part.set_color(color)
+        return self
+
+    def set_color_by_regex_to_color_map(self, regexes_to_color_map):
+        for regexes, color in list(regexes_to_color_map.items()):
+            try:
+                regexes + ""
+                self.set_color_by_regex(regexes, color)
+            except TypeError:
+                for regex in regexes:
+                    self.set_color_by_regex(regex, color)
         return self
 
     def index_of_part(self, part: MathTex) -> int:
