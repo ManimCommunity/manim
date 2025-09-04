@@ -235,9 +235,9 @@ class ColoredSingleStringMathTex(SingleStringMathTex):
 
     def _make_colored_string(self, s):
         regex_to_color = (self.regex_to_tex_color_map or {}) | {re.escape(k):v for k,v in self.tex_to_tex_color_map.items()}
-        if not regex_to_color: 
+        if not regex_to_color:
            return s
-         
+
         matches = sorted(((m.start(), m.end(), c) for r,c in regex_to_color.items() for m in re.finditer(r,s)), key=lambda x:(x[0],-(x[1]-x[0])))
         last,end,fmt = -1,-1,""
         for start,stop,color in matches:
@@ -346,7 +346,7 @@ class MathTex(ColoredSingleStringMathTex):
         # or tex_to_color_map lists.
         patterns = []
         patterns.extend(
-            f"({regex})" 
+            f"({regex})"
             for regex in it.chain(
                 self.regexes_to_isolate,
                 self.regex_to_color_map.keys(),
