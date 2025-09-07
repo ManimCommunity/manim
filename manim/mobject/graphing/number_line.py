@@ -138,6 +138,21 @@ class NumberLine(Line):
 
                 line_group = VGroup(l0, l1, l2, l3).arrange(DOWN, buff=1)
                 self.add(line_group)
+
+    .. manim:: NumberLineWithExcluded
+        :save_last_frame:
+
+        class NumberLineWithExcluded(Scene):
+            def construct(self):
+                # Example showing how to use numbers_to_exclude parameter
+                number_line = NumberLine(
+                    x_range=[-5, 5, 1],
+                    length=8,
+                    include_numbers=True,
+                    numbers_to_exclude=[-3, 0, 2],  # Exclude -3, 0, and 2 from display
+                    font_size=24,
+                )
+                self.add(number_line)
     """
 
     def __init__(
