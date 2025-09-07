@@ -520,10 +520,10 @@ class NumberLine(Line):
 
     def default_numbers_to_display(self) -> np.ndarray:
         """Returns the default numbers to display on the number line.
-        
+
         This method returns the tick range excluding numbers that are in
         the numbers_to_exclude list.
-        
+
         Returns
         -------
         np.ndarray
