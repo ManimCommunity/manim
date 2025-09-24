@@ -3,8 +3,8 @@ from skimage import measure
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
-def sphere_f(x, y, z, R=1.0, r=0.4):
-    return (np.sqrt(x**2 + y**2) - R)**2 + z**2 - r**2
+def sphere_f(x, y, z, r=1.0):
+    return x**2 + y**2 + z**2 - r**2
 
 
 # Saddle = 
@@ -18,7 +18,7 @@ y = np.linspace(-2, 2, n)
 z = np.linspace(-2, 2, n)
 X, Y, Z = np.meshgrid(x, y, z, indexing="ij")
 
-F = sphere_f(X, Y, Z, R=1.0, r=0.4)
+F = sphere_f(X, Y, Z, r=1.0)
 
 verts, faces, normals, values = measure.marching_cubes(F, level=0.0, spacing=(x[1]-x[0], y[1]-y[0], z[1]-z[0]))
 
