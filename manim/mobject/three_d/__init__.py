@@ -9,5 +9,4 @@ Modules
     ~polyhedra
     ~three_d_utils
     ~three_dimensions
-    ~implicit_surface
     """
