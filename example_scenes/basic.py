@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
-
 from manim import *
+from manim.mobject.three_d.implicit_surface import ImplicitSurface
+
 
 # To watch one of these scenes, run the following:
 # python --quality m manim -p example_scenes.py SquareToCircle
@@ -174,6 +175,17 @@ class LineJoints(Scene):
         grp.set(width=config.frame_width - 1)
 
         self.add(grp)
+
+class ExampleImplicitSurface(ThreeDScene):
+    def construct(self):
+        self.set_camera_orientation(phi=70*DEGREES, theta=45*DEGREES)
+        surface = ImplicitSurface(
+            lambda x, y, z: x**2 + y**2 + z**2 - 1,
+            resolution=30,
+            color=BLUE,
+        )
+        self.add(surface)
+        self.wait()
 
 
 # See many more examples at https://docs.manim.community/en/stable/examples.html
