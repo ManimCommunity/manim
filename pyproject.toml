@@ -43,6 +43,7 @@ dependencies = [
     "pydub>=0.20.0",
     "pygments>=2.0.0",
     "rich>=12.0.0",
+    "scikit-image",
     "scipy>=1.13.0",
     "scipy>=1.14.0 ; python_full_version >= '3.13'",
     "screeninfo>=0.7",
