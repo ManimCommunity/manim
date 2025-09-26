@@ -1,6 +1,10 @@
+from __future__ import annotations
+
 import numpy as np
 from skimage import measure
+
 from manim import *
+
 
 class ImplicitSurface(ThreeDVMobject):
     """Renderiza uma isosuperfície implícita usando Marching Cubes.
@@ -30,7 +34,7 @@ class ImplicitSurface(ThreeDVMobject):
         y_range=[-2, 2],
         z_range=[-2, 2],
         color=BLUE,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
 
@@ -48,10 +52,16 @@ class ImplicitSurface(ThreeDVMobject):
         scale_x = (x_range[1] - x_range[0]) / resolution
         scale_y = (y_range[1] - y_range[0]) / resolution
         scale_z = (z_range[1] - z_range[0]) / resolution
-        verts = np.array([
-            [x_range[0] + v[0]*scale_x, y_range[0] + v[1]*scale_y, z_range[0] + v[2]*scale_z]
-            for v in verts
-        ])
+        verts = np.array(
+            [
+                [
+                    x_range[0] + v[0] * scale_x,
+                    y_range[0] + v[1] * scale_y,
+                    z_range[0] + v[2] * scale_z,
+                ]
+                for v in verts
+            ]
+        )
 
         # Constrói os polígonos:
         for face in faces:
