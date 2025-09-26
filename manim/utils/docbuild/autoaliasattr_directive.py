@@ -174,7 +174,7 @@ class AliasAttrDocumenter(Directive):
                     # Parse the reST text into a fresh container
                     # https://www.sphinx-doc.org/en/master/extdev/markupapi.html#parsing-directive-content-as-rest
                     alias_container = nodes.container()
-                    self.state.nested_parse(unparsed, 0, alias_container)
+                    self.state.nested_parse(unparsed, 0, alias_container)  # type: ignore[arg-type]
                     category_alias_container += alias_container
 
         # then add the module TypeVars section
@@ -205,7 +205,7 @@ class AliasAttrDocumenter(Directive):
                 # Parse the reST text into a fresh container
                 # https://www.sphinx-doc.org/en/master/extdev/markupapi.html#parsing-directive-content-as-rest
                 typevar_container = nodes.container()
-                self.state.nested_parse(unparsed, 0, typevar_container)
+                self.state.nested_parse(unparsed, 0, alias_container)  # type: ignore[arg-type]
                 module_typevars_section += typevar_container
 
         # Then, add the traditional "Module Attributes" section
@@ -228,7 +228,7 @@ class AliasAttrDocumenter(Directive):
             # Parse the reST text into a fresh container
             # https://www.sphinx-doc.org/en/master/extdev/markupapi.html#parsing-directive-content-as-rest
             data_container = nodes.container()
-            self.state.nested_parse(unparsed, 0, data_container)
+            self.state.nested_parse(unparsed, 0, alias_container)  # type: ignore[arg-type]
             module_attrs_section += data_container
 
         return [content]
