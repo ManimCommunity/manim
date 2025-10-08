@@ -641,7 +641,7 @@ class Circle(Arc):
 
         """
         start_angle = angle_of_vector(self.points[0] - self.get_center())
-        proportion = (angle - start_angle) / TAU
+        proportion = angle / TAU
         proportion -= np.floor(proportion)
         return self.point_from_proportion(proportion)
 
