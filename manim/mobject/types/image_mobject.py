@@ -312,7 +312,7 @@ class ImageMobjectFromCamera(AbstractImageMobject):
         if default_display_frame_config is None:
             default_display_frame_config = {
                 "stroke_width": 3,
-                "stroke_color": WHITE,                
+                "stroke_color": WHITE,
             }
         self.default_display_frame_config = default_display_frame_config
         self.pixel_array = self.camera.pixel_array
@@ -326,7 +326,7 @@ class ImageMobjectFromCamera(AbstractImageMobject):
     def add_display_frame(self, **kwargs: Any) -> Self:
         config = self.default_display_frame_config
         config.update(kwargs)
-        self.display_frame = SurroundingRectangle(self, buff =  0,**config)
+        self.display_frame = SurroundingRectangle(self, buff=0, **config)
         self.add(self.display_frame)
         return self
 
