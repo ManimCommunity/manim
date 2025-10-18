@@ -1,0 +1,57 @@
+#!C:\Users\meghna\manim\manim-env\Scripts\python.exe
+
+import os
+import sys
+import errno
+
+
+SRT_BIN_PREFIX = "srt-"
+
+
+def find_srt_commands_in_path():
+    paths = os.environ.get("PATH", "").split(os.pathsep)
+
+    for path in paths:
+        try:
+            path_files = os.listdir(path)
+        except OSError as thrown_exc:
+            if thrown_exc.errno in (errno.ENOENT, errno.ENOTDIR):
+                continue
+            else:
+                raise
+
+        for path_file in path_files:
+            if path_file.startswith(SRT_BIN_PREFIX):
+                yield path_file[len(SRT_BIN_PREFIX) :]
+
+
+def show_help():
+    print(
+        "Available commands "
+        "(pass --help to a specific command for usage information):\n"
+    )
+    commands = sorted(set(find_srt_commands_in_path()))
+    for command in commands:
+        print("- {}".format(command))
+
+
+def main():
+    if len(sys.argv) < 2 or sys.argv[1].startswith("-"):
+        show_help()
+        sys.exit(0)
+
+    command = sys.argv[1]
+
+    available_commands = find_srt_commands_in_path()
+
+    if command not in available_commands:
+        print('Unknown command: "{}"\n'.format(command))
+        show_help()
+        sys.exit(1)
+
+    real_command = SRT_BIN_PREFIX + command
+    os.execvp(real_command, [real_command] + sys.argv[2:])
+
+
+if __name__ == "__main__":  # pragma: no cover
+    main()

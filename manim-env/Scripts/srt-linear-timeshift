@@ -1,0 +1,105 @@
+#!C:\Users\meghna\manim\manim-env\Scripts\python.exe
+
+"""Perform linear time correction on a subtitle."""
+
+from __future__ import division
+
+import srt
+import datetime
+import srt_tools.utils
+import logging
+
+log = logging.getLogger(__name__)
+
+
+def timedelta_to_milliseconds(delta):
+    return delta.days * 86400000 + delta.seconds * 1000 + delta.microseconds / 1000
+
+
+def parse_args():
+    def srt_timestamp_to_milliseconds(parser, arg):
+        try:
+            delta = srt.srt_timestamp_to_timedelta(arg)
+        except ValueError:
+            parser.error("not a valid SRT timestamp: %s" % arg)
+        else:
+            return timedelta_to_milliseconds(delta)
+
+    examples = {
+        "Stretch out a subtitle so that second 1 is 1, 2 is 3, 3 is 5, etc": "srt linear-timeshift --f1 00:00:01,000 --t1 00:00:01,000 --f2 00:00:02,000 --t2 00:00:03,000"
+    }
+
+    parser = srt_tools.utils.basic_parser(description=__doc__, examples=examples)
+    parser.add_argument(
+        "--from-start",
+        "--f1",
+        type=lambda arg: srt_timestamp_to_milliseconds(parser, arg),
+        required=True,
+        help="the first desynchronised timestamp",
+    )
+    parser.add_argument(
+        "--to-start",
+        "--t1",
+        type=lambda arg: srt_timestamp_to_milliseconds(parser, arg),
+        required=True,
+        help="the first synchronised timestamp",
+    )
+    parser.add_argument(
+        "--from-end",
+        "--f2",
+        type=lambda arg: srt_timestamp_to_milliseconds(parser, arg),
+        required=True,
+        help="the second desynchronised timestamp",
+    )
+    parser.add_argument(
+        "--to-end",
+        "--t2",
+        type=lambda arg: srt_timestamp_to_milliseconds(parser, arg),
+        required=True,
+        help="the second synchronised timestamp",
+    )
+    return parser.parse_args()
+
+
+def calc_correction(to_start, to_end, from_start, from_end):
+    angular = (to_end - to_start) / (from_end - from_start)
+    linear = to_end - angular * from_end
+    return angular, linear
+
+
+def correct_time(current_msecs, angular, linear):
+    return round(current_msecs * angular + linear)
+
+
+def correct_timedelta(bad_delta, angular, linear):
+    bad_msecs = timedelta_to_milliseconds(bad_delta)
+    good_msecs = correct_time(bad_msecs, angular, linear)
+    good_delta = datetime.timedelta(milliseconds=good_msecs)
+    return good_delta
+
+
+def linear_correct_subs(subtitles, angular, linear):
+    for subtitle in subtitles:
+        subtitle.start = correct_timedelta(subtitle.start, angular, linear)
+        subtitle.end = correct_timedelta(subtitle.end, angular, linear)
+        yield subtitle
+
+
+def main():
+    args = parse_args()
+    logging.basicConfig(level=args.log_level)
+    angular, linear = calc_correction(
+        args.to_start, args.to_end, args.from_start, args.from_end
+    )
+    srt_tools.utils.set_basic_args(args)
+    corrected_subs = linear_correct_subs(args.input, angular, linear)
+    output = srt_tools.utils.compose_suggest_on_fail(corrected_subs, strict=args.strict)
+
+    try:
+        args.output.write(output)
+    except (UnicodeEncodeError, TypeError):  # Python 2 fallback
+        args.output.write(output.encode(args.encoding))
+
+
+if __name__ == "__main__":  # pragma: no cover
+    main()

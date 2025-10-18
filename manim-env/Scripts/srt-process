@@ -1,0 +1,57 @@
+#!C:\Users\meghna\manim\manim-env\Scripts\python.exe
+
+"""Process subtitle text content using arbitrary Python code."""
+
+import importlib
+import srt_tools.utils
+import logging
+
+log = logging.getLogger(__name__)
+
+
+def strip_to_matching_lines_only(subtitles, imports, func_str):
+    for import_name in imports:
+        real_import = importlib.import_module(import_name)
+        globals()[import_name] = real_import
+
+    func = eval(func_str)  # pylint: disable-msg=eval-used
+
+    for subtitle in subtitles:
+        subtitle.content = func(subtitle.content)
+        yield subtitle
+
+
+def parse_args():
+    examples = {
+        "Strip HTML-like symbols from a subtitle": """srt process -m re -f 'lambda sub: re.sub("<[^<]+?>", "", sub)'"""
+    }
+
+    parser = srt_tools.utils.basic_parser(description=__doc__, examples=examples)
+    parser.add_argument(
+        "-f", "--func", help="a function to use to process lines", required=True
+    )
+    parser.add_argument(
+        "-m",
+        "--module",
+        help="modules to import in the function context",
+        action="append",
+        default=[],
+    )
+    return parser.parse_args()
+
+
+def main():
+    args = parse_args()
+    logging.basicConfig(level=args.log_level)
+    srt_tools.utils.set_basic_args(args)
+    processed_subs = strip_to_matching_lines_only(args.input, args.module, args.func)
+    output = srt_tools.utils.compose_suggest_on_fail(processed_subs, strict=args.strict)
+
+    try:
+        args.output.write(output)
+    except (UnicodeEncodeError, TypeError):  # Python 2 fallback
+        args.output.write(output.encode(args.encoding))
+
+
+if __name__ == "__main__":  # pragma: no cover
+    main()
