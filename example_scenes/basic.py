@@ -181,19 +181,20 @@ class LineJoints(Scene):
 
 class QuadraticFormula(Scene):
     """Demonstrates the quadratic formula with a clear mathematical presentation."""
+
     def construct(self):
         # Title
         title = Text("The Quadratic Formula", font_size=48)
         title.to_edge(UP)
         self.play(Write(title))
         self.wait()
-        
+
         # The famous formula
         formula = MathTex(r"x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}")
         formula.scale(2)
         self.play(Write(formula))
         self.wait(2)
-        
+
         # Cleanup
         self.play(FadeOut(title, formula))
         self.wait()
