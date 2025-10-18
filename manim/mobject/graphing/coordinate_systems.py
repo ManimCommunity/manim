@@ -211,11 +211,50 @@ class CoordinateSystem:
         x, y = self.point_to_coords(point)
         return np.sqrt(x**2 + y**2), np.arctan2(y, x)
 
-    def c2p(
-        self, *coords: float | Sequence[float] | Sequence[Sequence[float]] | np.ndarray
-    ) -> np.ndarray:
-        """Abbreviation for :meth:`coords_to_point`"""
-        return self.coords_to_point(*coords)
+    # def c2p(
+    #     self, *coords: float | Sequence[float] | Sequence[Sequence[float]] | np.ndarray
+    # ) -> np.ndarray:
+    #     """Abbreviation for :meth:`coords_to_point`"""
+    #     return self.coords_to_point(*coords)
+   
+ 
+
+def c2p(self, *coords):
+    """
+    Convert user coordinates to 3D Manim points.
+
+    Acceptable inputs:
+        - Multiple numbers: c2p(x, y) or c2p(x, y, z)
+        - Single 1D list/array: c2p([x, y]) or c2p([x, y, z])
+        - Single 2D list/array: c2p([[x1,y1],[x2,y2]]) or c2p([[x1,y1,z1],[x2,y2,z2]])
+
+    Returns:
+        - Single point: np.array of shape (3,)
+        - Multiple points: np.array of shape (3, n_points)
+    """
+    if len(coords) == 1:
+        # Only one argument, could be a list or array
+        arr = np.array(coords[0], dtype=float)
+
+        if arr.ndim == 1:
+            # Single point
+            arr = np.pad(arr, (0, 3 - arr.size), mode='constant')
+            return arr  # shape (3,)
+        elif arr.ndim == 2:
+            # Multiple points
+            n_points, n_dims = arr.shape
+            if n_dims < 3:
+                # Pad each point to have 3 coordinates
+                arr = np.pad(arr, ((0, 0), (0, 3 - n_dims)), mode='constant')
+            return arr.T  # shape (3, n_points)
+        else:
+            raise ValueError("Input array must be 1D or 2D")
+    else:
+        # Multiple arguments: treat as a single point
+        arr = np.array(coords, dtype=float)
+        arr = np.pad(arr, (0, 3 - arr.size), mode='constant')
+        return arr  # shape (3,)
+
 
     def p2c(self, point: Point3DLike) -> list[ManimFloat]:
         """Abbreviation for :meth:`point_to_coords`"""
