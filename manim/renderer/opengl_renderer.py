@@ -452,7 +452,16 @@ class OpenGLRenderer:
             self.animation_elapsed_time = scene.duration
 
         else:
-            scene.play_internal()
+            # If animations are being skipped due to caching, we still need to
+            # properly interpolate animations to their end state to ensure
+            # ValueTrackers and always_redraw functions have correct values
+            if self.skip_animations:
+                # Ensure all animations reach their final state
+                scene.update_to_time(scene.duration)
+                # Update all mobjects to reflect the final animation state
+                scene.update_mobjects(0)
+            else:
+                scene.play_internal()
 
         self.file_writer.end_animation(not self.skip_animations)
         self.time += scene.duration
