@@ -138,6 +138,21 @@ class NumberLine(Line):
 
                 line_group = VGroup(l0, l1, l2, l3).arrange(DOWN, buff=1)
                 self.add(line_group)
+
+    .. manim:: NumberLineWithExcluded
+        :save_last_frame:
+
+        class NumberLineWithExcluded(Scene):
+            def construct(self):
+                # Example showing how to use numbers_to_exclude parameter
+                number_line = NumberLine(
+                    x_range=[-5, 5, 1],
+                    length=8,
+                    include_numbers=True,
+                    numbers_to_exclude=[-3, 0, 2],  # Exclude -3, 0, and 2 from display
+                    font_size=24,
+                )
+                self.add(number_line)
     """
 
     def __init__(
@@ -502,6 +517,23 @@ class NumberLine(Line):
             # Align without the minus sign
             num_mob.shift(num_mob[0].width * LEFT / 2)
         return num_mob
+
+    def default_numbers_to_display(self) -> np.ndarray:
+        """Returns the default numbers to display on the number line.
+
+        This method returns the tick range excluding numbers that are in
+        the numbers_to_exclude list.
+
+        Returns
+        -------
+        np.ndarray
+            Array of numbers that should be displayed by default.
+        """
+        tick_range = self.get_tick_range()
+        if self.numbers_to_exclude:
+            # Filter out excluded numbers
+            return np.array([x for x in tick_range if x not in self.numbers_to_exclude])
+        return tick_range
 
     def get_number_mobjects(self, *numbers: float, **kwargs: Any) -> VGroup:
         if len(numbers) == 0:
