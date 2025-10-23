@@ -503,6 +503,23 @@ class NumberLine(Line):
             num_mob.shift(num_mob[0].width * LEFT / 2)
         return num_mob
 
+    def default_numbers_to_display(self) -> np.ndarray:
+        """Returns the default numbers to display on the number line.
+
+        This method returns the tick range excluding numbers that are in
+        the numbers_to_exclude list.
+
+        Returns
+        -------
+        np.ndarray
+            Array of numbers that should be displayed by default.
+        """
+        tick_range = self.get_tick_range()
+        if self.numbers_to_exclude:
+            # Filter out excluded numbers
+            return np.array([x for x in tick_range if x not in self.numbers_to_exclude])
+        return tick_range
+
     def get_number_mobjects(self, *numbers: float, **kwargs: Any) -> VGroup:
         if len(numbers) == 0:
             numbers = self.default_numbers_to_display()
