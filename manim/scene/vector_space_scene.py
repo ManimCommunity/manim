@@ -971,8 +971,8 @@ class LinearTransformationScene(VectorScene):
             )
         label_mob.vector = vector  # type: ignore[attr-defined]
         label_mob.kwargs = kwargs  # type: ignore[attr-defined]
-        if "animate" in label_mob.kwargs:  # type: ignore[operator]
-            label_mob.kwargs.pop("animate")  # type: ignore[attr-defined]
+        if "animate" in label_mob.kwargs:
+            label_mob.kwargs.pop("animate")
         self.transformable_labels.append(label_mob)
         return cast(MathTex, label_mob)
 
