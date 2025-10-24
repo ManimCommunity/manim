@@ -169,7 +169,7 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
             if child.name == "span":
                 try:
                     child_style = child["style"]
-                    if isinstance(child_style, str):
+                    if isinstance(child_style, str) and "color: " in child_style:
                         color = child_style.removeprefix("color: ")
                     else:
                         color = None
