@@ -1,3 +1,5 @@
+import pytest
+
 from manim.mobject.text.code_mobject import Code
 from manim.utils.color.core import ManimColor
 
@@ -29,3 +31,17 @@ def test_code_initialization_from_file():
     )
     assert len(rendered_code.code_lines) == len(rendered_code.line_numbers)
     assert rendered_code.background.fill_color == ManimColor("#101010")
+
+
+def test_code_initialization_style_correct_color():
+    for style in Code.get_styles_list():
+        try:
+            Code(
+                code_string="""# This is a comment.
+var = 3
+print(var)
+""",
+                formatter_style=style,
+            )
+        except ValueError as e:
+            pytest.fail(f"Code initialization failed for style {style} with error: {e}")
