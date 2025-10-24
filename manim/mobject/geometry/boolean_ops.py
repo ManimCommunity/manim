@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 from pathops import Path as SkiaPath
@@ -13,8 +13,6 @@ from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VMobject
 
 if TYPE_CHECKING:
-    from typing import Any
-
     from manim.typing import Point2DLike_Array, Point3D_Array, Point3DLike_Array
 
 from ...constants import RendererType

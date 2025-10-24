@@ -116,6 +116,17 @@ def test_SurroundingRectangle():
     assert sr.get_fill_opacity() == 0.42
 
 
+def test_SurroundingRectangle_buff():
+    sq = Square()
+    rect1 = SurroundingRectangle(sq, buff=1)
+    assert rect1.width == sq.width + 2
+    assert rect1.height == sq.height + 2
+
+    rect2 = SurroundingRectangle(sq, buff=(1, 2))
+    assert rect2.width == sq.width + 2
+    assert rect2.height == sq.height + 4
+
+
 def test_BackgroundRectangle(manim_caplog):
     circle = Circle()
     square = Square()

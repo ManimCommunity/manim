@@ -40,9 +40,11 @@ __all__ = [
 
 
 import itertools as it
-from collections.abc import Iterable, Sequence
+from collections.abc import Callable, Iterable, Sequence
+from typing import Any
 
 import numpy as np
+from typing_extensions import Self
 
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
@@ -56,7 +58,7 @@ from ..mobject.types.vectorized_mobject import VGroup, VMobject
 #         Not sure if we should keep it or not.
 
 
-def matrix_to_tex_string(matrix):
+def matrix_to_tex_string(matrix: np.ndarray) -> str:
     matrix = np.array(matrix).astype("str")
     if matrix.ndim == 1:
         matrix = matrix.reshape((matrix.size, 1))
@@ -67,7 +69,7 @@ def matrix_to_tex_string(matrix):
     return prefix + " \\\\ ".join(rows) + suffix
 
 
-def matrix_to_mobject(matrix):
+def matrix_to_mobject(matrix: np.ndarray) -> MathTex:
     return MathTex(matrix_to_tex_string(matrix))
 
 
@@ -170,14 +172,14 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         bracket_v_buff: float = MED_SMALL_BUFF,
         add_background_rectangles_to_entries: bool = False,
         include_background_rectangle: bool = False,
-        element_to_mobject: type[MathTex] = MathTex,
+        element_to_mobject: type[Mobject] | Callable[..., Mobject] = MathTex,
         element_to_mobject_config: dict = {},
         element_alignment_corner: Sequence[float] = DR,
         left_bracket: str = "[",
         right_bracket: str = "]",
         stretch_brackets: bool = True,
         bracket_config: dict = {},
-        **kwargs,
+        **kwargs: Any,
     ):
         self.v_buff = v_buff
         self.h_buff = h_buff
@@ -205,7 +207,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         if self.include_background_rectangle:
             self.add_background_rectangle()
 
-    def _matrix_to_mob_matrix(self, matrix):
+    def _matrix_to_mob_matrix(self, matrix: np.ndarray) -> list[list[Mobject]]:
         return [
             [
                 self.element_to_mobject(item, **self.element_to_mobject_config)
@@ -214,7 +216,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
             for row in matrix
         ]
 
-    def _organize_mob_matrix(self, matrix):
+    def _organize_mob_matrix(self, matrix: list[list[Mobject]]) -> Self:
         for i, row in enumerate(matrix):
             for j, _ in enumerate(row):
                 mob = matrix[i][j]
@@ -224,7 +226,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
                 )
         return self
 
-    def _add_brackets(self, left: str = "[", right: str = "]", **kwargs):
+    def _add_brackets(self, left: str = "[", right: str = "]", **kwargs: Any) -> Self:
         """Adds the brackets to the Matrix mobject.
 
         See Latex document for various bracket types.
@@ -278,13 +280,13 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         self.add(l_bracket, r_bracket)
         return self
 
-    def get_columns(self):
+    def get_columns(self) -> VGroup:
         r"""Return columns of the matrix as VGroups.
 
         Returns
         --------
-        List[:class:`~.VGroup`]
-            Each VGroup contains a column of the matrix.
+        :class:`~.VGroup`
+            The VGroup contains a nested VGroup for each column of the matrix.
 
         Examples
         --------
@@ -305,7 +307,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
             )
         )
 
-    def set_column_colors(self, *colors: str):
+    def set_column_colors(self, *colors: str) -> Self:
         r"""Set individual colors for each columns of the matrix.
 
         Parameters
@@ -335,13 +337,13 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
             column.set_color(color)
         return self
 
-    def get_rows(self):
+    def get_rows(self) -> VGroup:
         r"""Return rows of the matrix as VGroups.
 
         Returns
         --------
-        List[:class:`~.VGroup`]
-            Each VGroup contains a row of the matrix.
+        :class:`~.VGroup`
+            The VGroup contains a nested VGroup for each row of the matrix.
 
         Examples
         --------
@@ -357,7 +359,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         """
         return VGroup(*(VGroup(*row) for row in self.mob_matrix))
 
-    def set_row_colors(self, *colors: str):
+    def set_row_colors(self, *colors: str) -> Self:
         r"""Set individual colors for each row of the matrix.
 
         Parameters
@@ -387,7 +389,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
             row.set_color(color)
         return self
 
-    def add_background_to_entries(self):
+    def add_background_to_entries(self) -> Self:
         """Add a black background rectangle to the matrix,
         see above for an example.
 
@@ -400,7 +402,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
             mob.add_background_rectangle()
         return self
 
-    def get_mob_matrix(self) -> list[list[MathTex]]:
+    def get_mob_matrix(self) -> list[list[Mobject]]:
         """Return the underlying mob matrix mobjects.
 
         Returns
@@ -410,7 +412,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         """
         return self.mob_matrix
 
-    def get_entries(self):
+    def get_entries(self) -> VGroup:
         """Return the individual entries of the matrix.
 
         Returns
@@ -483,9 +485,9 @@ class DecimalMatrix(Matrix):
     def __init__(
         self,
         matrix: Iterable,
-        element_to_mobject: Mobject = DecimalNumber,
-        element_to_mobject_config: dict[str, Mobject] = {"num_decimal_places": 1},
-        **kwargs,
+        element_to_mobject: type[Mobject] = DecimalNumber,
+        element_to_mobject_config: dict[str, Any] = {"num_decimal_places": 1},
+        **kwargs: Any,
     ):
         """
         Will round/truncate the decimal places as per the provided config.
@@ -526,7 +528,10 @@ class IntegerMatrix(Matrix):
     """
 
     def __init__(
-        self, matrix: Iterable, element_to_mobject: Mobject = Integer, **kwargs
+        self,
+        matrix: Iterable,
+        element_to_mobject: type[Mobject] = Integer,
+        **kwargs: Any,
     ):
         """
         Will round if there are decimal entries in the matrix.
@@ -560,7 +565,12 @@ class MobjectMatrix(Matrix):
                 self.add(m0)
     """
 
-    def __init__(self, matrix, element_to_mobject=lambda m: m, **kwargs):
+    def __init__(
+        self,
+        matrix: Iterable,
+        element_to_mobject: type[Mobject] | Callable[..., Mobject] = lambda m: m,
+        **kwargs: Any,
+    ):
         super().__init__(matrix, element_to_mobject=element_to_mobject, **kwargs)
 
 
@@ -569,7 +579,7 @@ def get_det_text(
     determinant: int | str | None = None,
     background_rect: bool = False,
     initial_scale_factor: float = 2,
-):
+) -> VGroup:
     r"""Helper function to create determinant.
 
     Parameters
