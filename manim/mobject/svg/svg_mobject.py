@@ -4,12 +4,14 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+from typing import Any
 from xml.etree import ElementTree as ET
 
 import numpy as np
 import svgelements as se
 
 from manim import config, logger
+from manim.utils.color import ManimColor, ParsableManimColor
 
 from ...constants import RIGHT
 from ...utils.bezier import get_quadratic_approximation_of_cubic
@@ -98,17 +100,17 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         should_center: bool = True,
         height: float | None = 2,
         width: float | None = None,
-        color: str | None = None,
+        color: ParsableManimColor | None = None,
         opacity: float | None = None,
-        fill_color: str | None = None,
+        fill_color: ParsableManimColor | None = None,
         fill_opacity: float | None = None,
-        stroke_color: str | None = None,
+        stroke_color: ParsableManimColor | None = None,
         stroke_opacity: float | None = None,
         stroke_width: float | None = None,
         svg_default: dict | None = None,
         path_string_config: dict | None = None,
         use_svg_cache: bool = True,
-        **kwargs,
+        **kwargs: Any,
     ):
         super().__init__(color=None, stroke_color=None, fill_color=None, **kwargs)
 
@@ -118,13 +120,15 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         self.should_center = should_center
         self.svg_height = height
         self.svg_width = width
-        self.color = color
+        self.color = ManimColor(color)
         self.opacity = opacity
         self.fill_color = fill_color
-        self.fill_opacity = fill_opacity
+        self.fill_opacity = fill_opacity  # type: ignore[assignment]
         self.stroke_color = stroke_color
-        self.stroke_opacity = stroke_opacity
-        self.stroke_width = stroke_width
+        self.stroke_opacity = stroke_opacity  # type: ignore[assignment]
+        self.stroke_width = stroke_width  # type: ignore[assignment]
+        if self.stroke_width is None:
+            self.stroke_width = 0
 
         if svg_default is None:
             svg_default = {
@@ -191,7 +195,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         """Parse the SVG and translate its elements to submobjects."""
         file_path = self.get_file_path()
         element_tree = ET.parse(file_path)
-        new_tree = self.modify_xml_tree(element_tree)
+        new_tree = self.modify_xml_tree(element_tree)  # type: ignore[arg-type]
         # Create a temporary svg file to dump modified svg to be parsed
         modified_file_path = file_path.with_name(f"{file_path.stem}_{file_path.suffix}")
         new_tree.write(modified_file_path)
@@ -228,12 +232,12 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             "style",
         )
         root = element_tree.getroot()
-        root_style_dict = {k: v for k, v in root.attrib.items() if k in style_keys}
+        root_style_dict = {k: v for k, v in root.attrib.items() if k in style_keys}  # type: ignore[union-attr]
 
         new_root = ET.Element("svg", {})
         config_style_node = ET.SubElement(new_root, "g", config_style_dict)
         root_style_node = ET.SubElement(config_style_node, "g", root_style_dict)
-        root_style_node.extend(root)
+        root_style_node.extend(root)  # type: ignore[arg-type]
         return ET.ElementTree(new_root)
 
     def generate_config_style_dict(self) -> dict[str, str]:
@@ -262,13 +266,13 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         svg
             The parsed SVG file.
         """
-        result = []
+        result: list[VMobject] = []
         for shape in svg.elements():
             # can we combine the two continue cases into one?
             if isinstance(shape, se.Group):  # noqa: SIM114
                 continue
             elif isinstance(shape, se.Path):
-                mob = self.path_to_mobject(shape)
+                mob: VMobject = self.path_to_mobject(shape)
             elif isinstance(shape, se.SimpleLine):
                 mob = self.line_to_mobject(shape)
             elif isinstance(shape, se.Rect):
@@ -422,7 +426,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         return vmobject_class().set_points_as_corners(points)
 
     @staticmethod
-    def text_to_mobject(text: se.Text):
+    def text_to_mobject(text: se.Text) -> VMobject:
         """Convert a text element to a vectorized mobject.
 
         .. warning::
@@ -435,7 +439,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             The parsed SVG text.
         """
         logger.warning(f"Unsupported element type: {type(text)}")
-        return
+        return  # type: ignore[return-value]
 
     def move_into_position(self) -> None:
         """Scale and move the generated mobject into position."""
@@ -480,7 +484,7 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
         long_lines: bool = False,
         should_subdivide_sharp_curves: bool = False,
         should_remove_null_curves: bool = False,
-        **kwargs,
+        **kwargs: Any,
     ):
         # Get rid of arcs
         path_obj.approximate_arcs_with_quads()
@@ -492,7 +496,7 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
 
         super().__init__(**kwargs)
 
-    def init_points(self) -> None:
+    def generate_points(self) -> None:
         # TODO: cache mobject in a re-importable way
 
         self.handle_commands()
@@ -505,15 +509,16 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
                 # Get rid of any null curves
                 self.set_points(self.get_points_without_null_curves())
 
-    generate_points = init_points
+    def init_points(self) -> None:
+        self.generate_points()
 
     def handle_commands(self) -> None:
         all_points: list[np.ndarray] = []
-        last_move = None
+        last_move: np.ndarray = None
         curve_start = None
         last_true_move = None
 
-        def move_pen(pt, *, true_move: bool = False):
+        def move_pen(pt: np.ndarray, *, true_move: bool = False) -> None:
             nonlocal last_move, curve_start, last_true_move
             last_move = pt
             if curve_start is None:
@@ -523,17 +528,19 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
 
         if self.n_points_per_curve == 4:
 
-            def add_cubic(start, cp1, cp2, end):
+            def add_cubic(
+                start: np.ndarray, cp1: np.ndarray, cp2: np.ndarray, end: np.ndarray
+            ) -> None:
                 nonlocal all_points
                 assert len(all_points) % 4 == 0, len(all_points)
                 all_points += [start, cp1, cp2, end]
                 move_pen(end)
 
-            def add_quad(start, cp, end):
+            def add_quad(start: np.ndarray, cp: np.ndarray, end: np.ndarray) -> None:
                 add_cubic(start, (start + cp + cp) / 3, (cp + cp + end) / 3, end)
                 move_pen(end)
 
-            def add_line(start, end):
+            def add_line(start: np.ndarray, end: np.ndarray) -> None:
                 add_cubic(
                     start, (start + start + end) / 3, (start + end + end) / 3, end
                 )
@@ -541,7 +548,9 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
 
         else:
 
-            def add_cubic(start, cp1, cp2, end):
+            def add_cubic(
+                start: np.ndarray, cp1: np.ndarray, cp2: np.ndarray, end: np.ndarray
+            ) -> None:
                 nonlocal all_points
                 assert len(all_points) % 3 == 0, len(all_points)
                 two_quads = get_quadratic_approximation_of_cubic(
@@ -554,13 +563,13 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
                 all_points += two_quads[3:].tolist()
                 move_pen(end)
 
-            def add_quad(start, cp, end):
+            def add_quad(start: np.ndarray, cp: np.ndarray, end: np.ndarray) -> None:
                 nonlocal all_points
                 assert len(all_points) % 3 == 0, len(all_points)
                 all_points += [start, cp, end]
                 move_pen(end)
 
-            def add_line(start, end):
+            def add_line(start: np.ndarray, end: np.ndarray) -> None:
                 add_quad(start, (start + end) / 2, end)
                 move_pen(end)
 

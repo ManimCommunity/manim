@@ -4,8 +4,8 @@ from __future__ import annotations
 
 __all__ = ["VectorScene", "LinearTransformationScene"]
 
-from collections.abc import Iterable
-from typing import TYPE_CHECKING, Any, Callable, cast
+from collections.abc import Callable, Iterable
+from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
 
@@ -45,11 +45,16 @@ from ..utils.rate_functions import rush_from, rush_into
 from ..utils.space_ops import angle_of_vector
 
 if TYPE_CHECKING:
-    from typing import Any
-
     from typing_extensions import Self
 
-    from manim.typing import MappingFunction, Point2DLike, Point3D, Point3DLike
+    from manim.typing import (
+        MappingFunction,
+        Point3D,
+        Point3DLike,
+        Vector2DLike,
+        Vector3D,
+        Vector3DLike,
+    )
 
 
 X_COLOR = GREEN_C
@@ -139,7 +144,7 @@ class VectorScene(Scene):
         self.renderer.camera = Camera(self.renderer.get_frame())
         self.clear()
 
-    def get_vector(self, numerical_vector: Point3DLike, **kwargs: Any) -> Arrow:
+    def get_vector(self, numerical_vector: Vector3DLike, **kwargs: Any) -> Arrow:
         """
         Returns an arrow on the Plane given an input numerical vector.
 
@@ -166,7 +171,7 @@ class VectorScene(Scene):
 
     def add_vector(
         self,
-        vector: Arrow | Point3DLike,
+        vector: Arrow | Vector3DLike,
         color: ParsableManimColor | Iterable[ParsableManimColor] = YELLOW,
         animate: bool = True,
         **kwargs: Any,
@@ -346,10 +351,10 @@ class VectorScene(Scene):
             if not rotate:
                 label.rotate(-angle, about_point=ORIGIN)
             if direction == "left":
-                temp_shift_1: Point3D = np.asarray(label.get_bottom())
+                temp_shift_1: Vector3D = np.asarray(label.get_bottom())
                 label.shift(-temp_shift_1 + 0.1 * UP)
             else:
-                temp_shift_2: Point3D = np.asarray(label.get_top())
+                temp_shift_2: Vector3D = np.asarray(label.get_top())
                 label.shift(-temp_shift_2 + 0.1 * DOWN)
             label.rotate(angle, about_point=ORIGIN)
             label.shift((vector.get_end() - vector.get_start()) / 2)
@@ -391,7 +396,7 @@ class VectorScene(Scene):
         self,
         x_coord: MathTex,
         x_line: Line,
-        vector: Point3DLike,
+        vector: Vector3DLike,
     ) -> MathTex:  # TODO Write DocStrings for this.
         x_coord.next_to(x_line, -np.sign(vector[1]) * UP)
         x_coord.set_color(X_COLOR)
@@ -401,7 +406,7 @@ class VectorScene(Scene):
         self,
         y_coord: MathTex,
         y_line: Line,
-        vector: Point3DLike,
+        vector: Vector3DLike,
     ) -> MathTex:  # TODO Write DocStrings for this.
         y_coord.next_to(y_line, np.sign(vector[0]) * RIGHT)
         y_coord.set_color(Y_COLOR)
@@ -409,7 +414,7 @@ class VectorScene(Scene):
 
     def coords_to_vector(
         self,
-        vector: Point2DLike,
+        vector: Vector2DLike,
         coords_start: Point3DLike = 2 * RIGHT + 2 * UP,
         clean_up: bool = True,
     ) -> None:
@@ -475,7 +480,7 @@ class VectorScene(Scene):
 
     def vector_to_coords(
         self,
-        vector: Point3DLike,
+        vector: Vector3DLike,
         integer_labels: bool = True,
         clean_up: bool = True,
     ) -> tuple[Matrix, Line, Line]:
@@ -536,7 +541,7 @@ class VectorScene(Scene):
             self.add(*starting_mobjects)
         return array, x_line, y_line
 
-    def show_ghost_movement(self, vector: Arrow | Point2DLike | Point3DLike) -> None:
+    def show_ghost_movement(self, vector: Arrow | Vector2DLike | Vector3DLike) -> None:
         """
         This method plays an animation that partially shows the entire plane moving
         in the direction of a particular vector. This is useful when you wish to
@@ -554,7 +559,7 @@ class VectorScene(Scene):
             vector = np.asarray(vector)
             if len(vector) == 2:
                 vector = np.append(np.array(vector), 0.0)
-        vector_cleaned: Point3D = vector
+        vector_cleaned: Vector3D = vector
 
         x_max = int(config["frame_x_radius"] + abs(vector_cleaned[0]))
         y_max = int(config["frame_y_radius"] + abs(vector_cleaned[1]))
@@ -962,12 +967,12 @@ class LinearTransformationScene(VectorScene):
             label_mob.target_text = new_label  # type: ignore[attr-defined]
         else:
             label_mob.target_text = (  # type: ignore[attr-defined]
-                f"{transformation_name}({label_mob.get_tex_string()})"  # type: ignore[no-untyped-call]
+                f"{transformation_name}({label_mob.get_tex_string()})"
             )
         label_mob.vector = vector  # type: ignore[attr-defined]
         label_mob.kwargs = kwargs  # type: ignore[attr-defined]
-        if "animate" in label_mob.kwargs:  # type: ignore[attr-defined]
-            label_mob.kwargs.pop("animate")  # type: ignore[attr-defined]
+        if "animate" in label_mob.kwargs:
+            label_mob.kwargs.pop("animate")
         self.transformable_labels.append(label_mob)
         return cast(MathTex, label_mob)
 

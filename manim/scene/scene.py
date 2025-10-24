@@ -15,6 +15,8 @@ import platform
 import random
 import threading
 import time
+from dataclasses import dataclass
+from pathlib import Path
 from queue import Queue
 
 import srt
@@ -25,15 +27,21 @@ try:
     import dearpygui.dearpygui as dpg
 
     dearpygui_imported = True
+    dpg.create_context()
+    window = dpg.generate_uuid()
 except ImportError:
     dearpygui_imported = False
-from typing import TYPE_CHECKING
+
+from collections.abc import Callable, Iterable, Sequence
+from typing import TYPE_CHECKING, Any, Union
 
 import numpy as np
 from tqdm import tqdm
 from watchdog.events import DirModifiedEvent, FileModifiedEvent, FileSystemEventHandler
 from watchdog.observers import Observer
 
+from manim import __version__
+from manim.data_structures import MethodWithArgs
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLPoint
 
@@ -41,7 +49,6 @@ from .. import config, logger
 from ..animation.animation import Animation, Wait, prepare_animation
 from ..camera.camera import Camera
 from ..constants import *
-from ..gui.gui import configure_pygui
 from ..renderer.cairo_renderer import CairoRenderer
 from ..renderer.opengl_renderer import OpenGLCamera, OpenGLMobject, OpenGLRenderer
 from ..renderer.shader import Object3D
@@ -51,31 +58,72 @@ from ..utils.family import extract_mobject_family_members
 from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
 from ..utils.file_ops import open_media_file
 from ..utils.iterables import list_difference_update, list_update
+from ..utils.module_ops import scene_classes_from_file
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable, Sequence
     from types import FrameType
-    from typing import Any, Callable, TypeAlias
 
-    from typing_extensions import Self
+    from typing_extensions import Self, TypeAlias
 
     from manim.typing import Point3D
 
-    SceneInteractAction: TypeAlias = tuple[str, Iterable[Any], dict[str, Any]]
-    """
-    The SceneInteractAction type alias is used for elements in the queue
-    used by Scene.interact().
-    The elements consist consist of:
+    SceneInteractAction: TypeAlias = Union[
+        MethodWithArgs, "SceneInteractContinue", "SceneInteractRerun"
+    ]
+    """The SceneInteractAction type alias is used for elements in the queue
+    used by :meth:`.Scene.interact()`.
 
-    - a string, which is either the name of a Scene method or some special keyword
-      starting with "rerun" or "exit",
-    - a list of args for the Scene method (only used if the first string actually
-      corresponds to a method) and
-    - a dict of kwargs for the Scene method (if the first string corresponds to one.
-      Otherwise, currently Scene.interact() extracts a possible "from_animation_number" from it if the first string starts with "rerun"),
-    as seen around the source code where it's common to use self.queue.put((method_name, [], {})) and similar items.
+    The elements can be one of the following three:
 
+    - a :class:`~.MethodWithArgs` object, which represents a :class:`Scene`
+      method to be called along with its args and kwargs,
+    - a :class:`~.SceneInteractContinue` object, indicating that the scene
+      interaction is over and the scene will continue rendering after that, or
+    - a :class:`~.SceneInteractRerun` object, indicating that the scene should
+      render again.
     """
+
+
+@dataclass
+class SceneInteractContinue:
+    """Object which, when encountered in :meth:`.Scene.interact`, triggers
+    the end of the scene interaction, continuing with the rest of the
+    animations, if any. This object can be queued in :attr:`.Scene.queue`
+    for later use in :meth:`.Scene.interact`.
+
+    Attributes
+    ----------
+    sender : str
+        The name of the entity which issued the end of the scene interaction,
+        such as ``"gui"`` or ``"keyboard"``.
+    """
+
+    __slots__ = ["sender"]
+
+    sender: str
+
+
+class SceneInteractRerun:
+    """Object which, when encountered in :meth:`.Scene.interact`, triggers
+    the rerun of the scene. This object can be queued in :attr:`.Scene.queue`
+    for later use in :meth:`.Scene.interact`.
+
+    Attributes
+    ----------
+    sender : str
+        The name of the entity which issued the rerun of the scene, such as
+        ``"gui"``, ``"keyboard"``, ``"play"`` or ``"file"``.
+    kwargs : dict[str, Any]
+        Additional keyword arguments when rerunning the scene. Currently,
+        only ``"from_animation_number"`` is being used, which determines the
+        animation from which to start rerunning the scene.
+    """
+
+    __slots__ = ["sender", "kwargs"]
+
+    def __init__(self, sender: str, **kwargs: Any) -> None:
+        self.sender = sender
+        self.kwargs = kwargs
 
 
 class RerunSceneHandler(FileSystemEventHandler):
@@ -86,7 +134,7 @@ class RerunSceneHandler(FileSystemEventHandler):
         self.queue = queue
 
     def on_modified(self, event: DirModifiedEvent | FileModifiedEvent) -> None:
-        self.queue.put(("rerun_file", [], {}))
+        self.queue.put(SceneInteractRerun("file"))
 
 
 class Scene:
@@ -144,7 +192,7 @@ class Scene:
         self.skip_animation_preview = False
         self.meshes: list[Object3D] = []
         self.camera_target = ORIGIN
-        self.widgets: list[Any] = []
+        self.widgets: list[dict[str, Any]] = []
         self.dearpygui_imported = dearpygui_imported
         self.updaters: list[Callable[[float], None]] = []
         self.key_to_function_map: dict[str, Callable[[], None]] = {}
@@ -335,7 +383,7 @@ class Scene:
 
     def update_meshes(self, dt: float) -> None:
         for obj in self.meshes:
-            for mesh in obj.get_family():  # type: ignore[no-untyped-call]
+            for mesh in obj.get_family():
                 mesh.update(dt)
 
     def update_self(self, dt: float) -> None:
@@ -544,6 +592,19 @@ class Scene:
         def replace_in_list(
             mobj_list: list[Mobject], old_m: Mobject, new_m: Mobject
         ) -> bool:
+            # Avoid duplicate references to the same object in self.mobjects
+            if new_m in mobj_list:
+                if old_m is new_m:
+                    # In this case, one could say that the old Mobject was already found.
+                    # No replacement is needed, since old_m is new_m, so no action is required.
+                    # This might be unexpected, so raise a warning.
+                    logger.warning(
+                        f"Attempted to replace {type(old_m).__name__} "
+                        "with itself in Scene.mobjects."
+                    )
+                    return True
+                mobj_list.remove(new_m)
+
             # We use breadth-first search because some Mobjects get very deep and
             # we expect top-level elements to be the most common targets for replace.
             for i in range(0, len(mobj_list)):
@@ -1102,6 +1163,7 @@ class Scene:
             and config.renderer == RendererType.OPENGL
             and threading.current_thread().name != "MainThread"
         ):
+            # TODO: are these actually being used?
             kwargs.update(
                 {
                     "subcaption": subcaption,
@@ -1109,13 +1171,7 @@ class Scene:
                     "subcaption_offset": subcaption_offset,
                 }
             )
-            self.queue.put(
-                (
-                    "play",
-                    args,
-                    kwargs,
-                )
-            )
+            self.queue.put(SceneInteractRerun("play", **kwargs))
             return
 
         start_time = self.time
@@ -1359,17 +1415,19 @@ class Scene:
             load_module_into_namespace(manim.opengl, namespace)
 
             def embedded_rerun(*args: Any, **kwargs: Any) -> None:
-                self.queue.put(("rerun_keyboard", args, kwargs))
+                self.queue.put(SceneInteractRerun("keyboard"))
                 shell.exiter()
 
             namespace["rerun"] = embedded_rerun
 
             shell(local_ns=namespace)
-            self.queue.put(("exit_keyboard", [], {}))
+            self.queue.put(SceneInteractContinue("keyboard"))
 
         def get_embedded_method(method_name: str) -> Callable[..., None]:
+            method = getattr(self, method_name)
+
             def embedded_method(*args: Any, **kwargs: Any) -> None:
-                self.queue.put((method_name, args, kwargs))
+                self.queue.put(MethodWithArgs(method, args, kwargs))
 
             return embedded_method
 
@@ -1406,13 +1464,12 @@ class Scene:
         if self.dearpygui_imported and config["enable_gui"]:
             if not dpg.is_dearpygui_running():
                 gui_thread = threading.Thread(
-                    target=configure_pygui,
-                    args=(self.renderer, self.widgets),
+                    target=self._configure_pygui,
                     kwargs={"update": False},
                 )
                 gui_thread.start()
             else:
-                configure_pygui(self.renderer, self.widgets, update=True)
+                self._configure_pygui(update=True)
 
         self.camera.model_matrix = self.camera.default_model_matrix
 
@@ -1432,36 +1489,38 @@ class Scene:
         assert self.queue.qsize() == 0
 
         last_time = time.time()
-        while not (self.renderer.window.is_closing or self.quit_interaction):
+        while not (
+            (self.renderer.window is not None and self.renderer.window.is_closing)
+            or self.quit_interaction
+        ):
             if not self.queue.empty():
-                tup = self.queue.get_nowait()
-                if tup[0].startswith("rerun"):
+                action = self.queue.get_nowait()
+                if isinstance(action, SceneInteractRerun):
                     # Intentionally skip calling join() on the file thread to save time.
-                    if not tup[0].endswith("keyboard"):
+                    if action.sender != "keyboard":
                         if shell.pt_app:
                             shell.pt_app.app.exit(exception=EOFError)
                         file_observer.unschedule_all()
                         raise RerunSceneException
                     keyboard_thread.join()
 
-                    kwargs = tup[2]
-                    if "from_animation_number" in kwargs:
-                        config["from_animation_number"] = kwargs[
+                    if "from_animation_number" in action.kwargs:
+                        config["from_animation_number"] = action.kwargs[
                             "from_animation_number"
                         ]
                     # # TODO: This option only makes sense if interactive_embed() is run at the
                     # # end of a scene by default.
-                    # if "upto_animation_number" in kwargs:
-                    #     config["upto_animation_number"] = kwargs[
+                    # if "upto_animation_number" in action.kwargs:
+                    #     config["upto_animation_number"] = action.kwargs[
                     #         "upto_animation_number"
                     #     ]
 
                     keyboard_thread.join()
                     file_observer.unschedule_all()
                     raise RerunSceneException
-                elif tup[0].startswith("exit"):
+                elif isinstance(action, SceneInteractContinue):
                     # Intentionally skip calling join() on the file thread to save time.
-                    if not tup[0].endswith("keyboard") and shell.pt_app:
+                    if action.sender != "keyboard" and shell.pt_app:
                         shell.pt_app.app.exit(exception=EOFError)
                     keyboard_thread.join()
                     # Remove exit_keyboard from the queue if necessary.
@@ -1470,8 +1529,7 @@ class Scene:
                     keyboard_thread_needs_join = False
                     break
                 else:
-                    method, args, kwargs = tup
-                    getattr(self, method)(*args, **kwargs)
+                    action.method(*action.args, **action.kwargs)
             else:
                 self.renderer.animation_start_time = 0
                 dt = time.time() - last_time
@@ -1495,7 +1553,7 @@ class Scene:
         if self.dearpygui_imported and config["enable_gui"]:
             dpg.stop_dearpygui()
 
-        if self.renderer.window.is_closing:
+        if self.renderer.window is not None and self.renderer.window.is_closing:
             self.renderer.window.destroy()
 
     def embed(self) -> None:
@@ -1542,6 +1600,73 @@ class Scene:
 
         # End scene when exiting an embed.
         raise Exception("Exiting scene.")
+
+    def _configure_pygui(self, update: bool = True) -> None:
+        if not self.dearpygui_imported:
+            raise RuntimeError("Attempted to use DearPyGUI when it isn't imported.")
+        if update:
+            dpg.delete_item(window)
+        else:
+            dpg.create_viewport()
+            dpg.setup_dearpygui()
+            dpg.show_viewport()
+
+        dpg.set_viewport_title(title=f"Manim Community v{__version__}")
+        dpg.set_viewport_width(1015)
+        dpg.set_viewport_height(540)
+
+        def rerun_callback(sender: Any, data: Any) -> None:
+            self.queue.put(SceneInteractRerun("gui"))
+
+        def continue_callback(sender: Any, data: Any) -> None:
+            self.queue.put(SceneInteractContinue("gui"))
+
+        def scene_selection_callback(sender: Any, data: Any) -> None:
+            config["scene_names"] = (dpg.get_value(sender),)
+            self.queue.put(SceneInteractRerun("gui"))
+
+        scene_classes = scene_classes_from_file(
+            Path(config["input_file"]), full_list=True
+        )  # type: ignore[call-overload]
+        scene_names = [scene_class.__name__ for scene_class in scene_classes]
+
+        with dpg.window(
+            id=window,
+            label="Manim GUI",
+            pos=[config["gui_location"][0], config["gui_location"][1]],
+            width=1000,
+            height=500,
+        ):
+            dpg.set_global_font_scale(2)
+            dpg.add_button(label="Rerun", callback=rerun_callback)
+            dpg.add_button(label="Continue", callback=continue_callback)
+            dpg.add_combo(
+                label="Selected scene",
+                items=scene_names,
+                callback=scene_selection_callback,
+                default_value=config["scene_names"][0],
+            )
+            dpg.add_separator()
+            if len(self.widgets) != 0:
+                with dpg.collapsing_header(
+                    label=f"{config['scene_names'][0]} widgets",
+                    default_open=True,
+                ):
+                    for widget_config in self.widgets:
+                        widget_config_copy = widget_config.copy()
+                        name = widget_config_copy["name"]
+                        widget = widget_config_copy["widget"]
+                        if widget != "separator":
+                            del widget_config_copy["name"]
+                            del widget_config_copy["widget"]
+                            getattr(dpg, f"add_{widget}")(
+                                label=name, **widget_config_copy
+                            )
+                        else:
+                            dpg.add_separator()
+
+        if not update:
+            dpg.start_dearpygui()
 
     def update_to_time(self, t: float) -> None:
         dt = t - self.last_t
@@ -1802,6 +1927,6 @@ class Scene:
     def set_key_function(self, char: str, func: Callable[[], Any]) -> None:
         self.key_to_function_map[char] = func
 
-    def on_mouse_press(self, point: Point3D, button: int, modifiers: int) -> None:
+    def on_mouse_press(self, point: Point3D, button: str, modifiers: int) -> None:
         for func in self.mouse_press_callbacks:
             func()

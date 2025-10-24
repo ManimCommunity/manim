@@ -45,6 +45,7 @@ if TYPE_CHECKING:
     from manim.animation.animation import Animation
     from manim.mobject.mobject import Mobject
     from manim.scene.scene import Scene
+    from manim.typing import Point3D
 
 
 __all__ = ["OpenGLCamera", "OpenGLRenderer"]
@@ -248,12 +249,14 @@ class OpenGLRenderer:
         self.camera = OpenGLCamera()
         self.pressed_keys = set()
 
+        self.window = None
+
         # Initialize texture map.
         self.path_to_texture_id = {}
 
         self.background_color = config["background_color"]
 
-    def init_scene(self, scene):
+    def init_scene(self, scene: Scene) -> None:
         self.partial_movie_files = []
         self.file_writer: Any = self._file_writer_class(
             self,
@@ -261,32 +264,31 @@ class OpenGLRenderer:
         )
         self.scene = scene
         self.background_color = config["background_color"]
-        if not hasattr(self, "window"):
-            if self.should_create_window():
-                from .opengl_renderer_window import Window
+        if self.should_create_window():
+            from .opengl_renderer_window import Window
 
-                self.window = Window(self)
-                self.context = self.window.ctx
-                self.frame_buffer_object = self.context.detect_framebuffer()
-            else:
-                self.window = None
-                try:
-                    self.context = moderngl.create_context(standalone=True)
-                except Exception:
-                    self.context = moderngl.create_context(
-                        standalone=True,
-                        backend="egl",
-                    )
-                self.frame_buffer_object = self.get_frame_buffer_object(self.context, 0)
-                self.frame_buffer_object.use()
-            self.context.enable(moderngl.BLEND)
-            self.context.wireframe = config["enable_wireframe"]
-            self.context.blend_func = (
-                moderngl.SRC_ALPHA,
-                moderngl.ONE_MINUS_SRC_ALPHA,
-                moderngl.ONE,
-                moderngl.ONE,
-            )
+            self.window = Window(self)
+            self.context = self.window.ctx
+            self.frame_buffer_object = self.context.detect_framebuffer()
+        else:
+            # self.window = None
+            try:
+                self.context = moderngl.create_context(standalone=True)
+            except Exception:
+                self.context = moderngl.create_context(
+                    standalone=True,
+                    backend="egl",
+                )
+            self.frame_buffer_object = self.get_frame_buffer_object(self.context, 0)
+            self.frame_buffer_object.use()
+        self.context.enable(moderngl.BLEND)
+        self.context.wireframe = config["enable_wireframe"]
+        self.context.blend_func = (
+            moderngl.SRC_ALPHA,
+            moderngl.ONE_MINUS_SRC_ALPHA,
+            moderngl.ONE,
+            moderngl.ONE,
+        )
 
     def should_create_window(self):
         if config["force_window"]:
@@ -401,8 +403,7 @@ class OpenGLRenderer:
         return self.path_to_texture_id[repr(path)]
 
     def update_skipping_status(self) -> None:
-        """
-        This method is used internally to check if the current
+        """This method is used internally to check if the current
         animation needs to be skipped or not. It also checks if
         the number of animations that were played correspond to
         the number of animations that need to be played, and
@@ -504,7 +505,7 @@ class OpenGLRenderer:
         if self.should_save_last_frame():
             config.save_last_frame = True
             self.update_frame(scene)
-            self.file_writer.save_final_image(self.get_image())
+            self.file_writer.save_image(self.get_image())
 
     def should_save_last_frame(self):
         if config["save_last_frame"]:
@@ -585,7 +586,9 @@ class OpenGLRenderer:
     # Returns offset from the bottom left corner in pixels.
     # top_left flag should be set to True when using a GUI framework
     # where the (0,0) is at the top left: e.g. PySide6
-    def pixel_coords_to_space_coords(self, px, py, relative=False, top_left=False):
+    def pixel_coords_to_space_coords(
+        self, px: float, py: float, relative: bool = False, top_left: bool = False
+    ) -> Point3D:
         pixel_shape = self.get_pixel_shape()
         if pixel_shape is None:
             return np.array([0, 0, 0])
