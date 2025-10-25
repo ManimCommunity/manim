@@ -13,9 +13,9 @@ release. Write RST between the following start and end comments.-->
 <!--changelog-end-->
 
 ## Checklist
-- [ ] I have read the [Contributing Guidelines](https://docs.manim.community/en/latest/contributing.html)
-- [ ] I have written a descriptive PR title (see top of PR template for examples)
-- [ ] My new documentation builds, looks correctly formatted, and adds no additional build warnings
+- [X] I have read the [Contributing Guidelines](https://docs.manim.community/en/latest/contributing.html)
+- [X] I have written a descriptive PR title (see top of PR template for examples)
+- [X] My new documentation builds, looks correctly formatted, and adds no additional build warnings
 
 <!-- Do not modify the lines below. These are for the reviewers of your PR -->
 ## Reviewer Checklist
