@@ -351,7 +351,7 @@ pip install bandersnatch
 pip install cibuildwheel 
 '''
 
-After this you should be able to run 'puproject-build' in the root
+After this you should be able to run 'pyproject-build' in the root
 of the project to create the package under dist. Under which you can 
 run the interpreter to install any other dependicies and add it into
 the pip package. 
