@@ -359,7 +359,7 @@ class MathTex(SingleStringMathTex):
             else:
                 is_script = tex_string.strip().startswith(("^", "_"))
                 remaining = self.submobjects[curr_index:new_index]
-                
+
                 if is_script and len(remaining) >= num_submobs:
                     matched_submobs = []
                     for target_submob in sub_tex_mob.submobjects:
