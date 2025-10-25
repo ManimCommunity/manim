@@ -6,6 +6,7 @@ __all__ = [
     "Code",
 ]
 
+import re
 from pathlib import Path
 from typing import Any, Literal
 
@@ -169,10 +170,10 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
             if child.name == "span":
                 try:
                     child_style = child["style"]
-                    if isinstance(child_style, str) and "color: " in child_style:
-                        color = child_style.removeprefix("color: ")
-                    else:
-                        color = None
+                    match_ = re.match(
+                        r"color: (#[A-Fa-f0-9]{6}|#[A-Fa-f0-9]{3})", child_style
+                    )
+                    color = None if match_ is None else match_.group(1)
                 except KeyError:
                     color = None
                 current_line_color_ranges.append(
