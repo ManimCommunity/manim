@@ -31,6 +31,7 @@ from functools import reduce
 from textwrap import dedent
 from typing import Any
 
+import numpy as np
 from typing_extensions import Self
 
 from manim import config, logger
@@ -356,7 +357,25 @@ class MathTex(SingleStringMathTex):
                 last_submob_index = min(curr_index, len(self.submobjects) - 1)
                 sub_tex_mob.move_to(self.submobjects[last_submob_index], RIGHT)
             else:
-                sub_tex_mob.submobjects = self.submobjects[curr_index:new_index]
+                is_script = tex_string.strip().startswith(("^", "_"))
+                remaining = self.submobjects[curr_index:new_index]
+                
+                if is_script and len(remaining) >= num_submobs:
+                    matched_submobs = []
+                    for target_submob in sub_tex_mob.submobjects:
+                        if not remaining:
+                            break
+                        target_center = target_submob.get_center()
+                        best_match_idx = min(
+                            range(len(remaining)),
+                            key=lambda i: np.linalg.norm(
+                                remaining[i].get_center() - target_center
+                            ),
+                        )
+                        matched_submobs.append(remaining.pop(best_match_idx))
+                    sub_tex_mob.submobjects = matched_submobs
+                else:
+                    sub_tex_mob.submobjects = self.submobjects[curr_index:new_index]
             new_submobjects.append(sub_tex_mob)
             curr_index = new_index
         self.submobjects = new_submobjects
