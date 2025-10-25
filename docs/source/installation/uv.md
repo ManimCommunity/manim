@@ -333,26 +333,26 @@ environment is updated!
 
 
 :::{dropdown} Installing the current repo as a pip package
-If there are problems with the current release of manim. 
-You can install the current repository as a pip package by running 
+If there are problems with the current release of manim.
+You can install the current repository as a pip package by running
 
 'pip install git+https://github.com/ManimCommunity/manim.git@main'
 
-or 
+or
 
 'uv add git+https://github.com/ManimCommunity/manim.git@main'
 
 If you want to install a specific commit or test some changes to the
 source files you'll want to install these packages:
 
-''' 
+'''
 pip install build
 pip install bandersnatch
-pip install cibuildwheel 
+pip install cibuildwheel
 '''
 
 After this you should be able to run 'pyproject-build' in the root
-of the project to create the package under dist. Under which you can 
+of the project to create the package under dist. Under which you can
 run the interpreter to install any other dependicies and add it into
-the pip package. 
+the pip package.
 :::
