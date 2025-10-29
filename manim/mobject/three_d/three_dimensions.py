@@ -1254,7 +1254,7 @@ class Torus(Surface):
         resolution = resolution if resolution is not None else res_value
 
         self.R = major_radius
-        self.r = minor_radius
+        self.minor_radius = minor_radius
         super().__init__(
             self.func,
             u_range=u_range,
@@ -1271,5 +1271,5 @@ class Torus(Surface):
         :class:`numpy.ndarray`
             The z values defining the :class:`Torus`.
         """
-        P = np.array([np.cos(u), np.sin(u), 0])
-        return (self.R - self.r * np.cos(v)) * P - self.r * np.sin(v) * OUT
+    P = np.array([np.cos(u), np.sin(u), 0])
+    return (self.R - self.minor_radius * np.cos(v)) * P - self.minor_radius * np.sin(v) * OUT
