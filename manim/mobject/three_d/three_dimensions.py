@@ -1271,5 +1271,5 @@ class Torus(Surface):
         :class:`numpy.ndarray`
             The z values defining the :class:`Torus`.
         """
-    P = np.array([np.cos(u), np.sin(u), 0])
-    return (self.R - self.minor_radius * np.cos(v)) * P - self.minor_radius * np.sin(v) * OUT
+        P = np.array([np.cos(u), np.sin(u), 0])
+        return (self.R - self.minor_radius * np.cos(v)) * P - self.minor_radius * np.sin(v) * OUT
