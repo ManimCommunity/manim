@@ -69,16 +69,25 @@ def get_module(file_name: Path) -> types.ModuleType:
             raise FileNotFoundError(f"{file_name} not found")
 
 
-def get_scene_classes_from_module(module: types.ModuleType) -> list[type[Scene]]:
+def get_scene_classes_from_module(module: types.ModuleType, include_imported: bool = False) -> list[type[Scene]]:
     from ..scene.scene import Scene
-
-    def is_child_scene(obj: Any, module: types.ModuleType) -> bool:
-        return (
-            inspect.isclass(obj)
-            and issubclass(obj, Scene)
-            and obj != Scene
-            and obj.__module__.startswith(module.__name__)
-        )
+    
+    if include_imported:
+        def is_child_scene(obj: Any, module: types.ModuleType) -> bool:
+            return (
+                inspect.isclass(obj)
+                and issubclass(obj, Scene)
+                and obj != Scene
+                and not obj.__module__.startswith("manim.")
+            )
+    else:
+        def is_child_scene(obj: Any, module: types.ModuleType) -> bool:
+            return (
+                inspect.isclass(obj)
+                and issubclass(obj, Scene)
+                and obj != Scene
+                and obj.__module__ == module.__name__
+            )
 
     return [
         member[1]
@@ -139,7 +148,7 @@ def prompt_user_for_choice(scene_classes: list[type[Scene]]) -> list[type[Scene]
 
 @overload
 def scene_classes_from_file(
-    file_path: Path, require_single_scene: bool, full_list: Literal[True]
+    file_path: Path, require_single_scene: bool, full_list: Literal[True], include_imported: bool = False
 ) -> list[type[Scene]]: ...
 
 
@@ -148,6 +157,7 @@ def scene_classes_from_file(
     file_path: Path,
     require_single_scene: Literal[True],
     full_list: Literal[False] = False,
+    include_imported: bool = False,
 ) -> type[Scene]: ...
 
 
@@ -156,14 +166,15 @@ def scene_classes_from_file(
     file_path: Path,
     require_single_scene: Literal[False] = False,
     full_list: Literal[False] = False,
+    include_imported: bool = False,
 ) -> list[type[Scene]]: ...
 
 
 def scene_classes_from_file(
-    file_path: Path, require_single_scene: bool = False, full_list: bool = False
+    file_path: Path, require_single_scene: bool = False, full_list: bool = False, include_imported: bool = False
 ) -> type[Scene] | list[type[Scene]]:
     module = get_module(file_path)
-    all_scene_classes = get_scene_classes_from_module(module)
+    all_scene_classes = get_scene_classes_from_module(module, include_imported)
     if full_list:
         return all_scene_classes
     scene_classes_to_render = get_scenes_to_render(all_scene_classes)
