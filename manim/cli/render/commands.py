@@ -101,7 +101,9 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
             renderer = OpenGLRenderer()
             keep_running = True
             while keep_running:
-                for SceneClass in scene_classes_from_file(file, include_imported=kwargs["render_imported_scenes"]):
+                for SceneClass in scene_classes_from_file(
+                    file, include_imported=kwargs["render_imported_scenes"]
+                ):
                     with tempconfig({}):
                         scene = SceneClass(renderer)
                         rerun = scene.render()
@@ -118,7 +120,9 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
             error_console.print_exception()
             sys.exit(1)
     else:
-        for SceneClass in scene_classes_from_file(file, include_imported=kwargs["render_imported_scenes"]):
+        for SceneClass in scene_classes_from_file(
+            file, include_imported=kwargs["render_imported_scenes"]
+        ):
             try:
                 with tempconfig({}):
                     scene = SceneClass()

@@ -69,10 +69,13 @@ def get_module(file_name: Path) -> types.ModuleType:
             raise FileNotFoundError(f"{file_name} not found")
 
 
-def get_scene_classes_from_module(module: types.ModuleType, include_imported: bool = False) -> list[type[Scene]]:
+def get_scene_classes_from_module(
+    module: types.ModuleType, include_imported: bool = False
+) -> list[type[Scene]]:
     from ..scene.scene import Scene
-    
+
     if include_imported:
+
         def is_child_scene(obj: Any, module: types.ModuleType) -> bool:
             return (
                 inspect.isclass(obj)
@@ -81,6 +84,7 @@ def get_scene_classes_from_module(module: types.ModuleType, include_imported: bo
                 and not obj.__module__.startswith("manim.")
             )
     else:
+
         def is_child_scene(obj: Any, module: types.ModuleType) -> bool:
             return (
                 inspect.isclass(obj)
@@ -148,7 +152,10 @@ def prompt_user_for_choice(scene_classes: list[type[Scene]]) -> list[type[Scene]
 
 @overload
 def scene_classes_from_file(
-    file_path: Path, require_single_scene: bool, full_list: Literal[True], include_imported: bool = False
+    file_path: Path,
+    require_single_scene: bool,
+    full_list: Literal[True],
+    include_imported: bool = False,
 ) -> list[type[Scene]]: ...
 
 
@@ -171,7 +178,10 @@ def scene_classes_from_file(
 
 
 def scene_classes_from_file(
-    file_path: Path, require_single_scene: bool = False, full_list: bool = False, include_imported: bool = False
+    file_path: Path,
+    require_single_scene: bool = False,
+    full_list: bool = False,
+    include_imported: bool = False,
 ) -> type[Scene] | list[type[Scene]]:
     module = get_module(file_path)
     all_scene_classes = get_scene_classes_from_module(module, include_imported)
