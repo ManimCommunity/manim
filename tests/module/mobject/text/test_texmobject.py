@@ -228,28 +228,28 @@ def test_tex_garbage_collection(tmpdir, monkeypatch, config):
 
 
 def test_tex_strings_with_subscripts_and_superscripts():
-    """Check that MathTex submobjects match their tex_strings when using
-    subscripts and superscripts in different orders.
+    """Test that submobjects match tex_strings and positions when LaTeX reorders scripts.
 
-    This is a regression test for issue #3548. LaTeX may reorder subscripts
-    and superscripts in the compiled output, but the submobjects should still
-    correspond to their original tex_strings.
+    Regression test for issue #3548.
     """
-    # Test with superscript before subscript
     eq1 = MathTex("A", "^n", "_1")
     assert eq1.submobjects[0].get_tex_string() == "A"
     assert eq1.submobjects[1].get_tex_string() == "^n"
     assert eq1.submobjects[2].get_tex_string() == "_1"
+    assert eq1.submobjects[1].get_center()[1] > 0
+    assert eq1.submobjects[2].get_center()[1] < 0
 
-    # Test with subscript before superscript (reversed order)
     eq2 = MathTex("A", "_1", "^n")
     assert eq2.submobjects[0].get_tex_string() == "A"
     assert eq2.submobjects[1].get_tex_string() == "_1"
     assert eq2.submobjects[2].get_tex_string() == "^n"
+    assert eq2.submobjects[1].get_center()[1] < 0
+    assert eq2.submobjects[2].get_center()[1] > 0
 
-    # Test with summation and multiple terms
     eq3 = MathTex("\\sum", "^n", "_1", "x")
     assert eq3.submobjects[0].get_tex_string() == "\\sum"
     assert eq3.submobjects[1].get_tex_string() == "^n"
     assert eq3.submobjects[2].get_tex_string() == "_1"
     assert eq3.submobjects[3].get_tex_string() == "x"
+    assert eq3.submobjects[1].get_center()[1] > 0
+    assert eq3.submobjects[2].get_center()[1] < 0

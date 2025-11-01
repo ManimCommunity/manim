@@ -31,7 +31,6 @@ from functools import reduce
 from textwrap import dedent
 from typing import Any
 
-import numpy as np
 from typing_extensions import Self
 
 from manim import config, logger
@@ -343,7 +342,10 @@ class MathTex(SingleStringMathTex):
         """
         new_submobjects: list[VMobject] = []
         curr_index = 0
-        for tex_string in self.tex_strings:
+        i = 0
+
+        while i < len(self.tex_strings):
+            tex_string = self.tex_strings[i]
             sub_tex_mob = SingleStringMathTex(
                 tex_string,
                 tex_environment=self.tex_environment,
@@ -353,31 +355,73 @@ class MathTex(SingleStringMathTex):
             new_index = (
                 curr_index + num_submobs + len("".join(self.arg_separator.split()))
             )
+
             if num_submobs == 0:
                 last_submob_index = min(curr_index, len(self.submobjects) - 1)
                 sub_tex_mob.move_to(self.submobjects[last_submob_index], RIGHT)
-            else:
-                is_script = tex_string.strip().startswith(("^", "_"))
-                remaining = self.submobjects[curr_index:new_index]
+                new_submobjects.append(sub_tex_mob)
+                curr_index = new_index
+                i += 1
+            elif tex_string.strip().startswith(("^", "_")):
+                # Handle consecutive scripts as a group
+                script_group = [tex_string]
+                j = i + 1
+                while j < len(self.tex_strings) and self.tex_strings[j].strip().startswith(("^", "_")):
+                    script_group.append(self.tex_strings[j])
+                    j += 1
 
-                if is_script and len(remaining) >= num_submobs:
-                    matched_submobs = []
-                    for target_submob in sub_tex_mob.submobjects:
-                        if not remaining:
-                            break
-                        target_center = target_submob.get_center()
-                        best_match_idx = min(
-                            range(len(remaining)),
-                            key=lambda i: np.linalg.norm(
-                                remaining[i].get_center() - target_center
-                            ),
+                # Calculate total submobjects needed for all scripts
+                total_script_submobs = sum(
+                    len(SingleStringMathTex(
+                        s,
+                        tex_environment=self.tex_environment,
+                        tex_template=self.tex_template,
+                    ).submobjects)
+                    for s in script_group
+                )
+
+                # Get the pool of available submobjects for all scripts
+                script_pool = self.submobjects[curr_index:curr_index + total_script_submobs]
+
+                # Process each script in the group
+                for script_tex in script_group:
+                    script_mob = SingleStringMathTex(
+                        script_tex,
+                        tex_environment=self.tex_environment,
+                        tex_template=self.tex_template,
+                    )
+                    script_num_submobs = len(script_mob.submobjects)
+
+                    if script_num_submobs > 0 and len(script_pool) > 0:
+                        # Select submobjects by Y position
+                        is_superscript = script_tex.strip().startswith("^")
+                        sorted_pool = sorted(
+                            script_pool,
+                            key=lambda mob: mob.get_center()[1],
+                            reverse=is_superscript,  # highest first for ^, lowest first for _
                         )
-                        matched_submobs.append(remaining.pop(best_match_idx))
-                    sub_tex_mob.submobjects = matched_submobs
-                else:
-                    sub_tex_mob.submobjects = self.submobjects[curr_index:new_index]
-            new_submobjects.append(sub_tex_mob)
-            curr_index = new_index
+
+                        # Take the first script_num_submobs from sorted pool
+                        selected = sorted_pool[:script_num_submobs]
+                        script_mob.submobjects = selected
+
+                        # Remove selected submobjects from pool
+                        for sel in selected:
+                            if sel in script_pool:
+                                script_pool.remove(sel)
+
+                    new_submobjects.append(script_mob)
+
+                # Update indices
+                curr_index += total_script_submobs
+                i = j  # Skip past all processed scripts
+            else:
+                # Normal (non-script) processing
+                sub_tex_mob.submobjects = self.submobjects[curr_index:new_index]
+                new_submobjects.append(sub_tex_mob)
+                curr_index = new_index
+                i += 1
+
         self.submobjects = new_submobjects
         return self
 
