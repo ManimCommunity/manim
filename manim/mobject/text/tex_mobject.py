@@ -366,22 +366,28 @@ class MathTex(SingleStringMathTex):
                 # Handle consecutive scripts as a group
                 script_group = [tex_string]
                 j = i + 1
-                while j < len(self.tex_strings) and self.tex_strings[j].strip().startswith(("^", "_")):
+                while j < len(self.tex_strings) and self.tex_strings[
+                    j
+                ].strip().startswith(("^", "_")):
                     script_group.append(self.tex_strings[j])
                     j += 1
 
                 # Calculate total submobjects needed for all scripts
                 total_script_submobs = sum(
-                    len(SingleStringMathTex(
-                        s,
-                        tex_environment=self.tex_environment,
-                        tex_template=self.tex_template,
-                    ).submobjects)
+                    len(
+                        SingleStringMathTex(
+                            s,
+                            tex_environment=self.tex_environment,
+                            tex_template=self.tex_template,
+                        ).submobjects
+                    )
                     for s in script_group
                 )
 
                 # Get the pool of available submobjects for all scripts
-                script_pool = self.submobjects[curr_index:curr_index + total_script_submobs]
+                script_pool = self.submobjects[
+                    curr_index : curr_index + total_script_submobs
+                ]
 
                 # Process each script in the group
                 for script_tex in script_group:
