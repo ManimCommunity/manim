@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import inspect
 import types
-from typing import TYPE_CHECKING, Callable
+from collections.abc import Callable
+from typing import TYPE_CHECKING
 
 from numpy import piecewise
 

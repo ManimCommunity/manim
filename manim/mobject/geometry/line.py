@@ -14,7 +14,7 @@ __all__ = [
     "RightAngle",
 ]
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Literal
 
 import numpy as np
 
@@ -30,9 +30,7 @@ from manim.utils.color import WHITE
 from manim.utils.space_ops import angle_of_vector, line_intersection, normalize
 
 if TYPE_CHECKING:
-    from typing import Any
-
-    from typing_extensions import Literal, Self, TypeAlias
+    from typing_extensions import Self, TypeAlias
 
     from manim.typing import Point3D, Point3DLike, Vector2DLike, Vector3D, Vector3DLike
     from manim.utils.color import ParsableManimColor
@@ -147,7 +145,8 @@ class Line(TipableVMobject):
 
         self._account_for_buff(buff)
 
-    init_points = generate_points
+    def init_points(self) -> None:
+        self.generate_points()
 
     def _account_for_buff(self, buff: float) -> None:
         if buff <= 0:

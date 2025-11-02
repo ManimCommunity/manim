@@ -2,9 +2,10 @@ from __future__ import annotations
 
 __all__ = ["OpenGLPMobject", "OpenGLPGroup", "OpenGLPMPoint"]
 
+from typing import TYPE_CHECKING
+
 import moderngl
 import numpy as np
-from typing_extensions import Self
 
 from manim.constants import *
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
@@ -19,6 +20,16 @@ from manim.utils.color import (
 )
 from manim.utils.config_ops import _Uniforms
 from manim.utils.iterables import resize_with_interpolation
+
+if TYPE_CHECKING:
+    from typing_extensions import Self
+
+    from manim.typing import (
+        FloatRGBA_Array,
+        FloatRGBALike_Array,
+        Point3D_Array,
+        Point3DLike_Array,
+    )
 
 __all__ = ["OpenGLPMobject", "OpenGLPGroup", "OpenGLPMPoint"]
 
@@ -48,14 +59,20 @@ class OpenGLPMobject(OpenGLMobject):
         )
 
     def reset_points(self) -> Self:
-        self.rgbas = np.zeros((1, 4))
-        self.points = np.zeros((0, 3))
+        self.rgbas: FloatRGBA_Array = np.zeros((1, 4))
+        self.points: Point3D_Array = np.zeros((0, 3))
         return self
 
     def get_array_attrs(self):
         return ["points", "rgbas"]
 
-    def add_points(self, points, rgbas=None, color=None, opacity=None):
+    def add_points(
+        self,
+        points: Point3DLike_Array,
+        rgbas: FloatRGBALike_Array | None = None,
+        color: ParsableManimColor | None = None,
+        opacity: float | None = None,
+    ) -> Self:
         """Add points.
 
         Points must be a Nx3 numpy array.
