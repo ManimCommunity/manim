@@ -40,13 +40,15 @@ __all__ = [
     "CubicBezier",
     "ArcPolygon",
     "ArcPolygonFromArcs",
+    "TangentialArc",
 ]
 
 import itertools
 import warnings
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, cast, Tuple, Literal
 
 import numpy as np
+from manim import Line
 from typing_extensions import Self
 
 from manim.constants import *
@@ -59,7 +61,7 @@ from manim.utils.space_ops import (
     cartesian_to_spherical,
     line_intersection,
     perpendicular_bisector,
-    rotate_vector,
+    rotate_vector, angle_between_vectors,
 )
 
 if TYPE_CHECKING:
@@ -494,6 +496,48 @@ class ArcBetweenPoints(Arc):
                 )
             else:
                 self.radius = np.inf
+
+type Corner = Tuple[Literal[-1, 1], Literal[-1, 1]]
+
+class TangentialArc(ArcBetweenPoints):
+    """
+    Arc tangent to two intersecting lines.
+    You can choose any of the 4 possible corner arcs via the `corner` tuple.
+    corner = (s1, s2) where each si is ±1 to control direction along each line.
+    """
+
+    def __init__(self, line1: Line, line2: Line, radius: float, corner: Corner = (1, 1),  **kwargs):
+        self.line1 = line1
+        self.line2 = line2
+
+        intersection_point = line_intersection([line1.get_start(), line1.get_end()],
+                                               [line2.get_start(), line2.get_end()])
+
+        s1, s2 = corner
+        # Get unit vector for specified directions
+        unit_vector1 = s1 * line1.get_unit_vector()
+        unit_vector2 = s2 * line2.get_unit_vector()
+
+        corner_angle = angle_between_vectors(unit_vector1, unit_vector2)
+        tangent_point_distance = radius / np.tan(corner_angle / 2)
+
+        # tangent points
+        tangent_point1 = intersection_point + tangent_point_distance * unit_vector1
+        tangent_point2 = intersection_point + tangent_point_distance * unit_vector2
+
+        cross_product = unit_vector1[0] * unit_vector2[1] - unit_vector1[1] * unit_vector2[0]
+
+        # Determine start and end points based on orientation
+        if cross_product < 0:
+            # Counterclockwise orientation - standard order
+            start_point = tangent_point1
+            end_point = tangent_point2
+        else:
+            # Clockwise orientation - reverse the points
+            start_point = tangent_point2
+            end_point = tangent_point1
+
+        super().__init__(start=start_point, end=end_point, radius=radius, **kwargs)
 
 
 class CurvedArrow(ArcBetweenPoints):
