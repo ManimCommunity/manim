@@ -45,23 +45,24 @@ __all__ = [
 
 import itertools
 import warnings
-from typing import TYPE_CHECKING, Any, cast, Tuple, Literal
+from typing import TYPE_CHECKING, Any, Literal, Tuple, cast
 
 import numpy as np
-from manim import Line
 from typing_extensions import Self
 
+from manim import Line
 from manim.constants import *
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import BLACK, BLUE, RED, WHITE, ParsableManimColor
 from manim.utils.iterables import adjacent_pairs
 from manim.utils.space_ops import (
+    angle_between_vectors,
     angle_of_vector,
     cartesian_to_spherical,
     line_intersection,
     perpendicular_bisector,
-    rotate_vector, angle_between_vectors,
+    rotate_vector,
 )
 
 if TYPE_CHECKING:
@@ -497,7 +498,9 @@ class ArcBetweenPoints(Arc):
             else:
                 self.radius = np.inf
 
+
 type Corner = Tuple[Literal[-1, 1], Literal[-1, 1]]
+
 
 class TangentialArc(ArcBetweenPoints):
     """
@@ -506,12 +509,15 @@ class TangentialArc(ArcBetweenPoints):
     corner = (s1, s2) where each si is ±1 to control direction along each line.
     """
 
-    def __init__(self, line1: Line, line2: Line, radius: float, corner: Corner = (1, 1),  **kwargs):
+    def __init__(
+        self, line1: Line, line2: Line, radius: float, corner: Corner = (1, 1), **kwargs
+    ):
         self.line1 = line1
         self.line2 = line2
 
-        intersection_point = line_intersection([line1.get_start(), line1.get_end()],
-                                               [line2.get_start(), line2.get_end()])
+        intersection_point = line_intersection(
+            [line1.get_start(), line1.get_end()], [line2.get_start(), line2.get_end()]
+        )
 
         s1, s2 = corner
         # Get unit vector for specified directions
@@ -525,7 +531,9 @@ class TangentialArc(ArcBetweenPoints):
         tangent_point1 = intersection_point + tangent_point_distance * unit_vector1
         tangent_point2 = intersection_point + tangent_point_distance * unit_vector2
 
-        cross_product = unit_vector1[0] * unit_vector2[1] - unit_vector1[1] * unit_vector2[0]
+        cross_product = (
+            unit_vector1[0] * unit_vector2[1] - unit_vector1[1] * unit_vector2[0]
+        )
 
         # Determine start and end points based on orientation
         if cross_product < 0:
