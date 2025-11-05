@@ -504,7 +504,7 @@ type Corner = Tuple[Literal[-1, 1], Literal[-1, 1]]
 
 class TangentialArc(ArcBetweenPoints):
     """
-    Arc tangent to two intersecting lines.
+    Construct an arc that is tangent to two intersecting lines.
     You can choose any of the 4 possible corner arcs via the `corner` tuple.
     corner = (s1, s2) where each si is ±1 to control direction along each line.
 
