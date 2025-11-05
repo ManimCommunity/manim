@@ -50,7 +50,6 @@ from typing import TYPE_CHECKING, Any, cast
 import numpy as np
 from typing_extensions import Self
 
-from manim import Line
 from manim.constants import *
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
@@ -70,6 +69,7 @@ if TYPE_CHECKING:
 
     import manim.mobject.geometry.tips as tips
     from manim.mobject.mobject import Mobject
+    from manim.mobject.geometry.line import Line
     from manim.mobject.text.tex_mobject import SingleStringMathTex, Tex
     from manim.mobject.text.text_mobject import Text
     from manim.typing import (
