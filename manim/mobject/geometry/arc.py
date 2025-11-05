@@ -498,6 +498,7 @@ class ArcBetweenPoints(Arc):
             else:
                 self.radius = np.inf
 
+
 class TangentialArc(ArcBetweenPoints):
     """
     Construct an arc that is tangent to two intersecting lines.
