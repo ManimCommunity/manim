@@ -45,7 +45,7 @@ __all__ = [
 
 import itertools
 import warnings
-from typing import TYPE_CHECKING, Any, Literal, Tuple, cast
+from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
 from typing_extensions import Self
@@ -498,10 +498,6 @@ class ArcBetweenPoints(Arc):
             else:
                 self.radius = np.inf
 
-
-type Corner = Tuple[Literal[-1, 1], Literal[-1, 1]]
-
-
 class TangentialArc(ArcBetweenPoints):
     """
     Construct an arc that is tangent to two intersecting lines.
@@ -524,7 +520,7 @@ class TangentialArc(ArcBetweenPoints):
     """
 
     def __init__(
-        self, line1: Line, line2: Line, radius: float, corner: Corner = (1, 1), **kwargs
+        self, line1: Line, line2: Line, radius: float, corner: Any = (1, 1), **kwargs
     ):
         self.line1 = line1
         self.line2 = line2
