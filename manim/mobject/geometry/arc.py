@@ -68,8 +68,8 @@ if TYPE_CHECKING:
     from collections.abc import Iterable
 
     import manim.mobject.geometry.tips as tips
-    from manim.mobject.mobject import Mobject
     from manim.mobject.geometry.line import Line
+    from manim.mobject.mobject import Mobject
     from manim.mobject.text.tex_mobject import SingleStringMathTex, Tex
     from manim.mobject.text.text_mobject import Text
     from manim.typing import (
