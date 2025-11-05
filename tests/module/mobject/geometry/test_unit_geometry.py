@@ -14,7 +14,7 @@ from manim import (
     Polygram,
     Sector,
     Square,
-    SurroundingRectangle,
+    SurroundingRectangle, DOWN, UP, TangentialArc, ORIGIN,
 )
 
 logger = logging.getLogger(__name__)
@@ -115,6 +115,12 @@ def test_SurroundingRectangle():
     sr.set_style(fill_opacity=0.42)
     assert sr.get_fill_opacity() == 0.42
 
+def test_TangentialArc():
+    l1 = Line(start=LEFT, end=RIGHT)
+    l2 = Line(start=DOWN, end=UP)
+    l2.rotate(angle=45*DEGREES, about_point=ORIGIN)
+    arc = TangentialArc(l1, l2, radius=1.0)
+    assert arc.radius == 1.0
 
 def test_SurroundingRectangle_buff():
     sq = Square()

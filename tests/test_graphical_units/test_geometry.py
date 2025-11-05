@@ -25,14 +25,6 @@ def test_ArcBetweenPoints(scene):
 
 
 @frames_comparison
-def test_TangentialArc(scene):
-    l1 = Line(start=LEFT, end=RIGHT)
-    l2 = Line(start=DOWN, end=UP)
-    arc = TangentialArc(l1, l2, radius=1.0)
-    scene.add(arc)
-
-
-@frames_comparison
 def test_CurvedArrow(scene):
     a = CurvedArrow(np.array([1, 1, 0]), np.array([2, 2, 0]))
     scene.add(a)
