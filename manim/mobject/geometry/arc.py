@@ -521,7 +521,12 @@ class TangentialArc(ArcBetweenPoints):
     """
 
     def __init__(
-        self, line1: Line, line2: Line, radius: float, corner: Any = (1, 1), **kwargs: Any
+        self,
+        line1: Line,
+        line2: Line,
+        radius: float,
+        corner: Any = (1, 1),
+        **kwargs: Any,
     ):
         self.line1 = line1
         self.line2 = line2
