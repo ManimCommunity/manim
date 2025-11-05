@@ -507,6 +507,20 @@ class TangentialArc(ArcBetweenPoints):
     Arc tangent to two intersecting lines.
     You can choose any of the 4 possible corner arcs via the `corner` tuple.
     corner = (s1, s2) where each si is ±1 to control direction along each line.
+
+        Example
+    -------
+    .. manim:: TangentialArcExample
+
+        class TangentialArcExample(Scene):
+            def construct(self):
+                line1 = DashedLine(start=3 * LEFT, end=3 * RIGHT)
+                line1.rotate(angle=31 * DEGREES, about_point=ORIGIN)
+                line2 = DashedLine(start=3 * UP, end=3 * DOWN)
+                line2.rotate(angle=12 * DEGREES, about_point=ORIGIN)
+
+                arc = TangentialArc(line1, line2, radius=2.25, corner=(1, 1), color=TEAL)
+                self.add(arc, line1, line2)
     """
 
     def __init__(
