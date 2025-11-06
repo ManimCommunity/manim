@@ -366,7 +366,9 @@ class MathTex(SingleStringMathTex):
                 # Handle consecutive scripts as a group, matching by Y-position
                 script_group, j = self._group_consecutive_scripts(i)
                 total_script_submobs = self._total_submobs_for_scripts(script_group)
-                script_pool = self.submobjects[curr_index:curr_index + total_script_submobs]
+                script_pool = self.submobjects[
+                    curr_index : curr_index + total_script_submobs
+                ]
 
                 self._assign_script_group(script_group, script_pool, new_submobjects)
 
@@ -374,27 +376,34 @@ class MathTex(SingleStringMathTex):
                 i = j
             else:
                 # Base element processing: check if followed by scripts
-                next_is_script = (i + 1 < len(self.tex_strings) and
-                                self.tex_strings[i + 1].strip().startswith(("^", "_")))
+                next_is_script = i + 1 < len(self.tex_strings) and self.tex_strings[
+                    i + 1
+                ].strip().startswith(("^", "_"))
 
                 if next_is_script and num_submobs > 0:
                     script_group, j = self._group_consecutive_scripts(i + 1)
                     total_script_submobs = self._total_submobs_for_scripts(script_group)
                     total_needed = num_submobs + total_script_submobs
 
-                    all_submobs = self.submobjects[curr_index:curr_index + total_needed]
+                    all_submobs = self.submobjects[
+                        curr_index : curr_index + total_needed
+                    ]
 
                     # Only use special handling if scripts have content (non-empty)
                     if total_script_submobs > 0 and len(all_submobs) == total_needed:
                         # LaTeX may render base+scripts in unexpected order
                         # Find base by Y-position: closest to baseline (Y=0)
-                        base_submob = min(all_submobs, key=lambda m: abs(m.get_center()[1]))
+                        base_submob = min(
+                            all_submobs, key=lambda m: abs(m.get_center()[1])
+                        )
                         sub_tex_mob.submobjects = [base_submob]
 
                         script_pool = [m for m in all_submobs if m != base_submob]
                         new_submobjects.append(sub_tex_mob)
 
-                        self._assign_script_group(script_group, script_pool, new_submobjects)
+                        self._assign_script_group(
+                            script_group, script_pool, new_submobjects
+                        )
 
                         curr_index += total_needed
                         i = j
@@ -421,7 +430,9 @@ class MathTex(SingleStringMathTex):
         """
         script_group = [self.tex_strings[start_index]]
         j = start_index + 1
-        while j < len(self.tex_strings) and self.tex_strings[j].strip().startswith(("^", "_")):
+        while j < len(self.tex_strings) and self.tex_strings[j].strip().startswith(
+            ("^", "_")
+        ):
             script_group.append(self.tex_strings[j])
             j += 1
         return script_group, j
@@ -435,12 +446,19 @@ class MathTex(SingleStringMathTex):
         for s in script_group:
             total += len(
                 SingleStringMathTex(
-                    s, tex_environment=self.tex_environment, tex_template=self.tex_template
+                    s,
+                    tex_environment=self.tex_environment,
+                    tex_template=self.tex_template,
                 ).submobjects
             )
         return total
 
-    def _assign_script_group(self, script_group: list[str], script_pool: list[VMobject], new_submobjects: list[VMobject]) -> None:
+    def _assign_script_group(
+        self,
+        script_group: list[str],
+        script_pool: list[VMobject],
+        new_submobjects: list[VMobject],
+    ) -> None:
         """Assign submobjects from ``script_pool`` to scripts in ``script_group``.
 
         Selection strategy:
@@ -451,14 +469,20 @@ class MathTex(SingleStringMathTex):
         """
         for script_tex in script_group:
             script_mob = SingleStringMathTex(
-                script_tex, tex_environment=self.tex_environment, tex_template=self.tex_template
+                script_tex,
+                tex_environment=self.tex_environment,
+                tex_template=self.tex_template,
             )
             script_num_submobs = len(script_mob.submobjects)
 
             if script_num_submobs > 0 and len(script_pool) > 0:
                 is_superscript = script_tex.strip().startswith("^")
                 # Sort by Y-position: reverse=True for superscripts (highest first)
-                sorted_pool = sorted(script_pool, key=lambda mob: mob.get_center()[1], reverse=is_superscript)
+                sorted_pool = sorted(
+                    script_pool,
+                    key=lambda mob: mob.get_center()[1],
+                    reverse=is_superscript,
+                )
 
                 selected = sorted_pool[:script_num_submobs]
                 script_mob.submobjects = selected
