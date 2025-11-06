@@ -40,6 +40,7 @@ __all__ = [
     "CubicBezier",
     "ArcPolygon",
     "ArcPolygonFromArcs",
+    "TangentialArc",
 ]
 
 import itertools
@@ -55,6 +56,7 @@ from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import BLACK, BLUE, RED, WHITE, ParsableManimColor
 from manim.utils.iterables import adjacent_pairs
 from manim.utils.space_ops import (
+    angle_between_vectors,
     angle_of_vector,
     cartesian_to_spherical,
     line_intersection,
@@ -66,6 +68,7 @@ if TYPE_CHECKING:
     from collections.abc import Iterable
 
     import manim.mobject.geometry.tips as tips
+    from manim.mobject.geometry.line import Line
     from manim.mobject.mobject import Mobject
     from manim.mobject.text.tex_mobject import SingleStringMathTex, Tex
     from manim.mobject.text.text_mobject import Text
@@ -494,6 +497,71 @@ class ArcBetweenPoints(Arc):
                 )
             else:
                 self.radius = np.inf
+
+
+class TangentialArc(ArcBetweenPoints):
+    """
+    Construct an arc that is tangent to two intersecting lines.
+    You can choose any of the 4 possible corner arcs via the `corner` tuple.
+    corner = (s1, s2) where each si is ±1 to control direction along each line.
+
+        Example
+    -------
+    .. manim:: TangentialArcExample
+
+        class TangentialArcExample(Scene):
+            def construct(self):
+                line1 = DashedLine(start=3 * LEFT, end=3 * RIGHT)
+                line1.rotate(angle=31 * DEGREES, about_point=ORIGIN)
+                line2 = DashedLine(start=3 * UP, end=3 * DOWN)
+                line2.rotate(angle=12 * DEGREES, about_point=ORIGIN)
+
+                arc = TangentialArc(line1, line2, radius=2.25, corner=(1, 1), color=TEAL)
+                self.add(arc, line1, line2)
+    """
+
+    def __init__(
+        self,
+        line1: Line,
+        line2: Line,
+        radius: float,
+        corner: Any = (1, 1),
+        **kwargs: Any,
+    ):
+        self.line1 = line1
+        self.line2 = line2
+
+        intersection_point = line_intersection(
+            [line1.get_start(), line1.get_end()], [line2.get_start(), line2.get_end()]
+        )
+
+        s1, s2 = corner
+        # Get unit vector for specified directions
+        unit_vector1 = s1 * line1.get_unit_vector()
+        unit_vector2 = s2 * line2.get_unit_vector()
+
+        corner_angle = angle_between_vectors(unit_vector1, unit_vector2)
+        tangent_point_distance = radius / np.tan(corner_angle / 2)
+
+        # tangent points
+        tangent_point1 = intersection_point + tangent_point_distance * unit_vector1
+        tangent_point2 = intersection_point + tangent_point_distance * unit_vector2
+
+        cross_product = (
+            unit_vector1[0] * unit_vector2[1] - unit_vector1[1] * unit_vector2[0]
+        )
+
+        # Determine start and end points based on orientation
+        if cross_product < 0:
+            # Counterclockwise orientation - standard order
+            start_point = tangent_point1
+            end_point = tangent_point2
+        else:
+            # Clockwise orientation - reverse the points
+            start_point = tangent_point2
+            end_point = tangent_point1
+
+        super().__init__(start=start_point, end=end_point, radius=radius, **kwargs)
 
 
 class CurvedArrow(ArcBetweenPoints):
