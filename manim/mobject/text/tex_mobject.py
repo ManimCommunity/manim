@@ -362,7 +362,7 @@ class MathTex(SingleStringMathTex):
                 new_submobjects.append(sub_tex_mob)
                 curr_index = new_index
                 i += 1
-            elif tex_string.strip().startswith(("^", "_")):
+            elif self._is_pure_script(tex_string):
                 # Handle consecutive scripts as a group, matching by Y-position
                 script_group, j = self._group_consecutive_scripts(i)
                 total_script_submobs = self._total_submobs_for_scripts(script_group)
@@ -376,11 +376,12 @@ class MathTex(SingleStringMathTex):
                 i = j
             else:
                 # Base element processing: check if followed by scripts
-                next_is_script = i + 1 < len(self.tex_strings) and self.tex_strings[
-                    i + 1
-                ].strip().startswith(("^", "_"))
+                # But skip if this element already has scripts attached (e.g., \int^b)
+                has_scripts_already = '^' in tex_string or '_' in tex_string
+                next_is_script = (i + 1 < len(self.tex_strings) and
+                                self._is_pure_script(self.tex_strings[i + 1]))
 
-                if next_is_script and num_submobs > 0:
+                if next_is_script and num_submobs > 0 and not has_scripts_already:
                     script_group, j = self._group_consecutive_scripts(i + 1)
                     total_script_submobs = self._total_submobs_for_scripts(script_group)
                     total_needed = num_submobs + total_script_submobs
@@ -422,6 +423,20 @@ class MathTex(SingleStringMathTex):
         self.submobjects = new_submobjects
         return self
 
+    def _is_pure_script(self, tex_string: str) -> bool:
+        """Check if a tex_string is a pure script (only ^ or _ with its content).
+
+        A pure script should not contain spaces or other content beyond the script itself.
+        For example: '^n', '_1', '^{abc}' are pure scripts.
+        But '^b dx' is not a pure script (has additional content).
+        """
+        stripped = tex_string.strip()
+        if not stripped.startswith(("^", "_")):
+            return False
+        # Pure scripts shouldn't have spaces (which indicate additional content)
+        # They should be compact like '^n', '_1', '^{...}', etc.
+        return ' ' not in stripped
+
     def _group_consecutive_scripts(self, start_index: int) -> tuple[list[str], int]:
         """Collect consecutive script tex_strings starting at ``start_index``.
 
@@ -430,9 +445,7 @@ class MathTex(SingleStringMathTex):
         """
         script_group = [self.tex_strings[start_index]]
         j = start_index + 1
-        while j < len(self.tex_strings) and self.tex_strings[j].strip().startswith(
-            ("^", "_")
-        ):
+        while j < len(self.tex_strings) and self._is_pure_script(self.tex_strings[j]):
             script_group.append(self.tex_strings[j])
             j += 1
         return script_group, j
