@@ -377,9 +377,10 @@ class MathTex(SingleStringMathTex):
             else:
                 # Base element processing: check if followed by scripts
                 # But skip if this element already has scripts attached (e.g., \int^b)
-                has_scripts_already = '^' in tex_string or '_' in tex_string
-                next_is_script = (i + 1 < len(self.tex_strings) and
-                                self._is_pure_script(self.tex_strings[i + 1]))
+                has_scripts_already = "^" in tex_string or "_" in tex_string
+                next_is_script = i + 1 < len(self.tex_strings) and self._is_pure_script(
+                    self.tex_strings[i + 1]
+                )
 
                 if next_is_script and num_submobs > 0 and not has_scripts_already:
                     script_group, j = self._group_consecutive_scripts(i + 1)
@@ -435,7 +436,7 @@ class MathTex(SingleStringMathTex):
             return False
         # Pure scripts shouldn't have spaces (which indicate additional content)
         # They should be compact like '^n', '_1', '^{...}', etc.
-        return ' ' not in stripped
+        return " " not in stripped
 
     def _group_consecutive_scripts(self, start_index: int) -> tuple[list[str], int]:
         """Collect consecutive script tex_strings starting at ``start_index``.
