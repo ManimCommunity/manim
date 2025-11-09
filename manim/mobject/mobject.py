@@ -69,6 +69,70 @@ class Mobject:
     getting and setting generic attributes with ``get_*``
     and ``set_*`` methods. See :meth:`set` for more details.
 
+    Mobjects support NumPy-like indexing and slicing. If more than one item is
+    extracted, the results are collected inside a :class:`Group` or, if this is
+    a :class:`~.VMobject`, a :class:`~.VGroup`. For example, given this
+    structure of VMobjects:
+
+    .. code::
+
+        Mob0
+        ├──VGroup [0]
+        │   ├──Mob1 [0, 0]
+        │   └──Mob2 [0, 1]
+        ├──VGroup [1]
+        │   ├──Mob3 [1, 0]
+        │   │   ├──VGroup [1, 0, 0]
+        │   │   │   └──Mob7 [1, 0, 0, 0]
+        │   │   └──Mob8 [1, 0, 1]
+        │   │       └──Mob9 [1, 0, 1, 0]
+        │   ├──Mob4 [1, 1]
+        │   └──Mob5 [1, 2]
+        └──Mob6 [2]
+
+    this is possible:
+
+    .. code:: pycon
+
+        >>> mobs = [VMobject(name=f"Mob{i}") for i in range(10)]
+        >>> vgroups = [VGroup(*mobs[1:3]), VGroup(*mobs[3:6]), VGroup(mobs[7])]
+        >>>
+        >>> base_mob = mobs[0]
+        >>> base_mob.add(vgroups[0], vgroups[1], mobs[6])
+        >>> mobs[3].add(vgroups[2], mobs[8])
+        >>> mobs[8].add(mobs[9])
+        >>>
+        >>> # Basic indexing
+        >>> base_mob[2]
+        Mob6
+        >>> base_mob[0]
+        VGroup(Mob1, Mob2)
+        >>> base_mob[1]
+        VGroup(Mob3, Mob4, Mob5)
+        >>> base_mob[1:]
+        VGroup(VGroup of 3 submobjects, Mob6)
+        >>>
+        >>> # Multi-dimensional indexing
+        >>> base_mob[0, 0]
+        Mob1
+        >>> base_mob[1, 0, 0]
+        VGroup(Mob7)
+        >>> base_mob[1, 0, 0, 0]
+        Mob7
+        >>> base_mob[:2, 0]
+        VGroup(Mob1, Mob3)
+        >>> base_mob[:2, 1]
+        VGroup(Mob2, Mob4)
+        >>> base_mob[1, 0, :, 0]
+        VGroup(Mob7, Mob9)
+        >>>
+        >>> # Fancy indexing
+        >>> base_mob[[2, 0]]
+        VGroup(Mob6, VGroup of 2 submobjects)
+        >>> base_mob[[True, False, True]]
+        VGroup(VGroup of 2 submobjects, Mob6)
+
+
     Attributes
     ----------
     submobjects : List[:class:`Mobject`]
@@ -2347,12 +2411,68 @@ class Mobject:
 
     # Family matters
 
-    def __getitem__(self, value):
+    def __getitem__(self, value: int | slice | tuple | list | np.ndarray) -> Mobject:
+        """See the Mobject docstring for more information. This magic method's
+        docstring is not rendered in the docs.
+        """
+
+        def get_from_list(
+            mob_list: list[Mobject],
+            value: int | slice | tuple | list | np.ndarray,
+        ) -> Mobject | list[Mobject]:
+            """Internal function to extract items from a list, even if the
+            passed index is another sequence.
+            """
+            # Basic indexing, 1 dimension
+            if isinstance(value, (int, slice)):
+                return mob_list[value]
+
+            # Basic indexing, N dimensions
+            if isinstance(value, tuple):
+                submob_or_submob_list = get_from_list(mob_list, value[0])
+                # Base case: only 1 value
+                if len(value) == 1:
+                    return submob_or_submob_list
+                # Recursion: iterate over the rest of values
+                if isinstance(value[0], int):
+                    submob = submob_or_submob_list
+                    subgroup = submob[value[1:]]
+                    return subgroup
+                submob_list = submob_or_submob_list
+                subgroups = [sm[value[1:]] for sm in submob_list]
+                return subgroups
+
+            # Simple fancy indexing
+            if isinstance(value, (list, np.ndarray)):
+                items: list[Mobject]
+                # With array of bools
+                if len(value) == len(mob_list) and all(
+                    isinstance(index, bool) for index in value
+                ):
+                    items = []
+                    for i, include_mob in enumerate(value):
+                        if include_mob:
+                            items.append(mob_list[i])
+                    return items
+
+                if any(not isinstance(index, int) for index in value):
+                    raise ValueError(
+                        "The given array must contain either only bools or "
+                        "only ints."
+                    )
+
+                # With array of ints
+                items = [mob_list[index] for index in value]
+                return items
+
+            raise ValueError(f"Index type {value.__class__.__name__} is not supported.")
+
         self_list = self.split()
-        if isinstance(value, slice):
+        mob_or_mobs = get_from_list(self_list, value)
+        if isinstance(mob_or_mobs, list):
             GroupClass = self.get_group_class()
-            return GroupClass(*self_list.__getitem__(value))
-        return self_list.__getitem__(value)
+            return GroupClass(*mob_or_mobs)
+        return mob_or_mobs
 
     def __iter__(self):
         return iter(self.split())
