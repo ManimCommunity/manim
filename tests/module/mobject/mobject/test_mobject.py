@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from manim import DL, UR, Circle, Mobject, Rectangle, Square, VGroup
+from manim import DL, DR, UL, UR, Circle, Mobject, Rectangle, Square, VGroup
 
 
 def test_mobject_add():
@@ -136,21 +136,19 @@ def test_mobject_dimensions_nested_mobjects():
 
 
 def test_mobject_dimensions_mobjects_with_no_points_are_at_origin():
-    rect = Rectangle(width=2, height=3)
-    rect.move_to([-4, -5, 0])
-    outer_group = VGroup(rect)
+    for direction in [DL, DR, UL, UR]:
+        rect = Rectangle(width=2, height=3)
+        rect.move_to(direction * 10)
+        outer_group = VGroup(rect)
 
-    # This is as one would expect
-    assert outer_group.width == 2
-    assert outer_group.height == 3
+        # This is as one would expect
+        assert outer_group.width == 2
+        assert outer_group.height == 3
 
-    # Adding a mobject with no points has a quirk of adding a "point"
-    # to [0, 0, 0] (the origin). This changes the size of the outer
-    # group because now the bottom left corner is at [-5, -6.5, 0]
-    # but the upper right corner is [0, 0, 0] instead of [-3, -3.5, 0]
-    outer_group.add(VGroup())
-    assert outer_group.width == 5
-    assert outer_group.height == 6.5
+        # Adding a mobject with no points does not change its size
+        outer_group.add(VGroup())
+        assert outer_group.width == 2
+        assert outer_group.height == 3
 
 
 def test_mobject_dimensions_has_points_and_children():
