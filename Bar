@@ -1,0 +1,106 @@
+from manim import *
+import numpy as np
+
+class VarAleatoriaVarianza(Scene):
+    def construct(self):
+
+        # Variable aleatoria discreta
+        x_vals = np.array([1, 2, 3, 4, 5])
+        p_vals = np.array([0.1, 0.2, 0.4, 0.2, 0.1])
+
+        esperanza = np.sum(x_vals * p_vals)
+        varianza = np.sum(((x_vals - esperanza)**2) * p_vals)
+        desviacion = np.sqrt(varianza)
+
+        # Título
+        titulo = Text("Varianza y Desviación Estándar de una Variable Aleatoria", font_size=34)
+        self.play(FadeIn(titulo))
+        self.wait(1)
+        self.play(titulo.animate.to_edge(UP))
+
+        # Eje x para la variable aleatoria
+        eje = NumberLine(x_range=[0, 6, 1], length=8)
+        eje.to_edge(DOWN)
+        self.play(Create(eje))
+
+        # Barras de probabilidad
+        barras = VGroup()
+        for x, p in zip(x_vals, p_vals):
+            bar = Rectangle(
+                width=0.3,
+                height=p * 4,
+                fill_color=BLUE,
+                fill_opacity=0.7,
+                stroke_color=WHITE
+            )
+            bar.next_to(eje.number_to_point(x), UP, buff=0)
+            barras.add(bar)
+
+        self.play(LaggedStartMap(GrowFromEdge, barras, edge=DOWN, lag_ratio=0.2))
+        self.wait(1)
+
+        # Texto: "Esto es una variable aleatoria"
+        texto_x = Text("Esto es una variable aleatoria X", font_size=28).next_to(barras, UP)
+        self.play(FadeIn(texto_x))
+        self.wait(1)
+
+        # Cálculo de la esperanza
+        formula_E = MathTex(
+            r"E[X] = \sum x_i p_i = " + f"{esperanza:.2f}",
+            font_size=40
+        ).to_edge(LEFT).shift(UP * 1.5)
+
+        self.play(Write(formula_E))
+        self.wait(1)
+
+        # Mostrar distancias al valor esperado
+        distancias = VGroup()
+        for x in x_vals:
+            line = Line(
+                eje.number_to_point(x),
+                eje.number_to_point(esperanza),
+                color=YELLOW
+            )
+            distancias.add(line)
+
+        self.play(LaggedStartMap(Create, distancias, lag_ratio=0.2))
+        self.wait(1)
+
+        # Barras de (xi - E[X])^2 * p
+        cuadros = VGroup()
+        for x, p in zip(x_vals, p_vals):
+            valor = ((x - esperanza)**2) * p
+            bar = Rectangle(
+                width=0.3,
+                height=valor * 3,
+                fill_color=GREEN,
+                fill_opacity=0.7,
+                stroke_color=WHITE
+            )
+            bar.next_to(eje.number_to_point(x), UP)
+            cuadros.add(bar)
+
+        texto_var = Text("Aporte a la varianza: (xi - E[X])² * p", font_size=26)
+        texto_var.next_to(titulo, DOWN)
+
+        self.play(FadeIn(texto_var))
+        self.play(LaggedStartMap(GrowFromCenter, cuadros, lag_ratio=0.2))
+        self.wait(1)
+
+        # Fórmula de varianza
+        formula_var = MathTex(
+            r"\text{Var}(X) = \sum (x_i - E[X])^2 p_i = " + f"{varianza:.3f}",
+            font_size=36
+        ).to_edge(LEFT).shift(DOWN * 0.5)
+
+        self.play(Write(formula_var))
+        self.wait(1)
+
+        # Fórmula de desviación estándar
+        formula_desv = MathTex(
+            r"\sigma = \sqrt{\text{Var}(X)} = " + f"{desviacion:.3f}",
+            font_size=36
+        ).next_to(formula_var, DOWN)
+
+        self.play(Write(formula_desv))
+        self.wait(2)
