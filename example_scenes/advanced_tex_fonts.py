@@ -52,7 +52,7 @@ class TexFontTemplateLibrary(Scene):
     Many of the in the TexFontTemplates collection require that specific fonts
     are installed on your local machine.
     For example, choosing the template TexFontTemplates.comic_sans will
-    not compile if the Comic Sans Micrososft font is not installed.
+    not compile if the Comic Sans Microsoft font is not installed.
 
     This scene will only render those Templates that do not cause a TeX
     compilation error on your system. Furthermore, some of the ones that do render,

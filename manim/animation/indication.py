@@ -40,14 +40,16 @@ __all__ = [
 ]
 
 from collections.abc import Iterable
-from typing import Callable
+from typing import Any
 
 import numpy as np
+from typing_extensions import Self
 
 from manim.mobject.geometry.arc import Circle, Dot
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import Rectangle
 from manim.mobject.geometry.shape_matchers import SurroundingRectangle
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.scene.scene import Scene
 
 from .. import config
@@ -61,9 +63,10 @@ from ..animation.updaters.update import UpdateFromFunc
 from ..constants import *
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
+from ..typing import Point3D, Point3DLike, Vector3DLike
 from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import GREY, YELLOW, ParsableManimColor
-from ..utils.rate_functions import smooth, there_and_back, wiggle
+from ..utils.rate_functions import RateFunction, smooth, there_and_back, wiggle
 from ..utils.space_ops import normalize
 
 
@@ -95,12 +98,12 @@ class FocusOn(Transform):
 
     def __init__(
         self,
-        focus_point: np.ndarray | Mobject,
+        focus_point: Point3DLike | Mobject,
         opacity: float = 0.2,
-        color: str = GREY,
+        color: ParsableManimColor = GREY,
         run_time: float = 2,
-        **kwargs,
-    ) -> None:
+        **kwargs: Any,
+    ):
         self.focus_point = focus_point
         self.color = color
         self.opacity = opacity
@@ -151,15 +154,15 @@ class Indicate(Transform):
         self,
         mobject: Mobject,
         scale_factor: float = 1.2,
-        color: str = YELLOW,
-        rate_func: Callable[[float, float | None], np.ndarray] = there_and_back,
-        **kwargs,
-    ) -> None:
+        color: ParsableManimColor = YELLOW,
+        rate_func: RateFunction = there_and_back,
+        **kwargs: Any,
+    ):
         self.color = color
         self.scale_factor = scale_factor
         super().__init__(mobject, rate_func=rate_func, **kwargs)
 
-    def create_target(self) -> Mobject:
+    def create_target(self) -> Mobject | OpenGLMobject:
         target = self.mobject.copy()
         target.scale(self.scale_factor)
         target.set_color(self.color)
@@ -219,20 +222,20 @@ class Flash(AnimationGroup):
 
     def __init__(
         self,
-        point: np.ndarray | Mobject,
+        point: Point3DLike | Mobject,
         line_length: float = 0.2,
         num_lines: int = 12,
         flash_radius: float = 0.1,
         line_stroke_width: int = 3,
-        color: str = YELLOW,
+        color: ParsableManimColor = YELLOW,
         time_width: float = 1,
         run_time: float = 1.0,
-        **kwargs,
-    ) -> None:
+        **kwargs: Any,
+    ):
         if isinstance(point, Mobject):
-            self.point = point.get_center()
+            self.point: Point3D = point.get_center()
         else:
-            self.point = point
+            self.point = np.asarray(point)
         self.color = color
         self.line_length = line_length
         self.num_lines = num_lines
@@ -303,11 +306,13 @@ class ShowPassingFlash(ShowPartial):
 
     """
 
-    def __init__(self, mobject: VMobject, time_width: float = 0.1, **kwargs) -> None:
+    def __init__(
+        self, mobject: VMobject, time_width: float = 0.1, **kwargs: Any
+    ) -> None:
         self.time_width = time_width
         super().__init__(mobject, remover=True, introducer=True, **kwargs)
 
-    def _get_bounds(self, alpha: float) -> tuple[float]:
+    def _get_bounds(self, alpha: float) -> tuple[float, float]:
         tw = self.time_width
         upper = interpolate(0, 1 + tw, alpha)
         lower = upper - tw
@@ -322,7 +327,14 @@ class ShowPassingFlash(ShowPartial):
 
 
 class ShowPassingFlashWithThinningStrokeWidth(AnimationGroup):
-    def __init__(self, vmobject, n_segments=10, time_width=0.1, remover=True, **kwargs):
+    def __init__(
+        self,
+        vmobject: VMobject,
+        n_segments: int = 10,
+        time_width: float = 0.1,
+        remover: bool = True,
+        **kwargs: Any,
+    ):
         self.n_segments = n_segments
         self.time_width = time_width
         self.remover = remover
@@ -389,19 +401,19 @@ class ApplyWave(Homotopy):
     def __init__(
         self,
         mobject: Mobject,
-        direction: np.ndarray = UP,
+        direction: Vector3DLike = UP,
         amplitude: float = 0.2,
-        wave_func: Callable[[float], float] = smooth,
+        wave_func: RateFunction = smooth,
         time_width: float = 1,
         ripples: int = 1,
         run_time: float = 2,
-        **kwargs,
-    ) -> None:
+        **kwargs: Any,
+    ):
         x_min = mobject.get_left()[0]
         x_max = mobject.get_right()[0]
         vect = amplitude * normalize(direction)
 
-        def wave(t):
+        def wave(t: float) -> float:
             # Creates a wave with n ripples from a simple rate_func
             # This wave is build up as follows:
             # The time is split into 2*ripples phases. In every phase the amplitude
@@ -467,7 +479,8 @@ class ApplyWave(Homotopy):
             relative_x = inverse_interpolate(x_min, x_max, x)
             wave_phase = inverse_interpolate(lower, upper, relative_x)
             nudge = wave(wave_phase) * vect
-            return np.array([x, y, z]) + nudge
+            return_value: tuple[float, float, float] = np.array([x, y, z]) + nudge
+            return return_value
 
         super().__init__(homotopy, mobject, run_time=run_time, **kwargs)
 
@@ -511,24 +524,28 @@ class Wiggle(Animation):
         scale_value: float = 1.1,
         rotation_angle: float = 0.01 * TAU,
         n_wiggles: int = 6,
-        scale_about_point: np.ndarray | None = None,
-        rotate_about_point: np.ndarray | None = None,
+        scale_about_point: Point3DLike | None = None,
+        rotate_about_point: Point3DLike | None = None,
         run_time: float = 2,
-        **kwargs,
-    ) -> None:
+        **kwargs: Any,
+    ):
         self.scale_value = scale_value
         self.rotation_angle = rotation_angle
         self.n_wiggles = n_wiggles
         self.scale_about_point = scale_about_point
+        if scale_about_point is not None:
+            self.scale_about_point = np.array(scale_about_point)
         self.rotate_about_point = rotate_about_point
+        if rotate_about_point is not None:
+            self.rotate_about_point = np.array(rotate_about_point)
         super().__init__(mobject, run_time=run_time, **kwargs)
 
-    def get_scale_about_point(self) -> np.ndarray:
+    def get_scale_about_point(self) -> Point3D:
         if self.scale_about_point is None:
             return self.mobject.get_center()
         return self.scale_about_point
 
-    def get_rotate_about_point(self) -> np.ndarray:
+    def get_rotate_about_point(self) -> Point3D:
         if self.rotate_about_point is None:
             return self.mobject.get_center()
         return self.rotate_about_point
@@ -538,7 +555,7 @@ class Wiggle(Animation):
         submobject: Mobject,
         starting_submobject: Mobject,
         alpha: float,
-    ) -> None:
+    ) -> Self:
         submobject.points[:, :] = starting_submobject.points
         submobject.scale(
             interpolate(1, self.scale_value, there_and_back(alpha)),
@@ -548,6 +565,7 @@ class Wiggle(Animation):
             wiggle(alpha, self.n_wiggles) * self.rotation_angle,
             about_point=self.get_rotate_about_point(),
         )
+        return self
 
 
 class Circumscribe(Succession):
@@ -595,18 +613,18 @@ class Circumscribe(Succession):
     def __init__(
         self,
         mobject: Mobject,
-        shape: type = Rectangle,
-        fade_in=False,
-        fade_out=False,
-        time_width=0.3,
+        shape: type[Rectangle] | type[Circle] = Rectangle,
+        fade_in: bool = False,
+        fade_out: bool = False,
+        time_width: float = 0.3,
         buff: float = SMALL_BUFF,
         color: ParsableManimColor = YELLOW,
-        run_time=1,
-        stroke_width=DEFAULT_STROKE_WIDTH,
-        **kwargs,
+        run_time: float = 1,
+        stroke_width: float = DEFAULT_STROKE_WIDTH,
+        **kwargs: Any,
     ):
         if shape is Rectangle:
-            frame = SurroundingRectangle(
+            frame: SurroundingRectangle | Circle = SurroundingRectangle(
                 mobject,
                 color=color,
                 buff=buff,
@@ -685,7 +703,7 @@ class Blink(Succession):
         time_off: float = 0.5,
         blinks: int = 1,
         hide_at_end: bool = False,
-        **kwargs,
+        **kwargs: Any,
     ):
         animations = [
             UpdateFromFunc(

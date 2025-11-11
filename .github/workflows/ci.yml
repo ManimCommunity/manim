@@ -27,15 +27,15 @@ jobs:
 
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Python ${{ matrix.python }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python }}
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
 
@@ -54,10 +54,13 @@ jobs:
 
       - name: Install Texlive (Linux)
         if: runner.os == 'Linux'
-        uses: teatimeguest/setup-texlive-action@v3
+        uses: zauguin/install-texlive@v4
         with:
-          cache: true
-          packages: scheme-basic fontspec inputenc fontenc tipa mathrsfs calligra xcolor standalone preview doublestroke ms everysel setspace rsfs relsize ragged2e fundus-calligra microtype wasysym physics dvisvgm jknapltx wasy cm-super babel-english gnu-freefont mathastext cbfonts-fd xetex
+          packages: >
+            scheme-basic latex fontspec tipa calligra xcolor
+            standalone preview doublestroke setspace rsfs relsize
+            ragged2e fundus-calligra microtype wasysym physics dvisvgm jknapltx
+            wasy cm-super babel-english gnu-freefont mathastext cbfonts-fd xetex
 
       - name: Start virtual display (Linux)
         if: runner.os == 'Linux'

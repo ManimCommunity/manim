@@ -122,10 +122,14 @@ def make_config_parser(
     # read_file() before calling read() for any optional files."
     # https://docs.python.org/3/library/configparser.html#configparser.ConfigParser.read
     parser = configparser.ConfigParser()
+    logger.info(f"Reading config file: {library_wide}")
     with library_wide.open() as file:
         parser.read_file(file)  # necessary file
 
     other_files = [user_wide, Path(custom_file) if custom_file else folder_wide]
+    for path in other_files:
+        if path.exists():
+            logger.info(f"Reading config file: {path}")
     parser.read(other_files)  # optional files
 
     return parser
@@ -591,6 +595,7 @@ class ManimConfig(MutableMapping):
             "enable_wireframe",
             "force_window",
             "no_latex_cleanup",
+            "dry_run",
         ]:
             setattr(self, key, parser["CLI"].getboolean(key, fallback=False))
 
@@ -625,6 +630,7 @@ class ManimConfig(MutableMapping):
             "background_color",
             "renderer",
             "window_position",
+            "preview_command",
         ]:
             setattr(self, key, parser["CLI"].get(key, fallback="", raw=True))
 
@@ -1414,7 +1420,7 @@ class ManimConfig(MutableMapping):
 
     @property
     def window_size(self) -> str:
-        """The size of the opengl window. 'default' to automatically scale the window based on the display monitor."""
+        """The size of the opengl window as 'width,height' or 'default' to automatically scale the window based on the display monitor."""
         return self._d["window_size"]
 
     @window_size.setter

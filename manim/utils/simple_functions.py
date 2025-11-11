@@ -10,8 +10,9 @@ __all__ = [
 ]
 
 
+from collections.abc import Callable
 from functools import lru_cache
-from typing import Any, Callable, Protocol, TypeVar
+from typing import Any, Protocol, TypeVar
 
 import numpy as np
 from scipy import special
@@ -98,7 +99,7 @@ class Comparable(Protocol):
     def __gt__(self, other: Any) -> bool: ...
 
 
-ComparableT = TypeVar("ComparableT", bound=Comparable)  # noqa: Y001
+ComparableT = TypeVar("ComparableT", bound=Comparable)
 
 
 def clip(a: ComparableT, min_a: ComparableT, max_a: ComparableT) -> ComparableT:

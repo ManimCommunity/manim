@@ -6,6 +6,7 @@ __all__ = [
     "Code",
 ]
 
+import re
 from pathlib import Path
 from typing import Any, Callable, Literal
 
@@ -23,7 +24,6 @@ from manim.mobject.geometry.arc import Dot
 from manim.mobject.geometry.shape_matchers import SurroundingRectangle
 from manim.mobject.mobject import override_animate
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.text.text_mobject import Paragraph
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.typing import StrPath
 from manim.utils.color import WHITE, ManimColor
@@ -126,6 +126,7 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
         "line_spacing": 0.5,
         "disable_ligatures": True,
     }
+    code: VMobject
 
     def __init__(
         self,
@@ -177,10 +178,10 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
             if child.name == "span":
                 try:
                     child_style = child["style"]
-                    if isinstance(child_style, str):
-                        color = child_style.removeprefix("color: ")
-                    else:
-                        color = None
+                    match_ = re.match(
+                        r"color: (#[A-Fa-f0-9]{6}|#[A-Fa-f0-9]{3})", child_style
+                    )
+                    color = None if match_ is None else match_.group(1)
                 except KeyError:
                     color = None
                 current_line_color_ranges.append(
@@ -208,6 +209,8 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
         base_paragraph_config = self.default_paragraph_config.copy()
         base_paragraph_config.update(paragraph_config)
 
+        from manim.mobject.text.text_mobject import Paragraph
+
         self.code_lines = Paragraph(
             *code_lines,
             **base_paragraph_config,
@@ -232,6 +235,8 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
             )
             self.add(self.line_numbers)
 
+        for line in self.code_lines:
+            line.submobjects = [c for c in line if not isinstance(c, Dot)]
         self.add(self.code_lines)
 
         if background_config is None:
