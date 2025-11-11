@@ -1,0 +1,95 @@
+from manim import *
+
+class DiferenciadorAnimacion(Scene):
+    def construct(self):
+
+        # Título
+        titulo = Text("Amplificador Diferenciador").scale(0.9)
+        titulo.to_edge(UP)
+        self.play(Write(titulo))
+        self.wait(1)
+
+        # Componentes del circuito
+        vin = Text("Vin").scale(0.7)
+        vin.shift(LEFT * 4)
+
+        capacitor = Rectangle(height=1, width=0.3)
+        capacitor_label = Text("C", font_size=30).next_to(capacitor, DOWN, buff=0.1)
+
+        opamp = Polygon(
+            [-1, -1, 0],
+            [1, 0, 0],
+            [-1, 1, 0]
+        ).scale(1).shift(RIGHT*1)
+
+        node_inversor = Dot(opamp.get_left() + UP*0.4)
+        node_noinv = Dot(opamp.get_left() + DOWN*0.4)
+
+        resistencia = Line(opamp.get_right(), opamp.get_right()+RIGHT*2)
+        resistencia_label = Text("R", font_size=30).next_to(resistencia, UP, buff=0.1)
+
+        vout = Text("Vout").scale(0.7)
+        vout.next_to(resistencia, RIGHT)
+
+        # Conexiones
+        line1 = Line(vin.get_right(), capacitor.get_left())
+        line2 = Line(capacitor.get_right(), node_inversor.get_left())
+        line3 = Line(node_inversor.get_right(), opamp.get_left()+UP*0.4)
+        line4 = Line(opamp.get_left()+DOWN*0.4, opamp.get_left()+DOWN*0.4 + DOWN*1)
+        ground = Line(opamp.get_left()+DOWN*1.4, opamp.get_left()+DOWN*1.8)
+
+        line_fb_top = Line(opamp.get_right(), opamp.get_right()+RIGHT*2)
+        line_fb_down = Line(line_fb_top.get_end(), node_inversor.get_right())
+
+        # Dibujar circuito
+        self.play(
+            FadeIn(vin),
+            Create(capacitor),
+            FadeIn(capacitor_label)
+        )
+        self.play(Create(line1), Create(line2))
+
+        self.play(Create(opamp))
+        self.play(FadeIn(node_inversor), FadeIn(node_noinv))
+        self.play(Create(line3), Create(line4), Create(ground))
+
+        self.play(Create(resistencia), FadeIn(resistencia_label))
+        self.play(Create(line_fb_top), Create(line_fb_down))
+        self.play(FadeIn(vout))
+
+        self.wait(1)
+
+        # Ecuación
+        eq = MathTex(r"V_{out} = -RC \cdot \frac{dV_{in}}{dt}").scale(0.9)
+        eq.to_edge(DOWN)
+
+        self.play(Write(eq))
+        self.wait(1)
+
+        # Animación de señal --> derivada
+        señal_in = Axes(
+            x_range=[0, 4],
+            y_range=[-1, 3],
+            width=5,
+            height=2
+        ).shift(LEFT*2 + UP*1.5)
+
+        señal_out = Axes(
+            x_range=[0, 4],
+            y_range=[-2, 2],
+            width=5,
+            height=2
+        ).shift(RIGHT*2 + UP*1.5)
+
+        f_in = señal_in.plot(lambda x: 1 if x < 2 else 2, color=BLUE)
+        f_out = señal_out.plot(lambda x: 1 if x == 2 else 0, color=RED)
+
+        label_in = Text("Entrada (Vin)", font_size=25).next_to(señal_in, UP)
+        label_out = Text("Salida (Vout)", font_size=25).next_to(señal_out, UP)
+
+        self.play(Create(señal_in), FadeIn(label_in))
+        self.play(Create(señal_out), FadeIn(label_out))
+        self.play(Create(f_in))
+        self.wait(0.5)
+        self.play(Create(f_out))
+        self.wait(2)
