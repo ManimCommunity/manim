@@ -269,26 +269,10 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         result: list[VMobject] = []
         for shape in svg.elements():
             # can we combine the two continue cases into one?
+            mob = self.get_mob_from_shape_element(shape)
             if isinstance(shape, se.Group):  # noqa: SIM114
                 continue
-            elif isinstance(shape, se.Path):
-                mob: VMobject = self.path_to_mobject(shape)
-            elif isinstance(shape, se.SimpleLine):
-                mob = self.line_to_mobject(shape)
-            elif isinstance(shape, se.Rect):
-                mob = self.rect_to_mobject(shape)
-            elif isinstance(shape, (se.Circle, se.Ellipse)):
-                mob = self.ellipse_to_mobject(shape)
-            elif isinstance(shape, se.Polygon):
-                mob = self.polygon_to_mobject(shape)
-            elif isinstance(shape, se.Polyline):
-                mob = self.polyline_to_mobject(shape)
-            elif isinstance(shape, se.Text):
-                mob = self.text_to_mobject(shape)
             elif isinstance(shape, se.Use) or type(shape) is se.SVGElement:
-                continue
-            else:
-                logger.warning(f"Unsupported element type: {type(shape)}")
                 continue
             if mob is None or not mob.has_points():
                 continue
@@ -297,6 +281,26 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
                 self.handle_transform(mob, shape.transform)
             result.append(mob)
         return result
+
+    def get_mob_from_shape_element(self, shape: se.SVGElement) -> VMobject | None:
+        if isinstance(shape, se.Path):
+            mob: VMobject | None = self.path_to_mobject(shape)
+        elif isinstance(shape, se.SimpleLine):
+            mob = self.line_to_mobject(shape)
+        elif isinstance(shape, se.Rect):
+            mob = self.rect_to_mobject(shape)
+        elif isinstance(shape, (se.Circle, se.Ellipse)):
+            mob = self.ellipse_to_mobject(shape)
+        elif isinstance(shape, se.Polygon):
+            mob = self.polygon_to_mobject(shape)
+        elif isinstance(shape, se.Polyline):
+            mob = self.polyline_to_mobject(shape)
+        elif isinstance(shape, se.Text):
+            mob = self.text_to_mobject(shape)
+        else:
+            logger.warning(f"Unsupported element type: {type(shape)}")
+            mob = None
+        return mob
 
     @staticmethod
     def handle_transform(mob: VMobject, matrix: se.Matrix) -> VMobject:
