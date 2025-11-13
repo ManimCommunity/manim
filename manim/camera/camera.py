@@ -475,13 +475,38 @@ class Camera:
                 use_z_index=self.use_z_index,
                 only_those_with_points=True,
             )
-            if excluded_mobjects:
-                all_excluded = extract_mobject_family_members(
-                    excluded_mobjects,
-                    use_z_index=self.use_z_index,
-                )
-                mobjects = list_difference_update(mobjects, all_excluded)
-        return list(mobjects)
+
+        if excluded_mobjects:
+            all_excluded = extract_mobject_family_members(
+                excluded_mobjects,
+                use_z_index=self.use_z_index,
+            )
+            mobjects = list_difference_update(mobjects, all_excluded)
+
+        mobject_list = list(mobjects)
+
+        # --- Depth sort for 3D-shaded mobjects (e.g. Surface faces) ---
+        def z_key(mob: Mobject) -> float:
+            # Only depth-sort “true 3D” mobjects, like Surface faces.
+            if not (hasattr(mob, "shade_in_3d") and getattr(mob, "shade_in_3d")):
+                # Non-3D mobjects keep their relative order (stable sort).
+                return float("inf")
+
+            # Prefer a dedicated reference point if available.
+            if hasattr(mob, "get_z_index_reference_point"):
+                ref = mob.get_z_index_reference_point()
+            else:
+                ref = mob.get_center()
+
+            # Larger z = closer to camera = should be drawn later.
+            return ref[2]
+
+        # Python’s sort is stable: non-3D mobjects stay in order,
+        # 3D ones get correctly sorted by depth.
+        mobject_list.sort(key=z_key)
+
+        return mobject_list
+
 
     def is_in_frame(self, mobject: Mobject) -> bool:
         """Checks whether the passed mobject is in
