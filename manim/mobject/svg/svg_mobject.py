@@ -268,11 +268,11 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         """
         result: list[VMobject] = []
         for shape in svg.elements():
-            mob = self.get_mob_from_shape_element(shape)
             if isinstance(shape, se.Group):  # noqa: SIM114
                 continue
             elif isinstance(shape, se.Use) or type(shape) is se.SVGElement:
                 continue
+            mob = self.get_mob_from_shape_element(shape)
             if mob is not None:
                 result.append(mob)
         return result
