@@ -488,7 +488,7 @@ class Camera:
         # --- Depth sort for 3D-shaded mobjects (e.g. Surface faces) ---
         def z_key(mob: Mobject) -> float:
             # Only depth-sort “true 3D” mobjects, like Surface faces.
-            if not (hasattr(mob, "shade_in_3d") and getattr(mob, "shade_in_3d")):
+            if not (hasattr(mob, "shade_in_3d") and mob.shade_in_3d):
                 # Non-3D mobjects keep their relative order (stable sort).
                 return float("inf")
 
@@ -506,7 +506,6 @@ class Camera:
         mobject_list.sort(key=z_key)
 
         return mobject_list
-
 
     def is_in_frame(self, mobject: Mobject) -> bool:
         """Checks whether the passed mobject is in
