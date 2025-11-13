@@ -268,18 +268,13 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         """
         result: list[VMobject] = []
         for shape in svg.elements():
-            # can we combine the two continue cases into one?
             mob = self.get_mob_from_shape_element(shape)
             if isinstance(shape, se.Group):  # noqa: SIM114
                 continue
             elif isinstance(shape, se.Use) or type(shape) is se.SVGElement:
                 continue
-            if mob is None or not mob.has_points():
-                continue
-            self.apply_style_to_mobject(mob, shape)
-            if isinstance(shape, se.Transformable) and shape.apply:
-                self.handle_transform(mob, shape.transform)
-            result.append(mob)
+            if mob is not None:
+                result.append(mob)
         return result
 
     def get_mob_from_shape_element(self, shape: se.SVGElement) -> VMobject | None:
@@ -300,6 +295,11 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         else:
             logger.warning(f"Unsupported element type: {type(shape)}")
             mob = None
+        if mob is None or not mob.has_points():
+            return mob
+        self.apply_style_to_mobject(mob, shape)
+        if isinstance(shape, se.Transformable) and shape.apply:
+            self.handle_transform(mob, shape.transform)
         return mob
 
     @staticmethod
