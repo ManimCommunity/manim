@@ -127,6 +127,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         self.stroke_color = stroke_color
         self.stroke_opacity = stroke_opacity  # type: ignore[assignment]
         self.stroke_width = stroke_width  # type: ignore[assignment]
+        self.id_to_vgroup_dict: dict[str, VGroup] = {}
         if self.stroke_width is None:
             self.stroke_width = 0
 
@@ -203,8 +204,9 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         svg = se.SVG.parse(modified_file_path)
         modified_file_path.unlink()
 
-        mobjects = self.get_mobjects_from(svg)
+        mobjects, mobject_dict = self.get_mobjects_from(svg)
         self.add(*mobjects)
+        self.id_to_vgroup_dict = mobject_dict
         self.flip(RIGHT)  # Flip y
 
     def get_file_path(self) -> Path:
@@ -258,7 +260,9 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
                 result[svg_key] = str(svg_default_dict[style_key])
         return result
 
-    def get_mobjects_from(self, svg: se.SVG) -> list[VMobject]:
+    def get_mobjects_from(
+        self, svg: se.SVG
+    ) -> tuple[list[VMobject], dict[str, VGroup]]:
         """Convert the elements of the SVG to a list of mobjects.
 
         Parameters
@@ -282,11 +286,10 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             except Exception:
                 group_name = f"numbered_group_{group_id_number}"
                 group_id_number += 1
-            if isinstance(element, se.Group):
-                vg = VGroup()
-                vgroup_names.append(group_name)
-                vgroup_stack.append(group_name)
-                vgroups[group_name] = vg
+            vg = VGroup()
+            vgroup_names.append(group_name)
+            vgroup_stack.append(group_name)
+            vgroups[group_name] = vg
 
             if isinstance(element, (se.Group, se.Use)):
                 for subelement in element[::-1]:
@@ -310,11 +313,12 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
                     if mob is not None:
                         result.append(mob)
                         parent_name = vgroup_stack[-2]
-                        vgroups[parent_name].add(vgroups[group_name])
+                        for parent_name in vgroup_stack[:-2]:
+                            vgroups[parent_name].add(mob)
             except Exception as e:
                 print(e)
 
-        return result
+        return result, vgroups
 
     def get_mob_from_shape_element(self, shape: se.SVGElement) -> VMobject | None:
         if isinstance(shape, se.Path):
