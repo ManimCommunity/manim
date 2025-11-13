@@ -21,7 +21,7 @@ from ..geometry.arc import Circle
 from ..geometry.line import Line
 from ..geometry.polygram import Polygon, Rectangle, RoundedRectangle
 from ..opengl.opengl_compatibility import ConvertToOpenGL
-from ..types.vectorized_mobject import VMobject
+from ..types.vectorized_mobject import VGroup, VMobject
 
 __all__ = ["SVGMobject", "VMobjectFromSVGPath"]
 
@@ -267,14 +267,53 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             The parsed SVG file.
         """
         result: list[VMobject] = []
-        for shape in svg.elements():
-            if isinstance(shape, se.Group):  # noqa: SIM114
-                continue
-            elif isinstance(shape, se.Use) or type(shape) is se.SVGElement:
-                continue
-            mob = self.get_mob_from_shape_element(shape)
-            if mob is not None:
-                result.append(mob)
+        stack: list[tuple[se.SVGElement, int]] = []
+        stack.append((svg, 1))
+        group_id_number = 0
+        vgroup_stack: list[str] = ["root"]
+        vgroup_names: list[str] = ["root"]
+        vgroups: dict[str, VGroup] = {"root": VGroup()}
+        while len(stack) > 0:
+            element, depth = stack.pop()
+            # Reduce stack heights
+            vgroup_stack = vgroup_stack[0:(depth)]
+            try:
+                group_name = str(element.values["id"])
+            except Exception:
+                group_name = f"numbered_group_{group_id_number}"
+                group_id_number += 1
+            if isinstance(element, se.Group):
+                vg = VGroup()
+                vgroup_names.append(group_name)
+                vgroup_stack.append(group_name)
+                vgroups[group_name] = vg
+
+            if isinstance(element, (se.Group, se.Use)):
+                for subelement in element[::-1]:
+                    stack.append((subelement, depth + 1))
+            # Add element to the parent vgroup
+            try:
+                if isinstance(
+                    element,
+                    (
+                        se.Path,
+                        se.SimpleLine,
+                        se.Rect,
+                        se.Circle,
+                        se.Ellipse,
+                        se.Polygon,
+                        se.Polyline,
+                        se.Text,
+                    ),
+                ):
+                    mob = self.get_mob_from_shape_element(element)
+                    if mob is not None:
+                        result.append(mob)
+                        parent_name = vgroup_stack[-2]
+                        vgroups[parent_name].add(vgroups[group_name])
+            except Exception as e:
+                print(e)
+
         return result
 
     def get_mob_from_shape_element(self, shape: se.SVGElement) -> VMobject | None:
