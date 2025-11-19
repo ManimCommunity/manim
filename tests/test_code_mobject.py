@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 from manim.mobject.text.code_mobject import Code
 from manim.utils.color.core import ManimColor
@@ -45,3 +46,17 @@ for _ in range(42):
         rendered_code.code_lines[0].height,
         rendered_code.code_lines[2].height,
     )
+
+
+def test_code_initialization_style_correct_color():
+    for style in Code.get_styles_list():
+        try:
+            Code(
+                code_string="""# This is a comment.
+var = 3
+print(var)
+""",
+                formatter_style=style,
+            )
+        except ValueError as e:
+            pytest.fail(f"Code initialization failed for style {style} with error: {e}")
