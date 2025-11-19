@@ -153,7 +153,7 @@ The following commands will
 The name for the Python project is *manimations*, which you can change
 to anything you like.
 
-Manim does not yet support python 3.14 and the python version is therefore set to 3.13.
+Manim does not yet support Python 3.14 and the Python version is therefore set to 3.13.
 
 ```bash
 uv init --python 3.13 manimations
@@ -202,7 +202,7 @@ Manim itself! The following commands will
 The name for the Python project is *manimations*, which you can change
 to anything you like.
 
-Manim does not yet support python 3.14 and the python version is therefore set to 3.13.
+Manim does not yet support Python 3.14 and the Python version is therefore set to 3.13.
 
 ```bash
 uv init --python 3.13 manimations
@@ -262,7 +262,7 @@ cd manimations
 uv add manim
 ```
 
-Manim does not yet support python 3.14 and the python version is therefore set to 3.13.
+Manim does not yet support Python 3.14 and the Python version is therefore set to 3.13.
 
 :::::
 
