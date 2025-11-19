@@ -892,16 +892,15 @@ class Mobject:
         :meth:`get_updaters`
 
         """
-        if self.updating_suspended:
-            return self
-        for updater in self.updaters:
-            if "dt" in inspect.signature(updater).parameters:
-                updater(self, dt)
-            else:
-                updater(self)
+        if not self.updating_suspended:
+            for updater in self.updaters:
+                if "dt" in inspect.signature(updater).parameters:
+                    updater(self, dt)
+                else:
+                    updater(self)
         if recursive:
             for submob in self.submobjects:
-                submob.update(dt, recursive)
+                submob.update(dt, recursive=recursive)
         return self
 
     def get_time_based_updaters(self) -> list[TimeBasedUpdater]:
