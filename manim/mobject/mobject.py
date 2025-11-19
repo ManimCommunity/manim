@@ -1473,6 +1473,8 @@ class Mobject:
             if about_edge is None:
                 about_edge = ORIGIN
             about_point = self.get_critical_point(about_edge)
+        # Make a copy to prevent mutation of the original array if about_point is a view
+        about_point = np.array(about_point, copy=True)
         for mob in self.family_members_with_points():
             mob.points -= about_point
             mob.points = func(mob.points)
