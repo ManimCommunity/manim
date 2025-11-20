@@ -22,7 +22,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04, macos-15-large, windows-latest]
+        os: [ubuntu-22.04, macos-15-intel, windows-latest]
         python: ["3.9", "3.10", "3.11", "3.12", "3.13"]
 
     steps:
