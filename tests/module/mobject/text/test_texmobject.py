@@ -225,3 +225,31 @@ def test_tex_garbage_collection(tmpdir, monkeypatch, config):
 
     tex_with_log = Tex("Hello World, again!")  # da27670a37b08799.tex
     assert Path("media", "Tex", "da27670a37b08799.log").exists()
+
+
+def test_tex_strings_with_subscripts_and_superscripts():
+    """Test that submobjects match tex_strings and positions when LaTeX reorders scripts.
+
+    Regression test for issue #3548.
+    """
+    eq1 = MathTex("A", "^n", "_1")
+    assert eq1.submobjects[0].get_tex_string() == "A"
+    assert eq1.submobjects[1].get_tex_string() == "^n"
+    assert eq1.submobjects[2].get_tex_string() == "_1"
+    assert eq1.submobjects[1].get_center()[1] > 0
+    assert eq1.submobjects[2].get_center()[1] < 0
+
+    eq2 = MathTex("A", "_1", "^n")
+    assert eq2.submobjects[0].get_tex_string() == "A"
+    assert eq2.submobjects[1].get_tex_string() == "_1"
+    assert eq2.submobjects[2].get_tex_string() == "^n"
+    assert eq2.submobjects[1].get_center()[1] < 0
+    assert eq2.submobjects[2].get_center()[1] > 0
+
+    eq3 = MathTex("\\sum", "^n", "_1", "x")
+    assert eq3.submobjects[0].get_tex_string() == "\\sum"
+    assert eq3.submobjects[1].get_tex_string() == "^n"
+    assert eq3.submobjects[2].get_tex_string() == "_1"
+    assert eq3.submobjects[3].get_tex_string() == "x"
+    assert eq3.submobjects[1].get_center()[1] > 0
+    assert eq3.submobjects[2].get_center()[1] < 0
