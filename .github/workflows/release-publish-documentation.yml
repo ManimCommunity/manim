@@ -43,7 +43,7 @@ jobs:
         tar -czvf ../html-docs.tar.gz *
 
     - name: Store artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
           path: ${{ github.workspace }}/docs/build/html-docs.tar.gz
           name: html-docs.tar.gz
