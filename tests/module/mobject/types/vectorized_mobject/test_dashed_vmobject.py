@@ -1,4 +1,4 @@
-from manim import Arrow, DashedVMobject, ORIGIN, UR, VGroup
+from manim import ORIGIN, UR, Arrow, DashedVMobject, VGroup
 from manim.mobject.geometry.tips import ArrowTip, StealthTip
 
 
