@@ -321,13 +321,13 @@ class Table(VGroup):
         if self.col_labels is not None:
             if self.row_labels is not None:
                 if self.top_left_entry is not None:
-                    col_labels = [self.top_left_entry] + self.col_labels
+                    col_labels = [self.top_left_entry] + list(self.col_labels)
                     mob_table.insert(0, col_labels)
                 else:
                     # Placeholder to use arrange_in_grid if top_left_entry is not set.
                     # Import OpenGLVMobject to work with --renderer=opengl
                     dummy_mobject = get_vectorized_mobject_class()()
-                    col_labels = [dummy_mobject] + self.col_labels
+                    col_labels = [dummy_mobject] + list(self.col_labels)
                     mob_table.insert(0, col_labels)
             else:
                 mob_table.insert(0, self.col_labels)
