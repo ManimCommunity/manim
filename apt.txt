@@ -1,0 +1,5 @@
+texlive
+texlive-latex-extra
+texlive-science
+texlive-pictures
+texlive-fonts-recommended
