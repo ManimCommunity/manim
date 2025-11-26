@@ -187,9 +187,9 @@ class Table(VGroup):
 
     def __init__(
         self,
-        table: Iterable[Iterable[float | str | VMobject]],
-        row_labels: Iterable[VMobject] | None = None,
-        col_labels: Iterable[VMobject] | None = None,
+        table: Sequence[Sequence[float | str | VMobject]],
+        row_labels: Sequence[VMobject] | None = None,
+        col_labels: Sequence[VMobject] | None = None,
         top_left_entry: VMobject | None = None,
         v_buff: float = 0.8,
         h_buff: float = 1.3,
@@ -275,7 +275,7 @@ class Table(VGroup):
             for row in table
         ]
 
-    def _organize_mob_table(self, table: Iterable[Iterable[VMobject]]) -> VGroup:
+    def _organize_mob_table(self, table: Sequence[Sequence[VMobject]]) -> VGroup:
         """Arranges the :class:`~.VMobject` of ``table`` in a grid.
 
         Parameters
