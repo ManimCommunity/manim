@@ -995,8 +995,9 @@ class MathTable(Table):
 
     def __init__(
         self,
-        table: Iterable[Iterable[float | str]],
-        element_to_mobject: Callable[[float | str], VMobject] = MathTex,
+        table: Sequence[Sequence[float | str]],
+        element_to_mobject: Callable[[float | str], VMobject]
+        | type[VMobject] = MathTex,
         **kwargs: Any,
     ):
         """
@@ -1050,8 +1051,9 @@ class MobjectTable(Table):
 
     def __init__(
         self,
-        table: Iterable[Iterable[VMobject]],
-        element_to_mobject: Callable[[VMobject], VMobject] = lambda m: m,
+        table: Sequence[Sequence[VMobject]],
+        element_to_mobject: Callable[[VMobject], VMobject]
+        | type[VMobject] = lambda m: m,
         **kwargs: Any,
     ):
         """
@@ -1098,8 +1100,9 @@ class IntegerTable(Table):
 
     def __init__(
         self,
-        table: Iterable[Iterable[float | str]],
-        element_to_mobject: Callable[[float | str], VMobject] = Integer,
+        table: Sequence[Sequence[float | str]],
+        element_to_mobject: Callable[[float | str], VMobject]
+        | type[VMobject] = Integer,
         **kwargs: Any,
     ):
         """
@@ -1142,8 +1145,9 @@ class DecimalTable(Table):
 
     def __init__(
         self,
-        table: Iterable[Iterable[float | str]],
-        element_to_mobject: Callable[[float | str], VMobject] = DecimalNumber,
+        table: Sequence[Sequence[float | str]],
+        element_to_mobject: Callable[[float | str], VMobject]
+        | type[VMobject] = DecimalNumber,
         element_to_mobject_config: dict = {"num_decimal_places": 1},
         **kwargs: Any,
     ):
