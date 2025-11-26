@@ -802,7 +802,7 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
         if i == 0:
             break
 
-    meta_indices = earcut(verts[indices, :2], [len(indices)])
+    meta_indices = earcut(verts[indices, :2], np.array([len(indices)], dtype=np.uint32))
     return [indices[mi] for mi in meta_indices]
 
 
