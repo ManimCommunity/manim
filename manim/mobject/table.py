@@ -938,7 +938,7 @@ class Table(VGroup):
                     self.play(table.create())
                     self.wait()
         """
-        animations: Sequence[Animation] = [
+        animations: list[Animation] = [
             line_animation(
                 VGroup(self.vertical_lines, self.horizontal_lines),
                 **kwargs,
