@@ -201,7 +201,8 @@ class Table(VGroup):
         element_to_mobject: Callable[
             [float | str | VMobject],
             VMobject,
-        ] = Paragraph,
+        ]
+        | type[VMobject] = Paragraph,
         element_to_mobject_config: dict = {},
         arrange_in_grid_config: dict = {},
         line_config: dict = {},
