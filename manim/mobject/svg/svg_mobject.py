@@ -327,9 +327,11 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         shape
             The parsed SVG element.
         """
-        if shape.stroke.hexrgb is not None and (shape.stroke_width is None or shape.stroke_width == 0.0):
+        if shape.stroke.hexrgb is not None and (
+            shape.stroke_width is None or shape.stroke_width == 0.0
+        ):
             shape.stroke_width = 1.0
-        
+
         mob.set_style(
             stroke_width=shape.stroke_width,
             stroke_color=shape.stroke.hexrgb,
