@@ -352,10 +352,10 @@ class NumberLine(Line):
         """
         x_min, x_max, x_step = self.x_range
         if not self.include_tip and not self.include_double_sided_tip:
-            x_max += min(1e-6, x_step/2)
+            x_max += min(1e-6, x_step / 2)
 
         if not self.include_double_sided_tip:
-            x_min -= min(1e-6, x_step/2)
+            x_min -= min(1e-6, x_step / 2)
 
         # Handle cases where min and max are both positive or both negative
         if x_min < x_max < 0 or x_max > x_min > 0:
