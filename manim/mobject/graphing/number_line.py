@@ -59,6 +59,8 @@ class NumberLine(Line):
         The thickness of the line.
     include_tip
         Whether to add a tip to the end of the line.
+    include_double_sided_tip
+        Should tips be added on both ends? Ignores value of include_tip if passed True
     tip_width
         The width of the tip.
     tip_height
@@ -156,6 +158,7 @@ class NumberLine(Line):
         stroke_width: float = 2.0,
         # tip
         include_tip: bool = False,
+        include_double_sided_tip: bool = False,
         tip_width: float = DEFAULT_ARROW_TIP_LENGTH,
         tip_height: float = DEFAULT_ARROW_TIP_LENGTH,
         tip_shape: type[ArrowTip] | None = None,
@@ -210,6 +213,7 @@ class NumberLine(Line):
         self.rotation = rotation
         # tip
         self.include_tip = include_tip
+        self.include_double_sided_tip = include_double_sided_tip
         self.tip_width = tip_width
         self.tip_height = tip_height
         # numbers
@@ -238,13 +242,22 @@ class NumberLine(Line):
 
         self.center()
 
-        if self.include_tip:
+        if self.include_double_sided_tip or self.include_tip:
             self.add_tip(
                 tip_length=self.tip_height,
                 tip_width=self.tip_width,
                 tip_shape=tip_shape,
             )
             self.tip.set_stroke(self.stroke_color, self.stroke_width)
+
+        if self.include_double_sided_tip:
+            self.add_tip(
+                tip_length=self.tip_height,
+                tip_width=self.tip_width,
+                tip_shape=tip_shape,
+                at_start=True,
+            )
+            self.start_tip.set_stroke(self.stroke_color, self.stroke_width)
 
         if self.include_ticks:
             self.add_ticks()
@@ -335,11 +348,14 @@ class NumberLine(Line):
         Returns
         -------
         np.ndarray
-            A numpy array of floats represnting values along the number line.
+            A numpy array of floats representing values along the number line.
         """
         x_min, x_max, x_step = self.x_range
-        if not self.include_tip:
+        if not self.include_tip and not self.include_double_sided_tip:
             x_max += 1e-6
+
+        if not self.include_double_sided_tip:
+            x_min -= 1e-6
 
         # Handle cases where min and max are both positive or both negative
         if x_min < x_max < 0 or x_max > x_min > 0:
@@ -349,7 +365,7 @@ class NumberLine(Line):
             if self.exclude_origin_tick:
                 start_point += x_step
 
-            x_min_segment = np.arange(start_point, np.abs(x_min) + 1e-6, x_step) * -1
+            x_min_segment = np.arange(start_point, np.abs(x_min), x_step) * -1
             x_max_segment = np.arange(start_point, x_max, x_step)
 
             tick_range = np.unique(np.concatenate((x_min_segment, x_max_segment)))
