@@ -14,33 +14,31 @@ from typing import TYPE_CHECKING, Any
 
 import cairo
 import numpy as np
-import numpy.typing as npt
 from PIL import Image
-from scipy.spatial.distance import pdist
-from typing_extensions import Self
 
-from manim.typing import (
-    FloatRGBA_Array,
-    FloatRGBALike_Array,
-    ManimInt,
-    PixelArray,
-    Point3D,
-    Point3D_Array,
-)
-
-from .. import config, logger
-from ..constants import *
-from ..mobject.mobject import Mobject
-from ..mobject.types.point_cloud_mobject import PMobject
-from ..mobject.types.vectorized_mobject import VMobject
-from ..utils.color import ManimColor, ParsableManimColor, color_to_int_rgba
-from ..utils.family import extract_mobject_family_members
-from ..utils.images import get_full_raster_image_path
-from ..utils.iterables import list_difference_update
-from ..utils.space_ops import angle_of_vector
+from manim._config import config, logger
+from manim.constants import *
+from manim.mobject.mobject import Mobject
+from manim.mobject.types.point_cloud_mobject import PMobject
+from manim.mobject.types.vectorized_mobject import VMobject
+from manim.utils.color import ManimColor, ParsableManimColor, color_to_int_rgba
+from manim.utils.family import extract_mobject_family_members
+from manim.utils.images import get_full_raster_image_path
+from manim.utils.iterables import list_difference_update
 
 if TYPE_CHECKING:
-    from ..mobject.types.image_mobject import AbstractImageMobject
+    import numpy.typing as npt
+    from typing_extensions import Self
+
+    from manim.mobject.types.image_mobject import AbstractImageMobject
+    from manim.typing import (
+        FloatRGBA_Array,
+        FloatRGBALike_Array,
+        ManimInt,
+        PixelArray,
+        Point3D,
+        Point3D_Array,
+    )
 
 
 LINE_JOIN_MAP = {
@@ -999,60 +997,83 @@ class Camera:
     def display_image_mobject(
         self, image_mobject: AbstractImageMobject, pixel_array: np.ndarray
     ) -> None:
-        """Displays an ImageMobject by changing the pixel_array suitably.
+        """Display an :class:`~.ImageMobject` by changing the ``pixel_array`` suitably.
 
         Parameters
         ----------
         image_mobject
-            The imageMobject to display
+            The :class:`~.ImageMobject` to display.
         pixel_array
-            The Pixel array to put the imagemobject in.
+            The pixel array to put the :class:`~.ImageMobject` in.
         """
-        corner_coords = self.points_to_pixel_coords(image_mobject, image_mobject.points)
-        ul_coords, ur_coords, dl_coords, _ = corner_coords
-        right_vect = ur_coords - ul_coords
-        down_vect = dl_coords - ul_coords
-        center_coords = ul_coords + (right_vect + down_vect) / 2
-
         sub_image = Image.fromarray(image_mobject.get_pixel_array(), mode="RGBA")
+        original_coords = np.array(
+            [
+                [0, 0],
+                [sub_image.width, 0],
+                [0, sub_image.height],
+                [sub_image.width, sub_image.height],
+            ]
+        )
+        target_coords = self.points_to_pixel_coords(image_mobject, image_mobject.points)
 
-        # Reshape
-        pixel_width = max(int(pdist([ul_coords, ur_coords]).item()), 1)
-        pixel_height = max(int(pdist([ul_coords, dl_coords]).item()), 1)
-        sub_image = sub_image.resize(
-            (pixel_width, pixel_height),
+        # Temporarily translate target coords to upper left corner to calculate the
+        # smallest possible size for the target image.
+        shift_vector = np.array(
+            [
+                min(*[x for x, y in target_coords]),
+                min(*[y for x, y in target_coords]),
+            ]
+        )
+        target_coords -= shift_vector
+        target_size = (
+            max(*[x for x, y in target_coords]),
+            max(*[y for x, y in target_coords]),
+        )
+
+        # Use PIL.Image.Image.transform() to apply a perspective transform to the image.
+        # The transform coefficients must be calculated. The following is adapted from
+        # https://stackoverflow.com/questions/14177744/how-does-perspective-transformation-work-in-pil
+        # and
+        # https://web.archive.org/web/20150222120106/xenia.media.mit.edu/~cwren/interpolator/
+
+        homography_matrix = []
+        for (x, y), (X, Y) in zip(target_coords, original_coords):
+            homography_matrix.append([x, y, 1, 0, 0, 0, -X * x, -X * y])
+            homography_matrix.append([0, 0, 0, x, y, 1, -Y * x, -Y * y])
+
+        A = np.array(homography_matrix, dtype=np.float64)
+        b = original_coords.reshape(8).astype(np.float64)
+
+        try:
+            transform_coefficients = np.linalg.solve(A, b)
+        except np.linalg.LinAlgError:
+            # The matrix A might be singular.
+            # In this case, do nothing and return.
+            return
+
+        sub_image = sub_image.transform(
+            size=target_size,  # Use the smallest possible size for speed.
+            method=Image.Transform.PERSPECTIVE,
+            data=transform_coefficients,
             resample=image_mobject.resampling_algorithm,
         )
 
-        # Rotate
-        angle = angle_of_vector(right_vect)
-        adjusted_angle = -int(360 * angle / TAU)
-        if adjusted_angle != 0:
-            sub_image = sub_image.rotate(
-                adjusted_angle,
-                resample=image_mobject.resampling_algorithm,
-                expand=1,
-            )
-
-        # TODO, there is no accounting for a shear...
-
-        # Paste into an image as large as the camera's pixel array
+        # Paste into an image as large as the camera's pixel array.
         full_image = Image.fromarray(
             np.zeros((self.pixel_height, self.pixel_width)),
             mode="RGBA",
         )
-        new_ul_coords = center_coords - np.array(sub_image.size) / 2
-        new_ul_coords = new_ul_coords.astype(int)
         full_image.paste(
             sub_image,
             box=(
-                new_ul_coords[0],
-                new_ul_coords[1],
-                new_ul_coords[0] + sub_image.size[0],
-                new_ul_coords[1] + sub_image.size[1],
+                shift_vector[0],
+                shift_vector[1],
+                shift_vector[0] + target_size[0],
+                shift_vector[1] + target_size[1],
             ),
         )
-        # Paint on top of existing pixel array
+        # Paint on top of existing pixel array.
         self.overlay_PIL_image(pixel_array, full_image)
 
     def overlay_rgba_array(
