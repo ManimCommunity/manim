@@ -259,7 +259,7 @@ class MathTex(SingleStringMathTex):
         *tex_strings: str,
         arg_separator: str = " ",
         substrings_to_isolate: Iterable[str] | None = None,
-        tex_to_color_map: dict[str, ManimColor] | None = None,
+        tex_to_color_map: dict[str, ParsableManimColor] | None = None,
         tex_environment: str | None = "align*",
         **kwargs: Any,
     ):
@@ -269,7 +269,7 @@ class MathTex(SingleStringMathTex):
             [] if substrings_to_isolate is None else substrings_to_isolate
         )
         if tex_to_color_map is None:
-            self.tex_to_color_map: dict[str, ManimColor] = {}
+            self.tex_to_color_map: dict[str, ParsableManimColor] = {}
         else:
             self.tex_to_color_map = tex_to_color_map
         self.tex_environment = tex_environment
@@ -416,17 +416,17 @@ class MathTex(SingleStringMathTex):
         return self
 
     def set_color_by_tex_to_color_map(
-        self, texs_to_color_map: dict[str, ManimColor], **kwargs: Any
+        self, texs_to_color_map: dict[str, ParsableManimColor], **kwargs: Any
     ) -> Self:
         for texs, color in list(texs_to_color_map.items()):
             try:
                 # If the given key behaves like tex_strings
                 texs + ""
-                self.set_color_by_tex(texs, color, **kwargs)
+                self.set_color_by_tex(texs, ManimColor(color), **kwargs)
             except TypeError:
                 # If the given key is a tuple
                 for tex in texs:
-                    self.set_color_by_tex(tex, color, **kwargs)
+                    self.set_color_by_tex(tex, ManimColor(color), **kwargs)
         return self
 
     def index_of_part(self, part: MathTex) -> int:
@@ -508,7 +508,9 @@ class BulletedList(Tex):
         self.tex_environment = tex_environment
         line_separated_items = [s + "\\\\" for s in items]
         super().__init__(
-            *line_separated_items, tex_environment=tex_environment, **kwargs
+            *line_separated_items,
+            tex_environment=tex_environment,
+            **kwargs,
         )
         for part in self:
             dot = MathTex("\\cdot").scale(self.dot_scale_factor)
@@ -519,9 +521,13 @@ class BulletedList(Tex):
     def fade_all_but(self, index_or_string: int | str, opacity: float = 0.5) -> None:
         arg = index_or_string
         if isinstance(arg, str):
-            part = self.get_part_by_tex(arg)
+            part: VGroup | VMobject | None = self.get_part_by_tex(arg)
+            if part is None:
+                raise Exception(
+                    f"Could not locate part by provided tex string '{arg}'."
+                )
         elif isinstance(arg, int):
-            part = self.submobjects[arg]  # type: ignore[assignment]
+            part = self.submobjects[arg]
         else:
             raise TypeError(f"Expected int or string, got {arg}")
         for other_part in self.submobjects:

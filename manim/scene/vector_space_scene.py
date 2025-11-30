@@ -4,8 +4,8 @@ from __future__ import annotations
 
 __all__ = ["VectorScene", "LinearTransformationScene"]
 
-from collections.abc import Iterable
-from typing import TYPE_CHECKING, Any, Callable, cast
+from collections.abc import Callable, Iterable
+from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
 
@@ -45,8 +45,6 @@ from ..utils.rate_functions import rush_from, rush_into
 from ..utils.space_ops import angle_of_vector
 
 if TYPE_CHECKING:
-    from typing import Any
-
     from typing_extensions import Self
 
     from manim.typing import (
@@ -973,8 +971,8 @@ class LinearTransformationScene(VectorScene):
             )
         label_mob.vector = vector  # type: ignore[attr-defined]
         label_mob.kwargs = kwargs  # type: ignore[attr-defined]
-        if "animate" in label_mob.kwargs:  # type: ignore[operator]
-            label_mob.kwargs.pop("animate")  # type: ignore[attr-defined]
+        if "animate" in label_mob.kwargs:
+            label_mob.kwargs.pop("animate")
         self.transformable_labels.append(label_mob)
         return cast(MathTex, label_mob)
 

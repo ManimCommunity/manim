@@ -20,6 +20,7 @@ __all__ = [
 
 import itertools as it
 from collections.abc import (
+    Callable,
     Collection,
     Generator,
     Hashable,
@@ -27,7 +28,7 @@ from collections.abc import (
     Reversible,
     Sequence,
 )
-from typing import TYPE_CHECKING, Callable, TypeVar, overload
+from typing import TYPE_CHECKING, TypeVar, overload
 
 import numpy as np
 

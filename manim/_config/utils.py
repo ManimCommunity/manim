@@ -595,6 +595,7 @@ class ManimConfig(MutableMapping):
             "enable_wireframe",
             "force_window",
             "no_latex_cleanup",
+            "dry_run",
         ]:
             setattr(self, key, parser["CLI"].getboolean(key, fallback=False))
 
@@ -629,6 +630,7 @@ class ManimConfig(MutableMapping):
             "background_color",
             "renderer",
             "window_position",
+            "preview_command",
         ]:
             setattr(self, key, parser["CLI"].get(key, fallback="", raw=True))
 
@@ -1418,7 +1420,7 @@ class ManimConfig(MutableMapping):
 
     @property
     def window_size(self) -> str:
-        """The size of the opengl window. 'default' to automatically scale the window based on the display monitor."""
+        """The size of the opengl window as 'width,height' or 'default' to automatically scale the window based on the display monitor."""
         return self._d["window_size"]
 
     @window_size.setter

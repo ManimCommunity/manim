@@ -20,9 +20,9 @@ __all__ = [
 ]
 
 
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from functools import reduce
-from typing import TYPE_CHECKING, Callable, overload
+from typing import TYPE_CHECKING, overload
 
 import numpy as np
 
@@ -915,10 +915,10 @@ def subdivide_bezier(points: BezierPointsLike, n_divisions: int) -> Spline:
     :class:`~.Spline`
         An array containing the points defining the new :math:`n` subcurves.
     """
+    points = np.asarray(points)
     if n_divisions == 1:
         return points
 
-    points = np.asarray(points)
     N, dim = points.shape
 
     if N <= 4:

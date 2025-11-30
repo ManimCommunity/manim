@@ -18,7 +18,7 @@ from manim.mobject.types.vectorized_mobject import VMobject
 from manim.mobject.value_tracker import ValueTracker
 from manim.typing import Vector3DLike
 
-string_to_mob_map: dict[str, VMobject] = {}
+string_to_mob_map: dict[str, SingleStringMathTex] = {}
 
 
 class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
@@ -227,7 +227,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         if string not in string_to_mob_map:
             string_to_mob_map[string] = mob_class(string, **kwargs)
         mob = string_to_mob_map[string].copy()
-        mob.font_size = self._font_size  # type: ignore[attr-defined]
+        mob.font_size = self._font_size
         return mob
 
     def _get_formatter(self, **kwargs: Any) -> str:

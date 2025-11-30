@@ -11,7 +11,7 @@ import numpy as np
 import svgelements as se
 
 from manim import config, logger
-from manim.utils.color import ParsableManimColor
+from manim.utils.color import ManimColor, ParsableManimColor
 
 from ...constants import RIGHT
 from ...utils.bezier import get_quadratic_approximation_of_cubic
@@ -120,7 +120,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         self.should_center = should_center
         self.svg_height = height
         self.svg_width = width
-        self.color = color
+        self.color = ManimColor(color)
         self.opacity = opacity
         self.fill_color = fill_color
         self.fill_opacity = fill_opacity  # type: ignore[assignment]
@@ -496,7 +496,7 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
 
         super().__init__(**kwargs)
 
-    def init_points(self) -> None:
+    def generate_points(self) -> None:
         # TODO: cache mobject in a re-importable way
 
         self.handle_commands()
@@ -509,7 +509,8 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
                 # Get rid of any null curves
                 self.set_points(self.get_points_without_null_curves())
 
-    generate_points = init_points
+    def init_points(self) -> None:
+        self.generate_points()
 
     def handle_commands(self) -> None:
         all_points: list[np.ndarray] = []

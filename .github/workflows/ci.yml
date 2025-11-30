@@ -22,20 +22,20 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04, macos-13, windows-latest]
+        os: [ubuntu-22.04, macos-15-intel, windows-latest]
         python: ["3.9", "3.10", "3.11", "3.12", "3.13"]
 
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Python ${{ matrix.python }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python }}
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v7
         with:
           enable-cache: true
 

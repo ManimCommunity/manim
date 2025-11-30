@@ -105,8 +105,6 @@ class SampleSpace(Rectangle):
         p_list_complete = self.complete_p_list(p_list)
         colors_in_gradient = color_gradient(colors, len(p_list_complete))
 
-        assert isinstance(colors_in_gradient, list)
-
         last_point = self.get_edge_center(-vect)
         parts = VGroup()
         for factor, color in zip(p_list_complete, colors_in_gradient):
@@ -172,7 +170,7 @@ class SampleSpace(Rectangle):
             "direction": direction,
             "buff": buff,
         }
-        return VGroup(parts.braces, parts.labels)  # type: ignore[arg-type]
+        return VGroup(parts.braces, parts.labels)
 
     def get_side_braces_and_labels(
         self,
