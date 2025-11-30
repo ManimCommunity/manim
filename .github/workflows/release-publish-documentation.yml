@@ -17,7 +17,7 @@ jobs:
         python-version: 3.13
 
     - name: Install uv
-      uses: astral-sh/setup-uv@v6
+      uses: astral-sh/setup-uv@v7
 
     - name: Install system dependencies
       run: |
@@ -43,7 +43,7 @@ jobs:
         tar -czvf ../html-docs.tar.gz *
 
     - name: Store artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
           path: ${{ github.workspace }}/docs/build/html-docs.tar.gz
           name: html-docs.tar.gz
