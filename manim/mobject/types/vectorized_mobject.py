@@ -472,7 +472,14 @@ class VMobject(Mobject):
         self.set_stroke(opacity=opacity, family=family, background=True)
         return self
 
-    def scale(self, scale_factor: float, scale_stroke: bool = False, **kwargs) -> Self:
+    def scale(
+        self,
+        scale_factor: float,
+        scale_stroke: bool = False,
+        *,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
+    ) -> Self:
         r"""Scale the size by a factor.
 
         Default behavior is to scale about the center of the vmobject.
@@ -527,7 +534,7 @@ class VMobject(Mobject):
                 width=abs(scale_factor) * self.get_stroke_width(background=True),
                 background=True,
             )
-        super().scale(scale_factor, **kwargs)
+        super().scale(scale_factor, about_point=about_point, about_edge=about_edge)
         return self
 
     def fade(self, darkness: float = 0.5, family: bool = True) -> Self:
@@ -593,7 +600,6 @@ class VMobject(Mobject):
 
     def get_stroke_width(self, background: bool = False) -> float:
         if background:
-            self.background_stroke_width: float
             width = self.background_stroke_width
         else:
             width = self.stroke_width
@@ -1177,7 +1183,13 @@ class VMobject(Mobject):
             self.points = self.points[:-1]
         self.append_points(vectorized_mobject.points)
 
-    def apply_function(self, function: MappingFunction) -> Self:
+    def apply_function(
+        self,
+        function: MappingFunction,
+        *,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
+    ) -> Self:
         factor = self.pre_function_handle_to_anchor_scale_factor
         self.scale_handle_to_anchor_distances(factor)
         super().apply_function(function)
@@ -1190,11 +1202,12 @@ class VMobject(Mobject):
         self,
         angle: float,
         axis: Vector3DLike = OUT,
+        *,
         about_point: Point3DLike | None = None,
-        **kwargs,
+        about_edge: Vector3DLike | None = None,
     ) -> Self:
         self.rotate_sheen_direction(angle, axis)
-        super().rotate(angle, axis, about_point, **kwargs)
+        super().rotate(angle, axis, about_point=about_point, about_edge=about_edge)
         return self
 
     def scale_handle_to_anchor_distances(self, factor: float) -> Self:
@@ -2819,6 +2832,21 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
         self.dashed_ratio = dashed_ratio
         self.num_dashes = num_dashes
         super().__init__(color=color, **kwargs)
+
+        # Work on a copy to avoid mutating the caller's mobject (e.g. removing tips).
+        base_vmobject = vmobject
+        vmobject = base_vmobject.copy()
+
+        # TipableVMobject instances (Arrow, Vector, etc.) carry tips as submobjects.
+        # When dashing such objects, each subcurve would otherwise include its own
+        # tip, leading to many overlapping arrowheads. Pop tips from the working
+        # copy and re-attach them only once after the dashes are created.
+        tips = None
+        if hasattr(vmobject, "pop_tips"):
+            popped_tips = vmobject.pop_tips()
+            if len(popped_tips.submobjects) > 0:
+                tips = popped_tips
+
         r = self.dashed_ratio
         n = self.num_dashes
         if n > 0:
@@ -2904,6 +2932,9 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
         # Family is already taken care of by get_subcurve
         # implementation
         if config.renderer == RendererType.OPENGL:
-            self.match_style(vmobject, recurse=False)
+            self.match_style(base_vmobject, recurse=False)
         else:
-            self.match_style(vmobject, family=False)
+            self.match_style(base_vmobject, family=False)
+
+        if tips is not None:
+            self.add(*tips.submobjects)
