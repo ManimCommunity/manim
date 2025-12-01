@@ -625,7 +625,7 @@ class Cone(Surface):
         show_base: bool = False,
         v_range: Sequence[float] = [0, TAU],
         u_min: float = 0,
-        checkerboard_colors: bool = False,
+        checkerboard_colors: Sequence[ParsableManimColor] | Literal[False] = False,
         **kwargs: Any,
     ) -> None:
         self.direction = direction
