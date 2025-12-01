@@ -182,7 +182,9 @@ class Union(_BooleanOps):
         if len(vmobjects) < 2:
             raise ValueError("At least 2 mobjects needed for Union.")
         super().__init__(**kwargs)
-        paths = [self._convert_vmobject_to_skia_path(vmobject) for vmobject in vmobjects]
+        paths = [
+            self._convert_vmobject_to_skia_path(vmobject) for vmobject in vmobjects
+        ]
         outpen = SkiaPath()
         union(paths, outpen.getPen())
         self._convert_skia_path_to_vmobject(outpen)
