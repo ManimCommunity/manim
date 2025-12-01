@@ -17,7 +17,7 @@ __all__ = [
 ]
 
 from collections.abc import Callable, Iterable, Sequence
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal
 
 import numpy as np
 from typing_extensions import Self
@@ -119,7 +119,10 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         surface_piece_config: dict = {},
         fill_color: ParsableManimColor = BLUE_D,
         fill_opacity: float = 1.0,
-        checkerboard_colors: Sequence[ParsableManimColor] | bool = [BLUE_D, BLUE_E],
+        checkerboard_colors: Sequence[ParsableManimColor] | Literal[False] = [
+            BLUE_D,
+            BLUE_E,
+        ],
         stroke_color: ParsableManimColor = LIGHT_GREY,
         stroke_width: float = 0.5,
         should_make_jagged: bool = False,
@@ -138,7 +141,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         self.resolution = resolution
         self.surface_piece_config = surface_piece_config
         if checkerboard_colors:
-            self.checkerboard_colors: list[ManimColor] = [
+            self.checkerboard_colors: list[ManimColor] | Literal[False] = [
                 ManimColor(x) for x in checkerboard_colors
             ]
         else:
