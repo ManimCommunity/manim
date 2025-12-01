@@ -40,7 +40,6 @@ from manim.utils.color import (
     ParsableManimColor,
     interpolate_color,
 )
-from manim.utils.iterables import tuplify
 from manim.utils.space_ops import normalize, perpendicular_bisector, z_to_vector
 
 if TYPE_CHECKING:
@@ -158,11 +157,10 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         return self._func(u, v)
 
     def _get_u_values_and_v_values(self) -> tuple[np.ndarray, np.ndarray]:
-        res = tuplify(self.resolution)
-        if len(res) == 1:
-            u_res = v_res = res[0]
+        if isinstance(self.resolution, int):
+            u_res = v_res = self.resolution
         else:
-            u_res, v_res = res
+            u_res, v_res = self.resolution[0:2]
 
         u_values = np.linspace(*self.u_range, u_res + 1)
         v_values = np.linspace(*self.v_range, v_res + 1)
