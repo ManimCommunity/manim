@@ -87,7 +87,7 @@ dev = [
     "pytest>=8.3.4",
     "pytest-cov>=6.0.0",
     "pytest-xdist>=2.2,<3.0",
-    "ruff>=0.9.3",
+    "ruff>=0.14.7",
     "sphinx>=7.4.7",
     "sphinx-copybutton>=0.5.2",
     "sphinx-design>=0.6.1",
@@ -149,13 +149,14 @@ select = [
   "C4",
   "D",
   "E",
-  "W",
   "F",
   "I",
+  "PERF",
   "PGH",
   "PT",
   "SIM",
   "UP",
+  "W",
 ]
 
 ignore = [
@@ -172,18 +173,19 @@ ignore = [
   "D205",
   "D212",
   "D4",
+  "E111",
+  "E114",
+  "E117",
+  "E501",
   # due to the import * used in manim
   "F403",
   "F405",
+  "PERF203",  # try-except-in-loop
   # Exception too broad (this would require lots of changes + re.escape) for little benefit
   "PT011",
   # as recommended by https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules
   "D206",
   "D300",
-  "E111",
-  "E114",
-  "E117",
-  "E501",
 ]
 
 # Allow unused variables when underscore-prefixed.
