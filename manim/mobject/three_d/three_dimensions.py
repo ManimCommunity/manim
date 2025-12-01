@@ -733,7 +733,7 @@ class Cone(Surface):
         """
         return self.direction
 
-    def _set_start_and_end_attributes(self, direction):
+    def _set_start_and_end_attributes(self, direction: Vector3DLike) -> None:
         normalized_direction = direction * np.linalg.norm(direction)
 
         start = self.base_circle.get_center()
@@ -822,6 +822,7 @@ class Cylinder(Surface):
 
     def add_bases(self) -> None:
         """Adds the end caps of the cylinder."""
+        opacity: float
         if config.renderer == RendererType.OPENGL:
             color = self.color
             opacity = self.opacity
@@ -944,7 +945,9 @@ class Line3D(Cylinder):
         **kwargs: Any,
     ):
         self.thickness = thickness
-        self.resolution = (2, resolution) if isinstance(resolution, int) else resolution
+        self.resolution: Sequence[int] = (
+            (2, resolution) if isinstance(resolution, int) else resolution
+        )
 
         start = np.array(start, dtype=np.float64)
         end = np.array(end, dtype=np.float64)
