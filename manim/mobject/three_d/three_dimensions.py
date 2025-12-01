@@ -296,7 +296,11 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
             )
             return self
 
-        ranges = [axes.x_range, axes.y_range, axes.z_range]
+        # TODO: Handle this type error that has been ignored
+        # error: List item 0 has incompatible type "MethodType"; expected "Sequence[float]"  [list-item]
+        # error: List item 1 has incompatible type "MethodType"; expected "Sequence[float]"  [list-item]
+        # error: List item 2 has incompatible type "MethodType"; expected "Sequence[float]"  [list-item]
+        ranges: list[Sequence[float]] = [axes.x_range, axes.y_range, axes.z_range]  # type: ignore[list-item]
         assert isinstance(colorscale, list)
         new_colors: list[ManimColor]
         if type(colorscale[0]) is tuple:
