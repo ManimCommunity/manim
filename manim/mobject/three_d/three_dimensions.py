@@ -335,6 +335,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
                             color_index,
                         )
                         if config.renderer == RendererType.OPENGL:
+                            assert isinstance(mob, OpenGLMobject)
                             mob.set_color(mob_color, recurse=False)
                         elif config.renderer == RendererType.CAIRO:
                             mob.set_color(mob_color, family=False)
@@ -827,6 +828,7 @@ class Cylinder(Surface):
         """Adds the end caps of the cylinder."""
         opacity: float
         if config.renderer == RendererType.OPENGL:
+            assert isinstance(self, OpenGLMobject)
             color = self.color
             opacity = self.opacity
         elif config.renderer == RendererType.CAIRO:
