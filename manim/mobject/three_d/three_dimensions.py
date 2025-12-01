@@ -393,7 +393,7 @@ class Sphere(Surface):
         resolution: Sequence[int] | None = None,
         u_range: Sequence[float] = (0, TAU),
         v_range: Sequence[float] = (0, PI),
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         if config.renderer == RendererType.OPENGL:
             res_value = (101, 51)
@@ -467,7 +467,7 @@ class Dot3D(Sphere):
         radius: float = DEFAULT_DOT_RADIUS,
         color: ParsableManimColor = WHITE,
         resolution: tuple[int, int] = (8, 8),
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         super().__init__(center=point, radius=radius, resolution=resolution, **kwargs)
         self.set_color(color)
@@ -509,7 +509,7 @@ class Cube(VGroup):
         fill_opacity: float = 0.75,
         fill_color: ParsableManimColor = BLUE,
         stroke_width: float = 0,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         self.side_length = side_length
         super().__init__(
@@ -561,7 +561,9 @@ class Prism(Cube):
     """
 
     def __init__(
-        self, dimensions: tuple[float, float, float] | np.ndarray = [3, 2, 1], **kwargs
+        self,
+        dimensions: tuple[float, float, float] | np.ndarray = [3, 2, 1],
+        **kwargs: Any,
     ) -> None:
         self.dimensions = dimensions
         super().__init__(**kwargs)
@@ -781,7 +783,7 @@ class Cylinder(Surface):
         v_range: Sequence[float] = [0, TAU],
         show_ends: bool = True,
         resolution: Sequence[int] = (24, 24),
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         self._height = height
         self.radius = radius
@@ -939,7 +941,7 @@ class Line3D(Cylinder):
         thickness: float = 0.02,
         color: ParsableManimColor | None = None,
         resolution: int | Sequence[int] = 24,
-        **kwargs,
+        **kwargs: Any,
     ):
         self.thickness = thickness
         self.resolution = (2, resolution) if isinstance(resolution, int) else resolution
@@ -952,7 +954,7 @@ class Line3D(Cylinder):
             self.set_color(color)
 
     def set_start_and_end_attrs(
-        self, start: np.ndarray, end: np.ndarray, **kwargs
+        self, start: np.ndarray, end: np.ndarray, **kwargs: Any
     ) -> None:
         """Sets the start and end points of the line.
 
@@ -1038,7 +1040,7 @@ class Line3D(Cylinder):
         line: Line3D,
         point: Point3DLike = ORIGIN,
         length: float = 5,
-        **kwargs,
+        **kwargs: Any,
     ) -> Line3D:
         """Returns a line parallel to another line going through
         a given point.
@@ -1086,7 +1088,7 @@ class Line3D(Cylinder):
         line: Line3D,
         point: Vector3DLike = ORIGIN,
         length: float = 5,
-        **kwargs,
+        **kwargs: Any,
     ) -> Line3D:
         """Returns a line perpendicular to another line going through
         a given point.
@@ -1181,7 +1183,7 @@ class Arrow3D(Line3D):
         base_radius: float = 0.08,
         color: ParsableManimColor = WHITE,
         resolution: int | Sequence[int] = 24,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         super().__init__(
             start=start,
@@ -1251,7 +1253,7 @@ class Torus(Surface):
         u_range: Sequence[float] = (0, TAU),
         v_range: Sequence[float] = (0, TAU),
         resolution: tuple[int, int] | None = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         if config.renderer == RendererType.OPENGL:
             res_value = (101, 101)
