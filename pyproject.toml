@@ -1,6 +1,6 @@
 [project]
 name = "manim"
-version = "0.19.0"
+version = "0.19.1"
 description = "Animation engine for explanatory math videos."
 authors = [
   {name = "The Manim Community Developers", email = "contact@manim.community"},
@@ -14,14 +14,13 @@ classifiers = [
     "Topic :: Scientific/Engineering",
     "Topic :: Multimedia :: Video",
     "Topic :: Multimedia :: Graphics",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Natural Language :: English",
     ]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
     "audioop-lts>=0.2.1 ; python_full_version >= '3.13'",
     "av>=9.0.0,<14.0.0",
@@ -29,7 +28,6 @@ dependencies = [
     "click>=8.0",
     "cloup>=2.0.0",
     "decorator>=4.3.2",
-    "importlib-metadata>=8.6.1 ; python_full_version < '3.10'",
     "isosurfaces>=0.1.0",
     "manimpango>=0.5.0,<1.0.0",
     "mapbox-earcut>=1.0.0",
