@@ -23,11 +23,11 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-22.04, macos-15-intel, windows-latest]
-        python: ["3.10", "3.11", "3.12", "3.13"]
+        python: ["3.10", "3.11", "3.12", "3.13", "3.14"]
 
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup Python ${{ matrix.python }}
         uses: actions/setup-python@v6
