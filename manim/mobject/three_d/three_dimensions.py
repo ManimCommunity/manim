@@ -48,7 +48,14 @@ if TYPE_CHECKING:
 
 
 class ThreeDVMobject(VMobject, metaclass=ConvertToOpenGL):
-    def __init__(self, shade_in_3d: bool = True, **kwargs):
+    u_index: int
+    v_index: int
+    u1: float
+    u2: float
+    v1: float
+    v2: float
+
+    def __init__(self, shade_in_3d: bool = True, **kwargs: Any):
         super().__init__(shade_in_3d=shade_in_3d, **kwargs)
 
 
@@ -109,7 +116,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         func: Callable[[float, float], np.ndarray],
         u_range: Sequence[float] = [0, 1],
         v_range: Sequence[float] = [0, 1],
-        resolution: Sequence[int] = 32,
+        resolution: Sequence[int] | int = 32,
         surface_piece_config: dict = {},
         fill_color: ParsableManimColor = BLUE_D,
         fill_opacity: float = 1.0,
@@ -226,7 +233,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         axes: Mobject,
         colorscale: list[ParsableManimColor] | ParsableManimColor | None = None,
         axis: int = 2,
-        **kwargs,
+        **kwargs: Any,
     ) -> Self:
         """Sets the color of each mobject of a parametric surface to a color
         relative to its axis-value.
