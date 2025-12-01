@@ -152,6 +152,9 @@ jobs:
         run: |
           uv sync --all-extras --locked
 
+      - if: runner.os == 'macOS'
+        run: brew install cairo ffmpeg pkg-config
+
       - name: Run tests
         run: |
           uv run python -m pytest
