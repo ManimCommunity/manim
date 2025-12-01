@@ -521,10 +521,7 @@ def deprecated_params(
             arguments.
 
         """
-        used = []
-        for param in params:
-            if param in kwargs:
-                used.append(param)
+        used = [param for param in params if param in kwargs]
 
         if len(used) > 0:
             logger.warning(warning_msg(func, used))
