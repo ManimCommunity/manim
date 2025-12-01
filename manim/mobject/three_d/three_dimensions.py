@@ -231,7 +231,9 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
     def set_fill_by_value(
         self,
         axes: Mobject,
-        colorscale: list[ParsableManimColor] | ParsableManimColor | None = None,
+        colorscale: list[ParsableManimColor]
+        | list[tuple[ParsableManimColor, float]]
+        | None = None,
         axis: int = 2,
         **kwargs: Any,
     ) -> Self:
