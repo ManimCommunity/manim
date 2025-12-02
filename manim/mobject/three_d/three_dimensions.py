@@ -17,7 +17,7 @@ __all__ = [
 ]
 
 from collections.abc import Callable, Iterable, Sequence
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal
 
 import numpy as np
 from typing_extensions import Self
@@ -40,7 +40,6 @@ from manim.utils.color import (
     ParsableManimColor,
     interpolate_color,
 )
-from manim.utils.iterables import tuplify
 from manim.utils.space_ops import normalize, perpendicular_bisector, z_to_vector
 
 if TYPE_CHECKING:
@@ -48,7 +47,14 @@ if TYPE_CHECKING:
 
 
 class ThreeDVMobject(VMobject, metaclass=ConvertToOpenGL):
-    def __init__(self, shade_in_3d: bool = True, **kwargs):
+    u_index: int
+    v_index: int
+    u1: float
+    u2: float
+    v1: float
+    v2: float
+
+    def __init__(self, shade_in_3d: bool = True, **kwargs: Any):
         super().__init__(shade_in_3d=shade_in_3d, **kwargs)
 
 
@@ -109,11 +115,14 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         func: Callable[[float, float], np.ndarray],
         u_range: Sequence[float] = [0, 1],
         v_range: Sequence[float] = [0, 1],
-        resolution: Sequence[int] = 32,
+        resolution: Sequence[int] | int = 32,
         surface_piece_config: dict = {},
         fill_color: ParsableManimColor = BLUE_D,
         fill_opacity: float = 1.0,
-        checkerboard_colors: Sequence[ParsableManimColor] | bool = [BLUE_D, BLUE_E],
+        checkerboard_colors: Sequence[ParsableManimColor] | Literal[False] = [
+            BLUE_D,
+            BLUE_E,
+        ],
         stroke_color: ParsableManimColor = LIGHT_GREY,
         stroke_width: float = 0.5,
         should_make_jagged: bool = False,
@@ -131,12 +140,11 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         )
         self.resolution = resolution
         self.surface_piece_config = surface_piece_config
-        if checkerboard_colors:
-            self.checkerboard_colors: list[ManimColor] = [
-                ManimColor(x) for x in checkerboard_colors
-            ]
-        else:
+        self.checkerboard_colors: list[ManimColor] | Literal[False]
+        if checkerboard_colors is False:
             self.checkerboard_colors = checkerboard_colors
+        else:
+            self.checkerboard_colors = [ManimColor(i) for i in checkerboard_colors]
         self.should_make_jagged = should_make_jagged
         self.pre_function_handle_to_anchor_scale_factor = (
             pre_function_handle_to_anchor_scale_factor
@@ -151,11 +159,10 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         return self._func(u, v)
 
     def _get_u_values_and_v_values(self) -> tuple[np.ndarray, np.ndarray]:
-        res = tuplify(self.resolution)
-        if len(res) == 1:
-            u_res = v_res = res[0]
+        if isinstance(self.resolution, int):
+            u_res = v_res = self.resolution
         else:
-            u_res, v_res = res
+            u_res, v_res = self.resolution[0:2]
 
         u_values = np.linspace(*self.u_range, u_res + 1)
         v_values = np.linspace(*self.v_range, v_res + 1)
@@ -194,7 +201,8 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         )
         self.add(*faces)
         if self.checkerboard_colors:
-            self.set_fill_by_checkerboard(*self.checkerboard_colors)
+            # error: Argument 1 to "set_fill_by_checkerboard" of "Surface" has incompatible type "*list[ManimColor]"; expected "Iterable[ManimColor | int | str | Any | tuple[int, int, int] | Any | tuple[float, float, float] | Any | tuple[int, int, int, int] | Any | tuple[float, float, float, float]]"  [arg-type]
+            self.set_fill_by_checkerboard(*self.checkerboard_colors)  # type: ignore[arg-type]
 
     def set_fill_by_checkerboard(
         self, *colors: Iterable[ParsableManimColor], opacity: float | None = None
@@ -224,9 +232,11 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
     def set_fill_by_value(
         self,
         axes: Mobject,
-        colorscale: list[ParsableManimColor] | ParsableManimColor | None = None,
+        colorscale: list[ParsableManimColor]
+        | list[tuple[ParsableManimColor, float]]
+        | None = None,
         axis: int = 2,
-        **kwargs,
+        **kwargs: Any,
     ) -> Self:
         """Sets the color of each mobject of a parametric surface to a color
         relative to its axis-value.
@@ -287,15 +297,20 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
             )
             return self
 
-        ranges = [axes.x_range, axes.y_range, axes.z_range]
-
+        # TODO: Handle this type error that has been ignored
+        # error: List item 0 has incompatible type "MethodType"; expected "Sequence[float]"  [list-item]
+        # error: List item 1 has incompatible type "MethodType"; expected "Sequence[float]"  [list-item]
+        # error: List item 2 has incompatible type "MethodType"; expected "Sequence[float]"  [list-item]
+        ranges: list[Sequence[float]] = [axes.x_range, axes.y_range, axes.z_range]  # type: ignore[list-item]
+        assert isinstance(colorscale, list)
+        new_colors: list[ManimColor]
         if type(colorscale[0]) is tuple:
             new_colors, pivots = [
-                [i for i, j in colorscale],
+                [ManimColor(i) for i, j in colorscale],
                 [j for i, j in colorscale],
             ]
         else:
-            new_colors = colorscale
+            new_colors = [ManimColor(i) for i in colorscale]
 
             pivot_min = ranges[axis][0]
             pivot_max = ranges[axis][1]
@@ -325,6 +340,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
                             color_index,
                         )
                         if config.renderer == RendererType.OPENGL:
+                            assert isinstance(mob, OpenGLMobject)
                             mob.set_color(mob_color, recurse=False)
                         elif config.renderer == RendererType.CAIRO:
                             mob.set_color(mob_color, family=False)
@@ -386,7 +402,7 @@ class Sphere(Surface):
         resolution: Sequence[int] | None = None,
         u_range: Sequence[float] = (0, TAU),
         v_range: Sequence[float] = (0, PI),
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         if config.renderer == RendererType.OPENGL:
             res_value = (101, 51)
@@ -460,7 +476,7 @@ class Dot3D(Sphere):
         radius: float = DEFAULT_DOT_RADIUS,
         color: ParsableManimColor = WHITE,
         resolution: tuple[int, int] = (8, 8),
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         super().__init__(center=point, radius=radius, resolution=resolution, **kwargs)
         self.set_color(color)
@@ -502,7 +518,7 @@ class Cube(VGroup):
         fill_opacity: float = 0.75,
         fill_color: ParsableManimColor = BLUE,
         stroke_width: float = 0,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         self.side_length = side_length
         super().__init__(
@@ -554,7 +570,9 @@ class Prism(Cube):
     """
 
     def __init__(
-        self, dimensions: tuple[float, float, float] | np.ndarray = [3, 2, 1], **kwargs
+        self,
+        dimensions: tuple[float, float, float] | np.ndarray = [3, 2, 1],
+        **kwargs: Any,
     ) -> None:
         self.dimensions = dimensions
         super().__init__(**kwargs)
@@ -612,7 +630,7 @@ class Cone(Surface):
         show_base: bool = False,
         v_range: Sequence[float] = [0, TAU],
         u_min: float = 0,
-        checkerboard_colors: bool = False,
+        checkerboard_colors: Sequence[ParsableManimColor] | Literal[False] = False,
         **kwargs: Any,
     ) -> None:
         self.direction = direction
@@ -724,7 +742,7 @@ class Cone(Surface):
         """
         return self.direction
 
-    def _set_start_and_end_attributes(self, direction):
+    def _set_start_and_end_attributes(self, direction: Vector3DLike) -> None:
         normalized_direction = direction * np.linalg.norm(direction)
 
         start = self.base_circle.get_center()
@@ -774,7 +792,7 @@ class Cylinder(Surface):
         v_range: Sequence[float] = [0, TAU],
         show_ends: bool = True,
         resolution: Sequence[int] = (24, 24),
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         self._height = height
         self.radius = radius
@@ -813,7 +831,9 @@ class Cylinder(Surface):
 
     def add_bases(self) -> None:
         """Adds the end caps of the cylinder."""
+        opacity: float
         if config.renderer == RendererType.OPENGL:
+            assert isinstance(self, OpenGLMobject)
             color = self.color
             opacity = self.opacity
         elif config.renderer == RendererType.CAIRO:
@@ -932,10 +952,12 @@ class Line3D(Cylinder):
         thickness: float = 0.02,
         color: ParsableManimColor | None = None,
         resolution: int | Sequence[int] = 24,
-        **kwargs,
+        **kwargs: Any,
     ):
         self.thickness = thickness
-        self.resolution = (2, resolution) if isinstance(resolution, int) else resolution
+        self.resolution: Sequence[int] = (
+            (2, resolution) if isinstance(resolution, int) else resolution
+        )
 
         start = np.array(start, dtype=np.float64)
         end = np.array(end, dtype=np.float64)
@@ -945,7 +967,7 @@ class Line3D(Cylinder):
             self.set_color(color)
 
     def set_start_and_end_attrs(
-        self, start: np.ndarray, end: np.ndarray, **kwargs
+        self, start: np.ndarray, end: np.ndarray, **kwargs: Any
     ) -> None:
         """Sets the start and end points of the line.
 
@@ -1031,7 +1053,7 @@ class Line3D(Cylinder):
         line: Line3D,
         point: Point3DLike = ORIGIN,
         length: float = 5,
-        **kwargs,
+        **kwargs: Any,
     ) -> Line3D:
         """Returns a line parallel to another line going through
         a given point.
@@ -1079,7 +1101,7 @@ class Line3D(Cylinder):
         line: Line3D,
         point: Vector3DLike = ORIGIN,
         length: float = 5,
-        **kwargs,
+        **kwargs: Any,
     ) -> Line3D:
         """Returns a line perpendicular to another line going through
         a given point.
@@ -1174,7 +1196,7 @@ class Arrow3D(Line3D):
         base_radius: float = 0.08,
         color: ParsableManimColor = WHITE,
         resolution: int | Sequence[int] = 24,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         super().__init__(
             start=start,
@@ -1244,7 +1266,7 @@ class Torus(Surface):
         u_range: Sequence[float] = (0, TAU),
         v_range: Sequence[float] = (0, TAU),
         resolution: tuple[int, int] | None = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         if config.renderer == RendererType.OPENGL:
             res_value = (101, 101)
