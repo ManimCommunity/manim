@@ -2959,8 +2959,7 @@ class Mobject:
         new_submobs = []
         for submob, sf in zip(self.submobjects, split_factors):
             new_submobs.append(submob)
-            for _ in range(1, sf):
-                new_submobs.append(submob.copy().fade(1))
+            new_submobs.extend(submob.copy().fade(1) for _ in range(1, sf))
         self.submobjects = new_submobs
         return self
 
