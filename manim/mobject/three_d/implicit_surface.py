@@ -183,7 +183,7 @@ class ImplicitSurface(VGroup, metaclass=ConvertToOpenGL):
             raise ValueError("resolution must be an int or a 3-tuple")
         if any(r < 2 for r in res):
             raise ValueError("each resolution component must be >= 2")
-        return res  # type: ignore[return-value]
+        return (res[0], res[1], res[2])
 
     def _build_surface(self) -> None:
         """Build the triangular mesh from the implicit function."""

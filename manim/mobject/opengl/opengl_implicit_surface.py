@@ -3,17 +3,14 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Sequence
-from typing import TYPE_CHECKING
+from typing import Any
 
 import mcubes
 import moderngl
 import numpy as np
 
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-from manim.utils.color import GREY
-
-if TYPE_CHECKING:
-    pass
+from manim.utils.color import GREY, ParsableManimColor
 
 __all__ = ["OpenGLImplicitSurface"]
 
@@ -66,14 +63,14 @@ class OpenGLImplicitSurface(OpenGLMobject):
         z_range: Sequence[float] = (-1.0, 1.0),
         resolution: int | Sequence[int] = 32,
         level: float = 0.0,
-        color=GREY,
+        color: ParsableManimColor = GREY,
         opacity: float = 1.0,
         gloss: float = 0.3,
         shadow: float = 0.4,
-        render_primitive=moderngl.TRIANGLES,
+        render_primitive: int = moderngl.TRIANGLES,
         depth_test: bool = True,
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> None:
         self.func = func
         self.x_range = tuple(x_range)
         self.y_range = tuple(y_range)
@@ -113,9 +110,9 @@ class OpenGLImplicitSurface(OpenGLMobject):
             raise ValueError("resolution must be an int or a 3-tuple")
         if any(r < 2 for r in res):
             raise ValueError("each resolution component must be >= 2")
-        return res  # type: ignore[return-value]
+        return (res[0], res[1], res[2])
 
-    def init_points(self):
+    def init_points(self) -> None:
         """Initialize the surface mesh using marching cubes."""
         if self.func is None:
             self.set_points(np.zeros((0, 3)))
@@ -168,15 +165,16 @@ class OpenGLImplicitSurface(OpenGLMobject):
 
         self.set_points(all_verts)
 
-    def get_triangle_indices(self):
+    def get_triangle_indices(self) -> np.ndarray:
         """Return indices for triangle rendering."""
         if self._triangle_indices is None:
             return np.zeros(0, dtype=int)
         return self._triangle_indices
 
-    def get_shader_vert_indices(self):
+    def get_shader_vert_indices(self) -> Sequence[int] | None:
         """Return vertex indices for shader."""
-        return self.get_triangle_indices()
+        indices = self.get_triangle_indices()
+        return indices.tolist() if len(indices) > 0 else None
 
     def _compute_normals(self) -> np.ndarray:
         """Compute normals for each vertex based on face normals."""
@@ -205,7 +203,7 @@ class OpenGLImplicitSurface(OpenGLMobject):
 
         return normals
 
-    def get_shader_data(self):
+    def get_shader_data(self) -> np.ndarray:
         """Generate shader data for rendering."""
         points = self.points
         if len(points) == 0:
@@ -223,7 +221,7 @@ class OpenGLImplicitSurface(OpenGLMobject):
 
         return shader_data
 
-    def fill_in_shader_color_info(self, shader_data):
+    def fill_in_shader_color_info(self, shader_data: np.ndarray) -> np.ndarray:
         """Fill color information in shader data."""
         self.read_data_to_shader(shader_data, "color", "rgbas")
         return shader_data
