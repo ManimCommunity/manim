@@ -22,8 +22,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04, macos-15-intel, windows-latest]
+        os: [ubuntu-22.04, macos-latest, windows-latest]
         python: ["3.10", "3.11", "3.12", "3.13"]
+        include:
+          - os: macos-15-intel
+            python: "3.13"
 
     steps:
       - name: Checkout the repository
@@ -74,7 +77,7 @@ jobs:
         if: runner.os == 'Linux' || runner.os == 'macOS'
         with:
           path: ${{ github.workspace }}/third_party
-          key: ${{ runner.os }}-dependencies-cairo-${{ hashFiles('.github/scripts/ci_build_cairo.py') }}
+          key: ${{ runner.os }}-${{ runner.arch }}-dependencies-cairo-${{ hashFiles('.github/scripts/ci_build_cairo.py') }}
 
       - name: Build and install Cairo (Linux and macOS)
         if: (runner.os == 'Linux' || runner.os == 'macOS') && steps.cache-cairo.outputs.cache-hit != 'true'
