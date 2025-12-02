@@ -195,5 +195,3 @@ def test_type_conversion_in_Arrow3D():
     assert np.allclose(arrow.get_end(), end, atol=0.01), (
         "end points of Arrow3D do not match"
     )
-
-
