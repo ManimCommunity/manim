@@ -291,9 +291,9 @@ class ImplicitSurface(VGroup, metaclass=ConvertToOpenGL):
         ...     return x**2 + y**2 + z**2 - 1
         >>> surface = ImplicitSurface(sphere, resolution=20)
         >>> errors = surface.verify_surface()
-        >>> errors['mean_error'] < 0.01  # Verify accuracy
+        >>> errors["mean_error"] < 0.01  # Verify accuracy
         True
-        >>> errors['max_error'] < 0.02
+        >>> errors["max_error"] < 0.02
         True
         """
         vertices = self.get_vertices()
