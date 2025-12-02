@@ -195,3 +195,44 @@ def test_type_conversion_in_Arrow3D():
     assert np.allclose(arrow.get_end(), end, atol=0.01), (
         "end points of Arrow3D do not match"
     )
+
+
+@frames_comparison(base_scene=ThreeDScene)
+def test_ImplicitSurface_sphere(scene):
+    """Test ImplicitSurface rendering of a sphere."""
+
+    def sphere_func(x, y, z):
+        return x**2 + y**2 + z**2 - 1.0
+
+    surface = ImplicitSurface(
+        sphere_func,
+        x_range=(-1.3, 1.3),
+        y_range=(-1.3, 1.3),
+        z_range=(-1.3, 1.3),
+        resolution=32,
+        fill_color=BLUE,
+        fill_opacity=0.8,
+    )
+    scene.set_camera_orientation(phi=70 * DEGREES, theta=-45 * DEGREES)
+    scene.add(surface)
+
+
+@frames_comparison(base_scene=ThreeDScene)
+def test_ImplicitSurface_torus(scene):
+    """Test ImplicitSurface rendering of a torus."""
+    R, r = 1.5, 0.5
+
+    def torus_func(x, y, z):
+        return (np.sqrt(x**2 + y**2) - R) ** 2 + z**2 - r**2
+
+    surface = ImplicitSurface(
+        torus_func,
+        x_range=(-2.5, 2.5),
+        y_range=(-2.5, 2.5),
+        z_range=(-1, 1),
+        resolution=40,
+        fill_color=GREEN,
+        fill_opacity=0.9,
+    )
+    scene.set_camera_orientation(phi=60 * DEGREES, theta=-45 * DEGREES)
+    scene.add(surface)

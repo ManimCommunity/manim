@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 2
 requires-python = ">=3.10"
 resolution-markers = [
     "python_full_version >= '3.13'",
@@ -1350,6 +1350,7 @@ dependencies = [
     { name = "pycairo" },
     { name = "pydub" },
     { name = "pygments" },
+    { name = "pymcubes" },
     { name = "rich" },
     { name = "scipy", version = "1.13.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.13'" },
     { name = "scipy", version = "1.15.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.13'" },
@@ -1419,6 +1420,7 @@ requires-dist = [
     { name = "pycairo", specifier = ">=1.13,<2.0.0" },
     { name = "pydub", specifier = ">=0.20.0" },
     { name = "pygments", specifier = ">=2.0.0" },
+    { name = "pymcubes", specifier = ">=0.1.0" },
     { name = "rich", specifier = ">=12.0.0" },
     { name = "scipy", specifier = ">=1.13.0" },
     { name = "scipy", marker = "python_full_version >= '3.13'", specifier = ">=1.14.0" },
@@ -2297,6 +2299,31 @@ wheels = [
 [package.optional-dependencies]
 crypto = [
     { name = "cryptography" },
+]
+
+[[package]]
+name = "pymcubes"
+version = "0.1.6"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy" },
+    { name = "scipy", version = "1.13.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.13'" },
+    { name = "scipy", version = "1.15.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.13'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/df/fb/8660bc09b05e5b7209377a476e937f36c2e4353a5300e6c71283fd6f8c2b/pymcubes-0.1.6.tar.gz", hash = "sha256:1a72476a22a4c98907acec0c5ef8d46f4451fa987c7efeaf970990775826ed8b", size = 109395, upload-time = "2024-07-03T23:14:43.434Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e9/40/cd07da8d67a3e70a22e3fcd86280a287dc95f9118b9935c7fb6771850be2/PyMCubes-0.1.6-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:8b66c714abb554dbb0cc3fa75fc1fd24e27dc2cc618a2685832b825156848792", size = 54392, upload-time = "2024-07-03T23:17:13.756Z" },
+    { url = "https://files.pythonhosted.org/packages/4e/ef/0ba7253b8ea48bc6207ef7f5dbcf61df7237bf8ae0c1bb86ce39c6432cfa/PyMCubes-0.1.6-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:e37a81ffff099e8d275c4c973f34978934720120a02d06198c410f48c9f6b7d0", size = 52470, upload-time = "2024-07-03T23:15:24.635Z" },
+    { url = "https://files.pythonhosted.org/packages/5e/46/c4d6d8faed01bb63be83570a9d8d4b88963d82d84085fd95cf5423319d23/PyMCubes-0.1.6-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:16ed358f20f514def6b4669d4714f86429c609421f167a2fd28731b71adf381a", size = 318360, upload-time = "2024-07-03T23:15:52.994Z" },
+    { url = "https://files.pythonhosted.org/packages/60/f9/db2002e639681476d863674e1f52290f02d7a701700676f9f53c5f8ea4d2/PyMCubes-0.1.6-cp310-cp310-win_amd64.whl", hash = "sha256:8433ecf1ef8dca963056d0b5e8ce9d6a1d5160764a199fd1a375a4ab58e89a3c", size = 50022, upload-time = "2024-07-03T23:18:51.281Z" },
+    { url = "https://files.pythonhosted.org/packages/62/d3/4eb02520fd20558ec581af2bd5f670fd58c31c5630d90a7e30f1be501222/PyMCubes-0.1.6-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:e859a7aaa97bfc909079ce1ecbc12f0bc61b49b8b01ee0d59eaabf9a7f266a9f", size = 54338, upload-time = "2024-07-03T23:17:15.464Z" },
+    { url = "https://files.pythonhosted.org/packages/3a/e8/c39c7eedb7a2b514092ea8017b11f1c3ad3cc9398e5afa7568739a859447/PyMCubes-0.1.6-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:8f1246d4ef9dee648a111060aac95f0b99f9b36c937436e75af4cae57b5f50f7", size = 52324, upload-time = "2024-07-03T23:15:26.161Z" },
+    { url = "https://files.pythonhosted.org/packages/2a/e6/5796cf17a909d6048c0c2cfd70577029fb39c15e5aa098df5336b316a6c7/PyMCubes-0.1.6-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:323b1d6454e3092ce2ba42c0ce69a753cb646fbda33d5274f03514a68f4441c8", size = 336818, upload-time = "2024-07-03T23:15:54.554Z" },
+    { url = "https://files.pythonhosted.org/packages/bd/4c/30cfeb335589ddcb72db0f4f68e5fce703ada8d05e4c2b37b5125bbae1a9/PyMCubes-0.1.6-cp311-cp311-win_amd64.whl", hash = "sha256:4e326cba1471047567e016c39fa2b4934dd451e9f1feec63a35e23bbcab1d34c", size = 50006, upload-time = "2024-07-03T23:18:52.403Z" },
+    { url = "https://files.pythonhosted.org/packages/27/17/71df57cadc0f34d31f0348f6067dea19de3c100e9aed069b792e8c4ca8fe/PyMCubes-0.1.6-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:6dea0bfb68778d7f9becd87c86a396c9ffbb8f322c184967fa2a48d430974513", size = 53794, upload-time = "2024-07-03T23:17:16.767Z" },
+    { url = "https://files.pythonhosted.org/packages/7f/50/78eeda22066c42c6a5c77b7b762e670880b8ec970b1f38ba11d575c3ba31/PyMCubes-0.1.6-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:138eaa87d2b8daf7488102070191e8e99254d48b6f08577a618db6e95fd53f90", size = 51547, upload-time = "2024-07-03T23:15:28.124Z" },
+    { url = "https://files.pythonhosted.org/packages/b5/13/63d018ea286c95b758f8b5cbe97d88a16b38f5672411138287bd2123d877/PyMCubes-0.1.6-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ea366a2064af0846093e0ad3f9035e375f4b14b62bb565c95dcc8dcaf78308a5", size = 339385, upload-time = "2024-07-03T23:15:56.087Z" },
+    { url = "https://files.pythonhosted.org/packages/f6/3e/a9a9f624a364166b1b4513f5ae8627fb59eea64eccf3e5a91c82c2b7b44e/PyMCubes-0.1.6-cp312-cp312-win_amd64.whl", hash = "sha256:8926475690ce1e0be2460c941a51cdda6eed6f10986073d23fc67535bc70aa78", size = 49968, upload-time = "2024-07-03T23:18:53.376Z" },
 ]
 
 [[package]]
