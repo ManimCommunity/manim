@@ -117,7 +117,7 @@ exclude = [
 
 [tool.pytest.ini_options]
 markers = "slow: Mark the test as slow. Can be skipped with --skip_slow"
-addopts = "--no-cov-on-fail --cov=manim --cov-report xml --cov-report term -n 10 --dist=loadfile --durations=0"
+addopts = "--no-cov-on-fail --cov=manim --cov-report xml --cov-report term -n auto --dist=loadfile --durations=0"
 
 [tool.isort]
 profile = "black"
