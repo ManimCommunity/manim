@@ -38,6 +38,7 @@ dependencies = [
     "numpy>=2.1 ; python_full_version >= '3.10'",
     "pillow>=9.1",
     "pycairo>=1.13,<2.0.0",
+    "pymcubes>=0.1.0",
     "pydub>=0.20.0",
     "pygments>=2.0.0",
     "rich>=12.0.0",
