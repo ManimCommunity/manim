@@ -14,16 +14,16 @@ classifiers = [
     "Topic :: Scientific/Engineering",
     "Topic :: Multimedia :: Video",
     "Topic :: Multimedia :: Graphics",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Natural Language :: English",
     ]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
     "audioop-lts>=0.2.1 ; python_full_version >= '3.13'",
-    "av>=9.0.0,<14.0.0",
+    "av>=14.0.1",
     "beautifulsoup4>=4.12",
     "click>=8.0",
     "cloup>=2.0.0",
