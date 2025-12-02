@@ -67,6 +67,7 @@ Mobjects
    manim.mobject.matrix
    manim.mobject.mobject
    manim.mobject.table
+   manim.mobject.three_d.implicit_surface
    manim.mobject.three_d.polyhedra
    manim.mobject.three_d.three_d_utils
    manim.mobject.three_d.three_dimensions
