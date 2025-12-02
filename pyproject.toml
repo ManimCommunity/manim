@@ -23,7 +23,7 @@ classifiers = [
 requires-python = ">=3.10"
 dependencies = [
     "audioop-lts>=0.2.1 ; python_full_version >= '3.13'",
-    "av>=9.0.0,<14.0.0",
+    "av>=9.0.0",
     "beautifulsoup4>=4.12",
     "click>=8.0",
     "cloup>=2.0.0",
