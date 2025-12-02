@@ -24,9 +24,9 @@ jobs:
       matrix:
         os: [ubuntu-22.04, macos-latest, windows-latest]
         python: ["3.11", "3.12", "3.13", "3.14"]
-      include:
-        - os: macos-15-intel
-          python: "3.13"
+        include:
+          - os: macos-15-intel
+            python: "3.13"
 
     steps:
       - name: Checkout the repository
