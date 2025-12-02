@@ -121,6 +121,7 @@ class ImplicitSurface(VGroup, metaclass=ConvertToOpenGL):
             # some computation that only works with scalars
             return result
 
+
         # Wrap for use with ImplicitSurface
         surface = ImplicitSurface(np.vectorize(scalar_f), ...)
 

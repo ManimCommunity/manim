@@ -64,11 +64,7 @@ class ImplicitGyroidExample(ThreeDScene):
 
     def construct(self):
         def gyroid_func(x, y, z):
-            return (
-                np.sin(x) * np.cos(y)
-                + np.sin(y) * np.cos(z)
-                + np.sin(z) * np.cos(x)
-            )
+            return np.sin(x) * np.cos(y) + np.sin(y) * np.cos(z) + np.sin(z) * np.cos(x)
 
         # Define salmon to pink gradient colors
         salmon = ManimColor("#FA8072")

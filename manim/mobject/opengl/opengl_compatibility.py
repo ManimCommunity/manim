@@ -3,9 +3,9 @@ from __future__ import annotations
 from abc import ABCMeta
 
 from manim import config
+from manim.mobject.opengl.opengl_implicit_surface import OpenGLImplicitSurface
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.opengl.opengl_point_cloud_mobject import OpenGLPMobject
-from manim.mobject.opengl.opengl_implicit_surface import OpenGLImplicitSurface
 from manim.mobject.opengl.opengl_three_dimensions import OpenGLSurface
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 
