@@ -589,7 +589,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         elif isinstance(labels, bool):
             if labels:
                 self._labels = {
-                    v: MathTex(v, fill_color=label_fill_color) for v in vertices
+                    v: MathTex(v, color=label_fill_color) for v in vertices
                 }
             else:
                 self._labels = {}
@@ -697,7 +697,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
             )
 
         if label is True:
-            label = MathTex(vertex, fill_color=label_fill_color)
+            label = MathTex(vertex, color=label_fill_color)
         elif vertex in self._labels:
             label = self._labels[vertex]
         elif not isinstance(label, (Mobject, OpenGLMobject)):
