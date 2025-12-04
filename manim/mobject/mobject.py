@@ -14,7 +14,7 @@ import random
 import sys
 import types
 import warnings
-from collections.abc import Callable, Iterable, Iterator
+from collections.abc import Callable, Iterable, Iterator, Sequence
 from functools import partialmethod, reduce
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, Union, cast
@@ -1497,7 +1497,7 @@ class Mobject:
         def R3_func(point: Point3D) -> Point3D:
             x, y, z = point
             xy_complex = function(complex(x, y))
-            return [xy_complex.real, xy_complex.imag, z]
+            return np.array([xy_complex.real, xy_complex.imag, z])
 
         return self.apply_function(
             R3_func, about_point=about_point, about_edge=about_edge
@@ -2111,14 +2111,13 @@ class Mobject:
 
     def restore(self) -> Self:
         """Restores the state that was previously saved with :meth:`~.Mobject.save_state`."""
-        if not hasattr(self, "saved_state") or self.save_state is None:
+        if not hasattr(self, "saved_state") or self.saved_state is None:
             raise Exception("Trying to restore without having saved")
-        assert self.saved_state is not None
         self.become(self.saved_state)
         return self
 
     def reduce_across_dimension(
-        self, reduce_func: Callable[..., float], dim: int
+        self, reduce_func: Callable[[Iterable[float]], float], dim: int
     ) -> float:
         """Find the min or max value from a dimension across all points in this and submobjects."""
         assert dim >= 0
@@ -2142,7 +2141,7 @@ class Mobject:
         assert rv is not None
         return rv
 
-    def nonempty_submobjects(self) -> list[Mobject]:
+    def nonempty_submobjects(self) -> Sequence[Mobject]:
         return [
             submob
             for submob in self.submobjects

@@ -632,6 +632,13 @@ class VMobject(Mobject):
 
     color: ManimColor = property(get_color, set_color)
 
+    def nonempty_submobjects(self) -> Sequence[VMobject]:
+        return [
+            submob
+            for submob in self.submobjects
+            if len(submob.submobjects) != 0 or len(submob.points) != 0
+        ]
+
     def split(self) -> list[VMobject]:
         result: list[VMobject] = [self] if len(self.points) > 0 else []
         return result + self.submobjects
