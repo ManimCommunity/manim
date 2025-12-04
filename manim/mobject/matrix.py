@@ -49,6 +49,7 @@ from typing_extensions import Self
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.text.numbers import DecimalNumber, Integer
 from manim.mobject.text.tex_mobject import MathTex, Tex
+from manim.typing import Vector2DLike
 
 from ..constants import *
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
@@ -164,7 +165,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
 
     def __init__(
         self,
-        matrix: Iterable,
+        matrix: Iterable[Iterable[Any] | Vector2DLike],
         v_buff: float = 0.8,
         h_buff: float = 1.3,
         bracket_h_buff: float = MED_SMALL_BUFF,
@@ -172,7 +173,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         add_background_rectangles_to_entries: bool = False,
         include_background_rectangle: bool = False,
         element_to_mobject: type[VMobject] | Callable[..., VMobject] = MathTex,
-        element_to_mobject_config: dict = {},
+        element_to_mobject_config: dict[str, Any] = {},
         element_alignment_corner: Sequence[float] = DR,
         left_bracket: str = "[",
         right_bracket: str = "]",
