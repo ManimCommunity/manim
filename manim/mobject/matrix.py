@@ -49,7 +49,7 @@ from typing_extensions import Self
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.text.numbers import DecimalNumber, Integer
 from manim.mobject.text.tex_mobject import MathTex, Tex
-from manim.typing import Vector2DLike
+from manim.typing import Vector2DLike, Vector3DLike
 
 from ..constants import *
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
@@ -207,7 +207,9 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         if self.include_background_rectangle:
             self.add_background_rectangle()
 
-    def _matrix_to_mob_matrix(self, matrix: np.ndarray) -> list[list[VMobject]]:
+    def _matrix_to_mob_matrix(
+        self, matrix: Iterable[Iterable[Any]]
+    ) -> list[list[VMobject]]:
         return [
             [
                 self.element_to_mobject(item, **self.element_to_mobject_config)
@@ -484,8 +486,8 @@ class DecimalMatrix(Matrix):
 
     def __init__(
         self,
-        matrix: Iterable,
-        element_to_mobject: type[VMobject] = DecimalNumber,
+        matrix: Iterable[Iterable[Any]],
+        element_to_mobject: type[VMobject] | Callable[..., VMobject] = DecimalNumber,
         element_to_mobject_config: dict[str, Any] = {"num_decimal_places": 1},
         **kwargs: Any,
     ):
@@ -529,8 +531,8 @@ class IntegerMatrix(Matrix):
 
     def __init__(
         self,
-        matrix: Iterable,
-        element_to_mobject: type[VMobject] = Integer,
+        matrix: Iterable[Iterable[Any]],
+        element_to_mobject: type[VMobject] | Callable[..., VMobject] = Integer,
         **kwargs: Any,
     ):
         """
@@ -567,7 +569,7 @@ class MobjectMatrix(Matrix):
 
     def __init__(
         self,
-        matrix: Iterable,
+        matrix: Iterable[Iterable[Any]],
         element_to_mobject: type[VMobject] | Callable[..., VMobject] = lambda m: m,
         **kwargs: Any,
     ):

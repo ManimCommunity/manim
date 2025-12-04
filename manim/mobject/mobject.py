@@ -14,10 +14,10 @@ import random
 import sys
 import types
 import warnings
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Iterable, Iterator
 from functools import partialmethod, reduce
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Literal, cast
+from typing import TYPE_CHECKING, Any, Literal, Union, cast
 
 import numpy as np
 
@@ -41,9 +41,6 @@ from ..utils.paths import straight_path
 from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
-    from typing import Any, Callable, Literal
-
     from typing_extensions import Self, TypeAlias
 
     from manim.mobject.types.point_cloud_mobject import Point
@@ -65,7 +62,6 @@ if TYPE_CHECKING:
     from ..animation.animation import Animation
     from ..camera.camera import Camera
 
-from typing import Union
 
 _TimeBasedUpdater: TypeAlias = Callable[["Mobject", float], object]
 _NonTimeBasedUpdater: TypeAlias = Callable[["Mobject"], object]
