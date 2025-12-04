@@ -40,7 +40,7 @@ __all__ = [
 
 
 import itertools as it
-from collections.abc import Callable, Iterable, Sequence
+from collections.abc import Callable, Iterable
 from typing import Any
 
 import numpy as np
