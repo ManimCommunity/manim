@@ -41,6 +41,7 @@ from ..utils.paths import straight_path
 from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
 
 if TYPE_CHECKING:
+    from PIL import Image
     from typing_extensions import Self, TypeAlias
 
     from manim.mobject.types.point_cloud_mobject import Point
@@ -50,7 +51,6 @@ if TYPE_CHECKING:
         MatrixMN,
         MultiMappingFunction,
         PathFuncType,
-        PixelArray,
         Point3D,
         Point3D_Array,
         Point3DLike,
@@ -834,7 +834,7 @@ class Mobject:
         return self
 
     # Displaying
-    def get_image(self, camera: Camera | None = None) -> PixelArray:
+    def get_image(self, camera: Camera | None = None) -> Image.Image:
         if camera is None:
             camera = Camera()
         camera.capture_mobject(self)
@@ -2292,12 +2292,12 @@ class Mobject:
 
     def length_over_dim(self, dim: int) -> float:
         """Measure the length of an :class:`~.Mobject` in a certain direction."""
-        max_distance: float = self.reduce_across_dimension(
+        max_coord: float = self.reduce_across_dimension(
             max,
             dim,
         )
-        min_distance: float = self.reduce_across_dimension(min, dim)
-        return max_distance - min_distance
+        min_coord: float = self.reduce_across_dimension(min, dim)
+        return max_coord - min_coord
 
     def get_coord(self, dim: int, direction: Vector3DLike = ORIGIN) -> float:
         """Meant to generalize ``get_x``, ``get_y`` and ``get_z``"""
@@ -2651,14 +2651,14 @@ class Mobject:
             num: int | None,
             alignments: str | None,
             sizes: Iterable[float | None] | None,
-        ) -> int:
+        ) -> int | None:
             if num is not None:
                 return num
             if alignments is not None:
                 return len(alignments)
             if sizes is not None:
                 return len(list(sizes))
-            raise ValueError("num, alignments and sizes are all None.")
+            return None
 
         cols = init_size(cols, col_alignments, col_widths)
         rows = init_size(rows, row_alignments, row_heights)
@@ -2669,8 +2669,9 @@ class Mobject:
             # make the grid as close to quadratic as possible.
             # choosing cols first can results in cols>rows.
             # This is favored over rows>cols since in general
-            # the sceene is wider than high.
+            # the scene is wider than high.
         if rows is None:
+            assert isinstance(cols, int)
             rows = math.ceil(len(mobs) / cols)
         if cols is None:
             cols = math.ceil(len(mobs) / rows)
@@ -2688,7 +2689,7 @@ class Mobject:
         def init_alignments(
             alignments: str | None,
             num: int,
-            mapping: dict[str, Point3D],
+            char_to_direction: dict[str, Vector3D],
             name: str,
             dir_: Vector3D,
         ) -> list[str]:
@@ -2699,7 +2700,7 @@ class Mobject:
                 raise ValueError(f"{name}_alignments has a mismatching size.")
             alignments_in_list = list(alignments)
             for i in range(num):
-                alignments_in_list[i] = mapping[alignments_in_list[i]]
+                alignments_in_list[i] = char_to_direction[alignments_in_list[i]]
             return alignments_in_list
 
         row_alignments_in_list = init_alignments(
