@@ -378,7 +378,7 @@ class MathTex(SingleStringMathTex):
 
     def get_part_by_tex(self, tex: str, **kwargs: Any) -> VMobject | None:
         all_parts = self.get_parts_by_tex(tex, **kwargs)
-        return all_parts.submobjects[0] if all_parts else None
+        return all_parts[0] if all_parts else None
 
     def set_color_by_tex(
         self, tex: str, color: ParsableManimColor, **kwargs: Any
