@@ -1,0 +1,207 @@
+from manim import 
+
+class TauxDeVariation(Scene):
+    def construct(self):
+        # Titre
+        titre = Text("Le Taux de Variation", font_size=48, color=BLUE)
+        self.play(Write(titre))
+        self.wait(1)
+        self.play(titre.animate.to_edge(UP))
+        
+        # Créer les axes
+        axes = Axes(
+            x_range=[-1, 5, 1],
+            y_range=[-1, 10, 2],
+            x_length=8,
+            y_length=5,
+            axis_config={"include_tip": True},
+        ).add_coordinates()
+        
+        axes_labels = axes.get_axis_labels(x_label="x", y_label="f(x)")
+        
+        self.play(Create(axes), Write(axes_labels))
+        self.wait(1)
+        
+        # Définir la fonction f(x) = x²
+        fonction = axes.plot(lambda x: x**2, color=YELLOW, x_range=[0, 3])
+        fonction_label = MathTex("f(x) = x^2", color=YELLOW).next_to(fonction, RIGHT, buff=0.5).shift(UP*2)
+        
+        self.play(Create(fonction), Write(fonction_label))
+        self.wait(1)
+        
+        # Points A et B
+        x_a, x_b = 1, 2.5
+        y_a, y_b = x_a**2, x_b**2
+        
+        point_A = Dot(axes.c2p(x_a, y_a), color=RED)
+        point_B = Dot(axes.c2p(x_b, y_b), color=GREEN)
+        
+        label_A = MathTex("A(x_a, f(x_a))", color=RED, font_size=32).next_to(point_A, LEFT)
+        label_B = MathTex("B(x_b, f(x_b))", color=GREEN, font_size=32).next_to(point_B, RIGHT)
+        
+        self.play(FadeIn(point_A), Write(label_A))
+        self.wait(0.5)
+        self.play(FadeIn(point_B), Write(label_B))
+        self.wait(1)
+        
+        # Ligne entre A et B (sécante)
+        secante = Line(
+            axes.c2p(x_a, y_a),
+            axes.c2p(x_b, y_b),
+            color=PURPLE
+        )
+        
+        self.play(Create(secante))
+        self.wait(1)
+        
+        # Lignes pour montrer Δx et Δy
+        ligne_dx = DashedLine(
+            axes.c2p(x_a, y_a),
+            axes.c2p(x_b, y_a),
+            color=ORANGE
+        )
+        ligne_dy = DashedLine(
+            axes.c2p(x_b, y_a),
+            axes.c2p(x_b, y_b),
+            color=BLUE
+        )
+        
+        # Labels pour Δx et Δy
+        delta_x = MathTex(r"\Delta x = x_b - x_a", color=ORANGE, font_size=32).next_to(ligne_dx, DOWN)
+        delta_y = MathTex(r"\Delta y = f(x_b) - f(x_a)", color=BLUE, font_size=32).next_to(ligne_dy, RIGHT)
+        
+        self.play(Create(ligne_dx), Write(delta_x))
+        self.wait(1)
+        self.play(Create(ligne_dy), Write(delta_y))
+        self.wait(1)
+        
+        # Formule du taux de variation
+        formule = MathTex(
+            r"T = \frac{\Delta y}{\Delta x} = \frac{f(x_b) - f(x_a)}{x_b - x_a}",
+            font_size=36
+        ).to_edge(DOWN, buff=0.5)
+        
+        box = SurroundingRectangle(formule, color=YELLOW, buff=0.2)
+        
+        self.play(Write(formule))
+        self.play(Create(box))
+        self.wait(2)
+        
+        # Interprétation géométrique
+        interpretation = Text(
+            "Le taux de variation = la pente de la sécante AB",
+            font_size=28,
+            color=PURPLE
+        ).next_to(formule, UP, buff=0.5)
+        
+        self.play(Write(interpretation))
+        self.wait(3)
+        
+        # Animation finale: déplacement de B vers A
+        self.play(
+            point_B.animate.move_to(axes.c2p(x_a + 0.3, (x_a + 0.3)**2)),
+            run_time=2
+        )
+        self.wait(1)
+        
+        tangente_text = Text(
+            "Quand B → A, la sécante devient tangente",
+            font_size=24,
+            color=RED
+        ).to_edge(UP, buff=1.5)
+        
+        self.play(Write(tangente_text))
+        self.wait(3)
+        
+        # Fade out
+        self.play(*[FadeOut(mob) for mob in self.mobjects])
+
+
+class CalculTauxVariation(Scene):
+    def construct(self):
+        # Titre
+        titre = Text("Exemple de calcul", font_size=40, color=BLUE)
+        self.play(Write(titre))
+        self.wait(1)
+        self.play(titre.animate.to_edge(UP))
+        
+        # Fonction donnée
+        fonction = MathTex("f(x) = x^2 - 4x + 3", font_size=40)
+        self.play(Write(fonction))
+        self.wait(1)
+        self.play(fonction.animate.shift(UP*2))
+        
+        # Calculer f(x_a) et f(x_b)
+        calcul1 = MathTex(
+            r"f(x_a) = x_a^2 - 4x_a + 3",
+            font_size=36
+        ).shift(UP*0.5)
+        
+        calcul2 = MathTex(
+            r"f(x_b) = x_b^2 - 4x_b + 3",
+            font_size=36
+        ).next_to(calcul1, DOWN, buff=0.5)
+        
+        self.play(Write(calcul1))
+        self.wait(1)
+        self.play(Write(calcul2))
+        self.wait(1)
+        
+        # Différence
+        diff = MathTex(
+            r"f(x_b) - f(x_a) = (x_b^2 - 4x_b + 3) - (x_a^2 - 4x_a + 3)",
+            font_size=32
+        ).shift(DOWN*1)
+        
+        self.play(Write(diff))
+        self.wait(2)
+        
+        # Simplification
+        simpl = MathTex(
+            r"= x_b^2 - x_a^2 - 4x_b + 4x_a",
+            font_size=32
+        ).next_to(diff, DOWN)
+        
+        self.play(Write(simpl))
+        self.wait(1)
+        
+        # Factorisation
+        factor = MathTex(
+            r"= (x_b - x_a)(x_b + x_a) - 4(x_b - x_a)",
+            font_size=32
+        ).next_to(simpl, DOWN)
+        
+        self.play(Write(factor))
+        self.wait(1)
+        
+        factor2 = MathTex(
+            r"= (x_b - x_a)(x_b + x_a - 4)",
+            font_size=32
+        ).next_to(factor, DOWN)
+        
+        self.play(Write(factor2))
+        self.wait(2)
+        
+        # Taux de variation
+        taux = MathTex(
+            r"T = \frac{f(x_b) - f(x_a)}{x_b - x_a} = \frac{(x_b - x_a)(x_b + x_a - 4)}{x_b - x_a}",
+            font_size=28
+        ).to_edge(DOWN, buff=1)
+        
+        self.play(Write(taux))
+        self.wait(2)
+        
+        # Résultat final
+        resultat = MathTex(
+            r"T = x_b + x_a - 4",
+            font_size=40,
+            color=GREEN
+        ).next_to(taux, DOWN, buff=0.5)
+        
+        box = SurroundingRectangle(resultat, color=YELLOW, buff=0.2)
+        
+        self.play(Write(resultat))
+        self.play(Create(box))
+        self.wait(3)
+        
+        self.play(*[FadeOut(mob) for mob in self.mobjects])
