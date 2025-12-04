@@ -10,7 +10,7 @@ from __future__ import annotations
 __all__ = ["MovingCamera"]
 
 from collections.abc import Iterable
-from typing import Any
+from typing import Any, Literal, overload
 
 from cairo import Context
 
@@ -165,6 +165,24 @@ class MovingCamera(Camera):
         list[Mobject]
         """
         return [self.frame]
+
+    @overload
+    def auto_zoom(
+        self,
+        mobjects: Iterable[Mobject],
+        margin: float,
+        only_mobjects_in_frame: bool,
+        animate: Literal[False],
+    ) -> Mobject: ...
+
+    @overload
+    def auto_zoom(
+        self,
+        mobjects: Iterable[Mobject],
+        margin: float,
+        only_mobjects_in_frame: bool,
+        animate: Literal[True],
+    ) -> _AnimationBuilder: ...
 
     def auto_zoom(
         self,
