@@ -263,7 +263,6 @@ class Flash(AnimationGroup):
     def create_line_anims(self) -> Iterable[ShowPassingFlash]:
         return [
             ShowPassingFlash(
-                # error: Argument 1 to "ShowPassingFlash" has incompatible type "Mobject"; expected "VMobject"  [arg-type]
                 line,
                 time_width=self.time_width,
                 run_time=self.run_time,
