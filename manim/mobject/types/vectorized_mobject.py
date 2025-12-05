@@ -47,6 +47,8 @@ from manim.utils.iterables import (
 from manim.utils.space_ops import rotate_vector, shoelace_direction
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
+
     import numpy.typing as npt
     from typing_extensions import Self
 
@@ -102,6 +104,7 @@ class VMobject(Mobject):
     """
 
     sheen_factor = 0.0
+    target: VMobject
 
     def __init__(
         self,
@@ -170,6 +173,9 @@ class VMobject(Mobject):
 
     def _assert_valid_submobjects(self, submobjects: Iterable[VMobject]) -> Self:
         return self._assert_valid_submobjects_internal(submobjects, VMobject)
+
+    def __iter__(self) -> Iterator[VMobject]:
+        return iter(self.split())
 
     # OpenGL compatibility
     @property
@@ -625,6 +631,17 @@ class VMobject(Mobject):
         return self.get_fill_color()
 
     color: ManimColor = property(get_color, set_color)
+
+    def nonempty_submobjects(self) -> Sequence[VMobject]:
+        return [
+            submob
+            for submob in self.submobjects
+            if len(submob.submobjects) != 0 or len(submob.points) != 0
+        ]
+
+    def split(self) -> list[VMobject]:
+        result: list[VMobject] = [self] if len(self.points) > 0 else []
+        return result + self.submobjects
 
     def set_sheen_direction(self, direction: Vector3DLike, family: bool = True) -> Self:
         """Sets the direction of the applied sheen.
@@ -2298,6 +2315,9 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
         """
         self._assert_valid_submobjects(tuplify(value))
         self.submobjects[key] = value
+
+    def __getitem__(self, key: int | slice) -> VMobject:
+        return self.submobjects[key]
 
 
 class VDict(VMobject, metaclass=ConvertToOpenGL):
