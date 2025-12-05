@@ -2698,19 +2698,17 @@ class Mobject:
                 return [cell_alignment * dir_] * num
             if len(alignments) != num:
                 raise ValueError(f"{name}_alignments has a mismatching size.")
-            alignments_in_list = list(alignments)
-            for i in range(num):
-                alignments_in_list[i] = char_to_direction[alignments_in_list[i]]
-            return alignments_in_list
+            alignment_directions = [char_to_direction[char] for char in alignments]
+            return alignment_directions
 
-        row_alignments_in_list = init_alignments(
+        row_alignment_directions = init_alignments(
             row_alignments,
             rows,
             {"u": UP, "c": ORIGIN, "d": DOWN},
             "row",
             RIGHT,
         )
-        col_alignments_in_list = init_alignments(
+        col_alignment_directions = init_alignments(
             col_alignments,
             cols,
             {"l": LEFT, "c": ORIGIN, "r": RIGHT},
@@ -2733,19 +2731,13 @@ class Mobject:
             raise ValueError(
                 'flow_order must be one of the following values: "dr", "rd", "ld" "dl", "ru", "ur", "lu", "ul".',
             )
-        flow_order_method = mapper[flow_order]
+        get_mob_index_by_position = mapper[flow_order]
 
-        # Reverse row_alignments_in_list and row_heights. Necessary since the
+        # Reverse row_alignment_directions and row_heights. Necessary since the
         # grid filling is handled bottom up for simplicity reasons.
-        def reverse(maybe_list: Iterable | None) -> list:
-            if maybe_list is not None:
-                maybe_list = list(maybe_list)
-                maybe_list.reverse()
-                return maybe_list
-            return []
-
-        row_alignments_in_list = reverse(row_alignments_in_list)
-        row_heights = reverse(row_heights)
+        row_alignment_directions.reverse()
+        row_heights_list = list(row_heights) if row_heights is not None else []
+        row_heights_list.reverse()
         col_widths_list = list(col_widths) if col_widths is not None else []
 
         placeholder = Mobject()
@@ -2755,7 +2747,8 @@ class Mobject:
 
         mobs.extend([placeholder] * (rows * cols - len(mobs)))
         grid = [
-            [mobs[flow_order_method(r, c)] for c in range(cols)] for r in range(rows)
+            [mobs[get_mob_index_by_position(r, c)] for c in range(cols)]
+            for r in range(rows)
         ]
 
         measured_heigths = [
@@ -2777,7 +2770,7 @@ class Mobject:
                 sizes[i] if sizes[i] is not None else measures[i] for i in range(num)
             ]
 
-        heights = init_sizes(row_heights, rows, measured_heigths, "row_heights")
+        heights = init_sizes(row_heights_list, rows, measured_heigths, "row_heights")
         widths = init_sizes(col_widths_list, cols, measured_widths, "col_widths")
 
         x, y = 0.0, 0.0
@@ -2785,7 +2778,9 @@ class Mobject:
             x = 0
             for c in range(cols):
                 if grid[r][c] is not placeholder:
-                    alignment = row_alignments_in_list[r] + col_alignments_in_list[c]
+                    alignment = (
+                        row_alignment_directions[r] + col_alignment_directions[c]
+                    )
                     line = Line(
                         x * RIGHT + y * UP,
                         (x + widths[c]) * RIGHT + (y + heights[r]) * UP,
