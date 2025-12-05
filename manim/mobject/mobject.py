@@ -2760,14 +2760,15 @@ class Mobject:
 
         # Initialize row_heights / col_widths correctly using measurements as fallback
         def init_sizes(
-            sizes: list | None, num: int, measures: list, name: str
+            sizes: list[float | None] | None, num: int, measures: list[float], name: str
         ) -> list[float]:
             if sizes is None or len(sizes) == 0:
                 sizes = [None] * num
             if len(sizes) != num:
                 raise ValueError(f"{name} has a mismatching size.")
             return [
-                sizes[i] if sizes[i] is not None else measures[i] for i in range(num)
+                size if size is not None else measure
+                for size, measure in zip(sizes, measures)
             ]
 
         heights = init_sizes(row_heights_list, rows, measured_heigths, "row_heights")
