@@ -102,12 +102,12 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         self,
         tip_length: float = DEFAULT_ARROW_TIP_LENGTH,
         normal_vector: Vector3DLike = OUT,
-        tip_style: dict = {},
+        tip_style: dict | None = None,
         **kwargs: Any,
     ) -> None:
         self.tip_length: float = tip_length
         self.normal_vector = normal_vector
-        self.tip_style: dict = tip_style
+        self.tip_style: dict = tip_style if tip_style is not None else {}
         super().__init__(**kwargs)
 
     # Adding, Creating, Modifying tips
@@ -129,7 +129,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         else:
             self.position_tip(tip, at_start)
         self.reset_endpoints_based_on_tip(tip, at_start)
-        self.asign_tip_attr(tip, at_start)
+        self.assign_tip_attr(tip, at_start)
         self.add(tip)
         return self
 
@@ -202,6 +202,9 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
                 axis=axis,
             )  # Rotates the tip along the vertical wrt the axis
             self._init_positioning_axis = axis
+
+        # TODO: The tip object should have its own local transform unaltered by its parent:
+        #       Make the anchor point a group and shift that instead of the tip itself
         tip.shift(anchor - tip.tip_point)
         return tip
 
@@ -210,13 +213,15 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
             # Zero length, put_start_and_end_on wouldn't work
             return self
 
+        # TODO: the tip should only be able to position itself along the curve
+        #       (potentially extending the curve) - it should not redefine the curve itself
         if at_start:
             self.put_start_and_end_on(tip.base, self.get_end())
         else:
             self.put_start_and_end_on(self.get_start(), tip.base)
         return self
 
-    def asign_tip_attr(self, tip: tips.ArrowTip, at_start: bool) -> Self:
+    def assign_tip_attr(self, tip: tips.ArrowTip, at_start: bool) -> Self:
         if at_start:
             self.start_tip = tip
         else:
