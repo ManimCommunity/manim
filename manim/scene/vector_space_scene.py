@@ -281,24 +281,26 @@ class VectorScene(Scene):
                 color (str),
                 label_scale_factor=VECTOR_LABEL_SCALE_FACTOR (int, float),
         """
-        temp = self.get_basis_vectors()
-        i_hat = temp.submobjects[0]
-        j_hat = temp.submobjects[1]
+        i_hat = self.get_basis_vectors().submobjects[0]
+        j_hat = self.get_basis_vectors().submobjects[1]
         return VGroup(
             *(
                 self.get_vector_label(
                     vect, label, color=color, label_scale_factor=1, **kwargs
                 )
                 for vect, label, color in [
-                    (i_hat, "\\hat{\\imath}", X_COLOR),
-                    (j_hat, "\\hat{\\jmath}", Y_COLOR),
+                    # Casting i_hat and j_hat to Vector, as the VGroup from
+                    # self.get_basis_vectors() contains two vectors, but the
+                    # type checker is currently not aware of that.
+                    (cast(Vector, i_hat), "\\hat{\\imath}", X_COLOR),
+                    (cast(Vector, j_hat), "\\hat{\\jmath}", Y_COLOR),
                 ]
             )
         )
 
     def get_vector_label(
         self,
-        vector: VMobject,
+        vector: Vector,
         label: MathTex | str,
         at_tip: bool = False,
         direction: str = "left",
