@@ -2692,10 +2692,10 @@ class Mobject:
             char_to_direction: dict[str, Vector3D],
             name: str,
             dir_: Vector3D,
-        ) -> list[str]:
+        ) -> list[Vector3D]:
             if alignments is None:
                 # Use cell_alignment as fallback
-                return [np.array(cell_alignment) * dir_] * num
+                return [cell_alignment * dir_] * num
             if len(alignments) != num:
                 raise ValueError(f"{name}_alignments has a mismatching size.")
             alignments_in_list = list(alignments)
