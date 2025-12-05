@@ -3326,13 +3326,11 @@ class Group(Mobject, metaclass=ConvertToOpenGL):
 
 
 class _AnimationBuilder:
-    _override_animate: Any
-
     def __init__(self, mobject: Mobject) -> None:
         self.mobject = mobject
         self.mobject.generate_target()
 
-        self.overridden_animation = None
+        self.overridden_animation: Animation | None = None
         self.is_chaining = False
         self.methods: list[MethodWithArgs] = []
 
@@ -3390,8 +3388,8 @@ class _AnimationBuilder:
 
 
 def override_animate(
-    method: Callable[..., Animation],
-) -> Callable[[Callable], Callable]:
+    method: types.MethodType,
+) -> Callable[[types.MethodType], types.MethodType]:
     r"""Decorator for overriding method animations.
 
     This allows to specify a method (returning an :class:`~.Animation`)
@@ -3444,9 +3442,9 @@ def override_animate(
     """
     temp_method = cast(_AnimationBuilder, method)
 
-    def decorator(animation_method: Callable) -> Callable:
+    def decorator(animation_method: types.MethodType) -> types.MethodType:
         # error: "Callable[..., Animation]" has no attribute "_override_animate"  [attr-defined]
-        temp_method._override_animate = animation_method
+        temp_method._override_animate = animation_method  # type: ignore[attr-defined]
         return animation_method
 
     return decorator
