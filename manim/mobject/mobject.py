@@ -3338,7 +3338,7 @@ class _AnimationBuilder:
 
         # Whether animation args can be passed
         self.cannot_pass_args = False
-        self.anim_args: dict = {}
+        self.anim_args: dict[str, Any] = {}
 
     def __call__(self, **kwargs: Any) -> Self:
         if self.cannot_pass_args:
