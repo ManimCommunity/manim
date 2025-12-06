@@ -16,7 +16,7 @@ __all__ = [
     "Torus",
 ]
 
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Iterable, Sequence
 from typing import TYPE_CHECKING, Any, Literal
 
 import numpy as np
@@ -232,8 +232,8 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
     def set_fill_by_value(
         self,
         axes: ThreeDAxes,
-        colorscale: list[ParsableManimColor]
-        | list[tuple[ParsableManimColor, float]]
+        colorscale: Iterable[ParsableManimColor]
+        | Iterable[tuple[ParsableManimColor, float]]
         | None = None,
         axis: int = 2,
         **kwargs: Any,
@@ -296,17 +296,18 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
                 "the surface fill color has not been changed"
             )
             return self
+        colorscale_list = list(colorscale)
 
         ranges = [axes.x_range, axes.y_range, axes.z_range]
-        assert isinstance(colorscale, list)
+        assert isinstance(colorscale_list, list)
         new_colors: list[ManimColor]
-        if type(colorscale[0]) is tuple and len(colorscale[0]) == 2:
+        if type(colorscale_list[0]) is tuple and len(colorscale_list[0]) == 2:
             new_colors, pivots = [
-                [ManimColor(i) for i, j in colorscale],
-                [j for i, j in colorscale],
+                [ManimColor(i) for i, j in colorscale_list],
+                [j for i, j in colorscale_list],
             ]
         else:
-            new_colors = [ManimColor(i) for i in colorscale]
+            new_colors = [ManimColor(i) for i in colorscale_list]
             current_range = ranges[axis]
 
             assert current_range is not None
