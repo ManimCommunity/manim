@@ -16,7 +16,7 @@ __all__ = [
     "Torus",
 ]
 
-from collections.abc import Callable, Iterable, Sequence
+from collections.abc import Callable, Sequence
 from typing import TYPE_CHECKING, Any, Literal
 
 import numpy as np
@@ -201,11 +201,10 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         )
         self.add(*faces)
         if self.checkerboard_colors:
-            # error: Argument 1 to "set_fill_by_checkerboard" of "Surface" has incompatible type "*list[ManimColor]"; expected "Iterable[ManimColor | int | str | Any | tuple[int, int, int] | Any | tuple[float, float, float] | Any | tuple[int, int, int, int] | Any | tuple[float, float, float, float]]"  [arg-type]
-            self.set_fill_by_checkerboard(*self.checkerboard_colors)  # type: ignore[arg-type]
+            self.set_fill_by_checkerboard(*self.checkerboard_colors)
 
     def set_fill_by_checkerboard(
-        self, *colors: Iterable[ParsableManimColor], opacity: float | None = None
+        self, *colors: ParsableManimColor, opacity: float | None = None
     ) -> Self:
         """Sets the fill_color of each face of :class:`Surface` in
         an alternating pattern.
