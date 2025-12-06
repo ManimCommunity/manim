@@ -113,8 +113,8 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
     def __init__(
         self,
         func: Callable[[float, float], np.ndarray],
-        u_range: Sequence[float] = [0, 1],
-        v_range: Sequence[float] = [0, 1],
+        u_range: tuple[float, float] = (0, 1),
+        v_range: tuple[float, float] = (0, 1),
         resolution: int | Sequence[int] = 32,
         surface_piece_config: dict = {},
         fill_color: ParsableManimColor = BLUE_D,
@@ -399,8 +399,8 @@ class Sphere(Surface):
         center: Point3DLike = ORIGIN,
         radius: float = 1,
         resolution: Sequence[int] | None = None,
-        u_range: Sequence[float] = (0, TAU),
-        v_range: Sequence[float] = (0, PI),
+        u_range: tuple[float, float] = (0, TAU),
+        v_range: tuple[float, float] = (0, PI),
         **kwargs: Any,
     ) -> None:
         if config.renderer == RendererType.OPENGL:
@@ -627,7 +627,7 @@ class Cone(Surface):
         height: float = 1,
         direction: np.ndarray = Z_AXIS,
         show_base: bool = False,
-        v_range: Sequence[float] = [0, TAU],
+        v_range: tuple[float, float] = (0, TAU),
         u_min: float = 0,
         checkerboard_colors: Sequence[ParsableManimColor] | Literal[False] = False,
         **kwargs: Any,
@@ -638,7 +638,7 @@ class Cone(Surface):
         super().__init__(
             self.func,
             v_range=v_range,
-            u_range=[u_min, np.sqrt(base_radius**2 + height**2)],
+            u_range=(u_min, np.sqrt(base_radius**2 + height**2)),
             checkerboard_colors=checkerboard_colors,
             **kwargs,
         )
@@ -788,7 +788,7 @@ class Cylinder(Surface):
         radius: float = 1,
         height: float = 2,
         direction: np.ndarray = Z_AXIS,
-        v_range: Sequence[float] = [0, TAU],
+        v_range: tuple[float, float] = (0, TAU),
         show_ends: bool = True,
         resolution: Sequence[int] = (24, 24),
         **kwargs: Any,
@@ -798,7 +798,7 @@ class Cylinder(Surface):
         super().__init__(
             self.func,
             resolution=resolution,
-            u_range=[-self._height / 2, self._height / 2],
+            u_range=(-self._height / 2, self._height / 2),
             v_range=v_range,
             **kwargs,
         )
@@ -1262,8 +1262,8 @@ class Torus(Surface):
         self,
         major_radius: float = 3,
         minor_radius: float = 1,
-        u_range: Sequence[float] = (0, TAU),
-        v_range: Sequence[float] = (0, TAU),
+        u_range: tuple[float, float] = (0, TAU),
+        v_range: tuple[float, float] = (0, TAU),
         resolution: tuple[int, int] | None = None,
         **kwargs: Any,
     ) -> None:
