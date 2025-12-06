@@ -397,7 +397,7 @@ class Sphere(Surface):
         self,
         center: Point3DLike = ORIGIN,
         radius: float = 1,
-        resolution: Sequence[int] | None = None,
+        resolution: int | Sequence[int] | None = None,
         u_range: tuple[float, float] = (0, TAU),
         v_range: tuple[float, float] = (0, PI),
         **kwargs: Any,
@@ -473,7 +473,7 @@ class Dot3D(Sphere):
         point: list | np.ndarray = ORIGIN,
         radius: float = DEFAULT_DOT_RADIUS,
         color: ParsableManimColor = WHITE,
-        resolution: tuple[int, int] = (8, 8),
+        resolution: int | tuple[int, int] | None = (8, 8),
         **kwargs: Any,
     ) -> None:
         super().__init__(center=point, radius=radius, resolution=resolution, **kwargs)
@@ -789,7 +789,7 @@ class Cylinder(Surface):
         direction: np.ndarray = Z_AXIS,
         v_range: tuple[float, float] = (0, TAU),
         show_ends: bool = True,
-        resolution: Sequence[int] = (24, 24),
+        resolution: int | Sequence[int] = (24, 24),
         **kwargs: Any,
     ) -> None:
         self._height = height
@@ -949,7 +949,7 @@ class Line3D(Cylinder):
         end: np.ndarray = RIGHT,
         thickness: float = 0.02,
         color: ParsableManimColor | None = None,
-        resolution: int | Sequence[int] = 24,
+        resolution: int | tuple[int, int] = 24,
         **kwargs: Any,
     ):
         self.thickness = thickness
@@ -1193,7 +1193,7 @@ class Arrow3D(Line3D):
         height: float = 0.3,
         base_radius: float = 0.08,
         color: ParsableManimColor = WHITE,
-        resolution: int | Sequence[int] = 24,
+        resolution: int | tuple[int, int] = 24,
         **kwargs: Any,
     ) -> None:
         super().__init__(
