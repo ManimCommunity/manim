@@ -43,6 +43,7 @@ from manim.utils.color import (
 from manim.utils.space_ops import normalize, perpendicular_bisector, z_to_vector
 
 if TYPE_CHECKING:
+    from manim.mobject.graphing.coordinate_systems import ThreeDAxes
     from manim.typing import Point3D, Point3DLike, Vector3DLike
 
 
@@ -230,7 +231,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
 
     def set_fill_by_value(
         self,
-        axes: Mobject,
+        axes: ThreeDAxes,
         colorscale: list[ParsableManimColor]
         | list[tuple[ParsableManimColor, float]]
         | None = None,
@@ -296,11 +297,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
             )
             return self
 
-        # TODO: Handle this type error that has been ignored
-        # error: List item 0 has incompatible type "MethodType"; expected "Sequence[float]"  [list-item]
-        # error: List item 1 has incompatible type "MethodType"; expected "Sequence[float]"  [list-item]
-        # error: List item 2 has incompatible type "MethodType"; expected "Sequence[float]"  [list-item]
-        ranges: list[Sequence[float]] = [axes.x_range, axes.y_range, axes.z_range]  # type: ignore[list-item]
+        ranges = [axes.x_range, axes.y_range, axes.z_range]
         assert isinstance(colorscale, list)
         new_colors: list[ManimColor]
         if type(colorscale[0]) is tuple:
@@ -310,9 +307,11 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
             ]
         else:
             new_colors = [ManimColor(i) for i in colorscale]
+            current_range = ranges[axis]
 
-            pivot_min = ranges[axis][0]
-            pivot_max = ranges[axis][1]
+            assert current_range is not None
+            pivot_min = current_range[0]
+            pivot_max = current_range[1]
             pivot_frequency = (pivot_max - pivot_min) / (len(new_colors) - 1)
             pivots = np.arange(
                 start=pivot_min,
