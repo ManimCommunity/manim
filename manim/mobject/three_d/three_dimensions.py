@@ -120,7 +120,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         surface_piece_config: dict = {},
         fill_color: ParsableManimColor = BLUE_D,
         fill_opacity: float = 1.0,
-        checkerboard_colors: Sequence[ParsableManimColor] | Literal[False] = [
+        checkerboard_colors: Iterable[ParsableManimColor] | Literal[False] = [
             BLUE_D,
             BLUE_E,
         ],
@@ -629,7 +629,7 @@ class Cone(Surface):
         show_base: bool = False,
         v_range: tuple[float, float] = (0, TAU),
         u_min: float = 0,
-        checkerboard_colors: Sequence[ParsableManimColor] | Literal[False] = False,
+        checkerboard_colors: Iterable[ParsableManimColor] | Literal[False] = False,
         **kwargs: Any,
     ) -> None:
         self.direction = np.array(direction)
