@@ -965,7 +965,7 @@ class Line3D(Cylinder):
             self.set_color(color)
 
     def set_start_and_end_attrs(
-        self, start: np.ndarray, end: np.ndarray, **kwargs: Any
+        self, start: Point3DLike, end: Point3DLike, **kwargs: Any
     ) -> None:
         """Sets the start and end points of the line.
 
@@ -1025,7 +1025,7 @@ class Line3D(Cylinder):
                 return mob.get_boundary_point(direction)
         return np.array(mob_or_point)
 
-    def get_start(self) -> np.ndarray:
+    def get_start(self) -> Point3D:
         """Returns the starting point of the :class:`Line3D`.
 
         Returns
@@ -1035,7 +1035,7 @@ class Line3D(Cylinder):
         """
         return self.start
 
-    def get_end(self) -> np.ndarray:
+    def get_end(self) -> Point3D:
         """Returns the ending point of the :class:`Line3D`.
 
         Returns
@@ -1097,7 +1097,7 @@ class Line3D(Cylinder):
     def perpendicular_to(
         cls,
         line: Line3D,
-        point: Vector3DLike = ORIGIN,
+        point: Point3DLike = ORIGIN,
         length: float = 5,
         **kwargs: Any,
     ) -> Line3D:
@@ -1263,7 +1263,7 @@ class Torus(Surface):
         minor_radius: float = 1,
         u_range: tuple[float, float] = (0, TAU),
         v_range: tuple[float, float] = (0, TAU),
-        resolution: tuple[int, int] | None = None,
+        resolution: int | tuple[int, int] | None = None,
         **kwargs: Any,
     ) -> None:
         if config.renderer == RendererType.OPENGL:
@@ -1283,7 +1283,7 @@ class Torus(Surface):
             **kwargs,
         )
 
-    def func(self, u: float, v: float) -> np.ndarray:
+    def func(self, u: float, v: float) -> Point3D:
         """The z values defining the :class:`Torus` being plotted.
 
         Returns
