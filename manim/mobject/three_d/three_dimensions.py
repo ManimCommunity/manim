@@ -44,7 +44,7 @@ from manim.utils.space_ops import normalize, perpendicular_bisector, z_to_vector
 
 if TYPE_CHECKING:
     from manim.mobject.graphing.coordinate_systems import ThreeDAxes
-    from manim.typing import Point3D, Point3DLike, Vector3DLike
+    from manim.typing import Point3D, Point3DLike, Vector3D, Vector3DLike
 
 
 class ThreeDVMobject(VMobject, metaclass=ConvertToOpenGL):
@@ -423,12 +423,12 @@ class Sphere(Surface):
 
         self.shift(center)
 
-    def func(self, u: float, v: float) -> np.ndarray:
+    def func(self, u: float, v: float) -> Point3D:
         """The z values defining the :class:`Sphere` being plotted.
 
         Returns
         -------
-        :class:`numpy.array`
+        :class:`Point3D`
             The z values defining the :class:`Sphere`.
         """
         return self.radius * np.array(
@@ -470,7 +470,7 @@ class Dot3D(Sphere):
 
     def __init__(
         self,
-        point: list | np.ndarray = ORIGIN,
+        point: Point3D = ORIGIN,
         radius: float = DEFAULT_DOT_RADIUS,
         color: ParsableManimColor = WHITE,
         resolution: int | tuple[int, int] | None = (8, 8),
@@ -569,7 +569,7 @@ class Prism(Cube):
 
     def __init__(
         self,
-        dimensions: tuple[float, float, float] | np.ndarray = [3, 2, 1],
+        dimensions: Vector3DLike = [3, 2, 1],
         **kwargs: Any,
     ) -> None:
         self.dimensions = dimensions
@@ -624,14 +624,14 @@ class Cone(Surface):
         self,
         base_radius: float = 1,
         height: float = 1,
-        direction: np.ndarray = Z_AXIS,
+        direction: Vector3DLike = Z_AXIS,
         show_base: bool = False,
         v_range: tuple[float, float] = (0, TAU),
         u_min: float = 0,
         checkerboard_colors: Sequence[ParsableManimColor] | Literal[False] = False,
         **kwargs: Any,
     ) -> None:
-        self.direction = direction
+        self.direction = np.array(direction)
         self.theta = PI - np.arctan(base_radius / height)
 
         super().__init__(
@@ -658,7 +658,7 @@ class Cone(Surface):
 
         self._rotate_to_direction()
 
-    def func(self, u: float, v: float) -> np.ndarray:
+    def func(self, u: float, v: float) -> Point3D:
         """Converts from spherical coordinates to cartesian.
 
         Parameters
@@ -683,10 +683,10 @@ class Cone(Surface):
             ],
         )
 
-    def get_start(self) -> np.ndarray:
+    def get_start(self) -> Point3D:
         return self.start_point.get_center()
 
-    def get_end(self) -> np.ndarray:
+    def get_end(self) -> Point3D:
         return self.end_point.get_center()
 
     def _rotate_to_direction(self) -> None:
@@ -719,7 +719,7 @@ class Cone(Surface):
         self._current_theta = theta
         self._current_phi = phi
 
-    def set_direction(self, direction: np.ndarray) -> None:
+    def set_direction(self, direction: Vector3DLike) -> None:
         """Changes the direction of the apex of the :class:`Cone`.
 
         Parameters
@@ -727,10 +727,10 @@ class Cone(Surface):
         direction
             The direction of the apex.
         """
-        self.direction = direction
+        self.direction = np.array(direction)
         self._rotate_to_direction()
 
-    def get_direction(self) -> np.ndarray:
+    def get_direction(self) -> Vector3D:
         """Returns the current direction of the apex of the :class:`Cone`.
 
         Returns
@@ -740,7 +740,7 @@ class Cone(Surface):
         """
         return self.direction
 
-    def _set_start_and_end_attributes(self, direction: Vector3DLike) -> None:
+    def _set_start_and_end_attributes(self, direction: Vector3D) -> None:
         normalized_direction = direction * np.linalg.norm(direction)
 
         start = self.base_circle.get_center()
@@ -786,7 +786,7 @@ class Cylinder(Surface):
         self,
         radius: float = 1,
         height: float = 2,
-        direction: np.ndarray = Z_AXIS,
+        direction: Vector3DLike = Z_AXIS,
         v_range: tuple[float, float] = (0, TAU),
         show_ends: bool = True,
         resolution: int | Sequence[int] = (24, 24),
@@ -886,7 +886,7 @@ class Cylinder(Surface):
         self._current_theta = theta
         self._current_phi = phi
 
-    def set_direction(self, direction: np.ndarray) -> None:
+    def set_direction(self, direction: Vector3DLike) -> None:
         """Sets the direction of the central axis of the :class:`Cylinder`.
 
         Parameters
@@ -945,8 +945,8 @@ class Line3D(Cylinder):
 
     def __init__(
         self,
-        start: np.ndarray = LEFT,
-        end: np.ndarray = RIGHT,
+        start: Point3DLike = LEFT,
+        end: Point3DLike = RIGHT,
         thickness: float = 0.02,
         color: ParsableManimColor | None = None,
         resolution: int | tuple[int, int] = 24,
@@ -983,7 +983,7 @@ class Line3D(Cylinder):
         rough_end = self.pointify(end)
         self.vect = rough_end - rough_start
         self.length = np.linalg.norm(self.vect)
-        self.direction = normalize(self.vect)
+        self.direction: Vector3D = normalize(self.vect)
         # Now that we know the direction between them,
         # we can the appropriate boundary point from
         # start and end, if they're mobjects
@@ -1187,8 +1187,8 @@ class Arrow3D(Line3D):
 
     def __init__(
         self,
-        start: np.ndarray = LEFT,
-        end: np.ndarray = RIGHT,
+        start: Point3DLike = LEFT,
+        end: Point3DLike = RIGHT,
         thickness: float = 0.02,
         height: float = 0.3,
         base_radius: float = 0.08,
