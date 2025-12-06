@@ -17,7 +17,7 @@ __all__ = [
 ]
 
 from collections.abc import Callable, Iterable, Sequence
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal
 
 import numpy as np
 from typing_extensions import Self
@@ -120,7 +120,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         surface_piece_config: dict = {},
         fill_color: ParsableManimColor = BLUE_D,
         fill_opacity: float = 1.0,
-        checkerboard_colors: Iterable[ParsableManimColor] | None = [
+        checkerboard_colors: Iterable[ParsableManimColor] | Literal[False] = [
             BLUE_D,
             BLUE_E,
         ],
@@ -141,8 +141,8 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         )
         self.resolution = resolution
         self.surface_piece_config = surface_piece_config
-        self.checkerboard_colors: list[ManimColor] | None
-        if checkerboard_colors is None:
+        self.checkerboard_colors: list[ManimColor] | Literal[False]
+        if checkerboard_colors is False:
             self.checkerboard_colors = checkerboard_colors
         else:
             self.checkerboard_colors = [ManimColor(i) for i in checkerboard_colors]
@@ -629,7 +629,7 @@ class Cone(Surface):
         show_base: bool = False,
         v_range: tuple[float, float] = (0, TAU),
         u_min: float = 0,
-        checkerboard_colors: Iterable[ParsableManimColor] | None = None,
+        checkerboard_colors: Iterable[ParsableManimColor] | Literal[False] = False,
         **kwargs: Any,
     ) -> None:
         self.direction = np.array(direction)
