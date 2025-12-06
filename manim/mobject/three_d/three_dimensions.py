@@ -115,7 +115,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         func: Callable[[float, float], np.ndarray],
         u_range: Sequence[float] = [0, 1],
         v_range: Sequence[float] = [0, 1],
-        resolution: Sequence[int] | int = 32,
+        resolution: int | Sequence[int] = 32,
         surface_piece_config: dict = {},
         fill_color: ParsableManimColor = BLUE_D,
         fill_opacity: float = 1.0,
