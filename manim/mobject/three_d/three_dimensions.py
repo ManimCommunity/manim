@@ -300,7 +300,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         ranges = [axes.x_range, axes.y_range, axes.z_range]
         assert isinstance(colorscale, list)
         new_colors: list[ManimColor]
-        if type(colorscale[0]) is tuple:
+        if type(colorscale[0]) is tuple and len(colorscale[0]) == 2:
             new_colors, pivots = [
                 [ManimColor(i) for i, j in colorscale],
                 [j for i, j in colorscale],
