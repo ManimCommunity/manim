@@ -163,7 +163,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         if isinstance(self.resolution, int):
             u_res = v_res = self.resolution
         else:
-            u_res, v_res = self.resolution[0:2]
+            u_res, v_res = self.resolution
 
         u_values = np.linspace(*self.u_range, u_res + 1)
         v_values = np.linspace(*self.v_range, v_res + 1)
@@ -789,7 +789,7 @@ class Cylinder(Surface):
         direction: Vector3DLike = Z_AXIS,
         v_range: tuple[float, float] = (0, TAU),
         show_ends: bool = True,
-        resolution: int | Sequence[int] = (24, 24),
+        resolution: int | tuple[int, int] = (24, 24),
         **kwargs: Any,
     ) -> None:
         self._height = height
@@ -953,7 +953,7 @@ class Line3D(Cylinder):
         **kwargs: Any,
     ):
         self.thickness = thickness
-        self.resolution: Sequence[int] = (
+        self.resolution: tuple[int, int] = (
             (2, resolution) if isinstance(resolution, int) else resolution
         )
 
