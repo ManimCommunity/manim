@@ -64,7 +64,7 @@ class OneMinuteScene(Scene):
         # 50–60 секунд: Финал
         # -----------------------------
         end_text = Text("THE END", font_size=60, color=YELLOW)
-        
+
         self.play(
             self.camera.frame.animate.scale(2).shift(DOWN * 0.5),
             run_time=3
