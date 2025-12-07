@@ -1,0 +1,74 @@
+from manim import *
+
+class OneMinuteScene(Scene):
+    def construct(self):
+
+        # -----------------------------
+        # 0–10 секунд: Кіріспе мәтін
+        # -----------------------------
+        title = Text(
+            "Иногда жизнь преподносит удивительные мгновения...",
+            font_size=38,
+            color=BLUE
+        )
+
+        self.play(FadeIn(title), run_time=3)
+        self.wait(2)
+        self.play(title.animate.shift(UP*2), run_time=2)
+
+        # -----------------------------
+        # 10–20 секунд: Фигура анимациясы
+        # -----------------------------
+        circle = Circle(radius=1.2, color=YELLOW)
+        square = Square(side_length=2, color=RED)
+
+        self.play(Create(circle), run_time=2)
+        self.play(circle.animate.shift(DOWN*1.5), run_time=3)
+        self.wait(1)
+
+        self.play(Transform(circle, square), run_time=3)
+        self.wait(1)
+
+        # -----------------------------
+        # 20–35 секунд: Үздіксіз қозғалыс
+        # -----------------------------
+        moving_dot = Dot(color=GREEN, radius=0.1)
+        moving_path = ParametricFunction(
+            lambda t: np.array([
+                3 * np.sin(t),
+                1.5 * np.cos(t),
+                0
+            ]),
+            t_range=[0, 4 * PI],
+            color=PURPLE
+        )
+
+        self.play(Create(moving_path), run_time=3)
+        self.play(MoveAlongPath(moving_dot, moving_path), run_time=10)
+        self.wait(1)
+
+        # -----------------------------
+        # 35–50 секунд: Камера масштабтау
+        # -----------------------------
+        zoom_text = Text("Надежда всегда живёт в нашем сердце", font_size=40, color=TEAL)
+        self.play(FadeOut(circle), FadeOut(square), FadeOut(moving_dot))
+        self.play(FadeIn(zoom_text), run_time=2)
+
+        self.play(
+            self.camera.frame.animate.scale(0.5).shift(UP*0.5),
+            run_time=6
+        )
+        self.wait(1)
+
+        # -----------------------------
+        # 50–60 секунд: Финал
+        # -----------------------------
+        end_text = Text("THE END", font_size=60, color=YELLOW)
+        
+        self.play(
+            self.camera.frame.animate.scale(2).shift(DOWN * 0.5),
+            run_time=3
+        )
+        self.play(FadeOut(zoom_text), run_time=1)
+        self.play(Write(end_text), run_time=3)
+        self.wait(2)
