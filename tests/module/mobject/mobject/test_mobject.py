@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from manim import DL, UR, Circle, Mobject, Rectangle, Square, VGroup
+from manim import DL, PI, UR, Circle, Mobject, Rectangle, Square, Triangle, VGroup
 
 
 def test_mobject_add():
@@ -168,3 +168,78 @@ def test_mobject_dimensions_has_points_and_children():
     assert inner_rect.width == 2
     assert inner_rect.height == 1
     assert inner_rect.depth == 0
+
+
+def test_rotate_about_vertex_view():
+    """Test that rotating about a vertex obtained from get_vertices() works correctly.
+
+    This is a regression test for an issue where get_vertices() returns a view of the points array,
+    and using it as about_point in rotate() would cause the view to be mutated.
+    """
+    triangle = Triangle()
+    original_vertices = triangle.get_vertices().copy()
+    first_vertex = original_vertices[0].copy()
+
+    # This should rotate about the first vertex without corrupting it
+    triangle.rotate(PI / 2, about_point=triangle.get_vertices()[0])
+
+    # The first vertex should remain in the same position (within numerical precision)
+    rotated_vertices = triangle.get_vertices()
+    np.testing.assert_allclose(rotated_vertices[0], first_vertex, atol=1e-6)
+
+
+def test_scale_about_vertex_view():
+    """Test that scaling about a vertex obtained from get_vertices() works correctly.
+
+    This is a regression test for an issue where get_vertices() returns a view of the points array,
+    and using it as about_point in scale() would cause the view to be mutated.
+    """
+    triangle = Triangle()
+    original_vertices = triangle.get_vertices().copy()
+    first_vertex = original_vertices[0].copy()
+
+    # This should scale about the first vertex without corrupting it
+    triangle.scale(2, about_point=triangle.get_vertices()[0])
+
+    # The first vertex should remain in the same position (within numerical precision)
+    scaled_vertices = triangle.get_vertices()
+    np.testing.assert_allclose(scaled_vertices[0], first_vertex, atol=1e-6)
+
+
+def test_stretch_about_vertex_view():
+    """Test that stretching about a vertex obtained from get_vertices() works correctly.
+
+    This is a regression test for an issue where get_vertices() returns a view of the points array,
+    and using it as about_point in stretch() would cause the view to be mutated.
+    """
+    triangle = Triangle()
+    original_vertices = triangle.get_vertices().copy()
+    first_vertex = original_vertices[0].copy()
+
+    # This should stretch about the first vertex without corrupting it
+    triangle.stretch(2, 0, about_point=triangle.get_vertices()[0])
+
+    # The first vertex should remain in the same position (within numerical precision)
+    stretched_vertices = triangle.get_vertices()
+    np.testing.assert_allclose(stretched_vertices[0], first_vertex, atol=1e-6)
+
+
+def test_apply_matrix_about_vertex_view():
+    """Test that apply_matrix about a vertex obtained from get_vertices() works correctly.
+
+    This is a regression test for an issue where get_vertices() returns a view of the points array,
+    and using it as about_point in apply_matrix() would cause the view to be mutated.
+    """
+    triangle = Triangle()
+    original_vertices = triangle.get_vertices().copy()
+    first_vertex = original_vertices[0].copy()
+
+    # Define a rotation matrix (90 degrees rotation around z-axis)
+    rotation_matrix = np.array([[0, -1, 0], [1, 0, 0], [0, 0, 1]])
+
+    # This should apply the matrix about the first vertex without corrupting it
+    triangle.apply_matrix(rotation_matrix, about_point=triangle.get_vertices()[0])
+
+    # The first vertex should remain in the same position (within numerical precision)
+    transformed_vertices = triangle.get_vertices()
+    np.testing.assert_allclose(transformed_vertices[0], first_vertex, atol=1e-6)

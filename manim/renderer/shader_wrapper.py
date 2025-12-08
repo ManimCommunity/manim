@@ -141,10 +141,9 @@ class ShaderWrapper:
 
     def replace_code(self, old: str, new: str) -> None:
         code_map = self.program_code
-        for name, _code in code_map.items():
-            if code_map[name] is None:
-                continue
-            code_map[name] = re.sub(old, new, code_map[name])
+        for name, code in code_map.items():
+            if code:
+                code_map[name] = re.sub(old, new, code)
         self.refresh_id()
 
     def combine_with(self, *shader_wrappers: "ShaderWrapper") -> Self:  # noqa: UP037

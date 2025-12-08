@@ -154,9 +154,7 @@ class Polyhedron(VGroup):
         """Extracts the coordinates of the vertices in the graph.
         Used for updating faces.
         """
-        new_vertex_coords = []
-        for v in self.graph.vertices:
-            new_vertex_coords.append(self.graph[v].get_center())
+        new_vertex_coords = [self.graph[v].get_center() for v in self.graph.vertices]
         layout = dict(enumerate(new_vertex_coords))
         return [[layout[j] for j in i] for i in self.faces_list]
 

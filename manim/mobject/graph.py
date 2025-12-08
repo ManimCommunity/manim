@@ -1021,10 +1021,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         """
         if edge_config is None:
             edge_config = self.default_edge_config.copy()
-        added_mobjects = []
-        for v in edge:
-            if v not in self.vertices:
-                added_mobjects.append(self._add_vertex(v))
+        added_mobjects = [self._add_vertex(v) for v in edge if v not in self.vertices]
         u, v = edge
 
         self._graph.add_edge(u, v)
