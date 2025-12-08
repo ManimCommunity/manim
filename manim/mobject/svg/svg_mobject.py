@@ -292,8 +292,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             vgroups[group_name] = vg
 
             if isinstance(element, (se.Group, se.Use)):
-                for subelement in element[::-1]:
-                    stack.append((subelement, depth + 1))
+                stack.extend((subelement, depth + 1) for subelement in element[::-1])
             # Add element to the parent vgroup
             try:
                 if isinstance(
