@@ -274,10 +274,38 @@ class MathTex(SingleStringMathTex):
             self.tex_to_color_map = tex_to_color_map
         self.tex_environment = tex_environment
         self.brace_notation_split_occurred = False
-        self.tex_strings = self._break_up_tex_strings(tex_strings)
+        self.tex_strings = tex_strings
+
+        def join_tex_strings_with_unique_deliminters(
+            tex_strings: Iterable[str], substrings_to_isolate: Iterable[str]
+        ) -> str:
+            joined_string = ""
+            for idx, tex_string in enumerate(tex_strings):
+                string_part = rf"\special{{dvisvgm:raw <g id='unique{idx:03d}'>}}"
+                print("tex_string: '", tex_string, "'")
+                for substring in substrings_to_isolate:
+                    pre_string = rf"\special{{dvisvgm:raw <g id='unique{idx:03d}ss'>}}"
+                    post_string = r"\special{dvisvgm:raw </g>}"
+                    replacement_string = pre_string + substring + post_string
+                    tex_string = tex_string.replace(substring, replacement_string, 1)
+                string_part += tex_string
+                string_part += r"\special{dvisvgm:raw </g>}"
+                # string_part = f"{tex_string} "
+                joined_string = joined_string + string_part
+            return joined_string
+
+        # self.tex_strings = self._break_up_tex_strings(tex_strings)
         try:
+            joined_string = join_tex_strings_with_unique_deliminters(
+                self.tex_strings, self.substrings_to_isolate
+            )
+            print("joined_string")
+            print("'" + joined_string + "'")
+            # print("self.arg_separator.join(self.tex_strings)")
+            # print("'" + self.arg_separator.join(self.tex_strings) + "'")
             super().__init__(
-                self.arg_separator.join(self.tex_strings),
+                # self.arg_separator.join(self.tex_strings),
+                joined_string,
                 tex_environment=self.tex_environment,
                 tex_template=self.tex_template,
                 **kwargs,
