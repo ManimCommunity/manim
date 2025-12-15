@@ -240,7 +240,6 @@ class _CustomEncoder(json.JSONEncoder):
     @overload
     def _cleaned_iterable(self, iterable: Sequence[Any]) -> list[Any]: ...
 
-
     def _cleaned_iterable(self, iterable: Iterable) -> dict[Any, Any] | list[Any]:
         """Check for circular reference at each iterable that will go through the JSONEncoder, as well as key of the wrong format.
 
