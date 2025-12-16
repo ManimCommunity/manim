@@ -275,61 +275,63 @@ class MathTex(SingleStringMathTex):
         self.tex_environment = tex_environment
         self.brace_notation_split_occurred = False
         self.tex_strings = tex_strings
+        self.matched_strings_and_ids: list[tuple[str, str]] = []
+
+        def locate_first_match(
+            substrings_to_isolate: Iterable[str], unprocessed_string: str
+        ) -> re.Match | None:
+            first_match_start = len(unprocessed_string)
+            first_match = None
+            for substring in substrings_to_isolate:
+                match = re.match(f"(.*?)({substring})(.*)", unprocessed_string)
+                if match and len(match.group(1)) < first_match_start:
+                    first_match = match
+                    first_match_start = len(match.group(1))
+            return first_match
+
+        def handle_match(ssIdx: int, first_match: re.Match) -> tuple[str, str]:
+            pre_match = first_match.group(1)
+            matched_string = first_match.group(2)
+            post_match = first_match.group(3)
+            pre_string = rf"\special{{dvisvgm:raw <g id='unique{ssIdx:03d}ss'>}}"
+            post_string = r"\special{dvisvgm:raw </g>}"
+            self.matched_strings_and_ids.append(
+                (matched_string, f"unique{ssIdx:03d}ss")
+            )
+            processed_string = pre_match + pre_string + matched_string + post_string
+            unprocessed_string = post_match
+            return processed_string, unprocessed_string
 
         def join_tex_strings_with_unique_deliminters(
             tex_strings: Iterable[str], substrings_to_isolate: Iterable[str]
         ) -> str:
             joined_string = ""
             ssIdx = 0
-            matched_strings_and_ids = []
             for idx, tex_string in enumerate(tex_strings):
                 string_part = rf"\special{{dvisvgm:raw <g id='unique{idx:03d}'>}}"
-                matched_strings_and_ids.append((tex_string, f"unique{idx:03d}"))
-                print("tex_string: '", tex_string, "'")
+                self.matched_strings_and_ids.append((tex_string, f"unique{idx:03d}"))
+
                 # Try to match with all substrings_to_isolate and apply the first match
                 # then match again (on the rest of the string) and continue until no
                 # characters are left in the string
                 unprocessed_string = tex_string
                 processed_string = ""
                 while len(unprocessed_string) > 0:
-                    first_match_start = len(unprocessed_string)
-                    first_match = None
-                    for substring in substrings_to_isolate:
-                        match = re.match(f"(.*?)({substring})(.*)", unprocessed_string)
-                        if match and len(match.group(1)) < first_match_start:
-                            first_match = match
-                            first_match_start = len(match.group(1))
+                    first_match = locate_first_match(
+                        substrings_to_isolate, unprocessed_string
+                    )
 
                     if first_match:
-                        pre_match = first_match.group(1)
-                        matched_string = first_match.group(2)
-                        post_match = first_match.group(3)
-                        pre_string = (
-                            rf"\special{{dvisvgm:raw <g id='unique{ssIdx:03d}ss'>}}"
-                        )
-                        post_string = r"\special{dvisvgm:raw </g>}"
-                        matched_strings_and_ids.append(
-                            (matched_string, f"unique{ssIdx:03d}ss")
-                        )
+                        processed, unprocessed_string = handle_match(ssIdx, first_match)
+                        processed_string = processed_string + processed
                         ssIdx += 1
-                        processed_string = (
-                            processed_string
-                            + pre_match
-                            + pre_string
-                            + matched_string
-                            + post_string
-                        )
-                        unprocessed_string = post_match
                     else:
                         processed_string = processed_string + unprocessed_string
                         unprocessed_string = ""
 
                 string_part += processed_string
                 string_part += r"\special{dvisvgm:raw </g>}"
-                # string_part = f"{tex_string} "
                 joined_string = joined_string + string_part
-            print("matched_strings_and_ids")
-            print(matched_strings_and_ids)
             return joined_string
 
         # self.tex_strings = self._break_up_tex_strings(tex_strings)
@@ -348,7 +350,7 @@ class MathTex(SingleStringMathTex):
                 tex_template=self.tex_template,
                 **kwargs,
             )
-            self._break_up_by_substrings()
+            # self._break_up_by_substrings()
         except ValueError as compilation_error:
             if self.brace_notation_split_occurred:
                 logger.error(
