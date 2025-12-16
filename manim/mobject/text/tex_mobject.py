@@ -280,14 +280,29 @@ class MathTex(SingleStringMathTex):
             tex_strings: Iterable[str], substrings_to_isolate: Iterable[str]
         ) -> str:
             joined_string = ""
+            ssIdx = 0
             for idx, tex_string in enumerate(tex_strings):
                 string_part = rf"\special{{dvisvgm:raw <g id='unique{idx:03d}'>}}"
                 print("tex_string: '", tex_string, "'")
                 for substring in substrings_to_isolate:
-                    pre_string = rf"\special{{dvisvgm:raw <g id='unique{idx:03d}ss'>}}"
-                    post_string = r"\special{dvisvgm:raw </g>}"
-                    replacement_string = pre_string + substring + post_string
-                    tex_string = tex_string.replace(substring, replacement_string, 1)
+                    remaining_string = tex_string
+                    match = re.match(f"(.*)({substring})(.*)", remaining_string)
+                    if match:
+                        pre_match = match.group(1)
+                        matched_string = match.group(2)
+                        post_match = match.group(3)
+                        pre_string = (
+                            rf"\special{{dvisvgm:raw <g id='unique{ssIdx:03d}ss'>}}"
+                        )
+                        post_string = r"\special{dvisvgm:raw </g>}"
+                        ssIdx += 1
+                        tex_string = (
+                            pre_match
+                            + pre_string
+                            + matched_string
+                            + post_string
+                            + post_match
+                        )
                 string_part += tex_string
                 string_part += r"\special{dvisvgm:raw </g>}"
                 # string_part = f"{tex_string} "
