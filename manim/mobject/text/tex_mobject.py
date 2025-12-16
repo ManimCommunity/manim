@@ -281,12 +281,20 @@ class MathTex(SingleStringMathTex):
             substrings_to_isolate: Iterable[str], unprocessed_string: str
         ) -> re.Match | None:
             first_match_start = len(unprocessed_string)
+            first_match_length = 0
             first_match = None
             for substring in substrings_to_isolate:
                 match = re.match(f"(.*?)({substring})(.*)", unprocessed_string)
                 if match and len(match.group(1)) < first_match_start:
                     first_match = match
                     first_match_start = len(match.group(1))
+                    first_match_length = len(match.group(2))
+                elif match and len(match.group(1)) == first_match_start:
+                    # Break ties by looking at length of matches.
+                    if first_match_length < len(match.group(2)):
+                        first_match = match
+                        first_match_start = len(match.group(1))
+                        first_match_length = len(match.group(2))
             return first_match
 
         def handle_match(ssIdx: int, first_match: re.Match) -> tuple[str, str]:
@@ -339,8 +347,6 @@ class MathTex(SingleStringMathTex):
             joined_string = join_tex_strings_with_unique_deliminters(
                 self.tex_strings, self.substrings_to_isolate
             )
-            print("joined_string")
-            print("'" + joined_string + "'")
             # print("self.arg_separator.join(self.tex_strings)")
             # print("'" + self.arg_separator.join(self.tex_strings) + "'")
             super().__init__(
