@@ -281,13 +281,19 @@ class MathTex(SingleStringMathTex):
         ) -> str:
             joined_string = ""
             ssIdx = 0
+            matched_strings_and_ids = []
             for idx, tex_string in enumerate(tex_strings):
                 string_part = rf"\special{{dvisvgm:raw <g id='unique{idx:03d}'>}}"
+                matched_strings_and_ids.append((tex_string, f"unique{idx:03d}"))
                 print("tex_string: '", tex_string, "'")
+                # Repeat replace until stable
+                processed_string = tex_string
                 for substring in substrings_to_isolate:
                     remaining_string = tex_string
-                    match = re.match(f"(.*)({substring})(.*)", remaining_string)
-                    if match:
+                    processed_string = ""
+                    while match := re.match(
+                        f"(.*?)({substring})(.*)", remaining_string
+                    ):
                         pre_match = match.group(1)
                         matched_string = match.group(2)
                         post_match = match.group(3)
@@ -295,18 +301,26 @@ class MathTex(SingleStringMathTex):
                             rf"\special{{dvisvgm:raw <g id='unique{ssIdx:03d}ss'>}}"
                         )
                         post_string = r"\special{dvisvgm:raw </g>}"
+                        matched_strings_and_ids.append(
+                            (matched_string, f"unique{ssIdx:03d}")
+                        )
                         ssIdx += 1
-                        tex_string = (
-                            pre_match
+                        processed_string = (
+                            processed_string
+                            + pre_match
                             + pre_string
                             + matched_string
                             + post_string
-                            + post_match
                         )
-                string_part += tex_string
+                        remaining_string = post_match
+                    processed_string = processed_string + remaining_string
+
+                string_part += processed_string
                 string_part += r"\special{dvisvgm:raw </g>}"
                 # string_part = f"{tex_string} "
                 joined_string = joined_string + string_part
+            print("matched_strings_and_ids")
+            print(matched_strings_and_ids)
             return joined_string
 
         # self.tex_strings = self._break_up_tex_strings(tex_strings)
