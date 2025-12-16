@@ -157,3 +157,63 @@ class ExampleScene8(Scene):
         set_color_by_tex(formula, "1", YELLOW)
         set_color_by_tex(formula, "0.5", BLUE_D)
         self.add(formula)
+
+
+class ExampleScene9(Scene):
+    def construct(self):
+        t2cm = {r"\sum": BLUE, "^{n}": RED, "_{1}": GREEN, "x": YELLOW}
+        eq1 = MathTex(r"\sum", "^{n}", "_{1}", "x").scale(1.3)
+        eq2 = MathTex(r"\sum", "_{1}", "^{n}", "x").scale(1.3)
+
+        def set_color_by_tex(
+            mathtex: MathTex, tex: str, color: ParsableManimColor
+        ) -> None:
+            for match in mathtex.matched_strings_and_ids:
+                if match[0] == tex:
+                    mathtex.id_to_vgroup_dict[match[1]].set_color(color)
+
+        for k, v in t2cm.items():
+            set_color_by_tex(eq1, k, v)
+            set_color_by_tex(eq2, k, v)
+
+        grp = VGroup(eq1, eq2).arrange_in_grid(2, 1)
+        self.add(grp)
+
+
+class ExampleScene10(Scene):
+    def construct(self):
+        # TODO: This approach to highlighting \sum does not work right now.
+        # It changes the shape of the rendered equation.
+        t2cm1 = {r"\\sum": BLUE, "n": RED, "1": GREEN, "x": YELLOW}
+        t2cm2 = {r"\sum": BLUE, "n": RED, "1": GREEN, "x": YELLOW}
+        eq1 = MathTex(
+            r"\sum^{n}_{1} x", substrings_to_isolate=list(t2cm1.keys())
+        ).scale(1.3)
+        eq2 = MathTex(
+            r"\sum_{1}^{n} x", substrings_to_isolate=list(t2cm2.keys())
+        ).scale(1.3)
+
+        def set_color_by_tex(
+            mathtex: MathTex, tex: str, color: ParsableManimColor
+        ) -> None:
+            for match in mathtex.matched_strings_and_ids:
+                if match[0] == tex:
+                    mathtex.id_to_vgroup_dict[match[1]].set_color(color)
+
+        for k, v in t2cm1.items():
+            set_color_by_tex(eq1, k, v)
+        for k, v in t2cm2.items():
+            set_color_by_tex(eq2, k, v)
+
+        grp = VGroup(eq1, eq2).arrange_in_grid(2, 1)
+        self.add(grp)
+
+        # This workaround based on index_labels still work
+        # labels = index_labels(eq2)
+        # self.add(labels)
+        # eq1[0].set_color(BLUE)
+        # eq2[1].set_color(BLUE)
+
+
+# Get inspiration from
+# https://docs.manim.community/en/stable/guides/using_text.html#text-with-latex
