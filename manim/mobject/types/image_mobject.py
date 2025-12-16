@@ -18,7 +18,13 @@ from ...camera.moving_camera import MovingCamera
 from ...constants import *
 from ...mobject.mobject import Mobject
 from ...utils.bezier import interpolate
-from ...utils.color import WHITE, ManimColor, color_to_int_rgb
+from ...utils.color import (
+    WHITE,
+    YELLOW_C,
+    ManimColor,
+    ParsableManimColor,
+    color_to_int_rgb,
+)
 from ...utils.images import change_to_rgba_array, get_full_raster_image_path
 
 __all__ = ["ImageMobject", "ImageMobjectFromCamera"]
@@ -61,9 +67,14 @@ class AbstractImageMobject(Mobject):
     def get_pixel_array(self) -> PixelArray:
         raise NotImplementedError()
 
-    def set_color(self, color, alpha=None, family=True):
+    def set_color(  # type: ignore[override]
+        self,
+        color: ParsableManimColor = YELLOW_C,
+        alpha: Any = None,
+        family: bool = True,
+    ) -> AbstractImageMobject:
         # Likely to be implemented in subclasses, but no obligation
-        pass
+        raise NotImplementedError()
 
     def set_resampling_algorithm(self, resampling_algorithm: int) -> Self:
         """
@@ -209,18 +220,23 @@ class ImageMobject(AbstractImageMobject):
         self.orig_alpha_pixel_array = self.pixel_array[:, :, 3].copy()
         super().__init__(scale_to_resolution, **kwargs)
 
-    def get_pixel_array(self):
+    def get_pixel_array(self) -> PixelArray:
         """A simple getter method."""
         return self.pixel_array
 
-    def set_color(self, color, alpha=None, family=True):
+    def set_color(  # type: ignore[override]
+        self,
+        color: ParsableManimColor = YELLOW_C,
+        alpha: Any = None,
+        family: bool = True,
+    ) -> Self:
         rgb = color_to_int_rgb(color)
         self.pixel_array[:, :, :3] = rgb
         if alpha is not None:
             self.pixel_array[:, :, 3] = int(255 * alpha)
         for submob in self.submobjects:
             submob.set_color(color, alpha, family)
-        self.color = color
+        self.color = ManimColor(color)
         return self
 
     def set_opacity(self, alpha: float) -> Self:
@@ -252,7 +268,7 @@ class ImageMobject(AbstractImageMobject):
         return self
 
     def interpolate_color(
-        self, mobject1: ImageMobject, mobject2: ImageMobject, alpha: float
+        self, mobject1: Mobject, mobject2: Mobject, alpha: float
     ) -> None:
         """Interpolates the array of pixel color values from one ImageMobject
         into an array of equal size in the target ImageMobject.
@@ -268,6 +284,8 @@ class ImageMobject(AbstractImageMobject):
         alpha
             Used to track the lerp relationship. Not opacity related.
         """
+        assert isinstance(mobject1, ImageMobject)
+        assert isinstance(mobject2, ImageMobject)
         assert mobject1.pixel_array.shape == mobject2.pixel_array.shape, (
             f"Mobject pixel array shapes incompatible for interpolation.\n"
             f"Mobject 1 ({mobject1}) : {mobject1.pixel_array.shape}\n"
@@ -291,7 +309,7 @@ class ImageMobject(AbstractImageMobject):
 
     def get_style(self) -> dict[str, Any]:
         return {
-            "fill_color": ManimColor(self.color.get_rgb()).to_hex(),
+            "fill_color": ManimColor(self.color.to_rgb()).to_hex(),
             "fill_opacity": self.fill_opacity,
         }
 
@@ -320,7 +338,7 @@ class ImageMobjectFromCamera(AbstractImageMobject):
         super().__init__(scale_to_resolution=False, **kwargs)
 
     # TODO: Get rid of this.
-    def get_pixel_array(self):
+    def get_pixel_array(self) -> PixelArray:
         self.pixel_array = self.camera.pixel_array
         return self.pixel_array
 
@@ -331,7 +349,11 @@ class ImageMobjectFromCamera(AbstractImageMobject):
         self.add(self.display_frame)
         return self
 
-    def interpolate_color(self, mobject1, mobject2, alpha) -> None:
+    def interpolate_color(
+        self, mobject1: Mobject, mobject2: Mobject, alpha: float
+    ) -> None:
+        assert isinstance(mobject1, ImageMobject)
+        assert isinstance(mobject2, ImageMobject)
         assert mobject1.pixel_array.shape == mobject2.pixel_array.shape, (
             f"Mobject pixel array shapes incompatible for interpolation.\n"
             f"Mobject 1 ({mobject1}) : {mobject1.pixel_array.shape}\n"
