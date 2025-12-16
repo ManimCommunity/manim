@@ -286,23 +286,30 @@ class MathTex(SingleStringMathTex):
                 string_part = rf"\special{{dvisvgm:raw <g id='unique{idx:03d}'>}}"
                 matched_strings_and_ids.append((tex_string, f"unique{idx:03d}"))
                 print("tex_string: '", tex_string, "'")
-                # Repeat replace until stable
-                processed_string = tex_string
-                for substring in substrings_to_isolate:
-                    remaining_string = tex_string
-                    processed_string = ""
-                    while match := re.match(
-                        f"(.*?)({substring})(.*)", remaining_string
-                    ):
-                        pre_match = match.group(1)
-                        matched_string = match.group(2)
-                        post_match = match.group(3)
+                # Try to match with all substrings_to_isolate and apply the first match
+                # then match again (on the rest of the string) and continue until no
+                # characters are left in the string
+                unprocessed_string = tex_string
+                processed_string = ""
+                while len(unprocessed_string) > 0:
+                    first_match_start = len(unprocessed_string)
+                    first_match = None
+                    for substring in substrings_to_isolate:
+                        match = re.match(f"(.*?)({substring})(.*)", unprocessed_string)
+                        if match and len(match.group(1)) < first_match_start:
+                            first_match = match
+                            first_match_start = len(match.group(1))
+
+                    if first_match:
+                        pre_match = first_match.group(1)
+                        matched_string = first_match.group(2)
+                        post_match = first_match.group(3)
                         pre_string = (
                             rf"\special{{dvisvgm:raw <g id='unique{ssIdx:03d}ss'>}}"
                         )
                         post_string = r"\special{dvisvgm:raw </g>}"
                         matched_strings_and_ids.append(
-                            (matched_string, f"unique{ssIdx:03d}")
+                            (matched_string, f"unique{ssIdx:03d}ss")
                         )
                         ssIdx += 1
                         processed_string = (
@@ -312,8 +319,10 @@ class MathTex(SingleStringMathTex):
                             + matched_string
                             + post_string
                         )
-                        remaining_string = post_match
-                    processed_string = processed_string + remaining_string
+                        unprocessed_string = post_match
+                    else:
+                        processed_string = processed_string + unprocessed_string
+                        unprocessed_string = ""
 
                 string_part += processed_string
                 string_part += r"\special{dvisvgm:raw </g>}"
