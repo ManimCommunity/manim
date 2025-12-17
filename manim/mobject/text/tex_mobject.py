@@ -372,9 +372,11 @@ class MathTex(SingleStringMathTex):
         if self.organize_left_to_right:
             self._organize_submobjects_left_to_right()
 
-    def get_part_by_tex(self, tex: str, **kwargs: Any) -> MathTex | None:
-        all_parts = self.get_parts_by_tex(tex, **kwargs)
-        return all_parts[0] if all_parts else None
+    def get_part_by_tex(self, tex: str, **kwargs: Any) -> VGroup | None:
+        for tex_str, match_id in self.matched_strings_and_ids:
+            if tex_str == tex:
+                return self.id_to_vgroup_dict[match_id]
+        return None
 
     def set_color_by_tex(
         self, tex: str, color: ParsableManimColor, **kwargs: Any
