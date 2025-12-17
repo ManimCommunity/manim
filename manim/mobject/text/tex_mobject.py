@@ -23,10 +23,9 @@ __all__ = [
 ]
 
 
-import itertools as it
 import operator as op
 import re
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable
 from functools import reduce
 from textwrap import dedent
 from typing import Any
@@ -343,21 +342,16 @@ class MathTex(SingleStringMathTex):
                 joined_string = joined_string + string_part
             return joined_string
 
-        # self.tex_strings = self._break_up_tex_strings(tex_strings)
         try:
             joined_string = join_tex_strings_with_unique_deliminters(
                 self.tex_strings, self.substrings_to_isolate
             )
-            # print("self.arg_separator.join(self.tex_strings)")
-            # print("'" + self.arg_separator.join(self.tex_strings) + "'")
             super().__init__(
-                # self.arg_separator.join(self.tex_strings),
                 joined_string,
                 tex_environment=self.tex_environment,
                 tex_template=self.tex_template,
                 **kwargs,
             )
-            # self._break_up_by_substrings()
         except ValueError as compilation_error:
             if self.brace_notation_split_occurred:
                 logger.error(
@@ -377,79 +371,6 @@ class MathTex(SingleStringMathTex):
 
         if self.organize_left_to_right:
             self._organize_submobjects_left_to_right()
-
-    def _break_up_tex_strings(self, tex_strings: Sequence[str]) -> list[str]:
-        # Separate out anything surrounded in double braces
-        pre_split_length = len(tex_strings)
-        tex_strings_brace_splitted = [
-            re.split("{{(.*?)}}", str(t)) for t in tex_strings
-        ]
-        tex_strings_combined = sum(tex_strings_brace_splitted, [])
-        if len(tex_strings_combined) > pre_split_length:
-            self.brace_notation_split_occurred = True
-
-        # Separate out any strings specified in the isolate
-        # or tex_to_color_map lists.
-        patterns = []
-        patterns.extend(
-            [
-                f"({re.escape(ss)})"
-                for ss in it.chain(
-                    self.substrings_to_isolate,
-                    self.tex_to_color_map.keys(),
-                )
-            ],
-        )
-        pattern = "|".join(patterns)
-        if pattern:
-            pieces = []
-            for s in tex_strings_combined:
-                pieces.extend(re.split(pattern, s))
-        else:
-            pieces = tex_strings_combined
-        return [p for p in pieces if p]
-
-    def _break_up_by_substrings(self) -> Self:
-        """
-        Reorganize existing submobjects one layer
-        deeper based on the structure of tex_strings (as a list
-        of tex_strings)
-        """
-        new_submobjects: list[VMobject] = []
-        curr_index = 0
-        for tex_string in self.tex_strings:
-            sub_tex_mob = SingleStringMathTex(
-                tex_string,
-                tex_environment=self.tex_environment,
-                tex_template=self.tex_template,
-            )
-            num_submobs = len(sub_tex_mob.submobjects)
-            new_index = (
-                curr_index + num_submobs + len("".join(self.arg_separator.split()))
-            )
-            if num_submobs == 0:
-                last_submob_index = min(curr_index, len(self.submobjects) - 1)
-                sub_tex_mob.move_to(self.submobjects[last_submob_index], RIGHT)
-            else:
-                sub_tex_mob.submobjects = self.submobjects[curr_index:new_index]
-            new_submobjects.append(sub_tex_mob)
-            curr_index = new_index
-        self.submobjects = new_submobjects
-        return self
-
-    def get_parts_by_tex(
-        self, tex: str, substring: bool = True, case_sensitive: bool = True
-    ) -> VGroup:
-        def test(tex1: str, tex2: str) -> bool:
-            if not case_sensitive:
-                tex1 = tex1.lower()
-                tex2 = tex2.lower()
-            if substring:
-                return tex1 in tex2
-            else:
-                return tex1 == tex2
-
-        return VGroup(*(m for m in self.submobjects if test(tex, m.get_tex_string())))
 
     def get_part_by_tex(self, tex: str, **kwargs: Any) -> MathTex | None:
         all_parts = self.get_parts_by_tex(tex, **kwargs)
@@ -505,12 +426,6 @@ class MathTex(SingleStringMathTex):
         if part not in split_self:
             raise ValueError("Trying to get index of part not in MathTex")
         return split_self.index(part)
-
-    def index_of_part_by_tex(self, tex: str, **kwargs: Any) -> int:
-        part = self.get_part_by_tex(tex, **kwargs)
-        if part is None:
-            return -1
-        return self.index_of_part(part)
 
     def sort_alphabetically(self) -> None:
         self.submobjects.sort(key=lambda m: m.get_tex_string())
