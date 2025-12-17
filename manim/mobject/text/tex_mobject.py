@@ -322,7 +322,7 @@ class MathTex(SingleStringMathTex):
                 # Try to match with all substrings_to_isolate and apply the first match
                 # then match again (on the rest of the string) and continue until no
                 # characters are left in the string
-                unprocessed_string = tex_string
+                unprocessed_string = str(tex_string)
                 processed_string = ""
                 while len(unprocessed_string) > 0:
                     first_match = locate_first_match(
@@ -351,6 +351,9 @@ class MathTex(SingleStringMathTex):
                 tex_environment=self.tex_environment,
                 tex_template=self.tex_template,
                 **kwargs,
+            )
+            self.tex_string = self.arg_separator.join(
+                [str(s) for s in self.tex_strings]
             )
         except ValueError as compilation_error:
             if self.brace_notation_split_occurred:

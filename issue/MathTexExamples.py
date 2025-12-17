@@ -235,5 +235,14 @@ class ExampleScene12(Scene):
         self.add(eq)
 
 
+class ExampleScene13(Scene):
+    def construct(self):
+        matrix_elements = [[1, 2, 3]]
+        row = 0
+        column = 2
+        matrix = Matrix(matrix_elements)
+        print(matrix.get_columns()[column][row].tex_string)
+
+
 # Get inspiration from
 # https://docs.manim.community/en/stable/guides/using_text.html#text-with-latex
