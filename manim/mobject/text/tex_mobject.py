@@ -12,7 +12,7 @@ r"""Mobjects representing text rendered using LaTeX.
 
 from __future__ import annotations
 
-from manim.utils.color import BLACK, ManimColor, ParsableManimColor
+from manim.utils.color import BLACK, ParsableManimColor
 
 __all__ = [
     "SingleStringMathTex",
@@ -266,12 +266,13 @@ class MathTex(SingleStringMathTex):
         self.tex_template = kwargs.pop("tex_template", config["tex_template"])
         self.arg_separator = arg_separator
         self.substrings_to_isolate = (
-            [] if substrings_to_isolate is None else substrings_to_isolate
+            [] if substrings_to_isolate is None else list(substrings_to_isolate)
         )
         if tex_to_color_map is None:
             self.tex_to_color_map: dict[str, ParsableManimColor] = {}
         else:
             self.tex_to_color_map = tex_to_color_map
+        self.substrings_to_isolate.extend(self.tex_to_color_map.keys())
         self.tex_environment = tex_environment
         self.brace_notation_split_occurred = False
         self.tex_strings = tex_strings
@@ -457,9 +458,9 @@ class MathTex(SingleStringMathTex):
     def set_color_by_tex(
         self, tex: str, color: ParsableManimColor, **kwargs: Any
     ) -> Self:
-        parts_to_color = self.get_parts_by_tex(tex, **kwargs)
-        for part in parts_to_color:
-            part.set_color(color)
+        for tex_str, match_id in self.matched_strings_and_ids:
+            if tex_str == tex:
+                self.id_to_vgroup_dict[match_id].set_color(color)
         return self
 
     def set_opacity_by_tex(
@@ -485,22 +486,18 @@ class MathTex(SingleStringMathTex):
         """
         if remaining_opacity is not None:
             self.set_opacity(opacity=remaining_opacity)
-        for part in self.get_parts_by_tex(tex):
-            part.set_opacity(opacity)
+        for tex_str, match_id in self.matched_strings_and_ids:
+            if tex_str == tex:
+                self.id_to_vgroup_dict[match_id].set_opacity(opacity)
         return self
 
     def set_color_by_tex_to_color_map(
         self, texs_to_color_map: dict[str, ParsableManimColor], **kwargs: Any
     ) -> Self:
         for texs, color in list(texs_to_color_map.items()):
-            try:
-                # If the given key behaves like tex_strings
-                texs + ""
-                self.set_color_by_tex(texs, ManimColor(color), **kwargs)
-            except TypeError:
-                # If the given key is a tuple
-                for tex in texs:
-                    self.set_color_by_tex(tex, ManimColor(color), **kwargs)
+            for match in self.matched_strings_and_ids:
+                if match[0] == texs:
+                    self.id_to_vgroup_dict[match[1]].set_color(color)
         return self
 
     def index_of_part(self, part: MathTex) -> int:
