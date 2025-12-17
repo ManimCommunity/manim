@@ -262,6 +262,7 @@ class MathTex(SingleStringMathTex):
         tex_environment: str | None = "align*",
         **kwargs: Any,
     ):
+        self.texstring = ""
         self.tex_template = kwargs.pop("tex_template", config["tex_template"])
         self.arg_separator = arg_separator
         self.substrings_to_isolate = (

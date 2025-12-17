@@ -244,5 +244,14 @@ class ExampleScene13(Scene):
         print(matrix.get_columns()[column][row].tex_string)
 
 
+class ExampleScene14(Scene):
+    def construct(self):
+        start = MathTex("A", r"\to", "B")
+        end = MathTex("B", r"\to", "A")
+
+        self.add(start)
+        self.play(TransformMatchingTex(start, end, fade_transform_mismatches=True))
+
+
 # Get inspiration from
 # https://docs.manim.community/en/stable/guides/using_text.html#text-with-latex
