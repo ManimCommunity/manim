@@ -215,5 +215,25 @@ class ExampleScene10(Scene):
         # eq2[1].set_color(BLUE)
 
 
+class ExampleScene11(Scene):
+    def construct(self):
+        t2cm = {"n": RED, "1": GREEN, "x": YELLOW}
+        eq = MathTex(r"\sum_{1}^{n} x", tex_to_color_map=t2cm).scale(1.3)
+
+        self.add(eq)
+
+
+class ExampleScene12(Scene):
+    def construct(self):
+        eq = MathTex(r"\sum_{1}^{n} x", substrings_to_isolate=["1", "n", "x"]).scale(
+            1.3
+        )
+        eq.set_color_by_tex("1", YELLOW)
+        eq.set_color_by_tex("x", RED)
+        eq.set_opacity_by_tex("n", 0.5)
+
+        self.add(eq)
+
+
 # Get inspiration from
 # https://docs.manim.community/en/stable/guides/using_text.html#text-with-latex
