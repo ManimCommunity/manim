@@ -222,7 +222,7 @@ class Scene:
         self.foreground_mobjects: list[Mobject] = []
         if self.random_seed is not None:
             random.seed(self.random_seed)
-            np.random.seed(self.random_seed)
+            np.random.default_rng(self.random_seed)
 
     @property
     def camera(self) -> Camera | OpenGLCamera:
