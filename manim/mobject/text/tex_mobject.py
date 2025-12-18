@@ -302,8 +302,8 @@ class MathTex(SingleStringMathTex):
             pre_match = first_match.group(1)
             matched_string = first_match.group(2)
             post_match = first_match.group(3)
-            pre_string = rf"\special{{dvisvgm:raw <g id='unique{ssIdx:03d}ss'>}}"
-            post_string = r"\special{dvisvgm:raw </g>}"
+            pre_string = "{" + rf"\special{{dvisvgm:raw <g id='unique{ssIdx:03d}ss'>}}"
+            post_string = r"\special{dvisvgm:raw </g>}}"
             self.matched_strings_and_ids.append(
                 (matched_string, f"unique{ssIdx:03d}ss")
             )

@@ -460,7 +460,7 @@ class ExampleScene21(Scene):
         # Original string which fails to compile
         # reqeq2 = MathTex(r"Y_{ij} = \mu_i + \gamma_i X_{ij} + e_{ij}", substrings_to_isolate = ["i"])
         reqeq2 = MathTex(
-            r"Y_{ij} = \mu_{i} + \gamma_{i} X_{ij} + e_{ij}",
+            r"Y_{ij} = \mu_i + \gamma_i X_{ij} + e_{ij}",
             substrings_to_isolate=["i"],
         )
         self.add(reqeq2)
