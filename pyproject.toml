@@ -151,6 +151,7 @@ select = [
   "E",
   "F",
   "I",
+  "NPY",
   "PERF",
   "PGH",
   "PT",
