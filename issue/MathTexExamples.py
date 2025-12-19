@@ -94,10 +94,10 @@ class Scene6(Scene):
     def construct(self):
         formula = MathTex(
             r"a^2 + b^2 = c^2 + d^2 - a^2",
-            substrings_to_isolate=["[acd]"],
+            substrings_to_isolate=["a", "c", "d"],
         ).scale(1.3)
 
-        formula.set_color_by_tex("c", ORANGE)
+        formula.set_color_by_tex("c", YELLOW)
         formula.set_color_by_tex("a", RED)
 
         self.add(formula)
@@ -107,7 +107,7 @@ class Scene7(Scene):
     def construct(self):
         formula = MathTex(
             r"a^2 + b^2 = c^2 + d^2 - 2 a^2",
-            substrings_to_isolate=["[acd]"],
+            substrings_to_isolate=["a", "c", "d"],
         ).scale(1.3)
 
         formula.set_color_by_tex("c", GREEN)
