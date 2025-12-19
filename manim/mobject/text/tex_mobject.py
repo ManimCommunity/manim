@@ -384,7 +384,7 @@ class MathTex(SingleStringMathTex):
         curr_index = 0
         for tex_string in self.tex_strings:
             sub_tex_mob = SingleStringMathTex(
-                tex_string,
+                str(tex_string),
                 tex_environment=self.tex_environment,
                 tex_template=self.tex_template,
             )
