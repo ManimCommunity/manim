@@ -353,9 +353,7 @@ class MathTex(SingleStringMathTex):
                 tex_template=self.tex_template,
                 **kwargs,
             )
-            self.tex_string = self.arg_separator.join(
-                [str(s) for s in self.tex_strings]
-            )
+            self._break_up_by_substrings()
         except ValueError as compilation_error:
             if self.brace_notation_split_occurred:
                 logger.error(
@@ -375,6 +373,34 @@ class MathTex(SingleStringMathTex):
 
         if self.organize_left_to_right:
             self._organize_submobjects_left_to_right()
+
+    def _break_up_by_substrings(self) -> Self:
+        """
+        Reorganize existing submobjects one layer
+        deeper based on the structure of tex_strings (as a list
+        of tex_strings)
+        """
+        new_submobjects: list[VMobject] = []
+        curr_index = 0
+        for tex_string in self.tex_strings:
+            sub_tex_mob = SingleStringMathTex(
+                tex_string,
+                tex_environment=self.tex_environment,
+                tex_template=self.tex_template,
+            )
+            num_submobs = len(sub_tex_mob.submobjects)
+            new_index = (
+                curr_index + num_submobs + len("".join(self.arg_separator.split()))
+            )
+            if num_submobs == 0:
+                last_submob_index = min(curr_index, len(self.submobjects) - 1)
+                sub_tex_mob.move_to(self.submobjects[last_submob_index], RIGHT)
+            else:
+                sub_tex_mob.submobjects = self.submobjects[curr_index:new_index]
+            new_submobjects.append(sub_tex_mob)
+            curr_index = new_index
+        self.submobjects = new_submobjects
+        return self
 
     def get_part_by_tex(self, tex: str, **kwargs: Any) -> VGroup | None:
         for tex_str, match_id in self.matched_strings_and_ids:
