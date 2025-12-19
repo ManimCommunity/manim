@@ -225,6 +225,11 @@ class Scene13(Scene):
 
 
 class Scene14(Scene):
+    """
+    Triggers this exception
+    Exception in TransformMatchingTex::get_mobject_key
+    """
+
     def construct(self):
         start = MathTex("A", r"\to", "B")
         end = MathTex("B", r"\to", "A")
