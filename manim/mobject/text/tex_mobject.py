@@ -262,7 +262,6 @@ class MathTex(SingleStringMathTex):
         tex_environment: str | None = "align*",
         **kwargs: Any,
     ):
-        self.texstring = ""
         self.tex_template = kwargs.pop("tex_template", config["tex_template"])
         self.arg_separator = arg_separator
         self.substrings_to_isolate = (
@@ -275,7 +274,12 @@ class MathTex(SingleStringMathTex):
         self.substrings_to_isolate.extend(self.tex_to_color_map.keys())
         self.tex_environment = tex_environment
         self.brace_notation_split_occurred = False
-        self.tex_strings = tex_strings
+        # Deal with the case where tex_strings contains integers instead
+        # of strings.
+        tex_strings_validated = [
+            string if isinstance(string, str) else str(string) for string in tex_strings
+        ]
+        self.tex_strings = tex_strings_validated
         self.matched_strings_and_ids: list[tuple[str, str]] = []
 
         try:
@@ -288,6 +292,8 @@ class MathTex(SingleStringMathTex):
                 tex_template=self.tex_template,
                 **kwargs,
             )
+            # Save the original tex_string
+            self.tex_string = self.arg_separator.join(self.tex_strings)
             self._break_up_by_substrings()
         except ValueError as compilation_error:
             if self.brace_notation_split_occurred:
