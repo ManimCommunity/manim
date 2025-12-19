@@ -3,7 +3,7 @@ from __future__ import annotations
 from manim import *
 
 
-class ExampleScene2(Scene):
+class Scene2(Scene):
     def construct(self):
         formula = MathTex(
             r"P(X=k) = 0.5^k (1-0.5)^{12-k}",
@@ -14,7 +14,7 @@ class ExampleScene2(Scene):
         self.add(formula)
 
 
-class ExampleScene3(Scene):
+class Scene3(Scene):
     def construct(self):
         formula = MathTex(
             r"P(X=k) =",
@@ -37,7 +37,7 @@ class ExampleScene3(Scene):
         self.add(formula)
 
 
-class ExampleScene4a(Scene):
+class Scene4a(Scene):
     def construct(self):
         formula = MathTex(
             r"a^2 + b^2 = c^2 + a^2",
@@ -52,7 +52,7 @@ class ExampleScene4a(Scene):
         self.add(formula)
 
 
-class ExampleScene4b(Scene):
+class Scene4b(Scene):
     def construct(self):
         formula = MathTex(
             r"a^2 + b^2 = c^2 + a^2",
@@ -67,7 +67,7 @@ class ExampleScene4b(Scene):
         self.add(formula)
 
 
-class ExampleScene5(Scene):
+class Scene5(Scene):
     def construct(self):
         formula = MathTex(
             r"a^2 + b^2 = c^2 + d^2 - a^2",
@@ -85,12 +85,12 @@ class ExampleScene5(Scene):
 # TODO:
 # When all scenes are rendered with a single command line call
 # uv run manim render MathTexExamples.py --write_all
-# ExampleScene6 fails with the following error
+# Scene6 fails with the following error
 # KeyError: 'unique001ss'
 # I think it is related to a caching issue, because the error vanishes
 # when the scene is rendered by itself.
-# uv run manim render MathTexExamples.py ExampleScene6
-class ExampleScene6(Scene):
+# uv run manim render MathTexExamples.py Scene6
+class Scene6(Scene):
     def construct(self):
         formula = MathTex(
             r"a^2 + b^2 = c^2 + d^2 - a^2",
@@ -103,7 +103,7 @@ class ExampleScene6(Scene):
         self.add(formula)
 
 
-class ExampleScene7(Scene):
+class Scene7(Scene):
     def construct(self):
         formula = MathTex(
             r"a^2 + b^2 = c^2 + d^2 - 2 a^2",
@@ -116,7 +116,7 @@ class ExampleScene7(Scene):
         self.add(formula)
 
 
-class ExampleScene8(Scene):
+class Scene8(Scene):
     """
     Example based on this issue:
     set_color_by_tex selects wrong substring in certain contexts
@@ -139,7 +139,7 @@ class ExampleScene8(Scene):
         self.add(formula)
 
 
-class ExampleScene9(Scene):
+class Scene9(Scene):
     def construct(self):
         t2cm = {r"\sum": BLUE, "^{n}": RED, "_{1}": GREEN, "x": YELLOW}
         eq1 = MathTex(r"\sum", "^{n}", "_{1}", "x").scale(1.3)
@@ -160,7 +160,7 @@ class ExampleScene9(Scene):
         self.add(grp)
 
 
-class ExampleScene10(Scene):
+class Scene10(Scene):
     def construct(self):
         # TODO: This approach to highlighting \sum does not work right now.
         # It changes the shape of the rendered equation.
@@ -195,7 +195,7 @@ class ExampleScene10(Scene):
         # eq2[1].set_color(BLUE)
 
 
-class ExampleScene11(Scene):
+class Scene11(Scene):
     def construct(self):
         t2cm = {"n": RED, "1": GREEN, "x": YELLOW}
         eq = MathTex(r"\sum_{1}^{n} x", tex_to_color_map=t2cm).scale(1.3)
@@ -203,7 +203,7 @@ class ExampleScene11(Scene):
         self.add(eq)
 
 
-class ExampleScene12(Scene):
+class Scene12(Scene):
     def construct(self):
         eq = MathTex(r"\sum_{1}^{n} x", substrings_to_isolate=["1", "n", "x"]).scale(
             1.3
@@ -215,7 +215,7 @@ class ExampleScene12(Scene):
         self.add(eq)
 
 
-class ExampleScene13(Scene):
+class Scene13(Scene):
     def construct(self):
         matrix_elements = [[1, 2, 3]]
         row = 0
@@ -224,7 +224,7 @@ class ExampleScene13(Scene):
         print(matrix.get_columns()[column][row].tex_string)
 
 
-class ExampleScene14(Scene):
+class Scene14(Scene):
     def construct(self):
         start = MathTex("A", r"\to", "B")
         end = MathTex("B", r"\to", "A")
@@ -233,7 +233,7 @@ class ExampleScene14(Scene):
         self.play(TransformMatchingTex(start, end, fade_transform_mismatches=True))
 
 
-class ExampleScene15(Scene):
+class Scene15(Scene):
     """
     Example taken from
     TeX splitting can cause the last parts of an equation to not be displayed
@@ -271,7 +271,7 @@ class ExampleScene15(Scene):
         self.add(lpc_implies_not_polynomial, lpc_implies_polynomial)
 
 
-class ExampleScene16(Scene):
+class Scene16(Scene):
     """
     LaTeX rendering incorrectly
     https://github.com/ManimCommunity/manim/issues/2912
@@ -294,7 +294,7 @@ class ExampleScene16(Scene):
         self.add(Tex(r"$\frac{a}{b}$", tex_template=template))
 
 
-class ExampleScene17(Scene):
+class Scene17(Scene):
     """
     Tex splitting issue with frac numerator
     https://github.com/ManimCommunity/manim/issues/2884
@@ -322,7 +322,7 @@ class ExampleScene17(Scene):
         self.wait(2)
 
 
-class ExampleScene18(Scene):
+class Scene18(Scene):
     """
     Transforming to similar MathTex object distorts sometimes
     https://github.com/ManimCommunity/manim/issues/2544
@@ -344,14 +344,15 @@ class ExampleScene18(Scene):
         self.wait()
 
 
-class ExampleScene19(Scene):
+class Scene19(Scene):
     """
-    Docstring for ExampleScene19
     Manim's unexpected colouring behaviour under the radical sign
     https://github.com/ManimCommunity/manim/issues/1996
 
-    The code does not run at the moment.
+    The code from the issue does not run at the moment.
     AttributeError: VMobjectFromSVGPath object has no attribute 'tex_string'
+
+    The code have been adjusted to be able to run.
     """
 
     def construct(self):
@@ -359,51 +360,47 @@ class ExampleScene19(Scene):
         val_b = 2
         color_a = "#0470cf"
         color_b = "#cf0492"
-        tex_a = Tex(str(val_a).format(int), color=color_a).move_to([-1, 2, 0]).scale(2)
-        tex_b = Tex(str(val_b).format(int), color=color_b).move_to([1, 2, 0]).scale(2)
+        tex_a = Tex(str(val_a), color=color_a).move_to([-1, 2, 0]).scale(2)
+        tex_b = Tex(str(val_b), color=color_b).move_to([1, 2, 0]).scale(2)
 
         self.play(FadeIn(tex_a, tex_b))
         self.wait()
 
-        # using \over because \frac fails here
         form = MathTex(
-            r"\hat{u}= {  3 \hat{i}+ 2\hat{j}  \over{ \sqrt{ {2^{2}+3^{2} } } } }",
+            # unique000
+            r"\hat{u}= \frac{ 3 \hat{i}+ 2\hat{j}}{\sqrt{ {",
+            # unique001
+            r"2",
+            # unique002
+            r"^{2}+",
+            # unique003
+            r"3",
+            # unique004
+            r"^{2} } } } } }",
             substrings_to_isolate=["2", "3"],
         ).scale(1.25)
 
-        # This line triggers the error
-        idx_a = np.array(
-            [
-                i
-                for i, character in enumerate(form)
-                if character.get_tex_string() == tex_a[0].get_tex_string()
-            ],
-            dtype="int",
-        )
-        idx_b = np.array(
-            [
-                i
-                for i, character in enumerate(form)
-                if character.get_tex_string() == tex_b[0].get_tex_string()
-            ],
-            dtype="int",
-        )
+        get_pos_a = form.id_to_vgroup_dict["unique003"].get_center()
+        get_pos_b = form.id_to_vgroup_dict["unique001"].get_center()
 
-        get_pos_a = form[idx_a[0]].get_center()
-        get_pos_b = form[idx_b[0]].get_center()
-
-        # using the set_color methods of MathTex object
-        form.set_color_by_tex(str(val_a).format(int), color_a)
-        b1_copy = form[idx_b[0]].set_color(color_b)
-        print(b1_copy)
+        form.id_to_vgroup_dict["unique003"].set_color(color_a)
+        form.id_to_vgroup_dict["unique001"].set_color(color_b)
 
         self.play(FadeIn(form))
-        self.play(tex_a.animate.move_to(get_pos_a).match_height(form[idx_a[0]]))
-        self.play(tex_b.animate.move_to(get_pos_b).match_height(form[idx_b[0]]))
+        self.play(
+            tex_a.animate.move_to(get_pos_a).match_height(
+                form.id_to_vgroup_dict["unique003"]
+            )
+        )
+        self.play(
+            tex_b.animate.move_to(get_pos_b).match_height(
+                form.id_to_vgroup_dict["unique001"]
+            )
+        )
         self.wait(1)
 
 
-class ExampleScene20(Scene):
+class Scene20(Scene):
     """
     LaTex Error in combination of MathTex and SurroundingRectangle
     https://github.com/ManimCommunity/manim/issues/1907
@@ -448,22 +445,43 @@ class ExampleScene20(Scene):
         self.wait(5)
 
 
-class ExampleScene21(Scene):
+class Scene21(Scene):
     """
     LaTeX compilation error when breaking up a MathTex string by subscripts
     https://github.com/ManimCommunity/manim/issues/1865
 
-    If I add {} around each subscript, the code works as expected.
+    This seems to work well.
     """
 
     def construct(self):
-        # Original string which fails to compile
-        # reqeq2 = MathTex(r"Y_{ij} = \mu_i + \gamma_i X_{ij} + e_{ij}", substrings_to_isolate = ["i"])
         reqeq2 = MathTex(
-            r"Y_{ij} = \mu_i + \gamma_i X_{ij} + e_{ij}",
-            substrings_to_isolate=["i"],
+            r"Y_{ij} = \mu_i + \gamma_i X_{ij} + e_{ij}", substrings_to_isolate=["i"]
         )
         self.add(reqeq2)
+
+
+class Scene22(Scene):
+    """
+    uwezi on discord 2025-05-27 Kerning (tex vs text)
+    https://discord.com/channels/581738731934056449/1376977419269050460/1376998448724967454
+
+    In the thread it is explained that the tex_environment should
+    be given without the opening curly brace.
+    tex_environment="minipage}{20em}"
+    The code below seems to work fine.
+    """
+
+    def construct(self):
+        tex = Tex(
+            r"""
+Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+Donec rhoncus eros turpis, quis ullamcorper augue pretium eget.
+Nullam hendrerit massa at mauris lacinia, eget rhoncus
+enim vestibulum.
+""",
+            tex_environment="{minipage}{20em}",
+        )
+        self.add(tex)
 
 
 # Get inspiration from
