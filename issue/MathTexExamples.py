@@ -305,7 +305,10 @@ class Scene17(Scene):
     https://github.com/ManimCommunity/manim/issues/2884
 
     Problem is not solved at the moment.
-    Please examine TransformMatchingTex::get_mobject_key() to handle this.
+
+    I don't think it is possible to make this
+    type of animation / transform with the current implementation, as it
+    requires the expression to be able to compile for each segment.
     """
 
     def construct(self):
@@ -315,15 +318,18 @@ class Scene17(Scene):
         )
         self.add(n)
         self.wait(2)
-        # This works
         self.play(TransformMatchingTex(n, denominator))
         self.wait(2)
 
-        # This does not work
         numerator = MathTex(r"\frac{ n + 1 }{ 2 }", substrings_to_isolate="n").shift(
             2 * DOWN
         )
         self.play(TransformMatchingTex(n, numerator))
+        self.wait(2)
+
+        # This approach works fine.
+        fraction_right = MathTex(r"{ ", "n", r" + 1 } \over { 2 }").shift(2 * RIGHT)
+        self.play(TransformMatchingTex(n, fraction_right))
         self.wait(2)
 
 
