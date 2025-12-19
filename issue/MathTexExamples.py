@@ -221,6 +221,7 @@ class Scene13(Scene):
         row = 0
         column = 2
         matrix = Matrix(matrix_elements)
+        print("matrix.get_columns()[column][row].tex_string")
         print(matrix.get_columns()[column][row].tex_string)
 
 
@@ -492,6 +493,15 @@ enim vestibulum.
 """,
             tex_environment="{minipage}{20em}",
         )
+        self.add(tex)
+
+
+class Scene23(Scene):
+    def construct(self):
+        """Test that set_opacity_by_tex works correctly."""
+        tex = MathTex("f(x) = y", substrings_to_isolate=["f(x)"])
+        print(tex.matched_strings_and_ids)
+        tex.set_opacity_by_tex("f(x)", 0.2, 0.5)
         self.add(tex)
 
 
