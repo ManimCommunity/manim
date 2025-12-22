@@ -323,6 +323,11 @@ class Scene16(Scene):
     Problem is still present.
     I think it is related to the fraction line being a line object in the
     svg and not an object defined by bezier curves.
+
+    Currently this fails to run as expected.
+    When inspecting the generated svg file, the group "unique000" that was inserted in the
+    .tex file is not present...
+    https://dvisvgm.de/Manpage/#specials
     """
 
     def construct(self):
@@ -336,6 +341,29 @@ class Scene16(Scene):
         )
 
         self.add(Tex(r"$\frac{a}{b}$", tex_template=template))
+
+
+class Scene16a(Scene):
+    """
+    Currently this fails to run as expected.
+    When inspecting the generated svg file, the group "unique000" that was inserted in the
+    .tex file is not present...
+    KeyError: unique000
+
+    By adding this to MathTex::_break_up_by_substrings
+    new_submobjects.append(self.id_to_vgroup_dict['root'])
+    the code still runs, even if the expected group was not found.
+    """
+
+    def construct(self):
+        self.add(Tex(r"$\frac{a}{b}$", tex_environment="center"))
+
+
+class Scene16b(Scene):
+    """This works fine."""
+
+    def construct(self):
+        self.add(Tex(r"$\frac{a}{b}$", tex_environment=None))
 
 
 class Scene17(Scene):

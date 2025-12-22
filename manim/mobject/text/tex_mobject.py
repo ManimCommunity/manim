@@ -372,14 +372,17 @@ class MathTex(SingleStringMathTex):
         of tex_strings)
         """
         new_submobjects: list[VMobject] = []
-        for tex_string, tex_string_id in self.matched_strings_and_ids:
-            if tex_string_id[-2:] == "ss":
-                continue
-            mtp = MathTexPart()
-            mtp.tex_string = tex_string
-            mtp.submobjects.append(self.id_to_vgroup_dict[tex_string_id])
-            new_submobjects.append(mtp)
-        self.old_submobjects = self.submobjects
+        try:
+            for tex_string, tex_string_id in self.matched_strings_and_ids:
+                if tex_string_id[-2:] == "ss":
+                    continue
+                mtp = MathTexPart()
+                mtp.tex_string = tex_string
+                mtp.submobjects.append(self.id_to_vgroup_dict[tex_string_id])
+                new_submobjects.append(mtp)
+        except KeyError as e:
+            print(f"KeyError: {e}")
+            new_submobjects.append(self.id_to_vgroup_dict["root"])
         self.submobjects = new_submobjects
         return self
 
