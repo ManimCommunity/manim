@@ -204,10 +204,21 @@ class Scene11(Scene):
 
 
 class Scene12(Scene):
+    """
+    The following command
+    uv run manim MathTexExamples.py Scene11 Scene12
+    triggers what I believe is a caching error.
+    If the parameter "use_svg_cache=False" is included in the call
+    to MathTex the issue disappears.
+    KeyError: 'unique000'
+    The issue is that the tex string is the exact same in this
+    scene as in Scene11. This also means that the id_to_vgroup_dict is empty.
+    """
+
     def construct(self):
-        eq = MathTex(r"\sum_{1}^{n} x", substrings_to_isolate=["1", "n", "x"]).scale(
-            1.3
-        )
+        eq = MathTex(
+            r"\sum_{1}^{n} x", substrings_to_isolate=["1", "n", "x"], use_svg_cache=True
+        ).scale(1.3)
         eq.set_color_by_tex("1", YELLOW)
         eq.set_color_by_tex("x", RED)
         eq.set_opacity_by_tex("n", 0.5)

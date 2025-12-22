@@ -26,7 +26,7 @@ from ..types.vectorized_mobject import VGroup, VMobject
 __all__ = ["SVGMobject", "VMobjectFromSVGPath"]
 
 
-SVG_HASH_TO_MOB_MAP: dict[int, VMobject] = {}
+SVG_HASH_TO_MOB_MAP: dict[int, SVGMobject] = {}
 
 
 def _convert_point_to_3d(x: float, y: float) -> np.ndarray:
@@ -171,6 +171,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             if hash_val in SVG_HASH_TO_MOB_MAP:
                 mob = SVG_HASH_TO_MOB_MAP[hash_val].copy()
                 self.add(*mob)
+                self.id_to_vgroup_dict = mob.id_to_vgroup_dict
                 return
 
         self.generate_mobject()
