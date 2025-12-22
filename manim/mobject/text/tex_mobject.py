@@ -39,6 +39,8 @@ from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.tex import TexTemplate
 from manim.utils.tex_file_writing import tex_to_svg_file
 
+from ..opengl.opengl_compatibility import ConvertToOpenGL
+
 
 class SingleStringMathTex(SVGMobject):
     """Elementary building block for rendering text with LaTeX.
@@ -447,7 +449,7 @@ class MathTex(SingleStringMathTex):
         self.submobjects.sort(key=lambda m: m.get_tex_string())
 
 
-class MathTexPart(VMobject):
+class MathTexPart(VMobject, metaclass=ConvertToOpenGL):
     tex_string: str
 
     def __repr__(self) -> str:
