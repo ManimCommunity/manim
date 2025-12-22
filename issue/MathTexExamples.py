@@ -676,5 +676,17 @@ class Scene23(Scene):
         self.add(tex)
 
 
+class Scene24(Scene):
+    def construct(self):
+        exp1 = MathTex("a^2", "+", "b^2", "=", "c^2").shift(2 * UP)
+        exp2 = MathTex("a^2", "=", "c^2", "-", "b^2")
+        exp3 = MathTex("a", "=", r"\sqrt{", "c^2", "-", "b^2", "}").shift(2 * DOWN)
+        self.add(exp1)
+        self.wait(2)
+        self.play(TransformMatchingTex(exp1, exp2), run_time=5)
+        self.play(TransformMatchingTex(exp2, exp3), run_time=5)
+        self.wait(2)
+
+
 # Get inspiration from
 # https://docs.manim.community/en/stable/guides/using_text.html#text-with-latex
