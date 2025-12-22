@@ -372,24 +372,14 @@ class MathTex(SingleStringMathTex):
         of tex_strings)
         """
         new_submobjects: list[VMobject] = []
-        curr_index = 0
-        for tex_string in self.tex_strings:
-            sub_tex_mob = SingleStringMathTex(
-                str(tex_string),
-                tex_environment=self.tex_environment,
-                tex_template=self.tex_template,
-            )
-            num_submobs = len(sub_tex_mob.submobjects)
-            new_index = (
-                curr_index + num_submobs + len("".join(self.arg_separator.split()))
-            )
-            if num_submobs == 0:
-                last_submob_index = min(curr_index, len(self.submobjects) - 1)
-                sub_tex_mob.move_to(self.submobjects[last_submob_index], RIGHT)
-            else:
-                sub_tex_mob.submobjects = self.submobjects[curr_index:new_index]
-            new_submobjects.append(sub_tex_mob)
-            curr_index = new_index
+        for tex_string, tex_string_id in self.matched_strings_and_ids:
+            if tex_string_id[-2:] == "ss":
+                continue
+            mtp = MathTexPart()
+            mtp.tex_string = tex_string
+            mtp.submobjects.append(self.id_to_vgroup_dict[tex_string_id])
+            new_submobjects.append(mtp)
+        self.old_submobjects = self.submobjects
         self.submobjects = new_submobjects
         return self
 
@@ -452,6 +442,13 @@ class MathTex(SingleStringMathTex):
 
     def sort_alphabetically(self) -> None:
         self.submobjects.sort(key=lambda m: m.get_tex_string())
+
+
+class MathTexPart(VMobject):
+    tex_string: str
+
+    def __repr__(self) -> str:
+        return f"{type(self).__name__}({repr(self.tex_string)})"
 
 
 class Tex(MathTex):
