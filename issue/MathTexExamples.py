@@ -87,6 +87,11 @@ class Scene4b(Scene):
 
 
 class Scene5(Scene):
+    """
+    At an earlier stage, I experimented with using a regular expression to
+    locate substrings to isolate. I don't think this is actually needed.
+    """
+
     def construct(self):
         formula = MathTex(
             r"a^2 + b^2 = c^2 + d^2 - a^2",
