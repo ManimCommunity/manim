@@ -3,6 +3,17 @@ from __future__ import annotations
 from manim import *
 
 
+class Scene1(Scene):
+    def construct(self):
+        formula = MathTex(
+            r"P(X=k)",
+            r" = 0.5^k (1-0.5)^{12-k}",
+        )
+        formula.id_to_vgroup_dict["unique001"].set_color(RED)
+        self.add(formula)
+        # self.add(formula.id_to_vgroup_dict['unique001'])
+
+
 class Scene2(Scene):
     def construct(self):
         formula = MathTex(
@@ -106,14 +117,6 @@ class Scene5(Scene):
         self.add(formula)
 
 
-# TODO:
-# When all scenes are rendered with a single command line call
-# uv run manim render MathTexExamples.py --write_all
-# Scene6 fails with the following error
-# KeyError: 'unique001ss'
-# I think it is related to a caching issue, because the error vanishes
-# when the scene is rendered by itself.
-# uv run manim render MathTexExamples.py Scene6
 class Scene6(Scene):
     def construct(self):
         formula = MathTex(
@@ -169,22 +172,21 @@ class Scene9(Scene):
         eq1 = MathTex(r"\sum", "^{n}", "_{1}", "x").scale(1.3)
         eq2 = MathTex(r"\sum", "_{1}", "^{n}", "x").scale(1.3)
 
-        def set_color_by_tex(
-            mathtex: MathTex, tex: str, color: ParsableManimColor
-        ) -> None:
-            for match in mathtex.matched_strings_and_ids:
-                if match[0] == tex:
-                    mathtex.id_to_vgroup_dict[match[1]].set_color(color)
-
-        for k, v in t2cm.items():
-            set_color_by_tex(eq1, k, v)
-            set_color_by_tex(eq2, k, v)
+        for texstring, color in t2cm.items():
+            eq1.set_color_by_tex(texstring, color)
+            eq2.set_color_by_tex(texstring, color)
 
         grp = VGroup(eq1, eq2).arrange_in_grid(2, 1)
         self.add(grp)
 
 
 class Scene10(Scene):
+    """
+    This scene show an example of when the current implementation
+    of substrings_to_isolate fails, as it changes the layout of the
+    rendered latex equation.
+    """
+
     def construct(self):
         # TODO: This approach to highlighting \sum does not work right now.
         # It changes the shape of the rendered equation.
@@ -197,26 +199,42 @@ class Scene10(Scene):
             r"\sum_{1}^{n} x", substrings_to_isolate=list(t2cm2.keys())
         ).scale(1.3)
 
-        def set_color_by_tex(
-            mathtex: MathTex, tex: str, color: ParsableManimColor
-        ) -> None:
-            for match in mathtex.matched_strings_and_ids:
-                if match[0] == tex:
-                    mathtex.id_to_vgroup_dict[match[1]].set_color(color)
+        for texstring, color in t2cm1.items():
+            eq1.set_color_by_tex(texstring, color)
+        for texstring, color in t2cm2.items():
+            eq2.set_color_by_tex(texstring, color)
 
-        for k, v in t2cm1.items():
-            set_color_by_tex(eq1, k, v)
-        for k, v in t2cm2.items():
-            set_color_by_tex(eq2, k, v)
+        grp = VGroup(eq1, eq2).arrange_in_grid(2, 1)
+        self.add(grp)
+
+
+class Scene10a(Scene):
+    """
+    This scene shows a workaround to the issue in Scene10, based on
+    index_labels, it works, but currently the levelling is a bit different
+    the previous implementation of MathTex.
+    """
+
+    def construct(self):
+        t2cm = {"n": RED, "1": GREEN, "x": YELLOW}
+        eq1 = MathTex(r"\sum^{n}_{1} x", substrings_to_isolate=list(t2cm.keys())).scale(
+            1.3
+        )
+        eq2 = MathTex(r"\sum_{1}^{n} x", substrings_to_isolate=list(t2cm.keys())).scale(
+            1.3
+        )
+
+        for texstring, color in t2cm.items():
+            eq1.set_color_by_tex(texstring, color)
+            eq2.set_color_by_tex(texstring, color)
 
         grp = VGroup(eq1, eq2).arrange_in_grid(2, 1)
         self.add(grp)
 
         # This workaround based on index_labels still work
-        # labels = index_labels(eq2)
+        # labels = index_labels(eq2[0][0])
         # self.add(labels)
-        # eq1[0].set_color(BLUE)
-        # eq2[1].set_color(BLUE)
+        eq2[0][0][1].set_color(BLUE)
 
 
 class Scene11(Scene):
@@ -228,17 +246,6 @@ class Scene11(Scene):
 
 
 class Scene12(Scene):
-    """
-    The following command
-    uv run manim MathTexExamples.py Scene11 Scene12
-    triggers what I believe is a caching error.
-    If the parameter "use_svg_cache=False" is included in the call
-    to MathTex the issue disappears.
-    KeyError: 'unique000'
-    The issue is that the tex string is the exact same in this
-    scene as in Scene11. This also means that the id_to_vgroup_dict is empty.
-    """
-
     def construct(self):
         eq = MathTex(
             r"\sum_{1}^{n} x", substrings_to_isolate=["1", "n", "x"], use_svg_cache=True
@@ -258,17 +265,13 @@ class Scene13(Scene):
         matrix = Matrix(matrix_elements)
         print("matrix.get_columns()[column][row].tex_string")
         print(matrix.get_columns()[column][row].tex_string)
+        self.add(matrix)
 
 
 class Scene14(Scene):
-    """
-    Triggers this exception
-    Exception in TransformMatchingTex::get_mobject_key
-    """
-
     def construct(self):
-        start = MathTex("A", r"\to", "B")
-        end = MathTex("B", r"\to", "A")
+        start = MathTex("2", "A", r"\to", "B").shift(UP)
+        end = MathTex("2", "B", r"\to", "A")
 
         self.add(start)
         self.play(TransformMatchingTex(start, end, fade_transform_mismatches=True))
@@ -369,6 +372,22 @@ class Scene17(Scene):
         self.wait(2)
 
 
+class Scene17a(Scene):
+    """This seems to work fine right now."""
+
+    def construct(self):
+        n = MathTex("n").shift(LEFT)
+        denominator = MathTex(r"\frac{ 2 }{ ", "n", " + 1 }").shift(2 * UP)
+        self.add(n)
+        self.wait(2)
+        self.play(TransformMatchingTex(n, denominator))
+        self.wait(2)
+
+        numerator = MathTex(r"\frac{", "n", " + 1 }{ 2 }").shift(2 * DOWN)
+        self.play(TransformMatchingTex(n, numerator))
+        self.wait(2)
+
+
 class Scene18(Scene):
     """
     Transforming to similar MathTex object distorts sometimes
@@ -447,6 +466,73 @@ class Scene19(Scene):
         self.wait(1)
 
 
+class Scene19a(Scene):
+    """
+    This seems to work fine now.
+    I have split the input string manually.
+
+    Minor issue is that the horizontal line in the fraction is not displayed
+    and neither is the horizontal line above the squareroot.
+    """
+
+    def construct(self):
+        val_a = 3
+        val_b = 2
+        color_a = "#f1f514"
+        color_b = "#cf0492"
+        tex_a = (
+            MathTex(str(val_a).format(int), color=color_a).move_to([-1, 2, 0]).scale(2)
+        )
+        tex_b = (
+            MathTex(str(val_b).format(int), color=color_b).move_to([1, 2, 0]).scale(2)
+        )
+
+        self.play(FadeIn(tex_a, tex_b))
+        self.wait()
+
+        form = MathTex(
+            r"\hat{u}= \frac{  ",
+            "3",
+            r" \hat{i} + ",
+            "2",
+            r"\hat{j}}{ \sqrt{ ",
+            "2",
+            "^{2} + ",
+            "3",
+            "^{2} } } }",
+        ).scale(1.25)
+
+        idx_a = [
+            int(i)
+            for i, character in enumerate(form)
+            if character.tex_string == tex_a[0].tex_string
+        ]
+        idx_b = [
+            int(i)
+            for i, character in enumerate(form)
+            if character.tex_string == tex_b[0].tex_string
+        ]
+
+        print(idx_a)
+        print(idx_b)
+
+        get_pos_a = form[idx_a[0]].get_center()
+        get_pos_b = form[idx_b[0]].get_center()
+        a1_copy = []
+        b1_copy = []
+
+        # here I force colouring of two's and three's on the MathTex object
+        for i in range(len(idx_a)):
+            a1_copy += form[idx_a[i]].set_color(color_a)
+        for i in range(len(idx_b)):
+            b1_copy += form[idx_b[i]].set_color(color_b)
+
+        self.play(FadeIn(form))
+        self.play(tex_a.animate.move_to(get_pos_a).match_height(form[idx_a[0]]))
+        self.play(tex_b.animate.move_to(get_pos_b).match_height(form[idx_b[0]]))
+        self.wait(1)
+
+
 class Scene20(Scene):
     """
     LaTex Error in combination of MathTex and SurroundingRectangle
@@ -493,16 +579,38 @@ class Scene20(Scene):
 
 
 class Scene21(Scene):
-    """
+    r"""
     LaTeX compilation error when breaking up a MathTex string by subscripts
     https://github.com/ManimCommunity/manim/issues/1865
 
-    This seems to work well.
+    This currently fails.
+    It can be solved by adding a pair of curly braces around the
+    detected substrings in MathTex::_handle_match
+        pre_string = "{" + rf"\special{{dvisvgm:raw <g id='unique{ssIdx:03d}ss'>}}"
+        post_string = r"\special{dvisvgm:raw </g>}}"
+    But doing that triggers and issue in Scene4a
     """
 
     def construct(self):
         reqeq2 = MathTex(
             r"Y_{ij} = \mu_i + \gamma_i X_{ij} + e_{ij}", substrings_to_isolate=["i"]
+        )
+        self.add(reqeq2)
+
+
+class Scene21a(Scene):
+    """
+    LaTeX compilation error when breaking up a MathTex string by subscripts
+    https://github.com/ManimCommunity/manim/issues/1865
+
+    By inserting curly braces around the objects to isolate,
+    the error vanishes.
+    """
+
+    def construct(self):
+        reqeq2 = MathTex(
+            r"Y_{ij} = \mu_{i} + \gamma_{i} X_{ij} + e_{ij}",
+            substrings_to_isolate=["i"],
         )
         self.add(reqeq2)
 
