@@ -37,7 +37,26 @@ class Scene3(Scene):
         self.add(formula)
 
 
+class Scene4(Scene):
+    def construct(self):
+        formula = MathTex(
+            r"a^2 + b^2 = c^2 + a^2",
+        ).scale(1.3)
+
+        self.add(formula)
+
+
 class Scene4a(Scene):
+    r"""
+    One small issue here is that the power 2 that b is raised to
+    is moved a bit upwards than in Scene4 and Scene4b.
+    This is related to adding a pair of curly braces around the
+    detected substrings in MathTex::_handle_match
+        pre_string = "{" + rf"\special{{dvisvgm:raw <g id='unique{ssIdx:03d}ss'>}}"
+        post_string = r"\special{dvisvgm:raw </g>}}"
+    If the curly braces are not added, the issue disappears.
+    """
+
     def construct(self):
         formula = MathTex(
             r"a^2 + b^2 = c^2 + a^2",
