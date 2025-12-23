@@ -303,7 +303,7 @@ class MathTex(SingleStringMathTex):
             self._organize_submobjects_left_to_right()
 
     def _join_tex_strings_with_unique_deliminters(
-        self, tex_strings: Iterable[str], substrings_to_isolate: Iterable[str]
+        self, tex_strings: list[str], substrings_to_isolate: Iterable[str]
     ) -> str:
         joined_string = ""
         ssIdx = 0
@@ -332,6 +332,8 @@ class MathTex(SingleStringMathTex):
                     unprocessed_string = ""
 
             string_part += processed_string
+            if idx < len(tex_strings) - 1:
+                string_part += self.arg_separator
             string_part += r"\special{dvisvgm:raw </g>}"
             joined_string = joined_string + string_part
         return joined_string
