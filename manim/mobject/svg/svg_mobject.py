@@ -312,7 +312,6 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
                     mob = self.get_mob_from_shape_element(element)
                     if mob is not None:
                         result.append(mob)
-                        parent_name = vgroup_stack[-2]
                         for parent_name in vgroup_stack[:-1]:
                             vgroups[parent_name].add(mob)
             except Exception as e:
