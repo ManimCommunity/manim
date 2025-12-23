@@ -232,9 +232,9 @@ class Scene10a(Scene):
         self.add(grp)
 
         # This workaround based on index_labels still work
-        # labels = index_labels(eq2[0][0])
+        # labels = index_labels(eq2[0])
         # self.add(labels)
-        eq2[0][0][1].set_color(BLUE)
+        eq2[0][1].set_color(BLUE)
 
 
 class Scene11(Scene):
@@ -498,9 +498,6 @@ class Scene19a(Scene):
     """
     This seems to work fine now.
     I have split the input string manually.
-
-    Minor issue is that the horizontal line in the fraction is not displayed
-    and neither is the horizontal line above the squareroot.
     """
 
     def construct(self):
@@ -620,8 +617,12 @@ class Scene21(Scene):
     """
 
     def construct(self):
+        # reqeq2 = MathTex(
+        #    r"Y_{ij} = \mu_i + \gamma_i X_{ij} + e_{ij}", substrings_to_isolate=["i"]
+        # )
         reqeq2 = MathTex(
-            r"Y_{ij} = \mu_i + \gamma_i X_{ij} + e_{ij}", substrings_to_isolate=["i"]
+            r"Y_{ij} = \mu_{i} + \gamma_{i} X_{ij} + e_{ij}",
+            substrings_to_isolate=["i"],
         )
         self.add(reqeq2)
 
@@ -686,6 +687,34 @@ class Scene24(Scene):
         self.play(TransformMatchingTex(exp1, exp2), run_time=5)
         self.play(TransformMatchingTex(exp2, exp3), run_time=5)
         self.wait(2)
+
+
+class Scene25(Scene):
+    """test_tex_white_space_and_non_whitespace_args(using_opengl_renderer):"""
+
+    def construct(self):
+        """Check that correct number of submobjects are created per string when mixing characters with whitespace"""
+        separator = ", \n . \t\t"
+        str_part_1 = "Hello"
+        str_part_2 = "world"
+        str_part_3 = "It is"
+        str_part_4 = "me!"
+        tex = Tex(
+            str_part_1, str_part_2, str_part_3, str_part_4, arg_separator=separator
+        )
+        assert len(tex) == 4
+        print(len(tex[0]))
+        print(tex[0])
+        print(len("".join((str_part_1 + separator).split())))
+        print("".join((str_part_1 + separator).split()))
+        assert len(tex[0]) == len("".join((str_part_1 + separator).split()))
+
+
+class Scene26(Scene):
+    def construct(self):
+        eq = MathTex("{{ a }} + {{ b }} = {{ c }}")
+        self.add(eq)
+        eq.set_color_by_tex("a", YELLOW)
 
 
 # Get inspiration from

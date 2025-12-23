@@ -274,12 +274,7 @@ class MathTex(SingleStringMathTex):
             self.tex_to_color_map = tex_to_color_map
         self.substrings_to_isolate.extend(self.tex_to_color_map.keys())
         self.tex_environment = tex_environment
-        # Deal with the case where tex_strings contains integers instead
-        # of strings.
-        tex_strings_validated = [
-            string if isinstance(string, str) else str(string) for string in tex_strings
-        ]
-        self.tex_strings = tex_strings_validated
+        self.tex_strings = self._prepare_tex_strings(tex_strings)
         self.matched_strings_and_ids: list[tuple[str, str]] = []
 
         try:
@@ -301,6 +296,19 @@ class MathTex(SingleStringMathTex):
 
         if self.organize_left_to_right:
             self._organize_submobjects_left_to_right()
+
+    def _prepare_tex_strings(self, tex_strings: Iterable[str]) -> list[str]:
+        # Deal with the case where tex_strings contains integers instead
+        # of strings.
+        tex_strings_validated = [
+            string if isinstance(string, str) else str(string) for string in tex_strings
+        ]
+        # Locate double curly bracers
+        tex_strings_validated_two = []
+        for tex_string in tex_strings_validated:
+            split = re.split(r"{{|}}", tex_string)
+            tex_strings_validated_two.extend(split)
+        return [string for string in tex_strings_validated_two if len(string) > 0]
 
     def _join_tex_strings_with_unique_deliminters(
         self, tex_strings: list[str], substrings_to_isolate: Iterable[str]
