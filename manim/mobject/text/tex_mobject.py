@@ -27,11 +27,12 @@ import operator as op
 import re
 from collections.abc import Iterable
 from functools import reduce
+from textwrap import dedent
 from typing import Any
 
 from typing_extensions import Self
 
-from manim import config
+from manim import config, logger
 from manim.constants import *
 from manim.mobject.geometry.line import Line
 from manim.mobject.svg.svg_mobject import SVGMobject
@@ -274,6 +275,7 @@ class MathTex(SingleStringMathTex):
             self.tex_to_color_map = tex_to_color_map
         self.substrings_to_isolate.extend(self.tex_to_color_map.keys())
         self.tex_environment = tex_environment
+        self.brace_notation_split_occurred = False
         self.tex_strings = self._prepare_tex_strings(tex_strings)
         self.matched_strings_and_ids: list[tuple[str, str]] = []
 
@@ -291,6 +293,19 @@ class MathTex(SingleStringMathTex):
             self.tex_string = self.arg_separator.join(self.tex_strings)
             self._break_up_by_substrings()
         except ValueError as compilation_error:
+            if self.brace_notation_split_occurred:
+                logger.error(
+                    dedent(
+                        """\
+                        A group of double braces, {{ ... }}, was detected in
+                        your string. Manim splits TeX strings at the double
+                        braces, which might have caused the current
+                        compilation error. If you didn't use the double brace
+                        split intentionally, add spaces between the braces to
+                        avoid the automatic splitting: {{ ... }} --> { { ... } }.
+                        """,
+                    ),
+                )
             raise compilation_error
         self.set_color_by_tex_to_color_map(self.tex_to_color_map)
 
@@ -308,6 +323,8 @@ class MathTex(SingleStringMathTex):
         for tex_string in tex_strings_validated:
             split = re.split(r"{{|}}", tex_string)
             tex_strings_validated_two.extend(split)
+        if len(tex_strings_validated_two) > len(tex_strings_validated):
+            self.brace_notation_split_occurred = True
         return [string for string in tex_strings_validated_two if len(string) > 0]
 
     def _join_tex_strings_with_unique_deliminters(

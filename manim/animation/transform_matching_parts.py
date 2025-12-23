@@ -294,9 +294,4 @@ class TransformMatchingTex(TransformMatchingAbstractBase):
 
     @staticmethod
     def get_mobject_key(mobject: Mobject) -> str:
-        # Ugly hack to make the following test pass
-        # test_TransformMatchingTex_FadeTransformMismatches_NothingToFade
-        try:
-            return mobject.tex_string
-        except Exception:
-            return ""
+        return mobject.tex_string
