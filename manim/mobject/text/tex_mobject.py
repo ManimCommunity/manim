@@ -380,7 +380,7 @@ class MathTex(SingleStringMathTex):
                     continue
                 mtp = MathTexPart()
                 mtp.tex_string = tex_string
-                mtp.submobjects.append(self.id_to_vgroup_dict[tex_string_id])
+                mtp.add(*self.id_to_vgroup_dict[tex_string_id].submobjects)
                 new_submobjects.append(mtp)
         except KeyError as e:
             print(f"KeyError: {e}")
