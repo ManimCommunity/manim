@@ -157,8 +157,7 @@ int get_corners(vec2 controls[3], int degree, float stroke_widths[3], out vec2 c
     return 5;
 }
 
-
-void set_adjascent_info(vec2 c0, vec2 tangent,
+void set_adjacent_info(vec2 c0, vec2 tangent,
                         int degree,
                         vec2 adj[3],
                         out float bevel,
@@ -185,14 +184,14 @@ void find_joint_info(vec2 controls[3], vec2 prev[3], vec2 next[3], int degree){
 
     if(bool(has_prev)){
         vec2 tangent = controls[1] - controls[0];
-        set_adjascent_info(
+        set_adjacent_info(
             controls[0], tangent, degree, prev,
             bevel_start, angle_from_prev
         );
     }
     if(bool(has_next)){
         vec2 tangent = controls[1] - controls[2];
-        set_adjascent_info(
+        set_adjacent_info(
             controls[2], tangent, degree, next,
             bevel_end, angle_to_next
         );

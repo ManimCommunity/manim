@@ -2630,7 +2630,7 @@ class Mobject:
             # make the grid as close to quadratic as possible.
             # choosing cols first can results in cols>rows.
             # This is favored over rows>cols since in general
-            # the sceene is wider than high.
+            # the scene is wider than high.
         if rows is None:
             rows = math.ceil(len(mobs) / cols)
         if cols is None:
@@ -2708,7 +2708,7 @@ class Mobject:
         mobs.extend([placeholder] * (rows * cols - len(mobs)))
         grid = [[mobs[flow_order(r, c)] for c in range(cols)] for r in range(rows)]
 
-        measured_heigths = [
+        measured_heights = [
             max(grid[r][c].height for c in range(cols)) for r in range(rows)
         ]
         measured_widths = [
@@ -2725,7 +2725,7 @@ class Mobject:
                 sizes[i] if sizes[i] is not None else measures[i] for i in range(num)
             ]
 
-        heights = init_sizes(row_heights, rows, measured_heigths, "row_heights")
+        heights = init_sizes(row_heights, rows, measured_heights, "row_heights")
         widths = init_sizes(col_widths, cols, measured_widths, "col_widths")
 
         x, y = 0, 0

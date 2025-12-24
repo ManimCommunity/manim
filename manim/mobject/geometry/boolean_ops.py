@@ -62,7 +62,7 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
 
     def _convert_vmobject_to_skia_path(self, vmobject: VMobject) -> SkiaPath:
         """Converts a :class:`~.VMobject` to SkiaPath. This method only works for
-        cairo renderer because it treats the points as Cubic beizer curves.
+        cairo renderer because it treats the points as Cubic bezier curves.
 
         Parameters
         ----------
@@ -84,7 +84,7 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
         if len(points) == 0:  # what? No points so return empty path
             return path
 
-        # In OpenGL it's quadratic beizer curves while on Cairo it's cubic...
+        # In OpenGL it's quadratic bezier curves while on Cairo it's cubic...
         if config.renderer == RendererType.OPENGL:
             subpaths = vmobject.get_subpaths_from_points(points)
             for subpath in subpaths:

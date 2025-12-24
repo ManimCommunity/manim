@@ -108,7 +108,7 @@ class OpenGLTipableVMobject(OpenGLVMobject):
         """
         tip = self.create_tip(at_start, **kwargs)
         self.reset_endpoints_based_on_tip(tip, at_start)
-        self.asign_tip_attr(tip, at_start)
+        self.assign_tip_attr(tip, at_start)
         self.add(tip)
         return self
 
@@ -161,7 +161,7 @@ class OpenGLTipableVMobject(OpenGLVMobject):
         self.put_start_and_end_on(start, end)
         return self
 
-    def asign_tip_attr(self, tip: OpenGLArrowTip, at_start: bool) -> Self:
+    def assign_tip_attr(self, tip: OpenGLArrowTip, at_start: bool) -> Self:
         if at_start:
             self.start_tip = tip
         else:
