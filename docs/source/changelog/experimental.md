@@ -66,7 +66,7 @@ class MyAnimation(Animation):
         self._sqrs = VGroup(Square())
 
     def _setup_scene(self, scene: Scene) -> None:
-        scene.add(self._sqr)
+        scene.add(self._sqrs)
         self.scene = scene
 
     def interpolate_mobject(self, alpha: float) -> None:
