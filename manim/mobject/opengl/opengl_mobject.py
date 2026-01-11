@@ -128,7 +128,7 @@ class OpenGLMobject:
     ]
     shader_folder: ClassVar[str] = ""
 
-    # _Data and _Uniforms are set as class variables to tell manim how to handle setting/getting these attributes later.
+    # INFO: _Data and _Uniforms are set as class variables to tell manim how to handle setting/getting these attributes later.
     points: _Data[Point3D_Array] = _Data()
     bounding_box: _Data[Point3D_Array] = _Data()
     rgbas: _Data[FloatRGBA_Array] = _Data()
@@ -205,7 +205,6 @@ class OpenGLMobject:
 
         self.init_data()
         self.init_updaters()
-        # self.init_event_listners()
         self.init_points()
         self.color: ManimColor | list[ManimColor] = ManimColor.parse(color)
         self.init_colors()
@@ -1190,7 +1189,7 @@ class OpenGLMobject:
             # make the grid as close to quadratic as possible.
             # choosing cols first can results in cols>rows.
             # This is favored over rows>cols since in general
-            # the sceene is wider than high.
+            # the scene is wider than high.
         if rows is None:
             rows = ceil(len(mobs) / cols)
         if cols is None:
@@ -1282,7 +1281,7 @@ class OpenGLMobject:
         mobs.extend([placeholder] * (rows * cols - len(mobs)))
         grid = [[mobs[flow_order_func(r, c)] for c in range(cols)] for r in range(rows)]
 
-        measured_heigths = [
+        measured_heights = [
             max(grid[r][c].height for c in range(cols)) for r in range(rows)
         ]
         measured_widths = [
@@ -1305,7 +1304,7 @@ class OpenGLMobject:
                 for i in range(num)
             ]
 
-        heights = init_sizes(row_heights, rows, measured_heigths, "row_heights")
+        heights = init_sizes(row_heights, rows, measured_heights, "row_heights")
         widths = init_sizes(col_widths, cols, measured_widths, "col_widths")
 
         x, y = 0.0, 0.0

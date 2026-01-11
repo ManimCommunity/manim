@@ -97,9 +97,9 @@ class _ControlDataWriter(_FramesTester):
     @contextlib.contextmanager
     def testing(self) -> Generator[None, None, None]:
         yield
-        self.save_contol_data()
+        self.save_control_data()
 
-    def save_contol_data(self) -> None:
+    def save_control_data(self) -> None:
         self.frames = self.frames.astype("uint8")
         np.savez_compressed(self.file_path, frame_data=self.frames)
         logger.info(

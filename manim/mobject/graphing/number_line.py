@@ -335,7 +335,7 @@ class NumberLine(Line):
         Returns
         -------
         np.ndarray
-            A numpy array of floats represnting values along the number line.
+            A numpy array of floats representing values along the number line.
         """
         x_min, x_max, x_step = self.x_range
         if not self.include_tip:

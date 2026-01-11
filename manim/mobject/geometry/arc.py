@@ -129,7 +129,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         else:
             self.position_tip(tip, at_start)
         self.reset_endpoints_based_on_tip(tip, at_start)
-        self.asign_tip_attr(tip, at_start)
+        self.assign_tip_attr(tip, at_start)
         self.add(tip)
         return self
 
@@ -216,7 +216,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
             self.put_start_and_end_on(self.get_start(), tip.base)
         return self
 
-    def asign_tip_attr(self, tip: tips.ArrowTip, at_start: bool) -> Self:
+    def assign_tip_attr(self, tip: tips.ArrowTip, at_start: bool) -> Self:
         if at_start:
             self.start_tip = tip
         else:
