@@ -2808,7 +2808,8 @@ class OpenGLMobject:
         for sm, sm1, sm2 in zip(
             self.get_family(),
             mobject1.get_family(),
-            mobject2.get_family(), strict=False,
+            mobject2.get_family(),
+            strict=False,
         ):
             keys = sm.data.keys() & sm1.data.keys() & sm2.data.keys()
             sm.lock_data(

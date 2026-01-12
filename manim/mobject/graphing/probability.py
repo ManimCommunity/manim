@@ -367,7 +367,9 @@ class BarChart(Axes):
 
         labels = VGroup()
 
-        for i, (value, bar_name) in enumerate(zip(val_range, self.bar_names, strict=False)):
+        for i, (value, bar_name) in enumerate(
+            zip(val_range, self.bar_names, strict=False)
+        ):
             # to accommodate negative bars, the label may need to be
             # below or above the x_axis depending on the value of the bar
             direction = UP if self.values[i] < 0 else DOWN

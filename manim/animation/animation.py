@@ -278,9 +278,12 @@ class Animation:
 
     def get_all_families_zipped(self) -> Iterable[tuple]:
         if config["renderer"] == RendererType.OPENGL:
-            return zip(*(mob.get_family() for mob in self.get_all_mobjects()), strict=False)
+            return zip(
+                *(mob.get_family() for mob in self.get_all_mobjects()), strict=False
+            )
         return zip(
-            *(mob.family_members_with_points() for mob in self.get_all_mobjects()), strict=False
+            *(mob.family_members_with_points() for mob in self.get_all_mobjects()),
+            strict=False,
         )
 
     def update_mobjects(self, dt: float) -> None:

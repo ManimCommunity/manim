@@ -444,7 +444,13 @@ class CoordinateSystem:
             elif values is None and axis.scaling.custom_labels:
                 tick_range = axis.get_tick_range()
                 axis.add_labels(
-                    dict(zip(tick_range, axis.scaling.get_custom_labels(tick_range), strict=False))
+                    dict(
+                        zip(
+                            tick_range,
+                            axis.scaling.get_custom_labels(tick_range),
+                            strict=False,
+                        )
+                    )
                 )
                 labels = axis.labels
             else:
@@ -2030,7 +2036,9 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
                 )
             )
         """
-        for default_config, passed_config in zip(default_configs, passed_configs, strict=False):
+        for default_config, passed_config in zip(
+            default_configs, passed_configs, strict=False
+        ):
             if passed_config is not None:
                 update_dict_recursively(default_config, passed_config)
 

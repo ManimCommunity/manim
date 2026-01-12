@@ -261,7 +261,8 @@ class NumberLine(Line):
                     dict(
                         zip(
                             tick_range,
-                            custom_labels, strict=False,
+                            custom_labels,
+                            strict=False,
                         )
                     ),
                 )
