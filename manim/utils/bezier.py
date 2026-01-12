@@ -1234,6 +1234,7 @@ def match_interpolate(
 
     Examples
     --------
+    >>> from manim import match_interpolate
     >>> match_interpolate(0, 100, 10, 20, 15)
     np.float64(50.0)
     """
