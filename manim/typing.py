@@ -22,11 +22,10 @@ from __future__ import annotations
 
 from collections.abc import Callable, Sequence
 from os import PathLike
-from typing import Union
+from typing import TypeAlias
 
 import numpy as np
 import numpy.typing as npt
-from typing_extensions import TypeAlias
 
 __all__ = [
     "ManimFloat",
@@ -157,7 +156,7 @@ Its components describe, in order, the intensity of Red, Green, and
 Blue in the represented color.
 """
 
-FloatRGBLike: TypeAlias = Union[FloatRGB, tuple[float, float, float]]
+FloatRGBLike: TypeAlias = FloatRGB | tuple[float, float, float]
 """``shape: (3,)``
 
 An array of 3 floats between 0 and 1, representing a color in RGB
@@ -173,7 +172,7 @@ FloatRGB_Array: TypeAlias = npt.NDArray[ManimColorDType]
 A :class:`numpy.ndarray` of many rows of 3 floats representing RGB colors.
 """
 
-FloatRGBLike_Array: TypeAlias = Union[FloatRGB_Array, Sequence[FloatRGBLike]]
+FloatRGBLike_Array: TypeAlias = FloatRGB_Array | Sequence[FloatRGBLike]
 """``shape: (M, 3)``
 
 An array of many rows of 3 floats representing RGB colors.
@@ -192,7 +191,7 @@ Its components describe, in order, the intensity of Red, Green, and
 Blue in the represented color.
 """
 
-IntRGBLike: TypeAlias = Union[IntRGB, tuple[int, int, int]]
+IntRGBLike: TypeAlias = IntRGB | tuple[int, int, int]
 """``shape: (3,)``
 
 An array of 3 integers between 0 and 255, representing a color in RGB
@@ -212,7 +211,7 @@ Its components describe, in order, the intensity of Red, Green, Blue
 and Alpha (opacity) in the represented color.
 """
 
-FloatRGBALike: TypeAlias = Union[FloatRGBA, tuple[float, float, float, float]]
+FloatRGBALike: TypeAlias = FloatRGBA | tuple[float, float, float, float]
 """``shape: (4,)``
 
 An array of 4 floats between 0 and 1, representing a color in RGBA
@@ -228,7 +227,7 @@ FloatRGBA_Array: TypeAlias = npt.NDArray[ManimColorDType]
 A :class:`numpy.ndarray` of many rows of 4 floats representing RGBA colors.
 """
 
-FloatRGBALike_Array: TypeAlias = Union[FloatRGBA_Array, Sequence[FloatRGBALike]]
+FloatRGBALike_Array: TypeAlias = FloatRGBA_Array | Sequence[FloatRGBALike]
 """``shape: (M, 4)``
 
 An array of many rows of 4 floats representing RGBA colors.
@@ -247,7 +246,7 @@ Its components describe, in order, the intensity of Red, Green, Blue
 and Alpha (opacity) in the represented color.
 """
 
-IntRGBALike: TypeAlias = Union[IntRGBA, tuple[int, int, int, int]]
+IntRGBALike: TypeAlias = IntRGBA | tuple[int, int, int, int]
 """``shape: (4,)``
 
 An array of 4 integers between 0 and 255, representing a color in RGBA
@@ -344,7 +343,7 @@ Point2D: TypeAlias = npt.NDArray[PointDType]
 A NumPy array representing a 2-dimensional point: ``[float, float]``.
 """
 
-Point2DLike: TypeAlias = Union[Point2D, tuple[float, float]]
+Point2DLike: TypeAlias = Point2D | tuple[float, float]
 """``shape: (2,)``
 
 A 2-dimensional point: ``[float, float]``.
@@ -360,7 +359,7 @@ A NumPy array representing a sequence of :class:`.Point2D` objects:
 ``[[float, float], ...]``.
 """
 
-Point2DLike_Array: TypeAlias = Union[Point2D_Array, Sequence[Point2DLike]]
+Point2DLike_Array: TypeAlias = Point2D_Array | Sequence[Point2DLike]
 """``shape: (M, 2)``
 
 An array of :class:`.Point2DLike` objects: ``[[float, float], ...]``.
@@ -378,7 +377,7 @@ Point3D: TypeAlias = npt.NDArray[PointDType]
 A NumPy array representing a 3-dimensional point: ``[float, float, float]``.
 """
 
-Point3DLike: TypeAlias = Union[Point3D, tuple[float, float, float]]
+Point3DLike: TypeAlias = Point3D | tuple[float, float, float]
 """``shape: (3,)``
 
 A 3-dimensional point: ``[float, float, float]``.
@@ -394,7 +393,7 @@ A NumPy array representing a sequence of :class:`.Point3D` objects:
 ``[[float, float, float], ...]``.
 """
 
-Point3DLike_Array: TypeAlias = Union[Point3D_Array, Sequence[Point3DLike]]
+Point3DLike_Array: TypeAlias = Point3D_Array | Sequence[Point3DLike]
 """``shape: (M, 3)``
 
 An array of :class:`.Point3DLike` objects: ``[[float, float, float], ...]``.
@@ -412,7 +411,7 @@ PointND: TypeAlias = npt.NDArray[PointDType]
 A NumPy array representing an N-dimensional point: ``[float, ...]``.
 """
 
-PointNDLike: TypeAlias = Union[PointND, Sequence[float]]
+PointNDLike: TypeAlias = PointND | Sequence[float]
 """``shape: (N,)``
 
 An N-dimensional point: ``[float, ...]``.
@@ -428,7 +427,7 @@ A NumPy array representing a sequence of :class:`.PointND` objects:
 ``[[float, ...], ...]``.
 """
 
-PointNDLike_Array: TypeAlias = Union[PointND_Array, Sequence[PointNDLike]]
+PointNDLike_Array: TypeAlias = PointND_Array | Sequence[PointNDLike]
 """``shape: (M, N)``
 
 An array of :class:`.PointNDLike` objects: ``[[float, ...], ...]``.
@@ -456,7 +455,7 @@ A NumPy array representing a 2-dimensional vector: ``[float, float]``.
     VMobjects!
 """
 
-Vector2DLike: TypeAlias = Union[npt.NDArray[PointDType], tuple[float, float]]
+Vector2DLike: TypeAlias = npt.NDArray[PointDType] | tuple[float, float]
 """``shape: (2,)``
 
 A 2-dimensional vector: ``[float, float]``.
@@ -476,7 +475,7 @@ A NumPy array representing a sequence of :class:`.Vector2D` objects:
 ``[[float, float], ...]``.
 """
 
-Vector2DLike_Array: TypeAlias = Union[Vector2D_Array, Sequence[Vector2DLike]]
+Vector2DLike_Array: TypeAlias = Vector2D_Array | Sequence[Vector2DLike]
 """``shape: (M, 2)``
 
 An array of :class:`.Vector2DLike` objects: ``[[float, float], ...]``.
@@ -495,7 +494,7 @@ A NumPy array representing a 3-dimensional vector: ``[float, float, float]``.
     VMobjects!
 """
 
-Vector3DLike: TypeAlias = Union[npt.NDArray[PointDType], tuple[float, float, float]]
+Vector3DLike: TypeAlias = npt.NDArray[PointDType] | tuple[float, float, float]
 """``shape: (3,)``
 
 A 3-dimensional vector: ``[float, float, float]``.
@@ -515,7 +514,7 @@ An NumPy array representing a sequence of :class:`.Vector3D` objects:
 ``[[float, float, float], ...]``.
 """
 
-Vector3DLike_Array: TypeAlias = Union[npt.NDArray[PointDType], Sequence[Vector3DLike]]
+Vector3DLike_Array: TypeAlias = npt.NDArray[PointDType] | Sequence[Vector3DLike]
 """``shape: (M, 3)``
 
 An array of :class:`.Vector3DLike` objects: ``[[float, float, float], ...]``.
@@ -535,7 +534,7 @@ A NumPy array representing an :math:`N`-dimensional vector: ``[float, ...]``.
     collisions.
 """
 
-VectorNDLike: TypeAlias = Union[npt.NDArray[PointDType], Sequence[float]]
+VectorNDLike: TypeAlias = npt.NDArray[PointDType] | Sequence[float]
 """``shape (N,)``
 
 An :math:`N`-dimensional vector: ``[float, ...]``.
@@ -556,7 +555,7 @@ A NumPy array representing a sequence of :class:`.VectorND` objects:
 ``[[float, ...], ...]``.
 """
 
-VectorNDLike_Array: TypeAlias = Union[npt.NDArray[PointDType], Sequence[VectorNDLike]]
+VectorNDLike_Array: TypeAlias = npt.NDArray[PointDType] | Sequence[VectorNDLike]
 """``shape (M, N)``
 
 An array of :class:`.VectorNDLike` objects: ``[[float, ...], ...]``.
@@ -610,9 +609,7 @@ curve:
 ``[[float, float, float], [float, float, float], [float, float, float]]``.
 """
 
-QuadraticBezierPointsLike: TypeAlias = Union[
-    QuadraticBezierPoints, tuple[Point3DLike, Point3DLike, Point3DLike]
-]
+QuadraticBezierPointsLike: TypeAlias = QuadraticBezierPoints | tuple[Point3DLike, Point3DLike, Point3DLike]
 """``shape: (3, 3)``
 
 A :class:`.Point3DLike_Array` of three 3D control points for a single quadratic Bézier
@@ -630,9 +627,7 @@ A NumPy array containing :math:`N` :class:`.QuadraticBezierPoints` objects:
 ``[[[float, float, float], [float, float, float], [float, float, float]], ...]``.
 """
 
-QuadraticBezierPointsLike_Array: TypeAlias = Union[
-    QuadraticBezierPoints_Array, Sequence[QuadraticBezierPointsLike]
-]
+QuadraticBezierPointsLike_Array: TypeAlias = QuadraticBezierPoints_Array | Sequence[QuadraticBezierPointsLike]
 """``shape: (N, 3, 3)``
 
 A sequence of :math:`N` :class:`.QuadraticBezierPointsLike` objects:
@@ -701,9 +696,7 @@ A :class:`.Point3D_Array` of four 3D control points for a single cubic Bézier c
 ``[[float, float, float], [float, float, float], [float, float, float], [float, float, float]]``.
 """
 
-CubicBezierPointsLike: TypeAlias = Union[
-    CubicBezierPoints, tuple[Point3DLike, Point3DLike, Point3DLike, Point3DLike]
-]
+CubicBezierPointsLike: TypeAlias = CubicBezierPoints | tuple[Point3DLike, Point3DLike, Point3DLike, Point3DLike]
 """``shape: (4, 3)``
 
 A :class:`.Point3DLike_Array` of 4 control points for a single cubic Bézier curve:
@@ -720,9 +713,7 @@ A NumPy array containing :math:`N` :class:`.CubicBezierPoints` objects:
 ``[[[float, float, float], [float, float, float], [float, float, float], [float, float, float]], ...]``.
 """
 
-CubicBezierPointsLike_Array: TypeAlias = Union[
-    CubicBezierPoints_Array, Sequence[CubicBezierPointsLike]
-]
+CubicBezierPointsLike_Array: TypeAlias = CubicBezierPoints_Array | Sequence[CubicBezierPointsLike]
 """``shape: (N, 4, 3)``
 
 A sequence of :math:`N` :class:`.CubicBezierPointsLike` objects:
@@ -823,9 +814,7 @@ Please refer to the documentation of the function you are using for
 further type information.
 """
 
-BezierPointsLike_Array: TypeAlias = Union[
-    BezierPoints_Array, Sequence[BezierPointsLike]
-]
+BezierPointsLike_Array: TypeAlias = BezierPoints_Array | Sequence[BezierPointsLike]
 r"""``shape: (N, PPC, 3)``
 
 A sequence of :math:`N` :class:`.BezierPointsLike` objects containing
@@ -898,7 +887,7 @@ Please refer to the documentation of the function you are using for
 further type information.
 """
 
-FlatBezierPoints: TypeAlias = Union[npt.NDArray[PointDType], tuple[float, ...]]
+FlatBezierPoints: TypeAlias = npt.NDArray[PointDType] | tuple[float, ...]
 """``shape: (3*PPC*N,)``
 
 A flattened array of Bézier control points:
@@ -979,12 +968,12 @@ value is an :class:`.RGBA_Array_Int` object.
 Path types
 """
 
-StrPath: TypeAlias = Union[str, PathLike[str]]
+StrPath: TypeAlias = str | PathLike[str]
 """A string or :class:`.os.PathLike` representing a path to a
 directory or file.
 """
 
-StrOrBytesPath: TypeAlias = Union[str, bytes, PathLike[str], PathLike[bytes]]
+StrOrBytesPath: TypeAlias = str | bytes | PathLike[str] | PathLike[bytes]
 """A string, bytes or :class:`.os.PathLike` object representing a path
 to a directory or file.
 """

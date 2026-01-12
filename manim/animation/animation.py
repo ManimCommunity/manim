@@ -17,9 +17,7 @@ __all__ = ["Animation", "Wait", "Add", "override_animation"]
 from collections.abc import Callable, Iterable, Sequence
 from copy import deepcopy
 from functools import partialmethod
-from typing import TYPE_CHECKING, Any
-
-from typing_extensions import Self
+from typing import TYPE_CHECKING, Any, Self
 
 if TYPE_CHECKING:
     from manim.scene.scene import Scene

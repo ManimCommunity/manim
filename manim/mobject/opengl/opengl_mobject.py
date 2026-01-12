@@ -9,16 +9,23 @@ import types
 from collections.abc import Callable, Iterable, Iterator, Sequence
 from functools import partialmethod, wraps
 from math import ceil
-from typing import TYPE_CHECKING, Any, ClassVar, Protocol, TypeVar, cast
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    ClassVar,
+    Never,
+    Protocol,
+    Self,
+    TypeAlias,
+    TypeVar,
+    cast,
+    overload,
+)
 
 import moderngl
 import numpy as np
 import numpy.typing as npt
 from typing_extensions import (
-    Never,
-    Self,
-    TypeAlias,
-    overload,
     override,
 )
 

@@ -47,8 +47,9 @@ from manim.utils.iterables import (
 from manim.utils.space_ops import rotate_vector, shoelace_direction
 
 if TYPE_CHECKING:
+    from typing import Self
+
     import numpy.typing as npt
-    from typing_extensions import Self
 
     from manim.typing import (
         CubicBezierPath,

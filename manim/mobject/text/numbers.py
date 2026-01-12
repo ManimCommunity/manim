@@ -4,10 +4,9 @@ from __future__ import annotations
 
 __all__ = ["DecimalNumber", "Integer", "Variable"]
 
-from typing import Any
+from typing import Any, Self
 
 import numpy as np
-from typing_extensions import Self
 
 from manim import config
 from manim.constants import *

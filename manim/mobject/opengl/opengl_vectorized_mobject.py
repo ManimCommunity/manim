@@ -4,11 +4,10 @@ import itertools as it
 import operator as op
 from collections.abc import Callable, Iterable, Sequence
 from functools import reduce, wraps
-from typing import Any
+from typing import Any, Self
 
 import moderngl
 import numpy as np
-from typing_extensions import Self
 
 from manim import config
 from manim.constants import *

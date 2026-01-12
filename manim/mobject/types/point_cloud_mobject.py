@@ -30,8 +30,9 @@ from ...utils.iterables import stretch_array_to_length
 __all__ = ["PMobject", "Mobject1D", "Mobject2D", "PGroup", "PointCloudDot", "Point"]
 
 if TYPE_CHECKING:
+    from typing import Self
+
     import numpy.typing as npt
-    from typing_extensions import Self
 
     from manim.typing import (
         FloatRGBA_Array,

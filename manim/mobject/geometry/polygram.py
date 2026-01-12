@@ -32,8 +32,9 @@ from manim.utils.qhull import QuickHull
 from manim.utils.space_ops import angle_between_vectors, normalize, regular_vertices
 
 if TYPE_CHECKING:
+    from typing import Self
+
     import numpy.typing as npt
-    from typing_extensions import Self
 
     from manim.typing import (
         Point3D,

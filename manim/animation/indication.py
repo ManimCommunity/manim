@@ -40,10 +40,9 @@ __all__ = [
 ]
 
 from collections.abc import Iterable
-from typing import Any
+from typing import Any, Self
 
 import numpy as np
-from typing_extensions import Self
 
 from manim.mobject.geometry.arc import Circle, Dot
 from manim.mobject.geometry.line import Line

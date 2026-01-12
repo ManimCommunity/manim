@@ -45,7 +45,7 @@ from ..utils.rate_functions import rush_from, rush_into
 from ..utils.space_ops import angle_of_vector
 
 if TYPE_CHECKING:
-    from typing_extensions import Self
+    from typing import Self
 
     from manim.typing import (
         MappingFunction,

@@ -10,14 +10,13 @@ import operator as op
 import pathlib
 from collections.abc import Callable, Iterable
 from functools import reduce
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Self
 
 import cairo
 import numpy as np
 import numpy.typing as npt
 from PIL import Image
 from scipy.spatial.distance import pdist
-from typing_extensions import Self
 
 from manim.typing import (
     FloatRGBA_Array,

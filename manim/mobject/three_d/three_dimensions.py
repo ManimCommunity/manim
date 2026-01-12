@@ -17,10 +17,9 @@ __all__ = [
 ]
 
 from collections.abc import Callable, Iterable, Sequence
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Any, Literal, Self
 
 import numpy as np
-from typing_extensions import Self
 
 from manim import config, logger
 from manim.constants import *

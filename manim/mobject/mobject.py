@@ -41,7 +41,7 @@ from ..utils.paths import straight_path
 from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
 
 if TYPE_CHECKING:
-    from typing_extensions import Self, TypeAlias
+    from typing import Self, TypeAlias
 
     from manim.typing import (
         FunctionOverride,

@@ -17,9 +17,7 @@ from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VMobject
 
 if TYPE_CHECKING:
-    from typing import Any
-
-    from typing_extensions import Self
+    from typing import Any, Self
 
     from manim.typing import Point3D, Point3DLike
     from manim.utils.color import ParsableManimColor

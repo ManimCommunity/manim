@@ -14,10 +14,9 @@ __all__ = [
 import fractions as fr
 import numbers
 from collections.abc import Callable, Iterable, Sequence
-from typing import TYPE_CHECKING, Any, TypeVar, overload
+from typing import TYPE_CHECKING, Any, Self, TypeVar, overload
 
 import numpy as np
-from typing_extensions import Self
 
 from manim import config
 from manim.constants import *
