@@ -630,7 +630,7 @@ def get_winding_number(points: Sequence[np.ndarray]) -> float:
     Examples
     --------
 
-    >>> from manim import Square, get_winding_number
+    >>> from manim import Square, UP, get_winding_number
     >>> polygon = Square()
     >>> get_winding_number(polygon.get_vertices())
     np.float64(1.0)
