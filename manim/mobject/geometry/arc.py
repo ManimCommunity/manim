@@ -1232,7 +1232,7 @@ class ArcPolygon(VMobject, metaclass=ConvertToOpenGL):
 
         arcs = [
             ArcBetweenPoints(*pair, **conf)
-            for (pair, conf) in zip(point_pairs, all_arc_configs)
+            for (pair, conf) in zip(point_pairs, all_arc_configs, strict=False)
         ]
 
         super().__init__(**kwargs)

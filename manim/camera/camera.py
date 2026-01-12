@@ -758,7 +758,7 @@ class Camera:
             pat = cairo.LinearGradient(*it.chain(*(point[:2] for point in points)))
             step = 1.0 / (len(rgbas) - 1)
             offsets = np.arange(0, 1 + step, step)
-            for rgba, offset in zip(rgbas, offsets):
+            for rgba, offset in zip(rgbas, offsets, strict=False):
                 pat.add_color_stop_rgba(offset, *rgba[2::-1], rgba[3])
             ctx.set_source(pat)
         return self

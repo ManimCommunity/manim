@@ -999,7 +999,7 @@ def bezier_remap(
 
     new_tuples = np.empty((new_number_of_curves, nppc, dim))
     index = 0
-    for curve, sf in zip(bezier_tuples, split_factors):
+    for curve, sf in zip(bezier_tuples, split_factors, strict=False):
         new_tuples[index : index + sf] = subdivide_bezier(curve, sf).reshape(
             sf, nppc, dim
         )

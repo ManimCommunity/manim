@@ -35,7 +35,7 @@ def _check_logs(reference_logfile_path: Path, generated_logfile_path: Path) -> N
         ref_log = json.loads(ref)
         gen_log = json.loads(gen)
         diff_keys = [
-            d1[0] for d1, d2 in zip(ref_log.items(), gen_log.items()) if d1[1] != d2[1]
+            d1[0] for d1, d2 in zip(ref_log.items(), gen_log.items(), strict=False) if d1[1] != d2[1]
         ]
         # \n and \t don't not work in f-strings.
         newline = "\n"

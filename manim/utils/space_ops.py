@@ -609,7 +609,7 @@ def find_intersection(
     # algorithm from https://en.wikipedia.org/wiki/Skew_lines#Nearest_points
     result = []
 
-    for p0, v0, p1, v1 in zip(p0s, v0s, p1s, v1s):
+    for p0, v0, p1, v1 in zip(p0s, v0s, p1s, v1s, strict=False):
         normal = cross(v1, cross(v0, v1))
         denom = max(np.dot(v0, normal), threshold)
         result += [p0 + np.dot(p1 - p0, normal) / denom * v0]
@@ -736,7 +736,7 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
     # with holes is instead treated as a (very convex)
     # polygon with one edge.  Do this by drawing connections
     # between rings close to each other
-    rings = [list(range(e0, e1)) for e0, e1 in zip([0, *ring_ends], ring_ends)]
+    rings = [list(range(e0, e1)) for e0, e1 in zip([0, *ring_ends], ring_ends, strict=False)]
     attached_rings = rings[:1]
     detached_rings = rings[1:]
     loop_connections = {}

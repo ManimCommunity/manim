@@ -2016,7 +2016,7 @@ class Mobject:
         mobs = self.family_members_with_points()
         new_colors = color_gradient(colors, len(mobs))
 
-        for mob, color in zip(mobs, new_colors):
+        for mob, color in zip(mobs, new_colors, strict=False):
             mob.set_color(color, family=False)
         return self
 
@@ -2309,7 +2309,7 @@ class Mobject:
         return Group(
             *(
                 template.copy().pointwise_become_partial(self, a1, a2)
-                for a1, a2 in zip(alphas[:-1], alphas[1:])
+                for a1, a2 in zip(alphas[:-1], alphas[1:], strict=False)
             )
         )
 
@@ -2502,7 +2502,7 @@ class Mobject:
                     x = VGroup(s1, s2, s3, s4).set_x(0).arrange(buff=1.0)
                     self.add(x)
         """
-        for m1, m2 in zip(self.submobjects, self.submobjects[1:]):
+        for m1, m2 in zip(self.submobjects, self.submobjects[1:], strict=False):
             m2.next_to(m1, direction, buff, **kwargs)
         if center:
             self.center()
@@ -2887,7 +2887,7 @@ class Mobject:
         if not skip_point_alignment:
             self.align_points(mobject)
         # Recurse
-        for m1, m2 in zip(self.submobjects, mobject.submobjects):
+        for m1, m2 in zip(self.submobjects, mobject.submobjects, strict=False):
             m1.align_data(m2)
 
     def get_point_mobject(self, center=None):
@@ -2957,7 +2957,7 @@ class Mobject:
         repeat_indices = (np.arange(target) * curr) // target
         split_factors = [sum(repeat_indices == i) for i in range(curr)]
         new_submobs = []
-        for submob, sf in zip(self.submobjects, split_factors):
+        for submob, sf in zip(self.submobjects, split_factors, strict=False):
             new_submobs.append(submob)
             new_submobs.extend(submob.copy().fade(1) for _ in range(1, sf))
         self.submobjects = new_submobs
@@ -3169,7 +3169,7 @@ class Mobject:
                 mobject.move_to(self.get_center())
 
         self.align_data(mobject, skip_point_alignment=True)
-        for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
+        for sm1, sm2 in zip(self.get_family(), mobject.get_family(), strict=False):
             sm1.points = np.array(sm2.points)
             sm1.interpolate_color(sm1, sm2, 1)
         return self
@@ -3191,7 +3191,7 @@ class Mobject:
                     self.play(circ.animate.match_points(square))
                     self.wait(0.5)
         """
-        for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
+        for sm1, sm2 in zip(self.get_family(), mobject.get_family(), strict=False):
             sm1.points = np.array(sm2.points)
         return self
 

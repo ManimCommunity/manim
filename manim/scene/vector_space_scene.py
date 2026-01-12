@@ -682,7 +682,7 @@ class LinearTransformationScene(VectorScene):
         default_configs: Iterable[dict[str, Any]],
         passed_configs: Iterable[dict[str, Any] | None],
     ) -> None:
-        for default_config, passed_config in zip(default_configs, passed_configs):
+        for default_config, passed_config in zip(default_configs, passed_configs, strict=False):
             if passed_config is not None:
                 update_dict_recursively(default_config, passed_config)
 

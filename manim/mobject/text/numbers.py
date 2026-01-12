@@ -294,7 +294,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         self._set_submobjects_from_number(number)
         self.font_size = old_font_size
         self.move_to(move_to_point, self.edge_to_fix)
-        for sm1, sm2 in zip(self.submobjects, old_submobjects):
+        for sm1, sm2 in zip(self.submobjects, old_submobjects, strict=False):
             sm1.match_style(sm2)
 
         if config.renderer == RendererType.CAIRO:

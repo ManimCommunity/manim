@@ -437,14 +437,14 @@ class CoordinateSystem:
         if not axes_numbers:
             axes_numbers = [None for _ in range(self.dimension)]
 
-        for axis, values in zip(self.axes, axes_numbers):
+        for axis, values in zip(self.axes, axes_numbers, strict=False):
             if isinstance(values, dict):
                 axis.add_labels(values, **kwargs)
                 labels = axis.labels
             elif values is None and axis.scaling.custom_labels:
                 tick_range = axis.get_tick_range()
                 axis.add_labels(
-                    dict(zip(tick_range, axis.scaling.get_custom_labels(tick_range)))
+                    dict(zip(tick_range, axis.scaling.get_custom_labels(tick_range), strict=False))
                 )
                 labels = axis.labels
             else:
@@ -1294,7 +1294,7 @@ class CoordinateSystem:
 
         colors = color_gradient(color, len(x_range_array))
 
-        for x, color in zip(x_range_array, colors):
+        for x, color in zip(x_range_array, colors, strict=False):
             if input_sample_type == "left":
                 sample_input = x
             elif input_sample_type == "right":
@@ -2030,7 +2030,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
                 )
             )
         """
-        for default_config, passed_config in zip(default_configs, passed_configs):
+        for default_config, passed_config in zip(default_configs, passed_configs, strict=False):
             if passed_config is not None:
                 update_dict_recursively(default_config, passed_config)
 
@@ -2160,7 +2160,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         # Although "points" and "nums" are in plural, there might be a single point or number.
         points = self.x_axis.number_to_point(coords[0])
         other_axes = self.axes.submobjects[1:]
-        for axis, nums in zip(other_axes, coords[1:]):
+        for axis, nums in zip(other_axes, coords[1:], strict=False):
             points += axis.number_to_point(nums) - origin
 
         # Return points as is, except if coords originally looked like
@@ -2354,7 +2354,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
 
         vertices = [
             self.coords_to_point(x, y, z)
-            for x, y, z in zip(x_values, y_values, z_values)
+            for x, y, z in zip(x_values, y_values, z_values, strict=False)
         ]
         graph.set_points_as_corners(vertices)
         line_graph["line_graph"] = graph
