@@ -658,7 +658,7 @@ def shoelace(x_y: Point2D_Array) -> float:
     """
     x = x_y[:, 0]
     y = x_y[:, 1]
-    val: float = np.trapz(y, x)
+    val: float = np.trapezoid(y, x)
     return val
 
 
