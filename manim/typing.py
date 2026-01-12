@@ -609,7 +609,9 @@ curve:
 ``[[float, float, float], [float, float, float], [float, float, float]]``.
 """
 
-QuadraticBezierPointsLike: TypeAlias = QuadraticBezierPoints | tuple[Point3DLike, Point3DLike, Point3DLike]
+QuadraticBezierPointsLike: TypeAlias = (
+    QuadraticBezierPoints | tuple[Point3DLike, Point3DLike, Point3DLike]
+)
 """``shape: (3, 3)``
 
 A :class:`.Point3DLike_Array` of three 3D control points for a single quadratic Bézier
@@ -627,7 +629,9 @@ A NumPy array containing :math:`N` :class:`.QuadraticBezierPoints` objects:
 ``[[[float, float, float], [float, float, float], [float, float, float]], ...]``.
 """
 
-QuadraticBezierPointsLike_Array: TypeAlias = QuadraticBezierPoints_Array | Sequence[QuadraticBezierPointsLike]
+QuadraticBezierPointsLike_Array: TypeAlias = (
+    QuadraticBezierPoints_Array | Sequence[QuadraticBezierPointsLike]
+)
 """``shape: (N, 3, 3)``
 
 A sequence of :math:`N` :class:`.QuadraticBezierPointsLike` objects:
@@ -696,7 +700,9 @@ A :class:`.Point3D_Array` of four 3D control points for a single cubic Bézier c
 ``[[float, float, float], [float, float, float], [float, float, float], [float, float, float]]``.
 """
 
-CubicBezierPointsLike: TypeAlias = CubicBezierPoints | tuple[Point3DLike, Point3DLike, Point3DLike, Point3DLike]
+CubicBezierPointsLike: TypeAlias = (
+    CubicBezierPoints | tuple[Point3DLike, Point3DLike, Point3DLike, Point3DLike]
+)
 """``shape: (4, 3)``
 
 A :class:`.Point3DLike_Array` of 4 control points for a single cubic Bézier curve:
@@ -713,7 +719,9 @@ A NumPy array containing :math:`N` :class:`.CubicBezierPoints` objects:
 ``[[[float, float, float], [float, float, float], [float, float, float], [float, float, float]], ...]``.
 """
 
-CubicBezierPointsLike_Array: TypeAlias = CubicBezierPoints_Array | Sequence[CubicBezierPointsLike]
+CubicBezierPointsLike_Array: TypeAlias = (
+    CubicBezierPoints_Array | Sequence[CubicBezierPointsLike]
+)
 """``shape: (N, 4, 3)``
 
 A sequence of :math:`N` :class:`.CubicBezierPointsLike` objects:

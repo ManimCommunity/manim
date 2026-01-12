@@ -66,7 +66,9 @@ if TYPE_CHECKING:
 
     from manim.typing import Point3D
 
-    SceneInteractAction: TypeAlias = MethodWithArgs | "SceneInteractContinue" | "SceneInteractRerun"
+    SceneInteractAction: TypeAlias = (
+        MethodWithArgs | "SceneInteractContinue" | "SceneInteractRerun"
+    )
     """The SceneInteractAction type alias is used for elements in the queue
     used by :meth:`.Scene.interact()`.
 

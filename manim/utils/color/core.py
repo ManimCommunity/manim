@@ -1211,7 +1211,9 @@ class HSV(ManimColor):
         self.__alpha = value[3]
 
 
-ParsableManimColor: TypeAlias = ManimColor | int | str | IntRGBLike | FloatRGBLike | IntRGBALike | FloatRGBALike
+ParsableManimColor: TypeAlias = (
+    ManimColor | int | str | IntRGBLike | FloatRGBLike | IntRGBALike | FloatRGBALike
+)
 """`ParsableManimColor` represents all the types which can be parsed
 to a :class:`ManimColor` in Manim.
 """
