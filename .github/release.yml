@@ -1,5 +1,4 @@
-# Changelog categorization for GitHub auto-generated release notes
-# Uses existing repo labels only - no new labels needed
+# https://docs.github.com/en/repositories/releasing-projects-on-github/automatically-generated-release-notes
 
 changelog:
   exclude:
