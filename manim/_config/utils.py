@@ -33,8 +33,7 @@ from manim.utils.tex import TexTemplate
 
 if TYPE_CHECKING:
     from enum import EnumMeta
-
-    from typing_extensions import Self
+    from typing import Self
 
     from manim.typing import StrPath, Vector3D
 

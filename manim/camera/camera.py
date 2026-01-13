@@ -10,14 +10,13 @@ import operator as op
 import pathlib
 from collections.abc import Callable, Iterable
 from functools import reduce
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Self
 
 import cairo
 import numpy as np
 import numpy.typing as npt
 from PIL import Image
 from scipy.spatial.distance import pdist
-from typing_extensions import Self
 
 from manim.typing import (
     FloatRGBA_Array,
@@ -759,7 +758,7 @@ class Camera:
             pat = cairo.LinearGradient(*it.chain(*(point[:2] for point in points)))
             step = 1.0 / (len(rgbas) - 1)
             offsets = np.arange(0, 1 + step, step)
-            for rgba, offset in zip(rgbas, offsets):
+            for rgba, offset in zip(rgbas, offsets, strict=False):
                 pat.add_color_stop_rgba(offset, *rgba[2::-1], rgba[3])
             ctx.set_source(pat)
         return self
