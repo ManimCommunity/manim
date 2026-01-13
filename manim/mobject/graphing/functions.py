@@ -17,9 +17,7 @@ from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VMobject
 
 if TYPE_CHECKING:
-    from typing import Any
-
-    from typing_extensions import Self
+    from typing import Any, Self
 
     from manim.typing import Point3D, Point3DLike
     from manim.utils.color import ParsableManimColor
@@ -159,7 +157,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
         else:
             boundary_times = [self.t_min, self.t_max]
 
-        for t1, t2 in zip(boundary_times[0::2], boundary_times[1::2]):
+        for t1, t2 in zip(boundary_times[0::2], boundary_times[1::2], strict=False):
             t_range = np.array(
                 [
                     *self.scaling.function(np.arange(t1, t2, self.t_step)),

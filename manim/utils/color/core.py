@@ -70,11 +70,11 @@ import colorsys
 import random
 import re
 from collections.abc import Iterable, Sequence
-from typing import TypeVar, Union, overload
+from typing import Self, TypeAlias, TypeVar, overload
 
 import numpy as np
 import numpy.typing as npt
-from typing_extensions import Self, TypeAlias, TypeIs, override
+from typing_extensions import TypeIs, override
 
 from manim.typing import (
     FloatHSL,
@@ -1211,15 +1211,9 @@ class HSV(ManimColor):
         self.__alpha = value[3]
 
 
-ParsableManimColor: TypeAlias = Union[
-    ManimColor,
-    int,
-    str,
-    IntRGBLike,
-    FloatRGBLike,
-    IntRGBALike,
-    FloatRGBALike,
-]
+ParsableManimColor: TypeAlias = (
+    ManimColor | int | str | IntRGBLike | FloatRGBLike | IntRGBALike | FloatRGBALike
+)
 """`ParsableManimColor` represents all the types which can be parsed
 to a :class:`ManimColor` in Manim.
 """
@@ -1424,7 +1418,7 @@ def color_gradient(
     floors[-1] = num_colors - 2
     return [
         rgb_to_color((rgbs[i] * (1 - alpha)) + (rgbs[i + 1] * alpha))
-        for i, alpha in zip(floors, alphas_mod1)
+        for i, alpha in zip(floors, alphas_mod1, strict=False)
     ]
 
 

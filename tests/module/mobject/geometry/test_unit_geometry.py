@@ -6,8 +6,11 @@ import numpy as np
 
 from manim import (
     DEGREES,
+    DOWN,
     LEFT,
+    ORIGIN,
     RIGHT,
+    UP,
     BackgroundRectangle,
     Circle,
     Line,
@@ -15,6 +18,7 @@ from manim import (
     Sector,
     Square,
     SurroundingRectangle,
+    TangentialArc,
 )
 
 logger = logging.getLogger(__name__)
@@ -85,7 +89,7 @@ def test_Polygram_get_vertex_groups():
     for vertex_groups in vertex_groups_arr:
         polygram = Polygram(*vertex_groups)
         poly_vertex_groups = polygram.get_vertex_groups()
-        for poly_group, group in zip(poly_vertex_groups, vertex_groups):
+        for poly_group, group in zip(poly_vertex_groups, vertex_groups, strict=False):
             np.testing.assert_array_equal(poly_group, group)
 
     # If polygram is a Polygram of a vertex group containing the start vertex N times,
@@ -114,6 +118,14 @@ def test_SurroundingRectangle():
     sr = SurroundingRectangle(circle, square)
     sr.set_style(fill_opacity=0.42)
     assert sr.get_fill_opacity() == 0.42
+
+
+def test_TangentialArc():
+    l1 = Line(start=LEFT, end=RIGHT)
+    l2 = Line(start=DOWN, end=UP)
+    l2.rotate(angle=45 * DEGREES, about_point=ORIGIN)
+    arc = TangentialArc(l1, l2, radius=1.0)
+    assert arc.radius == 1.0
 
 
 def test_SurroundingRectangle_buff():
