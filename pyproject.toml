@@ -130,7 +130,7 @@ exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:"]
 
 [tool.ruff]
 line-length = 88
-target-version = "py39"
+target-version = "py311"
 extend-exclude = [
   ".github",
   ".hg",

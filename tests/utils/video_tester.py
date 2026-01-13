@@ -59,7 +59,7 @@ def check_video_data(path_control_data: Path, path_video_gen: Path) -> None:
             f"expected {len(sec_index_exp)} sections ({', '.join([el['name'] for el in sec_index_exp])}), but {len(sec_index_gen)} ({', '.join([el['name'] for el in sec_index_gen])}) got generated (in '{path_sec_index_gen}')"
         )
     # check individual sections
-    for sec_gen, sec_exp in zip(sec_index_gen, sec_index_exp):
+    for sec_gen, sec_exp in zip(sec_index_gen, sec_index_exp, strict=False):
         assert_shallow_dict_compare(
             sec_gen,
             sec_exp,

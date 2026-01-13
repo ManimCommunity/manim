@@ -40,10 +40,9 @@ __all__ = [
 ]
 
 from collections.abc import Iterable
-from typing import Any
+from typing import Any, Self
 
 import numpy as np
-from typing_extensions import Self
 
 from manim.mobject.geometry.arc import Circle, Dot
 from manim.mobject.geometry.line import Line
@@ -350,6 +349,7 @@ class ShowPassingFlashWithThinningStrokeWidth(AnimationGroup):
                 for stroke_width, time_width in zip(
                     np.linspace(0, max_stroke_width, self.n_segments),
                     np.linspace(max_time_width, 0, self.n_segments),
+                    strict=False,
                 )
             ),
         )
