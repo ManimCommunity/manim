@@ -1556,7 +1556,7 @@ requires-dist = [
     { name = "cloup", specifier = ">=2.0.0" },
     { name = "dearpygui", marker = "extra == 'gui'", specifier = ">=1.0.0" },
     { name = "decorator", specifier = ">=4.3.2" },
-    { name = "isosurfaces", specifier = ">=0.1.0" },
+    { name = "isosurfaces", specifier = ">=0.1.1" },
     { name = "jupyterlab", marker = "extra == 'jupyterlab'", specifier = ">=4.3.4" },
     { name = "manimpango", specifier = ">=0.5.0,<1.0.0" },
     { name = "mapbox-earcut", specifier = ">=1.0.0" },
