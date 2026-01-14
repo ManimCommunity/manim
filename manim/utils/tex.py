@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from typing_extensions import Self
+    from typing import Self
 
     from manim.typing import StrPath
 

@@ -17,7 +17,7 @@ import warnings
 from collections.abc import Callable, Iterable, Iterator, Sequence
 from functools import partialmethod, reduce
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Literal, Union, cast
+from typing import TYPE_CHECKING, Any, Literal, cast
 
 import numpy as np
 
@@ -41,8 +41,9 @@ from ..utils.paths import straight_path
 from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
 
 if TYPE_CHECKING:
+    from typing import Self, TypeAlias
+
     from PIL import Image
-    from typing_extensions import Self, TypeAlias
 
     from manim.mobject.types.point_cloud_mobject import Point
     from manim.typing import (
@@ -65,7 +66,7 @@ if TYPE_CHECKING:
 
 _TimeBasedUpdater: TypeAlias = Callable[["Mobject", float], object]
 _NonTimeBasedUpdater: TypeAlias = Callable[["Mobject"], object]
-_Updater: TypeAlias = Union[_NonTimeBasedUpdater, _TimeBasedUpdater]
+_Updater: TypeAlias = _NonTimeBasedUpdater | _TimeBasedUpdater
 
 
 class Mobject:
@@ -2039,7 +2040,7 @@ class Mobject:
         mobs = self.family_members_with_points()
         new_colors = color_gradient(colors, len(mobs))
 
-        for mob, color in zip(mobs, new_colors):
+        for mob, color in zip(mobs, new_colors, strict=False):
             mob.set_color(color, family=False)
         return self
 
@@ -2342,7 +2343,7 @@ class Mobject:
         return Group(
             *(
                 template.copy().pointwise_become_partial(self, a1, a2)
-                for a1, a2 in zip(alphas[:-1], alphas[1:])
+                for a1, a2 in zip(alphas[:-1], alphas[1:], strict=False)
             )
         )
 
@@ -2536,7 +2537,7 @@ class Mobject:
                     x = VGroup(s1, s2, s3, s4).set_x(0).arrange(buff=1.0)
                     self.add(x)
         """
-        for m1, m2 in zip(self.submobjects, self.submobjects[1:]):
+        for m1, m2 in zip(self.submobjects, self.submobjects[1:], strict=False):
             m2.next_to(m1, direction, buff, **kwargs)
         if center:
             self.center()
@@ -2768,7 +2769,7 @@ class Mobject:
                 raise ValueError(f"{name} has a mismatching size.")
             return [
                 size if size is not None else measure
-                for size, measure in zip(sizes, measures)
+                for size, measure in zip(sizes, measures, strict=False)
             ]
 
         heights = init_sizes(row_heights_list, rows, measured_heigths, "row_heights")
@@ -2935,7 +2936,7 @@ class Mobject:
         if not skip_point_alignment:
             self.align_points(mobject)
         # Recurse
-        for m1, m2 in zip(self.submobjects, mobject.submobjects):
+        for m1, m2 in zip(self.submobjects, mobject.submobjects, strict=False):
             m1.align_data(m2)
 
     def get_point_mobject(self, center: Point3DLike | None = None) -> Point:
@@ -3005,7 +3006,7 @@ class Mobject:
         repeat_indices = (np.arange(target) * curr) // target
         split_factors = [sum(repeat_indices == i) for i in range(curr)]
         new_submobs = []
-        for submob, sf in zip(self.submobjects, split_factors):
+        for submob, sf in zip(self.submobjects, split_factors, strict=False):
             new_submobs.append(submob)
             new_submobs.extend(submob.copy().fade(1) for _ in range(1, sf))
         self.submobjects = new_submobs
@@ -3219,7 +3220,7 @@ class Mobject:
                 mobject.move_to(self.get_center())
 
         self.align_data(mobject, skip_point_alignment=True)
-        for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
+        for sm1, sm2 in zip(self.get_family(), mobject.get_family(), strict=False):
             sm1.points = np.array(sm2.points)
             sm1.interpolate_color(sm1, sm2, 1)
         return self
@@ -3241,7 +3242,7 @@ class Mobject:
                     self.play(circ.animate.match_points(square))
                     self.wait(0.5)
         """
-        for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
+        for sm1, sm2 in zip(self.get_family(), mobject.get_family(), strict=False):
             sm1.points = np.array(sm2.points)
         return self
 

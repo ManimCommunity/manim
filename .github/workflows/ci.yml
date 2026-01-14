@@ -23,7 +23,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-22.04, macos-latest, windows-latest]
-        python: ["3.10", "3.11", "3.12", "3.13"]
+        python: ["3.11", "3.12", "3.13", "3.14"]
         include:
           - os: macos-15-intel
             python: "3.13"
@@ -72,7 +72,7 @@ jobs:
           sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
 
       - name: Setup Cairo Cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: cache-cairo
         if: runner.os == 'Linux' || runner.os == 'macOS'
         with:
@@ -88,7 +88,7 @@ jobs:
         run: python .github/scripts/ci_build_cairo.py --set-env-vars
 
       - name: Setup macOS cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: cache-macos
         if: runner.os == 'macOS'
         with:
@@ -124,7 +124,7 @@ jobs:
       - name: Setup Windows cache
         id: cache-windows
         if: runner.os == 'Windows'
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ github.workspace }}\ManimCache
           key: ${{ runner.os }}-dependencies-tinytex-${{ hashFiles('.github/manimdependency.json') }}-${{ steps.cache-vars.outputs.date }}-1

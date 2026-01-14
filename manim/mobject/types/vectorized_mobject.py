@@ -48,9 +48,9 @@ from manim.utils.space_ops import rotate_vector, shoelace_direction
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
+    from typing import Self
 
     import numpy.typing as npt
-    from typing_extensions import Self
 
     from manim.typing import (
         CubicBezierPath,
@@ -239,7 +239,10 @@ class VMobject(Mobject):
             o if (o is not None) else 0.0 for o in tuplify(opacity)
         ]
         rgbas: FloatRGBA_Array = np.array(
-            [c.to_rgba_with_alpha(o) for c, o in zip(*make_even(colors, opacities))],
+            [
+                c.to_rgba_with_alpha(o)
+                for c, o in zip(*make_even(colors, opacities), strict=False)
+            ],
         )
 
         sheen_factor = self.get_sheen_factor()
@@ -463,7 +466,7 @@ class VMobject(Mobject):
                 return self
             elif len(submobs2) == 0:
                 submobs2 = [vmobject]
-            for sm1, sm2 in zip(*make_even(submobs1, submobs2)):
+            for sm1, sm2 in zip(*make_even(submobs1, submobs2), strict=False):
                 sm1.match_style(sm2)
         return self
 
@@ -1350,7 +1353,7 @@ class VMobject(Mobject):
         split_indices = [0] + list(filtered) + [len(points)]
         return (
             points[i1:i2]
-            for i1, i2 in zip(split_indices, split_indices[1:])
+            for i1, i2 in zip(split_indices, split_indices[1:], strict=False)
             if (i2 - i1) >= nppcc
         )
 
@@ -1704,7 +1707,7 @@ class VMobject(Mobject):
 
         s = self.get_start_anchors()
         e = self.get_end_anchors()
-        return list(it.chain.from_iterable(zip(s, e)))
+        return list(it.chain.from_iterable(zip(s, e, strict=False)))
 
     def get_points_defining_boundary(self) -> Point3D_Array:
         # Probably returns all anchors, but this is weird regarding  the name of the method.

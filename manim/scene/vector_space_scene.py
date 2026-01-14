@@ -45,7 +45,7 @@ from ..utils.rate_functions import rush_from, rush_into
 from ..utils.space_ops import angle_of_vector
 
 if TYPE_CHECKING:
-    from typing_extensions import Self
+    from typing import Self
 
     from manim.typing import (
         MappingFunction,
@@ -688,7 +688,9 @@ class LinearTransformationScene(VectorScene):
         default_configs: Iterable[dict[str, Any]],
         passed_configs: Iterable[dict[str, Any] | None],
     ) -> None:
-        for default_config, passed_config in zip(default_configs, passed_configs):
+        for default_config, passed_config in zip(
+            default_configs, passed_configs, strict=False
+        ):
             if passed_config is not None:
                 update_dict_recursively(default_config, passed_config)
 

@@ -41,10 +41,9 @@ __all__ = [
 
 import itertools as it
 from collections.abc import Callable, Iterable
-from typing import Any
+from typing import Any, Self
 
 import numpy as np
-from typing_extensions import Self
 
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.text.numbers import DecimalNumber, Integer
@@ -335,7 +334,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
                     self.add(m0)
         """
         columns = self.get_columns()
-        for color, column in zip(colors, columns):
+        for color, column in zip(colors, columns, strict=False):
             column.set_color(color)
         return self
 
@@ -387,7 +386,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
                     self.add(m0)
         """
         rows = self.get_rows()
-        for color, row in zip(colors, rows):
+        for color, row in zip(colors, rows, strict=False):
             row.set_color(color)
         return self
 

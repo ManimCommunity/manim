@@ -76,7 +76,7 @@ from manim.typing import Point3D
 from manim.utils.color import ManimColor, ParsableManimColor, color_gradient
 
 if TYPE_CHECKING:
-    from typing_extensions import Self
+    from typing import Self
 
     from manim.typing import Point3D
 
