@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 2
 requires-python = ">=3.11"
 resolution-markers = [
     "python_full_version >= '3.14'",
@@ -1568,7 +1568,7 @@ requires-dist = [
     { name = "numpy", marker = "python_full_version >= '3.10'", specifier = ">=2.1" },
     { name = "pillow", specifier = ">=9.1" },
     { name = "pycairo", specifier = ">=1.13,<2.0.0" },
-    { name = "pydub", specifier = ">=0.20.0" },
+    { name = "pydub", specifier = ">=0.22.0" },
     { name = "pygments", specifier = ">=2.0.0" },
     { name = "rich", specifier = ">=12.0.0" },
     { name = "scipy", specifier = ">=1.13.0" },
