@@ -1550,7 +1550,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "audioop-lts", marker = "python_full_version >= '3.13'", specifier = ">=0.2.1" },
-    { name = "av", specifier = ">=14.0.1" },
+    { name = "av", specifier = ">=15.0" },
     { name = "beautifulsoup4", specifier = ">=4.12" },
     { name = "click", specifier = ">=8.0" },
     { name = "cloup", specifier = ">=2.0.0" },
