@@ -6,8 +6,11 @@ import numpy as np
 
 from manim import (
     DEGREES,
+    DOWN,
     LEFT,
+    ORIGIN,
     RIGHT,
+    UP,
     BackgroundRectangle,
     Circle,
     Line,
@@ -15,6 +18,7 @@ from manim import (
     Sector,
     Square,
     SurroundingRectangle,
+    TangentialArc,
 )
 
 logger = logging.getLogger(__name__)
@@ -85,7 +89,7 @@ def test_Polygram_get_vertex_groups():
     for vertex_groups in vertex_groups_arr:
         polygram = Polygram(*vertex_groups)
         poly_vertex_groups = polygram.get_vertex_groups()
-        for poly_group, group in zip(poly_vertex_groups, vertex_groups):
+        for poly_group, group in zip(poly_vertex_groups, vertex_groups, strict=False):
             np.testing.assert_array_equal(poly_group, group)
 
     # If polygram is a Polygram of a vertex group containing the start vertex N times,
@@ -114,6 +118,14 @@ def test_SurroundingRectangle():
     sr = SurroundingRectangle(circle, square)
     sr.set_style(fill_opacity=0.42)
     assert sr.get_fill_opacity() == 0.42
+
+
+def test_TangentialArc():
+    l1 = Line(start=LEFT, end=RIGHT)
+    l2 = Line(start=DOWN, end=UP)
+    l2.rotate(angle=45 * DEGREES, about_point=ORIGIN)
+    arc = TangentialArc(l1, l2, radius=1.0)
+    assert arc.radius == 1.0
 
 
 def test_SurroundingRectangle_buff():
@@ -190,3 +202,51 @@ def test_line_with_buff_and_path_arc():
         ]
     )
     np.testing.assert_allclose(line.points, expected_points)
+
+
+def test_Circle_point_at_angle():
+    from manim import TAU
+
+    # Test basic angles
+    circle = Circle(radius=1.0)
+    start_point = circle.points[0].copy()
+
+    # Angle 0 should return start point
+    p0 = circle.point_at_angle(0)
+    np.testing.assert_array_almost_equal(p0, start_point, decimal=5)
+
+    # Angle π/2 should return point 90° along arc
+    p90 = circle.point_at_angle(TAU / 4)
+    # Verify it's approximately at top of circle
+    assert p90[1] > 0.9  # Y coordinate close to 1
+
+    # Angle π should return point opposite to start
+    p180 = circle.point_at_angle(TAU / 2)
+    # Verify it's opposite to start point
+    np.testing.assert_array_almost_equal(p180[:2], -start_point[:2], decimal=5)
+
+    # Angle beyond 2π should wrap around
+    p720 = circle.point_at_angle(2 * TAU)
+    np.testing.assert_array_almost_equal(p720[:2], start_point[:2], decimal=5)
+
+    # Negative angles should work
+    p_neg = circle.point_at_angle(-TAU / 4)
+    # Should be same as 3/4 TAU
+    p270 = circle.point_at_angle(3 * TAU / 4)
+    np.testing.assert_array_almost_equal(p_neg, p270, decimal=5)
+
+    # Test with rotated circle
+    rotated_circle = Circle(radius=1.0).rotate(TAU / 8)
+    rotated_start = rotated_circle.points[0].copy()
+
+    # Angle 0 should still return start point after rotation
+    p_rotated_0 = rotated_circle.point_at_angle(0)
+    np.testing.assert_array_almost_equal(p_rotated_0, rotated_start, decimal=5)
+
+    # Test with reflected circle
+    reflected_circle = Circle(radius=1.0).flip()
+    reflected_start = reflected_circle.points[0].copy()
+
+    # Angle 0 should return start point even after reflection
+    p_reflected_0 = reflected_circle.point_at_angle(0)
+    np.testing.assert_array_almost_equal(p_reflected_0, reflected_start, decimal=5)

@@ -1,6 +1,6 @@
 [project]
 name = "manim"
-version = "0.19.0"
+version = "0.19.1"
 description = "Animation engine for explanatory math videos."
 authors = [
   {name = "The Manim Community Developers", email = "contact@manim.community"},
@@ -14,22 +14,20 @@ classifiers = [
     "Topic :: Scientific/Engineering",
     "Topic :: Multimedia :: Video",
     "Topic :: Multimedia :: Graphics",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Natural Language :: English",
     ]
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 dependencies = [
     "audioop-lts>=0.2.1 ; python_full_version >= '3.13'",
-    "av>=9.0.0,<14.0.0",
+    "av>=14.0.1",
     "beautifulsoup4>=4.12",
     "click>=8.0",
     "cloup>=2.0.0",
     "decorator>=4.3.2",
-    "importlib-metadata>=8.6.1 ; python_full_version < '3.10'",
     "isosurfaces>=0.1.0",
     "manimpango>=0.5.0,<1.0.0",
     "mapbox-earcut>=1.0.0",
@@ -89,7 +87,7 @@ dev = [
     "pytest>=8.3.4",
     "pytest-cov>=6.0.0",
     "pytest-xdist>=2.2,<3.0",
-    "ruff>=0.9.3",
+    "ruff>=0.14.7",
     "sphinx>=7.4.7",
     "sphinx-copybutton>=0.5.2",
     "sphinx-design>=0.6.1",
@@ -132,7 +130,7 @@ exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:"]
 
 [tool.ruff]
 line-length = 88
-target-version = "py39"
+target-version = "py311"
 extend-exclude = [
   ".github",
   ".hg",
@@ -151,13 +149,15 @@ select = [
   "C4",
   "D",
   "E",
-  "W",
   "F",
   "I",
+  "NPY",
+  "PERF",
   "PGH",
   "PT",
   "SIM",
   "UP",
+  "W",
 ]
 
 ignore = [
@@ -174,18 +174,19 @@ ignore = [
   "D205",
   "D212",
   "D4",
+  "E111",
+  "E114",
+  "E117",
+  "E501",
   # due to the import * used in manim
   "F403",
   "F405",
+  "PERF203",  # try-except-in-loop
   # Exception too broad (this would require lots of changes + re.escape) for little benefit
   "PT011",
   # as recommended by https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules
   "D206",
   "D300",
-  "E111",
-  "E114",
-  "E117",
-  "E501",
 ]
 
 # Allow unused variables when underscore-prefixed.

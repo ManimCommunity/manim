@@ -10,7 +10,7 @@ import operator as op
 import pathlib
 from collections.abc import Callable, Iterable
 from functools import reduce
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Self
 
 import cairo
 import numpy as np
@@ -28,8 +28,9 @@ from manim.utils.iterables import list_difference_update
 from manim.utils.space_ops import cross2d, normalize
 
 if TYPE_CHECKING:
+    from typing import Self
+
     import numpy.typing as npt
-    from typing_extensions import Self
 
     from manim.mobject.types.image_mobject import AbstractImageMobject
     from manim.typing import (
@@ -759,7 +760,7 @@ class Camera:
             pat = cairo.LinearGradient(*it.chain(*(point[:2] for point in points)))
             step = 1.0 / (len(rgbas) - 1)
             offsets = np.arange(0, 1 + step, step)
-            for rgba, offset in zip(rgbas, offsets):
+            for rgba, offset in zip(rgbas, offsets, strict=False):
                 pat.add_color_stop_rgba(offset, *rgba[2::-1], rgba[3])
             ctx.set_source(pat)
         return self
@@ -1053,7 +1054,7 @@ class Camera:
         # https://web.archive.org/web/20150222120106/xenia.media.mit.edu/~cwren/interpolator/
 
         homography_matrix = []
-        for (x, y), (X, Y) in zip(target_coords, original_coords):
+        for (x, y), (X, Y) in zip(target_coords, original_coords, strict=True):
             homography_matrix.append([x, y, 1, 0, 0, 0, -X * x, -X * y])
             homography_matrix.append([0, 0, 0, x, y, 1, -Y * x, -Y * y])
 

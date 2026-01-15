@@ -33,7 +33,7 @@ except ImportError:
     dearpygui_imported = False
 
 from collections.abc import Callable, Iterable, Sequence
-from typing import TYPE_CHECKING, Any, Union
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 from tqdm import tqdm
@@ -62,14 +62,13 @@ from ..utils.module_ops import scene_classes_from_file
 
 if TYPE_CHECKING:
     from types import FrameType
-
-    from typing_extensions import Self, TypeAlias
+    from typing import Self, TypeAlias
 
     from manim.typing import Point3D
 
-    SceneInteractAction: TypeAlias = Union[
-        MethodWithArgs, "SceneInteractContinue", "SceneInteractRerun"
-    ]
+    SceneInteractAction: TypeAlias = (
+        MethodWithArgs | "SceneInteractContinue" | "SceneInteractRerun"
+    )
     """The SceneInteractAction type alias is used for elements in the queue
     used by :meth:`.Scene.interact()`.
 
@@ -186,7 +185,7 @@ class Scene:
         self.moving_mobjects: list[Mobject] = []
         self.static_mobjects: list[Mobject] = []
         self.time_progression: tqdm[float] | None = None
-        self.duration: float | None = None
+        self.duration: float = 0.0
         self.last_t = 0.0
         self.queue: Queue[SceneInteractAction] = Queue()
         self.skip_animation_preview = False
@@ -222,7 +221,7 @@ class Scene:
         self.foreground_mobjects: list[Mobject] = []
         if self.random_seed is not None:
             random.seed(self.random_seed)
-            np.random.seed(self.random_seed)
+            np.random.default_rng(self.random_seed)
 
     @property
     def camera(self) -> Camera | OpenGLCamera:
