@@ -1048,6 +1048,9 @@ class Camera:
         longest_side_index = np.argmax(side_lengths_in_pixels)
         longest_side = sides[longest_side_index]
         longest_side_length_in_pixels = side_lengths_in_pixels[longest_side_index]
+        if longest_side_length_in_pixels == 0:
+            return
+
         previous_side = sides[(longest_side_index - 1) % 4]
         next_side = sides[(longest_side_index - 1) % 4]
 
