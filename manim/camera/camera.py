@@ -25,11 +25,9 @@ from manim.utils.color import ManimColor, ParsableManimColor, color_to_int_rgba
 from manim.utils.family import extract_mobject_family_members
 from manim.utils.images import get_full_raster_image_path
 from manim.utils.iterables import list_difference_update
-from manim.utils.space_ops import cross2d, normalize
+from manim.utils.space_ops import cross2d
 
 if TYPE_CHECKING:
-    from typing import Self
-
     import numpy.typing as npt
 
     from manim.mobject.types.image_mobject import AbstractImageMobject
@@ -1032,19 +1030,33 @@ class Camera:
             ]
         )
         target_coords -= shift_vector
+        int_target_coords -= shift_vector
         target_size = (
             max(*[x for x, y in int_target_coords]),
             max(*[y for x, y in int_target_coords]),
         )
 
-        # Check that the image is not perpendicular to the camera by checking that no three points are colinear.
-        # If it is perpendicular, do not render it. Otherwise, the perspective transform coefficients below will have
-        # broken values.
-        p0, p1, p3, p2 = target_coords
-        u1 = normalize(p1 - p0)
-        u2 = normalize(p2 - p1)
-        u3 = normalize(p3 - p2)
-        if abs(cross2d(u1, u2)) < 1e-8 or abs(cross2d(u2, u3)) < 1e-8:
+        # Check that the quadrilateral of the transformed image can actually contain any
+        # pixels by checking that its height from the longest side is longer than 0.5 pixels.
+        # If it's not, do not render the image. Otherwise, the perspective transform
+        # coefficients below might have broken values due to the extreme distortion (for
+        # example, when the image is perpendicular to the camera).
+        ordered_vertices = [target_coords[i] for i in (0, 1, 3, 2)]
+        sides = [ordered_vertices[(i + 1) % 4] - ordered_vertices[i] for i in range(4)]
+        side_lengths_in_pixels = np.linalg.norm(sides, axis=1)
+
+        longest_side_index = np.argmax(side_lengths_in_pixels)
+        longest_side = sides[longest_side_index]
+        longest_side_length_in_pixels = side_lengths_in_pixels[longest_side_index]
+        previous_side = sides[(longest_side_index - 1) % 4]
+        next_side = sides[(longest_side_index - 1) % 4]
+
+        # height = area / base
+        h1 = abs(cross2d(longest_side, previous_side)) / longest_side_length_in_pixels
+        h2 = abs(cross2d(longest_side, next_side)) / longest_side_length_in_pixels
+        height_from_longest_side_in_pixels = max(h1, h2)
+
+        if height_from_longest_side_in_pixels < 0.5:
             return
 
         # Use PIL.Image.Image.transform() to apply a perspective transform to the image.
@@ -1061,7 +1073,12 @@ class Camera:
         A = np.array(homography_matrix, dtype=np.float64)
         b = original_coords.reshape(8).astype(np.float64)
 
-        transform_coefficients = np.linalg.solve(A, b)
+        try:
+            transform_coefficients = np.linalg.solve(A, b)
+        except np.linalg.LinAlgError:
+            # The matrix A might be singular if three points are collinear.
+            # In this case, do nothing and return.
+            return
 
         sub_image = sub_image.transform(
             size=target_size,  # Use the smallest possible size for speed.
@@ -1164,8 +1181,9 @@ class Camera:
         self,
         mobject: Mobject,
         points: Point3D_Array,
-    ) -> npt.NDArray[ManimFloat]:
-        # TODO: Write more detailed docstrings for this method.
+    ) -> npt.NDArray[
+        ManimFloat
+    ]:  # TODO: Write more detailed docstrings for this method.
         points = self.transform_points_pre_display(mobject, points)
         shifted_points = points - self.frame_center
 
@@ -1189,8 +1207,7 @@ class Camera:
         self,
         mobject: Mobject,
         points: Point3D_Array,
-    ) -> npt.NDArray[ManimInt]:
-        # TODO: Write more detailed docstrings for this method.
+    ) -> npt.NDArray[ManimInt]:  # TODO: Write more detailed docstrings for this method.
         return self.points_to_subpixel_coords(mobject, points).astype(np.int64)
 
     def on_screen_pixels(self, pixel_coords: np.ndarray) -> PixelArray:
