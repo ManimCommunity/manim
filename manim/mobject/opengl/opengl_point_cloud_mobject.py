@@ -22,7 +22,7 @@ from manim.utils.config_ops import _Uniforms
 from manim.utils.iterables import resize_with_interpolation
 
 if TYPE_CHECKING:
-    from typing_extensions import Self
+    from typing import Self
 
     from manim.typing import (
         FloatRGBA_Array,

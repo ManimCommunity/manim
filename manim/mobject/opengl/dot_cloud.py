@@ -2,10 +2,9 @@ from __future__ import annotations
 
 __all__ = ["TrueDot", "DotCloud"]
 
-from typing import Any
+from typing import Any, Self
 
 import numpy as np
-from typing_extensions import Self
 
 from manim.constants import ORIGIN, RIGHT, UP
 from manim.mobject.opengl.opengl_point_cloud_mobject import OpenGLPMobject

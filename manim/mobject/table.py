@@ -526,7 +526,7 @@ class Table(VGroup):
                     self.add(table)
         """
         columns = self.get_columns()
-        for color, column in zip(colors, columns):
+        for color, column in zip(colors, columns, strict=False):
             column.set_color(color)
         return self
 
@@ -555,7 +555,7 @@ class Table(VGroup):
                     self.add(table)
         """
         rows = self.get_rows()
-        for color, row in zip(colors, rows):
+        for color, row in zip(colors, rows, strict=False):
             row.set_color(color)
         return self
 
