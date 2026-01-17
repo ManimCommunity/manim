@@ -1063,11 +1063,11 @@ class Camera:
             return
 
         # Use PIL.Image.Image.transform() to apply a perspective transform to the image.
-        # The transform coefficients must be calculated. The following is adapted from
+        # The transform coefficients must be calculated. The following is adapted from:
+        # https://pc-pillow.readthedocs.io/en/latest/Image_class/Image_transform.html#transform-perspective-coefficients
         # https://stackoverflow.com/questions/14177744/how-does-perspective-transformation-work-in-pil
-        # and
+        # The derivation can be found here:
         # https://web.archive.org/web/20150222120106/xenia.media.mit.edu/~cwren/interpolator/
-
         homography_matrix = []
         for (x, y), (X, Y) in zip(target_coords, original_coords, strict=True):
             homography_matrix.append([x, y, 1, 0, 0, 0, -X * x, -X * y])
