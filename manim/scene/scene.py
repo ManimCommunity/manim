@@ -1163,11 +1163,13 @@ class Scene:
             and threading.current_thread().name != "MainThread"
         ):
             # TODO: are these actually being used?
-            kwargs.update({
-                "subcaption": subcaption,
-                "subcaption_duration": subcaption_duration,
-                "subcaption_offset": subcaption_offset,
-            })
+            kwargs.update(
+                {
+                    "subcaption": subcaption,
+                    "subcaption_duration": subcaption_duration,
+                    "subcaption_offset": subcaption_offset,
+                }
+            )
             self.queue.put(SceneInteractRerun("play", **kwargs))
             return
 
