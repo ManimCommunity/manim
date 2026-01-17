@@ -374,7 +374,7 @@ class MathTex(SingleStringMathTex):
 
         return VGroup(*(m for m in self.submobjects if test(tex, m.get_tex_string())))
 
-    def get_part_by_tex(self, tex: str, **kwargs: Any) -> MathTex | None:
+    def get_part_by_tex(self, tex: str, **kwargs: Any) -> VMobject | None:
         all_parts = self.get_parts_by_tex(tex, **kwargs)
         return all_parts[0] if all_parts else None
 
@@ -427,7 +427,7 @@ class MathTex(SingleStringMathTex):
                     self.set_color_by_tex(tex, ManimColor(color), **kwargs)
         return self
 
-    def index_of_part(self, part: MathTex) -> int:
+    def index_of_part(self, part: VMobject) -> int:
         split_self = self.split()
         if part not in split_self:
             raise ValueError("Trying to get index of part not in MathTex")
